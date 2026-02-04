@@ -4,7 +4,7 @@ from pathlib import Path
 
 WORKFLOWS_DIR = Path(__file__).parent.parent / ".github" / "workflows"
 
-TESTS_YML = '''name: Tests
+TESTS_YML = """name: Tests
 
 on:
   push:
@@ -50,9 +50,9 @@ jobs:
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
-'''
+"""
 
-HEALTH_CHECK_YML = '''name: Daily Health Check
+HEALTH_CHECK_YML = """name: Daily Health Check
 
 on:
   schedule:
@@ -90,9 +90,9 @@ jobs:
           name: health-report-${{ github.run_number }}
           path: health_report.json
           retention-days: 30
-'''
+"""
 
-STRUCTURE_MONITOR_YML = '''name: Structure Monitor
+STRUCTURE_MONITOR_YML = """name: Structure Monitor
 
 on:
   schedule:
@@ -133,7 +133,7 @@ jobs:
         if: steps.compare.outputs.drift_detected == 'true'
         run: |
           python scripts/alert_structure_change.py diff_report.json
-'''
+"""
 
 
 def main():

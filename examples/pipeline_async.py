@@ -22,7 +22,7 @@ async def coletar_precos() -> pd.DataFrame:
     """Coleta indicadores de preços do CEPEA."""
     from agrobr import cepea
 
-    produtos = ['soja', 'milho', 'boi_gordo', 'cafe']
+    produtos = ["soja", "milho", "boi_gordo", "cafe"]
 
     async def get_produto(produto: str) -> pd.DataFrame:
         try:
@@ -42,7 +42,7 @@ async def coletar_safras() -> pd.DataFrame:
     from agrobr import conab
 
     try:
-        df = await conab.safras('soja', safra='2024/25')
+        df = await conab.safras("soja", safra="2024/25")
         return df
     except Exception as e:
         print(f"Erro ao coletar safras: {e}")
@@ -54,7 +54,7 @@ async def coletar_pam() -> pd.DataFrame:
     from agrobr import ibge
 
     try:
-        df = await ibge.pam('soja', ano=2023, nivel='uf')
+        df = await ibge.pam("soja", ano=2023, nivel="uf")
         return df
     except Exception as e:
         print(f"Erro ao coletar PAM: {e}")
@@ -81,8 +81,8 @@ async def main():
     if not precos.empty:
         print(f"Total de registros: {len(precos)}")
         print("\nÚltimos valores por produto:")
-        for produto in precos['produto'].unique():
-            ultimo = precos[precos['produto'] == produto].iloc[-1]
+        for produto in precos["produto"].unique():
+            ultimo = precos[precos["produto"] == produto].iloc[-1]
             print(f"  {produto}: R$ {ultimo['valor']:.2f} ({ultimo['data']})")
     else:
         print("Nenhum dado coletado")
