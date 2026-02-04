@@ -106,7 +106,8 @@ class HistoryManager:
             Dados ou None
         """
         dt = datetime.combine(data_date, datetime.min.time()) if data_date else None
-        return self.store.history_get(key, dt)
+        result: bytes | None = self.store.history_get(key, dt)
+        return result
 
     def get_latest(self, key: str) -> bytes | None:
         """
@@ -142,7 +143,7 @@ class HistoryManager:
         start_dt = datetime.combine(start_date, datetime.min.time()) if start_date else None
         end_dt = datetime.combine(end_date, datetime.max.time()) if end_date else None
 
-        entries = self.store.history_query(
+        entries: list[dict[str, Any]] = self.store.history_query(
             source=source,
             start_date=start_dt,
             end_date=end_dt,

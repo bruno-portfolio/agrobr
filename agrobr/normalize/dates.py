@@ -108,9 +108,9 @@ def normalizar_safra(safra: str) -> str:
 
     match_barra = REGEX_SAFRA_BARRA.match(safra)
     if match_barra:
-        ano_inicio = match_barra.group(1)
-        ano_fim = match_barra.group(2)[-2:]
-        return f"{ano_inicio}/{ano_fim}"
+        ano_inicio_str = match_barra.group(1)
+        ano_fim_str = match_barra.group(2)[-2:]
+        return f"{ano_inicio_str}/{ano_fim_str}"
 
     raise ValueError(f"Formato de safra inválido: '{safra}'")
 
@@ -131,6 +131,9 @@ def safra_para_anos(safra: str) -> tuple[int, int]:
     """
     safra_norm = normalizar_safra(safra)
     match = REGEX_SAFRA_COMPLETA.match(safra_norm)
+
+    if match is None:
+        raise ValueError(f"Formato de safra inválido: '{safra}'")
 
     ano_inicio = int(match.group(1))
     ano_fim_curto = int(match.group(2))

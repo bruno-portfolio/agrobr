@@ -57,7 +57,7 @@ def run_sync(coro: Awaitable[T]) -> T:
         nest_asyncio.apply()
         return loop.run_until_complete(coro)
     else:
-        return asyncio.run(coro)
+        return asyncio.run(coro)  # type: ignore[arg-type]
 
 
 def sync_wrapper(async_func: Callable[..., Awaitable[T]]) -> Callable[..., T]:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 import structlog
@@ -191,7 +191,7 @@ async def indicador(
     return df
 
 
-def _dicts_to_indicadores(dicts: list[dict]) -> list[Indicador]:
+def _dicts_to_indicadores(dicts: list[dict[str, Any]]) -> list[Indicador]:
     """Converte lista de dicts do banco para objetos Indicador."""
     indicadores = []
     for d in dicts:
@@ -212,7 +212,7 @@ def _dicts_to_indicadores(dicts: list[dict]) -> list[Indicador]:
     return indicadores
 
 
-def _indicadores_to_dicts(indicadores: list[Indicador]) -> list[dict]:
+def _indicadores_to_dicts(indicadores: list[Indicador]) -> list[dict[str, Any]]:
     """Converte lista de Indicador para dicts para salvar no banco."""
     return [
         {

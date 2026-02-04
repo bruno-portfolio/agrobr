@@ -157,9 +157,9 @@ async def fetch_with_browser(
 
             # Verifica se foi bloqueado pelo Cloudflare
             if response.status in (403, 503):
-                html = await page.content()
+                check_html: str = await page.content()
                 # Detecta página de challenge do Cloudflare
-                if "cloudflare" in html.lower() or "challenge" in html.lower():
+                if "cloudflare" in check_html.lower() or "challenge" in check_html.lower():
                     raise SourceUnavailableError(
                         source=source,
                         url=url,
@@ -167,7 +167,7 @@ async def fetch_with_browser(
                     )
 
             # Obtém HTML
-            html = await page.content()
+            html: str = await page.content()
 
             logger.info(
                 "browser_fetch_success",

@@ -38,7 +38,7 @@ async def fetch_boletim_page() -> str:
         await page.goto(url, timeout=60000)
         await page.wait_for_timeout(3000)
 
-        html = await page.content()
+        html: str = await page.content()
         await browser.close()
 
         logger.info(

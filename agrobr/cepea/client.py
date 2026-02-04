@@ -52,7 +52,7 @@ def _get_produto_url(produto: str) -> str:
     return f"{base}/{produto_key}.aspx"
 
 
-async def _fetch_with_httpx(url: str, headers: dict) -> str:
+async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> str:
     """Tenta buscar com httpx (mais rápido, mas pode falhar com Cloudflare)."""
 
     async def _fetch() -> httpx.Response:

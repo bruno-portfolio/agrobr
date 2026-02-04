@@ -173,7 +173,7 @@ class ConabParserV1:
         suprimentos = []
         current_produto = None
 
-        for idx in range(header_row + 1, len(df)):
+        for idx in range(int(header_row) + 1, len(df)):
             row = df.iloc[idx]
 
             produto_cell = str(row.iloc[0]).strip() if pd.notna(row.iloc[0]) else None
@@ -239,7 +239,7 @@ class ConabParserV1:
                 reason=f"Erro ao ler aba Brasil - Total por Produto: {e}",
             ) from e
 
-        totais = []
+        totais: list[dict[str, Any]] = []
 
         header_row = self._find_header_row(df)
         if header_row is None:
@@ -282,7 +282,7 @@ class ConabParserV1:
         for idx, row in df.iterrows():
             cell0 = str(row.iloc[0]).upper() if pd.notna(row.iloc[0]) else ""
             if "REGI" in cell0 or "UF" in cell0 or "PRODUTO" in cell0:
-                return idx
+                return int(idx)
         return None
 
     def _extract_safra_columns(

@@ -17,7 +17,7 @@ class BaseParser(ABC):
     source: str
     valid_from: date
     valid_until: date | None = None
-    expected_fingerprint: dict | None = None
+    expected_fingerprint: dict[str, str] | None = None
 
     @abstractmethod
     def can_parse(self, html: str) -> tuple[bool, float]:
@@ -30,6 +30,6 @@ class BaseParser(ABC):
         pass
 
     @abstractmethod
-    def extract_fingerprint(self, html: str) -> dict:
+    def extract_fingerprint(self, html: str) -> dict[str, str]:
         """Extrai assinatura estrutural do HTML."""
         pass

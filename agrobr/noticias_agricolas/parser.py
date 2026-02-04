@@ -153,7 +153,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
                 continue
 
             # Extrai variação se disponível
-            meta: dict = {}
+            meta: dict[str, str | float] = {}
             if len(cells) >= 3:
                 var_str = cells[2].get_text(strip=True)
                 variacao = _parse_variacao(var_str)

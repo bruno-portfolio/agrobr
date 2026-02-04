@@ -40,7 +40,7 @@ UF = Literal[
 
 Regiao = Literal["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"]
 
-UFS: dict[str, dict] = {
+UFS: dict[str, dict[str, str | int]] = {
     "AC": {"nome": "Acre", "regiao": "Norte", "ibge": 12},
     "AL": {"nome": "Alagoas", "regiao": "Nordeste", "ibge": 27},
     "AP": {"nome": "Amapá", "regiao": "Norte", "ibge": 16},
@@ -86,7 +86,7 @@ def remover_acentos(texto: str) -> str:
 
 
 NOMES_PARA_UF: dict[str, str] = {
-    remover_acentos(info["nome"].lower()): uf for uf, info in UFS.items()
+    remover_acentos(str(info["nome"]).lower()): uf for uf, info in UFS.items()
 } | {uf.lower(): uf for uf in UFS}
 
 
@@ -136,7 +136,7 @@ def uf_para_nome(uf: str) -> str:
     Raises:
         KeyError: Se UF inválida
     """
-    return UFS[uf.upper()]["nome"]
+    return str(UFS[uf.upper()]["nome"])
 
 
 def uf_para_regiao(uf: str) -> str:
@@ -149,7 +149,7 @@ def uf_para_regiao(uf: str) -> str:
     Returns:
         Nome da região
     """
-    return UFS[uf.upper()]["regiao"]
+    return str(UFS[uf.upper()]["regiao"])
 
 
 def uf_para_ibge(uf: str) -> int:
@@ -162,7 +162,7 @@ def uf_para_ibge(uf: str) -> int:
     Returns:
         Código IBGE (2 dígitos)
     """
-    return UFS[uf.upper()]["ibge"]
+    return int(UFS[uf.upper()]["ibge"])
 
 
 def ibge_para_uf(codigo: int) -> str:
