@@ -72,9 +72,7 @@ def migrate(conn: duckdb.DuckDBPyConnection) -> None:
                             raise
 
                 with contextlib.suppress(Exception):
-                    conn.execute(
-                        "INSERT INTO schema_version (version) VALUES (?)", [version]
-                    )
+                    conn.execute("INSERT INTO schema_version (version) VALUES (?)", [version])
 
                 logger.info("migration_applied", version=version)
             except Exception as e:

@@ -162,12 +162,14 @@ def analyze_consensus(
     unique_counts = set(counts.values())
 
     if len(unique_counts) > 1:
-        divergences.append({
-            "type": "count_mismatch",
-            "versions": list(counts.keys()),
-            "counts": counts,
-            "description": f"Different record counts: {counts}",
-        })
+        divergences.append(
+            {
+                "type": "count_mismatch",
+                "versions": list(counts.keys()),
+                "counts": counts,
+                "description": f"Different record counts: {counts}",
+            }
+        )
 
     versions = list(results.keys())
     base_version = versions[0]
@@ -178,36 +180,44 @@ def analyze_consensus(
 
         if base_results and other_results:
             if base_results[0].data != other_results[0].data:
-                divergences.append({
-                    "type": "first_date_mismatch",
-                    "versions": [base_version, other_version],
-                    "values": [str(base_results[0].data), str(other_results[0].data)],
-                })
+                divergences.append(
+                    {
+                        "type": "first_date_mismatch",
+                        "versions": [base_version, other_version],
+                        "values": [str(base_results[0].data), str(other_results[0].data)],
+                    }
+                )
 
             first_diff = abs(float(base_results[0].valor) - float(other_results[0].valor))
             if first_diff > DIVERGENCE_THRESHOLD_VALUE:
-                divergences.append({
-                    "type": "first_value_mismatch",
-                    "versions": [base_version, other_version],
-                    "values": [str(base_results[0].valor), str(other_results[0].valor)],
-                    "difference": first_diff,
-                })
+                divergences.append(
+                    {
+                        "type": "first_value_mismatch",
+                        "versions": [base_version, other_version],
+                        "values": [str(base_results[0].valor), str(other_results[0].valor)],
+                        "difference": first_diff,
+                    }
+                )
 
             if base_results[-1].data != other_results[-1].data:
-                divergences.append({
-                    "type": "last_date_mismatch",
-                    "versions": [base_version, other_version],
-                    "values": [str(base_results[-1].data), str(other_results[-1].data)],
-                })
+                divergences.append(
+                    {
+                        "type": "last_date_mismatch",
+                        "versions": [base_version, other_version],
+                        "values": [str(base_results[-1].data), str(other_results[-1].data)],
+                    }
+                )
 
             last_diff = abs(float(base_results[-1].valor) - float(other_results[-1].valor))
             if last_diff > DIVERGENCE_THRESHOLD_VALUE:
-                divergences.append({
-                    "type": "last_value_mismatch",
-                    "versions": [base_version, other_version],
-                    "values": [str(base_results[-1].valor), str(other_results[-1].valor)],
-                    "difference": last_diff,
-                })
+                divergences.append(
+                    {
+                        "type": "last_value_mismatch",
+                        "versions": [base_version, other_version],
+                        "values": [str(base_results[-1].valor), str(other_results[-1].valor)],
+                        "difference": last_diff,
+                    }
+                )
 
     report["divergences"] = divergences
     report["has_divergence"] = len(divergences) > 0

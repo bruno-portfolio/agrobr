@@ -43,6 +43,7 @@ class HistoryManager:
         """Obtém store, criando se necessário."""
         if self._store is None:
             from .duckdb_store import get_store
+
             self._store = get_store()
         return self._store
 
@@ -148,7 +149,7 @@ class HistoryManager:
         )
 
         if key_prefix:
-            entries = [e for e in entries if e['key'].startswith(key_prefix)]
+            entries = [e for e in entries if e["key"].startswith(key_prefix)]
 
         return entries
 
@@ -173,8 +174,8 @@ class HistoryManager:
         dates = set()
 
         for entry in entries:
-            if entry['key'] == key:
-                data_date = entry.get('data_date')
+            if entry["key"] == key:
+                data_date = entry.get("data_date")
                 if data_date:
                     if isinstance(data_date, datetime):
                         dates.add(data_date.date())
@@ -207,7 +208,7 @@ class HistoryManager:
         while current <= end_date:
             if current.weekday() < 5:
                 all_dates.append(current)
-            current = current + __import__('datetime').timedelta(days=1)
+            current = current + __import__("datetime").timedelta(days=1)
 
         return [d for d in all_dates if d not in available]
 
@@ -235,7 +236,7 @@ class HistoryManager:
         source: Fonte | None = None,
         start_date: date | None = None,
         end_date: date | None = None,
-        format: str = 'parquet',
+        format: str = "parquet",
     ) -> int:
         """
         Exporta histórico para arquivo.
@@ -262,12 +263,12 @@ class HistoryManager:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        if format == 'parquet':
+        if format == "parquet":
             df.to_parquet(path, index=False)
-        elif format == 'csv':
+        elif format == "csv":
             df.to_csv(path, index=False)
-        elif format == 'json':
-            df.to_json(path, orient='records', date_format='iso')
+        elif format == "json":
+            df.to_json(path, orient="records", date_format="iso")
         else:
             raise ValueError(f"Formato não suportado: {format}")
 

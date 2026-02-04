@@ -178,9 +178,7 @@ def validate_indicador(
         change_pct = abs((indicador.valor - valor_anterior) / valor_anterior) * 100
 
         if change_pct > rule.max_daily_change_pct:
-            severity = (
-                "critical" if change_pct > rule.max_daily_change_pct * 2 else "warning"
-            )
+            severity = "critical" if change_pct > rule.max_daily_change_pct * 2 else "warning"
             anomalies.append(
                 AnomalyReport(
                     field="valor",

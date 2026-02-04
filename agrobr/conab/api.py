@@ -73,6 +73,7 @@ async def safras(
     if as_polars:
         try:
             import polars as pl
+
             return pl.from_pandas(df)
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
@@ -129,6 +130,7 @@ async def balanco(
     if as_polars:
         try:
             import polars as pl
+
             return pl.from_pandas(df)
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
@@ -179,6 +181,7 @@ async def brasil_total(
     if as_polars:
         try:
             import polars as pl
+
             return pl.from_pandas(df)
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")

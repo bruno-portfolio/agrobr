@@ -34,47 +34,47 @@ class TTL(Enum):
 
 
 POLICIES: dict[str, CachePolicy] = {
-    'cepea_diario': CachePolicy(
+    "cepea_diario": CachePolicy(
         ttl_seconds=TTL.HOURS_4.value,
         stale_max_seconds=TTL.HOURS_24.value * 2,
-        description='CEPEA indicador diário (atualiza ~18h)',
+        description="CEPEA indicador diário (atualiza ~18h)",
     ),
-    'cepea_semanal': CachePolicy(
+    "cepea_semanal": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_7.value,
-        description='CEPEA indicador semanal (atualiza sexta)',
+        description="CEPEA indicador semanal (atualiza sexta)",
     ),
-    'conab_safras': CachePolicy(
+    "conab_safras": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_30.value,
-        description='CONAB safras (atualiza mensalmente)',
+        description="CONAB safras (atualiza mensalmente)",
     ),
-    'conab_balanco': CachePolicy(
+    "conab_balanco": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_30.value,
-        description='CONAB balanço (atualiza mensalmente)',
+        description="CONAB balanço (atualiza mensalmente)",
     ),
-    'ibge_pam': CachePolicy(
+    "ibge_pam": CachePolicy(
         ttl_seconds=TTL.DAYS_7.value,
         stale_max_seconds=TTL.DAYS_90.value,
-        description='IBGE PAM (atualiza anualmente)',
+        description="IBGE PAM (atualiza anualmente)",
     ),
-    'ibge_lspa': CachePolicy(
+    "ibge_lspa": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_30.value,
-        description='IBGE LSPA (atualiza mensalmente)',
+        description="IBGE LSPA (atualiza mensalmente)",
     ),
-    'noticias_agricolas': CachePolicy(
+    "noticias_agricolas": CachePolicy(
         ttl_seconds=TTL.HOURS_4.value,
         stale_max_seconds=TTL.HOURS_24.value * 2,
-        description='Notícias Agrícolas (mirror CEPEA)',
+        description="Notícias Agrícolas (mirror CEPEA)",
     ),
 }
 
 SOURCE_POLICY_MAP: dict[Fonte, str] = {
-    Fonte.CEPEA: 'cepea_diario',
-    Fonte.CONAB: 'conab_safras',
-    Fonte.IBGE: 'ibge_lspa',
+    Fonte.CEPEA: "cepea_diario",
+    Fonte.CONAB: "conab_safras",
+    Fonte.IBGE: "ibge_lspa",
 }
 
 
@@ -95,14 +95,14 @@ def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
         try:
             source = Fonte(source)
         except ValueError:
-            return POLICIES['cepea_diario']
+            return POLICIES["cepea_diario"]
 
     if endpoint:
         key = f"{source.value}_{endpoint}"
         if key in POLICIES:
             return POLICIES[key]
 
-    default_key = SOURCE_POLICY_MAP.get(source, 'cepea_diario')
+    default_key = SOURCE_POLICY_MAP.get(source, "cepea_diario")
     return POLICIES[default_key]
 
 

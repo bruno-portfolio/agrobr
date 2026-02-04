@@ -50,8 +50,7 @@ async def pam(
     produto_lower = produto.lower()
     if produto_lower not in client.PRODUTOS_PAM:
         raise ValueError(
-            f"Produto não suportado: {produto}. "
-            f"Disponíveis: {list(client.PRODUTOS_PAM.keys())}"
+            f"Produto não suportado: {produto}. " f"Disponíveis: {list(client.PRODUTOS_PAM.keys())}"
         )
 
     produto_cod = client.PRODUTOS_PAM[produto_lower]
@@ -127,6 +126,7 @@ async def pam(
     if as_polars:
         try:
             import polars as pl
+
             return pl.from_pandas(df)
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
@@ -187,6 +187,7 @@ async def lspa(
     # Define período
     if ano is None:
         from datetime import date
+
         ano = date.today().year
 
     # Define período
@@ -219,6 +220,7 @@ async def lspa(
     if as_polars:
         try:
             import polars as pl
+
             return pl.from_pandas(df)
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")

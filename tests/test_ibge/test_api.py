@@ -86,19 +86,21 @@ class TestPamMocked:
     @pytest.fixture
     def mock_sidra_response(self):
         """Resposta mockada do SIDRA."""
-        return pd.DataFrame({
-            "NC": ["3", "3"],
-            "NN": ["Unidade da Federação", "Unidade da Federação"],
-            "MC": ["51", "41"],
-            "MN": ["Mato Grosso", "Paraná"],
-            "V": ["15000000", "12000000"],
-            "D1C": ["2023", "2023"],
-            "D1N": ["2023", "2023"],
-            "D2C": ["214", "214"],
-            "D2N": ["Área plantada", "Área plantada"],
-            "D3C": ["40124", "40124"],
-            "D3N": ["Soja (em grão)", "Soja (em grão)"],
-        })
+        return pd.DataFrame(
+            {
+                "NC": ["3", "3"],
+                "NN": ["Unidade da Federação", "Unidade da Federação"],
+                "MC": ["51", "41"],
+                "MN": ["Mato Grosso", "Paraná"],
+                "V": ["15000000", "12000000"],
+                "D1C": ["2023", "2023"],
+                "D1N": ["2023", "2023"],
+                "D2C": ["214", "214"],
+                "D2N": ["Área plantada", "Área plantada"],
+                "D3C": ["40124", "40124"],
+                "D3N": ["Soja (em grão)", "Soja (em grão)"],
+            }
+        )
 
     @pytest.mark.asyncio
     async def test_pam_returns_dataframe(self, mock_sidra_response):
@@ -164,19 +166,21 @@ class TestLspaMocked:
     @pytest.fixture
     def mock_lspa_response(self):
         """Resposta mockada do LSPA."""
-        return pd.DataFrame({
-            "NC": ["1", "1"],
-            "NN": ["Brasil", "Brasil"],
-            "MC": ["1", "1"],
-            "MN": ["Brasil", "Brasil"],
-            "V": ["150000", "45000"],
-            "D1C": ["202406", "202406"],
-            "D1N": ["junho 2024", "junho 2024"],
-            "D2C": ["109", "216"],
-            "D2N": ["Área", "Produção"],
-            "D3C": ["39443", "39443"],
-            "D3N": ["Soja", "Soja"],
-        })
+        return pd.DataFrame(
+            {
+                "NC": ["1", "1"],
+                "NN": ["Brasil", "Brasil"],
+                "MC": ["1", "1"],
+                "MN": ["Brasil", "Brasil"],
+                "V": ["150000", "45000"],
+                "D1C": ["202406", "202406"],
+                "D1N": ["junho 2024", "junho 2024"],
+                "D2C": ["109", "216"],
+                "D2N": ["Área", "Produção"],
+                "D3C": ["39443", "39443"],
+                "D3N": ["Soja", "Soja"],
+            }
+        )
 
     @pytest.mark.asyncio
     async def test_lspa_returns_dataframe(self, mock_lspa_response):
@@ -233,15 +237,17 @@ class TestPolarsSupport:
     @pytest.fixture
     def mock_response(self):
         """Resposta mockada."""
-        return pd.DataFrame({
-            "NC": ["3"],
-            "NN": ["UF"],
-            "MC": ["51"],
-            "MN": ["Mato Grosso"],
-            "V": ["15000"],
-            "D1N": ["2023"],
-            "D2N": ["Área plantada"],
-        })
+        return pd.DataFrame(
+            {
+                "NC": ["3"],
+                "NN": ["UF"],
+                "MC": ["51"],
+                "MN": ["Mato Grosso"],
+                "V": ["15000"],
+                "D1N": ["2023"],
+                "D2N": ["Área plantada"],
+            }
+        )
 
     @pytest.mark.asyncio
     async def test_pam_polars_conversion(self, mock_response):
@@ -254,6 +260,7 @@ class TestPolarsSupport:
             df = await ibge.pam("soja", ano=2023, as_polars=True)
 
             import polars as pl
+
             assert isinstance(df, pl.DataFrame)
 
     @pytest.mark.asyncio
@@ -267,6 +274,7 @@ class TestPolarsSupport:
             df = await ibge.lspa("soja", ano=2024, mes=6, as_polars=True)
 
             import polars as pl
+
             assert isinstance(df, pl.DataFrame)
 
     @pytest.mark.asyncio
@@ -274,6 +282,7 @@ class TestPolarsSupport:
         """Testa fallback para pandas quando polars nao instalado."""
         # Simula polars nao instalado
         import builtins
+
         real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):

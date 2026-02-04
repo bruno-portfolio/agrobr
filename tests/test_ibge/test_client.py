@@ -133,14 +133,16 @@ class TestParseSidraResponse:
         """Testa renomeacao de colunas padrao."""
         import pandas as pd
 
-        df = pd.DataFrame({
-            "NC": ["1"],
-            "NN": ["Brasil"],
-            "MC": ["1"],
-            "MN": ["Brasil"],
-            "V": ["100"],
-            "D1N": ["2023"],
-        })
+        df = pd.DataFrame(
+            {
+                "NC": ["1"],
+                "NN": ["Brasil"],
+                "MC": ["1"],
+                "MN": ["Brasil"],
+                "V": ["100"],
+                "D1N": ["2023"],
+            }
+        )
 
         result = client.parse_sidra_response(df)
 
@@ -153,9 +155,11 @@ class TestParseSidraResponse:
         """Testa conversao de valor para numerico."""
         import pandas as pd
 
-        df = pd.DataFrame({
-            "V": ["100", "200.5", "300"],
-        })
+        df = pd.DataFrame(
+            {
+                "V": ["100", "200.5", "300"],
+            }
+        )
 
         result = client.parse_sidra_response(df)
 
@@ -166,9 +170,11 @@ class TestParseSidraResponse:
         """Testa que valores invalidos viram NaN."""
         import pandas as pd
 
-        df = pd.DataFrame({
-            "V": ["100", "-", "..."],
-        })
+        df = pd.DataFrame(
+            {
+                "V": ["100", "-", "..."],
+            }
+        )
 
         result = client.parse_sidra_response(df)
 
@@ -180,10 +186,12 @@ class TestParseSidraResponse:
         """Testa renomeacao customizada."""
         import pandas as pd
 
-        df = pd.DataFrame({
-            "D5C": ["123"],
-            "D5N": ["Custom"],
-        })
+        df = pd.DataFrame(
+            {
+                "D5C": ["123"],
+                "D5N": ["Custom"],
+            }
+        )
 
         result = client.parse_sidra_response(df, rename_columns={"D5N": "custom_field"})
 

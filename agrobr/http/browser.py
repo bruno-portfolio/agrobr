@@ -79,11 +79,13 @@ async def get_page() -> AsyncGenerator[Page, None]:
     page = await context.new_page()
 
     # Esconde sinais de automação
-    await page.add_init_script("""
+    await page.add_init_script(
+        """
         Object.defineProperty(navigator, 'webdriver', {
             get: () => undefined
         });
-    """)
+    """
+    )
 
     try:
         yield page

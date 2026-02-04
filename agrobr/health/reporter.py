@@ -39,26 +39,23 @@ class HealthReport:
         warning_count = sum(1 for r in self.results if r.status == CheckStatus.WARNING)
         failed_count = sum(1 for r in self.results if r.status == CheckStatus.FAILED)
 
-        avg_latency = (
-            sum(r.latency_ms for r in self.results) / total
-            if total > 0 else 0
-        )
+        avg_latency = sum(r.latency_ms for r in self.results) / total if total > 0 else 0
 
         return {
-            'total_checks': total,
-            'ok': ok_count,
-            'warnings': warning_count,
-            'failures': failed_count,
-            'success_rate': ok_count / total if total > 0 else 0,
-            'avg_latency_ms': avg_latency,
-            'all_passed': failed_count == 0,
-            'has_warnings': warning_count > 0,
+            "total_checks": total,
+            "ok": ok_count,
+            "warnings": warning_count,
+            "failures": failed_count,
+            "success_rate": ok_count / total if total > 0 else 0,
+            "avg_latency_ms": avg_latency,
+            "all_passed": failed_count == 0,
+            "has_warnings": warning_count > 0,
         }
 
     @property
     def all_passed(self) -> bool:
         """Retorna True se todos os checks passaram."""
-        return self.summary['all_passed']
+        return self.summary["all_passed"]
 
     @property
     def failures(self) -> list[CheckResult]:
@@ -73,16 +70,16 @@ class HealthReport:
     def to_dict(self) -> dict[str, Any]:
         """Converte relatório para dicionário."""
         return {
-            'timestamp': self.timestamp.isoformat() + 'Z',
-            'summary': self.summary,
-            'checks': [
+            "timestamp": self.timestamp.isoformat() + "Z",
+            "summary": self.summary,
+            "checks": [
                 {
-                    'source': r.source.value,
-                    'status': r.status.value,
-                    'latency_ms': r.latency_ms,
-                    'message': r.message,
-                    'details': r.details,
-                    'timestamp': r.timestamp.isoformat() + 'Z',
+                    "source": r.source.value,
+                    "status": r.status.value,
+                    "latency_ms": r.latency_ms,
+                    "message": r.message,
+                    "details": r.details,
+                    "timestamp": r.timestamp.isoformat() + "Z",
                 }
                 for r in self.results
             ],
@@ -92,7 +89,7 @@ class HealthReport:
         """Converte relatório para JSON."""
         return json.dumps(self.to_dict(), indent=indent, default=str)
 
-    def save(self, path: str | Path, format: str = 'json') -> None:
+    def save(self, path: str | Path, format: str = "json") -> None:
         """
         Salva relatório em arquivo.
 
@@ -103,11 +100,11 @@ class HealthReport:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        if format == 'json':
+        if format == "json":
             path.write_text(self.to_json())
-        elif format == 'html':
+        elif format == "html":
             path.write_text(self.to_html())
-        elif format == 'md':
+        elif format == "md":
             path.write_text(self.to_markdown())
         else:
             raise ValueError(f"Formato não suportado: {format}")
@@ -149,44 +146,50 @@ class HealthReport:
             )
 
         if self.failures:
-            lines.extend([
-                "",
-                "## Failures",
-                "",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "## Failures",
+                    "",
+                ]
+            )
             for r in self.failures:
-                lines.extend([
-                    f"### {r.source.value}",
-                    "",
-                    f"**Error:** {r.message}",
-                    "",
-                    "```json",
-                    json.dumps(r.details, indent=2, default=str),
-                    "```",
-                    "",
-                ])
+                lines.extend(
+                    [
+                        f"### {r.source.value}",
+                        "",
+                        f"**Error:** {r.message}",
+                        "",
+                        "```json",
+                        json.dumps(r.details, indent=2, default=str),
+                        "```",
+                        "",
+                    ]
+                )
 
         return "\n".join(lines)
 
     def to_html(self) -> str:
         """Converte relatório para HTML."""
         status_colors = {
-            CheckStatus.OK: '#28a745',
-            CheckStatus.WARNING: '#ffc107',
-            CheckStatus.FAILED: '#dc3545',
+            CheckStatus.OK: "#28a745",
+            CheckStatus.WARNING: "#ffc107",
+            CheckStatus.FAILED: "#dc3545",
         }
 
         rows = []
         for r in self.results:
-            color = status_colors.get(r.status, '#6c757d')
-            rows.append(f"""
+            color = status_colors.get(r.status, "#6c757d")
+            rows.append(
+                f"""
                 <tr>
                     <td>{r.source.value}</td>
                     <td style="color: {color}; font-weight: bold;">{r.status.value}</td>
                     <td>{r.latency_ms:.0f}ms</td>
                     <td>{r.message}</td>
                 </tr>
-            """)
+            """
+            )
 
         return f"""
 <!DOCTYPE html>
@@ -269,19 +272,23 @@ class HealthReport:
 
         print()
         print("-" * 60)
-        print(f"Total: {self.summary['total_checks']} | "
-              f"OK: {self.summary['ok']} | "
-              f"Warnings: {self.summary['warnings']} | "
-              f"Failures: {self.summary['failures']}")
-        print(f"Success Rate: {self.summary['success_rate']:.1%} | "
-              f"Avg Latency: {self.summary['avg_latency_ms']:.0f}ms")
+        print(
+            f"Total: {self.summary['total_checks']} | "
+            f"OK: {self.summary['ok']} | "
+            f"Warnings: {self.summary['warnings']} | "
+            f"Failures: {self.summary['failures']}"
+        )
+        print(
+            f"Success Rate: {self.summary['success_rate']:.1%} | "
+            f"Avg Latency: {self.summary['avg_latency_ms']:.0f}ms"
+        )
         print("=" * 60 + "\n")
 
 
 async def generate_report(
     sources: list[Fonte] | None = None,
     save_path: str | Path | None = None,
-    format: str = 'json',
+    format: str = "json",
 ) -> HealthReport:
     """
     Gera relatório de health check.
