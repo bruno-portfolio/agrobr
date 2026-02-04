@@ -1,0 +1,41 @@
+name: Structure Monitor
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Fetch current structures
+        run: |
+          python scripts/fetch_structures.py --output current_structures.json
+
+      - name: Compare with baseline
+        id: compare
+        run: |
+          python scripts/compare_structures.py \
+            --baseline .structures/baseline.json \
+            --current current_structures.json \
+            --threshold 0.85 \
+            --output diff_report.json || echo "drift_detected=true" >> $GITHUB_OUTPUT
+
+      - name: Alert on drift
+        if: steps.compare.outputs.drift_detected == 'true'
+        run: |
+          python scripts/alert_structure_change.py diff_report.json

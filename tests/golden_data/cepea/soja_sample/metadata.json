@@ -1,0 +1,9 @@
+{
+  "source": "cepea",
+  "produto": "soja",
+  "periodo": "2024-01",
+  "captured_at": "2024-02-01T10:00:00Z",
+  "parser_version": 1,
+  "url": "https://www.cepea.org.br/br/indicador/soja.aspx",
+  "notes": "Sample golden data for testing - CEPEA uses Cloudflare protection"
+}

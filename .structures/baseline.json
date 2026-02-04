@@ -1,0 +1,35 @@
+{
+  "collected_at": "2026-02-04T01:02:57.512333Z",
+  "sources": {
+    "cepea": {
+      "source": "cepea",
+      "url": "soja",
+      "collected_at": "2026-02-04T01:02:57.512224",
+      "table_classes": [
+        [
+          "indicador"
+        ]
+      ],
+      "key_ids": [
+        "tblIndicador"
+      ],
+      "structure_hash": "d702ed66de78",
+      "table_headers": [
+        [
+          "Data",
+          "Valor (R$/sc 60kg)",
+          "Varia\u00e7\u00e3o (%)"
+        ]
+      ],
+      "element_counts": {
+        "tables": 1,
+        "forms": 0,
+        "divs_with_id": 1,
+        "inputs": 0,
+        "selects": 0,
+        "links": 0,
+        "scripts": 0
+      }
+    }
+  }
+}

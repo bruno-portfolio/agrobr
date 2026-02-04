@@ -1,0 +1,31 @@
+{
+  "soja": {
+    "count": 30,
+    "ufs_found": [
+      "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
+      "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN",
+      "RO", "RR", "RS", "SC", "SE", "SP", "TO"
+    ],
+    "safra": "2025/26",
+    "first_uf": {
+      "uf": "RR",
+      "area_plantada": "145.5",
+      "producao": "479.4"
+    }
+  },
+  "milho": {
+    "count": 30,
+    "ufs_found": [
+      "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
+      "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN",
+      "RO", "RR", "RS", "SC", "SE", "SP", "TO"
+    ]
+  },
+  "suprimento": {
+    "count": 28,
+    "produtos": ["ARROZ EM CASCA", "MILHO"]
+  },
+  "brasil_total": {
+    "count": 86
+  }
+}
