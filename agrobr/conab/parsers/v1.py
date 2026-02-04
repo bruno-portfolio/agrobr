@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from io import BytesIO
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 import structlog
@@ -173,7 +173,7 @@ class ConabParserV1:
         suprimentos = []
         current_produto = None
 
-        for idx in range(int(header_row) + 1, len(df)):
+        for idx in range(cast(int, header_row) + 1, len(df)):
             row = df.iloc[idx]
 
             produto_cell = str(row.iloc[0]).strip() if pd.notna(row.iloc[0]) else None
@@ -282,7 +282,7 @@ class ConabParserV1:
         for idx, row in df.iterrows():
             cell0 = str(row.iloc[0]).upper() if pd.notna(row.iloc[0]) else ""
             if "REGI" in cell0 or "UF" in cell0 or "PRODUTO" in cell0:
-                return int(idx)
+                return cast(int, idx)
         return None
 
     def _extract_safra_columns(
