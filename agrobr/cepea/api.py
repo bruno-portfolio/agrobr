@@ -40,8 +40,7 @@ async def indicador(
     offline: bool = False,
     *,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame | pl.DataFrame:
-    ...
+) -> pd.DataFrame | pl.DataFrame: ...
 
 
 @overload
@@ -57,8 +56,7 @@ async def indicador(
     offline: bool = False,
     *,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame | pl.DataFrame, MetaInfo]:
-    ...
+) -> tuple[pd.DataFrame | pl.DataFrame, MetaInfo]: ...
 
 
 async def indicador(
