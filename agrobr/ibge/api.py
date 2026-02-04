@@ -50,7 +50,7 @@ async def pam(
     produto_lower = produto.lower()
     if produto_lower not in client.PRODUTOS_PAM:
         raise ValueError(
-            f"Produto não suportado: {produto}. " f"Disponíveis: {list(client.PRODUTOS_PAM.keys())}"
+            f"Produto não suportado: {produto}. Disponíveis: {list(client.PRODUTOS_PAM.keys())}"
         )
 
     produto_cod = client.PRODUTOS_PAM[produto_lower]
@@ -178,8 +178,7 @@ async def lspa(
     produto_lower = produto.lower()
     if produto_lower not in client.PRODUTOS_LSPA:
         raise ValueError(
-            f"Produto não suportado: {produto}. "
-            f"Disponíveis: {list(client.PRODUTOS_LSPA.keys())}"
+            f"Produto não suportado: {produto}. Disponíveis: {list(client.PRODUTOS_LSPA.keys())}"
         )
 
     produto_cod = client.PRODUTOS_LSPA[produto_lower]
