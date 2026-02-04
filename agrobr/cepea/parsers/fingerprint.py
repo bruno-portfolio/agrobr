@@ -114,9 +114,7 @@ def compare_fingerprints(
     scores: dict[str, float] = {}
     details: dict[str, Any] = {}
 
-    scores["structure"] = (
-        1.0 if current.structure_hash == reference.structure_hash else 0.0
-    )
+    scores["structure"] = 1.0 if current.structure_hash == reference.structure_hash else 0.0
     if scores["structure"] == 0:
         details["structure_changed"] = {
             "current": current.structure_hash,
@@ -124,18 +122,14 @@ def compare_fingerprints(
         }
 
     if reference.table_classes:
-        matches = sum(
-            1 for tc in current.table_classes if tc in reference.table_classes
-        )
+        matches = sum(1 for tc in current.table_classes if tc in reference.table_classes)
         scores["table_classes"] = matches / len(reference.table_classes)
         if scores["table_classes"] < 1.0:
             details["table_classes_diff"] = {
                 "missing": [
                     tc for tc in reference.table_classes if tc not in current.table_classes
                 ],
-                "new": [
-                    tc for tc in current.table_classes if tc not in reference.table_classes
-                ],
+                "new": [tc for tc in current.table_classes if tc not in reference.table_classes],
             }
     else:
         scores["table_classes"] = 1.0

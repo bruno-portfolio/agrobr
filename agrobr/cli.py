@@ -201,7 +201,9 @@ app.add_typer(ibge_app, name="ibge")
 @ibge_app.command("pam")
 def ibge_pam(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, etc)"),
-    ano: str | None = typer.Option(None, "--ano", "-a", help="Ano ou anos (ex: 2023 ou 2020,2021,2022)"),
+    ano: str | None = typer.Option(
+        None, "--ano", "-a", help="Ano ou anos (ex: 2023 ou 2020,2021,2022)"
+    ),
     uf: str | None = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
     nivel: str = typer.Option("uf", "--nivel", "-n", help="Nivel: brasil, uf, municipio"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),

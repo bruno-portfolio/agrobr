@@ -19,11 +19,10 @@ TABELAS = {
     # PAM - Produção Agrícola Municipal
     "pam_temporarias": "1612",  # Lavouras temporárias (1974-2018)
     "pam_permanentes": "1613",  # Lavouras permanentes (1974-2018)
-    "pam_nova": "5457",         # Nova série PAM (2018+)
-
+    "pam_nova": "5457",  # Nova série PAM (2018+)
     # LSPA - Levantamento Sistemático da Produção Agrícola
-    "lspa": "6588",             # Série mensal (2006+)
-    "lspa_safra": "1618",       # Por ano de safra
+    "lspa": "6588",  # Série mensal (2006+)
+    "lspa_safra": "1618",  # Por ano de safra
 }
 
 # Variáveis disponíveis
@@ -34,14 +33,12 @@ VARIAVEIS = {
     "producao": "216",
     "rendimento": "112",
     "valor_producao": "215",
-
     # PAM 1612 (lavouras temporárias)
     "area_plantada_1612": "109",
     "area_colhida_1612": "1000109",
     "producao_1612": "214",
     "rendimento_1612": "112",
     "valor_1612": "215",
-
     # LSPA 6588
     "area_lspa": "109",
     "producao_lspa": "216",
@@ -223,12 +220,33 @@ def parse_sidra_response(
 def get_uf_codes() -> dict[str, str]:
     """Retorna mapeamento de sigla UF para código IBGE."""
     return {
-        "RO": "11", "AC": "12", "AM": "13", "RR": "14", "PA": "15",
-        "AP": "16", "TO": "17", "MA": "21", "PI": "22", "CE": "23",
-        "RN": "24", "PB": "25", "PE": "26", "AL": "27", "SE": "28",
-        "BA": "29", "MG": "31", "ES": "32", "RJ": "33", "SP": "35",
-        "PR": "41", "SC": "42", "RS": "43", "MS": "50", "MT": "51",
-        "GO": "52", "DF": "53",
+        "RO": "11",
+        "AC": "12",
+        "AM": "13",
+        "RR": "14",
+        "PA": "15",
+        "AP": "16",
+        "TO": "17",
+        "MA": "21",
+        "PI": "22",
+        "CE": "23",
+        "RN": "24",
+        "PB": "25",
+        "PE": "26",
+        "AL": "27",
+        "SE": "28",
+        "BA": "29",
+        "MG": "31",
+        "ES": "32",
+        "RJ": "33",
+        "SP": "35",
+        "PR": "41",
+        "SC": "42",
+        "RS": "43",
+        "MS": "50",
+        "MT": "51",
+        "GO": "52",
+        "DF": "53",
     }
 
 

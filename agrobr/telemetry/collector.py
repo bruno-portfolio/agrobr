@@ -117,9 +117,7 @@ class TelemetryCollector:
         cls._instance_id = None
 
 
-async def track_fetch(
-    source: str, produto: str, latency_ms: float, from_cache: bool
-) -> None:
+async def track_fetch(source: str, produto: str, latency_ms: float, from_cache: bool) -> None:
     """Registra evento de fetch."""
     await TelemetryCollector.track(
         "fetch",

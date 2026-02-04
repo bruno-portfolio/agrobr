@@ -84,7 +84,9 @@ async def _send_slack(
 
     if details:
         detail_text = json.dumps(details, indent=2, default=str)[:2900]
-        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": f"```{detail_text}```"}})
+        blocks.append(
+            {"type": "section", "text": {"type": "mrkdwn", "text": f"```{detail_text}```"}}
+        )
 
     payload = {"attachments": [{"color": color, "blocks": blocks}]}
 

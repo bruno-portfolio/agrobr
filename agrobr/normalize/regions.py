@@ -9,61 +9,84 @@ import unicodedata
 from typing import Literal
 
 UF = Literal[
-    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
-    'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
-    'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+    "AC",
+    "AL",
+    "AP",
+    "AM",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MT",
+    "MS",
+    "MG",
+    "PA",
+    "PB",
+    "PR",
+    "PE",
+    "PI",
+    "RJ",
+    "RN",
+    "RS",
+    "RO",
+    "RR",
+    "SC",
+    "SP",
+    "SE",
+    "TO",
 ]
 
-Regiao = Literal['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul']
+Regiao = Literal["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"]
 
 UFS: dict[str, dict] = {
-    'AC': {'nome': 'Acre', 'regiao': 'Norte', 'ibge': 12},
-    'AL': {'nome': 'Alagoas', 'regiao': 'Nordeste', 'ibge': 27},
-    'AP': {'nome': 'Amapá', 'regiao': 'Norte', 'ibge': 16},
-    'AM': {'nome': 'Amazonas', 'regiao': 'Norte', 'ibge': 13},
-    'BA': {'nome': 'Bahia', 'regiao': 'Nordeste', 'ibge': 29},
-    'CE': {'nome': 'Ceará', 'regiao': 'Nordeste', 'ibge': 23},
-    'DF': {'nome': 'Distrito Federal', 'regiao': 'Centro-Oeste', 'ibge': 53},
-    'ES': {'nome': 'Espírito Santo', 'regiao': 'Sudeste', 'ibge': 32},
-    'GO': {'nome': 'Goiás', 'regiao': 'Centro-Oeste', 'ibge': 52},
-    'MA': {'nome': 'Maranhão', 'regiao': 'Nordeste', 'ibge': 21},
-    'MT': {'nome': 'Mato Grosso', 'regiao': 'Centro-Oeste', 'ibge': 51},
-    'MS': {'nome': 'Mato Grosso do Sul', 'regiao': 'Centro-Oeste', 'ibge': 50},
-    'MG': {'nome': 'Minas Gerais', 'regiao': 'Sudeste', 'ibge': 31},
-    'PA': {'nome': 'Pará', 'regiao': 'Norte', 'ibge': 15},
-    'PB': {'nome': 'Paraíba', 'regiao': 'Nordeste', 'ibge': 25},
-    'PR': {'nome': 'Paraná', 'regiao': 'Sul', 'ibge': 41},
-    'PE': {'nome': 'Pernambuco', 'regiao': 'Nordeste', 'ibge': 26},
-    'PI': {'nome': 'Piauí', 'regiao': 'Nordeste', 'ibge': 22},
-    'RJ': {'nome': 'Rio de Janeiro', 'regiao': 'Sudeste', 'ibge': 33},
-    'RN': {'nome': 'Rio Grande do Norte', 'regiao': 'Nordeste', 'ibge': 24},
-    'RS': {'nome': 'Rio Grande do Sul', 'regiao': 'Sul', 'ibge': 43},
-    'RO': {'nome': 'Rondônia', 'regiao': 'Norte', 'ibge': 11},
-    'RR': {'nome': 'Roraima', 'regiao': 'Norte', 'ibge': 14},
-    'SC': {'nome': 'Santa Catarina', 'regiao': 'Sul', 'ibge': 42},
-    'SP': {'nome': 'São Paulo', 'regiao': 'Sudeste', 'ibge': 35},
-    'SE': {'nome': 'Sergipe', 'regiao': 'Nordeste', 'ibge': 28},
-    'TO': {'nome': 'Tocantins', 'regiao': 'Norte', 'ibge': 17},
+    "AC": {"nome": "Acre", "regiao": "Norte", "ibge": 12},
+    "AL": {"nome": "Alagoas", "regiao": "Nordeste", "ibge": 27},
+    "AP": {"nome": "Amapá", "regiao": "Norte", "ibge": 16},
+    "AM": {"nome": "Amazonas", "regiao": "Norte", "ibge": 13},
+    "BA": {"nome": "Bahia", "regiao": "Nordeste", "ibge": 29},
+    "CE": {"nome": "Ceará", "regiao": "Nordeste", "ibge": 23},
+    "DF": {"nome": "Distrito Federal", "regiao": "Centro-Oeste", "ibge": 53},
+    "ES": {"nome": "Espírito Santo", "regiao": "Sudeste", "ibge": 32},
+    "GO": {"nome": "Goiás", "regiao": "Centro-Oeste", "ibge": 52},
+    "MA": {"nome": "Maranhão", "regiao": "Nordeste", "ibge": 21},
+    "MT": {"nome": "Mato Grosso", "regiao": "Centro-Oeste", "ibge": 51},
+    "MS": {"nome": "Mato Grosso do Sul", "regiao": "Centro-Oeste", "ibge": 50},
+    "MG": {"nome": "Minas Gerais", "regiao": "Sudeste", "ibge": 31},
+    "PA": {"nome": "Pará", "regiao": "Norte", "ibge": 15},
+    "PB": {"nome": "Paraíba", "regiao": "Nordeste", "ibge": 25},
+    "PR": {"nome": "Paraná", "regiao": "Sul", "ibge": 41},
+    "PE": {"nome": "Pernambuco", "regiao": "Nordeste", "ibge": 26},
+    "PI": {"nome": "Piauí", "regiao": "Nordeste", "ibge": 22},
+    "RJ": {"nome": "Rio de Janeiro", "regiao": "Sudeste", "ibge": 33},
+    "RN": {"nome": "Rio Grande do Norte", "regiao": "Nordeste", "ibge": 24},
+    "RS": {"nome": "Rio Grande do Sul", "regiao": "Sul", "ibge": 43},
+    "RO": {"nome": "Rondônia", "regiao": "Norte", "ibge": 11},
+    "RR": {"nome": "Roraima", "regiao": "Norte", "ibge": 14},
+    "SC": {"nome": "Santa Catarina", "regiao": "Sul", "ibge": 42},
+    "SP": {"nome": "São Paulo", "regiao": "Sudeste", "ibge": 35},
+    "SE": {"nome": "Sergipe", "regiao": "Nordeste", "ibge": 28},
+    "TO": {"nome": "Tocantins", "regiao": "Norte", "ibge": 17},
 }
 
 REGIOES: dict[str, list[str]] = {
-    'Norte': ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO'],
-    'Nordeste': ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
-    'Centro-Oeste': ['DF', 'GO', 'MT', 'MS'],
-    'Sudeste': ['ES', 'MG', 'RJ', 'SP'],
-    'Sul': ['PR', 'RS', 'SC'],
+    "Norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
+    "Nordeste": ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
+    "Centro-Oeste": ["DF", "GO", "MT", "MS"],
+    "Sudeste": ["ES", "MG", "RJ", "SP"],
+    "Sul": ["PR", "RS", "SC"],
 }
 
 
 def remover_acentos(texto: str) -> str:
     """Remove acentos de uma string."""
-    nfkd = unicodedata.normalize('NFKD', texto)
-    return ''.join(c for c in nfkd if not unicodedata.combining(c))
+    nfkd = unicodedata.normalize("NFKD", texto)
+    return "".join(c for c in nfkd if not unicodedata.combining(c))
 
 
 NOMES_PARA_UF: dict[str, str] = {
-    remover_acentos(info['nome'].lower()): uf
-    for uf, info in UFS.items()
+    remover_acentos(info["nome"].lower()): uf for uf, info in UFS.items()
 } | {uf.lower(): uf for uf in UFS}
 
 
@@ -113,7 +136,7 @@ def uf_para_nome(uf: str) -> str:
     Raises:
         KeyError: Se UF inválida
     """
-    return UFS[uf.upper()]['nome']
+    return UFS[uf.upper()]["nome"]
 
 
 def uf_para_regiao(uf: str) -> str:
@@ -126,7 +149,7 @@ def uf_para_regiao(uf: str) -> str:
     Returns:
         Nome da região
     """
-    return UFS[uf.upper()]['regiao']
+    return UFS[uf.upper()]["regiao"]
 
 
 def uf_para_ibge(uf: str) -> int:
@@ -139,7 +162,7 @@ def uf_para_ibge(uf: str) -> int:
     Returns:
         Código IBGE (2 dígitos)
     """
-    return UFS[uf.upper()]['ibge']
+    return UFS[uf.upper()]["ibge"]
 
 
 def ibge_para_uf(codigo: int) -> str:
@@ -153,7 +176,7 @@ def ibge_para_uf(codigo: int) -> str:
         Sigla UF
     """
     for uf, info in UFS.items():
-        if info['ibge'] == codigo:
+        if info["ibge"] == codigo:
             return uf
     raise ValueError(f"Código IBGE inválido: {codigo}")
 
@@ -192,9 +215,9 @@ def normalizar_municipio(nome: str) -> str:
     """
     nome = nome.strip()
 
-    nome = re.sub(r'\s+', ' ', nome)
+    nome = re.sub(r"\s+", " ", nome)
 
-    palavras_minusculas = {'de', 'da', 'do', 'das', 'dos', 'e'}
+    palavras_minusculas = {"de", "da", "do", "das", "dos", "e"}
 
     partes = nome.lower().split()
     resultado = []
@@ -205,7 +228,7 @@ def normalizar_municipio(nome: str) -> str:
         else:
             resultado.append(parte)
 
-    return ' '.join(resultado)
+    return " ".join(resultado)
 
 
 def extrair_uf_municipio(texto: str) -> tuple[str | None, str | None]:
@@ -218,7 +241,7 @@ def extrair_uf_municipio(texto: str) -> tuple[str | None, str | None]:
     Returns:
         Tupla (uf, municipio) ou (None, None) se não identificado
     """
-    padrao = re.compile(r'^(.+?)[\s]*[-/][\s]*([A-Za-z]{2})$')
+    padrao = re.compile(r"^(.+?)[\s]*[-/][\s]*([A-Za-z]{2})$")
     match = padrao.match(texto.strip())
 
     if match:
@@ -240,25 +263,25 @@ def validar_regiao(regiao: str) -> bool:
 
 
 PRACAS_CEPEA: dict[str, dict[str, str]] = {
-    'soja': {
-        'paranagua': 'PR',
-        'rio grande': 'RS',
-        'santos': 'SP',
+    "soja": {
+        "paranagua": "PR",
+        "rio grande": "RS",
+        "santos": "SP",
     },
-    'milho': {
-        'campinas': 'SP',
-        'cascavel': 'PR',
-        'rio verde': 'GO',
+    "milho": {
+        "campinas": "SP",
+        "cascavel": "PR",
+        "rio verde": "GO",
     },
-    'boi_gordo': {
-        'sao paulo': 'SP',
-        'araçatuba': 'SP',
-        'presidente prudente': 'SP',
+    "boi_gordo": {
+        "sao paulo": "SP",
+        "araçatuba": "SP",
+        "presidente prudente": "SP",
     },
-    'cafe': {
-        'sao paulo': 'SP',
-        'mogiana': 'SP',
-        'sul de minas': 'MG',
+    "cafe": {
+        "sao paulo": "SP",
+        "mogiana": "SP",
+        "sul de minas": "MG",
     },
 }
 

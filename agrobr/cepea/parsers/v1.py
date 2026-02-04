@@ -42,7 +42,9 @@ class CepeaParserV1(BaseParser):
 
         indicador_table = soup.find("table", id=re.compile(r"indicador|preco|cotacao", re.I))
         if not indicador_table:
-            indicador_table = soup.find("table", class_=re.compile(r"indicador|preco|cotacao", re.I))
+            indicador_table = soup.find(
+                "table", class_=re.compile(r"indicador|preco|cotacao", re.I)
+            )
         if indicador_table:
             checks_passed += 1
 
@@ -56,9 +58,7 @@ class CepeaParserV1(BaseParser):
         if any(kw in " ".join(header_texts) for kw in value_keywords):
             checks_passed += 1
 
-        cepea_indicators = soup.find_all(
-            string=re.compile(r"cepea|esalq|indicador", re.I)
-        )
+        cepea_indicators = soup.find_all(string=re.compile(r"cepea|esalq|indicador", re.I))
         if cepea_indicators:
             checks_passed += 1
 
@@ -146,9 +146,7 @@ class CepeaParserV1(BaseParser):
         if table:
             return table
 
-        table = soup.find(
-            "table", class_=re.compile(r"indicador|preco|cotacao|dados|table", re.I)
-        )
+        table = soup.find("table", class_=re.compile(r"indicador|preco|cotacao|dados|table", re.I))
         if table:
             return table
 
@@ -179,9 +177,7 @@ class CepeaParserV1(BaseParser):
 
         return headers
 
-    def _parse_row(
-        self, cells: list[Any], headers: list[str], produto: str
-    ) -> Indicador | None:
+    def _parse_row(self, cells: list[Any], headers: list[str], produto: str) -> Indicador | None:
         """Parseia uma linha da tabela."""
         cell_texts = [c.get_text(strip=True) for c in cells]
 

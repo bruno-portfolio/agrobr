@@ -131,17 +131,17 @@ async def _fetch_with_httpx(url: str) -> str:
                 follow_redirects=True,
             ) as client,
         ):
-                response = await client.get(url, headers=headers)
+            response = await client.get(url, headers=headers)
 
-                if should_retry_status(response.status_code):
-                    raise httpx.HTTPStatusError(
-                        f"Retriable status: {response.status_code}",
-                        request=response.request,
-                        response=response,
-                    )
+            if should_retry_status(response.status_code):
+                raise httpx.HTTPStatusError(
+                    f"Retriable status: {response.status_code}",
+                    request=response.request,
+                    response=response,
+                )
 
-                response.raise_for_status()
-                return response
+            response.raise_for_status()
+            return response
 
     response = await retry_async(_fetch)
 

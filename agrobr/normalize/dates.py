@@ -15,13 +15,12 @@ from datetime import date
 from typing import Literal
 
 MesSafra = Literal[
-    'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-    'jul', 'ago', 'set', 'out', 'nov', 'dez'
+    "jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"
 ]
 
-REGEX_SAFRA_COMPLETA = re.compile(r'^(\d{4})/(\d{2})$')
-REGEX_SAFRA_CURTA = re.compile(r'^(\d{2})/(\d{2})$')
-REGEX_SAFRA_BARRA = re.compile(r'^(\d{4})/(\d{4})$')
+REGEX_SAFRA_COMPLETA = re.compile(r"^(\d{4})/(\d{2})$")
+REGEX_SAFRA_CURTA = re.compile(r"^(\d{2})/(\d{2})$")
+REGEX_SAFRA_BARRA = re.compile(r"^(\d{4})/(\d{4})$")
 
 INICIO_SAFRA_MES = 7
 
@@ -271,9 +270,18 @@ def mes_para_numero(mes: str | MesSafra) -> int:
         Número do mês (1-12)
     """
     meses = {
-        'jan': 1, 'fev': 2, 'mar': 3, 'abr': 4,
-        'mai': 5, 'jun': 6, 'jul': 7, 'ago': 8,
-        'set': 9, 'out': 10, 'nov': 11, 'dez': 12,
+        "jan": 1,
+        "fev": 2,
+        "mar": 3,
+        "abr": 4,
+        "mai": 5,
+        "jun": 6,
+        "jul": 7,
+        "ago": 8,
+        "set": 9,
+        "out": 10,
+        "nov": 11,
+        "dez": 12,
     }
     return meses[mes.lower()[:3]]
 
@@ -288,8 +296,5 @@ def numero_para_mes(numero: int) -> str:
     Returns:
         Nome do mês (3 letras)
     """
-    meses = [
-        'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-        'jul', 'ago', 'set', 'out', 'nov', 'dez'
-    ]
+    meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
     return meses[numero - 1]

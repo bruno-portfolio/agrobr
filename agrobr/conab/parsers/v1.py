@@ -305,7 +305,11 @@ class ConabParserV1:
         producao_start = None
 
         for col_idx in range(1, len(header_cols)):
-            cell = str(header_cols.iloc[col_idx]).upper() if pd.notna(header_cols.iloc[col_idx]) else ""
+            cell = (
+                str(header_cols.iloc[col_idx]).upper()
+                if pd.notna(header_cols.iloc[col_idx])
+                else ""
+            )
             if "ÁREA" in cell or "AREA" in cell:
                 area_start = col_idx
             elif "PRODUTIVIDADE" in cell:

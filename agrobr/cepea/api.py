@@ -128,6 +128,7 @@ async def indicador(
             if is_noticias_agricolas:
                 # Usa parser de Notícias Agrícolas
                 from agrobr.noticias_agricolas.parser import parse_indicador as na_parse
+
                 new_indicadores = na_parse(html, produto)
                 logger.info(
                     "parse_success",
@@ -182,6 +183,7 @@ async def indicador(
     if as_polars:
         try:
             import polars as pl
+
             return pl.from_pandas(df)
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
@@ -295,6 +297,7 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
 
                 if is_noticias_agricolas:
                     from agrobr.noticias_agricolas.parser import parse_indicador as na_parse
+
                     new_indicadores = na_parse(html, produto)
                 else:
                     parser, new_indicadores = await get_parser_with_fallback(html, produto)

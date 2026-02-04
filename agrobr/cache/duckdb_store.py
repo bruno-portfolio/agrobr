@@ -296,8 +296,16 @@ class DuckDBStore:
         ).fetchall()
 
         columns = [
-            "produto", "praca", "data", "valor", "unidade", "fonte",
-            "metodologia", "variacao_percentual", "collected_at", "parser_version"
+            "produto",
+            "praca",
+            "data",
+            "valor",
+            "unidade",
+            "fonte",
+            "metodologia",
+            "variacao_percentual",
+            "collected_at",
+            "parser_version",
         ]
 
         indicadores = [dict(zip(columns, row)) for row in result]

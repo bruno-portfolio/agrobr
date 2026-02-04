@@ -72,13 +72,15 @@ async def list_levantamentos(html: str | None = None) -> list[dict[str, Any]]:
         ano_inicio = int(match.group(3))
         ano_fim = int(match.group(4))
 
-        levantamentos.append({
-            "url": url,
-            "levantamento": num_levantamento,
-            "safra": f"{ano_inicio}/{ano_fim}",
-            "ano_inicio": ano_inicio,
-            "ano_fim": ano_fim,
-        })
+        levantamentos.append(
+            {
+                "url": url,
+                "levantamento": num_levantamento,
+                "safra": f"{ano_inicio}/{ano_fim}",
+                "ano_inicio": ano_inicio,
+                "ano_fim": ano_fim,
+            }
+        )
 
     levantamentos.sort(key=lambda x: (x["ano_inicio"], x["levantamento"]), reverse=True)
 

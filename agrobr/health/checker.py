@@ -61,9 +61,7 @@ async def check_cepea() -> CheckResult:
             )
 
         current_fp = fp.extract_fingerprint(html, Fonte.CEPEA, "health_check")
-        baseline_fp = fp.load_baseline_fingerprint(
-            ".structures/cepea_baseline.json"
-        )
+        baseline_fp = fp.load_baseline_fingerprint(".structures/cepea_baseline.json")
 
         if baseline_fp:
             similarity, diff = fp.compare_fingerprints(current_fp, baseline_fp)
