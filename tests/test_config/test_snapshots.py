@@ -17,6 +17,15 @@ from agrobr.snapshots import (
     load_from_snapshot,
 )
 
+try:
+    import pyarrow  # noqa: F401
+
+    HAS_PYARROW = True
+except ImportError:
+    HAS_PYARROW = False
+
+requires_pyarrow = pytest.mark.skipif(not HAS_PYARROW, reason="pyarrow not installed")
+
 
 class TestSnapshotManifest:
     def test_manifest_creation(self):
@@ -139,6 +148,7 @@ class TestSnapshotOperations:
 
 
 class TestLoadFromSnapshot:
+    @requires_pyarrow
     def test_load_parquet_success(self, tmp_path):
         snapshot_dir = tmp_path / "2025-01-15" / "cepea"
         snapshot_dir.mkdir(parents=True)

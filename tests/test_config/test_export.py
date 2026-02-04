@@ -16,6 +16,15 @@ from agrobr.export import (
 )
 from agrobr.models import MetaInfo
 
+try:
+    import pyarrow  # noqa: F401
+
+    HAS_PYARROW = True
+except ImportError:
+    HAS_PYARROW = False
+
+requires_pyarrow = pytest.mark.skipif(not HAS_PYARROW, reason="pyarrow not installed")
+
 
 @pytest.fixture
 def sample_df():
@@ -38,6 +47,7 @@ def sample_meta():
     )
 
 
+@requires_pyarrow
 class TestExportParquet:
     def test_export_basic(self, tmp_path, sample_df):
         path = tmp_path / "test.parquet"
@@ -158,6 +168,7 @@ class TestExportJSON:
 
 
 class TestVerifyExport:
+    @requires_pyarrow
     def test_verify_parquet(self, tmp_path, sample_df):
         path = tmp_path / "test.parquet"
         export_parquet(sample_df, path)
