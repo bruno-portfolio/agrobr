@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import functools
-from typing import Any, Awaitable, Callable, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 
@@ -28,7 +29,7 @@ def _get_or_create_event_loop() -> asyncio.AbstractEventLoop:
             raise RuntimeError(
                 "Event loop already running. Install nest_asyncio for Jupyter support: "
                 "pip install nest_asyncio"
-            )
+            ) from None
     except RuntimeError:
         try:
             return asyncio.get_event_loop()

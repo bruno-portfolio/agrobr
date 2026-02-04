@@ -10,7 +10,6 @@ import pytest
 
 from agrobr.conab.parsers.v1 import ConabParserV1
 
-
 SAMPLE_FILE = Path(__file__).parent.parent / "golden_data" / "conab" / "safra_sample" / "response.xlsx"
 
 

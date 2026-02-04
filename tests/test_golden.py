@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import json
 import hashlib
-from pathlib import Path
+import json
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
@@ -45,8 +45,8 @@ def get_conab_golden_test_cases() -> list[tuple[str, Path]]:
 
 
 @pytest.mark.skipif(not get_golden_test_cases(), reason="No golden data available")
-@pytest.mark.parametrize("name,path", get_golden_test_cases())
-def test_golden_parsing(name: str, path: Path):
+@pytest.mark.parametrize("_name,path", get_golden_test_cases())
+def test_golden_parsing(_name: str, path: Path):
     """
     Testa parsing contra golden data.
 
@@ -63,8 +63,9 @@ def test_golden_parsing(name: str, path: Path):
     produto = metadata["produto"]
 
     if source == "cepea":
-        from agrobr.cepea.parsers.detector import get_parser_with_fallback
         import asyncio
+
+        from agrobr.cepea.parsers.detector import get_parser_with_fallback
 
         parser, results = asyncio.run(get_parser_with_fallback(html, produto, strict=False))
     else:
@@ -90,12 +91,12 @@ def test_golden_parsing(name: str, path: Path):
         if checksum != expected["checksum"]:
             import warnings
 
-            warnings.warn(f"Checksum mismatch: {checksum} != {expected['checksum']}")
+            warnings.warn(f"Checksum mismatch: {checksum} != {expected['checksum']}", stacklevel=2)
 
 
 @pytest.mark.skipif(not get_golden_test_cases(), reason="No golden data available")
-@pytest.mark.parametrize("name,path", get_golden_test_cases())
-def test_golden_fingerprint(name: str, path: Path):
+@pytest.mark.parametrize("_name,path", get_golden_test_cases())
+def test_golden_fingerprint(_name: str, path: Path):
     """Testa que fingerprint do golden data é reconhecida."""
     html = (path / "response.html").read_text(encoding="utf-8")
     metadata = json.loads((path / "metadata.json").read_text())
@@ -110,8 +111,8 @@ def test_golden_fingerprint(name: str, path: Path):
 
 
 @pytest.mark.skipif(not get_golden_test_cases(), reason="No golden data available")
-@pytest.mark.parametrize("name,path", get_golden_test_cases())
-def test_golden_parser_can_parse(name: str, path: Path):
+@pytest.mark.parametrize("_name,path", get_golden_test_cases())
+def test_golden_parser_can_parse(_name: str, path: Path):
     """Testa que parser reconhece o golden data."""
     html = (path / "response.html").read_text(encoding="utf-8")
     metadata = json.loads((path / "metadata.json").read_text())
@@ -132,10 +133,11 @@ def test_golden_parser_can_parse(name: str, path: Path):
 
 
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
-@pytest.mark.parametrize("name,path", get_conab_golden_test_cases())
-def test_conab_golden_parsing_soja(name: str, path: Path):
+@pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
+def test_conab_golden_parsing_soja(_name: str, path: Path):
     """Testa parsing de soja contra golden data CONAB."""
     from io import BytesIO
+
     from agrobr.conab.parsers.v1 import ConabParserV1
 
     xlsx_path = path / "response.xlsx"
@@ -151,17 +153,18 @@ def test_conab_golden_parsing_soja(name: str, path: Path):
         f"Expected {expected['soja']['count']} soja records, got {len(safras)}"
     )
 
-    ufs_found = sorted(list({s.uf for s in safras if s.uf}))
+    ufs_found = sorted({s.uf for s in safras if s.uf})
     assert ufs_found == expected["soja"]["ufs_found"], (
         f"UFs mismatch: {ufs_found} != {expected['soja']['ufs_found']}"
     )
 
 
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
-@pytest.mark.parametrize("name,path", get_conab_golden_test_cases())
-def test_conab_golden_parsing_milho(name: str, path: Path):
+@pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
+def test_conab_golden_parsing_milho(_name: str, path: Path):
     """Testa parsing de milho contra golden data CONAB."""
     from io import BytesIO
+
     from agrobr.conab.parsers.v1 import ConabParserV1
 
     xlsx_path = path / "response.xlsx"
@@ -179,10 +182,11 @@ def test_conab_golden_parsing_milho(name: str, path: Path):
 
 
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
-@pytest.mark.parametrize("name,path", get_conab_golden_test_cases())
-def test_conab_golden_parsing_suprimento(name: str, path: Path):
+@pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
+def test_conab_golden_parsing_suprimento(_name: str, path: Path):
     """Testa parsing de suprimento contra golden data CONAB."""
     from io import BytesIO
+
     from agrobr.conab.parsers.v1 import ConabParserV1
 
     xlsx_path = path / "response.xlsx"
@@ -200,10 +204,11 @@ def test_conab_golden_parsing_suprimento(name: str, path: Path):
 
 
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
-@pytest.mark.parametrize("name,path", get_conab_golden_test_cases())
-def test_conab_golden_parsing_brasil_total(name: str, path: Path):
+@pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
+def test_conab_golden_parsing_brasil_total(_name: str, path: Path):
     """Testa parsing de totais do Brasil contra golden data CONAB."""
     from io import BytesIO
+
     from agrobr.conab.parsers.v1 import ConabParserV1
 
     xlsx_path = path / "response.xlsx"

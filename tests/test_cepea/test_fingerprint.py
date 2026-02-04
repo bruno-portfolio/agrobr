@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from agrobr.cepea.parsers.fingerprint import (
     compare_fingerprints,
     extract_fingerprint,

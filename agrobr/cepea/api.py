@@ -30,12 +30,12 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    moeda: str = "BRL",
+    _moeda: str = "BRL",
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-) -> "pd.DataFrame | pl.DataFrame":
+) -> pd.DataFrame | pl.DataFrame:
     """
     Obtém série de indicadores de preço do CEPEA.
 

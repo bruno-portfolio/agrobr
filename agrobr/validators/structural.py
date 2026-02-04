@@ -5,7 +5,6 @@ Validação estrutural de páginas usando fingerprints.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -38,7 +37,7 @@ class StructuralValidationResult:
 def validate_structure(
     current: Fingerprint,
     baseline: Fingerprint,
-    threshold: float = THRESHOLD_HIGH,
+    _threshold: float = THRESHOLD_HIGH,
 ) -> StructuralValidationResult:
     """
     Valida estrutura atual contra baseline.
@@ -291,8 +290,8 @@ class StructuralMonitor:
         Returns:
             StructuralValidationResult
         """
-        from ..cepea.parsers.fingerprint import extract_fingerprint
         from ..cepea import client as cepea_client
+        from ..cepea.parsers.fingerprint import extract_fingerprint
 
         html = await cepea_client.fetch_indicador_page('soja')
         current = extract_fingerprint(html, source, 'soja')

@@ -3,18 +3,15 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
 from io import BytesIO
 from typing import Any
 
-import httpx
 import structlog
 from playwright.async_api import async_playwright
 
 from agrobr import constants
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.rate_limiter import RateLimiter
-from agrobr.http.retry import retry_async
 from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
@@ -31,26 +28,25 @@ async def fetch_boletim_page() -> str:
 
     logger.info("conab_fetch_boletim_page", url=url)
 
-    async with RateLimiter.acquire(constants.Fonte.CONAB):
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page(
-                user_agent=UserAgentRotator.get_random(),
-                viewport={"width": 1920, "height": 1080},
-            )
+    async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page(
+            user_agent=UserAgentRotator.get_random(),
+            viewport={"width": 1920, "height": 1080},
+        )
 
-            await page.goto(url, timeout=60000)
-            await page.wait_for_timeout(3000)
+        await page.goto(url, timeout=60000)
+        await page.wait_for_timeout(3000)
 
-            html = await page.content()
-            await browser.close()
+        html = await page.content()
+        await browser.close()
 
-            logger.info(
-                "conab_fetch_boletim_success",
-                content_length=len(html),
-            )
+        logger.info(
+            "conab_fetch_boletim_success",
+            content_length=len(html),
+        )
 
-            return html
+        return html
 
 
 async def list_levantamentos(html: str | None = None) -> list[dict[str, Any]]:
@@ -109,51 +105,50 @@ async def download_xlsx(url: str) -> BytesIO:
     """
     logger.info("conab_download_xlsx", url=url)
 
-    async with RateLimiter.acquire(constants.Fonte.CONAB):
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            context = await browser.new_context(accept_downloads=True)
-            page = await context.new_page()
+    async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(accept_downloads=True)
+        page = await context.new_page()
 
-            try:
-                async with page.expect_download(timeout=60000) as download_info:
-                    await page.evaluate(f'() => {{ window.location.href = "{url}" }}')
+        try:
+            async with page.expect_download(timeout=60000) as download_info:
+                await page.evaluate(f'() => {{ window.location.href = "{url}" }}')
 
-                download = await download_info.value
+            download = await download_info.value
 
-                path = await download.path()
-                if path:
-                    with open(path, "rb") as f:
-                        content = f.read()
+            path = await download.path()
+            if path:
+                with open(path, "rb") as f:
+                    content = f.read()
 
-                    logger.info(
-                        "conab_download_success",
-                        url=url,
-                        size_bytes=len(content),
-                    )
-
-                    return BytesIO(content)
-                else:
-                    raise SourceUnavailableError(
-                        source="conab",
-                        url=url,
-                        last_error="Download path not available",
-                    )
-
-            except Exception as e:
-                logger.error(
-                    "conab_download_failed",
+                logger.info(
+                    "conab_download_success",
                     url=url,
-                    error=str(e),
+                    size_bytes=len(content),
                 )
+
+                return BytesIO(content)
+            else:
                 raise SourceUnavailableError(
                     source="conab",
                     url=url,
-                    last_error=str(e),
-                ) from e
+                    last_error="Download path not available",
+                )
 
-            finally:
-                await browser.close()
+        except Exception as e:
+            logger.error(
+                "conab_download_failed",
+                url=url,
+                error=str(e),
+            )
+            raise SourceUnavailableError(
+                source="conab",
+                url=url,
+                last_error=str(e),
+            ) from e
+
+        finally:
+            await browser.close()
 
 
 async def fetch_latest_safra_xlsx() -> tuple[BytesIO, dict[str, Any]]:
@@ -204,10 +199,10 @@ async def fetch_safra_xlsx(
     filtered = levantamentos
 
     if safra:
-        filtered = [l for l in filtered if l["safra"] == safra]
+        filtered = [lev for lev in filtered if lev["safra"] == safra]
 
     if levantamento:
-        filtered = [l for l in filtered if l["levantamento"] == levantamento]
+        filtered = [lev for lev in filtered if lev["levantamento"] == levantamento]
 
     if not filtered:
         raise SourceUnavailableError(

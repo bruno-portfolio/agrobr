@@ -10,13 +10,13 @@ from .sanity import (
     validate_safra,
 )
 from .structural import (
+    StructuralMonitor,
     StructuralValidationResult,
-    validate_structure,
-    validate_against_baseline,
     compare_fingerprints,
     load_baseline,
     save_baseline,
-    StructuralMonitor,
+    validate_against_baseline,
+    validate_structure,
 )
 
 __all__: list[str] = [

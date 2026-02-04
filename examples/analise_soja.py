@@ -13,9 +13,6 @@ Uso:
 from __future__ import annotations
 
 import asyncio
-from datetime import date
-
-import pandas as pd
 
 
 async def main():

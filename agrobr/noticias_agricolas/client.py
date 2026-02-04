@@ -124,11 +124,13 @@ async def _fetch_with_httpx(url: str) -> str:
     headers = UserAgentRotator.get_headers(source="noticias_agricolas")
 
     async def _fetch() -> httpx.Response:
-        async with RateLimiter.acquire(constants.Fonte.NOTICIAS_AGRICOLAS):
-            async with httpx.AsyncClient(
+        async with (
+            RateLimiter.acquire(constants.Fonte.NOTICIAS_AGRICOLAS),
+            httpx.AsyncClient(
                 timeout=_get_timeout(),
                 follow_redirects=True,
-            ) as client:
+            ) as client,
+        ):
                 response = await client.get(url, headers=headers)
 
                 if should_retry_status(response.status_code):

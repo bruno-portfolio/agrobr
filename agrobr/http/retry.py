@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Awaitable, Callable, Sequence
 from functools import wraps
-from typing import Any, Awaitable, Callable, Sequence, TypeVar
+from typing import Any, TypeVar
 
 import httpx
 import structlog

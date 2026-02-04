@@ -12,11 +12,11 @@ from typing import Any
 
 import structlog
 
+from ...alerts.notifier import AlertLevel, send_alert
+from ...exceptions import ParseError
+from ...models import Indicador
 from .base import BaseParser
 from .v1 import CepeaParserV1
-from ...models import Indicador
-from ...alerts.notifier import send_alert, AlertLevel
-from ...exceptions import ParseError
 
 logger = structlog.get_logger()
 

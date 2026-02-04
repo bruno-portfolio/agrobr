@@ -189,11 +189,8 @@ async def lspa(
         from datetime import date
         ano = date.today().year
 
-    if mes:
-        period = f"{ano}{int(mes):02d}"
-    else:
-        # Todos os meses do ano
-        period = ",".join(f"{ano}{m:02d}" for m in range(1, 13))
+    # Define período
+    period = f"{ano}{int(mes):02d}" if mes else ",".join(f"{ano}{m:02d}" for m in range(1, 13))
 
     # Define nível territorial
     territorial_level = "3" if uf else "1"

@@ -56,22 +56,21 @@ async def _fetch_with_httpx(url: str, headers: dict) -> str:
     """Tenta buscar com httpx (mais rápido, mas pode falhar com Cloudflare)."""
 
     async def _fetch() -> httpx.Response:
-        async with RateLimiter.acquire(constants.Fonte.CEPEA):
-            async with httpx.AsyncClient(
-                timeout=_get_timeout(),
-                follow_redirects=True,
-            ) as client:
-                response = await client.get(url, headers=headers)
+        async with RateLimiter.acquire(constants.Fonte.CEPEA), httpx.AsyncClient(
+            timeout=_get_timeout(),
+            follow_redirects=True,
+        ) as client:
+            response = await client.get(url, headers=headers)
 
-                if should_retry_status(response.status_code):
-                    raise httpx.HTTPStatusError(
-                        f"Retriable status: {response.status_code}",
-                        request=response.request,
-                        response=response,
-                    )
+            if should_retry_status(response.status_code):
+                raise httpx.HTTPStatusError(
+                    f"Retriable status: {response.status_code}",
+                    request=response.request,
+                    response=response,
+                )
 
-                response.raise_for_status()
-                return response
+            response.raise_for_status()
+            return response
 
     response = await retry_async(_fetch)
 
@@ -219,7 +218,7 @@ async def fetch_series_historica(produto: str, anos: int = 5) -> str:
     Returns:
         HTML da página de série histórica
     """
-    produto_key = constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
+    constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
     base = constants.URLS[constants.Fonte.CEPEA]["base"]
     url = f"{base}/br/consultas-ao-banco-de-dados-do-site.aspx"
 
@@ -235,14 +234,13 @@ async def fetch_series_historica(produto: str, anos: int = 5) -> str:
     )
 
     async def _fetch() -> httpx.Response:
-        async with RateLimiter.acquire(constants.Fonte.CEPEA):
-            async with httpx.AsyncClient(
-                timeout=_get_timeout(),
-                follow_redirects=True,
-            ) as client:
-                response = await client.get(url, headers=headers)
-                response.raise_for_status()
-                return response
+        async with RateLimiter.acquire(constants.Fonte.CEPEA), httpx.AsyncClient(
+            timeout=_get_timeout(),
+            follow_redirects=True,
+        ) as client:
+            response = await client.get(url, headers=headers)
+            response.raise_for_status()
+            return response
 
     try:
         response = await retry_async(_fetch)
