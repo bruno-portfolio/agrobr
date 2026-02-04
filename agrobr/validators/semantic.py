@@ -46,7 +46,7 @@ class PricePositiveRule(SemanticRule):
     severity: str = "error"
 
     def check(self, df: pd.DataFrame, **_kwargs: Any) -> list[ValidationResult]:
-        results = []
+        results: list[ValidationResult] = []
 
         if "valor" not in df.columns:
             return results
@@ -99,7 +99,7 @@ class ProductivityRangeRule(SemanticRule):
     )
 
     def check(self, df: pd.DataFrame, **_kwargs: Any) -> list[ValidationResult]:
-        results = []
+        results: list[ValidationResult] = []
 
         if "produtividade" not in df.columns or "produto" not in df.columns:
             return results
@@ -155,7 +155,7 @@ class DailyVariationRule(SemanticRule):
     max_variation_pct: float = 20.0
 
     def check(self, df: pd.DataFrame, **_kwargs: Any) -> list[ValidationResult]:
-        results = []
+        results: list[ValidationResult] = []
 
         if "valor" not in df.columns or "data" not in df.columns:
             return results
@@ -203,7 +203,7 @@ class DateSequenceRule(SemanticRule):
     severity: str = "warning"
 
     def check(self, df: pd.DataFrame, **_kwargs: Any) -> list[ValidationResult]:
-        results = []
+        results: list[ValidationResult] = []
 
         if "data" not in df.columns:
             return results
@@ -252,7 +252,7 @@ class AreaConsistencyRule(SemanticRule):
     severity: str = "error"
 
     def check(self, df: pd.DataFrame, **_kwargs: Any) -> list[ValidationResult]:
-        results = []
+        results: list[ValidationResult] = []
 
         if "area_plantada" not in df.columns or "area_colhida" not in df.columns:
             return results
@@ -300,7 +300,7 @@ class SafraFormatRule(SemanticRule):
     def check(self, df: pd.DataFrame, **_kwargs: Any) -> list[ValidationResult]:
         import re
 
-        results = []
+        results: list[ValidationResult] = []
 
         if "safra" not in df.columns:
             return results
@@ -402,8 +402,9 @@ def validate_semantic(
 
         raise ValidationError(
             source="semantic",
-            reason=f"{len(errors)} semantic errors found",
-            details={"errors": [r.message for r in errors]},
+            field="multiple",
+            value=None,
+            reason=f"{len(errors)} semantic errors found: {[r.message for r in errors]}",
         )
 
     all_passed = all(r.passed for r in all_results)

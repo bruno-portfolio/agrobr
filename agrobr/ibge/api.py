@@ -166,8 +166,8 @@ async def pam(
 
             result_df = pl.from_pandas(df)
             if return_meta:
-                return result_df, meta  # type: ignore[return-value]
-            return result_df  # type: ignore[return-value]
+                return result_df, meta  # type: ignore[return-value,no-any-return]
+            return result_df  # type: ignore[return-value,no-any-return]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
@@ -296,8 +296,8 @@ async def lspa(
 
             result_df = pl.from_pandas(df)
             if return_meta:
-                return result_df, meta  # type: ignore[return-value]
-            return result_df  # type: ignore[return-value]
+                return result_df, meta  # type: ignore[return-value,no-any-return]
+            return result_df  # type: ignore[return-value,no-any-return]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
