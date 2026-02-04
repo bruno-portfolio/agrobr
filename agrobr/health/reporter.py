@@ -214,23 +214,23 @@ class HealthReport:
 
     <div class="summary">
         <div class="summary-item">
-            <div class="summary-value">{self.summary['total_checks']}</div>
+            <div class="summary-value">{self.summary["total_checks"]}</div>
             <div class="summary-label">Total</div>
         </div>
         <div class="summary-item">
-            <div class="summary-value" style="color: #28a745;">{self.summary['ok']}</div>
+            <div class="summary-value" style="color: #28a745;">{self.summary["ok"]}</div>
             <div class="summary-label">OK</div>
         </div>
         <div class="summary-item">
-            <div class="summary-value" style="color: #ffc107;">{self.summary['warnings']}</div>
+            <div class="summary-value" style="color: #ffc107;">{self.summary["warnings"]}</div>
             <div class="summary-label">Warnings</div>
         </div>
         <div class="summary-item">
-            <div class="summary-value" style="color: #dc3545;">{self.summary['failures']}</div>
+            <div class="summary-value" style="color: #dc3545;">{self.summary["failures"]}</div>
             <div class="summary-label">Failures</div>
         </div>
         <div class="summary-item">
-            <div class="summary-value">{self.summary['avg_latency_ms']:.0f}ms</div>
+            <div class="summary-value">{self.summary["avg_latency_ms"]:.0f}ms</div>
             <div class="summary-label">Avg Latency</div>
         </div>
     </div>
@@ -246,7 +246,7 @@ class HealthReport:
             </tr>
         </thead>
         <tbody>
-            {''.join(rows)}
+            {"".join(rows)}
         </tbody>
     </table>
 </body>

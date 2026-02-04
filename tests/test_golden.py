@@ -72,9 +72,9 @@ def test_golden_parsing(_name: str, path: Path):
         pytest.skip(f"Golden tests for {source} not implemented")
         return
 
-    assert (
-        len(results) == expected["count"]
-    ), f"Expected {expected['count']} records, got {len(results)}"
+    assert len(results) == expected["count"], (
+        f"Expected {expected['count']} records, got {len(results)}"
+    )
 
     first = results[0]
     assert str(first.data) == expected["first"]["data"]
@@ -149,14 +149,14 @@ def test_conab_golden_parsing_soja(_name: str, path: Path):
     parser = ConabParserV1()
     safras = parser.parse_safra_produto(xlsx, "soja", safra_ref="2025/26")
 
-    assert (
-        len(safras) == expected["soja"]["count"]
-    ), f"Expected {expected['soja']['count']} soja records, got {len(safras)}"
+    assert len(safras) == expected["soja"]["count"], (
+        f"Expected {expected['soja']['count']} soja records, got {len(safras)}"
+    )
 
     ufs_found = sorted({s.uf for s in safras if s.uf})
-    assert (
-        ufs_found == expected["soja"]["ufs_found"]
-    ), f"UFs mismatch: {ufs_found} != {expected['soja']['ufs_found']}"
+    assert ufs_found == expected["soja"]["ufs_found"], (
+        f"UFs mismatch: {ufs_found} != {expected['soja']['ufs_found']}"
+    )
 
 
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
@@ -176,9 +176,9 @@ def test_conab_golden_parsing_milho(_name: str, path: Path):
     parser = ConabParserV1()
     safras = parser.parse_safra_produto(xlsx, "milho", safra_ref="2025/26")
 
-    assert (
-        len(safras) == expected["milho"]["count"]
-    ), f"Expected {expected['milho']['count']} milho records, got {len(safras)}"
+    assert len(safras) == expected["milho"]["count"], (
+        f"Expected {expected['milho']['count']} milho records, got {len(safras)}"
+    )
 
 
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
@@ -198,9 +198,9 @@ def test_conab_golden_parsing_suprimento(_name: str, path: Path):
     parser = ConabParserV1()
     suprimentos = parser.parse_suprimento(xlsx)
 
-    assert (
-        len(suprimentos) == expected["suprimento"]["count"]
-    ), f"Expected {expected['suprimento']['count']} suprimento records, got {len(suprimentos)}"
+    assert len(suprimentos) == expected["suprimento"]["count"], (
+        f"Expected {expected['suprimento']['count']} suprimento records, got {len(suprimentos)}"
+    )
 
 
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
@@ -220,6 +220,6 @@ def test_conab_golden_parsing_brasil_total(_name: str, path: Path):
     parser = ConabParserV1()
     totais = parser.parse_brasil_total(xlsx)
 
-    assert (
-        len(totais) == expected["brasil_total"]["count"]
-    ), f"Expected {expected['brasil_total']['count']} brasil_total records, got {len(totais)}"
+    assert len(totais) == expected["brasil_total"]["count"], (
+        f"Expected {expected['brasil_total']['count']} brasil_total records, got {len(totais)}"
+    )

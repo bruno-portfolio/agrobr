@@ -56,10 +56,13 @@ async def _fetch_with_httpx(url: str, headers: dict) -> str:
     """Tenta buscar com httpx (mais rápido, mas pode falhar com Cloudflare)."""
 
     async def _fetch() -> httpx.Response:
-        async with RateLimiter.acquire(constants.Fonte.CEPEA), httpx.AsyncClient(
-            timeout=_get_timeout(),
-            follow_redirects=True,
-        ) as client:
+        async with (
+            RateLimiter.acquire(constants.Fonte.CEPEA),
+            httpx.AsyncClient(
+                timeout=_get_timeout(),
+                follow_redirects=True,
+            ) as client,
+        ):
             response = await client.get(url, headers=headers)
 
             if should_retry_status(response.status_code):
@@ -234,10 +237,13 @@ async def fetch_series_historica(produto: str, anos: int = 5) -> str:
     )
 
     async def _fetch() -> httpx.Response:
-        async with RateLimiter.acquire(constants.Fonte.CEPEA), httpx.AsyncClient(
-            timeout=_get_timeout(),
-            follow_redirects=True,
-        ) as client:
+        async with (
+            RateLimiter.acquire(constants.Fonte.CEPEA),
+            httpx.AsyncClient(
+                timeout=_get_timeout(),
+                follow_redirects=True,
+            ) as client,
+        ):
             response = await client.get(url, headers=headers)
             response.raise_for_status()
             return response
