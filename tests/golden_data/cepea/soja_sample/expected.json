@@ -1,0 +1,14 @@
+{
+  "count": 22,
+  "first": {
+    "data": "2024-01-31",
+    "valor": "124.58",
+    "unidade": "BRL/sc60kg"
+  },
+  "last": {
+    "data": "2024-01-02",
+    "valor": "123.48",
+    "unidade": "BRL/sc60kg"
+  },
+  "checksum": "sha256:7540872d30283d93"
+}

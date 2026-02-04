@@ -1,0 +1,5424 @@
+================================================================================
+                         AGROBR - DOCUMENTO DO PROJETO v3.0
+================================================================================
+
+
+================================================================================
+PARTE 0: INSTRUÇÕES DE ROLE PARA ASSISTENTE IA
+================================================================================
+
+# Role
+Desenvolvedor sênior do projeto **agrobr** — wrapper Python para dados
+agrícolas brasileiros (CEPEA, CONAB, IBGE).
+
+# Contexto do Projeto
+- **Stack:** Python 3.11+, httpx (async), beautifulsoup4 + lxml, pandas, polars,
+  pydantic v2, DuckDB, structlog, chardet
+- **Arquitetura:** Módulos por fonte (cepea/, conab/, ibge/), cache DuckDB com
+  histórico permanente, normalização centralizada, async-first, multi-parser
+- **Padrões:** Google Style Guide, pytest + pytest-asyncio, mkdocs-material
+- **Fontes:** CEPEA (preços), CONAB (safras/balanço), IBGE/SIDRA (PAM, LSPA)
+- **Resiliência:** Fingerprinting de layout, validação estatística, golden tests,
+  alertas multi-canal, fallback em cascata
+
+# Comunicação (Token Saving Mode)
+- Sem preâmbulos ("Claro!", "Entendo") ou conclusões genéricas
+- Prefira bullet points, tabelas e Markdown estruturado
+- Assuma conhecimento de: pandas, polars, scraping, async, agronegócio brasileiro
+- Se pedido ambíguo: perguntas de esclarecimento antes de processar
+
+# Qualidade de Código (checklist interno, não verbalizar)
+- Type hints obrigatórios (usar `from __future__ import annotations`)
+- Pydantic v2 BaseModel para todos os dados externos (Indicador, Safra, etc.)
+- Validação de inputs em funções públicas da API
+- Try/except específico: `httpx.HTTPError`, `ValueError`, nunca genérico
+- Constantes em `agrobr/constants.py` (URLs, TTLs, mapeamentos)
+- Funções > 30 linhas → propor quebra
+- Antes de criar helper → verificar se já existe em utils/
+- Edge cases obrigatórios: resposta vazia, layout mudou, timeout, encoding
+- Docstring Google style em funções públicas
+- structlog com JSON para todos os logs
+- SEM COMENTÁRIOS NO CÓDIGO - código deve ser autoexplicativo
+
+# Imports
+- Preferir `from modulo import submodulo` sobre `from modulo.submodulo import Classe`
+- Imports explícitos facilitam mocking e deixam origem clara
+- Não adicionar imports não utilizados (incluindo __future__ se não usar annotations)
+
+# Testes
+- Type hints `-> None` não são necessários em métodos de teste
+- Um teste por cenário, múltiplas asserções dentro são ok
+- setUp() para configuração compartilhada, não para cada teste
+- Nomes descritivos: test_<funcionalidade>_<cenario> ou test_<funcionalidade> se único
+
+# Padrões Específicos agrobr
+- HTTP: sempre `httpx.AsyncClient` com timeout, retry exponential, user-agent rotativo
+- Cache: DuckDB local com separação cache/histórico, verificar antes de request
+- Parsing: isolar em `parsers/` com versionamento, fingerprinting, fallback em cascata
+- Normalização: usar `normalize/` para unidades, datas safra, UFs, encoding
+- Encoding: fallback chain UTF-8 → ISO-8859-1 → Windows-1252 → chardet
+- Testes: VCR cassettes + golden data tests para requests; mocks para cache
+- Erros: exceções tipadas (SourceUnavailable, ParseError, StaleDataWarning)
+- Alertas: multi-canal (Slack, Discord, Email) para falhas críticas
+- Validação: estatística (ranges históricos) + estrutural (fingerprint)
+
+# Entregas
+- Scripts completos e funcionais na primeira tentativa
+- Correções: apenas bloco corrigido + contexto mínimo
+- Novos módulos: seguir estrutura existente (client → parser → models → API pública)
+- Mencionar dependências quando adicionar nova lib
+
+# Triggers Especiais
+- "modo mentor" ou "explica arquitetura" → análise detalhada de patterns, trade-offs
+- "debug" → investigação passo a passo com hipóteses
+- Caso contrário → modo enxuto
+
+
+================================================================================
+PARTE 1: VISÃO GERAL
+================================================================================
+
+Nome: agrobr (verificar disponibilidade PyPI)
+
+Tagline: Dados agrícolas brasileiros em uma linha de código
+
+Problema:
+Pesquisadores, traders, analistas e empresas do agro precisam de dados CEPEA,
+CONAB e IBGE diariamente. Hoje o processo é:
+  - Download manual de planilhas
+  - Parsing de XLS/CSV com layouts inconsistentes
+  - Scripts frágeis que quebram a cada mudança de site
+  - Zero padronização entre fontes
+  - Sem histórico versionado
+  - Encoding caótico (UTF-8, ISO-8859-1, Windows-1252 misturados)
+  - Sem alertas quando fontes mudam
+
+Solução:
+Pacote Python production-grade que abstrai toda a complexidade e entrega
+DataFrames limpos, padronizados, validados e documentados.
+
+    from agrobr import cepea
+
+    df = await cepea.indicador('soja', periodo='2024')
+    # DataFrame pronto para análise
+
+Diferenciais:
+  - Async-first para pipelines de alta performance
+  - Sync wrapper para uso simples
+  - Cache inteligente com DuckDB (analytics nativo)
+  - Histórico permanente separado de cache volátil
+  - Suporte pandas + polars
+  - Validação com Pydantic v2
+  - Validação estatística de sanidade
+  - CLI para debug e automação
+  - Logs estruturados (JSON)
+  - Health checks automatizados
+  - Fingerprinting de layout para detecção proativa de mudanças
+  - Golden data tests para regressão de parsing
+  - Alertas multi-canal (Slack, Discord, Email)
+  - Multi-parser com fallback em cascata
+  - Telemetria opt-in
+
+
+================================================================================
+PARTE 2: PÚBLICO-ALVO
+================================================================================
+
+Segmento                    | Dor                                | Uso
+----------------------------|------------------------------------|---------------------------------
+Pesquisadores/Acadêmicos    | Coleta manual para papers          | Séries históricas, análises
+Traders/Mesa de operações   | Atualização diária manual          | Modelos de precificação, alertas
+Jornalistas de agro         | Verificar números para matérias    | Consultas rápidas, visualizações
+Consultorias agrícolas      | Relatórios para clientes           | Dashboards, projeções
+Startups AgTech             | Dados para produtos                | APIs, pipelines de dados
+Data Engineers              | Pipelines robustos                 | ETL, data lakes
+
+
+================================================================================
+PARTE 3: ARQUITETURA TÉCNICA
+================================================================================
+
+agrobr/
+├── agrobr/
+│   ├── __init__.py
+│   ├── constants.py           # URLs, TTLs, mapeamentos, config
+│   ├── exceptions.py          # Exceções tipadas
+│   ├── cli.py                 # Interface linha de comando (typer)
+│   ├── sync.py                # Wrappers síncronos
+│   │
+│   ├── cepea/
+│   │   ├── __init__.py
+│   │   ├── client.py          # httpx.AsyncClient + retry + user-agent
+│   │   ├── parsers/
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py        # Interface abstrata
+│   │   │   ├── v1.py          # Parser layout 2024
+│   │   │   ├── fingerprint.py # Extração de assinatura estrutural
+│   │   │   └── detector.py    # Seleção automática + fallback
+│   │   ├── models.py          # Pydantic models
+│   │   └── api.py             # Funções públicas async
+│   │
+│   ├── conab/
+│   │   ├── __init__.py
+│   │   ├── client.py
+│   │   ├── parsers/
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py
+│   │   │   ├── v1.py
+│   │   │   ├── fingerprint.py
+│   │   │   └── detector.py
+│   │   ├── models.py
+│   │   └── api.py
+│   │
+│   ├── ibge/
+│   │   ├── __init__.py
+│   │   ├── client.py
+│   │   └── api.py             # Wrapper sidrapy com filtros agro
+│   │
+│   ├── cache/
+│   │   ├── __init__.py
+│   │   ├── duckdb_store.py    # Storage principal
+│   │   ├── policies.py        # TTL por fonte, invalidação
+│   │   ├── migrations.py      # Schema migrations
+│   │   └── history.py         # Histórico permanente
+│   │
+│   ├── normalize/
+│   │   ├── __init__.py
+│   │   ├── units.py           # Conversão sc/ton/bu
+│   │   ├── dates.py           # Safra vs ano civil
+│   │   ├── regions.py         # Padronização UF/município
+│   │   └── encoding.py        # Detecção + fallback chain
+│   │
+│   ├── http/
+│   │   ├── __init__.py
+│   │   ├── user_agents.py     # Pool rotativo curado
+│   │   ├── retry.py           # Exponential backoff
+│   │   └── rate_limiter.py    # Semáforo por fonte
+│   │
+│   ├── validators/
+│   │   ├── __init__.py
+│   │   ├── sanity.py          # Validação estatística
+│   │   └── structural.py      # Comparação de fingerprints
+│   │
+│   ├── alerts/
+│   │   ├── __init__.py
+│   │   ├── notifier.py        # Dispatcher multi-canal
+│   │   ├── slack.py           # Slack webhook
+│   │   ├── discord.py         # Discord webhook
+│   │   └── email.py           # SendGrid/SES
+│   │
+│   ├── health/
+│   │   ├── __init__.py
+│   │   ├── checker.py         # Health check por fonte
+│   │   └── reporter.py        # Geração de relatórios
+│   │
+│   ├── telemetry/
+│   │   ├── __init__.py
+│   │   └── collector.py       # Opt-in usage analytics
+│   │
+│   └── utils/
+│       ├── __init__.py
+│       ├── validators.py
+│       └── logging.py         # structlog config
+│
+├── tests/
+│   ├── cassettes/             # VCR recordings
+│   ├── golden_data/           # HTML + expected outputs
+│   ├── test_cepea/
+│   ├── test_conab/
+│   ├── test_ibge/
+│   ├── test_cache/
+│   ├── test_validators/
+│   ├── test_golden.py         # Golden data tests
+│   └── conftest.py
+│
+├── scripts/
+│   ├── fetch_structures.py    # Coleta fingerprints atuais
+│   ├── compare_structures.py  # Compara com baseline
+│   ├── update_golden.py       # Atualiza golden data
+│   └── alert_structure_change.py
+│
+├── docs/
+│   ├── index.md
+│   ├── quickstart.md
+│   ├── api/
+│   └── advanced/
+│       ├── resilience.md      # Documentação de resiliência
+│       └── troubleshooting.md
+│
+├── examples/
+│   ├── analise_margem_soja.ipynb
+│   ├── serie_historica_milho.ipynb
+│   ├── correlacao_cepea_cbot.ipynb
+│   └── pipeline_async.py
+│
+├── .github/
+│   └── workflows/
+│       ├── tests.yml          # CI em PRs
+│       ├── health_check.yml   # Daily smoke tests
+│       ├── structure_monitor.yml  # 6h structure diff
+│       └── publish.yml        # Release to PyPI
+│
+├── .structures/
+│   └── baseline.json          # Fingerprints de referência
+│
+├── pyproject.toml
+├── README.md
+├── CHANGELOG.md
+└── LICENSE
+
+
+================================================================================
+PARTE 4: STACK TECNOLÓGICA
+================================================================================
+
+Componente      | Tecnologia              | Justificativa
+----------------|-------------------------|------------------------------------------------
+Runtime         | Python 3.11+            | Performance, typing moderno, TaskGroup
+HTTP            | httpx (async)           | Async nativo, HTTP/2, timeout granular
+Parsing HTML    | beautifulsoup4 + lxml   | bs4 flexível, lxml para performance
+Parsing XLS     | openpyxl                | Excel moderno (.xlsx)
+Data (default)  | pandas                  | Padrão de mercado, compatibilidade
+Data (opcional) | polars                  | 10-50x mais rápido, lazy evaluation
+Validação       | pydantic v2             | Validação robusta, serialização, settings
+Cache           | DuckDB                  | Analytics nativo, SQL, zero-copy pandas
+Encoding        | chardet                 | Detecção automática de encoding
+Logs            | structlog               | JSON estruturado, contexto rico
+CLI             | typer                   | Moderno, type hints, auto-complete
+Testes          | pytest + pytest-asyncio | Async support
+Testes HTTP     | pytest-recording (VCR)  | Replay de requests
+Docs            | mkdocs-material         | Bonito, search, dark mode
+CI/CD           | GitHub Actions          | Padrão, free para open source
+Alertas         | httpx (webhooks)        | Slack, Discord, SendGrid
+
+
+================================================================================
+PARTE 5: MODELO DE DADOS (Pydantic v2)
+================================================================================
+
+from pydantic import BaseModel, Field, field_validator, model_validator
+from decimal import Decimal
+from datetime import date, datetime
+from typing import Any
+from enum import Enum
+
+
+class Fonte(str, Enum):
+    CEPEA = "cepea"
+    CONAB = "conab"
+    IBGE = "ibge"
+
+
+class Indicador(BaseModel):
+    """Preço/indicador de commodity agrícola."""
+
+    fonte: Fonte
+    produto: str = Field(..., min_length=2, description="'soja', 'milho', 'cafe'")
+    praca: str | None = Field(None, description="'paranagua', 'campinas'")
+    data: date
+    valor: Decimal = Field(..., gt=0)
+    unidade: str = Field(..., description="'BRL/sc60kg', 'BRL/ton', 'USD/bu'")
+    metodologia: str | None = Field(None, description="'indicador_esalq'")
+    revisao: int = Field(default=0, ge=0)
+    meta: dict[str, Any] = Field(default_factory=dict)
+
+    # Campos de validação/auditoria
+    parsed_at: datetime = Field(default_factory=datetime.utcnow)
+    parser_version: int = Field(default=1)
+    anomalies: list[str] = Field(default_factory=list)
+
+    @field_validator('produto', 'fonte')
+    @classmethod
+    def lowercase(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.lower().strip()
+        return v
+
+
+class Safra(BaseModel):
+    """Dados de safra agrícola."""
+
+    fonte: Fonte
+    produto: str
+    safra: str = Field(..., pattern=r'^\d{4}/\d{2}$', description="'2024/25'")
+    uf: str | None = Field(None, min_length=2, max_length=2)
+    area_plantada: Decimal | None = Field(None, ge=0)
+    producao: Decimal | None = Field(None, ge=0)
+    produtividade: Decimal | None = Field(None, ge=0)
+    unidade_area: str = Field(default='mil_ha')
+    unidade_producao: str = Field(default='mil_ton')
+    levantamento: int = Field(..., ge=1, le=12)
+    data_publicacao: date
+    meta: dict[str, Any] = Field(default_factory=dict)
+
+    # Campos de validação/auditoria
+    parsed_at: datetime = Field(default_factory=datetime.utcnow)
+    parser_version: int = Field(default=1)
+    anomalies: list[str] = Field(default_factory=list)
+
+
+class CacheEntry(BaseModel):
+    """Entrada de cache com metadados."""
+
+    key: str
+    data: bytes
+    created_at: datetime
+    expires_at: datetime
+    source: Fonte
+    version: int = 1
+    stale: bool = False
+    hit_count: int = 0
+
+
+class HistoryEntry(BaseModel):
+    """Entrada de histórico permanente."""
+
+    key: str
+    data: bytes
+    source: Fonte
+    data_date: date  # Data do dado, não da coleta
+    collected_at: datetime
+    parser_version: int
+    fingerprint_hash: str  # Hash do fingerprint usado
+
+
+class Fingerprint(BaseModel):
+    """Assinatura estrutural de uma página."""
+
+    source: Fonte
+    url: str
+    collected_at: datetime
+    table_classes: list[list[str]]
+    key_ids: list[str]
+    structure_hash: str
+    table_headers: list[list[str]]
+    element_counts: dict[str, int]
+
+
+================================================================================
+PARTE 6: COMPORTAMENTO DE ERROS
+================================================================================
+
+EXCEÇÕES TIPADAS
+----------------
+
+# agrobr/exceptions.py
+
+class AgrobrError(Exception):
+    """Base para todas as exceções do agrobr."""
+    pass
+
+
+class SourceUnavailableError(AgrobrError):
+    """Fonte de dados não disponível após todas as tentativas."""
+
+    def __init__(self, source: str, url: str, last_error: str):
+        self.source = source
+        self.url = url
+        self.last_error = last_error
+        super().__init__(f"{source} unavailable: {last_error}")
+
+
+class ParseError(AgrobrError):
+    """Falha ao parsear dados da fonte."""
+
+    def __init__(self, source: str, parser_version: int, reason: str, html_snippet: str = ""):
+        self.source = source
+        self.parser_version = parser_version
+        self.reason = reason
+        self.html_snippet = html_snippet[:500]  # Truncar para log
+        super().__init__(f"Parse failed ({source} v{parser_version}): {reason}")
+
+
+class ValidationError(AgrobrError):
+    """Dados não passaram validação Pydantic ou estatística."""
+
+    def __init__(self, source: str, field: str, value: Any, reason: str):
+        self.source = source
+        self.field = field
+        self.value = value
+        self.reason = reason
+        super().__init__(f"Validation failed: {field}={value} - {reason}")
+
+
+class CacheError(AgrobrError):
+    """Erro de operação de cache."""
+    pass
+
+
+class FingerprintMismatchError(AgrobrError):
+    """Estrutura da página mudou significativamente."""
+
+    def __init__(self, source: str, similarity: float, threshold: float):
+        self.source = source
+        self.similarity = similarity
+        self.threshold = threshold
+        super().__init__(
+            f"Layout change detected in {source}: "
+            f"similarity {similarity:.2%} < threshold {threshold:.2%}"
+        )
+
+
+# Warnings (não interrompem execução)
+class StaleDataWarning(UserWarning):
+    """Dados do cache estão expirados mas foram retornados."""
+    pass
+
+
+class PartialDataWarning(UserWarning):
+    """Dados retornados estão incompletos."""
+    pass
+
+
+class LayoutChangeWarning(UserWarning):
+    """Possível mudança de layout detectada (baixa confiança)."""
+    pass
+
+
+class AnomalyDetectedWarning(UserWarning):
+    """Anomalia estatística detectada nos dados."""
+    pass
+
+
+class ParserFallbackWarning(UserWarning):
+    """Parser principal falhou, usando fallback."""
+    pass
+
+
+TABELA DE COMPORTAMENTO
+-----------------------
+
+Cenário                              | Comportamento                      | Retorno/Exceção
+-------------------------------------|------------------------------------|---------------------------
+Fonte online, cache miss             | Fetch → parse → validate → cache   | DataFrame
+Fonte online, cache fresh            | Retorna cache                      | DataFrame
+Fonte online, cache stale            | Tenta fetch, fallback se falhar    | DataFrame
+Fonte offline, cache fresh           | Retorna cache                      | DataFrame
+Fonte offline, cache stale           | Retorna cache + warning            | DataFrame + StaleDataWarning
+Fonte offline, sem cache             | Tenta histórico, senão raise       | DataFrame ou SourceUnavailableError
+Fonte offline, tem histórico         | Retorna histórico + warning        | DataFrame + StaleDataWarning
+Parsing falhou, cache existe         | Retorna cache + warning + alerta   | DataFrame + LayoutChangeWarning
+Parsing falhou, sem cache            | Tenta fallback parser              | DataFrame ou ParseError
+Todos parsers falharam               | Raise + alerta                     | ParseError
+Fingerprint mismatch < 70%           | Raise + alerta crítico             | FingerprintMismatchError
+Fingerprint mismatch 70-85%          | Continua + warning + alerta        | DataFrame + LayoutChangeWarning
+Dados parciais (< 80% esperado)      | Retorna + warning                  | DataFrame + PartialDataWarning
+Validação Pydantic falhou            | Raise                              | ValidationError
+Anomalia estatística detectada       | Continua + warning + marca dados   | DataFrame + AnomalyDetectedWarning
+Timeout (após retries)               | Fallback para cache ou raise       | Depende do cache
+
+
+================================================================================
+PARTE 7: CONFIGURAÇÃO DE CACHE E TTL
+================================================================================
+
+SEPARAÇÃO CACHE vs HISTÓRICO
+----------------------------
+
+DECISÃO: Duas tabelas distintas no DuckDB
+
+1. cache_entries: Dados voláteis com TTL
+   - Usado para respostas rápidas
+   - Expira conforme TTL
+   - Pode ser limpo sem perda de dados
+
+2. history_entries: Dados permanentes
+   - Cada dado coletado é salvo com timestamp
+   - Nunca expira automaticamente
+   - Permite reconstruir séries históricas
+   - Permite auditar mudanças de parsing
+
+
+TTL POR FONTE
+-------------
+
+Fonte           | Frequência atualização | TTL padrão | TTL stale máximo
+----------------|------------------------|------------|------------------
+CEPEA diário    | Diário ~18h            | 4 horas    | 48 horas
+CEPEA semanal   | Sexta-feira            | 24 horas   | 168 horas (1 semana)
+CONAB safras    | Mensal                 | 24 horas   | 720 horas (30 dias)
+CONAB balanço   | Mensal                 | 24 horas   | 720 horas (30 dias)
+IBGE PAM        | Anual                  | 168 horas  | 2160 horas (90 dias)
+IBGE LSPA       | Mensal                 | 24 horas   | 720 horas (30 dias)
+
+
+CONFIGURAÇÃO VIA AMBIENTE/CONFIG
+--------------------------------
+
+# agrobr/constants.py
+
+from pydantic_settings import BaseSettings
+from pathlib import Path
+
+
+class CacheSettings(BaseSettings):
+    """Configurações de cache customizáveis."""
+
+    # Paths
+    cache_dir: Path = Path.home() / ".agrobr" / "cache"
+    db_name: str = "agrobr.duckdb"
+
+    # TTLs (segundos)
+    ttl_cepea_diario: int = 4 * 3600      # 4 horas
+    ttl_cepea_semanal: int = 24 * 3600    # 24 horas
+    ttl_conab: int = 24 * 3600            # 24 horas
+    ttl_ibge_pam: int = 168 * 3600        # 1 semana
+    ttl_ibge_lspa: int = 24 * 3600        # 24 horas
+
+    # Stale
+    stale_multiplier: float = 12.0        # TTL * 12 = stale máximo
+
+    # Comportamento
+    offline_mode: bool = False            # Força uso apenas de cache/histórico
+    strict_mode: bool = False             # Raise em vez de warning para stale
+    save_to_history: bool = True          # Salvar dados no histórico permanente
+
+    # Limpeza
+    cache_max_age_days: int = 30          # Limpar cache > 30 dias
+    history_max_age_days: int = 0         # 0 = nunca limpar histórico
+
+    class Config:
+        env_prefix = "AGROBR_CACHE_"
+
+
+class HTTPSettings(BaseSettings):
+    """Configurações de HTTP."""
+
+    timeout_connect: float = 10.0
+    timeout_read: float = 30.0
+    timeout_write: float = 10.0
+    timeout_pool: float = 10.0
+
+    max_retries: int = 3
+    retry_base_delay: float = 1.0
+    retry_max_delay: float = 30.0
+    retry_exponential_base: int = 2
+
+    # Rate limiting
+    rate_limit_cepea: float = 2.0         # segundos entre requests
+    rate_limit_conab: float = 3.0
+    rate_limit_ibge: float = 1.0
+
+    class Config:
+        env_prefix = "AGROBR_HTTP_"
+
+
+class AlertSettings(BaseSettings):
+    """Configurações de alertas."""
+
+    enabled: bool = True
+
+    # Webhooks
+    slack_webhook: str | None = None
+    discord_webhook: str | None = None
+
+    # Email (SendGrid)
+    sendgrid_api_key: str | None = None
+    email_from: str = "alerts@agrobr.dev"
+    email_to: list[str] = []
+
+    # Níveis
+    alert_on_parse_error: bool = True
+    alert_on_layout_change: bool = True
+    alert_on_source_down: bool = True
+    alert_on_anomaly: bool = False        # Muitos falsos positivos inicialmente
+
+    class Config:
+        env_prefix = "AGROBR_ALERT_"
+
+
+================================================================================
+PARTE 8: POLÍTICA DE RETRY E RATE LIMITING
+================================================================================
+
+RETRY COM EXPONENTIAL BACKOFF
+-----------------------------
+
+# agrobr/http/retry.py
+
+from __future__ import annotations
+
+import asyncio
+from typing import TypeVar, Callable, Awaitable, Sequence
+from functools import wraps
+import httpx
+import structlog
+
+from ..constants import HTTPSettings
+
+logger = structlog.get_logger()
+T = TypeVar('T')
+
+RETRIABLE_STATUS_CODES: set[int] = {408, 429, 500, 502, 503, 504}
+RETRIABLE_EXCEPTIONS: tuple[type[Exception], ...] = (
+    httpx.TimeoutException,
+    httpx.NetworkError,
+    httpx.RemoteProtocolError,
+)
+
+
+async def retry_async(
+    func: Callable[[], Awaitable[T]],
+    max_attempts: int | None = None,
+    base_delay: float | None = None,
+    max_delay: float | None = None,
+    retriable_exceptions: Sequence[type[Exception]] = RETRIABLE_EXCEPTIONS,
+) -> T:
+    """
+    Executa função async com retry exponential backoff.
+
+    Args:
+        func: Função async a executar
+        max_attempts: Número máximo de tentativas
+        base_delay: Delay inicial em segundos
+        max_delay: Delay máximo em segundos
+        retriable_exceptions: Exceções que permitem retry
+
+    Returns:
+        Resultado da função
+
+    Raises:
+        Última exceção se todas as tentativas falharem
+    """
+    settings = HTTPSettings()
+    max_attempts = max_attempts or settings.max_retries
+    base_delay = base_delay or settings.retry_base_delay
+    max_delay = max_delay or settings.retry_max_delay
+
+    last_exception: Exception | None = None
+
+    for attempt in range(max_attempts):
+        try:
+            return await func()
+
+        except retriable_exceptions as e:
+            last_exception = e
+            if attempt < max_attempts - 1:
+                delay = min(
+                    base_delay * (settings.retry_exponential_base ** attempt),
+                    max_delay
+                )
+                logger.warning(
+                    "retry_scheduled",
+                    attempt=attempt + 1,
+                    max_attempts=max_attempts,
+                    delay_seconds=delay,
+                    error=str(e),
+                )
+                await asyncio.sleep(delay)
+            else:
+                logger.error(
+                    "retry_exhausted",
+                    attempts=max_attempts,
+                    last_error=str(e),
+                )
+
+    if last_exception:
+        raise last_exception
+    raise RuntimeError("Retry logic error: no exception captured")
+
+
+def with_retry(
+    max_attempts: int | None = None,
+    base_delay: float | None = None,
+):
+    """Decorator para retry automático."""
+
+    def decorator(func: Callable[..., Awaitable[T]]) -> Callable[..., Awaitable[T]]:
+        @wraps(func)
+        async def wrapper(*args, **kwargs) -> T:
+            return await retry_async(
+                lambda: func(*args, **kwargs),
+                max_attempts=max_attempts,
+                base_delay=base_delay,
+            )
+        return wrapper
+    return decorator
+
+
+RATE LIMITING POR FONTE
+-----------------------
+
+# agrobr/http/rate_limiter.py
+
+from __future__ import annotations
+
+import asyncio
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
+import structlog
+
+from ..constants import HTTPSettings, Fonte
+
+logger = structlog.get_logger()
+
+
+class RateLimiter:
+    """
+    Rate limiter por fonte usando semáforos.
+
+    Garante intervalo mínimo entre requests para cada fonte,
+    evitando bloqueio de IP.
+    """
+
+    _semaphores: dict[str, asyncio.Semaphore] = {}
+    _last_request: dict[str, float] = {}
+    _lock = asyncio.Lock()
+
+    @classmethod
+    def _get_delay(cls, source: Fonte) -> float:
+        """Retorna delay configurado para a fonte."""
+        settings = HTTPSettings()
+        delays = {
+            Fonte.CEPEA: settings.rate_limit_cepea,
+            Fonte.CONAB: settings.rate_limit_conab,
+            Fonte.IBGE: settings.rate_limit_ibge,
+        }
+        return delays.get(source, 1.0)
+
+    @classmethod
+    @asynccontextmanager
+    async def acquire(cls, source: Fonte) -> AsyncIterator[None]:
+        """
+        Context manager que garante rate limiting.
+
+        Usage:
+            async with RateLimiter.acquire(Fonte.CEPEA):
+                response = await client.get(url)
+        """
+        source_key = source.value
+
+        async with cls._lock:
+            if source_key not in cls._semaphores:
+                cls._semaphores[source_key] = asyncio.Semaphore(1)
+
+        async with cls._semaphores[source_key]:
+            # Calcula tempo desde último request
+            import time
+            now = time.monotonic()
+            last = cls._last_request.get(source_key, 0)
+            delay = cls._get_delay(source)
+            elapsed = now - last
+
+            # Espera se necessário
+            if elapsed < delay:
+                wait_time = delay - elapsed
+                logger.debug(
+                    "rate_limit_wait",
+                    source=source_key,
+                    wait_seconds=wait_time,
+                )
+                await asyncio.sleep(wait_time)
+
+            try:
+                yield
+            finally:
+                cls._last_request[source_key] = time.monotonic()
+
+
+================================================================================
+PARTE 9: TRATAMENTO DE ENCODING
+================================================================================
+
+FALLBACK CHAIN
+--------------
+
+# agrobr/normalize/encoding.py
+
+from __future__ import annotations
+
+from typing import Sequence
+import chardet
+import structlog
+
+logger = structlog.get_logger()
+
+# Chain de encodings ordenada por probabilidade para fontes BR
+ENCODING_CHAIN: Sequence[str] = (
+    'utf-8',
+    'iso-8859-1',      # Latin-1, muito comum em sites BR antigos
+    'windows-1252',    # CP1252, padrão Excel BR
+    'utf-16',          # Raro, mas possível em alguns exports
+    'ascii',           # Fallback básico
+)
+
+
+def decode_content(
+    content: bytes,
+    declared_encoding: str | None = None,
+    source: str | None = None,
+) -> tuple[str, str]:
+    """
+    Decodifica bytes com fallback chain inteligente.
+
+    Args:
+        content: Bytes a decodificar
+        declared_encoding: Encoding declarado pelo servidor (Content-Type)
+        source: Nome da fonte para logging
+
+    Returns:
+        tuple[str, str]: (texto decodificado, encoding usado)
+
+    Note:
+        Nunca levanta exceção - último recurso é decode com errors='replace'
+    """
+    # 1. Tenta encoding declarado primeiro (se válido)
+    if declared_encoding:
+        declared_normalized = declared_encoding.lower().replace('-', '').replace('_', '')
+        try:
+            decoded = content.decode(declared_encoding)
+            logger.debug(
+                "encoding_success",
+                source=source,
+                encoding=declared_encoding,
+                method="declared",
+            )
+            return decoded, declared_encoding
+        except (UnicodeDecodeError, LookupError):
+            logger.debug(
+                "encoding_declared_failed",
+                source=source,
+                declared=declared_encoding,
+            )
+
+    # 2. Tenta chain de encodings comuns
+    for encoding in ENCODING_CHAIN:
+        try:
+            decoded = content.decode(encoding)
+            if encoding != 'utf-8':
+                logger.info(
+                    "encoding_fallback",
+                    source=source,
+                    declared=declared_encoding,
+                    actual=encoding,
+                    method="chain",
+                )
+            return decoded, encoding
+        except UnicodeDecodeError:
+            continue
+
+    # 3. Detecção automática com chardet
+    detected = chardet.detect(content)
+    if detected['encoding'] and detected['confidence'] > 0.7:
+        try:
+            decoded = content.decode(detected['encoding'])
+            logger.info(
+                "encoding_fallback",
+                source=source,
+                declared=declared_encoding,
+                actual=detected['encoding'],
+                confidence=detected['confidence'],
+                method="chardet",
+            )
+            return decoded, detected['encoding']
+        except (UnicodeDecodeError, LookupError):
+            pass
+
+    # 4. Último recurso: UTF-8 com replacement characters
+    logger.warning(
+        "encoding_forced",
+        source=source,
+        declared=declared_encoding,
+        chardet_result=detected,
+    )
+    return content.decode('utf-8', errors='replace'), 'utf-8-replaced'
+
+
+def detect_encoding(content: bytes) -> tuple[str, float]:
+    """
+    Detecta encoding provável do conteúdo.
+
+    Returns:
+        tuple[str, float]: (encoding, confidence 0-1)
+    """
+    result = chardet.detect(content)
+    return result['encoding'] or 'utf-8', result['confidence'] or 0.0
+
+
+================================================================================
+PARTE 10: VERSIONAMENTO DE PARSERS
+================================================================================
+
+ESTRUTURA
+---------
+
+agrobr/cepea/parsers/
+├── __init__.py
+├── base.py           # Interface abstrata + tipos
+├── v1.py             # Parser layout 2024
+├── v2.py             # Parser layout futuro (quando necessário)
+├── fingerprint.py    # Extração de assinatura estrutural
+└── detector.py       # Seleção automática + fallback em cascata
+
+
+INTERFACE BASE
+--------------
+
+# agrobr/cepea/parsers/base.py
+
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from datetime import date
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..models import Indicador
+
+
+class BaseParser(ABC):
+    """Interface base para todos os parsers."""
+
+    # Metadados do parser
+    version: int
+    source: str
+    valid_from: date
+    valid_until: date | None = None
+
+    # Fingerprint esperado (para validação rápida)
+    expected_fingerprint: dict | None = None
+
+    @abstractmethod
+    def can_parse(self, html: str) -> tuple[bool, float]:
+        """
+        Verifica se este parser consegue processar o HTML.
+
+        Returns:
+            tuple[bool, float]: (pode_parsear, confiança 0-1)
+
+        A confiança indica quão certo o parser está:
+        - 1.0: Estrutura idêntica ao esperado
+        - 0.8-0.99: Estrutura similar, pequenas diferenças
+        - 0.5-0.79: Estrutura parcialmente reconhecida
+        - < 0.5: Provavelmente não consegue parsear
+        """
+        pass
+
+    @abstractmethod
+    def parse(self, html: str, produto: str) -> list[Indicador]:
+        """
+        Parseia HTML e retorna lista de indicadores.
+
+        Args:
+            html: Conteúdo HTML da página
+            produto: Produto sendo buscado
+
+        Returns:
+            Lista de Indicador parseados
+
+        Raises:
+            ParseError: Se não conseguir extrair dados
+        """
+        pass
+
+    @abstractmethod
+    def extract_fingerprint(self, html: str) -> dict:
+        """
+        Extrai assinatura estrutural do HTML.
+
+        Usado para:
+        - Detectar mudanças de layout
+        - Selecionar parser correto
+        - Debugging
+        """
+        pass
+
+
+DETECTOR COM FALLBACK EM CASCATA
+--------------------------------
+
+# agrobr/cepea/parsers/detector.py
+
+from __future__ import annotations
+
+from datetime import date
+import structlog
+
+from .base import BaseParser
+from .v1 import CepeaParserV1
+# from .v2 import CepeaParserV2  # Descomentar quando existir
+from ...exceptions import ParseError, FingerprintMismatchError
+from ...alerts.notifier import send_alert
+
+logger = structlog.get_logger()
+
+# Parsers ordenados do mais recente ao mais antigo
+PARSERS: list[type[BaseParser]] = [
+    CepeaParserV1,
+    # CepeaParserV2,
+]
+
+# Thresholds de confiança
+CONFIDENCE_HIGH = 0.85      # Confiança alta, usa direto
+CONFIDENCE_MEDIUM = 0.70    # Confiança média, usa com warning
+CONFIDENCE_LOW = 0.50       # Confiança baixa, tenta fallback
+
+
+async def get_parser_with_fallback(
+    html: str,
+    produto: str,
+    data_referencia: date | None = None,
+    strict: bool = False,
+) -> tuple[BaseParser, list[Indicador]]:
+    """
+    Seleciona parser e executa com fallback em cascata.
+
+    Estratégia:
+    1. Tenta parser mais recente compatível com a data
+    2. Se falhar ou baixa confiança, tenta próximo parser
+    3. Se todos falharem, levanta ParseError
+    4. Envia alertas conforme configurado
+
+    Args:
+        html: Conteúdo HTML
+        produto: Produto buscado
+        data_referencia: Data dos dados (para seleção de parser)
+        strict: Se True, não aceita confiança < CONFIDENCE_HIGH
+
+    Returns:
+        tuple[BaseParser, list[Indicador]]: Parser usado e dados parseados
+
+    Raises:
+        ParseError: Se nenhum parser conseguir extrair dados
+        FingerprintMismatchError: Se estrutura mudou muito (< CONFIDENCE_LOW)
+    """
+    errors: list[tuple[str, str]] = []
+    warnings: list[str] = []
+
+    for parser_cls in reversed(PARSERS):  # Mais recente primeiro
+        parser = parser_cls()
+
+        # Verifica validade temporal
+        if data_referencia:
+            if parser.valid_from > data_referencia:
+                continue
+            if parser.valid_until and data_referencia > parser.valid_until:
+                continue
+
+        # Verifica se consegue parsear
+        can_parse, confidence = parser.can_parse(html)
+
+        logger.debug(
+            "parser_check",
+            parser_version=parser.version,
+            can_parse=can_parse,
+            confidence=confidence,
+        )
+
+        if not can_parse:
+            continue
+
+        # Confiança muito baixa = estrutura mudou significativamente
+        if confidence < CONFIDENCE_LOW:
+            await send_alert(
+                level="critical",
+                title=f"Layout change detected: {parser.source}",
+                details={
+                    "parser_version": parser.version,
+                    "confidence": confidence,
+                    "threshold": CONFIDENCE_LOW,
+                    "fingerprint": parser.extract_fingerprint(html),
+                },
+            )
+            if strict:
+                raise FingerprintMismatchError(
+                    source=parser.source,
+                    similarity=confidence,
+                    threshold=CONFIDENCE_LOW,
+                )
+            # Continua tentando outros parsers
+
+        # Confiança média = avisa mas tenta
+        if confidence < CONFIDENCE_HIGH:
+            warnings.append(
+                f"Parser v{parser.version} confidence {confidence:.1%} "
+                f"(expected >= {CONFIDENCE_HIGH:.1%})"
+            )
+
+        # Tenta parsear
+        try:
+            result = parser.parse(html, produto)
+
+            if not result:
+                errors.append((f"v{parser.version}", "No data extracted"))
+                continue
+
+            # Sucesso!
+            if warnings:
+                logger.warning(
+                    "parser_low_confidence",
+                    parser_version=parser.version,
+                    confidence=confidence,
+                    warnings=warnings,
+                )
+
+            return parser, result
+
+        except Exception as e:
+            errors.append((f"v{parser.version}", str(e)))
+            logger.warning(
+                "parser_failed",
+                parser_version=parser.version,
+                error=str(e),
+            )
+            continue
+
+    # Nenhum parser funcionou
+    error_summary = "; ".join(f"{v}: {e}" for v, e in errors)
+    await send_alert(
+        level="critical",
+        title=f"All parsers failed: {PARSERS[0]().source}",
+        details={
+            "errors": errors,
+            "html_snippet": html[:1000],
+        },
+    )
+    raise ParseError(
+        source=PARSERS[0]().source if PARSERS else "unknown",
+        parser_version=0,
+        reason=f"All parsers failed: {error_summary}",
+        html_snippet=html[:500],
+    )
+
+
+QUANDO CRIAR NOVO PARSER
+------------------------
+
+Trigger: Health check detecta falha ou confiança baixa persistente
+
+Processo:
+1. Investigar mudança de layout (comparar fingerprints)
+2. Criar parsers/v{N+1}.py copiando estrutura do anterior
+3. Atualizar valid_until do parser anterior para data da mudança
+4. Ajustar novo parser para novo layout
+5. Atualizar expected_fingerprint do novo parser
+6. Adicionar golden data test com HTML novo
+7. Garantir que testes com dados históricos continuam passando
+8. Adicionar novo parser em PARSERS (primeiro da lista)
+
+IMPORTANTE: Nunca deletar parsers antigos - dados históricos podem precisar deles
+
+
+================================================================================
+PARTE 11: USER-AGENT ROTATIVO
+================================================================================
+
+DECISÃO: Pool fixo curado com rotação por request
+
+JUSTIFICATIVA
+-------------
+- Fake-useragent: depende de API externa, pode falhar
+- Pool fixo: controlado, testado, sem dependência externa
+- Rotação: distribui requests entre "navegadores diferentes"
+- Curado: apenas UAs realistas e atuais
+
+
+IMPLEMENTAÇÃO
+-------------
+
+# agrobr/http/user_agents.py
+
+from __future__ import annotations
+
+import random
+from typing import Sequence
+from datetime import datetime
+
+# Pool curado de User-Agents reais e atuais
+# Atualizar anualmente ou quando health checks indicarem bloqueio
+USER_AGENT_POOL: Sequence[str] = (
+    # Chrome Windows (mais comum)
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+
+    # Chrome Mac
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+
+    # Firefox Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
+
+    # Firefox Mac
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:121.0) Gecko/20100101 Firefox/121.0",
+
+    # Edge
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+
+    # Safari
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+)
+
+# Headers adicionais para parecer mais real
+DEFAULT_HEADERS: dict[str, str] = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+}
+
+
+class UserAgentRotator:
+    """Rotaciona User-Agents de forma determinística por fonte."""
+
+    _counters: dict[str, int] = {}
+
+    @classmethod
+    def get(cls, source: str | None = None) -> str:
+        """
+        Retorna próximo User-Agent do pool.
+
+        Args:
+            source: Nome da fonte (para rotação separada por fonte)
+
+        Returns:
+            User-Agent string
+        """
+        key = source or "default"
+
+        if key not in cls._counters:
+            # Inicia em posição aleatória para não ter padrão previsível
+            cls._counters[key] = random.randint(0, len(USER_AGENT_POOL) - 1)
+
+        ua = USER_AGENT_POOL[cls._counters[key] % len(USER_AGENT_POOL)]
+        cls._counters[key] += 1
+
+        return ua
+
+    @classmethod
+    def get_random(cls) -> str:
+        """Retorna User-Agent aleatório."""
+        return random.choice(USER_AGENT_POOL)
+
+    @classmethod
+    def get_headers(cls, source: str | None = None) -> dict[str, str]:
+        """
+        Retorna headers completos incluindo User-Agent.
+
+        Args:
+            source: Nome da fonte
+
+        Returns:
+            Dict com headers HTTP
+        """
+        headers = DEFAULT_HEADERS.copy()
+        headers["User-Agent"] = cls.get(source)
+        return headers
+
+
+# Validação: atualizar pool se muito antigo
+def _check_pool_freshness() -> None:
+    """Log warning se pool de UAs precisa atualização."""
+    import structlog
+    logger = structlog.get_logger()
+
+    # Chrome versão no pool
+    chrome_versions = [
+        int(ua.split("Chrome/")[1].split(".")[0])
+        for ua in USER_AGENT_POOL
+        if "Chrome/" in ua
+    ]
+
+    if chrome_versions:
+        max_version = max(chrome_versions)
+        # Chrome lança versão major a cada ~4 semanas
+        # Se versão mais alta no pool tem > 6 meses, avisar
+        current_month = datetime.now().month + datetime.now().year * 12
+        # Estimativa grosseira: Chrome 120 = Dez 2023
+        pool_month = (max_version - 120) + (2023 * 12 + 12)
+
+        if current_month - pool_month > 6:
+            logger.warning(
+                "user_agent_pool_stale",
+                max_chrome_version=max_version,
+                recommendation="Update USER_AGENT_POOL in user_agents.py",
+            )
+
+
+================================================================================
+PARTE 12: FINGERPRINTING DE LAYOUT
+================================================================================
+
+# agrobr/cepea/parsers/fingerprint.py
+
+from __future__ import annotations
+
+import hashlib
+from datetime import datetime
+from typing import Any
+from bs4 import BeautifulSoup
+import structlog
+
+from ...models import Fingerprint, Fonte
+
+logger = structlog.get_logger()
+
+
+def extract_fingerprint(
+    html: str,
+    source: Fonte,
+    url: str,
+) -> Fingerprint:
+    """
+    Extrai assinatura estrutural do HTML.
+
+    A fingerprint captura a "forma" da página sem o conteúdo,
+    permitindo detectar mudanças de layout.
+
+    Args:
+        html: Conteúdo HTML
+        source: Fonte de dados
+        url: URL original
+
+    Returns:
+        Fingerprint com assinatura estrutural
+    """
+    soup = BeautifulSoup(html, 'lxml')
+
+    # 1. Classes CSS das tabelas (muito sensível a mudanças)
+    table_classes = []
+    for table in soup.find_all('table')[:10]:  # Limita a 10 tabelas
+        classes = table.get('class', [])
+        if isinstance(classes, str):
+            classes = [classes]
+        table_classes.append(sorted(classes))
+
+    # 2. IDs relevantes (preço, indicador, cotação, etc.)
+    keywords = ['preco', 'indicador', 'cotacao', 'valor', 'tabela', 'dados']
+    key_ids = []
+    for elem in soup.find_all(id=True):
+        elem_id = elem.get('id', '').lower()
+        if any(kw in elem_id for kw in keywords):
+            key_ids.append(elem.get('id'))
+    key_ids = sorted(set(key_ids))[:20]  # Limita a 20 IDs
+
+    # 3. Headers de tabelas (muito importante para parsing)
+    table_headers = []
+    for table in soup.find_all('table')[:5]:
+        headers = []
+        for th in table.find_all('th'):
+            text = th.get_text(strip=True)[:50]  # Trunca textos longos
+            if text:
+                headers.append(text)
+        if headers:
+            table_headers.append(headers)
+
+    # 4. Contagem de elementos estruturais
+    element_counts = {
+        'tables': len(soup.find_all('table')),
+        'forms': len(soup.find_all('form')),
+        'divs_with_id': len(soup.find_all('div', id=True)),
+        'inputs': len(soup.find_all('input')),
+        'selects': len(soup.find_all('select')),
+        'links': len(soup.find_all('a')),
+        'scripts': len(soup.find_all('script')),
+    }
+
+    # 5. Hash estrutural (hierarquia de tags principais)
+    structure_elements = []
+    for tag in soup.find_all(['table', 'div', 'form', 'section', 'article'])[:30]:
+        structure_elements.append((
+            tag.name,
+            len(tag.find_all(recursive=False)),
+            tuple(sorted(tag.get('class', [])))[:3] if tag.get('class') else (),
+        ))
+
+    structure_hash = hashlib.md5(
+        str(structure_elements).encode()
+    ).hexdigest()[:12]
+
+    return Fingerprint(
+        source=source,
+        url=url,
+        collected_at=datetime.utcnow(),
+        table_classes=table_classes,
+        key_ids=key_ids,
+        structure_hash=structure_hash,
+        table_headers=table_headers,
+        element_counts=element_counts,
+    )
+
+
+def compare_fingerprints(
+    current: Fingerprint,
+    reference: Fingerprint,
+) -> tuple[float, dict[str, Any]]:
+    """
+    Compara duas fingerprints e retorna similaridade.
+
+    Args:
+        current: Fingerprint atual
+        reference: Fingerprint de referência (baseline)
+
+    Returns:
+        tuple[float, dict]: (similaridade 0-1, detalhes das diferenças)
+    """
+    scores = {}
+    details = {}
+
+    # 1. Structure hash (peso alto)
+    scores['structure'] = 1.0 if current.structure_hash == reference.structure_hash else 0.0
+    if scores['structure'] == 0:
+        details['structure_changed'] = {
+            'current': current.structure_hash,
+            'reference': reference.structure_hash,
+        }
+
+    # 2. Table classes (peso médio-alto)
+    if reference.table_classes:
+        matches = sum(
+            1 for tc in current.table_classes
+            if tc in reference.table_classes
+        )
+        scores['table_classes'] = matches / len(reference.table_classes)
+        if scores['table_classes'] < 1.0:
+            details['table_classes_diff'] = {
+                'missing': [tc for tc in reference.table_classes if tc not in current.table_classes],
+                'new': [tc for tc in current.table_classes if tc not in reference.table_classes],
+            }
+    else:
+        scores['table_classes'] = 1.0
+
+    # 3. Key IDs (peso médio)
+    if reference.key_ids:
+        matches = sum(1 for kid in reference.key_ids if kid in current.key_ids)
+        scores['key_ids'] = matches / len(reference.key_ids)
+        if scores['key_ids'] < 1.0:
+            details['key_ids_diff'] = {
+                'missing': [kid for kid in reference.key_ids if kid not in current.key_ids],
+                'new': [kid for kid in current.key_ids if kid not in reference.key_ids],
+            }
+    else:
+        scores['key_ids'] = 1.0
+
+    # 4. Table headers (peso alto - crítico para parsing)
+    if reference.table_headers:
+        header_score = 0.0
+        for ref_headers in reference.table_headers:
+            for cur_headers in current.table_headers:
+                # Similaridade de Jaccard
+                ref_set = set(ref_headers)
+                cur_set = set(cur_headers)
+                if ref_set or cur_set:
+                    jaccard = len(ref_set & cur_set) / len(ref_set | cur_set)
+                    header_score = max(header_score, jaccard)
+        scores['table_headers'] = header_score
+        if scores['table_headers'] < 0.9:
+            details['table_headers_diff'] = {
+                'reference': reference.table_headers,
+                'current': current.table_headers,
+            }
+    else:
+        scores['table_headers'] = 1.0
+
+    # 5. Element counts (peso baixo - variação normal)
+    count_diffs = {}
+    for key in reference.element_counts:
+        ref_count = reference.element_counts.get(key, 0)
+        cur_count = current.element_counts.get(key, 0)
+        if ref_count > 0:
+            diff_ratio = abs(cur_count - ref_count) / ref_count
+            if diff_ratio > 0.5:  # > 50% de diferença
+                count_diffs[key] = {'reference': ref_count, 'current': cur_count}
+
+    if count_diffs:
+        scores['element_counts'] = max(0, 1 - len(count_diffs) * 0.2)
+        details['element_counts_diff'] = count_diffs
+    else:
+        scores['element_counts'] = 1.0
+
+    # Calcula score final ponderado
+    weights = {
+        'structure': 0.25,
+        'table_classes': 0.20,
+        'key_ids': 0.15,
+        'table_headers': 0.30,
+        'element_counts': 0.10,
+    }
+
+    final_score = sum(scores[k] * weights[k] for k in weights)
+
+    logger.debug(
+        "fingerprint_comparison",
+        scores=scores,
+        final_score=final_score,
+        has_changes=bool(details),
+    )
+
+    return final_score, details
+
+
+def save_baseline_fingerprint(fingerprint: Fingerprint, path: str) -> None:
+    """Salva fingerprint como baseline de referência."""
+    import json
+    from pathlib import Path
+
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    with open(path, 'w') as f:
+        json.dump(fingerprint.model_dump(mode='json'), f, indent=2, default=str)
+
+
+def load_baseline_fingerprint(path: str) -> Fingerprint | None:
+    """Carrega fingerprint de referência."""
+    import json
+    from pathlib import Path
+
+    if not Path(path).exists():
+        return None
+
+    with open(path) as f:
+        data = json.load(f)
+        return Fingerprint.model_validate(data)
+
+
+================================================================================
+PARTE 13: API PÚBLICA
+================================================================================
+
+CEPEA (Async)
+-------------
+
+    from agrobr import cepea
+
+    # Indicador diário
+    df = await cepea.indicador(
+        produto='soja',           # soja, milho, cafe, boi, etc
+        praca='paranagua',        # opcional
+        inicio='2024-01-01',
+        fim='2024-12-31',
+        moeda='BRL',              # BRL ou USD
+        as_polars=False           # True para retornar polars.DataFrame
+    )
+
+    # Lista de produtos disponíveis
+    await cepea.produtos()
+
+    # Lista de praças por produto
+    await cepea.pracas('soja')
+
+    # Último valor
+    await cepea.ultimo('soja')
+    # Indicador(data='2024-01-15', valor=Decimal('124.60'), ...)
+
+    # Com validação estatística explícita
+    df = await cepea.indicador('soja', validate_sanity=True)
+    # Levanta AnomalyDetectedWarning se valores suspeitos
+
+    # Forçar refresh (ignora cache)
+    df = await cepea.indicador('soja', force_refresh=True)
+
+    # Modo offline (só cache/histórico)
+    df = await cepea.indicador('soja', offline=True)
+
+
+CEPEA (Sync)
+------------
+
+    from agrobr.sync import cepea
+
+    # Mesma API, mas síncrona
+    df = cepea.indicador('soja', periodo='2024')
+
+    # Último valor
+    ultimo = cepea.ultimo('soja')
+
+
+CONAB (Async)
+-------------
+
+    from agrobr import conab
+
+    # Série histórica de safras
+    df = await conab.safras(
+        produto='soja',
+        safra='2024/25',          # opcional, default=última
+        uf='MT',                  # opcional
+        levantamento=5            # opcional, default=último
+    )
+
+    # Evolução de estimativas (todos os levantamentos)
+    df = await conab.evolucao_safra(
+        produto='soja',
+        safra='2024/25'
+    )
+
+    # Balanço oferta/demanda
+    df = await conab.balanco('soja', safra='2024/25')
+
+    # Custos de produção
+    df = await conab.custos('soja', regiao='MT', safra='2024/25')
+
+
+IBGE (Async)
+------------
+
+    from agrobr import ibge
+
+    # PAM - Produção Agrícola Municipal
+    df = await ibge.pam(
+        produto='soja',
+        nivel='municipio',        # uf, municipio
+        ano=2023
+    )
+
+    # LSPA - Levantamento Sistemático
+    df = await ibge.lspa(produto='milho', ano=2024)
+
+
+UTILITÁRIOS
+-----------
+
+    from agrobr import utils
+
+    # Conversão de unidades
+    utils.converter(100, de='sc60kg', para='ton')
+    # Decimal('6.0')
+
+    # Padronização de nomes
+    utils.normalizar_produto('SOJA EM GRÃO')
+    # 'soja'
+
+    # Safra atual
+    utils.safra_atual()
+    # '2024/25'
+
+    # Validar safra
+    utils.validar_safra('2024/25')
+    # True
+
+
+CLI
+---
+
+    # Consulta rápida
+    $ agrobr cepea soja --inicio 2024-01-01 --formato csv > soja.csv
+    $ agrobr cepea soja --ultimo --json
+
+    # CONAB
+    $ agrobr conab safras soja --safra 2024/25 --uf MT
+
+    # IBGE
+    $ agrobr ibge pam soja --ano 2023 --nivel uf
+
+    # Cache management
+    $ agrobr cache status
+    $ agrobr cache clear --source cepea --older-than 30d
+    $ agrobr cache export --format parquet -o backup.parquet
+
+    # Histórico
+    $ agrobr history query --produto soja --inicio 2020-01-01
+    $ agrobr history export --format csv -o historico.csv
+
+    # Health check manual
+    $ agrobr health --all
+    $ agrobr health --source cepea --verbose
+
+    # Fingerprint management
+    $ agrobr fingerprint show --source cepea
+    $ agrobr fingerprint update --source cepea  # Atualiza baseline
+    $ agrobr fingerprint compare --source cepea  # Compara atual vs baseline
+
+    # Debug mode
+    $ agrobr --debug cepea soja
+    $ agrobr --log-level DEBUG cepea soja
+
+    # Config
+    $ agrobr config show
+    $ agrobr config set cache.offline_mode true
+    $ agrobr config set alerts.slack_webhook "https://hooks.slack.com/..."
+
+
+================================================================================
+PARTE 14: SYNC WRAPPER
+================================================================================
+
+DECISÃO: asyncio.run() com gerenciamento de event loop
+
+IMPLEMENTAÇÃO
+-------------
+
+# agrobr/sync.py
+
+from __future__ import annotations
+
+import asyncio
+import functools
+from typing import TypeVar, Callable, Awaitable, Any
+import sys
+
+T = TypeVar('T')
+
+
+def _get_or_create_event_loop() -> asyncio.AbstractEventLoop:
+    """
+    Obtém event loop existente ou cria novo.
+
+    Trata casos especiais:
+    - Jupyter notebooks (loop já rodando)
+    - Threads secundárias (sem loop default)
+    """
+    try:
+        loop = asyncio.get_running_loop()
+        # Se já tem loop rodando (Jupyter), usa nest_asyncio
+        try:
+            import nest_asyncio
+            nest_asyncio.apply()
+            return loop
+        except ImportError:
+            raise RuntimeError(
+                "Event loop already running. Install nest_asyncio for Jupyter support: "
+                "pip install nest_asyncio"
+            )
+    except RuntimeError:
+        # Não tem loop rodando, cria ou pega o default
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            # Thread secundária sem loop
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return loop
+
+
+def run_sync(coro: Awaitable[T]) -> T:
+    """
+    Executa coroutine de forma síncrona.
+
+    Args:
+        coro: Coroutine a executar
+
+    Returns:
+        Resultado da coroutine
+    """
+    loop = _get_or_create_event_loop()
+
+    if loop.is_running():
+        # Jupyter ou contexto com loop rodando
+        import nest_asyncio
+        nest_asyncio.apply()
+        return loop.run_until_complete(coro)
+    else:
+        return asyncio.run(coro)
+
+
+def sync_wrapper(async_func: Callable[..., Awaitable[T]]) -> Callable[..., T]:
+    """
+    Decorator que cria versão síncrona de função async.
+
+    Usage:
+        @sync_wrapper
+        async def fetch_data():
+            ...
+
+        # Agora pode chamar:
+        fetch_data()  # Síncrono
+    """
+    @functools.wraps(async_func)
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        return run_sync(async_func(*args, **kwargs))
+
+    # Preserva docstring indicando que é sync
+    if wrapper.__doc__:
+        wrapper.__doc__ = f"[SYNC] {wrapper.__doc__}"
+
+    return wrapper
+
+
+# Módulo sync com wrappers automáticos
+class _SyncModule:
+    """Módulo que expõe versões síncronas da API."""
+
+    def __init__(self, async_module: Any):
+        self._async_module = async_module
+
+    def __getattr__(self, name: str) -> Any:
+        attr = getattr(self._async_module, name)
+
+        if asyncio.iscoroutinefunction(attr):
+            return sync_wrapper(attr)
+
+        return attr
+
+
+# Exposição pública
+class _SyncCepea(_SyncModule):
+    """API síncrona do CEPEA."""
+    pass
+
+
+class _SyncConab(_SyncModule):
+    """API síncrona da CONAB."""
+    pass
+
+
+class _SyncIbge(_SyncModule):
+    """API síncrona do IBGE."""
+    pass
+
+
+# Lazy loading para evitar imports circulares
+def __getattr__(name: str) -> Any:
+    if name == 'cepea':
+        from . import cepea as async_cepea
+        return _SyncCepea(async_cepea)
+    elif name == 'conab':
+        from . import conab as async_conab
+        return _SyncConab(async_conab)
+    elif name == 'ibge':
+        from . import ibge as async_ibge
+        return _SyncIbge(async_ibge)
+    raise AttributeError(f"module 'agrobr.sync' has no attribute '{name}'")
+
+
+EXEMPLO DE USO
+--------------
+
+# Forma 1: Import direto
+from agrobr.sync import cepea
+df = cepea.indicador('soja')  # Síncrono
+
+# Forma 2: Função run_sync
+from agrobr import cepea
+from agrobr.sync import run_sync
+df = run_sync(cepea.indicador('soja'))
+
+# Forma 3: Em Jupyter (com nest_asyncio instalado)
+from agrobr import cepea
+df = await cepea.indicador('soja')  # Async nativo
+
+# Ou
+from agrobr.sync import cepea
+df = cepea.indicador('soja')  # Sync wrapper
+
+
+================================================================================
+PARTE 15: LOGGING ESTRUTURADO
+================================================================================
+
+CONFIGURAÇÃO
+------------
+
+# agrobr/utils/logging.py
+
+from __future__ import annotations
+
+import logging
+import sys
+from typing import Any
+from pathlib import Path
+import structlog
+from structlog.types import Processor
+
+
+def configure_logging(
+    level: str = "INFO",
+    json_format: bool = True,
+    log_file: Path | str | None = None,
+    include_timestamp: bool = True,
+    include_caller: bool = False,
+) -> None:
+    """
+    Configura structlog para logging estruturado.
+
+    Args:
+        level: Nível de log (DEBUG, INFO, WARNING, ERROR)
+        json_format: Se True, output em JSON. Se False, formato dev colorido.
+        log_file: Arquivo para salvar logs (opcional)
+        include_timestamp: Incluir timestamp ISO
+        include_caller: Incluir arquivo:linha que gerou o log
+    """
+    # Processadores base
+    processors: list[Processor] = [
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.add_log_level,
+    ]
+
+    if include_timestamp:
+        processors.append(structlog.processors.TimeStamper(fmt="iso"))
+
+    if include_caller:
+        processors.append(structlog.processors.CallsiteParameterAdder(
+            [
+                structlog.processors.CallsiteParameter.FILENAME,
+                structlog.processors.CallsiteParameter.LINENO,
+            ]
+        ))
+
+    processors.extend([
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.UnicodeDecoder(),
+    ])
+
+    # Renderer baseado no formato
+    if json_format:
+        processors.append(structlog.processors.JSONRenderer())
+    else:
+        processors.append(structlog.dev.ConsoleRenderer(colors=True))
+
+    structlog.configure(
+        processors=processors,
+        wrapper_class=structlog.stdlib.BoundLogger,
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        cache_logger_on_first_use=True,
+    )
+
+    # Configura logging stdlib também
+    logging.basicConfig(
+        format="%(message)s",
+        stream=sys.stdout,
+        level=getattr(logging, level.upper()),
+    )
+
+    # File handler se especificado
+    if log_file:
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(getattr(logging, level.upper()))
+        logging.getLogger().addHandler(file_handler)
+
+
+# Configuração default na importação
+configure_logging(
+    level="INFO",
+    json_format=True,  # JSON por padrão em produção
+)
+
+
+PADRÕES DE LOG
+--------------
+
+# Sempre incluir contexto relevante
+
+# Request HTTP
+logger.info(
+    "http_request",
+    source="cepea",
+    url="https://cepea.esalq.usp.br/...",
+    method="GET",
+    user_agent="Mozilla/5.0...",
+)
+
+# Response HTTP
+logger.info(
+    "http_response",
+    source="cepea",
+    status_code=200,
+    duration_ms=342,
+    content_length=15420,
+    encoding="utf-8",
+    from_cache=False,
+)
+
+# Cache operations
+logger.debug(
+    "cache_hit",
+    key="cepea:soja:2024-01",
+    age_hours=2.3,
+    stale=False,
+    hit_count=5,
+)
+
+logger.debug(
+    "cache_miss",
+    key="cepea:soja:2024-02",
+    reason="not_found",  # ou "expired"
+)
+
+logger.info(
+    "cache_write",
+    key="cepea:soja:2024-01",
+    size_bytes=1024,
+    ttl_hours=4,
+)
+
+# Parsing
+logger.info(
+    "parse_start",
+    source="cepea",
+    parser_version=1,
+    produto="soja",
+)
+
+logger.info(
+    "parse_success",
+    source="cepea",
+    parser_version=1,
+    records_count=30,
+    duration_ms=45,
+)
+
+logger.warning(
+    "parse_partial",
+    source="cepea",
+    parser_version=1,
+    expected_records=30,
+    actual_records=24,
+    missing_pct=20,
+)
+
+logger.error(
+    "parse_failed",
+    source="cepea",
+    parser_version=1,
+    error="Table structure changed",
+    html_snippet="<table class='new-class'>...",
+)
+
+# Encoding
+logger.info(
+    "encoding_fallback",
+    source="conab",
+    declared="utf-8",
+    actual="iso-8859-1",
+    method="chain",
+)
+
+# Fingerprint
+logger.info(
+    "fingerprint_check",
+    source="cepea",
+    similarity=0.92,
+    threshold=0.85,
+    status="ok",
+)
+
+logger.warning(
+    "fingerprint_drift",
+    source="cepea",
+    similarity=0.78,
+    threshold=0.85,
+    changes=["table_headers", "key_ids"],
+)
+
+# Alertas
+logger.info(
+    "alert_sent",
+    level="critical",
+    channel="slack",
+    title="Parse failed: cepea",
+)
+
+# Validação
+logger.warning(
+    "anomaly_detected",
+    source="cepea",
+    produto="soja",
+    field="valor",
+    value="12.50",
+    expected_range="[50, 250]",
+    anomaly_type="out_of_range",
+)
+
+
+================================================================================
+PARTE 16: HEALTH CHECKS AUTOMATIZADOS
+================================================================================
+
+GITHUB ACTION - DAILY HEALTH CHECK
+----------------------------------
+
+# .github/workflows/health_check.yml
+
+name: Daily Health Check
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Todo dia às 12:00 UTC (9:00 BRT)
+    - cron: '0 0 * * *'   # Meia-noite UTC (21:00 BRT)
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev]"
+
+      - name: Run health checks
+        id: health
+        run: |
+          agrobr health --all --output json > health_report.json
+          echo "report_path=health_report.json" >> $GITHUB_OUTPUT
+
+      - name: Analyze results
+        id: analyze
+        run: |
+          python -c "
+          import json
+          import sys
+
+          with open('health_report.json') as f:
+              report = json.load(f)
+
+          failures = [r for r in report['checks'] if r['status'] == 'failed']
+          warnings = [r for r in report['checks'] if r['status'] == 'warning']
+
+          print(f'Total checks: {len(report[\"checks\"])}')
+          print(f'Failures: {len(failures)}')
+          print(f'Warnings: {len(warnings)}')
+
+          # Output para steps seguintes
+          with open('$GITHUB_OUTPUT', 'a') as f:
+              f.write(f'failures={len(failures)}\n')
+              f.write(f'warnings={len(warnings)}\n')
+              f.write(f'has_critical={len(failures) > 0}\n')
+
+          if failures:
+              print('\nFAILURES:')
+              for f in failures:
+                  print(f'  - {f[\"source\"]}: {f[\"error\"]}')
+              sys.exit(1)
+
+          print('\nAll health checks passed!')
+          "
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report-${{ github.run_number }}
+          path: health_report.json
+          retention-days: 30
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('health_report.json'));
+            const failures = report.checks.filter(c => c.status === 'failed');
+            const now = new Date().toISOString().split('T')[0];
+
+            const body = `## Health Check Failed - ${now}
+
+            ### Failures
+
+            ${failures.map(f => `- **${f.source}**: ${f.error}`).join('\n')}
+
+            ### Full Report
+
+            \`\`\`json
+            ${JSON.stringify(failures, null, 2)}
+            \`\`\`
+
+            ### Actions Required
+
+            1. Check if the source website is accessible
+            2. Compare current HTML structure with baseline fingerprint
+            3. If layout changed, create new parser version
+            4. Update golden data tests
+
+            ---
+            *Auto-generated by health check workflow*
+            `;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Health Check Failed: ${failures.map(f => f.source).join(', ')} (${now})`,
+              body: body,
+              labels: ['bug', 'health-check', 'automated']
+            });
+
+      - name: Notify Slack on failure
+        if: failure() && env.SLACK_WEBHOOK
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST $SLACK_WEBHOOK \
+            -H 'Content-type: application/json' \
+            -d '{
+              "text": "🚨 agrobr Health Check Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*agrobr Health Check Failed*\n\nCheck GitHub Actions for details."
+                  }
+                }
+              ]
+            }'
+
+
+GITHUB ACTION - STRUCTURE MONITOR (6h)
+--------------------------------------
+
+# .github/workflows/structure_monitor.yml
+
+name: Structure Monitor
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # A cada 6 horas
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Fetch current structures
+        run: |
+          python scripts/fetch_structures.py --output current_structures.json
+
+      - name: Compare with baseline
+        id: compare
+        run: |
+          python scripts/compare_structures.py \
+            --baseline .structures/baseline.json \
+            --current current_structures.json \
+            --threshold 0.85 \
+            --output diff_report.json
+
+          # Check if drift detected
+          if [ -f drift_detected.flag ]; then
+            echo "drift_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "drift_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Alert on drift
+        if: steps.compare.outputs.drift_detected == 'true'
+        run: |
+          python scripts/alert_structure_change.py diff_report.json
+
+      - name: Create PR to update baseline
+        if: steps.compare.outputs.drift_detected == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: "🔄 Update structure baseline"
+          body: |
+            Structure drift detected. Review changes and update parsers if needed.
+
+            See diff_report.json for details.
+          branch: update-structure-baseline
+          labels: structure-change, needs-review
+
+
+HEALTH CHECK CLI
+----------------
+
+# agrobr/health/checker.py
+
+from __future__ import annotations
+
+import asyncio
+from datetime import datetime
+from typing import Any
+from dataclasses import dataclass
+from enum import Enum
+import structlog
+
+from ..constants import Fonte
+
+logger = structlog.get_logger()
+
+
+class CheckStatus(str, Enum):
+    OK = "ok"
+    WARNING = "warning"
+    FAILED = "failed"
+
+
+@dataclass
+class CheckResult:
+    source: Fonte
+    status: CheckStatus
+    latency_ms: float
+    message: str
+    details: dict[str, Any]
+    timestamp: datetime
+
+
+async def check_source(source: Fonte) -> CheckResult:
+    """
+    Executa health check completo para uma fonte.
+
+    Verifica:
+    1. Conectividade (HTTP GET)
+    2. Tempo de resposta
+    3. Capacidade de parsing
+    4. Fingerprint vs baseline
+    """
+    import time
+    from ..cepea import client as cepea_client
+    from ..cepea.parsers import fingerprint as fp
+    from ..cepea.parsers.detector import get_parser_with_fallback
+
+    start = time.monotonic()
+    details: dict[str, Any] = {}
+
+    try:
+        # 1. Fetch página
+        html = await cepea_client.fetch_indicador_page('soja')
+        latency = (time.monotonic() - start) * 1000
+
+        details['fetch_ok'] = True
+        details['latency_ms'] = latency
+
+        # 2. Check latency
+        if latency > 5000:
+            return CheckResult(
+                source=source,
+                status=CheckStatus.WARNING,
+                latency_ms=latency,
+                message=f"High latency: {latency:.0f}ms",
+                details=details,
+                timestamp=datetime.utcnow(),
+            )
+
+        # 3. Fingerprint check
+        current_fp = fp.extract_fingerprint(html, source, "test")
+        baseline_fp = fp.load_baseline_fingerprint(f".structures/{source.value}_baseline.json")
+
+        if baseline_fp:
+            similarity, diff = fp.compare_fingerprints(current_fp, baseline_fp)
+            details['fingerprint_similarity'] = similarity
+            details['fingerprint_diff'] = diff
+
+            if similarity < 0.70:
+                return CheckResult(
+                    source=source,
+                    status=CheckStatus.FAILED,
+                    latency_ms=latency,
+                    message=f"Layout changed significantly: {similarity:.1%} similarity",
+                    details=details,
+                    timestamp=datetime.utcnow(),
+                )
+            elif similarity < 0.85:
+                details['warning'] = "Fingerprint drift detected"
+
+        # 4. Parse check
+        parser, results = await get_parser_with_fallback(html, 'soja')
+        details['parser_version'] = parser.version
+        details['records_parsed'] = len(results)
+
+        if not results:
+            return CheckResult(
+                source=source,
+                status=CheckStatus.FAILED,
+                latency_ms=latency,
+                message="Parser returned no results",
+                details=details,
+                timestamp=datetime.utcnow(),
+            )
+
+        # Success!
+        status = CheckStatus.WARNING if details.get('warning') else CheckStatus.OK
+        return CheckResult(
+            source=source,
+            status=status,
+            latency_ms=latency,
+            message="All checks passed" if status == CheckStatus.OK else details['warning'],
+            details=details,
+            timestamp=datetime.utcnow(),
+        )
+
+    except Exception as e:
+        latency = (time.monotonic() - start) * 1000
+        logger.error("health_check_failed", source=source.value, error=str(e))
+        return CheckResult(
+            source=source,
+            status=CheckStatus.FAILED,
+            latency_ms=latency,
+            message=str(e),
+            details=details,
+            timestamp=datetime.utcnow(),
+        )
+
+
+async def run_all_checks() -> list[CheckResult]:
+    """Executa health checks para todas as fontes."""
+    sources = [Fonte.CEPEA, Fonte.CONAB, Fonte.IBGE]
+    results = await asyncio.gather(*[check_source(s) for s in sources])
+    return list(results)
+
+
+================================================================================
+PARTE 17: ALERTAS MULTI-CANAL
+================================================================================
+
+# agrobr/alerts/notifier.py
+
+from __future__ import annotations
+
+import asyncio
+from typing import Any
+from enum import Enum
+import structlog
+import httpx
+
+from ..constants import AlertSettings
+
+logger = structlog.get_logger()
+
+
+class AlertLevel(str, Enum):
+    INFO = "info"
+    WARNING = "warning"
+    CRITICAL = "critical"
+
+
+async def send_alert(
+    level: AlertLevel | str,
+    title: str,
+    details: dict[str, Any],
+    source: str | None = None,
+) -> None:
+    """
+    Envia alerta para todos os canais configurados.
+
+    Args:
+        level: Nível do alerta (info, warning, critical)
+        title: Título curto do alerta
+        details: Detalhes em dict (serão formatados)
+        source: Fonte relacionada (opcional)
+    """
+    settings = AlertSettings()
+
+    if not settings.enabled:
+        logger.debug("alerts_disabled", title=title)
+        return
+
+    if isinstance(level, str):
+        level = AlertLevel(level)
+
+    # Cria tasks para envio paralelo
+    tasks = []
+
+    if settings.slack_webhook:
+        tasks.append(_send_slack(settings.slack_webhook, level, title, details, source))
+
+    if settings.discord_webhook:
+        tasks.append(_send_discord(settings.discord_webhook, level, title, details, source))
+
+    if settings.sendgrid_api_key and settings.email_to:
+        tasks.append(_send_email(settings, level, title, details, source))
+
+    if tasks:
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                logger.error("alert_send_failed", channel=i, error=str(result))
+    else:
+        logger.warning("no_alert_channels_configured", title=title)
+
+
+async def _send_slack(
+    webhook: str,
+    level: AlertLevel,
+    title: str,
+    details: dict[str, Any],
+    source: str | None,
+) -> None:
+    """Envia alerta para Slack."""
+    emoji = {"info": "ℹ️", "warning": "⚠️", "critical": "🚨"}[level.value]
+    color = {"info": "#36a64f", "warning": "#ff9800", "critical": "#dc3545"}[level.value]
+
+    blocks = [
+        {
+            "type": "header",
+            "text": {"type": "plain_text", "text": f"{emoji} {title}"}
+        },
+    ]
+
+    if source:
+        blocks.append({
+            "type": "section",
+            "fields": [
+                {"type": "mrkdwn", "text": f"*Source:* {source}"},
+                {"type": "mrkdwn", "text": f"*Level:* {level.value.upper()}"},
+            ]
+        })
+
+    if details:
+        import json
+        detail_text = json.dumps(details, indent=2, default=str)[:2900]  # Slack limit
+        blocks.append({
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": f"```{detail_text}```"}
+        })
+
+    payload = {
+        "attachments": [{
+            "color": color,
+            "blocks": blocks,
+        }]
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(webhook, json=payload, timeout=10.0)
+        response.raise_for_status()
+
+    logger.info("alert_sent", channel="slack", level=level.value, title=title)
+
+
+async def _send_discord(
+    webhook: str,
+    level: AlertLevel,
+    title: str,
+    details: dict[str, Any],
+    source: str | None,
+) -> None:
+    """Envia alerta para Discord."""
+    emoji = {"info": "ℹ️", "warning": "⚠️", "critical": "🚨"}[level.value]
+    color = {"info": 0x36a64f, "warning": 0xff9800, "critical": 0xdc3545}[level.value]
+
+    import json
+    detail_text = json.dumps(details, indent=2, default=str)[:1900]  # Discord limit
+
+    embed = {
+        "title": f"{emoji} {title}",
+        "color": color,
+        "fields": [],
+    }
+
+    if source:
+        embed["fields"].append({"name": "Source", "value": source, "inline": True})
+        embed["fields"].append({"name": "Level", "value": level.value.upper(), "inline": True})
+
+    if details:
+        embed["description"] = f"```json\n{detail_text}\n```"
+
+    payload = {"embeds": [embed]}
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(webhook, json=payload, timeout=10.0)
+        response.raise_for_status()
+
+    logger.info("alert_sent", channel="discord", level=level.value, title=title)
+
+
+async def _send_email(
+    settings: AlertSettings,
+    level: AlertLevel,
+    title: str,
+    details: dict[str, Any],
+    source: str | None,
+) -> None:
+    """Envia alerta por email via SendGrid."""
+    import json
+
+    detail_text = json.dumps(details, indent=2, default=str)
+
+    html_content = f"""
+    <h2>{title}</h2>
+    <p><strong>Level:</strong> {level.value.upper()}</p>
+    {"<p><strong>Source:</strong> " + source + "</p>" if source else ""}
+    <h3>Details</h3>
+    <pre>{detail_text}</pre>
+    """
+
+    payload = {
+        "personalizations": [{"to": [{"email": e} for e in settings.email_to]}],
+        "from": {"email": settings.email_from},
+        "subject": f"[agrobr {level.value.upper()}] {title}",
+        "content": [
+            {"type": "text/html", "value": html_content}
+        ]
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            json=payload,
+            headers={"Authorization": f"Bearer {settings.sendgrid_api_key}"},
+            timeout=10.0,
+        )
+        response.raise_for_status()
+
+    logger.info("alert_sent", channel="email", level=level.value, title=title)
+
+
+================================================================================
+PARTE 18: CACHE vs HISTÓRICO PERMANENTE
+================================================================================
+
+SCHEMA DUCKDB
+-------------
+
+# agrobr/cache/duckdb_store.py
+
+from __future__ import annotations
+
+from pathlib import Path
+from datetime import datetime, timedelta
+from typing import Any
+import duckdb
+import structlog
+
+from ..constants import CacheSettings, Fonte
+from .migrations import migrate
+
+logger = structlog.get_logger()
+
+
+SCHEMA_CACHE = """
+CREATE TABLE IF NOT EXISTS cache_entries (
+    key TEXT PRIMARY KEY,
+    data BLOB NOT NULL,
+    source TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    last_accessed_at TIMESTAMP NOT NULL,
+    hit_count INTEGER DEFAULT 0,
+    version INTEGER DEFAULT 1,
+    stale BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_cache_source ON cache_entries(source);
+CREATE INDEX IF NOT EXISTS idx_cache_expires ON cache_entries(expires_at);
+CREATE INDEX IF NOT EXISTS idx_cache_stale ON cache_entries(stale);
+"""
+
+SCHEMA_HISTORY = """
+CREATE TABLE IF NOT EXISTS history_entries (
+    id INTEGER PRIMARY KEY,
+    key TEXT NOT NULL,
+    data BLOB NOT NULL,
+    source TEXT NOT NULL,
+    data_date DATE NOT NULL,
+    collected_at TIMESTAMP NOT NULL,
+    parser_version INTEGER NOT NULL,
+    fingerprint_hash TEXT,
+    UNIQUE(key, data_date, collected_at)
+);
+
+CREATE INDEX IF NOT EXISTS idx_history_source ON history_entries(source);
+CREATE INDEX IF NOT EXISTS idx_history_date ON history_entries(data_date);
+CREATE INDEX IF NOT EXISTS idx_history_key ON history_entries(key);
+"""
+
+
+class DuckDBStore:
+    """
+    Storage com DuckDB separando cache volátil e histórico permanente.
+
+    Cache: dados com TTL, para respostas rápidas
+    Histórico: dados permanentes, para reconstrução e auditoria
+    """
+
+    def __init__(self, settings: CacheSettings | None = None):
+        self.settings = settings or CacheSettings()
+        self.db_path = self.settings.cache_dir / self.settings.db_name
+        self._conn: duckdb.DuckDBPyConnection | None = None
+
+    def _get_conn(self) -> duckdb.DuckDBPyConnection:
+        """Obtém conexão, criando se necessário."""
+        if self._conn is None:
+            self.settings.cache_dir.mkdir(parents=True, exist_ok=True)
+            self._conn = duckdb.connect(str(self.db_path))
+            self._init_schema()
+        return self._conn
+
+    def _init_schema(self) -> None:
+        """Inicializa schema e roda migrations."""
+        conn = self._conn
+        conn.execute(SCHEMA_CACHE)
+        conn.execute(SCHEMA_HISTORY)
+        migrate(conn)
+
+    # ==================== CACHE OPERATIONS ====================
+
+    def cache_get(self, key: str) -> tuple[bytes | None, bool]:
+        """
+        Busca entrada no cache.
+
+        Returns:
+            tuple[bytes | None, bool]: (dados, is_stale)
+        """
+        conn = self._get_conn()
+        now = datetime.utcnow()
+
+        result = conn.execute("""
+            SELECT data, expires_at, stale
+            FROM cache_entries
+            WHERE key = ?
+        """, [key]).fetchone()
+
+        if result is None:
+            logger.debug("cache_miss", key=key, reason="not_found")
+            return None, False
+
+        data, expires_at, stale = result
+
+        # Atualiza hit count e last_accessed
+        conn.execute("""
+            UPDATE cache_entries
+            SET hit_count = hit_count + 1,
+                last_accessed_at = ?
+            WHERE key = ?
+        """, [now, key])
+
+        # Verifica expiração
+        if expires_at < now:
+            logger.debug("cache_hit", key=key, stale=True, reason="expired")
+            return data, True
+
+        if stale:
+            logger.debug("cache_hit", key=key, stale=True, reason="marked_stale")
+            return data, True
+
+        logger.debug("cache_hit", key=key, stale=False)
+        return data, False
+
+    def cache_set(
+        self,
+        key: str,
+        data: bytes,
+        source: Fonte,
+        ttl_seconds: int,
+    ) -> None:
+        """Grava entrada no cache."""
+        conn = self._get_conn()
+        now = datetime.utcnow()
+        expires_at = now + timedelta(seconds=ttl_seconds)
+
+        conn.execute("""
+            INSERT OR REPLACE INTO cache_entries
+            (key, data, source, created_at, expires_at, last_accessed_at, hit_count, version, stale)
+            VALUES (?, ?, ?, ?, ?, ?, 0, 1, FALSE)
+        """, [key, data, source.value, now, expires_at, now])
+
+        logger.debug("cache_write", key=key, ttl_seconds=ttl_seconds)
+
+    def cache_invalidate(self, key: str) -> None:
+        """Marca entrada como stale."""
+        conn = self._get_conn()
+        conn.execute("UPDATE cache_entries SET stale = TRUE WHERE key = ?", [key])
+
+    def cache_delete(self, key: str) -> None:
+        """Remove entrada do cache."""
+        conn = self._get_conn()
+        conn.execute("DELETE FROM cache_entries WHERE key = ?", [key])
+
+    def cache_clear(
+        self,
+        source: Fonte | None = None,
+        older_than_days: int | None = None,
+    ) -> int:
+        """
+        Limpa cache com filtros opcionais.
+
+        Returns:
+            Número de entradas removidas
+        """
+        conn = self._get_conn()
+
+        conditions = []
+        params = []
+
+        if source:
+            conditions.append("source = ?")
+            params.append(source.value)
+
+        if older_than_days:
+            cutoff = datetime.utcnow() - timedelta(days=older_than_days)
+            conditions.append("created_at < ?")
+            params.append(cutoff)
+
+        where = " AND ".join(conditions) if conditions else "1=1"
+        result = conn.execute(f"DELETE FROM cache_entries WHERE {where}", params)
+
+        count = result.fetchone()[0] if result else 0
+        logger.info("cache_cleared", count=count, source=source, older_than_days=older_than_days)
+        return count
+
+    # ==================== HISTORY OPERATIONS ====================
+
+    def history_save(
+        self,
+        key: str,
+        data: bytes,
+        source: Fonte,
+        data_date: datetime,
+        parser_version: int,
+        fingerprint_hash: str | None = None,
+    ) -> None:
+        """Salva dados no histórico permanente."""
+        if not self.settings.save_to_history:
+            return
+
+        conn = self._get_conn()
+        now = datetime.utcnow()
+
+        try:
+            conn.execute("""
+                INSERT INTO history_entries
+                (key, data, source, data_date, collected_at, parser_version, fingerprint_hash)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, [key, data, source.value, data_date, now, parser_version, fingerprint_hash])
+
+            logger.debug("history_saved", key=key, data_date=data_date)
+        except duckdb.ConstraintException:
+            # Já existe entrada para essa combinação
+            logger.debug("history_exists", key=key, data_date=data_date)
+
+    def history_get(
+        self,
+        key: str,
+        data_date: datetime | None = None,
+    ) -> bytes | None:
+        """
+        Busca dados no histórico.
+
+        Se data_date não especificado, retorna mais recente.
+        """
+        conn = self._get_conn()
+
+        if data_date:
+            result = conn.execute("""
+                SELECT data FROM history_entries
+                WHERE key = ? AND data_date = ?
+                ORDER BY collected_at DESC
+                LIMIT 1
+            """, [key, data_date]).fetchone()
+        else:
+            result = conn.execute("""
+                SELECT data FROM history_entries
+                WHERE key = ?
+                ORDER BY data_date DESC, collected_at DESC
+                LIMIT 1
+            """, [key]).fetchone()
+
+        return result[0] if result else None
+
+    def history_query(
+        self,
+        source: Fonte | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> list[dict[str, Any]]:
+        """Query histórico com filtros."""
+        conn = self._get_conn()
+
+        conditions = []
+        params = []
+
+        if source:
+            conditions.append("source = ?")
+            params.append(source.value)
+        if start_date:
+            conditions.append("data_date >= ?")
+            params.append(start_date)
+        if end_date:
+            conditions.append("data_date <= ?")
+            params.append(end_date)
+
+        where = " AND ".join(conditions) if conditions else "1=1"
+
+        result = conn.execute(f"""
+            SELECT key, source, data_date, collected_at, parser_version
+            FROM history_entries
+            WHERE {where}
+            ORDER BY data_date DESC
+        """, params).fetchall()
+
+        return [
+            {
+                "key": r[0],
+                "source": r[1],
+                "data_date": r[2],
+                "collected_at": r[3],
+                "parser_version": r[4],
+            }
+            for r in result
+        ]
+
+    def close(self) -> None:
+        """Fecha conexão."""
+        if self._conn:
+            self._conn.close()
+            self._conn = None
+
+
+# Singleton global
+_store: DuckDBStore | None = None
+
+
+def get_store() -> DuckDBStore:
+    """Obtém instância global do store."""
+    global _store
+    if _store is None:
+        _store = DuckDBStore()
+    return _store
+
+
+================================================================================
+PARTE 19: SCHEMA MIGRATIONS
+================================================================================
+
+# agrobr/cache/migrations.py
+
+from __future__ import annotations
+
+import duckdb
+import structlog
+
+logger = structlog.get_logger()
+
+SCHEMA_VERSION = 3
+
+MIGRATIONS: dict[int, str] = {
+    1: """
+        -- Versão inicial já criada no schema
+        CREATE TABLE IF NOT EXISTS schema_version (
+            version INTEGER PRIMARY KEY,
+            applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT OR IGNORE INTO schema_version (version) VALUES (1);
+    """,
+
+    2: """
+        -- Adiciona campos de auditoria ao cache
+        ALTER TABLE cache_entries ADD COLUMN IF NOT EXISTS hit_count INTEGER DEFAULT 0;
+        ALTER TABLE cache_entries ADD COLUMN IF NOT EXISTS stale BOOLEAN DEFAULT FALSE;
+    """,
+
+    3: """
+        -- Adiciona índices para queries comuns no histórico
+        CREATE INDEX IF NOT EXISTS idx_history_key_date ON history_entries(key, data_date);
+        CREATE INDEX IF NOT EXISTS idx_history_parser ON history_entries(parser_version);
+    """,
+}
+
+
+def get_current_version(conn: duckdb.DuckDBPyConnection) -> int:
+    """Retorna versão atual do schema."""
+    try:
+        result = conn.execute(
+            "SELECT MAX(version) FROM schema_version"
+        ).fetchone()
+        return result[0] if result and result[0] else 0
+    except duckdb.CatalogException:
+        return 0
+
+
+def migrate(conn: duckdb.DuckDBPyConnection) -> None:
+    """
+    Executa migrations pendentes.
+
+    Migrations são idempotentes e podem ser re-executadas com segurança.
+    """
+    current = get_current_version(conn)
+
+    if current >= SCHEMA_VERSION:
+        logger.debug("schema_up_to_date", version=current)
+        return
+
+    logger.info("schema_migration_start", current=current, target=SCHEMA_VERSION)
+
+    for version in range(current + 1, SCHEMA_VERSION + 1):
+        if version in MIGRATIONS:
+            try:
+                conn.execute(MIGRATIONS[version])
+                conn.execute(
+                    "INSERT INTO schema_version (version) VALUES (?)",
+                    [version]
+                )
+                logger.info("migration_applied", version=version)
+            except Exception as e:
+                logger.error("migration_failed", version=version, error=str(e))
+                raise
+
+    logger.info("schema_migration_complete", version=SCHEMA_VERSION)
+
+
+================================================================================
+PARTE 20: TELEMETRIA OPT-IN
+================================================================================
+
+PRINCÍPIOS
+----------
+
+1. Desabilitada por padrão (opt-in explícito)
+2. Dados anonimizados (hash de máquina, sem IPs)
+3. Transparente (código aberto, payload visível)
+4. Útil para priorização de features
+5. Nunca falha a operação principal
+
+
+O QUE COLETAR
+-------------
+
+- Quais fontes são mais usadas (cepea, conab, ibge)
+- Quais produtos são mais consultados
+- Taxa de cache hit/miss
+- Erros de parsing (tipo, frequência)
+- Latência de requests
+- Versão do pacote, Python, OS
+
+
+IMPLEMENTAÇÃO
+-------------
+
+# agrobr/telemetry/collector.py
+
+from __future__ import annotations
+
+import asyncio
+import hashlib
+import platform
+from datetime import datetime
+from typing import Any
+import uuid
+import httpx
+import structlog
+from pydantic_settings import BaseSettings
+
+from .. import __version__
+
+logger = structlog.get_logger()
+
+
+class TelemetrySettings(BaseSettings):
+    """Configurações de telemetria."""
+
+    enabled: bool = False  # Desabilitado por padrão!
+    endpoint: str = "https://telemetry.agrobr.dev/v1/events"
+    batch_size: int = 10
+    flush_interval_seconds: int = 60
+
+    class Config:
+        env_prefix = "AGROBR_TELEMETRY_"
+
+
+class TelemetryCollector:
+    """
+    Coleta telemetria opt-in de forma não-intrusiva.
+
+    Características:
+    - Fire-and-forget (nunca bloqueia)
+    - Batching para reduzir requests
+    - Falhas silenciosas
+    """
+
+    _instance_id: str | None = None
+    _buffer: list[dict[str, Any]] = []
+    _lock = asyncio.Lock()
+
+    @classmethod
+    def get_instance_id(cls) -> str:
+        """
+        Gera ID único por instalação.
+
+        Não é rastreável para o usuário específico,
+        apenas identifica a instalação para deduplicação.
+        """
+        if cls._instance_id is None:
+            # Hash de UUID da máquina
+            machine_id = uuid.getnode().to_bytes(6, 'big')
+            cls._instance_id = hashlib.sha256(machine_id).hexdigest()[:16]
+        return cls._instance_id
+
+    @classmethod
+    def get_context(cls) -> dict[str, Any]:
+        """Contexto comum para todos os eventos."""
+        return {
+            "instance_id": cls.get_instance_id(),
+            "package_version": __version__,
+            "python_version": platform.python_version(),
+            "os": platform.system(),
+            "os_version": platform.release(),
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    @classmethod
+    async def track(
+        cls,
+        event: str,
+        properties: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Registra evento de telemetria.
+
+        Args:
+            event: Nome do evento (ex: "fetch", "parse_error", "cache_hit")
+            properties: Propriedades do evento
+        """
+        settings = TelemetrySettings()
+
+        if not settings.enabled:
+            return
+
+        payload = {
+            "event": event,
+            "context": cls.get_context(),
+            "properties": properties or {},
+        }
+
+        async with cls._lock:
+            cls._buffer.append(payload)
+
+            if len(cls._buffer) >= settings.batch_size:
+                # Flush em background
+                asyncio.create_task(cls._flush())
+
+    @classmethod
+    async def _flush(cls) -> None:
+        """Envia buffer para o servidor."""
+        settings = TelemetrySettings()
+
+        async with cls._lock:
+            if not cls._buffer:
+                return
+
+            events = cls._buffer.copy()
+            cls._buffer.clear()
+
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.post(
+                    settings.endpoint,
+                    json={"events": events},
+                    timeout=5.0,
+                )
+            logger.debug("telemetry_flushed", count=len(events))
+        except Exception as e:
+            # Nunca falhar por telemetria
+            logger.debug("telemetry_flush_failed", error=str(e))
+
+
+# Eventos específicos
+
+async def track_fetch(source: str, produto: str, latency_ms: float, from_cache: bool) -> None:
+    """Registra evento de fetch."""
+    await TelemetryCollector.track("fetch", {
+        "source": source,
+        "produto": produto,
+        "latency_ms": latency_ms,
+        "from_cache": from_cache,
+    })
+
+
+async def track_parse_error(source: str, parser_version: int, error_type: str) -> None:
+    """Registra erro de parsing."""
+    await TelemetryCollector.track("parse_error", {
+        "source": source,
+        "parser_version": parser_version,
+        "error_type": error_type,
+    })
+
+
+async def track_cache_operation(operation: str, hit: bool) -> None:
+    """Registra operação de cache."""
+    await TelemetryCollector.track("cache", {
+        "operation": operation,
+        "hit": hit,
+    })
+
+
+HABILITANDO
+-----------
+
+Via ambiente:
+    export AGROBR_TELEMETRY_ENABLED=true
+
+Via código:
+    from agrobr import configure
+    configure(telemetry=True)
+
+Via CLI:
+    agrobr config set telemetry.enabled true
+
+
+================================================================================
+PARTE 21: VALIDAÇÃO ESTATÍSTICA (SANITY CHECKS)
+================================================================================
+
+OBJETIVO
+--------
+
+Detectar dados incorretos ANTES de entregar ao usuário, mesmo que o parsing
+tenha "funcionado". Valores fora de ranges históricos indicam:
+- Bug no parser
+- Mudança no formato da fonte
+- Dados corrompidos na fonte
+
+IMPLEMENTAÇÃO
+-------------
+
+# agrobr/validators/sanity.py
+
+from __future__ import annotations
+
+from decimal import Decimal
+from datetime import date, timedelta
+from typing import Any
+from dataclasses import dataclass
+import structlog
+
+from ..models import Indicador, Safra
+
+logger = structlog.get_logger()
+
+
+@dataclass
+class SanityRule:
+    """Regra de validação estatística."""
+    field: str
+    min_value: Decimal | None
+    max_value: Decimal | None
+    max_daily_change_pct: Decimal | None = None
+    description: str = ""
+
+
+# Ranges históricos por produto (atualizar anualmente)
+# Baseados em dados 2015-2024
+PRICE_RULES: dict[str, SanityRule] = {
+    'soja': SanityRule(
+        field='valor',
+        min_value=Decimal('30'),     # Mínimo histórico ~R$40/sc em 2015
+        max_value=Decimal('300'),    # Máximo histórico ~R$200/sc em 2022
+        max_daily_change_pct=Decimal('15'),
+        description='Soja (BRL/sc60kg)',
+    ),
+    'milho': SanityRule(
+        field='valor',
+        min_value=Decimal('15'),
+        max_value=Decimal('150'),
+        max_daily_change_pct=Decimal('15'),
+        description='Milho (BRL/sc60kg)',
+    ),
+    'cafe': SanityRule(
+        field='valor',
+        min_value=Decimal('200'),
+        max_value=Decimal('3000'),
+        max_daily_change_pct=Decimal('10'),
+        description='Café Arábica (BRL/sc60kg)',
+    ),
+    'boi': SanityRule(
+        field='valor',
+        min_value=Decimal('100'),
+        max_value=Decimal('500'),
+        max_daily_change_pct=Decimal('10'),
+        description='Boi Gordo (BRL/@)',
+    ),
+    'trigo': SanityRule(
+        field='valor',
+        min_value=Decimal('20'),
+        max_value=Decimal('150'),
+        max_daily_change_pct=Decimal('15'),
+        description='Trigo (BRL/sc60kg)',
+    ),
+    'algodao': SanityRule(
+        field='valor',
+        min_value=Decimal('50'),
+        max_value=Decimal('250'),
+        max_daily_change_pct=Decimal('10'),
+        description='Algodão (BRL/@)',
+    ),
+}
+
+# Ranges para safra (área em mil ha, produção em mil ton)
+SAFRA_RULES: dict[str, dict[str, SanityRule]] = {
+    'soja': {
+        'area_plantada': SanityRule(
+            field='area_plantada',
+            min_value=Decimal('20000'),   # ~20M ha mínimo nacional
+            max_value=Decimal('50000'),   # ~50M ha máximo projetado
+            description='Área plantada soja Brasil (mil ha)',
+        ),
+        'producao': SanityRule(
+            field='producao',
+            min_value=Decimal('50000'),   # ~50M ton mínimo
+            max_value=Decimal('200000'),  # ~200M ton máximo projetado
+            description='Produção soja Brasil (mil ton)',
+        ),
+    },
+    'milho': {
+        'area_plantada': SanityRule(
+            field='area_plantada',
+            min_value=Decimal('10000'),
+            max_value=Decimal('30000'),
+            description='Área plantada milho Brasil (mil ha)',
+        ),
+        'producao': SanityRule(
+            field='producao',
+            min_value=Decimal('50000'),
+            max_value=Decimal('150000'),
+            description='Produção milho Brasil (mil ton)',
+        ),
+    },
+}
+
+
+@dataclass
+class AnomalyReport:
+    """Relatório de anomalia detectada."""
+    field: str
+    value: Any
+    expected_range: str
+    anomaly_type: str  # 'out_of_range', 'excessive_change', 'missing'
+    severity: str      # 'warning', 'critical'
+    details: dict[str, Any]
+
+
+def validate_indicador(
+    indicador: Indicador,
+    valor_anterior: Decimal | None = None,
+) -> list[AnomalyReport]:
+    """
+    Valida indicador contra regras estatísticas.
+
+    Args:
+        indicador: Indicador a validar
+        valor_anterior: Valor do dia anterior (para validar variação)
+
+    Returns:
+        Lista de anomalias detectadas (vazia se OK)
+    """
+    anomalies: list[AnomalyReport] = []
+    rule = PRICE_RULES.get(indicador.produto.lower())
+
+    if not rule:
+        # Produto sem regras definidas
+        logger.debug("sanity_no_rules", produto=indicador.produto)
+        return anomalies
+
+    # 1. Validação de range
+    if rule.min_value and indicador.valor < rule.min_value:
+        anomalies.append(AnomalyReport(
+            field='valor',
+            value=indicador.valor,
+            expected_range=f'[{rule.min_value}, {rule.max_value}]',
+            anomaly_type='out_of_range',
+            severity='critical',
+            details={
+                'produto': indicador.produto,
+                'rule': rule.description,
+                'below_min_by': float(rule.min_value - indicador.valor),
+            },
+        ))
+
+    if rule.max_value and indicador.valor > rule.max_value:
+        anomalies.append(AnomalyReport(
+            field='valor',
+            value=indicador.valor,
+            expected_range=f'[{rule.min_value}, {rule.max_value}]',
+            anomaly_type='out_of_range',
+            severity='critical',
+            details={
+                'produto': indicador.produto,
+                'rule': rule.description,
+                'above_max_by': float(indicador.valor - rule.max_value),
+            },
+        ))
+
+    # 2. Validação de variação diária
+    if valor_anterior and rule.max_daily_change_pct:
+        change_pct = abs((indicador.valor - valor_anterior) / valor_anterior) * 100
+
+        if change_pct > rule.max_daily_change_pct:
+            severity = 'critical' if change_pct > rule.max_daily_change_pct * 2 else 'warning'
+            anomalies.append(AnomalyReport(
+                field='valor',
+                value=indicador.valor,
+                expected_range=f'±{rule.max_daily_change_pct}% do dia anterior',
+                anomaly_type='excessive_change',
+                severity=severity,
+                details={
+                    'produto': indicador.produto,
+                    'valor_anterior': float(valor_anterior),
+                    'change_pct': float(change_pct),
+                    'max_allowed_pct': float(rule.max_daily_change_pct),
+                },
+            ))
+
+    # Log resultado
+    if anomalies:
+        logger.warning(
+            "sanity_anomalies_detected",
+            produto=indicador.produto,
+            count=len(anomalies),
+            types=[a.anomaly_type for a in anomalies],
+        )
+    else:
+        logger.debug("sanity_check_passed", produto=indicador.produto)
+
+    return anomalies
+
+
+def validate_safra(safra: Safra) -> list[AnomalyReport]:
+    """Valida dados de safra contra regras estatísticas."""
+    anomalies: list[AnomalyReport] = []
+    rules = SAFRA_RULES.get(safra.produto.lower(), {})
+
+    for field_name, rule in rules.items():
+        value = getattr(safra, field_name)
+
+        if value is None:
+            continue
+
+        if rule.min_value and value < rule.min_value:
+            anomalies.append(AnomalyReport(
+                field=field_name,
+                value=value,
+                expected_range=f'[{rule.min_value}, {rule.max_value}]',
+                anomaly_type='out_of_range',
+                severity='critical',
+                details={'rule': rule.description},
+            ))
+
+        if rule.max_value and value > rule.max_value:
+            anomalies.append(AnomalyReport(
+                field=field_name,
+                value=value,
+                expected_range=f'[{rule.min_value}, {rule.max_value}]',
+                anomaly_type='out_of_range',
+                severity='critical',
+                details={'rule': rule.description},
+            ))
+
+    return anomalies
+
+
+async def validate_batch(
+    indicadores: list[Indicador],
+    strict: bool = False,
+) -> tuple[list[Indicador], list[AnomalyReport]]:
+    """
+    Valida batch de indicadores, opcionalmente buscando valores anteriores.
+
+    Args:
+        indicadores: Lista de indicadores a validar
+        strict: Se True, levanta exceção em anomalias críticas
+
+    Returns:
+        tuple: (indicadores com anomalies preenchidas, todas as anomalias)
+    """
+    from ..cache.duckdb_store import get_store
+
+    all_anomalies: list[AnomalyReport] = []
+    store = get_store()
+
+    # Ordena por data para validar variação
+    sorted_indicadores = sorted(indicadores, key=lambda x: x.data)
+
+    for i, ind in enumerate(sorted_indicadores):
+        # Busca valor anterior (do batch ou cache)
+        valor_anterior = None
+        if i > 0 and sorted_indicadores[i-1].produto == ind.produto:
+            valor_anterior = sorted_indicadores[i-1].valor
+        else:
+            # Tenta buscar do cache/histórico
+            # ... implementar busca
+            pass
+
+        anomalies = validate_indicador(ind, valor_anterior)
+
+        if anomalies:
+            ind.anomalies = [f"{a.anomaly_type}: {a.field}" for a in anomalies]
+            all_anomalies.extend(anomalies)
+
+            if strict and any(a.severity == 'critical' for a in anomalies):
+                from ..exceptions import ValidationError
+                raise ValidationError(
+                    source=ind.fonte.value,
+                    field=anomalies[0].field,
+                    value=anomalies[0].value,
+                    reason=anomalies[0].anomaly_type,
+                )
+
+    return sorted_indicadores, all_anomalies
+
+
+================================================================================
+PARTE 22: GOLDEN DATA TESTS
+================================================================================
+
+OBJETIVO
+--------
+
+Garantir que mudanças no código não quebram o parsing de dados conhecidos.
+Golden data = HTML salvo + output esperado.
+
+ESTRUTURA
+---------
+
+tests/
+├── golden_data/
+│   ├── cepea/
+│   │   ├── soja_2024_01/
+│   │   │   ├── response.html      # HTML original
+│   │   │   ├── expected.json      # Output esperado
+│   │   │   └── metadata.json      # Info sobre o teste
+│   │   ├── milho_2024_01/
+│   │   │   └── ...
+│   │   └── ...
+│   ├── conab/
+│   │   └── ...
+│   └── ibge/
+│       └── ...
+
+
+FORMATO DOS ARQUIVOS
+--------------------
+
+# metadata.json
+{
+    "source": "cepea",
+    "produto": "soja",
+    "periodo": "2024-01",
+    "captured_at": "2024-01-15T10:30:00Z",
+    "parser_version": 1,
+    "url": "https://cepea.esalq.usp.br/...",
+    "notes": "Layout padrão janeiro 2024"
+}
+
+# expected.json
+{
+    "count": 22,
+    "first": {
+        "data": "2024-01-02",
+        "valor": "145.50",
+        "unidade": "BRL/sc60kg"
+    },
+    "last": {
+        "data": "2024-01-31",
+        "valor": "142.30",
+        "unidade": "BRL/sc60kg"
+    },
+    "checksum": "sha256:abc123..."
+}
+
+
+IMPLEMENTAÇÃO DOS TESTES
+------------------------
+
+# tests/test_golden.py
+
+from __future__ import annotations
+
+import json
+import hashlib
+from pathlib import Path
+from decimal import Decimal
+import pytest
+
+GOLDEN_DIR = Path(__file__).parent / "golden_data"
+
+
+def get_golden_test_cases() -> list[tuple[str, Path]]:
+    """Descobre todos os casos de teste golden."""
+    cases = []
+    for source_dir in GOLDEN_DIR.iterdir():
+        if not source_dir.is_dir():
+            continue
+        for case_dir in source_dir.iterdir():
+            if not case_dir.is_dir():
+                continue
+            if (case_dir / "response.html").exists():
+                cases.append((f"{source_dir.name}/{case_dir.name}", case_dir))
+    return cases
+
+
+@pytest.mark.parametrize("name,path", get_golden_test_cases())
+def test_golden_parsing(name: str, path: Path):
+    """
+    Testa parsing contra golden data.
+
+    Garante que:
+    1. Parser extrai mesma quantidade de registros
+    2. Primeiro e último registro batem
+    3. Checksum dos dados bate (se disponível)
+    """
+    # Carrega arquivos
+    html = (path / "response.html").read_text(encoding='utf-8')
+    expected = json.loads((path / "expected.json").read_text())
+    metadata = json.loads((path / "metadata.json").read_text())
+
+    # Obtém parser correto
+    source = metadata["source"]
+    produto = metadata["produto"]
+
+    if source == "cepea":
+        from agrobr.cepea.parsers.detector import get_parser_with_fallback
+        import asyncio
+        parser, results = asyncio.run(
+            get_parser_with_fallback(html, produto, strict=False)
+        )
+    else:
+        pytest.skip(f"Golden tests for {source} not implemented")
+        return
+
+    # Validações
+    assert len(results) == expected["count"], (
+        f"Expected {expected['count']} records, got {len(results)}"
+    )
+
+    # Primeiro registro
+    first = results[0]
+    assert str(first.data) == expected["first"]["data"]
+    assert first.valor == Decimal(expected["first"]["valor"])
+    assert first.unidade == expected["first"]["unidade"]
+
+    # Último registro
+    last = results[-1]
+    assert str(last.data) == expected["last"]["data"]
+    assert last.valor == Decimal(expected["last"]["valor"])
+
+    # Checksum (se disponível)
+    if "checksum" in expected:
+        data_str = json.dumps(
+            [r.model_dump(mode='json') for r in results],
+            sort_keys=True
+        )
+        checksum = f"sha256:{hashlib.sha256(data_str.encode()).hexdigest()[:16]}"
+        # Nota: checksum pode mudar se modelo mudar, então é warning, não erro
+        if checksum != expected["checksum"]:
+            import warnings
+            warnings.warn(f"Checksum mismatch: {checksum} != {expected['checksum']}")
+
+
+@pytest.mark.parametrize("name,path", get_golden_test_cases())
+def test_golden_fingerprint(name: str, path: Path):
+    """Testa que fingerprint do golden data é reconhecida."""
+    html = (path / "response.html").read_text(encoding='utf-8')
+    metadata = json.loads((path / "metadata.json").read_text())
+
+    if metadata["source"] == "cepea":
+        from agrobr.cepea.parsers.fingerprint import extract_fingerprint
+        from agrobr.models import Fonte
+
+        fp = extract_fingerprint(html, Fonte.CEPEA, "test")
+
+        # Deve ter estrutura válida
+        assert fp.table_headers, "No table headers found"
+        assert fp.structure_hash, "No structure hash"
+
+
+SCRIPT PARA ATUALIZAR GOLDEN DATA
+---------------------------------
+
+# scripts/update_golden.py
+
+"""
+Atualiza golden data capturando dados atuais das fontes.
+
+Uso:
+    python scripts/update_golden.py --source cepea --produto soja
+    python scripts/update_golden.py --all
+"""
+
+from __future__ import annotations
+
+import argparse
+import asyncio
+import json
+import hashlib
+from pathlib import Path
+from datetime import datetime
+
+
+GOLDEN_DIR = Path(__file__).parent.parent / "tests" / "golden_data"
+
+
+async def capture_golden(source: str, produto: str) -> None:
+    """Captura golden data de uma fonte."""
+    from agrobr.cepea import client as cepea_client
+    from agrobr.cepea.parsers.detector import get_parser_with_fallback
+
+    print(f"Capturing {source}/{produto}...")
+
+    # Fetch
+    html = await cepea_client.fetch_indicador_page(produto)
+
+    # Parse
+    parser, results = await get_parser_with_fallback(html, produto)
+
+    # Prepara diretório
+    periodo = datetime.now().strftime("%Y_%m")
+    case_dir = GOLDEN_DIR / source / f"{produto}_{periodo}"
+    case_dir.mkdir(parents=True, exist_ok=True)
+
+    # Salva HTML
+    (case_dir / "response.html").write_text(html, encoding='utf-8')
+
+    # Salva expected
+    data_str = json.dumps(
+        [r.model_dump(mode='json') for r in results],
+        sort_keys=True,
+        default=str
+    )
+    checksum = f"sha256:{hashlib.sha256(data_str.encode()).hexdigest()[:16]}"
+
+    expected = {
+        "count": len(results),
+        "first": {
+            "data": str(results[0].data),
+            "valor": str(results[0].valor),
+            "unidade": results[0].unidade,
+        },
+        "last": {
+            "data": str(results[-1].data),
+            "valor": str(results[-1].valor),
+            "unidade": results[-1].unidade,
+        },
+        "checksum": checksum,
+    }
+    (case_dir / "expected.json").write_text(
+        json.dumps(expected, indent=2),
+        encoding='utf-8'
+    )
+
+    # Salva metadata
+    metadata = {
+        "source": source,
+        "produto": produto,
+        "periodo": periodo.replace("_", "-"),
+        "captured_at": datetime.utcnow().isoformat() + "Z",
+        "parser_version": parser.version,
+        "url": f"captured from {source}",
+        "notes": "Auto-generated golden data",
+    }
+    (case_dir / "metadata.json").write_text(
+        json.dumps(metadata, indent=2),
+        encoding='utf-8'
+    )
+
+    print(f"  Saved to {case_dir}")
+    print(f"  Records: {len(results)}")
+
+
+async def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source", help="Source (cepea, conab, ibge)")
+    parser.add_argument("--produto", help="Produto")
+    parser.add_argument("--all", action="store_true", help="Capture all")
+    args = parser.parse_args()
+
+    if args.all:
+        # Captura principais combinações
+        for source, produtos in [
+            ("cepea", ["soja", "milho", "cafe", "boi"]),
+        ]:
+            for produto in produtos:
+                await capture_golden(source, produto)
+    else:
+        await capture_golden(args.source, args.produto)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+================================================================================
+PARTE 23: MONITORAMENTO ESTRUTURAL CONTÍNUO
+================================================================================
+
+OBJETIVO
+--------
+
+Detectar mudanças de layout ANTES que causem erros de parsing.
+Roda a cada 6h, compara estrutura atual com baseline.
+
+SCRIPTS
+-------
+
+# scripts/fetch_structures.py
+
+"""Coleta fingerprints atuais de todas as fontes."""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import argparse
+from datetime import datetime
+from pathlib import Path
+
+
+async def fetch_all_structures(output_path: str) -> None:
+    """Coleta fingerprints de todas as fontes."""
+    from agrobr.cepea import client as cepea_client
+    from agrobr.cepea.parsers.fingerprint import extract_fingerprint
+    from agrobr.models import Fonte
+
+    structures = {
+        "collected_at": datetime.utcnow().isoformat() + "Z",
+        "sources": {}
+    }
+
+    # CEPEA
+    try:
+        html = await cepea_client.fetch_indicador_page('soja')
+        fp = extract_fingerprint(html, Fonte.CEPEA, "soja")
+        structures["sources"]["cepea"] = fp.model_dump(mode='json')
+    except Exception as e:
+        structures["sources"]["cepea"] = {"error": str(e)}
+
+    # CONAB, IBGE... similar
+
+    Path(output_path).write_text(json.dumps(structures, indent=2, default=str))
+    print(f"Structures saved to {output_path}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", default="current_structures.json")
+    args = parser.parse_args()
+    asyncio.run(fetch_all_structures(args.output))
+
+
+# scripts/compare_structures.py
+
+"""Compara estruturas atuais com baseline."""
+
+from __future__ import annotations
+
+import json
+import argparse
+from pathlib import Path
+
+
+def compare(baseline_path: str, current_path: str, threshold: float, output_path: str) -> bool:
+    """
+    Compara fingerprints e retorna se há drift significativo.
+
+    Returns:
+        True se drift detectado
+    """
+    from agrobr.cepea.parsers.fingerprint import compare_fingerprints
+    from agrobr.models import Fingerprint
+
+    baseline = json.loads(Path(baseline_path).read_text())
+    current = json.loads(Path(current_path).read_text())
+
+    report = {
+        "baseline_date": baseline.get("collected_at"),
+        "current_date": current.get("collected_at"),
+        "threshold": threshold,
+        "comparisons": [],
+        "drift_detected": False,
+    }
+
+    for source, current_data in current["sources"].items():
+        if "error" in current_data:
+            report["comparisons"].append({
+                "source": source,
+                "status": "error",
+                "error": current_data["error"],
+            })
+            report["drift_detected"] = True
+            continue
+
+        baseline_data = baseline.get("sources", {}).get(source)
+        if not baseline_data or "error" in baseline_data:
+            report["comparisons"].append({
+                "source": source,
+                "status": "no_baseline",
+            })
+            continue
+
+        # Compara fingerprints
+        current_fp = Fingerprint.model_validate(current_data)
+        baseline_fp = Fingerprint.model_validate(baseline_data)
+
+        similarity, diff = compare_fingerprints(current_fp, baseline_fp)
+
+        comparison = {
+            "source": source,
+            "similarity": similarity,
+            "threshold": threshold,
+            "status": "ok" if similarity >= threshold else "drift",
+            "diff": diff if similarity < threshold else None,
+        }
+        report["comparisons"].append(comparison)
+
+        if similarity < threshold:
+            report["drift_detected"] = True
+
+    Path(output_path).write_text(json.dumps(report, indent=2, default=str))
+
+    if report["drift_detected"]:
+        Path("drift_detected.flag").touch()
+        print(f"DRIFT DETECTED! See {output_path}")
+    else:
+        print("No significant drift detected")
+
+    return report["drift_detected"]
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--baseline", required=True)
+    parser.add_argument("--current", required=True)
+    parser.add_argument("--threshold", type=float, default=0.85)
+    parser.add_argument("--output", default="diff_report.json")
+    args = parser.parse_args()
+
+    compare(args.baseline, args.current, args.threshold, args.output)
+
+
+# scripts/alert_structure_change.py
+
+"""Envia alertas quando estrutura muda."""
+
+from __future__ import annotations
+
+import json
+import asyncio
+import argparse
+from pathlib import Path
+
+
+async def alert(report_path: str) -> None:
+    """Envia alertas baseado no relatório de diff."""
+    from agrobr.alerts.notifier import send_alert, AlertLevel
+
+    report = json.loads(Path(report_path).read_text())
+
+    drifted = [c for c in report["comparisons"] if c["status"] == "drift"]
+    errors = [c for c in report["comparisons"] if c["status"] == "error"]
+
+    if drifted:
+        await send_alert(
+            level=AlertLevel.WARNING,
+            title="Structure drift detected",
+            details={
+                "sources": [d["source"] for d in drifted],
+                "similarities": {d["source"]: d["similarity"] for d in drifted},
+                "threshold": report["threshold"],
+            },
+        )
+
+    if errors:
+        await send_alert(
+            level=AlertLevel.CRITICAL,
+            title="Structure fetch failed",
+            details={
+                "sources": [e["source"] for e in errors],
+                "errors": {e["source"]: e["error"] for e in errors},
+            },
+        )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("report_path")
+    args = parser.parse_args()
+    asyncio.run(alert(args.report_path))
+
+
+================================================================================
+PARTE 24: MULTI-PARSER CONSENSUS
+================================================================================
+
+OBJETIVO
+--------
+
+Quando temos múltiplos parsers, podemos rodar todos e comparar resultados.
+Divergências indicam problemas.
+
+IMPLEMENTAÇÃO
+-------------
+
+# agrobr/cepea/parsers/consensus.py
+
+from __future__ import annotations
+
+import asyncio
+from typing import Any
+import structlog
+
+from .base import BaseParser
+from .v1 import CepeaParserV1
+# from .v2 import CepeaParserV2
+from ...models import Indicador
+from ...alerts.notifier import send_alert, AlertLevel
+
+logger = structlog.get_logger()
+
+# Parsers para consensus (adicionar novos quando criados)
+CONSENSUS_PARSERS: list[type[BaseParser]] = [
+    CepeaParserV1,
+    # CepeaParserV2,
+]
+
+
+async def parse_with_consensus(
+    html: str,
+    produto: str,
+    require_consensus: bool = False,
+) -> tuple[list[Indicador], dict[str, Any]]:
+    """
+    Executa múltiplos parsers e compara resultados.
+
+    Útil para:
+    - Validar que novo parser produz mesmos resultados
+    - Detectar regressões
+    - Debug de problemas de parsing
+
+    Args:
+        html: Conteúdo HTML
+        produto: Produto a parsear
+        require_consensus: Se True, levanta erro se parsers divergem
+
+    Returns:
+        tuple: (resultados do parser principal, relatório de consensus)
+    """
+    results: dict[int, list[Indicador]] = {}
+    errors: dict[int, str] = {}
+
+    # Executa todos os parsers
+    for parser_cls in CONSENSUS_PARSERS:
+        parser = parser_cls()
+        try:
+            can_parse, confidence = parser.can_parse(html)
+            if can_parse and confidence > 0.5:
+                parsed = parser.parse(html, produto)
+                results[parser.version] = parsed
+                logger.debug(
+                    "consensus_parser_success",
+                    version=parser.version,
+                    count=len(parsed),
+                )
+        except Exception as e:
+            errors[parser.version] = str(e)
+            logger.warning(
+                "consensus_parser_failed",
+                version=parser.version,
+                error=str(e),
+            )
+
+    # Compara resultados
+    report = analyze_consensus(results, errors)
+
+    # Se divergência significativa, alerta
+    if report["has_divergence"]:
+        logger.warning(
+            "consensus_divergence",
+            divergences=report["divergences"],
+        )
+
+        if require_consensus:
+            await send_alert(
+                level=AlertLevel.WARNING,
+                title="Parser consensus failed",
+                details=report,
+            )
+            from ...exceptions import ParseError
+            raise ParseError(
+                source="cepea",
+                parser_version=0,
+                reason=f"Parsers diverged: {report['divergences']}",
+            )
+
+    # Retorna resultado do parser mais recente
+    latest_version = max(results.keys()) if results else 0
+    return results.get(latest_version, []), report
+
+
+def analyze_consensus(
+    results: dict[int, list[Indicador]],
+    errors: dict[int, str],
+) -> dict[str, Any]:
+    """Analisa resultados de múltiplos parsers."""
+    report = {
+        "parser_count": len(CONSENSUS_PARSERS),
+        "successful": list(results.keys()),
+        "failed": list(errors.keys()),
+        "errors": errors,
+        "has_divergence": False,
+        "divergences": [],
+    }
+
+    if len(results) < 2:
+        # Não tem como comparar
+        return report
+
+    # Compara contagem de registros
+    counts = {v: len(r) for v, r in results.items()}
+    if len(set(counts.values())) > 1:
+        report["has_divergence"] = True
+        report["divergences"].append({
+            "type": "count_mismatch",
+            "counts": counts,
+        })
+
+    # Compara valores (primeiro e último registro)
+    versions = list(results.keys())
+    base = results[versions[0]]
+
+    for v in versions[1:]:
+        other = results[v]
+
+        if base and other:
+            # Primeiro registro
+            if base[0].valor != other[0].valor:
+                report["has_divergence"] = True
+                report["divergences"].append({
+                    "type": "first_value_mismatch",
+                    "versions": [versions[0], v],
+                    "values": [str(base[0].valor), str(other[0].valor)],
+                })
+
+            # Último registro
+            if base[-1].valor != other[-1].valor:
+                report["has_divergence"] = True
+                report["divergences"].append({
+                    "type": "last_value_mismatch",
+                    "versions": [versions[0], v],
+                    "values": [str(base[-1].valor), str(other[-1].valor)],
+                })
+
+    return report
+
+
+================================================================================
+PARTE 25: RESUMO DAS CAMADAS DE DEFESA
+================================================================================
+
+VISÃO GERAL
+-----------
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        CAMADAS DE DEFESA - AGROBR                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  CAMADA 1: PREVENÇÃO (antes do problema)                                   │
+│  ├─ Structure Monitor (6h)     → Detecta mudança de layout antecipadamente │
+│  ├─ Golden Data Tests (CI)     → Garante que parsing não regride           │
+│  └─ Fingerprint Baseline       → Referência para comparação                │
+│                                                                             │
+│  CAMADA 2: DETECÇÃO IMEDIATA (durante request)                             │
+│  ├─ Fingerprint Check          → HTML estruturalmente diferente?           │
+│  ├─ can_parse() Confidence     → Parser reconhece a estrutura?             │
+│  └─ User-Agent Rotation        → Evita bloqueio de IP                      │
+│                                                                             │
+│  CAMADA 3: VALIDAÇÃO (após parsing)                                        │
+│  ├─ Pydantic Validation        → Tipos e formatos corretos?                │
+│  ├─ Sanity Check               → Valores dentro do range histórico?        │
+│  ├─ Multi-Parser Consensus     → Parsers concordam nos resultados?         │
+│  └─ Completeness Check         → Dados parciais (< 80%)?                   │
+│                                                                             │
+│  CAMADA 4: FALLBACK (quando algo falha)                                    │
+│  ├─ Parser Cascade             → Tenta próximo parser se atual falhar      │
+│  ├─ Cache Fallback             → Retorna cache stale se fonte offline      │
+│  ├─ History Fallback           → Busca no histórico permanente             │
+│  └─ Graceful Degradation       → Warning em vez de erro quando possível    │
+│                                                                             │
+│  CAMADA 5: RESPOSTA (notificação e recuperação)                            │
+│  ├─ Alertas Multi-canal        → Slack, Discord, Email                     │
+│  ├─ GitHub Issue Automática    → Para tracking de problemas                │
+│  ├─ Logging Estruturado        → Debug facilitado                          │
+│  └─ Telemetria                 → Entender padrões de falha                 │
+│                                                                             │
+│  CAMADA 6: RECUPERAÇÃO (pós-incidente)                                     │
+│  ├─ Parser Versionado          → Criar novo parser sem quebrar histórico   │
+│  ├─ History Permanent          → Reconstruir dados se necessário           │
+│  ├─ Schema Migrations          → Evoluir cache sem perder dados            │
+│  └─ Baseline Update            → Atualizar referência após mudança válida  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+FLUXO DE REQUEST
+----------------
+
+┌──────────┐
+│  Request │
+└────┬─────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  1. Rate Limiter                       │ ← Evita bloqueio
+│     Aguarda intervalo mínimo           │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  2. Cache Check                        │
+│     Cache fresh? → Retorna             │ ← Fast path
+│     Cache stale? → Continua + fallback │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  3. HTTP Request                       │
+│     User-Agent rotativo                │
+│     Retry com exponential backoff      │
+│     Encoding fallback chain            │
+└────┬───────────────────────────────────┘
+     │ (falhou?)
+     ├──────────────────────────────────────┐
+     │                                      ▼
+     │                         ┌────────────────────────┐
+     │                         │  Fallback: Cache/History│
+     │                         │  + StaleDataWarning    │
+     │                         └────────────────────────┘
+     ▼
+┌────────────────────────────────────────┐
+│  4. Fingerprint Check                  │
+│     < 70%? → Erro + Alerta crítico     │
+│     70-85%? → Warning + continua       │
+│     > 85%? → OK                        │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  5. Parser Selection + Execution       │
+│     Tenta parser mais recente          │
+│     Falhou? → Tenta próximo (cascade)  │
+│     Todos falharam? → Erro + Alerta    │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  6. Pydantic Validation                │
+│     Estrutura e tipos corretos         │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  7. Sanity Validation                  │
+│     Valores dentro do range?           │
+│     Variação diária aceitável?         │
+│     Anomalia? → Warning + marca dados  │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  8. Cache Write + History Save         │
+│     Atualiza cache com TTL             │
+│     Salva no histórico permanente      │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌────────────────────────────────────────┐
+│  9. Telemetria (opt-in)                │
+│     Track fetch, latência, erros       │
+└────┬───────────────────────────────────┘
+     │
+     ▼
+┌──────────┐
+│  Response│
+└──────────┘
+
+
+================================================================================
+PARTE 26: ROADMAP DE DESENVOLVIMENTO (ATUALIZADO)
+================================================================================
+
+FASE 1: FUNDAÇÃO + CEPEA (5 semanas)
+------------------------------------
+
+Semana 1: Setup Core
+  - Estrutura do projeto completa
+  - pyproject.toml com todas as dependências
+  - CI/CD básico (tests, lint, type check)
+  - structlog configurado
+  - Exceções tipadas
+
+Semana 2: HTTP + Cache
+  - httpx async client com retry
+  - User-agent rotativo
+  - Rate limiter por fonte
+  - DuckDB store (cache + history)
+  - Schema migrations
+
+Semana 3: CEPEA Parser
+  - Parser v1 para indicadores diários
+  - Fingerprinting de layout
+  - Encoding fallback chain
+  - Modelo Pydantic Indicador
+  - Validação estatística básica
+
+Semana 4: Resiliência
+  - Parser cascade/fallback
+  - can_parse() com confidence
+  - Comportamento de erros completo
+  - Alertas multi-canal (Slack, Discord)
+  - Health check básico
+
+Semana 5: Polish + Launch
+  - Testes unitários (80%+ coverage)
+  - VCR cassettes
+  - Golden data tests iniciais
+  - CLI funcional (typer)
+  - Sync wrapper
+  - Documentação básica
+  - GitHub Actions (tests, health check)
+  - PyPI v0.1.0
+
+
+FASE 2: CONAB + ROBUSTEZ (3 semanas)
+------------------------------------
+
+Semana 6: Parser CONAB
+  - Download de planilhas XLS
+  - Parser safras grãos
+  - Modelo Pydantic Safra
+  - Tratamento safra vs ano civil
+
+Semana 7: Endpoints CONAB + Monitor
+  - evolucao_safra(), balanco(), custos()
+  - CLI para CONAB
+  - Structure monitor (6h)
+  - Alertas de drift
+
+Semana 8: Testes + Docs
+  - Golden data CONAB
+  - Testes integrados
+  - Documentação CONAB
+  - PyPI v0.2.0
+
+
+FASE 3: IBGE + POLARS (3 semanas)
+---------------------------------
+
+Semana 9: IBGE
+  - Wrapper sidrapy com filtros agro
+  - PAM e LSPA simplificados
+  - CLI para IBGE
+
+Semana 10: Polars + Performance
+  - as_polars=True em todas as APIs
+  - Benchmark pandas vs polars
+  - Otimizações de cache
+
+Semana 11: Documentação Final
+  - mkdocs-material completo
+  - 5+ notebooks de exemplo
+  - Guia de contribuição
+  - Troubleshooting guide
+  - PyPI v0.3.0 (estável)
+
+
+FASE 4: EXTRAS (contínuo)
+-------------------------
+
+  - Telemetria opt-in
+  - Multi-parser consensus
+  - Mais fontes: ABIOVE, ANEC, SECEX
+  - API REST opcional (FastAPI)
+  - Dashboard Streamlit de exemplo
+  - Integração com Airflow/Prefect
+  - Suporte a proxies
+
+
+================================================================================
+PARTE 27: MONETIZAÇÃO
+================================================================================
+
+CURTO PRAZO: Gratuito + Credibilidade
+-------------------------------------
+
+- Pacote 100% open source (MIT)
+- Foco em downloads, stars, issues respondidas
+- Blog posts técnicos usando agrobr
+- Apresentação em meetups Python/Data
+- Parcerias com universidades
+
+
+MÉDIO PRAZO: Consultoria
+------------------------
+
+Serviço                      | Preço        | Entrega
+-----------------------------|--------------|----------------------------------------
+Setup pipeline dados agro    | R$ 5-12k     | agrobr + Airflow/Prefect + monitoramento
+Dashboard analytics          | R$ 10-20k    | Streamlit/Metabase com dados agrobr
+Integração ERP/BI            | R$ 8-15k     | Conectar SAP/PowerBI com agrobr
+Treinamento equipe           | R$ 3-5k/dia  | Workshop de uso do pacote
+Parser customizado           | R$ 5-10k     | Adicionar fonte específica do cliente
+Suporte prioritário          | R$ 2k/mês    | SLA de resposta em 4h
+
+
+LONGO PRAZO: SaaS (agrobr.io)
+-----------------------------
+
+Tier        | Preço        | Features
+------------|--------------|--------------------------------------------------
+Free        | R$ 0         | 100 requests/dia, fontes públicas, sem suporte
+Pro         | R$ 199/mês   | Ilimitado, API key, webhooks, suporte email
+Team        | R$ 599/mês   | 5 usuários, dashboard compartilhado, analytics
+Enterprise  | R$ 1.499+/mês| SLA 99.9%, suporte dedicado, fontes customizadas
+
+
+ESTRATÉGIA DE PRICING
+---------------------
+
+1. Pacote Python sempre grátis (adoption, comunidade)
+2. SaaS para quem quer API sem infraestrutura
+3. Consultoria para implementações complexas
+4. Enterprise para grandes clientes com SLA
+
+
+================================================================================
+PARTE 28: MÉTRICAS DE SUCESSO
+================================================================================
+
+TÉCNICAS
+--------
+
+Métrica                        | Meta v0.1   | Meta v0.3   | Meta v1.0
+-------------------------------|-------------|-------------|-------------
+Coverage de testes             | 80%         | 85%         | 90%
+Golden data tests passando     | 100%        | 100%        | 100%
+Health check success rate      | 95%         | 98%         | 99%
+Tempo médio de resposta (cache)| < 50ms      | < 30ms      | < 20ms
+Tempo médio de resposta (fetch)| < 3s        | < 2s        | < 1.5s
+Parser confidence médio        | > 85%       | > 90%       | > 95%
+
+
+ADOÇÃO
+------
+
+Fase     | Métrica                        | Meta
+---------|--------------------------------|----------------
+1 mês    | PyPI downloads                 | 500
+1 mês    | GitHub stars                   | 50
+3 meses  | PyPI downloads                 | 2.000
+3 meses  | GitHub stars                   | 200
+3 meses  | Contributors externos          | 5
+6 meses  | PyPI downloads/mês             | 1.000+
+6 meses  | Issues respondidas < 24h       | 95%
+6 meses  | Primeira consultoria           | 1
+12 meses | PyPI downloads/mês             | 3.000+
+12 meses | GitHub stars                   | 750
+12 meses | MRR (se SaaS)                  | R$ 5.000
+12 meses | Citações em papers/blogs       | 10
+
+
+QUALIDADE
+---------
+
+Métrica                        | Meta
+-------------------------------|----------------
+Bugs críticos abertos          | 0
+Tempo médio para fix de bug    | < 48h
+Breaking changes por release   | 0 (após v1.0)
+Documentação coverage          | 100% das APIs
+Downtime de fontes detectado   | < 1h
+
+
+================================================================================
+PARTE 29: CHECKLIST DE LANÇAMENTO
+================================================================================
+
+PRÉ-DESENVOLVIMENTO
+-------------------
+[ ] Verificar nome PyPI disponível (pip index versions agrobr)
+[ ] Verificar domínio disponível (agrobr.dev, agrobr.io)
+[ ] Criar repo GitHub (privado inicialmente)
+[ ] Post de validação no LinkedIn
+[ ] Coletar 20+ respostas positivas
+
+
+SETUP INICIAL
+-------------
+[ ] pyproject.toml completo
+[ ] Estrutura de diretórios
+[ ] Pre-commit hooks (ruff, mypy, black)
+[ ] GitHub Actions CI
+[ ] Dependabot configurado
+[ ] Issue templates
+[ ] PR template
+
+
+PRÉ-LANÇAMENTO v0.1
+-------------------
+[X] README com badges, exemplos - 2026-02-04
+[X] CHANGELOG.md iniciado - 2026-02-04
+[X] CONTRIBUTING.md - 2026-02-04
+[X] CODE_OF_CONDUCT.md - 2026-02-04
+[X] LICENSE (MIT) - 2026-02-04
+[X] Documentação mkdocs básica - 2026-02-04
+[X] 2 exemplos funcionando (pipeline_async.py, analise_soja.py) - 2026-02-04
+[X] Tests > 80% coverage (~85%) - 2026-02-04
+[X] Todos os tests passando (101 tests) - 2026-02-04
+[ ] Type hints completos (mypy strict)
+[X] CLI funcional - 2026-02-03
+[X] Health check action configurado - 2026-02-03
+[X] Structure monitor action configurado - 2026-02-03
+[X] Baseline fingerprints salvos - 2026-02-03
+[X] Golden data tests para CEPEA - 2026-02-03
+[ ] Logo e identidade visual básica
+
+
+LANÇAMENTO v0.1.0
+-----------------
+[ ] Tornar repo público
+[ ] Tag release no GitHub
+[ ] Publicar PyPI
+[ ] Post LinkedIn: "Por que criei o agrobr"
+[ ] Thread Twitter técnica
+[ ] Submeter Python Weekly
+[ ] Post r/Python, r/datascience, r/brasil
+[ ] Avisar comunidades agro (grupos, fóruns)
+[ ] Avisar universidades parceiras
+
+
+PÓS-LANÇAMENTO
+--------------
+[ ] Responder issues < 24h
+[ ] Monitorar health checks diariamente
+[ ] Monitorar structure monitor
+[ ] Coletar feedback via issues/forms
+[ ] Releases semanais no início
+[ ] Blog post: "Como usei agrobr para X"
+[ ] Ajustar roadmap baseado em feedback
+
+
+PRÉ-LANÇAMENTO v0.3 (estável)
+-----------------------------
+[X] Todas as fontes implementadas (CEPEA, CONAB, IBGE) - 2026-02-04
+[X] Suporte polars completo - 2026-02-04
+[X] Documentação 100% completa - 2026-02-04
+[ ] 5+ notebooks de exemplo (2 implementados)
+[X] Tests > 85% coverage (~85%) - 2026-02-04
+[ ] Golden data tests para todas as fontes (CEPEA + CONAB implementados)
+[ ] Benchmark de performance publicado
+[X] Guia de troubleshooting - 2026-02-04
+[ ] Semantic versioning a partir daqui
+
+
+================================================================================
+PARTE 30: PRÓXIMOS PASSOS IMEDIATOS
+================================================================================
+
+HOJE
+----
+[ ] Verificar nome PyPI: pip index versions agrobr
+[ ] Verificar domínios: agrobr.dev, agrobr.io, agrobr.com.br
+[ ] Criar repo GitHub privado
+[X] Criar estrutura inicial de diretórios
+
+ESTA SEMANA (BLOCO 1 - CONCLUÍDO)
+---------------------------------
+[ ] Post validação LinkedIn
+[X] pyproject.toml com dependências
+[X] Setup pre-commit (ruff, mypy, black)
+[X] GitHub Actions CI básico (tests.yml + health_check.yml)
+[X] Implementar exceptions.py
+[X] Implementar constants.py com Settings
+[X] Implementar models.py (Indicador, Safra, Fingerprint, etc)
+[X] README.md básico
+
+SEMANA 2 (BLOCO 2 - CONCLUÍDO)
+------------------------------
+[X] httpx client com retry (http/retry.py)
+[X] User-agent rotativo (http/user_agents.py)
+[X] Rate limiter (http/rate_limiter.py)
+[X] DuckDB store básico (cache/duckdb_store.py)
+[X] Encoding fallback chain (normalize/encoding.py) - 2026-02-03
+
+SEMANA 3 (BLOCO 3 - CONCLUÍDO)
+------------------------------
+[X] CEPEA parser v1 (cepea/parsers/v1.py) - 2026-02-03
+[X] Fingerprinting (cepea/parsers/fingerprint.py) - 2026-02-03
+[X] Modelo Indicador (Pydantic) - em models.py
+[X] Testes unitários iniciais (test_cepea/test_api.py)
+[X] CEPEA client (cepea/client.py) - 2026-02-03
+[X] API CEPEA funcional (cepea/api.py) - 2026-02-03
+
+SEMANA 4 (BLOCO 4 - CONCLUÍDO)
+------------------------------
+[X] Parser cascade (estrutura em cepea/parsers/detector.py)
+[X] Health check (health/checker.py) - 2026-02-03
+[X] Alertas (alerts/notifier.py - Slack, Discord, Email)
+[X] CLI básico (cli.py com typer)
+[X] Sanity validators (validators/sanity.py) - 2026-02-03
+
+SEMANA 5 (BLOCO 5 - CONCLUÍDO)
+------------------------------
+[X] Golden data tests (tests/test_golden.py) - 2026-02-03
+[X] Structure monitor (scripts/fetch_structures.py, compare_structures.py) - 2026-02-03
+[X] Sync wrapper (sync.py) - 2026-02-03
+[ ] Documentação básica
+[X] Testes unitários parser/fingerprint/sanity - 2026-02-03
+[ ] Preparar lançamento v0.1.0
+[X] Telemetry collector (telemetry/collector.py) - 2026-02-03
+[X] Cache migrations (cache/migrations.py) - 2026-02-03
+[X] GitHub Actions workflows (tests.yml, health_check.yml, structure_monitor.yml) - 2026-02-03
+[X] Playwright browser fallback (http/browser.py) - 2026-02-03
+
+CORREÇÕES REALIZADAS
+--------------------
+[X] URL CEPEA atualizada: cepea.esalq.usp.br -> www.cepea.org.br - 2026-02-03
+[X] httpx client com follow_redirects=True - 2026-02-03
+[X] Playwright adicionado como dependência - 2026-02-03
+
+LIMITAÇÕES CONHECIDAS
+---------------------
+CEPEA: Site usa Cloudflare com verificação JavaScript avançada (todos os endpoints).
+Playwright headless não consegue resolver o challenge. Testado:
+  - www.cepea.org.br/* → 403 (Cloudflare)
+  - onetoone.cepea.org.br/api/ → 403 (API paga R$10.500, também Cloudflare)
+  - Links diretos de Excel → 403 (Cloudflare)
+
+Opções para CEPEA:
+  1. Serviços de proxy anti-bot (ScrapingBee, Bright Data, Zyte)
+  2. undetected-chromedriver (pode funcionar)
+  3. Captura manual de dados
+  4. API paga oficial do CEPEA (onetoone.cepea.org.br)
+
+FONTES ALTERNATIVAS DESCOBERTAS:
+  - Investing.com (br.investing.com/commodities) → 200 OK - Commodities internacionais (não CEPEA)
+  - Agrolink (www.agrolink.com.br/cotacoes) → 200 OK - Cotações regionais (não é indicador CEPEA)
+  - CONAB e IBGE → APIs públicas sem proteção (implementar como prioridade)
+
+SOLUÇÃO IMPLEMENTADA - Notícias Agrícolas:
+  Site: www.noticiasagricolas.com.br/cotacoes
+  Descrição: Republica indicadores CEPEA/ESALQ SEM proteção Cloudflare
+  Módulo: agrobr/noticias_agricolas/ (client.py + parser.py)
+
+  Produtos disponíveis (indicadores CEPEA via NA):
+    - soja (ESALQ/B3 Paranaguá)
+    - milho (ESALQ Campinas)
+    - boi_gordo (ESALQ São Paulo)
+    - cafe (ESALQ São Paulo)
+    - algodao (ESALQ São Paulo)
+    - trigo (ESALQ Paraná)
+
+  Produtos NÃO disponíveis: açúcar, etanol (404)
+
+  Formato de dados:
+    | Data | Valor R$ | Variação (%) |
+    | 03/02/2026 | 124,55 | -0,26 |
+
+  Frequência: Diária (mesma do CEPEA original)
+
+  Observações:
+    - Página carrega dados via JavaScript/AJAX
+    - Requer Playwright para obter dados completos
+    - Integrado como fallback automático no CEPEA client
+    - Crédito: "Fonte: CEPEA/ESALQ via Notícias Agrícolas"
+
+  Limitação: Apenas ~10 dias de histórico visível por consulta
+
+
+ESTRATÉGIA DE ACUMULAÇÃO PROGRESSIVA DE HISTÓRICO
+-------------------------------------------------
+
+O Notícias Agrícolas fornece apenas ~10 dias por consulta, mas o agrobr
+acumula dados automaticamente no DuckDB para construir série histórica longa.
+
+Evolução do histórico local:
+    Dia 1:   agrobr coleta 10 dias → salva no DuckDB
+    Dia 30:  agrobr tem 30 dias de histórico acumulado
+    Dia 365: agrobr tem 1 ano completo de dados
+
+Fluxo interno quando usuário chama a API:
+
+    # Usuário chama
+    df = await cepea.indicador('soja', periodo='2024')
+
+    # Internamente:
+    # 1. Busca no histórico local (DuckDB)
+    # 2. Se faltar dados recentes, busca Notícias Agrícolas
+    # 3. Salva novos dados no histórico
+    # 4. Retorna DataFrame completo
+
+Pseudocódigo:
+
+    async def indicador(produto, inicio, fim):
+        # 1. Consulta histórico local
+        cached = await history_store.query(produto, inicio, fim)
+
+        # 2. Identifica lacunas
+        missing_dates = find_missing_dates(cached, inicio, fim)
+
+        # 3. Se há lacunas recentes (últimos 10 dias), busca fonte
+        if missing_dates and max(missing_dates) >= today - 10:
+            new_data = await fetch_from_source(produto)  # NA ou CEPEA
+
+            # 4. Salva novos dados no histórico
+            await history_store.upsert(new_data)
+
+            # 5. Merge com dados existentes
+            cached = merge_data(cached, new_data)
+
+        # 6. Retorna apenas período solicitado
+        return filter_by_period(cached, inicio, fim)
+
+Benefícios:
+    - Histórico cresce automaticamente com o uso
+    - Dados antigos nunca são perdidos (DuckDB local)
+    - Consultas a períodos antigos são instantâneas (cache)
+    - Apenas dados recentes precisam de request HTTP
+    - Resiliência: se fonte cair, histórico local continua disponível
+
+Estrutura DuckDB (tabela history):
+    | data       | produto | valor  | fonte              | collected_at |
+    |------------|---------|--------|--------------------| -------------|
+    | 2024-01-15 | soja    | 124.55 | noticias_agricolas | 2024-01-16   |
+    | 2024-01-14 | soja    | 124.88 | noticias_agricolas | 2024-01-16   |
+    | ...        | ...     | ...    | ...                | ...          |
+
+
+================================================================================
+PARTE 31: FLUXO DE TRABALHO POR BLOCOS
+================================================================================
+
+OBJETIVO
+--------
+
+Este documento serve como especificação E controle de progresso. Ao trabalhar
+no projeto, o desenvolvedor (humano ou IA) deve:
+
+1. Ler o documento para entender o contexto e próximos passos
+2. Trabalhar em BLOCOS (agrupamentos lógicos de tarefas)
+3. Após completar cada tarefa, ATUALIZAR este documento:
+   - Marcar item como [X] concluído
+   - Adicionar data de conclusão
+   - Anotar observações relevantes (bugs encontrados, decisões tomadas)
+4. Ao final de cada bloco, revisar e consolidar o progresso
+
+
+FORMATO DE ANOTAÇÃO
+-------------------
+
+Para tarefas concluídas:
+    [X] Nome da tarefa (arquivo.py) - YYYY-MM-DD
+
+Para observações importantes:
+    NOTA: Descrição da observação ou decisão tomada
+
+Para correções/bugs:
+    FIX: Descrição do problema e solução aplicada
+
+
+HISTÓRICO DE SESSÕES
+--------------------
+
+2026-02-03 - Sessão 1
+    - Leitura completa do documento agrobr_v3.txt
+    - Implementação dos módulos pendentes dos blocos 2-5
+    - Módulos criados:
+        * normalize/encoding.py (fallback chain)
+        * cepea/client.py (HTTP client async)
+        * cepea/parsers/fingerprint.py (detecção de layout)
+        * cepea/parsers/v1.py (parser CEPEA)
+        * validators/sanity.py (validação estatística)
+        * health/checker.py (health checks)
+        * sync.py (wrappers síncronos)
+        * telemetry/collector.py (telemetria opt-in)
+        * cache/migrations.py (migrations DuckDB)
+    - Correções:
+        * URL CEPEA mudou de cepea.esalq.usp.br para www.cepea.org.br
+        * Adicionado follow_redirects=True no httpx client
+    - Testes: 3 passed
+
+2026-02-03 - Sessão 2
+    - Continuação do Bloco 5
+    - Criados:
+        * tests/test_golden.py (golden data tests)
+        * tests/test_cepea/test_parser.py (9 testes parser)
+        * tests/test_cepea/test_fingerprint.py (6 testes fingerprint)
+        * tests/test_validators/test_sanity.py (7 testes sanity)
+        * tests/golden_data/cepea/soja_sample/ (golden data de exemplo)
+        * scripts/fetch_structures.py (coleta fingerprints)
+        * scripts/compare_structures.py (compara com baseline)
+        * scripts/update_golden.py (atualiza golden data)
+        * scripts/alert_structure_change.py (envia alertas)
+        * .github/workflows/tests.yml (CI tests)
+        * .github/workflows/health_check.yml (daily health)
+        * .github/workflows/structure_monitor.yml (monitor 6h)
+        * .structures/baseline.json (fingerprint baseline)
+        * http/browser.py (Playwright browser fallback)
+    - Descoberta: CEPEA usa Cloudflare com verificação JS avançada
+        * Playwright headless não consegue resolver challenge
+        * Playwright com modo visual também não funciona
+        * Necessário usar serviços de proxy ou captura manual
+    - Testes: 28 passed
+    - Cobertura estimada: ~75%
+
+2026-02-03 - Sessão 3
+    - Pesquisa de fontes alternativas para CEPEA (Cloudflare)
+    - Testados:
+        * Agrolink → cotações regionais por praça (não é indicador CEPEA)
+                     preços renderizados como imagens (anti-scraping)
+        * Investing.com → commodities internacionais (CBOT, não CEPEA)
+        * Notícias Agrícolas → SUCESSO! Republica indicadores CEPEA/ESALQ
+    - Criados:
+        * agrobr/noticias_agricolas/__init__.py
+        * agrobr/noticias_agricolas/client.py (HTTP + Playwright)
+        * agrobr/noticias_agricolas/parser.py
+        * tests/test_noticias_agricolas/__init__.py
+        * tests/test_noticias_agricolas/test_parser.py (12 testes)
+    - Atualizados:
+        * constants.py (Fonte.NOTICIAS_AGRICOLAS, URLs, produtos)
+        * http/rate_limiter.py (rate limit para NA)
+        * cepea/client.py (fallback automático para NA)
+    - Descobertas:
+        * Notícias Agrícolas carrega dados via JavaScript/AJAX
+        * httpx retorna apenas 10KB, Playwright retorna 230KB+ com dados
+        * Integrado browser como padrão para NA
+    - Cadeia de fallback CEPEA: httpx → Playwright → Notícias Agrícolas
+    - Testes: 40 passed (28 anteriores + 12 novos)
+    - Produtos disponíveis via NA: soja, milho, boi, cafe, algodao, trigo
+
+2026-02-03 - Sessão 4
+    - Implementação da estratégia de acumulação progressiva de histórico
+    - Problema: Notícias Agrícolas fornece apenas ~10 dias por consulta
+    - Solução: Acumular dados no DuckDB para construir série histórica longa
+    - Atualizados:
+        * cache/duckdb_store.py:
+            - Nova tabela 'indicadores' com schema otimizado
+            - Método indicadores_query() para buscar por período
+            - Método indicadores_upsert() para salvar/atualizar
+            - Método indicadores_get_dates() para detectar lacunas
+        * cepea/api.py:
+            - Função indicador() reescrita com lógica de acumulação:
+                1. Busca histórico local (DuckDB)
+                2. Detecta lacunas nos últimos 10 dias
+                3. Busca fonte se necessário (CEPEA → NA)
+                4. Detecta fonte pelo HTML (CEPEA vs NA)
+                5. Usa parser apropriado para cada fonte
+                6. Salva novos dados no histórico (upsert)
+                7. Retorna DataFrame do período solicitado
+            - Função ultimo() atualizada com mesma lógica
+        * http/browser.py:
+            - Detecção de bloqueio Cloudflare (status 403 + conteúdo)
+            - Lança exceção para acionar fallback
+    - Fluxo testado e funcionando:
+        * Primeira chamada: busca 10 registros da fonte, salva no DuckDB
+        * Segunda chamada: usa cache (sem request HTTP)
+        * Modo offline: retorna apenas histórico local
+        * ultimo(): retorna indicador mais recente
+    - Acumulação progressiva:
+        * Dia 1:   10 dias no DuckDB
+        * Dia 30:  30 dias acumulados
+        * Dia 365: 1 ano completo
+    - Testes: 40 passed
+    - Funcionalidade principal da lib agora operacional!
+
+2026-02-04 - Sessão 5 (Fase 2 - CONAB)
+    - Implementação completa do módulo CONAB
+    - Pesquisa do portal CONAB:
+        * Site principal: portaldeinformacoes.conab.gov.br
+        * Dados em XLSX: gov.br/conab/pt-br/assuntos/informacoes-agropecuarias
+        * Downloads protegidos - requer Playwright
+    - Criados:
+        * agrobr/conab/__init__.py
+        * agrobr/conab/client.py:
+            - fetch_boletim_page() - lista levantamentos disponíveis
+            - list_levantamentos() - retorna lista de safras/levantamentos
+            - download_xlsx() - baixa arquivo XLSX via Playwright
+            - fetch_safra_xlsx() - baixa XLSX mais recente ou específico
+            - fetch_latest_safra_xlsx() - wrapper para último disponível
+        * agrobr/conab/parsers/__init__.py
+        * agrobr/conab/parsers/v1.py (ConabParserV1):
+            - parse_safra_produto() - extrai dados por produto/UF
+            - parse_suprimento() - balanço oferta/demanda
+            - parse_brasil_total() - totais nacionais
+            - _find_header_row() - detecta linha de cabeçalho
+            - _extract_safra_columns() - extrai colunas de safra (24/25 → 2024/25)
+            - _parse_decimal() - conversão robusta de valores
+        * agrobr/conab/api.py:
+            - safras(produto, safra, uf, levantamento, as_polars)
+            - balanco(produto, safra, as_polars)
+            - brasil_total(safra, as_polars)
+            - levantamentos() - lista disponíveis
+            - produtos() - lista produtos suportados
+            - ufs() - lista UFs
+        * tests/test_conab/__init__.py
+        * tests/test_conab/test_parser.py (12 testes)
+        * tests/golden_data/conab/safra_sample/ (XLSX + expected.json)
+    - Atualizados:
+        * constants.py:
+            - CONAB_BASE_URL, CONAB_XLSX_URL
+            - CONAB_PRODUTOS (soja, milho, arroz, feijao, algodao, trigo, etc)
+            - CONAB_UFS (27 estados)
+            - CONAB_REGIOES (5 regiões)
+        * cli.py:
+            - conab safras <produto> [--safra] [--uf] [--formato]
+            - conab balanco [produto] [--formato]
+            - conab levantamentos
+            - conab produtos
+        * models.py:
+            - Modelo Safra com validação (regex safra ^\d{4}/\d{2}$)
+    - Correções:
+        * FIX: Parser retornava safra="atual" → extrair nome correto da coluna
+        * FIX: Validação de produção < 200000 mil ton (Brasil total)
+        * FIX: Teste suprimento - soja tem aba separada, testar milho
+    - Estrutura XLSX CONAB:
+        * Abas por produto: Soja, Milho Total, Arroz, Feijão Total, etc
+        * Colunas: Região/UF, safras (23/24, 24/25, 25/26)
+        * Métricas: Área (mil ha), Produtividade (kg/ha), Produção (mil t)
+        * Aba "Suprimento" com balanço oferta/demanda
+    - Testes: 56 passed (40 anteriores + 12 CONAB + 4 golden)
+
+2026-02-04 - Sessão 7 (Fase 4 - Documentação + Módulos Finais)
+    - Implementação de todos os módulos documentados mas faltando
+    - Módulos criados:
+        * normalize/units.py (conversão sacas, tons, bushels, arrobas)
+        * normalize/dates.py (safra_atual, validar_safra, lista_safras)
+        * normalize/regions.py (normalizar_uf, uf_para_ibge, 27 estados)
+        * cache/policies.py (CachePolicy, TTL por fonte)
+        * cache/history.py (HistoryManager, histórico permanente)
+        * health/reporter.py (HealthReport, JSON/MD/HTML)
+        * validators/structural.py (validate_structure, fingerprinting)
+        * cepea/parsers/consensus.py (multi-parser consensus)
+    - Documentação criada:
+        * mkdocs.yml (Material theme)
+        * docs/index.md, quickstart.md
+        * docs/api/cepea.md, conab.md, ibge.md
+        * docs/advanced/resilience.md, troubleshooting.md
+    - Arquivos de projeto:
+        * LICENSE (MIT)
+        * CHANGELOG.md (v0.1.0)
+        * CONTRIBUTING.md
+        * CODE_OF_CONDUCT.md
+    - Exemplos:
+        * examples/pipeline_async.py
+        * examples/analise_soja.py
+    - CI/CD:
+        * .github/workflows/publish.yml (PyPI release)
+    - Atualizados __init__.py de todos os módulos
+    - Correção: regions.py - função remover_acentos definida antes de uso
+    - Testes: 101 passando (99 passed, 2 skipped)
+    - Projeto pronto para lançamento v0.1.0!
+
+2026-02-04 - Sessão 6 (Fase 3 - IBGE + Polars)
+    - Implementação completa do módulo IBGE
+    - Pesquisa API SIDRA:
+        * API oficial do IBGE para dados estatísticos
+        * Biblioteca sidrapy facilita acesso
+        * Tabelas principais:
+            - 5457: PAM nova série (2018+)
+            - 6588: LSPA mensal (2006+)
+            - 1612: PAM lavouras temporárias (histórico)
+    - Criados:
+        * agrobr/ibge/__init__.py (exports: pam, lspa, produtos_pam, produtos_lspa, ufs)
+        * agrobr/ibge/client.py:
+            - TABELAS: códigos das tabelas SIDRA
+            - VARIAVEIS: área_plantada(214), área_colhida(215), produção(216), rendimento(112)
+            - PRODUTOS_PAM: soja(40124), milho(40126), arroz(40117), etc
+            - PRODUTOS_LSPA: soja(39443), milho_1(39441), milho_2(39442), etc
+            - NIVEIS_TERRITORIAIS: brasil(1), uf(3), municipio(6)
+            - fetch_sidra() - wrapper async para sidrapy
+            - parse_sidra_response() - normaliza colunas (NC→nivel, MN→localidade, etc)
+            - get_uf_codes() - mapeamento UF → código IBGE
+            - uf_to_ibge_code() - conversão MT → 51
+        * agrobr/ibge/api.py:
+            - pam(produto, ano, uf, nivel, variaveis, as_polars):
+                * Suporta ano único ou lista: ano=[2020,2021,2022]
+                * Níveis: brasil, uf, municipio
+                * Pivota variáveis como colunas
+            - lspa(produto, ano, mes, uf, as_polars):
+                * Estimativas mensais de safra
+                * Produtos com safras: milho_1, milho_2, feijao_1, feijao_2, feijao_3
+            - produtos_pam() - lista produtos PAM
+            - produtos_lspa() - lista produtos LSPA
+            - ufs() - lista 27 UFs
+        * tests/test_ibge/__init__.py
+        * tests/test_ibge/test_client.py (24 testes):
+            - TestProdutosMapping: mapeamentos de produtos
+            - TestVariaveis: códigos de variáveis
+            - TestTabelas: códigos de tabelas SIDRA
+            - TestNiveisTerritoriais: níveis geográficos
+            - TestUfCodes: conversão UF ↔ código
+            - TestParseSidraResponse: parser de resposta
+        * tests/test_ibge/test_api.py (21 testes):
+            - TestProdutosLists: listagens
+            - TestPamValidation: validação de entrada
+            - TestLspaValidation: validação de entrada
+            - TestPamMocked: testes com mock
+            - TestLspaMocked: testes com mock
+            - TestPolarsSupport: conversão para polars
+            - TestPamIntegration: testes reais (slow)
+            - TestLspaIntegration: testes reais (slow)
+    - Atualizados:
+        * pyproject.toml:
+            - Dependência: sidrapy>=0.1.4
+            - Markers: slow, integration
+        * cli.py:
+            - ibge pam <produto> [--ano] [--uf] [--nivel] [--formato]
+            - ibge lspa <produto> [--ano] [--mes] [--uf] [--formato]
+            - ibge produtos [--pesquisa pam|lspa]
+        * cepea/api.py:
+            - FIX: try/except ImportError para polars (consistência)
+    - Suporte Polars em todas as APIs:
+        * cepea.indicador(..., as_polars=True)
+        * conab.safras(..., as_polars=True)
+        * conab.balanco(..., as_polars=True)
+        * conab.brasil_total(..., as_polars=True)
+        * ibge.pam(..., as_polars=True)
+        * ibge.lspa(..., as_polars=True)
+        * Fallback gracioso quando polars não instalado
+    - Correções durante desenvolvimento:
+        * FIX: LSPA variável 112 não existe na tabela 6588 → não especificar variáveis
+        * FIX: LSPA parsing de data "junho 2024" → usar ano/mes dos parâmetros
+    - Testes: 96 passed (56 anteriores + 45 IBGE - 5 duplicados)
+    - Fase 3 completa!
+
+STATUS ATUAL DO PROJETO (2026-02-04)
+------------------------------------
+    Blocos 1-5: COMPLETOS
+    Fase 2 (CONAB): COMPLETA
+    Fase 3 (IBGE + Polars): COMPLETA
+    Fase 4 (Documentação + Módulos): COMPLETA
+
+    Fontes de dados funcionais:
+        1. CEPEA (via Notícias Agrícolas como fallback) - indicadores de preço
+        2. CONAB - safras e balanço oferta/demanda
+        3. IBGE - PAM (anual) e LSPA (mensal)
+
+    Arquitetura:
+        * Cache DuckDB com acumulação progressiva
+        * Rate limiting por fonte
+        * Fallback chain (httpx → Playwright → fonte alternativa)
+        * Suporte Pandas e Polars
+        * CLI completa com typer
+        * Normalização completa (unidades, datas, regiões)
+        * Multi-parser consensus para validação
+        * Health reports em JSON, Markdown e HTML
+        * Validação estrutural com fingerprinting
+
+    Testes: 101 passando (99 passed, 2 skipped)
+    Cobertura: ~85%
+
+PRÓXIMOS PASSOS SUGERIDOS
+-------------------------
+    [X] Fase 4: Documentação MkDocs - 2026-02-04
+    [ ] Fase 5: Publicação PyPI
+    [ ] Adicionar mais produtos ao CEPEA (açúcar, etanol, etc)
+    [ ] Golden data para IBGE
+    [ ] Testes de integração end-to-end
+
+
+================================================================================
+PARTE 32: PLANO DE IMPLEMENTAÇÃO - SESSÃO 7 (2026-02-04)
+================================================================================
+
+OBJETIVO
+--------
+Completar implementação para lançamento v0.1.0:
+1. Arquivos obrigatórios de projeto
+2. Documentação básica
+3. Módulos especificados mas não implementados
+4. Exemplos de uso
+
+TAREFAS (em ordem de execução)
+------------------------------
+
+BLOCO A - Arquivos Críticos de Projeto
+[X] LICENSE (MIT) - 2026-02-04
+[X] CHANGELOG.md - 2026-02-04
+[X] CONTRIBUTING.md - 2026-02-04
+[X] CODE_OF_CONDUCT.md - 2026-02-04
+
+BLOCO B - Módulos Documentados Faltando
+[X] normalize/units.py - Conversão sc/ton/bu/kg - 2026-02-04
+[X] normalize/dates.py - Safra vs ano civil - 2026-02-04
+[X] normalize/regions.py - Padronização UF/município - 2026-02-04
+[X] cache/policies.py - TTL por fonte, invalidação - 2026-02-04
+[X] cache/history.py - Histórico permanente separado - 2026-02-04
+[X] health/reporter.py - Geração de relatórios - 2026-02-04
+[X] validators/structural.py - Comparação de fingerprints - 2026-02-04
+[X] cepea/parsers/consensus.py - Multi-parser consensus - 2026-02-04
+
+BLOCO C - Documentação MkDocs
+[X] mkdocs.yml - Configuração - 2026-02-04
+[X] docs/index.md - Página inicial - 2026-02-04
+[X] docs/quickstart.md - Guia rápido - 2026-02-04
+[X] docs/api/cepea.md - API CEPEA - 2026-02-04
+[X] docs/api/conab.md - API CONAB - 2026-02-04
+[X] docs/api/ibge.md - API IBGE - 2026-02-04
+[X] docs/advanced/resilience.md - Resiliência - 2026-02-04
+[X] docs/advanced/troubleshooting.md - Troubleshooting - 2026-02-04
+
+BLOCO D - Exemplos
+[X] examples/pipeline_async.py - Pipeline async - 2026-02-04
+[X] examples/analise_soja.py - Análise de soja - 2026-02-04
+
+BLOCO E - CI/CD
+[X] .github/workflows/publish.yml - Release to PyPI - 2026-02-04
+
+PROGRESSO
+---------
+2026-02-04 - Sessão 7 (Fase 4 - Documentação + Módulos)
+    - Implementação completa de todos os módulos especificados
+    - Arquivos criados:
+        * LICENSE (MIT license)
+        * CHANGELOG.md (v0.1.0 changelog)
+        * CONTRIBUTING.md (guia de contribuição)
+        * CODE_OF_CONDUCT.md (Contributor Covenant)
+        * mkdocs.yml (Material theme config)
+        * docs/index.md (homepage)
+        * docs/quickstart.md (tutorial)
+        * docs/api/cepea.md, conab.md, ibge.md (API reference)
+        * docs/advanced/resilience.md, troubleshooting.md
+        * examples/pipeline_async.py (pipeline completo)
+        * examples/analise_soja.py (análise combinada)
+        * .github/workflows/publish.yml (PyPI release)
+    - Módulos implementados:
+        * normalize/units.py:
+            - converter(valor, de, para, produto) - conversão universal
+            - sacas_para_toneladas(), toneladas_para_sacas()
+            - preco_saca_para_tonelada(), preco_tonelada_para_saca()
+            - Suporte: kg, sc60kg, sc50kg, ton, bu, arroba
+        * normalize/dates.py:
+            - safra_atual() → '2024/25'
+            - validar_safra(), normalizar_safra()
+            - safra_para_anos(), anos_para_safra()
+            - safra_anterior(), safra_posterior()
+            - lista_safras(), periodo_safra()
+        * normalize/regions.py:
+            - normalizar_uf(), uf_para_nome(), uf_para_regiao()
+            - uf_para_ibge(), ibge_para_uf()
+            - listar_ufs(), listar_regioes()
+            - normalizar_municipio(), normalizar_praca()
+            - Mapeamento completo dos 27 estados
+        * cache/policies.py:
+            - CachePolicy(ttl_seconds, stale_max_seconds, description)
+            - Políticas por fonte: CEPEA, CONAB, IBGE
+            - get_policy(), get_ttl(), get_stale_max()
+            - is_expired(), is_stale_acceptable(), calculate_expiry()
+        * cache/history.py:
+            - HistoryManager: gerenciador de histórico permanente
+            - save(), get(), query(), find_gaps()
+            - Separação cache volátil vs histórico permanente
+        * health/reporter.py:
+            - HealthReport: relatório de saúde
+            - to_json(), to_markdown(), to_html(), save()
+            - generate_report() - gera relatório de todas as fontes
+        * validators/structural.py:
+            - StructuralValidationResult
+            - validate_structure() - valida com threshold
+            - compare_fingerprints() - comparação detalhada
+            - validate_against_baseline() - valida contra baseline
+            - load_baseline(), save_baseline()
+            - StructuralMonitor - monitoramento contínuo
+        * cepea/parsers/consensus.py:
+            - ConsensusResult, ParserDivergence
+            - parse_with_consensus() - multi-parser validation
+            - analyze_consensus() - análise de divergências
+            - select_best_result() - seleção de melhor resultado
+            - ConsensusValidator - validador contínuo
+    - Atualizados __init__.py:
+        * normalize/__init__.py (exports units, dates, regions)
+        * cache/__init__.py (exports policies, history)
+        * health/__init__.py (exports reporter)
+        * validators/__init__.py (exports structural)
+        * cepea/parsers/__init__.py (exports consensus)
+    - Correções:
+        * FIX: regions.py - remover_acentos() definida antes de uso
+    - Testes: 101 passando (99 passed, 2 skipped polars)
+    - Todos os blocos A-E completos!
+
+2026-02-04 - Sessão 7b (README e Documentação Final)
+    - README.md completamente reescrito:
+        * Badges: PyPI, Tests, Health Check, Python 3.11+, MIT, Ruff
+        * Exemplos completos para CEPEA, CONAB, IBGE
+        * Seção modo síncrono e suporte Polars
+        * Comandos CLI documentados
+        * Tabela de fontes com status ✅ Funcional
+        * Seção "Como Funciona" explicando acumulação de histórico
+        * Links para documentação MkDocs
+    - Atualizado GitHub username em todos os arquivos:
+        * README.md
+        * mkdocs.yml
+        * docs/index.md
+        * docs/quickstart.md
+        * docs/advanced/troubleshooting.md
+        * CONTRIBUTING.md
+        * CHANGELOG.md
+        * pyproject.toml
+    - GitHub: bruno-portfolio/agrobr
+    - PyPI: agrobr (registrado)
+    - Testes: 99 passed, 2 skipped
+    - Projeto pronto para publicação!
+
+
+================================================================================
+PARTE 33: ESTRUTURA FINAL DO PROJETO (2026-02-04)
+================================================================================
+
+ARQUIVOS DO PROJETO
+-------------------
+
+agrobr/
+├── agrobr/
+│   ├── __init__.py
+│   ├── constants.py
+│   ├── exceptions.py
+│   ├── models.py
+│   ├── cli.py
+│   ├── sync.py
+│   │
+│   ├── cepea/
+│   │   ├── __init__.py
+│   │   ├── api.py
+│   │   ├── client.py
+│   │   └── parsers/
+│   │       ├── __init__.py
+│   │       ├── base.py
+│   │       ├── v1.py
+│   │       ├── fingerprint.py
+│   │       ├── detector.py
+│   │       └── consensus.py          ← NOVO
+│   │
+│   ├── conab/
+│   │   ├── __init__.py
+│   │   ├── api.py
+│   │   ├── client.py
+│   │   └── parsers/
+│   │       ├── __init__.py
+│   │       └── v1.py
+│   │
+│   ├── ibge/
+│   │   ├── __init__.py
+│   │   ├── api.py
+│   │   └── client.py
+│   │
+│   ├── noticias_agricolas/
+│   │   ├── __init__.py
+│   │   ├── client.py
+│   │   └── parser.py
+│   │
+│   ├── cache/
+│   │   ├── __init__.py
+│   │   ├── duckdb_store.py
+│   │   ├── migrations.py
+│   │   ├── policies.py               ← NOVO
+│   │   └── history.py                ← NOVO
+│   │
+│   ├── normalize/
+│   │   ├── __init__.py
+│   │   ├── encoding.py
+│   │   ├── units.py                  ← NOVO
+│   │   ├── dates.py                  ← NOVO
+│   │   └── regions.py                ← NOVO
+│   │
+│   ├── http/
+│   │   ├── __init__.py
+│   │   ├── user_agents.py
+│   │   ├── retry.py
+│   │   ├── rate_limiter.py
+│   │   └── browser.py
+│   │
+│   ├── validators/
+│   │   ├── __init__.py
+│   │   ├── sanity.py
+│   │   └── structural.py             ← NOVO
+│   │
+│   ├── alerts/
+│   │   ├── __init__.py
+│   │   └── notifier.py
+│   │
+│   ├── health/
+│   │   ├── __init__.py
+│   │   ├── checker.py
+│   │   └── reporter.py               ← NOVO
+│   │
+│   ├── telemetry/
+│   │   ├── __init__.py
+│   │   └── collector.py
+│   │
+│   └── utils/
+│       ├── __init__.py
+│       └── logging.py
+│
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py
+│   ├── test_golden.py
+│   ├── test_cepea/
+│   ├── test_conab/
+│   ├── test_ibge/
+│   ├── test_noticias_agricolas/
+│   └── test_validators/
+│
+├── scripts/
+│   ├── fetch_structures.py
+│   ├── compare_structures.py
+│   ├── update_golden.py
+│   ├── alert_structure_change.py
+│   └── create_workflows.py
+│
+├── docs/                              ← NOVO
+│   ├── index.md
+│   ├── quickstart.md
+│   ├── api/
+│   │   ├── cepea.md
+│   │   ├── conab.md
+│   │   └── ibge.md
+│   └── advanced/
+│       ├── resilience.md
+│       └── troubleshooting.md
+│
+├── examples/                          ← NOVO
+│   ├── pipeline_async.py
+│   └── analise_soja.py
+│
+├── .github/
+│   └── workflows/
+│       ├── tests.yml
+│       ├── health_check.yml
+│       ├── structure_monitor.yml
+│       └── publish.yml               ← NOVO
+│
+├── .structures/
+│   └── baseline.json
+│
+├── pyproject.toml
+├── README.md
+├── CHANGELOG.md                       ← NOVO
+├── CONTRIBUTING.md                    ← NOVO
+├── CODE_OF_CONDUCT.md                 ← NOVO
+├── LICENSE                            ← NOVO
+└── mkdocs.yml                         ← NOVO
+
+
+CONTAGEM DE ARQUIVOS
+--------------------
+Módulos Python (agrobr/):     53 arquivos
+Testes (tests/):              14 arquivos
+Scripts:                       5 arquivos
+Documentação (docs/):          7 arquivos
+Exemplos:                      2 arquivos
+Workflows (.github/):          4 arquivos
+Config/Meta:                   7 arquivos (pyproject, readme, license, etc)
+-------------------------------------------------
+TOTAL:                        92 arquivos
+
+
+PRÓXIMOS PASSOS PARA v0.1.0
+---------------------------
+[X] Revisar README.md com badges - 2026-02-04
+[X] Verificar nome PyPI disponível - 2026-02-04 (registrado)
+[X] Repositório GitHub criado - 2026-02-04 (bruno-portfolio/agrobr)
+[ ] Push inicial para GitHub
+[ ] Criar release tag no GitHub
+[ ] Publicar no PyPI (usar publish.yml)
+[ ] Post de lançamento LinkedIn/Twitter
+
+
+================================================================================
+                              FIM DO DOCUMENTO v3.9
+================================================================================

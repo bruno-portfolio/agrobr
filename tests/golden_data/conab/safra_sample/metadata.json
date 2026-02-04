@@ -1,0 +1,11 @@
+{
+    "source": "conab",
+    "type": "safra_graos",
+    "captured_at": "2026-02-03T23:43:00Z",
+    "parser_version": 1,
+    "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/3o-levantamento-safra-2025-26/site_previsao_de_safra-por_produto-dez-2025.xlsx",
+    "levantamento": 3,
+    "safra": "2025/26",
+    "mes_referencia": "dez-2025",
+    "notes": "3o levantamento da safra 2025/26, publicado em dezembro de 2025"
+}
