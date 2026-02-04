@@ -13,7 +13,7 @@ class CachePolicy(NamedTuple):
     ttl_seconds: int
     stale_max_seconds: int
     description: str
-    smart_expiry: bool = False  # Se True, usa horário fixo de expiração
+    smart_expiry: bool = False
 
 
 class TTL(Enum):
@@ -30,14 +30,13 @@ class TTL(Enum):
     DAYS_90 = 90 * 24 * 60 * 60
 
 
-# Horário de atualização do CEPEA (18:00 Brasília)
 CEPEA_UPDATE_HOUR = 18
 CEPEA_UPDATE_MINUTE = 0
 
 
 POLICIES: dict[str, CachePolicy] = {
     "cepea_diario": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,  # Fallback se smart_expiry falhar
+        ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.HOURS_24.value * 2,
         description="CEPEA indicador diário (expira às 18h)",
         smart_expiry=True,
@@ -73,7 +72,7 @@ POLICIES: dict[str, CachePolicy] = {
         smart_expiry=False,
     ),
     "noticias_agricolas": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,  # Fallback
+        ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.HOURS_24.value * 2,
         description="Notícias Agrícolas (expira às 18h, mirror CEPEA)",
         smart_expiry=True,
@@ -129,10 +128,8 @@ def _get_smart_expiry_time() -> datetime:
     today_expiry = datetime.combine(now.date(), time(CEPEA_UPDATE_HOUR, CEPEA_UPDATE_MINUTE))
 
     if now < today_expiry:
-        # Ainda não chegou às 18h hoje → expira hoje às 18h
         return today_expiry
     else:
-        # Já passou das 18h → expira amanhã às 18h
         return today_expiry + timedelta(days=1)
 
 
@@ -192,11 +189,9 @@ def is_expired(created_at: datetime, source: Fonte | str, endpoint: str | None =
     policy = get_policy(source, endpoint)
 
     if policy.smart_expiry:
-        # Smart expiry: cache válido se criado após última expiração (18h)
         last_expiry = _get_last_expiry_time()
         return created_at < last_expiry
 
-    # TTL fixo tradicional
     expires_at = created_at + timedelta(seconds=policy.ttl_seconds)
     return datetime.now() > expires_at
 

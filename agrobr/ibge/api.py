@@ -2,14 +2,45 @@
 
 from __future__ import annotations
 
-from typing import Literal
+import time
+from datetime import datetime
+from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import constants
+from agrobr.cache.policies import calculate_expiry
 from agrobr.ibge import client
+from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
+
+
+@overload
+async def pam(
+    produto: str,
+    ano: int | str | list[int] | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variaveis: list[str] | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def pam(
+    produto: str,
+    ano: int | str | list[int] | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variaveis: list[str] | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def pam(
@@ -19,7 +50,8 @@ async def pam(
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame:
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     """
     Obtém dados da Produção Agrícola Municipal (PAM).
 
@@ -30,14 +62,22 @@ async def pam(
         nivel: Nível territorial ("brasil", "uf", "municipio")
         variaveis: Lista de variáveis (area_plantada, area_colhida, producao, rendimento)
         as_polars: Se True, retorna polars.DataFrame
+        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
 
     Returns:
-        DataFrame com dados da PAM
+        DataFrame com dados da PAM ou tupla (DataFrame, MetaInfo)
 
     Example:
         >>> df = await ibge.pam('soja', ano=2023)
-        >>> df = await ibge.pam('milho', ano=[2020, 2021, 2022], uf='MT')
+        >>> df, meta = await ibge.pam('milho', ano=[2020, 2021, 2022], uf='MT', return_meta=True)
     """
+    fetch_start = time.perf_counter()
+    meta = MetaInfo(
+        source="ibge_pam",
+        source_url="https://sidra.ibge.gov.br",
+        source_method="httpx",
+        fetched_at=datetime.now(),
+    )
     logger.info(
         "ibge_pam_request",
         produto=produto,
@@ -46,7 +86,6 @@ async def pam(
         nivel=nivel,
     )
 
-    # Mapeia produto para código SIDRA
     produto_lower = produto.lower()
     if produto_lower not in client.PRODUTOS_PAM:
         raise ValueError(
@@ -55,7 +94,6 @@ async def pam(
 
     produto_cod = client.PRODUTOS_PAM[produto_lower]
 
-    # Mapeia variáveis
     if variaveis is None:
         variaveis = ["area_plantada", "area_colhida", "producao", "rendimento"]
 
@@ -66,7 +104,6 @@ async def pam(
         else:
             logger.warning(f"Variável desconhecida: {var}")
 
-    # Mapeia nível territorial
     nivel_map = {
         "brasil": "1",
         "uf": "3",
@@ -74,12 +111,10 @@ async def pam(
     }
     territorial_level = nivel_map.get(nivel, "3")
 
-    # Define código territorial
     ibge_code = "all"
     if uf and nivel in ("uf", "municipio"):
         ibge_code = client.uf_to_ibge_code(uf)
 
-    # Define período
     if ano is None:
         period = "last"
     elif isinstance(ano, list):
@@ -87,7 +122,6 @@ async def pam(
     else:
         period = str(ano)
 
-    # Busca dados
     df = await client.fetch_sidra(
         table_code=client.TABELAS["pam_nova"],
         territorial_level=territorial_level,
@@ -97,10 +131,8 @@ async def pam(
         classifications={"782": produto_cod},
     )
 
-    # Processa resposta
     df = client.parse_sidra_response(df)
 
-    # Pivota para ter variáveis como colunas
     if "variavel" in df.columns and "valor" in df.columns:
         df_pivot = df.pivot_table(
             index=["localidade", "ano"] if "localidade" in df.columns else ["ano"],
@@ -109,7 +141,6 @@ async def pam(
             aggfunc="first",
         ).reset_index()
 
-        # Renomeia colunas para nomes mais simples
         rename_map = {
             "Área plantada": "area_plantada",
             "Área colhida": "area_colhida",
@@ -123,11 +154,20 @@ async def pam(
     df["produto"] = produto_lower
     df["fonte"] = "ibge_pam"
 
+    meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+    meta.records_count = len(df)
+    meta.columns = df.columns.tolist()
+    meta.cache_key = f"ibge:pam:{produto}:{ano}"
+    meta.cache_expires_at = calculate_expiry(constants.Fonte.IBGE, "pam")
+
     if as_polars:
         try:
             import polars as pl
 
-            return pl.from_pandas(df)  # type: ignore[no-any-return]
+            result_df = pl.from_pandas(df)
+            if return_meta:
+                return result_df, meta  # type: ignore[return-value]
+            return result_df  # type: ignore[return-value]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
@@ -137,7 +177,33 @@ async def pam(
         records=len(df),
     )
 
+    if return_meta:
+        return df, meta
     return df
+
+
+@overload
+async def lspa(
+    produto: str,
+    ano: int | str | None = None,
+    mes: int | str | None = None,
+    uf: str | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def lspa(
+    produto: str,
+    ano: int | str | None = None,
+    mes: int | str | None = None,
+    uf: str | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def lspa(
@@ -146,7 +212,8 @@ async def lspa(
     mes: int | str | None = None,
     uf: str | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame:
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     """
     Obtém dados do Levantamento Sistemático da Produção Agrícola (LSPA).
 
@@ -158,14 +225,22 @@ async def lspa(
         mes: Mês de referência (1-12). Se None, retorna todos os meses do ano.
         uf: Filtrar por UF (ex: "MT", "PR")
         as_polars: Se True, retorna polars.DataFrame
+        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
 
     Returns:
-        DataFrame com estimativas LSPA
+        DataFrame com estimativas LSPA ou tupla (DataFrame, MetaInfo)
 
     Example:
         >>> df = await ibge.lspa('soja', ano=2024)
-        >>> df = await ibge.lspa('milho_1', ano=2024, mes=6, uf='PR')
+        >>> df, meta = await ibge.lspa('milho_1', ano=2024, mes=6, uf='PR', return_meta=True)
     """
+    fetch_start = time.perf_counter()
+    meta = MetaInfo(
+        source="ibge_lspa",
+        source_url="https://sidra.ibge.gov.br",
+        source_method="httpx",
+        fetched_at=datetime.now(),
+    )
     logger.info(
         "ibge_lspa_request",
         produto=produto,
@@ -174,7 +249,6 @@ async def lspa(
         uf=uf,
     )
 
-    # Mapeia produto para código SIDRA
     produto_lower = produto.lower()
     if produto_lower not in client.PRODUTOS_LSPA:
         raise ValueError(
@@ -183,20 +257,16 @@ async def lspa(
 
     produto_cod = client.PRODUTOS_LSPA[produto_lower]
 
-    # Define período
     if ano is None:
         from datetime import date
 
         ano = date.today().year
 
-    # Define período
     period = f"{ano}{int(mes):02d}" if mes else ",".join(f"{ano}{m:02d}" for m in range(1, 13))
 
-    # Define nível territorial
     territorial_level = "3" if uf else "1"
     ibge_code = client.uf_to_ibge_code(uf) if uf else "all"
 
-    # Busca dados (não especifica variáveis - retorna todas)
     df = await client.fetch_sidra(
         table_code=client.TABELAS["lspa"],
         territorial_level=territorial_level,
@@ -205,10 +275,8 @@ async def lspa(
         classifications={"48": produto_cod},
     )
 
-    # Processa resposta
     df = client.parse_sidra_response(df)
 
-    # Adiciona período da consulta
     df["ano"] = ano
     if mes:
         df["mes"] = mes
@@ -216,11 +284,20 @@ async def lspa(
     df["produto"] = produto_lower
     df["fonte"] = "ibge_lspa"
 
+    meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+    meta.records_count = len(df)
+    meta.columns = df.columns.tolist()
+    meta.cache_key = f"ibge:lspa:{produto}:{ano}:{mes}"
+    meta.cache_expires_at = calculate_expiry(constants.Fonte.IBGE, "lspa")
+
     if as_polars:
         try:
             import polars as pl
 
-            return pl.from_pandas(df)  # type: ignore[no-any-return]
+            result_df = pl.from_pandas(df)
+            if return_meta:
+                return result_df, meta  # type: ignore[return-value]
+            return result_df  # type: ignore[return-value]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
@@ -230,6 +307,8 @@ async def lspa(
         records=len(df),
     )
 
+    if return_meta:
+        return df, meta
     return df
 
 

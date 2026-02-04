@@ -14,7 +14,6 @@ from agrobr.models import Indicador
 
 logger = structlog.get_logger()
 
-# Mapeamento de produtos para unidades
 UNIDADES = {
     "soja": "BRL/sc60kg",
     "soja_parana": "BRL/sc60kg",
@@ -27,7 +26,6 @@ UNIDADES = {
     "trigo": "BRL/ton",
 }
 
-# Mapeamento de produtos para praça
 PRACAS = {
     "soja": "Paranaguá/PR",
     "soja_parana": "Paraná",
@@ -45,7 +43,6 @@ def _parse_date(date_str: str) -> datetime | None:
     """Converte string de data para datetime."""
     date_str = date_str.strip()
 
-    # Formato: DD/MM/YYYY
     match = re.match(r"(\d{2})/(\d{2})/(\d{4})", date_str)
     if match:
         day, month, year = match.groups()
@@ -61,10 +58,8 @@ def _parse_valor(valor_str: str) -> Decimal | None:
     """Converte string de valor para Decimal."""
     valor_str = valor_str.strip()
 
-    # Remove "R$" e espaços
     valor_str = re.sub(r"R\$\s*", "", valor_str)
 
-    # Substitui vírgula por ponto
     valor_str = valor_str.replace(".", "").replace(",", ".")
 
     try:
@@ -77,10 +72,8 @@ def _parse_variacao(var_str: str) -> Decimal | None:
     """Converte string de variação para Decimal."""
     var_str = var_str.strip()
 
-    # Remove % e espaços
     var_str = re.sub(r"[%\s]", "", var_str)
 
-    # Substitui vírgula por ponto
     var_str = var_str.replace(",", ".")
 
     try:
@@ -107,26 +100,18 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
     unidade = UNIDADES.get(produto_lower, "BRL/unidade")
     praca = PRACAS.get(produto_lower)
 
-    # Estrutura do Notícias Agrícolas:
-    # Tabela com classe "cot-fisicas" ou tabelas genéricas
-    # Headers: Data | Valor R$ | Variação (%)
-
-    # Primeiro tenta tabela específica de cotações
     tables = soup.find_all("table", class_="cot-fisicas")
 
-    # Se não encontrar, tenta todas as tabelas
     if not tables:
         tables = soup.find_all("table")
 
     for table in tables:
-        # Verifica se é tabela de cotação
         headers = table.find_all("th")
         header_text = " ".join(h.get_text(strip=True).lower() for h in headers)
 
         if "data" not in header_text or "valor" not in header_text:
             continue
 
-        # Extrai todas as linhas de dados (tbody > tr)
         tbody = table.find("tbody")
         rows = tbody.find_all("tr") if tbody else table.find_all("tr")[1:]
 
@@ -136,7 +121,6 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
             if len(cells) < 2:
                 continue
 
-            # Extrai data e valor
             data_str = cells[0].get_text(strip=True)
             valor_str = cells[1].get_text(strip=True)
 
@@ -152,7 +136,6 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
                 )
                 continue
 
-            # Extrai variação se disponível
             meta: dict[str, str | float] = {}
             if len(cells) >= 3:
                 var_str = cells[2].get_text(strip=True)

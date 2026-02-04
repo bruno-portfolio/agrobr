@@ -15,7 +15,6 @@ from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-# Singleton para reutilizar browser
 _playwright: Playwright | None = None
 _browser: Browser | None = None
 _lock = asyncio.Lock()
@@ -64,7 +63,6 @@ async def get_page() -> AsyncGenerator[Page, None]:
     """Context manager para obter uma página do browser."""
     browser = await _get_browser()
 
-    # Cria contexto com fingerprint realista
     ua = UserAgentRotator.get_random()
     context = await browser.new_context(
         user_agent=ua,
@@ -78,7 +76,6 @@ async def get_page() -> AsyncGenerator[Page, None]:
 
     page = await context.new_page()
 
-    # Esconde sinais de automação
     await page.add_init_script(
         """
         Object.defineProperty(navigator, 'webdriver', {
@@ -124,7 +121,6 @@ async def fetch_with_browser(
 
     try:
         async with get_page() as page:
-            # Navega para a URL
             response = await page.goto(
                 url,
                 wait_until="domcontentloaded",
@@ -138,7 +134,6 @@ async def fetch_with_browser(
                     last_error="No response received",
                 )
 
-            # Aguarda seletor específico se fornecido
             if wait_selector:
                 try:
                     await page.wait_for_selector(
@@ -152,13 +147,10 @@ async def fetch_with_browser(
                         error=str(e),
                     )
 
-            # Aguarda Cloudflare resolver e JS terminar
             await page.wait_for_timeout(5000)
 
-            # Verifica se foi bloqueado pelo Cloudflare
             if response.status in (403, 503):
                 check_html: str = await page.content()
-                # Detecta página de challenge do Cloudflare
                 if "cloudflare" in check_html.lower() or "challenge" in check_html.lower():
                     raise SourceUnavailableError(
                         source=source,
@@ -166,7 +158,6 @@ async def fetch_with_browser(
                         last_error=f"Cloudflare block detected (status {response.status})",
                     )
 
-            # Obtém HTML
             html: str = await page.content()
 
             logger.info(

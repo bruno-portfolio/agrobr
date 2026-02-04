@@ -12,7 +12,7 @@ class Fonte(StrEnum):
     CEPEA = "cepea"
     CONAB = "conab"
     IBGE = "ibge"
-    NOTICIAS_AGRICOLAS = "noticias_agricolas"  # Fonte alternativa para CEPEA
+    NOTICIAS_AGRICOLAS = "noticias_agricolas"
 
 
 URLS = {
@@ -35,7 +35,6 @@ URLS = {
     },
 }
 
-# Mapeamento de produtos para URLs do Notícias Agrícolas (indicadores CEPEA)
 NOTICIAS_AGRICOLAS_PRODUTOS = {
     "soja": "soja/soja-indicador-cepea-esalq-porto-paranagua",
     "soja_parana": "soja/indicador-cepea-esalq-soja-parana",

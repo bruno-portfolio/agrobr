@@ -1,2 +1,27 @@
-nul
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+dist/
+*.egg-info/
+
+# Cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Project
+.claude/
 agrobr_v3.txt
+agrobr_roadmap_v2.txt

@@ -2,18 +2,21 @@
 
 from __future__ import annotations
 
+import hashlib
+import time
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 import pandas as pd
 import structlog
 
 from agrobr import constants
 from agrobr.cache.duckdb_store import get_store
+from agrobr.cache.policies import calculate_expiry
 from agrobr.cepea import client
 from agrobr.cepea.parsers.detector import get_parser_with_fallback
-from agrobr.models import Indicador
+from agrobr.models import Indicador, MetaInfo
 from agrobr.validators.sanity import validate_batch
 
 if TYPE_CHECKING:
@@ -21,8 +24,39 @@ if TYPE_CHECKING:
 
 logger = structlog.get_logger()
 
-# Janela de dados disponível na fonte (Notícias Agrícolas tem ~10 dias)
 SOURCE_WINDOW_DAYS = 10
+
+
+@overload
+async def indicador(
+    produto: str,
+    praca: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    _moeda: str = "BRL",
+    as_polars: bool = False,
+    validate_sanity: bool = False,
+    force_refresh: bool = False,
+    offline: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame | pl.DataFrame: ...
+
+
+@overload
+async def indicador(
+    produto: str,
+    praca: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    _moeda: str = "BRL",
+    as_polars: bool = False,
+    validate_sanity: bool = False,
+    force_refresh: bool = False,
+    offline: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame | pl.DataFrame, MetaInfo]: ...
 
 
 async def indicador(
@@ -35,7 +69,8 @@ async def indicador(
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-) -> pd.DataFrame | pl.DataFrame:
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]:
     """
     Obtém série de indicadores de preço do CEPEA.
 
@@ -55,17 +90,23 @@ async def indicador(
         validate_sanity: Se True, valida dados estatisticamente
         force_refresh: Se True, ignora histórico e busca da fonte
         offline: Se True, usa apenas histórico local
+        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
 
     Returns:
-        DataFrame com indicadores
+        DataFrame com indicadores ou tupla (DataFrame, MetaInfo) se return_meta=True
     """
-    # Normaliza datas
+    fetch_start = time.perf_counter()
+    meta = MetaInfo(
+        source="unknown",
+        source_url="",
+        source_method="unknown",
+        fetched_at=datetime.now(),
+    )
     if isinstance(inicio, str):
         inicio = datetime.strptime(inicio, "%Y-%m-%d").date()
     if isinstance(fim, str):
         fim = datetime.strptime(fim, "%Y-%m-%d").date()
 
-    # Default: último ano
     if fim is None:
         fim = date.today()
     if inicio is None:
@@ -74,7 +115,9 @@ async def indicador(
     store = get_store()
     indicadores: list[Indicador] = []
 
-    # 1. Busca no histórico local
+    source_url = ""
+    parser_version = 1
+
     if not force_refresh:
         cached_data = store.indicadores_query(
             produto=produto,
@@ -85,6 +128,11 @@ async def indicador(
 
         indicadores = _dicts_to_indicadores(cached_data)
 
+        if indicadores:
+            meta.from_cache = True
+            meta.source = "cache"
+            meta.source_method = "duckdb"
+
         logger.info(
             "history_query",
             produto=produto,
@@ -93,54 +141,61 @@ async def indicador(
             cached_count=len(indicadores),
         )
 
-    # 2. Verifica se precisa buscar dados recentes
     needs_fetch = False
     if not offline:
         if force_refresh:
             needs_fetch = True
         else:
-            # Verifica se faltam dados na janela recente
             today = date.today()
             recent_start = today - timedelta(days=SOURCE_WINDOW_DAYS)
 
-            # Se o período solicitado inclui dados recentes
             if fim >= recent_start:
                 existing_dates = {ind.data for ind in indicadores}
-                # Verifica se tem lacunas nos últimos dias
                 for i in range(min(SOURCE_WINDOW_DAYS, (fim - max(inicio, recent_start)).days + 1)):
                     check_date = fim - timedelta(days=i)
-                    # Pula fins de semana (CEPEA não publica)
                     if check_date.weekday() < 5 and check_date not in existing_dates:
                         needs_fetch = True
                         break
 
-    # 3. Busca da fonte se necessário
     if needs_fetch:
         logger.info("fetching_from_source", produto=produto)
 
         try:
-            # Tenta buscar - pode vir do CEPEA ou Notícias Agrícolas
+            parse_start = time.perf_counter()
             html = await client.fetch_indicador_page(produto)
+            raw_content_size = len(html.encode("utf-8"))
+            raw_content_hash = f"sha256:{hashlib.sha256(html.encode('utf-8')).hexdigest()[:16]}"
 
-            # Detecta fonte pelo conteúdo do HTML
             is_noticias_agricolas = "noticiasagricolas" in html.lower() or "cot-fisicas" in html
 
             if is_noticias_agricolas:
-                # Usa parser de Notícias Agrícolas
                 from agrobr.noticias_agricolas.parser import parse_indicador as na_parse
 
                 new_indicadores = na_parse(html, produto)
+                source_url = f"https://www.noticiasagricolas.com.br/cotacoes/{produto}"
+                meta.source = "noticias_agricolas"
+                meta.source_method = "httpx"
                 logger.info(
                     "parse_success",
                     source="noticias_agricolas",
                     records_count=len(new_indicadores),
                 )
             else:
-                # Usa parser CEPEA
                 parser, new_indicadores = await get_parser_with_fallback(html, produto)
+                source_url = f"https://www.cepea.esalq.usp.br/br/indicador/{produto}.aspx"
+                meta.source = "cepea"
+                meta.source_method = "httpx"
+                parser_version = parser.version
+
+            parse_duration_ms = int((time.perf_counter() - parse_start) * 1000)
+            meta.parse_duration_ms = parse_duration_ms
+            meta.source_url = source_url
+            meta.raw_content_hash = raw_content_hash
+            meta.raw_content_size = raw_content_size
+            meta.parser_version = parser_version
+            meta.from_cache = False
 
             if new_indicadores:
-                # 4. Salva novos dados no histórico
                 new_dicts = _indicadores_to_dicts(new_indicadores)
                 saved_count = store.indicadores_upsert(new_dicts)
 
@@ -151,7 +206,6 @@ async def indicador(
                     saved=saved_count,
                 )
 
-                # Merge com dados existentes
                 existing_dates = {ind.data for ind in indicadores}
                 for ind in new_indicadores:
                     if ind.data not in existing_dates:
@@ -163,13 +217,11 @@ async def indicador(
                 produto=produto,
                 error=str(e),
             )
-            # Continua com dados do histórico
+            meta.validation_warnings.append(f"source_fetch_failed: {e}")
 
-    # 5. Validação estatística
     if validate_sanity and indicadores:
         indicadores, anomalies = await validate_batch(indicadores)
 
-    # 6. Filtra por período e praça
     indicadores = [ind for ind in indicadores if inicio <= ind.data <= fim]
 
     if praca:
@@ -177,17 +229,27 @@ async def indicador(
             ind for ind in indicadores if ind.praca and ind.praca.lower() == praca.lower()
         ]
 
-    # 7. Converte para DataFrame
     df = _to_dataframe(indicadores)
+
+    meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+    meta.records_count = len(df)
+    meta.columns = df.columns.tolist() if not df.empty else []
+    meta.cache_key = f"cepea:{produto}:{praca or 'all'}"
+    meta.cache_expires_at = calculate_expiry(constants.Fonte.CEPEA)
 
     if as_polars:
         try:
             import polars as pl
 
-            return pl.from_pandas(df)
+            result_df = pl.from_pandas(df)
+            if return_meta:
+                return result_df, meta
+            return result_df
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
+    if return_meta:
+        return df, meta
     return df
 
 
@@ -270,7 +332,6 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
     store = get_store()
     indicadores: list[Indicador] = []
 
-    # Busca no histórico (últimos 30 dias)
     fim = date.today()
     inicio = fim - timedelta(days=30)
 
@@ -284,7 +345,6 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
     if cached_data:
         indicadores = _dicts_to_indicadores(cached_data)
 
-    # Se não tem dados recentes ou não está offline, busca da fonte
     if not offline:
         has_recent = any(ind.data >= fim - timedelta(days=3) for ind in indicadores)
 
@@ -292,7 +352,6 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
             try:
                 html = await client.fetch_indicador_page(produto)
 
-                # Detecta fonte pelo conteúdo do HTML
                 is_noticias_agricolas = "noticiasagricolas" in html.lower() or "cot-fisicas" in html
 
                 if is_noticias_agricolas:
@@ -303,11 +362,9 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
                     parser, new_indicadores = await get_parser_with_fallback(html, produto)
 
                 if new_indicadores:
-                    # Salva no histórico
                     new_dicts = _indicadores_to_dicts(new_indicadores)
                     store.indicadores_upsert(new_dicts)
 
-                    # Merge
                     existing_dates = {ind.data for ind in indicadores}
                     for ind in new_indicadores:
                         if ind.data not in existing_dates:

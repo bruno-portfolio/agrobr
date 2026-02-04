@@ -68,6 +68,29 @@ def health(
         typer.echo(json.dumps(result, indent=2))
 
 
+@app.command("doctor")  # type: ignore[misc]
+def doctor(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Mostra informacoes detalhadas"),
+    json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
+) -> None:
+    """Diagnostica saude do sistema, conectividade e cache."""
+    import asyncio
+
+    from agrobr.health.doctor import run_diagnostics
+
+    try:
+        result = asyncio.run(run_diagnostics(verbose=verbose))
+
+        if json_output:
+            typer.echo(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+        else:
+            typer.echo(result.to_rich())
+
+    except Exception as e:
+        typer.echo(f"Erro ao executar diagnostico: {e}", err=True)
+        raise typer.Exit(1) from None
+
+
 cache_app = typer.Typer(help="Gerenciamento de cache")
 app.add_typer(cache_app, name="cache")
 
@@ -191,10 +214,6 @@ def conab_produtos() -> None:
         typer.echo(f"  - {prod}")
 
 
-# =============================================================================
-# IBGE Commands
-# =============================================================================
-
 ibge_app = typer.Typer(help="Dados IBGE - PAM e LSPA")
 app.add_typer(ibge_app, name="ibge")
 
@@ -217,7 +236,6 @@ def ibge_pam(
     typer.echo(f"Consultando PAM para {produto}...")
 
     try:
-        # Parse ano
         ano_param: int | list[int] | None = None
         if ano:
             ano_param = [int(a.strip()) for a in ano.split(",")] if "," in ano else int(ano)
@@ -298,6 +316,9 @@ def ibge_produtos(
 config_app = typer.Typer(help="Configuracoes")
 app.add_typer(config_app, name="config")
 
+snapshot_app = typer.Typer(help="Gerenciamento de snapshots para modo deterministico")
+app.add_typer(snapshot_app, name="snapshot")
+
 
 @config_app.command("show")  # type: ignore[misc]
 def config_show() -> None:
@@ -317,6 +338,121 @@ def config_show() -> None:
     alerts = constants.AlertSettings()
     typer.echo(f"  enabled: {alerts.enabled}")
     typer.echo(f"  slack_webhook: {'configured' if alerts.slack_webhook else 'not set'}")
+
+
+@snapshot_app.command("list")  # type: ignore[misc]
+def snapshot_list(
+    json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
+) -> None:
+    """Lista todos os snapshots disponiveis."""
+    from agrobr.snapshots import list_snapshots
+
+    snapshots = list_snapshots()
+
+    if not snapshots:
+        typer.echo("Nenhum snapshot encontrado.")
+        typer.echo("Use 'agrobr snapshot create' para criar um snapshot.")
+        return
+
+    if json_output:
+        data = [
+            {
+                "name": s.name,
+                "created_at": s.created_at.isoformat(),
+                "size_mb": round(s.size_bytes / 1024 / 1024, 2),
+                "sources": s.sources,
+                "files": s.file_count,
+            }
+            for s in snapshots
+        ]
+        typer.echo(json.dumps(data, indent=2))
+    else:
+        typer.echo("Snapshots disponiveis:")
+        typer.echo("-" * 60)
+        for s in snapshots:
+            size_mb = s.size_bytes / 1024 / 1024
+            typer.echo(f"  {s.name}")
+            typer.echo(f"    Criado em: {s.created_at.strftime('%Y-%m-%d %H:%M')}")
+            typer.echo(f"    Tamanho: {size_mb:.2f} MB")
+            typer.echo(f"    Fontes: {', '.join(s.sources)}")
+            typer.echo(f"    Arquivos: {s.file_count}")
+            typer.echo()
+
+
+@snapshot_app.command("create")  # type: ignore[misc]
+def snapshot_create(
+    name: str | None = typer.Argument(None, help="Nome do snapshot (default: data atual)"),
+    sources: str | None = typer.Option(
+        None, "--sources", "-s", help="Fontes a incluir (ex: cepea,conab,ibge)"
+    ),
+) -> None:
+    """Cria um novo snapshot dos dados atuais."""
+    import asyncio
+
+    from agrobr.snapshots import create_snapshot
+
+    source_list = sources.split(",") if sources else None
+
+    typer.echo(f"Criando snapshot{f' {name}' if name else ''}...")
+
+    try:
+        info = asyncio.run(create_snapshot(name=name, sources=source_list))
+        typer.echo("Snapshot criado com sucesso!")
+        typer.echo(f"  Nome: {info.name}")
+        typer.echo(f"  Caminho: {info.path}")
+        typer.echo(f"  Arquivos: {info.file_count}")
+    except ValueError as e:
+        typer.echo(f"Erro: {e}", err=True)
+        raise typer.Exit(1) from None
+    except Exception as e:
+        typer.echo(f"Erro ao criar snapshot: {e}", err=True)
+        raise typer.Exit(1) from None
+
+
+@snapshot_app.command("delete")  # type: ignore[misc]
+def snapshot_delete(
+    name: str = typer.Argument(..., help="Nome do snapshot a remover"),
+    force: bool = typer.Option(False, "--force", "-f", help="Nao pedir confirmacao"),
+) -> None:
+    """Remove um snapshot."""
+    from agrobr.snapshots import delete_snapshot, get_snapshot
+
+    snapshot = get_snapshot(name)
+    if not snapshot:
+        typer.echo(f"Snapshot '{name}' nao encontrado.", err=True)
+        raise typer.Exit(1)
+
+    if not force:
+        confirm = typer.confirm(f"Remover snapshot '{name}'?")
+        if not confirm:
+            typer.echo("Operacao cancelada.")
+            return
+
+    if delete_snapshot(name):
+        typer.echo(f"Snapshot '{name}' removido com sucesso.")
+    else:
+        typer.echo("Erro ao remover snapshot.", err=True)
+        raise typer.Exit(1)
+
+
+@snapshot_app.command("use")  # type: ignore[misc]
+def snapshot_use(
+    name: str = typer.Argument(..., help="Nome do snapshot a usar"),
+) -> None:
+    """Configura agrobr para usar um snapshot (modo deterministico)."""
+    from agrobr.config import set_mode
+    from agrobr.snapshots import get_snapshot
+
+    snapshot = get_snapshot(name)
+    if not snapshot:
+        typer.echo(f"Snapshot '{name}' nao encontrado.", err=True)
+        typer.echo("Use 'agrobr snapshot list' para ver snapshots disponiveis.")
+        raise typer.Exit(1)
+
+    set_mode("deterministic", snapshot=name)
+    typer.echo(f"Modo deterministico ativado com snapshot '{name}'.")
+    typer.echo("Todas as chamadas usarao dados do snapshot.")
+    typer.echo("Use 'agrobr config mode normal' para voltar ao modo normal.")
 
 
 if __name__ == "__main__":

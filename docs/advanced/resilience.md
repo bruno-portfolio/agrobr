@@ -249,3 +249,60 @@ export AGROBR_TELEMETRY_ENABLED=true
 - IPs ou dados pessoais
 - Conteúdo dos dados
 - Informações identificáveis
+
+## Comando Doctor
+
+Use o comando `doctor` para diagnosticar saúde do sistema:
+
+```bash
+agrobr doctor
+```
+
+### Exemplo de saída
+
+```
+agrobr diagnostics v0.2.0
+==================================================
+
+Sources Connectivity
+  [OK] CEPEA (Noticias Agricolas)             142ms
+  [OK] CONAB                                   89ms
+  [OK] IBGE/SIDRA                              67ms
+
+Cache Status
+  Location:      ~/.agrobr/cache/agrobr.duckdb
+  Size:          2.40 MB
+  Total records: 1,247
+
+  By source:
+    CEPEA: 847 records (2025-01-21 to 2026-02-04)
+    CONAB: 305 records (2024-01-01 to 2026-02-04)
+    IBGE: 95 records (2020-01-01 to 2023-12-31)
+
+Cache Expiry
+  CEPEA: Expira as 18h (atualizacao CEPEA)
+  CONAB: TTL 24 horas
+  IBGE: TTL 7 dias
+
+Configuration
+  Browser fallback:   disabled
+  Alternative source: enabled
+
+[OK] All systems operational
+```
+
+### Output JSON
+
+Para integração com sistemas de monitoramento:
+
+```bash
+agrobr doctor --json
+```
+
+### Verbose
+
+Para informações detalhadas:
+
+```bash
+agrobr doctor --verbose
+```

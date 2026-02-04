@@ -1,0 +1,181 @@
+"""Contratos de estabilidade para dados CONAB."""
+
+from agrobr.contracts import BreakingChangePolicy, Column, ColumnType, Contract
+
+CONAB_SAFRA_V1 = Contract(
+    name="conab.safras",
+    version="1.0",
+    effective_from="0.3.0",
+    columns=[
+        Column(
+            name="fonte",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Fonte dos dados (conab)",
+        ),
+        Column(
+            name="produto",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Nome do produto",
+        ),
+        Column(
+            name="safra",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Safra no formato YYYY/YY",
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+            description="Sigla da UF",
+        ),
+        Column(
+            name="area_plantada",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ha",
+            stable=True,
+            description="Area plantada em mil hectares",
+        ),
+        Column(
+            name="area_colhida",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ha",
+            stable=True,
+            description="Area colhida em mil hectares",
+        ),
+        Column(
+            name="produtividade",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="kg/ha",
+            stable=True,
+            description="Produtividade em kg/ha",
+        ),
+        Column(
+            name="producao",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Producao em mil toneladas",
+        ),
+        Column(
+            name="levantamento",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            description="Numero do levantamento (1-12)",
+        ),
+        Column(
+            name="data_publicacao",
+            type=ColumnType.DATE,
+            nullable=False,
+            stable=True,
+            description="Data de publicacao do levantamento",
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'safra' always matches pattern YYYY/YY",
+        "'uf' is always a valid Brazilian state code",
+        "'levantamento' is between 1 and 12",
+        "Numeric values are always >= 0",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+CONAB_BALANCO_V1 = Contract(
+    name="conab.balanco",
+    version="1.0",
+    effective_from="0.3.0",
+    columns=[
+        Column(
+            name="produto",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Nome do produto",
+        ),
+        Column(
+            name="safra",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Safra de referencia",
+        ),
+        Column(
+            name="estoque_inicial",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Estoque inicial",
+        ),
+        Column(
+            name="producao",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Producao",
+        ),
+        Column(
+            name="importacao",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Importacao",
+        ),
+        Column(
+            name="suprimento",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Suprimento total",
+        ),
+        Column(
+            name="consumo",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Consumo interno",
+        ),
+        Column(
+            name="exportacao",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Exportacao",
+        ),
+        Column(
+            name="estoque_final",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="mil_ton",
+            stable=True,
+            description="Estoque final",
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "All numeric values represent thousands of tons",
+        "suprimento = estoque_inicial + producao + importacao",
+        "estoque_final = suprimento - consumo - exportacao",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+
+__all__ = ["CONAB_SAFRA_V1", "CONAB_BALANCO_V1"]

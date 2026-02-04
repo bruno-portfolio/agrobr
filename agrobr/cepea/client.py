@@ -14,9 +14,7 @@ from agrobr.normalize.encoding import decode_content
 
 logger = structlog.get_logger()
 
-# Flag para controlar uso de browser
 _use_browser: bool = False
-# Flag para controlar uso de fonte alternativa (Notícias Agrícolas)
 _use_alternative_source: bool = True
 
 
@@ -141,7 +139,6 @@ async def fetch_indicador_page(
     Raises:
         SourceUnavailableError: Se não conseguir acessar após todos os fallbacks
     """
-    # Se forçar fonte alternativa, vai direto para Notícias Agrícolas
     if force_alternative:
         return await _fetch_with_alternative_source(produto)
 
@@ -157,7 +154,6 @@ async def fetch_indicador_page(
 
     last_error: str = ""
 
-    # Passo 1: Tenta httpx (a menos que force_browser)
     if not force_browser:
         try:
             return await _fetch_with_httpx(url, headers)
@@ -170,7 +166,6 @@ async def fetch_indicador_page(
                 error=last_error,
             )
 
-    # Passo 2: Tenta browser (se habilitado)
     if _use_browser:
         try:
             return await _fetch_with_browser(produto)
@@ -183,7 +178,6 @@ async def fetch_indicador_page(
                 error=last_error,
             )
 
-    # Passo 3: Tenta fonte alternativa (se habilitado)
     if _use_alternative_source:
         try:
             return await _fetch_with_alternative_source(produto)
@@ -196,7 +190,6 @@ async def fetch_indicador_page(
                 error=last_error,
             )
 
-    # Todos os métodos falharam
     logger.error(
         "all_methods_failed",
         source="cepea",
