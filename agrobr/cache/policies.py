@@ -1,10 +1,6 @@
-"""
-Políticas de cache e TTL por fonte.
-"""
-
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from enum import Enum
 from typing import NamedTuple
 
@@ -17,6 +13,7 @@ class CachePolicy(NamedTuple):
     ttl_seconds: int
     stale_max_seconds: int
     description: str
+    smart_expiry: bool = False  # Se True, usa horário fixo de expiração
 
 
 class TTL(Enum):
@@ -33,41 +30,53 @@ class TTL(Enum):
     DAYS_90 = 90 * 24 * 60 * 60
 
 
+# Horário de atualização do CEPEA (18:00 Brasília)
+CEPEA_UPDATE_HOUR = 18
+CEPEA_UPDATE_MINUTE = 0
+
+
 POLICIES: dict[str, CachePolicy] = {
     "cepea_diario": CachePolicy(
-        ttl_seconds=TTL.HOURS_4.value,
+        ttl_seconds=TTL.HOURS_24.value,  # Fallback se smart_expiry falhar
         stale_max_seconds=TTL.HOURS_24.value * 2,
-        description="CEPEA indicador diário (atualiza ~18h)",
+        description="CEPEA indicador diário (expira às 18h)",
+        smart_expiry=True,
     ),
     "cepea_semanal": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_7.value,
         description="CEPEA indicador semanal (atualiza sexta)",
+        smart_expiry=False,
     ),
     "conab_safras": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_30.value,
         description="CONAB safras (atualiza mensalmente)",
+        smart_expiry=False,
     ),
     "conab_balanco": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_30.value,
         description="CONAB balanço (atualiza mensalmente)",
+        smart_expiry=False,
     ),
     "ibge_pam": CachePolicy(
         ttl_seconds=TTL.DAYS_7.value,
         stale_max_seconds=TTL.DAYS_90.value,
         description="IBGE PAM (atualiza anualmente)",
+        smart_expiry=False,
     ),
     "ibge_lspa": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.DAYS_30.value,
         description="IBGE LSPA (atualiza mensalmente)",
+        smart_expiry=False,
     ),
     "noticias_agricolas": CachePolicy(
-        ttl_seconds=TTL.HOURS_4.value,
+        ttl_seconds=TTL.HOURS_24.value,  # Fallback
         stale_max_seconds=TTL.HOURS_24.value * 2,
-        description="Notícias Agrícolas (mirror CEPEA)",
+        description="Notícias Agrícolas (expira às 18h, mirror CEPEA)",
+        smart_expiry=True,
     ),
 }
 
@@ -106,6 +115,40 @@ def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
     return POLICIES[default_key]
 
 
+def _get_smart_expiry_time() -> datetime:
+    """
+    Calcula próximo horário de expiração para CEPEA (18h).
+    
+    CEPEA atualiza dados por volta das 17-18h.
+    Cache expira às 18h para pegar dados novos.
+    
+    Returns:
+        Datetime da próxima expiração
+    """
+    now = datetime.now()
+    today_expiry = datetime.combine(
+        now.date(), 
+        time(CEPEA_UPDATE_HOUR, CEPEA_UPDATE_MINUTE)
+    )
+    
+    if now < today_expiry:
+        # Ainda não chegou às 18h hoje → expira hoje às 18h
+        return today_expiry
+    else:
+        # Já passou das 18h → expira amanhã às 18h
+        return today_expiry + timedelta(days=1)
+
+
+def _get_last_expiry_time() -> datetime:
+    """
+    Retorna o último horário de expiração (18h anterior).
+    
+    Returns:
+        Datetime da última expiração
+    """
+    return _get_smart_expiry_time() - timedelta(days=1)
+
+
 def get_ttl(source: Fonte | str, endpoint: str | None = None) -> int:
     """
     Retorna TTL em segundos para uma fonte.
@@ -134,20 +177,31 @@ def get_stale_max(source: Fonte | str, endpoint: str | None = None) -> int:
     return get_policy(source, endpoint).stale_max_seconds
 
 
-def is_expired(created_at: datetime, source: Fonte | str) -> bool:
+def is_expired(created_at: datetime, source: Fonte | str, endpoint: str | None = None) -> bool:
     """
     Verifica se entrada de cache está expirada.
+
+    Para fontes com smart_expiry (CEPEA), expira às 18h.
+    Para outras fontes, usa TTL fixo.
 
     Args:
         created_at: Data de criação
         source: Fonte de dados
+        endpoint: Endpoint específico
 
     Returns:
         True se expirado
     """
-    ttl = get_ttl(source)
-    expires_at = created_at + timedelta(seconds=ttl)
-    return datetime.utcnow() > expires_at
+    policy = get_policy(source, endpoint)
+    
+    if policy.smart_expiry:
+        # Smart expiry: cache válido se criado após última expiração (18h)
+        last_expiry = _get_last_expiry_time()
+        return created_at < last_expiry
+    
+    # TTL fixo tradicional
+    expires_at = created_at + timedelta(seconds=policy.ttl_seconds)
+    return datetime.now() > expires_at
 
 
 def is_stale_acceptable(created_at: datetime, source: Fonte | str) -> bool:
@@ -163,12 +217,15 @@ def is_stale_acceptable(created_at: datetime, source: Fonte | str) -> bool:
     """
     stale_max = get_stale_max(source)
     max_acceptable = created_at + timedelta(seconds=stale_max)
-    return datetime.utcnow() <= max_acceptable
+    return datetime.now() <= max_acceptable
 
 
 def calculate_expiry(source: Fonte | str, endpoint: str | None = None) -> datetime:
     """
     Calcula data de expiração para nova entrada.
+
+    Para fontes com smart_expiry (CEPEA), retorna próximas 18h.
+    Para outras fontes, usa TTL fixo.
 
     Args:
         source: Fonte de dados
@@ -177,8 +234,12 @@ def calculate_expiry(source: Fonte | str, endpoint: str | None = None) -> dateti
     Returns:
         Data de expiração
     """
-    ttl = get_ttl(source, endpoint)
-    return datetime.utcnow() + timedelta(seconds=ttl)
+    policy = get_policy(source, endpoint)
+    
+    if policy.smart_expiry:
+        return _get_smart_expiry_time()
+    
+    return datetime.now() + timedelta(seconds=policy.ttl_seconds)
 
 
 class InvalidationReason(Enum):
@@ -196,6 +257,7 @@ def should_refresh(
     created_at: datetime,
     source: Fonte | str,
     force: bool = False,
+    endpoint: str | None = None,
 ) -> tuple[bool, str]:
     """
     Determina se cache deve ser atualizado.
@@ -204,6 +266,7 @@ def should_refresh(
         created_at: Data de criação do cache
         source: Fonte de dados
         force: Forçar atualização
+        endpoint: Endpoint específico
 
     Returns:
         Tupla (deve_atualizar, razão)
@@ -211,7 +274,7 @@ def should_refresh(
     if force:
         return True, "force_refresh"
 
-    if is_expired(created_at, source):
+    if is_expired(created_at, source, endpoint):
         return True, "expired"
 
     return False, "fresh"
@@ -238,3 +301,31 @@ def format_ttl(seconds: int) -> str:
 
     days = seconds // 86400
     return f"{days} dia{'s' if days > 1 else ''}"
+
+
+def get_next_update_info(source: Fonte | str) -> dict[str, str]:
+    """
+    Retorna informações sobre próxima atualização.
+    
+    Args:
+        source: Fonte de dados
+        
+    Returns:
+        Dict com info de expiração
+    """
+    policy = get_policy(source)
+    
+    if policy.smart_expiry:
+        next_expiry = _get_smart_expiry_time()
+        return {
+            "type": "smart",
+            "expires_at": next_expiry.strftime("%Y-%m-%d %H:%M"),
+            "description": f"Expira às {CEPEA_UPDATE_HOUR}h (atualização CEPEA)",
+        }
+    
+    return {
+        "type": "ttl",
+        "ttl": format_ttl(policy.ttl_seconds),
+        "description": policy.description,
+    }
+```
