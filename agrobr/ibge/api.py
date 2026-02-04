@@ -27,8 +27,7 @@ async def pam(
     as_polars: bool = False,
     *,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame:
-    ...
+) -> pd.DataFrame: ...
 
 
 @overload
@@ -41,8 +40,7 @@ async def pam(
     as_polars: bool = False,
     *,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]:
-    ...
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def pam(
@@ -193,8 +191,7 @@ async def lspa(
     as_polars: bool = False,
     *,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame:
-    ...
+) -> pd.DataFrame: ...
 
 
 @overload
@@ -206,8 +203,7 @@ async def lspa(
     as_polars: bool = False,
     *,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]:
-    ...
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def lspa(
