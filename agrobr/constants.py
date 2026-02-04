@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
 
 
-class Fonte(str, Enum):
+class Fonte(StrEnum):
     CEPEA = "cepea"
     CONAB = "conab"
     IBGE = "ibge"
