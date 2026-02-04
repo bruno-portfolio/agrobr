@@ -27,7 +27,8 @@ async def safras(
     as_polars: bool = False,
     *,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame: ...
+) -> pd.DataFrame:
+    ...
 
 
 @overload
@@ -39,7 +40,8 @@ async def safras(
     as_polars: bool = False,
     *,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[pd.DataFrame, MetaInfo]:
+    ...
 
 
 async def safras(

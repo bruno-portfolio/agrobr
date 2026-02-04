@@ -99,11 +99,13 @@ class TestQualityCertificate:
 
 class TestCertify:
     def test_certify_gold(self):
-        df = pd.DataFrame({
-            "data": pd.date_range(datetime.now() - timedelta(days=5), periods=100),
-            "valor": [100.0 + i for i in range(100)],
-            "produto": ["soja"] * 100,
-        })
+        df = pd.DataFrame(
+            {
+                "data": pd.date_range(datetime.now() - timedelta(days=5), periods=100),
+                "valor": [100.0 + i for i in range(100)],
+                "produto": ["soja"] * 100,
+            }
+        )
         cert = certify(df, source="test", dataset="test_data")
 
         assert cert.level in [QualityLevel.GOLD, QualityLevel.SILVER]
@@ -111,21 +113,25 @@ class TestCertify:
         assert cert.score > 0.7
 
     def test_certify_with_nulls(self):
-        df = pd.DataFrame({
-            "data": pd.date_range(datetime.now() - timedelta(days=5), periods=10),
-            "valor": [100.0, None, 102.0, None, 104.0, None, 106.0, None, 108.0, None],
-            "produto": ["soja"] * 10,
-        })
+        df = pd.DataFrame(
+            {
+                "data": pd.date_range(datetime.now() - timedelta(days=5), periods=10),
+                "valor": [100.0, None, 102.0, None, 104.0, None, 106.0, None, 108.0, None],
+                "produto": ["soja"] * 10,
+            }
+        )
         cert = certify(df)
 
         completeness_check = next((c for c in cert.checks if c.name == "completeness"), None)
         assert completeness_check is not None
 
     def test_certify_with_duplicates(self):
-        df = pd.DataFrame({
-            "data": [datetime.now()] * 10,
-            "valor": [100.0] * 10,
-        })
+        df = pd.DataFrame(
+            {
+                "data": [datetime.now()] * 10,
+                "valor": [100.0] * 10,
+            }
+        )
         cert = certify(df)
 
         dup_check = next((c for c in cert.checks if c.name == "duplicates"), None)
@@ -133,11 +139,13 @@ class TestCertify:
         assert dup_check.status == CheckStatus.FAILED
 
     def test_certify_with_expected_schema(self):
-        df = pd.DataFrame({
-            "data": pd.date_range(datetime.now(), periods=5),
-            "valor": [100.0] * 5,
-            "produto": ["soja"] * 5,
-        })
+        df = pd.DataFrame(
+            {
+                "data": pd.date_range(datetime.now(), periods=5),
+                "valor": [100.0] * 5,
+                "produto": ["soja"] * 5,
+            }
+        )
         cert = certify(df, expected_columns=["data", "valor", "produto"])
 
         schema_check = next((c for c in cert.checks if c.name == "schema"), None)
@@ -145,10 +153,12 @@ class TestCertify:
         assert schema_check.status == CheckStatus.PASSED
 
     def test_certify_missing_schema(self):
-        df = pd.DataFrame({
-            "data": pd.date_range(datetime.now(), periods=5),
-            "valor": [100.0] * 5,
-        })
+        df = pd.DataFrame(
+            {
+                "data": pd.date_range(datetime.now(), periods=5),
+                "valor": [100.0] * 5,
+            }
+        )
         cert = certify(df, expected_columns=["data", "valor", "produto", "praca"])
 
         schema_check = next((c for c in cert.checks if c.name == "schema"), None)
@@ -156,10 +166,12 @@ class TestCertify:
         assert schema_check.status == CheckStatus.FAILED
 
     def test_certify_stale_data(self):
-        df = pd.DataFrame({
-            "data": pd.date_range(datetime.now() - timedelta(days=30), periods=5),
-            "valor": [100.0] * 5,
-        })
+        df = pd.DataFrame(
+            {
+                "data": pd.date_range(datetime.now() - timedelta(days=30), periods=5),
+                "valor": [100.0] * 5,
+            }
+        )
         cert = certify(df)
 
         freshness_check = next((c for c in cert.checks if c.name == "freshness"), None)
@@ -167,10 +179,12 @@ class TestCertify:
         assert freshness_check.status in [CheckStatus.WARNING, CheckStatus.FAILED]
 
     def test_certify_negative_values(self):
-        df = pd.DataFrame({
-            "data": pd.date_range(datetime.now(), periods=5),
-            "valor": [-10.0, 100.0, 150.0, 200.0, 250.0],
-        })
+        df = pd.DataFrame(
+            {
+                "data": pd.date_range(datetime.now(), periods=5),
+                "valor": [-10.0, 100.0, 150.0, 200.0, 250.0],
+            }
+        )
         cert = certify(df, min_value=0)
 
         range_check = next((c for c in cert.checks if c.name == "range_valor"), None)
@@ -180,10 +194,12 @@ class TestCertify:
 
 class TestQuickCheck:
     def test_quick_check(self):
-        df = pd.DataFrame({
-            "data": pd.date_range(datetime.now() - timedelta(days=3), periods=50),
-            "valor": [100.0 + i for i in range(50)],
-        })
+        df = pd.DataFrame(
+            {
+                "data": pd.date_range(datetime.now() - timedelta(days=3), periods=50),
+                "valor": [100.0 + i for i in range(50)],
+            }
+        )
         level, score = quick_check(df)
 
         assert isinstance(level, QualityLevel)

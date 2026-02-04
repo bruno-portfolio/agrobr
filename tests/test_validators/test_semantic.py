@@ -61,9 +61,7 @@ class TestProductivityRangeRule:
 
     def test_unknown_product(self):
         rule = ProductivityRangeRule()
-        df = pd.DataFrame(
-            {"produto": ["unknown_product"], "produtividade": [100]}
-        )
+        df = pd.DataFrame({"produto": ["unknown_product"], "produtividade": [100]})
         results = rule.check(df)
         assert results[0].passed is True
 
@@ -101,9 +99,7 @@ class TestDateSequenceRule:
 
     def test_large_gap(self):
         rule = DateSequenceRule()
-        df = pd.DataFrame(
-            {"data": ["2024-01-01", "2024-01-05", "2024-01-25"]}
-        )
+        df = pd.DataFrame({"data": ["2024-01-01", "2024-01-05", "2024-01-25"]})
         results = rule.check(df)
         assert results[0].passed is False
         assert "gaps" in results[0].message.lower()
