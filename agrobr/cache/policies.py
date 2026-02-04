@@ -118,19 +118,16 @@ def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
 def _get_smart_expiry_time() -> datetime:
     """
     Calcula próximo horário de expiração para CEPEA (18h).
-    
+
     CEPEA atualiza dados por volta das 17-18h.
     Cache expira às 18h para pegar dados novos.
-    
+
     Returns:
         Datetime da próxima expiração
     """
     now = datetime.now()
-    today_expiry = datetime.combine(
-        now.date(), 
-        time(CEPEA_UPDATE_HOUR, CEPEA_UPDATE_MINUTE)
-    )
-    
+    today_expiry = datetime.combine(now.date(), time(CEPEA_UPDATE_HOUR, CEPEA_UPDATE_MINUTE))
+
     if now < today_expiry:
         # Ainda não chegou às 18h hoje → expira hoje às 18h
         return today_expiry
@@ -142,7 +139,7 @@ def _get_smart_expiry_time() -> datetime:
 def _get_last_expiry_time() -> datetime:
     """
     Retorna o último horário de expiração (18h anterior).
-    
+
     Returns:
         Datetime da última expiração
     """
@@ -193,12 +190,12 @@ def is_expired(created_at: datetime, source: Fonte | str, endpoint: str | None =
         True se expirado
     """
     policy = get_policy(source, endpoint)
-    
+
     if policy.smart_expiry:
         # Smart expiry: cache válido se criado após última expiração (18h)
         last_expiry = _get_last_expiry_time()
         return created_at < last_expiry
-    
+
     # TTL fixo tradicional
     expires_at = created_at + timedelta(seconds=policy.ttl_seconds)
     return datetime.now() > expires_at
@@ -235,10 +232,10 @@ def calculate_expiry(source: Fonte | str, endpoint: str | None = None) -> dateti
         Data de expiração
     """
     policy = get_policy(source, endpoint)
-    
+
     if policy.smart_expiry:
         return _get_smart_expiry_time()
-    
+
     return datetime.now() + timedelta(seconds=policy.ttl_seconds)
 
 
@@ -306,15 +303,15 @@ def format_ttl(seconds: int) -> str:
 def get_next_update_info(source: Fonte | str) -> dict[str, str]:
     """
     Retorna informações sobre próxima atualização.
-    
+
     Args:
         source: Fonte de dados
-        
+
     Returns:
         Dict com info de expiração
     """
     policy = get_policy(source)
-    
+
     if policy.smart_expiry:
         next_expiry = _get_smart_expiry_time()
         return {
@@ -322,10 +319,9 @@ def get_next_update_info(source: Fonte | str) -> dict[str, str]:
             "expires_at": next_expiry.strftime("%Y-%m-%d %H:%M"),
             "description": f"Expira às {CEPEA_UPDATE_HOUR}h (atualização CEPEA)",
         }
-    
+
     return {
         "type": "ttl",
         "ttl": format_ttl(policy.ttl_seconds),
         "description": policy.description,
     }
-```
