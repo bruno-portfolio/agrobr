@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agrobr"
-version = "0.1.0"
+version = "0.1.1"
 description = "Dados agrícolas brasileiros em uma linha de código"
 readme = "README.md"
 license = "MIT"
