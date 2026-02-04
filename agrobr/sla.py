@@ -65,7 +65,9 @@ class SourceSLA:
             "tier": self.tier.value,
             "freshness": {
                 "update_frequency": self.freshness.update_frequency,
-                "update_time": self.freshness.update_time.isoformat() if self.freshness.update_time else None,
+                "update_time": self.freshness.update_time.isoformat()
+                if self.freshness.update_time
+                else None,
                 "timezone": self.freshness.timezone,
                 "weekends": self.freshness.weekends,
                 "holidays": self.freshness.holidays,

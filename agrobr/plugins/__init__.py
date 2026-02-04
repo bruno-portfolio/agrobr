@@ -93,7 +93,9 @@ def register(plugin_class: type[T]) -> type[T]:
 
     name = plugin_class.meta.name
     if name in _registry:
-        logger.warning("plugin_override", name=name, old=_registry[name].__name__, new=plugin_class.__name__)
+        logger.warning(
+            "plugin_override", name=name, old=_registry[name].__name__, new=plugin_class.__name__
+        )
 
     _registry[name] = plugin_class
     logger.info("plugin_registered", name=name, version=plugin_class.meta.version)

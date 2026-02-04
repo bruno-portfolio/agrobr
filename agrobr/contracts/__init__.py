@@ -49,9 +49,7 @@ class Column:
 
         if not self.nullable and series.isna().any():
             null_count = series.isna().sum()
-            errors.append(
-                f"Column '{self.name}' has {null_count} null values but nullable=False"
-            )
+            errors.append(f"Column '{self.name}' has {null_count} null values but nullable=False")
 
         if self.type == ColumnType.DATE:
             if not pd.api.types.is_datetime64_any_dtype(series):
@@ -69,10 +67,10 @@ class Column:
                     except (ValueError, TypeError):
                         errors.append(f"Column '{self.name}' contains non-integer values")
 
-        elif (
-            self.type in (ColumnType.FLOAT, ColumnType.DECIMAL)
-            and not pd.api.types.is_numeric_dtype(series)
-        ):
+        elif self.type in (
+            ColumnType.FLOAT,
+            ColumnType.DECIMAL,
+        ) and not pd.api.types.is_numeric_dtype(series):
             errors.append(f"Column '{self.name}' is not numeric")
 
         return errors
