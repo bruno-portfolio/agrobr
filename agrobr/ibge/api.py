@@ -127,7 +127,7 @@ async def pam(
         try:
             import polars as pl
 
-            return pl.from_pandas(df)
+            return pl.from_pandas(df)  # type: ignore[no-any-return]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
@@ -220,7 +220,7 @@ async def lspa(
         try:
             import polars as pl
 
-            return pl.from_pandas(df)
+            return pl.from_pandas(df)  # type: ignore[no-any-return]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
