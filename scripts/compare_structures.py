@@ -50,21 +50,25 @@ def compare(
 
     for source, current_data in current.get("sources", {}).items():
         if "error" in current_data:
-            report["comparisons"].append({
-                "source": source,
-                "status": "error",
-                "error": current_data["error"],
-            })
+            report["comparisons"].append(
+                {
+                    "source": source,
+                    "status": "error",
+                    "error": current_data["error"],
+                }
+            )
             report["drift_detected"] = True
             print(f"[ERROR] {source}: {current_data['error']}")
             continue
 
         baseline_data = baseline.get("sources", {}).get(source)
         if not baseline_data or "error" in baseline_data:
-            report["comparisons"].append({
-                "source": source,
-                "status": "no_baseline",
-            })
+            report["comparisons"].append(
+                {
+                    "source": source,
+                    "status": "no_baseline",
+                }
+            )
             print(f"[SKIP] {source}: No baseline available")
             continue
 
