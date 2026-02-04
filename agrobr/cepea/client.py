@@ -15,7 +15,7 @@ from agrobr.normalize.encoding import decode_content
 logger = structlog.get_logger()
 
 # Flag para controlar uso de browser
-_use_browser: bool = True
+_use_browser: bool = False
 # Flag para controlar uso de fonte alternativa (Notícias Agrícolas)
 _use_alternative_source: bool = True
 
