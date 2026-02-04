@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import json
-from typing import Optional
 
 import typer
 
-from agrobr import __version__
-from agrobr import constants
+from agrobr import __version__, constants
 
 app = typer.Typer(
     name="agrobr",
@@ -25,7 +23,7 @@ def version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: bool = typer.Option(
+    _version: bool = typer.Option(
         None,
         "--version",
         "-v",
@@ -45,10 +43,10 @@ app.add_typer(cepea_app, name="cepea")
 @cepea_app.command("indicador")
 def cepea_indicador(
     produto: str = typer.Argument(..., help="Produto (soja, milho, cafe, boi, etc)"),
-    inicio: Optional[str] = typer.Option(None, "--inicio", "-i", help="Data inicio (YYYY-MM-DD)"),
-    fim: Optional[str] = typer.Option(None, "--fim", "-f", help="Data fim (YYYY-MM-DD)"),
-    ultimo: bool = typer.Option(False, "--ultimo", "-u", help="Apenas ultimo valor"),
-    formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
+    _inicio: str | None = typer.Option(None, "--inicio", "-i", help="Data inicio (YYYY-MM-DD)"),
+    _fim: str | None = typer.Option(None, "--fim", "-f", help="Data fim (YYYY-MM-DD)"),
+    _ultimo: bool = typer.Option(False, "--ultimo", "-u", help="Apenas ultimo valor"),
+    _formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
     """Consulta indicador CEPEA."""
     typer.echo(f"Consultando {produto}...")
@@ -57,8 +55,8 @@ def cepea_indicador(
 
 @app.command("health")
 def health(
-    all_sources: bool = typer.Option(False, "--all", "-a", help="Verifica todas as fontes"),
-    source: Optional[str] = typer.Option(None, "--source", "-s", help="Fonte especifica"),
+    _all_sources: bool = typer.Option(False, "--all", "-a", help="Verifica todas as fontes"),
+    _source: str | None = typer.Option(None, "--source", "-s", help="Fonte especifica"),
     output: str = typer.Option("text", "--output", "-o", help="Formato: text, json"),
 ) -> None:
     """Executa health checks."""
@@ -81,8 +79,8 @@ def cache_status() -> None:
 
 @cache_app.command("clear")
 def cache_clear(
-    source: Optional[str] = typer.Option(None, "--source", "-s", help="Limpar apenas fonte"),
-    older_than: Optional[str] = typer.Option(None, "--older-than", help="Ex: 30d"),
+    _source: str | None = typer.Option(None, "--source", "-s", help="Limpar apenas fonte"),
+    _older_than: str | None = typer.Option(None, "--older-than", help="Ex: 30d"),
 ) -> None:
     """Limpa o cache."""
     typer.echo("Limpeza de cache em desenvolvimento")
@@ -95,12 +93,13 @@ app.add_typer(conab_app, name="conab")
 @conab_app.command("safras")
 def conab_safras(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, feijao, etc)"),
-    safra: Optional[str] = typer.Option(None, "--safra", "-s", help="Safra (ex: 2025/26)"),
-    uf: Optional[str] = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
+    safra: str | None = typer.Option(None, "--safra", "-s", help="Safra (ex: 2025/26)"),
+    uf: str | None = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
     """Consulta dados de safra por produto."""
     import asyncio
+
     from agrobr import conab
 
     typer.echo(f"Consultando safras de {produto}...")
@@ -121,16 +120,17 @@ def conab_safras(
 
     except Exception as e:
         typer.echo(f"Erro: {e}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @conab_app.command("balanco")
 def conab_balanco(
-    produto: Optional[str] = typer.Argument(None, help="Produto (opcional)"),
+    produto: str | None = typer.Argument(None, help="Produto (opcional)"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
     """Consulta balanco de oferta e demanda."""
     import asyncio
+
     from agrobr import conab
 
     typer.echo("Consultando balanco oferta/demanda...")
@@ -151,13 +151,14 @@ def conab_balanco(
 
     except Exception as e:
         typer.echo(f"Erro: {e}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @conab_app.command("levantamentos")
 def conab_levantamentos() -> None:
     """Lista levantamentos disponiveis."""
     import asyncio
+
     from agrobr import conab
 
     typer.echo("Listando levantamentos...")
@@ -173,13 +174,14 @@ def conab_levantamentos() -> None:
 
     except Exception as e:
         typer.echo(f"Erro: {e}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @conab_app.command("produtos")
 def conab_produtos() -> None:
     """Lista produtos disponiveis."""
     import asyncio
+
     from agrobr import conab
 
     prods = asyncio.run(conab.produtos())
@@ -199,13 +201,14 @@ app.add_typer(ibge_app, name="ibge")
 @ibge_app.command("pam")
 def ibge_pam(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, etc)"),
-    ano: Optional[str] = typer.Option(None, "--ano", "-a", help="Ano ou anos (ex: 2023 ou 2020,2021,2022)"),
-    uf: Optional[str] = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
+    ano: str | None = typer.Option(None, "--ano", "-a", help="Ano ou anos (ex: 2023 ou 2020,2021,2022)"),
+    uf: str | None = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
     nivel: str = typer.Option("uf", "--nivel", "-n", help="Nivel: brasil, uf, municipio"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
     """Consulta dados da Producao Agricola Municipal (PAM)."""
     import asyncio
+
     from agrobr import ibge
 
     typer.echo(f"Consultando PAM para {produto}...")
@@ -214,10 +217,7 @@ def ibge_pam(
         # Parse ano
         ano_param = None
         if ano:
-            if "," in ano:
-                ano_param = [int(a.strip()) for a in ano.split(",")]
-            else:
-                ano_param = int(ano)
+            ano_param = [int(a.strip()) for a in ano.split(",")] if "," in ano else int(ano)
 
         df = asyncio.run(ibge.pam(produto=produto, ano=ano_param, uf=uf, nivel=nivel))
 
@@ -234,19 +234,20 @@ def ibge_pam(
 
     except Exception as e:
         typer.echo(f"Erro: {e}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @ibge_app.command("lspa")
 def ibge_lspa(
     produto: str = typer.Argument(..., help="Produto (soja, milho_1, milho_2, etc)"),
-    ano: Optional[int] = typer.Option(None, "--ano", "-a", help="Ano de referencia"),
-    mes: Optional[int] = typer.Option(None, "--mes", "-m", help="Mes (1-12)"),
-    uf: Optional[str] = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
+    ano: int | None = typer.Option(None, "--ano", "-a", help="Ano de referencia"),
+    mes: int | None = typer.Option(None, "--mes", "-m", help="Mes (1-12)"),
+    uf: str | None = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
     """Consulta dados do Levantamento Sistematico da Producao Agricola (LSPA)."""
     import asyncio
+
     from agrobr import ibge
 
     typer.echo(f"Consultando LSPA para {produto}...")
@@ -267,7 +268,7 @@ def ibge_lspa(
 
     except Exception as e:
         typer.echo(f"Erro: {e}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @ibge_app.command("produtos")
@@ -276,6 +277,7 @@ def ibge_produtos(
 ) -> None:
     """Lista produtos disponiveis."""
     import asyncio
+
     from agrobr import ibge
 
     if pesquisa == "pam":

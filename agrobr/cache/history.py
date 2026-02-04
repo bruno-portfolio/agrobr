@@ -8,7 +8,6 @@ Permite reconstruir séries históricas e auditar mudanças de parsing.
 from __future__ import annotations
 
 from datetime import date, datetime
-from decimal import Decimal
 from pathlib import Path
 from typing import Any
 

@@ -49,10 +49,7 @@ def safra_atual(data: date | None = None) -> str:
     if data is None:
         data = date.today()
 
-    if data.month >= INICIO_SAFRA_MES:
-        ano_inicio = data.year
-    else:
-        ano_inicio = data.year - 1
+    ano_inicio = data.year if data.month >= INICIO_SAFRA_MES else data.year - 1
 
     ano_fim = ano_inicio + 1
     return f"{ano_inicio}/{str(ano_fim)[-2:]}"
@@ -109,10 +106,7 @@ def normalizar_safra(safra: str) -> str:
     if match_curta:
         ano_inicio = int(match_curta.group(1))
         ano_fim = match_curta.group(2)
-        if ano_inicio >= 50:
-            ano_inicio = 1900 + ano_inicio
-        else:
-            ano_inicio = 2000 + ano_inicio
+        ano_inicio = 1900 + ano_inicio if ano_inicio >= 50 else 2000 + ano_inicio
         return f"{ano_inicio}/{ano_fim}"
 
     match_barra = REGEX_SAFRA_BARRA.match(safra)

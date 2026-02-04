@@ -5,11 +5,9 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 
-import pytest
-
 from agrobr.constants import Fonte
 from agrobr.models import Indicador
-from agrobr.validators.sanity import validate_indicador, PRICE_RULES
+from agrobr.validators.sanity import PRICE_RULES, validate_indicador
 
 
 class TestSanityValidation:

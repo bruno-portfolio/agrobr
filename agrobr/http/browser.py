@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 import structlog
-from playwright.async_api import async_playwright, Browser, Page, Playwright
+from playwright.async_api import Browser, Page, Playwright, async_playwright
 
 from agrobr import constants
 from agrobr.exceptions import SourceUnavailableError

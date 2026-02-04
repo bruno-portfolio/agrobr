@@ -189,7 +189,7 @@ class CepeaParserV1(BaseParser):
         valor_value = None
         variacao_value = None
 
-        for i, (header, cell_text) in enumerate(zip(headers, cell_texts)):
+        for _i, (header, cell_text) in enumerate(zip(headers, cell_texts)):
             header_lower = header.lower()
 
             if any(kw in header_lower for kw in ["data", "dia", "date"]):

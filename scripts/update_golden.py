@@ -14,7 +14,6 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-
 GOLDEN_DIR = Path(__file__).parent.parent / "tests" / "golden_data"
 
 

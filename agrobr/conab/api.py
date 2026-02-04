@@ -2,17 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import date
 from typing import Any
 
 import pandas as pd
 import structlog
 
 from agrobr import constants
-from agrobr.cache.duckdb_store import get_store
 from agrobr.conab import client
 from agrobr.conab.parsers.v1 import ConabParserV1
-from agrobr.models import Safra
 
 logger = structlog.get_logger()
 

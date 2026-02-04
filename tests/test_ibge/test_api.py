@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from agrobr import ibge
-from agrobr.ibge import api, client
+from agrobr.ibge import client
 
 
 class TestProdutosLists:

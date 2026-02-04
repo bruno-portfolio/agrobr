@@ -14,7 +14,7 @@ from pathlib import Path
 
 async def alert(report_path: str) -> None:
     """Envia alertas baseado no relatório de diff."""
-    from agrobr.alerts.notifier import send_alert, AlertLevel
+    from agrobr.alerts.notifier import AlertLevel, send_alert
 
     report = json.loads(Path(report_path).read_text())
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from io import BytesIO
 from typing import Any
@@ -87,9 +87,8 @@ class ConabParserV1:
             if uf.upper() in constants.CONAB_REGIOES:
                 continue
 
-            if uf.upper() not in constants.CONAB_UFS:
-                if not any(c.isalpha() for c in uf):
-                    continue
+            if uf.upper() not in constants.CONAB_UFS and not any(c.isalpha() for c in uf):
+                continue
 
             for safra_str, cols in safra_cols.items():
                 if safra_ref and safra_str != safra_ref:
@@ -366,7 +365,7 @@ class ConabParserV1:
             return None
 
         try:
-            if isinstance(value, (int, float)):
+            if isinstance(value, int | float):
                 return Decimal(str(value))
 
             value_str = str(value).strip().replace(",", ".")

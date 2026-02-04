@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 import structlog
@@ -32,7 +33,7 @@ MIGRATIONS: dict[int, str] = {
 }
 
 
-def get_current_version(conn: "duckdb.DuckDBPyConnection") -> int:
+def get_current_version(conn: duckdb.DuckDBPyConnection) -> int:
     """Retorna versão atual do schema."""
     try:
         result = conn.execute("SELECT MAX(version) FROM schema_version").fetchone()
@@ -41,7 +42,7 @@ def get_current_version(conn: "duckdb.DuckDBPyConnection") -> int:
         return 0
 
 
-def migrate(conn: "duckdb.DuckDBPyConnection") -> None:
+def migrate(conn: duckdb.DuckDBPyConnection) -> None:
     """
     Executa migrations pendentes.
 
@@ -70,12 +71,10 @@ def migrate(conn: "duckdb.DuckDBPyConnection") -> None:
                                 continue
                             raise
 
-                try:
+                with contextlib.suppress(Exception):
                     conn.execute(
                         "INSERT INTO schema_version (version) VALUES (?)", [version]
                     )
-                except Exception:
-                    pass
 
                 logger.info("migration_applied", version=version)
             except Exception as e:

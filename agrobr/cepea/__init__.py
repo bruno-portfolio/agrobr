@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from agrobr.cepea.api import indicador, produtos, pracas, ultimo
+from agrobr.cepea.api import indicador, pracas, produtos, ultimo
 
 __all__ = ["indicador", "produtos", "pracas", "ultimo"]

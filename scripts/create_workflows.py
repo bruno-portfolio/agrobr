@@ -1,6 +1,5 @@
 """Script para criar os workflows do GitHub Actions."""
 
-import os
 from pathlib import Path
 
 WORKFLOWS_DIR = Path(__file__).parent.parent / ".github" / "workflows"

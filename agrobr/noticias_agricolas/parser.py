@@ -128,11 +128,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
 
         # Extrai todas as linhas de dados (tbody > tr)
         tbody = table.find("tbody")
-        if tbody:
-            rows = tbody.find_all("tr")
-        else:
-            # Fallback: pega todas as tr exceto header
-            rows = table.find_all("tr")[1:]
+        rows = tbody.find_all("tr") if tbody else table.find_all("tr")[1:]
 
         for row in rows:
             cells = row.find_all("td")

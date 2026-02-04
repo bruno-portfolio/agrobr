@@ -25,7 +25,7 @@ class BaseParser(ABC):
         pass
 
     @abstractmethod
-    def parse(self, html: str, produto: str) -> list["models.Indicador"]:
+    def parse(self, html: str, produto: str) -> list[models.Indicador]:
         """Parseia HTML e retorna lista de indicadores."""
         pass
 

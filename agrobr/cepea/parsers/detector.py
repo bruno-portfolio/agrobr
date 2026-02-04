@@ -26,7 +26,7 @@ async def get_parser_with_fallback(
     produto: str,
     data_referencia: date | None = None,
     strict: bool = False,
-) -> tuple[base.BaseParser, list["models.Indicador"]]:
+) -> tuple[base.BaseParser, list[models.Indicador]]:
     """Seleciona parser e executa com fallback em cascata."""
     if not PARSERS:
         raise exceptions.ParseError(
@@ -60,13 +60,12 @@ async def get_parser_with_fallback(
         if not can_parse:
             continue
 
-        if confidence < constants.CONFIDENCE_LOW:
-            if strict:
-                raise exceptions.FingerprintMismatchError(
-                    source=parser.source,
-                    similarity=confidence,
-                    threshold=constants.CONFIDENCE_LOW,
-                )
+        if confidence < constants.CONFIDENCE_LOW and strict:
+            raise exceptions.FingerprintMismatchError(
+                source=parser.source,
+                similarity=confidence,
+                threshold=constants.CONFIDENCE_LOW,
+            )
 
         if confidence < constants.CONFIDENCE_HIGH:
             warnings.append(
