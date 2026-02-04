@@ -129,12 +129,12 @@ def export_json(
     if include_metadata:
         output = {
             "metadata": _create_sidecar(df, meta),
-            "data": json.loads(df.to_json(orient=orient, date_format="iso")),
+            "data": json.loads(df.to_json(orient=orient, date_format="iso")),  # type: ignore[arg-type]
         }
         with open(path, "w") as f:
             json.dump(output, f, indent=2, ensure_ascii=False)
     else:
-        df.to_json(path, orient=orient, date_format="iso", indent=2)
+        df.to_json(path, orient=orient, date_format="iso", indent=2)  # type: ignore[call-overload]
 
     logger.info("export_json", path=str(path), rows=len(df))
     return path

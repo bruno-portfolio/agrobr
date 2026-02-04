@@ -199,7 +199,7 @@ async def _snapshot_conab(path: Path, manifest: SnapshotManifest) -> None:
     from agrobr import conab
 
     try:
-        df = await conab.safras()
+        df = await conab.safras(produto="soja")
         if df is not None and not df.empty:
             file_path = path / "safras.parquet"
             df.to_parquet(file_path, index=False)
@@ -228,7 +228,7 @@ async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
     from agrobr import ibge
 
     try:
-        df = await ibge.pam()
+        df = await ibge.pam(produto="soja")
         if df is not None and not df.empty:
             file_path = path / "pam.parquet"
             df.to_parquet(file_path, index=False)
@@ -240,7 +240,7 @@ async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
         logger.warning("snapshot_ibge_pam_error", error=str(e))
 
     try:
-        df = await ibge.lspa()
+        df = await ibge.lspa(produto="soja")
         if df is not None and not df.empty:
             file_path = path / "lspa.parquet"
             df.to_parquet(file_path, index=False)

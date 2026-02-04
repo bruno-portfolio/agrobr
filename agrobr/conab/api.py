@@ -87,7 +87,12 @@ async def safras(
     parse_start = time.perf_counter()
     xlsx, metadata = await client.fetch_safra_xlsx(safra=safra, levantamento=levantamento)
 
-    meta.raw_content_size = len(xlsx) if isinstance(xlsx, bytes) else 0
+    if isinstance(xlsx, bytes):
+        meta.raw_content_size = len(xlsx)
+    elif hasattr(xlsx, "getbuffer"):
+        meta.raw_content_size = len(xlsx.getbuffer())
+    else:
+        meta.raw_content_size = 0
     meta.source_url = metadata.get("url", meta.source_url)
 
     parser = ConabParserV1()
@@ -132,8 +137,8 @@ async def safras(
 
             result_df = pl.from_pandas(df)
             if return_meta:
-                return result_df, meta  # type: ignore[return-value]
-            return result_df  # type: ignore[return-value]
+                return result_df, meta  # type: ignore[return-value,no-any-return]
+            return result_df  # type: ignore[return-value,no-any-return]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 

@@ -153,7 +153,7 @@ def load_plugin_from_file(path: Path) -> type[Plugin] | None:
 
 
 def load_plugins_from_dir(directory: Path) -> list[type[Plugin]]:
-    loaded = []
+    loaded: list[type[Plugin]] = []
     if not directory.exists():
         return loaded
 
