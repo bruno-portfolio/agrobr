@@ -17,7 +17,6 @@ from agrobr.normalize.encoding import decode_content
 
 logger = structlog.get_logger()
 
-# Por padrão usa browser pois a página carrega dados via AJAX
 _use_browser: bool = True
 
 
@@ -77,20 +76,17 @@ async def _fetch_with_browser(url: str, produto: str) -> str:
                     last_error="No response received",
                 )
 
-            # Aguarda tabela de cotações carregar
             try:
                 await page.wait_for_selector(
                     "table.cot-fisicas",
                     timeout=15000,
                 )
             except Exception:
-                # Tenta seletor alternativo
                 await page.wait_for_selector(
                     "table",
                     timeout=10000,
                 )
 
-            # Aguarda AJAX terminar
             await page.wait_for_timeout(2000)
 
             html: str = await page.content()
@@ -193,7 +189,6 @@ async def fetch_indicador_page(produto: str, force_httpx: bool = False) -> str:
         produto=produto,
     )
 
-    # Por padrão usa browser pois a página carrega dados via AJAX
     if not force_httpx and _use_browser:
         try:
             return await _fetch_with_browser(url, produto)
@@ -203,9 +198,7 @@ async def fetch_indicador_page(produto: str, force_httpx: bool = False) -> str:
                 source="noticias_agricolas",
                 url=url,
             )
-            # Fallback para httpx
 
-    # Tenta httpx (pode ter dados incompletos)
     try:
         return await _fetch_with_httpx(url)
     except httpx.HTTPError as e:

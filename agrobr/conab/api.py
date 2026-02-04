@@ -2,16 +2,44 @@
 
 from __future__ import annotations
 
-from typing import Any
+import time
+from datetime import datetime
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
 from agrobr import constants
+from agrobr.cache.policies import calculate_expiry
 from agrobr.conab import client
 from agrobr.conab.parsers.v1 import ConabParserV1
+from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
+
+
+@overload
+async def safras(
+    produto: str,
+    safra: str | None = None,
+    uf: str | None = None,
+    levantamento: int | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def safras(
+    produto: str,
+    safra: str | None = None,
+    uf: str | None = None,
+    levantamento: int | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def safras(
@@ -20,7 +48,8 @@ async def safras(
     uf: str | None = None,
     levantamento: int | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame:
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     """
     Obtém dados de safra por produto.
 
@@ -30,14 +59,23 @@ async def safras(
         uf: Filtrar por UF (ex: "MT", "PR")
         levantamento: Número do levantamento (default: mais recente)
         as_polars: Se True, retorna polars.DataFrame
+        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
 
     Returns:
-        DataFrame com dados de safra por UF
+        DataFrame com dados de safra por UF ou tupla (DataFrame, MetaInfo)
 
     Example:
         >>> df = await conab.safras('soja', safra='2025/26')
-        >>> df = await conab.safras('milho', uf='MT')
+        >>> df, meta = await conab.safras('milho', uf='MT', return_meta=True)
     """
+    fetch_start = time.perf_counter()
+    meta = MetaInfo(
+        source="conab",
+        source_url="https://www.conab.gov.br/info-agro/safras/graos",
+        source_method="httpx",
+        fetched_at=datetime.now(),
+    )
+
     logger.info(
         "conab_safras_request",
         produto=produto,
@@ -46,7 +84,11 @@ async def safras(
         levantamento=levantamento,
     )
 
+    parse_start = time.perf_counter()
     xlsx, metadata = await client.fetch_safra_xlsx(safra=safra, levantamento=levantamento)
+
+    meta.raw_content_size = len(xlsx) if isinstance(xlsx, bytes) else 0
+    meta.source_url = metadata.get("url", meta.source_url)
 
     parser = ConabParserV1()
     safra_list = parser.parse_safra_produto(
@@ -55,6 +97,9 @@ async def safras(
         safra_ref=safra or metadata["safra"],
         levantamento=metadata.get("levantamento"),
     )
+
+    meta.parse_duration_ms = int((time.perf_counter() - parse_start) * 1000)
+    meta.parser_version = parser.version
 
     if uf:
         safra_list = [s for s in safra_list if s.uf == uf.upper()]
@@ -66,15 +111,29 @@ async def safras(
             safra=safra,
             uf=uf,
         )
-        return pd.DataFrame()
+        df = pd.DataFrame()
+        if return_meta:
+            meta.records_count = 0
+            meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+            return df, meta
+        return df
 
     df = pd.DataFrame([s.model_dump() for s in safra_list])
+
+    meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+    meta.records_count = len(df)
+    meta.columns = df.columns.tolist()
+    meta.cache_key = f"conab:safras:{produto}:{safra or 'latest'}"
+    meta.cache_expires_at = calculate_expiry(constants.Fonte.CONAB)
 
     if as_polars:
         try:
             import polars as pl
 
-            return pl.from_pandas(df)  # type: ignore[no-any-return]
+            result_df = pl.from_pandas(df)
+            if return_meta:
+                return result_df, meta  # type: ignore[return-value]
+            return result_df  # type: ignore[return-value]
         except ImportError:
             logger.warning("polars_not_installed", fallback="pandas")
 
@@ -84,6 +143,8 @@ async def safras(
         records=len(df),
     )
 
+    if return_meta:
+        return df, meta
     return df
 
 

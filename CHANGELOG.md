@@ -7,9 +7,123 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-02-04
+
 ### Added
-- Suporte inicial para IBGE (PAM e LSPA)
-- Golden data tests para CONAB
+- **Plugin System** - Arquitetura extensível para fontes e validadores
+  - `SourcePlugin` - Interface para novas fontes de dados
+  - `ParserPlugin` - Interface para parsers customizados
+  - `ExporterPlugin` - Interface para exportadores customizados
+  - `ValidatorPlugin` - Interface para validadores customizados
+  - `register()`, `get_plugin()`, `list_plugins()` - Gerenciamento de plugins
+- **API Stability Decorators** - Marcadores de estabilidade de API
+  - `@stable(since="x.y.z")` - Marca API como estável
+  - `@experimental(since="x.y.z")` - Marca API como experimental
+  - `@deprecated(since, removed_in, replacement)` - Marca API como deprecated
+  - `@internal` - Marca API como interna (não pública)
+  - `list_stable_apis()`, `list_experimental_apis()`, `list_deprecated_apis()`
+- **SLA Documentado** - Contratos de nível de serviço por fonte
+  - `SourceSLA` - Definição de SLA com tier, freshness, latency, availability
+  - `CEPEA_SLA` - Tier CRITICAL, atualização diária 18h, 99% uptime
+  - `CONAB_SLA` - Tier STANDARD, atualização mensal, 98% uptime
+  - `IBGE_SLA` - Tier STANDARD, varia por pesquisa
+  - `get_sla()`, `list_slas()`, `get_sla_summary()`
+- **Certificação de Qualidade** - Sistema de certificação de dados
+  - `QualityLevel` - GOLD, SILVER, BRONZE, UNCERTIFIED
+  - `QualityCheck` - Check individual com status e detalhes
+  - `QualityCertificate` - Certificado completo com score e validade
+  - `certify(df)` - Executa checks (completeness, duplicates, schema, freshness, range)
+  - `quick_check(df)` - Retorna (level, score) rapidamente
+
+## [0.4.0] - 2026-02-04
+
+### Added
+- **Modo Determinístico** - Reprodutibilidade absoluta para backtests
+  - `agrobr.set_mode("deterministic", snapshot="2025-01-01")`
+  - `agrobr.configure()` para opções globais
+  - `agrobr.get_config()` para consultar configuração atual
+  - `agrobr.reset_config()` para resetar ao padrão
+- **Sistema de Snapshots** - Gerenciamento de versões de dados
+  - `create_snapshot()` - Cria snapshot dos dados atuais
+  - `load_from_snapshot()` - Carrega dados de um snapshot
+  - `list_snapshots()` / `delete_snapshot()` - Gerenciamento
+  - CLI: `agrobr snapshot create/list/delete/use`
+- **Export Auditável** - Formatos com metadados de proveniência
+  - `export_parquet()` - Parquet com metadata embutido
+  - `export_csv()` - CSV com arquivo sidecar .meta.json
+  - `export_json()` - JSON com metadados opcionais
+  - `verify_export()` - Verificação de integridade
+
+## [0.3.0] - 2026-02-04
+
+### Added
+- **Stability Contracts** - Garantias formais de schema para todas as fontes
+  - `CEPEA_INDICADOR_V1` - Contrato para indicadores de preço CEPEA
+  - `CONAB_SAFRA_V1` - Contrato para dados de safra CONAB
+  - `CONAB_BALANCO_V1` - Contrato para balanço oferta/demanda CONAB
+  - `IBGE_PAM_V1` - Contrato para dados PAM do IBGE
+  - `IBGE_LSPA_V1` - Contrato para dados LSPA do IBGE
+  - `contract.validate(df)` - Validação automática contra contrato
+  - `contract.to_markdown()` - Documentação automática
+- **Validação Semântica** - Verificações avançadas de qualidade
+  - Validação de preços positivos
+  - Validação de faixas de produtividade por cultura
+  - Detecção de anomalias em variação diária (>20%)
+  - Consistência de sequência de datas
+  - Consistência de áreas (colhida <= plantada)
+  - Validação de formato de safra
+  - `validate_semantic(df)` - Executa todas as regras
+  - `get_validation_summary(df)` - Resumo das violações
+- **Benchmark Suite** - Ferramentas para medição de performance
+  - `benchmark_async()` / `benchmark_sync()` - Benchmark de funções
+  - `run_api_benchmarks()` - Benchmark das APIs
+  - `run_contract_benchmarks()` - Benchmark de validação de contratos
+  - `run_semantic_benchmarks()` - Benchmark de validação semântica
+
+### Changed
+- Changelog reestruturado seguindo Keep a Changelog
+
+## [0.2.0] - 2026-02-04
+
+### Added
+- **`agrobr doctor`** - Comando CLI para diagnóstico do sistema
+  - Verificação de conectividade das fontes
+  - Estatísticas do cache (tamanho, registros, por fonte)
+  - Status de configuração
+  - Output JSON (`--json`) e formatado Rich
+- **Parâmetro `return_meta`** - Suporte a data lineage em todas as APIs
+  - `cepea.indicador(return_meta=True)` retorna `(DataFrame, MetaInfo)`
+  - `conab.safras(return_meta=True)` retorna `(DataFrame, MetaInfo)`
+  - `ibge.pam(return_meta=True)` retorna `(DataFrame, MetaInfo)`
+  - `ibge.lspa(return_meta=True)` retorna `(DataFrame, MetaInfo)`
+- **Classe `MetaInfo`** - Metadados de proveniência e rastreabilidade
+  - Informações da fonte (nome, URL, método)
+  - Timing (duração fetch, duração parse)
+  - Status do cache (from_cache, cache_key, expires_at)
+  - Integridade do conteúdo (hash SHA256, tamanho)
+  - Versões (agrobr, parser, schema, python)
+  - `to_dict()` / `to_json()` para serialização
+  - `verify_hash(df)` para verificação de integridade
+- **Documentação** - Guias de proveniência e resiliência
+  - `docs/sources/cepea.md` - Documentação da fonte CEPEA
+  - `docs/sources/conab.md` - Documentação da fonte CONAB
+  - `docs/sources/ibge.md` - Documentação da fonte IBGE
+  - `docs/advanced/resilience.md` - Documentação de resiliência
+
+### Changed
+- `MetaInfo` exportado do pacote principal
+
+## [0.1.2] - 2026-02-04
+
+### Changed
+- **Smart TTL** para cache CEPEA - expira às 18:00 (horário de atualização CEPEA)
+- Reduz requests desnecessários em ~90%
+
+## [0.1.1] - 2026-02-04
+
+### Fixed
+- Browser fallback desabilitado para CEPEA (Cloudflare bloqueia)
+- CEPEA agora vai direto para Notícias Agrícolas, evitando timeout
 
 ## [0.1.0] - 2026-02-04
 
@@ -42,7 +156,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **Monitoramento**: Health checks e alertas
   - Health check por fonte
   - Alertas multi-canal (Slack, Discord, Email)
-  - Monitoramento de estrutura (6h)
+  - Monitoramento de estrutura
 - **Suporte Polars**: Todas as APIs suportam `as_polars=True`
 - **Testes**: 96 testes passando (~80% cobertura)
 - **CI/CD**: GitHub Actions configurados
@@ -56,5 +170,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.1.2...v0.2.0
+[0.1.2]: https://github.com/bruno-portfolio/agrobr/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bruno-portfolio/agrobr/releases/tag/v0.1.0

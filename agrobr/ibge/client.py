@@ -14,38 +14,30 @@ from agrobr.http.rate_limiter import RateLimiter
 logger = structlog.get_logger()
 
 
-# Códigos das tabelas SIDRA
 TABELAS = {
-    # PAM - Produção Agrícola Municipal
-    "pam_temporarias": "1612",  # Lavouras temporárias (1974-2018)
-    "pam_permanentes": "1613",  # Lavouras permanentes (1974-2018)
-    "pam_nova": "5457",  # Nova série PAM (2018+)
-    # LSPA - Levantamento Sistemático da Produção Agrícola
-    "lspa": "6588",  # Série mensal (2006+)
-    "lspa_safra": "1618",  # Por ano de safra
+    "pam_temporarias": "1612",
+    "pam_permanentes": "1613",
+    "pam_nova": "5457",
+    "lspa": "6588",
+    "lspa_safra": "1618",
 }
 
-# Variáveis disponíveis
 VARIAVEIS = {
-    # PAM 5457
     "area_plantada": "214",
     "area_colhida": "215",
     "producao": "216",
     "rendimento": "112",
     "valor_producao": "215",
-    # PAM 1612 (lavouras temporárias)
     "area_plantada_1612": "109",
     "area_colhida_1612": "1000109",
     "producao_1612": "214",
     "rendimento_1612": "112",
     "valor_1612": "215",
-    # LSPA 6588
     "area_lspa": "109",
     "producao_lspa": "216",
     "rendimento_lspa": "112",
 }
 
-# Níveis territoriais
 NIVEIS_TERRITORIAIS = {
     "brasil": "1",
     "regiao": "2",
@@ -55,7 +47,6 @@ NIVEIS_TERRITORIAIS = {
     "municipio": "6",
 }
 
-# Códigos de produtos agrícolas (classificação 782 para tabela 5457)
 PRODUTOS_PAM = {
     "soja": "40124",
     "milho": "40126",
@@ -69,7 +60,6 @@ PRODUTOS_PAM = {
     "laranja": "40125",
 }
 
-# Códigos para LSPA (classificação 48 para tabela 6588)
 PRODUTOS_LSPA = {
     "soja": "39443",
     "milho_1": "39441",
@@ -125,7 +115,6 @@ async def fetch_sidra(
     )
 
     async with RateLimiter.acquire(constants.Fonte.IBGE):
-        # sidrapy é síncrono, então apenas chamamos diretamente
         kwargs: dict[str, Any] = {
             "table_code": table_code,
             "territorial_level": territorial_level,
@@ -151,7 +140,6 @@ async def fetch_sidra(
         try:
             df = sidrapy.get_table(**kwargs)
 
-            # Remove primeira linha que é o header descritivo
             if header == "n" and len(df) > 1:
                 df = df.iloc[1:].reset_index(drop=True)
 
@@ -186,7 +174,6 @@ def parse_sidra_response(
     Returns:
         DataFrame processado
     """
-    # Mapeamento padrão de colunas SIDRA
     default_rename = {
         "NC": "nivel_territorial_cod",
         "NN": "nivel_territorial",
@@ -206,11 +193,9 @@ def parse_sidra_response(
     if rename_columns:
         default_rename.update(rename_columns)
 
-    # Renomeia apenas colunas que existem
     rename_map = {k: v for k, v in default_rename.items() if k in df.columns}
     df = df.rename(columns=rename_map)
 
-    # Converte valor para numérico
     if "valor" in df.columns:
         df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
 
