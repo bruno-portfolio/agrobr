@@ -74,9 +74,7 @@ def validar_safra(safra: str) -> bool:
         return True
     if REGEX_SAFRA_CURTA.match(safra):
         return True
-    if REGEX_SAFRA_BARRA.match(safra):
-        return True
-    return False
+    return bool(REGEX_SAFRA_BARRA.match(safra))
 
 
 def normalizar_safra(safra: str) -> str:

@@ -6,7 +6,7 @@ import asyncio
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 import structlog
@@ -16,7 +16,7 @@ from agrobr.constants import Fonte
 logger = structlog.get_logger()
 
 
-class CheckStatus(str, Enum):
+class CheckStatus(StrEnum):
     OK = "ok"
     WARNING = "warning"
     FAILED = "failed"

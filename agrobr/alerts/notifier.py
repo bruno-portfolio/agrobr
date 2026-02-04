@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 import httpx
@@ -15,7 +15,7 @@ from agrobr import constants
 logger = structlog.get_logger()
 
 
-class AlertLevel(str, Enum):
+class AlertLevel(StrEnum):
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
