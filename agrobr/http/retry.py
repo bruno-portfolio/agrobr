@@ -41,7 +41,7 @@ async def retry_async(
         try:
             return await func()
 
-        except retriable_exceptions as e:
+        except tuple(retriable_exceptions) as e:
             last_exception = e
             if attempt < max_attempts - 1:
                 delay = min(

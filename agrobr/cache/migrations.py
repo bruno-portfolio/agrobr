@@ -37,7 +37,7 @@ def get_current_version(conn: duckdb.DuckDBPyConnection) -> int:
     """Retorna versão atual do schema."""
     try:
         result = conn.execute("SELECT MAX(version) FROM schema_version").fetchone()
-        return result[0] if result and result[0] else 0
+        return int(result[0]) if result and result[0] else 0
     except Exception:
         return 0
 

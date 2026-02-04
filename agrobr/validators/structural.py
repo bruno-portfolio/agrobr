@@ -103,8 +103,8 @@ def compare_fingerprints(
     Returns:
         Tupla (similaridade 0-1, detalhes das diferenças)
     """
-    scores = {}
-    details = {}
+    scores: dict[str, float] = {}
+    details: dict[str, Any] = {}
 
     scores["structure"] = 1.0 if current.structure_hash == reference.structure_hash else 0.0
     if scores["structure"] == 0:
@@ -155,7 +155,7 @@ def compare_fingerprints(
     else:
         scores["table_headers"] = 1.0
 
-    count_diffs = {}
+    count_diffs: dict[str, dict[str, int]] = {}
     for key in reference.element_counts:
         ref_count = reference.element_counts.get(key, 0)
         cur_count = current.element_counts.get(key, 0)

@@ -116,7 +116,7 @@ async def parse_with_consensus(
     latest_version = max(results.keys()) if results else 0
     best_results = results.get(latest_version, [])
 
-    parser_used = CepeaParserV1()
+    parser_used: BaseParser = CepeaParserV1()
     for parser_cls in CONSENSUS_PARSERS:
         if parser_cls().version == latest_version:
             parser_used = parser_cls()
@@ -260,7 +260,7 @@ def select_best_result(
 class ConsensusValidator:
     """Validador de consensus para uso contínuo."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.history: list[ConsensusResult] = []
         self.divergence_count = 0
 

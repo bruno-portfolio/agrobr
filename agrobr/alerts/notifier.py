@@ -67,7 +67,7 @@ async def _send_slack(
     emoji = {"info": "info", "warning": "warning", "critical": "rotating_light"}[level.value]
     color = {"info": "#36a64f", "warning": "#ff9800", "critical": "#dc3545"}[level.value]
 
-    blocks = [
+    blocks: list[dict[str, Any]] = [
         {"type": "header", "text": {"type": "plain_text", "text": f":{emoji}: {title}"}},
     ]
 

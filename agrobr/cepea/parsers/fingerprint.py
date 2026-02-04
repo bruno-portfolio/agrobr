@@ -37,17 +37,24 @@ def extract_fingerprint(
 
     table_classes: list[list[str]] = []
     for table in soup.find_all("table")[:10]:
-        classes = table.get("class", [])
-        if isinstance(classes, str):
-            classes = [classes]
+        classes_raw = table.get("class")
+        if classes_raw is None:
+            classes: list[str] = []
+        elif isinstance(classes_raw, str):
+            classes = [classes_raw]
+        else:
+            classes = list(classes_raw)
         table_classes.append(sorted(classes))
 
     keywords = ["preco", "indicador", "cotacao", "valor", "tabela", "dados"]
     key_ids: list[str] = []
     for elem in soup.find_all(id=True):
-        elem_id = elem.get("id", "").lower()
+        elem_id_raw = elem.get("id")
+        if elem_id_raw is None or not isinstance(elem_id_raw, str):
+            continue
+        elem_id = elem_id_raw.lower()
         if any(kw in elem_id for kw in keywords):
-            key_ids.append(elem.get("id"))
+            key_ids.append(elem_id_raw)
     key_ids = sorted(set(key_ids))[:20]
 
     table_headers: list[list[str]] = []
@@ -72,12 +79,16 @@ def extract_fingerprint(
 
     structure_elements: list[tuple[str, int, tuple[str, ...]]] = []
     for tag in soup.find_all(["table", "div", "form", "section", "article"])[:30]:
-        tag_classes = tag.get("class", [])
-        if isinstance(tag_classes, str):
-            tag_classes = [tag_classes]
+        tag_classes_raw = tag.get("class")
+        if tag_classes_raw is None:
+            tag_classes: list[str] = []
+        elif isinstance(tag_classes_raw, str):
+            tag_classes = [tag_classes_raw]
+        else:
+            tag_classes = list(tag_classes_raw)
         structure_elements.append(
             (
-                tag.name,
+                tag.name or "",
                 len(tag.find_all(recursive=False)),
                 tuple(sorted(tag_classes))[:3] if tag_classes else (),
             )

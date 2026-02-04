@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from typing import Any
 
 import typer
 
@@ -21,7 +22,7 @@ def version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-@app.callback()
+@app.callback()  # type: ignore[misc]
 def main(
     _version: bool = typer.Option(
         None,
@@ -40,7 +41,7 @@ cepea_app = typer.Typer(help="Indicadores CEPEA")
 app.add_typer(cepea_app, name="cepea")
 
 
-@cepea_app.command("indicador")
+@cepea_app.command("indicador")  # type: ignore[misc]
 def cepea_indicador(
     produto: str = typer.Argument(..., help="Produto (soja, milho, cafe, boi, etc)"),
     _inicio: str | None = typer.Option(None, "--inicio", "-i", help="Data inicio (YYYY-MM-DD)"),
@@ -53,7 +54,7 @@ def cepea_indicador(
     typer.echo("Funcionalidade em desenvolvimento")
 
 
-@app.command("health")
+@app.command("health")  # type: ignore[misc]
 def health(
     _all_sources: bool = typer.Option(False, "--all", "-a", help="Verifica todas as fontes"),
     _source: str | None = typer.Option(None, "--source", "-s", help="Fonte especifica"),
@@ -71,13 +72,13 @@ cache_app = typer.Typer(help="Gerenciamento de cache")
 app.add_typer(cache_app, name="cache")
 
 
-@cache_app.command("status")
+@cache_app.command("status")  # type: ignore[misc]
 def cache_status() -> None:
     """Mostra status do cache."""
     typer.echo("Status do cache em desenvolvimento")
 
 
-@cache_app.command("clear")
+@cache_app.command("clear")  # type: ignore[misc]
 def cache_clear(
     _source: str | None = typer.Option(None, "--source", "-s", help="Limpar apenas fonte"),
     _older_than: str | None = typer.Option(None, "--older-than", help="Ex: 30d"),
@@ -90,7 +91,7 @@ conab_app = typer.Typer(help="Dados CONAB - Safras e balanco")
 app.add_typer(conab_app, name="conab")
 
 
-@conab_app.command("safras")
+@conab_app.command("safras")  # type: ignore[misc]
 def conab_safras(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, feijao, etc)"),
     safra: str | None = typer.Option(None, "--safra", "-s", help="Safra (ex: 2025/26)"),
@@ -123,7 +124,7 @@ def conab_safras(
         raise typer.Exit(1) from None
 
 
-@conab_app.command("balanco")
+@conab_app.command("balanco")  # type: ignore[misc]
 def conab_balanco(
     produto: str | None = typer.Argument(None, help="Produto (opcional)"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
@@ -154,7 +155,7 @@ def conab_balanco(
         raise typer.Exit(1) from None
 
 
-@conab_app.command("levantamentos")
+@conab_app.command("levantamentos")  # type: ignore[misc]
 def conab_levantamentos() -> None:
     """Lista levantamentos disponiveis."""
     import asyncio
@@ -177,7 +178,7 @@ def conab_levantamentos() -> None:
         raise typer.Exit(1) from None
 
 
-@conab_app.command("produtos")
+@conab_app.command("produtos")  # type: ignore[misc]
 def conab_produtos() -> None:
     """Lista produtos disponiveis."""
     import asyncio
@@ -198,7 +199,7 @@ ibge_app = typer.Typer(help="Dados IBGE - PAM e LSPA")
 app.add_typer(ibge_app, name="ibge")
 
 
-@ibge_app.command("pam")
+@ibge_app.command("pam")  # type: ignore[misc]
 def ibge_pam(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, etc)"),
     ano: str | None = typer.Option(
@@ -217,11 +218,12 @@ def ibge_pam(
 
     try:
         # Parse ano
-        ano_param = None
+        ano_param: int | list[int] | None = None
         if ano:
             ano_param = [int(a.strip()) for a in ano.split(",")] if "," in ano else int(ano)
 
-        df = asyncio.run(ibge.pam(produto=produto, ano=ano_param, uf=uf, nivel=nivel))
+        nivel_typed: Any = nivel  # type validated by ibge.pam at runtime
+        df = asyncio.run(ibge.pam(produto=produto, ano=ano_param, uf=uf, nivel=nivel_typed))
 
         if df.empty:
             typer.echo("Nenhum dado encontrado")
@@ -239,7 +241,7 @@ def ibge_pam(
         raise typer.Exit(1) from None
 
 
-@ibge_app.command("lspa")
+@ibge_app.command("lspa")  # type: ignore[misc]
 def ibge_lspa(
     produto: str = typer.Argument(..., help="Produto (soja, milho_1, milho_2, etc)"),
     ano: int | None = typer.Option(None, "--ano", "-a", help="Ano de referencia"),
@@ -273,7 +275,7 @@ def ibge_lspa(
         raise typer.Exit(1) from None
 
 
-@ibge_app.command("produtos")
+@ibge_app.command("produtos")  # type: ignore[misc]
 def ibge_produtos(
     pesquisa: str = typer.Option("pam", "--pesquisa", "-p", help="Pesquisa: pam ou lspa"),
 ) -> None:
@@ -297,7 +299,7 @@ config_app = typer.Typer(help="Configuracoes")
 app.add_typer(config_app, name="config")
 
 
-@config_app.command("show")
+@config_app.command("show")  # type: ignore[misc]
 def config_show() -> None:
     """Mostra configuracoes atuais."""
     typer.echo("=== Cache Settings ===")

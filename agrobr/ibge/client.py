@@ -161,7 +161,7 @@ async def fetch_sidra(
                 rows=len(df),
             )
 
-            return df
+            return pd.DataFrame(df)
 
         except Exception as e:
             logger.error(

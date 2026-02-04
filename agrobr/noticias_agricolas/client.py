@@ -93,7 +93,7 @@ async def _fetch_with_browser(url: str, produto: str) -> str:
             # Aguarda AJAX terminar
             await page.wait_for_timeout(2000)
 
-            html = await page.content()
+            html: str = await page.content()
 
             logger.info(
                 "browser_fetch_success",

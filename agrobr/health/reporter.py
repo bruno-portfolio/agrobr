@@ -55,7 +55,7 @@ class HealthReport:
     @property
     def all_passed(self) -> bool:
         """Retorna True se todos os checks passaram."""
-        return self.summary["all_passed"]
+        return bool(self.summary["all_passed"])
 
     @property
     def failures(self) -> list[CheckResult]:
