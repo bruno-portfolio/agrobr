@@ -132,16 +132,16 @@ agrobr health --all
 
 ## Diferenciais
 
-- 🚀 **Async-first** para pipelines de alta performance
-- 💾 **Cache inteligente** com DuckDB (analytics nativo)
-- 📊 **Histórico permanente** - acumula dados automaticamente
-- 🐼 **Suporte pandas + polars**
-- ✅ **Validação com Pydantic v2**
-- 📈 **Validação estatística** de sanidade (detecta anomalias)
-- 🔍 **Fingerprinting de layout** para detecção proativa de mudanças
-- 🔔 **Alertas multi-canal** (Slack, Discord, Email)
-- 🖥️ **CLI completo** para debug e automação
-- 🔄 **Fallback automático** entre fontes
+-  **Async-first** para pipelines de alta performance
+-  **Cache inteligente** com DuckDB (analytics nativo)
+-  **Histórico permanente** - acumula dados automaticamente
+-  **Suporte pandas + polars**
+-  **Validação com Pydantic v2**
+-  **Validação estatística** de sanidade (detecta anomalias)
+-  **Fingerprinting de layout** para detecção proativa de mudanças
+-  **Alertas multi-canal** (Slack, Discord, Email)
+-  **CLI completo** para debug e automação
+-  **Fallback automático** entre fontes
 
 ## Como Funciona
 
@@ -157,7 +157,7 @@ Consultas a períodos antigos são instantâneas (cache). Apenas dados recentes 
 
 ## Documentação
 
-📚 [Documentação completa](https://bruno-portfolio.github.io/agrobr/)
+ [Documentação completa](https://bruno-portfolio.github.io/agrobr/)
 
 - [Guia Rápido](https://bruno-portfolio.github.io/agrobr/quickstart/)
 - [API CEPEA](https://bruno-portfolio.github.io/agrobr/api/cepea/)
