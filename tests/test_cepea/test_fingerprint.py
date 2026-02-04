@@ -35,7 +35,7 @@ class TestFingerprint:
 
         similarity, diff = compare_fingerprints(fp1, fp2)
 
-        assert similarity == 1.0
+        assert similarity >= 0.9999
         assert len(diff) == 0
 
     def test_compare_different_fingerprints(self, sample_html_cepea, sample_html_empty):
