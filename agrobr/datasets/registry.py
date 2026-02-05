@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from agrobr.datasets.base import BaseDataset
@@ -33,6 +33,6 @@ def list_products(name: str) -> list[str]:
     return get_dataset(name).info.products
 
 
-def info(name: str) -> dict:
+def info(name: str) -> dict[str, Any]:
     """Retorna metadados de um dataset."""
     return get_dataset(name).info.to_dict()

@@ -78,7 +78,7 @@ ESTIMATIVA_SAFRA_INFO = DatasetInfo(
 class EstimativaSafraDataset(BaseDataset):
     info = ESTIMATIVA_SAFRA_INFO
 
-    async def fetch(
+    async def fetch(  # type: ignore[override]
         self,
         produto: str,
         safra: str | None = None,

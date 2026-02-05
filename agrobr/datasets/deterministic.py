@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import contextvars
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from datetime import date
 from functools import wraps
@@ -27,7 +27,7 @@ def is_deterministic() -> bool:
 
 
 @asynccontextmanager
-async def deterministic(snapshot: str):
+async def deterministic(snapshot: str) -> AsyncIterator[None]:
     """Context manager para modo determinístico.
 
     Args:
