@@ -7,7 +7,6 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import structlog
-from playwright.async_api import Browser, Page, Playwright, async_playwright
 
 from agrobr import constants
 from agrobr.exceptions import SourceUnavailableError
@@ -15,21 +14,46 @@ from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-_playwright: Playwright | None = None
+try:
+    from playwright.async_api import Browser, Page, Playwright, async_playwright
+
+    _playwright_available = True
+except ImportError:
+    _playwright_available = False
+    Browser = None  # type: ignore[assignment,misc]
+    Page = None  # type: ignore[assignment,misc]
+    Playwright = None  # type: ignore[assignment,misc]
+    logger.warning(
+        "playwright_not_available", hint="pip install playwright && playwright install chromium"
+    )
+
+_playwright_instance: Playwright | None = None
 _browser: Browser | None = None
 _lock = asyncio.Lock()
 
 
+def is_available() -> bool:
+    """Retorna True se Playwright está instalado e disponível."""
+    return _playwright_available
+
+
 async def _get_browser() -> Browser:
     """Obtém ou cria instância do browser (singleton)."""
-    global _playwright, _browser
+    global _playwright_instance, _browser
+
+    if not _playwright_available:
+        raise SourceUnavailableError(
+            source="browser",
+            url="",
+            last_error="Playwright not installed or incompatible with current Python version",
+        )
 
     async with _lock:
         if _browser is None or not _browser.is_connected():
             logger.info("browser_starting", browser="chromium")
 
-            _playwright = await async_playwright().start()
-            _browser = await _playwright.chromium.launch(
+            _playwright_instance = await async_playwright().start()
+            _browser = await _playwright_instance.chromium.launch(
                 headless=True,
                 args=[
                     "--disable-blink-features=AutomationControlled",
@@ -45,7 +69,7 @@ async def _get_browser() -> Browser:
 
 async def close_browser() -> None:
     """Fecha o browser e libera recursos."""
-    global _playwright, _browser
+    global _playwright_instance, _browser
 
     async with _lock:
         if _browser is not None:
@@ -53,9 +77,9 @@ async def close_browser() -> None:
             _browser = None
             logger.info("browser_closed")
 
-        if _playwright is not None:
-            await _playwright.stop()
-            _playwright = None
+        if _playwright_instance is not None:
+            await _playwright_instance.stop()
+            _playwright_instance = None
 
 
 @asynccontextmanager

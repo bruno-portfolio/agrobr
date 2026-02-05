@@ -210,6 +210,17 @@ async def indicador(
                 for ind in new_indicadores:
                     if ind.data not in existing_dates:
                         indicadores.append(ind)
+            elif indicadores:
+                import warnings
+
+                from agrobr.exceptions import StaleDataWarning
+
+                warnings.warn(
+                    f"Fresh fetch for '{produto}' returned no data. Using cached data.",
+                    StaleDataWarning,
+                    stacklevel=2,
+                )
+                meta.validation_warnings.append("stale_data: using cache after empty fetch")
 
         except Exception as e:
             logger.warning(
@@ -218,6 +229,26 @@ async def indicador(
                 error=str(e),
             )
             meta.validation_warnings.append(f"source_fetch_failed: {e}")
+            if not indicadores:
+                cached_fallback = store.indicadores_query(
+                    produto=produto,
+                    inicio=datetime.combine(inicio, datetime.min.time()),
+                    fim=datetime.combine(fim, datetime.max.time()),
+                    praca=praca,
+                )
+                if cached_fallback:
+                    import warnings
+
+                    from agrobr.exceptions import StaleDataWarning
+
+                    indicadores = _dicts_to_indicadores(cached_fallback)
+                    warnings.warn(
+                        f"All sources failed for '{produto}'. Using stale cache ({len(indicadores)} records).",
+                        StaleDataWarning,
+                        stacklevel=2,
+                    )
+                    meta.from_cache = True
+                    meta.source = "cache_fallback"
 
     if validate_sanity and indicadores:
         indicadores, anomalies = await validate_batch(indicadores)

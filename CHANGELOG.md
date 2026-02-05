@@ -7,6 +7,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-02-05
+
+### Fixed
+- Playwright graceful degradation — import com try/except, não crasha em Python 3.14+
+- Parser Notícias Agrícolas levanta `ParseError` ao invés de retornar lista vazia silenciosamente
+- Cache fallback automático com `StaleDataWarning` quando todas as fontes falham
+
 ## [0.6.0] - 2026-02-05
 
 ### Added
