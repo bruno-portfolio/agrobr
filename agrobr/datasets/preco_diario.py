@@ -95,7 +95,7 @@ class PrecoDiarioDataset(BaseDataset):
 
     info = PRECO_DIARIO_INFO
 
-    async def fetch(
+    async def fetch(  # type: ignore[override]
         self,
         produto: str,
         inicio: str | date | None = None,

@@ -56,7 +56,7 @@ BALANCO_INFO = DatasetInfo(
 class BalancoDataset(BaseDataset):
     info = BALANCO_INFO
 
-    async def fetch(
+    async def fetch(  # type: ignore[override]
         self,
         produto: str,
         safra: str | None = None,

@@ -80,7 +80,7 @@ PRODUCAO_ANUAL_INFO = DatasetInfo(
 class ProducaoAnualDataset(BaseDataset):
     info = PRODUCAO_ANUAL_INFO
 
-    async def fetch(
+    async def fetch(  # type: ignore[override]
         self,
         produto: str,
         ano: int | None = None,
