@@ -344,6 +344,14 @@ async def pracas(produto: str) -> list[str]:
         "cafe": ["mogiana", "sul_de_minas"],
         "boi": ["sao_paulo"],
         "trigo": ["parana", "rio_grande_do_sul"],
+        "arroz": ["rio_grande_do_sul"],
+        "acucar": ["sao_paulo"],
+        "frango_congelado": ["sao_paulo"],
+        "frango_resfriado": ["sao_paulo"],
+        "suino": ["sao_paulo"],
+        "leite": ["minas_gerais", "goias", "parana", "rio_grande_do_sul", "sao_paulo"],
+        "laranja_industria": ["sao_paulo"],
+        "laranja_in_natura": ["sao_paulo"],
     }
     return pracas_map.get(produto.lower(), [])
 

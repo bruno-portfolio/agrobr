@@ -93,13 +93,76 @@ class TestParseIndicador:
         </html>
         """
 
+    @pytest.fixture
+    def sample_html_no_class(self):
+        """HTML sem classe cot-fisicas (formato real atual do site)."""
+        return """
+        <html>
+        <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Valor R$</th>
+                    <th>Variação (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>04/02/2026</td>
+                    <td>66,44</td>
+                    <td>+0,24</td>
+                </tr>
+                <tr>
+                    <td>03/02/2026</td>
+                    <td>66,28</td>
+                    <td>+0,17</td>
+                </tr>
+            </tbody>
+        </table>
+        </body>
+        </html>
+        """
+
+    @pytest.fixture
+    def sample_html_trigo(self):
+        """HTML com tabela de trigo (4 colunas: Data, Região, R$/t, Variação)."""
+        return """
+        <html>
+        <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Região</th>
+                    <th>R$/t</th>
+                    <th>Variação (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>04/02/2026</td>
+                    <td>Paraná</td>
+                    <td>1.176,58</td>
+                    <td>+0,12</td>
+                </tr>
+                <tr>
+                    <td>04/02/2026</td>
+                    <td>Rio Grande do Sul</td>
+                    <td>1.056,90</td>
+                    <td>0,00</td>
+                </tr>
+            </tbody>
+        </table>
+        </body>
+        </html>
+        """
+
     def test_parse_indicador_success(self, sample_html):
-        """Testa parse bem-sucedido."""
         indicadores = parse_indicador(sample_html, "soja")
 
         assert len(indicadores) == 2
 
-        # Primeiro indicador
         ind1 = indicadores[0]
         assert ind1.fonte == Fonte.NOTICIAS_AGRICOLAS
         assert ind1.produto == "soja"
@@ -110,24 +173,40 @@ class TestParseIndicador:
         assert ind1.meta["variacao_percentual"] == -0.26
         assert ind1.meta["fonte_original"] == "CEPEA/ESALQ"
 
-        # Segundo indicador
         ind2 = indicadores[1]
         assert ind2.data == date(2026, 2, 2)
         assert ind2.valor == Decimal("124.88")
 
+    def test_parse_indicador_no_class(self, sample_html_no_class):
+        """Tabela sem classe cot-fisicas (formato atual do site)."""
+        indicadores = parse_indicador(sample_html_no_class, "milho")
+
+        assert len(indicadores) == 2
+        assert indicadores[0].produto == "milho"
+        assert indicadores[0].valor == Decimal("66.44")
+        assert indicadores[0].unidade == "BRL/sc60kg"
+
+    def test_parse_indicador_trigo_multi_regiao(self, sample_html_trigo):
+        """Trigo tem coluna Região extra."""
+        indicadores = parse_indicador(sample_html_trigo, "trigo")
+
+        assert len(indicadores) == 2
+        assert indicadores[0].praca == "Paraná"
+        assert indicadores[0].valor == Decimal("1176.58")
+        assert indicadores[0].unidade == "BRL/ton"
+        assert indicadores[1].praca == "Rio Grande do Sul"
+        assert indicadores[1].valor == Decimal("1056.90")
+
     def test_parse_indicador_empty_html(self):
-        """Testa parse com HTML vazio levanta ParseError."""
         with pytest.raises(ParseError, match="No indicators found"):
             parse_indicador("<html></html>", "soja")
 
     def test_parse_indicador_no_table(self):
-        """Testa parse sem tabela de cotações levanta ParseError."""
         html = "<html><body><p>Sem tabela</p></body></html>"
         with pytest.raises(ParseError, match="No tables found"):
             parse_indicador(html, "soja")
 
     def test_parse_indicador_different_products(self, sample_html):
-        """Testa parse para diferentes produtos."""
         for produto in ["soja", "milho", "boi", "cafe"]:
             indicadores = parse_indicador(sample_html, produto)
             assert len(indicadores) == 2
@@ -135,22 +214,48 @@ class TestParseIndicador:
             assert indicadores[0].unidade == UNIDADES[produto]
             assert indicadores[0].praca == PRACAS[produto]
 
+    def test_parse_indicador_new_products(self, sample_html_no_class):
+        """Novos produtos adicionados."""
+        for produto in ["arroz", "acucar", "frango_congelado", "suino"]:
+            indicadores = parse_indicador(sample_html_no_class, produto)
+            assert len(indicadores) == 2
+            assert indicadores[0].produto == produto
+            assert indicadores[0].unidade == UNIDADES[produto]
+
 
 class TestConstants:
     """Testes para constantes do parser."""
 
     def test_unidades_mapping(self):
-        """Verifica mapeamento de unidades."""
         assert UNIDADES["soja"] == "BRL/sc60kg"
         assert UNIDADES["milho"] == "BRL/sc60kg"
         assert UNIDADES["boi"] == "BRL/@"
         assert UNIDADES["cafe"] == "BRL/sc60kg"
-        assert UNIDADES["algodao"] == "BRL/@"
+        assert UNIDADES["algodao"] == "cBRL/lb"
         assert UNIDADES["trigo"] == "BRL/ton"
+        assert UNIDADES["arroz"] == "BRL/sc50kg"
+        assert UNIDADES["acucar"] == "BRL/sc50kg"
+        assert UNIDADES["etanol_hidratado"] == "BRL/L"
+        assert UNIDADES["etanol_anidro"] == "BRL/L"
+        assert UNIDADES["frango_congelado"] == "BRL/kg"
+        assert UNIDADES["frango_resfriado"] == "BRL/kg"
+        assert UNIDADES["suino"] == "BRL/kg"
+        assert UNIDADES["leite"] == "BRL/L"
+        assert UNIDADES["laranja_industria"] == "BRL/cx40.8kg"
+        assert UNIDADES["laranja_in_natura"] == "BRL/cx40.8kg"
 
     def test_pracas_mapping(self):
-        """Verifica mapeamento de praças."""
         assert PRACAS["soja"] == "Paranaguá/PR"
         assert PRACAS["milho"] == "Campinas/SP"
         assert PRACAS["boi"] == "São Paulo/SP"
         assert PRACAS["cafe"] == "São Paulo/SP"
+        assert PRACAS["trigo"] is None
+        assert PRACAS["leite"] is None
+        assert PRACAS["arroz"] == "Rio Grande do Sul"
+
+    def test_all_na_produtos_have_unidade(self):
+        """Todo produto mapeado no NA deve ter unidade definida."""
+        from agrobr.constants import NOTICIAS_AGRICOLAS_PRODUTOS
+
+        for produto in NOTICIAS_AGRICOLAS_PRODUTOS:
+            assert produto in UNIDADES, f"Falta unidade para '{produto}'"
