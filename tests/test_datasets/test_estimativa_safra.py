@@ -2,7 +2,7 @@
 
 import pytest
 
-from agrobr.datasets.estimativa_safra import EstimativaSafraDataset, ESTIMATIVA_SAFRA_INFO
+from agrobr.datasets.estimativa_safra import ESTIMATIVA_SAFRA_INFO, EstimativaSafraDataset
 
 
 class TestEstimativaSafraInfo:

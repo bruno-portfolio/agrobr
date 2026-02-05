@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any, TYPE_CHECKING
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 import structlog
@@ -119,7 +119,7 @@ class EstimativaSafraDataset(BaseDataset):
                 source=f"datasets.estimativa_safra/{source_name}",
                 source_url=source_meta.source_url if source_meta else "",
                 source_method="dataset",
-                fetched_at=source_meta.fetched_at if source_meta else datetime.now(timezone.utc),
+                fetched_at=source_meta.fetched_at if source_meta else datetime.now(UTC),
                 records_count=len(df),
                 columns=df.columns.tolist(),
                 from_cache=False,
@@ -144,7 +144,7 @@ class EstimativaSafraDataset(BaseDataset):
 
 _estimativa_safra = EstimativaSafraDataset()
 
-from agrobr.datasets.registry import register
+from agrobr.datasets.registry import register  # noqa: E402
 
 register(_estimativa_safra)
 

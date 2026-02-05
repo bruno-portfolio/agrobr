@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any, Literal, TYPE_CHECKING
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, Literal
 
 import pandas as pd
 import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource
-from agrobr.datasets.deterministic import get_snapshot, is_deterministic
+from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
 
 if TYPE_CHECKING:
@@ -126,7 +126,7 @@ class ProducaoAnualDataset(BaseDataset):
                 source=f"datasets.producao_anual/{source_name}",
                 source_url=source_meta.source_url if source_meta else "",
                 source_method="dataset",
-                fetched_at=source_meta.fetched_at if source_meta else datetime.now(timezone.utc),
+                fetched_at=source_meta.fetched_at if source_meta else datetime.now(UTC),
                 records_count=len(df),
                 columns=df.columns.tolist(),
                 from_cache=False,
@@ -151,7 +151,7 @@ class ProducaoAnualDataset(BaseDataset):
 
 _producao_anual = ProducaoAnualDataset()
 
-from agrobr.datasets.registry import register
+from agrobr.datasets.registry import register  # noqa: E402
 
 register(_producao_anual)
 
