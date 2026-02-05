@@ -14,11 +14,15 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Unidade do algodão corrigida de `BRL/@` para `cBRL/lb` (centavos de real por libra-peso)
 - Parser trigo ajustado para tabela com 4 colunas (Data, Região, R$/t, Variação)
 - `wait_for_selector("table.cot-fisicas")` substituído por `wait_for_selector("table td")` — classe CSS não existe mais no site
+- IBGE LSPA aceita nomes genéricos de produto (`milho` → `milho_1` + `milho_2`, `feijao` → `feijao_1` + `feijao_2` + `feijao_3`)
+- Playwright cleanup no Windows — `atexit` handler evita `ValueError: I/O operation on closed pipe`
+- Circuit breaker no CEPEA httpx — pula tentativa direta (403 Cloudflare) por 10min após primeira falha, eliminando ~2s de latência
 
 ### Added
 - 11 novos produtos CEPEA via Notícias Agrícolas: arroz, açúcar cristal, açúcar refinado, etanol hidratado, etanol anidro, frango congelado, frango resfriado, suíno, leite, laranja indústria, laranja in natura
 - Total de 20 indicadores CEPEA/ESALQ disponíveis via fallback Notícias Agrícolas
 - Parser v2 com suporte a tabelas multi-região (trigo: Paraná + RS)
+- Aliases LSPA: `milho`, `feijao`, `amendoim`, `batata` expandem para sub-safras automaticamente
 
 ## [0.6.1] - 2026-02-05
 
