@@ -13,6 +13,9 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **CEPEA**, **CONAB** e **IBGE**.
 
+## Demo
+![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
+
 ## Instalação
 
 ```bash
