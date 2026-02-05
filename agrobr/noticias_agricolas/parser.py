@@ -23,8 +23,19 @@ UNIDADES = {
     "boi_gordo": "BRL/@",
     "cafe": "BRL/sc60kg",
     "cafe_arabica": "BRL/sc60kg",
-    "algodao": "BRL/@",
+    "algodao": "cBRL/lb",
     "trigo": "BRL/ton",
+    "arroz": "BRL/sc50kg",
+    "acucar": "BRL/sc50kg",
+    "acucar_refinado": "BRL/sc50kg",
+    "etanol_hidratado": "BRL/L",
+    "etanol_anidro": "BRL/L",
+    "frango_congelado": "BRL/kg",
+    "frango_resfriado": "BRL/kg",
+    "suino": "BRL/kg",
+    "leite": "BRL/L",
+    "laranja_industria": "BRL/cx40.8kg",
+    "laranja_in_natura": "BRL/cx40.8kg",
 }
 
 PRACAS = {
@@ -36,7 +47,18 @@ PRACAS = {
     "cafe": "São Paulo/SP",
     "cafe_arabica": "São Paulo/SP",
     "algodao": "São Paulo/SP",
-    "trigo": "Paraná",
+    "trigo": None,
+    "arroz": "Rio Grande do Sul",
+    "acucar": "São Paulo/SP",
+    "acucar_refinado": "São Paulo/SP",
+    "etanol_hidratado": "São Paulo/SP",
+    "etanol_anidro": "São Paulo/SP",
+    "frango_congelado": "São Paulo/SP",
+    "frango_resfriado": "São Paulo/SP",
+    "suino": "São Paulo/SP",
+    "leite": None,
+    "laranja_industria": "São Paulo/SP",
+    "laranja_in_natura": "São Paulo/SP",
 }
 
 
@@ -106,12 +128,22 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
     if not tables:
         tables = soup.find_all("table")
 
+    has_region_col = produto_lower == "trigo"
+
     for table in tables:
         headers = table.find_all("th")
         header_text = " ".join(h.get_text(strip=True).lower() for h in headers)
 
-        if "data" not in header_text or "valor" not in header_text:
+        if "data" not in header_text:
             continue
+
+        has_valor = "valor" in header_text or "r$" in header_text
+        has_region_header = "regi" in header_text
+        if not has_valor and not has_region_header:
+            continue
+
+        if has_region_header:
+            has_region_col = True
 
         tbody = table.find("tbody")
         rows = tbody.find_all("tr") if tbody else table.find_all("tr")[1:]
@@ -123,7 +155,15 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
                 continue
 
             data_str = cells[0].get_text(strip=True)
-            valor_str = cells[1].get_text(strip=True)
+
+            if has_region_col and len(cells) >= 3:
+                regiao = cells[1].get_text(strip=True)
+                valor_str = cells[2].get_text(strip=True)
+                var_idx = 3
+            else:
+                regiao = None
+                valor_str = cells[1].get_text(strip=True)
+                var_idx = 2
 
             data = _parse_date(data_str)
             valor = _parse_valor(valor_str)
@@ -138,8 +178,8 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
                 continue
 
             meta: dict[str, str | float] = {}
-            if len(cells) >= 3:
-                var_str = cells[2].get_text(strip=True)
+            if len(cells) > var_idx:
+                var_str = cells[var_idx].get_text(strip=True)
                 variacao = _parse_variacao(var_str)
                 if variacao is not None:
                     meta["variacao_percentual"] = float(variacao)
@@ -147,16 +187,18 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
             meta["fonte_original"] = "CEPEA/ESALQ"
             meta["via"] = "Notícias Agrícolas"
 
+            row_praca = regiao if regiao else praca
+
             indicador = Indicador(
                 fonte=Fonte.NOTICIAS_AGRICOLAS,
                 produto=produto_lower,
-                praca=praca,
+                praca=row_praca,
                 data=data.date(),
                 valor=valor,
                 unidade=unidade,
                 metodologia="CEPEA/ESALQ via Notícias Agrícolas",
                 meta=meta,
-                parser_version=1,
+                parser_version=2,
             )
 
             indicadores.append(indicador)

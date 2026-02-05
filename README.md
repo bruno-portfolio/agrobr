@@ -191,7 +191,7 @@ Use `agrobr health --all` para verificar localmente.
 
 | Fonte | Dados | Status |
 |-------|-------|--------|
-| CEPEA | Indicadores de preços (soja, milho, café, boi, algodão, trigo) | ✅ Funcional |
+| CEPEA | Indicadores de preços (soja, milho, café, boi, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja) | ✅ Funcional |
 | CONAB | Safras, balanço oferta/demanda | ✅ Funcional |
 | IBGE | PAM (anual), LSPA (mensal) | ✅ Funcional |
 

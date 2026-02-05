@@ -76,18 +76,10 @@ async def _fetch_with_browser(url: str, produto: str) -> str:
                     last_error="No response received",
                 )
 
-            try:
-                await page.wait_for_selector(
-                    "table.cot-fisicas",
-                    timeout=15000,
-                )
-            except Exception:
-                await page.wait_for_selector(
-                    "table",
-                    timeout=10000,
-                )
-
-            await page.wait_for_timeout(2000)
+            await page.wait_for_selector(
+                "table td",
+                timeout=15000,
+            )
 
             html: str = await page.content()
 
