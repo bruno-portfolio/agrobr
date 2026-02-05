@@ -8,8 +8,9 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/demo_colab.ipynb)
 
-Wrapper Python production-grade para dados do **CEPEA**, **CONAB** e **IBGE**.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **CEPEA**, **CONAB** e **IBGE**.
 
 ## Instalação
 
@@ -83,15 +84,56 @@ async def main():
     df = await ibge.pam('milho', ano=[2020, 2021, 2022, 2023])
 ```
 
+### Datasets (v0.6.0) - Camada Semântica
+
+Peça o que quer, fonte é detalhe interno:
+
+```python
+from agrobr import datasets
+
+async def main():
+    # Preço diário (CEPEA com fallback automático)
+    df = await datasets.preco_diario("soja")
+
+    # Produção anual (IBGE PAM → CONAB)
+    df = await datasets.producao_anual("soja", ano=2023)
+
+    # Estimativa de safra corrente (CONAB → IBGE LSPA)
+    df = await datasets.estimativa_safra("soja", safra="2024/25")
+
+    # Balanço oferta/demanda (CONAB)
+    df = await datasets.balanco("soja")
+
+    # Com metadados de proveniência
+    df, meta = await datasets.preco_diario("soja", return_meta=True)
+    print(meta.source, meta.contract_version)
+
+    # Listar datasets disponíveis
+    print(datasets.list_datasets())
+    # ['balanco', 'estimativa_safra', 'preco_diario', 'producao_anual']
+```
+
+### Modo Determinístico (Reprodutibilidade)
+
+```python
+from agrobr import datasets
+
+async with datasets.deterministic("2025-12-31"):
+    # Todas as consultas filtram data <= snapshot
+    # Usa apenas cache local (sem rede)
+    df = await datasets.preco_diario("soja")
+```
+
 ### Modo Síncrono
 
 ```python
-from agrobr.sync import cepea, conab, ibge
+from agrobr.sync import cepea, conab, ibge, datasets
 
 # Mesmo API, sem async/await
 df = cepea.indicador('soja', periodo='2024')
 safras = conab.safras('milho')
 pam = ibge.pam('soja', ano=2023)
+df = datasets.preco_diario('soja')
 ```
 
 ### Suporte Polars
@@ -122,6 +164,25 @@ agrobr ibge lspa milho --ano 2024 --mes 6
 agrobr health --all
 ```
 
+## Status das Fontes
+
+| Fonte | Status |
+|-------|--------|
+| CEPEA | [![Health](https://github.com/bruno-portfolio/agrobr/actions/workflows/health_check.yml/badge.svg)](https://github.com/bruno-portfolio/agrobr/actions/workflows/health_check.yml) |
+| Testes | [![Tests](https://github.com/bruno-portfolio/agrobr/actions/workflows/tests.yml/badge.svg)](https://github.com/bruno-portfolio/agrobr/actions/workflows/tests.yml) |
+
+O agrobr monitora automaticamente a disponibilidade das fontes.
+Use `agrobr health --all` para verificar localmente.
+
+## Datasets Disponíveis
+
+| Dataset | Descrição | Fontes |
+|---------|-----------|--------|
+| `preco_diario` | Preços diários spot | CEPEA → cache |
+| `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
+| `estimativa_safra` | Estimativas safra corrente | CONAB → IBGE LSPA |
+| `balanco` | Oferta/demanda | CONAB |
+
 ## Fontes Suportadas
 
 | Fonte | Dados | Status |
@@ -132,16 +193,19 @@ agrobr health --all
 
 ## Diferenciais
 
--  **Async-first** para pipelines de alta performance
--  **Cache inteligente** com DuckDB (analytics nativo)
--  **Histórico permanente** - acumula dados automaticamente
--  **Suporte pandas + polars**
--  **Validação com Pydantic v2**
--  **Validação estatística** de sanidade (detecta anomalias)
--  **Fingerprinting de layout** para detecção proativa de mudanças
--  **Alertas multi-canal** (Slack, Discord, Email)
--  **CLI completo** para debug e automação
--  **Fallback automático** entre fontes
+- **Camada semântica** - datasets padronizados com fallback automático
+- **Contratos públicos** - schema versionado e garantias de estabilidade
+- **Modo determinístico** - reprodutibilidade total para papers/auditorias
+- **Async-first** para pipelines de alta performance
+- **Cache inteligente** com DuckDB (analytics nativo)
+- **Histórico permanente** - acumula dados automaticamente
+- **Suporte pandas + polars**
+- **Validação com Pydantic v2**
+- **Validação estatística** de sanidade (detecta anomalias)
+- **Fingerprinting de layout** para detecção proativa de mudanças
+- **Alertas multi-canal** (Slack, Discord, Email)
+- **CLI completo** para debug e automação
+- **Fallback automático** entre fontes
 
 ## Como Funciona
 

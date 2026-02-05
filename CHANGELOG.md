@@ -7,6 +7,38 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-02-05
+
+### Added
+- **Camada Semântica** - 4 datasets padronizados com fallback automático entre fontes
+  - `datasets.preco_diario()` - Preços diários (CEPEA → cache)
+  - `datasets.producao_anual()` - Produção anual (IBGE PAM → CONAB)
+  - `datasets.estimativa_safra()` - Estimativas safra corrente (CONAB → IBGE LSPA)
+  - `datasets.balanco()` - Balanço oferta/demanda (CONAB)
+  - `datasets.list_datasets()` / `datasets.list_products()` / `datasets.info()`
+- **Contratos Públicos** - Garantias formais de schema versionado
+  - Documentação em `docs/contracts/` para cada dataset
+  - Colunas estáveis, tipos só alargam, breaking changes só em major
+- **Modo Determinístico Aprimorado** - Context manager async com contextvars
+  - `async with datasets.deterministic("2025-12-31"):` - Isolado por task
+  - `@deterministic_decorator("2025-12-31")` - Decorator para funções
+  - `is_deterministic()` / `get_snapshot()` - Verificar estado atual
+- **Hierarquia de Exceções Expandida**
+  - `NetworkError` - Erros de rede (timeout, HTTP error, DNS)
+  - `ContractViolationError` - DataFrame não atende contrato do dataset
+- **MetaInfo Expandido** - Novos campos de proveniência
+  - `dataset` - Nome do dataset
+  - `contract_version` - Versão do contrato
+  - `snapshot` - Data de corte (modo determinístico)
+- **Documentação Avançada**
+  - `docs/advanced/reproducibility.md` - Guia de reprodutibilidade
+  - `docs/advanced/pipelines.md` - Integração Airflow, Prefect, Dagster
+- **Notebook Demo** - Google Colab com exemplos executáveis
+
+### Changed
+- `agrobr.sync.datasets` - API síncrona para datasets
+- README atualizado com seção de datasets e status das fontes
+
 ## [0.5.0] - 2026-02-04
 
 ### Added
@@ -170,7 +202,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.2.0...v0.3.0
