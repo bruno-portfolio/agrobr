@@ -2,7 +2,7 @@
 
 import pytest
 
-from agrobr.datasets.preco_diario import PrecoDiarioDataset, PRECO_DIARIO_INFO
+from agrobr.datasets.preco_diario import PRECO_DIARIO_INFO, PrecoDiarioDataset
 
 
 class TestPrecoDiarioInfo:

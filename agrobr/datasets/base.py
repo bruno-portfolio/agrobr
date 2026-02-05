@@ -5,13 +5,14 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import httpx
 import structlog
 
 if TYPE_CHECKING:
     import pandas as pd
+
     from agrobr.models import MetaInfo
 
 from agrobr.exceptions import (

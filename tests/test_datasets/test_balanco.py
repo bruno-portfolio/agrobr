@@ -2,7 +2,7 @@
 
 import pytest
 
-from agrobr.datasets.balanco import BalancoDataset, BALANCO_INFO
+from agrobr.datasets.balanco import BALANCO_INFO, BalancoDataset
 
 
 class TestBalancoInfo:

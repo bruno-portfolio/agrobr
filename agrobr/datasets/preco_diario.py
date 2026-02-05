@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
-from typing import Any, TYPE_CHECKING
+from datetime import UTC, date, datetime
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 import structlog
@@ -139,7 +139,7 @@ class PrecoDiarioDataset(BaseDataset):
                 source=f"datasets.preco_diario/{source_name}",
                 source_url=source_meta.source_url if source_meta else "",
                 source_method="dataset",
-                fetched_at=source_meta.fetched_at if source_meta else datetime.now(timezone.utc),
+                fetched_at=source_meta.fetched_at if source_meta else datetime.now(UTC),
                 records_count=len(df),
                 columns=df.columns.tolist(),
                 from_cache=source_name == "cache",
@@ -173,7 +173,7 @@ class PrecoDiarioDataset(BaseDataset):
 
 _preco_diario = PrecoDiarioDataset()
 
-from agrobr.datasets.registry import register
+from agrobr.datasets.registry import register  # noqa: E402
 
 register(_preco_diario)
 

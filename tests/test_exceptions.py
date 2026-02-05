@@ -1,6 +1,5 @@
 """Testes para exceções do agrobr."""
 
-import pytest
 
 from agrobr.exceptions import (
     AgrobrError,

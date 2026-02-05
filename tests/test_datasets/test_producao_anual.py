@@ -2,7 +2,7 @@
 
 import pytest
 
-from agrobr.datasets.producao_anual import ProducaoAnualDataset, PRODUCAO_ANUAL_INFO
+from agrobr.datasets.producao_anual import PRODUCAO_ANUAL_INFO, ProducaoAnualDataset
 
 
 class TestProducaoAnualInfo:

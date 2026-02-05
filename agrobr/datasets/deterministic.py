@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import contextvars
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from datetime import date
 from functools import wraps
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 _snapshot_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
     "agrobr_snapshot", default=None
