@@ -189,7 +189,9 @@ async def fetch_indicador_page(produto: str, force_httpx: bool = False) -> str:
         produto=produto,
     )
 
-    if not force_httpx and _use_browser:
+    from agrobr.http.browser import is_available
+
+    if not force_httpx and _use_browser and is_available():
         try:
             return await _fetch_with_browser(url, produto)
         except SourceUnavailableError:

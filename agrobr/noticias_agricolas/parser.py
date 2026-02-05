@@ -10,6 +10,7 @@ import structlog
 from bs4 import BeautifulSoup
 
 from agrobr.constants import Fonte
+from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
 
 logger = structlog.get_logger()
@@ -159,6 +160,18 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
             )
 
             indicadores.append(indicador)
+
+    if not indicadores:
+        has_tables = bool(soup.find_all("table"))
+        raise ParseError(
+            source="noticias_agricolas",
+            parser_version=1,
+            reason=(
+                f"No indicators found for '{produto}'. "
+                f"{'Tables found but no data rows — page likely requires JavaScript (AJAX).' if has_tables else 'No tables found in HTML.'}"
+            ),
+            html_snippet=html[:500],
+        )
 
     logger.info(
         "parse_complete",

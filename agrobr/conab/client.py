@@ -7,7 +7,6 @@ from io import BytesIO
 from typing import Any
 
 import structlog
-from playwright.async_api import async_playwright
 
 from agrobr import constants
 from agrobr.exceptions import SourceUnavailableError
@@ -27,6 +26,17 @@ async def fetch_boletim_page() -> str:
     url = constants.URLS[constants.Fonte.CONAB]["boletim_graos"]
 
     logger.info("conab_fetch_boletim_page", url=url)
+
+    from agrobr.http.browser import is_available
+
+    if not is_available():
+        raise SourceUnavailableError(
+            source="conab",
+            url=url,
+            last_error="Playwright not available for CONAB page fetch",
+        )
+
+    from playwright.async_api import async_playwright
 
     async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -106,6 +116,17 @@ async def download_xlsx(url: str) -> BytesIO:
         SourceUnavailableError: Se não conseguir baixar
     """
     logger.info("conab_download_xlsx", url=url)
+
+    from agrobr.http.browser import is_available
+
+    if not is_available():
+        raise SourceUnavailableError(
+            source="conab",
+            url=url,
+            last_error="Playwright not available for CONAB download",
+        )
+
+    from playwright.async_api import async_playwright
 
     async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:
         browser = await p.chromium.launch(headless=True)

@@ -6,6 +6,7 @@ from decimal import Decimal
 import pytest
 
 from agrobr.constants import Fonte
+from agrobr.exceptions import ParseError
 from agrobr.noticias_agricolas.parser import (
     PRACAS,
     UNIDADES,
@@ -115,15 +116,15 @@ class TestParseIndicador:
         assert ind2.valor == Decimal("124.88")
 
     def test_parse_indicador_empty_html(self):
-        """Testa parse com HTML vazio."""
-        indicadores = parse_indicador("<html></html>", "soja")
-        assert len(indicadores) == 0
+        """Testa parse com HTML vazio levanta ParseError."""
+        with pytest.raises(ParseError, match="No indicators found"):
+            parse_indicador("<html></html>", "soja")
 
     def test_parse_indicador_no_table(self):
-        """Testa parse sem tabela de cotações."""
+        """Testa parse sem tabela de cotações levanta ParseError."""
         html = "<html><body><p>Sem tabela</p></body></html>"
-        indicadores = parse_indicador(html, "soja")
-        assert len(indicadores) == 0
+        with pytest.raises(ParseError, match="No tables found"):
+            parse_indicador(html, "soja")
 
     def test_parse_indicador_different_products(self, sample_html):
         """Testa parse para diferentes produtos."""
