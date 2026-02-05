@@ -116,14 +116,21 @@ class _SyncIbge(_SyncModule):
     pass
 
 
+class _SyncDatasets(_SyncModule):
+    """API síncrona dos datasets."""
+
+    pass
+
+
 _cepea: _SyncCepea | None = None
 _conab: _SyncConab | None = None
 _ibge: _SyncIbge | None = None
+_datasets: _SyncDatasets | None = None
 
 
 def __getattr__(name: str) -> Any:
     """Lazy loading para evitar imports circulares."""
-    global _cepea, _conab, _ibge
+    global _cepea, _conab, _ibge, _datasets
 
     if name == "cepea":
         if _cepea is None:
@@ -143,5 +150,11 @@ def __getattr__(name: str) -> Any:
 
             _ibge = _SyncIbge(async_ibge)
         return _ibge
+    elif name == "datasets":
+        if _datasets is None:
+            from agrobr import datasets as async_datasets
+
+            _datasets = _SyncDatasets(async_datasets)
+        return _datasets
 
     raise AttributeError(f"module 'agrobr.sync' has no attribute '{name}'")

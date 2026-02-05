@@ -66,11 +66,19 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Guia Rápido: quickstart.md
+  - Datasets:
+    - Visão Geral: contracts/index.md
+    - preco_diario: contracts/preco_diario.md
+    - producao_anual: contracts/producao_anual.md
+    - estimativa_safra: contracts/estimativa_safra.md
+    - balanco: contracts/balanco.md
   - API Reference:
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md
     - IBGE: api/ibge.md
   - Avançado:
+    - Reprodutibilidade: advanced/reproducibility.md
+    - Integração Pipelines: advanced/pipelines.md
     - Resiliência: advanced/resilience.md
     - Troubleshooting: advanced/troubleshooting.md
 

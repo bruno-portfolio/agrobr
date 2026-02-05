@@ -117,6 +117,9 @@ class MetaInfo:
     python_version: str = ""
     validation_passed: bool = True
     validation_warnings: list[str] = dataclass_field(default_factory=list)
+    dataset: str = ""
+    contract_version: str = ""
+    snapshot: str | None = None
 
     def __post_init__(self) -> None:
         """Preenche versoes automaticamente."""
@@ -153,6 +156,9 @@ class MetaInfo:
             "python_version": self.python_version,
             "validation_passed": self.validation_passed,
             "validation_warnings": self.validation_warnings,
+            "dataset": self.dataset,
+            "contract_version": self.contract_version,
+            "snapshot": self.snapshot,
         }
 
     def to_json(self, indent: int = 2) -> str:
