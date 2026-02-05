@@ -16,6 +16,35 @@ from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
 
+_LSPA_ALIASES: dict[str, list[str]] = {
+    "milho": ["milho_1", "milho_2"],
+    "feijao": ["feijao_1", "feijao_2", "feijao_3"],
+    "amendoim": ["amendoim_1", "amendoim_2"],
+    "batata": ["batata_1", "batata_2"],
+}
+
+
+def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
+    """Expande nome genérico de produto LSPA para sub-produtos.
+
+    Args:
+        produto: Nome do produto (pode ser genérico como "milho" ou específico como "milho_1")
+
+    Returns:
+        Lista de tuplas (nome_sub_produto, codigo_sidra)
+
+    Raises:
+        ValueError: Se o produto não for suportado
+    """
+    if produto in client.PRODUTOS_LSPA:
+        return [(produto, client.PRODUTOS_LSPA[produto])]
+
+    if produto in _LSPA_ALIASES:
+        return [(sub, client.PRODUTOS_LSPA[sub]) for sub in _LSPA_ALIASES[produto]]
+
+    all_valid = sorted(set(list(client.PRODUTOS_LSPA.keys()) + list(_LSPA_ALIASES.keys())))
+    raise ValueError(f"Produto não suportado: {produto}. Disponíveis: {all_valid}")
+
 
 @overload
 async def pam(
@@ -250,12 +279,7 @@ async def lspa(
     )
 
     produto_lower = produto.lower()
-    if produto_lower not in client.PRODUTOS_LSPA:
-        raise ValueError(
-            f"Produto não suportado: {produto}. Disponíveis: {list(client.PRODUTOS_LSPA.keys())}"
-        )
-
-    produto_cod = client.PRODUTOS_LSPA[produto_lower]
+    sub_produtos = _expand_lspa_produto(produto_lower)
 
     if ano is None:
         from datetime import date
@@ -267,22 +291,27 @@ async def lspa(
     territorial_level = "3" if uf else "1"
     ibge_code = client.uf_to_ibge_code(uf) if uf else "all"
 
-    df = await client.fetch_sidra(
-        table_code=client.TABELAS["lspa"],
-        territorial_level=territorial_level,
-        ibge_territorial_code=ibge_code,
-        period=period,
-        classifications={"48": produto_cod},
-    )
+    frames: list[pd.DataFrame] = []
+    for sub_nome, sub_cod in sub_produtos:
+        sub_df = await client.fetch_sidra(
+            table_code=client.TABELAS["lspa"],
+            territorial_level=territorial_level,
+            ibge_territorial_code=ibge_code,
+            period=period,
+            classifications={"48": sub_cod},
+        )
 
-    df = client.parse_sidra_response(df)
+        sub_df = client.parse_sidra_response(sub_df)
 
-    df["ano"] = ano
-    if mes:
-        df["mes"] = mes
+        sub_df["ano"] = ano
+        if mes:
+            sub_df["mes"] = mes
 
-    df["produto"] = produto_lower
-    df["fonte"] = "ibge_lspa"
+        sub_df["produto"] = sub_nome
+        sub_df["fonte"] = "ibge_lspa"
+        frames.append(sub_df)
+
+    df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)

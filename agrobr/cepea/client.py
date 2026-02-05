@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 import httpx
 import structlog
 
@@ -16,6 +18,10 @@ logger = structlog.get_logger()
 
 _use_browser: bool = False
 _use_alternative_source: bool = True
+
+_httpx_circuit_open: bool = False
+_httpx_circuit_opened_at: float = 0.0
+_CIRCUIT_RESET_SECONDS: float = 600.0
 
 
 def set_use_browser(enabled: bool) -> None:
@@ -40,6 +46,30 @@ def _get_timeout() -> httpx.Timeout:
         read=settings.timeout_read,
         write=settings.timeout_write,
         pool=settings.timeout_pool,
+    )
+
+
+def _is_circuit_open() -> bool:
+    """Verifica se o circuit breaker httpx→CEPEA está aberto."""
+    global _httpx_circuit_open
+    if not _httpx_circuit_open:
+        return False
+    elapsed = time.monotonic() - _httpx_circuit_opened_at
+    if elapsed >= _CIRCUIT_RESET_SECONDS:
+        _httpx_circuit_open = False
+        logger.info("cepea_circuit_reset", elapsed_s=int(elapsed))
+        return False
+    return True
+
+
+def _open_circuit() -> None:
+    """Abre o circuit breaker após detectar Cloudflare."""
+    global _httpx_circuit_open, _httpx_circuit_opened_at
+    _httpx_circuit_open = True
+    _httpx_circuit_opened_at = time.monotonic()
+    logger.warning(
+        "cepea_circuit_opened",
+        reset_after_s=int(_CIRCUIT_RESET_SECONDS),
     )
 
 
@@ -154,16 +184,20 @@ async def fetch_indicador_page(
 
     last_error: str = ""
 
-    if not force_browser:
+    if not force_browser and not _is_circuit_open():
         try:
             return await _fetch_with_httpx(url, headers)
         except (httpx.HTTPError, httpx.HTTPStatusError, SourceUnavailableError) as e:
             last_error = str(e)
+            is_cloudflare = "403" in last_error or "cloudflare" in last_error.lower()
+            if is_cloudflare:
+                _open_circuit()
             logger.warning(
                 "httpx_failed",
                 source="cepea",
                 url=url,
                 error=last_error,
+                circuit_opened=is_cloudflare,
             )
 
     if _use_browser:

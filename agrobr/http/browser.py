@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import atexit
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -30,6 +31,22 @@ except ImportError:
 _playwright_instance: Playwright | None = None
 _browser: Browser | None = None
 _lock = asyncio.Lock()
+
+
+def _sync_cleanup() -> None:
+    """Cleanup síncrono do Playwright no shutdown do processo."""
+    global _playwright_instance, _browser
+    if _browser is None and _playwright_instance is None:
+        return
+    try:
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(close_browser())
+        loop.close()
+    except Exception:
+        pass
+
+
+atexit.register(_sync_cleanup)
 
 
 def is_available() -> bool:

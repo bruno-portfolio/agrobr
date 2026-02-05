@@ -79,6 +79,54 @@ class TestLspaValidation:
 
         assert "Produto não suportado" in str(exc.value)
 
+    @pytest.mark.asyncio
+    async def test_lspa_aceita_milho_generico(self):
+        """Testa que 'milho' expande para milho_1 + milho_2."""
+        mock_df = pd.DataFrame({"V": ["100"], "D1N": ["202406"]})
+        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
+            mock_fetch.return_value = mock_df
+
+            await ibge.lspa("milho", ano=2024, mes=6)
+
+            assert mock_fetch.call_count == 2
+            codes_called = [
+                call.kwargs["classifications"]["48"] for call in mock_fetch.call_args_list
+            ]
+            assert client.PRODUTOS_LSPA["milho_1"] in codes_called
+            assert client.PRODUTOS_LSPA["milho_2"] in codes_called
+
+    @pytest.mark.asyncio
+    async def test_lspa_aceita_feijao_generico(self):
+        """Testa que 'feijao' expande para feijao_1 + feijao_2 + feijao_3."""
+        mock_df = pd.DataFrame({"V": ["100"], "D1N": ["202406"]})
+        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
+            mock_fetch.return_value = mock_df
+
+            await ibge.lspa("feijao", ano=2024, mes=6)
+
+            assert mock_fetch.call_count == 3
+
+    @pytest.mark.asyncio
+    async def test_lspa_especifico_continua_funcionando(self):
+        """Testa que milho_1 específico ainda funciona."""
+        mock_df = pd.DataFrame({"V": ["100"], "D1N": ["202406"]})
+        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
+            mock_fetch.return_value = mock_df
+
+            await ibge.lspa("milho_1", ano=2024, mes=6)
+
+            assert mock_fetch.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_lspa_erro_lista_aliases(self):
+        """Testa que erro inclui aliases na lista de disponíveis."""
+        with pytest.raises(ValueError) as exc:
+            await ibge.lspa("xyz")
+
+        msg = str(exc.value)
+        assert "milho" in msg
+        assert "feijao" in msg
+
 
 class TestPamMocked:
     """Testes da funcao PAM com mock."""
