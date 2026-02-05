@@ -18,9 +18,7 @@ if TYPE_CHECKING:
 logger = structlog.get_logger()
 
 
-async def _fetch_conab(
-    produto: str, **kwargs: Any
-) -> tuple[pd.DataFrame, MetaInfo | None]:
+async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
 
     safra = kwargs.get("safra")
@@ -83,9 +81,7 @@ class BalancoDataset(BaseDataset):
 
         snapshot = get_snapshot()
 
-        df, source_name, source_meta = await self._try_sources(
-            produto, safra=safra, **kwargs
-        )
+        df, source_name, source_meta = await self._try_sources(produto, safra=safra, **kwargs)
 
         df = self._normalize(df, produto)
 

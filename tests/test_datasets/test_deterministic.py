@@ -60,6 +60,7 @@ class TestDeterministicDecorator:
 
     def test_decorator_invalid_date_raises(self):
         with pytest.raises(ValueError):
+
             @deterministic_decorator("not-a-date")
             async def my_func():
                 pass

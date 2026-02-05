@@ -18,9 +18,7 @@ if TYPE_CHECKING:
 logger = structlog.get_logger()
 
 
-async def _fetch_conab(
-    produto: str, **kwargs: Any
-) -> tuple[pd.DataFrame, MetaInfo | None]:
+async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
 
     safra = kwargs.get("safra")
@@ -33,9 +31,7 @@ async def _fetch_conab(
     return result, None
 
 
-async def _fetch_ibge_lspa(
-    produto: str, **kwargs: Any
-) -> tuple[pd.DataFrame, MetaInfo | None]:
+async def _fetch_ibge_lspa(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import ibge
 
     safra = kwargs.get("safra")
@@ -45,6 +41,7 @@ async def _fetch_ibge_lspa(
         ano = int(safra.split("/")[0])
     else:
         from datetime import date
+
         ano = date.today().year
 
     result = await ibge.lspa(produto, ano=ano, uf=uf, return_meta=True)
