@@ -18,9 +18,7 @@ if TYPE_CHECKING:
 logger = structlog.get_logger()
 
 
-async def _fetch_ibge_pam(
-    produto: str, **kwargs: Any
-) -> tuple[pd.DataFrame, MetaInfo | None]:
+async def _fetch_ibge_pam(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import ibge
 
     ano = kwargs.get("ano")
@@ -34,9 +32,7 @@ async def _fetch_ibge_pam(
     return result, None
 
 
-async def _fetch_conab(
-    produto: str, **kwargs: Any
-) -> tuple[pd.DataFrame, MetaInfo | None]:
+async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
 
     safra = kwargs.get("safra")

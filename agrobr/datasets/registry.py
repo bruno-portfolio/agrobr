@@ -19,10 +19,7 @@ def register(dataset: BaseDataset) -> BaseDataset:
 def get_dataset(name: str) -> BaseDataset:
     """Retorna instância de um dataset pelo nome."""
     if name not in _REGISTRY:
-        raise KeyError(
-            f"Dataset '{name}' não encontrado. "
-            f"Disponíveis: {list(_REGISTRY.keys())}"
-        )
+        raise KeyError(f"Dataset '{name}' não encontrado. Disponíveis: {list(_REGISTRY.keys())}")
     return _REGISTRY[name]
 
 

@@ -1,6 +1,5 @@
 """Testes para exceções do agrobr."""
 
-
 from agrobr.exceptions import (
     AgrobrError,
     ContractViolationError,
