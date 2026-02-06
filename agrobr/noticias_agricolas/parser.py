@@ -210,7 +210,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
             parser_version=1,
             reason=(
                 f"No indicators found for '{produto}'. "
-                f"{'Tables found but no data rows — page likely requires JavaScript (AJAX).' if has_tables else 'No tables found in HTML.'}"
+                f"{'Tables found but no data rows matched expected format.' if has_tables else 'No tables found in HTML.'}"
             ),
             html_snippet=html[:500],
         )

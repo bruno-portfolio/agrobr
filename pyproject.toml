@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agrobr"
-version = "0.6.2"
+version = "0.6.3"
 description = "Dados agrícolas brasileiros em uma linha de código"
 readme = "README.md"
 license = "MIT"
@@ -50,11 +50,13 @@ dependencies = [
     "chardet>=5.2.0",
     "typer>=0.9.0",
     "openpyxl>=3.1.0",
-    "playwright>=1.40.0",
     "sidrapy>=0.1.4",
 ]
 
 [project.optional-dependencies]
+browser = [
+    "playwright>=1.40.0",
+]
 polars = [
     "polars>=0.19.0",
 ]
@@ -63,7 +65,7 @@ dev = [
     "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.1.0",
     "pytest-recording>=0.13.0",
-    "ruff>=0.14.0",
+    "ruff>=0.4.0",
     "mypy>=1.7.0",
     "black>=23.11.0",
     "pre-commit>=3.5.0",
@@ -75,7 +77,7 @@ docs = [
     "mkdocstrings[python]>=0.24.0",
 ]
 all = [
-    "agrobr[polars,dev,docs]",
+    "agrobr[polars,browser,dev,docs]",
 ]
 
 [project.scripts]
@@ -83,7 +85,7 @@ agrobr = "agrobr.cli:app"
 
 [project.urls]
 Homepage = "https://github.com/bruno-portfolio/agrobr"
-Documentation = "https://agrobr.dev"
+Documentation = "https://bruno-portfolio.github.io/agrobr/"
 Repository = "https://github.com/bruno-portfolio/agrobr"
 Issues = "https://github.com/bruno-portfolio/agrobr/issues"
 

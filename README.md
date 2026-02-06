@@ -24,10 +24,11 @@ Infraestrutura Python para dados agrícolas brasileiros com camada semântica so
 pip install agrobr
 ```
 
-Com suporte a Polars e Playwright (para fontes que requerem JavaScript):
+Com extras opcionais:
 ```bash
-pip install agrobr[polars,browser]
-playwright install chromium
+pip install agrobr[polars]          # Suporte a Polars
+pip install agrobr[browser]         # Playwright (opcional, para fontes com JS)
+playwright install chromium         # Só se usar [browser]
 ```
 
 ## Uso Rápido
@@ -40,7 +41,7 @@ from agrobr import cepea
 
 async def main():
     # Série histórica de soja
-    df = await cepea.indicador('soja', periodo='2024')
+    df = await cepea.indicador('soja', inicio='2024-01-01')
     print(df.head())
 
     # Último valor disponível
@@ -48,7 +49,7 @@ async def main():
     print(f"Soja: R$ {ultimo.valor}/sc em {ultimo.data}")
 
     # Produtos disponíveis
-    print(cepea.produtos())  # ['soja', 'milho', 'boi_gordo', 'cafe', ...]
+    print(await cepea.produtos())  # ['soja', 'milho', 'boi_gordo', 'cafe', ...]
 
 asyncio.run(main())
 ```
@@ -136,7 +137,7 @@ async with datasets.deterministic("2025-12-31"):
 from agrobr.sync import cepea, conab, ibge, datasets
 
 # Mesmo API, sem async/await
-df = cepea.indicador('soja', periodo='2024')
+df = cepea.indicador('soja', inicio='2024-01-01')
 safras = conab.safras('milho')
 pam = ibge.pam('soja', ano=2023)
 df = datasets.preco_diario('soja')

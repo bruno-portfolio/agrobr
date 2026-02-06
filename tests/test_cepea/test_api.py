@@ -7,6 +7,7 @@ import pytest
 from agrobr import cepea
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_produtos_returns_list():
     """Test that produtos returns a list of available products."""
@@ -17,6 +18,7 @@ async def test_produtos_returns_list():
     assert "cafe" in result
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_pracas_returns_list():
     """Test that pracas returns a list for known products."""
@@ -25,6 +27,7 @@ async def test_pracas_returns_list():
     assert len(result) > 0
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_pracas_unknown_product():
     """Test that pracas returns empty list for unknown products."""
