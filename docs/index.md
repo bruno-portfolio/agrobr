@@ -9,31 +9,39 @@
 
 ## O que é o agrobr?
 
-O **agrobr** é um pacote Python que fornece acesso simplificado aos principais dados agrícolas brasileiros:
+Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre CEPEA, CONAB e IBGE.
 
-- **CEPEA/ESALQ**: Indicadores de preços (soja, milho, boi, café, etc.)
-- **CONAB**: Dados de safras e balanço oferta/demanda
-- **IBGE/SIDRA**: PAM (Produção Agrícola Municipal) e LSPA (Levantamento Sistemático)
+- **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
+- **CONAB**: Safras e balanço oferta/demanda
+- **IBGE/SIDRA**: PAM (anual) e LSPA (mensal)
 
-## Por que usar o agrobr?
+## Datasets — Camada Semântica
 
-| Problema | Solução agrobr |
-|----------|----------------|
-| Download manual de planilhas | Uma linha de código |
-| Layouts inconsistentes | Parsing robusto com fallback |
-| Scripts que quebram | Fingerprinting detecta mudanças |
-| Sem histórico | Cache DuckDB com acumulação |
-| Encoding caótico | Fallback chain automático |
+Peça o que quer, a fonte é detalhe interno:
+
+| Dataset | Descrição | Fontes (fallback automático) |
+|---------|-----------|------------------------------|
+| `preco_diario` | Preços diários spot | CEPEA → Notícias Agrícolas → cache |
+| `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
+| `estimativa_safra` | Estimativas safra corrente | CONAB → IBGE LSPA |
+| `balanco` | Oferta/demanda | CONAB |
+
+```python
+from agrobr import datasets
+
+df = await datasets.preco_diario("soja")
+df = await datasets.producao_anual("soja", ano=2023)
+df = await datasets.estimativa_safra("soja", safra="2024/25")
+df = await datasets.balanco("soja")
+```
 
 ## Instalação
 
 ```bash
 pip install agrobr
 
-# Com suporte a Polars (opcional)
-pip install agrobr[polars]
-
-# Instalar Playwright para scraping avançado
+# Com Playwright (para fontes que requerem JavaScript)
+pip install agrobr[browser]
 playwright install chromium
 ```
 
@@ -43,8 +51,7 @@ playwright install chromium
 from agrobr import cepea, conab, ibge
 
 # CEPEA - Indicadores de preços
-df = await cepea.indicador('soja')
-print(df.head())
+df = await cepea.indicador('soja', inicio='2024-01-01')
 
 # CONAB - Safras
 df = await conab.safras('soja', safra='2024/25')
@@ -58,27 +65,40 @@ df = await ibge.pam('soja', ano=2023, nivel='uf')
 ```python
 from agrobr.sync import cepea
 
-# Mesma API, sem async/await
 df = cepea.indicador('soja')
 ```
 
+## Diferenciais
+
+| Problema | Solução agrobr |
+|----------|----------------|
+| Download manual de planilhas | Uma linha de código |
+| Layouts inconsistentes | Parsing robusto com fallback |
+| Scripts que quebram | Fingerprinting detecta mudanças |
+| Sem histórico | Cache DuckDB com acumulação |
+| Encoding caótico | Fallback chain automático |
+| Escolher fonte | Datasets abstraem a fonte |
+
 ## Features
 
-- **Async-first**: Performance para pipelines de dados
-- **Sync wrapper**: Uso simples quando async não é necessário
-- **Cache inteligente**: DuckDB com histórico permanente
-- **Suporte Pandas + Polars**: `as_polars=True` em todas as APIs
-- **CLI completa**: `agrobr cepea soja --formato csv`
-- **Resiliência**: Retry, rate limiting, fallback automático
-- **Validação**: Pydantic v2 + sanity checks estatísticos
-- **Monitoramento**: Health checks e alertas
+- **Camada semântica** — datasets com fallback automático entre fontes
+- **Contratos públicos** — schema versionado com garantias de estabilidade
+- **Modo determinístico** — reprodutibilidade total para papers/auditorias
+- **Async-first** com sync wrapper para uso simples
+- **Cache DuckDB** com histórico permanente
+- **Suporte pandas + polars** (`as_polars=True`)
+- **CLI completa** (`agrobr cepea soja --formato csv`)
+- **Validação** — Pydantic v2 + sanity checks estatísticos + fingerprinting
+- **Monitoramento** — health checks diários + alertas multi-canal
 
 ## Próximos Passos
 
-- [Guia Rápido](quickstart.md) - Tutorial completo
-- [API Reference](api/cepea.md) - Documentação detalhada
-- [Exemplos](https://github.com/bruno-portfolio/agrobr/tree/main/examples) - Scripts de exemplo
+- [Guia Rápido](quickstart.md) — Tutorial completo
+- [Datasets](contracts/index.md) — Contratos e garantias
+- [API Reference](api/cepea.md) — Documentação detalhada
+- [Fontes](sources/index.md) — Proveniência e rastreabilidade
+- [Exemplos](https://github.com/bruno-portfolio/agrobr/tree/main/examples) — Scripts de exemplo
 
 ## Licença
 
-MIT License - veja [LICENSE](https://github.com/bruno-portfolio/agrobr/blob/main/LICENSE)
+MIT License — veja [LICENSE](https://github.com/bruno-portfolio/agrobr/blob/main/LICENSE)

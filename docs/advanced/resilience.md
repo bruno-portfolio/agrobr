@@ -102,13 +102,13 @@ Chain de fallback para encoding:
 
 ```
 CEPEA (www.cepea.org.br)
-        ↓ bloqueado?
-Playwright (browser headless)
-        ↓ ainda bloqueado?
-Notícias Agrícolas (fallback)
+        ↓ bloqueado (Cloudflare)?
+Notícias Agrícolas (httpx direto, SSR)
+        ↓ falhou?
+Cache local (DuckDB)
 ```
 
-O Notícias Agrícolas republica os mesmos indicadores CEPEA/ESALQ.
+O Notícias Agrícolas republica os mesmos indicadores CEPEA/ESALQ via HTML server-side rendered, sem necessidade de Playwright.
 
 ## Cache e Histórico
 
@@ -261,7 +261,7 @@ agrobr doctor
 ### Exemplo de saída
 
 ```
-agrobr diagnostics v0.2.0
+agrobr diagnostics v0.6.3
 ==================================================
 
 Sources Connectivity
@@ -285,8 +285,7 @@ Cache Expiry
   IBGE: TTL 7 dias
 
 Configuration
-  Browser fallback:   disabled
-  Alternative source: enabled
+  Alternative source: enabled (Notícias Agrícolas via httpx)
 
 [OK] All systems operational
 ```

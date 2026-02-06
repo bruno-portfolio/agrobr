@@ -33,17 +33,17 @@ Guia para resolver problemas comuns.
 
 ### `403 Forbidden` (CEPEA)
 
-**Causa:** Cloudflare bloqueando requisições.
+**Causa:** Cloudflare bloqueando requisições diretas ao CEPEA.
 
-**Solução:** O agrobr automaticamente usa Notícias Agrícolas como fallback. Se ainda falhar:
+**Solução:** O agrobr automaticamente usa Notícias Agrícolas como fallback (httpx puro, sem Playwright). Se ainda falhar:
 
-1. Verifique se Playwright está instalado:
-   ```bash
-   playwright install chromium
-   ```
-2. Tente forçar atualização:
+1. Tente forçar atualização:
    ```python
    df = await cepea.indicador('soja', force_refresh=True)
+   ```
+2. Use modo offline com dados do cache:
+   ```python
+   df = await cepea.indicador('soja', offline=True)
    ```
 
 ## Erros de Parsing

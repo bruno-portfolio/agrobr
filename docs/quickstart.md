@@ -11,7 +11,8 @@ pip install agrobr
 # Com suporte a Polars (recomendado para grandes volumes)
 pip install agrobr[polars]
 
-# Instalar navegador para scraping avançado
+# Com Playwright (fontes que requerem JavaScript)
+pip install agrobr[browser]
 playwright install chromium
 ```
 
@@ -64,14 +65,26 @@ print(f"Milho: R$ {ultimo.valor}")
 
 ### Produtos Disponíveis
 
-| Produto | Descrição |
-|---------|-----------|
-| `soja` | Soja em grão (Paranaguá) |
-| `milho` | Milho (Campinas) |
-| `boi_gordo` | Boi gordo (São Paulo) |
-| `cafe` | Café Arábica |
-| `algodao` | Algodão em pluma |
-| `trigo` | Trigo (Paraná) |
+| Produto | Descrição | Unidade |
+|---------|-----------|---------|
+| `soja` | Soja em grão (Paranaguá) | BRL/sc 60kg |
+| `soja_parana` | Soja (Paraná) | BRL/sc 60kg |
+| `milho` | Milho (Campinas) | BRL/sc 60kg |
+| `boi` / `boi_gordo` | Boi gordo (São Paulo) | BRL/@ |
+| `cafe` / `cafe_arabica` | Café Arábica | BRL/sc 60kg |
+| `algodao` | Algodão em pluma | cBRL/lb |
+| `trigo` | Trigo (Paraná + RS) | BRL/ton |
+| `arroz` | Arroz em casca (ESALQ/BBM) | BRL/sc 50kg |
+| `acucar` | Açúcar cristal | BRL/sc 50kg |
+| `acucar_refinado` | Açúcar refinado amorfo | BRL/sc 50kg |
+| `etanol_hidratado` | Etanol hidratado (semanal) | BRL/L |
+| `etanol_anidro` | Etanol anidro (semanal) | BRL/L |
+| `frango_congelado` | Frango congelado | BRL/kg |
+| `frango_resfriado` | Frango resfriado | BRL/kg |
+| `suino` | Suíno vivo | BRL/kg |
+| `leite` | Leite ao produtor | BRL/L |
+| `laranja_industria` | Laranja indústria | BRL/cx 40,8kg |
+| `laranja_in_natura` | Laranja pera in natura | BRL/cx 40,8kg |
 
 ## CONAB - Safras
 
@@ -145,6 +158,11 @@ async def main():
     # Milho 1ª e 2ª safra
     df1 = await ibge.lspa('milho_1', ano=2024)
     df2 = await ibge.lspa('milho_2', ano=2024)
+
+    # Aliases genéricos — expandem para sub-safras automaticamente
+    df = await ibge.lspa('milho', ano=2024)   # → milho_1 + milho_2
+    df = await ibge.lspa('feijao', ano=2024)  # → feijao_1 + feijao_2 + feijao_3
+    df = await ibge.lspa('batata', ano=2024)  # → batata_1 + batata_2
 
 asyncio.run(main())
 ```

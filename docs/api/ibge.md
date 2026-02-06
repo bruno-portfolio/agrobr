@@ -98,6 +98,19 @@ async def lspa(
 | `algodao` | Algodão herbáceo |
 | `amendoim_1` | Amendoim 1ª safra |
 | `amendoim_2` | Amendoim 2ª safra |
+| `batata_1` | Batata-inglesa 1ª safra |
+| `batata_2` | Batata-inglesa 2ª safra |
+
+**Aliases genéricos:**
+
+Nomes genéricos expandem automaticamente para sub-safras e retornam um DataFrame concatenado:
+
+| Alias | Expande para |
+|-------|-------------|
+| `milho` | `milho_1` + `milho_2` |
+| `feijao` | `feijao_1` + `feijao_2` + `feijao_3` |
+| `amendoim` | `amendoim_1` + `amendoim_2` |
+| `batata` | `batata_1` + `batata_2` |
 
 **Exemplo:**
 
@@ -109,6 +122,9 @@ df = await ibge.lspa('soja', ano=2024, mes=6)
 
 # Milho 2ª safra
 df = await ibge.lspa('milho_2', ano=2024)
+
+# Alias genérico — retorna milho_1 + milho_2 concatenados
+df = await ibge.lspa('milho', ano=2024)
 
 # Por UF
 df = await ibge.lspa('soja', ano=2024, uf='MT')

@@ -21,16 +21,28 @@
 - **Tipo**: Mirror autorizado dos indicadores CEPEA
 - **Status**: Funcional
 
-## Produtos Disponiveis
+## Produtos Disponiveis (20 indicadores)
 
 | Produto | Praca Principal | Unidade | Frequencia |
 |---------|-----------------|---------|------------|
 | Soja | Paranagua/PR | BRL/sc 60kg | Diaria |
+| Soja Parana | Parana | BRL/sc 60kg | Diaria |
 | Milho | Campinas/SP | BRL/sc 60kg | Diaria |
 | Boi Gordo | Sao Paulo/SP | BRL/@ | Diaria |
 | Cafe Arabica | Sao Paulo/SP | BRL/sc 60kg | Diaria |
-| Trigo | Parana | BRL/ton | Diaria |
-| Algodao | Sao Paulo/SP | BRL/@ | Diaria |
+| Trigo | Parana + RS | BRL/ton | Diaria |
+| Algodao | Sao Paulo/SP | cBRL/lb | Diaria |
+| Arroz em casca | ESALQ/BBM | BRL/sc 50kg | Diaria |
+| Acucar cristal | Sao Paulo/SP | BRL/sc 50kg | Diaria |
+| Acucar refinado | Sao Paulo/SP | BRL/sc 50kg | Diaria |
+| Etanol hidratado | Sao Paulo/SP | BRL/L | Semanal |
+| Etanol anidro | Sao Paulo/SP | BRL/L | Semanal |
+| Frango congelado | Sao Paulo/SP | BRL/kg | Diaria |
+| Frango resfriado | Sao Paulo/SP | BRL/kg | Diaria |
+| Suino vivo | Sao Paulo/SP | BRL/kg | Diaria |
+| Leite | Ao produtor | BRL/L | Mensal |
+| Laranja industria | Sao Paulo/SP | BRL/cx 40,8kg | Diaria |
+| Laranja in natura | Sao Paulo/SP | BRL/cx 40,8kg | Diaria |
 
 ## Metodologia CEPEA
 
@@ -112,7 +124,10 @@ O CEPEA usa Smart TTL - o cache expira automaticamente as 18:00:
 ```python
 # Lista produtos disponiveis
 produtos = await cepea.produtos()
-# ['soja', 'milho', 'boi', 'cafe', 'trigo', 'algodao']
+# ['soja', 'soja_parana', 'milho', 'boi', 'cafe', 'algodao', 'trigo',
+#  'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado', 'etanol_anidro',
+#  'frango_congelado', 'frango_resfriado', 'suino', 'leite',
+#  'laranja_industria', 'laranja_in_natura']
 
 # Lista pracas para um produto
 pracas = await cepea.pracas('soja')

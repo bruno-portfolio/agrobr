@@ -7,6 +7,25 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-02-06
+
+### Fixed
+- `__version__` atualizado para `0.6.3` (estava travado em `0.6.0` desde o v0.6.0)
+- `.gitignore` corrompido — linhas garbled reescritas, adicionados roadmap v4 e insights
+- README: parâmetro inexistente `periodo=` corrigido para `inicio=` na API CEPEA
+- README: `cepea.produtos()` agora com `await` (função é async)
+- `ruff>=0.14.0` corrigido para `ruff>=0.4.0` (versão 0.14 não existe)
+- `site_url` corrigido no mkdocs.yml e pyproject.toml (era `agrobr.dev`, agora aponta para GitHub Pages)
+- Testes CEPEA API marcados como `@pytest.mark.integration` (chamavam API real sem mock)
+
+### Changed
+- `playwright` movido de dependência core para extra `[browser]` (~50MB a menos no install padrão)
+- Notícias Agrícolas client reescrito — Playwright removido, agora usa httpx puro (página é server-side rendered, não precisa de JS)
+- `docs/sources/` (4 páginas órfãs) adicionadas ao nav do mkdocs.yml
+- `docs/index.md` reescrito — agora reflete estado atual do projeto (datasets, 20 indicadores, features v0.6)
+- Documentação atualizada: 20 produtos CEPEA, LSPA aliases, algodão cBRL/lb, troubleshooting sem Playwright
+- Arquivo `nul` (artefato Windows) removido do repositório
+
 ## [0.6.2] - 2026-02-05
 
 ### Fixed
@@ -226,7 +245,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.5.0...v0.6.0
