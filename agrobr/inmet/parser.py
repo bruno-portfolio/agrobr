@@ -136,7 +136,7 @@ def agregar_diario(df: pd.DataFrame) -> pd.DataFrame:
         group_cols.append("uf")
 
     result = (
-        df.groupby([pd.Grouper(key="data", freq="D")] + group_cols)  # type: ignore[list-item]
+        df.groupby([pd.Grouper(key="data", freq="D")] + group_cols)  # type: ignore[operator]
         .agg(**{k: pd.NamedAgg(column=v[0], aggfunc=v[1]) for k, v in agg_filtrado.items()})
         .reset_index()
     )

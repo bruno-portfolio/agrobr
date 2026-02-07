@@ -38,7 +38,7 @@ class Estacao(BaseModel):
             return None
         if isinstance(v, str):
             return date.fromisoformat(v)
-        return v  # type: ignore[return-value]
+        return v  # type: ignore[no-any-return]
 
     @property
     def operante(self) -> bool:
@@ -118,7 +118,7 @@ class ObservacaoHoraria(BaseModel):
     def parse_date(cls, v: Any) -> date:
         if isinstance(v, str):
             return date.fromisoformat(v)
-        return v  # type: ignore[return-value]
+        return v  # type: ignore[no-any-return]
 
     @property
     def datetime_utc(self) -> datetime:
