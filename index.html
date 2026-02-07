@@ -226,6 +226,11 @@
     margin: 0 auto;
   }
 
+  section.hero,
+  section.cta-section {
+    max-width: none;
+  }
+
   .section-label {
     font-family: var(--font-mono);
     font-size: 0.7rem;
@@ -375,7 +380,7 @@
   /* ═══════════════ SOURCES ═══════════════ */
   .sources-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.25rem;
     margin-top: 2rem;
   }

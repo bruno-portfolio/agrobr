@@ -13,15 +13,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **NASA POWER** (`agrobr.nasa_power`) — Dados climaticos globais como substituto do INMET
   - `nasa_power.clima_ponto()` — Dados diarios/mensais por coordenada (lat/lon)
   - `nasa_power.clima_uf()` — Dados climaticos por UF (ponto central)
-  - 7 parametros agroclimáticos: temp (media/max/min), precipitacao, umidade, radiacao, vento
+  - 7 parametros agroclimaticos: temp (media/max/min), precipitacao, umidade, radiacao, vento
   - API REST pura (NASA LaRC), sem autenticacao, cobertura global desde 1981
   - Chunking automatico para periodos > 365 dias
   - 34 testes unitarios (models, parser, api)
 - **NASAPowerCollector** no agrobr-collector (substitui INMETCollector)
+- **Notebook demo** (`examples/agrobr_demo.ipynb`) — 14 secoes cobrindo todas as fontes, MetaInfo, fallback, cache, pipeline com graficos e modo async
+- **Landing page** atualizada — 7 fontes (era 3), 561 testes, grid responsivo
 
 ### Changed
 - INMET desabilitado no collector (config.yaml `enabled: false`) — API dados retornando 404
 - Docs atualizados: INMET referencia NASA POWER como alternativa
+
+### Fixed
+- **sync.py** — `_SyncNasaPower` adicionado (nasa_power nao funcionava no modo sincrono)
 
 ## [0.7.0] - 2026-02-07
 
@@ -296,7 +301,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.1...v0.6.2
