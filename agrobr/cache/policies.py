@@ -107,6 +107,12 @@ POLICIES: dict[str, CachePolicy] = {
         description="ANDA entregas fertilizantes (atualiza mensalmente, PDF)",
         smart_expiry=False,
     ),
+    "nasa_power": CachePolicy(
+        ttl_seconds=TTL.DAYS_7.value,
+        stale_max_seconds=TTL.DAYS_30.value,
+        description="NASA POWER dados climáticos (grid diário, atualiza com ~2 dias de atraso)",
+        smart_expiry=False,
+    ),
 }
 
 SOURCE_POLICY_MAP: dict[Fonte, str] = {
@@ -117,7 +123,7 @@ SOURCE_POLICY_MAP: dict[Fonte, str] = {
     Fonte.CONAB: "conab_safras",
     Fonte.IBGE: "ibge_lspa",
     Fonte.INMET: "inmet",
-    Fonte.NASA_POWER: "bcb",
+    Fonte.NASA_POWER: "nasa_power",
     Fonte.NOTICIAS_AGRICOLAS: "noticias_agricolas",
 }
 

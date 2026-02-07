@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    env:
+      AGROBR_ALERT_ENABLED: "true"
+      AGROBR_ALERT_SLACK_WEBHOOK: ${{ secrets.AGROBR_SLACK_WEBHOOK }}
+      AGROBR_ALERT_DISCORD_WEBHOOK: ${{ secrets.AGROBR_DISCORD_WEBHOOK }}
+
     steps:
       - uses: actions/checkout@v4
 

@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    env:
+      AGROBR_ALERT_ENABLED: "true"
+      AGROBR_ALERT_SLACK_WEBHOOK: ${{ secrets.AGROBR_SLACK_WEBHOOK }}
+      AGROBR_ALERT_DISCORD_WEBHOOK: ${{ secrets.AGROBR_DISCORD_WEBHOOK }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -27,10 +32,58 @@ jobs:
       - name: Run health checks
         id: health
         run: |
-          python scripts/fetch_structures.py --output health_report.json
-          echo "report_path=health_report.json" >> $GITHUB_OUTPUT
+          python -c "
+          import asyncio, json, sys
+          from agrobr.health.doctor import run_diagnostics
+
+          result = asyncio.run(run_diagnostics(verbose=True))
+          report = result.to_dict()
+
+          with open('health_report.json', 'w') as f:
+              json.dump(report, f, indent=2)
+
+          print(result.to_rich())
+
+          # Set outputs for alert step
+          print(f\"overall_status={report['overall_status']}\", file=open('$GITHUB_OUTPUT', 'a') if '$GITHUB_OUTPUT' != '' else sys.stdout)
+
+          failed = [s['name'] for s in report['sources'] if s['status'] == 'error']
+          if failed:
+              print(f\"failed_sources={','.join(failed)}\", file=open('$GITHUB_OUTPUT', 'a') if '$GITHUB_OUTPUT' != '' else sys.stdout)
+          "
+          echo "overall_status=$(python -c "import json; r=json.load(open('health_report.json')); print(r['overall_status'])")" >> $GITHUB_OUTPUT
+
+      - name: Alert on degraded/error
+        if: steps.health.outputs.overall_status != 'healthy'
+        run: |
+          python -c "
+          import asyncio, json
+
+          report = json.load(open('health_report.json'))
+          failed = [s for s in report['sources'] if s['status'] == 'error']
+
+          if not failed:
+              print('No failed sources to alert on')
+              exit(0)
+
+          from agrobr.alerts.notifier import AlertLevel, send_alert
+
+          level = AlertLevel.CRITICAL if report['overall_status'] == 'error' else AlertLevel.WARNING
+
+          asyncio.run(send_alert(
+              level=level,
+              title=f\"Health check: {report['overall_status']}\",
+              details={
+                  'failed_sources': {s['name']: s.get('error', 'unknown') for s in failed},
+                  'ok_sources': [s['name'] for s in report['sources'] if s['status'] == 'ok'],
+                  'version': report['version'],
+              },
+          ))
+          print(f'Alert sent: {level.value} - {len(failed)} sources down')
+          "
 
       - name: Upload report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: health-report-${{ github.run_number }}

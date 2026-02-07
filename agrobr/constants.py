@@ -234,7 +234,7 @@ class AlertSettings(BaseSettings):
     alert_on_parse_error: bool = True
     alert_on_layout_change: bool = True
     alert_on_source_down: bool = True
-    alert_on_anomaly: bool = False
+    alert_on_anomaly: bool = True
 
     class Config:
         env_prefix = "AGROBR_ALERT_"

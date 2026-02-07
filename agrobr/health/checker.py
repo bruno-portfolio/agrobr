@@ -119,30 +119,131 @@ async def check_cepea() -> CheckResult:
 
 async def check_conab() -> CheckResult:
     """Executa health check para CONAB."""
-    start = time.monotonic()
+    import httpx
 
-    return CheckResult(
-        source=Fonte.CONAB,
-        status=CheckStatus.WARNING,
-        latency_ms=(time.monotonic() - start) * 1000,
-        message="CONAB health check not implemented yet",
-        details={},
-        timestamp=datetime.utcnow(),
-    )
+    start = time.monotonic()
+    details: dict[str, Any] = {}
+    url = "https://www.conab.gov.br"
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.head(url, follow_redirects=True)
+            latency = (time.monotonic() - start) * 1000
+
+            details["status_code"] = response.status_code
+            details["latency_ms"] = latency
+
+            if response.status_code >= 400:
+                return CheckResult(
+                    source=Fonte.CONAB,
+                    status=CheckStatus.FAILED,
+                    latency_ms=latency,
+                    message=f"HTTP {response.status_code}",
+                    details=details,
+                    timestamp=datetime.utcnow(),
+                )
+
+            if latency > 5000:
+                return CheckResult(
+                    source=Fonte.CONAB,
+                    status=CheckStatus.WARNING,
+                    latency_ms=latency,
+                    message=f"High latency: {latency:.0f}ms",
+                    details=details,
+                    timestamp=datetime.utcnow(),
+                )
+
+            return CheckResult(
+                source=Fonte.CONAB,
+                status=CheckStatus.OK,
+                latency_ms=latency,
+                message="CONAB reachable",
+                details=details,
+                timestamp=datetime.utcnow(),
+            )
+
+    except Exception as e:
+        latency = (time.monotonic() - start) * 1000
+        logger.error("health_check_failed", source="conab", error=str(e))
+        return CheckResult(
+            source=Fonte.CONAB,
+            status=CheckStatus.FAILED,
+            latency_ms=latency,
+            message=str(e),
+            details=details,
+            timestamp=datetime.utcnow(),
+        )
 
 
 async def check_ibge() -> CheckResult:
-    """Executa health check para IBGE."""
-    start = time.monotonic()
+    """Executa health check para IBGE (API SIDRA)."""
+    import httpx
 
-    return CheckResult(
-        source=Fonte.IBGE,
-        status=CheckStatus.WARNING,
-        latency_ms=(time.monotonic() - start) * 1000,
-        message="IBGE health check not implemented yet",
-        details={},
-        timestamp=datetime.utcnow(),
-    )
+    start = time.monotonic()
+    details: dict[str, Any] = {}
+    url = "https://apisidra.ibge.gov.br/values/t/5457/n1/all/v/allxp/p/last%201/c782/40124"
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.get(url, follow_redirects=True)
+            latency = (time.monotonic() - start) * 1000
+
+            details["status_code"] = response.status_code
+            details["latency_ms"] = latency
+
+            if response.status_code >= 400:
+                return CheckResult(
+                    source=Fonte.IBGE,
+                    status=CheckStatus.FAILED,
+                    latency_ms=latency,
+                    message=f"SIDRA API HTTP {response.status_code}",
+                    details=details,
+                    timestamp=datetime.utcnow(),
+                )
+
+            data = response.json()
+            details["records"] = len(data) if isinstance(data, list) else 0
+
+            if not data or (isinstance(data, list) and len(data) < 2):
+                return CheckResult(
+                    source=Fonte.IBGE,
+                    status=CheckStatus.WARNING,
+                    latency_ms=latency,
+                    message="SIDRA API returned empty data",
+                    details=details,
+                    timestamp=datetime.utcnow(),
+                )
+
+            if latency > 5000:
+                return CheckResult(
+                    source=Fonte.IBGE,
+                    status=CheckStatus.WARNING,
+                    latency_ms=latency,
+                    message=f"High latency: {latency:.0f}ms",
+                    details=details,
+                    timestamp=datetime.utcnow(),
+                )
+
+            return CheckResult(
+                source=Fonte.IBGE,
+                status=CheckStatus.OK,
+                latency_ms=latency,
+                message=f"SIDRA API OK ({details['records']} records)",
+                details=details,
+                timestamp=datetime.utcnow(),
+            )
+
+    except Exception as e:
+        latency = (time.monotonic() - start) * 1000
+        logger.error("health_check_failed", source="ibge", error=str(e))
+        return CheckResult(
+            source=Fonte.IBGE,
+            status=CheckStatus.FAILED,
+            latency_ms=latency,
+            message=str(e),
+            details=details,
+            timestamp=datetime.utcnow(),
+        )
 
 
 async def check_source(source: Fonte) -> CheckResult:
