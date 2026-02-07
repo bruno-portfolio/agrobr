@@ -10,6 +10,10 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,25 +22,32 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Install dependencies
         run: pip install mkdocs-material mkdocstrings mkdocstrings-python
-      
-      - name: Build docs
-        run: mkdocs build
-      
+
+      - name: Build MkDocs
+        run: mkdocs build -d site_mkdocs
+
+      - name: Assemble site
+        run: |
+          mkdir site
+          cp index.html site/
+          cp -r site_mkdocs site/docs
+          echo "agrobr.dev" > site/CNAME
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
-      
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

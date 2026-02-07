@@ -120,6 +120,9 @@ class MetaInfo:
     dataset: str = ""
     contract_version: str = ""
     snapshot: str | None = None
+    attempted_sources: list[str] = dataclass_field(default_factory=list)
+    selected_source: str = ""
+    fetch_timestamp: datetime | None = None
 
     def __post_init__(self) -> None:
         """Preenche versoes automaticamente."""
@@ -159,6 +162,11 @@ class MetaInfo:
             "dataset": self.dataset,
             "contract_version": self.contract_version,
             "snapshot": self.snapshot,
+            "attempted_sources": self.attempted_sources,
+            "selected_source": self.selected_source,
+            "fetch_timestamp": (
+                self.fetch_timestamp.isoformat() if self.fetch_timestamp else None
+            ),
         }
 
     def to_json(self, indent: int = 2) -> str:
@@ -170,7 +178,7 @@ class MetaInfo:
         """Reconstroi a partir de dicionario."""
         data = data.copy()
 
-        for key in ["fetched_at", "timestamp", "cache_expires_at"]:
+        for key in ["fetched_at", "timestamp", "cache_expires_at", "fetch_timestamp"]:
             if data.get(key) and isinstance(data[key], str):
                 data[key] = datetime.fromisoformat(data[key])
 

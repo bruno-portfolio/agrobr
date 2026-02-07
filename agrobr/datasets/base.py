@@ -84,13 +84,23 @@ class BaseDataset(ABC):
         self,
         produto: str,
         **kwargs: Any,
-    ) -> tuple[pd.DataFrame, str, Any]:
+    ) -> tuple[pd.DataFrame, str, Any, list[str]]:
+        """Tenta fontes em ordem de prioridade com fallback.
+
+        Returns:
+            Tupla (DataFrame, source_name, source_meta, attempted_sources).
+            attempted_sources lista todas as fontes tentadas em ordem,
+            incluindo a que teve sucesso.
+        """
         self._validate_produto(produto)
         errors: list[tuple[str, str, str]] = []
+        attempted: list[str] = []
 
         for source in sorted(self.info.sources, key=lambda s: s.priority):
             if not source.enabled:
                 continue
+
+            attempted.append(source.name)
 
             try:
                 df, meta = await source.fetch_fn(produto, **kwargs)
@@ -99,8 +109,9 @@ class BaseDataset(ABC):
                     dataset=self.info.name,
                     source=source.name,
                     rows=len(df),
+                    attempted_sources=attempted,
                 )
-                return df, source.name, meta
+                return df, source.name, meta, attempted
 
             except (httpx.HTTPError, httpx.TimeoutException, OSError) as e:
                 logger.warning(

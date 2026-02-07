@@ -124,7 +124,7 @@ class PrecoDiarioDataset(BaseDataset):
         if snapshot:
             fim = snapshot
 
-        df, source_name, source_meta = await self._try_sources(
+        df, source_name, source_meta, attempted = await self._try_sources(
             produto, inicio=inicio, fim=fim, **kwargs
         )
 
@@ -135,11 +135,12 @@ class PrecoDiarioDataset(BaseDataset):
             df = df[df["data"].dt.date <= snapshot_date]
 
         if return_meta:
+            now = datetime.now(UTC)
             meta = MetaInfo(
                 source=f"datasets.preco_diario/{source_name}",
                 source_url=source_meta.source_url if source_meta else "",
                 source_method="dataset",
-                fetched_at=source_meta.fetched_at if source_meta else datetime.now(UTC),
+                fetched_at=source_meta.fetched_at if source_meta else now,
                 records_count=len(df),
                 columns=df.columns.tolist(),
                 from_cache=source_name == "cache",
@@ -147,6 +148,9 @@ class PrecoDiarioDataset(BaseDataset):
                 dataset="preco_diario",
                 contract_version=self.info.contract_version,
                 snapshot=snapshot,
+                attempted_sources=attempted,
+                selected_source=source_name,
+                fetch_timestamp=now,
             )
             return df, meta
 

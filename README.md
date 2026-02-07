@@ -13,7 +13,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/demo_colab.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **CEPEA**, **CONAB** e **IBGE**.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **CEPEA**, **CONAB**, **IBGE**, **INMET**, **BCB/SICOR**, **ComexStat** e **ANDA**.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -26,9 +26,10 @@ pip install agrobr
 
 Com extras opcionais:
 ```bash
+pip install agrobr[pdf]             # pdfplumber para ANDA (fertilizantes)
 pip install agrobr[polars]          # Suporte a Polars
 pip install agrobr[browser]         # Playwright (opcional, para fontes com JS)
-playwright install chromium         # Só se usar [browser]
+pip install agrobr[all]             # Tudo incluído
 ```
 
 ## Uso Rápido
@@ -131,16 +132,42 @@ async with datasets.deterministic("2025-12-31"):
     df = await datasets.preco_diario("soja")
 ```
 
+### Novas Fontes v0.7.0
+
+```python
+from agrobr import inmet, bcb, comexstat, anda
+
+async def main():
+    # INMET — clima mensal por UF
+    df = await inmet.clima_uf("MT", ano=2024)
+
+    # BCB/SICOR — crédito rural
+    df = await bcb.credito_rural(produto="soja", safra="2024/25")
+
+    # ComexStat — exportações mensais
+    df = await comexstat.exportacao("soja", ano=2024, agregacao="mensal")
+
+    # ANDA — entregas de fertilizantes (requer pip install agrobr[pdf])
+    df = await anda.entregas(ano=2024, uf="MT")
+
+    # CONAB — custos de produção
+    from agrobr import conab
+    df = await conab.custo_producao(cultura="soja", uf="MT", safra="2024/25")
+```
+
 ### Modo Síncrono
 
 ```python
-from agrobr.sync import cepea, conab, ibge, datasets
+from agrobr.sync import cepea, conab, ibge, datasets, inmet, bcb, comexstat
 
 # Mesmo API, sem async/await
 df = cepea.indicador('soja', inicio='2024-01-01')
 safras = conab.safras('milho')
 pam = ibge.pam('soja', ano=2023)
 df = datasets.preco_diario('soja')
+clima = inmet.clima_uf('MT', ano=2024)
+credito = bcb.credito_rural(produto='soja', safra='2024/25')
+exportacao = comexstat.exportacao('soja', ano=2024)
 ```
 
 ### Suporte Polars
@@ -194,9 +221,13 @@ Use `agrobr health --all` para verificar localmente.
 
 | Fonte | Dados | Status |
 |-------|-------|--------|
-| CEPEA | Indicadores de preços (soja, milho, café, boi, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja) | ✅ Funcional |
-| CONAB | Safras, balanço oferta/demanda | ✅ Funcional |
-| IBGE | PAM (anual), LSPA (mensal) | ✅ Funcional |
+| CEPEA | Indicadores de preços (20 produtos) | Funcional |
+| CONAB | Safras, balanço, custos de produção | Funcional |
+| IBGE | PAM (anual), LSPA (mensal) | Funcional |
+| INMET | Meteorologia (600+ estações) | Funcional (v0.7.0) |
+| BCB/SICOR | Crédito rural por município | Funcional (v0.7.0) |
+| ComexStat | Exportações por NCM/UF | Funcional (v0.7.0) |
+| ANDA | Entregas de fertilizantes | Funcional (v0.7.0) |
 
 ## Diferenciais
 
@@ -225,6 +256,21 @@ Dia 365: 1 ano completo de dados locais
 ```
 
 Consultas a períodos antigos são instantâneas (cache). Apenas dados recentes precisam de request HTTP.
+
+## Manter Dados Atualizados
+
+Integre com Airflow, Prefect ou Dagster usando a API sync:
+
+```python
+# Airflow task
+@task
+def extract_soja():
+    from agrobr.sync import datasets
+    df = datasets.preco_diario("soja")
+    df.to_parquet("/data/soja.parquet")
+```
+
+Veja o [guia completo de pipelines](https://bruno-portfolio.github.io/agrobr/advanced/pipelines/) e o [guia de ergonomia async](https://bruno-portfolio.github.io/agrobr/guides/async/).
 
 ## Documentação
 

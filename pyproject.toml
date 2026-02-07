@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agrobr"
-version = "0.6.3"
+version = "0.7.0"
 description = "Dados agrícolas brasileiros em uma linha de código"
 readme = "README.md"
 license = "MIT"
@@ -57,6 +57,9 @@ dependencies = [
 browser = [
     "playwright>=1.40.0",
 ]
+pdf = [
+    "pdfplumber>=0.10.0",
+]
 polars = [
     "polars>=0.19.0",
 ]
@@ -77,7 +80,7 @@ docs = [
     "mkdocstrings[python]>=0.24.0",
 ]
 all = [
-    "agrobr[polars,browser,dev,docs]",
+    "agrobr[polars,browser,pdf,dev,docs]",
 ]
 
 [project.scripts]

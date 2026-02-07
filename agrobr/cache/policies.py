@@ -77,12 +77,46 @@ POLICIES: dict[str, CachePolicy] = {
         description="Notícias Agrícolas (expira às 18h, mirror CEPEA)",
         smart_expiry=True,
     ),
+    "conab_custo": CachePolicy(
+        ttl_seconds=TTL.DAYS_30.value,
+        stale_max_seconds=TTL.DAYS_90.value,
+        description="CONAB custos de produção (atualiza anualmente por safra)",
+        smart_expiry=False,
+    ),
+    "inmet": CachePolicy(
+        ttl_seconds=TTL.HOURS_24.value,
+        stale_max_seconds=TTL.DAYS_7.value,
+        description="INMET dados meteorológicos (atualiza diariamente)",
+        smart_expiry=False,
+    ),
+    "bcb": CachePolicy(
+        ttl_seconds=TTL.HOURS_24.value,
+        stale_max_seconds=TTL.DAYS_30.value,
+        description="BCB/SICOR crédito rural (atualiza mensalmente)",
+        smart_expiry=False,
+    ),
+    "comexstat": CachePolicy(
+        ttl_seconds=TTL.HOURS_24.value,
+        stale_max_seconds=TTL.DAYS_7.value,
+        description="ComexStat exportação (atualiza semanalmente/mensalmente)",
+        smart_expiry=False,
+    ),
+    "anda": CachePolicy(
+        ttl_seconds=TTL.DAYS_7.value,
+        stale_max_seconds=TTL.DAYS_30.value,
+        description="ANDA entregas fertilizantes (atualiza mensalmente, PDF)",
+        smart_expiry=False,
+    ),
 }
 
 SOURCE_POLICY_MAP: dict[Fonte, str] = {
+    Fonte.ANDA: "anda",
+    Fonte.BCB: "bcb",
     Fonte.CEPEA: "cepea_diario",
+    Fonte.COMEXSTAT: "comexstat",
     Fonte.CONAB: "conab_safras",
     Fonte.IBGE: "ibge_lspa",
+    Fonte.INMET: "inmet",
 }
 
 
