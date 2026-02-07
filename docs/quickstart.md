@@ -404,6 +404,12 @@ async def main():
         print(f"Dados inválidos: {e.field} = {e.value}")
 ```
 
+## Notebook Interativo
+
+Experimente todas as fontes direto no navegador:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
+
 ## Próximos Passos
 
 - Veja os [exemplos completos](https://github.com/bruno-portfolio/agrobr/tree/main/examples)

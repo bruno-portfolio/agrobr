@@ -98,6 +98,7 @@ df = cepea.indicador('soja')
 - [API Reference](api/cepea.md) — Documentação detalhada
 - [Fontes](sources/index.md) — Proveniência e rastreabilidade
 - [Exemplos](https://github.com/bruno-portfolio/agrobr/tree/main/examples) — Scripts de exemplo
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb) — Notebook interativo com todas as fontes
 
 ## Licença
 
