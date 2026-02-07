@@ -44,7 +44,7 @@ async def _get_with_retry(url: str, *, retries: int = MAX_RETRIES) -> httpx.Resp
             async with httpx.AsyncClient(
                 timeout=TIMEOUT,
                 follow_redirects=True,
-                headers={"User-Agent": "agrobr/0.7.0 (https://github.com/bruno-portfolio/agrobr)"},
+                headers={"User-Agent": "agrobr/0.7.1 (https://github.com/bruno-portfolio/agrobr)"},
             ) as client:
                 response = await client.get(url)
                 response.raise_for_status()

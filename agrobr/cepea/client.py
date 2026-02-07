@@ -203,7 +203,7 @@ async def fetch_indicador_page(
     if _use_browser:
         try:
             return await _fetch_with_browser(produto)
-        except (SourceUnavailableError, Exception) as e:
+        except Exception as e:
             last_error = str(e)
             logger.warning(
                 "browser_failed",
@@ -215,7 +215,7 @@ async def fetch_indicador_page(
     if _use_alternative_source:
         try:
             return await _fetch_with_alternative_source(produto)
-        except (SourceUnavailableError, ValueError, Exception) as e:
+        except Exception as e:
             last_error = str(e)
             logger.warning(
                 "alternative_source_failed",
@@ -248,7 +248,7 @@ async def fetch_series_historica(produto: str, anos: int = 5) -> str:
     Returns:
         HTML da página de série histórica
     """
-    constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
+    produto_key = constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
     base = constants.URLS[constants.Fonte.CEPEA]["base"]
     url = f"{base}/br/consultas-ao-banco-de-dados-do-site.aspx"
 

@@ -23,7 +23,7 @@ class Fonte(StrEnum):
 URLS = {
     Fonte.ANDA: {
         "base": "https://anda.org.br",
-        "estatisticas": "https://anda.org.br/estatisticas/",
+        "estatisticas": "https://anda.org.br/recursos/",
     },
     Fonte.BCB: {
         "base": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata",

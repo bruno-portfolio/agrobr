@@ -1,6 +1,6 @@
 site_name: agrobr
 site_description: Dados agrícolas brasileiros em uma linha de código
-site_url: https://agrobr.dev/docs/
+site_url: https://www.agrobr.dev/docs/
 repo_name: bruno-portfolio/agrobr
 repo_url: https://github.com/bruno-portfolio/agrobr
 
@@ -86,11 +86,16 @@ nav:
     - BCB/SICOR: sources/bcb.md
     - ComexStat: sources/comexstat.md
     - ANDA: sources/anda.md
+  - Guias:
+    - Async: guides/async.md
+    - Dependências: guides/dependencies.md
   - Avançado:
     - Reprodutibilidade: advanced/reproducibility.md
     - Integração Pipelines: advanced/pipelines.md
     - Resiliência: advanced/resilience.md
     - Troubleshooting: advanced/troubleshooting.md
+  - Contratos:
+    - SemVer: contracts/semver.md
 
 extra:
   social:

@@ -117,6 +117,8 @@ SOURCE_POLICY_MAP: dict[Fonte, str] = {
     Fonte.CONAB: "conab_safras",
     Fonte.IBGE: "ibge_lspa",
     Fonte.INMET: "inmet",
+    Fonte.NASA_POWER: "bcb",
+    Fonte.NOTICIAS_AGRICOLAS: "noticias_agricolas",
 }
 
 

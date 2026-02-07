@@ -87,7 +87,7 @@ df = cepea.indicador('soja')
 - **Async-first** com sync wrapper para uso simples
 - **Cache DuckDB** com histórico permanente
 - **Suporte pandas + polars** (`as_polars=True`)
-- **CLI completa** (`agrobr cepea soja --formato csv`)
+- **CLI completa** (`agrobr cepea indicador soja --formato csv`)
 - **Validação** — Pydantic v2 + sanity checks estatísticos + fingerprinting
 - **Monitoramento** — health checks diários + alertas multi-canal
 

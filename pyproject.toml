@@ -87,8 +87,8 @@ all = [
 agrobr = "agrobr.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/bruno-portfolio/agrobr"
-Documentation = "https://bruno-portfolio.github.io/agrobr/"
+Homepage = "https://www.agrobr.dev"
+Documentation = "https://www.agrobr.dev/docs/"
 Repository = "https://github.com/bruno-portfolio/agrobr"
 Issues = "https://github.com/bruno-portfolio/agrobr/issues"
 

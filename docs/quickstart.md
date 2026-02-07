@@ -321,9 +321,9 @@ O agrobr inclui uma CLI completa:
 
 ```bash
 # CEPEA
-agrobr cepea soja
-agrobr cepea soja --inicio 2024-01-01 --formato csv > soja.csv
-agrobr cepea soja --ultimo --json
+agrobr cepea indicador soja
+agrobr cepea indicador soja --inicio 2024-01-01 --formato csv > soja.csv
+agrobr cepea indicador soja --ultimo
 
 # CONAB
 agrobr conab safras soja --safra 2024/25

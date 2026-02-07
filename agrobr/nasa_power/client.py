@@ -24,7 +24,7 @@ RATE_LIMIT_DELAY = 1.0
 MAX_DAYS_PER_REQUEST = 365
 
 HEADERS = {
-    "User-Agent": "agrobr/0.7.0 (https://github.com/bruno-portfolio/agrobr)",
+    "User-Agent": "agrobr/0.7.1 (https://github.com/bruno-portfolio/agrobr)",
     "Accept": "application/json",
 }
 

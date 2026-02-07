@@ -184,7 +184,7 @@ pip install agrobr[polars]
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # Ou exporte para arquivo
-agrobr cepea soja --formato csv > soja.csv
+agrobr cepea indicador soja --formato csv > soja.csv
 ```
 
 ## Debug

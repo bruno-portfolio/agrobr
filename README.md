@@ -7,7 +7,7 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/agrobr)](https://pypi.org/project/agrobr/)
 [![Tests](https://github.com/bruno-portfolio/agrobr/actions/workflows/tests.yml/badge.svg)](https://github.com/bruno-portfolio/agrobr/actions/workflows/tests.yml)
 [![Daily Health Check](https://github.com/bruno-portfolio/agrobr/actions/workflows/health_check.yml/badge.svg)](https://github.com/bruno-portfolio/agrobr/actions/workflows/health_check.yml)
-[![Docs](https://github.com/bruno-portfolio/agrobr/actions/workflows/docs.yml/badge.svg)](https://bruno-portfolio.github.io/agrobr/)
+[![Docs](https://github.com/bruno-portfolio/agrobr/actions/workflows/docs.yml/badge.svg)](https://www.agrobr.dev/docs/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
@@ -184,8 +184,8 @@ df = await ibge.pam('soja', ano=2023, as_polars=True)
 
 ```bash
 # CEPEA
-agrobr cepea soja --ultimo
-agrobr cepea milho --inicio 2024-01-01 --formato csv
+agrobr cepea indicador soja --ultimo
+agrobr cepea indicador milho --inicio 2024-01-01 --formato csv
 
 # CONAB
 agrobr conab safras soja --safra 2024/25
@@ -272,17 +272,17 @@ def extract_soja():
     df.to_parquet("/data/soja.parquet")
 ```
 
-Veja o [guia completo de pipelines](https://bruno-portfolio.github.io/agrobr/advanced/pipelines/) e o [guia de ergonomia async](https://bruno-portfolio.github.io/agrobr/guides/async/).
+Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelines/) e o [guia de ergonomia async](https://www.agrobr.dev/docs/guides/async/).
 
 ## Documentação
 
- [Documentação completa](https://bruno-portfolio.github.io/agrobr/)
+ [Documentação completa](https://www.agrobr.dev/docs/)
 
-- [Guia Rápido](https://bruno-portfolio.github.io/agrobr/quickstart/)
-- [API CEPEA](https://bruno-portfolio.github.io/agrobr/api/cepea/)
-- [API CONAB](https://bruno-portfolio.github.io/agrobr/api/conab/)
-- [API IBGE](https://bruno-portfolio.github.io/agrobr/api/ibge/)
-- [Resiliência](https://bruno-portfolio.github.io/agrobr/advanced/resilience/)
+- [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
+- [API CEPEA](https://www.agrobr.dev/docs/api/cepea/)
+- [API CONAB](https://www.agrobr.dev/docs/api/conab/)
+- [API IBGE](https://www.agrobr.dev/docs/api/ibge/)
+- [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 
 ## Contribuindo
 
