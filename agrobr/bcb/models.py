@@ -30,7 +30,7 @@ class CreditoRural(BaseModel):
             return None
         if isinstance(v, str):
             return v.upper().strip()
-        return v
+        return str(v)
 
     @field_validator("produto", mode="before")
     @classmethod

@@ -29,7 +29,7 @@ class Estacao(BaseModel):
     def parse_float_strings(cls, v: Any) -> float:
         if isinstance(v, str):
             return float(v)
-        return v
+        return float(v)
 
     @field_validator("inicio_operacao", "fim_operacao", mode="before")
     @classmethod
@@ -38,7 +38,7 @@ class Estacao(BaseModel):
             return None
         if isinstance(v, str):
             return date.fromisoformat(v)
-        return v
+        return v  # type: ignore[return-value]
 
     @property
     def operante(self) -> bool:
@@ -118,7 +118,7 @@ class ObservacaoHoraria(BaseModel):
     def parse_date(cls, v: Any) -> date:
         if isinstance(v, str):
             return date.fromisoformat(v)
-        return v
+        return v  # type: ignore[return-value]
 
     @property
     def datetime_utc(self) -> datetime:

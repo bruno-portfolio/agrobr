@@ -111,7 +111,7 @@ async def _fetch_odata(
                     continue
 
                 response.raise_for_status()
-                return response.json()
+                return response.json()  # type: ignore[no-any-return]
 
         except httpx.TimeoutException as e:
             last_error = f"Timeout: {e}"
