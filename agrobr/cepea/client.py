@@ -248,7 +248,6 @@ async def fetch_series_historica(produto: str, anos: int = 5) -> str:
     Returns:
         HTML da página de série histórica
     """
-    produto_key = constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
     base = constants.URLS[constants.Fonte.CEPEA]["base"]
     url = f"{base}/br/consultas-ao-banco-de-dados-do-site.aspx"
 
