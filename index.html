@@ -164,6 +164,8 @@
     animation: fadeUp 1s 0.7s forwards;
   }
 
+  .hero-sources { color: var(--accent-gold); }
+
   .hero-install {
     display: inline-flex;
     align-items: center;
@@ -546,7 +548,7 @@
   <div class="hero-content">
     <p class="hero-eyebrow">Python · Open Source · PyPI</p>
     <h1 class="hero-title">Dados agrícolas brasileiros em <em>uma linha</em> de código</h1>
-    <p class="hero-subtitle">CEPEA, CONAB, IBGE, NASA POWER e mais 3 fontes — uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
+    <p class="hero-subtitle"><span class="hero-sources">CEPEA, CONAB, IBGE, NASA POWER</span> e mais 3 fontes — uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
     <div class="hero-install" onclick="copyInstall(this)" title="Copiar">
       <span><span class="pip">$</span> pip install agrobr</span>
       <span class="copy-icon">⎘</span>
@@ -627,7 +629,7 @@
       </div>
     </div>
     <div class="feature-item">
-      <div class="feature-icon">⚡</div>
+      <div class="feature-icon">↯</div>
       <div class="feature-text">
         <h3>Async-first</h3>
         <p>httpx nativo com sync wrapper. Funciona em Jupyter, FastAPI e Airflow.</p>
@@ -714,7 +716,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <span>© 2024–2026 Bruno · MIT License</span>
+  <span>© 2026 Bruno · MIT License</span>
   <div class="footer-links">
     <a href="https://github.com/bruno-portfolio/agrobr">GitHub</a>
     <a href="https://pypi.org/project/agrobr/">PyPI</a>
