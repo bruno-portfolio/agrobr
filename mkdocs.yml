@@ -81,6 +81,11 @@ nav:
     - CEPEA: sources/cepea.md
     - CONAB: sources/conab.md
     - IBGE: sources/ibge.md
+    - NASA POWER: sources/nasa_power.md
+    - INMET: sources/inmet.md
+    - BCB/SICOR: sources/bcb.md
+    - ComexStat: sources/comexstat.md
+    - ANDA: sources/anda.md
   - Avançado:
     - Reprodutibilidade: advanced/reproducibility.md
     - Integração Pipelines: advanced/pipelines.md

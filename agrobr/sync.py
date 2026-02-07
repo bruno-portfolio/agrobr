@@ -146,6 +146,12 @@ class _SyncAnda(_SyncModule):
     pass
 
 
+class _SyncNasaPower(_SyncModule):
+    """API síncrona do NASA POWER."""
+
+    pass
+
+
 _modules: dict[str, _SyncModule | None] = {
     "anda": None,
     "bcb": None,
@@ -155,6 +161,7 @@ _modules: dict[str, _SyncModule | None] = {
     "datasets": None,
     "ibge": None,
     "inmet": None,
+    "nasa_power": None,
 }
 
 _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
@@ -166,6 +173,7 @@ _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "datasets": _SyncDatasets,
     "ibge": _SyncIbge,
     "inmet": _SyncInmet,
+    "nasa_power": _SyncNasaPower,
 }
 
 

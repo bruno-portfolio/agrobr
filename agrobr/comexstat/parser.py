@@ -104,9 +104,9 @@ def parse_exportacao(
     if "ncm" in df.columns:
         df["ncm"] = df["ncm"].astype(str).str.zfill(8)
 
-    # Filtrar por NCM
+    # Filtrar por NCM (prefix match — 8 dígitos = exato, <8 = subposições)
     if ncm and "ncm" in df.columns:
-        df = df[df["ncm"] == ncm]
+        df = df[df["ncm"].str.startswith(ncm)]
 
     # Filtrar por UF
     if uf and "uf" in df.columns:

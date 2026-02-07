@@ -16,6 +16,7 @@ class Fonte(StrEnum):
     CONAB = "conab"
     IBGE = "ibge"
     INMET = "inmet"
+    NASA_POWER = "nasa_power"
     NOTICIAS_AGRICOLAS = "noticias_agricolas"
 
 
@@ -49,6 +50,10 @@ URLS = {
         "base": "https://apitempo.inmet.gov.br",
         "estacoes": "https://apitempo.inmet.gov.br/estacoes",
         "dados": "https://apitempo.inmet.gov.br/estacao/dados",
+    },
+    Fonte.NASA_POWER: {
+        "base": "https://power.larc.nasa.gov",
+        "daily": "https://power.larc.nasa.gov/api/temporal/daily/point",
     },
     Fonte.NOTICIAS_AGRICOLAS: {
         "base": "https://www.noticiasagricolas.com.br",
@@ -176,6 +181,7 @@ class CacheSettings(BaseSettings):
     ttl_inmet: int = 24 * 3600
     ttl_bcb: int = 24 * 3600
     ttl_comexstat: int = 24 * 3600
+    ttl_nasa_power: int = 24 * 3600
 
     stale_multiplier: float = 12.0
 
@@ -208,6 +214,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_conab: float = 3.0
     rate_limit_ibge: float = 1.0
     rate_limit_inmet: float = 0.5
+    rate_limit_nasa_power: float = 1.0
     rate_limit_noticias_agricolas: float = 2.0
 
     class Config:

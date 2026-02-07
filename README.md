@@ -13,7 +13,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/demo_colab.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **CEPEA**, **CONAB**, **IBGE**, **INMET**, **BCB/SICOR**, **ComexStat** e **ANDA**.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **CEPEA**, **CONAB**, **IBGE**, **NASA POWER**, **INMET**, **BCB/SICOR**, **ComexStat** e **ANDA**.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -132,14 +132,15 @@ async with datasets.deterministic("2025-12-31"):
     df = await datasets.preco_diario("soja")
 ```
 
-### Novas Fontes v0.7.0
+### Novas Fontes v0.7.0+
 
 ```python
-from agrobr import inmet, bcb, comexstat, anda
+from agrobr import nasa_power, bcb, comexstat, anda
 
 async def main():
-    # INMET — clima mensal por UF
-    df = await inmet.clima_uf("MT", ano=2024)
+    # NASA POWER — climatologia por ponto ou UF (v0.7.1)
+    df = await nasa_power.clima_ponto(-12.6, -56.1, "2024-01-01", "2024-12-31")
+    df = await nasa_power.clima_uf("MT", ano=2024)
 
     # BCB/SICOR — crédito rural
     df = await bcb.credito_rural(produto="soja", safra="2024/25")
@@ -158,14 +159,14 @@ async def main():
 ### Modo Síncrono
 
 ```python
-from agrobr.sync import cepea, conab, ibge, datasets, inmet, bcb, comexstat
+from agrobr.sync import cepea, conab, ibge, datasets, nasa_power, bcb, comexstat
 
 # Mesmo API, sem async/await
 df = cepea.indicador('soja', inicio='2024-01-01')
 safras = conab.safras('milho')
 pam = ibge.pam('soja', ano=2023)
 df = datasets.preco_diario('soja')
-clima = inmet.clima_uf('MT', ano=2024)
+clima = nasa_power.clima_uf('MT', ano=2024)
 credito = bcb.credito_rural(produto='soja', safra='2024/25')
 exportacao = comexstat.exportacao('soja', ano=2024)
 ```
@@ -224,7 +225,8 @@ Use `agrobr health --all` para verificar localmente.
 | CEPEA | Indicadores de preços (20 produtos) | Funcional |
 | CONAB | Safras, balanço, custos de produção | Funcional |
 | IBGE | PAM (anual), LSPA (mensal) | Funcional |
-| INMET | Meteorologia (600+ estações) | Funcional (v0.7.0) |
+| NASA POWER | Climatologia diária/mensal (grid 0.5°) | Funcional (v0.7.1) |
+| INMET | Meteorologia (600+ estações) | API fora do ar — usar NASA POWER |
 | BCB/SICOR | Crédito rural por município | Funcional (v0.7.0) |
 | ComexStat | Exportações por NCM/UF | Funcional (v0.7.0) |
 | ANDA | Entregas de fertilizantes | Funcional (v0.7.0) |

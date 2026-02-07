@@ -20,9 +20,18 @@ from agrobr.exceptions import SourceUnavailableError
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://www.conab.gov.br"
+BASE_URL = "https://www.gov.br"
 
-CUSTOS_PAGE = f"{BASE_URL}/info-agro/custos-de-producao/planilhas-de-custo-de-producao"
+CUSTOS_PAGE = (
+    f"{BASE_URL}/conab/pt-br/atuacao/informacoes-agropecuarias"
+    "/custos-de-producao/planilhas-de-custos-de-producao"
+)
+
+_TAB_SLUGS = [
+    "copy_of_agricolas",  # Hortícolas / sociobiodiversidade
+    "pecuarios",  # Pecuários
+    "copy",  # Grãos / fibras (custos-de-producao/custos-de-producao)
+]
 
 _settings = HTTPSettings()
 
@@ -48,28 +57,45 @@ HEADERS = {
 
 
 async def fetch_custos_page() -> str:
-    """Busca HTML da página de planilhas de custo de produção.
+    """Busca HTML combinado das tabs de planilhas de custo de produção.
+
+    O gov.br carrega as tabs via sub-URLs separadas.  Concatenamos o HTML
+    de todas para que ``parse_links_from_html`` encontre todos os xlsx.
 
     Returns:
-        HTML da página.
+        HTML combinado de todas as tabs.
 
     Raises:
-        SourceUnavailableError: Se a página não estiver acessível.
+        SourceUnavailableError: Se nenhuma tab estiver acessível.
     """
-    logger.info("conab_custo_fetch_page", url=CUSTOS_PAGE)
+    combined_html = ""
 
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
-        try:
-            response = await client.get(CUSTOS_PAGE)
-            response.raise_for_status()
-            logger.info("conab_custo_page_ok", content_length=len(response.text))
-            return response.text
-        except httpx.HTTPError as e:
-            raise SourceUnavailableError(
-                source="conab_custo",
-                url=CUSTOS_PAGE,
-                last_error=str(e),
-            ) from e
+        for slug in _TAB_SLUGS:
+            url = f"{CUSTOS_PAGE}/{slug}"
+            try:
+                response = await client.get(url)
+                response.raise_for_status()
+                combined_html += response.text
+                logger.info("conab_custo_tab_ok", slug=slug, content_length=len(response.text))
+            except httpx.HTTPError as e:
+                logger.warning("conab_custo_tab_error", slug=slug, error=str(e))
+
+        if not combined_html:
+            # Fallback: tenta a página principal
+            try:
+                response = await client.get(CUSTOS_PAGE)
+                response.raise_for_status()
+                combined_html = response.text
+                logger.info("conab_custo_page_ok", content_length=len(response.text))
+            except httpx.HTTPError as e:
+                raise SourceUnavailableError(
+                    source="conab_custo",
+                    url=CUSTOS_PAGE,
+                    last_error=str(e),
+                ) from e
+
+    return combined_html
 
 
 async def download_xlsx(url: str) -> BytesIO:
@@ -114,24 +140,36 @@ def parse_links_from_html(html: str) -> list[dict[str, str]]:
     """Extrai links de planilhas .xlsx da página HTML.
 
     Args:
-        html: HTML da página de custos CONAB.
+        html: HTML combinado das tabs de custos CONAB (gov.br).
 
     Returns:
         Lista de dicts com chaves: url, titulo, cultura_hint, uf_hint, safra_hint.
     """
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(html, "lxml")
     links: list[dict[str, str]] = []
+    seen_urls: set[str] = set()
 
-    pattern = r'href="([^"]*\.xlsx[^"]*)"[^>]*>([^<]*)'
-
-    for match in re.finditer(pattern, html, re.IGNORECASE):
-        url = match.group(1)
-        titulo = match.group(2).strip()
-
-        if not titulo:
+    for a_tag in soup.find_all("a", href=True):
+        href = str(a_tag["href"])
+        if ".xlsx" not in href.lower():
             continue
 
+        if href in seen_urls:
+            continue
+        seen_urls.add(href)
+
+        titulo = a_tag.get_text(strip=True)
+        if not titulo:
+            titulo = href.split("/")[-1].replace("-", " ").replace(".xlsx", "")
+
+        full_url = href
+        if full_url.startswith("/"):
+            full_url = f"{BASE_URL}{full_url}"
+
         link_info: dict[str, str] = {
-            "url": url,
+            "url": full_url,
             "titulo": titulo,
         }
 

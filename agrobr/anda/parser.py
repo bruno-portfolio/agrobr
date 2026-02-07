@@ -158,6 +158,46 @@ def extract_tables_from_pdf(pdf_bytes: bytes) -> list[list[list[str | None]]]:
     return tables
 
 
+def _expand_newline_cells(table: list[list[str | None]]) -> list[list[str]]:
+    """Expande tabelas com meses/valores compactados por \\n numa única célula.
+
+    O PDF "Principais Indicadores" da ANDA tem layout compacto:
+    row[header]  = ["", "", "2021", "2022", "2023", "2024", ...]
+    row[data]    = ["", "Janeiro\\nFevereiro\\n...", "3.397.952\\n...", ...]
+
+    Expande para uma tabela convencional com uma linha por mês.
+    """
+    if not table or len(table) < 2:
+        return [[str(c).strip() if c else "" for c in row] for row in table]
+
+    clean = [[str(c).strip() if c else "" for c in row] for row in table]
+
+    # Detecta se alguma célula tem 5+ linhas internas (padrão compacto)
+    max_lines = 0
+    for row in clean:
+        for cell in row:
+            n = cell.count("\n") + 1
+            if n > max_lines:
+                max_lines = n
+
+    if max_lines < 5:
+        return clean
+
+    # Expande: cada linha interna vira uma row na tabela
+    expanded: list[list[str]] = []
+    for row in clean:
+        splits = [cell.split("\n") for cell in row]
+        n_lines = max(len(s) for s in splits)
+        if n_lines < 2:
+            expanded.append(row)
+        else:
+            for i in range(n_lines):
+                new_row = [s[i].strip() if i < len(s) else "" for s in splits]
+                expanded.append(new_row)
+
+    return expanded
+
+
 def parse_entregas_table(
     table: list[list[str | None]],
     ano: int,
@@ -168,6 +208,9 @@ def parse_entregas_table(
     A tabela ANDA típica tem UFs nas linhas e meses nas colunas,
     ou meses nas linhas e UFs nas colunas. O parser detecta
     automaticamente a orientação.
+
+    Também suporta o layout compacto "Principais Indicadores"
+    onde meses e valores são concatenados com \\n numa célula.
 
     Args:
         table: Tabela como lista de linhas.
@@ -182,8 +225,8 @@ def parse_entregas_table(
 
     records: list[dict[str, Any]] = []
 
-    # Limpa células None
-    clean_table = [[str(cell).strip() if cell else "" for cell in row] for row in table]
+    # Expande células compactadas com \n (layout "Principais Indicadores")
+    clean_table = _expand_newline_cells(table)
 
     # Detecta orientação: UFs nas linhas vs UFs nas colunas
     header = clean_table[0]
@@ -205,6 +248,10 @@ def parse_entregas_table(
     if not records:
         # Tenta detectar outra estrutura genérica
         records = _parse_generic(clean_table, ano, produto)
+
+    # Tenta layout "Principais Indicadores": meses na col 1, anos nas cols headers
+    if not records:
+        records = _parse_indicadores(clean_table, ano, produto)
 
     return records
 
@@ -343,6 +390,71 @@ def _parse_generic(
                 "volume_ton": vol,
             }
             records.append(record)
+
+    return records
+
+
+def _parse_indicadores(
+    table: list[list[str]],
+    ano: int,
+    produto: str,
+) -> list[dict[str, Any]]:
+    """Parseia layout 'Principais Indicadores': meses nas linhas, anos nas colunas.
+
+    Headers: ["", "", "2021", "2022", "2023", "2024", ...]
+    Rows:    ["", "Janeiro", "3.397.952", "3.222.516", ...]
+    """
+    records: list[dict[str, Any]] = []
+
+    # Procura header com anos (4 dígitos)
+    ano_str = str(ano)
+    header_row_idx = None
+    ano_col_idx = None
+
+    for i, row in enumerate(table):
+        for j, cell in enumerate(row):
+            if cell.strip() == ano_str:
+                header_row_idx = i
+                ano_col_idx = j
+                break
+        if ano_col_idx is not None:
+            break
+
+    if header_row_idx is None or ano_col_idx is None:
+        return records
+
+    # Detecta coluna de meses (coluna com nomes de mês)
+    mes_col_idx = None
+    for row in table[header_row_idx + 1 :]:
+        for j, cell in enumerate(row):
+            if _detect_month(cell) is not None:
+                mes_col_idx = j
+                break
+        if mes_col_idx is not None:
+            break
+
+    if mes_col_idx is None:
+        return records
+
+    for row in table[header_row_idx + 1 :]:
+        if len(row) <= max(mes_col_idx, ano_col_idx):
+            continue
+
+        mes = _detect_month(row[mes_col_idx])
+        if mes is None:
+            continue
+
+        vol = _safe_float(row[ano_col_idx])
+        if vol is not None and vol > 0:
+            records.append(
+                {
+                    "ano": ano,
+                    "mes": mes,
+                    "uf": "BR",
+                    "produto_fertilizante": normalize_fertilizante(produto),
+                    "volume_ton": vol,
+                }
+            )
 
     return records
 

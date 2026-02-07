@@ -60,7 +60,7 @@ async def download_csv(url: str) -> str:
     for attempt in range(MAX_RETRIES):
         try:
             async with httpx.AsyncClient(
-                timeout=TIMEOUT, headers=HEADERS, follow_redirects=True
+                timeout=TIMEOUT, headers=HEADERS, follow_redirects=True, verify=False
             ) as client:
                 response = await client.get(url)
 

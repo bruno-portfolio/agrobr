@@ -51,8 +51,13 @@ df, meta = await bcb.credito_rural(produto="soja", safra="2024/25", return_meta=
 print(meta.source)  # "bcb"
 ```
 
+## Status (fev/2026)
+
+A API SICOR esta retornando 503 Service Unavailable de forma intermitente.
+O client possui retry com backoff exponencial (4 tentativas). Problema externo.
+
 ## Fonte
 
 - API: `https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata`
-- Atualização: mensal
-- Histórico: 2013+
+- Atualizacao: mensal
+- Historico: 2013+

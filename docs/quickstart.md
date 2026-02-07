@@ -167,6 +167,132 @@ async def main():
 asyncio.run(main())
 ```
 
+## ComexStat - Exportacoes
+
+Dados de comercio exterior do MDIC/SECEX por NCM, UF e pais.
+
+```python
+from agrobr import comexstat
+
+async def main():
+    # Exportacoes mensais de soja
+    df = await comexstat.exportacao("soja", ano=2024)
+
+    # Por UF
+    df = await comexstat.exportacao("soja", ano=2024, uf="MT")
+
+    # Algodao (prefix match captura todas subposicoes NCM)
+    df = await comexstat.exportacao("algodao", ano=2024)
+
+asyncio.run(main())
+```
+
+### Produtos ComexStat
+
+Soja, milho, cafe, algodao, trigo, arroz, acucar, etanol, carne bovina/frango/suina, e mais.
+Veja [docs/sources/comexstat.md](sources/comexstat.md) para tabela completa de NCMs.
+
+## NASA POWER - Dados Climaticos
+
+Dados climaticos globais da NASA (substituto do INMET, cuja API esta fora do ar).
+Cobertura global, grid 0.5 grau, desde 1981, sem autenticacao.
+
+```python
+from agrobr import nasa_power
+
+async def main():
+    # Clima mensal de MT em 2024
+    df = await nasa_power.clima_uf("MT", ano=2024)
+
+    # Dados diarios de um ponto
+    df = await nasa_power.clima_ponto(
+        lat=-12.6, lon=-56.1,
+        inicio="2024-01-01", fim="2024-01-31"
+    )
+
+    # Agregacao mensal de um ponto
+    df = await nasa_power.clima_ponto(
+        lat=-12.6, lon=-56.1,
+        inicio="2024-01-01", fim="2024-12-31",
+        agregacao="mensal"
+    )
+
+asyncio.run(main())
+```
+
+## INMET - Meteorologia (API fora do ar)
+
+> **Nota:** A API INMET esta retornando 404. Usar `nasa_power` como alternativa.
+
+Dados climaticos de 600+ estacoes automaticas do INMET.
+
+```python
+from agrobr import inmet
+
+async def main():
+    # Estacoes automaticas de MT
+    df = await inmet.estacoes(tipo="T", uf="MT")
+
+    # Clima mensal agregado por UF
+    df = await inmet.clima_uf("MT", ano=2024)
+
+    # Dados horarios de uma estacao
+    df = await inmet.estacao("A001", inicio="2024-01-01", fim="2024-01-31")
+
+asyncio.run(main())
+```
+
+## BCB - Credito Rural
+
+Dados de credito rural do SICOR (Sistema de Operacoes do Credito Rural).
+
+```python
+from agrobr import bcb
+
+async def main():
+    # Credito de custeio para soja
+    df = await bcb.credito_rural("soja", safra="2024/25")
+
+    # Filtrar por UF
+    df = await bcb.credito_rural("soja", safra="2024/25", uf="MT")
+
+asyncio.run(main())
+```
+
+## ANDA - Fertilizantes
+
+Entregas de fertilizantes por UF e mes. Requer `pip install agrobr[pdf]`.
+
+```python
+from agrobr import anda
+
+async def main():
+    # Entregas nacionais
+    df = await anda.entregas(ano=2024)
+
+    # Filtrar por UF
+    df = await anda.entregas(ano=2024, uf="MT")
+
+asyncio.run(main())
+```
+
+## CONAB - Custo de Producao
+
+Custos detalhados por hectare, cultura e UF.
+
+```python
+from agrobr import conab
+
+async def main():
+    # Custo de producao de soja em MT
+    df = await conab.custo_producao("soja", uf="MT")
+
+    # Totais (COE, COT, CT)
+    totais = await conab.custo_producao_total("soja", uf="MT")
+
+asyncio.run(main())
+```
+
 ## Usando Polars
 
 Todas as APIs suportam retorno em Polars para melhor performance:

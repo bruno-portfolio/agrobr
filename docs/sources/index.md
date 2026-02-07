@@ -1,6 +1,7 @@
 # Fontes de Dados
 
-O agrobr integra dados de sete fontes oficiais brasileiras de dados agricolas.
+O agrobr integra dados de oito fontes de dados agricolas.
+Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 
 ## Visao Geral
 
@@ -9,7 +10,8 @@ O agrobr integra dados de sete fontes oficiais brasileiras de dados agricolas.
 | [CEPEA/ESALQ](cepea.md) | Precos | Diaria | Commodities agricolas |
 | [CONAB](conab.md) | Safras, custos | Mensal | Producao nacional |
 | [IBGE/SIDRA](ibge.md) | Estatisticas | Anual/Mensal | Dados oficiais |
-| [INMET](inmet.md) | Meteorologia | Diaria | 600+ estacoes |
+| [NASA POWER](nasa_power.md) | Climatologia | Diaria | Global, grid 0.5 grau |
+| [INMET](inmet.md) | Meteorologia | Diaria | 600+ estacoes (API fora do ar) |
 | [BCB/SICOR](bcb.md) | Credito rural | Mensal | Municipios |
 | [ComexStat](comexstat.md) | Exportacoes | Semanal | NCM/UF |
 | [ANDA](anda.md) | Fertilizantes | Mensal | UF/mes |

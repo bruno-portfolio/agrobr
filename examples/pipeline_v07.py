@@ -66,9 +66,7 @@ async def coletar_exportacao() -> tuple[pd.DataFrame, dict]:
     """Coleta exportações de soja (ComexStat)."""
     from agrobr import comexstat
 
-    df, meta = await comexstat.exportacao(
-        "soja", ano=2024, agregacao="mensal", return_meta=True
-    )
+    df, meta = await comexstat.exportacao("soja", ano=2024, agregacao="mensal", return_meta=True)
     return df, meta.to_dict()
 
 
@@ -130,17 +128,27 @@ def transformar_precos(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     df["data"] = pd.to_datetime(df["data"])
     df = df.set_index("data").sort_index()
 
-    semanal = df[["valor"]].resample("W").agg(
-        valor_medio=("valor", "mean"),
-        valor_max=("valor", "max"),
-        valor_min=("valor", "min"),
-    ).dropna()
+    semanal = (
+        df[["valor"]]
+        .resample("W")
+        .agg(
+            valor_medio=("valor", "mean"),
+            valor_max=("valor", "max"),
+            valor_min=("valor", "min"),
+        )
+        .dropna()
+    )
 
-    mensal = df[["valor"]].resample("ME").agg(
-        valor_medio=("valor", "mean"),
-        valor_max=("valor", "max"),
-        valor_min=("valor", "min"),
-    ).dropna()
+    mensal = (
+        df[["valor"]]
+        .resample("ME")
+        .agg(
+            valor_medio=("valor", "mean"),
+            valor_max=("valor", "max"),
+            valor_min=("valor", "min"),
+        )
+        .dropna()
+    )
 
     df = df.reset_index()
     semanal = semanal.reset_index()
@@ -211,7 +219,7 @@ async def main() -> None:
         print_meta(nome, meta)
 
     # ── Transformação ────────────────────────────────────────
-    print(f"\n3. TRANSFORMAÇÃO")
+    print("\n3. TRANSFORMAÇÃO")
     print("-" * 70)
 
     precos_views = {}
@@ -222,7 +230,7 @@ async def main() -> None:
                 print(f"  precos_{view_name}: {len(view_df)} rows")
 
     # ── Salvar Parquet ───────────────────────────────────────
-    print(f"\n4. EXPORTAÇÃO (Parquet)")
+    print("\n4. EXPORTAÇÃO (Parquet)")
     print("-" * 70)
 
     output_dir = Path("./output/v07_pipeline")
@@ -245,7 +253,7 @@ async def main() -> None:
     print(f"  Fontes coletadas: {len(datasets)}/{len(nomes)}")
     print(f"  Total de registros: {total_records:,}")
     print(f"  Arquivos Parquet: {len(salvos)}")
-    print(f"\nDica: execute novamente para ver cache hit!")
+    print("\nDica: execute novamente para ver cache hit!")
     print(f"{'=' * 70}")
 
 

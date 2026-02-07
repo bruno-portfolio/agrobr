@@ -7,6 +7,57 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-02-07
+
+### Added
+- **NASA POWER** (`agrobr.nasa_power`) — Dados climaticos globais como substituto do INMET
+  - `nasa_power.clima_ponto()` — Dados diarios/mensais por coordenada (lat/lon)
+  - `nasa_power.clima_uf()` — Dados climaticos por UF (ponto central)
+  - 7 parametros agroclimáticos: temp (media/max/min), precipitacao, umidade, radiacao, vento
+  - API REST pura (NASA LaRC), sem autenticacao, cobertura global desde 1981
+  - Chunking automatico para periodos > 365 dias
+  - 34 testes unitarios (models, parser, api)
+- **NASAPowerCollector** no agrobr-collector (substitui INMETCollector)
+
+### Changed
+- INMET desabilitado no collector (config.yaml `enabled: false`) — API dados retornando 404
+- Docs atualizados: INMET referencia NASA POWER como alternativa
+
+## [0.7.0] - 2026-02-07
+
+### Added
+- **INMET** (`agrobr.inmet`) — Dados meteorologicos de 600+ estacoes automaticas
+  - `inmet.estacoes()` — Listar estacoes por tipo e UF
+  - `inmet.estacao()` — Dados horarios/diarios de uma estacao
+  - `inmet.clima_uf()` — Clima mensal agregado por UF
+- **BCB/SICOR** (`agrobr.bcb`) — Credito rural por municipio e cultura
+  - `bcb.credito_rural()` — Dados de credito de custeio por safra
+- **ComexStat** (`agrobr.comexstat`) — Exportacoes brasileiras por NCM
+  - `comexstat.exportacao()` — Exportacoes mensais com 19 produtos mapeados
+  - Filtro por NCM usa prefix match (subposicoes capturadas automaticamente)
+- **ANDA** (`agrobr.anda`) — Entregas de fertilizantes por UF/mes
+  - `anda.entregas()` — Dados de entregas de fertilizantes
+  - Parser suporta multiplas orientacoes de tabela PDF + layout "Principais Indicadores"
+  - Requer `pip install agrobr[pdf]` (pdfplumber)
+- **CONAB custo_producao** (`agrobr.conab.custo_producao`) — Custos de producao por hectare
+  - `conab.custo_producao()` — Dados detalhados de custo por cultura/UF/safra
+  - `conab.custo_producao_total()` — Totais COE/COT/CT
+
+### Fixed
+- **ComexStat**: NCM algodao corrigido de `52010000` (inexistente) para prefixo `520100` (captura `52010020` + `52010090`)
+- **ComexStat**: `verify=False` no httpx para contornar certificado SSL invalido do `balanca.economia.gov.br`
+- **ComexStat**: Filtro NCM no parser mudou de match exato (`==`) para prefix match (`str.startswith()`)
+- **ANDA**: URL atualizada de `/estatisticas/` para `/recursos/` (reorganizacao do site)
+- **ANDA**: Parser expandido com `_expand_newline_cells()` e `_parse_indicadores()` para PDFs com meses/valores concatenados
+- **INMET**: User-Agent header adicionado ao client HTTP (previne 403 Forbidden)
+- **custo_producao**: URLs migradas de `conab.gov.br` para `gov.br/conab/` com scraping multi-tab (3 abas de planilhas)
+- **custo_producao**: `parse_links_from_html()` reescrito com BeautifulSoup + dedup de URLs
+
+### Known Issues
+- **INMET**: API de dados (`/estacao/dados/`) retornando 404 em todos endpoints — API fora do ar externamente
+- **BCB/SICOR**: API OData retornando 503 Service Unavailable — indisponibilidade temporaria
+- **custo_producao**: Graos (soja, milho, cafe, algodao) nao disponiveis como xlsx no gov.br — conteudo carregado via JavaScript dinamico
+
 ## [0.6.3] - 2026-02-06
 
 ### Fixed
@@ -245,7 +296,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.3...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.0...v0.6.1

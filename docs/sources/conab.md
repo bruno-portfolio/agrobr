@@ -131,6 +131,36 @@ for lev in levs[:5]:
     print(f"{lev['safra']} - {lev['levantamento']}o levantamento")
 ```
 
+## Custo de Producao
+
+Planilhas de custo de producao por hectare, disponibilizadas em `gov.br/conab`.
+
+```python
+# Custo detalhado de soja em MT
+df = await conab.custo_producao("soja", uf="MT")
+
+# Totais (COE, COT, CT)
+totais = await conab.custo_producao_total("soja", uf="MT", safra="2024/25")
+```
+
+### Schema - custo_producao
+
+| Coluna | Tipo | Descricao |
+|--------|------|-----------|
+| `cultura` | str | Nome da cultura |
+| `uf` | str | Sigla da UF |
+| `safra` | str | Safra (ex: "2024/25") |
+| `item` | str | Item de custo |
+| `categoria` | str | Categoria (insumos, operacoes, mao_de_obra, etc) |
+| `valor_ha` | float | Valor por hectare (R$/ha) |
+| `unidade` | str | Unidade do item |
+
+### Status (fev/2026)
+
+As planilhas de graos (soja, milho, cafe, algodao) no gov.br sao carregadas
+via JavaScript dinamico e nao possuem links .xlsx acessiveis via scraping.
+Culturas menores (abacaxi, acai, etc.) funcionam normalmente.
+
 ## Cache
 
 | Aspecto | Valor |

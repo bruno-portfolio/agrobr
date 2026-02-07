@@ -17,7 +17,7 @@ from agrobr.constants import RETRIABLE_STATUS_CODES
 logger = structlog.get_logger()
 
 BASE_URL = "https://anda.org.br"
-ESTATISTICAS_URL = f"{BASE_URL}/estatisticas/"
+ESTATISTICAS_URL = f"{BASE_URL}/recursos/"
 
 TIMEOUT = httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=10.0)
 

@@ -50,7 +50,7 @@ class TestResolveNcm:
         assert resolve_ncm("soja") == "12019000"
         assert resolve_ncm("milho") == "10059010"
         assert resolve_ncm("cafe") == "09011110"
-        assert resolve_ncm("algodao") == "52010000"
+        assert resolve_ncm("algodao") == "520100"
 
     def test_case_insensitive(self):
         assert resolve_ncm("SOJA") == "12019000"

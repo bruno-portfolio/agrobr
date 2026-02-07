@@ -39,12 +39,14 @@ df = await anda.entregas(ano=2024, agregacao="mensal")
 ## Nota de Risco
 
 ANDA publica dados em PDF. O layout pode mudar sem aviso entre anos.
-O parser do agrobr detecta automaticamente a orientação das tabelas
-(UFs nas linhas vs colunas), mas mudanças drásticas de formato podem
-exigir atualização do parser.
+O parser do agrobr detecta automaticamente a orientacao das tabelas
+(UFs nas linhas vs colunas), e tambem suporta o layout "Principais
+Indicadores" (dados nacionais agregados com meses/valores em celulas
+concatenadas com `\n`). Mudancas drasticas de formato podem exigir
+atualizacao do parser.
 
-No agrobr-insights, dados ANDA são tratados com peso dinâmico: quando
-parecem distorcidos, o peso no SCI é reduzido automaticamente.
+No agrobr-insights, dados ANDA sao tratados com peso dinamico: quando
+parecem distorcidos, o peso no SCI e reduzido automaticamente.
 
 ## MetaInfo
 
@@ -56,7 +58,7 @@ print(meta.source_method)  # "httpx+pdfplumber"
 
 ## Fonte
 
-- URL: `https://anda.org.br/estatisticas/`
+- URL: `https://anda.org.br/recursos/`
 - Formato: PDF/Excel
-- Atualização: mensal
-- Histórico: 2010+
+- Atualizacao: mensal
+- Historico: 2010+

@@ -20,11 +20,19 @@ MAX_DAYS_PER_REQUEST = 365
 
 RATE_LIMIT_DELAY = 0.5
 
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    ),
+}
+
 
 async def _get_json(path: str) -> list[dict[str, Any]]:
     """Faz GET na API INMET e retorna JSON parseado."""
     url = f"{BASE_URL}{path}"
-    async with httpx.AsyncClient(timeout=TIMEOUT) as client:
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS) as client:
         response = await client.get(url)
         response.raise_for_status()
         data = response.json()
