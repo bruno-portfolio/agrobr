@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>agrobr — Dados agrícolas brasileiros em uma linha de código</title>
-<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. CEPEA, CONAB, IBGE — uma API, fallback automático, cache DuckDB.">
+<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA — uma API, fallback automático, cache DuckDB.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -375,7 +375,7 @@
   /* ═══════════════ SOURCES ═══════════════ */
   .sources-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.25rem;
     margin-top: 2rem;
   }
@@ -541,7 +541,7 @@
   <div class="hero-content">
     <p class="hero-eyebrow">Python · Open Source · PyPI</p>
     <h1 class="hero-title">Dados agrícolas brasileiros em <em>uma linha</em> de código</h1>
-    <p class="hero-subtitle">CEPEA, CONAB, IBGE — uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
+    <p class="hero-subtitle">CEPEA, CONAB, IBGE, NASA POWER e mais 3 fontes — uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
     <div class="hero-install" onclick="copyInstall(this)" title="Copiar">
       <span><span class="pip">$</span> pip install agrobr</span>
       <span class="copy-icon">⎘</span>
@@ -649,7 +649,7 @@
 <section id="sources">
   <div class="reveal">
     <p class="section-label">Fontes de dados</p>
-    <h2 class="section-title">Três origens. Uma API.</h2>
+    <h2 class="section-title">Sete origens. Uma API.</h2>
     <p class="section-desc">Cada fonte tem seu próprio parser com versionamento, fingerprinting e tratamento de encoding. Você só vê o DataFrame.</p>
   </div>
 
@@ -661,13 +661,33 @@
     </div>
     <div class="source-card">
       <div class="source-name">CONAB</div>
-      <div class="source-count">Safras + Balanço O&D</div>
-      <div class="source-detail">Estimativas mensais, oferta e demanda, séries históricas por cultura</div>
+      <div class="source-count">Safras + Balanço + Custos</div>
+      <div class="source-detail">Estimativas mensais, oferta e demanda, custos de produção por cultura</div>
     </div>
     <div class="source-card">
       <div class="source-name">IBGE/SIDRA</div>
       <div class="source-count">PAM + LSPA</div>
       <div class="source-detail">Produção anual municipal e estimativas mensais por UF</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">NASA POWER</div>
+      <div class="source-count">7 parâmetros diários</div>
+      <div class="source-detail">Climatologia via satélite: temperatura, precipitação, radiação, umidade, vento</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">BCB/SICOR</div>
+      <div class="source-count">Crédito rural</div>
+      <div class="source-detail">Financiamentos por produto, município e safra</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">ComexStat</div>
+      <div class="source-count">Exportações</div>
+      <div class="source-detail">Comércio exterior agrícola por NCM, UF e período</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">ANDA</div>
+      <div class="source-count">Fertilizantes</div>
+      <div class="source-detail">Entregas de fertilizantes por UF e produto</div>
     </div>
   </div>
 </section>
@@ -677,7 +697,7 @@
   <div class="reveal">
     <p class="section-label">Começar</p>
     <h2 class="section-title">pip install agrobr</h2>
-    <p class="section-desc" style="margin: 0 auto 0;">MIT License. 328 testes. Documentação completa.</p>
+    <p class="section-desc" style="margin: 0 auto 0;">MIT License. 561 testes. Documentação completa.</p>
     <div class="cta-links">
       <a href="/docs/" class="cta-btn primary">Documentação →</a>
       <a href="https://github.com/bruno-portfolio/agrobr" class="cta-btn secondary">GitHub ↗</a>
