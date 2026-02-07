@@ -174,9 +174,27 @@ class TestParseEntregasTable:
 class TestAgregarMensal:
     def test_basic(self):
         data = [
-            {"ano": 2024, "mes": 1, "uf": "MT", "produto_fertilizante": "total", "volume_ton": 150000},
-            {"ano": 2024, "mes": 1, "uf": "SP", "produto_fertilizante": "total", "volume_ton": 100000},
-            {"ano": 2024, "mes": 2, "uf": "MT", "produto_fertilizante": "total", "volume_ton": 120000},
+            {
+                "ano": 2024,
+                "mes": 1,
+                "uf": "MT",
+                "produto_fertilizante": "total",
+                "volume_ton": 150000,
+            },
+            {
+                "ano": 2024,
+                "mes": 1,
+                "uf": "SP",
+                "produto_fertilizante": "total",
+                "volume_ton": 100000,
+            },
+            {
+                "ano": 2024,
+                "mes": 2,
+                "uf": "MT",
+                "produto_fertilizante": "total",
+                "volume_ton": 120000,
+            },
         ]
         df = pd.DataFrame(data)
         result = agregar_mensal(df)

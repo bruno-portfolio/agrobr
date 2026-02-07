@@ -41,7 +41,12 @@ def _mock_sicor_data():
 class TestCreditoRural:
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
-        with patch.object(api.client, "fetch_credito_rural", new_callable=AsyncMock, return_value=_mock_sicor_data()):
+        with patch.object(
+            api.client,
+            "fetch_credito_rural",
+            new_callable=AsyncMock,
+            return_value=_mock_sicor_data(),
+        ):
             df = await api.credito_rural("soja", safra="2023/24")
 
         assert len(df) == 2
@@ -51,7 +56,12 @@ class TestCreditoRural:
 
     @pytest.mark.asyncio
     async def test_return_meta(self):
-        with patch.object(api.client, "fetch_credito_rural", new_callable=AsyncMock, return_value=_mock_sicor_data()):
+        with patch.object(
+            api.client,
+            "fetch_credito_rural",
+            new_callable=AsyncMock,
+            return_value=_mock_sicor_data(),
+        ):
             df, meta = await api.credito_rural("soja", safra="2023/24", return_meta=True)
 
         assert meta.source == "bcb"
@@ -62,7 +72,12 @@ class TestCreditoRural:
 
     @pytest.mark.asyncio
     async def test_agregacao_uf(self):
-        with patch.object(api.client, "fetch_credito_rural", new_callable=AsyncMock, return_value=_mock_sicor_data()):
+        with patch.object(
+            api.client,
+            "fetch_credito_rural",
+            new_callable=AsyncMock,
+            return_value=_mock_sicor_data(),
+        ):
             df = await api.credito_rural("soja", safra="2023/24", agregacao="uf")
 
         assert len(df) == 1
@@ -70,7 +85,12 @@ class TestCreditoRural:
 
     @pytest.mark.asyncio
     async def test_filter_uf(self):
-        with patch.object(api.client, "fetch_credito_rural", new_callable=AsyncMock, return_value=_mock_sicor_data()):
+        with patch.object(
+            api.client,
+            "fetch_credito_rural",
+            new_callable=AsyncMock,
+            return_value=_mock_sicor_data(),
+        ):
             df = await api.credito_rural("soja", safra="2023/24", uf="MT")
 
         assert len(df) == 2

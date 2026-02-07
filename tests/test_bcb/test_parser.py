@@ -129,6 +129,7 @@ class TestAgregarPorUf:
 
     def test_empty_df(self):
         import pandas as pd
+
         df = pd.DataFrame()
         result = agregar_por_uf(df)
         assert result.empty

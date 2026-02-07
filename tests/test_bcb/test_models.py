@@ -1,6 +1,5 @@
 """Testes para os modelos BCB/SICOR."""
 
-
 from agrobr.bcb.models import (
     SICOR_PRODUTOS,
     UF_CODES,

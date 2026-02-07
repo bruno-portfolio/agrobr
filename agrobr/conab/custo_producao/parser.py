@@ -59,9 +59,20 @@ def _find_header_row(df_raw: pd.DataFrame) -> int:
     Raises:
         ParseError: Se não encontrar cabeçalho.
     """
-    keywords = {"item", "especificação", "especificacao", "valor", "unidade",
-                "quantidade", "preço", "preco", "participação", "participacao",
-                "r$/ha", "total/ha"}
+    keywords = {
+        "item",
+        "especificação",
+        "especificacao",
+        "valor",
+        "unidade",
+        "quantidade",
+        "preço",
+        "preco",
+        "participação",
+        "participacao",
+        "r$/ha",
+        "total/ha",
+    }
 
     for idx in range(min(20, len(df_raw))):
         row_values = [str(v).lower().strip() for v in df_raw.iloc[idx] if pd.notna(v)]
@@ -92,7 +103,10 @@ def _identify_columns(headers: list[str]) -> dict[str, int]:
     for i, h in enumerate(headers):
         h_lower = h.lower().strip()
 
-        if any(w in h_lower for w in ("item", "componente", "especificação", "especificacao", "discriminação")):
+        if any(
+            w in h_lower
+            for w in ("item", "componente", "especificação", "especificacao", "discriminação")
+        ):
             if "item" not in mapping:
                 mapping["item"] = i
 
@@ -102,10 +116,14 @@ def _identify_columns(headers: list[str]) -> dict[str, int]:
         elif any(w in h_lower for w in ("quantidade", "qtd", "qtde", "quant")):
             mapping["quantidade_ha"] = i
 
-        elif any(w in h_lower for w in ("preço unitário", "preco unitario", "preço unit", "vlr. unit")):
+        elif any(
+            w in h_lower for w in ("preço unitário", "preco unitario", "preço unit", "vlr. unit")
+        ):
             mapping["preco_unitario"] = i
 
-        elif any(w in h_lower for w in ("valor total", "total/ha", "valor/ha", "vlr. total", "r$/ha")):
+        elif any(
+            w in h_lower for w in ("valor total", "total/ha", "valor/ha", "vlr. total", "r$/ha")
+        ):
             mapping["valor_ha"] = i
 
         elif any(w in h_lower for w in ("participação", "participacao", "part.", "%")):
@@ -244,11 +262,19 @@ def parse_planilha(
             tecnologia=tecnologia,
             categoria=categoria,
             item=item_name,
-            unidade=str(row.iloc[col_map["unidade"]]).strip() if "unidade" in col_map and pd.notna(row.iloc[col_map["unidade"]]) else None,
-            quantidade_ha=_safe_float(row.iloc[col_map["quantidade_ha"]]) if "quantidade_ha" in col_map else None,
-            preco_unitario=_safe_float(row.iloc[col_map["preco_unitario"]]) if "preco_unitario" in col_map else None,
+            unidade=str(row.iloc[col_map["unidade"]]).strip()
+            if "unidade" in col_map and pd.notna(row.iloc[col_map["unidade"]])
+            else None,
+            quantidade_ha=_safe_float(row.iloc[col_map["quantidade_ha"]])
+            if "quantidade_ha" in col_map
+            else None,
+            preco_unitario=_safe_float(row.iloc[col_map["preco_unitario"]])
+            if "preco_unitario" in col_map
+            else None,
             valor_ha=valor,
-            participacao_pct=_safe_float(row.iloc[col_map["participacao_pct"]]) if "participacao_pct" in col_map else None,
+            participacao_pct=_safe_float(row.iloc[col_map["participacao_pct"]])
+            if "participacao_pct" in col_map
+            else None,
         )
 
         items.append(item)
@@ -274,10 +300,7 @@ def parse_planilha(
     elif items:
         # Computar COE a partir da soma dos itens operacionais
         coe_categorias = {"insumos", "operacoes", "mao_de_obra"}
-        coe_from_items = sum(
-            item.valor_ha for item in items
-            if item.categoria in coe_categorias
-        )
+        coe_from_items = sum(item.valor_ha for item in items if item.categoria in coe_categorias)
         if coe_from_items > 0:
             custo_total = CustoTotal(
                 cultura=cultura_norm,

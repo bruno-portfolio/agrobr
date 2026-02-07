@@ -1,6 +1,5 @@
 """Testes para o módulo de aliases de produto."""
 
-
 from agrobr.aliases import PRODUCT_ALIASES, list_aliases, resolve_alias
 
 

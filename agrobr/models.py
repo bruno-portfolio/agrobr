@@ -164,9 +164,7 @@ class MetaInfo:
             "snapshot": self.snapshot,
             "attempted_sources": self.attempted_sources,
             "selected_source": self.selected_source,
-            "fetch_timestamp": (
-                self.fetch_timestamp.isoformat() if self.fetch_timestamp else None
-            ),
+            "fetch_timestamp": (self.fetch_timestamp.isoformat() if self.fetch_timestamp else None),
         }
 
     def to_json(self, indent: int = 2) -> str:

@@ -21,18 +21,31 @@ PARSER_VERSION = 1
 
 # Meses em português → número
 _MESES_MAP: dict[str, int] = {
-    "janeiro": 1, "jan": 1,
-    "fevereiro": 2, "fev": 2,
-    "março": 3, "mar": 3, "marco": 3,
-    "abril": 4, "abr": 4,
-    "maio": 5, "mai": 5,
-    "junho": 6, "jun": 6,
-    "julho": 7, "jul": 7,
-    "agosto": 8, "ago": 8,
-    "setembro": 9, "set": 9,
-    "outubro": 10, "out": 10,
-    "novembro": 11, "nov": 11,
-    "dezembro": 12, "dez": 12,
+    "janeiro": 1,
+    "jan": 1,
+    "fevereiro": 2,
+    "fev": 2,
+    "março": 3,
+    "mar": 3,
+    "marco": 3,
+    "abril": 4,
+    "abr": 4,
+    "maio": 5,
+    "mai": 5,
+    "junho": 6,
+    "jun": 6,
+    "julho": 7,
+    "jul": 7,
+    "agosto": 8,
+    "ago": 8,
+    "setembro": 9,
+    "set": 9,
+    "outubro": 10,
+    "out": 10,
+    "novembro": 11,
+    "nov": 11,
+    "dezembro": 12,
+    "dez": 12,
 }
 
 # Colunas possíveis nas tabelas ANDA
@@ -52,6 +65,7 @@ def _check_pdfplumber() -> Any:
     """
     try:
         import pdfplumber
+
         return pdfplumber
     except ImportError:
         raise ImportError(
@@ -169,10 +183,7 @@ def parse_entregas_table(
     records: list[dict[str, Any]] = []
 
     # Limpa células None
-    clean_table = [
-        [str(cell).strip() if cell else "" for cell in row]
-        for row in table
-    ]
+    clean_table = [[str(cell).strip() if cell else "" for cell in row] for row in table]
 
     # Detecta orientação: UFs nas linhas vs UFs nas colunas
     header = clean_table[0]
@@ -229,13 +240,15 @@ def _parse_uf_rows(
                 continue
             vol = _safe_float(row[col_idx])
             if vol is not None and vol > 0:
-                records.append({
-                    "ano": ano,
-                    "mes": mes,
-                    "uf": uf_candidate,
-                    "produto_fertilizante": normalize_fertilizante(produto),
-                    "volume_ton": vol,
-                })
+                records.append(
+                    {
+                        "ano": ano,
+                        "mes": mes,
+                        "uf": uf_candidate,
+                        "produto_fertilizante": normalize_fertilizante(produto),
+                        "volume_ton": vol,
+                    }
+                )
 
     return records
 
@@ -270,13 +283,15 @@ def _parse_uf_cols(
                 continue
             vol = _safe_float(row[col_idx])
             if vol is not None and vol > 0:
-                records.append({
-                    "ano": ano,
-                    "mes": mes,
-                    "uf": uf,
-                    "produto_fertilizante": normalize_fertilizante(produto),
-                    "volume_ton": vol,
-                })
+                records.append(
+                    {
+                        "ano": ano,
+                        "mes": mes,
+                        "uf": uf,
+                        "produto_fertilizante": normalize_fertilizante(produto),
+                        "volume_ton": vol,
+                    }
+                )
 
     return records
 

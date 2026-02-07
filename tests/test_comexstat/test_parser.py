@@ -13,17 +13,39 @@ from agrobr.exceptions import ParseError
 
 def _sample_csv(sep=";", ncm="12019000", rows=3):
     """Gera CSV de exportação de exemplo."""
-    header = sep.join([
-        "CO_ANO", "CO_MES", "CO_NCM", "CO_UNID", "CO_PAIS",
-        "SG_UF_NCM", "CO_VIA", "CO_URF", "QT_ESTAT", "KG_LIQUIDO", "VL_FOB",
-    ])
+    header = sep.join(
+        [
+            "CO_ANO",
+            "CO_MES",
+            "CO_NCM",
+            "CO_UNID",
+            "CO_PAIS",
+            "SG_UF_NCM",
+            "CO_VIA",
+            "CO_URF",
+            "QT_ESTAT",
+            "KG_LIQUIDO",
+            "VL_FOB",
+        ]
+    )
 
     lines = [header]
     for i in range(rows):
-        line = sep.join([
-            "2024", str((i % 12) + 1), ncm, "10", "160",
-            "MT", "4", "817800", "1000", str(5000000 * (i + 1)), str(2000000 * (i + 1)),
-        ])
+        line = sep.join(
+            [
+                "2024",
+                str((i % 12) + 1),
+                ncm,
+                "10",
+                "160",
+                "MT",
+                "4",
+                "817800",
+                "1000",
+                str(5000000 * (i + 1)),
+                str(2000000 * (i + 1)),
+            ]
+        )
         lines.append(line)
 
     return "\n".join(lines)
@@ -62,10 +84,21 @@ class TestParseExportacao:
     def test_filter_by_ncm(self):
         lines = _sample_csv(ncm="12019000", rows=2)
         # Add a non-soja row
-        lines += "\n" + ";".join([
-            "2024", "1", "10059010", "10", "160",
-            "MT", "4", "817800", "500", "3000000", "1000000",
-        ])
+        lines += "\n" + ";".join(
+            [
+                "2024",
+                "1",
+                "10059010",
+                "10",
+                "160",
+                "MT",
+                "4",
+                "817800",
+                "500",
+                "3000000",
+                "1000000",
+            ]
+        )
 
         df = parse_exportacao(lines, ncm="12019000")
         assert len(df) == 2
@@ -74,10 +107,21 @@ class TestParseExportacao:
     def test_filter_by_uf(self):
         lines = _sample_csv(rows=2)
         # Add a PR row
-        lines += "\n" + ";".join([
-            "2024", "1", "12019000", "10", "160",
-            "PR", "4", "817800", "500", "3000000", "1000000",
-        ])
+        lines += "\n" + ";".join(
+            [
+                "2024",
+                "1",
+                "12019000",
+                "10",
+                "160",
+                "PR",
+                "4",
+                "817800",
+                "500",
+                "3000000",
+                "1000000",
+            ]
+        )
 
         df = parse_exportacao(lines, uf="PR")
         assert len(df) == 1
@@ -135,6 +179,7 @@ class TestAgregarMensal:
 
     def test_empty_df(self):
         import pandas as pd
+
         df = pd.DataFrame()
         result = agregar_mensal(df)
         assert result.empty

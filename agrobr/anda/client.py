@@ -51,10 +51,13 @@ async def _get_with_retry(url: str, *, retries: int = MAX_RETRIES) -> httpx.Resp
                 return response
         except (httpx.HTTPStatusError, httpx.TimeoutException, httpx.ConnectError) as e:
             last_error = e
-            if isinstance(e, httpx.HTTPStatusError) and e.response.status_code not in RETRIABLE_STATUS_CODES:
+            if (
+                isinstance(e, httpx.HTTPStatusError)
+                and e.response.status_code not in RETRIABLE_STATUS_CODES
+            ):
                 raise
 
-            wait = RETRY_BASE_DELAY * (2 ** attempt)
+            wait = RETRY_BASE_DELAY * (2**attempt)
             logger.warning(
                 "anda_retry",
                 url=url,
@@ -114,10 +117,12 @@ def parse_links_from_html(html: str, pattern: str = r"\.pdf|\.xlsx?") -> list[di
             if full_url.startswith("/"):
                 full_url = f"{BASE_URL}{full_url}"
 
-            links.append({
-                "url": full_url,
-                "text": a_tag.get_text(strip=True),
-            })
+            links.append(
+                {
+                    "url": full_url,
+                    "text": a_tag.get_text(strip=True),
+                }
+            )
 
     logger.info("anda_links_found", count=len(links))
     return links
@@ -143,14 +148,12 @@ async def fetch_entregas_pdf(ano: int) -> bytes:
 
     # Busca link que contenha o ano no texto ou URL
     ano_str = str(ano)
-    candidates = [
-        link for link in links
-        if ano_str in link["url"] or ano_str in link["text"]
-    ]
+    candidates = [link for link in links if ano_str in link["url"] or ano_str in link["text"]]
 
     # Prioriza links com "entrega" ou "fertilizante" no texto/URL
     priority = [
-        link for link in candidates
+        link
+        for link in candidates
         if re.search(r"entrega|fertiliz", f"{link['text']} {link['url']}", re.IGNORECASE)
     ]
 

@@ -134,8 +134,7 @@ async def fetch_dados_estacoes_uf(
 
     uf_upper = uf.upper()
     estacoes_uf = [
-        e for e in estacoes
-        if e.get("SG_ESTADO") == uf_upper and e.get("CD_SITUACAO") == "Operante"
+        e for e in estacoes if e.get("SG_ESTADO") == uf_upper and e.get("CD_SITUACAO") == "Operante"
     ]
 
     if not estacoes_uf:

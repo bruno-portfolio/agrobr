@@ -10,14 +10,52 @@ from agrobr.anda import api
 
 def _mock_parsed_df():
     """DataFrame de entregas mockado."""
-    return pd.DataFrame([
-        {"ano": 2024, "mes": 1, "uf": "MT", "produto_fertilizante": "total", "volume_ton": 150000.0},
-        {"ano": 2024, "mes": 1, "uf": "SP", "produto_fertilizante": "total", "volume_ton": 100000.0},
-        {"ano": 2024, "mes": 2, "uf": "MT", "produto_fertilizante": "total", "volume_ton": 120000.0},
-        {"ano": 2024, "mes": 2, "uf": "SP", "produto_fertilizante": "total", "volume_ton": 90000.0},
-        {"ano": 2024, "mes": 3, "uf": "MT", "produto_fertilizante": "total", "volume_ton": 80000.0},
-        {"ano": 2024, "mes": 3, "uf": "PR", "produto_fertilizante": "total", "volume_ton": 70000.0},
-    ])
+    return pd.DataFrame(
+        [
+            {
+                "ano": 2024,
+                "mes": 1,
+                "uf": "MT",
+                "produto_fertilizante": "total",
+                "volume_ton": 150000.0,
+            },
+            {
+                "ano": 2024,
+                "mes": 1,
+                "uf": "SP",
+                "produto_fertilizante": "total",
+                "volume_ton": 100000.0,
+            },
+            {
+                "ano": 2024,
+                "mes": 2,
+                "uf": "MT",
+                "produto_fertilizante": "total",
+                "volume_ton": 120000.0,
+            },
+            {
+                "ano": 2024,
+                "mes": 2,
+                "uf": "SP",
+                "produto_fertilizante": "total",
+                "volume_ton": 90000.0,
+            },
+            {
+                "ano": 2024,
+                "mes": 3,
+                "uf": "MT",
+                "produto_fertilizante": "total",
+                "volume_ton": 80000.0,
+            },
+            {
+                "ano": 2024,
+                "mes": 3,
+                "uf": "PR",
+                "produto_fertilizante": "total",
+                "volume_ton": 70000.0,
+            },
+        ]
+    )
 
 
 class TestEntregas:
@@ -25,7 +63,9 @@ class TestEntregas:
     async def test_returns_dataframe(self):
         mock_df = _mock_parsed_df()
         with (
-            patch.object(api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"),
+            patch.object(
+                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+            ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
             df = await api.entregas(ano=2024)
@@ -39,7 +79,9 @@ class TestEntregas:
     async def test_filter_uf(self):
         mock_df = _mock_parsed_df()
         with (
-            patch.object(api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"),
+            patch.object(
+                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+            ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
             df = await api.entregas(ano=2024, uf="MT")
@@ -51,7 +93,9 @@ class TestEntregas:
     async def test_agregacao_mensal(self):
         mock_df = _mock_parsed_df()
         with (
-            patch.object(api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"),
+            patch.object(
+                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+            ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
             df = await api.entregas(ano=2024, agregacao="mensal")
@@ -63,7 +107,9 @@ class TestEntregas:
     async def test_return_meta(self):
         mock_df = _mock_parsed_df()
         with (
-            patch.object(api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"),
+            patch.object(
+                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+            ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
             df, meta = await api.entregas(ano=2024, return_meta=True)
@@ -78,7 +124,9 @@ class TestEntregas:
     async def test_filter_uf_case_insensitive(self):
         mock_df = _mock_parsed_df()
         with (
-            patch.object(api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"),
+            patch.object(
+                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+            ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
             df = await api.entregas(ano=2024, uf="mt")

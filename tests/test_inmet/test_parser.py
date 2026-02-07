@@ -135,10 +135,33 @@ class TestParseObservacoes:
 class TestAgregarDiario:
     def test_agrega_horario_para_diario(self):
         dados = [
-            _obs(hora="0000 UTC", tem="20.0", tem_max="21.0", tem_min="19.0", chuva="5.0", rad="0.0"),
-            _obs(hora="0600 UTC", tem="22.0", tem_max="23.0", tem_min="21.0", chuva="3.0", rad="200.0"),
-            _obs(hora="1200 UTC", tem="28.0", tem_max="30.0", tem_min="26.0", chuva="0.0", rad="800.0"),
-            _obs(hora="1800 UTC", tem="24.0", tem_max="25.0", tem_min="23.0", chuva="2.0", rad="100.0"),
+            _obs(
+                hora="0000 UTC", tem="20.0", tem_max="21.0", tem_min="19.0", chuva="5.0", rad="0.0"
+            ),
+            _obs(
+                hora="0600 UTC",
+                tem="22.0",
+                tem_max="23.0",
+                tem_min="21.0",
+                chuva="3.0",
+                rad="200.0",
+            ),
+            _obs(
+                hora="1200 UTC",
+                tem="28.0",
+                tem_max="30.0",
+                tem_min="26.0",
+                chuva="0.0",
+                rad="800.0",
+            ),
+            _obs(
+                hora="1800 UTC",
+                tem="24.0",
+                tem_max="25.0",
+                tem_min="23.0",
+                chuva="2.0",
+                rad="100.0",
+            ),
         ]
         df_horario = parse_observacoes(dados)
         df_diario = agregar_diario(df_horario)
@@ -152,6 +175,7 @@ class TestAgregarDiario:
 
     def test_agrega_empty(self):
         import pandas as pd
+
         df = pd.DataFrame()
         result = agregar_diario(df)
         assert result.empty
@@ -176,6 +200,7 @@ class TestAgregarMensalUf:
 
     def test_agrega_empty(self):
         import pandas as pd
+
         df = pd.DataFrame()
         result = agregar_mensal_uf(df)
         assert result.empty

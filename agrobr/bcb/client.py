@@ -100,7 +100,7 @@ async def _fetch_odata(
 
                 if response.status_code in RETRIABLE_STATUS_CODES:
                     last_error = f"HTTP {response.status_code}"
-                    delay = RETRY_BASE_DELAY * (2 ** attempt)
+                    delay = RETRY_BASE_DELAY * (2**attempt)
                     logger.warning(
                         "bcb_retriable_error",
                         status=response.status_code,
@@ -115,7 +115,7 @@ async def _fetch_odata(
 
         except httpx.TimeoutException as e:
             last_error = f"Timeout: {e}"
-            delay = RETRY_BASE_DELAY * (2 ** attempt)
+            delay = RETRY_BASE_DELAY * (2**attempt)
             logger.warning(
                 "bcb_timeout",
                 attempt=attempt + 1,
@@ -126,7 +126,7 @@ async def _fetch_odata(
 
         except httpx.HTTPError as e:
             last_error = str(e)
-            delay = RETRY_BASE_DELAY * (2 ** attempt)
+            delay = RETRY_BASE_DELAY * (2**attempt)
             logger.warning(
                 "bcb_http_error",
                 error=str(e),
@@ -167,8 +167,7 @@ async def fetch_credito_rural(
     endpoint = ENDPOINT_MAP.get(finalidade.lower())
     if not endpoint:
         raise ValueError(
-            f"Finalidade inválida: '{finalidade}'. "
-            f"Opções: {list(ENDPOINT_MAP.keys())}"
+            f"Finalidade inválida: '{finalidade}'. Opções: {list(ENDPOINT_MAP.keys())}"
         )
 
     filters: list[str] = []

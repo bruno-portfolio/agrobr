@@ -14,7 +14,14 @@ def _make_sample_xlsx() -> BytesIO:
     rows = [
         ["CUSTO DE PRODUÇÃO - SOJA - MT - ALTA TECNOLOGIA", None, None, None, None, None],
         [None, None, None, None, None, None],
-        ["Item / Especificação", "Unidade", "Qtd./ha", "Preço Unitário (R$)", "Valor Total/ha (R$)", "Participação (%)"],
+        [
+            "Item / Especificação",
+            "Unidade",
+            "Qtd./ha",
+            "Preço Unitário (R$)",
+            "Valor Total/ha (R$)",
+            "Participação (%)",
+        ],
         ["Sementes", "kg", 60.0, 8.50, 510.00, 17.72],
         ["Fertilizantes", "kg", 200.0, 4.20, 840.00, 29.18],
         ["Herbicidas", "L", 3.0, 25.00, 75.00, 2.60],
@@ -36,9 +43,20 @@ class TestCustoProducao:
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         xlsx = _make_sample_xlsx()
-        metadata = {"url": "https://test.com/soja_mt.xlsx", "titulo": "Soja MT", "cultura": "soja", "uf": "MT", "safra": "2023/24"}
+        metadata = {
+            "url": "https://test.com/soja_mt.xlsx",
+            "titulo": "Soja MT",
+            "cultura": "soja",
+            "uf": "MT",
+            "safra": "2023/24",
+        }
 
-        with patch.object(api.client, "fetch_xlsx_for_cultura", new_callable=AsyncMock, return_value=(xlsx, metadata)):
+        with patch.object(
+            api.client,
+            "fetch_xlsx_for_cultura",
+            new_callable=AsyncMock,
+            return_value=(xlsx, metadata),
+        ):
             df = await api.custo_producao("soja", uf="MT", safra="2023/24")
 
         assert isinstance(df, pd.DataFrame)
@@ -50,9 +68,20 @@ class TestCustoProducao:
     @pytest.mark.asyncio
     async def test_return_meta(self):
         xlsx = _make_sample_xlsx()
-        metadata = {"url": "https://test.com/soja_mt.xlsx", "titulo": "Soja MT", "cultura": "soja", "uf": "MT", "safra": "2023/24"}
+        metadata = {
+            "url": "https://test.com/soja_mt.xlsx",
+            "titulo": "Soja MT",
+            "cultura": "soja",
+            "uf": "MT",
+            "safra": "2023/24",
+        }
 
-        with patch.object(api.client, "fetch_xlsx_for_cultura", new_callable=AsyncMock, return_value=(xlsx, metadata)):
+        with patch.object(
+            api.client,
+            "fetch_xlsx_for_cultura",
+            new_callable=AsyncMock,
+            return_value=(xlsx, metadata),
+        ):
             df, meta = await api.custo_producao("soja", uf="MT", safra="2023/24", return_meta=True)
 
         assert meta.source == "conab_custo"
@@ -67,9 +96,20 @@ class TestCustoProducaoTotal:
     @pytest.mark.asyncio
     async def test_returns_dict(self):
         xlsx = _make_sample_xlsx()
-        metadata = {"url": "https://test.com/soja_mt.xlsx", "titulo": "Soja MT", "cultura": "soja", "uf": "MT", "safra": "2023/24"}
+        metadata = {
+            "url": "https://test.com/soja_mt.xlsx",
+            "titulo": "Soja MT",
+            "cultura": "soja",
+            "uf": "MT",
+            "safra": "2023/24",
+        }
 
-        with patch.object(api.client, "fetch_xlsx_for_cultura", new_callable=AsyncMock, return_value=(xlsx, metadata)):
+        with patch.object(
+            api.client,
+            "fetch_xlsx_for_cultura",
+            new_callable=AsyncMock,
+            return_value=(xlsx, metadata),
+        ):
             result = await api.custo_producao_total("soja", uf="MT", safra="2023/24")
 
         assert isinstance(result, dict)
@@ -81,10 +121,23 @@ class TestCustoProducaoTotal:
     @pytest.mark.asyncio
     async def test_return_meta(self):
         xlsx = _make_sample_xlsx()
-        metadata = {"url": "https://test.com/soja_mt.xlsx", "titulo": "Soja MT", "cultura": "soja", "uf": "MT", "safra": "2023/24"}
+        metadata = {
+            "url": "https://test.com/soja_mt.xlsx",
+            "titulo": "Soja MT",
+            "cultura": "soja",
+            "uf": "MT",
+            "safra": "2023/24",
+        }
 
-        with patch.object(api.client, "fetch_xlsx_for_cultura", new_callable=AsyncMock, return_value=(xlsx, metadata)):
-            result, meta = await api.custo_producao_total("soja", uf="MT", safra="2023/24", return_meta=True)
+        with patch.object(
+            api.client,
+            "fetch_xlsx_for_cultura",
+            new_callable=AsyncMock,
+            return_value=(xlsx, metadata),
+        ):
+            result, meta = await api.custo_producao_total(
+                "soja", uf="MT", safra="2023/24", return_meta=True
+            )
 
         assert meta.source == "conab_custo"
         assert meta.records_count == 1

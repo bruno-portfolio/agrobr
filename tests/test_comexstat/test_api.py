@@ -20,7 +20,9 @@ def _mock_csv():
 class TestExportacao:
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
-        with patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()):
+        with patch.object(
+            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
+        ):
             df = await api.exportacao("soja", ano=2024)
 
         assert len(df) > 0
@@ -30,7 +32,9 @@ class TestExportacao:
 
     @pytest.mark.asyncio
     async def test_return_meta(self):
-        with patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()):
+        with patch.object(
+            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
+        ):
             df, meta = await api.exportacao("soja", ano=2024, return_meta=True)
 
         assert meta.source == "comexstat"
@@ -41,7 +45,9 @@ class TestExportacao:
 
     @pytest.mark.asyncio
     async def test_mensal_aggregation(self):
-        with patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()):
+        with patch.object(
+            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
+        ):
             df = await api.exportacao("soja", ano=2024, agregacao="mensal")
 
         # 3 meses distintos
@@ -49,7 +55,9 @@ class TestExportacao:
 
     @pytest.mark.asyncio
     async def test_detalhado(self):
-        with patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()):
+        with patch.object(
+            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
+        ):
             df = await api.exportacao("soja", ano=2024, agregacao="detalhado")
 
         assert len(df) == 3
@@ -62,7 +70,9 @@ class TestExportacao:
             "2024;1;12019000;10;160;MT;4;817800;1000;50000000;20000000\n"
             "2024;1;12019000;10;160;PR;4;817800;800;40000000;16000000\n"
         )
-        with patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=csv):
+        with patch.object(
+            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=csv
+        ):
             df = await api.exportacao("soja", ano=2024, uf="PR")
 
         assert len(df) == 1

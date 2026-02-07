@@ -59,7 +59,9 @@ class TestEstacoes:
             },
         ]
 
-        with patch.object(api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=mock_data):
+        with patch.object(
+            api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=mock_data
+        ):
             df = await api.estacoes()
 
         assert len(df) == 1
@@ -93,7 +95,9 @@ class TestEstacoes:
             },
         ]
 
-        with patch.object(api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=mock_data):
+        with patch.object(
+            api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=mock_data
+        ):
             df = await api.estacoes(uf="SP")
 
         assert len(df) == 1
@@ -105,7 +109,9 @@ class TestEstacao:
     async def test_estacao_horario(self):
         mock_data = [_mock_obs(hora="1200 UTC"), _mock_obs(hora="1300 UTC")]
 
-        with patch.object(api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data):
+        with patch.object(
+            api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data
+        ):
             df = await api.estacao("A001", "2024-01-15", "2024-01-15")
 
         assert len(df) == 2
@@ -120,7 +126,9 @@ class TestEstacao:
             _mock_obs(hora="1800 UTC", chuva="2.0"),
         ]
 
-        with patch.object(api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data):
+        with patch.object(
+            api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data
+        ):
             df = await api.estacao("A001", "2024-01-15", "2024-01-15", agregacao="diario")
 
         assert len(df) == 1
@@ -131,7 +139,9 @@ class TestEstacao:
     async def test_estacao_return_meta(self):
         mock_data = [_mock_obs()]
 
-        with patch.object(api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data):
+        with patch.object(
+            api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data
+        ):
             df, meta = await api.estacao("A001", "2024-01-15", "2024-01-15", return_meta=True)
 
         assert meta.source == "inmet"
@@ -149,7 +159,9 @@ class TestClimaUf:
             _mock_obs(data="2024-02-15", chuva="20.0"),
         ]
 
-        with patch.object(api.client, "fetch_dados_estacoes_uf", new_callable=AsyncMock, return_value=mock_data):
+        with patch.object(
+            api.client, "fetch_dados_estacoes_uf", new_callable=AsyncMock, return_value=mock_data
+        ):
             df, meta = await api.clima_uf("DF", 2024, return_meta=True)
 
         assert meta.source == "inmet"

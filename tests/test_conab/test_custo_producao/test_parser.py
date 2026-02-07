@@ -36,9 +36,23 @@ def _sample_xlsx(
 ) -> BytesIO:
     """Cria planilha CONAB de custo de produção realista para testes."""
     rows = [
-        ["CUSTO DE PRODUÇÃO - SOJA - MT - ALTA TECNOLOGIA - SAFRA 2023/24", None, None, None, None, None],
+        [
+            "CUSTO DE PRODUÇÃO - SOJA - MT - ALTA TECNOLOGIA - SAFRA 2023/24",
+            None,
+            None,
+            None,
+            None,
+            None,
+        ],
         [None, None, None, None, None, None],
-        ["Item / Especificação", "Unidade", "Qtd./ha", "Preço Unitário (R$)", "Valor Total/ha (R$)", "Participação (%)"],
+        [
+            "Item / Especificação",
+            "Unidade",
+            "Qtd./ha",
+            "Preço Unitário (R$)",
+            "Valor Total/ha (R$)",
+            "Participação (%)",
+        ],
         # Insumos
         ["I - INSUMOS", None, None, None, None, None],
         ["Sementes", "kg", 60.0, 8.50, 510.00, 13.42],
@@ -128,7 +142,14 @@ class TestFindHeaderRow:
 
 class TestIdentifyColumns:
     def test_full_headers(self):
-        headers = ["Item / Especificação", "Unidade", "Qtd./ha", "Preço Unitário (R$)", "Valor Total/ha (R$)", "Participação (%)"]
+        headers = [
+            "Item / Especificação",
+            "Unidade",
+            "Qtd./ha",
+            "Preço Unitário (R$)",
+            "Valor Total/ha (R$)",
+            "Participação (%)",
+        ]
         mapping = _identify_columns(headers)
 
         assert "item" in mapping
@@ -149,9 +170,7 @@ class TestIdentifyColumns:
 class TestParsePlanilha:
     def test_parse_basic(self):
         xlsx = _sample_xlsx()
-        items, custo_total = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        items, custo_total = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         assert len(items) > 0
         assert all(i.cultura == "soja" for i in items)
@@ -160,18 +179,14 @@ class TestParsePlanilha:
 
     def test_parse_detects_coe(self):
         xlsx = _sample_xlsx(with_coe=True)
-        _, custo_total = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        _, custo_total = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         assert custo_total is not None
         assert custo_total.coe_ha == pytest.approx(2879.0)
 
     def test_parse_detects_cot_ct(self):
         xlsx = _sample_xlsx(with_coe=True, with_cot=True, with_ct=True)
-        _, custo_total = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        _, custo_total = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         assert custo_total is not None
         assert custo_total.coe_ha == pytest.approx(2879.0)
@@ -180,9 +195,7 @@ class TestParsePlanilha:
 
     def test_computes_coe_from_items_if_missing(self):
         xlsx = _sample_xlsx(with_coe=False)
-        items, custo_total = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        items, custo_total = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         # Deve computar COE = soma de insumos + operacoes + mao_de_obra
         assert custo_total is not None
@@ -195,9 +208,7 @@ class TestParsePlanilha:
 
     def test_parse_categories(self):
         xlsx = _sample_xlsx()
-        items, _ = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        items, _ = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         categories = {i.categoria for i in items}
         assert "insumos" in categories
@@ -206,9 +217,7 @@ class TestParsePlanilha:
 
     def test_parse_numeric_values(self):
         xlsx = _sample_xlsx()
-        items, _ = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        items, _ = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         sementes = [i for i in items if "semente" in i.item.lower()]
         assert len(sementes) == 1
@@ -228,9 +237,7 @@ class TestParsePlanilha:
 
     def test_cultura_normalization(self):
         xlsx = _sample_xlsx()
-        items, _ = parse_planilha(
-            xlsx, cultura="SOJA", uf="mt", safra="2023/24"
-        )
+        items, _ = parse_planilha(xlsx, cultura="SOJA", uf="mt", safra="2023/24")
 
         assert all(i.cultura == "soja" for i in items)
         assert all(i.uf == "MT" for i in items)
@@ -247,9 +254,7 @@ class TestParsePlanilha:
 class TestItemsToDataframe:
     def test_converts_to_dataframe(self):
         xlsx = _sample_xlsx()
-        items, _ = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        items, _ = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         df = items_to_dataframe(items)
 
@@ -268,9 +273,7 @@ class TestItemsToDataframe:
 
     def test_numeric_columns_are_numeric(self):
         xlsx = _sample_xlsx()
-        items, _ = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        items, _ = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         df = items_to_dataframe(items)
 
@@ -278,9 +281,7 @@ class TestItemsToDataframe:
 
     def test_sorted_output(self):
         xlsx = _sample_xlsx()
-        items, _ = parse_planilha(
-            xlsx, cultura="soja", uf="MT", safra="2023/24"
-        )
+        items, _ = parse_planilha(xlsx, cultura="soja", uf="MT", safra="2023/24")
 
         df = items_to_dataframe(items)
 

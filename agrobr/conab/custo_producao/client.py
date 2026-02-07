@@ -184,10 +184,7 @@ async def fetch_xlsx_for_cultura(
         )
 
     cultura_lower = cultura.lower()
-    candidates = [
-        link for link in links
-        if cultura_lower in link["titulo"].lower()
-    ]
+    candidates = [link for link in links if cultura_lower in link["titulo"].lower()]
 
     if uf:
         uf_upper = uf.upper()

@@ -59,12 +59,14 @@ async def download_csv(url: str) -> str:
 
     for attempt in range(MAX_RETRIES):
         try:
-            async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+            async with httpx.AsyncClient(
+                timeout=TIMEOUT, headers=HEADERS, follow_redirects=True
+            ) as client:
                 response = await client.get(url)
 
                 if response.status_code in RETRIABLE_STATUS_CODES:
                     last_error = f"HTTP {response.status_code}"
-                    delay = 2.0 * (2 ** attempt)
+                    delay = 2.0 * (2**attempt)
                     logger.warning(
                         "comexstat_retriable_error",
                         status=response.status_code,
@@ -86,7 +88,7 @@ async def download_csv(url: str) -> str:
 
         except httpx.HTTPError as e:
             last_error = str(e)
-            delay = 2.0 * (2 ** attempt)
+            delay = 2.0 * (2**attempt)
             logger.warning(
                 "comexstat_download_error",
                 url=url,
