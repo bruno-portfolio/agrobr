@@ -270,6 +270,7 @@
     border-radius: 10px;
     padding: 1.75rem 2rem;
     overflow-x: auto;
+    margin-top: 3rem;
     margin-bottom: 2rem;
     position: relative;
   }
@@ -593,11 +594,13 @@
   </div>
 
   <div class="code-block reveal" data-lang="python">
-    <code><span class="kw">from</span> <span class="var">agrobr</span> <span class="kw">import</span> <span class="var">datasets</span>
+<code><span class="kw">from</span> <span class="var">agrobr</span> <span class="kw">import</span> <span class="var">datasets</span>
 
 <span class="cm"># Uma linha. Fallback automático. Cache DuckDB.</span>
 <span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.preco_diario</span>(<span class="str">"soja"</span>)
+
 <span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.producao_anual</span>(<span class="str">"soja"</span>, <span class="var">ano</span><span class="op">=</span><span class="var">2023</span>)
+
 <span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.estimativa_safra</span>(<span class="str">"soja"</span>, <span class="var">safra</span><span class="op">=</span><span class="str">"2024/25"</span>)
 </code>
   </div>
