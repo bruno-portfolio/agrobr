@@ -181,7 +181,7 @@ class CacheSettings(BaseSettings):
     ttl_inmet: int = 24 * 3600
     ttl_bcb: int = 24 * 3600
     ttl_comexstat: int = 24 * 3600
-    ttl_nasa_power: int = 24 * 3600
+    ttl_nasa_power: int = 7 * 24 * 3600
 
     stale_multiplier: float = 12.0
 

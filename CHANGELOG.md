@@ -18,15 +18,25 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   - Chunking automatico para periodos > 365 dias
   - 34 testes unitarios (models, parser, api)
 - **NASAPowerCollector** no agrobr-collector (substitui INMETCollector)
+- **Alertas automaticos** — health_check.yml e structure_monitor.yml enviam alertas Discord/Slack quando fontes degradam
+- **Health checks reais** — CONAB (HTTP HEAD), IBGE (SIDRA API query com validacao de dados)
+- **NASA POWER cache policy** dedicada (TTL 7d, stale 30d) em `policies.py`
 - **Notebook demo** (`examples/agrobr_demo.ipynb`) — 14 secoes cobrindo todas as fontes, MetaInfo, fallback, cache, pipeline com graficos e modo async
-- **Landing page** atualizada — 7 fontes (era 3), 561 testes, grid responsivo
+- **Landing page** atualizada — text-shadow para legibilidade, copyright 2026, icone monocromatico, botao Colab no CTA
 
 ### Changed
 - INMET desabilitado no collector (config.yaml `enabled: false`) — API dados retornando 404
 - Docs atualizados: INMET referencia NASA POWER como alternativa
+- `docs/index.md` atualizado com 8 fontes (era 3), NASA POWER no uso rapido
+- `alert_on_anomaly` habilitado por padrao em `constants.py`
+- `CacheSettings.ttl_nasa_power` corrigido de 24h para 7d (consistente com `policies.py`)
+- `SOURCE_POLICY_MAP` corrigido: NASA_POWER aponta para `"nasa_power"` (era `"bcb"`)
 
 ### Fixed
 - **sync.py** — `_SyncNasaPower` adicionado (nasa_power nao funcionava no modo sincrono)
+- **Notebook cell 17** — PAM defensivo: detecta `"producao"` ou `"Quantidade produzida"` (SIDRA rename)
+- **README** — Colab badge corrigido de `demo_colab.ipynb` para `agrobr_demo.ipynb`
+- **cepea/client.py** — Variavel nao usada `produto_key` removida (ruff lint)
 
 ## [0.7.0] - 2026-02-07
 

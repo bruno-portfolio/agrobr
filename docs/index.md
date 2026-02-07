@@ -9,11 +9,16 @@
 
 ## O que é o agrobr?
 
-Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre CEPEA, CONAB e IBGE.
+Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 8 fontes públicas.
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
-- **CONAB**: Safras e balanço oferta/demanda
+- **CONAB**: Safras, balanço oferta/demanda e custos de produção
 - **IBGE/SIDRA**: PAM (anual) e LSPA (mensal)
+- **NASA POWER**: Climatologia gridded diária (temperatura, precipitação, radiação, umidade, vento)
+- **BCB/SICOR**: Crédito rural por cultura e UF
+- **ComexStat**: Exportações agrícolas por NCM
+- **ANDA**: Entregas de fertilizantes por UF
+- **INMET**: Dados meteorológicos por estação (API instável — usar NASA POWER como alternativa)
 
 ## Datasets — Camada Semântica
 
@@ -48,7 +53,7 @@ playwright install chromium
 ## Uso Rápido
 
 ```python
-from agrobr import cepea, conab, ibge
+from agrobr import cepea, conab, ibge, nasa_power
 
 # CEPEA - Indicadores de preços
 df = await cepea.indicador('soja', inicio='2024-01-01')
@@ -58,14 +63,18 @@ df = await conab.safras('soja', safra='2024/25')
 
 # IBGE - PAM
 df = await ibge.pam('soja', ano=2023, nivel='uf')
+
+# NASA POWER - Clima
+df = await nasa_power.clima_uf('MT', ano=2025)
 ```
 
 ### Versão Síncrona
 
 ```python
-from agrobr.sync import cepea
+from agrobr.sync import cepea, nasa_power
 
 df = cepea.indicador('soja')
+df = nasa_power.clima_uf('MT', ano=2025)
 ```
 
 ## Diferenciais
@@ -81,6 +90,7 @@ df = cepea.indicador('soja')
 
 ## Features
 
+- **8 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, INMET
 - **Camada semântica** — datasets com fallback automático entre fontes
 - **Contratos públicos** — schema versionado com garantias de estabilidade
 - **Modo determinístico** — reprodutibilidade total para papers/auditorias
@@ -89,7 +99,7 @@ df = cepea.indicador('soja')
 - **Suporte pandas + polars** (`as_polars=True`)
 - **CLI completa** (`agrobr cepea indicador soja --formato csv`)
 - **Validação** — Pydantic v2 + sanity checks estatísticos + fingerprinting
-- **Monitoramento** — health checks diários + alertas multi-canal
+- **Monitoramento** — health checks diários + alertas Discord/Slack
 
 ## Próximos Passos
 
