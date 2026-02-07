@@ -104,6 +104,9 @@ def _safe_float(value: Any) -> float | None:
 def _detect_month(text: str) -> int | None:
     """Detecta mês a partir de texto (nome ou número).
 
+    Rejeita padrões de acumulado/período como "Janeiro a Dezembro",
+    "Jan/Dez", "Acumulado", "Total do Ano", etc.
+
     Args:
         text: Texto contendo mês.
 
@@ -111,6 +114,11 @@ def _detect_month(text: str) -> int | None:
         Número do mês (1-12) ou None.
     """
     s = text.strip().lower()
+
+    # Rejeita padrões de acumulado/período (ex: "janeiro a dezembro", "jan/dez")
+    _ACUMULADO_PATTERNS = (" a ", "/dez", "total", "acumulado", "anual", "ano")
+    if any(p in s for p in _ACUMULADO_PATTERNS):
+        return None
 
     # Tenta como número direto
     try:
@@ -401,12 +409,26 @@ def _parse_indicadores(
 ) -> list[dict[str, Any]]:
     """Parseia layout 'Principais Indicadores': meses nas linhas, anos nas colunas.
 
-    Headers: ["", "", "2021", "2022", "2023", "2024", ...]
-    Rows:    ["", "Janeiro", "3.397.952", "3.222.516", ...]
+    O PDF "Principais Indicadores" da ANDA contém múltiplas seções
+    (entregas, produção, importação, exportação) com layout idêntico.
+    Apenas a **primeira seção** (Fertilizantes Entregues ao Mercado)
+    é relevante — as demais são ignoradas.
+
+    Estrutura de cada seção:
+        Row titulo: ["", "Fertilizantes Entregues ao Mercado (em ton...)", ...]
+        Row header: ["", "",  "2018", "2019", "2020", "2021", ...]
+        Row dados:  ["", "Janeiro", "2.443.088", "2.762.157", ...]
+        ...
+        Row total:  ["", "Janeiro a Dezembro", "35.506.322", ...]  (ignorada)
+        Row total:  ["", "Total do Ano", "35.506.322", ...]  (ignorada)
+
+    A detecção de fim de seção usa dois sinais:
+    1. Linha com título descritivo longo (> 30 chars) na coluna de meses
+    2. Reaparição do header de ano (nova seção com layout idêntico)
     """
     records: list[dict[str, Any]] = []
 
-    # Procura header com anos (4 dígitos)
+    # Procura PRIMEIRO header com o ano alvo (4 dígitos)
     ano_str = str(ano)
     header_row_idx = None
     ano_col_idx = None
@@ -440,7 +462,15 @@ def _parse_indicadores(
         if len(row) <= max(mes_col_idx, ano_col_idx):
             continue
 
-        mes = _detect_month(row[mes_col_idx])
+        cell_mes = row[mes_col_idx]
+
+        # Detecta início de nova seção: título descritivo longo ou re-aparição do ano
+        if cell_mes and len(cell_mes.strip()) > 30:
+            break
+        if row[ano_col_idx].strip() == ano_str and cell_mes.strip() == "":
+            break
+
+        mes = _detect_month(cell_mes)
         if mes is None:
             continue
 
