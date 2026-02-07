@@ -173,3 +173,83 @@ class TestMetaInfo:
 
         assert meta.parser_version == 2
         assert meta.schema_version == "1.1"
+
+    def test_provenance_fields_default(self):
+        meta = MetaInfo(
+            source="cepea",
+            source_url="https://example.com",
+            source_method="httpx",
+            fetched_at=datetime.now(),
+        )
+
+        assert meta.attempted_sources == []
+        assert meta.selected_source == ""
+        assert meta.fetch_timestamp is None
+
+    def test_provenance_fields_populated(self):
+        now = datetime.now()
+        meta = MetaInfo(
+            source="datasets.preco_diario/cepea",
+            source_url="https://example.com",
+            source_method="dataset",
+            fetched_at=now,
+            attempted_sources=["cepea", "cache"],
+            selected_source="cepea",
+            fetch_timestamp=now,
+        )
+
+        assert meta.attempted_sources == ["cepea", "cache"]
+        assert meta.selected_source == "cepea"
+        assert meta.fetch_timestamp == now
+
+    def test_provenance_fallback_chain(self):
+        meta = MetaInfo(
+            source="datasets.estimativa_safra/ibge_lspa",
+            source_url="https://sidra.ibge.gov.br",
+            source_method="dataset",
+            fetched_at=datetime.now(),
+            attempted_sources=["conab", "ibge_lspa"],
+            selected_source="ibge_lspa",
+            fetch_timestamp=datetime.now(),
+        )
+
+        assert len(meta.attempted_sources) == 2
+        assert meta.attempted_sources[0] == "conab"
+        assert meta.selected_source == "ibge_lspa"
+        assert meta.selected_source == meta.attempted_sources[-1]
+
+    def test_provenance_to_dict(self):
+        now = datetime(2024, 6, 15, 10, 30, 0)
+        meta = MetaInfo(
+            source="datasets.preco_diario/cepea",
+            source_url="https://example.com",
+            source_method="dataset",
+            fetched_at=now,
+            attempted_sources=["cepea"],
+            selected_source="cepea",
+            fetch_timestamp=now,
+        )
+
+        d = meta.to_dict()
+        assert d["attempted_sources"] == ["cepea"]
+        assert d["selected_source"] == "cepea"
+        assert d["fetch_timestamp"] == now.isoformat()
+
+    def test_provenance_roundtrip(self):
+        now = datetime(2024, 6, 15, 10, 30, 0)
+        original = MetaInfo(
+            source="datasets.preco_diario/cepea",
+            source_url="https://example.com",
+            source_method="dataset",
+            fetched_at=now,
+            attempted_sources=["cepea", "cache"],
+            selected_source="cepea",
+            fetch_timestamp=now,
+        )
+
+        d = original.to_dict()
+        restored = MetaInfo.from_dict(d)
+
+        assert restored.attempted_sources == original.attempted_sources
+        assert restored.selected_source == original.selected_source
+        assert restored.fetch_timestamp == original.fetch_timestamp

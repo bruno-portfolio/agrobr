@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>agrobr — Dados agrícolas brasileiros em uma linha de código</title>
+<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. CEPEA, CONAB, IBGE — uma API, fallback automático, cache DuckDB.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #0a0a0f;
+    --bg-surface: #111118;
+    --bg-card: #16161f;
+    --bg-elevated: #1c1c28;
+    --text-primary: #e8e6e1;
+    --text-secondary: #8a8880;
+    --text-muted: #5a5850;
+    --accent-gold: #c9a96e;
+    --accent-gold-dim: #9a7d4e;
+    --accent-green: #5a8a5e;
+    --accent-blue: #4a6a8a;
+    --code-bg: #0d0d14;
+    --border: #222230;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--accent-gold);
+    color: var(--bg-deep);
+  }
+
+  /* ═══════════════ NAV ═══════════════ */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.25rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.4s, backdrop-filter 0.4s;
+  }
+
+  nav.scrolled {
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--accent-gold); }
+
+  /* ═══════════════ HERO ═══════════════ */
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(10,10,15,0.35) 0%, rgba(20,12,5,0.15) 35%, rgba(10,10,15,0.65) 75%, rgba(10,10,15,1) 100%),
+      url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80') center/cover no-repeat;
+    transform: scale(1.05);
+    animation: heroZoom 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroZoom {
+    from { transform: scale(1.05); }
+    to { transform: scale(1.12); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 2rem;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent-gold);
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+  }
+
+  .hero-install {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.85rem 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.3s, transform 0.2s;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+
+  .hero-install:hover {
+    border-color: var(--accent-gold-dim);
+    transform: translateY(-2px);
+  }
+
+  .hero-install .pip { color: var(--accent-gold); }
+  .hero-install .copy-icon { color: var(--text-muted); font-size: 0.8rem; }
+  .hero-install .copied { color: var(--accent-green); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+  }
+
+  .hero-scroll span {
+    display: block;
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, var(--accent-gold-dim), transparent);
+    margin: 0 auto;
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════════════ SECTIONS ═══════════════ */
+  section {
+    padding: 7rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-gold-dim);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    max-width: 600px;
+    font-weight: 300;
+    margin-bottom: 3rem;
+  }
+
+  /* ═══════════════ CODE BLOCK ═══════════════ */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem 2rem;
+    overflow-x: auto;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .code-block::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+
+  .code-block .kw { color: #c792ea; }
+  .code-block .fn { color: #82aaff; }
+  .code-block .str { color: #c3e88d; }
+  .code-block .cm { color: #546e7a; }
+  .code-block .var { color: var(--text-primary); }
+  .code-block .op { color: #89ddff; }
+
+  /* ═══════════════ DATASETS GRID ═══════════════ */
+  .datasets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .dataset-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .dataset-card:hover {
+    border-color: var(--accent-gold-dim);
+    transform: translateY(-3px);
+  }
+
+  .dataset-name {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .dataset-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    font-weight: 300;
+  }
+
+  .dataset-sources {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+  }
+
+  /* ═══════════════ FEATURES ═══════════════ */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .feature-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    background: var(--bg-elevated);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .feature-text h3 {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .feature-text p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+
+  /* ═══════════════ SOURCES ═══════════════ */
+  .sources-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .source-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+
+  .source-card:hover { border-color: var(--accent-gold-dim); }
+
+  .source-name {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+  }
+
+  .source-count {
+    font-size: 0.78rem;
+    color: var(--accent-gold-dim);
+    font-family: var(--font-mono);
+    margin-bottom: 0.6rem;
+  }
+
+  .source-detail {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+
+  /* ═══════════════ CTA ═══════════════ */
+  .cta-section {
+    text-align: center;
+    padding: 6rem 3rem 8rem;
+    position: relative;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: var(--accent-gold-dim);
+  }
+
+  .cta-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+
+  .cta-btn.primary {
+    background: var(--accent-gold);
+    color: var(--bg-deep);
+  }
+  .cta-btn.primary:hover {
+    background: #dbb87a;
+    transform: translateY(-2px);
+  }
+
+  .cta-btn.secondary {
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    background: var(--bg-card);
+  }
+  .cta-btn.secondary:hover {
+    border-color: var(--accent-gold-dim);
+    transform: translateY(-2px);
+  }
+
+  /* ═══════════════ FOOTER ═══════════════ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  footer a:hover { color: var(--accent-gold); }
+
+  .footer-links { display: flex; gap: 2rem; }
+
+  /* ═══════════════ REVEAL ANIMATION ═══════════════ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ═══════════════ RESPONSIVE ═══════════════ */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.25rem; }
+    .nav-links a { font-size: 0.75rem; }
+    section { padding: 4rem 1.5rem; }
+    .sources-row { grid-template-columns: 1fr; }
+    .cta-section { padding: 4rem 1.5rem 6rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links { display: none; }
+    .hero-install { font-size: 0.82rem; padding: 0.75rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="/" class="nav-logo">agrobr</a>
+  <ul class="nav-links">
+    <li><a href="#datasets">Datasets</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#sources">Fontes</a></li>
+    <li><a href="/docs/">Docs</a></li>
+    <li><a href="https://github.com/bruno-portfolio/agrobr" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Python · Open Source · PyPI</p>
+    <h1 class="hero-title">Dados agrícolas brasileiros em <em>uma linha</em> de código</h1>
+    <p class="hero-subtitle">CEPEA, CONAB, IBGE — uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
+    <div class="hero-install" onclick="copyInstall(this)" title="Copiar">
+      <span><span class="pip">$</span> pip install agrobr</span>
+      <span class="copy-icon">⎘</span>
+    </div>
+  </div>
+  <div class="hero-scroll"><span></span></div>
+</section>
+
+<!-- DATASETS -->
+<section id="datasets">
+  <div class="reveal">
+    <p class="section-label">Camada Semântica</p>
+    <h2 class="section-title">Peça o que quer.<br>A fonte é detalhe interno.</h2>
+    <p class="section-desc">Datasets abstraem múltiplas fontes com fallback automático. Quando CEPEA retorna 403, o agrobr busca Notícias Agrícolas. Quando o servidor cai, serve do cache.</p>
+  </div>
+
+  <div class="datasets-grid reveal">
+    <div class="dataset-card">
+      <div class="dataset-name">preco_diario</div>
+      <div class="dataset-desc">Preços spot de 20 commodities agrícolas</div>
+      <div class="dataset-sources">CEPEA → NA → cache</div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">producao_anual</div>
+      <div class="dataset-desc">Produção consolidada por UF e município</div>
+      <div class="dataset-sources">IBGE PAM → CONAB</div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">estimativa_safra</div>
+      <div class="dataset-desc">Estimativas da safra corrente</div>
+      <div class="dataset-sources">CONAB → IBGE LSPA</div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">balanco</div>
+      <div class="dataset-desc">Oferta e demanda por cultura</div>
+      <div class="dataset-sources">CONAB</div>
+    </div>
+  </div>
+
+  <div class="code-block reveal" data-lang="python">
+    <code><span class="kw">from</span> <span class="var">agrobr</span> <span class="kw">import</span> <span class="var">datasets</span>
+
+<span class="cm"># Uma linha. Fallback automático. Cache DuckDB.</span>
+<span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.preco_diario</span>(<span class="str">"soja"</span>)
+<span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.producao_anual</span>(<span class="str">"soja"</span>, <span class="var">ano</span><span class="op">=</span><span class="var">2023</span>)
+<span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.estimativa_safra</span>(<span class="str">"soja"</span>, <span class="var">safra</span><span class="op">=</span><span class="str">"2024/25"</span>)
+</code>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="reveal">
+    <p class="section-label">Infraestrutura</p>
+    <h2 class="section-title">Construído para produção,<br>não para demo.</h2>
+  </div>
+
+  <div class="features-grid reveal">
+    <div class="feature-item">
+      <div class="feature-icon">⟳</div>
+      <div class="feature-text">
+        <h3>Fallback em Cascata</h3>
+        <p>Fonte primária falha → tenta secundária → serve do cache. Transparente.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">⛁</div>
+      <div class="feature-text">
+        <h3>Cache DuckDB</h3>
+        <p>Histórico permanente local. Sem re-download. Séries temporais acumuladas.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">◈</div>
+      <div class="feature-text">
+        <h3>Contratos Versionados</h3>
+        <p>Schema garantido por dataset. Breaking changes só em major. Semver.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-text">
+        <h3>Async-first</h3>
+        <p>httpx nativo com sync wrapper. Funciona em Jupyter, FastAPI e Airflow.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">✓</div>
+      <div class="feature-text">
+        <h3>Validação Pydantic v2</h3>
+        <p>Modelos tipados. Sanity checks estatísticos. Fingerprinting de layout.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">◎</div>
+      <div class="feature-text">
+        <h3>Modo Determinístico</h3>
+        <p>Reprodutibilidade total via contextvars. Para papers e auditorias.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section id="sources">
+  <div class="reveal">
+    <p class="section-label">Fontes de dados</p>
+    <h2 class="section-title">Três origens. Uma API.</h2>
+    <p class="section-desc">Cada fonte tem seu próprio parser com versionamento, fingerprinting e tratamento de encoding. Você só vê o DataFrame.</p>
+  </div>
+
+  <div class="sources-row reveal">
+    <div class="source-card">
+      <div class="source-name">CEPEA/ESALQ</div>
+      <div class="source-count">20 indicadores</div>
+      <div class="source-detail">Soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">CONAB</div>
+      <div class="source-count">Safras + Balanço O&D</div>
+      <div class="source-detail">Estimativas mensais, oferta e demanda, séries históricas por cultura</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">IBGE/SIDRA</div>
+      <div class="source-count">PAM + LSPA</div>
+      <div class="source-detail">Produção anual municipal e estimativas mensais por UF</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="reveal">
+    <p class="section-label">Começar</p>
+    <h2 class="section-title">pip install agrobr</h2>
+    <p class="section-desc" style="margin: 0 auto 0;">MIT License. 328 testes. Documentação completa.</p>
+    <div class="cta-links">
+      <a href="/docs/" class="cta-btn primary">Documentação →</a>
+      <a href="https://github.com/bruno-portfolio/agrobr" class="cta-btn secondary">GitHub ↗</a>
+      <a href="https://pypi.org/project/agrobr/" class="cta-btn secondary">PyPI ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2024–2026 Bruno · MIT License</span>
+  <div class="footer-links">
+    <a href="https://github.com/bruno-portfolio/agrobr">GitHub</a>
+    <a href="https://pypi.org/project/agrobr/">PyPI</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Copy install command
+  function copyInstall(el) {
+    navigator.clipboard.writeText('pip install agrobr').then(() => {
+      const icon = el.querySelector('.copy-icon');
+      icon.textContent = '✓';
+      icon.classList.add('copied');
+      setTimeout(() => { icon.textContent = '⎘'; icon.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

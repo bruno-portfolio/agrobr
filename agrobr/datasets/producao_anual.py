@@ -111,18 +111,19 @@ class ProducaoAnualDataset(BaseDataset):
         if snapshot and ano is None:
             ano = int(snapshot[:4]) - 1
 
-        df, source_name, source_meta = await self._try_sources(
+        df, source_name, source_meta, attempted = await self._try_sources(
             produto, ano=ano, nivel=nivel, uf=uf, **kwargs
         )
 
         df = self._normalize(df, produto)
 
         if return_meta:
+            now = datetime.now(UTC)
             meta = MetaInfo(
                 source=f"datasets.producao_anual/{source_name}",
                 source_url=source_meta.source_url if source_meta else "",
                 source_method="dataset",
-                fetched_at=source_meta.fetched_at if source_meta else datetime.now(UTC),
+                fetched_at=source_meta.fetched_at if source_meta else now,
                 records_count=len(df),
                 columns=df.columns.tolist(),
                 from_cache=False,
@@ -130,6 +131,9 @@ class ProducaoAnualDataset(BaseDataset):
                 dataset="producao_anual",
                 contract_version=self.info.contract_version,
                 snapshot=snapshot,
+                attempted_sources=attempted,
+                selected_source=source_name,
+                fetch_timestamp=now,
             )
             return df, meta
 

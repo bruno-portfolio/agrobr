@@ -1,4 +1,4 @@
-"""Modulo CONAB - Dados de safras e balanco oferta/demanda."""
+"""Modulo CONAB - Dados de safras, balanco oferta/demanda e custos de produção."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from agrobr.conab.api import (
     safras,
     ufs,
 )
+from agrobr.conab.custo_producao import custo_producao, custo_producao_total
 
 __all__ = [
     "safras",
@@ -18,4 +19,6 @@ __all__ = [
     "levantamentos",
     "produtos",
     "ufs",
+    "custo_producao",
+    "custo_producao_total",
 ]

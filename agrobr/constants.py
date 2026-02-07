@@ -9,16 +9,32 @@ from pydantic_settings import BaseSettings
 
 
 class Fonte(StrEnum):
+    ANDA = "anda"
+    BCB = "bcb"
     CEPEA = "cepea"
+    COMEXSTAT = "comexstat"
     CONAB = "conab"
     IBGE = "ibge"
+    INMET = "inmet"
     NOTICIAS_AGRICOLAS = "noticias_agricolas"
 
 
 URLS = {
+    Fonte.ANDA: {
+        "base": "https://anda.org.br",
+        "estatisticas": "https://anda.org.br/estatisticas/",
+    },
+    Fonte.BCB: {
+        "base": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata",
+        "dados_abertos": "https://dadosabertos.bcb.gov.br/dataset/sicor",
+    },
     Fonte.CEPEA: {
         "base": "https://www.cepea.org.br",
         "indicadores": "https://www.cepea.org.br/br/indicador",
+    },
+    Fonte.COMEXSTAT: {
+        "base": "https://comexstat.mdic.gov.br",
+        "bulk_csv": "https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm",
     },
     Fonte.CONAB: {
         "base": "https://www.gov.br/conab",
@@ -28,6 +44,11 @@ URLS = {
     Fonte.IBGE: {
         "base": "https://sidra.ibge.gov.br",
         "api": "https://apisidra.ibge.gov.br",
+    },
+    Fonte.INMET: {
+        "base": "https://apitempo.inmet.gov.br",
+        "estacoes": "https://apitempo.inmet.gov.br/estacoes",
+        "dados": "https://apitempo.inmet.gov.br/estacao/dados",
     },
     Fonte.NOTICIAS_AGRICOLAS: {
         "base": "https://www.noticiasagricolas.com.br",
@@ -151,6 +172,10 @@ class CacheSettings(BaseSettings):
     ttl_conab: int = 24 * 3600
     ttl_ibge_pam: int = 168 * 3600
     ttl_ibge_lspa: int = 24 * 3600
+    ttl_anda: int = 7 * 24 * 3600
+    ttl_inmet: int = 24 * 3600
+    ttl_bcb: int = 24 * 3600
+    ttl_comexstat: int = 24 * 3600
 
     stale_multiplier: float = 12.0
 
@@ -176,9 +201,13 @@ class HTTPSettings(BaseSettings):
     retry_max_delay: float = 30.0
     retry_exponential_base: int = 2
 
+    rate_limit_anda: float = 3.0
+    rate_limit_bcb: float = 1.0
     rate_limit_cepea: float = 2.0
+    rate_limit_comexstat: float = 2.0
     rate_limit_conab: float = 3.0
     rate_limit_ibge: float = 1.0
+    rate_limit_inmet: float = 0.5
     rate_limit_noticias_agricolas: float = 2.0
 
     class Config:

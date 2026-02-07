@@ -122,39 +122,63 @@ class _SyncDatasets(_SyncModule):
     pass
 
 
-_cepea: _SyncCepea | None = None
-_conab: _SyncConab | None = None
-_ibge: _SyncIbge | None = None
-_datasets: _SyncDatasets | None = None
+class _SyncInmet(_SyncModule):
+    """API síncrona do INMET."""
+
+    pass
+
+
+class _SyncBcb(_SyncModule):
+    """API síncrona do BCB/SICOR."""
+
+    pass
+
+
+class _SyncComexstat(_SyncModule):
+    """API síncrona do ComexStat."""
+
+    pass
+
+
+class _SyncAnda(_SyncModule):
+    """API síncrona da ANDA."""
+
+    pass
+
+
+_modules: dict[str, _SyncModule | None] = {
+    "anda": None,
+    "bcb": None,
+    "cepea": None,
+    "comexstat": None,
+    "conab": None,
+    "datasets": None,
+    "ibge": None,
+    "inmet": None,
+}
+
+_MODULE_CLASSES: dict[str, type[_SyncModule]] = {
+    "anda": _SyncAnda,
+    "bcb": _SyncBcb,
+    "cepea": _SyncCepea,
+    "comexstat": _SyncComexstat,
+    "conab": _SyncConab,
+    "datasets": _SyncDatasets,
+    "ibge": _SyncIbge,
+    "inmet": _SyncInmet,
+}
 
 
 def __getattr__(name: str) -> Any:
     """Lazy loading para evitar imports circulares."""
-    global _cepea, _conab, _ibge, _datasets
+    if name not in _modules:
+        raise AttributeError(f"module 'agrobr.sync' has no attribute '{name}'")
 
-    if name == "cepea":
-        if _cepea is None:
-            from agrobr import cepea as async_cepea
+    if _modules[name] is None:
+        import importlib
 
-            _cepea = _SyncCepea(async_cepea)
-        return _cepea
-    elif name == "conab":
-        if _conab is None:
-            from agrobr import conab as async_conab
+        async_module = importlib.import_module(f"agrobr.{name}")
+        cls = _MODULE_CLASSES[name]
+        _modules[name] = cls(async_module)
 
-            _conab = _SyncConab(async_conab)
-        return _conab
-    elif name == "ibge":
-        if _ibge is None:
-            from agrobr import ibge as async_ibge
-
-            _ibge = _SyncIbge(async_ibge)
-        return _ibge
-    elif name == "datasets":
-        if _datasets is None:
-            from agrobr import datasets as async_datasets
-
-            _datasets = _SyncDatasets(async_datasets)
-        return _datasets
-
-    raise AttributeError(f"module 'agrobr.sync' has no attribute '{name}'")
+    return _modules[name]

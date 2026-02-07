@@ -81,16 +81,19 @@ class BalancoDataset(BaseDataset):
 
         snapshot = get_snapshot()
 
-        df, source_name, source_meta = await self._try_sources(produto, safra=safra, **kwargs)
+        df, source_name, source_meta, attempted = await self._try_sources(
+            produto, safra=safra, **kwargs
+        )
 
         df = self._normalize(df, produto)
 
         if return_meta:
+            now = datetime.now(UTC)
             meta = MetaInfo(
                 source=f"datasets.balanco/{source_name}",
                 source_url=source_meta.source_url if source_meta else "",
                 source_method="dataset",
-                fetched_at=source_meta.fetched_at if source_meta else datetime.now(UTC),
+                fetched_at=source_meta.fetched_at if source_meta else now,
                 records_count=len(df),
                 columns=df.columns.tolist(),
                 from_cache=False,
@@ -98,6 +101,9 @@ class BalancoDataset(BaseDataset):
                 dataset="balanco",
                 contract_version=self.info.contract_version,
                 snapshot=snapshot,
+                attempted_sources=attempted,
+                selected_source=source_name,
+                fetch_timestamp=now,
             )
             return df, meta
 
