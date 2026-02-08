@@ -16,12 +16,32 @@ class TestProdutosMapping:
     def test_produtos_pam_contains_milho(self):
         """Testa que milho esta nos produtos PAM."""
         assert "milho" in client.PRODUTOS_PAM
+        assert client.PRODUTOS_PAM["milho"] == "40122"
 
     def test_produtos_pam_contains_main_crops(self):
         """Testa que principais culturas estao mapeadas."""
         expected = ["soja", "milho", "arroz", "feijao", "trigo", "algodao", "cafe", "cana"]
         for prod in expected:
             assert prod in client.PRODUTOS_PAM, f"{prod} not in PRODUTOS_PAM"
+
+    def test_produtos_pam_codes_correct(self):
+        """Testa codigos SIDRA corretos para cada produto (tabela 5457, classificacao 782)."""
+        expected_codes = {
+            "soja": "40124",
+            "milho": "40122",
+            "arroz": "40102",
+            "feijao": "40112",
+            "trigo": "40127",
+            "algodao": "40099",
+            "cafe": "40139",
+            "cana": "40106",
+            "mandioca": "40119",
+            "laranja": "40151",
+        }
+        for produto, code in expected_codes.items():
+            assert client.PRODUTOS_PAM[produto] == code, (
+                f"{produto}: expected {code}, got {client.PRODUTOS_PAM[produto]}"
+            )
 
     def test_produtos_lspa_contains_soja(self):
         """Testa que soja esta nos produtos LSPA."""
@@ -49,6 +69,13 @@ class TestVariaveis:
         assert "area_colhida" in client.VARIAVEIS
         assert "producao" in client.VARIAVEIS
         assert "rendimento" in client.VARIAVEIS
+
+    def test_variaveis_pam_codes_correct(self):
+        """Testa codigos SIDRA corretos para variaveis PAM tabela 5457."""
+        assert client.VARIAVEIS["area_plantada"] == "8331"
+        assert client.VARIAVEIS["area_colhida"] == "216"
+        assert client.VARIAVEIS["producao"] == "214"
+        assert client.VARIAVEIS["valor_producao"] == "215"
 
     def test_variaveis_codes(self):
         """Testa que codigos sao strings numericas."""

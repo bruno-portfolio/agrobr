@@ -23,9 +23,9 @@ TABELAS = {
 }
 
 VARIAVEIS = {
-    "area_plantada": "214",
-    "area_colhida": "215",
-    "producao": "216",
+    "area_plantada": "8331",
+    "area_colhida": "216",
+    "producao": "214",
     "rendimento": "112",
     "valor_producao": "215",
     "area_plantada_1612": "109",
@@ -49,15 +49,15 @@ NIVEIS_TERRITORIAIS = {
 
 PRODUTOS_PAM = {
     "soja": "40124",
-    "milho": "40126",
-    "arroz": "40117",
-    "feijao": "40120",
-    "trigo": "40145",
-    "algodao": "40109",
-    "cafe": "40112",
-    "cana": "40114",
-    "mandioca": "40127",
-    "laranja": "40125",
+    "milho": "40122",
+    "arroz": "40102",
+    "feijao": "40112",
+    "trigo": "40127",
+    "algodao": "40099",
+    "cafe": "40139",
+    "cana": "40106",
+    "mandioca": "40119",
+    "laranja": "40151",
 }
 
 PRODUTOS_LSPA = {
