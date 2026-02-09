@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>agrobr — Dados agrícolas brasileiros em uma linha de código</title>
-<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA — uma API, fallback automático, cache DuckDB.">
+<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. 13 fontes públicas — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL — uma API, fallback automático, cache DuckDB.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -555,7 +555,7 @@
   <div class="hero-content">
     <p class="hero-eyebrow">Python · Open Source · PyPI</p>
     <h1 class="hero-title">Dados agrícolas brasileiros em <em>uma linha</em> de código</h1>
-    <p class="hero-subtitle"><span class="hero-sources">CEPEA, CONAB, IBGE, NASA POWER</span> e mais 3 fontes — uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
+    <p class="hero-subtitle"><span class="hero-sources">CEPEA, CONAB, IBGE, NASA POWER, USDA, IMEA</span> e mais 7 fontes — 13 origens, uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
     <div class="hero-install" onclick="copyInstall(this)" title="Copiar">
       <span><span class="pip">$</span> pip install agrobr</span>
       <span class="copy-icon">⎘</span>
@@ -593,6 +593,26 @@
       <div class="dataset-desc">Oferta e demanda por cultura</div>
       <div class="dataset-sources">CONAB</div>
     </div>
+    <div class="dataset-card">
+      <div class="dataset-name">credito_rural</div>
+      <div class="dataset-desc">Crédito rural por cultura e UF</div>
+      <div class="dataset-sources">BCB/SICOR → BigQuery</div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">exportacao</div>
+      <div class="dataset-desc">Exportações agrícolas por NCM</div>
+      <div class="dataset-sources">ComexStat → ABIOVE</div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">fertilizante</div>
+      <div class="dataset-desc">Entregas de fertilizantes por UF</div>
+      <div class="dataset-sources">ANDA</div>
+    </div>
+    <div class="dataset-card">
+      <div class="dataset-name">custo_producao</div>
+      <div class="dataset-desc">Custos de produção por hectare</div>
+      <div class="dataset-sources">CONAB</div>
+    </div>
   </div>
 
   <div class="code-block reveal" data-lang="python">
@@ -604,6 +624,10 @@
 <span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.producao_anual</span>(<span class="str">"soja"</span>, <span class="var">ano</span><span class="op">=</span><span class="var">2023</span>)
 
 <span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.estimativa_safra</span>(<span class="str">"soja"</span>, <span class="var">safra</span><span class="op">=</span><span class="str">"2024/25"</span>)
+
+<span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.credito_rural</span>(<span class="str">"soja"</span>, <span class="var">safra</span><span class="op">=</span><span class="str">"2024/25"</span>)
+
+<span class="var">df</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">datasets.exportacao</span>(<span class="str">"soja"</span>, <span class="var">ano</span><span class="op">=</span><span class="var">2024</span>)
 </code>
   </div>
 </section>
@@ -665,7 +689,7 @@
 <section id="sources">
   <div class="reveal">
     <p class="section-label">Fontes de dados</p>
-    <h2 class="section-title">Sete origens. Uma API.</h2>
+    <h2 class="section-title">Treze origens. Uma API.</h2>
     <p class="section-desc">Cada fonte tem seu próprio parser com versionamento, fingerprinting e tratamento de encoding. Você só vê o DataFrame.</p>
   </div>
 
@@ -677,8 +701,8 @@
     </div>
     <div class="source-card">
       <div class="source-name">CONAB</div>
-      <div class="source-count">Safras + Balanço + Custos</div>
-      <div class="source-detail">Estimativas mensais, oferta e demanda, custos de produção por cultura</div>
+      <div class="source-count">Safras + Balanço + Custos + Série</div>
+      <div class="source-detail">Estimativas mensais, oferta e demanda, custos, série histórica 2010+</div>
     </div>
     <div class="source-card">
       <div class="source-name">IBGE/SIDRA</div>
@@ -693,7 +717,7 @@
     <div class="source-card">
       <div class="source-name">BCB/SICOR</div>
       <div class="source-count">Crédito rural</div>
-      <div class="source-detail">Financiamentos por produto, município e safra</div>
+      <div class="source-detail">Financiamentos por cultura e UF, com fallback BigQuery</div>
     </div>
     <div class="source-card">
       <div class="source-name">ComexStat</div>
@@ -705,6 +729,36 @@
       <div class="source-count">Fertilizantes</div>
       <div class="source-detail">Entregas de fertilizantes por UF e produto</div>
     </div>
+    <div class="source-card">
+      <div class="source-name">ABIOVE</div>
+      <div class="source-count">Complexo soja</div>
+      <div class="source-detail">Exportação mensal de grão, farelo, óleo e milho</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">USDA PSD</div>
+      <div class="source-count">Estimativas globais</div>
+      <div class="source-detail">Produção, oferta e demanda internacional por commodity</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">IMEA</div>
+      <div class="source-count">Mato Grosso</div>
+      <div class="source-detail">Cotações diárias e indicadores de 6 cadeias produtivas</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">DERAL</div>
+      <div class="source-count">Lavouras PR</div>
+      <div class="source-detail">Condição semanal, progresso de plantio e colheita</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">INMET</div>
+      <div class="source-count">600+ estações</div>
+      <div class="source-detail">Meteorologia por estação (API instável — usar NASA POWER)</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">Not. Agrícolas</div>
+      <div class="source-count">Fallback CEPEA</div>
+      <div class="source-detail">Cotações agrícolas como fonte secundária de preços</div>
+    </div>
   </div>
 </section>
 
@@ -713,7 +767,7 @@
   <div class="reveal">
     <p class="section-label">Começar</p>
     <h2 class="section-title">pip install agrobr</h2>
-    <p class="section-desc" style="margin: 0 auto 0;">MIT License. 563 testes. Documentação completa.</p>
+    <p class="section-desc" style="margin: 0 auto 0;">MIT License. 949 testes. 13 fontes. 8 datasets. Documentação completa.</p>
     <div class="cta-links">
       <a href="https://www.agrobr.dev/docs/" class="cta-btn primary">Documentação →</a>
       <a href="https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb" class="cta-btn secondary">Abrir no Colab ↗</a>
