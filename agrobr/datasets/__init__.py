@@ -1,16 +1,24 @@
 """Camada semântica de datasets do agrobr."""
 
 from agrobr.datasets.balanco import balanco
+from agrobr.datasets.credito_rural import credito_rural
+from agrobr.datasets.custo_producao import custo_producao
 from agrobr.datasets.deterministic import deterministic, get_snapshot, is_deterministic
 from agrobr.datasets.estimativa_safra import estimativa_safra
+from agrobr.datasets.exportacao import exportacao
+from agrobr.datasets.fertilizante import fertilizante
 from agrobr.datasets.preco_diario import preco_diario
 from agrobr.datasets.producao_anual import producao_anual
 from agrobr.datasets.registry import get_dataset, info, list_datasets, list_products
 
 __all__ = [
     "balanco",
+    "credito_rural",
+    "custo_producao",
     "deterministic",
     "estimativa_safra",
+    "exportacao",
+    "fertilizante",
     "get_dataset",
     "get_snapshot",
     "info",

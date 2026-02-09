@@ -72,6 +72,10 @@ nav:
     - producao_anual: contracts/producao_anual.md
     - estimativa_safra: contracts/estimativa_safra.md
     - balanco: contracts/balanco.md
+    - credito_rural: contracts/credito_rural.md
+    - exportacao: contracts/exportacao.md
+    - fertilizante: contracts/fertilizante.md
+    - custo_producao: contracts/custo_producao.md
   - API Reference:
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md
@@ -82,10 +86,14 @@ nav:
     - CONAB: sources/conab.md
     - IBGE: sources/ibge.md
     - NASA POWER: sources/nasa_power.md
-    - INMET: sources/inmet.md
     - BCB/SICOR: sources/bcb.md
     - ComexStat: sources/comexstat.md
     - ANDA: sources/anda.md
+    - ABIOVE: sources/abiove.md
+    - USDA PSD: sources/usda.md
+    - IMEA: sources/imea.md
+    - DERAL: sources/deral.md
+    - INMET: sources/inmet.md
   - Guias:
     - Async: guides/async.md
     - Dependências: guides/dependencies.md

@@ -9,18 +9,27 @@ from pydantic_settings import BaseSettings
 
 
 class Fonte(StrEnum):
+    ABIOVE = "abiove"
     ANDA = "anda"
     BCB = "bcb"
     CEPEA = "cepea"
     COMEXSTAT = "comexstat"
     CONAB = "conab"
+    DERAL = "deral"
     IBGE = "ibge"
+    IMEA = "imea"
     INMET = "inmet"
     NASA_POWER = "nasa_power"
     NOTICIAS_AGRICOLAS = "noticias_agricolas"
+    USDA = "usda"
 
 
 URLS = {
+    Fonte.ABIOVE: {
+        "base": "https://abiove.org.br",
+        "estatisticas": "https://abiove.org.br/estatisticas",
+        "exportacao": "https://abiove.org.br/abiove_content/Abiove",
+    },
     Fonte.ANDA: {
         "base": "https://anda.org.br",
         "estatisticas": "https://anda.org.br/recursos/",
@@ -42,9 +51,18 @@ URLS = {
         "safras": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras",
         "boletim_graos": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos",
     },
+    Fonte.DERAL: {
+        "base": "https://www.agricultura.pr.gov.br/deral",
+        "safras": "https://www.agricultura.pr.gov.br/deral/safras",
+        "pc_xls": "https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls",
+    },
     Fonte.IBGE: {
         "base": "https://sidra.ibge.gov.br",
         "api": "https://apisidra.ibge.gov.br",
+    },
+    Fonte.IMEA: {
+        "base": "https://api1.imea.com.br/api",
+        "cotacoes": "https://api1.imea.com.br/api/v2/mobile/cadeias",
     },
     Fonte.INMET: {
         "base": "https://apitempo.inmet.gov.br",
@@ -54,6 +72,10 @@ URLS = {
     Fonte.NASA_POWER: {
         "base": "https://power.larc.nasa.gov",
         "daily": "https://power.larc.nasa.gov/api/temporal/daily/point",
+    },
+    Fonte.USDA: {
+        "base": "https://apps.fas.usda.gov/OpenData/api",
+        "psd": "https://apps.fas.usda.gov/OpenData/api/psd",
     },
     Fonte.NOTICIAS_AGRICOLAS: {
         "base": "https://www.noticiasagricolas.com.br",
@@ -177,11 +199,15 @@ class CacheSettings(BaseSettings):
     ttl_conab: int = 24 * 3600
     ttl_ibge_pam: int = 168 * 3600
     ttl_ibge_lspa: int = 24 * 3600
+    ttl_abiove: int = 7 * 24 * 3600
     ttl_anda: int = 7 * 24 * 3600
+    ttl_deral: int = 24 * 3600
+    ttl_imea: int = 12 * 3600
     ttl_inmet: int = 24 * 3600
     ttl_bcb: int = 24 * 3600
     ttl_comexstat: int = 24 * 3600
     ttl_nasa_power: int = 7 * 24 * 3600
+    ttl_usda: int = 24 * 3600
 
     stale_multiplier: float = 12.0
 
@@ -207,15 +233,19 @@ class HTTPSettings(BaseSettings):
     retry_max_delay: float = 30.0
     retry_exponential_base: int = 2
 
+    rate_limit_abiove: float = 3.0
     rate_limit_anda: float = 3.0
     rate_limit_bcb: float = 1.0
     rate_limit_cepea: float = 2.0
     rate_limit_comexstat: float = 2.0
     rate_limit_conab: float = 3.0
+    rate_limit_deral: float = 3.0
     rate_limit_ibge: float = 1.0
+    rate_limit_imea: float = 1.0
     rate_limit_inmet: float = 0.5
     rate_limit_nasa_power: float = 1.0
     rate_limit_noticias_agricolas: float = 2.0
+    rate_limit_usda: float = 1.0
 
     class Config:
         env_prefix = "AGROBR_HTTP_"

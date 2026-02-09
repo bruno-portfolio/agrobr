@@ -64,7 +64,9 @@ O operador OData `$filter eq` não funciona nos novos endpoints. O client usa
 ano/UF client-side após download paginado.
 
 Retry com backoff exponencial (6 tentativas, timeout read 120s).
-A API retorna HTTP 500 de forma intermitente — fallback CSV planejado para v0.8.
+A API retorna HTTP 500 de forma intermitente. Desde v0.8.0, o agrobr
+utiliza Base dos Dados (BigQuery) como fallback automático quando a API
+OData falha. Instale com `pip install agrobr[bigquery]`.
 
 ## Fonte
 

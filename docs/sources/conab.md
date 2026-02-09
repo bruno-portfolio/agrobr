@@ -161,6 +161,29 @@ As planilhas de graos (soja, milho, cafe, algodao) no gov.br sao carregadas
 via JavaScript dinamico e nao possuem links .xlsx acessiveis via scraping.
 Culturas menores (abacaxi, acai, etc.) funcionam normalmente.
 
+## Serie Historica (v0.8.0)
+
+Dados historicos de safras desde 2010, disponibilizados em planilhas Excel.
+
+```python
+# Serie historica de soja
+df = await conab.serie_historica("soja", inicio=2020, fim=2025)
+
+# Filtrar por UF
+df = await conab.serie_historica("soja", inicio=2020, uf="MT")
+```
+
+### Schema - serie_historica
+
+| Coluna | Tipo | Descricao |
+|--------|------|-----------|
+| `safra` | str | Safra (ex: "2024/25") |
+| `produto` | str | Nome do produto |
+| `uf` | str | Sigla da UF |
+| `area_plantada` | float | Mil hectares |
+| `producao` | float | Mil toneladas |
+| `produtividade` | float | kg/ha |
+
 ## Cache
 
 | Aspecto | Valor |

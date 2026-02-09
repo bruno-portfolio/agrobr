@@ -87,7 +87,7 @@ async def credito_rural(
         uf=uf,
     )
 
-    dados = await client.fetch_credito_rural(
+    dados, source_used = await client.fetch_credito_rural_with_fallback(
         finalidade=finalidade,
         produto_sicor=produto_sicor,
         safra_sicor=safra_sicor,
@@ -95,6 +95,10 @@ async def credito_rural(
     )
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
+
+    attempted_sources = ["bcb_odata"]
+    if source_used == "bigquery":
+        attempted_sources.append("bcb_bigquery")
 
     t1 = time.monotonic()
     df = parse_credito_rural(dados, finalidade=finalidade)
@@ -107,18 +111,21 @@ async def credito_rural(
 
     parse_ms = int((time.monotonic() - t1) * 1000)
 
+    source_method = "httpx" if source_used == "odata" else "bigquery"
+
     logger.info(
         "bcb_credito_rural_ok",
         produto=produto,
         safra=safra,
         records=len(df),
+        source_used=source_used,
     )
 
     if return_meta:
         meta = MetaInfo(
             source="bcb",
             source_url=f"{client.BASE_URL}/{client.ENDPOINT_MAP.get(finalidade.lower(), 'CusteioMunicipio')}",
-            source_method="httpx",
+            source_method=source_method,
             fetched_at=datetime.now(UTC),
             fetch_duration_ms=fetch_ms,
             parse_duration_ms=parse_ms,
@@ -126,8 +133,8 @@ async def credito_rural(
             columns=df.columns.tolist(),
             parser_version=PARSER_VERSION,
             schema_version="1.0",
-            attempted_sources=["bcb"],
-            selected_source="bcb",
+            attempted_sources=attempted_sources,
+            selected_source=f"bcb_{source_used}",
             fetch_timestamp=datetime.now(UTC),
         )
         return df, meta

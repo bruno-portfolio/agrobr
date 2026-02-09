@@ -20,6 +20,10 @@ O agrobr garante estabilidade de schema. Seu pipeline não vai quebrar.
 | [producao_anual](./producao_anual.md) | Produção anual consolidada | IBGE PAM → CONAB |
 | [estimativa_safra](./estimativa_safra.md) | Estimativas safra corrente | CONAB → IBGE LSPA |
 | [balanco](./balanco.md) | Oferta/demanda | CONAB |
+| [credito_rural](./credito_rural.md) | Crédito rural por cultura | BCB/SICOR → BigQuery |
+| [exportacao](./exportacao.md) | Exportações agrícolas | ComexStat → ABIOVE |
+| [fertilizante](./fertilizante.md) | Entregas de fertilizantes | ANDA |
+| [custo_producao](./custo_producao.md) | Custos de produção | CONAB |
 
 ## Uso
 
@@ -28,7 +32,8 @@ from agrobr import datasets
 
 # Listar datasets
 datasets.list_datasets()
-# ['balanco', 'estimativa_safra', 'preco_diario', 'producao_anual']
+# ['balanco', 'credito_rural', 'custo_producao', 'estimativa_safra',
+#  'exportacao', 'fertilizante', 'preco_diario', 'producao_anual']
 
 # Listar produtos de um dataset
 datasets.list_products("preco_diario")
@@ -49,6 +54,10 @@ preco_diario: CEPEA → cache local
 producao_anual: IBGE PAM → CONAB
 estimativa_safra: CONAB → IBGE LSPA
 balanco: CONAB
+credito_rural: BCB/SICOR → BigQuery (basedosdados)
+exportacao: ComexStat → ABIOVE
+fertilizante: ANDA
+custo_producao: CONAB
 ```
 
 ## MetaInfo

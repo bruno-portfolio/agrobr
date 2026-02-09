@@ -7,6 +7,36 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-02-09
+
+### Added
+- **ABIOVE** (`agrobr.abiove`) — Exportação do complexo soja
+  - `abiove.exportacao()` — Volume e receita mensal de grão, farelo, óleo e milho
+  - Parser Excel com detecção dinâmica de header
+- **USDA PSD** (`agrobr.usda`) — Estimativas internacionais de oferta/demanda
+  - `usda.psd()` — Dados PSD por commodity/país/ano via API FAS OpenData v2
+  - Suporte a pivot, filtro por atributos, mapeamento PT-BR
+  - Requer API key gratuita (api.data.gov)
+- **IMEA** (`agrobr.imea`) — Cotações e indicadores Mato Grosso
+  - `imea.cotacoes()` — Preços, progresso de safra, comercialização (6 cadeias)
+  - API REST pública (api1.imea.com.br), sem autenticação
+- **DERAL** (`agrobr.deral`) — Condição das lavouras Paraná
+  - `deral.condicao_lavouras()` — Condição semanal (boa/média/ruim) + progresso plantio/colheita
+  - Parser Excel (PC.xls) com detecção dinâmica de abas e produtos
+- **CONAB série histórica** (`agrobr.conab.serie_historica`) — Sub-módulo de safras 2010+
+  - `conab.serie_historica()` — Série histórica de safras por UF com filtros
+  - Parser Excel com detecção dinâmica de header row
+- **BCB BigQuery fallback** — `pip install agrobr[bigquery]`
+  - Base dos Dados como fallback quando API OData retorna 500
+  - `asyncio.to_thread()` para wrapping do SDK síncrono
+- **5 novos datasets semânticos** (camada semântica):
+  - `datasets.credito_rural()` — BCB/SICOR com fallback BigQuery
+  - `datasets.exportacao()` — ComexStat → ABIOVE (fallback automático)
+  - `datasets.fertilizante()` — ANDA (entregas por UF)
+  - `datasets.custo_producao()` — CONAB custos de produção
+  - Total: 8 datasets (era 4)
+- 949 testes passando (era ~804)
+
 ### Fixed
 - **BCB/SICOR** — Endpoints atualizados para API reestruturada (~2024)
   - `CusteioMunicipio` → `CusteioRegiaoUFProduto`
@@ -19,6 +49,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ### Changed
 - **BCB client** — Server-side filter via `contains()` (unico operador suportado pelo Olinda v2); filtragem por ano/UF client-side
 - **BCB client** — `MAX_RETRIES` 4→6, `timeout.read` 60→120s, `User-Agent` header adicionado
+- **13 fontes** integradas (era 8): +ABIOVE, +USDA PSD, +IMEA, +DERAL, +Notícias Agrícolas
+- `agrobr/constants.py` — Fonte enum +4, URLS +4, CacheSettings +4 TTLs, HTTPSettings +4 rate limits
+- `agrobr/sync.py` — 4 novas classes _SyncModule (abiove, deral, imea, usda)
+- `agrobr/http/rate_limiter.py` — 4 novas entradas no delays dict
 
 ## [0.7.1] - 2026-02-07
 
@@ -324,7 +358,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.2...v0.6.3

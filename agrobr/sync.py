@@ -98,6 +98,12 @@ class _SyncModule:
         return attr
 
 
+class _SyncAbiove(_SyncModule):
+    """API síncrona da ABIOVE."""
+
+    pass
+
+
 class _SyncCepea(_SyncModule):
     """API síncrona do CEPEA."""
 
@@ -110,6 +116,12 @@ class _SyncConab(_SyncModule):
     pass
 
 
+class _SyncDeral(_SyncModule):
+    """API síncrona do DERAL."""
+
+    pass
+
+
 class _SyncIbge(_SyncModule):
     """API síncrona do IBGE."""
 
@@ -118,6 +130,12 @@ class _SyncIbge(_SyncModule):
 
 class _SyncDatasets(_SyncModule):
     """API síncrona dos datasets."""
+
+    pass
+
+
+class _SyncImea(_SyncModule):
+    """API síncrona do IMEA."""
 
     pass
 
@@ -152,28 +170,42 @@ class _SyncNasaPower(_SyncModule):
     pass
 
 
+class _SyncUsda(_SyncModule):
+    """API síncrona do USDA."""
+
+    pass
+
+
 _modules: dict[str, _SyncModule | None] = {
+    "abiove": None,
     "anda": None,
     "bcb": None,
     "cepea": None,
     "comexstat": None,
     "conab": None,
     "datasets": None,
+    "deral": None,
     "ibge": None,
+    "imea": None,
     "inmet": None,
     "nasa_power": None,
+    "usda": None,
 }
 
 _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
+    "abiove": _SyncAbiove,
     "anda": _SyncAnda,
     "bcb": _SyncBcb,
     "cepea": _SyncCepea,
     "comexstat": _SyncComexstat,
     "conab": _SyncConab,
     "datasets": _SyncDatasets,
+    "deral": _SyncDeral,
     "ibge": _SyncIbge,
+    "imea": _SyncImea,
     "inmet": _SyncInmet,
     "nasa_power": _SyncNasaPower,
+    "usda": _SyncUsda,
 }
 
 

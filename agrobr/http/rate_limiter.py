@@ -25,14 +25,19 @@ class RateLimiter:
     def _get_delay(cls, source: constants.Fonte) -> float:
         settings = constants.HTTPSettings()
         delays = {
+            constants.Fonte.ABIOVE: settings.rate_limit_abiove,
             constants.Fonte.ANDA: settings.rate_limit_anda,
             constants.Fonte.BCB: settings.rate_limit_bcb,
             constants.Fonte.CEPEA: settings.rate_limit_cepea,
             constants.Fonte.COMEXSTAT: settings.rate_limit_comexstat,
             constants.Fonte.CONAB: settings.rate_limit_conab,
+            constants.Fonte.DERAL: settings.rate_limit_deral,
             constants.Fonte.IBGE: settings.rate_limit_ibge,
+            constants.Fonte.IMEA: settings.rate_limit_imea,
             constants.Fonte.INMET: settings.rate_limit_inmet,
+            constants.Fonte.NASA_POWER: settings.rate_limit_nasa_power,
             constants.Fonte.NOTICIAS_AGRICOLAS: settings.rate_limit_noticias_agricolas,
+            constants.Fonte.USDA: settings.rate_limit_usda,
         }
         return delays.get(source, 1.0)
 

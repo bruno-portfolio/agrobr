@@ -9,16 +9,21 @@
 
 ## O que é o agrobr?
 
-Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 8 fontes públicas.
+Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 13 fontes públicas.
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
-- **CONAB**: Safras, balanço oferta/demanda e custos de produção
+- **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica
 - **IBGE/SIDRA**: PAM (anual) e LSPA (mensal)
 - **NASA POWER**: Climatologia gridded diária (temperatura, precipitação, radiação, umidade, vento)
-- **BCB/SICOR**: Crédito rural por cultura e UF
+- **BCB/SICOR**: Crédito rural por cultura e UF (+ fallback BigQuery)
 - **ComexStat**: Exportações agrícolas por NCM
 - **ANDA**: Entregas de fertilizantes por UF
-- **INMET**: Dados meteorológicos por estação (API instável — usar NASA POWER como alternativa)
+- **ABIOVE**: Exportação do complexo soja (volume e receita mensal)
+- **USDA PSD**: Estimativas internacionais de produção/oferta/demanda
+- **IMEA**: Cotações e indicadores para Mato Grosso (6 cadeias produtivas)
+- **DERAL**: Condição das lavouras do Paraná (semanal)
+- **INMET**: Dados meteorológicos por estação (API instável — usar NASA POWER)
+- **Notícias Agrícolas**: Cotações agrícolas (fallback CEPEA)
 
 ## Datasets — Camada Semântica
 
@@ -30,6 +35,10 @@ Peça o que quer, a fonte é detalhe interno:
 | `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
 | `estimativa_safra` | Estimativas safra corrente | CONAB → IBGE LSPA |
 | `balanco` | Oferta/demanda | CONAB |
+| `credito_rural` | Crédito rural por cultura | BCB/SICOR → BigQuery |
+| `exportacao` | Exportações agrícolas | ComexStat → ABIOVE |
+| `fertilizante` | Entregas de fertilizantes | ANDA |
+| `custo_producao` | Custos de produção | CONAB |
 
 ```python
 from agrobr import datasets
@@ -90,7 +99,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 ## Features
 
-- **8 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, INMET
+- **13 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL, INMET, Notícias Agrícolas
 - **Camada semântica** — datasets com fallback automático entre fontes
 - **Contratos públicos** — schema versionado com garantias de estabilidade
 - **Modo determinístico** — reprodutibilidade total para papers/auditorias

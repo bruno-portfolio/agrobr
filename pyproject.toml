@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agrobr"
-version = "0.7.1"
+version = "0.8.0"
 description = "Dados agrícolas brasileiros em uma linha de código"
 readme = "README.md"
 license = "MIT"
@@ -15,9 +15,13 @@ authors = [
 keywords = [
     "agro",
     "agricultura",
+    "abiove",
     "cepea",
     "conab",
+    "deral",
     "ibge",
+    "imea",
+    "usda",
     "commodities",
     "soja",
     "milho",
@@ -60,6 +64,9 @@ browser = [
 pdf = [
     "pdfplumber>=0.10.0",
 ]
+bigquery = [
+    "basedosdados>=2.0.0",
+]
 polars = [
     "polars>=0.19.0",
 ]
@@ -80,7 +87,7 @@ docs = [
     "mkdocstrings[python]>=0.24.0",
 ]
 all = [
-    "agrobr[polars,browser,pdf,dev,docs]",
+    "agrobr[polars,browser,pdf,bigquery,dev,docs]",
 ]
 
 [project.scripts]

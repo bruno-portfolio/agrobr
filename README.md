@@ -13,7 +13,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **CEPEA**, **CONAB**, **IBGE**, **NASA POWER**, **INMET**, **BCB/SICOR**, **ComexStat** e **ANDA**.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **13 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET e Notícias Agrícolas.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -29,6 +29,7 @@ Com extras opcionais:
 pip install agrobr[pdf]             # pdfplumber para ANDA (fertilizantes)
 pip install agrobr[polars]          # Suporte a Polars
 pip install agrobr[browser]         # Playwright (opcional, para fontes com JS)
+pip install agrobr[bigquery]        # Base dos Dados (fallback BCB/SICOR)
 pip install agrobr[all]             # Tudo incluído
 ```
 
@@ -92,7 +93,7 @@ async def main():
     df = await ibge.pam('milho', ano=[2020, 2021, 2022, 2023])
 ```
 
-### Datasets (v0.6.0) - Camada Semântica
+### Datasets - Camada Semântica
 
 Peça o que quer, fonte é detalhe interno:
 
@@ -112,13 +113,26 @@ async def main():
     # Balanço oferta/demanda (CONAB)
     df = await datasets.balanco("soja")
 
+    # Crédito rural (BCB/SICOR com fallback BigQuery)
+    df = await datasets.credito_rural("soja", safra="2024/25")
+
+    # Exportações (ComexStat → ABIOVE)
+    df = await datasets.exportacao("soja", ano=2024)
+
+    # Fertilizantes (ANDA)
+    df = await datasets.fertilizante(ano=2024, uf="MT")
+
+    # Custos de produção (CONAB)
+    df = await datasets.custo_producao("soja", uf="MT", safra="2024/25")
+
     # Com metadados de proveniência
     df, meta = await datasets.preco_diario("soja", return_meta=True)
     print(meta.source, meta.contract_version)
 
     # Listar datasets disponíveis
     print(datasets.list_datasets())
-    # ['balanco', 'estimativa_safra', 'preco_diario', 'producao_anual']
+    # ['balanco', 'credito_rural', 'custo_producao', 'estimativa_safra',
+    #  'exportacao', 'fertilizante', 'preco_diario', 'producao_anual']
 ```
 
 ### Modo Determinístico (Reprodutibilidade)
@@ -156,10 +170,33 @@ async def main():
     df = await conab.custo_producao(cultura="soja", uf="MT", safra="2024/25")
 ```
 
+### Novas Fontes v0.8.0
+
+```python
+from agrobr import abiove, usda, imea, deral, conab
+
+async def main():
+    # ABIOVE — exportação do complexo soja
+    df = await abiove.exportacao(ano=2024, produto="grao")
+
+    # USDA PSD — estimativas internacionais (requer API key gratuita)
+    df = await usda.psd("soja", country="BR", market_year=2024)
+
+    # IMEA — cotações e indicadores Mato Grosso
+    df = await imea.cotacoes("soja", safra="24/25")
+
+    # DERAL — condição das lavouras Paraná
+    df = await deral.condicao_lavouras("soja")
+
+    # CONAB — série histórica de safras (2010+)
+    df = await conab.serie_historica("soja", inicio=2020, fim=2025, uf="MT")
+```
+
 ### Modo Síncrono
 
 ```python
 from agrobr.sync import cepea, conab, ibge, datasets, nasa_power, bcb, comexstat
+from agrobr.sync import abiove, usda, imea, deral
 
 # Mesmo API, sem async/await
 df = cepea.indicador('soja', inicio='2024-01-01')
@@ -169,6 +206,13 @@ df = datasets.preco_diario('soja')
 clima = nasa_power.clima_uf('MT', ano=2024)
 credito = bcb.credito_rural(produto='soja', safra='2024/25')
 exportacao = comexstat.exportacao('soja', ano=2024)
+
+# v0.8.0
+df = abiove.exportacao(ano=2024)
+df = usda.psd('soja', market_year=2024)
+df = imea.cotacoes('soja')
+df = deral.condicao_lavouras('soja')
+df = conab.serie_historica('soja', inicio=2020)
 ```
 
 ### Suporte Polars
@@ -217,19 +261,28 @@ Use `agrobr health --all` para verificar localmente.
 | `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
 | `estimativa_safra` | Estimativas safra corrente | CONAB → IBGE LSPA |
 | `balanco` | Oferta/demanda | CONAB |
+| `credito_rural` | Crédito rural por cultura | BCB/SICOR → BigQuery |
+| `exportacao` | Exportações agrícolas | ComexStat → ABIOVE |
+| `fertilizante` | Entregas de fertilizantes | ANDA |
+| `custo_producao` | Custos de produção | CONAB |
 
 ## Fontes Suportadas
 
 | Fonte | Dados | Status |
 |-------|-------|--------|
 | CEPEA | Indicadores de preços (20 produtos) | Funcional |
-| CONAB | Safras, balanço, custos de produção | Funcional |
+| CONAB | Safras, balanço, custos, série histórica | Funcional |
 | IBGE | PAM (anual), LSPA (mensal) | Funcional |
 | NASA POWER | Climatologia diária/mensal (grid 0.5°) | Funcional (v0.7.1) |
-| INMET | Meteorologia (600+ estações) | API fora do ar — usar NASA POWER |
-| BCB/SICOR | Crédito rural por município | Funcional (v0.7.0) |
+| BCB/SICOR | Crédito rural por cultura (+ fallback BigQuery) | Funcional (v0.8.0) |
 | ComexStat | Exportações por NCM/UF | Funcional (v0.7.0) |
 | ANDA | Entregas de fertilizantes | Funcional (v0.7.0) |
+| ABIOVE | Exportação complexo soja (volume/receita) | Funcional (v0.8.0) |
+| USDA PSD | Estimativas internacionais (produção/oferta/demanda) | Funcional (v0.8.0) |
+| IMEA | Cotações e indicadores Mato Grosso | Funcional (v0.8.0) |
+| DERAL | Condição das lavouras Paraná | Funcional (v0.8.0) |
+| INMET | Meteorologia (600+ estações) | API fora do ar — usar NASA POWER |
+| Notícias Agrícolas | Cotações (fallback CEPEA) | Funcional |
 
 ## Diferenciais
 
@@ -279,9 +332,9 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
  [Documentação completa](https://www.agrobr.dev/docs/)
 
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
-- [API CEPEA](https://www.agrobr.dev/docs/api/cepea/)
-- [API CONAB](https://www.agrobr.dev/docs/api/conab/)
-- [API IBGE](https://www.agrobr.dev/docs/api/ibge/)
+- [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
+- [Fontes](https://www.agrobr.dev/docs/sources/) — 13 fontes documentadas
+- [API Reference](https://www.agrobr.dev/docs/api/cepea/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 
 ## Contribuindo

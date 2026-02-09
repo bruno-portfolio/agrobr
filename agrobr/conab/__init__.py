@@ -11,6 +11,7 @@ from agrobr.conab.api import (
     ufs,
 )
 from agrobr.conab.custo_producao import custo_producao, custo_producao_total
+from agrobr.conab.serie_historica import serie_historica
 
 __all__ = [
     "safras",
@@ -21,4 +22,5 @@ __all__ = [
     "ufs",
     "custo_producao",
     "custo_producao_total",
+    "serie_historica",
 ]

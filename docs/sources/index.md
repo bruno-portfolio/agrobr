@@ -1,6 +1,6 @@
 # Fontes de Dados
 
-O agrobr integra dados de oito fontes de dados agricolas.
+O agrobr integra dados de 13 fontes de dados agricolas.
 Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 
 ## Visao Geral
@@ -8,13 +8,18 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | Fonte | Tipo | Atualizacao | Cobertura |
 |-------|------|-------------|-----------|
 | [CEPEA/ESALQ](cepea.md) | Precos | Diaria | Commodities agricolas |
-| [CONAB](conab.md) | Safras, custos | Mensal | Producao nacional |
+| [CONAB](conab.md) | Safras, custos, serie historica | Mensal | Producao nacional |
 | [IBGE/SIDRA](ibge.md) | Estatisticas | Anual/Mensal | Dados oficiais |
 | [NASA POWER](nasa_power.md) | Climatologia | Diaria | Global, grid 0.5 grau |
-| [INMET](inmet.md) | Meteorologia | Diaria | 600+ estacoes (API fora do ar) |
-| [BCB/SICOR](bcb.md) | Credito rural | Mensal | Municipios |
+| [BCB/SICOR](bcb.md) | Credito rural | Mensal | Cultura/UF (+ BigQuery) |
 | [ComexStat](comexstat.md) | Exportacoes | Semanal | NCM/UF |
 | [ANDA](anda.md) | Fertilizantes | Mensal | UF/mes |
+| [ABIOVE](abiove.md) | Exportacao complexo soja | Mensal | Volume/receita |
+| [USDA PSD](usda.md) | Oferta/demanda internacional | Mensal | Commodities globais |
+| [IMEA](imea.md) | Cotacoes e indicadores MT | Diaria | Mato Grosso |
+| [DERAL](deral.md) | Condicao lavouras PR | Semanal | Parana |
+| [INMET](inmet.md) | Meteorologia | Diaria | 600+ estacoes (API fora do ar) |
+| [Noticias Agricolas](cepea.md) | Cotacoes (fallback CEPEA) | Diaria | Commodities |
 
 ## Proveniencia e Rastreabilidade
 

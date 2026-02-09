@@ -11,7 +11,8 @@ Endpoints usados (API reestruturada ~2024):
 NOTA: A API Olinda v2 NÃO suporta $filter OData nos novos endpoints.
       Filtragem é feita client-side após download paginado.
 
-TODO v0.8: fallback Base dos Dados / CSV bulk download quando API Olinda indisponível
+Fallback: Base dos Dados (BigQuery) quando API Olinda indisponível.
+          Requer: pip install agrobr[bigquery]
 """
 
 from __future__ import annotations
@@ -266,3 +267,68 @@ def _match_produto(nome_api: str, produto_upper: str) -> bool:
     """Verifica match de produto considerando aspas embarcadas do BCB."""
     cleaned = nome_api.strip().strip('"').upper()
     return cleaned == produto_upper
+
+
+async def fetch_credito_rural_with_fallback(
+    finalidade: str = "custeio",
+    produto_sicor: str | None = None,
+    safra_sicor: str | None = None,
+    cd_uf: str | None = None,
+) -> tuple[list[dict[str, Any]], str]:
+    """Busca crédito rural com fallback OData → BigQuery.
+
+    Tenta API Olinda primeiro. Se falhar (timeout, HTTP 500, etc.),
+    tenta BigQuery via basedosdados como fallback.
+
+    Args:
+        finalidade: "custeio", "investimento", "comercializacao".
+        produto_sicor: Nome do produto SICOR (ex: "SOJA").
+        safra_sicor: Safra SICOR (ex: "2023/2024").
+        cd_uf: Código UF IBGE (ex: "51" para MT).
+
+    Returns:
+        Tupla (records, source_used) onde source_used é
+        "odata" ou "bigquery".
+
+    Raises:
+        SourceUnavailableError: Se ambas as fontes falharem.
+    """
+    # 1. Tentar API Olinda
+    odata_error_msg = ""
+    try:
+        records = await fetch_credito_rural(
+            finalidade=finalidade,
+            produto_sicor=produto_sicor,
+            safra_sicor=safra_sicor,
+            cd_uf=cd_uf,
+        )
+        return records, "odata"
+
+    except SourceUnavailableError as odata_err:
+        odata_error_msg = odata_err.last_error
+        logger.warning(
+            "bcb_odata_fallback",
+            error=str(odata_err),
+            reason="Tentando fallback BigQuery",
+        )
+
+    # 2. Fallback BigQuery
+    try:
+        from agrobr.bcb.bigquery_client import fetch_credito_rural_bigquery
+
+        records = await fetch_credito_rural_bigquery(
+            finalidade=finalidade,
+            produto_sicor=produto_sicor,
+            safra_sicor=safra_sicor,
+            cd_uf=cd_uf,
+        )
+        return records, "bigquery"
+
+    except SourceUnavailableError as bq_err:
+        raise SourceUnavailableError(
+            source="bcb",
+            url=f"{BASE_URL}/{ENDPOINT_MAP.get(finalidade.lower(), '')}",
+            last_error=(
+                f"Ambas as fontes falharam. OData: {odata_error_msg}; BigQuery: {bq_err.last_error}"
+            ),
+        ) from bq_err
