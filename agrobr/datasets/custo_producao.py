@@ -16,13 +16,13 @@ logger = structlog.get_logger()
 
 
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
-    from agrobr.conab import custo_producao as conab_custo
+    from agrobr.conab.custo_producao.api import custo_producao as _custo_producao
 
-    uf = kwargs.get("uf")
-    safra = kwargs.get("safra")
-    tecnologia = kwargs.get("tecnologia", "alta")
+    uf: str | None = kwargs.get("uf")
+    safra: str | None = kwargs.get("safra")
+    tecnologia: str = kwargs.get("tecnologia", "alta")
 
-    result = await conab_custo.custo_producao(
+    result = await _custo_producao(
         produto, uf=uf, safra=safra, tecnologia=tecnologia, return_meta=True
     )
 

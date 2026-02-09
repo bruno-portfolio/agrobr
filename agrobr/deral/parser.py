@@ -87,7 +87,7 @@ def parse_pc_xls(data: bytes) -> pd.DataFrame:
     all_records: list[dict[str, Any]] = []
 
     for sheet_name in xls.sheet_names:
-        produto = _detect_produto_from_sheet(sheet_name)
+        produto = _detect_produto_from_sheet(str(sheet_name))
         if produto is None:
             logger.debug("deral_skip_sheet", sheet=sheet_name)
             continue

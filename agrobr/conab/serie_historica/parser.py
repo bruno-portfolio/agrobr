@@ -320,7 +320,7 @@ def parse_serie_historica(
     all_records: dict[tuple[str, str, str | None], dict[str, Any]] = {}
 
     for sheet_name in sheet_names:
-        metric = _detect_metric_from_sheet_name(sheet_name)
+        metric = _detect_metric_from_sheet_name(str(sheet_name))
         if metric is None:
             logger.debug(
                 "conab_serie_historica_skip_sheet",

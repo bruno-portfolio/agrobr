@@ -158,7 +158,7 @@ def parse_exportacao_excel(
 
     for sheet_name in xls.sheet_names:
         try:
-            records = _parse_sheet(xls, sheet_name, ano)
+            records = _parse_sheet(xls, str(sheet_name), ano)
             all_records.extend(records)
         except Exception:
             logger.warning("abiove_sheet_parse_error", sheet=sheet_name)

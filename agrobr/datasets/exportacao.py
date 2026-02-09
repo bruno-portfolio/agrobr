@@ -31,15 +31,15 @@ async def _fetch_comexstat(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
 async def _fetch_abiove(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import abiove
 
-    ano = kwargs.get("ano")
-    mes = kwargs.get("mes")
+    ano: int = kwargs.get("ano", datetime.now(UTC).year)
+    mes: int | None = kwargs.get("mes")
 
     result = await abiove.exportacao(ano=ano, mes=mes, produto=produto, return_meta=True)
 
     if isinstance(result, tuple):
         df, meta = result
         # Normalizar colunas para contrato do dataset
-        rename = {}
+        rename: dict[str, str] = {}
         if "volume_ton" in df.columns and "kg_liquido" not in df.columns:
             df["kg_liquido"] = df["volume_ton"] * 1000
         if "receita_usd_mil" in df.columns and "valor_fob_usd" not in df.columns:
