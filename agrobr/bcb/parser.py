@@ -17,7 +17,9 @@ logger = structlog.get_logger()
 PARSER_VERSION = 1
 
 # Mapeamento de colunas API → nomes agrobr
+# Suporta tanto endpoint antigo (CusteioMunicipio) quanto novos (CusteioRegiaoUFProduto)
 COLUNAS_MAP: dict[str, str] = {
+    # Campos comuns / antigos
     "Safra": "safra",
     "AnoEmissao": "ano_emissao",
     "MesEmissao": "mes_emissao",
@@ -33,6 +35,18 @@ COLUNAS_MAP: dict[str, str] = {
     "AreaFinanciada": "area_financiada",
     "QtdContratos": "qtd_contratos",
     "VlrMedio": "valor_medio",
+    # Campos novos (API reestruturada ~2024)
+    "nomeUF": "uf",
+    "nomeRegiao": "regiao",
+    "nomeProduto": "produto",
+    "cdEstado": "cd_uf",
+    "VlCusteio": "valor",
+    "AreaCusteio": "area_financiada",
+    "QtdCusteio": "qtd_contratos",
+    "VlInvestimento": "valor",
+    "AreaInvestimento": "area_financiada",
+    "QtdInvestimento": "qtd_contratos",
+    "codIbge": "cd_municipio",
 }
 
 
@@ -73,7 +87,7 @@ def parse_credito_rural(
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
 
     if "produto" in df.columns:
-        df["produto"] = df["produto"].str.lower().str.strip()
+        df["produto"] = df["produto"].str.strip().str.strip('"').str.lower().str.strip()
 
     if "uf" in df.columns:
         df["uf"] = df["uf"].str.upper().str.strip()
