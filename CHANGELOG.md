@@ -7,6 +7,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Fixed
+- **BCB/SICOR** — Endpoints atualizados para API reestruturada (~2024)
+  - `CusteioMunicipio` → `CusteioRegiaoUFProduto`
+  - `InvestimentoMunicipio` → `InvestRegiaoUFProduto`
+  - `ComercializacaoMunicipio` → `ComercRegiaoUFProduto`
+  - `industrializacao` removida (sem endpoint equivalente)
+- **BCB parser** — `COLUNAS_MAP` expandido para colunas da API nova (`VlCusteio`→`valor`, `nomeUF`→`uf`, `AreaCusteio`→`area_financiada`, etc.)
+- **BCB parser** — Limpeza de aspas embarcadas em `nomeProduto` (`"\"SOJA\""` → `soja`)
+
+### Changed
+- **BCB client** — Server-side filter via `contains()` (unico operador suportado pelo Olinda v2); filtragem por ano/UF client-side
+- **BCB client** — `MAX_RETRIES` 4→6, `timeout.read` 60→120s, `User-Agent` header adicionado
+
 ## [0.7.1] - 2026-02-07
 
 ### Added

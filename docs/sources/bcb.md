@@ -39,6 +39,8 @@ df = await bcb.credito_rural(produto="soja", safra="2024/25", agregacao="uf")
 - `investimento` — aquisição de máquinas, infraestrutura
 - `comercializacao` — financiamento da comercialização
 
+> **Nota:** `industrializacao` foi removida — endpoint não existe mais na API reestruturada.
+
 ## Produtos
 
 Soja, milho, café, algodão, arroz, trigo, feijão, cana-de-açúcar, mandioca,
@@ -53,8 +55,16 @@ print(meta.source)  # "bcb"
 
 ## Status (fev/2026)
 
-A API SICOR esta retornando 503 Service Unavailable de forma intermitente.
-O client possui retry com backoff exponencial (4 tentativas). Problema externo.
+A API SICOR foi reestruturada (~2024). Endpoints antigos (`CusteioMunicipio`,
+`InvestimentoMunicipio`) foram substituidos por `CusteioRegiaoUFProduto`,
+`InvestRegiaoUFProduto`, `ComercRegiaoUFProduto`.
+
+O operador OData `$filter eq` não funciona nos novos endpoints. O client usa
+`contains(nomeProduto,'...')` para filtro server-side por produto, e filtra
+ano/UF client-side após download paginado.
+
+Retry com backoff exponencial (6 tentativas, timeout read 120s).
+A API retorna HTTP 500 de forma intermitente — fallback CSV planejado para v0.8.
 
 ## Fonte
 
