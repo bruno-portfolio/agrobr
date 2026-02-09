@@ -96,7 +96,9 @@ async def _fetch_odata(
 
     for attempt in range(MAX_RETRIES):
         try:
-            async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+            async with httpx.AsyncClient(
+                timeout=TIMEOUT, headers=HEADERS, follow_redirects=True
+            ) as client:
                 logger.debug(
                     "bcb_odata_request",
                     endpoint=endpoint,
@@ -240,16 +242,14 @@ async def fetch_credito_rural(
 
     if safra_sicor:
         ano_emissao = safra_sicor.split("/")[0]
-        filtered = [
-            r for r in filtered
-            if str(r.get("AnoEmissao", "")) == ano_emissao
-        ]
+        filtered = [r for r in filtered if str(r.get("AnoEmissao", "")) == ano_emissao]
 
     if cd_uf:
         filtered = [
-            r for r in filtered
+            r
+            for r in filtered
             if str(r.get("cdEstado", "")) == cd_uf
-               or str(r.get("nomeUF", "")).upper() == cd_uf.upper()
+            or str(r.get("nomeUF", "")).upper() == cd_uf.upper()
         ]
 
     logger.info(
