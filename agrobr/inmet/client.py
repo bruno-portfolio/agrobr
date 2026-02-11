@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from datetime import date, timedelta
 from typing import Any
 
@@ -30,15 +31,41 @@ HEADERS = {
 }
 
 
+def _get_token() -> str | None:
+    """Retorna token INMET da env var AGROBR_INMET_TOKEN, se configurado."""
+    return os.getenv("AGROBR_INMET_TOKEN")
+
+
+def _build_headers() -> dict[str, str]:
+    """Constrói headers incluindo Authorization se token disponível."""
+    headers = dict(HEADERS)
+    token = _get_token()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
 async def _get_json(path: str) -> list[dict[str, Any]]:
     """Faz GET na API INMET e retorna JSON parseado."""
     url = f"{BASE_URL}{path}"
+    headers = _build_headers()
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS) as client:
+    if not _get_token():
+        logger.warning(
+            "inmet_no_token",
+            hint="Defina AGROBR_INMET_TOKEN para acessar dados observacionais",
+        )
+
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=headers) as client:
         response = await retry_on_status(
             lambda: client.get(url),
             source="inmet",
         )
+
+        if response.status_code == 204:
+            logger.info("inmet_no_content", path=path)
+            return []
+
         response.raise_for_status()
         data = response.json()
         if not isinstance(data, list):
@@ -96,7 +123,7 @@ async def fetch_dados_estacao(
     while chunk_start <= fim:
         chunk_end = min(chunk_start + timedelta(days=MAX_DAYS_PER_REQUEST - 1), fim)
 
-        path = f"/estacao/dados/{codigo}/{chunk_start.isoformat()}/{chunk_end.isoformat()}"
+        path = f"/estacao/{codigo}/{chunk_start.isoformat()}/{chunk_end.isoformat()}"
 
         try:
             chunk_data = await _get_json(path)

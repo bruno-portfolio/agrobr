@@ -1,10 +1,20 @@
 # INMET — Meteorologia
 
-> **Nota (fev/2026):** A API de dados INMET (apitempo.inmet.gov.br) esta retornando
-> 404 em todos os endpoints de dados. Para dados climaticos, usar
-> [NASA POWER](nasa_power.md) como alternativa (`from agrobr import nasa_power`).
-
 Instituto Nacional de Meteorologia. Dados climáticos de 600+ estações.
+
+## Autenticação
+
+A API de dados observacionais do INMET requer token de autenticação.
+Configure a variável de ambiente `AGROBR_INMET_TOKEN` antes de usar:
+
+```bash
+export AGROBR_INMET_TOKEN="seu-token-aqui"
+```
+
+Sem o token, requisições de dados observacionais retornam HTTP 204 (sem conteúdo).
+A listagem de estações (`/estacoes/T`, `/estacoes/M`) funciona sem token.
+
+Para obter o token, consulte o portal INMET: https://portal.inmet.gov.br
 
 ## API
 
@@ -45,16 +55,15 @@ print(meta.source)  # "inmet"
 
 ## Notas tecnicas
 
+- **Token obrigatório**: Dados observacionais exigem `AGROBR_INMET_TOKEN`.
+  Sem token, o client loga warning e retorna lista vazia (HTTP 204).
 - O client envia User-Agent de navegador (Chrome 120) em todas as
   requisicoes. A API INMET bloqueia com 403 requisicoes sem User-Agent.
 - A API divide automaticamente periodos longos em chunks de 365 dias.
 - Concorrencia limitada a 5 estacoes simultaneas por UF.
-
-## Status (fev/2026)
-
-A API de dados (`/estacao/dados/`) esta retornando 404 em todos os
-endpoints de dados. A listagem de estacoes (`/estacoes/T`) funciona
-normalmente. Problema externo, sem previsao de resolucao.
+- Endpoint de dados: `/estacao/{codigo}/{inicio}/{fim}` (atualizado fev/2026).
+- Para dados climaticos sem token, [NASA POWER](nasa_power.md) é uma
+  alternativa funcional (`from agrobr import nasa_power`).
 
 ## Fonte
 

@@ -67,7 +67,7 @@ URLS = {
     Fonte.INMET: {
         "base": "https://apitempo.inmet.gov.br",
         "estacoes": "https://apitempo.inmet.gov.br/estacoes",
-        "dados": "https://apitempo.inmet.gov.br/estacao/dados",
+        "dados": "https://apitempo.inmet.gov.br/estacao",
     },
     Fonte.NASA_POWER: {
         "base": "https://power.larc.nasa.gov",
