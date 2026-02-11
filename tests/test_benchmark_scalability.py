@@ -33,6 +33,8 @@ from agrobr.constants import CacheSettings, Fonte, HTTPSettings
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.models import Indicador
 
+pytestmark = pytest.mark.benchmark
+
 GOLDEN_DIR = Path(__file__).parent / "golden_data"
 
 FLAG_THRESHOLD_MS = 1000
