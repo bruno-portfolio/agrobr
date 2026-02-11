@@ -367,7 +367,7 @@ class DuckDBStore:
                     ],
                 )
                 count += 1
-            except Exception as e:
+            except (duckdb.Error, KeyError, ValueError, TypeError) as e:
                 logger.warning(
                     "indicador_upsert_failed",
                     data=ind.get("data"),

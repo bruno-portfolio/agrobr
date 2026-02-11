@@ -137,45 +137,26 @@ async def fetch_sidra(
         if classifications:
             kwargs["classifications"] = classifications
 
-        settings = constants.HTTPSettings()
+        from agrobr.http.retry import retry_async
 
-        for attempt in range(settings.max_retries):
-            try:
-                df = sidrapy.get_table(**kwargs)
+        async def _do_fetch() -> pd.DataFrame:
+            df = sidrapy.get_table(**kwargs)
+            if header == "n" and len(df) > 1:
+                df = df.iloc[1:].reset_index(drop=True)
+            return pd.DataFrame(df)
 
-                if header == "n" and len(df) > 1:
-                    df = df.iloc[1:].reset_index(drop=True)
+        df = await retry_async(
+            _do_fetch,
+            retriable_exceptions=(Exception,),
+        )
 
-                logger.info(
-                    "ibge_fetch_success",
-                    table=table_code,
-                    rows=len(df),
-                )
+        logger.info(
+            "ibge_fetch_success",
+            table=table_code,
+            rows=len(df),
+        )
 
-                return pd.DataFrame(df)
-
-            except Exception as e:
-                if attempt < settings.max_retries - 1:
-                    import asyncio
-
-                    delay = settings.retry_base_delay * (settings.retry_exponential_base**attempt)
-                    logger.warning(
-                        "ibge_retry",
-                        attempt=attempt + 1,
-                        table=table_code,
-                        error=str(e),
-                        delay=delay,
-                    )
-                    await asyncio.sleep(delay)
-                else:
-                    logger.error(
-                        "ibge_fetch_error",
-                        table=table_code,
-                        error=str(e),
-                    )
-                    raise
-
-        raise RuntimeError("Retry logic error")
+        return df
 
 
 def parse_sidra_response(

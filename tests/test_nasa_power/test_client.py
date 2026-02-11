@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.nasa_power import client
 
 
@@ -59,7 +60,7 @@ class TestNasaPowerHTTPErrors:
 
         with (
             patch("agrobr.nasa_power.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(httpx.HTTPStatusError),
+            pytest.raises(SourceUnavailableError, match="nasa_power"),
         ):
             await client._get_json({"test": "1"})
 
@@ -78,16 +79,18 @@ class TestNasaPowerHTTPErrors:
             await client._get_json({"test": "1"})
 
     @pytest.mark.asyncio
-    async def test_http_429_no_retry(self):
+    async def test_http_429_raises_after_retries(self):
         resp_429 = _mock_response(429)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp_429)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("agrobr.nasa_power.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client._get_json({"test": "1"})
-            assert isinstance(result, dict)
+        with (
+            patch("agrobr.nasa_power.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="nasa_power"),
+        ):
+            await client._get_json({"test": "1"})
 
 
 class TestNasaPowerEmptyResponse:

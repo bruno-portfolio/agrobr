@@ -86,15 +86,16 @@ class TestConabCustoHTTPErrors:
             await client.download_xlsx("https://www.gov.br/test.xlsx")
 
     @pytest.mark.asyncio
-    async def test_http_429_no_retry(self):
+    async def test_http_429_raises_after_retries(self):
         resp_429 = _mock_response(429)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp_429)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch(
-            "agrobr.conab.custo_producao.client.httpx.AsyncClient", return_value=mock_client
+        with (
+            patch("agrobr.conab.custo_producao.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="conab_custo"),
         ):
             await client.download_xlsx("https://www.gov.br/test.xlsx")
 

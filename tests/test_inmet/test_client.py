@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.inmet import client
 
 
@@ -63,7 +64,7 @@ class TestInmetHTTPErrors:
 
         with (
             patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(httpx.HTTPStatusError),
+            pytest.raises(SourceUnavailableError, match="inmet"),
         ):
             await client._get_json("/estacoes/T")
 
@@ -82,16 +83,18 @@ class TestInmetHTTPErrors:
             await client._get_json("/estacoes/T")
 
     @pytest.mark.asyncio
-    async def test_http_429_no_retry(self):
+    async def test_http_429_raises_after_retries(self):
         resp_429 = _mock_response(429)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp_429)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client._get_json("/estacoes/T")
-            assert isinstance(result, list)
+        with (
+            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="inmet"),
+        ):
+            await client._get_json("/estacoes/T")
 
     @pytest.mark.asyncio
     async def test_retriable_status_in_fetch_dados_logged_and_skipped(self):

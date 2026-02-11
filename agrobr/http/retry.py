@@ -22,6 +22,16 @@ RETRIABLE_EXCEPTIONS: tuple[type[Exception], ...] = (
 )
 
 
+def _extract_retry_after(response: httpx.Response) -> float | None:
+    raw = response.headers.get("Retry-After")
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
 async def retry_async(
     func: Callable[[], Awaitable[T]],
     max_attempts: int | None = None,
@@ -48,6 +58,10 @@ async def retry_async(
                     base_delay * (settings.retry_exponential_base**attempt),
                     max_delay,
                 )
+                if isinstance(e, httpx.HTTPStatusError):
+                    retry_after = _extract_retry_after(e.response)
+                    if retry_after is not None:
+                        delay = min(retry_after, max_delay)
                 logger.warning(
                     "retry_scheduled",
                     attempt=attempt + 1,
@@ -66,6 +80,74 @@ async def retry_async(
     if last_exception:
         raise last_exception
     raise RuntimeError("Retry logic error: no exception captured")
+
+
+async def retry_on_status(
+    func: Callable[[], Awaitable[httpx.Response]],
+    source: str,
+    max_attempts: int | None = None,
+    base_delay: float | None = None,
+    max_delay: float | None = None,
+) -> httpx.Response:
+    """Executa request HTTP com retry em status codes retriáveis.
+
+    Diferente de retry_async, esta função inspeciona o status_code da
+    Response ao invés de depender de raise_for_status(). Respeita o
+    header Retry-After quando presente.
+
+    Args:
+        func: Callable que retorna httpx.Response.
+        source: Nome da fonte para logging.
+        max_attempts: Máximo de tentativas.
+        base_delay: Delay base em segundos.
+        max_delay: Delay máximo em segundos.
+
+    Returns:
+        httpx.Response com status não-retriável.
+
+    Raises:
+        SourceUnavailableError: Quando retry esgotado em status retriável.
+    """
+    from agrobr.exceptions import SourceUnavailableError
+
+    settings = constants.HTTPSettings()
+    _max = max_attempts or settings.max_retries
+    _base = base_delay or settings.retry_base_delay
+    _cap = max_delay or settings.retry_max_delay
+
+    last_response: httpx.Response | None = None
+
+    for attempt in range(_max):
+        response = await func()
+
+        if not should_retry_status(response.status_code):
+            return response
+
+        last_response = response
+
+        if attempt < _max - 1:
+            delay = min(_base * (settings.retry_exponential_base**attempt), _cap)
+            retry_after = _extract_retry_after(response)
+            if retry_after is not None:
+                delay = min(retry_after, _cap)
+            logger.warning(
+                f"{source}_retry",
+                attempt=attempt + 1,
+                status=response.status_code,
+                delay=delay,
+            )
+            await asyncio.sleep(delay)
+
+    assert last_response is not None
+    logger.error(
+        f"{source}_retry_exhausted",
+        status=last_response.status_code,
+    )
+    raise SourceUnavailableError(
+        source=source,
+        url=str(last_response.url),
+        last_error=f"HTTP {last_response.status_code} after {_max} retries",
+    )
 
 
 def with_retry(

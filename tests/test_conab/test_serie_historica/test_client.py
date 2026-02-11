@@ -94,18 +94,20 @@ class TestConabSerieHTTPErrors:
             await client.download_xls("soja")
 
     @pytest.mark.asyncio
-    async def test_http_429_no_retry(self):
+    async def test_http_429_raises_after_retries(self):
         resp_429 = _mock_response(429)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp_429)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch(
-            "agrobr.conab.serie_historica.client.httpx.AsyncClient", return_value=mock_client
+        with (
+            patch(
+                "agrobr.conab.serie_historica.client.httpx.AsyncClient", return_value=mock_client
+            ),
+            pytest.raises(SourceUnavailableError, match="conab_serie"),
         ):
-            result, _ = await client.download_xls("soja")
-            assert result is not None
+            await client.download_xls("soja")
 
 
 class TestConabSerieEmptyResponse:

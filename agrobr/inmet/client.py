@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import asyncio
 from datetime import date, timedelta
 from typing import Any
 
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES, HTTPSettings
+from agrobr.constants import RETRIABLE_STATUS_CODES
+from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
@@ -32,33 +32,18 @@ HEADERS = {
 
 async def _get_json(path: str) -> list[dict[str, Any]]:
     """Faz GET na API INMET e retorna JSON parseado."""
-    settings = HTTPSettings()
     url = f"{BASE_URL}{path}"
-    last_response: httpx.Response | None = None
 
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS) as client:
-        for attempt in range(settings.max_retries):
-            response = await client.get(url)
-            if response.status_code != 429:
-                response.raise_for_status()
-                data = response.json()
-                if not isinstance(data, list):
-                    return []
-                return data
-            last_response = response
-            if attempt < settings.max_retries - 1:
-                delay = settings.retry_base_delay * (settings.retry_exponential_base**attempt)
-                logger.warning(
-                    "inmet_retry", attempt=attempt + 1, status=response.status_code, delay=delay
-                )
-                await asyncio.sleep(delay)
-
-    logger.warning(
-        "inmet_retry_exhausted",
-        status=last_response.status_code if last_response else None,
-        path=path,
-    )
-    return []
+        response = await retry_on_status(
+            lambda: client.get(url),
+            source="inmet",
+        )
+        response.raise_for_status()
+        data = response.json()
+        if not isinstance(data, list):
+            return []
+        return data
 
 
 async def fetch_estacoes(tipo: str = "T") -> list[dict[str, Any]]:

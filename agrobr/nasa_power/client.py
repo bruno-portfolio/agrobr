@@ -9,7 +9,8 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES, HTTPSettings
+from agrobr.constants import RETRIABLE_STATUS_CODES
+from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
@@ -17,10 +18,8 @@ BASE_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
 TIMEOUT = httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=10.0)
 
-# NASA POWER pede para respeitar rate limits.
 RATE_LIMIT_DELAY = 1.0
 
-# Maximo de dias por request (API aceita ate ~366, usamos 365 por seguranca).
 MAX_DAYS_PER_REQUEST = 365
 
 HEADERS = {
@@ -31,33 +30,16 @@ HEADERS = {
 
 async def _get_json(params: dict[str, Any]) -> dict[str, Any]:
     """Faz GET na API NASA POWER e retorna JSON parseado."""
-    settings = HTTPSettings()
-    last_response: httpx.Response | None = None
-
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS) as client:
-        for attempt in range(settings.max_retries):
-            response = await client.get(BASE_URL, params=params)
-            if response.status_code != 429:
-                response.raise_for_status()
-                data = response.json()
-                if not isinstance(data, dict):
-                    return {}
-                return data
-            last_response = response
-            if attempt < settings.max_retries - 1:
-                delay = settings.retry_base_delay * (settings.retry_exponential_base**attempt)
-                logger.warning(
-                    "nasa_power_retry",
-                    attempt=attempt + 1,
-                    status=response.status_code,
-                    delay=delay,
-                )
-                await asyncio.sleep(delay)
-
-    logger.warning(
-        "nasa_power_retry_exhausted", status=last_response.status_code if last_response else None
-    )
-    return {}
+        response = await retry_on_status(
+            lambda: client.get(BASE_URL, params=params),
+            source="nasa_power",
+        )
+        response.raise_for_status()
+        data = response.json()
+        if not isinstance(data, dict):
+            return {}
+        return data
 
 
 async def fetch_daily(

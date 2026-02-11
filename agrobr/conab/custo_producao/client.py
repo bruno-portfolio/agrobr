@@ -110,7 +110,7 @@ async def download_xlsx(url: str) -> BytesIO:
     Raises:
         SourceUnavailableError: Se não conseguir baixar.
     """
-    import asyncio
+    from agrobr.http.retry import retry_on_status
 
     if not url.startswith("http"):
         url = f"{BASE_URL}{url}"
@@ -119,33 +119,11 @@ async def download_xlsx(url: str) -> BytesIO:
 
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         try:
-            last_response: httpx.Response | None = None
-            retriable_exhausted = False
-            for attempt in range(_settings.max_retries):
-                response = await client.get(url)
-                if response.status_code != 429:
-                    break
-                last_response = response
-                if attempt < _settings.max_retries - 1:
-                    delay = _settings.retry_base_delay * (_settings.retry_exponential_base**attempt)
-                    logger.warning(
-                        "conab_custo_retry",
-                        attempt=attempt + 1,
-                        status=response.status_code,
-                        delay=delay,
-                    )
-                    await asyncio.sleep(delay)
-            else:
-                logger.warning(
-                    "conab_custo_retry_exhausted",
-                    status=last_response.status_code if last_response else None,
-                    url=url,
-                )
-                retriable_exhausted = True
-                response = last_response  # type: ignore[assignment]
-
-            if not retriable_exhausted:
-                response.raise_for_status()
+            response = await retry_on_status(
+                lambda: client.get(url),
+                source="conab_custo",
+            )
+            response.raise_for_status()
             content = response.content
 
             logger.info(
