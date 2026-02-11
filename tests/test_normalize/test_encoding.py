@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from unittest import mock
 
-import pytest
-
 from agrobr.normalize.encoding import ENCODING_CHAIN, decode_content, detect_encoding
 
 
 class TestDecodeContentUTF8:
     def test_valid_utf8(self):
-        text, enc = decode_content("café São Paulo açúcar".encode("utf-8"))
+        text, enc = decode_content("café São Paulo açúcar".encode())
 
         assert text == "café São Paulo açúcar"
         assert enc == "utf-8"
@@ -37,7 +35,7 @@ class TestDecodeContentDeclaredEncoding:
         assert enc == "iso-8859-1"
 
     def test_declared_encoding_wrong_falls_through(self):
-        content = "café".encode("utf-8")
+        content = "café".encode()
 
         text, enc = decode_content(content, declared_encoding="ascii")
 
@@ -45,7 +43,7 @@ class TestDecodeContentDeclaredEncoding:
         assert enc in ENCODING_CHAIN
 
     def test_declared_encoding_unknown_lookup_error(self):
-        content = "test".encode("utf-8")
+        content = b"test"
 
         text, enc = decode_content(content, declared_encoding="nonexistent-encoding")
 
@@ -103,7 +101,7 @@ class TestDecodeContentChardetFallback:
 
 class TestDecodeContentCorrupted:
     def test_irrecoverable_bytes_fallback_to_iso(self):
-        bad_bytes = bytes([0x80, 0x81, 0x82, 0xfe, 0xff] * 20)
+        bad_bytes = bytes([0x80, 0x81, 0x82, 0xFE, 0xFF] * 20)
 
         text, enc = decode_content(bad_bytes)
 
@@ -130,7 +128,7 @@ class TestDecodeContentCorrupted:
 
 class TestDecodeContentSourceLogging:
     def test_source_passed_to_logger(self):
-        content = "test".encode("utf-8")
+        content = b"test"
 
         text, enc = decode_content(content, source="cepea")
 
@@ -139,7 +137,7 @@ class TestDecodeContentSourceLogging:
 
 class TestDetectEncoding:
     def test_detect_utf8(self):
-        enc, conf = detect_encoding("hello".encode("utf-8"))
+        enc, conf = detect_encoding(b"hello")
 
         assert isinstance(enc, str)
         assert isinstance(conf, float)

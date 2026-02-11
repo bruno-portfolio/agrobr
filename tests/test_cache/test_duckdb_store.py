@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import asyncio
-import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest import mock
 
-import duckdb
 import pytest
 
 from agrobr.cache.duckdb_store import DuckDBStore
@@ -67,9 +64,7 @@ class TestCacheGet:
         tmp_store.cache_get("k1")
 
         conn = tmp_store._get_conn()
-        row = conn.execute(
-            "SELECT hit_count FROM cache_entries WHERE key = ?", ["k1"]
-        ).fetchone()
+        row = conn.execute("SELECT hit_count FROM cache_entries WHERE key = ?", ["k1"]).fetchone()
         assert row[0] == 3
 
 
@@ -132,9 +127,7 @@ class TestCacheTTL:
         tmp_store.cache_set("k1", b"data", Fonte.CEPEA, ttl_seconds=7200)
 
         conn = tmp_store._get_conn()
-        row = conn.execute(
-            "SELECT expires_at FROM cache_entries WHERE key = ?", ["k1"]
-        ).fetchone()
+        row = conn.execute("SELECT expires_at FROM cache_entries WHERE key = ?", ["k1"]).fetchone()
 
         expected_min = before + timedelta(seconds=7200)
         expected_max = datetime.utcnow() + timedelta(seconds=7200)
@@ -145,9 +138,7 @@ class TestCacheTTL:
         tmp_store.cache_invalidate("k1")
 
         conn = tmp_store._get_conn()
-        row = conn.execute(
-            "SELECT stale FROM cache_entries WHERE key = ?", ["k1"]
-        ).fetchone()
+        row = conn.execute("SELECT stale FROM cache_entries WHERE key = ?", ["k1"]).fetchone()
         assert row[0] is True
 
 
@@ -165,7 +156,7 @@ class TestDBCorrupted:
         settings = CacheSettings(cache_dir=tmp_path, db_name="test.duckdb")
         store = DuckDBStore(settings)
 
-        with mock.patch("duckdb.connect", side_effect=IOError("disk full")):
+        with mock.patch("duckdb.connect", side_effect=OSError("disk full")):
             store._conn = None
             with pytest.raises(IOError, match="disk full"):
                 store.cache_get("any")
@@ -219,9 +210,7 @@ class TestHistorySave:
         assert result is None
 
     def test_save_disabled_by_settings(self, tmp_path: Path):
-        settings = CacheSettings(
-            cache_dir=tmp_path, db_name="test.duckdb", save_to_history=False
-        )
+        settings = CacheSettings(cache_dir=tmp_path, db_name="test.duckdb", save_to_history=False)
         store = DuckDBStore(settings)
         store.history_save("k", b"d", Fonte.CEPEA, datetime(2024, 1, 1), 1)
 
@@ -254,14 +243,18 @@ class TestIndicadores:
 
     def test_query_with_date_range(self, tmp_store: DuckDBStore):
         for month in range(1, 7):
-            tmp_store.indicadores_upsert([{
-                "produto": "soja",
-                "praca": "paranagua",
-                "data": datetime(2024, month, 15),
-                "valor": 130.0 + month,
-                "unidade": "BRL/sc",
-                "fonte": "cepea",
-            }])
+            tmp_store.indicadores_upsert(
+                [
+                    {
+                        "produto": "soja",
+                        "praca": "paranagua",
+                        "data": datetime(2024, month, 15),
+                        "valor": 130.0 + month,
+                        "unidade": "BRL/sc",
+                        "fonte": "cepea",
+                    }
+                ]
+            )
 
         results = tmp_store.indicadores_query(
             "soja",
@@ -276,13 +269,17 @@ class TestIndicadores:
 
     def test_get_dates(self, tmp_store: DuckDBStore):
         for month in [1, 3, 6]:
-            tmp_store.indicadores_upsert([{
-                "produto": "milho",
-                "data": datetime(2024, month, 10),
-                "valor": 50.0,
-                "unidade": "BRL/sc",
-                "fonte": "cepea",
-            }])
+            tmp_store.indicadores_upsert(
+                [
+                    {
+                        "produto": "milho",
+                        "data": datetime(2024, month, 10),
+                        "valor": 50.0,
+                        "unidade": "BRL/sc",
+                        "fonte": "cepea",
+                    }
+                ]
+            )
 
         dates = tmp_store.indicadores_get_dates("milho")
         assert len(dates) == 3

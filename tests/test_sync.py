@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from agrobr.sync import _SyncModule, _get_or_create_event_loop, run_sync, sync_wrapper
+from agrobr.sync import _get_or_create_event_loop, _SyncModule, run_sync, sync_wrapper
 
 
 class TestRunSync:
@@ -181,11 +181,13 @@ class TestGetOrCreateEventLoop:
 
     def test_running_loop_without_nest_asyncio_raises(self):
         async def inner():
-            with mock.patch.dict("sys.modules", {"nest_asyncio": None}):
-                with mock.patch(
+            with (
+                mock.patch.dict("sys.modules", {"nest_asyncio": None}),
+                mock.patch(
                     "agrobr.sync.asyncio.get_running_loop",
                     return_value=asyncio.get_event_loop(),
-                ):
-                    pass
+                ),
+            ):
+                pass
 
         pass

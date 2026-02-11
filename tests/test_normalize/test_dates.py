@@ -152,9 +152,18 @@ class TestMesParaNumero:
     @pytest.mark.parametrize(
         "mes,numero",
         [
-            ("jan", 1), ("fev", 2), ("mar", 3), ("abr", 4),
-            ("mai", 5), ("jun", 6), ("jul", 7), ("ago", 8),
-            ("set", 9), ("out", 10), ("nov", 11), ("dez", 12),
+            ("jan", 1),
+            ("fev", 2),
+            ("mar", 3),
+            ("abr", 4),
+            ("mai", 5),
+            ("jun", 6),
+            ("jul", 7),
+            ("ago", 8),
+            ("set", 9),
+            ("out", 10),
+            ("nov", 11),
+            ("dez", 12),
         ],
     )
     def test_todos_meses(self, mes, numero):

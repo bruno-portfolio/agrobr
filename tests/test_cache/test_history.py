@@ -3,8 +3,6 @@ from __future__ import annotations
 from datetime import date, datetime
 from unittest import mock
 
-import pytest
-
 from agrobr.cache.history import HistoryManager
 from agrobr.constants import Fonte
 
