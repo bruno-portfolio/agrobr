@@ -7,6 +7,39 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-02-11
+
+### Added
+- **1433+ testes** (era 949), cobertura **~75%** (era 57.5%)
+- **Golden tests** para todas as 13 fontes de dados (era 2/13)
+- **Benchmark de escalabilidade** — memory, volume, cache, async, rate limiting, sync, golden
+- **Suporte a token INMET** — `AGROBR_INMET_TOKEN` via env var
+- `retry_on_status()` e `retry_async()` centralizados em `http/retry.py`
+- **Retry-After header** respeitado em respostas HTTP 429
+- **Testes de resiliência HTTP** para todos os 13 clients (timeout, 429, 500, 403, resposta vazia)
+- **Testes de API pública**: `cepea.indicador()`/`ultimo()`, `conab.safras()`/`balanco()`/`brasil_total()`/`levantamentos()`
+- Pre-commit hooks atualizados (ruff v0.15, mypy v1.19)
+
+### Fixed
+- **Cache DuckDB** — `history_entries.id` sem autoincrement: histórico permanente nunca salvava dados
+- **normalize/dates** — `normalizar_safra()` não fazia strip no input
+- **6 clients sem retry para HTTP 429**: inmet, nasa_power, conab_custo, conab_serie, conab main, ibge
+- **Graceful degradation silenciosa** trocada por `SourceUnavailableError` quando retry esgota
+- **except Exception genérico** em `duckdb_store.py` restringido para exceções específicas
+- **INMET** — endpoint `/estacao/dados/` atualizado para `/estacao/` (API mudou)
+- **INMET** — tratamento de HTTP 204 (No Content) retorna DataFrame vazio
+
+### Changed
+- Retry loops de 5 clients migrados para `http/retry.py` centralizado
+- Testes de datasets refatorados: 98 funções duplicadas → 27 parametrizadas (115 cenários)
+- mypy override para `tests.*` (`ignore_errors = true`, strict mantido no core)
+
+### Known Issues
+- `indicadores_upsert` com 50k+ records escala não-linearmente (10k OK, 50k timeout)
+- 5 golden tests com dados sintéticos (BCB, INMET, USDA, ComexStat, NA) — `needs_real_data`
+- 7 clients legados com retry loop próprio (não migrados para `retry_on_status`)
+- DuckDB 1.4.4 incompatível com coverage no Python 3.14
+
 ## [0.8.0] - 2026-02-09
 
 ### Added
@@ -358,7 +391,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.6.3...v0.7.0

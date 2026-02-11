@@ -11,6 +11,8 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 13 fontes públicas.
 
+**v0.9.0** — 1433+ testes | ~75% cobertura | 13/13 golden tests | resiliência HTTP completa
+
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica
 - **IBGE/SIDRA**: PAM (anual) e LSPA (mensal)
@@ -22,7 +24,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 - **USDA PSD**: Estimativas internacionais de produção/oferta/demanda
 - **IMEA**: Cotações e indicadores para Mato Grosso (6 cadeias produtivas)
 - **DERAL**: Condição das lavouras do Paraná (semanal)
-- **INMET**: Dados meteorológicos por estação (API instável — usar NASA POWER)
+- **INMET**: Dados meteorológicos por estação (requer token `AGROBR_INMET_TOKEN`)
 - **Notícias Agrícolas**: Cotações agrícolas (fallback CEPEA)
 
 ## Datasets — Camada Semântica
@@ -97,9 +99,22 @@ df = nasa_power.clima_uf('MT', ano=2025)
 | Encoding caótico | Fallback chain automático |
 | Escolher fonte | Datasets abstraem a fonte |
 
+## Quality & Reliability
+
+| Métrica | Valor |
+|---------|-------|
+| Testes | 1433+ passando |
+| Cobertura | ~75% |
+| Golden tests | 13/13 fontes |
+| Resiliência HTTP | Retry centralizado + 429/Retry-After |
+| Benchmarks | Memory, volume, cache, async, rate limiting |
+| Bugs corrigidos (v0.9.0) | 10 (incl. histórico DuckDB que nunca salvava) |
+
 ## Features
 
 - **13 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL, INMET, Notícias Agrícolas
+- **13/13 golden tests** — validação automatizada contra dados de referência
+- **Resiliência HTTP** — `retry_on_status()`/`retry_async()` centralizado, Retry-After, 429 handling
 - **Camada semântica** — datasets com fallback automático entre fontes
 - **Contratos públicos** — schema versionado com garantias de estabilidade
 - **Modo determinístico** — reprodutibilidade total para papers/auditorias

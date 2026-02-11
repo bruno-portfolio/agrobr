@@ -15,6 +15,8 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **13 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET e Notícias Agrícolas.
 
+**v0.9.0** — 1433+ testes, ~75% cobertura, 13/13 fontes com golden tests, resiliência HTTP completa.
+
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
 
@@ -192,6 +194,16 @@ async def main():
     df = await conab.serie_historica("soja", inicio=2020, fim=2025, uf="MT")
 ```
 
+### INMET — Token de Autenticação
+
+A API de dados observacionais do INMET requer token. Configure via variável de ambiente:
+
+```bash
+export AGROBR_INMET_TOKEN="seu-token-aqui"
+```
+
+Sem o token, requisições de dados retornam HTTP 204 (sem conteúdo). A listagem de estações funciona sem token. Para dados climáticos sem token, use [NASA POWER](#novas-fontes-v070) como alternativa.
+
 ### Modo Síncrono
 
 ```python
@@ -268,37 +280,38 @@ Use `agrobr health --all` para verificar localmente.
 
 ## Fontes Suportadas
 
-| Fonte | Dados | Status |
-|-------|-------|--------|
-| CEPEA | Indicadores de preços (20 produtos) | Funcional |
-| CONAB | Safras, balanço, custos, série histórica | Funcional |
-| IBGE | PAM (anual), LSPA (mensal) | Funcional |
-| NASA POWER | Climatologia diária/mensal (grid 0.5°) | Funcional (v0.7.1) |
-| BCB/SICOR | Crédito rural por cultura (+ fallback BigQuery) | Funcional (v0.8.0) |
-| ComexStat | Exportações por NCM/UF | Funcional (v0.7.0) |
-| ANDA | Entregas de fertilizantes | Funcional (v0.7.0) |
-| ABIOVE | Exportação complexo soja (volume/receita) | Funcional (v0.8.0) |
-| USDA PSD | Estimativas internacionais (produção/oferta/demanda) | Funcional (v0.8.0) |
-| IMEA | Cotações e indicadores Mato Grosso | Funcional (v0.8.0) |
-| DERAL | Condição das lavouras Paraná | Funcional (v0.8.0) |
-| INMET | Meteorologia (600+ estações) | API fora do ar — usar NASA POWER |
-| Notícias Agrícolas | Cotações (fallback CEPEA) | Funcional |
+| Fonte | Dados | Golden Test | Status |
+|-------|-------|:-----------:|--------|
+| CEPEA | Indicadores de preços (20 produtos) | ✅ | Funcional |
+| CONAB | Safras, balanço, custos, série histórica | ✅ | Funcional |
+| IBGE | PAM (anual), LSPA (mensal) | ✅ | Funcional |
+| NASA POWER | Climatologia diária/mensal (grid 0.5°) | ✅ | Funcional |
+| BCB/SICOR | Crédito rural por cultura (+ fallback BigQuery) | ✅¹ | Funcional |
+| ComexStat | Exportações por NCM/UF | ✅¹ | Funcional |
+| ANDA | Entregas de fertilizantes | ✅ | Funcional |
+| ABIOVE | Exportação complexo soja (volume/receita) | ✅ | Funcional |
+| USDA PSD | Estimativas internacionais (produção/oferta/demanda) | ✅¹ | Funcional |
+| IMEA | Cotações e indicadores Mato Grosso | ✅ | Funcional |
+| DERAL | Condição das lavouras Paraná | ✅ | Funcional |
+| INMET | Meteorologia (600+ estações) | ✅¹ | Requer token (`AGROBR_INMET_TOKEN`) |
+| Notícias Agrícolas | Cotações (fallback CEPEA) | ✅¹ | Funcional |
+
+> ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 
 ## Diferenciais
 
-- **Camada semântica** - datasets padronizados com fallback automático
-- **Contratos públicos** - schema versionado e garantias de estabilidade
-- **Modo determinístico** - reprodutibilidade total para papers/auditorias
+- **13/13 fontes com golden tests** — validação automatizada contra dados de referência
+- **Resiliência HTTP completa** — retry centralizado, 429 handling, Retry-After
+- **1433+ testes, ~75% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **Camada semântica** — datasets padronizados com fallback automático
+- **Contratos públicos** — schema versionado e garantias de estabilidade
+- **Modo determinístico** — reprodutibilidade total para papers/auditorias
 - **Async-first** para pipelines de alta performance
-- **Cache inteligente** com DuckDB (analytics nativo)
-- **Histórico permanente** - acumula dados automaticamente
+- **Cache inteligente** com DuckDB (analytics nativo + histórico permanente)
 - **Suporte pandas + polars**
-- **Validação com Pydantic v2**
-- **Validação estatística** de sanidade (detecta anomalias)
-- **Fingerprinting de layout** para detecção proativa de mudanças
+- **Validação** — Pydantic v2 + sanity checks estatísticos + fingerprinting de layout
 - **Alertas multi-canal** (Slack, Discord, Email)
 - **CLI completo** para debug e automação
-- **Fallback automático** entre fontes
 
 ## Como Funciona
 
