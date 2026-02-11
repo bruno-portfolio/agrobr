@@ -1,0 +1,8 @@
+{
+  "count": 3,
+  "columns": ["data", "hora_utc", "estacao", "uf", "temperatura", "temperatura_max", "temperatura_min", "umidade", "umidade_max", "umidade_min", "precipitacao_mm", "pressao_hpa", "vento_ms", "vento_dir", "vento_rajada_ms", "radiacao_kj_m2", "ponto_orvalho"],
+  "sentinel_handled": true,
+  "first_row": {"estacao": "A001", "uf": "DF", "temperatura": 22.5},
+  "last_row": {"estacao": "A001", "uf": "DF", "temperatura": 21.2},
+  "non_null_columns": ["data", "estacao", "uf", "temperatura"]
+}

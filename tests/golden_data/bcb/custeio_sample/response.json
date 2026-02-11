@@ -1,0 +1,7 @@
+[
+  {"Safra": "2024", "AnoEmissao": 2024, "MesEmissao": 1, "nomeUF": "MT", "nomeProduto": "\"SOJA\"", "VlCusteio": 1500000.50, "AreaCusteio": 2500.0, "QtdCusteio": 35},
+  {"Safra": "2024", "AnoEmissao": 2024, "MesEmissao": 1, "nomeUF": "PR", "nomeProduto": "\"SOJA\"", "VlCusteio": 980000.75, "AreaCusteio": 1800.0, "QtdCusteio": 28},
+  {"Safra": "2024", "AnoEmissao": 2024, "MesEmissao": 2, "nomeUF": "GO", "nomeProduto": "\"MILHO\"", "VlCusteio": 450000.00, "AreaCusteio": 900.0, "QtdCusteio": 15},
+  {"Safra": "2024", "AnoEmissao": 2024, "MesEmissao": 2, "nomeUF": "MS", "nomeProduto": "\"SOJA\"", "VlCusteio": 720000.25, "AreaCusteio": 1200.0, "QtdCusteio": 22},
+  {"Safra": "2024", "AnoEmissao": 2024, "MesEmissao": 3, "nomeUF": "SP", "nomeProduto": "\"MILHO\"", "VlCusteio": 280000.00, "AreaCusteio": 600.0, "QtdCusteio": 10}
+]

@@ -1,0 +1,12 @@
+{
+  "source": "na",
+  "format": "html",
+  "parser_module": "agrobr.noticias_agricolas.parser",
+  "parser_function": "parse_indicador",
+  "parser_kwargs": {"produto": "soja"},
+  "url": "https://www.noticiasagricolas.com.br/cotacoes/soja/soja-indicador-cepea-esalq-porto-paranagua",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 2,
+  "notes": "Synthetic HTML matching NA cot-fisicas table format for soja",
+  "needs_real_data": true
+}

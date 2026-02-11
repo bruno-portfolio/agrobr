@@ -1,0 +1,12 @@
+{
+  "source": "usda",
+  "format": "json",
+  "parser_module": "agrobr.usda.parser",
+  "parser_function": "parse_psd_response",
+  "parser_kwargs": {},
+  "url": "https://apps.fas.usda.gov/OpenData/api/psd/commodity/2222000/country/BR/year/2024",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 1,
+  "notes": "USDA PSD API requires API key - synthetic data based on documented schema",
+  "needs_real_data": true
+}

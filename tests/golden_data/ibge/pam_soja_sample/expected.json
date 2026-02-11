@@ -1,0 +1,7 @@
+{
+  "count": 5,
+  "columns": ["nivel_territorial_cod", "nivel_territorial", "localidade_cod", "localidade", "valor", "ano_cod", "ano", "produto_cod", "produto"],
+  "first_row": {"localidade": "Mato Grosso", "produto": "Soja (em grão)", "valor": 12220000.0},
+  "last_row": {"localidade": "Mato Grosso do Sul", "produto": "Soja (em grão)", "valor": 3200000.0},
+  "non_null_columns": ["nivel_territorial_cod", "localidade", "valor", "ano", "produto"]
+}

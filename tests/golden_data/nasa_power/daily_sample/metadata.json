@@ -1,0 +1,12 @@
+{
+  "source": "nasa_power",
+  "format": "json",
+  "parser_module": "agrobr.nasa_power.parser",
+  "parser_function": "parse_daily",
+  "parser_kwargs": {"lat": -12.6, "lon": -56.1, "uf": "MT"},
+  "url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-12.6&longitude=-56.1&start=20250101&end=20250105&parameters=T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,RH2M,ALLSKY_SFC_SW_DWN,WS2M&community=AG&format=JSON",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Real data from NASA POWER API - Sorriso/MT region, 5 days Jan 2025",
+  "needs_real_data": false
+}

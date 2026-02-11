@@ -1,0 +1,7 @@
+{
+  "count": 5,
+  "columns": ["cadeia", "localidade", "valor", "variacao", "safra", "unidade", "unidade_descricao", "data_publicacao"],
+  "first_row": {"cadeia": "soja", "localidade": "Convencional"},
+  "last_row": {"cadeia": "soja"},
+  "non_null_columns": ["cadeia", "localidade", "valor", "unidade"]
+}

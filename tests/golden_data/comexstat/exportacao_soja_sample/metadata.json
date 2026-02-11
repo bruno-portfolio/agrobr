@@ -1,0 +1,12 @@
+{
+  "source": "comexstat",
+  "format": "csv",
+  "parser_module": "agrobr.comexstat.parser",
+  "parser_function": "parse_exportacao",
+  "parser_kwargs": {},
+  "url": "https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/EXP_2024.csv",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic data matching ComexStat CSV format - soja grão (NCM 12019000) Jan 2024",
+  "needs_real_data": true
+}

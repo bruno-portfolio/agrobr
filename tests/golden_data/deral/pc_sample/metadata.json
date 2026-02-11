@@ -1,0 +1,12 @@
+{
+  "source": "deral",
+  "format": "xlsx",
+  "parser_module": "agrobr.deral.parser",
+  "parser_function": "parse_pc_xls",
+  "parser_kwargs": {},
+  "url": "https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic XLS created with openpyxl - Soja sheet with boa/media/ruim conditions",
+  "needs_real_data": true
+}

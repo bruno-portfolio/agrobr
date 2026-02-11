@@ -1,0 +1,8 @@
+{
+  "count": 15,
+  "columns": ["ano", "mes", "uf", "produto_fertilizante", "volume_ton"],
+  "ufs_expected": ["GO", "MG", "MT", "PR", "SP"],
+  "meses_expected": [1, 2, 3],
+  "first_row": {"mes": 1, "uf": "MT", "produto_fertilizante": "total", "volume_ton": 850000.0},
+  "non_null_columns": ["ano", "mes", "uf", "volume_ton"]
+}

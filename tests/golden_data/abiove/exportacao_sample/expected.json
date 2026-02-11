@@ -1,0 +1,8 @@
+{
+  "count_min": 6,
+  "columns": ["ano", "mes", "produto", "volume_ton"],
+  "has_multiple_products": true,
+  "produtos_expected": ["grao", "farelo", "oleo"],
+  "first_row_produto": "farelo",
+  "ano": 2024
+}

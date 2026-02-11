@@ -1,0 +1,7 @@
+{
+  "count": 5,
+  "columns": ["commodity_code", "commodity", "country_code", "country", "market_year", "attribute", "attribute_br", "value", "unit"],
+  "first_row": {"commodity": "soja", "country_code": "BR", "market_year": 2024},
+  "last_row": {"commodity": "soja", "country_code": "BR", "market_year": 2024},
+  "non_null_columns": ["commodity_code", "commodity", "country_code", "country", "market_year", "attribute", "value"]
+}

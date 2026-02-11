@@ -1,0 +1,7 @@
+{
+  "count": 5,
+  "columns": ["data", "lat", "lon", "uf", "temp_media", "temp_max", "temp_min", "precip_mm", "umidade_rel", "radiacao_mj", "vento_ms"],
+  "first_row": {"lat": -12.6, "lon": -56.1, "uf": "MT", "temp_media": 25.15, "precip_mm": 4.18},
+  "last_row": {"lat": -12.6, "lon": -56.1, "uf": "MT", "temp_media": 25.53, "precip_mm": 0.82},
+  "non_null_columns": ["data", "lat", "lon", "temp_media", "temp_max", "temp_min", "precip_mm"]
+}

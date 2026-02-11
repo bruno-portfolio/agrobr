@@ -1,0 +1,12 @@
+{
+  "source": "ibge",
+  "format": "dataframe",
+  "parser_module": "agrobr.ibge.client",
+  "parser_function": "parse_sidra_response",
+  "parser_kwargs": {},
+  "url": "https://apisidra.ibge.gov.br/values/t/5457/n3/all/v/214/p/2023/c782/40124",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic sidrapy DataFrame output - PAM soja produção 2023, top 5 UFs",
+  "needs_real_data": true
+}

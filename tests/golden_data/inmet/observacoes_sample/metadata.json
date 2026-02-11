@@ -1,0 +1,12 @@
+{
+  "source": "inmet",
+  "format": "json",
+  "parser_module": "agrobr.inmet.parser",
+  "parser_function": "parse_observacoes",
+  "parser_kwargs": {},
+  "url": "https://apitempo.inmet.gov.br/estacao/dados/A001/2025-01-01/2025-01-01",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 1,
+  "notes": "INMET API returned 403 - synthetic data based on documented schema",
+  "needs_real_data": true
+}

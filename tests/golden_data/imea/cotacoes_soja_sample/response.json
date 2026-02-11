@@ -1,0 +1,7 @@
+[
+  {"Localidade": "Convencional", "Valor": 182.5, "Variacao": -9.27, "Safra": null, "IndicadorFinalId": "3", "CadeiaId": "4", "DataPublicacao": "2025-12-31 00:00:00", "TipoLocalidadeId": "1", "UnidadeSigla": "R$/sc", "UnidadeDescricao": "Reais por saca"},
+  {"Localidade": "Convencional", "Valor": 4562.58, "Variacao": -9.27, "Safra": null, "IndicadorFinalId": "4", "CadeiaId": "4", "DataPublicacao": "2025-12-31 00:00:00", "TipoLocalidadeId": "1", "UnidadeSigla": "R$/bag", "UnidadeDescricao": "Reais por Bag"},
+  {"Localidade": "Transgênica", "Valor": 229.09, "Variacao": -9.27, "Safra": null, "IndicadorFinalId": "3", "CadeiaId": "4", "DataPublicacao": "2025-12-31 00:00:00", "TipoLocalidadeId": "2", "UnidadeSigla": "R$/sc", "UnidadeDescricao": "Reais por saca"},
+  {"Localidade": "Transgênica", "Valor": 5727.33, "Variacao": -9.27, "Safra": null, "IndicadorFinalId": "4", "CadeiaId": "4", "DataPublicacao": "2025-12-31 00:00:00", "TipoLocalidadeId": "2", "UnidadeSigla": "R$/bag", "UnidadeDescricao": "Reais por Bag"},
+  {"Localidade": "Intacta Pro", "Valor": 210.33, "Variacao": -16.95, "Safra": null, "IndicadorFinalId": "3", "CadeiaId": "4", "DataPublicacao": "2025-12-31 00:00:00", "TipoLocalidadeId": "99", "UnidadeSigla": "R$/sc", "UnidadeDescricao": "Reais por saca"}
+]

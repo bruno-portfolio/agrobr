@@ -1,0 +1,7 @@
+{
+  "count_min": 3,
+  "columns": ["produto", "data", "condicao", "pct", "plantio_pct", "colheita_pct"],
+  "has_condicao": true,
+  "condicoes_expected": ["boa", "media", "ruim"],
+  "produto_expected": "soja"
+}

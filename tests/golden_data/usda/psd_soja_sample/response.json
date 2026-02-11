@@ -1,0 +1,7 @@
+[
+  {"CommodityCode": "2222000", "CommodityDescription": "Oilseed, Soybean", "CountryCode": "BR", "CountryName": "Brazil", "MarketYear": 2024, "CalendarYear": 2024, "Month": 3, "AttributeId": 125, "AttributeDescription": "Production", "UnitId": 24, "UnitDescription": "1000 MT", "Value": 153000.0},
+  {"CommodityCode": "2222000", "CommodityDescription": "Oilseed, Soybean", "CountryCode": "BR", "CountryName": "Brazil", "MarketYear": 2024, "CalendarYear": 2024, "Month": 3, "AttributeId": 88, "AttributeDescription": "Exports", "UnitId": 24, "UnitDescription": "1000 MT", "Value": 105000.0},
+  {"CommodityCode": "2222000", "CommodityDescription": "Oilseed, Soybean", "CountryCode": "BR", "CountryName": "Brazil", "MarketYear": 2024, "CalendarYear": 2024, "Month": 3, "AttributeId": 57, "AttributeDescription": "Domestic Consumption", "UnitId": 24, "UnitDescription": "1000 MT", "Value": 56500.0},
+  {"CommodityCode": "2222000", "CommodityDescription": "Oilseed, Soybean", "CountryCode": "BR", "CountryName": "Brazil", "MarketYear": 2024, "CalendarYear": 2024, "Month": 3, "AttributeId": 84, "AttributeDescription": "Ending Stocks", "UnitId": 24, "UnitDescription": "1000 MT", "Value": 26400.0},
+  {"CommodityCode": "2222000", "CommodityDescription": "Oilseed, Soybean", "CountryCode": "BR", "CountryName": "Brazil", "MarketYear": 2024, "CalendarYear": 2024, "Month": 3, "AttributeId": 130, "AttributeDescription": "Imports", "UnitId": 24, "UnitDescription": "1000 MT", "Value": 500.0}
+]

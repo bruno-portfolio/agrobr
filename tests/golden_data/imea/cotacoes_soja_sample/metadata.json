@@ -1,0 +1,12 @@
+{
+  "source": "imea",
+  "format": "json",
+  "parser_module": "agrobr.imea.parser",
+  "parser_function": "parse_cotacoes",
+  "parser_kwargs": {},
+  "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/4/cotacoes",
+  "captured_at": "2026-02-11T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Real data from IMEA public API - soja cadeia quotations",
+  "needs_real_data": false
+}
