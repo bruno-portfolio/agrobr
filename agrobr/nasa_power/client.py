@@ -9,7 +9,7 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES
+from agrobr.constants import RETRIABLE_STATUS_CODES, HTTPSettings
 
 logger = structlog.get_logger()
 
@@ -31,13 +31,33 @@ HEADERS = {
 
 async def _get_json(params: dict[str, Any]) -> dict[str, Any]:
     """Faz GET na API NASA POWER e retorna JSON parseado."""
+    settings = HTTPSettings()
+    last_response: httpx.Response | None = None
+
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS) as client:
-        response = await client.get(BASE_URL, params=params)
-        response.raise_for_status()
-        data = response.json()
-        if not isinstance(data, dict):
-            return {}
-        return data
+        for attempt in range(settings.max_retries):
+            response = await client.get(BASE_URL, params=params)
+            if response.status_code != 429:
+                response.raise_for_status()
+                data = response.json()
+                if not isinstance(data, dict):
+                    return {}
+                return data
+            last_response = response
+            if attempt < settings.max_retries - 1:
+                delay = settings.retry_base_delay * (settings.retry_exponential_base**attempt)
+                logger.warning(
+                    "nasa_power_retry",
+                    attempt=attempt + 1,
+                    status=response.status_code,
+                    delay=delay,
+                )
+                await asyncio.sleep(delay)
+
+    logger.warning(
+        "nasa_power_retry_exhausted", status=last_response.status_code if last_response else None
+    )
+    return {}
 
 
 async def fetch_daily(

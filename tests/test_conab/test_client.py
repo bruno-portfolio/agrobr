@@ -76,7 +76,6 @@ class TestConabFetchSafra:
             await client.fetch_safra_xlsx(safra="2020/21")
 
     @pytest.mark.asyncio
-    @pytest.mark.xfail(reason="conab.client não implementa retry HTTP — sem tratamento 429/timeout")
     async def test_timeout_no_retry(self):
         with (
             patch("agrobr.http.browser.is_available", return_value=True),

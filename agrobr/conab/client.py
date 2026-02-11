@@ -13,6 +13,11 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.user_agents import UserAgentRotator
 
+try:
+    from playwright.async_api import async_playwright
+except ImportError:  # pragma: no cover
+    async_playwright = None  # type: ignore[assignment,misc]
+
 logger = structlog.get_logger()
 
 
@@ -22,7 +27,12 @@ async def fetch_boletim_page() -> str:
 
     Returns:
         HTML da página com lista de levantamentos
+
+    Raises:
+        SourceUnavailableError: Se não conseguir acessar a página
     """
+    import asyncio
+
     url = constants.URLS[constants.Fonte.CONAB]["boletim_graos"]
 
     logger.info("conab_fetch_boletim_page", url=url)
@@ -36,27 +46,45 @@ async def fetch_boletim_page() -> str:
             last_error="Playwright not available for CONAB page fetch",
         )
 
-    from playwright.async_api import async_playwright
+    settings = constants.HTTPSettings()
+    last_error: Exception | None = None
 
-    async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page(
-            user_agent=UserAgentRotator.get_random(),
-            viewport={"width": 1920, "height": 1080},
-        )
+    for attempt in range(settings.max_retries):
+        try:
+            async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:
+                browser = await p.chromium.launch(headless=True)
+                page = await browser.new_page(
+                    user_agent=UserAgentRotator.get_random(),
+                    viewport={"width": 1920, "height": 1080},
+                )
 
-        await page.goto(url, timeout=60000)
-        await page.wait_for_timeout(3000)
+                await page.goto(url, timeout=60000)
+                await page.wait_for_timeout(3000)
 
-        html: str = await page.content()
-        await browser.close()
+                html: str = await page.content()
+                await browser.close()
 
-        logger.info(
-            "conab_fetch_boletim_success",
-            content_length=len(html),
-        )
+                logger.info(
+                    "conab_fetch_boletim_success",
+                    content_length=len(html),
+                )
 
-        return html
+                return html
+
+        except Exception as e:
+            last_error = e
+            if attempt < settings.max_retries - 1:
+                delay = settings.retry_base_delay * (settings.retry_exponential_base**attempt)
+                logger.warning(
+                    "conab_boletim_retry", attempt=attempt + 1, error=str(e), delay=delay
+                )
+                await asyncio.sleep(delay)
+
+    raise SourceUnavailableError(
+        source="conab",
+        url=url,
+        last_error=str(last_error),
+    )
 
 
 async def list_levantamentos(html: str | None = None) -> list[dict[str, Any]]:
@@ -125,8 +153,6 @@ async def download_xlsx(url: str) -> BytesIO:
             url=url,
             last_error="Playwright not available for CONAB download",
         )
-
-    from playwright.async_api import async_playwright
 
     async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:
         browser = await p.chromium.launch(headless=True)

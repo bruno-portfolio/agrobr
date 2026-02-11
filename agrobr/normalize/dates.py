@@ -95,6 +95,8 @@ def normalizar_safra(safra: str) -> str:
         >>> normalizar_safra('2024/2025')
         '2024/25'
     """
+    safra = re.sub(r"\s*/\s*", "/", safra.strip())
+
     match_completa = REGEX_SAFRA_COMPLETA.match(safra)
     if match_completa:
         return safra

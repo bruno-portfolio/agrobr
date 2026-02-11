@@ -19,7 +19,6 @@ class TestIbgeSidraTimeout:
                 await client.fetch_sidra(table_code="5457")
 
     @pytest.mark.asyncio
-    @pytest.mark.xfail(reason="ibge.client usa sidrapy sem retry — timeout não retentado")
     async def test_sidrapy_timeout_retried(self):
         with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
             mock_sidra.side_effect = [

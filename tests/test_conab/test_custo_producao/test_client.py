@@ -86,7 +86,6 @@ class TestConabCustoHTTPErrors:
             await client.download_xlsx("https://www.gov.br/test.xlsx")
 
     @pytest.mark.asyncio
-    @pytest.mark.xfail(reason="conab_custo.client não implementa retry — sem tratamento 429")
     async def test_http_429_no_retry(self):
         resp_429 = _mock_response(429)
         mock_client = AsyncMock()

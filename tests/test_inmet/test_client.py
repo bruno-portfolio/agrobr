@@ -82,7 +82,6 @@ class TestInmetHTTPErrors:
             await client._get_json("/estacoes/T")
 
     @pytest.mark.asyncio
-    @pytest.mark.xfail(reason="inmet._get_json não implementa retry — 429 não tratado")
     async def test_http_429_no_retry(self):
         resp_429 = _mock_response(429)
         mock_client = AsyncMock()

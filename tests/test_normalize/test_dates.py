@@ -80,10 +80,6 @@ class TestNormalizarSafra:
         with pytest.raises(ValueError):
             normalizar_safra("")
 
-    @pytest.mark.xfail(
-        reason="GAP: normalizar_safra não faz strip — espaços não são tratados",
-        strict=True,
-    )
     def test_espacos_normalizados(self):
         assert normalizar_safra(" 2024 / 25 ") == "2024/25"
 

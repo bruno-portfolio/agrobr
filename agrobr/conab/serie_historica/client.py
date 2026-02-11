@@ -148,13 +148,40 @@ async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
     Raises:
         SourceUnavailableError: Se nao conseguir baixar.
     """
+    import asyncio
+
     url = get_xls_url(produto)
     logger.info("conab_serie_historica_download", produto=produto, url=url)
 
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         try:
-            response = await client.get(url)
-            response.raise_for_status()
+            last_response: httpx.Response | None = None
+            retriable_exhausted = False
+            for attempt in range(_settings.max_retries):
+                response = await client.get(url)
+                if response.status_code != 429:
+                    break
+                last_response = response
+                if attempt < _settings.max_retries - 1:
+                    delay = _settings.retry_base_delay * (_settings.retry_exponential_base**attempt)
+                    logger.warning(
+                        "conab_serie_retry",
+                        attempt=attempt + 1,
+                        status=response.status_code,
+                        delay=delay,
+                    )
+                    await asyncio.sleep(delay)
+            else:
+                logger.warning(
+                    "conab_serie_retry_exhausted",
+                    status=last_response.status_code if last_response else None,
+                    url=url,
+                )
+                retriable_exhausted = True
+                response = last_response  # type: ignore[assignment]
+
+            if not retriable_exhausted:
+                response.raise_for_status()
             content = response.content
 
             logger.info(

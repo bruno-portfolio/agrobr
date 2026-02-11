@@ -163,11 +163,6 @@ class TestDBCorrupted:
 
 
 class TestHistorySave:
-    @pytest.mark.xfail(
-        reason="BUG: history_entries.id é PRIMARY KEY sem autoincrement — "
-        "INSERT falha com NOT NULL constraint e ConstraintException é silenciada",
-        strict=True,
-    )
     def test_save_and_retrieve(self, tmp_store: DuckDBStore):
         data_date = datetime(2024, 6, 15)
         tmp_store.history_save(
@@ -182,10 +177,6 @@ class TestHistorySave:
         result = tmp_store.history_get("cepea:soja", data_date)
         assert result == b"hist_data"
 
-    @pytest.mark.xfail(
-        reason="BUG: history_entries.id sem autoincrement — save silenciosamente falha",
-        strict=True,
-    )
     def test_save_duplicate_is_idempotent(self, tmp_store: DuckDBStore):
         data_date = datetime(2024, 6, 15)
         tmp_store.history_save("k", b"d", Fonte.CEPEA, data_date, 1)
@@ -194,10 +185,6 @@ class TestHistorySave:
         result = tmp_store.history_get("k", data_date)
         assert result == b"d"
 
-    @pytest.mark.xfail(
-        reason="BUG: history_entries.id sem autoincrement — save silenciosamente falha",
-        strict=True,
-    )
     def test_history_get_latest(self, tmp_store: DuckDBStore):
         tmp_store.history_save("k", b"old", Fonte.CEPEA, datetime(2024, 1, 1), 1)
         tmp_store.history_save("k", b"new", Fonte.CEPEA, datetime(2024, 6, 1), 1)

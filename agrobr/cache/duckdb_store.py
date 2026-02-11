@@ -30,8 +30,10 @@ CREATE INDEX IF NOT EXISTS idx_cache_expires ON cache_entries(expires_at);
 """
 
 SCHEMA_HISTORY = """
+CREATE SEQUENCE IF NOT EXISTS seq_history_id START 1;
+
 CREATE TABLE IF NOT EXISTS history_entries (
-    id INTEGER PRIMARY KEY,
+    id INTEGER DEFAULT nextval('seq_history_id') PRIMARY KEY,
     key TEXT NOT NULL,
     data BLOB NOT NULL,
     source TEXT NOT NULL,

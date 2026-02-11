@@ -78,7 +78,6 @@ class TestNasaPowerHTTPErrors:
             await client._get_json({"test": "1"})
 
     @pytest.mark.asyncio
-    @pytest.mark.xfail(reason="nasa_power._get_json não implementa retry — 429 não tratado")
     async def test_http_429_no_retry(self):
         resp_429 = _mock_response(429)
         mock_client = AsyncMock()
