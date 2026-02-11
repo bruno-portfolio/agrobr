@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **13 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET e Notícias Agrícolas.
 
-**v0.9.0** — 1433+ testes, ~75% cobertura, 13/13 fontes com golden tests, resiliência HTTP completa.
+**v0.9.0** — 1529 testes, ~75% cobertura, 13/13 fontes com golden tests, resiliência HTTP completa.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -302,7 +302,7 @@ Use `agrobr health --all` para verificar localmente.
 
 - **13/13 fontes com golden tests** — validação automatizada contra dados de referência
 - **Resiliência HTTP completa** — retry centralizado, 429 handling, Retry-After
-- **1433+ testes, ~75% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **1529 testes, ~75% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos públicos** — schema versionado e garantias de estabilidade
 - **Modo determinístico** — reprodutibilidade total para papers/auditorias

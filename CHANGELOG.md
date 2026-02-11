@@ -10,7 +10,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [0.9.0] - 2026-02-11
 
 ### Added
-- **1433+ testes** (era 949), cobertura **~75%** (era 57.5%)
+- **1529 testes** (era 949), cobertura **~75%** (era 57.5%)
 - **Golden tests** para todas as 13 fontes de dados (era 2/13)
 - **Benchmark de escalabilidade** — memory, volume, cache, async, rate limiting, sync, golden
 - **Suporte a token INMET** — `AGROBR_INMET_TOKEN` via env var

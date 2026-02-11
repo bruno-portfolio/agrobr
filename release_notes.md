@@ -2,7 +2,7 @@
 
 ## Highlights
 
-- **1433+ testes** (era 949), cobertura **~75%** (era 57.5%)
+- **1529 testes** (era 949), cobertura **~75%** (era 57.5%)
 - **13/13 fontes** com golden tests (era 2/13)
 - **10 bugs corrigidos** incluindo histórico DuckDB que nunca salvava dados
 - **Resiliência HTTP** completa: retry centralizado, 429 handling, Retry-After
@@ -21,7 +21,7 @@ pip install --upgrade agrobr
 
 ## Added
 
-- 1433+ testes (era 949), cobertura ~75% (era 57.5%)
+- 1529 testes (era 949), cobertura ~75% (era 57.5%)
 - Golden tests para todas as 13 fontes de dados
 - Benchmark de escalabilidade (memory, volume, cache, async, rate limiting)
 - Suporte a token INMET (`AGROBR_INMET_TOKEN` via env var)
