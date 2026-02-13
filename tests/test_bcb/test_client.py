@@ -10,12 +10,15 @@ import pytest
 from agrobr.bcb import client
 from agrobr.exceptions import SourceUnavailableError
 
+RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
+
 
 def _mock_response(status_code: int = 200, json_data: dict | None = None) -> httpx.Response:
     resp = MagicMock(spec=httpx.Response)
     resp.status_code = status_code
     resp.json.return_value = json_data or {"value": []}
     resp.headers = {}
+    resp.url = "https://olinda.bcb.gov.br/test"
     resp.raise_for_status = MagicMock()
     if status_code >= 400:
         resp.raise_for_status.side_effect = httpx.HTTPStatusError(
@@ -26,7 +29,7 @@ def _mock_response(status_code: int = 200, json_data: dict | None = None) -> htt
 
 class TestBcbTimeout:
     @pytest.mark.asyncio
-    async def test_timeout_retries_then_fails(self):
+    async def test_timeout_propagates_immediately(self):
         mock_client = AsyncMock()
         mock_client.get.side_effect = httpx.TimeoutException("read timeout")
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -34,28 +37,11 @@ class TestBcbTimeout:
 
         with (
             patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="Falhou após 6 tentativas"),
+            pytest.raises(httpx.TimeoutException),
         ):
             await client._fetch_odata("CusteioRegiaoUFProduto")
 
-        assert mock_client.get.call_count == client.MAX_RETRIES
-
-    @pytest.mark.asyncio
-    async def test_timeout_succeeds_after_failures(self):
-        ok_resp = _mock_response(200, {"value": [{"id": 1}]})
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(side_effect=[httpx.TimeoutException("t1"), ok_resp])
-        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-        mock_client.__aexit__ = AsyncMock(return_value=False)
-
-        with (
-            patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-        ):
-            result = await client._fetch_odata("CusteioRegiaoUFProduto")
-
-        assert result == {"value": [{"id": 1}]}
+        assert mock_client.get.call_count == 1
 
 
 class TestBcbHTTPErrors:
@@ -69,10 +55,12 @@ class TestBcbHTTPErrors:
 
         with (
             patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="HTTP 500"),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
+            pytest.raises(SourceUnavailableError),
         ):
             await client._fetch_odata("CusteioRegiaoUFProduto")
+
+        assert mock_client.get.call_count == client.BCB_MAX_RETRIES
 
     @pytest.mark.asyncio
     async def test_http_429_retries(self):
@@ -85,7 +73,7 @@ class TestBcbHTTPErrors:
 
         with (
             patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
         ):
             result = await client._fetch_odata("CusteioRegiaoUFProduto")
 
@@ -101,8 +89,7 @@ class TestBcbHTTPErrors:
 
         with (
             patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
+            pytest.raises(httpx.HTTPStatusError),
         ):
             await client._fetch_odata("CusteioRegiaoUFProduto")
 
@@ -138,8 +125,9 @@ class TestBcbEmptyResponse:
 class TestBcbRetry:
     @pytest.mark.asyncio
     async def test_backoff_exponential(self):
+        resp_500 = _mock_response(500)
         mock_client = AsyncMock()
-        mock_client.get.side_effect = httpx.TimeoutException("timeout")
+        mock_client.get = AsyncMock(return_value=resp_500)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
@@ -150,12 +138,12 @@ class TestBcbRetry:
 
         with (
             patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", side_effect=track_sleep),
+            patch(RETRY_SLEEP, side_effect=track_sleep),
             pytest.raises(SourceUnavailableError),
         ):
             await client._fetch_odata("CusteioRegiaoUFProduto")
 
-        assert len(sleep_calls) == client.MAX_RETRIES
+        assert len(sleep_calls) == client.BCB_MAX_RETRIES - 1
         for i in range(1, len(sleep_calls)):
             assert sleep_calls[i] > sleep_calls[i - 1]
 

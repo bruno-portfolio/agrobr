@@ -10,12 +10,15 @@ import pytest
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.usda import client
 
+RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
+
 
 def _mock_response(status_code: int = 200, json_data: list | dict | None = None) -> httpx.Response:
     resp = MagicMock(spec=httpx.Response)
     resp.status_code = status_code
     resp.json.return_value = json_data if json_data is not None else []
     resp.headers = {}
+    resp.url = "https://test.usda.gov/api"
     resp.raise_for_status = MagicMock()
     if status_code >= 400:
         resp.raise_for_status.side_effect = httpx.HTTPStatusError(
@@ -44,7 +47,7 @@ class TestUsdaApiKey:
 
 class TestUsdaTimeout:
     @pytest.mark.asyncio
-    async def test_timeout_retries_then_fails(self):
+    async def test_timeout_propagates_immediately(self):
         mock_client = AsyncMock()
         mock_client.get.side_effect = httpx.TimeoutException("timeout")
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -52,28 +55,11 @@ class TestUsdaTimeout:
 
         with (
             patch("agrobr.usda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.usda.client.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="Falhou após"),
+            pytest.raises(httpx.TimeoutException),
         ):
             await client._fetch_json("https://test.usda.gov/api", "key123")
 
-        assert mock_client.get.call_count == client.MAX_RETRIES
-
-    @pytest.mark.asyncio
-    async def test_timeout_succeeds_after_failures(self):
-        ok_resp = _mock_response(200, [{"id": 1}])
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(side_effect=[httpx.TimeoutException("t"), ok_resp])
-        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-        mock_client.__aexit__ = AsyncMock(return_value=False)
-
-        with (
-            patch("agrobr.usda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.usda.client.asyncio.sleep", new_callable=AsyncMock),
-        ):
-            result = await client._fetch_json("https://test.usda.gov/api", "key123")
-
-        assert result == [{"id": 1}]
+        assert mock_client.get.call_count == 1
 
 
 class TestUsdaHTTPErrors:
@@ -116,10 +102,12 @@ class TestUsdaHTTPErrors:
 
         with (
             patch("agrobr.usda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.usda.client.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="HTTP 500"),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
+            pytest.raises(SourceUnavailableError),
         ):
             await client._fetch_json("https://test.usda.gov/api", "key")
+
+        assert mock_client.get.call_count > 1
 
     @pytest.mark.asyncio
     async def test_http_429_retries_then_succeeds(self):
@@ -132,7 +120,7 @@ class TestUsdaHTTPErrors:
 
         with (
             patch("agrobr.usda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.usda.client.asyncio.sleep", new_callable=AsyncMock),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
         ):
             result = await client._fetch_json("https://test.usda.gov/api", "key")
 
@@ -148,8 +136,7 @@ class TestUsdaHTTPErrors:
 
         with (
             patch("agrobr.usda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.usda.client.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
+            pytest.raises(httpx.HTTPStatusError),
         ):
             await client._fetch_json("https://test.usda.gov/api", "key")
 
@@ -185,8 +172,9 @@ class TestUsdaEmptyResponse:
 class TestUsdaRetryBackoff:
     @pytest.mark.asyncio
     async def test_backoff_exponential(self):
+        resp_500 = _mock_response(500)
         mock_client = AsyncMock()
-        mock_client.get.side_effect = httpx.TimeoutException("timeout")
+        mock_client.get = AsyncMock(return_value=resp_500)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
@@ -197,10 +185,11 @@ class TestUsdaRetryBackoff:
 
         with (
             patch("agrobr.usda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.usda.client.asyncio.sleep", side_effect=track_sleep),
+            patch(RETRY_SLEEP, side_effect=track_sleep),
             pytest.raises(SourceUnavailableError),
         ):
             await client._fetch_json("https://test.usda.gov/api", "key")
 
+        assert len(sleep_calls) >= 2
         for i in range(1, len(sleep_calls)):
             assert sleep_calls[i] > sleep_calls[i - 1]

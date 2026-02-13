@@ -10,12 +10,15 @@ import pytest
 from agrobr.comexstat import client
 from agrobr.exceptions import SourceUnavailableError
 
+RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
+
 
 def _mock_response(status_code: int = 200, text: str = "col1;col2\nval1;val2") -> httpx.Response:
     resp = MagicMock(spec=httpx.Response)
     resp.status_code = status_code
     resp.text = text
     resp.headers = {}
+    resp.url = "https://test.gov.br/EXP_2024.csv"
     resp.raise_for_status = MagicMock()
     if status_code >= 400:
         resp.raise_for_status.side_effect = httpx.HTTPStatusError(
@@ -26,7 +29,7 @@ def _mock_response(status_code: int = 200, text: str = "col1;col2\nval1;val2") -
 
 class TestComexstatTimeout:
     @pytest.mark.asyncio
-    async def test_timeout_retries_then_fails(self):
+    async def test_timeout_propagates_immediately(self):
         mock_client = AsyncMock()
         mock_client.get.side_effect = httpx.TimeoutException("read timeout")
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -34,12 +37,11 @@ class TestComexstatTimeout:
 
         with (
             patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="Falhou após"),
+            pytest.raises(httpx.TimeoutException),
         ):
             await client.download_csv("https://test.gov.br/EXP_2024.csv")
 
-        assert mock_client.get.call_count == client.MAX_RETRIES
+        assert mock_client.get.call_count == 1
 
 
 class TestComexstatHTTPErrors:
@@ -53,10 +55,12 @@ class TestComexstatHTTPErrors:
 
         with (
             patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="HTTP 500"),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
+            pytest.raises(SourceUnavailableError),
         ):
             await client.download_csv("https://test.gov.br/EXP_2024.csv")
+
+        assert mock_client.get.call_count > 1
 
     @pytest.mark.asyncio
     async def test_http_403_raises_via_raise_for_status(self):
@@ -68,8 +72,7 @@ class TestComexstatHTTPErrors:
 
         with (
             patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
+            pytest.raises(httpx.HTTPStatusError),
         ):
             await client.download_csv("https://test.gov.br/EXP_2024.csv")
 
@@ -84,7 +87,7 @@ class TestComexstatHTTPErrors:
 
         with (
             patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
         ):
             result = await client.download_csv("https://test.gov.br/EXP_2024.csv")
 
@@ -122,12 +125,12 @@ class TestComexstatRetryBackoff:
 
         with (
             patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", side_effect=track_sleep),
+            patch(RETRY_SLEEP, side_effect=track_sleep),
             pytest.raises(SourceUnavailableError),
         ):
             await client.download_csv("https://test.gov.br/EXP_2024.csv")
 
-        assert len(sleep_calls) == client.MAX_RETRIES
+        assert len(sleep_calls) >= 2
         for i in range(1, len(sleep_calls)):
             assert sleep_calls[i] > sleep_calls[i - 1]
 

@@ -12,8 +12,8 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES, HTTPSettings
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.constants import HTTPSettings
+from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
@@ -36,8 +36,6 @@ HEADERS = {
     ),
 }
 
-MAX_RETRIES = 3
-
 
 async def download_csv(url: str) -> str:
     """Baixa arquivo CSV da ComexStat.
@@ -51,59 +49,25 @@ async def download_csv(url: str) -> str:
     Raises:
         SourceUnavailableError: Se não conseguir baixar.
     """
-    import asyncio
-
     logger.info("comexstat_download_csv", url=url)
 
-    last_error = ""
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=HEADERS, follow_redirects=True, verify=False
+    ) as client:
+        response = await retry_on_status(
+            lambda: client.get(url),
+            source="comexstat",
+        )
 
-    for attempt in range(MAX_RETRIES):
-        try:
-            async with httpx.AsyncClient(
-                timeout=TIMEOUT, headers=HEADERS, follow_redirects=True, verify=False
-            ) as client:
-                response = await client.get(url)
+        response.raise_for_status()
 
-                if response.status_code in RETRIABLE_STATUS_CODES:
-                    last_error = f"HTTP {response.status_code}"
-                    delay = 2.0 * (2**attempt)
-                    logger.warning(
-                        "comexstat_retriable_error",
-                        status=response.status_code,
-                        attempt=attempt + 1,
-                        delay=delay,
-                    )
-                    await asyncio.sleep(delay)
-                    continue
-
-                response.raise_for_status()
-
-                content = response.text
-                logger.info(
-                    "comexstat_download_ok",
-                    url=url,
-                    size_chars=len(content),
-                )
-                return content
-
-        except httpx.HTTPError as e:
-            last_error = str(e)
-            delay = 2.0 * (2**attempt)
-            logger.warning(
-                "comexstat_download_error",
-                url=url,
-                error=str(e),
-                attempt=attempt + 1,
-                delay=delay,
-            )
-            await asyncio.sleep(delay)
-            continue
-
-    raise SourceUnavailableError(
-        source="comexstat",
-        url=url,
-        last_error=f"Falhou após {MAX_RETRIES} tentativas: {last_error}",
-    )
+        content = response.text
+        logger.info(
+            "comexstat_download_ok",
+            url=url,
+            size_chars=len(content),
+        )
+        return content
 
 
 async def fetch_exportacao_csv(ano: int) -> str:

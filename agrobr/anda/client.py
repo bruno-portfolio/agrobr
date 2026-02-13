@@ -12,7 +12,7 @@ import re
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES
+from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
@@ -21,53 +21,32 @@ ESTATISTICAS_URL = f"{BASE_URL}/recursos/"
 
 TIMEOUT = httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=10.0)
 
-MAX_RETRIES = 3
-RETRY_BASE_DELAY = 2.0
+HEADERS = {"User-Agent": "agrobr/0.7.1 (https://github.com/bruno-portfolio/agrobr)"}
 
 
-async def _get_with_retry(url: str, *, retries: int = MAX_RETRIES) -> httpx.Response:
-    """GET com retry exponencial.
+async def _get_with_retry(url: str) -> httpx.Response:
+    """GET com retry exponencial via retry_on_status centralizado.
 
     Args:
         url: URL para acessar.
-        retries: Número máximo de tentativas.
 
     Returns:
         Response HTTP.
+
+    Raises:
+        SourceUnavailableError: Se URL indisponível após retries.
     """
-    import asyncio
-
-    last_error: Exception | None = None
-
-    for attempt in range(retries):
-        try:
-            async with httpx.AsyncClient(
-                timeout=TIMEOUT,
-                follow_redirects=True,
-                headers={"User-Agent": "agrobr/0.7.1 (https://github.com/bruno-portfolio/agrobr)"},
-            ) as client:
-                response = await client.get(url)
-                response.raise_for_status()
-                return response
-        except (httpx.HTTPStatusError, httpx.TimeoutException, httpx.ConnectError) as e:
-            last_error = e
-            if (
-                isinstance(e, httpx.HTTPStatusError)
-                and e.response.status_code not in RETRIABLE_STATUS_CODES
-            ):
-                raise
-
-            wait = RETRY_BASE_DELAY * (2**attempt)
-            logger.warning(
-                "anda_retry",
-                url=url,
-                attempt=attempt + 1,
-                error=str(e),
-                wait=wait,
-            )
-            await asyncio.sleep(wait)
-
-    raise last_error  # type: ignore[misc]
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        follow_redirects=True,
+        headers=HEADERS,
+    ) as client:
+        response = await retry_on_status(
+            lambda: client.get(url),
+            source="anda",
+        )
+        response.raise_for_status()
+        return response
 
 
 async def fetch_estatisticas_page() -> str:

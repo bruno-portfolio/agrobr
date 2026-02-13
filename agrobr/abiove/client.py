@@ -8,13 +8,12 @@ O cliente tenta do mês mais recente para trás até encontrar arquivo válido.
 
 from __future__ import annotations
 
-import asyncio
-
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES, HTTPSettings
+from agrobr.constants import HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
@@ -31,9 +30,6 @@ TIMEOUT = httpx.Timeout(
 
 HEADERS = {"User-Agent": "agrobr/0.8.0 (https://github.com/your-org/agrobr)"}
 
-MAX_RETRIES = 3
-RETRY_BASE_DELAY = 2.0
-
 
 async def _fetch_url(url: str) -> bytes:
     """Fetch URL com retry exponencial.
@@ -47,54 +43,18 @@ async def _fetch_url(url: str) -> bytes:
     Raises:
         SourceUnavailableError: Se URL indisponível após retries.
     """
-    last_error = ""
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+        logger.debug("abiove_request", url=url)
+        response = await retry_on_status(
+            lambda: client.get(url),
+            source="abiove",
+        )
 
-    for attempt in range(MAX_RETRIES):
-        try:
-            async with httpx.AsyncClient(
-                timeout=TIMEOUT, headers=HEADERS, follow_redirects=True
-            ) as client:
-                logger.debug("abiove_request", url=url, attempt=attempt + 1)
-                response = await client.get(url)
+        if response.status_code == 404:
+            raise SourceUnavailableError(source="abiove", url=url, last_error="HTTP 404")
 
-                if response.status_code == 404:
-                    raise SourceUnavailableError(source="abiove", url=url, last_error="HTTP 404")
-
-                if response.status_code in RETRIABLE_STATUS_CODES:
-                    last_error = f"HTTP {response.status_code}"
-                    delay = RETRY_BASE_DELAY * (2**attempt)
-                    logger.warning(
-                        "abiove_retriable_error",
-                        status=response.status_code,
-                        attempt=attempt + 1,
-                        delay=delay,
-                    )
-                    await asyncio.sleep(delay)
-                    continue
-
-                response.raise_for_status()
-                return response.content
-
-        except SourceUnavailableError:
-            raise
-
-        except httpx.TimeoutException as e:
-            last_error = f"Timeout: {e}"
-            delay = RETRY_BASE_DELAY * (2**attempt)
-            logger.warning("abiove_timeout", attempt=attempt + 1, delay=delay)
-            await asyncio.sleep(delay)
-
-        except httpx.HTTPError as e:
-            last_error = str(e)
-            delay = RETRY_BASE_DELAY * (2**attempt)
-            logger.warning("abiove_http_error", error=str(e), attempt=attempt + 1, delay=delay)
-            await asyncio.sleep(delay)
-
-    raise SourceUnavailableError(
-        source="abiove",
-        url=url,
-        last_error=f"Falhou após {MAX_RETRIES} tentativas: {last_error}",
-    )
+        response.raise_for_status()
+        return response.content
 
 
 async def fetch_exportacao_excel(ano: int, mes: int | None = None) -> tuple[bytes, str]:

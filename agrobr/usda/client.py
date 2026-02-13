@@ -9,15 +9,15 @@ ou passe api_key diretamente.
 
 from __future__ import annotations
 
-import asyncio
 import os
 from typing import Any
 
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES, HTTPSettings
+from agrobr.constants import HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
@@ -31,9 +31,6 @@ TIMEOUT = httpx.Timeout(
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
-
-MAX_RETRIES = 3
-RETRY_BASE_DELAY = 2.0
 
 
 def _get_api_key(api_key: str | None = None) -> str:
@@ -84,60 +81,26 @@ async def _fetch_json(
         "User-Agent": "agrobr/0.8.0 (https://github.com/your-org/agrobr)",
     }
 
-    last_error = ""
+    async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as client:
+        logger.debug("usda_request", url=url)
+        response = await retry_on_status(
+            lambda: client.get(url, headers=headers, params=params),
+            source="usda",
+        )
 
-    for attempt in range(MAX_RETRIES):
-        try:
-            async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as client:
-                logger.debug("usda_request", url=url, attempt=attempt + 1)
-                response = await client.get(url, headers=headers, params=params)
+        if response.status_code == 401:
+            raise SourceUnavailableError(
+                source="usda",
+                url=url,
+                last_error="API key inválida (HTTP 401). Verifique AGROBR_USDA_API_KEY.",
+            )
 
-                if response.status_code == 401:
-                    raise SourceUnavailableError(
-                        source="usda",
-                        url=url,
-                        last_error="API key inválida (HTTP 401). Verifique AGROBR_USDA_API_KEY.",
-                    )
+        if response.status_code == 404:
+            return []
 
-                if response.status_code == 404:
-                    return []
-
-                if response.status_code in RETRIABLE_STATUS_CODES:
-                    last_error = f"HTTP {response.status_code}"
-                    delay = RETRY_BASE_DELAY * (2**attempt)
-                    logger.warning(
-                        "usda_retriable_error",
-                        status=response.status_code,
-                        attempt=attempt + 1,
-                        delay=delay,
-                    )
-                    await asyncio.sleep(delay)
-                    continue
-
-                response.raise_for_status()
-                data = response.json()
-                return data if isinstance(data, list) else []
-
-        except SourceUnavailableError:
-            raise
-
-        except httpx.TimeoutException as e:
-            last_error = f"Timeout: {e}"
-            delay = RETRY_BASE_DELAY * (2**attempt)
-            logger.warning("usda_timeout", attempt=attempt + 1, delay=delay)
-            await asyncio.sleep(delay)
-
-        except httpx.HTTPError as e:
-            last_error = str(e)
-            delay = RETRY_BASE_DELAY * (2**attempt)
-            logger.warning("usda_http_error", error=str(e), attempt=attempt + 1, delay=delay)
-            await asyncio.sleep(delay)
-
-    raise SourceUnavailableError(
-        source="usda",
-        url=url,
-        last_error=f"Falhou após {MAX_RETRIES} tentativas: {last_error}",
-    )
+        response.raise_for_status()
+        data = response.json()
+        return data if isinstance(data, list) else []
 
 
 async def fetch_psd_country(

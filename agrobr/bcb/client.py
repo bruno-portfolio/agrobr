@@ -22,8 +22,9 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES, HTTPSettings
+from agrobr.constants import HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
@@ -41,8 +42,7 @@ TIMEOUT = httpx.Timeout(
 HEADERS = {"User-Agent": "agrobr/0.7.1 (https://github.com/your-org/agrobr)"}
 
 PAGE_SIZE = 10000
-MAX_RETRIES = 6
-RETRY_BASE_DELAY = 2.0
+BCB_MAX_RETRIES = 6
 
 # Mapeamento de finalidade para endpoint (API reestruturada ~2024)
 # Endpoints antigos (CusteioMunicipio, InvestimentoMunicipio) foram removidos.
@@ -91,68 +91,22 @@ async def _fetch_odata(
     if select:
         params["$select"] = ",".join(select)
 
-    import asyncio
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+        logger.debug(
+            "bcb_odata_request",
+            endpoint=endpoint,
+            skip=skip,
+            top=top,
+        )
 
-    last_error: str = ""
+        response = await retry_on_status(
+            lambda: client.get(url, params=params),
+            source="bcb",
+            max_attempts=BCB_MAX_RETRIES,
+        )
 
-    for attempt in range(MAX_RETRIES):
-        try:
-            async with httpx.AsyncClient(
-                timeout=TIMEOUT, headers=HEADERS, follow_redirects=True
-            ) as client:
-                logger.debug(
-                    "bcb_odata_request",
-                    endpoint=endpoint,
-                    attempt=attempt + 1,
-                    skip=skip,
-                    top=top,
-                )
-
-                response = await client.get(url, params=params)
-
-                if response.status_code in RETRIABLE_STATUS_CODES:
-                    last_error = f"HTTP {response.status_code}"
-                    delay = RETRY_BASE_DELAY * (2**attempt)
-                    logger.warning(
-                        "bcb_retriable_error",
-                        status=response.status_code,
-                        attempt=attempt + 1,
-                        delay=delay,
-                    )
-                    await asyncio.sleep(delay)
-                    continue
-
-                response.raise_for_status()
-                return response.json()  # type: ignore[no-any-return]
-
-        except httpx.TimeoutException as e:
-            last_error = f"Timeout: {e}"
-            delay = RETRY_BASE_DELAY * (2**attempt)
-            logger.warning(
-                "bcb_timeout",
-                attempt=attempt + 1,
-                delay=delay,
-            )
-            await asyncio.sleep(delay)
-            continue
-
-        except httpx.HTTPError as e:
-            last_error = str(e)
-            delay = RETRY_BASE_DELAY * (2**attempt)
-            logger.warning(
-                "bcb_http_error",
-                error=str(e),
-                attempt=attempt + 1,
-                delay=delay,
-            )
-            await asyncio.sleep(delay)
-            continue
-
-    raise SourceUnavailableError(
-        source="bcb",
-        url=url,
-        last_error=f"Falhou após {MAX_RETRIES} tentativas: {last_error}",
-    )
+        response.raise_for_status()
+        return response.json()  # type: ignore[no-any-return]
 
 
 async def fetch_credito_rural(

@@ -10,6 +10,8 @@ import pytest
 from agrobr.abiove import client
 from agrobr.exceptions import SourceUnavailableError
 
+RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
+
 
 def _mock_response(
     status_code: int = 200, content: bytes = b"xlsx-data", headers: dict | None = None
@@ -18,6 +20,7 @@ def _mock_response(
     resp.status_code = status_code
     resp.content = content
     resp.headers = headers or {}
+    resp.url = "https://abiove.org.br/test.xlsx"
     resp.raise_for_status = MagicMock()
     if status_code >= 400:
         resp.raise_for_status.side_effect = httpx.HTTPStatusError(
@@ -28,7 +31,7 @@ def _mock_response(
 
 class TestAbioveTimeout:
     @pytest.mark.asyncio
-    async def test_timeout_propagates_after_retries(self):
+    async def test_timeout_propagates_immediately(self):
         mock_client = AsyncMock()
         mock_client.get.side_effect = httpx.TimeoutException("connect timeout")
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -36,30 +39,11 @@ class TestAbioveTimeout:
 
         with (
             patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.abiove.client.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="Falhou após 3 tentativas"),
+            pytest.raises(httpx.TimeoutException),
         ):
             await client._fetch_url("https://abiove.org.br/test.xlsx")
 
-        assert mock_client.get.call_count == client.MAX_RETRIES
-
-    @pytest.mark.asyncio
-    async def test_timeout_retries_then_succeeds(self):
-        ok_resp = _mock_response(200, b"valid-xlsx")
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(
-            side_effect=[httpx.TimeoutException("t1"), httpx.TimeoutException("t2"), ok_resp]
-        )
-        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-        mock_client.__aexit__ = AsyncMock(return_value=False)
-
-        with (
-            patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.abiove.client.asyncio.sleep", new_callable=AsyncMock),
-        ):
-            result = await client._fetch_url("https://abiove.org.br/test.xlsx")
-
-        assert result == b"valid-xlsx"
+        assert mock_client.get.call_count == 1
 
 
 class TestAbioveHTTPErrors:
@@ -73,10 +57,12 @@ class TestAbioveHTTPErrors:
 
         with (
             patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.abiove.client.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="HTTP 500"),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
+            pytest.raises(SourceUnavailableError),
         ):
             await client._fetch_url("https://abiove.org.br/test.xlsx")
+
+        assert mock_client.get.call_count > 1
 
     @pytest.mark.asyncio
     async def test_http_404_raises_immediately(self):
@@ -104,8 +90,7 @@ class TestAbioveHTTPErrors:
 
         with (
             patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.abiove.client.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
+            pytest.raises(httpx.HTTPStatusError),
         ):
             await client._fetch_url("https://abiove.org.br/test.xlsx")
 
@@ -120,7 +105,7 @@ class TestAbioveHTTPErrors:
 
         with (
             patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.abiove.client.asyncio.sleep", new_callable=AsyncMock),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
         ):
             result = await client._fetch_url("https://abiove.org.br/test.xlsx")
 
@@ -158,19 +143,19 @@ class TestAbioveRetry:
 
         with (
             patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.abiove.client.asyncio.sleep", side_effect=track_sleep),
+            patch(RETRY_SLEEP, side_effect=track_sleep),
             pytest.raises(SourceUnavailableError),
         ):
             await client._fetch_url("https://abiove.org.br/test.xlsx")
 
-        assert len(sleep_calls) == client.MAX_RETRIES
+        assert len(sleep_calls) >= 2
         for i in range(1, len(sleep_calls)):
             assert sleep_calls[i] > sleep_calls[i - 1]
 
 
-class TestAbioveHTTPError:
+class TestAbioveConnectError:
     @pytest.mark.asyncio
-    async def test_generic_http_error_retries(self):
+    async def test_connect_error_propagates_immediately(self):
         mock_client = AsyncMock()
         mock_client.get.side_effect = httpx.ConnectError("connection refused")
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -178,12 +163,11 @@ class TestAbioveHTTPError:
 
         with (
             patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
-            patch("agrobr.abiove.client.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="Falhou após"),
+            pytest.raises(httpx.ConnectError),
         ):
             await client._fetch_url("https://abiove.org.br/test.xlsx")
 
-        assert mock_client.get.call_count == client.MAX_RETRIES
+        assert mock_client.get.call_count == 1
 
 
 class TestFetchExportacaoExcel:

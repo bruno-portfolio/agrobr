@@ -8,6 +8,9 @@ import httpx
 import pytest
 
 from agrobr.anda import client
+from agrobr.exceptions import SourceUnavailableError
+
+RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
 
 
 def _mock_response(
@@ -18,6 +21,7 @@ def _mock_response(
     resp.text = text
     resp.content = content
     resp.headers = {}
+    resp.url = "https://anda.org.br/test"
     resp.raise_for_status = MagicMock()
     if status_code >= 400:
         resp.raise_for_status.side_effect = httpx.HTTPStatusError(
@@ -28,7 +32,7 @@ def _mock_response(
 
 class TestAndaTimeout:
     @pytest.mark.asyncio
-    async def test_timeout_retries_then_fails(self):
+    async def test_timeout_propagates_immediately(self):
         mock_client = AsyncMock()
         mock_client.get.side_effect = httpx.TimeoutException("read timeout")
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -36,33 +40,16 @@ class TestAndaTimeout:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
             pytest.raises(httpx.TimeoutException),
         ):
             await client._get_with_retry("https://anda.org.br/test")
 
-        assert mock_client.get.call_count == client.MAX_RETRIES
-
-    @pytest.mark.asyncio
-    async def test_timeout_succeeds_after_retries(self):
-        ok_resp = _mock_response(200)
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(side_effect=[httpx.TimeoutException("t1"), ok_resp])
-        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-        mock_client.__aexit__ = AsyncMock(return_value=False)
-
-        with (
-            patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
-        ):
-            result = await client._get_with_retry("https://anda.org.br/test")
-
-        assert result.status_code == 200
+        assert mock_client.get.call_count == 1
 
 
 class TestAndaHTTPErrors:
     @pytest.mark.asyncio
-    async def test_http_500_retries(self):
+    async def test_http_500_retries_then_succeeds(self):
         resp_500 = _mock_response(500)
         resp_ok = _mock_response(200)
         mock_client = AsyncMock()
@@ -72,14 +59,14 @@ class TestAndaHTTPErrors:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
         ):
             result = await client._get_with_retry("https://anda.org.br/test")
 
         assert result.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_http_403_raises_immediately(self):
+    async def test_http_403_raises_via_raise_for_status(self):
         resp_403 = _mock_response(403)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp_403)
@@ -95,7 +82,7 @@ class TestAndaHTTPErrors:
         assert mock_client.get.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_http_404_raises_immediately(self):
+    async def test_http_404_raises_via_raise_for_status(self):
         resp_404 = _mock_response(404)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp_404)
@@ -121,7 +108,7 @@ class TestAndaHTTPErrors:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
+            patch(RETRY_SLEEP, new_callable=AsyncMock),
         ):
             result = await client._get_with_retry("https://anda.org.br/test")
 
@@ -130,7 +117,7 @@ class TestAndaHTTPErrors:
 
 class TestAndaConnectError:
     @pytest.mark.asyncio
-    async def test_connect_error_retries(self):
+    async def test_connect_error_propagates_immediately(self):
         mock_client = AsyncMock()
         mock_client.get.side_effect = httpx.ConnectError("refused")
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -138,12 +125,11 @@ class TestAndaConnectError:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", new_callable=AsyncMock),
             pytest.raises(httpx.ConnectError),
         ):
             await client._get_with_retry("https://anda.org.br/test")
 
-        assert mock_client.get.call_count == client.MAX_RETRIES
+        assert mock_client.get.call_count == 1
 
 
 class TestAndaEmptyResponse:
@@ -172,8 +158,9 @@ class TestAndaEmptyResponse:
 class TestAndaRetryBackoff:
     @pytest.mark.asyncio
     async def test_backoff_exponential(self):
+        resp_500 = _mock_response(500)
         mock_client = AsyncMock()
-        mock_client.get.side_effect = httpx.TimeoutException("timeout")
+        mock_client.get = AsyncMock(return_value=resp_500)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
@@ -184,11 +171,12 @@ class TestAndaRetryBackoff:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            patch("asyncio.sleep", side_effect=track_sleep),
-            pytest.raises(httpx.TimeoutException),
+            patch(RETRY_SLEEP, side_effect=track_sleep),
+            pytest.raises(SourceUnavailableError),
         ):
             await client._get_with_retry("https://anda.org.br/test")
 
+        assert len(sleep_calls) >= 2
         for i in range(1, len(sleep_calls)):
             assert sleep_calls[i] > sleep_calls[i - 1]
 

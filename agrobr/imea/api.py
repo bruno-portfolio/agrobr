@@ -5,11 +5,16 @@ Cotações diárias, indicadores de preço, progresso de safra e
 comercialização para as cadeias produtivas de MT.
 
 Fonte: API pública IMEA (api1.imea.com.br), sem autenticação.
+
+LICENÇA: Termos de uso IMEA proíbem redistribuição de dados sem
+autorização escrita. Uso pessoal/educacional apenas.
+Ref: https://imea.com.br/imea-site/termo-de-uso.html
 """
 
 from __future__ import annotations
 
 import time
+import warnings
 from datetime import UTC, datetime
 from typing import Any, Literal, overload
 
@@ -20,6 +25,8 @@ from agrobr.models import MetaInfo
 
 from . import client, parser
 from .models import resolve_cadeia_id
+
+_WARNED = False
 
 logger = structlog.get_logger()
 
@@ -77,6 +84,17 @@ async def cotacoes(
         ['cadeia', 'localidade', 'valor', 'variacao', 'safra',
          'unidade', 'unidade_descricao', 'data_publicacao']
     """
+    global _WARNED  # noqa: PLW0603
+    if not _WARNED:
+        warnings.warn(
+            "IMEA: termos de uso proíbem redistribuição de dados sem "
+            "autorização escrita. Uso pessoal/educacional apenas. "
+            "Ref: https://imea.com.br/imea-site/termo-de-uso.html",
+            UserWarning,
+            stacklevel=2,
+        )
+        _WARNED = True
+
     cadeia_id = resolve_cadeia_id(cadeia)
 
     logger.info(
