@@ -10,6 +10,7 @@ import pandas as pd
 import structlog
 
 from agrobr import constants
+from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
 from agrobr.ibge import client
 from agrobr.models import MetaInfo
@@ -186,7 +187,11 @@ async def pam(
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
     meta.columns = df.columns.tolist()
-    meta.cache_key = f"ibge:pam:{produto}:{ano}"
+    meta.cache_key = build_cache_key(
+        "ibge:pam",
+        {"produto": produto, "ano": ano},
+        schema_version=meta.schema_version,
+    )
     meta.cache_expires_at = calculate_expiry(constants.Fonte.IBGE, "pam")
 
     if as_polars:
@@ -316,7 +321,11 @@ async def lspa(
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
     meta.columns = df.columns.tolist()
-    meta.cache_key = f"ibge:lspa:{produto}:{ano}:{mes}"
+    meta.cache_key = build_cache_key(
+        "ibge:lspa",
+        {"produto": produto, "ano": ano, "mes": mes},
+        schema_version=meta.schema_version,
+    )
     meta.cache_expires_at = calculate_expiry(constants.Fonte.IBGE, "lspa")
 
     if as_polars:

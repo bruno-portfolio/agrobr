@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .duckdb_store import DuckDBStore, get_store
 from .history import HistoryManager, get_history_manager
+from .keys import build_cache_key
 from .policies import (
     TTL,
     CachePolicy,
@@ -28,4 +29,5 @@ __all__ = [
     "calculate_expiry",
     "HistoryManager",
     "get_history_manager",
+    "build_cache_key",
 ]

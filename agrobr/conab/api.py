@@ -10,6 +10,7 @@ import pandas as pd
 import structlog
 
 from agrobr import constants
+from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
 from agrobr.conab import client
 from agrobr.conab.parsers.v1 import ConabParserV1
@@ -128,7 +129,11 @@ async def safras(
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
     meta.columns = df.columns.tolist()
-    meta.cache_key = f"conab:safras:{produto}:{safra or 'latest'}"
+    meta.cache_key = build_cache_key(
+        "conab:safras",
+        {"produto": produto, "safra": safra or "latest"},
+        schema_version=meta.schema_version,
+    )
     meta.cache_expires_at = calculate_expiry(constants.Fonte.CONAB)
 
     if as_polars:

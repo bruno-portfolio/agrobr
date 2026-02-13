@@ -1,4 +1,9 @@
-"""API pública do módulo CEPEA."""
+"""API pública do módulo CEPEA.
+
+Dados CEPEA/ESALQ licenciados sob CC BY-NC 4.0.
+Uso comercial requer autorização do CEPEA (cepea@usp.br).
+Ref: https://www.cepea.org.br/br/licenca-de-uso-de-dados.aspx
+"""
 
 from __future__ import annotations
 
@@ -13,6 +18,7 @@ import structlog
 
 from agrobr import constants
 from agrobr.cache.duckdb_store import get_store
+from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
 from agrobr.cepea import client
 from agrobr.cepea.parsers.detector import get_parser_with_fallback
@@ -265,7 +271,11 @@ async def indicador(
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
     meta.columns = df.columns.tolist() if not df.empty else []
-    meta.cache_key = f"cepea:{produto}:{praca or 'all'}"
+    meta.cache_key = build_cache_key(
+        "cepea",
+        {"produto": produto, "praca": praca or "all"},
+        schema_version=meta.schema_version,
+    )
     meta.cache_expires_at = calculate_expiry(constants.Fonte.CEPEA)
 
     if as_polars:
