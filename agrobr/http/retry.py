@@ -154,8 +154,6 @@ def with_retry(
     max_attempts: int | None = None,
     base_delay: float | None = None,
 ) -> Callable[[Callable[..., Awaitable[T]]], Callable[..., Awaitable[T]]]:
-    """Decorator para retry automático."""
-
     def decorator(func: Callable[..., Awaitable[T]]) -> Callable[..., Awaitable[T]]:
         @wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> T:
@@ -171,5 +169,4 @@ def with_retry(
 
 
 def should_retry_status(status_code: int) -> bool:
-    """Verifica se o status code permite retry."""
     return status_code in constants.RETRIABLE_STATUS_CODES

@@ -10,14 +10,6 @@ from agrobr.constants import Fonte, HTTPSettings
 
 
 def get_timeout(settings: HTTPSettings | None = None) -> httpx.Timeout:
-    """Constroi ``httpx.Timeout`` a partir de ``HTTPSettings``.
-
-    Args:
-        settings: Instancia de HTTPSettings. Se None, usa defaults.
-
-    Returns:
-        httpx.Timeout configurado.
-    """
     s = settings or HTTPSettings()
     return httpx.Timeout(
         connect=s.timeout_connect,
@@ -28,18 +20,7 @@ def get_timeout(settings: HTTPSettings | None = None) -> httpx.Timeout:
 
 
 def get_rate_limit(fonte: Fonte, settings: HTTPSettings | None = None) -> float:
-    """Retorna rate limit (segundos entre requests) para uma fonte.
-
-    Procura atributo ``rate_limit_{fonte.value}`` em HTTPSettings.
-    Se nao existir, retorna ``rate_limit_default``.
-
-    Args:
-        fonte: Fonte de dados.
-        settings: Instancia de HTTPSettings. Se None, usa defaults.
-
-    Returns:
-        Intervalo minimo em segundos entre requests.
-    """
+    """Lookup ``rate_limit_{fonte.value}`` em HTTPSettings; fallback para ``rate_limit_default``."""
     s = settings or HTTPSettings()
     attr = f"rate_limit_{fonte.value}"
     return getattr(s, attr, s.rate_limit_default)
@@ -50,19 +31,6 @@ def get_client_kwargs(
     settings: HTTPSettings | None = None,
     extra_headers: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    """Retorna dict pronto para ``httpx.AsyncClient(**kwargs)``.
-
-    Inclui timeout configurado e headers base. Nao inclui rate limiter
-    (que e responsabilidade do caller via ``RateLimiter``).
-
-    Args:
-        fonte: Fonte de dados (para logging e rate limit lookup).
-        settings: Instancia de HTTPSettings. Se None, usa defaults.
-        extra_headers: Headers adicionais a mesclar.
-
-    Returns:
-        Dict com ``timeout``, ``headers``, ``follow_redirects``.
-    """
     timeout = get_timeout(settings)
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",

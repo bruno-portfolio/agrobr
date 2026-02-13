@@ -29,7 +29,6 @@ class SnapshotManifest:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        """Converte para dicionario."""
         return {
             "name": self.name,
             "created_at": self.created_at.isoformat(),
@@ -41,7 +40,6 @@ class SnapshotManifest:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> SnapshotManifest:
-        """Cria a partir de dicionario."""
         data = data.copy()
         if isinstance(data.get("created_at"), str):
             data["created_at"] = datetime.fromisoformat(data["created_at"])
@@ -61,13 +59,11 @@ class SnapshotInfo:
 
 
 def get_snapshots_dir() -> Path:
-    """Retorna diretorio de snapshots."""
     config = get_config()
     return config.get_snapshot_dir()
 
 
 def list_snapshots() -> list[SnapshotInfo]:
-    """Lista todos os snapshots disponiveis."""
     snapshots_dir = get_snapshots_dir()
 
     if not snapshots_dir.exists():
@@ -106,7 +102,6 @@ def list_snapshots() -> list[SnapshotInfo]:
 
 
 def get_snapshot(name: str) -> SnapshotInfo | None:
-    """Obtem informacoes de um snapshot especifico."""
     for snapshot in list_snapshots():
         if snapshot.name == name:
             return snapshot
@@ -118,17 +113,6 @@ async def create_snapshot(
     sources: list[str] | None = None,
     _include_cache: bool = True,
 ) -> SnapshotInfo:
-    """
-    Cria um novo snapshot dos dados atuais.
-
-    Args:
-        name: Nome do snapshot (default: data atual YYYY-MM-DD)
-        sources: Fontes a incluir (default: todas)
-        include_cache: Incluir dados do cache
-
-    Returns:
-        SnapshotInfo do snapshot criado
-    """
     import agrobr
 
     if name is None:
@@ -175,7 +159,6 @@ async def create_snapshot(
 
 
 async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
-    """Cria snapshot dos dados CEPEA."""
     from agrobr import cepea
 
     produtos = await cepea.produtos()
@@ -195,7 +178,6 @@ async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
 
 
 async def _snapshot_conab(path: Path, manifest: SnapshotManifest) -> None:
-    """Cria snapshot dos dados CONAB."""
     from agrobr import conab
 
     try:
@@ -224,7 +206,6 @@ async def _snapshot_conab(path: Path, manifest: SnapshotManifest) -> None:
 
 
 async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
-    """Cria snapshot dos dados IBGE."""
     from agrobr import ibge
 
     try:
@@ -257,17 +238,6 @@ def load_from_snapshot(
     dataset: str,
     snapshot_name: str | None = None,
 ) -> pd.DataFrame | None:
-    """
-    Carrega dados de um snapshot.
-
-    Args:
-        source: Fonte (cepea, conab, ibge)
-        dataset: Nome do dataset (soja, safras, pam, etc)
-        snapshot_name: Nome do snapshot (usa config se None)
-
-    Returns:
-        DataFrame ou None se nao encontrado
-    """
     config = get_config()
 
     if snapshot_name is None:
@@ -291,15 +261,6 @@ def load_from_snapshot(
 
 
 def delete_snapshot(name: str) -> bool:
-    """
-    Remove um snapshot.
-
-    Args:
-        name: Nome do snapshot
-
-    Returns:
-        True se removido, False se nao existia
-    """
     snapshot_path = get_snapshots_dir() / name
 
     if not snapshot_path.exists():

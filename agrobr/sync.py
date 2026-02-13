@@ -12,8 +12,6 @@ T = TypeVar("T")
 
 def _get_or_create_event_loop() -> asyncio.AbstractEventLoop:
     """
-    Obtém event loop existente ou cria novo.
-
     Trata casos especiais:
     - Jupyter notebooks (loop já rodando)
     - Threads secundárias (sem loop default)

@@ -186,30 +186,10 @@ def _get_last_expiry_time() -> datetime:
 
 
 def get_ttl(source: Fonte | str, endpoint: str | None = None) -> int:
-    """
-    Retorna TTL em segundos para uma fonte.
-
-    Args:
-        source: Fonte de dados
-        endpoint: Endpoint específico
-
-    Returns:
-        TTL em segundos
-    """
     return get_policy(source, endpoint).ttl_seconds
 
 
 def get_stale_max(source: Fonte | str, endpoint: str | None = None) -> int:
-    """
-    Retorna tempo máximo stale em segundos.
-
-    Args:
-        source: Fonte de dados
-        endpoint: Endpoint específico
-
-    Returns:
-        Stale máximo em segundos
-    """
     return get_policy(source, endpoint).stale_max_seconds
 
 

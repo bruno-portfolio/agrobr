@@ -27,17 +27,9 @@ INICIO_SAFRA_MES = 7
 
 def safra_atual(data: date | None = None) -> str:
     """
-    Retorna a safra agrícola atual no formato '2024/25'.
-
     A safra é determinada pelo mês:
     - Jul a Dez: safra do ano atual / próximo ano
     - Jan a Jun: safra do ano anterior / ano atual
-
-    Args:
-        data: Data de referência (default: hoje)
-
-    Returns:
-        String no formato '2024/25'
 
     Examples:
         >>> safra_atual(date(2024, 10, 15))
@@ -56,18 +48,7 @@ def safra_atual(data: date | None = None) -> str:
 
 def validar_safra(safra: str) -> bool:
     """
-    Valida se string está no formato de safra válido.
-
-    Formatos aceitos:
-    - '2024/25' (padrão)
-    - '24/25' (curto)
-    - '2024/2025' (completo)
-
-    Args:
-        safra: String a validar
-
-    Returns:
-        True se válido, False caso contrário
+    Formatos aceitos: '2024/25' (padrão), '24/25' (curto), '2024/2025' (completo).
     """
     if REGEX_SAFRA_COMPLETA.match(safra):
         return True
@@ -265,15 +246,6 @@ def periodo_safra(safra: str) -> tuple[date, date]:
 
 
 def mes_para_numero(mes: str | MesSafra) -> int:
-    """
-    Converte nome do mês para número.
-
-    Args:
-        mes: Nome do mês (pt-BR, 3 letras)
-
-    Returns:
-        Número do mês (1-12)
-    """
     meses = {
         "jan": 1,
         "fev": 2,
@@ -292,14 +264,5 @@ def mes_para_numero(mes: str | MesSafra) -> int:
 
 
 def numero_para_mes(numero: int) -> str:
-    """
-    Converte número do mês para nome.
-
-    Args:
-        numero: Número do mês (1-12)
-
-    Returns:
-        Nome do mês (3 letras)
-    """
     meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
     return meses[numero - 1]

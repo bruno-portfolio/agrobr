@@ -80,7 +80,6 @@ REGIOES: dict[str, list[str]] = {
 
 
 def remover_acentos(texto: str) -> str:
-    """Remove acentos de uma string."""
     nfkd = unicodedata.normalize("NFKD", texto)
     return "".join(c for c in nfkd if not unicodedata.combining(c))
 
@@ -124,57 +123,18 @@ def normalizar_uf(entrada: str) -> str | None:
 
 
 def uf_para_nome(uf: str) -> str:
-    """
-    Retorna nome completo da UF.
-
-    Args:
-        uf: Sigla da UF
-
-    Returns:
-        Nome completo
-
-    Raises:
-        KeyError: Se UF inválida
-    """
     return str(UFS[uf.upper()]["nome"])
 
 
 def uf_para_regiao(uf: str) -> str:
-    """
-    Retorna região da UF.
-
-    Args:
-        uf: Sigla da UF
-
-    Returns:
-        Nome da região
-    """
     return str(UFS[uf.upper()]["regiao"])
 
 
 def uf_para_ibge(uf: str) -> int:
-    """
-    Retorna código IBGE da UF.
-
-    Args:
-        uf: Sigla da UF
-
-    Returns:
-        Código IBGE (2 dígitos)
-    """
     return int(UFS[uf.upper()]["ibge"])
 
 
 def ibge_para_uf(codigo: int) -> str:
-    """
-    Converte código IBGE para sigla UF.
-
-    Args:
-        codigo: Código IBGE
-
-    Returns:
-        Sigla UF
-    """
     for uf, info in UFS.items():
         if info["ibge"] == codigo:
             return uf
@@ -182,22 +142,12 @@ def ibge_para_uf(codigo: int) -> str:
 
 
 def listar_ufs(regiao: str | None = None) -> list[str]:
-    """
-    Lista UFs, opcionalmente filtradas por região.
-
-    Args:
-        regiao: Filtrar por região
-
-    Returns:
-        Lista de siglas UF
-    """
     if regiao:
         return REGIOES.get(regiao, [])
     return list(UFS.keys())
 
 
 def listar_regioes() -> list[str]:
-    """Retorna lista de regiões."""
     return list(REGIOES.keys())
 
 

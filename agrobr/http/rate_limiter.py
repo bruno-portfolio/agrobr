@@ -73,6 +73,5 @@ class RateLimiter:
 
     @classmethod
     def reset(cls) -> None:
-        """Reseta estado do rate limiter."""
         cls._semaphores.clear()
         cls._last_request.clear()

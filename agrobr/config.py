@@ -30,17 +30,14 @@ class AgrobrConfig:
     log_level: str = "INFO"
 
     def is_deterministic(self) -> bool:
-        """Verifica se esta em modo deterministico."""
         return self.mode == "deterministic"
 
     def get_snapshot_dir(self) -> Path:
-        """Retorna diretorio de snapshots."""
         if self.snapshot_path:
             return self.snapshot_path
         return Path.home() / ".agrobr" / "snapshots"
 
     def get_current_snapshot_path(self) -> Path | None:
-        """Retorna caminho do snapshot atual."""
         if not self.snapshot_date:
             return None
         return self.get_snapshot_dir() / self.snapshot_date.isoformat()
@@ -80,7 +77,6 @@ def set_mode(
 
 
 def get_config() -> AgrobrConfig:
-    """Retorna configuracao atual."""
     global _config
     if _config is None:
         _config = AgrobrConfig()
@@ -88,7 +84,6 @@ def get_config() -> AgrobrConfig:
 
 
 def reset_config() -> None:
-    """Reseta para configuracao padrao."""
     global _config
     _config = None
 
@@ -101,17 +96,6 @@ def configure(
     alternative_source: bool | None = None,
     log_level: str | None = None,
 ) -> None:
-    """
-    Configura opcoes do agrobr.
-
-    Args:
-        cache_enabled: Habilitar/desabilitar cache
-        cache_path: Caminho customizado para cache
-        timeout_seconds: Timeout para requisicoes HTTP
-        browser_fallback: Usar browser como fallback
-        alternative_source: Usar fontes alternativas
-        log_level: Nivel de log (DEBUG, INFO, WARNING, ERROR)
-    """
     config = get_config()
 
     if cache_enabled is not None:

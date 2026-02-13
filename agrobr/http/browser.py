@@ -50,12 +50,10 @@ atexit.register(_sync_cleanup)
 
 
 def is_available() -> bool:
-    """Retorna True se Playwright está instalado e disponível."""
     return _playwright_available
 
 
 async def _get_browser() -> Browser:
-    """Obtém ou cria instância do browser (singleton)."""
     global _playwright_instance, _browser
 
     if not _playwright_available:
@@ -85,7 +83,6 @@ async def _get_browser() -> Browser:
 
 
 async def close_browser() -> None:
-    """Fecha o browser e libera recursos."""
     global _playwright_instance, _browser
 
     async with _lock:
@@ -101,7 +98,6 @@ async def close_browser() -> None:
 
 @asynccontextmanager
 async def get_page() -> AsyncGenerator[Page, None]:
-    """Context manager para obter uma página do browser."""
     browser = await _get_browser()
 
     ua = UserAgentRotator.get_random()
@@ -137,23 +133,6 @@ async def fetch_with_browser(
     wait_selector: str | None = None,
     wait_timeout: float = 30000,
 ) -> str:
-    """
-    Busca página usando browser headless.
-
-    Contorna proteções anti-bot como Cloudflare.
-
-    Args:
-        url: URL para buscar
-        source: Nome da fonte (para logging)
-        wait_selector: Seletor CSS para aguardar antes de retornar
-        wait_timeout: Timeout em ms para aguardar
-
-    Returns:
-        HTML da página
-
-    Raises:
-        SourceUnavailableError: Se não conseguir carregar a página
-    """
     logger.info(
         "browser_fetch_start",
         source=source,
@@ -226,15 +205,6 @@ async def fetch_with_browser(
 
 
 async def fetch_cepea_indicador(produto: str) -> str:
-    """
-    Busca página de indicador do CEPEA usando browser.
-
-    Args:
-        produto: Nome do produto (soja, milho, etc)
-
-    Returns:
-        HTML da página
-    """
     produto_key = constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
     url = f"{constants.URLS[constants.Fonte.CEPEA]['indicadores']}/{produto_key}.aspx"
 

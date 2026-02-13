@@ -193,7 +193,6 @@ async def _check_source(name: str, url: str, timeout: float = 10.0) -> SourceSta
 
 
 def _get_cache_stats() -> CacheStats:
-    """Obtém estatísticas do cache."""
     try:
         store = get_store()
         cache_path = Path(store.db_path)
@@ -242,7 +241,6 @@ def _get_cache_stats() -> CacheStats:
 
 
 def _get_last_collections() -> dict[str, datetime | None]:
-    """Obtém data da última coleta por fonte."""
     collections: dict[str, datetime | None] = {}
 
     try:

@@ -213,48 +213,18 @@ def _converter_bushel(
 
 
 def sacas_para_toneladas(sacas: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
-    """
-    Converte sacas para toneladas.
-
-    Args:
-        sacas: Quantidade de sacas
-        peso_saca_kg: Peso da saca em kg (default: 60)
-
-    Returns:
-        Toneladas
-    """
     if not isinstance(sacas, Decimal):
         sacas = Decimal(str(sacas))
     return sacas * Decimal(str(peso_saca_kg)) / Decimal("1000")
 
 
 def toneladas_para_sacas(toneladas: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
-    """
-    Converte toneladas para sacas.
-
-    Args:
-        toneladas: Quantidade em toneladas
-        peso_saca_kg: Peso da saca em kg (default: 60)
-
-    Returns:
-        Sacas
-    """
     if not isinstance(toneladas, Decimal):
         toneladas = Decimal(str(toneladas))
     return toneladas * Decimal("1000") / Decimal(str(peso_saca_kg))
 
 
 def preco_saca_para_tonelada(preco_saca: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
-    """
-    Converte preço por saca para preço por tonelada.
-
-    Args:
-        preco_saca: Preço por saca (R$/sc)
-        peso_saca_kg: Peso da saca em kg (default: 60)
-
-    Returns:
-        Preço por tonelada (R$/t)
-    """
     if not isinstance(preco_saca, Decimal):
         preco_saca = Decimal(str(preco_saca))
     sacas_por_ton = Decimal("1000") / Decimal(str(peso_saca_kg))
@@ -262,16 +232,6 @@ def preco_saca_para_tonelada(preco_saca: Decimal | float, peso_saca_kg: int = 60
 
 
 def preco_tonelada_para_saca(preco_ton: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
-    """
-    Converte preço por tonelada para preço por saca.
-
-    Args:
-        preco_ton: Preço por tonelada (R$/t)
-        peso_saca_kg: Peso da saca em kg (default: 60)
-
-    Returns:
-        Preço por saca (R$/sc)
-    """
     if not isinstance(preco_ton, Decimal):
         preco_ton = Decimal(str(preco_ton))
     sacas_por_ton = Decimal("1000") / Decimal(str(peso_saca_kg))

@@ -92,11 +92,5 @@ def decode_content(
 
 
 def detect_encoding(content: bytes) -> tuple[str, float]:
-    """
-    Detecta encoding provável do conteúdo.
-
-    Returns:
-        tuple[str, float]: (encoding, confidence 0-1)
-    """
     result = chardet.detect(content)
     return result["encoding"] or "utf-8", result["confidence"] or 0.0
