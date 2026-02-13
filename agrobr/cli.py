@@ -22,7 +22,7 @@ def version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-@app.callback()  # type: ignore[misc]
+@app.callback()  # type: ignore[misc, untyped-decorator]
 def main(
     _version: bool = typer.Option(
         None,
@@ -41,7 +41,7 @@ cepea_app = typer.Typer(help="Indicadores CEPEA")
 app.add_typer(cepea_app, name="cepea")
 
 
-@cepea_app.command("indicador")  # type: ignore[misc]
+@cepea_app.command("indicador")  # type: ignore[misc, untyped-decorator]
 def cepea_indicador(
     produto: str = typer.Argument(..., help="Produto (soja, milho, cafe, boi, etc)"),
     _inicio: str | None = typer.Option(None, "--inicio", "-i", help="Data inicio (YYYY-MM-DD)"),
@@ -54,7 +54,7 @@ def cepea_indicador(
     typer.echo("Funcionalidade em desenvolvimento")
 
 
-@app.command("health")  # type: ignore[misc]
+@app.command("health")  # type: ignore[misc, untyped-decorator]
 def health(
     _all_sources: bool = typer.Option(False, "--all", "-a", help="Verifica todas as fontes"),
     _source: str | None = typer.Option(None, "--source", "-s", help="Fonte especifica"),
@@ -68,7 +68,7 @@ def health(
         typer.echo(json.dumps(result, indent=2))
 
 
-@app.command("doctor")  # type: ignore[misc]
+@app.command("doctor")  # type: ignore[misc, untyped-decorator]
 def doctor(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Mostra informacoes detalhadas"),
     json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
@@ -95,13 +95,13 @@ cache_app = typer.Typer(help="Gerenciamento de cache")
 app.add_typer(cache_app, name="cache")
 
 
-@cache_app.command("status")  # type: ignore[misc]
+@cache_app.command("status")  # type: ignore[misc, untyped-decorator]
 def cache_status() -> None:
     """Mostra status do cache."""
     typer.echo("Status do cache em desenvolvimento")
 
 
-@cache_app.command("clear")  # type: ignore[misc]
+@cache_app.command("clear")  # type: ignore[misc, untyped-decorator]
 def cache_clear(
     _source: str | None = typer.Option(None, "--source", "-s", help="Limpar apenas fonte"),
     _older_than: str | None = typer.Option(None, "--older-than", help="Ex: 30d"),
@@ -114,7 +114,7 @@ conab_app = typer.Typer(help="Dados CONAB - Safras e balanco")
 app.add_typer(conab_app, name="conab")
 
 
-@conab_app.command("safras")  # type: ignore[misc]
+@conab_app.command("safras")  # type: ignore[misc, untyped-decorator]
 def conab_safras(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, feijao, etc)"),
     safra: str | None = typer.Option(None, "--safra", "-s", help="Safra (ex: 2025/26)"),
@@ -147,7 +147,7 @@ def conab_safras(
         raise typer.Exit(1) from None
 
 
-@conab_app.command("balanco")  # type: ignore[misc]
+@conab_app.command("balanco")  # type: ignore[misc, untyped-decorator]
 def conab_balanco(
     produto: str | None = typer.Argument(None, help="Produto (opcional)"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
@@ -178,7 +178,7 @@ def conab_balanco(
         raise typer.Exit(1) from None
 
 
-@conab_app.command("levantamentos")  # type: ignore[misc]
+@conab_app.command("levantamentos")  # type: ignore[misc, untyped-decorator]
 def conab_levantamentos() -> None:
     """Lista levantamentos disponiveis."""
     import asyncio
@@ -201,7 +201,7 @@ def conab_levantamentos() -> None:
         raise typer.Exit(1) from None
 
 
-@conab_app.command("produtos")  # type: ignore[misc]
+@conab_app.command("produtos")  # type: ignore[misc, untyped-decorator]
 def conab_produtos() -> None:
     """Lista produtos disponiveis."""
     import asyncio
@@ -218,7 +218,7 @@ ibge_app = typer.Typer(help="Dados IBGE - PAM e LSPA")
 app.add_typer(ibge_app, name="ibge")
 
 
-@ibge_app.command("pam")  # type: ignore[misc]
+@ibge_app.command("pam")  # type: ignore[misc, untyped-decorator]
 def ibge_pam(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, etc)"),
     ano: str | None = typer.Option(
@@ -259,7 +259,7 @@ def ibge_pam(
         raise typer.Exit(1) from None
 
 
-@ibge_app.command("lspa")  # type: ignore[misc]
+@ibge_app.command("lspa")  # type: ignore[misc, untyped-decorator]
 def ibge_lspa(
     produto: str = typer.Argument(..., help="Produto (soja, milho_1, milho_2, etc)"),
     ano: int | None = typer.Option(None, "--ano", "-a", help="Ano de referencia"),
@@ -293,7 +293,7 @@ def ibge_lspa(
         raise typer.Exit(1) from None
 
 
-@ibge_app.command("produtos")  # type: ignore[misc]
+@ibge_app.command("produtos")  # type: ignore[misc, untyped-decorator]
 def ibge_produtos(
     pesquisa: str = typer.Option("pam", "--pesquisa", "-p", help="Pesquisa: pam ou lspa"),
 ) -> None:
@@ -320,7 +320,7 @@ snapshot_app = typer.Typer(help="Gerenciamento de snapshots para modo determinis
 app.add_typer(snapshot_app, name="snapshot")
 
 
-@config_app.command("show")  # type: ignore[misc]
+@config_app.command("show")  # type: ignore[misc, untyped-decorator]
 def config_show() -> None:
     """Mostra configuracoes atuais."""
     typer.echo("=== Cache Settings ===")
@@ -340,7 +340,7 @@ def config_show() -> None:
     typer.echo(f"  slack_webhook: {'configured' if alerts.slack_webhook else 'not set'}")
 
 
-@snapshot_app.command("list")  # type: ignore[misc]
+@snapshot_app.command("list")  # type: ignore[misc, untyped-decorator]
 def snapshot_list(
     json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
 ) -> None:
@@ -379,7 +379,7 @@ def snapshot_list(
             typer.echo()
 
 
-@snapshot_app.command("create")  # type: ignore[misc]
+@snapshot_app.command("create")  # type: ignore[misc, untyped-decorator]
 def snapshot_create(
     name: str | None = typer.Argument(None, help="Nome do snapshot (default: data atual)"),
     sources: str | None = typer.Option(
@@ -409,7 +409,7 @@ def snapshot_create(
         raise typer.Exit(1) from None
 
 
-@snapshot_app.command("delete")  # type: ignore[misc]
+@snapshot_app.command("delete")  # type: ignore[misc, untyped-decorator]
 def snapshot_delete(
     name: str = typer.Argument(..., help="Nome do snapshot a remover"),
     force: bool = typer.Option(False, "--force", "-f", help="Nao pedir confirmacao"),
@@ -435,7 +435,7 @@ def snapshot_delete(
         raise typer.Exit(1)
 
 
-@snapshot_app.command("use")  # type: ignore[misc]
+@snapshot_app.command("use")  # type: ignore[misc, untyped-decorator]
 def snapshot_use(
     name: str = typer.Argument(..., help="Nome do snapshot a usar"),
 ) -> None:

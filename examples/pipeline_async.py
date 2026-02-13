@@ -61,7 +61,7 @@ async def coletar_pam() -> pd.DataFrame:
         return pd.DataFrame()
 
 
-async def main():
+async def main() -> None:
     """Pipeline principal."""
     print("=" * 60)
     print("Pipeline Async de Dados Agrícolas")

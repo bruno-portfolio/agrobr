@@ -136,7 +136,7 @@ jobs:
 """
 
 
-def main():
+def main() -> None:
     WORKFLOWS_DIR.mkdir(parents=True, exist_ok=True)
 
     (WORKFLOWS_DIR / "tests.yml").write_text(TESTS_YML)

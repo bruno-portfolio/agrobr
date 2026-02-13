@@ -15,7 +15,7 @@ from __future__ import annotations
 import asyncio
 
 
-async def main():
+async def main() -> None:
     """Análise completa de soja."""
     from agrobr import cepea, conab, ibge
 

@@ -32,69 +32,69 @@ from pathlib import Path
 import pandas as pd
 
 
-async def coletar_precos() -> tuple[pd.DataFrame, dict]:
+async def coletar_precos() -> tuple[pd.DataFrame, dict[str, object]]:
     """Coleta preço diário da soja (CEPEA)."""
     from agrobr import cepea
 
-    df, meta = await cepea.indicador("soja", return_meta=True)
-    return df, meta.to_dict()
+    df, meta = await cepea.indicador("soja", return_meta=True)  # type: ignore[misc]
+    return df, meta.to_dict()  # type: ignore[union-attr]
 
 
-async def coletar_safras() -> tuple[pd.DataFrame, dict]:
+async def coletar_safras() -> tuple[pd.DataFrame, dict[str, object]]:
     """Coleta safra de soja (CONAB)."""
     from agrobr import conab
 
-    df, meta = await conab.safras("soja", safra="2024/25", return_meta=True)
-    return df, meta.to_dict()
+    df, meta = await conab.safras("soja", safra="2024/25", return_meta=True)  # type: ignore[misc]
+    return df, meta.to_dict()  # type: ignore[union-attr]
 
 
-async def coletar_custo_producao() -> tuple[pd.DataFrame, dict] | None:
+async def coletar_custo_producao() -> tuple[pd.DataFrame, dict[str, object]] | None:
     """Coleta custos de produção da soja (CONAB)."""
     from agrobr import conab
 
     try:
-        df, meta = await conab.custo_producao(
+        df, meta = await conab.custo_producao(  # type: ignore[misc]
             cultura="soja", uf="MT", safra="2024/25", return_meta=True
         )
-        return df, meta.to_dict()
+        return df, meta.to_dict()  # type: ignore[union-attr]
     except Exception as e:
         print(f"  [!] Custo produção indisponível: {e}")
         return None
 
 
-async def coletar_exportacao() -> tuple[pd.DataFrame, dict]:
+async def coletar_exportacao() -> tuple[pd.DataFrame, dict[str, object]]:
     """Coleta exportações de soja (ComexStat)."""
     from agrobr import comexstat
 
-    df, meta = await comexstat.exportacao("soja", ano=2024, agregacao="mensal", return_meta=True)
-    return df, meta.to_dict()
+    df, meta = await comexstat.exportacao("soja", ano=2024, agregacao="mensal", return_meta=True)  # type: ignore[misc]
+    return df, meta.to_dict()  # type: ignore[union-attr]
 
 
-async def coletar_credito() -> tuple[pd.DataFrame, dict]:
+async def coletar_credito() -> tuple[pd.DataFrame, dict[str, object]]:
     """Coleta crédito rural para soja (BCB/SICOR)."""
     from agrobr import bcb
 
-    df, meta = await bcb.credito_rural(
+    df, meta = await bcb.credito_rural(  # type: ignore[misc]
         produto="soja", safra="2024/25", finalidade="custeio", return_meta=True
     )
-    return df, meta.to_dict()
+    return df, meta.to_dict()  # type: ignore[union-attr]
 
 
-async def coletar_clima() -> tuple[pd.DataFrame, dict]:
+async def coletar_clima() -> tuple[pd.DataFrame, dict[str, object]]:
     """Coleta dados climáticos de MT (INMET)."""
     from agrobr import inmet
 
-    df, meta = await inmet.clima_uf("MT", ano=2024, return_meta=True)
-    return df, meta.to_dict()
+    df, meta = await inmet.clima_uf("MT", ano=2024, return_meta=True)  # type: ignore[misc]
+    return df, meta.to_dict()  # type: ignore[return-value, attr-defined]
 
 
-async def coletar_fertilizantes() -> tuple[pd.DataFrame, dict] | None:
+async def coletar_fertilizantes() -> tuple[pd.DataFrame, dict[str, object]] | None:
     """Coleta entregas de fertilizantes (ANDA). Requer pdfplumber."""
     try:
         from agrobr import anda
 
-        df, meta = await anda.entregas(ano=2024, uf="MT", return_meta=True)
-        return df, meta.to_dict()
+        df, meta = await anda.entregas(ano=2024, uf="MT", return_meta=True)  # type: ignore[misc]
+        return df, meta.to_dict()  # type: ignore[union-attr]
     except ImportError:
         print("  [!] ANDA: pdfplumber não instalado (pip install agrobr[pdf])")
         return None
@@ -103,7 +103,7 @@ async def coletar_fertilizantes() -> tuple[pd.DataFrame, dict] | None:
         return None
 
 
-def print_meta(nome: str, meta: dict) -> None:
+def print_meta(nome: str, meta: dict[str, object]) -> None:
     """Exibe proveniência de um dataset."""
     print(f"\n  [{nome}]")
     print(f"    source:       {meta.get('source', '?')}")
@@ -115,7 +115,7 @@ def print_meta(nome: str, meta: dict) -> None:
     print(f"    parser_v:     {meta.get('parser_version', '?')}")
     attempted = meta.get("attempted_sources", [])
     selected = meta.get("selected_source", "?")
-    if len(attempted) > 1:
+    if len(attempted) > 1:  # type: ignore[arg-type]
         print(f"    fallback:     tentou {attempted} → selecionou {selected}")
 
 
@@ -196,7 +196,7 @@ async def main() -> None:
 
     nomes = ["precos", "safras", "exportacao", "credito", "clima", "fertilizantes", "custo"]
     datasets: dict[str, pd.DataFrame] = {}
-    metas: dict[str, dict] = {}
+    metas: dict[str, dict[str, object]] = {}
 
     for nome, result in zip(nomes, results):
         if isinstance(result, Exception):
@@ -204,7 +204,7 @@ async def main() -> None:
         elif result is None:
             print(f"  [~] {nome}: não disponível")
         else:
-            df, meta = result
+            df, meta = result  # type: ignore[misc]
             datasets[nome] = df
             metas[nome] = meta
             print(f"  [ok] {nome}: {len(df)} registros")

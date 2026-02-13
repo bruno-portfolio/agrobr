@@ -48,7 +48,7 @@ async def alert(report_path: str) -> None:
         print("No alerts to send - all sources are OK")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Send alerts for structure changes")
     parser.add_argument("report_path", help="Path to diff report JSON file")
     args = parser.parse_args()

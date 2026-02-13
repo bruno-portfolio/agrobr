@@ -105,10 +105,10 @@ def compare(
     else:
         print("\nNo significant drift detected")
 
-    return report["drift_detected"]
+    return report["drift_detected"]  # type: ignore[no-any-return]
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Compare structure fingerprints")
     parser.add_argument("--baseline", required=True, help="Baseline structures file")
     parser.add_argument("--current", required=True, help="Current structures file")

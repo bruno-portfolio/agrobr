@@ -11,6 +11,7 @@ import asyncio
 import json
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 
 async def fetch_all_structures(output_path: str) -> None:
@@ -19,7 +20,7 @@ async def fetch_all_structures(output_path: str) -> None:
     from agrobr.cepea.parsers.fingerprint import extract_fingerprint
     from agrobr.constants import Fonte
 
-    structures = {
+    structures: dict[str, Any] = {
         "collected_at": datetime.utcnow().isoformat() + "Z",
         "sources": {},
     }
@@ -38,7 +39,7 @@ async def fetch_all_structures(output_path: str) -> None:
     print(f"\nStructures saved to {output_path}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Fetch current structure fingerprints")
     parser.add_argument(
         "--output",
