@@ -9,12 +9,12 @@ Platform: Windows, Python 3.11+
 |---|---|---|---|---|
 | 1. Memory Profiling | 6 | 6 | 0 | 5.50s |
 | 2. Volume Scaling | 10 | 10 | 0 | 1.70s |
-| 3. Cache DuckDB Stress | 8 | 6 | 2 (timeout) | 208.97s |
+| 3. Cache DuckDB Stress | 8 | 8 | 0 | ~32s |
 | 4. Rate Limiting & Concurrency | 5 | 5 | 0 | 21.28s |
 | 5. Async Performance | 3 | 3 | 0 | 1.61s |
 | 6. Sync Wrapper Stress | 5 | 5 | 0 | 1.36s |
 | 7. Golden Data Scaling | 2 | 2 | 0 | 1.08s |
-| **Total** | **39** | **37** | **2** | **~241s** |
+| **Total** | **39** | **39** | **0** | **~65s** |
 
 ---
 
@@ -55,17 +55,16 @@ Platform: Windows, Python 3.11+
 | `test_sequential_writes_10k` | < 60,000 ms | PASSED |
 | `test_sequential_reads_10k` | < 30,000 ms; 10k hits | PASSED |
 | `test_mixed_read_write` | < 60,000 ms | PASSED |
-| `test_indicadores_upsert_scaling[10000]` | completes; count == n | PASSED |
-| `test_indicadores_upsert_scaling[50000]` | completes; count == n | **TIMEOUT (60s)** |
-| `test_indicadores_query_scaling` | < 5,000 ms; 50k returned | SKIPPED (depends on 50k upsert) |
+| `test_indicadores_upsert_scaling[10000]` | completes; count == n | PASSED (4.8s) |
+| `test_indicadores_upsert_scaling[50000]` | completes; count == n | PASSED (25.9s) |
+| `test_indicadores_query_scaling` | < 5,000 ms; 50k returned | PASSED |
 | `test_ttl_check_scaling` | < 30,000 ms; 5k stale | PASSED |
 | `test_db_file_size_scaling` | ratio(10k/1k) < 15x | PASSED |
 
-### Timeout Details
+### Performance Note
 
-- **`test_indicadores_upsert_scaling[50000]`**: DuckDB `indicadores_upsert()` with 50,000 records exceeds 60s.
-  The bottleneck is `duckdb_store.py:344` — the INSERT/upsert SQL statement.
-  The 10k variant passes, so the issue is non-linear scaling between 10k-50k.
+- **`indicadores_upsert` optimized** (Issue #9): temp table + INSERT SELECT replaces row-by-row INSERT.
+  10k: 34s→4.8s, 50k: 187s→25.9s (7x speedup). Scaling now linear (50k/10k ≈ 5.4x).
 
 ---
 
@@ -129,4 +128,6 @@ Platform: Windows, Python 3.11+
 
 ## Action Items
 
-1. **`indicadores_upsert` performance at 50k records** — investigate batch size or chunked inserts in `DuckDBStore.indicadores_upsert()` (`duckdb_store.py:344`). The 10k variant passes within limits; 50k exceeds 60s.
+~~1. **`indicadores_upsert` performance at 50k records** — RESOLVED. Temp table approach gives 7x speedup.~~
+
+No open action items.

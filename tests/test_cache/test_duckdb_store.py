@@ -254,6 +254,66 @@ class TestIndicadores:
         results = tmp_store.indicadores_query("inexistente")
         assert results == []
 
+    def test_upsert_chunked_boundary(self, tmp_store: DuckDBStore):
+        from agrobr.cache.duckdb_store import UPSERT_CHUNK_SIZE
+
+        n = UPSERT_CHUNK_SIZE + 50
+        indicadores = [
+            {
+                "produto": "soja",
+                "praca": f"p_{i}",
+                "data": datetime(2024, 1, 1) + timedelta(days=i),
+                "valor": 100.0 + i,
+                "unidade": "BRL/sc",
+                "fonte": "cepea",
+            }
+            for i in range(n)
+        ]
+        count = tmp_store.indicadores_upsert(indicadores)
+        assert count == n
+
+        results = tmp_store.indicadores_query("soja")
+        assert len(results) == n
+
+    def test_upsert_skips_invalid_rows(self, tmp_store: DuckDBStore):
+        indicadores = [
+            {
+                "produto": "soja",
+                "praca": "ok",
+                "data": datetime(2024, 1, 1),
+                "valor": 100.0,
+                "unidade": "BRL/sc",
+                "fonte": "cepea",
+            },
+            {"produto": "bad", "praca": "x"},
+            {
+                "produto": "milho",
+                "praca": "ok",
+                "data": datetime(2024, 1, 2),
+                "valor": 50.0,
+                "unidade": "BRL/sc",
+                "fonte": "cepea",
+            },
+        ]
+        count = tmp_store.indicadores_upsert(indicadores)
+        assert count == 2
+
+    def test_upsert_conflict_updates(self, tmp_store: DuckDBStore):
+        base = {
+            "produto": "soja",
+            "praca": "paranagua",
+            "data": datetime(2024, 6, 15),
+            "valor": 100.0,
+            "unidade": "BRL/sc",
+            "fonte": "cepea",
+        }
+        tmp_store.indicadores_upsert([base])
+        tmp_store.indicadores_upsert([{**base, "valor": 200.0}])
+
+        results = tmp_store.indicadores_query("soja")
+        assert len(results) == 1
+        assert float(results[0]["valor"]) == 200.0
+
     def test_get_dates(self, tmp_store: DuckDBStore):
         for month in [1, 3, 6]:
             tmp_store.indicadores_upsert(
