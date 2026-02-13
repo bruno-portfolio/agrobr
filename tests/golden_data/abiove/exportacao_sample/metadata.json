@@ -1,12 +1,13 @@
 {
   "source": "abiove",
   "format": "xlsx",
-  "parser_module": "agrobr.abiove.parser",
-  "parser_function": "parse_exportacao_excel",
-  "parser_kwargs": {"ano": 2024},
-  "url": "https://abiove.org.br/abiove_content/Abiove/exp_202401.xlsx",
-  "captured_at": "2026-02-11T12:00:00Z",
+  "parser": "agrobr.abiove.parser::parse_exportacao_excel()",
   "parser_version": 1,
-  "notes": "Synthetic XLSX created with openpyxl - soja complex exports Jan-Jun 2024",
-  "needs_real_data": true
+  "parser_kwargs": {
+    "ano": 2025
+  },
+  "needs_real_data": false,
+  "captured_at": "2026-02-13T11:08:03.370740+00:00",
+  "api_url": "https://abiove.org.br/abiove_content/Abiove/exp_202512.xlsx",
+  "notes": "Real data from ABIOVE — export 2025, 72 records, produtos: ['farelo', 'grao', 'milho', 'oleo', 'total']"
 }

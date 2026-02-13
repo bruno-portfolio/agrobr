@@ -215,6 +215,27 @@ def _parse_sheet(
     return []
 
 
+def _find_month_col(df: pd.DataFrame) -> int:
+    """Detecta qual coluna contém os nomes de mês.
+
+    Testa colunas 0 e 1 procurando >= 3 meses reconhecíveis.
+
+    Returns:
+        Índice da coluna com meses (0 ou 1), default 0.
+    """
+    for col in (0, 1):
+        if col >= len(df.columns):
+            continue
+        hits = 0
+        for idx in range(len(df)):
+            cell = str(df.iloc[idx, col]).strip() if pd.notna(df.iloc[idx, col]) else ""
+            if _detect_month(cell) is not None:
+                hits += 1
+                if hits >= 3:
+                    return col
+    return 0
+
+
 def _parse_meses_rows(
     df: pd.DataFrame,
     ano: int | None,
@@ -222,89 +243,271 @@ def _parse_meses_rows(
 ) -> list[dict[str, Any]]:
     """Parseia formato com meses nas linhas.
 
-    Formato esperado:
-    Row 0-N:  Cabeçalhos (produto, volume/valor)
-    Row N+1:  Janeiro    | val | val | val | val
-    Row N+2:  Fevereiro  | val | val | val | val
-    ...
+    Suporta dois layouts:
+      - Clássico: meses na coluna 0, produto por sheet
+      - Multi-seção: meses na coluna 1, seções produto dentro da sheet
+        (ex: "1.1. Exportações de soja em grão", depois meses Jan-Dez)
     """
     records: list[dict[str, Any]] = []
 
-    # Encontrar linhas com nomes de meses
+    month_col = _find_month_col(df)
+
     month_rows: list[tuple[int, int]] = []
     for idx in range(len(df)):
-        first_col = str(df.iloc[idx, 0]).strip() if pd.notna(df.iloc[idx, 0]) else ""
-        month = _detect_month(first_col)
+        cell = str(df.iloc[idx, month_col]).strip() if pd.notna(df.iloc[idx, month_col]) else ""
+        month = _detect_month(cell)
         if month is not None:
             month_rows.append((idx, month))
 
     if len(month_rows) < 3:
         return []
 
-    # Detectar cabeçalhos nas linhas anteriores aos meses
-    header_start = max(0, month_rows[0][0] - 3)
-    header_end = month_rows[0][0]
+    first_month_idx = month_rows[0][0]
+    if first_month_idx > 0:
+        prev_row = df.iloc[first_month_idx - 1]
+        prev_vals = " ".join(str(v).strip().lower() for v in prev_row if pd.notna(v))
+        tabular_keywords = ["produto", "product", "ncm"]
+        if any(k in prev_vals for k in tabular_keywords):
+            return []
 
-    # Mapear colunas para produtos: col_idx -> (produto, tipo)
-    col_map: dict[int, tuple[str, str]] = {}
+    sections = _split_sections(df, month_col, month_rows, sheet_name)
 
-    for hdr_idx in range(header_start, header_end):
-        for col_idx in range(1, len(df.columns)):
-            val = df.iloc[hdr_idx, col_idx]
-            if pd.isna(val):
-                continue
-            val_str = str(val).strip()
-
-            produto = _detect_produto_from_header(val_str)
-            if produto:
-                col_map[col_idx] = (produto, "volume")
-                if col_idx + 1 < len(df.columns):
-                    col_map[col_idx + 1] = (produto, "receita")
-
-    # Se não detectou cabeçalhos, tentar do nome da sheet
-    if not col_map:
-        produto = _detect_produto_from_header(sheet_name)
-        if produto and len(df.columns) >= 2:
-            col_map[1] = (produto, "volume")
-            if len(df.columns) >= 3:
-                col_map[2] = (produto, "receita")
-
-    if not col_map:
-        return []
-
-    # Extrair dados dos meses
-    for row_idx, month in month_rows:
-        for col_idx, (produto, tipo) in col_map.items():
-            if col_idx >= len(df.columns):
-                continue
-
-            value = _safe_float(df.iloc[row_idx, col_idx])
-            if value is None:
-                continue
-
-            # Encontrar registro existente para este mês/produto ou criar novo
-            existing = None
-            for r in records:
-                if r["mes"] == month and r["produto"] == produto:
-                    existing = r
-                    break
-
-            if existing is None:
-                existing = {
-                    "ano": ano or 0,
-                    "mes": month,
-                    "produto": produto,
-                    "volume_ton": 0.0,
-                    "receita_usd_mil": None,
-                }
-                records.append(existing)
-
-            if tipo == "volume":
-                existing["volume_ton"] = value
-            elif tipo == "receita":
-                existing["receita_usd_mil"] = value
+    for produto, sec_months, data_cols in sections:
+        for row_idx, month in sec_months:
+            rec: dict[str, Any] = {
+                "ano": ano or 0,
+                "mes": month,
+                "produto": produto,
+                "volume_ton": 0.0,
+                "receita_usd_mil": None,
+            }
+            for col_idx, tipo in data_cols.items():
+                if col_idx >= len(df.columns):
+                    continue
+                value = _safe_float(df.iloc[row_idx, col_idx])
+                if value is None:
+                    continue
+                if tipo == "volume":
+                    rec["volume_ton"] = value
+                elif tipo == "receita":
+                    rec["receita_usd_mil"] = value
+            if rec["volume_ton"] != 0.0 or rec["receita_usd_mil"] is not None:
+                records.append(rec)
 
     return records
+
+
+def _split_sections(
+    df: pd.DataFrame,
+    month_col: int,
+    month_rows: list[tuple[int, int]],
+    sheet_name: str,
+) -> list[tuple[str, list[tuple[int, int]], dict[int, str]]]:
+    """Divide month_rows em seções por produto.
+
+    Dois modos:
+      - Multi-coluna (clássico): um bloco de meses, múltiplos produtos nas colunas
+      - Multi-seção (novo): blocos separados de meses, cada um com seu produto
+    """
+    groups: list[tuple[int, list[tuple[int, int]]]] = []
+    current: list[tuple[int, int]] = []
+
+    for _i, (row_idx, month) in enumerate(month_rows):
+        if current and row_idx - current[-1][0] > 4:
+            groups.append((current[0][0], list(current)))
+            current = []
+        current.append((row_idx, month))
+
+    if current:
+        groups.append((current[0][0], list(current)))
+
+    if len(groups) == 1:
+        first_row = groups[0][0]
+        col_product_map = _detect_column_products(df, month_col, first_row)
+        if col_product_map:
+            return _build_column_sections(
+                col_product_map,
+                groups[0][1],
+                df,
+                month_col,
+                first_row,
+            )
+
+    sections: list[tuple[str, list[tuple[int, int]], dict[int, str]]] = []
+
+    for first_row, grp_months in groups:
+        produto = _detect_section_produto(df, month_col, first_row, sheet_name)
+        data_cols = _detect_data_cols(df, month_col, first_row)
+        sections.append((produto, grp_months, data_cols))
+
+    return sections
+
+
+def _detect_column_products(
+    df: pd.DataFrame,
+    month_col: int,
+    first_month_row: int,
+) -> dict[int, str]:
+    """Detecta produtos mapeados a colunas (formato clássico multi-coluna)."""
+    col_products: dict[int, str] = {}
+    for offset in range(1, 5):
+        hdr_row = first_month_row - offset
+        if hdr_row < 0:
+            break
+        for col_idx in range(month_col + 1, len(df.columns)):
+            val = df.iloc[hdr_row, col_idx]
+            if pd.isna(val):
+                continue
+            produto = _detect_produto_from_header(str(val))
+            if produto and col_idx not in col_products:
+                col_products[col_idx] = produto
+    return col_products
+
+
+def _build_column_sections(
+    col_products: dict[int, str],
+    month_rows: list[tuple[int, int]],
+    df: pd.DataFrame,
+    month_col: int,
+    first_month_row: int,
+) -> list[tuple[str, list[tuple[int, int]], dict[int, str]]]:
+    """Constrói seções a partir de produtos mapeados por coluna."""
+    produto_cols: dict[str, list[int]] = {}
+    for col_idx, produto in sorted(col_products.items()):
+        produto_cols.setdefault(produto, []).append(col_idx)
+
+    type_map = _detect_col_types(df, month_col, first_month_row)
+
+    sections: list[tuple[str, list[tuple[int, int]], dict[int, str]]] = []
+
+    for produto, cols in produto_cols.items():
+        data_cols: dict[int, str] = {}
+        for c in cols:
+            data_cols[c] = type_map.get(c, "volume" if not data_cols else "receita")
+        sections.append((produto, month_rows, data_cols))
+
+    return sections
+
+
+def _detect_col_types(
+    df: pd.DataFrame,
+    month_col: int,
+    first_month_row: int,
+) -> dict[int, str]:
+    """Detecta tipos de coluna (volume/receita) a partir dos sub-headers."""
+    type_map: dict[int, str] = {}
+    for offset in range(1, 4):
+        hdr_row = first_month_row - offset
+        if hdr_row < 0:
+            break
+        for col_idx in range(month_col + 1, len(df.columns)):
+            if col_idx in type_map:
+                continue
+            val = df.iloc[hdr_row, col_idx]
+            if pd.isna(val):
+                continue
+            val_str = str(val).strip().lower()
+            if any(k in val_str for k in ["volume", "ton", "peso", "mil t", "quantidade"]):
+                type_map[col_idx] = "volume"
+            elif any(k in val_str for k in ["us$", "usd", "valor", "fob", "receita"]):
+                type_map[col_idx] = "receita"
+    return type_map
+
+
+def _detect_section_produto(
+    df: pd.DataFrame,
+    _month_col: int,
+    first_month_row: int,
+    sheet_name: str,
+) -> str:
+    """Detecta produto de uma seção olhando linhas acima do primeiro mês."""
+    for offset in range(1, 6):
+        check_row = first_month_row - offset
+        if check_row < 0:
+            break
+        for col in range(min(3, len(df.columns))):
+            val = df.iloc[check_row, col]
+            if pd.isna(val):
+                continue
+            produto = _detect_produto_from_header(str(val))
+            if produto:
+                return produto
+
+    produto = _detect_produto_from_header(sheet_name)
+    return produto or "total"
+
+
+def _detect_data_cols(
+    df: pd.DataFrame,
+    month_col: int,
+    first_month_row: int,
+) -> dict[int, str]:
+    """Mapeia colunas de dados para tipo (volume/receita).
+
+    Procura sub-cabeçalhos como "Peso Líquido" (volume) e
+    "Valor FOB" (receita) nas linhas acima dos meses.
+    Assume que cada grupo tem colunas de ano consecutivas;
+    pega a coluna do ano mais recente (segunda do grupo).
+    """
+    col_map: dict[int, str] = {}
+
+    for offset in range(1, 5):
+        hdr_row = first_month_row - offset
+        if hdr_row < 0:
+            break
+        for col_idx in range(month_col + 1, len(df.columns)):
+            val = df.iloc[hdr_row, col_idx]
+            if pd.isna(val):
+                continue
+            val_str = str(val).strip().lower()
+
+            if any(k in val_str for k in ["peso", "volume", "ton", "mil t", "quantidade"]):
+                target = _pick_latest_year_col(df, hdr_row, col_idx)
+                col_map[target] = "volume"
+            elif any(k in val_str for k in ["valor", "fob", "receita", "us$", "usd"]):
+                target = _pick_latest_year_col(df, hdr_row, col_idx)
+                col_map[target] = "receita"
+
+    if not col_map:
+        start = month_col + 1
+        if start < len(df.columns):
+            col_map[start] = "receita"
+        if start + 1 < len(df.columns):
+            col_map[start + 1] = "volume"
+
+    return col_map
+
+
+def _pick_latest_year_col(
+    df: pd.DataFrame,
+    header_row: int,
+    group_start: int,
+) -> int:
+    """Dentro de um grupo de sub-colunas (ex: 2024 | 2025 | Var.%), retorna
+    a coluna do ano mais recente com dados numéricos.
+
+    Olha a linha abaixo do header_row para encontrar anos.
+    """
+    year_row = header_row + 1
+    if year_row >= len(df):
+        return group_start
+
+    best_col = group_start
+    best_year = 0
+
+    for col_idx in range(group_start, min(group_start + 4, len(df.columns))):
+        val = df.iloc[year_row, col_idx]
+        if pd.isna(val):
+            continue
+        try:
+            yr = int(float(str(val)))
+            if 2000 <= yr <= 2100 and yr > best_year:
+                best_year = yr
+                best_col = col_idx
+        except (ValueError, TypeError):
+            pass
+
+    return best_col
 
 
 def _parse_tabular(

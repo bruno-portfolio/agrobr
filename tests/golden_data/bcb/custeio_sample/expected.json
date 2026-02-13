@@ -1,7 +1,34 @@
 {
-  "count": 5,
-  "columns": ["safra", "ano_emissao", "mes_emissao", "uf", "produto", "valor", "area_financiada", "qtd_contratos", "finalidade"],
-  "first_row": {"safra": "2024", "uf": "GO", "produto": "milho"},
-  "last_row": {"safra": "2024", "uf": "SP", "produto": "milho"},
-  "non_null_columns": ["safra", "uf", "produto", "valor"]
+  "count": 20,
+  "columns": [
+    "produto",
+    "regiao",
+    "uf",
+    "mes_emissao",
+    "ano_emissao",
+    "cdPrograma",
+    "cdSubPrograma",
+    "cdFonteRecurso",
+    "cdTipoSeguro",
+    "qtd_contratos",
+    "valor",
+    "Atividade",
+    "cdModalidade",
+    "area_financiada",
+    "finalidade"
+  ],
+  "non_null_columns": [
+    "uf",
+    "produto",
+    "valor"
+  ],
+  "first_row": {
+    "uf": "BA",
+    "produto": "soja",
+    "finalidade": "custeio"
+  },
+  "last_row": {
+    "uf": "RS",
+    "produto": "soja"
+  }
 }

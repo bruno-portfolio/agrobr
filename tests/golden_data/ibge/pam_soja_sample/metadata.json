@@ -1,12 +1,17 @@
 {
   "source": "ibge",
   "format": "dataframe",
-  "parser_module": "agrobr.ibge.client",
-  "parser_function": "parse_sidra_response",
-  "parser_kwargs": {},
-  "url": "https://apisidra.ibge.gov.br/values/t/5457/n3/all/v/214/p/2023/c782/40124",
-  "captured_at": "2026-02-11T12:00:00Z",
+  "parser": "agrobr.ibge.client::parse_sidra_response()",
   "parser_version": 1,
-  "notes": "Synthetic sidrapy DataFrame output - PAM soja produção 2023, top 5 UFs",
-  "needs_real_data": true
+  "parser_kwargs": {},
+  "needs_real_data": false,
+  "captured_at": "2026-02-13T11:00:10.209338+00:00",
+  "query": {
+    "table": "5457",
+    "variable": "214",
+    "territorial_level": "3",
+    "period": "2023",
+    "classification_81": "40124"
+  },
+  "notes": "Real data from IBGE SIDRA — PAM nova, produção soja por UF 2023, 26 rows"
 }

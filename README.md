@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **13 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET e Notícias Agrícolas.
 
-**v0.9.0** — 1492 testes, ~75% cobertura, 13/13 fontes com golden tests, retry centralizado em 13/13 clients.
+**v0.9.0** — 1531 testes, ~75% cobertura, 13/13 fontes com golden tests, retry centralizado em 13/13 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)

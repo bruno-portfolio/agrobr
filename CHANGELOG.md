@@ -8,6 +8,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **Golden tests com dados reais** para 5 fontes: BCB, IBGE, ComexStat, DERAL, ABIOVE
+  (substituindo dados sintéticos). Script `scripts/update_golden.py` expandido com
+  captura automatizada para 6 fontes (5 novas + CEPEA existente). Closes #10
 - **Audit de licenças** — `docs/licenses.md` com tabela completa das 13 fontes,
   classificação (`livre`, `nc`, `zona_cinza`, `restrito`) e URLs dos termos
 - **Aviso CC BY-NC 4.0** no módulo CEPEA (docstrings em `__init__.py` e `api.py`)
@@ -23,6 +26,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   garante invalidação automática entre versões da lib e mudanças de schema
 
 ### Fixed
+- **Parser ABIOVE** — suporte a formato single-sheet multi-seção (meses na coluna 1,
+  seções por produto: grão, farelo, óleo, milho, total). Layout novo de 2024/2025.
+- **Parser DERAL** — suporte a formato multi-produto por sheet (sheets nomeadas por
+  data: "Atual", "Anterior", "10-02-2025"). Layout atual do PC.xls com tabela
+  Condição/Fase por cultura em cada sheet.
 - **7 clients legados migrados para `retry_on_status()`** — deral, imea, usda,
   abiove, bcb, comexstat, anda. ~445 linhas de retry duplicado removidas.
   Timeout/ConnectError propagam imediatamente (sem retry).
@@ -64,7 +72,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - mypy override para `tests.*` (`ignore_errors = true`, strict mantido no core)
 
 ### Known Issues
-- 5 golden tests com dados sintéticos (BCB, INMET, USDA, ComexStat, NA) — `needs_real_data`
+- 4 golden tests com dados sintéticos (INMET, USDA, NA, ANDA) — `needs_real_data`
+  (BCB, IBGE, ComexStat, DERAL, ABIOVE migrados para dados reais na issue #10)
 - DuckDB 1.4.4 incompatível com coverage no Python 3.14
 
 ## [0.8.0] - 2026-02-09

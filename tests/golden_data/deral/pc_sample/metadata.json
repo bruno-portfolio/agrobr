@@ -1,12 +1,11 @@
 {
   "source": "deral",
   "format": "xlsx",
-  "parser_module": "agrobr.deral.parser",
-  "parser_function": "parse_pc_xls",
-  "parser_kwargs": {},
-  "url": "https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls",
-  "captured_at": "2026-02-11T12:00:00Z",
+  "parser": "agrobr.deral.parser::parse_pc_xls()",
   "parser_version": 1,
-  "notes": "Synthetic XLS created with openpyxl - Soja sheet with boa/media/ruim conditions",
-  "needs_real_data": true
+  "parser_kwargs": {},
+  "needs_real_data": false,
+  "captured_at": "2026-02-13T10:59:27.259411+00:00",
+  "api_url": "https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls",
+  "notes": "Real data from DERAL PC.xls — weekly crop conditions, 168 records, condicoes: ['boa', 'media', 'ruim']"
 }

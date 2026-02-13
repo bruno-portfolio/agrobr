@@ -1,7 +1,36 @@
 {
-  "count": 10,
-  "columns": ["ano", "mes", "ncm", "cod_unidade", "cod_pais", "uf", "cod_via", "cod_porto", "qtd_estatistica", "kg_liquido", "valor_fob_usd"],
-  "first_row": {"ano": 2024, "mes": 1, "ncm": "12019000", "uf": "BA"},
-  "last_row": {"ano": 2024, "mes": 1, "ncm": "12019000", "uf": "SP"},
-  "non_null_columns": ["ano", "mes", "ncm", "uf", "kg_liquido", "valor_fob_usd"]
+  "count": 20,
+  "columns": [
+    "ano",
+    "mes",
+    "ncm",
+    "cod_unidade",
+    "cod_pais",
+    "uf",
+    "cod_via",
+    "cod_porto",
+    "qtd_estatistica",
+    "kg_liquido",
+    "valor_fob_usd"
+  ],
+  "non_null_columns": [
+    "ano",
+    "mes",
+    "ncm",
+    "uf",
+    "kg_liquido",
+    "valor_fob_usd"
+  ],
+  "first_row": {
+    "ano": 2024,
+    "mes": 1,
+    "ncm": "12019000",
+    "uf": "BA"
+  },
+  "last_row": {
+    "ano": 2024,
+    "mes": 1,
+    "ncm": "12019000",
+    "uf": "TO"
+  }
 }

@@ -1,7 +1,20 @@
 {
-  "count_min": 3,
-  "columns": ["produto", "data", "condicao", "pct", "plantio_pct", "colheita_pct"],
+  "count_min": 168,
+  "columns": [
+    "produto",
+    "data",
+    "condicao",
+    "pct",
+    "plantio_pct",
+    "colheita_pct"
+  ],
+  "non_null_columns": [
+    "produto"
+  ],
   "has_condicao": true,
-  "condicoes_expected": ["boa", "media", "ruim"],
-  "produto_expected": "soja"
+  "condicoes_expected": [
+    "boa",
+    "media",
+    "ruim"
+  ]
 }

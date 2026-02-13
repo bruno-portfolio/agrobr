@@ -1,12 +1,11 @@
 {
   "source": "bcb",
   "format": "json",
-  "parser_module": "agrobr.bcb.parser",
-  "parser_function": "parse_credito_rural",
-  "parser_kwargs": {"finalidade": "custeio"},
-  "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
-  "captured_at": "2026-02-11T12:00:00Z",
+  "parser": "agrobr.bcb.parser::parse_credito_rural()",
   "parser_version": 1,
-  "notes": "BCB API returned 503 - synthetic data based on API schema",
-  "needs_real_data": true
+  "parser_kwargs": {},
+  "needs_real_data": false,
+  "captured_at": "2026-02-13T10:58:17.286041+00:00",
+  "api_url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?%24format=json&%24top=20&%24filter=contains%28nomeProduto%2C%27SOJA%27%29",
+  "notes": "Real data from BCB Olinda API — CusteioRegiaoUFProduto SOJA top 20, 20 records"
 }
