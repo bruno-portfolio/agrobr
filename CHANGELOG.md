@@ -8,6 +8,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **Cobertura CLI/alerts/health** — 107 testes novos: `test_cli.py` (51), `test_alerts/test_notifier.py` (17),
+  `test_health/test_checker.py` (15), `test_health/test_reporter.py` (24). Total suite: 1640 testes. Closes #11
 - **Golden tests com dados reais** para 5 fontes: BCB, IBGE, ComexStat, DERAL, ABIOVE
   (substituindo dados sintéticos). Script `scripts/update_golden.py` expandido com
   captura automatizada para 6 fontes (5 novas + CEPEA existente). Closes #10
@@ -26,6 +28,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   garante invalidação automática entre versões da lib e mudanças de schema
 
 ### Fixed
+- **Pre-commit limpo** — SIM117 (nested `with` combinados), mypy `untyped-decorator`
+  no cli.py, erros pré-existentes em `scripts/` e `examples/` corrigidos (27 erros mypy)
 - **Parser ABIOVE** — suporte a formato single-sheet multi-seção (meses na coluna 1,
   seções por produto: grão, farelo, óleo, milho, total). Layout novo de 2024/2025.
 - **Parser DERAL** — suporte a formato multi-produto por sheet (sheets nomeadas por
@@ -47,7 +51,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [0.9.0] - 2026-02-11
 
 ### Added
-- **1529 testes** (era 949), cobertura **~75%** (era 57.5%)
+- **1529 testes** (era 949), cobertura **~75%** (era 57.5%) — atualizado para 1640 no Unreleased
 - **Golden tests** para todas as 13 fontes de dados (era 2/13)
 - **Benchmark de escalabilidade** — memory, volume, cache, async, rate limiting, sync, golden
 - **Suporte a token INMET** — `AGROBR_INMET_TOKEN` via env var

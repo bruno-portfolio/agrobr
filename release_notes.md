@@ -2,7 +2,7 @@
 
 ## Highlights
 
-- **1529 testes** (era 949), cobertura **~75%** (era 57.5%)
+- **1640 testes** (era 949), cobertura **~78%** (era 57.5%)
 - **13/13 fontes** com golden tests (era 2/13)
 - **10 bugs corrigidos** incluindo histórico DuckDB que nunca salvava dados
 - **Resiliência HTTP** completa: retry centralizado, 429 handling, Retry-After
@@ -21,8 +21,9 @@ pip install --upgrade agrobr
 
 ## Added
 
-- 1529 testes (era 949), cobertura ~75% (era 57.5%)
+- 1640 testes (era 949), cobertura ~78% (era 57.5%)
 - Golden tests para todas as 13 fontes de dados
+- Cobertura CLI (51 testes), alerts (17 testes), health (39 testes)
 - Benchmark de escalabilidade (memory, volume, cache, async, rate limiting)
 - Suporte a token INMET (`AGROBR_INMET_TOKEN` via env var)
 - `retry_on_status()` e `retry_async()` centralizados em `http/retry.py`
@@ -49,7 +50,8 @@ pip install --upgrade agrobr
 
 ## Known Issues
 
-- 5 golden tests com dados sintéticos (BCB, INMET, USDA, ComexStat, NA) — `needs_real_data`
+- 4 golden tests com dados sintéticos (INMET, USDA, NA, ANDA) — `needs_real_data`
+  (BCB, IBGE, ComexStat, DERAL, ABIOVE migrados para dados reais na issue #10)
 - DuckDB 1.4.4 incompatível com coverage no Python 3.14
 
 ## Links
