@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **13 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET e Notícias Agrícolas.
 
-**v0.9.0** — 1529 testes, ~75% cobertura, 13/13 fontes com golden tests, resiliência HTTP completa.
+**v0.9.0** — 1492 testes, ~75% cobertura, 13/13 fontes com golden tests, retry centralizado em 13/13 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -301,8 +301,8 @@ Use `agrobr health --all` para verificar localmente.
 ## Diferenciais
 
 - **13/13 fontes com golden tests** — validação automatizada contra dados de referência
-- **Resiliência HTTP completa** — retry centralizado, 429 handling, Retry-After
-- **1529 testes, ~75% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **Resiliência HTTP completa** — retry centralizado em 13/13 clients, 429 handling, Retry-After
+- **1492 testes, ~75% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos públicos** — schema versionado e garantias de estabilidade
 - **Modo determinístico** — reprodutibilidade total para papers/auditorias
@@ -353,6 +353,14 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 ## Contribuindo
 
 Contribuições são bem-vindas! Veja [CONTRIBUTING.md](CONTRIBUTING.md) para detalhes.
+
+## Licenças dos Dados
+
+> **Importante:** O agrobr é licenciado sob MIT, mas os **dados** acessados
+> pertencem às suas respectivas fontes e possuem licenças próprias.
+> Dados CEPEA/ESALQ, por exemplo, são CC BY-NC 4.0 (uso comercial requer
+> autorização). Consulte **[docs/licenses.md](docs/licenses.md)** para a tabela
+> completa de fontes, licenças e classificações.
 
 ## Licença
 

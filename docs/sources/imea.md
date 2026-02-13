@@ -1,5 +1,15 @@
 # IMEA — Cotações e Indicadores MT
 
+> **Licença:** Termos de uso IMEA proíbem redistribuição de dados sem
+> autorização escrita. Uso pessoal/educacional apenas.
+> Ref: [Termo de Uso](https://imea.com.br/imea-site/termo-de-uso.html)
+> Classificação: `restrito`
+
+!!! warning "Restrição de redistribuição"
+    O IMEA proíbe explicitamente o compartilhamento de dados sem autorização
+    escrita. Um `warnings.warn()` é emitido no primeiro uso do módulo.
+    Não redistribua dados obtidos via este módulo sem autorização do IMEA.
+
 Instituto Mato-Grossense de Economia Agropecuária.
 Cotações diárias, indicadores de preço e dados de safra para Mato Grosso.
 
@@ -62,3 +72,4 @@ print(meta.source_method)  # "httpx"
 - Atualização: diária
 - Cobertura: Mato Grosso
 - Autenticação: nenhuma (API pública)
+- Licença: `restrito` — redistribuição requer autorização escrita do IMEA

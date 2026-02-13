@@ -2,9 +2,14 @@
 
 O Notícias Agrícolas serve dados CEPEA/ESALQ via HTML server-side rendered.
 Não requer JavaScript nem Playwright — httpx puro com parse BeautifulSoup.
+
+AVISO: Fallback temporário. Pendente deprecação em favor de acesso direto
+ao CEPEA. Dados sujeitos a CC BY-NC 4.0 (CEPEA) + direitos reservados (NA).
 """
 
 from __future__ import annotations
+
+import warnings
 
 import httpx
 import structlog
@@ -17,6 +22,8 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import decode_content
 
 logger = structlog.get_logger()
+
+_WARNED = False
 
 
 def _get_timeout() -> httpx.Timeout:
@@ -60,6 +67,17 @@ async def fetch_indicador_page(produto: str) -> str:
         SourceUnavailableError: Se não conseguir acessar após retries
         ValueError: Se o produto não estiver disponível
     """
+    global _WARNED  # noqa: PLW0603
+    if not _WARNED:
+        warnings.warn(
+            "Notícias Agrícolas: fallback temporário do CEPEA, pendente "
+            "deprecação. Dados originários do CEPEA (CC BY-NC 4.0). "
+            "Redistribuição sujeita a restrições.",
+            UserWarning,
+            stacklevel=2,
+        )
+        _WARNED = True
+
     url = _get_produto_url(produto)
     headers = UserAgentRotator.get_headers(source="noticias_agricolas")
 

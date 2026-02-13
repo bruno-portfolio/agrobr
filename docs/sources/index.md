@@ -19,7 +19,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [IMEA](imea.md) | Cotacoes e indicadores MT | Diaria | Mato Grosso |
 | [DERAL](deral.md) | Condicao lavouras PR | Semanal | Parana |
 | [INMET](inmet.md) | Meteorologia | Diaria | 600+ estacoes (API fora do ar) |
-| [Noticias Agricolas](cepea.md) | Cotacoes (fallback CEPEA) | Diaria | Commodities |
+| [Notícias Agrícolas](noticias_agricolas.md) | Cotações (fallback CEPEA) | Diária | Commodities |
 
 ## Proveniencia e Rastreabilidade
 

@@ -7,6 +7,35 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Added
+- **Audit de licenças** — `docs/licenses.md` com tabela completa das 13 fontes,
+  classificação (`livre`, `nc`, `zona_cinza`, `restrito`) e URLs dos termos
+- **Aviso CC BY-NC 4.0** no módulo CEPEA (docstrings em `__init__.py` e `api.py`)
+  e na documentação (`docs/sources/cepea.md`)
+- **Avisos de licença** nos módulos IMEA (`restrito`), Notícias Agrícolas
+  (`restrito`, deprecação pendente), ANDA e ABIOVE (`zona_cinza`, autorização
+  solicitada fev/2026)
+- **Runtime warnings** — `warnings.warn()` no primeiro uso de IMEA e Notícias
+  Agrícolas alertando sobre restrições de redistribuição
+- **Warning box no README** apontando para `docs/licenses.md`
+- **Cache key versionada** — `build_cache_key()` em `agrobr/cache/keys.py`:
+  formato `{dataset}|{params_hash}|v{lib_version}|sv{schema_version}`,
+  garante invalidação automática entre versões da lib e mudanças de schema
+
+### Fixed
+- **7 clients legados migrados para `retry_on_status()`** — deral, imea, usda,
+  abiove, bcb, comexstat, anda. ~445 linhas de retry duplicado removidas.
+  Timeout/ConnectError propagam imediatamente (sem retry).
+- **`indicadores_upsert` 7x mais rápido** — temp table + INSERT SELECT
+  substitui INSERT row-by-row. 10k: 34s→4.8s, 50k: 187s→25.9s.
+  Scaling agora linear (ratio 50k/10k ≈ 5.4x).
+
+### Changed
+- Retry loops dos 7 clients restantes migrados para `http/retry.py` centralizado
+  (todos 13 clients agora usam `retry_on_status()`)
+- `indicadores_upsert` usa chunks de 5000 via temp table `_ind_staging`
+  com fallback row-by-row para isolamento de erros
+
 ## [0.9.0] - 2026-02-11
 
 ### Added
@@ -35,9 +64,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - mypy override para `tests.*` (`ignore_errors = true`, strict mantido no core)
 
 ### Known Issues
-- `indicadores_upsert` com 50k+ records escala não-linearmente (10k OK, 50k timeout)
 - 5 golden tests com dados sintéticos (BCB, INMET, USDA, ComexStat, NA) — `needs_real_data`
-- 7 clients legados com retry loop próprio (não migrados para `retry_on_status`)
 - DuckDB 1.4.4 incompatível com coverage no Python 3.14
 
 ## [0.8.0] - 2026-02-09

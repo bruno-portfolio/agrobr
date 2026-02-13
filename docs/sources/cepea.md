@@ -1,12 +1,18 @@
-# CEPEA - Centro de Estudos Avancados em Economia Aplicada
+# CEPEA - Centro de Estudos Avançados em Economia Aplicada
 
-## Visao Geral
+> **Licença:** Dados CEPEA/ESALQ licenciados sob
+> [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.pt-br).
+> Uso comercial requer autorização do CEPEA (cepea@usp.br).
+> Ref: [Licença de uso de dados](https://www.cepea.org.br/br/licenca-de-uso-de-dados.aspx)
+
+## Visão Geral
 
 | Campo | Valor |
 |-------|-------|
-| **Instituicao** | ESALQ/USP |
+| **Instituição** | ESALQ/USP |
 | **Website** | [cepea.esalq.usp.br](https://www.cepea.esalq.usp.br) |
-| **Acesso agrobr** | Via Noticias Agricolas (mirror autorizado) |
+| **Licença** | CC BY-NC 4.0 |
+| **Acesso agrobr** | Via Notícias Agrícolas (mirror autorizado) |
 
 ## Origem dos Dados
 

@@ -425,6 +425,35 @@
     font-weight: 300;
   }
 
+  .source-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.6rem;
+    text-transform: uppercase;
+  }
+
+  .source-badge.nc {
+    color: #d4a843;
+    border: 1px solid #d4a84333;
+    background: #d4a84310;
+  }
+
+  .source-badge.restrito {
+    color: #c45a5a;
+    border: 1px solid #c45a5a33;
+    background: #c45a5a10;
+  }
+
+  .source-badge.deprecated {
+    color: #888;
+    border: 1px solid #88888833;
+    background: #88888810;
+  }
+
   /* ═══════════════ CTA ═══════════════ */
   .cta-section {
     text-align: center;
@@ -698,6 +727,7 @@
       <div class="source-name">CEPEA/ESALQ</div>
       <div class="source-count">20 indicadores</div>
       <div class="source-detail">Soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja</div>
+      <div class="source-badge nc">CC BY-NC</div>
     </div>
     <div class="source-card">
       <div class="source-name">CONAB</div>
@@ -743,6 +773,7 @@
       <div class="source-name">IMEA</div>
       <div class="source-count">Mato Grosso</div>
       <div class="source-detail">Cotações diárias e indicadores de 6 cadeias produtivas</div>
+      <div class="source-badge restrito">Restrito</div>
     </div>
     <div class="source-card">
       <div class="source-name">DERAL</div>
@@ -758,6 +789,7 @@
       <div class="source-name">Not. Agrícolas</div>
       <div class="source-count">Fallback CEPEA</div>
       <div class="source-detail">Cotações agrícolas como fonte secundária de preços</div>
+      <div class="source-badge deprecated">Deprecated · Restrito</div>
     </div>
   </div>
 </section>
@@ -767,7 +799,7 @@
   <div class="reveal">
     <p class="section-label">Começar</p>
     <h2 class="section-title">pip install agrobr</h2>
-    <p class="section-desc" style="margin: 0 auto 0;">MIT License. 1500+ testes. 13 fontes. 8 datasets. Documentação completa.</p>
+    <p class="section-desc" style="margin: 0 auto 0;">MIT License (código). 1500+ testes. 13 fontes. 8 datasets. <a href="https://www.agrobr.dev/docs/licenses/" style="color: var(--accent-gold-dim);">Licenças dos dados →</a></p>
     <div class="cta-links">
       <a href="https://www.agrobr.dev/docs/" class="cta-btn primary">Documentação →</a>
       <a href="https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb" class="cta-btn secondary">Abrir no Colab ↗</a>
@@ -779,7 +811,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <span>© 2026 Bruno · MIT License</span>
+  <span>© 2026 Bruno · MIT License (código). Dados sujeitos aos termos de cada fonte — <a href="https://www.agrobr.dev/docs/licenses/">ver licenças</a></span>
   <div class="footer-links">
     <a href="https://github.com/bruno-portfolio/agrobr">GitHub</a>
     <a href="https://pypi.org/project/agrobr/">PyPI</a>

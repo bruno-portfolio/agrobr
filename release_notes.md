@@ -43,15 +43,13 @@ pip install --upgrade agrobr
 
 ## Changed
 
-- Retry loops de 5 clients migrados para `http/retry.py` centralizado
+- Retry loops de todos 13 clients migrados para `http/retry.py` centralizado
 - Testes de datasets refatorados: 98 funções duplicadas → 27 parametrizadas (115 cenários)
 - mypy override para `tests.*` (`ignore_errors = true`, strict mantido no core)
 
 ## Known Issues
 
-- `indicadores_upsert` com 50k+ records escala não-linearmente (10k OK, 50k timeout)
 - 5 golden tests com dados sintéticos (BCB, INMET, USDA, ComexStat, NA) — `needs_real_data`
-- 7 clients legados com retry loop próprio (não migrados para `retry_on_status`)
 - DuckDB 1.4.4 incompatível com coverage no Python 3.14
 
 ## Links

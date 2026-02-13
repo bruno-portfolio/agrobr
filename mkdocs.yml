@@ -94,6 +94,8 @@ nav:
     - IMEA: sources/imea.md
     - DERAL: sources/deral.md
     - INMET: sources/inmet.md
+    - Notícias Agrícolas: sources/noticias_agricolas.md
+  - Licenças dos Dados: licenses.md
   - Guias:
     - Async: guides/async.md
     - Dependências: guides/dependencies.md

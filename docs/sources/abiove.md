@@ -1,5 +1,14 @@
 # ABIOVE — Exportação Complexo Soja
 
+> **Licença:** Sem termos de uso públicos localizados. Autorização formal
+> solicitada em fev/2026 — aguardando resposta.
+> Classificação: `zona_cinza`
+
+!!! note "Autorização pendente"
+    Autorização formal para redistribuição de dados foi solicitada à ABIOVE
+    em fevereiro/2026. Aguardando resposta. Verifique diretamente com a
+    ABIOVE antes de uso comercial.
+
 Associação Brasileira das Indústrias de Óleos Vegetais. Dados de exportação
 mensal de grão de soja, farelo, óleo e milho.
 
@@ -57,3 +66,4 @@ O parser do agrobr detecta automaticamente a posição do header.
 - Formato: Excel (.xlsx)
 - Atualização: mensal
 - Histórico: 2010+
+- Licença: `zona_cinza` — autorização solicitada (fev/2026)

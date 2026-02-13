@@ -1,5 +1,14 @@
 # ANDA — Fertilizantes
 
+> **Licença:** Sem termos de uso públicos localizados. Autorização formal
+> solicitada em fev/2026 — aguardando resposta.
+> Classificação: `zona_cinza`
+
+!!! note "Autorização pendente"
+    Autorização formal para redistribuição de dados foi solicitada à ANDA
+    em fevereiro/2026. Aguardando resposta. Verifique diretamente com a
+    ANDA antes de uso comercial.
+
 Associação Nacional para Difusão de Adubos. Dados de entregas de
 fertilizantes por UF e mês.
 
@@ -61,4 +70,5 @@ print(meta.source_method)  # "httpx+pdfplumber"
 - URL: `https://anda.org.br/recursos/`
 - Formato: PDF/Excel
 - Atualizacao: mensal
-- Historico: 2010+
+- Histórico: 2010+
+- Licença: `zona_cinza` — autorização solicitada (fev/2026)
