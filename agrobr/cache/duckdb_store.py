@@ -125,36 +125,103 @@ class DuckDBStore:
             migrate(conn)
 
     def cache_get(self, key: str) -> tuple[bytes | None, bool]:
-        """Busca entrada no cache. Retorna (dados, is_stale)."""
+        """Busca entrada no cache. Retorna (dados, is_stale).
+
+        Comportamentos extras de versionamento:
+        - **Strict mode** (``AGROBR_CACHE_STRICT=1``): se a key existir mas
+          a ``lib_version`` nao bater com ``agrobr.__version__``, retorna miss.
+        - **Migracao legacy**: se a key versionada nao existir, busca key
+          legacy (sem versao) com mesmo prefixo, migra para o novo formato
+          e retorna os dados.
+        """
+        from agrobr import __version__
+        from agrobr.cache.keys import is_legacy_key, legacy_key_prefix, parse_cache_key
+
         conn = self._get_conn()
         now = datetime.utcnow()
 
         result = conn.execute(
-            "SELECT data, expires_at, stale FROM cache_entries WHERE key = ?",
+            "SELECT data, expires_at, stale, key FROM cache_entries WHERE key = ?",
             [key],
         ).fetchone()
 
-        if result is None:
-            logger.debug("cache_miss", key=key, reason="not_found")
-            return None, False
+        if result is not None:
+            data, expires_at, stale, stored_key = result
 
-        data, expires_at, stale = result
+            if self.settings.strict_mode and not is_legacy_key(stored_key):
+                try:
+                    parsed = parse_cache_key(stored_key)
+                    if parsed["lib_version"] != __version__:
+                        logger.debug(
+                            "cache_miss",
+                            key=key,
+                            reason="strict_version_mismatch",
+                            cached_version=parsed["lib_version"],
+                            current_version=__version__,
+                        )
+                        return None, False
+                except ValueError:
+                    pass
 
-        conn.execute(
-            "UPDATE cache_entries SET hit_count = hit_count + 1, last_accessed_at = ? WHERE key = ?",
-            [now, key],
-        )
+            conn.execute(
+                "UPDATE cache_entries SET hit_count = hit_count + 1, last_accessed_at = ? WHERE key = ?",
+                [now, key],
+            )
 
-        if expires_at < now:
-            logger.debug("cache_hit", key=key, stale=True, reason="expired")
-            return data, True
+            if expires_at < now:
+                logger.debug("cache_hit", key=key, stale=True, reason="expired")
+                return data, True
 
-        if stale:
-            logger.debug("cache_hit", key=key, stale=True, reason="marked_stale")
-            return data, True
+            if stale:
+                logger.debug("cache_hit", key=key, stale=True, reason="marked_stale")
+                return data, True
 
-        logger.debug("cache_hit", key=key, stale=False)
-        return data, False
+            logger.debug("cache_hit", key=key, stale=False)
+            return data, False
+
+        if not is_legacy_key(key):
+            prefix = legacy_key_prefix(key)
+            legacy_result = conn.execute(
+                "SELECT key, data, source, expires_at, stale FROM cache_entries WHERE key LIKE ? || '%'",
+                [prefix],
+            ).fetchone()
+
+            if legacy_result is not None:
+                legacy_key, data, source, expires_at, stale = legacy_result
+
+                if is_legacy_key(legacy_key):
+                    remaining_ttl = max(int((expires_at - now).total_seconds()), 0)
+                    conn.execute("DELETE FROM cache_entries WHERE key = ?", [legacy_key])
+                    conn.execute(
+                        """
+                        INSERT OR REPLACE INTO cache_entries
+                        (key, data, source, created_at, expires_at, last_accessed_at, hit_count, version, stale)
+                        VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?)
+                        """,
+                        [
+                            key,
+                            data,
+                            source,
+                            now,
+                            now + timedelta(seconds=remaining_ttl),
+                            now,
+                            stale,
+                        ],
+                    )
+                    logger.info(
+                        "legacy_cache_migrated",
+                        old_key=legacy_key,
+                        new_key=key,
+                    )
+
+                    if expires_at < now:
+                        return data, True
+                    if stale:
+                        return data, True
+                    return data, False
+
+        logger.debug("cache_miss", key=key, reason="not_found")
+        return None, False
 
     def cache_set(
         self,
