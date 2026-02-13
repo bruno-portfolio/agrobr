@@ -246,6 +246,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_nasa_power: float = 1.0
     rate_limit_noticias_agricolas: float = 2.0
     rate_limit_usda: float = 1.0
+    rate_limit_default: float = 1.0
 
     class Config:
         env_prefix = "AGROBR_HTTP_"
