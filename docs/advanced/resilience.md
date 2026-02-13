@@ -62,16 +62,54 @@ exponential_base = 2
 
 ## Rate Limiting
 
-Cada fonte tem seu próprio rate limit:
+Cada fonte tem seu próprio rate limit, configurável via env vars:
 
-| Fonte | Intervalo |
-|-------|-----------|
-| CEPEA | 2 segundos |
-| CONAB | 3 segundos |
-| IBGE | 1 segundo |
-| Notícias Agrícolas | 2 segundos |
+| Fonte | Intervalo | Env var |
+|-------|-----------|---------|
+| ABIOVE | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_ABIOVE` |
+| ANDA | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_ANDA` |
+| BCB | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_BCB` |
+| CEPEA | 2 segundos | `AGROBR_HTTP_RATE_LIMIT_CEPEA` |
+| ComexStat | 2 segundos | `AGROBR_HTTP_RATE_LIMIT_COMEXSTAT` |
+| CONAB | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_CONAB` |
+| DERAL | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_DERAL` |
+| IBGE | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_IBGE` |
+| IMEA | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_IMEA` |
+| INMET | 0.5 segundo | `AGROBR_HTTP_RATE_LIMIT_INMET` |
+| NASA POWER | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_NASA_POWER` |
+| Notícias Agrícolas | 2 segundos | `AGROBR_HTTP_RATE_LIMIT_NOTICIAS_AGRICOLAS` |
+| USDA | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_USDA` |
+| Default | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` |
 
 O rate limiter usa semáforos por fonte, permitindo requests paralelos a fontes diferentes.
+
+## Configuração HTTP Centralizada
+
+Todos os clients usam `HTTPSettings` (env prefix `AGROBR_HTTP_`):
+
+```bash
+# Timeouts (segundos)
+export AGROBR_HTTP_TIMEOUT_CONNECT=10
+export AGROBR_HTTP_TIMEOUT_READ=30
+export AGROBR_HTTP_TIMEOUT_WRITE=10
+export AGROBR_HTTP_TIMEOUT_POOL=10
+
+# Retry
+export AGROBR_HTTP_MAX_RETRIES=3
+export AGROBR_HTTP_RETRY_BASE_DELAY=1.0
+export AGROBR_HTTP_RETRY_MAX_DELAY=30.0
+```
+
+Via código:
+
+```python
+from agrobr.http import get_timeout, get_rate_limit, get_client_kwargs
+from agrobr.constants import Fonte
+
+timeout = get_timeout()                      # httpx.Timeout
+rate = get_rate_limit(Fonte.CEPEA)           # 2.0
+kwargs = get_client_kwargs(Fonte.CEPEA)      # dict para httpx.AsyncClient(**kwargs)
+```
 
 ## User-Agent Rotativo
 

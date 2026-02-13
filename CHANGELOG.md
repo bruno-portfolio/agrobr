@@ -26,6 +26,15 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **Cache key versionada** — `build_cache_key()` em `agrobr/cache/keys.py`:
   formato `{dataset}|{params_hash}|v{lib_version}|sv{schema_version}`,
   garante invalidação automática entre versões da lib e mudanças de schema
+- **Cache versionado completo** — migração automática de keys legacy para formato
+  versionado (`legacy_cache_migrated`), strict mode via `AGROBR_CACHE_STRICT=1`
+  (rejeita cache de versão divergente), `parse_cache_key()` / `is_legacy_key()`
+  / `legacy_key_prefix()` em `cache/keys.py`. 16 testes novos (migração, strict,
+  concorrência 3 threads)
+- **HTTP settings centralizados** — `agrobr/http/settings.py` com `get_timeout()`,
+  `get_rate_limit()`, `get_client_kwargs()`. `rate_limit_default` (1 req/s) no
+  `HTTPSettings`. Env vars `AGROBR_HTTP_TIMEOUT_*` e `AGROBR_HTTP_RATE_LIMIT_*`
+  configuram tudo. 14 testes novos
 
 ### Fixed
 - **Pre-commit limpo** — SIM117 (nested `with` combinados), mypy `untyped-decorator`

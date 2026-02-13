@@ -136,6 +136,16 @@ Guia para resolver problemas comuns.
 df = await cepea.indicador('soja', force_refresh=True)
 ```
 
+### Cache Strict Mode
+
+Se você quer garantir que o cache sempre corresponda à versão atual do agrobr:
+
+```bash
+export AGROBR_CACHE_STRICT=1
+```
+
+Com strict mode ativo, qualquer entrada de cache gravada por uma versão diferente do agrobr é ignorada (cache miss). Útil em ambientes de produção onde consistência é mais importante que performance.
+
 ## Problemas com Polars
 
 ### `ImportError: polars not found`
