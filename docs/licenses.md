@@ -87,6 +87,10 @@ de acesso público (Lei de Acesso à Informação — Lei 12.527/2011). Não há
 restrição a uso comercial de dados públicos governamentais, mas a citação da
 fonte é recomendada.
 
+O agrobr embute códigos IBGE de 5571 municípios (arquivo `_municipios_ibge.json`)
+obtidos da [API IBGE Localidades](https://servicodados.ibge.gov.br/api/docs/localidades),
+que é pública e livre para uso.
+
 ### NASA POWER
 
 Dados NASA são disponibilizados sob CC BY 4.0. Uso livre (incluindo comercial)

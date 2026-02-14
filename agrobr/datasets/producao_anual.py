@@ -74,6 +74,11 @@ PRODUCAO_ANUAL_INFO = DatasetInfo(
     contract_version="1.0",
     update_frequency="yearly",
     typical_latency="Y+1",
+    source_url="https://sidra.ibge.gov.br",
+    source_institution="IBGE",
+    min_date="1974-01-01",
+    unit="ha / ton / kg/ha",
+    license="livre",
 )
 
 

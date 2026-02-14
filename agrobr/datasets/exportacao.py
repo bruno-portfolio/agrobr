@@ -70,6 +70,11 @@ EXPORTACAO_INFO = DatasetInfo(
     contract_version="1.0",
     update_frequency="monthly",
     typical_latency="M+1",
+    source_url="https://comexstat.mdic.gov.br",
+    source_institution="MDIC/ComexStat",
+    min_date="1997-01-01",
+    unit="kg / USD",
+    license="livre",
 )
 
 

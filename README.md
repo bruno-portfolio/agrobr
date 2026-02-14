@@ -323,14 +323,37 @@ validate_dataset(df, "preco_diario")  # raises ContractViolationError
 
 Garantias globais: nomes estáveis (só adicionam), tipos só alargam (int→float ok, float→int nunca), datas ISO-8601, breaking changes só em major version. Veja [docs/contracts/](https://www.agrobr.dev/docs/contracts/) para detalhes por dataset.
 
+## Normalização Transversal
+
+Funções para padronizar dados entre fontes:
+
+```python
+from agrobr.normalize import (
+    normalizar_cultura, municipio_para_ibge, normalizar_uf, normalizar_safra,
+)
+
+normalizar_cultura("Soja em Grão")    # "soja"
+normalizar_cultura("milho 2ª safra")  # "milho_2"
+normalizar_cultura("coffee")          # "cafe"
+
+municipio_para_ibge("Sorriso", "MT")  # 5107925
+municipio_para_ibge("SAO PAULO", "SP")  # 3550308
+
+normalizar_uf("São Paulo")            # "SP"
+normalizar_safra("24/25")             # "2024/25"
+```
+
+5571 municípios IBGE, 35 culturas canônicas, 27 UFs. Dados de municípios via API IBGE Localidades (livre para uso).
+
 ## Diferenciais
 
 - **13/13 fontes com golden tests** — validação automatizada contra dados de referência
 - **Resiliência HTTP completa** — retry centralizado em 13/13 clients, 429 handling, Retry-After
-- **1640 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **2128 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints
 - **Schemas JSON** — contratos exportados como JSON em `agrobr/schemas/`
+- **Normalização transversal** — municípios IBGE, culturas, UFs, safras padronizados
 - **Modo determinístico** — reprodutibilidade total para papers/auditorias
 - **Async-first** para pipelines de alta performance
 - **Cache inteligente** com DuckDB (analytics nativo + histórico permanente)

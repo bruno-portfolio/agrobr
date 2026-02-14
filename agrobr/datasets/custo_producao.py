@@ -46,6 +46,11 @@ CUSTO_PRODUCAO_INFO = DatasetInfo(
     contract_version="1.0",
     update_frequency="yearly",
     typical_latency="Y+0",
+    source_url="https://www.gov.br/conab/",
+    source_institution="CONAB",
+    min_date="2014-01-01",
+    unit="BRL/ha",
+    license="livre",
 )
 
 

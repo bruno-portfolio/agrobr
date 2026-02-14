@@ -72,6 +72,11 @@ ESTIMATIVA_SAFRA_INFO = DatasetInfo(
     contract_version="1.0",
     update_frequency="monthly",
     typical_latency="M+0",
+    source_url="https://www.gov.br/conab/",
+    source_institution="CONAB",
+    min_date="2005-01-01",
+    unit="mil ha / mil ton / kg/ha",
+    license="livre",
 )
 
 

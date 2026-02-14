@@ -14,6 +14,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   `exportacao`, `fertilizante`, `custo_producao`. Registry centralizado com
   `register_contract()` / `get_contract()` / `validate_dataset()`. 60 testes dedicados.
   `Contract.to_json()` / `from_json()` para serialização roundtrip
+- **Normalização transversal (roadmap 1.3)** — Dois novos módulos em `agrobr/normalize/`:
+  - `municipalities.py` — Mapeamento nome→código IBGE para 5571 municípios brasileiros.
+    Busca accent/case insensitive. `municipio_para_ibge()`, `ibge_para_municipio()`,
+    `buscar_municipios()`. Dados da API IBGE Localidades (livre para uso)
+  - `crops.py` — Dicionário unificado de 140+ variantes→35 culturas canônicas.
+    `normalizar_cultura()` resolve "SOJA", "soja em grão", "soybean" → "soja".
+    `listar_culturas()`, `is_cultura_valida()`. Substitui aliases dispersos
+  - 464 testes novos (100 municípios x 3 variações + culturas). Total suite: 2128 testes
+- **Metadados no registry (roadmap 1.9)** — `DatasetInfo` expandido com `source_url`,
+  `source_institution`, `min_date`, `unit`, `license`. 8 datasets preenchidos com metadados
+  reais (instituição, URL, licença, data mínima, unidade). Registry ganha
+  `describe(name)` e `describe_all()` para exibição formatada
 - **Cobertura CLI/alerts/health** — 107 testes novos: `test_cli.py` (51), `test_alerts/test_notifier.py` (17),
   `test_health/test_checker.py` (15), `test_health/test_reporter.py` (24). Total suite: 1640 testes. Closes #11
 - **Golden tests com dados reais** para 5 fontes: BCB, IBGE, ComexStat, DERAL, ABIOVE

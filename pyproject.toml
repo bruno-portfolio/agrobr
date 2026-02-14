@@ -105,6 +105,7 @@ packages = ["agrobr"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "agrobr/schemas" = "agrobr/schemas"
+"agrobr/normalize/_municipios_ibge.json" = "agrobr/normalize/_municipios_ibge.json"
 
 [tool.ruff]
 target-version = "py311"

@@ -85,6 +85,11 @@ PRECO_DIARIO_INFO = DatasetInfo(
     contract_version="1.0",
     update_frequency="daily",
     typical_latency="D+0",
+    source_url="https://cepea.esalq.usp.br",
+    source_institution="CEPEA/ESALQ/USP",
+    min_date="2004-01-01",
+    unit="BRL/unidade",
+    license="nc",
 )
 
 

@@ -45,6 +45,11 @@ class DatasetInfo:
     contract_version: str = "1.0"
     update_frequency: str = "daily"
     typical_latency: str = "D+0"
+    source_url: str = ""
+    source_institution: str = ""
+    min_date: str | None = None
+    unit: str | None = None
+    license: str = "livre"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -55,6 +60,11 @@ class DatasetInfo:
             "contract_version": self.contract_version,
             "update_frequency": self.update_frequency,
             "typical_latency": self.typical_latency,
+            "source_url": self.source_url,
+            "source_institution": self.source_institution,
+            "min_date": self.min_date,
+            "unit": self.unit,
+            "license": self.license,
         }
 
 

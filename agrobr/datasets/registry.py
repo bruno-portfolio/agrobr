@@ -36,3 +36,41 @@ def list_products(name: str) -> list[str]:
 def info(name: str) -> dict[str, Any]:
     """Retorna metadados de um dataset."""
     return get_dataset(name).info.to_dict()
+
+
+def describe(name: str) -> str:
+    """Retorna descricao formatada de um dataset para exibicao."""
+    d = get_dataset(name)
+    i = d.info
+    lines = [
+        f"Dataset: {i.name}",
+        f"  {i.description}",
+        f"  Institution: {i.source_institution or 'N/A'}",
+        f"  URL: {i.source_url or 'N/A'}",
+        f"  License: {i.license}",
+        f"  Products: {', '.join(i.products)}",
+        f"  Sources: {' > '.join(s.name for s in i.sources)}",
+        f"  Frequency: {i.update_frequency} (latency: {i.typical_latency})",
+        f"  Contract: v{i.contract_version}",
+        f"  Min date: {i.min_date or 'N/A'}",
+        f"  Unit: {i.unit or 'N/A'}",
+    ]
+    return "\n".join(lines)
+
+
+def describe_all() -> str:
+    """Retorna tabela resumida de todos os datasets registrados."""
+    lines = [
+        f"{'Dataset':<20} {'Institution':<15} {'Frequency':<10} {'License':<12} {'Products'}",
+        "-" * 90,
+    ]
+    for name in sorted(_REGISTRY):
+        i = _REGISTRY[name].info
+        products = ", ".join(i.products[:4])
+        if len(i.products) > 4:
+            products += f" +{len(i.products) - 4}"
+        lines.append(
+            f"{i.name:<20} {i.source_institution:<15} "
+            f"{i.update_frequency:<10} {i.license:<12} {products}"
+        )
+    return "\n".join(lines)

@@ -52,6 +52,11 @@ CREDITO_RURAL_INFO = DatasetInfo(
     contract_version="1.0",
     update_frequency="monthly",
     typical_latency="M+1",
+    source_url="https://olinda.bcb.gov.br",
+    source_institution="BCB/SICOR",
+    min_date="2013-01-01",
+    unit="BRL",
+    license="livre",
 )
 
 

@@ -46,6 +46,11 @@ FERTILIZANTE_INFO = DatasetInfo(
     contract_version="1.0",
     update_frequency="yearly",
     typical_latency="Y+1",
+    source_url="https://anda.org.br",
+    source_institution="ANDA",
+    min_date="2009-01-01",
+    unit="ton",
+    license="zona_cinza",
 )
 
 
