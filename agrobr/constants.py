@@ -225,6 +225,7 @@ class CacheSettings(BaseSettings):
     ttl_nasa_power: int = 7 * 24 * 3600
     ttl_desmatamento: int = 24 * 3600
     ttl_mapbiomas: int = 7 * 24 * 3600
+    ttl_conab_progresso: int = 12 * 3600
     ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
 

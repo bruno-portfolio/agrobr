@@ -11,6 +11,7 @@ from agrobr.conab.api import (
     ufs,
 )
 from agrobr.conab.custo_producao import custo_producao, custo_producao_total
+from agrobr.conab.progresso import progresso_safra, semanas_disponiveis
 from agrobr.conab.serie_historica import serie_historica
 
 __all__ = [
@@ -23,4 +24,6 @@ __all__ = [
     "custo_producao",
     "custo_producao_total",
     "serie_historica",
+    "progresso_safra",
+    "semanas_disponiveis",
 ]

@@ -9,9 +9,9 @@
 
 ## O que é o agrobr?
 
-Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 13 fontes públicas.
+Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 17 fontes públicas.
 
-**v0.9.0** — 2130 testes | ~78% cobertura | 13/13 golden tests | retry centralizado 13/13 clients
+**v0.10.0-dev** — 2360 testes | ~78% cobertura | 17/17 golden tests | retry centralizado 17/17 clients
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica
@@ -26,6 +26,10 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 - **DERAL**: Condição das lavouras do Paraná (semanal)
 - **INMET**: Dados meteorológicos por estação (requer token `AGROBR_INMET_TOKEN`)
 - **Notícias Agrícolas**: Cotações agrícolas (fallback CEPEA)
+- **Queimadas/INPE**: Focos de calor por satélite (6 biomas, 13 satélites)
+- **Desmatamento PRODES/DETER**: Desmatamento consolidado + alertas em tempo real
+- **MapBiomas**: Cobertura e uso da terra por município (1985-presente)
+- **CONAB Progresso**: Progresso semanal de plantio/colheita por cultura e UF
 
 ## Datasets — Camada Semântica
 
@@ -103,17 +107,17 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 | Métrica | Valor |
 |---------|-------|
-| Testes | 2130 passando |
+| Testes | 2360 passando |
 | Cobertura | ~78% |
-| Golden tests | 13/13 fontes |
+| Golden tests | 17/17 fontes |
 | Resiliência HTTP | Retry centralizado + 429/Retry-After |
 | Benchmarks | Memory, volume, cache, async, rate limiting |
 | Bugs corrigidos (v0.9.0) | 10 (incl. histórico DuckDB que nunca salvava) |
 
 ## Features
 
-- **13 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL, INMET, Notícias Agrícolas
-- **13/13 golden tests** — validação automatizada contra dados de referência
+- **17 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, CONAB Progresso
+- **17/17 golden tests** — validação automatizada contra dados de referência
 - **Resiliência HTTP** — `retry_on_status()`/`retry_async()` centralizado, Retry-After, 429 handling
 - **Camada semântica** — datasets com fallback automático entre fontes
 - **Contratos públicos** — schema versionado com garantias de estabilidade

@@ -118,6 +118,34 @@ asyncio.run(main())
 
 Soja, milho, arroz, feijão, algodão, trigo, sorgo, aveia, centeio, cevada, girassol, mamona, amendoim, gergelim, canola, triticale.
 
+## CONAB - Progresso de Safra
+
+Progresso semanal de plantio e colheita por cultura e UF.
+
+```python
+from agrobr import conab
+
+async def main():
+    # Progresso de todas as culturas (semana mais recente)
+    df = await conab.progresso_safra()
+
+    # Filtrar por cultura e estado
+    df = await conab.progresso_safra(cultura="Soja", estado="MT")
+
+    # Apenas colheita
+    df = await conab.progresso_safra(operacao="Colheita")
+
+    # Listar semanas disponíveis
+    semanas = await conab.semanas_disponiveis()
+    print(semanas[0])  # {'descricao': '...', 'url': '...'}
+
+asyncio.run(main())
+```
+
+### Culturas Progresso
+
+Soja, Milho 1ª, Milho 2ª, Arroz, Algodão, Feijão 1ª, Feijão 3ª.
+
 ## IBGE - PAM e LSPA
 
 O IBGE fornece dados através da API SIDRA.

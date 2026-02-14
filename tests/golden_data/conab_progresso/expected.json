@@ -1,0 +1,33 @@
+{
+  "columns": [
+    "cultura",
+    "safra",
+    "operacao",
+    "estado",
+    "semana_atual",
+    "pct_ano_anterior",
+    "pct_semana_anterior",
+    "pct_semana_atual",
+    "pct_media_5_anos"
+  ],
+  "culturas": [
+    "Milho 2ª",
+    "Soja"
+  ],
+  "operacoes": [
+    "Colheita",
+    "Semeadura"
+  ],
+  "estados": [
+    "GO",
+    "MT",
+    "PR"
+  ],
+  "total_records": 8,
+  "soja_semeadura_records": 3,
+  "soja_colheita_records": 3,
+  "milho2_semeadura_records": 2,
+  "semana": "2026-02-07",
+  "safra": "2025/26",
+  "mt_soja_colheita_pct_atual": 0.468
+}

@@ -557,6 +557,94 @@ MAPBIOMAS_TRANSICAO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+CONAB_PROGRESSO_V1 = Contract(
+    name="conab.progresso_safra",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["cultura", "safra", "operacao", "estado", "semana_atual"],
+    columns=[
+        Column(
+            name="cultura",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Cultura (ex: Soja, Milho 2a)",
+        ),
+        Column(
+            name="safra",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Safra no formato YYYY/YY",
+        ),
+        Column(
+            name="operacao",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Semeadura ou Colheita",
+        ),
+        Column(
+            name="estado",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Codigo UF (ex: MT, GO, PR)",
+        ),
+        Column(
+            name="semana_atual",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="Data da semana no formato YYYY-MM-DD",
+        ),
+        Column(
+            name="pct_ano_anterior",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            unit="fracao",
+            min_value=0.0,
+            max_value=1.0,
+        ),
+        Column(
+            name="pct_semana_anterior",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            unit="fracao",
+            min_value=0.0,
+            max_value=1.0,
+        ),
+        Column(
+            name="pct_semana_atual",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            unit="fracao",
+            min_value=0.0,
+            max_value=1.0,
+        ),
+        Column(
+            name="pct_media_5_anos",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            unit="fracao",
+            min_value=0.0,
+            max_value=1.0,
+        ),
+    ],
+    guarantees=[
+        "PK unica por combinacao cultura + safra + operacao + estado + semana",
+        "Valores percentuais entre 0.0 e 1.0 (fracao, nao %)",
+        "Dados semanais publicados pela CONAB",
+        "'estado' e codigo UF de 2 letras (ex: MT, GO, PR)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+register_contract("conab_progresso", CONAB_PROGRESSO_V1)
 register_contract("credito_rural", CREDITO_RURAL_V1)
 register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
 register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
@@ -567,6 +655,7 @@ register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
 register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
 
 __all__ = [
+    "CONAB_PROGRESSO_V1",
     "CREDITO_RURAL_V1",
     "DESMATAMENTO_DETER_V1",
     "DESMATAMENTO_PRODES_V1",

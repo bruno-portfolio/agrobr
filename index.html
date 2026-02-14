@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>agrobr — Dados agrícolas brasileiros em uma linha de código</title>
-<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. 13 fontes públicas — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL — uma API, fallback automático, cache DuckDB.">
+<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. 17 fontes públicas — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL, INMET, Queimadas/INPE, Desmatamento, MapBiomas, CONAB Progresso — uma API, fallback automático, cache DuckDB.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -584,7 +584,7 @@
   <div class="hero-content">
     <p class="hero-eyebrow">Python · Open Source · PyPI</p>
     <h1 class="hero-title">Dados agrícolas brasileiros em <em>uma linha</em> de código</h1>
-    <p class="hero-subtitle"><span class="hero-sources">CEPEA, CONAB, IBGE, NASA POWER, USDA, IMEA</span> e mais 7 fontes — 13 origens, uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
+    <p class="hero-subtitle"><span class="hero-sources">CEPEA, CONAB, IBGE, NASA POWER, USDA, IMEA</span> e mais 11 fontes — 17 origens, uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
     <div class="hero-install" onclick="copyInstall(this)" title="Copiar">
       <span><span class="pip">$</span> pip install agrobr</span>
       <span class="copy-icon">⎘</span>
@@ -718,7 +718,7 @@
 <section id="sources">
   <div class="reveal">
     <p class="section-label">Fontes de dados</p>
-    <h2 class="section-title">Treze origens. Uma API.</h2>
+    <h2 class="section-title">Dezessete origens. Uma API.</h2>
     <p class="section-desc">Cada fonte tem seu próprio parser com versionamento, fingerprinting e tratamento de encoding. Você só vê o DataFrame.</p>
   </div>
 
@@ -791,6 +791,26 @@
       <div class="source-detail">Cotações agrícolas como fonte secundária de preços</div>
       <div class="source-badge deprecated">Deprecated · Restrito</div>
     </div>
+    <div class="source-card">
+      <div class="source-name">Queimadas/INPE</div>
+      <div class="source-count">Focos de calor</div>
+      <div class="source-detail">6 biomas, 13 satélites, dados diários por município</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">Desmatamento</div>
+      <div class="source-count">PRODES + DETER</div>
+      <div class="source-detail">Desmatamento consolidado anual e alertas em tempo real</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">MapBiomas</div>
+      <div class="source-count">Cobertura da terra</div>
+      <div class="source-detail">Uso e cobertura anual por município (1985-presente)</div>
+    </div>
+    <div class="source-card">
+      <div class="source-name">CONAB Progresso</div>
+      <div class="source-count">Plantio/Colheita</div>
+      <div class="source-detail">Progresso semanal por cultura e UF (6 culturas, 27 UFs)</div>
+    </div>
   </div>
 </section>
 
@@ -799,7 +819,7 @@
   <div class="reveal">
     <p class="section-label">Começar</p>
     <h2 class="section-title">pip install agrobr</h2>
-    <p class="section-desc" style="margin: 0 auto 0;">MIT License (código). 1640+ testes. 13 fontes. 8 datasets. <a href="https://www.agrobr.dev/docs/licenses/" style="color: var(--accent-gold-dim);">Licenças dos dados →</a></p>
+    <p class="section-desc" style="margin: 0 auto 0;">MIT License (código). 2360+ testes. 17 fontes. 8 datasets. <a href="https://www.agrobr.dev/docs/licenses/" style="color: var(--accent-gold-dim);">Licenças dos dados →</a></p>
     <div class="cta-links">
       <a href="https://www.agrobr.dev/docs/" class="cta-btn primary">Documentação →</a>
       <a href="https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb" class="cta-btn secondary">Abrir no Colab ↗</a>

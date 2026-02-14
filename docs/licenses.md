@@ -24,6 +24,7 @@
 | **Queimadas/INPE** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [BDQueimadas](https://queimadas.dgi.inpe.br) |
 | **Desmatamento PRODES/DETER** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) |
 | **MapBiomas** | Dados públicos, livre com citação | Sim (com citação ao projeto) | `livre` | [Termos de Uso](https://brasil.mapbiomas.org/termos-de-uso/) |
+| **CONAB Progresso** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Gov.br](https://www.gov.br/conab/) |
 
 ### Legenda de Classificação
 
@@ -84,7 +85,7 @@
 
 ### Fontes Governamentais Brasileiras
 
-CONAB, IBGE, BCB, ComexStat, DERAL, INMET e INPE (Queimadas, PRODES/DETER) são órgãos públicos brasileiros.
+CONAB (incluindo Progresso de Safra), IBGE, BCB, ComexStat, DERAL, INMET e INPE (Queimadas, PRODES/DETER) são órgãos públicos brasileiros.
 MapBiomas é um projeto multi-institucional que disponibiliza dados abertos com citação obrigatória.
 Dados produzidos por órgãos públicos no exercício de suas funções são, em regra,
 de acesso público (Lei de Acesso à Informação — Lei 12.527/2011). Não há

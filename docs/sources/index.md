@@ -1,6 +1,6 @@
 # Fontes de Dados
 
-O agrobr integra dados de 13 fontes de dados agricolas.
+O agrobr integra dados de 17 fontes de dados agricolas.
 Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 
 ## Visao Geral
@@ -20,6 +20,10 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [DERAL](deral.md) | Condicao lavouras PR | Semanal | Parana |
 | [INMET](inmet.md) | Meteorologia | Diaria | 600+ estacoes (API fora do ar) |
 | [Notícias Agrícolas](noticias_agricolas.md) | Cotações (fallback CEPEA) | Diária | Commodities |
+| [Queimadas/INPE](queimadas.md) | Focos de calor | Diária | 6 biomas, 13 satélites |
+| [Desmatamento PRODES/DETER](desmatamento.md) | Desmatamento + alertas | Anual/Diária | Amazônia, Cerrado, Pantanal |
+| [MapBiomas](mapbiomas.md) | Cobertura e uso da terra | Anual | Municípios (1985-presente) |
+| [CONAB Progresso](conab_progresso.md) | Plantio/colheita semanal | Semanal | 6 culturas, 27 UFs |
 
 ## Proveniencia e Rastreabilidade
 

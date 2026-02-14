@@ -13,9 +13,9 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **15 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE e Desmatamento PRODES/DETER.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **17 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas e CONAB Progresso.
 
-**v0.10.0-dev** — 2227 testes, ~78% cobertura, 15/15 fontes com golden tests, retry centralizado em 15/15 clients.
+**v0.10.0-dev** — 2360 testes, ~78% cobertura, 17/17 fontes com golden tests, retry centralizado em 17/17 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -245,6 +245,25 @@ async def main():
     df, meta = await desmatamento.prodes(bioma="Cerrado", ano=2022, return_meta=True)
 ```
 
+### CONAB Progresso de Safra (v0.10.0)
+
+```python
+from agrobr import conab
+
+async def main():
+    # Progresso semanal de plantio/colheita
+    df = await conab.progresso_safra()
+
+    # Filtrar por cultura, estado e operação
+    df = await conab.progresso_safra(cultura="Soja", estado="MT", operacao="Colheita")
+
+    # Semana específica
+    df = await conab.progresso_safra(semana_url="https://www.gov.br/conab/.../acompanhamento-...")
+
+    # Listar semanas disponíveis
+    semanas = await conab.semanas_disponiveis()
+```
+
 ### Modo Síncrono
 
 ```python
@@ -341,6 +360,8 @@ Use `agrobr health --all` para verificar localmente.
 | Notícias Agrícolas | Cotações (fallback CEPEA) | ✅¹ | Funcional |
 | Queimadas/INPE | Focos de calor por satelite (6 biomas, 13 satelites) | ✅ | Funcional |
 | Desmatamento PRODES/DETER | Desmatamento consolidado + alertas (TerraBrasilis WFS) | ✅ | Funcional |
+| MapBiomas | Cobertura e uso da terra (1985-presente) | ✅ | Funcional |
+| CONAB Progresso | Progresso semanal de plantio/colheita por cultura e UF | ✅ | Funcional |
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 
@@ -391,9 +412,9 @@ normalizar_safra("24/25")             # "2024/25"
 
 ## Diferenciais
 
-- **15/15 fontes com golden tests** — validação automatizada contra dados de referência
-- **Resiliência HTTP completa** — retry centralizado em 15/15 clients, 429 handling, Retry-After
-- **2227 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **17/17 fontes com golden tests** — validação automatizada contra dados de referência
+- **Resiliência HTTP completa** — retry centralizado em 17/17 clients, 429 handling, Retry-After
+- **2360 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints
 - **Schemas JSON** — contratos exportados como JSON em `agrobr/schemas/`
@@ -439,7 +460,7 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
-- [Fontes](https://www.agrobr.dev/docs/sources/) — 15 fontes documentadas
+- [Fontes](https://www.agrobr.dev/docs/sources/) — 17 fontes documentadas
 - [API Reference](https://www.agrobr.dev/docs/api/cepea/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 

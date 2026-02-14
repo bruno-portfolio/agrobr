@@ -79,6 +79,7 @@ nav:
   - API Reference:
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md
+    - CONAB Progresso: api/conab_progresso.md
     - IBGE: api/ibge.md
     - NASA POWER: api/nasa_power.md
     - BCB/SICOR: api/bcb.md
@@ -97,6 +98,7 @@ nav:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
     - CONAB: sources/conab.md
+    - CONAB Progresso: sources/conab_progresso.md
     - IBGE: sources/ibge.md
     - NASA POWER: sources/nasa_power.md
     - BCB/SICOR: sources/bcb.md
