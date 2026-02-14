@@ -22,10 +22,21 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
     `normalizar_cultura()` resolve "SOJA", "soja em grão", "soybean" → "soja".
     `listar_culturas()`, `is_cultura_valida()`. Substitui aliases dispersos
   - 464 testes novos (100 municípios x 3 variações + culturas). Total suite: 2128 testes
+- **Politica de versionamento datasets (roadmap 1.4)** — `docs/contracts/semver.md` expandido
+  com tabela detalhada de bump rules (major/minor/patch), principio de `schema_version`
+  independente de `lib_version`, criterios de breaking change para datasets
 - **Metadados no registry (roadmap 1.9)** — `DatasetInfo` expandido com `source_url`,
   `source_institution`, `min_date`, `unit`, `license`. 8 datasets preenchidos com metadados
   reais (instituição, URL, licença, data mínima, unidade). Registry ganha
   `describe(name)` e `describe_all()` para exibição formatada
+- **Testes de integracao formalizados (roadmap 1.8)** — Distinção clara entre unit/golden
+  (todo push), integration (cron semanal) e benchmark (manual). Markers `@pytest.mark.integration`
+  e `@pytest.mark.benchmark` registrados em `pyproject.toml`. CI padrao exclui ambos:
+  `pytest -m "not integration and not benchmark"`
+- **CI health check semanal (roadmap 1.5)** — `.github/workflows/integration_tests.yml`:
+  cron segunda 08:00 UTC, `pytest -m integration --tb=short --timeout=120`, issue automatica
+  com label `source-changed` em caso de falha, alertas Discord/Slack, artefato de resultados
+  (30 dias). Nao bloqueia release — apenas alerta
 - **Cobertura CLI/alerts/health** — 107 testes novos: `test_cli.py` (51), `test_alerts/test_notifier.py` (17),
   `test_health/test_checker.py` (15), `test_health/test_reporter.py` (24). Total suite: 1640 testes. Closes #11
 - **Golden tests com dados reais** para 5 fontes: BCB, IBGE, ComexStat, DERAL, ABIOVE

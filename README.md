@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **13 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET e Notícias Agrícolas.
 
-**v0.9.0** — 1640 testes, ~78% cobertura, 13/13 fontes com golden tests, retry centralizado em 13/13 clients.
+**v0.9.0** — 2130 testes, ~78% cobertura, 13/13 fontes com golden tests, retry centralizado em 13/13 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -263,6 +263,7 @@ agrobr config show
 |-------|--------|
 | CEPEA | [![Health](https://github.com/bruno-portfolio/agrobr/actions/workflows/health_check.yml/badge.svg)](https://github.com/bruno-portfolio/agrobr/actions/workflows/health_check.yml) |
 | Testes | [![Tests](https://github.com/bruno-portfolio/agrobr/actions/workflows/tests.yml/badge.svg)](https://github.com/bruno-portfolio/agrobr/actions/workflows/tests.yml) |
+| Integração | [![Integration](https://github.com/bruno-portfolio/agrobr/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/bruno-portfolio/agrobr/actions/workflows/integration_tests.yml) |
 
 O agrobr monitora automaticamente a disponibilidade das fontes.
 Use `agrobr health --all` para verificar localmente.
@@ -349,7 +350,7 @@ normalizar_safra("24/25")             # "2024/25"
 
 - **13/13 fontes com golden tests** — validação automatizada contra dados de referência
 - **Resiliência HTTP completa** — retry centralizado em 13/13 clients, 429 handling, Retry-After
-- **2128 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **2130 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints
 - **Schemas JSON** — contratos exportados como JSON em `agrobr/schemas/`

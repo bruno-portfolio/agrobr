@@ -11,7 +11,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 13 fontes públicas.
 
-**v0.9.0** — 1640 testes | ~78% cobertura | 13/13 golden tests | retry centralizado 13/13 clients
+**v0.9.0** — 2130 testes | ~78% cobertura | 13/13 golden tests | retry centralizado 13/13 clients
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica
@@ -103,7 +103,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 | Métrica | Valor |
 |---------|-------|
-| Testes | 1640 passando |
+| Testes | 2130 passando |
 | Cobertura | ~78% |
 | Golden tests | 13/13 fontes |
 | Resiliência HTTP | Retry centralizado + 429/Retry-After |
