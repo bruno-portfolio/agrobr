@@ -26,6 +26,10 @@ Produção agrícola anual consolidada por UF ou município.
 | `rendimento` | float64 | ✅ | Rendimento (kg/ha) |
 | `fonte` | str | ❌ | Origem dos dados |
 
+## Primary Key
+
+`[ano, produto, localidade]`
+
 ## Garantias
 
 - Dados consolidados do ano agrícola completo

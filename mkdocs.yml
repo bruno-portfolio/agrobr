@@ -80,6 +80,16 @@ nav:
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md
     - IBGE: api/ibge.md
+    - NASA POWER: api/nasa_power.md
+    - BCB/SICOR: api/bcb.md
+    - ComexStat: api/comexstat.md
+    - ANDA: api/anda.md
+    - ABIOVE: api/abiove.md
+    - USDA PSD: api/usda.md
+    - IMEA: api/imea.md
+    - DERAL: api/deral.md
+    - INMET: api/inmet.md
+    - Noticias Agricolas: api/noticias_agricolas.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -98,6 +108,7 @@ nav:
   - Licenças dos Dados: licenses.md
   - Guias:
     - Async: guides/async.md
+    - Normalização: guides/normalizacao.md
     - Dependências: guides/dependencies.md
   - Avançado:
     - Reprodutibilidade: advanced/reproducibility.md
