@@ -91,6 +91,7 @@ nav:
     - INMET: api/inmet.md
     - Noticias Agricolas: api/noticias_agricolas.md
     - Queimadas/INPE: api/queimadas.md
+    - Desmatamento PRODES/DETER: api/desmatamento.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -107,6 +108,7 @@ nav:
     - INMET: sources/inmet.md
     - Notícias Agrícolas: sources/noticias_agricolas.md
     - Queimadas/INPE: sources/queimadas.md
+    - Desmatamento PRODES/DETER: sources/desmatamento.md
   - Licenças dos Dados: licenses.md
   - Guias:
     - Async: guides/async.md

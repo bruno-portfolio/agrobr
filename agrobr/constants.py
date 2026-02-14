@@ -21,6 +21,7 @@ class Fonte(StrEnum):
     INMET = "inmet"
     NASA_POWER = "nasa_power"
     NOTICIAS_AGRICOLAS = "noticias_agricolas"
+    DESMATAMENTO = "desmatamento"
     QUEIMADAS = "queimadas"
     USDA = "usda"
 
@@ -81,6 +82,10 @@ URLS = {
     Fonte.NOTICIAS_AGRICOLAS: {
         "base": "https://www.noticiasagricolas.com.br",
         "cotacoes": "https://www.noticiasagricolas.com.br/cotacoes",
+    },
+    Fonte.DESMATAMENTO: {
+        "base": "https://terrabrasilis.dpi.inpe.br",
+        "geoserver": "https://terrabrasilis.dpi.inpe.br/geoserver",
     },
     Fonte.QUEIMADAS: {
         "base": "https://terrabrasilis.dpi.inpe.br/queimadas/portal/",
@@ -212,6 +217,7 @@ class CacheSettings(BaseSettings):
     ttl_bcb: int = 24 * 3600
     ttl_comexstat: int = 24 * 3600
     ttl_nasa_power: int = 7 * 24 * 3600
+    ttl_desmatamento: int = 24 * 3600
     ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
 
@@ -251,6 +257,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_inmet: float = 0.5
     rate_limit_nasa_power: float = 1.0
     rate_limit_noticias_agricolas: float = 2.0
+    rate_limit_desmatamento: float = 2.0
     rate_limit_queimadas: float = 1.0
     rate_limit_usda: float = 1.0
     rate_limit_default: float = 1.0

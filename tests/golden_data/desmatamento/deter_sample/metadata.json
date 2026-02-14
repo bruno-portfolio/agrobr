@@ -1,0 +1,12 @@
+{
+  "source": "desmatamento",
+  "dataset": "deter",
+  "format": "csv",
+  "parser": "agrobr.desmatamento.parser::parse_deter_csv()",
+  "parser_version": 1,
+  "parser_kwargs": {"bioma": "Amazônia"},
+  "needs_real_data": true,
+  "captured_at": "2026-02-14T12:00:00+00:00",
+  "api_url": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-amz/ows",
+  "notes": "Sample DETER deforestation alerts with 10 records across classes and states"
+}

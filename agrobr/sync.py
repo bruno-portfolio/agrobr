@@ -168,6 +168,12 @@ class _SyncNasaPower(_SyncModule):
     pass
 
 
+class _SyncDesmatamento(_SyncModule):
+    """API síncrona do Desmatamento PRODES/DETER."""
+
+    pass
+
+
 class _SyncQueimadas(_SyncModule):
     """API síncrona do Queimadas/INPE."""
 
@@ -189,6 +195,7 @@ _modules: dict[str, _SyncModule | None] = {
     "conab": None,
     "datasets": None,
     "deral": None,
+    "desmatamento": None,
     "ibge": None,
     "imea": None,
     "inmet": None,
@@ -206,6 +213,7 @@ _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "conab": _SyncConab,
     "datasets": _SyncDatasets,
     "deral": _SyncDeral,
+    "desmatamento": _SyncDesmatamento,
     "ibge": _SyncIbge,
     "imea": _SyncImea,
     "inmet": _SyncInmet,

@@ -1,0 +1,154 @@
+{
+  "name": "desmatamento.deter",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "classe",
+    "uf",
+    "municipio",
+    "bioma"
+  ],
+  "required_columns": [
+    "data",
+    "classe",
+    "uf",
+    "area_km2",
+    "bioma"
+  ],
+  "dtypes": {
+    "data": "date",
+    "classe": "str",
+    "uf": "str",
+    "municipio": "str",
+    "municipio_id": "int",
+    "area_km2": "float",
+    "satelite": "str",
+    "sensor": "str",
+    "bioma": "str"
+  },
+  "nullable": {
+    "data": false,
+    "classe": false,
+    "uf": false,
+    "municipio": true,
+    "municipio_id": true,
+    "area_km2": false,
+    "satelite": true,
+    "sensor": true,
+    "bioma": false
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio_id",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_km2",
+      "type": "float",
+      "nullable": false,
+      "unit": "km2",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "satelite",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "sensor",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "bioma",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "area_km2_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'data' is always a valid date",
+    "'area_km2' is always >= 0",
+    "'uf' is always a valid Brazilian state code",
+    "'bioma' is always 'Amazônia' or 'Cerrado'"
+  ]
+}

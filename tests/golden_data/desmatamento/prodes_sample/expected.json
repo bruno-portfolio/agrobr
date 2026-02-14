@@ -1,0 +1,9 @@
+{
+  "count_min": 10,
+  "columns": ["ano", "uf", "classe", "area_km2", "satelite", "sensor", "bioma"],
+  "non_null_columns": ["ano", "uf", "classe", "area_km2", "bioma"],
+  "has_multiple_ufs": true,
+  "ufs_expected": ["MG", "MA", "MT", "PI", "BA", "GO", "TO", "MS", "SP"],
+  "bioma": "Cerrado",
+  "area_km2_min": 0
+}

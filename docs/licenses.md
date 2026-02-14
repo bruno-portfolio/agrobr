@@ -22,6 +22,7 @@
 | **INMET** | Dados públicos governo federal | Sim (dados públicos, token requerido) | `livre` | [INMET](https://portal.inmet.gov.br) |
 | **Notícias Agrícolas** | Todos os direitos reservados (Lei 9.610/98) | Não | `restrito` | — |
 | **Queimadas/INPE** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [BDQueimadas](https://queimadas.dgi.inpe.br) |
+| **Desmatamento PRODES/DETER** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) |
 
 ### Legenda de Classificação
 
@@ -82,7 +83,7 @@
 
 ### Fontes Governamentais Brasileiras
 
-CONAB, IBGE, BCB, ComexStat, DERAL, INMET e INPE (Queimadas) são órgãos públicos brasileiros.
+CONAB, IBGE, BCB, ComexStat, DERAL, INMET e INPE (Queimadas, PRODES/DETER) são órgãos públicos brasileiros.
 Dados produzidos por órgãos públicos no exercício de suas funções são, em regra,
 de acesso público (Lei de Acesso à Informação — Lei 12.527/2011). Não há
 restrição a uso comercial de dados públicos governamentais, mas a citação da

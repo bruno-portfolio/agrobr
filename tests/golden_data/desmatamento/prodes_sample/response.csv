@@ -1,0 +1,11 @@
+FID,uid,state,path_row,main_class,class_name,year,area_km,publish_year,source,satellite,sensor
+yearly_deforestation.1,1,MINAS GERAIS,220/72,desmatamento,d2022,2022,21.5259,2022-01-01,,Landsat8,OLI
+yearly_deforestation.2,33575,MARANHÃO,221/64,desmatamento,d2022,2022,0.0002,2022-01-01,,Landsat8,OLI
+yearly_deforestation.3,33576,MATO GROSSO,222/64,desmatamento,d2022,2022,15.3200,2022-01-01,,Landsat8,OLI
+yearly_deforestation.4,33577,PIAUÍ,219/64,desmatamento,d2022,2022,0.0106,2022-01-01,,Landsat8,OLI
+yearly_deforestation.5,33578,BAHIA,219/63,desmatamento,d2022,2022,0.0124,2022-01-01,,Landsat8,OLI
+yearly_deforestation.6,33579,GOIÁS,217/72,desmatamento,d2022,2022,0.0277,2022-01-01,,Landsat8,OLI
+yearly_deforestation.7,33580,TOCANTINS,218/69,desmatamento,d2022,2022,0.0102,2022-01-01,,Landsat8,OLI
+yearly_deforestation.8,33581,MATO GROSSO,218/70,desmatamento,d2022,2022,8.7300,2022-01-01,,Landsat8,OLI
+yearly_deforestation.9,33582,MATO GROSSO DO SUL,218/70,desmatamento,d2022,2022,0.0151,2022-01-01,,Landsat8,OLI
+yearly_deforestation.10,33583,SÃO PAULO,219/63,desmatamento,d2020,2020,0.0127,2020-01-01,,Landsat8,OLI

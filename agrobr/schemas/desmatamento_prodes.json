@@ -1,0 +1,128 @@
+{
+  "name": "desmatamento.prodes",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "ano",
+    "uf",
+    "classe",
+    "bioma"
+  ],
+  "required_columns": [
+    "ano",
+    "uf",
+    "classe",
+    "area_km2",
+    "bioma"
+  ],
+  "dtypes": {
+    "ano": "int",
+    "uf": "str",
+    "classe": "str",
+    "area_km2": "float",
+    "satelite": "str",
+    "sensor": "str",
+    "bioma": "str"
+  },
+  "nullable": {
+    "ano": false,
+    "uf": false,
+    "classe": false,
+    "area_km2": false,
+    "satelite": true,
+    "sensor": true,
+    "bioma": false
+  },
+  "columns": [
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 2000,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_km2",
+      "type": "float",
+      "nullable": false,
+      "unit": "km2",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "satelite",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "sensor",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "bioma",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "ano_min": 2000,
+    "area_km2_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'ano' is always >= 2000",
+    "'area_km2' is always >= 0",
+    "'uf' is always a valid Brazilian state code",
+    "'bioma' is always a valid Brazilian biome name"
+  ]
+}

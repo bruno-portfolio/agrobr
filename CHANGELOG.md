@@ -8,6 +8,16 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **Desmatamento PRODES/DETER (roadmap 2.2)** — Nova fonte: dados de desmatamento via
+  TerraBrasilis GeoServer (WFS). Modulo `agrobr/desmatamento/` com client (WFS+CSV, CQL_FILTER
+  por UF/ano/data), parser (PRODES anual + DETER alertas), models (workspaces por bioma,
+  classes DETER, mapeamento UF/estado). API publica `desmatamento.prodes()` (5 biomas: Cerrado,
+  Caatinga, Mata Atlantica, Pantanal, Pampa) e `desmatamento.deter()` (Amazonia, Cerrado)
+  com filtros por bioma/UF/ano/classe e suporte a `return_meta`. Contratos
+  `DESMATAMENTO_PRODES_V1` e `DESMATAMENTO_DETER_V1`. Schemas JSON, golden data (PRODES 10
+  registros x 9 UFs, DETER 10 registros x 5 UFs x 4 classes), 56 testes. Export em
+  `__init__.py` e sync wrapper. Docs: `api/desmatamento.md`, `sources/desmatamento.md`,
+  licenses atualizado
 - **Queimadas/INPE (roadmap 2.1)** — Nova fonte: focos de calor detectados por satelite via
   BDQueimadas/INPE. Modulo `agrobr/queimadas/` com client (CSV diario/mensal), parser
   (UTF-8 + latin-1 fallback), models (6 biomas, 27 UFs, 13 satelites), API publica

@@ -291,13 +291,152 @@ FOCOS_QUEIMADAS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+DESMATAMENTO_PRODES_V1 = Contract(
+    name="desmatamento.prodes",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["ano", "uf", "classe", "bioma"],
+    columns=[
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=2000,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="area_km2",
+            type=ColumnType.FLOAT,
+            nullable=False,
+            unit="km2",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="satelite",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="sensor",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="bioma",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'ano' is always >= 2000",
+        "'area_km2' is always >= 0",
+        "'uf' is always a valid Brazilian state code",
+        "'bioma' is always a valid Brazilian biome name",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+DESMATAMENTO_DETER_V1 = Contract(
+    name="desmatamento.deter",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["data", "classe", "uf", "municipio", "bioma"],
+    columns=[
+        Column(
+            name="data",
+            type=ColumnType.DATE,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="municipio_id",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="area_km2",
+            type=ColumnType.FLOAT,
+            nullable=False,
+            unit="km2",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="satelite",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="sensor",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="bioma",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'data' is always a valid date",
+        "'area_km2' is always >= 0",
+        "'uf' is always a valid Brazilian state code",
+        "'bioma' is always 'Amazônia' or 'Cerrado'",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("credito_rural", CREDITO_RURAL_V1)
+register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
+register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
 register_contract("exportacao", EXPORTACAO_V1)
 register_contract("fertilizante", FERTILIZANTE_V1)
 register_contract("focos_queimadas", FOCOS_QUEIMADAS_V1)
 
 __all__ = [
     "CREDITO_RURAL_V1",
+    "DESMATAMENTO_DETER_V1",
+    "DESMATAMENTO_PRODES_V1",
     "EXPORTACAO_V1",
     "FERTILIZANTE_V1",
     "FOCOS_QUEIMADAS_V1",
