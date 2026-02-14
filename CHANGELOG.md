@@ -8,6 +8,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **Schemas JSON formais (roadmap 1.2)** — Contratos Python agora geram schemas JSON em
+  `agrobr/schemas/`. 8 contratos com primary_key, min/max constraints, validação automática
+  via `_validate_contract()` em todos os 8 datasets. Novos contratos: `credito_rural`,
+  `exportacao`, `fertilizante`, `custo_producao`. Registry centralizado com
+  `register_contract()` / `get_contract()` / `validate_dataset()`. 60 testes dedicados.
+  `Contract.to_json()` / `from_json()` para serialização roundtrip
 - **Cobertura CLI/alerts/health** — 107 testes novos: `test_cli.py` (51), `test_alerts/test_notifier.py` (17),
   `test_health/test_checker.py` (15), `test_health/test_reporter.py` (24). Total suite: 1640 testes. Closes #11
 - **Golden tests com dados reais** para 5 fontes: BCB, IBGE, ComexStat, DERAL, ABIOVE

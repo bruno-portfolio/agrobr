@@ -49,6 +49,16 @@ df = await datasets.producao_anual("soja", ano=2023, uf="MT")
 df, meta = await datasets.producao_anual("soja", ano=2023, return_meta=True)
 ```
 
+## Schema JSON
+
+Disponível em `agrobr/schemas/producao_anual.json`.
+
+```python
+from agrobr.contracts import get_contract
+contract = get_contract("producao_anual")
+print(contract.to_json())
+```
+
 ## Níveis Territoriais
 
 | Nível | Descrição |

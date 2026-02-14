@@ -300,13 +300,37 @@ Use `agrobr health --all` para verificar localmente.
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 
+## Contratos & Schemas
+
+Cada dataset tem um contrato formal com validação automática. Schemas JSON gerados em `agrobr/schemas/`:
+
+```python
+from agrobr.contracts import get_contract, list_contracts, validate_dataset
+
+# Listar contratos registrados
+list_contracts()
+# ['balanco', 'credito_rural', 'custo_producao', 'estimativa_safra',
+#  'exportacao', 'fertilizante', 'preco_diario', 'producao_anual']
+
+# Inspecionar contrato
+contract = get_contract("preco_diario")
+print(contract.primary_key)   # ['data', 'produto']
+print(contract.to_json())     # Schema JSON completo
+
+# Validação explícita (automática em todo fetch)
+validate_dataset(df, "preco_diario")  # raises ContractViolationError
+```
+
+Garantias globais: nomes estáveis (só adicionam), tipos só alargam (int→float ok, float→int nunca), datas ISO-8601, breaking changes só em major version. Veja [docs/contracts/](https://www.agrobr.dev/docs/contracts/) para detalhes por dataset.
+
 ## Diferenciais
 
 - **13/13 fontes com golden tests** — validação automatizada contra dados de referência
 - **Resiliência HTTP completa** — retry centralizado em 13/13 clients, 429 handling, Retry-After
 - **1640 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
-- **Contratos públicos** — schema versionado e garantias de estabilidade
+- **Contratos formais** — schema versionado com validação automática, primary keys e constraints
+- **Schemas JSON** — contratos exportados como JSON em `agrobr/schemas/`
 - **Modo determinístico** — reprodutibilidade total para papers/auditorias
 - **Async-first** para pipelines de alta performance
 - **Cache inteligente** com DuckDB (analytics nativo + histórico permanente)

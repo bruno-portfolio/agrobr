@@ -61,6 +61,17 @@ async with datasets.deterministic("2025-12-31"):
     # Usa apenas cache local
 ```
 
+## Schema JSON
+
+Disponível em `agrobr/schemas/preco_diario.json`.
+
+```python
+from agrobr.contracts import get_contract
+contract = get_contract("preco_diario")
+print(contract.primary_key)  # ['data', 'produto']
+print(contract.to_json())
+```
+
 ## MetaInfo
 
 Quando `return_meta=True`, retorna tupla `(DataFrame, MetaInfo)`:

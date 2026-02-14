@@ -103,6 +103,9 @@ Issues = "https://github.com/bruno-portfolio/agrobr/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["agrobr"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"agrobr/schemas" = "agrobr/schemas"
+
 [tool.ruff]
 target-version = "py311"
 line-length = 100

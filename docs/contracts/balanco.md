@@ -55,6 +55,17 @@ Demanda = Consumo + Exportação
 Estoque Final = Suprimento - Demanda
 ```
 
+## Schema JSON
+
+Disponível em `agrobr/schemas/balanco.json`.
+
+```python
+from agrobr.contracts import get_contract
+contract = get_contract("balanco")
+print(contract.primary_key)  # ['safra', 'produto']
+print(contract.to_json())
+```
+
 ## Unidades
 
 Todos os valores em **mil toneladas** (exceto estoque que pode ser em mil sacas para alguns produtos).

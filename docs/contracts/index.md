@@ -2,6 +2,9 @@
 
 O agrobr garante estabilidade de schema. Seu pipeline não vai quebrar.
 
+Cada contrato é definido em Python (`agrobr/contracts/`) e exportado como JSON (`agrobr/schemas/`).
+Validação é automática: todo `fetch()` de dataset valida o DataFrame contra o contrato registrado.
+
 ## Garantias Globais
 
 | Garantia | Descrição |
@@ -11,6 +14,8 @@ O agrobr garante estabilidade de schema. Seu pipeline não vai quebrar.
 | **Datas ISO-8601** | Sempre YYYY-MM-DD |
 | **Unidades explícitas** | Coluna dedicada |
 | **Breaking = Major** | Quebras só em versão major |
+| **Primary keys** | Cada dataset tem chave primária definida (sem duplicatas) |
+| **Min/max constraints** | Valores numéricos validados contra limites |
 
 ## Datasets
 
@@ -24,6 +29,29 @@ O agrobr garante estabilidade de schema. Seu pipeline não vai quebrar.
 | [exportacao](./exportacao.md) | Exportações agrícolas | ComexStat → ABIOVE |
 | [fertilizante](./fertilizante.md) | Entregas de fertilizantes | ANDA |
 | [custo_producao](./custo_producao.md) | Custos de produção | CONAB |
+
+## Schemas JSON
+
+Cada contrato gera automaticamente um arquivo JSON em `agrobr/schemas/`:
+
+```python
+from agrobr.contracts import get_contract, list_contracts, generate_json_schemas
+
+# Listar contratos registrados
+list_contracts()
+
+# Acessar contrato
+contract = get_contract("preco_diario")
+print(contract.primary_key)   # ['data', 'produto']
+print(contract.to_json())     # Schema JSON completo
+
+# Validação (automática em todo fetch, ou manual)
+from agrobr.contracts import validate_dataset
+validate_dataset(df, "preco_diario")  # raises ContractViolationError
+
+# Gerar todos os JSONs
+generate_json_schemas("agrobr/schemas/")
+```
 
 ## Uso
 

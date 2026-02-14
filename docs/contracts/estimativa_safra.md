@@ -49,6 +49,17 @@ df = await datasets.estimativa_safra("milho", uf="MT")
 df, meta = await datasets.estimativa_safra("soja", return_meta=True)
 ```
 
+## Schema JSON
+
+Disponível em `agrobr/schemas/estimativa_safra.json`.
+
+```python
+from agrobr.contracts import get_contract
+contract = get_contract("estimativa_safra")
+print(contract.primary_key)  # ['safra', 'produto', 'uf', 'levantamento']
+print(contract.to_json())
+```
+
 ## Formato de Safra
 
 O formato de safra segue o padrão brasileiro: `AAAA/AA`
