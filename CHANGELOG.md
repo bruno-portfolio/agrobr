@@ -8,6 +8,21 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **CONAB Progresso de Safra (roadmap 2.0.5)** — Nova fonte: progresso semanal de plantio
+  e colheita por cultura x UF. Modulo `agrobr/conab/progresso/` com client (Plone CMS
+  pagination, XLSX download via sub-links), parser (block-based state machine para XLSX
+  com blocos repetidos por cultura/operacao), models (6 culturas, 27 UFs, normalizacao
+  estado→UF). API publica `conab.progresso_safra()` com filtros por cultura/estado/operacao
+  e `conab.semanas_disponiveis()` para listar semanas. Contrato `CONAB_PROGRESSO_V1` com
+  PK `[cultura, safra, operacao, estado, semana_atual]`. Golden data, 67 testes. Docs:
+  `api/conab_progresso.md`, `sources/conab_progresso.md`, licenses atualizado
+- **MapBiomas (roadmap 2.7)** — Nova fonte: cobertura e uso da terra por municipio/ano
+  (1985-presente). Modulo `agrobr/mapbiomas/` com client (download XLSX do Google Cloud
+  Storage), parser (multi-sheet com classes de cobertura MapBiomas Collection 9), models
+  (classes de cobertura, biomas, transicoes). API publica `mapbiomas.cobertura()` com
+  filtros por municipio/UF/bioma/classe/ano e `mapbiomas.transicao()`. Contrato
+  `MAPBIOMAS_COBERTURA_V1`. Golden data, 66 testes. Docs: `api/mapbiomas.md`,
+  `sources/mapbiomas.md`, licenses atualizado
 - **Desmatamento PRODES/DETER (roadmap 2.2)** — Nova fonte: dados de desmatamento via
   TerraBrasilis GeoServer (WFS). Modulo `agrobr/desmatamento/` com client (WFS+CSV, CQL_FILTER
   por UF/ano/data), parser (PRODES anual + DETER alertas), models (workspaces por bioma,
