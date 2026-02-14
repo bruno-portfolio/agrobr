@@ -103,6 +103,7 @@ class CreditoRuralDataset(BaseDataset):
         )
 
         df = self._normalize(df, produto, finalidade)
+        self._validate_contract(df)
 
         if return_meta:
             now = datetime.now(UTC)

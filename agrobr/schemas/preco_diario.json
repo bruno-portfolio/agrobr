@@ -1,0 +1,139 @@
+{
+  "name": "cepea.indicador",
+  "schema_version": "1.0",
+  "effective_from": "0.3.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "produto"
+  ],
+  "required_columns": [
+    "data",
+    "produto",
+    "valor",
+    "unidade",
+    "fonte"
+  ],
+  "dtypes": {
+    "data": "date",
+    "produto": "str",
+    "praca": "str",
+    "valor": "float",
+    "unidade": "str",
+    "fonte": "str",
+    "metodologia": "str",
+    "anomalies": "str"
+  },
+  "nullable": {
+    "data": false,
+    "produto": false,
+    "praca": true,
+    "valor": false,
+    "unidade": false,
+    "fonte": false,
+    "metodologia": true,
+    "anomalies": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "praca",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "valor",
+      "type": "float",
+      "nullable": false,
+      "unit": "BRL",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "fonte",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "metodologia",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "anomalies",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "valor_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "Types only widen (int -> float, str -> categorical)",
+    "Dates always in local timezone (Sao Paulo)",
+    "Units explicit in 'unidade' column",
+    "'valor' is always positive",
+    "'data' is always a valid business day"
+  ]
+}

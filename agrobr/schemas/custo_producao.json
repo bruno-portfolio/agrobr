@@ -1,0 +1,184 @@
+{
+  "name": "conab.custo_producao",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "cultura",
+    "uf",
+    "safra",
+    "categoria",
+    "item"
+  ],
+  "required_columns": [
+    "cultura",
+    "uf",
+    "safra",
+    "categoria",
+    "item"
+  ],
+  "dtypes": {
+    "cultura": "str",
+    "uf": "str",
+    "safra": "str",
+    "tecnologia": "str",
+    "categoria": "str",
+    "item": "str",
+    "unidade": "str",
+    "quantidade_ha": "float",
+    "preco_unitario": "float",
+    "valor_ha": "float",
+    "participacao_pct": "float"
+  },
+  "nullable": {
+    "cultura": false,
+    "uf": false,
+    "safra": false,
+    "tecnologia": true,
+    "categoria": false,
+    "item": false,
+    "unidade": true,
+    "quantidade_ha": true,
+    "preco_unitario": true,
+    "valor_ha": true,
+    "participacao_pct": true
+  },
+  "columns": [
+    {
+      "name": "cultura",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "tecnologia",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "categoria",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "item",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "quantidade_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": "unidade/ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "preco_unitario",
+      "type": "float",
+      "nullable": true,
+      "unit": "BRL",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": "BRL/ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "participacao_pct",
+      "type": "float",
+      "nullable": true,
+      "unit": "%",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 100
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "quantidade_ha_min": 0,
+    "preco_unitario_min": 0,
+    "valor_ha_min": 0,
+    "participacao_pct_min": 0,
+    "participacao_pct_max": 100
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'safra' always matches pattern YYYY/YY",
+    "'uf' is always a valid Brazilian state code",
+    "Numeric values are always >= 0",
+    "'participacao_pct' is between 0 and 100"
+  ]
+}

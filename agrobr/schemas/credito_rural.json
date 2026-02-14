@@ -1,0 +1,125 @@
+{
+  "name": "bcb.credito_rural",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "safra",
+    "produto",
+    "uf",
+    "finalidade"
+  ],
+  "required_columns": [
+    "safra",
+    "produto",
+    "finalidade"
+  ],
+  "dtypes": {
+    "safra": "str",
+    "produto": "str",
+    "uf": "str",
+    "finalidade": "str",
+    "agregacao": "str",
+    "volume": "float",
+    "valor": "float"
+  },
+  "nullable": {
+    "safra": false,
+    "produto": false,
+    "uf": true,
+    "finalidade": false,
+    "agregacao": true,
+    "volume": true,
+    "valor": true
+  },
+  "columns": [
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "finalidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "agregacao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "volume",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor",
+      "type": "float",
+      "nullable": true,
+      "unit": "BRL",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "volume_min": 0,
+    "valor_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'safra' always matches pattern YYYY/YY",
+    "'uf' is always a valid Brazilian state code when present",
+    "Numeric values are always >= 0"
+  ]
+}

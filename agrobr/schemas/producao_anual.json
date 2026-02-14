@@ -1,0 +1,154 @@
+{
+  "name": "ibge.pam",
+  "schema_version": "1.0",
+  "effective_from": "0.3.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "ano",
+    "produto",
+    "localidade"
+  ],
+  "required_columns": [
+    "ano",
+    "produto",
+    "fonte"
+  ],
+  "dtypes": {
+    "ano": "int",
+    "localidade": "str",
+    "produto": "str",
+    "area_plantada": "float",
+    "area_colhida": "float",
+    "producao": "float",
+    "rendimento": "float",
+    "valor_producao": "float",
+    "fonte": "str"
+  },
+  "nullable": {
+    "ano": false,
+    "localidade": true,
+    "produto": false,
+    "area_plantada": true,
+    "area_colhida": true,
+    "producao": true,
+    "rendimento": true,
+    "valor_producao": true,
+    "fonte": false
+  },
+  "columns": [
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1974,
+      "max_value": null
+    },
+    {
+      "name": "localidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_plantada",
+      "type": "float",
+      "nullable": true,
+      "unit": "ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "area_colhida",
+      "type": "float",
+      "nullable": true,
+      "unit": "ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "producao",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "rendimento",
+      "type": "float",
+      "nullable": true,
+      "unit": "kg/ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_producao",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_reais",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "fonte",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "ano_min": 1974,
+    "area_plantada_min": 0,
+    "area_colhida_min": 0,
+    "producao_min": 0,
+    "rendimento_min": 0,
+    "valor_producao_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'ano' is always a valid year (>= 1974)",
+    "Numeric values are always >= 0",
+    "'fonte' is always 'ibge_pam'"
+  ]
+}

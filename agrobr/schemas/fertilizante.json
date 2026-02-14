@@ -1,0 +1,101 @@
+{
+  "name": "anda.fertilizante",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "ano",
+    "mes",
+    "uf",
+    "produto_fertilizante"
+  ],
+  "required_columns": [
+    "ano",
+    "mes",
+    "produto_fertilizante"
+  ],
+  "dtypes": {
+    "ano": "int",
+    "mes": "int",
+    "uf": "str",
+    "produto_fertilizante": "str",
+    "volume_ton": "float"
+  },
+  "nullable": {
+    "ano": false,
+    "mes": false,
+    "uf": true,
+    "produto_fertilizante": false,
+    "volume_ton": true
+  },
+  "columns": [
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 2000,
+      "max_value": null
+    },
+    {
+      "name": "mes",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto_fertilizante",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "volume_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "ano_min": 2000,
+    "mes_min": 1,
+    "mes_max": 12,
+    "volume_ton_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'ano' is always >= 2000",
+    "'mes' is between 1 and 12",
+    "Numeric values are always >= 0"
+  ]
+}

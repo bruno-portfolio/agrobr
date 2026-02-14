@@ -1,39 +1,42 @@
-"""Contratos de estabilidade para dados CONAB."""
+from __future__ import annotations
 
-from agrobr.contracts import BreakingChangePolicy, Column, ColumnType, Contract
+from agrobr.contracts import (
+    BreakingChangePolicy,
+    Column,
+    ColumnType,
+    Contract,
+    register_contract,
+)
 
 CONAB_SAFRA_V1 = Contract(
     name="conab.safras",
     version="1.0",
     effective_from="0.3.0",
+    primary_key=["safra", "produto", "uf", "levantamento"],
     columns=[
         Column(
             name="fonte",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Fonte dos dados (conab)",
         ),
         Column(
             name="produto",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Nome do produto",
         ),
         Column(
             name="safra",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Safra no formato YYYY/YY",
         ),
         Column(
             name="uf",
             type=ColumnType.STRING,
             nullable=True,
             stable=True,
-            description="Sigla da UF",
         ),
         Column(
             name="area_plantada",
@@ -41,7 +44,7 @@ CONAB_SAFRA_V1 = Contract(
             nullable=True,
             unit="mil_ha",
             stable=True,
-            description="Area plantada em mil hectares",
+            min_value=0,
         ),
         Column(
             name="area_colhida",
@@ -49,7 +52,7 @@ CONAB_SAFRA_V1 = Contract(
             nullable=True,
             unit="mil_ha",
             stable=True,
-            description="Area colhida em mil hectares",
+            min_value=0,
         ),
         Column(
             name="produtividade",
@@ -57,7 +60,7 @@ CONAB_SAFRA_V1 = Contract(
             nullable=True,
             unit="kg/ha",
             stable=True,
-            description="Produtividade em kg/ha",
+            min_value=0,
         ),
         Column(
             name="producao",
@@ -65,21 +68,21 @@ CONAB_SAFRA_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Producao em mil toneladas",
+            min_value=0,
         ),
         Column(
             name="levantamento",
             type=ColumnType.INTEGER,
             nullable=False,
             stable=True,
-            description="Numero do levantamento (1-12)",
+            min_value=1,
+            max_value=12,
         ),
         Column(
             name="data_publicacao",
             type=ColumnType.DATE,
             nullable=False,
             stable=True,
-            description="Data de publicacao do levantamento",
         ),
     ],
     guarantees=[
@@ -96,20 +99,19 @@ CONAB_BALANCO_V1 = Contract(
     name="conab.balanco",
     version="1.0",
     effective_from="0.3.0",
+    primary_key=["safra", "produto"],
     columns=[
         Column(
             name="produto",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Nome do produto",
         ),
         Column(
             name="safra",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Safra de referencia",
         ),
         Column(
             name="estoque_inicial",
@@ -117,7 +119,7 @@ CONAB_BALANCO_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Estoque inicial",
+            min_value=0,
         ),
         Column(
             name="producao",
@@ -125,7 +127,7 @@ CONAB_BALANCO_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Producao",
+            min_value=0,
         ),
         Column(
             name="importacao",
@@ -133,7 +135,7 @@ CONAB_BALANCO_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Importacao",
+            min_value=0,
         ),
         Column(
             name="suprimento",
@@ -141,7 +143,7 @@ CONAB_BALANCO_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Suprimento total",
+            min_value=0,
         ),
         Column(
             name="consumo",
@@ -149,7 +151,7 @@ CONAB_BALANCO_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Consumo interno",
+            min_value=0,
         ),
         Column(
             name="exportacao",
@@ -157,7 +159,7 @@ CONAB_BALANCO_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Exportacao",
+            min_value=0,
         ),
         Column(
             name="estoque_final",
@@ -165,7 +167,7 @@ CONAB_BALANCO_V1 = Contract(
             nullable=True,
             unit="mil_ton",
             stable=True,
-            description="Estoque final",
+            min_value=0,
         ),
     ],
     guarantees=[
@@ -177,5 +179,100 @@ CONAB_BALANCO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+CONAB_CUSTO_PRODUCAO_V1 = Contract(
+    name="conab.custo_producao",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["cultura", "uf", "safra", "categoria", "item"],
+    columns=[
+        Column(
+            name="cultura",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="safra",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="tecnologia",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="categoria",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="item",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="unidade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="quantidade_ha",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="unidade/ha",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="preco_unitario",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="BRL",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="valor_ha",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="BRL/ha",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="participacao_pct",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="%",
+            stable=True,
+            min_value=0,
+            max_value=100,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'safra' always matches pattern YYYY/YY",
+        "'uf' is always a valid Brazilian state code",
+        "Numeric values are always >= 0",
+        "'participacao_pct' is between 0 and 100",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
 
-__all__ = ["CONAB_SAFRA_V1", "CONAB_BALANCO_V1"]
+register_contract("estimativa_safra", CONAB_SAFRA_V1)
+register_contract("balanco", CONAB_BALANCO_V1)
+register_contract("custo_producao", CONAB_CUSTO_PRODUCAO_V1)
+
+__all__ = ["CONAB_BALANCO_V1", "CONAB_CUSTO_PRODUCAO_V1", "CONAB_SAFRA_V1"]

@@ -1,0 +1,153 @@
+{
+  "name": "conab.balanco",
+  "schema_version": "1.0",
+  "effective_from": "0.3.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "safra",
+    "produto"
+  ],
+  "required_columns": [
+    "produto",
+    "safra"
+  ],
+  "dtypes": {
+    "produto": "str",
+    "safra": "str",
+    "estoque_inicial": "float",
+    "producao": "float",
+    "importacao": "float",
+    "suprimento": "float",
+    "consumo": "float",
+    "exportacao": "float",
+    "estoque_final": "float"
+  },
+  "nullable": {
+    "produto": false,
+    "safra": false,
+    "estoque_inicial": true,
+    "producao": true,
+    "importacao": true,
+    "suprimento": true,
+    "consumo": true,
+    "exportacao": true,
+    "estoque_final": true
+  },
+  "columns": [
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "estoque_inicial",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "producao",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "importacao",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "suprimento",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "consumo",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "exportacao",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "estoque_final",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "estoque_inicial_min": 0,
+    "producao_min": 0,
+    "importacao_min": 0,
+    "suprimento_min": 0,
+    "consumo_min": 0,
+    "exportacao_min": 0,
+    "estoque_final_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "All numeric values represent thousands of tons",
+    "suprimento = estoque_inicial + producao + importacao",
+    "estoque_final = suprimento - consumo - exportacao"
+  ]
+}

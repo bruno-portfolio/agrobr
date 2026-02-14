@@ -1,5 +1,3 @@
-"""Classes base para a camada de datasets."""
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -23,11 +21,14 @@ from agrobr.exceptions import (
 
 logger = structlog.get_logger()
 
+import agrobr.contracts.cepea  # noqa: F401, E402
+import agrobr.contracts.conab  # noqa: F401, E402
+import agrobr.contracts.datasets  # noqa: F401, E402
+import agrobr.contracts.ibge  # noqa: F401, E402
+
 
 @dataclass
 class DatasetSource:
-    """Representa uma fonte de dados para um dataset."""
-
     name: str
     priority: int
     fetch_fn: Callable[..., Awaitable[tuple[pd.DataFrame, Any]]]
@@ -37,8 +38,6 @@ class DatasetSource:
 
 @dataclass
 class DatasetInfo:
-    """Metadados de um dataset."""
-
     name: str
     description: str
     sources: list[DatasetSource] = field(default_factory=list)
@@ -60,8 +59,6 @@ class DatasetInfo:
 
 
 class BaseDataset(ABC):
-    """Classe base abstrata para todos os datasets."""
-
     info: DatasetInfo
 
     @abstractmethod
@@ -80,18 +77,17 @@ class BaseDataset(ABC):
                 f"Válidos: {self.info.products}"
             )
 
+    def _validate_contract(self, df: pd.DataFrame) -> None:
+        from agrobr.contracts import has_contract, validate_dataset
+
+        if has_contract(self.info.name):
+            validate_dataset(df, self.info.name)
+
     async def _try_sources(
         self,
         produto: str,
         **kwargs: Any,
     ) -> tuple[pd.DataFrame, str, Any, list[str]]:
-        """Tenta fontes em ordem de prioridade com fallback.
-
-        Returns:
-            Tupla (DataFrame, source_name, source_meta, attempted_sources).
-            attempted_sources lista todas as fontes tentadas em ordem,
-            incluindo a que teve sucesso.
-        """
         self._validate_produto(produto)
         errors: list[tuple[str, str, str]] = []
         attempted: list[str] = []

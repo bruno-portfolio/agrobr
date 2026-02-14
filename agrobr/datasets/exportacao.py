@@ -38,7 +38,6 @@ async def _fetch_abiove(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, Meta
 
     if isinstance(result, tuple):
         df, meta = result
-        # Normalizar colunas para contrato do dataset
         rename: dict[str, str] = {}
         if "volume_ton" in df.columns and "kg_liquido" not in df.columns:
             df["kg_liquido"] = df["volume_ton"] * 1000
@@ -111,6 +110,7 @@ class ExportacaoDataset(BaseDataset):
         )
 
         df = self._normalize(df, produto)
+        self._validate_contract(df)
 
         if return_meta:
             now = datetime.now(UTC)

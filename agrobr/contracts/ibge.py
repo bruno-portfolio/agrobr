@@ -1,32 +1,37 @@
-"""Contratos de estabilidade para dados IBGE."""
+from __future__ import annotations
 
-from agrobr.contracts import BreakingChangePolicy, Column, ColumnType, Contract
+from agrobr.contracts import (
+    BreakingChangePolicy,
+    Column,
+    ColumnType,
+    Contract,
+    register_contract,
+)
 
 IBGE_PAM_V1 = Contract(
     name="ibge.pam",
     version="1.0",
     effective_from="0.3.0",
+    primary_key=["ano", "produto", "localidade"],
     columns=[
         Column(
             name="ano",
             type=ColumnType.INTEGER,
             nullable=False,
             stable=True,
-            description="Ano de referencia",
+            min_value=1974,
         ),
         Column(
             name="localidade",
             type=ColumnType.STRING,
             nullable=True,
             stable=True,
-            description="Nome da localidade (UF ou municipio)",
         ),
         Column(
             name="produto",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Nome do produto",
         ),
         Column(
             name="area_plantada",
@@ -34,7 +39,7 @@ IBGE_PAM_V1 = Contract(
             nullable=True,
             unit="ha",
             stable=True,
-            description="Area plantada em hectares",
+            min_value=0,
         ),
         Column(
             name="area_colhida",
@@ -42,7 +47,7 @@ IBGE_PAM_V1 = Contract(
             nullable=True,
             unit="ha",
             stable=True,
-            description="Area colhida em hectares",
+            min_value=0,
         ),
         Column(
             name="producao",
@@ -50,7 +55,7 @@ IBGE_PAM_V1 = Contract(
             nullable=True,
             unit="ton",
             stable=True,
-            description="Quantidade produzida em toneladas",
+            min_value=0,
         ),
         Column(
             name="rendimento",
@@ -58,7 +63,7 @@ IBGE_PAM_V1 = Contract(
             nullable=True,
             unit="kg/ha",
             stable=True,
-            description="Rendimento medio em kg/ha",
+            min_value=0,
         ),
         Column(
             name="valor_producao",
@@ -66,14 +71,13 @@ IBGE_PAM_V1 = Contract(
             nullable=True,
             unit="mil_reais",
             stable=True,
-            description="Valor da producao em mil reais",
+            min_value=0,
         ),
         Column(
             name="fonte",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Fonte dos dados (ibge_pam)",
         ),
     ],
     guarantees=[
@@ -89,48 +93,46 @@ IBGE_LSPA_V1 = Contract(
     name="ibge.lspa",
     version="1.0",
     effective_from="0.3.0",
+    primary_key=["ano", "mes", "produto"],
     columns=[
         Column(
             name="ano",
             type=ColumnType.INTEGER,
             nullable=False,
             stable=True,
-            description="Ano de referencia",
+            min_value=1974,
         ),
         Column(
             name="mes",
             type=ColumnType.INTEGER,
             nullable=True,
             stable=True,
-            description="Mes de referencia (1-12)",
+            min_value=1,
+            max_value=12,
         ),
         Column(
             name="produto",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Nome do produto",
         ),
         Column(
             name="variavel",
             type=ColumnType.STRING,
             nullable=True,
             stable=False,
-            description="Nome da variavel",
         ),
         Column(
             name="valor",
             type=ColumnType.FLOAT,
             nullable=True,
             stable=False,
-            description="Valor da variavel",
         ),
         Column(
             name="fonte",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Fonte dos dados (ibge_lspa)",
         ),
     ],
     guarantees=[
@@ -142,5 +144,6 @@ IBGE_LSPA_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+register_contract("producao_anual", IBGE_PAM_V1)
 
-__all__ = ["IBGE_PAM_V1", "IBGE_LSPA_V1"]
+__all__ = ["IBGE_LSPA_V1", "IBGE_PAM_V1"]

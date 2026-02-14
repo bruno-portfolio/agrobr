@@ -19,7 +19,6 @@ logger = structlog.get_logger()
 
 
 async def _fetch_cepea(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
-    """Fetcher para CEPEA via Notícias Agrícolas."""
     from agrobr import cepea
 
     if is_deterministic():
@@ -33,7 +32,6 @@ async def _fetch_cepea(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
 
 
 async def _fetch_cache(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, None]:
-    """Fetcher para cache local DuckDB."""
     from agrobr.cache.duckdb_store import get_store
 
     store = get_store()
@@ -91,8 +89,6 @@ PRECO_DIARIO_INFO = DatasetInfo(
 
 
 class PrecoDiarioDataset(BaseDataset):
-    """Dataset de preços diários de commodities agrícolas."""
-
     info = PRECO_DIARIO_INFO
 
     async def fetch(  # type: ignore[override]
@@ -129,6 +125,7 @@ class PrecoDiarioDataset(BaseDataset):
         )
 
         df = self._normalize(df, produto)
+        self._validate_contract(df)
 
         if snapshot:
             snapshot_date = datetime.strptime(snapshot, "%Y-%m-%d").date()
@@ -157,7 +154,6 @@ class PrecoDiarioDataset(BaseDataset):
         return df
 
     def _normalize(self, df: pd.DataFrame, produto: str) -> pd.DataFrame:
-        """Normaliza DataFrame para contrato do dataset."""
         required = ["data", "valor", "unidade"]
 
         for col in required:

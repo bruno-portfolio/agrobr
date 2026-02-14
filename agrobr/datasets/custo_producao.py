@@ -96,6 +96,7 @@ class CustoProducaoDataset(BaseDataset):
         )
 
         df = self._normalize(df, produto)
+        self._validate_contract(df)
 
         if return_meta:
             now = datetime.now(UTC)

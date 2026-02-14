@@ -1,0 +1,171 @@
+{
+  "name": "conab.safras",
+  "schema_version": "1.0",
+  "effective_from": "0.3.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "safra",
+    "produto",
+    "uf",
+    "levantamento"
+  ],
+  "required_columns": [
+    "fonte",
+    "produto",
+    "safra",
+    "levantamento",
+    "data_publicacao"
+  ],
+  "dtypes": {
+    "fonte": "str",
+    "produto": "str",
+    "safra": "str",
+    "uf": "str",
+    "area_plantada": "float",
+    "area_colhida": "float",
+    "produtividade": "float",
+    "producao": "float",
+    "levantamento": "int",
+    "data_publicacao": "date"
+  },
+  "nullable": {
+    "fonte": false,
+    "produto": false,
+    "safra": false,
+    "uf": true,
+    "area_plantada": true,
+    "area_colhida": true,
+    "produtividade": true,
+    "producao": true,
+    "levantamento": false,
+    "data_publicacao": false
+  },
+  "columns": [
+    {
+      "name": "fonte",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_plantada",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "area_colhida",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "produtividade",
+      "type": "float",
+      "nullable": true,
+      "unit": "kg/ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "producao",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "levantamento",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "data_publicacao",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "area_plantada_min": 0,
+    "area_colhida_min": 0,
+    "produtividade_min": 0,
+    "producao_min": 0,
+    "levantamento_min": 1,
+    "levantamento_max": 12
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'safra' always matches pattern YYYY/YY",
+    "'uf' is always a valid Brazilian state code",
+    "'levantamento' is between 1 and 12",
+    "Numeric values are always >= 0"
+  ]
+}

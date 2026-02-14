@@ -1,32 +1,36 @@
-"""Contratos de estabilidade para dados CEPEA."""
+from __future__ import annotations
 
-from agrobr.contracts import BreakingChangePolicy, Column, ColumnType, Contract
+from agrobr.contracts import (
+    BreakingChangePolicy,
+    Column,
+    ColumnType,
+    Contract,
+    register_contract,
+)
 
 CEPEA_INDICADOR_V1 = Contract(
     name="cepea.indicador",
     version="1.0",
     effective_from="0.3.0",
+    primary_key=["data", "produto"],
     columns=[
         Column(
             name="data",
             type=ColumnType.DATE,
             nullable=False,
             stable=True,
-            description="Data do indicador",
         ),
         Column(
             name="produto",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Nome do produto (soja, milho, etc)",
         ),
         Column(
             name="praca",
             type=ColumnType.STRING,
             nullable=True,
             stable=True,
-            description="Praca de referencia",
         ),
         Column(
             name="valor",
@@ -34,35 +38,31 @@ CEPEA_INDICADOR_V1 = Contract(
             nullable=False,
             unit="BRL",
             stable=True,
-            description="Preco em reais",
+            min_value=0,
         ),
         Column(
             name="unidade",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Unidade do preco (BRL/sc60kg, BRL/@, etc)",
         ),
         Column(
             name="fonte",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
-            description="Fonte dos dados",
         ),
         Column(
             name="metodologia",
             type=ColumnType.STRING,
             nullable=True,
             stable=False,
-            description="Descricao da metodologia",
         ),
         Column(
             name="anomalies",
             type=ColumnType.STRING,
             nullable=True,
             stable=False,
-            description="Lista de anomalias detectadas",
         ),
     ],
     guarantees=[
@@ -76,5 +76,6 @@ CEPEA_INDICADOR_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+register_contract("preco_diario", CEPEA_INDICADOR_V1)
 
 __all__ = ["CEPEA_INDICADOR_V1"]
