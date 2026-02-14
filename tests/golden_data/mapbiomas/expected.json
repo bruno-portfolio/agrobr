@@ -1,0 +1,55 @@
+{
+  "cobertura": {
+    "columns": [
+      "bioma",
+      "estado",
+      "classe_id",
+      "classe",
+      "nivel_0",
+      "ano",
+      "area_ha"
+    ],
+    "biomas_expected": [
+      "Amazônia",
+      "Cerrado"
+    ],
+    "estados_expected": [
+      "AC",
+      "GO"
+    ],
+    "anos_expected": [
+      1985,
+      2000,
+      2020,
+      2024
+    ],
+    "min_records": 20
+  },
+  "transicao": {
+    "columns": [
+      "bioma",
+      "estado",
+      "classe_de_id",
+      "classe_de",
+      "classe_para_id",
+      "classe_para",
+      "periodo",
+      "area_ha"
+    ],
+    "biomas_expected": [
+      "Amazônia",
+      "Cerrado"
+    ],
+    "estados_expected": [
+      "AC",
+      "GO"
+    ],
+    "periodos_expected": [
+      "1985-1986",
+      "2019-2020",
+      "2023-2024",
+      "1985-2024"
+    ],
+    "min_records": 20
+  }
+}

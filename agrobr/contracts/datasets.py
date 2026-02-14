@@ -426,12 +426,145 @@ DESMATAMENTO_DETER_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+MAPBIOMAS_COBERTURA_V1 = Contract(
+    name="mapbiomas.cobertura",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["bioma", "estado", "classe_id", "ano"],
+    columns=[
+        Column(
+            name="bioma",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="estado",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe_id",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="nivel_0",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1985,
+        ),
+        Column(
+            name="area_ha",
+            type=ColumnType.FLOAT,
+            nullable=False,
+            unit="ha",
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'bioma' is always a valid Brazilian biome name",
+        "'estado' is always a valid Brazilian state code (UF)",
+        "'ano' is always between 1985 and current year",
+        "'area_ha' is always >= 0",
+        "'classe_id' maps to MapBiomas LULC legend codes",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+MAPBIOMAS_TRANSICAO_V1 = Contract(
+    name="mapbiomas.transicao",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["bioma", "estado", "classe_de_id", "classe_para_id", "periodo"],
+    columns=[
+        Column(
+            name="bioma",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="estado",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe_de_id",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe_de",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe_para_id",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="classe_para",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="periodo",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="area_ha",
+            type=ColumnType.FLOAT,
+            nullable=False,
+            unit="ha",
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'bioma' is always a valid Brazilian biome name",
+        "'estado' is always a valid Brazilian state code (UF)",
+        "'periodo' always matches pattern YYYY-YYYY",
+        "'area_ha' is always >= 0",
+        "'classe_de_id' and 'classe_para_id' map to MapBiomas LULC legend codes",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("credito_rural", CREDITO_RURAL_V1)
 register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
 register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
 register_contract("exportacao", EXPORTACAO_V1)
 register_contract("fertilizante", FERTILIZANTE_V1)
 register_contract("focos_queimadas", FOCOS_QUEIMADAS_V1)
+register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
+register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
 
 __all__ = [
     "CREDITO_RURAL_V1",
@@ -440,4 +573,6 @@ __all__ = [
     "EXPORTACAO_V1",
     "FERTILIZANTE_V1",
     "FOCOS_QUEIMADAS_V1",
+    "MAPBIOMAS_COBERTURA_V1",
+    "MAPBIOMAS_TRANSICAO_V1",
 ]

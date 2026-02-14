@@ -22,6 +22,7 @@ class Fonte(StrEnum):
     NASA_POWER = "nasa_power"
     NOTICIAS_AGRICOLAS = "noticias_agricolas"
     DESMATAMENTO = "desmatamento"
+    MAPBIOMAS = "mapbiomas"
     QUEIMADAS = "queimadas"
     USDA = "usda"
 
@@ -86,6 +87,11 @@ URLS = {
     Fonte.DESMATAMENTO: {
         "base": "https://terrabrasilis.dpi.inpe.br",
         "geoserver": "https://terrabrasilis.dpi.inpe.br/geoserver",
+    },
+    Fonte.MAPBIOMAS: {
+        "base": "https://brasil.mapbiomas.org",
+        "estatisticas": "https://brasil.mapbiomas.org/estatisticas/",
+        "gcs": "https://storage.googleapis.com/mapbiomas-public/initiatives/brasil",
     },
     Fonte.QUEIMADAS: {
         "base": "https://terrabrasilis.dpi.inpe.br/queimadas/portal/",
@@ -218,6 +224,7 @@ class CacheSettings(BaseSettings):
     ttl_comexstat: int = 24 * 3600
     ttl_nasa_power: int = 7 * 24 * 3600
     ttl_desmatamento: int = 24 * 3600
+    ttl_mapbiomas: int = 7 * 24 * 3600
     ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
 
@@ -258,6 +265,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_nasa_power: float = 1.0
     rate_limit_noticias_agricolas: float = 2.0
     rate_limit_desmatamento: float = 2.0
+    rate_limit_mapbiomas: float = 2.0
     rate_limit_queimadas: float = 1.0
     rate_limit_usda: float = 1.0
     rate_limit_default: float = 1.0
