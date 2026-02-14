@@ -168,6 +168,12 @@ class _SyncNasaPower(_SyncModule):
     pass
 
 
+class _SyncQueimadas(_SyncModule):
+    """API síncrona do Queimadas/INPE."""
+
+    pass
+
+
 class _SyncUsda(_SyncModule):
     """API síncrona do USDA."""
 
@@ -187,6 +193,7 @@ _modules: dict[str, _SyncModule | None] = {
     "imea": None,
     "inmet": None,
     "nasa_power": None,
+    "queimadas": None,
     "usda": None,
 }
 
@@ -203,6 +210,7 @@ _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "imea": _SyncImea,
     "inmet": _SyncInmet,
     "nasa_power": _SyncNasaPower,
+    "queimadas": _SyncQueimadas,
     "usda": _SyncUsda,
 }
 

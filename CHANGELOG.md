@@ -8,6 +8,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **Queimadas/INPE (roadmap 2.1)** — Nova fonte: focos de calor detectados por satelite via
+  BDQueimadas/INPE. Modulo `agrobr/queimadas/` com client (CSV diario/mensal), parser
+  (UTF-8 + latin-1 fallback), models (6 biomas, 27 UFs, 13 satelites), API publica
+  `queimadas.focos()` com filtros por UF/bioma/satelite e suporte a `return_meta`.
+  Contrato `FOCOS_QUEIMADAS_V1` com PK `[data, lat, lon, satelite, hora_gmt]`.
+  Schema JSON, golden data (8 registros x 6 biomas), 43 testes. Export em `__init__.py`
+  e sync wrapper. Docs: `api/queimadas.md`, `sources/queimadas.md`, licenses atualizado
 - **Schemas JSON formais (roadmap 1.2)** — Contratos Python agora geram schemas JSON em
   `agrobr/schemas/`. 8 contratos com primary_key, min/max constraints, validação automática
   via `_validate_contract()` em todos os 8 datasets. Novos contratos: `credito_rural`,

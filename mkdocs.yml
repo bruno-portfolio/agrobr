@@ -90,6 +90,7 @@ nav:
     - DERAL: api/deral.md
     - INMET: api/inmet.md
     - Noticias Agricolas: api/noticias_agricolas.md
+    - Queimadas/INPE: api/queimadas.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -105,6 +106,7 @@ nav:
     - DERAL: sources/deral.md
     - INMET: sources/inmet.md
     - Notícias Agrícolas: sources/noticias_agricolas.md
+    - Queimadas/INPE: sources/queimadas.md
   - Licenças dos Dados: licenses.md
   - Guias:
     - Async: guides/async.md

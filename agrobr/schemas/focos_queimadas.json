@@ -1,0 +1,226 @@
+{
+  "name": "queimadas.focos",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "lat",
+    "lon",
+    "satelite",
+    "hora_gmt"
+  ],
+  "required_columns": [
+    "data",
+    "lat",
+    "lon",
+    "satelite"
+  ],
+  "dtypes": {
+    "data": "date",
+    "hora_gmt": "str",
+    "lat": "float",
+    "lon": "float",
+    "satelite": "str",
+    "municipio": "str",
+    "municipio_id": "int",
+    "estado": "str",
+    "uf": "str",
+    "bioma": "str",
+    "numero_dias_sem_chuva": "float",
+    "precipitacao": "float",
+    "risco_fogo": "float",
+    "frp": "float"
+  },
+  "nullable": {
+    "data": false,
+    "hora_gmt": true,
+    "lat": false,
+    "lon": false,
+    "satelite": false,
+    "municipio": true,
+    "municipio_id": true,
+    "estado": true,
+    "uf": true,
+    "bioma": true,
+    "numero_dias_sem_chuva": true,
+    "precipitacao": true,
+    "risco_fogo": true,
+    "frp": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "hora_gmt",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "lat",
+      "type": "float",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": -35.0,
+      "max_value": 6.0
+    },
+    {
+      "name": "lon",
+      "type": "float",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": -74.0,
+      "max_value": -30.0
+    },
+    {
+      "name": "satelite",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio_id",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "estado",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "bioma",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "numero_dias_sem_chuva",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "precipitacao",
+      "type": "float",
+      "nullable": true,
+      "unit": "mm",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "risco_fogo",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 1
+    },
+    {
+      "name": "frp",
+      "type": "float",
+      "nullable": true,
+      "unit": "MW",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "lat_min": -35.0,
+    "lat_max": 6.0,
+    "lon_min": -74.0,
+    "lon_max": -30.0,
+    "numero_dias_sem_chuva_min": 0,
+    "precipitacao_min": 0,
+    "risco_fogo_min": 0,
+    "risco_fogo_max": 1,
+    "frp_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'lat' is always between -35 and 6 (Brazil bounding box)",
+    "'lon' is always between -74 and -30 (Brazil bounding box)",
+    "'data' is always a valid date",
+    "Numeric values are always >= 0 when present"
+  ]
+}

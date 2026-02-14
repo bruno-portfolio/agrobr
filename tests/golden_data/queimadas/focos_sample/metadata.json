@@ -1,0 +1,11 @@
+{
+  "source": "queimadas",
+  "format": "csv",
+  "parser": "agrobr.queimadas.parser::parse_focos_csv()",
+  "parser_version": 1,
+  "parser_kwargs": {},
+  "needs_real_data": true,
+  "captured_at": "2026-02-14T12:00:00+00:00",
+  "api_url": "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/Brasil/focos_diario_br_20240915.csv",
+  "notes": "Sample data with 8 records across 6 biomes, representative of real CSV structure"
+}

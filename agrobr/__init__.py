@@ -19,6 +19,7 @@ from agrobr import (
     imea,
     inmet,
     nasa_power,
+    queimadas,
     usda,
 )
 from agrobr.datasets.deterministic import deterministic
@@ -39,6 +40,7 @@ __all__ = [
     "imea",
     "inmet",
     "nasa_power",
+    "queimadas",
     "usda",
     "MetaInfo",
     "__version__",

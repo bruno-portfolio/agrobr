@@ -1,0 +1,10 @@
+{
+  "count_min": 8,
+  "columns": ["data", "hora_gmt", "lat", "lon", "satelite", "municipio", "municipio_id", "estado", "bioma", "numero_dias_sem_chuva", "precipitacao", "risco_fogo", "frp", "uf"],
+  "non_null_columns": ["data", "lat", "lon", "satelite"],
+  "has_multiple_biomas": true,
+  "biomas_expected": ["Amazônia", "Caatinga", "Cerrado", "Mata Atlântica", "Pampa", "Pantanal"],
+  "has_multiple_satelites": true,
+  "satelites_expected": ["AQUA_M-T", "GOES-19", "NOAA-20", "NOAA-21", "TERRA_M-M", "TERRA_M-T"],
+  "ufs_expected": ["AM", "DF", "MS", "MT", "PE", "RS", "SP", "TO"]
+}

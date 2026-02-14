@@ -13,9 +13,9 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **13 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET e Notícias Agrícolas.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **14 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas e Queimadas/INPE.
 
-**v0.9.0** — 2130 testes, ~78% cobertura, 13/13 fontes com golden tests, retry centralizado em 13/13 clients.
+**v0.10.0-dev** — 2173 testes, ~78% cobertura, 14/14 fontes com golden tests, retry centralizado em 14/14 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -204,11 +204,30 @@ export AGROBR_INMET_TOKEN="seu-token-aqui"
 
 Sem o token, requisições de dados retornam HTTP 204 (sem conteúdo). A listagem de estações funciona sem token. Para dados climáticos sem token, use [NASA POWER](#novas-fontes-v070) como alternativa.
 
+### Queimadas/INPE — Focos de Calor (v0.10.0)
+
+```python
+from agrobr import queimadas
+
+async def main():
+    # Focos de calor em setembro/2024
+    df = await queimadas.focos(ano=2024, mes=9)
+
+    # Filtrar por UF e bioma
+    df = await queimadas.focos(ano=2024, mes=9, uf="MT", bioma="Amazonia")
+
+    # Dia especifico
+    df = await queimadas.focos(ano=2024, mes=9, dia=15)
+
+    # Com metadados
+    df, meta = await queimadas.focos(ano=2024, mes=9, return_meta=True)
+```
+
 ### Modo Síncrono
 
 ```python
 from agrobr.sync import cepea, conab, ibge, datasets, nasa_power, bcb, comexstat
-from agrobr.sync import abiove, usda, imea, deral
+from agrobr.sync import abiove, usda, imea, deral, queimadas
 
 # Mesmo API, sem async/await
 df = cepea.indicador('soja', inicio='2024-01-01')
@@ -298,6 +317,7 @@ Use `agrobr health --all` para verificar localmente.
 | DERAL | Condição das lavouras Paraná | ✅ | Funcional |
 | INMET | Meteorologia (600+ estações) | ✅¹ | Requer token (`AGROBR_INMET_TOKEN`) |
 | Notícias Agrícolas | Cotações (fallback CEPEA) | ✅¹ | Funcional |
+| Queimadas/INPE | Focos de calor por satelite (6 biomas, 13 satelites) | ✅ | Funcional |
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 
@@ -348,9 +368,9 @@ normalizar_safra("24/25")             # "2024/25"
 
 ## Diferenciais
 
-- **13/13 fontes com golden tests** — validação automatizada contra dados de referência
-- **Resiliência HTTP completa** — retry centralizado em 13/13 clients, 429 handling, Retry-After
-- **2130 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **14/14 fontes com golden tests** — validação automatizada contra dados de referência
+- **Resiliência HTTP completa** — retry centralizado em 14/14 clients, 429 handling, Retry-After
+- **2173 testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints
 - **Schemas JSON** — contratos exportados como JSON em `agrobr/schemas/`
@@ -396,7 +416,7 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
-- [Fontes](https://www.agrobr.dev/docs/sources/) — 13 fontes documentadas
+- [Fontes](https://www.agrobr.dev/docs/sources/) — 14 fontes documentadas
 - [API Reference](https://www.agrobr.dev/docs/api/cepea/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 

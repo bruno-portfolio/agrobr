@@ -21,6 +21,7 @@ class Fonte(StrEnum):
     INMET = "inmet"
     NASA_POWER = "nasa_power"
     NOTICIAS_AGRICOLAS = "noticias_agricolas"
+    QUEIMADAS = "queimadas"
     USDA = "usda"
 
 
@@ -80,6 +81,10 @@ URLS = {
     Fonte.NOTICIAS_AGRICOLAS: {
         "base": "https://www.noticiasagricolas.com.br",
         "cotacoes": "https://www.noticiasagricolas.com.br/cotacoes",
+    },
+    Fonte.QUEIMADAS: {
+        "base": "https://terrabrasilis.dpi.inpe.br/queimadas/portal/",
+        "dados_abertos": "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv",
     },
 }
 
@@ -207,6 +212,7 @@ class CacheSettings(BaseSettings):
     ttl_bcb: int = 24 * 3600
     ttl_comexstat: int = 24 * 3600
     ttl_nasa_power: int = 7 * 24 * 3600
+    ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
 
     stale_multiplier: float = 12.0
@@ -245,6 +251,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_inmet: float = 0.5
     rate_limit_nasa_power: float = 1.0
     rate_limit_noticias_agricolas: float = 2.0
+    rate_limit_queimadas: float = 1.0
     rate_limit_usda: float = 1.0
     rate_limit_default: float = 1.0
 
