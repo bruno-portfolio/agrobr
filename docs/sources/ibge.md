@@ -31,6 +31,13 @@
 - **Cobertura**: Nacional/UF
 - **Frequencia**: Mensal
 
+### PPM - Pesquisa da Pecuaria Municipal
+
+- **Tabelas SIDRA**: 3939 (rebanhos), 74 (producao de origem animal)
+- **Cobertura**: Todos os municipios
+- **Frequencia**: Anual
+- **Serie**: 1974-presente (51 anos)
+
 ## Variaveis
 
 | Codigo | Nome | Unidade |
@@ -141,12 +148,88 @@ ufs = await ibge.ufs()
 # ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', ...]
 ```
 
+## Uso - PPM
+
+### Basico
+
+```python
+import asyncio
+from agrobr import ibge
+
+async def main():
+    # Rebanho bovino por UF
+    df = await ibge.ppm('bovino', ano=2023)
+
+    # Producao de leite
+    df = await ibge.ppm('leite', ano=2023)
+
+    # Multiplos anos
+    df = await ibge.ppm('bovino', ano=[2020, 2021, 2022, 2023])
+
+    # Filtrar por UF
+    df = await ibge.ppm('bovino', ano=2023, uf='MT')
+
+    # Nivel municipal
+    df = await ibge.ppm('bovino', ano=2023, nivel='municipio', uf='MS')
+
+    # Com metadados
+    df, meta = await ibge.ppm('bovino', ano=2023, return_meta=True)
+
+asyncio.run(main())
+```
+
+## Schema - PPM
+
+| Coluna | Tipo | Descricao |
+|--------|------|-----------|
+| `ano` | int | Ano de referencia |
+| `localidade` | str | Nome da localidade |
+| `localidade_cod` | int | Codigo IBGE da localidade |
+| `especie` | str | Nome da especie/produto |
+| `valor` | float | Valor (cabecas, mil litros, etc) |
+| `unidade` | str | Unidade de medida |
+| `fonte` | str | "ibge_ppm" |
+
+## Especies/Produtos PPM
+
+### Rebanhos (tabela 3939)
+
+| Codigo | Especie | Unidade |
+|--------|---------|---------|
+| `bovino` | Bovino | cabecas |
+| `bubalino` | Bubalino | cabecas |
+| `equino` | Equino | cabecas |
+| `suino_total` | Suino (total) | cabecas |
+| `suino_matrizes` | Suino matrizes | cabecas |
+| `caprino` | Caprino | cabecas |
+| `ovino` | Ovino | cabecas |
+| `galinaceos_total` | Galinaceos (total) | cabecas |
+| `galinhas_poedeiras` | Galinhas poedeiras | cabecas |
+| `codornas` | Codornas | cabecas |
+
+### Producao de origem animal (tabela 74)
+
+| Codigo | Produto | Unidade |
+|--------|---------|---------|
+| `leite` | Leite | mil litros |
+| `ovos_galinha` | Ovos de galinha | mil duzias |
+| `ovos_codorna` | Ovos de codorna | mil duzias |
+| `mel` | Mel de abelha | kg |
+| `casulos` | Casulos de bicho-da-seda | kg |
+| `la` | La | kg |
+
+```python
+especies = await ibge.especies_ppm()
+# ['bovino', 'bubalino', 'caprino', 'casulos', 'codornas', ...]
+```
+
 ## Cache
 
 | Pesquisa | TTL | Stale maximo |
 |----------|-----|--------------|
 | PAM | 7 dias | 90 dias |
 | LSPA | 24 horas | 30 dias |
+| PPM | 7 dias | 90 dias |
 
 ## Atualizacao
 
@@ -154,3 +237,4 @@ ufs = await ibge.ufs()
 |----------|------------|
 | PAM | Anual (agosto-setembro) |
 | LSPA | Mensal |
+| PPM | Anual (setembro) |

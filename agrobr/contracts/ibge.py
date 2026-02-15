@@ -144,6 +144,67 @@ IBGE_LSPA_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-register_contract("producao_anual", IBGE_PAM_V1)
+IBGE_PPM_V1 = Contract(
+    name="ibge.ppm",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["ano", "especie", "localidade"],
+    columns=[
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1974,
+        ),
+        Column(
+            name="localidade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="localidade_cod",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="especie",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="valor",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="unidade",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="fonte",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'ano' is always a valid year (>= 1974)",
+        "Numeric values are always >= 0",
+        "'fonte' is always 'ibge_ppm'",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
 
-__all__ = ["IBGE_LSPA_V1", "IBGE_PAM_V1"]
+register_contract("producao_anual", IBGE_PAM_V1)
+register_contract("pecuaria_municipal", IBGE_PPM_V1)
+
+__all__ = ["IBGE_LSPA_V1", "IBGE_PAM_V1", "IBGE_PPM_V1"]

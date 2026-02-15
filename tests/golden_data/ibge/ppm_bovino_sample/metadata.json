@@ -1,0 +1,17 @@
+{
+  "source": "ibge",
+  "format": "dataframe",
+  "parser": "agrobr.ibge.client::parse_sidra_response()",
+  "parser_version": 1,
+  "parser_kwargs": {},
+  "needs_real_data": false,
+  "captured_at": "2026-02-14T22:00:00.000000+00:00",
+  "query": {
+    "table": "3939",
+    "variable": "105",
+    "territorial_level": "3",
+    "period": "2023",
+    "classification_79": "2670"
+  },
+  "notes": "Simulated SIDRA response — PPM efetivo bovino por UF 2023, 27 rows"
+}

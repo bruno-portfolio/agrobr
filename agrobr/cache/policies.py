@@ -71,6 +71,12 @@ POLICIES: dict[str, CachePolicy] = {
         description="IBGE LSPA (atualiza mensalmente)",
         smart_expiry=False,
     ),
+    "ibge_ppm": CachePolicy(
+        ttl_seconds=TTL.DAYS_7.value,
+        stale_max_seconds=TTL.DAYS_90.value,
+        description="IBGE PPM (atualiza anualmente)",
+        smart_expiry=False,
+    ),
     "noticias_agricolas": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.HOURS_24.value * 2,

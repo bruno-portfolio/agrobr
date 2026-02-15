@@ -8,6 +8,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **IBGE PPM — Pesquisa da Pecuária Municipal (roadmap 2.8)** — Nova pesquisa no módulo IBGE:
+  efetivo de rebanhos (10 espécies, tabela SIDRA 3939) e produção de origem animal (6 produtos,
+  tabela 74). API pública `ibge.ppm()` com filtros por espécie/ano/UF/nível e `ibge.especies_ppm()`.
+  Dataset `pecuaria_municipal` com contrato `IBGE_PPM_V1`, schema JSON, golden data. Cache 7 dias.
+  60 testes. Docs: `api/ibge.md`, `sources/ibge.md`, `contracts/pecuaria_municipal.md`, licenses
+  atualizado
 - **CONAB Progresso de Safra (roadmap 2.0.5)** — Nova fonte: progresso semanal de plantio
   e colheita por cultura x UF. Modulo `agrobr/conab/progresso/` com client (Plone CMS
   pagination, XLSX download via sub-links), parser (block-based state machine para XLSX

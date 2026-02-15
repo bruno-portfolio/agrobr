@@ -380,11 +380,163 @@ async def produtos_lspa() -> list[str]:
     return list(client.PRODUTOS_LSPA.keys())
 
 
-async def ufs() -> list[str]:
-    """
-    Lista UFs disponíveis.
+@overload
+async def ppm(
+    especie: str,
+    ano: int | str | list[int] | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
 
-    Returns:
-        Lista de siglas de UF
-    """
+
+@overload
+async def ppm(
+    especie: str,
+    ano: int | str | list[int] | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def ppm(
+    especie: str,
+    ano: int | str | list[int] | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    fetch_start = time.perf_counter()
+    meta = MetaInfo(
+        source="ibge_ppm",
+        source_url="https://sidra.ibge.gov.br",
+        source_method="httpx",
+        fetched_at=datetime.now(),
+    )
+    logger.info(
+        "ibge_ppm_request",
+        especie=especie,
+        ano=ano,
+        uf=uf,
+        nivel=nivel,
+    )
+
+    especie_lower = especie.lower()
+    all_valid = sorted(
+        list(client.REBANHOS_PPM.keys()) + list(client.PRODUTOS_ORIGEM_ANIMAL.keys())
+    )
+
+    is_rebanho = especie_lower in client.REBANHOS_PPM
+    is_producao = especie_lower in client.PRODUTOS_ORIGEM_ANIMAL
+
+    if not is_rebanho and not is_producao:
+        raise ValueError(f"Espécie/produto não suportado: {especie}. Disponíveis: {all_valid}")
+
+    nivel_map = {
+        "brasil": "1",
+        "uf": "3",
+        "municipio": "6",
+    }
+    territorial_level = nivel_map.get(nivel, "3")
+
+    ibge_code = "all"
+    if uf and nivel in ("uf", "municipio"):
+        ibge_code = client.uf_to_ibge_code(uf)
+
+    if ano is None:
+        period = "last"
+    elif isinstance(ano, list):
+        period = ",".join(str(a) for a in ano)
+    else:
+        period = str(ano)
+
+    classifications: dict[str, str | list[str]] = {}
+    if is_rebanho:
+        table_code = client.TABELAS["ppm_rebanho"]
+        variable = client.VARIAVEIS_PPM["efetivo"]
+        classifications["79"] = client.REBANHOS_PPM[especie_lower]
+    else:
+        table_code = client.TABELAS["ppm_producao"]
+        variable = client.VARIAVEIS_PPM["producao"]
+        classifications["80"] = client.PRODUTOS_ORIGEM_ANIMAL[especie_lower]
+
+    df = await client.fetch_sidra(
+        table_code=table_code,
+        territorial_level=territorial_level,
+        ibge_territorial_code=ibge_code,
+        variable=variable,
+        period=period,
+        classifications=classifications,
+    )
+
+    df = client.parse_sidra_response(df)
+
+    if "ano" in df.columns:
+        df["ano"] = pd.to_numeric(df["ano"], errors="coerce").astype("Int64")
+
+    if "localidade_cod" in df.columns:
+        df["localidade_cod"] = pd.to_numeric(df["localidade_cod"], errors="coerce").astype("Int64")
+
+    df["especie"] = especie_lower
+    df["unidade"] = client.UNIDADES_PPM.get(especie_lower, "")
+    df["fonte"] = "ibge_ppm"
+
+    output_cols = [
+        c
+        for c in [
+            "ano",
+            "localidade",
+            "localidade_cod",
+            "especie",
+            "valor",
+            "unidade",
+            "fonte",
+        ]
+        if c in df.columns
+    ]
+    df = df[output_cols].reset_index(drop=True)
+
+    meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+    meta.records_count = len(df)
+    meta.columns = df.columns.tolist()
+    meta.cache_key = build_cache_key(
+        "ibge:ppm",
+        {"especie": especie, "ano": ano},
+        schema_version=meta.schema_version,
+    )
+    meta.cache_expires_at = calculate_expiry(constants.Fonte.IBGE, "ppm")
+
+    if as_polars:
+        try:
+            import polars as pl
+
+            result_df = pl.from_pandas(df)
+            if return_meta:
+                return result_df, meta  # type: ignore[return-value,no-any-return]
+            return result_df  # type: ignore[return-value,no-any-return]
+        except ImportError:
+            logger.warning("polars_not_installed", fallback="pandas")
+
+    logger.info(
+        "ibge_ppm_success",
+        especie=especie,
+        records=len(df),
+    )
+
+    if return_meta:
+        return df, meta
+    return df
+
+
+async def especies_ppm() -> list[str]:
+    return sorted(list(client.REBANHOS_PPM.keys()) + list(client.PRODUTOS_ORIGEM_ANIMAL.keys()))
+
+
+async def ufs() -> list[str]:
     return list(client.get_uf_codes().keys())

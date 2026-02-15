@@ -25,6 +25,7 @@
 | **Desmatamento PRODES/DETER** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) |
 | **MapBiomas** | Dados públicos, livre com citação | Sim (com citação ao projeto) | `livre` | [Termos de Uso](https://brasil.mapbiomas.org/termos-de-uso/) |
 | **CONAB Progresso** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Gov.br](https://www.gov.br/conab/) |
+| **IBGE PPM** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
 
 ### Legenda de Classificação
 

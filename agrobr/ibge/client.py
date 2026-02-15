@@ -20,6 +20,8 @@ TABELAS = {
     "pam_nova": "5457",
     "lspa": "6588",
     "lspa_safra": "1618",
+    "ppm_rebanho": "3939",
+    "ppm_producao": "74",
 }
 
 VARIAVEIS = {
@@ -58,6 +60,54 @@ PRODUTOS_PAM = {
     "cana": "40106",
     "mandioca": "40119",
     "laranja": "40151",
+}
+
+VARIAVEIS_PPM = {
+    "efetivo": "105",
+    "producao": "106",
+    "valor_producao": "215",
+    "vacas_ordenhadas": "107",
+}
+
+REBANHOS_PPM = {
+    "bovino": "2670",
+    "bubalino": "2675",
+    "equino": "2672",
+    "suino_total": "32794",
+    "suino_matrizes": "32795",
+    "caprino": "2681",
+    "ovino": "2677",
+    "galinaceos_total": "32796",
+    "galinhas_poedeiras": "32793",
+    "codornas": "2680",
+}
+
+PRODUTOS_ORIGEM_ANIMAL = {
+    "leite": "2682",
+    "ovos_galinha": "2685",
+    "ovos_codorna": "2686",
+    "mel": "2687",
+    "casulos": "2683",
+    "la": "2684",
+}
+
+UNIDADES_PPM: dict[str, str] = {
+    "bovino": "cabeças",
+    "bubalino": "cabeças",
+    "equino": "cabeças",
+    "suino_total": "cabeças",
+    "suino_matrizes": "cabeças",
+    "caprino": "cabeças",
+    "ovino": "cabeças",
+    "galinaceos_total": "cabeças",
+    "galinhas_poedeiras": "cabeças",
+    "codornas": "cabeças",
+    "leite": "mil litros",
+    "ovos_galinha": "mil dúzias",
+    "ovos_codorna": "mil dúzias",
+    "mel": "kg",
+    "casulos": "kg",
+    "la": "kg",
 }
 
 PRODUTOS_LSPA = {

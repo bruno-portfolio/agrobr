@@ -76,6 +76,7 @@ nav:
     - exportacao: contracts/exportacao.md
     - fertilizante: contracts/fertilizante.md
     - custo_producao: contracts/custo_producao.md
+    - pecuaria_municipal: contracts/pecuaria_municipal.md
   - API Reference:
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md

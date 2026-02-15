@@ -1,0 +1,31 @@
+{
+  "count": 27,
+  "columns": [
+    "nivel_territorial_cod",
+    "nivel_territorial",
+    "localidade_cod",
+    "localidade",
+    "valor",
+    "ano_cod",
+    "ano",
+    "variavel_cod",
+    "variavel",
+    "produto_cod",
+    "produto"
+  ],
+  "non_null_columns": [
+    "nivel_territorial_cod",
+    "localidade",
+    "ano"
+  ],
+  "first_row": {
+    "localidade": "Rondônia",
+    "valor": 14850000.0,
+    "ano": "2023"
+  },
+  "last_row": {
+    "localidade": "Distrito Federal",
+    "valor": 95000.0,
+    "ano": "2023"
+  }
+}

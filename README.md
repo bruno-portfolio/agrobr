@@ -77,7 +77,7 @@ async def main():
     print(brasil)
 ```
 
-### IBGE - PAM e LSPA
+### IBGE - PAM, LSPA e PPM
 
 ```python
 from agrobr import ibge
@@ -90,6 +90,13 @@ async def main():
     # LSPA - Levantamento Sistemático (mensal)
     df = await ibge.lspa('soja', ano=2024, mes=6)
     print(df)
+
+    # PPM - Pesquisa da Pecuária Municipal (anual)
+    df = await ibge.ppm('bovino', ano=2023, nivel='uf')
+    print(df[['localidade', 'especie', 'valor', 'unidade']])
+
+    # Produção de origem animal
+    df = await ibge.ppm('leite', ano=2023)
 
     # Múltiplos anos
     df = await ibge.pam('milho', ano=[2020, 2021, 2022, 2023])
@@ -131,10 +138,13 @@ async def main():
     df, meta = await datasets.preco_diario("soja", return_meta=True)
     print(meta.source, meta.contract_version)
 
+    # Pecuária municipal (IBGE PPM)
+    df = await datasets.pecuaria_municipal("bovino", ano=2023)
+
     # Listar datasets disponíveis
     print(datasets.list_datasets())
     # ['balanco', 'credito_rural', 'custo_producao', 'estimativa_safra',
-    #  'exportacao', 'fertilizante', 'preco_diario', 'producao_anual']
+    #  'exportacao', 'fertilizante', 'pecuaria_municipal', 'preco_diario', 'producao_anual']
 ```
 
 ### Modo Determinístico (Reprodutibilidade)
