@@ -644,6 +644,70 @@ CONAB_PROGRESSO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+AJUSTE_DIARIO_V1 = Contract(
+    name="b3.ajuste_diario",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["data", "ticker", "vencimento_codigo"],
+    columns=[
+        Column(name="data", type=ColumnType.DATE, nullable=False, stable=True),
+        Column(name="ticker", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="descricao", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(
+            name="vencimento_codigo",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="vencimento_mes",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1,
+            max_value=12,
+        ),
+        Column(
+            name="vencimento_ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=2000,
+        ),
+        Column(
+            name="ajuste_anterior",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="ajuste_atual",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+        Column(name="variacao", type=ColumnType.FLOAT, nullable=True, stable=True),
+        Column(
+            name="ajuste_por_contrato",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+        ),
+        Column(name="unidade", type=ColumnType.STRING, nullable=True, stable=True),
+    ],
+    guarantees=[
+        "PK unica por combinacao data + ticker + vencimento_codigo",
+        "'ticker' sempre em {BGI, CCM, ICF, CNL, ETH, SJC, SOY}",
+        "'vencimento_mes' entre 1 e 12",
+        "'ajuste_atual' e 'ajuste_anterior' sempre >= 0 quando presentes",
+        "Dados apenas para dias uteis (sem pregao em weekends/feriados)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V1)
 register_contract("credito_rural", CREDITO_RURAL_V1)
 register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
@@ -655,6 +719,7 @@ register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
 register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
 
 __all__ = [
+    "AJUSTE_DIARIO_V1",
     "CONAB_PROGRESSO_V1",
     "CREDITO_RURAL_V1",
     "DESMATAMENTO_DETER_V1",

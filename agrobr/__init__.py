@@ -8,6 +8,7 @@ __author__ = "Bruno"
 from agrobr import (
     abiove,
     anda,
+    b3,
     bcb,
     cepea,
     comexstat,
@@ -30,6 +31,7 @@ from agrobr.models import MetaInfo
 __all__ = [
     "abiove",
     "anda",
+    "b3",
     "bcb",
     "cepea",
     "comexstat",

@@ -97,6 +97,7 @@ nav:
     - Queimadas/INPE: api/queimadas.md
     - Desmatamento PRODES/DETER: api/desmatamento.md
     - MapBiomas: api/mapbiomas.md
+    - B3 Futuros Agro: api/b3.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -116,6 +117,7 @@ nav:
     - Queimadas/INPE: sources/queimadas.md
     - Desmatamento PRODES/DETER: sources/desmatamento.md
     - MapBiomas: sources/mapbiomas.md
+    - B3 Futuros Agro: sources/b3.md
   - Licenças dos Dados: licenses.md
   - Guias:
     - Async: guides/async.md

@@ -186,9 +186,16 @@ class _SyncUsda(_SyncModule):
     pass
 
 
+class _SyncB3(_SyncModule):
+    """API síncrona da B3."""
+
+    pass
+
+
 _modules: dict[str, _SyncModule | None] = {
     "abiove": None,
     "anda": None,
+    "b3": None,
     "bcb": None,
     "cepea": None,
     "comexstat": None,
@@ -207,6 +214,7 @@ _modules: dict[str, _SyncModule | None] = {
 _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "abiove": _SyncAbiove,
     "anda": _SyncAnda,
+    "b3": _SyncB3,
     "bcb": _SyncBcb,
     "cepea": _SyncCepea,
     "comexstat": _SyncComexstat,

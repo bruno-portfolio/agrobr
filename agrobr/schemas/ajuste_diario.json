@@ -1,0 +1,182 @@
+{
+  "name": "b3.ajuste_diario",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "ticker",
+    "vencimento_codigo"
+  ],
+  "required_columns": [
+    "data",
+    "ticker",
+    "vencimento_codigo",
+    "vencimento_mes",
+    "vencimento_ano"
+  ],
+  "dtypes": {
+    "data": "date",
+    "ticker": "str",
+    "descricao": "str",
+    "vencimento_codigo": "str",
+    "vencimento_mes": "int",
+    "vencimento_ano": "int",
+    "ajuste_anterior": "float",
+    "ajuste_atual": "float",
+    "variacao": "float",
+    "ajuste_por_contrato": "float",
+    "unidade": "str"
+  },
+  "nullable": {
+    "data": false,
+    "ticker": false,
+    "descricao": true,
+    "vencimento_codigo": false,
+    "vencimento_mes": false,
+    "vencimento_ano": false,
+    "ajuste_anterior": true,
+    "ajuste_atual": true,
+    "variacao": true,
+    "ajuste_por_contrato": true,
+    "unidade": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ticker",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "descricao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "vencimento_codigo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "vencimento_mes",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "vencimento_ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 2000,
+      "max_value": null
+    },
+    {
+      "name": "ajuste_anterior",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "ajuste_atual",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "variacao",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ajuste_por_contrato",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "vencimento_mes_min": 1,
+    "vencimento_mes_max": 12,
+    "vencimento_ano_min": 2000,
+    "ajuste_anterior_min": 0,
+    "ajuste_atual_min": 0
+  },
+  "guarantees": [
+    "PK unica por combinacao data + ticker + vencimento_codigo",
+    "'ticker' sempre em {BGI, CCM, ICF, CNL, ETH, SJC, SOY}",
+    "'vencimento_mes' entre 1 e 12",
+    "'ajuste_atual' e 'ajuste_anterior' sempre >= 0 quando presentes",
+    "Dados apenas para dias uteis (sem pregao em weekends/feriados)"
+  ]
+}

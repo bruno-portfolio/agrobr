@@ -11,6 +11,7 @@ from pydantic_settings import BaseSettings
 class Fonte(StrEnum):
     ABIOVE = "abiove"
     ANDA = "anda"
+    B3 = "b3"
     BCB = "bcb"
     CEPEA = "cepea"
     COMEXSTAT = "comexstat"
@@ -96,6 +97,10 @@ URLS = {
     Fonte.QUEIMADAS: {
         "base": "https://terrabrasilis.dpi.inpe.br/queimadas/portal/",
         "dados_abertos": "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv",
+    },
+    Fonte.B3: {
+        "base": "https://www.b3.com.br",
+        "ajustes": "https://www2.bmf.com.br/pages/portal/bmfbovespa/boletim1/Ajustes1.asp",
     },
 }
 
@@ -231,6 +236,7 @@ class CacheSettings(BaseSettings):
     ttl_conab_progresso: int = 12 * 3600
     ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
+    ttl_b3: int = 4 * 3600
 
     stale_multiplier: float = 12.0
 
@@ -272,6 +278,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_mapbiomas: float = 2.0
     rate_limit_queimadas: float = 1.0
     rate_limit_usda: float = 1.0
+    rate_limit_b3: float = 1.0
     rate_limit_default: float = 1.0
 
     class Config:

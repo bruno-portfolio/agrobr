@@ -1,0 +1,27 @@
+{
+  "date": "13/02/2025",
+  "atualizado_em": "13/02/2025",
+  "total_rows_all": 639,
+  "agro_tickers": ["BGI", "CCM", "CNL", "ETH", "ICF", "SJC", "SOY"],
+  "agro_row_count_min": 55,
+  "columns": [
+    "data", "ticker", "descricao", "vencimento_codigo",
+    "vencimento_mes", "vencimento_ano",
+    "ajuste_anterior", "ajuste_atual", "variacao", "ajuste_por_contrato"
+  ],
+  "non_null_columns": ["data", "ticker", "vencimento_codigo", "ajuste_atual"],
+  "sample_bgi": {
+    "ticker": "BGI",
+    "vencimento_codigo": "G25",
+    "ajuste_anterior": 313.85,
+    "ajuste_atual": 311.45,
+    "variacao": -2.40
+  },
+  "sample_sjc": {
+    "ticker": "SJC",
+    "vencimento_codigo": "H25",
+    "ajuste_anterior": 22.6576,
+    "ajuste_atual": 22.7072,
+    "variacao": 0.0496
+  }
+}

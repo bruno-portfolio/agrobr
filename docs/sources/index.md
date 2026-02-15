@@ -1,6 +1,6 @@
 # Fontes de Dados
 
-O agrobr integra dados de 17 fontes de dados agricolas.
+O agrobr integra dados de 18 fontes de dados agricolas.
 Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 
 ## Visao Geral
@@ -24,6 +24,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [Desmatamento PRODES/DETER](desmatamento.md) | Desmatamento + alertas | Anual/Diária | Amazônia, Cerrado, Pantanal |
 | [MapBiomas](mapbiomas.md) | Cobertura e uso da terra | Anual | Municípios (1985-presente) |
 | [CONAB Progresso](conab_progresso.md) | Plantio/colheita semanal | Semanal | 6 culturas, 27 UFs |
+| [B3 Futuros Agro](b3.md) | Ajustes diarios futuros | Diaria | 7 contratos agricolas |
 
 ## Proveniencia e Rastreabilidade
 

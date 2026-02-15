@@ -8,6 +8,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **B3 Futuros Agro** — Nova fonte: ajustes diarios de futuros agricolas (boi gordo, milho,
+  cafe arabica, cafe conillon, etanol, soja cross, soja FOB). Modulo `agrobr/b3/` com client
+  (HTML parse de `www2.bmf.com.br`, encoding iso-8859-1), parser (tabela `tblDadosAjustes`,
+  carry-forward de ticker, numeros BR), models (7 contratos, month codes, unidades).
+  API publica `b3.ajustes()` com filtro por contrato, `b3.historico()` para serie temporal,
+  `b3.contratos()`. Contrato `AJUSTE_DIARIO_V1` com PK `[data, ticker, vencimento_codigo]`.
+  Schema JSON, golden data (dia util + weekend), 71 testes. Warning zona_cinza na primeira
+  chamada. Sync wrapper. Docs: `api/b3.md`, `sources/b3.md`, licenses atualizado
 - **IBGE Censo Agropecuário (Censo Agro 2017)** — Nova pesquisa no módulo IBGE:
   4 temas (efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente) via tabelas
   SIDRA 6907/6881/6957/6956. API pública `ibge.censo_agro()` com filtros por tema/UF/nível

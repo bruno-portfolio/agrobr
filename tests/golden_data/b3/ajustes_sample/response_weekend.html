@@ -1,0 +1,706 @@
+
+<html><!-- InstanceBegin template="/Templates/br_Boletim.dwt" codeOutsideHTMLIsLocked="false" -->
+
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+
+
+
+<!-- START OF SmartSource Data Collector TAG -->
+<!-- Copyright (c) 1996-2010 WebTrends Inc.  All rights reserved. -->
+<!-- Version: 8.6.2 -->
+<!-- Tag Builder Version: 3.0  -->
+<!-- Created: 3/30/2010 4:35:15 PM -->
+<script type="text/javascript" src="/ruxitagentjs_ICANVfqru_10329260206100503.js" data-dtconfig="rid=RID_285569994|rpid=865673179|domain=bmf.com.br|reportUrl=/rb_ea8d7b8f-040c-423b-b726-54310cab2c40|app=e44446475f923f8e|cuc=kju5m9kg|owasp=1|mel=100000|featureHash=ICANVfqru|dpvc=1|lastModification=1771081219965|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/ruxitagentjs_ICANVfqru_10329260206100503.js"></script><script src="http://www.bmfbovespa.com.br/Shared/js/webtrends.js" type="text/javascript"></script>
+<!-- ----------------------------------------------------------------------------------- -->
+<!-- Warning: The two script blocks below must remain inline. Moving them to an external -->
+<!-- JavaScript include file can cause serious problems with cross-domain tracking.      -->
+<!-- ----------------------------------------------------------------------------------- -->
+<script type="text/javascript">
+//<![CDATA[
+var _tag=new WebTrends();
+_tag.dcsGetId();
+//]]>>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+// Add custom parameters here.
+//_tag.DCSext.param_name=param_value;
+_tag.dcsCollect();
+//]]>>
+</script>
+<noscript>
+<div><img alt="DCSIMG" id="DCSIMG" width="1" height="1" src="http://sdcbov.bovespa.com.br/dcs7cxucm10000g0rpvv97ynr_2s8b/njs.gif?dcsuri=/nojavascript&amp;WT.js=No&amp;WT.tv=8.6.2"/></div>
+</noscript>
+<!-- END OF SmartSource Data Collector TAG -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-43178799-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Ajustes relativos ao Pregão</title>
+<SCRIPT LANGUAGE="JSCRIPT">
+<!--
+function incluiQueryString()
+{
+	if(retroValidator(document.frmBD))
+	{
+		document.frmBD.action = document.frmBD.action + "?txtData=" + document.frmBD.txtData.value;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+function retroValidator(theForm)
+{
+  if(!CkDate(theForm.txtData, theForm.txtData.value))
+  {
+    window.alert("A data deve estar no formato dd/mm/aaaa.");
+    theForm.txtData.focus();
+    theForm.txtData.select();
+    return false;
+  }
+  else
+  {
+	return true;
+  }
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+function MM_showHideLayers() { //v9.0
+  var i,p,v,obj,args=MM_showHideLayers.arguments;
+  for (i=0; i<(args.length-2); i+=3)
+  with (document) if (getElementById && ((obj=getElementById(args[i]))!=null)) { v=args[i+2];
+    if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v=='hide')?'hidden':v; }
+    obj.visibility=v; }
+}
+
+if (window.attachEvent) {
+	window.attachEvent("onload", mesclarCelulasVaziasPrimeiraColuna);
+}
+else {
+	window.addEventListener("load", mesclarCelulasVaziasPrimeiraColuna, false);
+}
+
+function mesclarCelulasVaziasPrimeiraColuna() {
+	var tabelas = ["tblDadosAjustes"];
+
+	for (var iTabela = 0; iTabela < tabelas.length; iTabela++) {
+		var tabela = document.getElementById(tabelas[iTabela]);
+		var linhaLimitadora = garantirLimitacaoTabela(tabela);
+		var linhas = tabela.rows;
+		var celulaCabecalho = null;
+		var colunasExcluir = [];
+
+		for (var iLinha = 0; iLinha < linhas.length; iLinha++) {
+			var linha = linhas[iLinha];
+			var colunas = linha.cells;
+
+			if (colunas.length > 1) {
+				var coluna = colunas[0];
+
+				if (coluna.tagName.toUpperCase() == "TD") {
+					if (celulaCabecalho == null) {
+						celulaCabecalho = coluna;
+						continue;
+					}
+
+					if (htmlVazio(coluna)) {
+						colunasExcluir.push(coluna);
+						coluna.textContent = "X " + coluna.textContent;
+					}
+					else {
+						if (colunasExcluir.length > 0) {
+							celulaCabecalho.rowSpan = colunasExcluir.length + 1;
+
+							for (var iColunaExcluir = 0; iColunaExcluir < colunasExcluir.length; iColunaExcluir++) {
+								var colunaExcluir = colunasExcluir[iColunaExcluir];
+
+								colunaExcluir.parentNode.removeChild(colunaExcluir, true);
+							}
+						}
+
+						colunasExcluir = [];
+
+						celulaCabecalho = coluna;
+						continue;
+					}
+				}
+			}
+		}
+
+		if (linhaLimitadora) {
+			var ultimaLinha = linhas[linhas.length - 1];
+
+			ultimaLinha.parentNode.removeChild(ultimaLinha, true);
+		}
+	}
+
+	function htmlVazio(elemento) {
+		return (elemento.innerHTML == "" || elemento.innerHTML == "&nbsp;");
+	}
+
+	function garantirLimitacaoTabela(tabela) {
+		var linhas = tabela.rows;
+		var ultimaLinha = linhas[linhas.length - 1];
+
+		if (htmlVazio(ultimaLinha.cells[0])) {
+			var novaLinha = tabela.insertRow(linhas.length)
+
+			try {
+				novaLinha.insertCell(0).innerText = "------";
+				novaLinha.insertCell(0).innerText = "------";
+			}
+			catch (e) {
+				try {
+					novaLinha.insertCell(0).textContent = "------";
+					novaLinha.insertCell(0).textContent = "------";
+				}
+				catch (e) {
+					throw e;
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+}
+
+//-->
+</SCRIPT>
+
+
+<script language="Javascript">
+function retroativo_Validator(theForm)
+{
+   if(!CkDate(theForm.txtData, theForm.txtData.value))
+  {
+
+        window.alert("A data deve estar no formato dd/mm/aaaa.");
+
+    theForm.txtData.focus();
+    theForm.txtData.select();
+    return false;
+  };
+
+}
+
+function VerificaData(data) //data: string		return: boolean
+{
+
+	var filter = /^((0?[1-9]|[12]\d)\/(0?[1-9]|1[0-2])|30\/(0?[13-9]|1[0-2])|31\/(0?[13578]|1[02]))\/(19|20)?\d{2}$/;
+	if(filter.test(data)) return true
+	else
+	{
+
+				window.alert("A data deve estar no formato dd/mm/aaaa.");
+
+		return false;
+	}
+}
+
+
+
+function CkDate(campo,dData)
+{
+	var b_Ok;
+	b_Ok = true;
+	var sData = dData;
+	if(sData == "" )
+	{
+		b_Ok = false;
+	}
+	if(((sData.length)<(8))||((sData.length)>(10)))
+	{
+		b_Ok = false;
+	}
+	if(b_Ok)
+	{
+		var index;
+		var aux;
+		var sDia;
+		var sMes;
+		var sAno;
+
+		sDia = sData.substr(0,sData.indexOf("/"));
+		sMes = sData.substr(sData.indexOf("/")+1,((sData.lastIndexOf("/"))-(sData.indexOf("/")))-1);
+
+		sAno = sData.substr(sData.lastIndexOf("/")+1,sData.length);
+		sData = sDia + "" + sMes + "" + sAno;
+		if(((sMes.length)!=(2))||((sDia.length)!=(2)))
+		{
+			b_Ok = false;
+		}
+		for(index=0;index<(sData.length);index++)
+		{
+			if(isNaN(sData.substr(index,1)))
+			{
+				b_Ok = false;
+			}
+		}
+		if(b_Ok)
+		{
+			if((sMes==0)||(sDia==0)||(sAno==0))
+			{
+				b_Ok = false;
+			}
+			if(((sDia.length)>(2))||((sDia.length)<(1)))
+			{
+				b_Ok = false;
+			}
+			if(((sMes.length)>(2))||((sMes.length)<(1)))
+			{
+				b_Ok = false;
+			}
+			if((sAno.length)!=(4))
+			{
+				b_Ok = false;
+			}
+			if(b_Ok)
+			{
+				if(((sAno)<(1990))||((sAno)>(2026)))
+				{
+					b_Ok = false;
+				}
+				else
+				{
+					if((sMes)>(12))
+					{
+						b_Ok = false;
+					}
+					else
+					{
+						if((sDia)>(31))
+						{
+							b_Ok = false;
+						}
+						else
+						{
+							aMes = new Array();
+							aMes[0] = 31;
+							if(((sAno)%(4))!=(0))
+							{
+								aMes[1] = 28;
+							}
+							else
+							{
+								aMes[1] = 29;
+							}
+							aMes[2] = 31;
+							aMes[3] = 30;
+							aMes[4] = 31;
+							aMes[5] = 30;
+							aMes[6] = 31;
+							aMes[7] = 31;
+							aMes[8] = 30;
+							aMes[9] = 31;
+							aMes[10] = 30;
+							aMes[11] = 31;
+							if((aMes[sMes-1])<(sDia))
+							{
+								b_Ok = false;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if(b_Ok)
+	{
+		return true;
+	}
+	else
+	{
+		campo.focus();
+		return false;
+	}
+}
+
+function mask_data_home(ini,fim,decimal,theForm) {
+  var keypressed = window.event.keyCode;
+  var ElementText  = window.event.srcElement.value ;
+  if (keypressed == 45){
+    if (ElementText.length!=0) {
+      window.event.keyCode = 0;
+      return;
+    }
+  }
+  if (keypressed == 46){
+    if (ElementText.length!=0) {
+      window.event.keyCode = 0;
+      return;
+    }
+  }
+
+  else
+  {
+    if (decimal)
+	{
+    	var Reg = /\./g;
+      	if (Reg.test(ElementText))
+		{
+			if( (keypressed >= 48 && keypressed <= 57) == false)
+			{
+			  window.event.keyCode = 0;
+			  return;
+			}
+		}
+		else
+		{
+			if ((keypressed >= 48 && keypressed <= 57 || keypressed == 46) == false) {
+        	window.event.keyCode = 0;
+          	return;
+        }
+      }
+    }
+    else
+	{
+    	if ((keypressed >= 48 && keypressed <= 57) == false)
+		{
+			window.event.keyCode = 0;
+    	    return;
+	    }
+    }
+  }
+ //Para os gráficos que possuem apenas uma data
+ //javascript:mask_data('2','0',true,theForm)
+  if (ini == 2)
+  {
+	if (ElementText.length == 2 || ElementText.length == 5)
+	{
+		theForm.txtData.value += '/';
+	}
+  }
+}
+
+/************************************************************************************************************/
+/* Nome			: Valida_Intervalo_Datas																	*/
+/************************************************************************************************************/
+/* Finalidade	: Trazer o retorno de acordo com o resultado da comparação feita entre os intervalos	    */
+/*				  de datas																					*/
+/* Parâmetros	:
+/************************************************************************************************************/
+/* Autor		: Alessandro C. Alba																		*/
+/* Data			: 08/06/2006																				*/
+/************************************************************************************************************/
+function Valida_Intervalo_Datas(dData1, dData2)
+{
+	retorno = ComparaDatas(dData1, dData2);
+
+	if( retorno == 2 )
+	{
+	    return (false);
+	}
+	else
+	{
+	    return (true);
+	};
+};
+
+
+/************************************************************************************************************/
+/* Nome			: ComparaDatas																				*/
+/************************************************************************************************************/
+/* Finalidade	: Comparar e validar um intervalo de tadas													*/
+/* Parâmetros	: dData1 -> Data Inicial do Intervalo														*/
+/*				  dData2 -> Data Final do Intervalo															*/
+/************************************************************************************************************/
+/* Autor		: Alessandro C. Alba																		*/
+/* Data			: 08/06/2006																				*/
+/************************************************************************************************************/
+function ComparaDatas(dData1, dData2)
+{
+	var iData1 = 0;
+	var iData2 = 0;
+	var iDia1 = new String();
+	var iMes1 = new String();
+	var iAno1 = new String();
+	var iDia2 = new String();
+	var iMes2 = new String();
+	var iAno2 = new String();
+
+	if( dData1 == "" && dData2 != "")
+	{
+		return 2
+	}
+
+	if( dData1 != "" && dData2 == "")
+	{
+		return 2
+	}
+
+	iDia1 = dData1.substring(0,2);
+	iMes1 = dData1.substring(3,5);
+	iAno1 = dData1.substring(6,10);
+
+	iDia2 = dData2.substring(0,2);
+	iMes2 = dData2.substring(3,5);
+	iAno2 = dData2.substring(6,10);
+
+	iData1 = parseInt(iAno1 + iMes1 + iDia1);
+	iData2 = parseInt(iAno2 + iMes2 + iDia2);
+
+	if (iData1 == iData2)
+	{
+		//Data1 é igual a Data2
+		return 0
+	}
+	else if (iData1 < iData2)
+	{
+		//Data1 é menor que Data2
+		return 1
+	}
+	else if (iData1 > iData2)
+	{
+		//Data1 é maior que Data2
+		return 2
+	}
+};
+
+function HintText(control,text,eraseable)
+{
+	if(control.value == text) control.value = "";
+	else if(control.value == "") control.value = text;
+}
+
+function mask_data(ini,fim,decimal,TForm,TField) {
+
+  var keypressed = window.event.keyCode;
+  var ElementText  = window.event.srcElement.value ;
+  if (keypressed == 45){
+    if (ElementText.length!=0) {
+      window.event.keyCode = 0;
+      return;
+    }
+  }
+  if (keypressed == 46){
+    if (ElementText.length!=0) {
+      window.event.keyCode = 0;
+      return;
+    }
+  }
+
+  else {
+    if (decimal) {
+      var Reg = /\./g;
+      if (Reg.test(ElementText)) {
+        if( (keypressed >= 48 && keypressed <= 57) == false) {
+          window.event.keyCode = 0;
+          return;
+        }
+      }
+      else {
+        if ((keypressed >= 48 && keypressed <= 57 || keypressed == 46) == false) {
+          window.event.keyCode = 0;
+          return;
+        }
+      }
+    }
+
+    else {
+      if ((keypressed >= 48 && keypressed <= 57) == false) {
+        window.event.keyCode = 0;
+        return;
+      }
+    }
+  }
+
+  //Para os gráficos que possuem data inicial e data final
+  if (ini == 1 || fim == 1)
+  {
+	//javascript:mask_data('1','0',true)
+	if (ini == 1)
+	{
+		if (ElementText.length == 2 || ElementText.length == 5)
+		{
+			document.getElementById(TField).value += '/';
+		}
+	}
+	//javascript:mask_data('0','1',true)
+	if (fim == 1)
+	{
+		if (ElementText.length == 2 || ElementText.length == 5)
+		{
+			document.getElementById(TField).value += '/';
+		}
+	}
+  }
+ //Para os gráficos que possuem apenas uma data
+ //javascript:mask_data('2','0',true)
+  if (ini == 2)
+  {
+	if (ElementText.length == 2 || ElementText.length == 5) { document.getElementById(TField).value += '/' }
+  }
+
+};
+
+</script>
+
+<!-- InstanceEndEditable -->
+<script language="JavaScript" src="http://www.bmf.com.br/bmfbovespa/library/windows.js"></script>
+<script language="JavaScript" src="http://www.bmf.com.br/bmfbovespa/library/navegation.js"></script>
+<script language="JavaScript" src="http://www.bmf.com.br/bmfbovespa/library/menuCtrls.js"></script>
+<script language="JavaScript" src="http://www.bmf.com.br/bmfbovespa/library/dreamweavermx.js"></script>
+<link href="http://www.bmf.com.br/bmfbovespa/styles/meuCSS_default.css" rel="stylesheet" type="text/css">
+<link href="http://www.bmf.com.br/bmfbovespa/styles/bmfbovespa.css" rel="stylesheet" type="text/css">
+<!-- InstanceBeginEditable name="head" --> <!-- InstanceEndEditable --> <!-- InstanceParam name="DESCRIPTION" type="boolean" value="false" -->
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+
+<!-- InstanceBeginEditable name="TEXTO" -->
+<h1>Ajustes do Preg&atilde;o</h1>
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+<tr>
+<td width="150">
+<table border="0" cellpadding="0" cellspacing="0">
+<form name="frmBD" onSubmit="return incluiQueryString(this)" action="Ajustes1.asp" method="POST">
+<input name="caminho" value="Boletim||Cotações e Volumes||Ajustes do Pregão" type="hidden">
+<tr>
+<td class="TXT_Azul" nowrap>Retroativo:&nbsp;</td>
+<td><input name="txtData" MAXLENGTH=10 onKeyPress="javascript:mask_data_home('2','0',true,frmBD);" type="text" class="combo" id="txtData3" size="16"></td>
+<td nowrap>&nbsp;<input name="Consultar" type="image" src="http://www.bmf.com.br/bmfbovespa/images/comum/btoOk.gif" align="middle" border="0"></td>
+</tr>
+</form>
+</table></td>
+<td><img src="http://www.bmf.com.br/bmfbovespa/images/comum/btoLegenda.gif" onMouseOver="javascript:legenda.style.display='block';" onMouseOut="javascript:legenda.style.display='none';" style="margin: 5px 0px 0px 5px;">
+
+<div id="legenda" style="position:absolute; width:200px; height:115px; z-index:10; background-color: #FFFFFF; layer-background-color: #FFFFFF; border: 1px solid #C9C9C9; overflow: visible; display: none;">
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr>
+<td colspan="2" class="caixaTITAmarelo">Legenda</td>
+</tr>
+<tr>
+<td  align="center"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabConteudo">
+<tr align="center">
+<td class="tabelaTitulo" >C&oacute;d.</td>
+<td class="tabelaTitulo" >M&ecirc;s</td>
+</tr>
+<tr align="center">
+<td  width="50%" class="tabelaitem">F</td>
+<td  width="50%" class="tabelaconteudo2">Janeiro</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">G</td>
+<td class="tabelaconteudo2">Fevereiro</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">H</td>
+<td class="tabelaconteudo2">Mar&ccedil;o</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">J</td>
+<td class="tabelaconteudo2">Abril</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">K</td>
+<td class="tabelaconteudo2">Maio</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">M</td>
+<td class="tabelaconteudo2">Junho</td>
+</tr>
+</table>
+</td>
+<td  align="right">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabConteudo">
+<tr align="center">
+<td nowrap class="tabelaTitulo" >C&oacute;d.</td>
+<td nowrap class="tabelaTitulo" >M&ecirc;s</td>
+</tr>
+<tr align="center">
+<td  width="50%" class="tabelaitem">N</td>
+<td  width="50%" class="tabelaconteudo2">Julho</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">Q</td>
+<td class="tabelaconteudo2">Agosto</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">U</td>
+<td class="tabelaconteudo2">Setembro</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">V</td>
+<td class="tabelaconteudo2">Outubro</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">X</td>
+<td class="tabelaconteudo2">Novembro</td>
+</tr>
+<tr align="center">
+<td class="tabelaitem">Z</td>
+<td class="tabelaconteudo2">Dezembro</td>
+</tr>
+</table></td>
+</tr>
+</table>
+</div></td>
+</tr>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td align="right" valign="bottom" class="TXT_Azul">  </td>
+</tr>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" class="tabConteudo" id="tblDadosAjustes">
+<tr align="center">
+<td width="20%" class="tabelaTitulo">Mercadoria</td>
+<td width="10%" class="tabelaTitulo">Vct</td>
+<td width="20%" class="tabelaTitulo">Preço de Ajuste Anterior</td>
+<td width="20%" class="tabelaTitulo">Preço de Ajuste Atual</td>
+<td width="10%" class="tabelaTitulo">Variação</td>
+<td width="20%" class="tabelaTitulo">Valor do Ajuste por Contrato (R$)</td>
+</tr>
+
+<tr align="center" class="tabelaConteudo1" >
+<td colspan="6"> Não há dados para a data consultada.
+</td>
+</tr>
+
+</table>
+<div class="obs">
+  (*) O PRE&Ccedil;O ANTERIOR
+    J&Aacute; EST&Aacute; CORRIGIDO PELA TAXA CETIP PARA DI1;<br>
+    PELA DIFEREN&Ccedil;A ENTRE TAXA CETIP E VARIA&Ccedil;&Atilde;O
+    DO D&Oacute;LAR PARA DDI;<br>
+    PELA DIFEREN&Ccedil;A ENTRE TAXA CETIP E VARIA&Ccedil;&Atilde;O
+    DO IGP-M; PARA DDM;<br>
+    PELA DIFEREN&Ccedil;A ENTRE TAXA CETIP E VARIA&Ccedil;&Atilde;O
+    DO IPCA PARA DAP.
+  <br>
+<br>
+OBS.: AS TAXAS DE C&Acirc;MBIO UTILIZADAS SEGUEM AS ESPECIFICA&Ccedil;&Otilde;ES
+    CONTRATUAIS
+</div>
+<!-- InstanceEndEditable -->
+
+
+</body>
+<!-- InstanceEnd --></html>

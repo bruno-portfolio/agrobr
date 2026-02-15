@@ -28,6 +28,7 @@
 | **IBGE PPM** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
 | **IBGE Abate** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
 | **IBGE Censo Agro** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
+| **B3 Futuros Agro** | Sem termos públicos para acesso programático | Verificar com B3 | `zona_cinza` | [B3](https://www.b3.com.br) |
 
 ### Legenda de Classificação
 
@@ -85,6 +86,17 @@
 - **Decisão no agrobr:** Mantido temporariamente como fallback técnico do CEPEA
   (contorna Cloudflare). Pendente deprecação em favor de acesso direto ao CEPEA
   ou outras fontes primárias (DERAL, etc.).
+
+### B3 (Brasil, Bolsa, Balcão)
+
+- **Classificação:** `zona_cinza`
+- **Situação:** Empresa privada que publica ajustes diários de futuros sem
+  autenticação ou paywall. Dados são referência oficial para cálculo de margem
+  (exigência CVM). Sem termos de uso específicos para acesso programático.
+- **Dados utilizados:** Ajustes diários (settlement prices) de futuros
+  agrícolas (BGI, CCM, ICF, CNL, ETH, SJC, SOY) via página pública.
+- **Recomendação:** Uso educacional/pesquisa. Redistribuição em produto
+  comercial deve ser verificada com B3 (marketdata@b3.com.br).
 
 ### Fontes Governamentais Brasileiras
 
