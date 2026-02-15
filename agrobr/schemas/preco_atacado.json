@@ -1,0 +1,129 @@
+{
+  "name": "conab.preco_atacado",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "produto",
+    "ceasa"
+  ],
+  "required_columns": [
+    "data",
+    "produto",
+    "categoria",
+    "unidade",
+    "ceasa",
+    "ceasa_uf",
+    "preco"
+  ],
+  "dtypes": {
+    "data": "date",
+    "produto": "str",
+    "categoria": "str",
+    "unidade": "str",
+    "ceasa": "str",
+    "ceasa_uf": "str",
+    "preco": "float"
+  },
+  "nullable": {
+    "data": false,
+    "produto": false,
+    "categoria": false,
+    "unidade": false,
+    "ceasa": false,
+    "ceasa_uf": false,
+    "preco": false
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "categoria",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ceasa",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ceasa_uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "preco",
+      "type": "float",
+      "nullable": false,
+      "unit": "BRL",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "preco_min": 0
+  },
+  "guarantees": [
+    "PK unica por combinacao data + produto + ceasa",
+    "'produto' sempre em maiusculas (ex: TOMATE, ABACAXI)",
+    "'categoria' sempre FRUTAS ou HORTALICAS",
+    "'unidade' sempre KG, UN ou DZ",
+    "'ceasa_uf' sempre codigo UF de 2 letras",
+    "'preco' sempre > 0 (nulls filtrados)"
+  ]
+}

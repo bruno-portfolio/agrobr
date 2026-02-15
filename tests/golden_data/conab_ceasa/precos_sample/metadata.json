@@ -1,0 +1,9 @@
+{
+  "source": "conab_ceasa",
+  "produto": "hortifruti_atacado",
+  "periodo": "2026-02-13",
+  "captured_at": "2026-02-15T14:00:00Z",
+  "parser_version": 1,
+  "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery",
+  "notes": "Precos diarios atacado CEASA/PROHORT via Pentaho CDA REST API"
+}

@@ -707,8 +707,71 @@ AJUSTE_DIARIO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+PRECO_ATACADO_V1 = Contract(
+    name="conab.preco_atacado",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["data", "produto", "ceasa"],
+    columns=[
+        Column(
+            name="data",
+            type=ColumnType.DATE,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="produto",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="categoria",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="unidade",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="ceasa",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="ceasa_uf",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="preco",
+            type=ColumnType.FLOAT,
+            nullable=False,
+            unit="BRL",
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "PK unica por combinacao data + produto + ceasa",
+        "'produto' sempre em maiusculas (ex: TOMATE, ABACAXI)",
+        "'categoria' sempre FRUTAS ou HORTALICAS",
+        "'unidade' sempre KG, UN ou DZ",
+        "'ceasa_uf' sempre codigo UF de 2 letras",
+        "'preco' sempre > 0 (nulls filtrados)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V1)
+register_contract("preco_atacado", PRECO_ATACADO_V1)
 register_contract("credito_rural", CREDITO_RURAL_V1)
 register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
 register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
@@ -721,6 +784,7 @@ register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
 __all__ = [
     "AJUSTE_DIARIO_V1",
     "CONAB_PROGRESSO_V1",
+    "PRECO_ATACADO_V1",
     "CREDITO_RURAL_V1",
     "DESMATAMENTO_DETER_V1",
     "DESMATAMENTO_PRODES_V1",

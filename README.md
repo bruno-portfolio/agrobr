@@ -13,9 +13,9 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **18 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso e B3 Futuros Agro.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **19 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro e CONAB CEASA/PROHORT.
 
-**v0.10.0-dev** — 2400+ testes, ~78% cobertura, 18/18 fontes com golden tests, retry centralizado em 18/18 clients.
+**v0.10.0-dev** — 2600+ testes, ~78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -310,6 +310,24 @@ async def main():
     semanas = await conab.semanas_disponiveis()
 ```
 
+### CONAB CEASA/PROHORT — Precos Atacado Hortifruti (v0.10.0)
+
+```python
+from agrobr import conab
+
+async def main():
+    # Precos diarios de 48 produtos em 43 CEASAs
+    df = await conab.ceasa_precos()
+
+    # Filtrar por produto e/ou CEASA
+    df = await conab.ceasa_precos(produto="tomate", ceasa="SAO PAULO")
+
+    # Dimensoes
+    produtos = conab.ceasa_produtos()      # 48 produtos
+    ceasas = conab.lista_ceasas()          # 43 CEASAs com UF
+    cats = conab.ceasa_categorias()        # FRUTAS/HORTALICAS
+```
+
 ### Modo Síncrono
 
 ```python
@@ -411,6 +429,7 @@ Use `agrobr health --all` para verificar localmente.
 | MapBiomas | Cobertura e uso da terra (1985-presente) | ✅ | Funcional |
 | CONAB Progresso | Progresso semanal de plantio/colheita por cultura e UF | ✅ | Funcional |
 | B3 Futuros Agro | Ajustes diarios de futuros agricolas (7 contratos) | ✅ | Funcional |
+| CONAB CEASA/PROHORT | Precos atacado hortifruti (48 produtos, 43 CEASAs) | ✅ | Funcional |
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 

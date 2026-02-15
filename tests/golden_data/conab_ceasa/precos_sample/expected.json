@@ -1,0 +1,35 @@
+{
+  "columns": [
+    "data",
+    "produto",
+    "categoria",
+    "unidade",
+    "ceasa",
+    "ceasa_uf",
+    "preco"
+  ],
+  "total_produtos": 48,
+  "total_ceasas": 43,
+  "non_null_prices_min": 1900,
+  "sample_tomate_ceagesp_sp": {
+    "produto": "TOMATE",
+    "ceasa": "CEAGESP - SAO PAULO",
+    "ceasa_uf": "SP",
+    "unidade": "KG",
+    "categoria": "HORTALICAS",
+    "preco": 2.24
+  },
+  "sample_abacaxi_fortaleza": {
+    "produto": "ABACAXI",
+    "ceasa": "CEASA/CE - FORTALEZA",
+    "ceasa_uf": "CE",
+    "unidade": "UN",
+    "categoria": "FRUTAS",
+    "preco": 6.0
+  },
+  "frutas_count": 20,
+  "hortalicas_count": 26,
+  "unidades": ["KG", "UN", "DZ"],
+  "produtos_un": ["ABACAXI", "COCO VERDE", "COUVE-FLOR"],
+  "produtos_dz": ["ALFACE", "OVOS"]
+}

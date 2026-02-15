@@ -9,9 +9,9 @@
 
 ## O que é o agrobr?
 
-Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 17 fontes públicas.
+Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 19 fontes públicas.
 
-**v0.10.0-dev** — 2360 testes | ~78% cobertura | 17/17 golden tests | retry centralizado 17/17 clients
+**v0.10.0-dev** — 2600+ testes | ~78% cobertura | 19/19 golden tests | retry centralizado 19/19 clients
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica
@@ -30,6 +30,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 - **Desmatamento PRODES/DETER**: Desmatamento consolidado + alertas em tempo real
 - **MapBiomas**: Cobertura e uso da terra por município (1985-presente)
 - **CONAB Progresso**: Progresso semanal de plantio/colheita por cultura e UF
+- **CONAB CEASA/PROHORT**: Precos diarios de atacado hortifruti em 43 CEASAs (48 produtos)
 
 ## Datasets — Camada Semântica
 

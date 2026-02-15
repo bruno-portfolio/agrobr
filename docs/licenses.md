@@ -29,6 +29,7 @@
 | **IBGE Abate** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
 | **IBGE Censo Agro** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
 | **B3 Futuros Agro** | Sem termos públicos para acesso programático | Verificar com B3 | `zona_cinza` | [B3](https://www.b3.com.br) |
+| **CONAB CEASA/PROHORT** | Credenciais públicas embutidas no frontend, API não documentada oficialmente | Verificar com CONAB | `zona_cinza` | [Portal CONAB](https://portaldeinformacoes.conab.gov.br) |
 
 ### Legenda de Classificação
 
@@ -97,6 +98,19 @@
   agrícolas (BGI, CCM, ICF, CNL, ETH, SJC, SOY) via página pública.
 - **Recomendação:** Uso educacional/pesquisa. Redistribuição em produto
   comercial deve ser verificada com B3 (marketdata@b3.com.br).
+
+### CONAB CEASA/PROHORT
+
+- **Classificação:** `zona_cinza`
+- **Situação:** CONAB é empresa pública federal. O sistema PROHORT (preços de
+  atacado hortifruti em CEASAs) utiliza Pentaho BA Server com credenciais
+  embutidas no frontend público (`userid=pentaho`, `password=password`).
+  A API não é documentada oficialmente, mas alimenta dashboards e app mobile
+  públicos da CONAB.
+- **Dados utilizados:** Preços diários de 48 produtos (frutas, hortaliças, ovos)
+  em 43 CEASAs do Brasil via Pentaho CDA REST API.
+- **Recomendação:** Dados de interesse público (preços de alimentos). Uso
+  educacional/pesquisa. Consultar CONAB para redistribuição comercial.
 
 ### Fontes Governamentais Brasileiras
 

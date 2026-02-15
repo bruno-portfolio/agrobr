@@ -8,6 +8,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **CONAB CEASA/PROHORT (Precos de Atacado Hortifruti)** — Nova fonte: precos diarios de atacado
+  de 48 produtos (20 frutas, 28 hortalicas) em 43 CEASAs do Brasil. Modulo `agrobr/conab/ceasa/`
+  com client (Pentaho CDA REST API, JSON), parser (pivot 48x43 -> long-form, datas por header,
+  mapeamento posicional CEASAs), models (48 produtos, 43 CEASAs, UF map, categorias).
+  API publica `conab.ceasa_precos()` com filtros por produto/ceasa, `conab.ceasa_produtos()`,
+  `conab.lista_ceasas()`, `conab.ceasa_categorias()`. Contrato `PRECO_ATACADO_V1` com
+  PK `[data, produto, ceasa]`. Schema JSON, golden data (Pentaho real), 70 testes. Warning
+  zona_cinza na primeira chamada. Docs: `sources/conab.md`, licenses atualizado
 - **B3 Futuros Agro** — Nova fonte: ajustes diarios de futuros agricolas (boi gordo, milho,
   cafe arabica, cafe conillon, etanol, soja cross, soja FOB). Modulo `agrobr/b3/` com client
   (HTML parse de `www2.bmf.com.br`, encoding iso-8859-1), parser (tabela `tblDadosAjustes`,

@@ -1,0 +1,191 @@
+{
+  "metadata": [
+    {
+      "colName": "Name",
+      "colType": "String",
+      "colIndex": 0
+    },
+    {
+      "colName": "Ceasa.Ceasa",
+      "colType": "String",
+      "colIndex": 1
+    }
+  ],
+  "resultset": [
+    [
+      "[Ceasa].[AMA/BA - JUAZEIRO]",
+      "AMA/BA - JUAZEIRO"
+    ],
+    [
+      "[Ceasa].[CEAGESP - ARACATUBA]",
+      "CEAGESP - ARACATUBA"
+    ],
+    [
+      "[Ceasa].[CEAGESP - ARARAQUARA]",
+      "CEAGESP - ARARAQUARA"
+    ],
+    [
+      "[Ceasa].[CEAGESP - BAURU]",
+      "CEAGESP - BAURU"
+    ],
+    [
+      "[Ceasa].[CEAGESP - FRANCA]",
+      "CEAGESP - FRANCA"
+    ],
+    [
+      "[Ceasa].[CEAGESP - MARILIA]",
+      "CEAGESP - MARILIA"
+    ],
+    [
+      "[Ceasa].[CEAGESP - PIRACICABA]",
+      "CEAGESP - PIRACICABA"
+    ],
+    [
+      "[Ceasa].[CEAGESP - PRES. PRUDENTE]",
+      "CEAGESP - PRES. PRUDENTE"
+    ],
+    [
+      "[Ceasa].[CEAGESP - RIBEIRAO PRETO]",
+      "CEAGESP - RIBEIRAO PRETO"
+    ],
+    [
+      "[Ceasa].[CEAGESP - S J DOS CAMPOS]",
+      "CEAGESP - S J DOS CAMPOS"
+    ],
+    [
+      "[Ceasa].[CEAGESP - SAO JOSE RIO PRETO]",
+      "CEAGESP - SAO JOSE RIO PRETO"
+    ],
+    [
+      "[Ceasa].[CEAGESP - SAO PAULO]",
+      "CEAGESP - SAO PAULO"
+    ],
+    [
+      "[Ceasa].[CEAGESP - SOROCABA]",
+      "CEAGESP - SOROCABA"
+    ],
+    [
+      "[Ceasa].[CEASA/AL - MACEIO]",
+      "CEASA/AL - MACEIO"
+    ],
+    [
+      "[Ceasa].[CEASA/BA - PAULO AFONSO]",
+      "CEASA/BA - PAULO AFONSO"
+    ],
+    [
+      "[Ceasa].[CEASA/BA - SALVADOR]",
+      "CEASA/BA - SALVADOR"
+    ],
+    [
+      "[Ceasa].[CEASA/CE - FORTALEZA]",
+      "CEASA/CE - FORTALEZA"
+    ],
+    [
+      "[Ceasa].[CEASA/CE - TIANGUA]",
+      "CEASA/CE - TIANGUA"
+    ],
+    [
+      "[Ceasa].[CEASA/DF - BRASILIA]",
+      "CEASA/DF - BRASILIA"
+    ],
+    [
+      "[Ceasa].[CEASA/ES - VITORIA]",
+      "CEASA/ES - VITORIA"
+    ],
+    [
+      "[Ceasa].[CEASA/GO - GOIANIA]",
+      "CEASA/GO - GOIANIA"
+    ],
+    [
+      "[Ceasa].[CEASA/MA - SAO LUIZ]",
+      "CEASA/MA - SAO LUIZ"
+    ],
+    [
+      "[Ceasa].[CEASA/MS - CAMPO GRANDE]",
+      "CEASA/MS - CAMPO GRANDE"
+    ],
+    [
+      "[Ceasa].[CEASA/MT - CUIABA]",
+      "CEASA/MT - CUIABA"
+    ],
+    [
+      "[Ceasa].[CEASA/PA - BELEM]",
+      "CEASA/PA - BELEM"
+    ],
+    [
+      "[Ceasa].[CEASA/PB - JOAO PESSOA]",
+      "CEASA/PB - JOAO PESSOA"
+    ],
+    [
+      "[Ceasa].[CEASA/PB - PATOS]",
+      "CEASA/PB - PATOS"
+    ],
+    [
+      "[Ceasa].[CEASA/PE - CARUARU]",
+      "CEASA/PE - CARUARU"
+    ],
+    [
+      "[Ceasa].[CEASA/PE - RECIFE]",
+      "CEASA/PE - RECIFE"
+    ],
+    [
+      "[Ceasa].[CEASA/PR - CASCAVEL]",
+      "CEASA/PR - CASCAVEL"
+    ],
+    [
+      "[Ceasa].[CEASA/PR - CURITIBA]",
+      "CEASA/PR - CURITIBA"
+    ],
+    [
+      "[Ceasa].[CEASA/PR - FOZ DO IGUACU]",
+      "CEASA/PR - FOZ DO IGUACU"
+    ],
+    [
+      "[Ceasa].[CEASA/PR - MARINGA]",
+      "CEASA/PR - MARINGA"
+    ],
+    [
+      "[Ceasa].[CEASA/RJ - RIO DE JANEIRO]",
+      "CEASA/RJ - RIO DE JANEIRO"
+    ],
+    [
+      "[Ceasa].[CEASA/RN - NATAL]",
+      "CEASA/RN - NATAL"
+    ],
+    [
+      "[Ceasa].[CEASA/RS - CAXIAS DO SUL]",
+      "CEASA/RS - CAXIAS DO SUL"
+    ],
+    [
+      "[Ceasa].[CEASA/RS - PORTO ALEGRE]",
+      "CEASA/RS - PORTO ALEGRE"
+    ],
+    [
+      "[Ceasa].[CEASA/SC - FLORIANOPOLIS]",
+      "CEASA/SC - FLORIANOPOLIS"
+    ],
+    [
+      "[Ceasa].[CEASA/SP - CAMPINAS]",
+      "CEASA/SP - CAMPINAS"
+    ],
+    [
+      "[Ceasa].[CEASA/TO - PALMAS]",
+      "CEASA/TO - PALMAS"
+    ],
+    [
+      "[Ceasa].[CEASAMINAS - BARBACENA]",
+      "CEASAMINAS - BARBACENA"
+    ],
+    [
+      "[Ceasa].[CEASAMINAS - BELO HORIZONTE]",
+      "CEASAMINAS - BELO HORIZONTE"
+    ],
+    [
+      "[Ceasa].[CEASAMINAS - UBERABA]",
+      "CEASAMINAS - UBERABA"
+    ]
+  ],
+  "queryInfo": {
+    "totalRows": "43"
+  }
+}

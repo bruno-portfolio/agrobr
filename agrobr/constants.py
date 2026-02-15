@@ -54,6 +54,7 @@ URLS = {
         "base": "https://www.gov.br/conab",
         "safras": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras",
         "boletim_graos": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos",
+        "ceasa_prohort": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery",
     },
     Fonte.DERAL: {
         "base": "https://www.agricultura.pr.gov.br/deral",
@@ -237,6 +238,7 @@ class CacheSettings(BaseSettings):
     ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
     ttl_b3: int = 4 * 3600
+    ttl_conab_ceasa: int = 4 * 3600
 
     stale_multiplier: float = 12.0
 
@@ -279,6 +281,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_queimadas: float = 1.0
     rate_limit_usda: float = 1.0
     rate_limit_b3: float = 1.0
+    rate_limit_conab_ceasa: float = 2.0
     rate_limit_default: float = 1.0
 
     class Config:
