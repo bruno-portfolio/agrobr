@@ -29,6 +29,9 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | [exportacao](./exportacao.md) | Exportações agrícolas | ComexStat → ABIOVE |
 | [fertilizante](./fertilizante.md) | Entregas de fertilizantes | ANDA |
 | [custo_producao](./custo_producao.md) | Custos de produção | CONAB |
+| [pecuaria_municipal](./pecuaria_municipal.md) | Rebanhos e produção animal | IBGE PPM |
+| [abate_trimestral](./abate_trimestral.md) | Abate de bovinos, suínos e frangos | IBGE Abate |
+| [censo_agropecuario](./censo_agropecuario.md) | Censo Agropecuário 2017 | IBGE Censo Agro |
 
 ## Schemas JSON
 
@@ -60,8 +63,9 @@ from agrobr import datasets
 
 # Listar datasets
 datasets.list_datasets()
-# ['balanco', 'credito_rural', 'custo_producao', 'estimativa_safra',
-#  'exportacao', 'fertilizante', 'preco_diario', 'producao_anual']
+# ['abate_trimestral', 'balanco', 'censo_agropecuario', 'credito_rural',
+#  'custo_producao', 'estimativa_safra', 'exportacao', 'fertilizante',
+#  'pecuaria_municipal', 'preco_diario', 'producao_anual']
 
 # Listar produtos de um dataset
 datasets.list_products("preco_diario")
