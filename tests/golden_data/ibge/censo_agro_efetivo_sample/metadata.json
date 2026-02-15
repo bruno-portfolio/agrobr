@@ -1,0 +1,9 @@
+{
+  "source": "ibge_censo_agro",
+  "table": "6907",
+  "tema": "efetivo_rebanho",
+  "ano": "2017",
+  "nivel": "uf",
+  "description": "Censo Agropecuario 2017 - Efetivo da pecuaria por especie e UF",
+  "fetched_at": "2026-02-14"
+}

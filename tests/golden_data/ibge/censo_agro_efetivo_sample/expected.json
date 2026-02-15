@@ -1,0 +1,10 @@
+{
+  "row_count": 10,
+  "columns": ["ano", "localidade", "localidade_cod", "tema", "categoria", "variavel", "valor", "unidade", "fonte"],
+  "tema": "efetivo_rebanho",
+  "fonte": "ibge_censo_agro",
+  "sample_values": {
+    "São Paulo": {"Bovinos": {"cabecas": 10391878, "estabelecimentos": 131234}},
+    "Mato Grosso": {"Bovinos": {"cabecas": 30199340, "estabelecimentos": 87560}}
+  }
+}

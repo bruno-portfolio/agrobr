@@ -47,6 +47,15 @@
 - **Especies**: bovino, suino, frango
 - **Variaveis**: animais abatidos (cabecas), peso das carcacas (kg)
 
+### Censo Agropecuario 2017
+
+- **Tabelas SIDRA**: 6907 (efetivo rebanho), 6881 (uso terra), 6957 (lavoura temporaria), 6956 (lavoura permanente)
+- **Cobertura**: Brasil + UF + municipio
+- **Frequencia**: Decenial
+- **Periodo**: 2017 (referencia out/2016 a set/2017)
+- **Temas**: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente
+- **Formato**: Long format (variavel/valor por linha)
+
 ## Variaveis
 
 | Codigo | Nome | Unidade |
@@ -281,6 +290,61 @@ especies = await ibge.especies_abate()
 # ['bovino', 'suino', 'frango']
 ```
 
+## Uso - Censo Agropecuario
+
+### Basico
+
+```python
+import asyncio
+from agrobr import ibge
+
+async def main():
+    # Efetivo de rebanho por UF
+    df = await ibge.censo_agro('efetivo_rebanho')
+
+    # Uso da terra em Mato Grosso
+    df = await ibge.censo_agro('uso_terra', uf='MT')
+
+    # Lavoura temporaria por municipio
+    df = await ibge.censo_agro('lavoura_temporaria', nivel='municipio', uf='PR')
+
+    # Lavoura permanente — Brasil
+    df = await ibge.censo_agro('lavoura_permanente')
+
+    # Com metadados
+    df, meta = await ibge.censo_agro('efetivo_rebanho', return_meta=True)
+
+asyncio.run(main())
+```
+
+## Schema - Censo Agropecuario
+
+| Coluna | Tipo | Descricao |
+|--------|------|-----------|
+| `ano` | int | Ano de referencia (2017) |
+| `localidade` | str | Nome da localidade |
+| `localidade_cod` | int | Codigo IBGE da localidade |
+| `tema` | str | Tema do censo |
+| `categoria` | str | Categoria dentro do tema |
+| `variavel` | str | Nome da variavel |
+| `valor` | float | Valor da variavel |
+| `unidade` | str | Unidade de medida |
+| `fonte` | str | "ibge_censo_agro" |
+
+## Temas Censo Agropecuario
+
+| Codigo | Tema | Tabela SIDRA |
+|--------|------|--------------|
+| `efetivo_rebanho` | Efetivo de rebanho | 6907 |
+| `uso_terra` | Uso da terra | 6881 |
+| `lavoura_temporaria` | Lavoura temporaria | 6957 |
+| `lavoura_permanente` | Lavoura permanente | 6956 |
+
+```python
+temas = await ibge.temas_censo_agro()
+# ['efetivo_rebanho', 'uso_terra', 'lavoura_temporaria', 'lavoura_permanente']
+```
+
 ## Cache
 
 | Pesquisa | TTL | Stale maximo |
@@ -289,6 +353,7 @@ especies = await ibge.especies_abate()
 | LSPA | 24 horas | 30 dias |
 | PPM | 7 dias | 90 dias |
 | Abate | 7 dias | 90 dias |
+| Censo Agro | 30 dias | 365 dias |
 
 ## Atualizacao
 
@@ -298,3 +363,4 @@ especies = await ibge.especies_abate()
 | LSPA | Mensal |
 | PPM | Anual (setembro) |
 | Abate | Trimestral (T+2 meses) |
+| Censo Agro | Decenial (ultimo: 2017) |

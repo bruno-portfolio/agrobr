@@ -83,6 +83,12 @@ POLICIES: dict[str, CachePolicy] = {
         description="IBGE Abate Trimestral (atualiza trimestralmente)",
         smart_expiry=False,
     ),
+    "ibge_censo_agro": CachePolicy(
+        ttl_seconds=TTL.DAYS_30.value,
+        stale_max_seconds=TTL.DAYS_90.value,
+        description="IBGE Censo Agropecuário (atualiza a cada 10 anos)",
+        smart_expiry=False,
+    ),
     "noticias_agricolas": CachePolicy(
         ttl_seconds=TTL.HOURS_24.value,
         stale_max_seconds=TTL.HOURS_24.value * 2,

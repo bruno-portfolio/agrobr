@@ -744,5 +744,276 @@ async def especies_ppm() -> list[str]:
     return sorted(list(client.REBANHOS_PPM.keys()) + list(client.PRODUTOS_ORIGEM_ANIMAL.keys()))
 
 
+_CLASSIFICACOES_CENSO_AGRO: dict[str, dict[str, str]] = {
+    "efetivo_rebanho": {
+        "829": "46302",
+        "12443": "all",
+        "218": "46502",
+    },
+    "uso_terra": {
+        "829": "46302",
+        "222": "all",
+        "218": "46502",
+        "12517": "113601",
+        "12567": "41151",
+    },
+    "lavoura_temporaria": {
+        "829": "46302",
+        "226": "all",
+        "218": "46502",
+        "12517": "113601",
+    },
+    "lavoura_permanente": {
+        "829": "46302",
+        "227": "all",
+        "220": "110085",
+    },
+}
+
+_CENSO_VAR_NOME: dict[str, str] = {
+    "10010": "estabelecimentos",
+    "2209": "cabecas",
+    "9587": "estabelecimentos",
+    "184": "area",
+    "10084": "estabelecimentos",
+    "10085": "producao",
+    "10089": "area_colhida",
+    "9504": "estabelecimentos",
+    "9506": "producao",
+    "10078": "area_colhida",
+}
+
+_CENSO_VAR_UNIDADE: dict[str, str] = {
+    "10010": "unidades",
+    "2209": "cabeças",
+    "9587": "unidades",
+    "184": "hectares",
+    "10084": "unidades",
+    "10085": "",
+    "10089": "hectares",
+    "9504": "unidades",
+    "9506": "",
+    "10078": "hectares",
+}
+
+_CENSO_ALL_VAR_IDS = set(_CENSO_VAR_NOME.keys())
+
+_CENSO_CATEGORIA_COL_INDEX: dict[str, int] = {
+    "efetivo_rebanho": 5,
+    "uso_terra": 5,
+    "lavoura_temporaria": 5,
+    "lavoura_permanente": 5,
+}
+
+
+@overload
+async def censo_agro(
+    tema: str,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def censo_agro(
+    tema: str,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def censo_agro(
+    tema: str,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    fetch_start = time.perf_counter()
+    meta = MetaInfo(
+        source="ibge_censo_agro",
+        source_url="https://sidra.ibge.gov.br",
+        source_method="httpx",
+        fetched_at=datetime.now(),
+    )
+    logger.info(
+        "ibge_censo_agro_request",
+        tema=tema,
+        uf=uf,
+        nivel=nivel,
+    )
+
+    tema_lower = tema.lower()
+    if tema_lower not in client.TABELAS_CENSO_AGRO:
+        raise ValueError(f"Tema não suportado: {tema}. Disponíveis: {client.TEMAS_CENSO_AGRO}")
+
+    table_code = client.TABELAS_CENSO_AGRO[tema_lower]
+    var_map = client.VARIAVEIS_CENSO_AGRO[tema_lower]
+    var_codes = ",".join(var_map.values())
+
+    nivel_map = {
+        "brasil": "1",
+        "uf": "3",
+        "municipio": "6",
+    }
+    territorial_level = nivel_map.get(nivel, "3")
+
+    ibge_code = "all"
+    if uf and nivel in ("uf", "municipio"):
+        ibge_code = client.uf_to_ibge_code(uf)
+
+    classifications: dict[str, str | list[str]] = dict(_CLASSIFICACOES_CENSO_AGRO[tema_lower])
+
+    df = await client.fetch_sidra(
+        table_code=table_code,
+        territorial_level=territorial_level,
+        ibge_territorial_code=ibge_code,
+        variable=var_codes,
+        period="all",
+        classifications=classifications,
+    )
+
+    if df.empty:
+        df = pd.DataFrame(
+            columns=[
+                "ano",
+                "localidade",
+                "localidade_cod",
+                "tema",
+                "categoria",
+                "variavel",
+                "valor",
+                "unidade",
+                "fonte",
+            ]
+        )
+        if return_meta:
+            return df, meta
+        return df
+
+    col_map: dict[str, str] = {
+        "NC": "nivel_cod",
+        "NN": "nivel",
+        "V": "valor",
+        "D1C": "localidade_cod",
+        "D1N": "localidade",
+    }
+
+    for dc in ["D2C", "D3C"]:
+        if dc not in df.columns or len(df) == 0:
+            continue
+        sample = str(df[dc].iloc[0])
+        name_col = dc[:-1] + "N"
+        if sample in _CENSO_ALL_VAR_IDS:
+            col_map[dc] = "variavel_cod"
+            col_map[name_col] = "variavel_nome"
+        elif len(sample) == 4 and sample.isdigit():
+            col_map[dc] = "ano_cod"
+            col_map[name_col] = "ano_nome"
+
+    cat_idx = _CENSO_CATEGORIA_COL_INDEX[tema_lower]
+    cat_col_c = f"D{cat_idx}C"
+    cat_col_n = f"D{cat_idx}N"
+    if cat_col_c in df.columns:
+        col_map[cat_col_c] = "categoria_cod"
+    if cat_col_n in df.columns:
+        col_map[cat_col_n] = "categoria"
+
+    rename_map = {k: v for k, v in col_map.items() if k in df.columns}
+    df = df.rename(columns=rename_map)
+
+    if "valor" in df.columns:
+        df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
+
+    if "categoria" in df.columns:
+        df = df[df["categoria"].str.lower() != "total"]
+
+    if "ano_cod" in df.columns:
+        df["ano"] = pd.to_numeric(df["ano_cod"], errors="coerce").astype("Int64")
+    else:
+        df["ano"] = 2017
+
+    if "variavel_cod" in df.columns:
+        df["variavel"] = df["variavel_cod"].map(_CENSO_VAR_NOME).fillna(df.get("variavel_nome", ""))
+        unidade_from_map = df["variavel_cod"].map(_CENSO_VAR_UNIDADE)
+        mn_col = "MN" if "MN" in df.columns else None
+        if mn_col is None:
+            for c in df.columns:
+                if c == "MN":
+                    mn_col = c
+                    break
+        if mn_col and mn_col in df.columns:
+            df["unidade"] = unidade_from_map.where(unidade_from_map != "", df[mn_col])
+        else:
+            df["unidade"] = unidade_from_map.fillna("")
+    else:
+        df["variavel"] = ""
+        df["unidade"] = ""
+
+    if "localidade_cod" in df.columns:
+        df["localidade_cod"] = pd.to_numeric(df["localidade_cod"], errors="coerce").astype("Int64")
+
+    df["tema"] = tema_lower
+    df["fonte"] = "ibge_censo_agro"
+
+    output_cols = [
+        c
+        for c in [
+            "ano",
+            "localidade",
+            "localidade_cod",
+            "tema",
+            "categoria",
+            "variavel",
+            "valor",
+            "unidade",
+            "fonte",
+        ]
+        if c in df.columns
+    ]
+    df = df[output_cols].reset_index(drop=True)
+
+    meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+    meta.records_count = len(df)
+    meta.columns = df.columns.tolist()
+    meta.cache_key = build_cache_key(
+        "ibge:censo_agro",
+        {"tema": tema, "uf": uf},
+        schema_version=meta.schema_version,
+    )
+    meta.cache_expires_at = calculate_expiry(constants.Fonte.IBGE, "censo_agro")
+
+    if as_polars:
+        try:
+            import polars as pl
+
+            result_df = pl.from_pandas(df)
+            if return_meta:
+                return result_df, meta  # type: ignore[return-value,no-any-return]
+            return result_df  # type: ignore[return-value,no-any-return]
+        except ImportError:
+            logger.warning("polars_not_installed", fallback="pandas")
+
+    logger.info(
+        "ibge_censo_agro_success",
+        tema=tema,
+        records=len(df),
+    )
+
+    if return_meta:
+        return df, meta
+    return df
+
+
+async def temas_censo_agro() -> list[str]:
+    return list(client.TEMAS_CENSO_AGRO)
+
+
 async def ufs() -> list[str]:
     return list(client.get_uf_codes().keys())

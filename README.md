@@ -77,7 +77,7 @@ async def main():
     print(brasil)
 ```
 
-### IBGE - PAM, LSPA, PPM e Abate
+### IBGE - PAM, LSPA, PPM, Abate e Censo Agro
 
 ```python
 from agrobr import ibge
@@ -101,6 +101,11 @@ async def main():
     # Abate Trimestral — bovino, suíno, frango
     df = await ibge.abate('bovino', trimestre='202303')
     df = await ibge.abate('frango', trimestre='202303', uf='PR')
+
+    # Censo Agropecuário 2017 — 4 temas
+    df = await ibge.censo_agro('efetivo_rebanho')
+    df = await ibge.censo_agro('uso_terra', uf='MT')
+    df = await ibge.censo_agro('lavoura_temporaria', nivel='municipio', uf='PR')
 
     # Múltiplos anos
     df = await ibge.pam('milho', ano=[2020, 2021, 2022, 2023])
@@ -145,10 +150,14 @@ async def main():
     # Pecuária municipal (IBGE PPM)
     df = await datasets.pecuaria_municipal("bovino", ano=2023)
 
+    # Censo Agropecuário 2017 (IBGE Censo Agro)
+    df = await datasets.censo_agropecuario("efetivo_rebanho")
+
     # Listar datasets disponíveis
     print(datasets.list_datasets())
-    # ['balanco', 'credito_rural', 'custo_producao', 'estimativa_safra',
-    #  'exportacao', 'fertilizante', 'pecuaria_municipal', 'preco_diario', 'producao_anual']
+    # ['balanco', 'censo_agropecuario', 'credito_rural', 'custo_producao',
+    #  'estimativa_safra', 'exportacao', 'fertilizante', 'pecuaria_municipal',
+    #  'preco_diario', 'producao_anual']
 ```
 
 ### Modo Determinístico (Reprodutibilidade)
@@ -355,6 +364,7 @@ Use `agrobr health --all` para verificar localmente.
 | `fertilizante` | Entregas de fertilizantes | ANDA |
 | `custo_producao` | Custos de produção | CONAB |
 | `abate_trimestral` | Abate de bovinos, suínos e frangos por UF | IBGE Abate |
+| `censo_agropecuario` | Censo Agropecuário 2017 (rebanho, uso terra, lavouras) | IBGE Censo Agro |
 
 ## Fontes Suportadas
 

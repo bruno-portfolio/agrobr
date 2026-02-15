@@ -8,6 +8,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **IBGE Censo Agropecuário (Censo Agro 2017)** — Nova pesquisa no módulo IBGE:
+  4 temas (efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente) via tabelas
+  SIDRA 6907/6881/6957/6956. API pública `ibge.censo_agro()` com filtros por tema/UF/nível
+  e `ibge.temas_censo_agro()`. Dataset `censo_agropecuario` com contrato `ibge.censo_agro v1.0`,
+  schema JSON, golden data. Long format (variável/valor por linha). Cache 30 dias.
+  52 testes. Docs: `api/ibge.md`, `sources/ibge.md`, `contracts/censo_agropecuario.md`, licenses
+  atualizado
 - **IBGE Abate Trimestral**: abate bovino, suíno e frango por UF desde 1997 — 54 testes, contrato, golden data
 - **IBGE PPM — Pesquisa da Pecuária Municipal (roadmap 2.8)** — Nova pesquisa no módulo IBGE:
   efetivo de rebanhos (10 espécies, tabela SIDRA 3939) e produção de origem animal (6 produtos,

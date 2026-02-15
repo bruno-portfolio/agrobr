@@ -299,6 +299,85 @@ async def especies_abate() -> list[str]
 
 ---
 
+### `censo_agro`
+
+Obtém dados do Censo Agropecuário 2017.
+
+```python
+async def censo_agro(
+    tema: str,
+    uf: str | None = None,
+    nivel: str = 'uf',
+    as_polars: bool = False,
+) -> pd.DataFrame | pl.DataFrame
+```
+
+**Parâmetros:**
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `tema` | `str` | Tema: 'efetivo_rebanho', 'uso_terra', 'lavoura_temporaria', 'lavoura_permanente' |
+| `uf` | `str \| None` | Filtrar por UF (ex: 'MT') |
+| `nivel` | `str` | Nível: 'brasil', 'uf', 'municipio' |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
+
+**Temas disponíveis:**
+
+| Código | Tema | Tabela SIDRA |
+|--------|------|--------------|
+| `efetivo_rebanho` | Efetivo de rebanho | 6907 |
+| `uso_terra` | Uso da terra | 6881 |
+| `lavoura_temporaria` | Lavoura temporária | 6957 |
+| `lavoura_permanente` | Lavoura permanente | 6956 |
+
+**Variáveis retornadas por tema:**
+
+| Tema | Variável | Unidade |
+|------|----------|---------|
+| `efetivo_rebanho` | `estabelecimentos` | unidades |
+| `efetivo_rebanho` | `cabecas` | cabeças |
+| `uso_terra` | `estabelecimentos` | unidades |
+| `uso_terra` | `area` | hectares |
+| `lavoura_temporaria` | `estabelecimentos` | unidades |
+| `lavoura_temporaria` | `producao` | varia |
+| `lavoura_temporaria` | `area_colhida` | hectares |
+| `lavoura_permanente` | `estabelecimentos` | unidades |
+| `lavoura_permanente` | `producao` | varia |
+| `lavoura_permanente` | `area_colhida` | hectares |
+
+**Exemplo:**
+
+```python
+from agrobr import ibge
+
+# Efetivo de rebanho por UF
+df = await ibge.censo_agro('efetivo_rebanho')
+
+# Uso da terra em Mato Grosso
+df = await ibge.censo_agro('uso_terra', uf='MT')
+
+# Lavoura temporária por município
+df = await ibge.censo_agro('lavoura_temporaria', nivel='municipio', uf='PR')
+
+# Lavoura permanente — Brasil
+df = await ibge.censo_agro('lavoura_permanente', nivel='brasil')
+
+# Com metadados
+df, meta = await ibge.censo_agro('efetivo_rebanho', return_meta=True)
+```
+
+---
+
+### `temas_censo_agro`
+
+Lista temas disponíveis no Censo Agropecuário.
+
+```python
+async def temas_censo_agro() -> list[str]
+```
+
+---
+
 ### `ufs`
 
 Lista UFs disponíveis.
@@ -309,15 +388,15 @@ async def ufs() -> list[str]
 
 ---
 
-## Diferenças PAM vs LSPA vs PPM vs Abate
+## Diferenças PAM vs LSPA vs PPM vs Abate vs Censo Agro
 
-| Aspecto | PAM | LSPA | PPM | Abate |
-|---------|-----|------|-----|-------|
-| Frequência | Anual | Mensal | Anual | Trimestral |
-| Granularidade | Até município | Até UF | Até município | Brasil + UF |
-| Tipo | Dados consolidados | Estimativas | Dados consolidados | Dados consolidados |
-| Disponibilidade | T+1 ano | T+1 mês | T+1 ano | T+2 meses |
-| Escopo | Lavouras | Lavouras | Pecuária | Abate de animais |
+| Aspecto | PAM | LSPA | PPM | Abate | Censo Agro |
+|---------|-----|------|-----|-------|------------|
+| Frequência | Anual | Mensal | Anual | Trimestral | Decenial |
+| Granularidade | Até município | Até UF | Até município | Brasil + UF | Até município |
+| Tipo | Dados consolidados | Estimativas | Dados consolidados | Dados consolidados | Dados censitários |
+| Disponibilidade | T+1 ano | T+1 mês | T+1 ano | T+2 meses | Pós-censo |
+| Escopo | Lavouras | Lavouras | Pecuária | Abate de animais | Estrutura agropecuária |
 
 ## Tabelas SIDRA Utilizadas
 
@@ -331,6 +410,10 @@ async def ufs() -> list[str]
 | 1092 | Abate - Bovinos |
 | 1093 | Abate - Suínos |
 | 1094 | Abate - Frangos |
+| 6907 | Censo Agro - Efetivo de rebanho |
+| 6881 | Censo Agro - Uso da terra |
+| 6957 | Censo Agro - Lavoura temporária |
+| 6956 | Censo Agro - Lavoura permanente |
 
 ## Versão Síncrona
 
@@ -341,6 +424,7 @@ df = ibge.pam('soja', ano=2023)
 df = ibge.lspa('milho_1', ano=2024, mes=6)
 df = ibge.ppm('bovino', ano=2023)
 df = ibge.abate('bovino', trimestre='202303')
+df = ibge.censo_agro('efetivo_rebanho')
 ```
 
 ## Notas
@@ -351,3 +435,4 @@ df = ibge.abate('bovino', trimestre='202303')
 - PAM é consolidada anualmente após colheita
 - PPM é consolidada anualmente (setembro), série desde 1974
 - Abate Trimestral disponível desde 1997, atualizado a cada trimestre (T+2 meses)
+- Censo Agropecuário 2017: dados deceniais, referência out/2016 a set/2017, cache 30 dias

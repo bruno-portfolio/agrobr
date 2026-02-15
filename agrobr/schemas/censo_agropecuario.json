@@ -1,0 +1,79 @@
+{
+  "name": "ibge.censo_agro",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "primary_key": ["ano", "tema", "categoria", "variavel", "localidade"],
+  "columns": [
+    {
+      "name": "ano",
+      "type": "integer",
+      "nullable": false,
+      "stable": true,
+      "description": "Ano do censo (2006, 2017)",
+      "min_value": 2006
+    },
+    {
+      "name": "localidade",
+      "type": "string",
+      "nullable": true,
+      "stable": true,
+      "description": "UF ou município"
+    },
+    {
+      "name": "localidade_cod",
+      "type": "integer",
+      "nullable": true,
+      "stable": true,
+      "description": "Código IBGE da localidade"
+    },
+    {
+      "name": "tema",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Tema: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente"
+    },
+    {
+      "name": "categoria",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Espécie, tipo de uso da terra ou produto agrícola"
+    },
+    {
+      "name": "variavel",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Nome da variável medida (estabelecimentos, cabecas, area, producao, area_colhida)"
+    },
+    {
+      "name": "valor",
+      "type": "float",
+      "nullable": true,
+      "stable": true,
+      "min_value": 0,
+      "description": "Valor numérico da variável"
+    },
+    {
+      "name": "unidade",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Unidade de medida (unidades, cabeças, hectares, toneladas)"
+    },
+    {
+      "name": "fonte",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Origem dos dados (ibge_censo_agro)"
+    }
+  ],
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'ano' is always a valid census year (>= 2006)",
+    "Numeric values are always >= 0",
+    "'fonte' is always 'ibge_censo_agro'"
+  ]
+}

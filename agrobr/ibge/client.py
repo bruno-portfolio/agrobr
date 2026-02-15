@@ -129,6 +129,30 @@ CATEGORIAS_ABATE = {
 
 ESPECIES_ABATE = ["bovino", "suino", "frango"]
 
+TABELAS_CENSO_AGRO = {
+    "efetivo_rebanho": "6907",
+    "uso_terra": "6881",
+    "lavoura_temporaria": "6957",
+    "lavoura_permanente": "6956",
+}
+
+VARIAVEIS_CENSO_AGRO: dict[str, dict[str, str]] = {
+    "efetivo_rebanho": {"estabelecimentos": "10010", "cabecas": "2209"},
+    "uso_terra": {"estabelecimentos": "9587", "area": "184"},
+    "lavoura_temporaria": {
+        "estabelecimentos": "10084",
+        "producao": "10085",
+        "area_colhida": "10089",
+    },
+    "lavoura_permanente": {
+        "estabelecimentos": "9504",
+        "producao": "9506",
+        "area_colhida": "10078",
+    },
+}
+
+TEMAS_CENSO_AGRO = list(TABELAS_CENSO_AGRO.keys())
+
 PRODUTOS_LSPA = {
     "soja": "39443",
     "milho_1": "39441",
