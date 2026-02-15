@@ -1,61 +1,83 @@
 {
-  "name": "ibge.censo_agro",
+  "name": "mapbiomas.transicao",
   "schema_version": "1.0",
   "effective_from": "0.10.0",
   "breaking_policy": "major",
   "primary_key": [
-    "ano",
-    "tema",
-    "categoria",
-    "variavel",
-    "localidade"
+    "bioma",
+    "estado",
+    "classe_de_id",
+    "classe_para_id",
+    "periodo"
   ],
   "required_columns": [
-    "ano",
-    "tema",
-    "categoria",
-    "variavel",
-    "unidade",
-    "fonte"
+    "bioma",
+    "estado",
+    "classe_de_id",
+    "classe_de",
+    "classe_para_id",
+    "classe_para",
+    "periodo",
+    "area_ha"
   ],
   "dtypes": {
-    "ano": "int",
-    "localidade": "str",
-    "localidade_cod": "int",
-    "tema": "str",
-    "categoria": "str",
-    "variavel": "str",
-    "valor": "float",
-    "unidade": "str",
-    "fonte": "str"
+    "bioma": "str",
+    "estado": "str",
+    "classe_de_id": "int",
+    "classe_de": "str",
+    "classe_para_id": "int",
+    "classe_para": "str",
+    "periodo": "str",
+    "area_ha": "float"
   },
   "nullable": {
-    "ano": false,
-    "localidade": true,
-    "localidade_cod": true,
-    "tema": false,
-    "categoria": false,
-    "variavel": false,
-    "valor": true,
-    "unidade": false,
-    "fonte": false
+    "bioma": false,
+    "estado": false,
+    "classe_de_id": false,
+    "classe_de": false,
+    "classe_para_id": false,
+    "classe_para": false,
+    "periodo": false,
+    "area_ha": false
   },
   "columns": [
     {
-      "name": "ano",
+      "name": "bioma",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "estado",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe_de_id",
       "type": "int",
       "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": 2006,
+      "min_value": null,
       "max_value": null
     },
     {
-      "name": "localidade",
+      "name": "classe_de",
       "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -64,9 +86,9 @@
       "max_value": null
     },
     {
-      "name": "localidade_cod",
+      "name": "classe_para_id",
       "type": "int",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -75,7 +97,7 @@
       "max_value": null
     },
     {
-      "name": "tema",
+      "name": "classe_para",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -86,7 +108,7 @@
       "max_value": null
     },
     {
-      "name": "categoria",
+      "name": "periodo",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -97,59 +119,27 @@
       "max_value": null
     },
     {
-      "name": "variavel",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "valor",
+      "name": "area_ha",
       "type": "float",
-      "nullable": true,
-      "unit": null,
+      "nullable": false,
+      "unit": "ha",
       "stable": true,
       "deprecated": false,
       "description": "",
       "min_value": 0,
       "max_value": null
-    },
-    {
-      "name": "unidade",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "fonte",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "ano_min": 2006,
-    "valor_min": 0
+    "area_ha_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",
-    "'ano' is always a valid census year (>= 2006)",
-    "Numeric values are always >= 0",
-    "'fonte' is always 'ibge_censo_agro'"
+    "'bioma' is always a valid Brazilian biome name",
+    "'estado' is always a valid Brazilian state code (UF)",
+    "'periodo' always matches pattern YYYY-YYYY",
+    "'area_ha' is always >= 0",
+    "'classe_de_id' and 'classe_para_id' map to MapBiomas LULC legend codes"
   ]
 }

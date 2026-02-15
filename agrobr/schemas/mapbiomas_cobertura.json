@@ -1,39 +1,43 @@
 {
-  "name": "ibge.abate",
+  "name": "mapbiomas.cobertura",
   "schema_version": "1.0",
   "effective_from": "0.10.0",
   "breaking_policy": "major",
   "primary_key": [
-    "trimestre",
-    "especie",
-    "localidade"
+    "bioma",
+    "estado",
+    "classe_id",
+    "ano"
   ],
   "required_columns": [
-    "trimestre",
-    "especie",
-    "fonte"
+    "bioma",
+    "estado",
+    "classe_id",
+    "classe",
+    "ano",
+    "area_ha"
   ],
   "dtypes": {
-    "trimestre": "str",
-    "localidade": "str",
-    "localidade_cod": "int",
-    "especie": "str",
-    "animais_abatidos": "float",
-    "peso_carcacas": "float",
-    "fonte": "str"
+    "bioma": "str",
+    "estado": "str",
+    "classe_id": "int",
+    "classe": "str",
+    "nivel_0": "str",
+    "ano": "int",
+    "area_ha": "float"
   },
   "nullable": {
-    "trimestre": false,
-    "localidade": true,
-    "localidade_cod": true,
-    "especie": false,
-    "animais_abatidos": true,
-    "peso_carcacas": true,
-    "fonte": false
+    "bioma": false,
+    "estado": false,
+    "classe_id": false,
+    "classe": false,
+    "nivel_0": true,
+    "ano": false,
+    "area_ha": false
   },
   "columns": [
     {
-      "name": "trimestre",
+      "name": "bioma",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -44,9 +48,9 @@
       "max_value": null
     },
     {
-      "name": "localidade",
+      "name": "estado",
       "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -55,9 +59,9 @@
       "max_value": null
     },
     {
-      "name": "localidade_cod",
+      "name": "classe_id",
       "type": "int",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -66,7 +70,7 @@
       "max_value": null
     },
     {
-      "name": "especie",
+      "name": "classe",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -77,48 +81,50 @@
       "max_value": null
     },
     {
-      "name": "animais_abatidos",
-      "type": "float",
-      "nullable": true,
-      "unit": "cabeças",
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": 0,
-      "max_value": null
-    },
-    {
-      "name": "peso_carcacas",
-      "type": "float",
-      "nullable": true,
-      "unit": "kg",
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": 0,
-      "max_value": null
-    },
-    {
-      "name": "fonte",
+      "name": "nivel_0",
       "type": "str",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
       "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1985,
+      "max_value": null
+    },
+    {
+      "name": "area_ha",
+      "type": "float",
+      "nullable": false,
+      "unit": "ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
       "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "animais_abatidos_min": 0,
-    "peso_carcacas_min": 0
+    "ano_min": 1985,
+    "area_ha_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",
-    "'trimestre' format is YYYYQQ (e.g. 202303)",
-    "Numeric values are always >= 0",
-    "'fonte' is always 'ibge_abate'"
+    "'bioma' is always a valid Brazilian biome name",
+    "'estado' is always a valid Brazilian state code (UF)",
+    "'ano' is always between 1985 and current year",
+    "'area_ha' is always >= 0",
+    "'classe_id' maps to MapBiomas LULC legend codes"
   ]
 }

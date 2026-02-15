@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Fonte(StrEnum):
@@ -249,8 +249,7 @@ class CacheSettings(BaseSettings):
     cache_max_age_days: int = 30
     history_max_age_days: int = 0
 
-    class Config:
-        env_prefix = "AGROBR_CACHE_"
+    model_config = SettingsConfigDict(env_prefix="AGROBR_CACHE_")
 
 
 class HTTPSettings(BaseSettings):
@@ -284,8 +283,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_conab_ceasa: float = 2.0
     rate_limit_default: float = 1.0
 
-    class Config:
-        env_prefix = "AGROBR_HTTP_"
+    model_config = SettingsConfigDict(env_prefix="AGROBR_HTTP_")
 
 
 class AlertSettings(BaseSettings):
@@ -303,8 +301,7 @@ class AlertSettings(BaseSettings):
     alert_on_source_down: bool = True
     alert_on_anomaly: bool = True
 
-    class Config:
-        env_prefix = "AGROBR_ALERT_"
+    model_config = SettingsConfigDict(env_prefix="AGROBR_ALERT_")
 
 
 class TelemetrySettings(BaseSettings):
@@ -313,8 +310,7 @@ class TelemetrySettings(BaseSettings):
     batch_size: int = 10
     flush_interval_seconds: int = 60
 
-    class Config:
-        env_prefix = "AGROBR_TELEMETRY_"
+    model_config = SettingsConfigDict(env_prefix="AGROBR_TELEMETRY_")
 
 
 CONFIDENCE_HIGH: float = 0.85

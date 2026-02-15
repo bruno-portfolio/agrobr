@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import duckdb
@@ -11,6 +11,11 @@ import structlog
 from agrobr import constants
 
 logger = structlog.get_logger()
+
+
+def _utcnow() -> datetime:
+    return datetime.now(UTC).replace(tzinfo=None)
+
 
 SCHEMA_CACHE = """
 CREATE TABLE IF NOT EXISTS cache_entries (
@@ -138,7 +143,7 @@ class DuckDBStore:
         from agrobr.cache.keys import is_legacy_key, legacy_key_prefix, parse_cache_key
 
         conn = self._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
 
         result = conn.execute(
             "SELECT data, expires_at, stale, key FROM cache_entries WHERE key = ?",
@@ -232,7 +237,7 @@ class DuckDBStore:
     ) -> None:
         """Grava entrada no cache."""
         conn = self._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
         expires_at = now + timedelta(seconds=ttl_seconds)
 
         conn.execute(
@@ -272,7 +277,7 @@ class DuckDBStore:
             params.append(source.value)
 
         if older_than_days:
-            cutoff = datetime.utcnow() - timedelta(days=older_than_days)
+            cutoff = _utcnow() - timedelta(days=older_than_days)
             conditions.append("created_at < ?")
             params.append(cutoff)
 
@@ -297,7 +302,7 @@ class DuckDBStore:
             return
 
         conn = self._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
 
         try:
             conn.execute(
@@ -435,7 +440,7 @@ class DuckDBStore:
             return 0
 
         conn = self._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
 
         rows: list[tuple[Any, ...]] = []
         for ind in indicadores:

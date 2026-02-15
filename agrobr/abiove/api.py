@@ -7,6 +7,7 @@ Fonte: ABIOVE (abiove.org.br/estatisticas/).
 from __future__ import annotations
 
 import time
+import warnings
 from datetime import UTC, datetime
 from typing import Any, Literal, overload
 
@@ -19,6 +20,8 @@ from . import client, parser
 from .models import normalize_produto
 
 logger = structlog.get_logger()
+
+_WARNED = False
 
 
 @overload
@@ -76,6 +79,17 @@ async def exportacao(
         >>> df.columns.tolist()
         ['ano', 'mes', 'produto', 'volume_ton', 'receita_usd_mil']
     """
+    global _WARNED  # noqa: PLW0603
+    if not _WARNED:
+        warnings.warn(
+            "ABIOVE: termos de uso não encontrados publicamente. "
+            "Autorização solicitada em fev/2026. Classificação: zona_cinza. "
+            "Veja docs/licenses.md para detalhes.",
+            UserWarning,
+            stacklevel=2,
+        )
+        _WARNED = True
+
     logger.info(
         "abiove_exportacao",
         ano=ano,

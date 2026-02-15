@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import threading
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -14,6 +14,10 @@ from agrobr.cache.keys import (
     parse_cache_key,
 )
 from agrobr.constants import CacheSettings, Fonte
+
+
+def _utcnow() -> datetime:
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 class TestParseCacheKey:
@@ -35,10 +39,12 @@ class TestParseCacheKey:
             parse_cache_key("a|b|c|d|e")
 
     def test_roundtrip_with_build(self):
+        from agrobr import __version__
+
         key = build_cache_key("ibge:pam", {"produto": "soja", "ano": 2024})
         parsed = parse_cache_key(key)
         assert parsed["dataset"] == "ibge:pam"
-        assert parsed["lib_version"] == "0.9.0"
+        assert parsed["lib_version"] == __version__
 
 
 class TestIsLegacyKey:
@@ -82,7 +88,7 @@ class TestLegacyCacheMigration:
     def test_migration_legacy_key_rewritten(self, tmp_store: DuckDBStore):
         legacy_key = "cepea|abc123def456"
         conn = tmp_store._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
         conn.execute(
             """
             INSERT INTO cache_entries
@@ -107,7 +113,7 @@ class TestLegacyCacheMigration:
     def test_migration_preserves_stale_flag(self, tmp_store: DuckDBStore):
         legacy_key = "cepea|abc123def456"
         conn = tmp_store._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
         conn.execute(
             """
             INSERT INTO cache_entries
@@ -135,7 +141,7 @@ class TestStrictMode:
     def test_strict_mode_rejects_old_version(self, strict_store: DuckDBStore):
         old_key = "ds|abc123def456|v0.8.0|sv1.0"
         conn = strict_store._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
         conn.execute(
             """
             INSERT INTO cache_entries
@@ -162,7 +168,7 @@ class TestStrictMode:
     def test_non_strict_accepts_old_version(self, tmp_store: DuckDBStore):
         old_key = "ds|abc123def456|v0.8.0|sv1.0"
         conn = tmp_store._get_conn()
-        now = datetime.utcnow()
+        now = _utcnow()
         conn.execute(
             """
             INSERT INTO cache_entries

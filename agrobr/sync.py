@@ -192,6 +192,12 @@ class _SyncB3(_SyncModule):
     pass
 
 
+class _SyncMapBiomas(_SyncModule):
+    """API síncrona do MapBiomas."""
+
+    pass
+
+
 _modules: dict[str, _SyncModule | None] = {
     "abiove": None,
     "anda": None,
@@ -206,6 +212,7 @@ _modules: dict[str, _SyncModule | None] = {
     "ibge": None,
     "imea": None,
     "inmet": None,
+    "mapbiomas": None,
     "nasa_power": None,
     "queimadas": None,
     "usda": None,
@@ -225,6 +232,7 @@ _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "ibge": _SyncIbge,
     "imea": _SyncImea,
     "inmet": _SyncInmet,
+    "mapbiomas": _SyncMapBiomas,
     "nasa_power": _SyncNasaPower,
     "queimadas": _SyncQueimadas,
     "usda": _SyncUsda,

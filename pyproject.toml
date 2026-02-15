@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agrobr"
-version = "0.9.0"
+version = "0.10.0"
 description = "Dados agrícolas brasileiros em uma linha de código"
 readme = "README.md"
 license = "MIT"
@@ -102,10 +102,6 @@ Issues = "https://github.com/bruno-portfolio/agrobr/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["agrobr"]
-
-[tool.hatch.build.targets.wheel.force-include]
-"agrobr/schemas" = "agrobr/schemas"
-"agrobr/normalize/_municipios_ibge.json" = "agrobr/normalize/_municipios_ibge.json"
 
 [tool.ruff]
 target-version = "py311"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+import warnings
 from datetime import UTC, datetime
 from typing import Any, Literal, overload
 
@@ -14,6 +15,8 @@ from agrobr.models import MetaInfo
 from . import client, parser
 
 logger = structlog.get_logger()
+
+_WARNED = False
 
 
 @overload
@@ -72,6 +75,17 @@ async def entregas(
         >>> df.columns.tolist()
         ['ano', 'mes', 'uf', 'produto_fertilizante', 'volume_ton']
     """
+    global _WARNED  # noqa: PLW0603
+    if not _WARNED:
+        warnings.warn(
+            "ANDA: termos de uso não encontrados publicamente. "
+            "Autorização solicitada em fev/2026. Classificação: zona_cinza. "
+            "Veja docs/licenses.md para detalhes.",
+            UserWarning,
+            stacklevel=2,
+        )
+        _WARNED = True
+
     logger.info("anda_entregas", ano=ano, uf=uf, produto=produto, agregacao=agregacao)
 
     t0 = time.monotonic()

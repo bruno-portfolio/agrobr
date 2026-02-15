@@ -7,6 +7,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-02-15
+
 ### Added
 - **CONAB CEASA/PROHORT (Precos de Atacado Hortifruti)** — Nova fonte: precos diarios de atacado
   de 48 produtos (20 frutas, 28 hortalicas) em 43 CEASAs do Brasil. Modulo `agrobr/conab/ceasa/`
@@ -128,6 +130,15 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   configuram tudo. 14 testes novos
 
 ### Fixed
+- **Pydantic `class Config` → `model_config`** — 4 Settings classes em `constants.py`
+  migradas de `class Config` (deprecated) para `model_config = SettingsConfigDict(...)`.
+  Elimina 4 `PydanticDeprecatedSince20` warnings em toda importação do agrobr
+- **MapBiomas sync wrapper** — `_SyncMapBiomas` adicionado ao `sync.py`. Antes:
+  `from agrobr.sync import mapbiomas` lançava `ImportError`
+- **Warnings zona_cinza ANDA/ABIOVE** — `_WARNED` + `warnings.warn()` adicionados
+  em `anda/api.py` e `abiove/api.py` (padrão já existente em B3, CEASA, IMEA, NA)
+- **Schemas JSON desatualizados** — `generate_json_schemas()` regenerou 19 schemas
+  (3 novos: mapbiomas_cobertura, mapbiomas_transicao, conab_progresso; 16 atualizados)
 - **Pre-commit limpo** — SIM117 (nested `with` combinados), mypy `untyped-decorator`
   no cli.py, erros pré-existentes em `scripts/` e `examples/` corrigidos (27 erros mypy)
 - **Parser ABIOVE** — suporte a formato single-sheet multi-seção (meses na coluna 1,
@@ -531,7 +542,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.7.0...v0.7.1

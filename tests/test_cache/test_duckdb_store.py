@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from unittest import mock
 
@@ -8,6 +8,10 @@ import pytest
 
 from agrobr.cache.duckdb_store import DuckDBStore
 from agrobr.constants import CacheSettings, Fonte
+
+
+def _utcnow() -> datetime:
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 @pytest.fixture()
@@ -36,7 +40,7 @@ class TestCacheGet:
         tmp_store.cache_set("k1", b"old", Fonte.CEPEA, ttl_seconds=1)
 
         conn = tmp_store._get_conn()
-        past = datetime.utcnow() - timedelta(hours=1)
+        past = _utcnow() - timedelta(hours=1)
         conn.execute(
             "UPDATE cache_entries SET expires_at = ? WHERE key = ?",
             [past, "k1"],
@@ -123,14 +127,14 @@ class TestCacheEvict:
 
 class TestCacheTTL:
     def test_ttl_sets_expiry(self, tmp_store: DuckDBStore):
-        before = datetime.utcnow()
+        before = _utcnow()
         tmp_store.cache_set("k1", b"data", Fonte.CEPEA, ttl_seconds=7200)
 
         conn = tmp_store._get_conn()
         row = conn.execute("SELECT expires_at FROM cache_entries WHERE key = ?", ["k1"]).fetchone()
 
         expected_min = before + timedelta(seconds=7200)
-        expected_max = datetime.utcnow() + timedelta(seconds=7200)
+        expected_max = _utcnow() + timedelta(seconds=7200)
         assert expected_min <= row[0] <= expected_max
 
     def test_invalidate_marks_stale(self, tmp_store: DuckDBStore):

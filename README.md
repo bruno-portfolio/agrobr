@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **19 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro e CONAB CEASA/PROHORT.
 
-**v0.10.0-dev** — 2600+ testes, ~78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
+**v0.10.0** — 2660+ testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -333,6 +333,7 @@ async def main():
 ```python
 from agrobr.sync import cepea, conab, ibge, datasets, nasa_power, bcb, comexstat
 from agrobr.sync import abiove, usda, imea, deral, queimadas, desmatamento, b3
+from agrobr.sync import mapbiomas
 
 # Mesmo API, sem async/await
 df = cepea.indicador('soja', inicio='2024-01-01')
@@ -349,6 +350,12 @@ df = usda.psd('soja', market_year=2024)
 df = imea.cotacoes('soja')
 df = deral.condicao_lavouras('soja')
 df = conab.serie_historica('soja', inicio=2020)
+
+# v0.10.0
+df = queimadas.focos(ano=2024, mes=9)
+df = desmatamento.prodes(bioma="Cerrado", ano=2022)
+df = b3.ajustes(data="13/02/2025")
+df = mapbiomas.cobertura(uf="MT", ano=2022)
 ```
 
 ### Suporte Polars
@@ -442,8 +449,11 @@ from agrobr.contracts import get_contract, list_contracts, validate_dataset
 
 # Listar contratos registrados
 list_contracts()
-# ['balanco', 'credito_rural', 'custo_producao', 'estimativa_safra',
-#  'exportacao', 'fertilizante', 'preco_diario', 'producao_anual']
+# ['abate_trimestral', 'ajuste_diario', 'balanco', 'censo_agropecuario',
+#  'conab_progresso', 'credito_rural', 'custo_producao', 'desmatamento_deter',
+#  'desmatamento_prodes', 'estimativa_safra', 'exportacao', 'fertilizante',
+#  'focos_queimadas', 'mapbiomas_cobertura', 'mapbiomas_transicao',
+#  'pecuaria_municipal', 'preco_atacado', 'preco_diario', 'producao_anual']
 
 # Inspecionar contrato
 contract = get_contract("preco_diario")
@@ -480,9 +490,9 @@ normalizar_safra("24/25")             # "2024/25"
 
 ## Diferenciais
 
-- **18/18 fontes com golden tests** — validação automatizada contra dados de referência
-- **Resiliência HTTP completa** — retry centralizado em 18/18 clients, 429 handling, Retry-After
-- **2400+ testes, ~78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **19/19 fontes com golden tests** — validação automatizada contra dados de referência
+- **Resiliência HTTP completa** — retry centralizado em 19/19 clients, 429 handling, Retry-After
+- **2660+ testes, 78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints
 - **Schemas JSON** — contratos exportados como JSON em `agrobr/schemas/`
@@ -528,7 +538,7 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
-- [Fontes](https://www.agrobr.dev/docs/sources/) — 18 fontes documentadas
+- [Fontes](https://www.agrobr.dev/docs/sources/) — 19 fontes documentadas
 - [API Reference](https://www.agrobr.dev/docs/api/cepea/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 

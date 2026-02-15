@@ -1,0 +1,160 @@
+{
+  "name": "conab.progresso_safra",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "cultura",
+    "safra",
+    "operacao",
+    "estado",
+    "semana_atual"
+  ],
+  "required_columns": [
+    "cultura",
+    "safra",
+    "operacao",
+    "estado",
+    "semana_atual"
+  ],
+  "dtypes": {
+    "cultura": "str",
+    "safra": "str",
+    "operacao": "str",
+    "estado": "str",
+    "semana_atual": "str",
+    "pct_ano_anterior": "float",
+    "pct_semana_anterior": "float",
+    "pct_semana_atual": "float",
+    "pct_media_5_anos": "float"
+  },
+  "nullable": {
+    "cultura": false,
+    "safra": false,
+    "operacao": false,
+    "estado": false,
+    "semana_atual": false,
+    "pct_ano_anterior": true,
+    "pct_semana_anterior": true,
+    "pct_semana_atual": true,
+    "pct_media_5_anos": true
+  },
+  "columns": [
+    {
+      "name": "cultura",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Cultura (ex: Soja, Milho 2a)",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Safra no formato YYYY/YY",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "operacao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Semeadura ou Colheita",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "estado",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Codigo UF (ex: MT, GO, PR)",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "semana_atual",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Data da semana no formato YYYY-MM-DD",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "pct_ano_anterior",
+      "type": "float",
+      "nullable": true,
+      "unit": "fracao",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0.0,
+      "max_value": 1.0
+    },
+    {
+      "name": "pct_semana_anterior",
+      "type": "float",
+      "nullable": true,
+      "unit": "fracao",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0.0,
+      "max_value": 1.0
+    },
+    {
+      "name": "pct_semana_atual",
+      "type": "float",
+      "nullable": true,
+      "unit": "fracao",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0.0,
+      "max_value": 1.0
+    },
+    {
+      "name": "pct_media_5_anos",
+      "type": "float",
+      "nullable": true,
+      "unit": "fracao",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0.0,
+      "max_value": 1.0
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "pct_ano_anterior_min": 0.0,
+    "pct_ano_anterior_max": 1.0,
+    "pct_semana_anterior_min": 0.0,
+    "pct_semana_anterior_max": 1.0,
+    "pct_semana_atual_min": 0.0,
+    "pct_semana_atual_max": 1.0,
+    "pct_media_5_anos_min": 0.0,
+    "pct_media_5_anos_max": 1.0
+  },
+  "guarantees": [
+    "PK unica por combinacao cultura + safra + operacao + estado + semana",
+    "Valores percentuais entre 0.0 e 1.0 (fracao, nao %)",
+    "Dados semanais publicados pela CONAB",
+    "'estado' e codigo UF de 2 letras (ex: MT, GO, PR)"
+  ]
+}

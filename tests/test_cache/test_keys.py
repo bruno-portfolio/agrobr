@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+from agrobr import __version__
 from agrobr.cache.keys import build_cache_key
 
 
 class TestBuildCacheKey:
     def test_includes_version_and_schema(self):
         key = build_cache_key("cepea", {"produto": "soja"})
-        assert "|v0.9.0|" in key
+        assert f"|v{__version__}|" in key
         assert key.endswith("|sv1.0")
         assert key.startswith("cepea|")
 
