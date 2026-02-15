@@ -1,0 +1,11 @@
+{
+  "row_count": 5,
+  "columns": ["trimestre", "localidade", "localidade_cod", "especie", "animais_abatidos", "peso_carcacas", "fonte"],
+  "especie": "bovino",
+  "fonte": "ibge_abate",
+  "sample_values": {
+    "Rondônia": {"animais_abatidos": 764178, "peso_carcacas": 194840942},
+    "Mato Grosso": {"animais_abatidos": 1602321, "peso_carcacas": 454267996},
+    "São Paulo": {"animais_abatidos": 911856, "peso_carcacas": 255667937}
+  }
+}

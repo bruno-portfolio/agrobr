@@ -110,6 +110,25 @@ UNIDADES_PPM: dict[str, str] = {
     "la": "kg",
 }
 
+TABELAS_ABATE = {
+    "bovino": "1092",
+    "suino": "1093",
+    "frango": "1094",
+}
+
+VARIAVEIS_ABATE = {
+    "animais_abatidos": "284",
+    "peso_carcacas": "285",
+}
+
+CATEGORIAS_ABATE = {
+    "ref_trimestre": {"12716": "115236"},
+    "tipo_rebanho_bovino": {"18": "992"},
+    "tipo_inspecao": {"12529": "118225"},
+}
+
+ESPECIES_ABATE = ["bovino", "suino", "frango"]
+
 PRODUTOS_LSPA = {
     "soja": "39443",
     "milho_1": "39441",

@@ -232,6 +232,73 @@ async def especies_ppm() -> list[str]
 
 ---
 
+### `abate`
+
+Obtém dados da Pesquisa Trimestral do Abate de Animais.
+
+```python
+async def abate(
+    especie: str,
+    trimestre: str | None = None,
+    uf: str | None = None,
+    as_polars: bool = False,
+) -> pd.DataFrame | pl.DataFrame
+```
+
+**Parâmetros:**
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `especie` | `str` | Espécie: 'bovino', 'suino', 'frango' |
+| `trimestre` | `str \| None` | Trimestre YYYYQQ (ex: '202303'). Default: último disponível |
+| `uf` | `str \| None` | Filtrar por UF (ex: 'PR') |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
+
+**Espécies disponíveis:**
+
+| Código | Espécie | Tabela SIDRA |
+|--------|---------|--------------|
+| `bovino` | Bovino | 1092 |
+| `suino` | Suíno | 1093 |
+| `frango` | Frango | 1094 |
+
+**Variáveis retornadas:**
+
+| Variável | Descrição | Unidade |
+|----------|-----------|---------|
+| `animais_abatidos` | Quantidade de animais abatidos | cabeças |
+| `peso_carcacas` | Peso total das carcaças | kg |
+
+**Exemplo:**
+
+```python
+from agrobr import ibge
+
+# Abate bovino por UF
+df = await ibge.abate('bovino', trimestre='202303')
+
+# Abate de frango no Paraná
+df = await ibge.abate('frango', trimestre='202303', uf='PR')
+
+# Abate de suínos — Brasil
+df = await ibge.abate('suino', trimestre='202304')
+
+# Com metadados
+df, meta = await ibge.abate('bovino', trimestre='202303', return_meta=True)
+```
+
+---
+
+### `especies_abate`
+
+Lista espécies disponíveis no Abate Trimestral.
+
+```python
+async def especies_abate() -> list[str]
+```
+
+---
+
 ### `ufs`
 
 Lista UFs disponíveis.
@@ -242,15 +309,15 @@ async def ufs() -> list[str]
 
 ---
 
-## Diferenças PAM vs LSPA vs PPM
+## Diferenças PAM vs LSPA vs PPM vs Abate
 
-| Aspecto | PAM | LSPA | PPM |
-|---------|-----|------|-----|
-| Frequência | Anual | Mensal | Anual |
-| Granularidade | Até município | Até UF | Até município |
-| Tipo | Dados consolidados | Estimativas | Dados consolidados |
-| Disponibilidade | T+1 ano | T+1 mês | T+1 ano |
-| Escopo | Lavouras | Lavouras | Pecuária |
+| Aspecto | PAM | LSPA | PPM | Abate |
+|---------|-----|------|-----|-------|
+| Frequência | Anual | Mensal | Anual | Trimestral |
+| Granularidade | Até município | Até UF | Até município | Brasil + UF |
+| Tipo | Dados consolidados | Estimativas | Dados consolidados | Dados consolidados |
+| Disponibilidade | T+1 ano | T+1 mês | T+1 ano | T+2 meses |
+| Escopo | Lavouras | Lavouras | Pecuária | Abate de animais |
 
 ## Tabelas SIDRA Utilizadas
 
@@ -261,6 +328,9 @@ async def ufs() -> list[str]
 | 1612 | PAM - Lavouras temporárias (histórico) |
 | 3939 | PPM - Efetivo de rebanhos |
 | 74 | PPM - Produção de origem animal |
+| 1092 | Abate - Bovinos |
+| 1093 | Abate - Suínos |
+| 1094 | Abate - Frangos |
 
 ## Versão Síncrona
 
@@ -270,6 +340,7 @@ from agrobr.sync import ibge
 df = ibge.pam('soja', ano=2023)
 df = ibge.lspa('milho_1', ano=2024, mes=6)
 df = ibge.ppm('bovino', ano=2023)
+df = ibge.abate('bovino', trimestre='202303')
 ```
 
 ## Notas
@@ -279,3 +350,4 @@ df = ibge.ppm('bovino', ano=2023)
 - LSPA é atualizado mensalmente pelo IBGE
 - PAM é consolidada anualmente após colheita
 - PPM é consolidada anualmente (setembro), série desde 1974
+- Abate Trimestral disponível desde 1997, atualizado a cada trimestre (T+2 meses)

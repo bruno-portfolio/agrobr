@@ -1,8 +1,10 @@
-"""Modulo IBGE - Dados PAM, LSPA e PPM."""
+"""Modulo IBGE - Dados PAM, LSPA, PPM e Abate."""
 
 from __future__ import annotations
 
 from agrobr.ibge.api import (
+    abate,
+    especies_abate,
     especies_ppm,
     lspa,
     pam,
@@ -13,6 +15,8 @@ from agrobr.ibge.api import (
 )
 
 __all__ = [
+    "abate",
+    "especies_abate",
     "especies_ppm",
     "lspa",
     "pam",

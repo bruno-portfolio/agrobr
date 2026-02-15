@@ -534,6 +534,212 @@ async def ppm(
     return df
 
 
+@overload
+async def abate(
+    especie: str,
+    trimestre: str | list[str] | None = None,
+    uf: str | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def abate(
+    especie: str,
+    trimestre: str | list[str] | None = None,
+    uf: str | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def abate(
+    especie: str,
+    trimestre: str | list[str] | None = None,
+    uf: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    fetch_start = time.perf_counter()
+    meta = MetaInfo(
+        source="ibge_abate",
+        source_url="https://sidra.ibge.gov.br",
+        source_method="httpx",
+        fetched_at=datetime.now(),
+    )
+    logger.info(
+        "ibge_abate_request",
+        especie=especie,
+        trimestre=trimestre,
+        uf=uf,
+    )
+
+    especie_lower = especie.lower()
+    if especie_lower not in client.ESPECIES_ABATE:
+        raise ValueError(f"Espécie não suportada: {especie}. Disponíveis: {client.ESPECIES_ABATE}")
+
+    table_code = client.TABELAS_ABATE[especie_lower]
+    var_codes = ",".join(client.VARIAVEIS_ABATE.values())
+
+    territorial_level = "3" if uf is None else "3"
+    ibge_code = "all"
+    if uf:
+        ibge_code = client.uf_to_ibge_code(uf)
+
+    if trimestre is None:
+        period = "last"
+    elif isinstance(trimestre, list):
+        period = ",".join(str(t) for t in trimestre)
+    else:
+        period = str(trimestre)
+
+    classifications: dict[str, str | list[str]] = {
+        "12716": "115236",
+        "12529": "118225",
+    }
+    if especie_lower == "bovino":
+        classifications["18"] = "992"
+
+    df = await client.fetch_sidra(
+        table_code=table_code,
+        territorial_level=territorial_level,
+        ibge_territorial_code=ibge_code,
+        variable=var_codes,
+        period=period,
+        classifications=classifications,
+    )
+
+    col_map = {
+        "NC": "nivel_cod",
+        "NN": "nivel",
+        "MC": "unidade_cod",
+        "MN": "unidade",
+        "V": "valor",
+        "D1C": "localidade_cod",
+        "D1N": "localidade",
+    }
+
+    trimestre_col = None
+    variavel_col = None
+    variavel_name_col = ""
+    trimestre_name_col = ""
+    var_ids = {"284", "285", "1000284", "1000285", "151", "1000151"}
+    for dc in ["D2C", "D3C"]:
+        if dc not in df.columns or len(df) == 0:
+            continue
+        sample_str = str(df[dc].iloc[0])
+        name_col = dc[:-1] + "N"
+        if sample_str in var_ids:
+            variavel_col = dc
+            variavel_name_col = name_col
+        elif len(sample_str) == 6 and sample_str[:4].isdigit():
+            trimestre_col = dc
+            trimestre_name_col = name_col
+
+    if variavel_col:
+        col_map[variavel_col] = "variavel_cod"
+        col_map[variavel_name_col] = "variavel_nome"
+    if trimestre_col:
+        col_map[trimestre_col] = "trimestre_cod"
+        col_map[trimestre_name_col] = "trimestre_nome"
+
+    rename_map = {k: v for k, v in col_map.items() if k in df.columns}
+    df = df.rename(columns=rename_map)
+
+    if "valor" in df.columns:
+        df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
+
+    if "trimestre_cod" in df.columns:
+        df["trimestre"] = df["trimestre_cod"].astype(str)
+
+    cabecas = df[df["variavel_cod"].astype(str) == "284"].copy()
+    peso = df[df["variavel_cod"].astype(str) == "285"].copy()
+
+    merge_keys = [c for c in ["trimestre", "localidade", "localidade_cod"] if c in cabecas.columns]
+
+    if not cabecas.empty and not peso.empty and merge_keys:
+        cabecas = cabecas.rename(columns={"valor": "animais_abatidos"})
+        peso = peso.rename(columns={"valor": "peso_carcacas"})
+        result = cabecas[merge_keys + ["animais_abatidos"]].merge(
+            peso[merge_keys + ["peso_carcacas"]],
+            on=merge_keys,
+            how="outer",
+        )
+    elif not cabecas.empty:
+        result = cabecas.rename(columns={"valor": "animais_abatidos"})
+        result["peso_carcacas"] = pd.NA
+    else:
+        result = pd.DataFrame()
+
+    if not result.empty:
+        if "localidade_cod" in result.columns:
+            result["localidade_cod"] = pd.to_numeric(
+                result["localidade_cod"], errors="coerce"
+            ).astype("Int64")
+
+        result["especie"] = especie_lower
+        result["fonte"] = "ibge_abate"
+
+        output_cols = [
+            c
+            for c in [
+                "trimestre",
+                "localidade",
+                "localidade_cod",
+                "especie",
+                "animais_abatidos",
+                "peso_carcacas",
+                "fonte",
+            ]
+            if c in result.columns
+        ]
+        result = result[output_cols].reset_index(drop=True)
+
+        for col in ["animais_abatidos", "peso_carcacas"]:
+            if col in result.columns:
+                result[col] = pd.to_numeric(result[col], errors="coerce")
+
+    df = result
+
+    meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
+    meta.records_count = len(df)
+    meta.columns = df.columns.tolist()
+    meta.cache_key = build_cache_key(
+        "ibge:abate",
+        {"especie": especie, "trimestre": trimestre},
+        schema_version=meta.schema_version,
+    )
+    meta.cache_expires_at = calculate_expiry(constants.Fonte.IBGE, "abate")
+
+    if as_polars:
+        try:
+            import polars as pl
+
+            result_df = pl.from_pandas(df)
+            if return_meta:
+                return result_df, meta  # type: ignore[return-value,no-any-return]
+            return result_df  # type: ignore[return-value,no-any-return]
+        except ImportError:
+            logger.warning("polars_not_installed", fallback="pandas")
+
+    logger.info(
+        "ibge_abate_success",
+        especie=especie,
+        records=len(df),
+    )
+
+    if return_meta:
+        return df, meta
+    return df
+
+
+async def especies_abate() -> list[str]:
+    return list(client.ESPECIES_ABATE)
+
+
 async def especies_ppm() -> list[str]:
     return sorted(list(client.REBANHOS_PPM.keys()) + list(client.PRODUTOS_ORIGEM_ANIMAL.keys()))
 

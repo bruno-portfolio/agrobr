@@ -1,0 +1,9 @@
+{
+  "source": "ibge_abate",
+  "table": "1092",
+  "especie": "bovino",
+  "trimestre": "202303",
+  "nivel": "uf",
+  "description": "Abate bovino 3o trimestre 2023 por UF",
+  "fetched_at": "2026-02-14"
+}

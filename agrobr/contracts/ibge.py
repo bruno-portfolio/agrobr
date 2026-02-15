@@ -204,7 +204,70 @@ IBGE_PPM_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+IBGE_ABATE_V1 = Contract(
+    name="ibge.abate",
+    version="1.0",
+    effective_from="0.10.0",
+    primary_key=["trimestre", "especie", "localidade"],
+    columns=[
+        Column(
+            name="trimestre",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="localidade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="localidade_cod",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="especie",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="animais_abatidos",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="cabeças",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="peso_carcacas",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="kg",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="fonte",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'trimestre' format is YYYYQQ (e.g. 202303)",
+        "Numeric values are always >= 0",
+        "'fonte' is always 'ibge_abate'",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("producao_anual", IBGE_PAM_V1)
 register_contract("pecuaria_municipal", IBGE_PPM_V1)
+register_contract("abate_trimestral", IBGE_ABATE_V1)
 
-__all__ = ["IBGE_LSPA_V1", "IBGE_PAM_V1", "IBGE_PPM_V1"]
+__all__ = ["IBGE_ABATE_V1", "IBGE_LSPA_V1", "IBGE_PAM_V1", "IBGE_PPM_V1"]

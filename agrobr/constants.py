@@ -216,6 +216,7 @@ class CacheSettings(BaseSettings):
     ttl_ibge_pam: int = 168 * 3600
     ttl_ibge_lspa: int = 24 * 3600
     ttl_ibge_ppm: int = 7 * 24 * 3600
+    ttl_ibge_abate: int = 7 * 24 * 3600
     ttl_abiove: int = 7 * 24 * 3600
     ttl_anda: int = 7 * 24 * 3600
     ttl_deral: int = 24 * 3600

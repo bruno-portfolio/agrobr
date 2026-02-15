@@ -1,5 +1,6 @@
 """Camada semântica de datasets do agrobr."""
 
+from agrobr.datasets.abate_trimestral import abate_trimestral
 from agrobr.datasets.balanco import balanco
 from agrobr.datasets.credito_rural import credito_rural
 from agrobr.datasets.custo_producao import custo_producao
@@ -20,6 +21,7 @@ from agrobr.datasets.registry import (
 )
 
 __all__ = [
+    "abate_trimestral",
     "balanco",
     "credito_rural",
     "custo_producao",

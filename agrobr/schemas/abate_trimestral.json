@@ -1,0 +1,67 @@
+{
+  "name": "ibge.abate",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
+  "primary_key": ["trimestre", "especie", "localidade"],
+  "columns": [
+    {
+      "name": "trimestre",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Trimestre no formato YYYYQQ (ex: 202303)"
+    },
+    {
+      "name": "localidade",
+      "type": "string",
+      "nullable": true,
+      "stable": true,
+      "description": "UF"
+    },
+    {
+      "name": "localidade_cod",
+      "type": "integer",
+      "nullable": true,
+      "stable": true,
+      "description": "Código IBGE da UF"
+    },
+    {
+      "name": "especie",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Espécie: bovino, suino ou frango"
+    },
+    {
+      "name": "animais_abatidos",
+      "type": "float",
+      "nullable": true,
+      "stable": true,
+      "unit": "cabeças",
+      "min_value": 0,
+      "description": "Quantidade de animais abatidos"
+    },
+    {
+      "name": "peso_carcacas",
+      "type": "float",
+      "nullable": true,
+      "stable": true,
+      "unit": "kg",
+      "min_value": 0,
+      "description": "Peso total das carcaças em quilogramas"
+    },
+    {
+      "name": "fonte",
+      "type": "string",
+      "nullable": false,
+      "stable": true,
+      "description": "Origem dos dados (ibge_abate)"
+    }
+  ],
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'trimestre' format is YYYYQQ (e.g. 202303)",
+    "Numeric values are always >= 0",
+    "'fonte' is always 'ibge_abate'"
+  ]
+}

@@ -8,6 +8,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **IBGE Abate Trimestral**: abate bovino, suíno e frango por UF desde 1997 — 54 testes, contrato, golden data
 - **IBGE PPM — Pesquisa da Pecuária Municipal (roadmap 2.8)** — Nova pesquisa no módulo IBGE:
   efetivo de rebanhos (10 espécies, tabela SIDRA 3939) e produção de origem animal (6 produtos,
   tabela 74). API pública `ibge.ppm()` com filtros por espécie/ano/UF/nível e `ibge.especies_ppm()`.

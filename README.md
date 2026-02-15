@@ -77,7 +77,7 @@ async def main():
     print(brasil)
 ```
 
-### IBGE - PAM, LSPA e PPM
+### IBGE - PAM, LSPA, PPM e Abate
 
 ```python
 from agrobr import ibge
@@ -97,6 +97,10 @@ async def main():
 
     # Produção de origem animal
     df = await ibge.ppm('leite', ano=2023)
+
+    # Abate Trimestral — bovino, suíno, frango
+    df = await ibge.abate('bovino', trimestre='202303')
+    df = await ibge.abate('frango', trimestre='202303', uf='PR')
 
     # Múltiplos anos
     df = await ibge.pam('milho', ano=[2020, 2021, 2022, 2023])
@@ -350,6 +354,7 @@ Use `agrobr health --all` para verificar localmente.
 | `exportacao` | Exportações agrícolas | ComexStat → ABIOVE |
 | `fertilizante` | Entregas de fertilizantes | ANDA |
 | `custo_producao` | Custos de produção | CONAB |
+| `abate_trimestral` | Abate de bovinos, suínos e frangos por UF | IBGE Abate |
 
 ## Fontes Suportadas
 

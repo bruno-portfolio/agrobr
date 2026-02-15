@@ -38,6 +38,15 @@
 - **Frequencia**: Anual
 - **Serie**: 1974-presente (51 anos)
 
+### Abate - Pesquisa Trimestral do Abate de Animais
+
+- **Tabelas SIDRA**: 1092 (bovinos), 1093 (suinos), 1094 (frangos)
+- **Cobertura**: Brasil + UF (27 UFs)
+- **Frequencia**: Trimestral
+- **Serie**: 1997-presente
+- **Especies**: bovino, suino, frango
+- **Variaveis**: animais abatidos (cabecas), peso das carcacas (kg)
+
 ## Variaveis
 
 | Codigo | Nome | Unidade |
@@ -223,6 +232,55 @@ especies = await ibge.especies_ppm()
 # ['bovino', 'bubalino', 'caprino', 'casulos', 'codornas', ...]
 ```
 
+## Uso - Abate Trimestral
+
+### Basico
+
+```python
+import asyncio
+from agrobr import ibge
+
+async def main():
+    # Abate bovino por UF
+    df = await ibge.abate('bovino', trimestre='202303')
+
+    # Abate de frango no Parana
+    df = await ibge.abate('frango', trimestre='202303', uf='PR')
+
+    # Abate de suinos — Brasil
+    df = await ibge.abate('suino', trimestre='202304')
+
+    # Com metadados
+    df, meta = await ibge.abate('bovino', trimestre='202303', return_meta=True)
+
+asyncio.run(main())
+```
+
+## Schema - Abate Trimestral
+
+| Coluna | Tipo | Descricao |
+|--------|------|-----------|
+| `trimestre` | str | Trimestre no formato YYYYQQ |
+| `localidade` | str | UF |
+| `localidade_cod` | int | Codigo IBGE da localidade |
+| `especie` | str | bovino, suino ou frango |
+| `animais_abatidos` | float | Quantidade abatida (cabecas) |
+| `peso_carcacas` | float | Peso total das carcacas (kg) |
+| `fonte` | str | "ibge_abate" |
+
+## Especies Abate
+
+| Codigo | Especie | Tabela SIDRA |
+|--------|---------|--------------|
+| `bovino` | Bovino | 1092 |
+| `suino` | Suino | 1093 |
+| `frango` | Frango | 1094 |
+
+```python
+especies = await ibge.especies_abate()
+# ['bovino', 'suino', 'frango']
+```
+
 ## Cache
 
 | Pesquisa | TTL | Stale maximo |
@@ -230,6 +288,7 @@ especies = await ibge.especies_ppm()
 | PAM | 7 dias | 90 dias |
 | LSPA | 24 horas | 30 dias |
 | PPM | 7 dias | 90 dias |
+| Abate | 7 dias | 90 dias |
 
 ## Atualizacao
 
@@ -238,3 +297,4 @@ especies = await ibge.especies_ppm()
 | PAM | Anual (agosto-setembro) |
 | LSPA | Mensal |
 | PPM | Anual (setembro) |
+| Abate | Trimestral (T+2 meses) |
