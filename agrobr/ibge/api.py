@@ -161,7 +161,24 @@ async def pam(
         classifications={"782": produto_cod},
     )
 
-    df = client.parse_sidra_response(df)
+    df = client.parse_sidra_response(
+        df,
+        rename_columns={
+            "MC": "unidade_cod",
+            "MN": "unidade_medida",
+            "D1C": "localidade_cod",
+            "D1N": "localidade",
+            "D2C": "ano_cod",
+            "D2N": "ano",
+            "D3C": "variavel_cod",
+            "D3N": "variavel",
+            "D4C": "produto_cod",
+            "D4N": "produto_raw",
+        },
+    )
+
+    if "ano" in df.columns:
+        df["ano"] = pd.to_numeric(df["ano"], errors="coerce").astype("Int64")
 
     if "variavel" in df.columns and "valor" in df.columns:
         df_pivot = df.pivot_table(
@@ -173,6 +190,7 @@ async def pam(
 
         rename_map = {
             "Área plantada": "area_plantada",
+            "Área plantada ou destinada à colheita": "area_plantada",
             "Área colhida": "area_colhida",
             "Quantidade produzida": "producao",
             "Rendimento médio da produção": "rendimento",

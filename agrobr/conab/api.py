@@ -107,6 +107,8 @@ async def safras(
     meta.parse_duration_ms = int((time.perf_counter() - parse_start) * 1000)
     meta.parser_version = parser.version
 
+    safra_list = [s for s in safra_list if s.uf is not None]
+
     if uf:
         safra_list = [s for s in safra_list if s.uf == uf.upper()]
 
@@ -125,6 +127,27 @@ async def safras(
         return df
 
     df = pd.DataFrame([s.model_dump() for s in safra_list])
+
+    for col in ("area_plantada", "produtividade", "producao"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    if "area_colhida" not in df.columns:
+        df["area_colhida"] = df.get("area_plantada")
+
+    contract_cols = [
+        "fonte",
+        "produto",
+        "safra",
+        "uf",
+        "area_plantada",
+        "area_colhida",
+        "produtividade",
+        "producao",
+        "levantamento",
+        "data_publicacao",
+    ]
+    df = df[[c for c in contract_cols if c in df.columns]]
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -197,6 +220,21 @@ async def balanco(
         return pd.DataFrame()
 
     df = pd.DataFrame(suprimentos)
+
+    if "suprimento_total" in df.columns:
+        df = df.rename(columns={"suprimento_total": "suprimento"})
+
+    for col in (
+        "estoque_inicial",
+        "producao",
+        "importacao",
+        "suprimento",
+        "consumo",
+        "exportacao",
+        "estoque_final",
+    ):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
 
     if as_polars:
         try:

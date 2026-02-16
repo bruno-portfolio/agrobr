@@ -133,20 +133,25 @@ class TestPamMocked:
 
     @pytest.fixture
     def mock_sidra_response(self):
-        """Resposta mockada do SIDRA."""
+        """Resposta mockada do SIDRA (formato real tabela 5457)."""
         return pd.DataFrame(
             {
                 "NC": ["3", "3"],
                 "NN": ["Unidade da Federação", "Unidade da Federação"],
-                "MC": ["51", "41"],
-                "MN": ["Mato Grosso", "Paraná"],
+                "MC": ["1006", "1006"],
+                "MN": ["Hectares", "Hectares"],
                 "V": ["15000000", "12000000"],
-                "D1C": ["2023", "2023"],
-                "D1N": ["2023", "2023"],
-                "D2C": ["214", "214"],
-                "D2N": ["Área plantada", "Área plantada"],
-                "D3C": ["40124", "40124"],
-                "D3N": ["Soja (em grão)", "Soja (em grão)"],
+                "D1C": ["51", "41"],
+                "D1N": ["Mato Grosso", "Paraná"],
+                "D2C": ["2023", "2023"],
+                "D2N": ["2023", "2023"],
+                "D3C": ["214", "214"],
+                "D3N": [
+                    "Área plantada ou destinada à colheita",
+                    "Área plantada ou destinada à colheita",
+                ],
+                "D4C": ["40124", "40124"],
+                "D4N": ["Soja (em grão)", "Soja (em grão)"],
             }
         )
 

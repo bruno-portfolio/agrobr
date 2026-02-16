@@ -133,6 +133,20 @@ class ConabParserV1:
 
         return safras
 
+    _SUPRIMENTO_SEPARATE_SHEETS: dict[str, str] = {
+        "soja": "Suprimento - Soja",
+    }
+
+    _SUPRIMENTO_ITEM_MAP: dict[str, str] = {
+        "estoque inicial": "estoque_inicial",
+        "produ": "producao",
+        "importa": "importacao",
+        "exporta": "exportacao",
+        "estoque final": "estoque_final",
+        "sementes": "sementes_outros",
+        "processamento": "processamento",
+    }
+
     def parse_suprimento(
         self,
         xlsx: BytesIO,
@@ -148,7 +162,35 @@ class ConabParserV1:
         Returns:
             Lista de dicts com dados de suprimento
         """
+        if produto and produto.lower() in self._SUPRIMENTO_SEPARATE_SHEETS:
+            sheet_name = self._SUPRIMENTO_SEPARATE_SHEETS[produto.lower()]
+            try:
+                result = self._parse_suprimento_wide(xlsx, sheet_name, produto)
+                if result:
+                    logger.info(
+                        "conab_parse_suprimento_success",
+                        produto=produto,
+                        records=len(result),
+                    )
+                    return result
+            except (ParseError, Exception) as e:
+                logger.warning(
+                    "conab_suprimento_wide_fallback",
+                    produto=produto,
+                    sheet=sheet_name,
+                    error=str(e),
+                )
+
+        return self._parse_suprimento_long(xlsx, produto)
+
+    def _parse_suprimento_long(
+        self,
+        xlsx: BytesIO,
+        produto: str | None = None,
+    ) -> list[dict[str, Any]]:
         try:
+            if hasattr(xlsx, "seek"):
+                xlsx.seek(0)
             df = pd.read_excel(xlsx, sheet_name="Suprimento", header=None)
         except Exception as e:
             raise ParseError(
@@ -212,6 +254,119 @@ class ConabParserV1:
             produto=produto,
             records=len(suprimentos),
         )
+
+        return suprimentos
+
+    def _parse_suprimento_wide(
+        self,
+        xlsx: BytesIO,
+        sheet_name: str,
+        produto: str,
+    ) -> list[dict[str, Any]]:
+        if hasattr(xlsx, "seek"):
+            xlsx.seek(0)
+        df = pd.read_excel(xlsx, sheet_name=sheet_name, header=None)
+
+        safra_row = None
+        for idx, row in df.iterrows():
+            cell = str(row.iloc[0]).upper() if pd.notna(row.iloc[0]) else ""
+            if "PRODUTO" in cell or "SAFRA" in cell:
+                safra_row = cast(int, idx) + 1
+                break
+
+        if safra_row is None:
+            raise ParseError(
+                source="conab",
+                parser_version=self.version,
+                reason=f"Não encontrou header na aba {sheet_name}",
+            )
+
+        safras: list[str] = []
+        row_safras = df.iloc[safra_row]
+        for col_idx in range(1, len(row_safras)):
+            cell = (
+                str(row_safras.iloc[col_idx]).strip() if pd.notna(row_safras.iloc[col_idx]) else ""
+            )
+            if "/" in cell and len(cell) <= 8:
+                safras.append(cell)
+
+        if not safras:
+            raise ParseError(
+                source="conab",
+                parser_version=self.version,
+                reason=f"Não encontrou safras na aba {sheet_name}",
+            )
+
+        items: dict[str, dict[str, Decimal | None]] = {s: {} for s in safras}
+
+        import re
+
+        _section_re = re.compile(r"^\d+\.\s+\S")
+
+        in_section_1 = False
+        for idx in range(safra_row + 1, len(df)):
+            row = df.iloc[idx]
+            label = str(row.iloc[0]).strip() if pd.notna(row.iloc[0]) else ""
+            if not label:
+                continue
+
+            label_lower = label.lower()
+
+            if _section_re.match(label):
+                if label.startswith("1."):
+                    in_section_1 = True
+                    continue
+                else:
+                    break
+
+            if not in_section_1:
+                continue
+
+            field_name = None
+            for key, field in self._SUPRIMENTO_ITEM_MAP.items():
+                if key in label_lower:
+                    field_name = field
+                    break
+
+            if field_name is None:
+                continue
+
+            for i, safra_str in enumerate(safras):
+                col_idx = i + 1
+                if col_idx < len(row):
+                    items[safra_str][field_name] = self._parse_decimal(row.iloc[col_idx])
+
+        suprimentos: list[dict[str, Any]] = []
+        for safra_str in safras:
+            data = items[safra_str]
+            est_ini = data.get("estoque_inicial")
+            prod = data.get("producao")
+            imp = data.get("importacao")
+
+            sup = None
+            if est_ini is not None and prod is not None and imp is not None:
+                sup = est_ini + prod + imp
+
+            sem = data.get("sementes_outros")
+            proc = data.get("processamento")
+            consumo = None
+            if sem is not None and proc is not None:
+                consumo = sem + proc
+
+            suprimentos.append(
+                {
+                    "produto": produto.upper(),
+                    "safra": safra_str,
+                    "estoque_inicial": est_ini,
+                    "producao": prod,
+                    "importacao": imp,
+                    "suprimento_total": sup,
+                    "consumo": consumo,
+                    "exportacao": data.get("exportacao"),
+                    "estoque_final": data.get("estoque_final"),
+                    "unidade": "mil_ton",
+                }
+            )
 
         return suprimentos
 
