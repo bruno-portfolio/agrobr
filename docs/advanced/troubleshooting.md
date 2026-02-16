@@ -112,7 +112,7 @@ Guia para resolver problemas comuns.
 é usado em um processo multi-thread (ex: MCP server, FastAPI com threads),
 chamadas concorrentes ao cache podem causar segfault ou deadlock.
 
-**Solução:** A partir do Unreleased (pós-0.10.0), o `DuckDBStore` usa
+**Solução:** A partir da v0.10.1, o `DuckDBStore` usa
 `threading.Lock` interno em todos os métodos. Se estiver em versão anterior,
 atualize:
 
