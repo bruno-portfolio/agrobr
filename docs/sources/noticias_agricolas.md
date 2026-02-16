@@ -29,6 +29,14 @@ acionado automaticamente pelo módulo CEPEA quando:
 2. Playwright não está instalado ou também falha
 3. Circuit breaker abre para CEPEA httpx
 
+## Dados Semanais
+
+Algumas tabelas do NA contêm médias semanais no formato `09 - 13/02/2026`.
+O parser extrai a data final do intervalo e marca esses registros com
+`anomalies=["media_semanal"]` e `meta["tipo"]="media_semanal"`,
+`meta["periodo"]="09 - 13/02/2026"`. Isso permite distinguir cotações
+diárias de médias semanais no DataFrame retornado.
+
 ## Fonte
 
 - URL: `https://www.noticiasagricolas.com.br/cotacoes/`

@@ -106,6 +106,20 @@ Guia para resolver problemas comuns.
 
 ## Erros de Cache
 
+### DuckDB Lock / Segfault em Multi-Thread
+
+**Causa:** O DuckDB `DuckDBPyConnection` não é thread-safe. Se o agrobr
+é usado em um processo multi-thread (ex: MCP server, FastAPI com threads),
+chamadas concorrentes ao cache podem causar segfault ou deadlock.
+
+**Solução:** A partir do Unreleased (pós-0.10.0), o `DuckDBStore` usa
+`threading.Lock` interno em todos os métodos. Se estiver em versão anterior,
+atualize:
+
+```bash
+pip install --upgrade agrobr
+```
+
 ### `CacheError`
 
 **Causa:** Problema com DuckDB ou arquivo de cache corrompido.

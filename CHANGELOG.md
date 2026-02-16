@@ -7,6 +7,26 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Fixed
+- **DuckDB thread-safety** — `DuckDBStore` agora usa `threading.Lock` em todos os
+  métodos que acessam a conexão. `get_store()` usa double-checked locking. Corrige
+  segfault/deadlock quando múltiplas threads compartilham o singleton (ex: MCP server
+  despachando requests para threads diferentes)
+- **Parser NA semanal** — `_parse_date` aceita formato semanal `'09 - 13/02/2026'`
+  (média CEPEA semanal). Registros semanais marcados com `anomalies=["media_semanal"]`
+  e `meta["tipo"]="media_semanal"`. Antes: linhas ignoradas com warning
+  `parse_row_failed`
+- **ANDA ano errado** — `fetch_entregas_pdf` agora retorna `tuple[bytes, int]` com
+  `ano_real` extraído do texto do link (não da URL de upload que contém o ano do
+  upload, não dos dados). Corrige parser buscando header "2026" em PDF de dados 2025
+
+### Changed
+- `integration_tests.yml` — timeout global adicionado
+- `pyproject.toml` — `pytest-timeout` adicionado como dependência de teste
+- 3 testes de thread-safety no DuckDB store (`test_threaded_reads`,
+  `test_threaded_writes`, `test_threaded_indicadores` — 5 threads × 10-20 ops cada)
+- Suite: 2719 passed, 0 failed (era 2660+)
+
 ## [0.10.0] - 2026-02-15
 
 ### Added
