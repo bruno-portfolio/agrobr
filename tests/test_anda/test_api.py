@@ -64,7 +64,10 @@ class TestEntregas:
         mock_df = _mock_parsed_df()
         with (
             patch.object(
-                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+                api.client,
+                "fetch_entregas_pdf",
+                new_callable=AsyncMock,
+                return_value=(b"fake_pdf", 2024),
             ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
@@ -80,7 +83,10 @@ class TestEntregas:
         mock_df = _mock_parsed_df()
         with (
             patch.object(
-                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+                api.client,
+                "fetch_entregas_pdf",
+                new_callable=AsyncMock,
+                return_value=(b"fake_pdf", 2024),
             ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
@@ -94,7 +100,10 @@ class TestEntregas:
         mock_df = _mock_parsed_df()
         with (
             patch.object(
-                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+                api.client,
+                "fetch_entregas_pdf",
+                new_callable=AsyncMock,
+                return_value=(b"fake_pdf", 2024),
             ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
@@ -108,7 +117,10 @@ class TestEntregas:
         mock_df = _mock_parsed_df()
         with (
             patch.object(
-                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+                api.client,
+                "fetch_entregas_pdf",
+                new_callable=AsyncMock,
+                return_value=(b"fake_pdf", 2024),
             ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):
@@ -125,7 +137,10 @@ class TestEntregas:
         mock_df = _mock_parsed_df()
         with (
             patch.object(
-                api.client, "fetch_entregas_pdf", new_callable=AsyncMock, return_value=b"fake_pdf"
+                api.client,
+                "fetch_entregas_pdf",
+                new_callable=AsyncMock,
+                return_value=(b"fake_pdf", 2024),
             ),
             patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df),
         ):

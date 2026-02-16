@@ -89,11 +89,11 @@ async def entregas(
     logger.info("anda_entregas", ano=ano, uf=uf, produto=produto, agregacao=agregacao)
 
     t0 = time.monotonic()
-    pdf_bytes = await client.fetch_entregas_pdf(ano)
+    pdf_bytes, ano_real = await client.fetch_entregas_pdf(ano)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_entregas_pdf(pdf_bytes, ano=ano, produto=produto)
+    df = parser.parse_entregas_pdf(pdf_bytes, ano=ano_real, produto=produto)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     # Filtra por UF

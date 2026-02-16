@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -111,6 +112,7 @@ class DuckDBStore:
         self.settings = settings or constants.CacheSettings()
         self.db_path = self.settings.cache_dir / self.settings.db_name
         self._conn: duckdb.DuckDBPyConnection | None = None
+        self._lock = threading.Lock()
 
     def _get_conn(self) -> duckdb.DuckDBPyConnection:
         if self._conn is None:
@@ -142,88 +144,89 @@ class DuckDBStore:
         from agrobr import __version__
         from agrobr.cache.keys import is_legacy_key, legacy_key_prefix, parse_cache_key
 
-        conn = self._get_conn()
-        now = _utcnow()
+        with self._lock:
+            conn = self._get_conn()
+            now = _utcnow()
 
-        result = conn.execute(
-            "SELECT data, expires_at, stale, key FROM cache_entries WHERE key = ?",
-            [key],
-        ).fetchone()
-
-        if result is not None:
-            data, expires_at, stale, stored_key = result
-
-            if self.settings.strict_mode and not is_legacy_key(stored_key):
-                try:
-                    parsed = parse_cache_key(stored_key)
-                    if parsed["lib_version"] != __version__:
-                        logger.debug(
-                            "cache_miss",
-                            key=key,
-                            reason="strict_version_mismatch",
-                            cached_version=parsed["lib_version"],
-                            current_version=__version__,
-                        )
-                        return None, False
-                except ValueError:
-                    pass
-
-            conn.execute(
-                "UPDATE cache_entries SET hit_count = hit_count + 1, last_accessed_at = ? WHERE key = ?",
-                [now, key],
-            )
-
-            if expires_at < now:
-                logger.debug("cache_hit", key=key, stale=True, reason="expired")
-                return data, True
-
-            if stale:
-                logger.debug("cache_hit", key=key, stale=True, reason="marked_stale")
-                return data, True
-
-            logger.debug("cache_hit", key=key, stale=False)
-            return data, False
-
-        if not is_legacy_key(key):
-            prefix = legacy_key_prefix(key)
-            legacy_result = conn.execute(
-                "SELECT key, data, source, expires_at, stale FROM cache_entries WHERE key LIKE ? || '%'",
-                [prefix],
+            result = conn.execute(
+                "SELECT data, expires_at, stale, key FROM cache_entries WHERE key = ?",
+                [key],
             ).fetchone()
 
-            if legacy_result is not None:
-                legacy_key, data, source, expires_at, stale = legacy_result
+            if result is not None:
+                data, expires_at, stale, stored_key = result
 
-                if is_legacy_key(legacy_key):
-                    remaining_ttl = max(int((expires_at - now).total_seconds()), 0)
-                    conn.execute("DELETE FROM cache_entries WHERE key = ?", [legacy_key])
-                    conn.execute(
-                        """
-                        INSERT OR REPLACE INTO cache_entries
-                        (key, data, source, created_at, expires_at, last_accessed_at, hit_count, version, stale)
-                        VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?)
-                        """,
-                        [
-                            key,
-                            data,
-                            source,
-                            now,
-                            now + timedelta(seconds=remaining_ttl),
-                            now,
-                            stale,
-                        ],
-                    )
-                    logger.info(
-                        "legacy_cache_migrated",
-                        old_key=legacy_key,
-                        new_key=key,
-                    )
+                if self.settings.strict_mode and not is_legacy_key(stored_key):
+                    try:
+                        parsed = parse_cache_key(stored_key)
+                        if parsed["lib_version"] != __version__:
+                            logger.debug(
+                                "cache_miss",
+                                key=key,
+                                reason="strict_version_mismatch",
+                                cached_version=parsed["lib_version"],
+                                current_version=__version__,
+                            )
+                            return None, False
+                    except ValueError:
+                        pass
 
-                    if expires_at < now:
-                        return data, True
-                    if stale:
-                        return data, True
-                    return data, False
+                conn.execute(
+                    "UPDATE cache_entries SET hit_count = hit_count + 1, last_accessed_at = ? WHERE key = ?",
+                    [now, key],
+                )
+
+                if expires_at < now:
+                    logger.debug("cache_hit", key=key, stale=True, reason="expired")
+                    return data, True
+
+                if stale:
+                    logger.debug("cache_hit", key=key, stale=True, reason="marked_stale")
+                    return data, True
+
+                logger.debug("cache_hit", key=key, stale=False)
+                return data, False
+
+            if not is_legacy_key(key):
+                prefix = legacy_key_prefix(key)
+                legacy_result = conn.execute(
+                    "SELECT key, data, source, expires_at, stale FROM cache_entries WHERE key LIKE ? || '%'",
+                    [prefix],
+                ).fetchone()
+
+                if legacy_result is not None:
+                    legacy_key, data, source, expires_at, stale = legacy_result
+
+                    if is_legacy_key(legacy_key):
+                        remaining_ttl = max(int((expires_at - now).total_seconds()), 0)
+                        conn.execute("DELETE FROM cache_entries WHERE key = ?", [legacy_key])
+                        conn.execute(
+                            """
+                            INSERT OR REPLACE INTO cache_entries
+                            (key, data, source, created_at, expires_at, last_accessed_at, hit_count, version, stale)
+                            VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?)
+                            """,
+                            [
+                                key,
+                                data,
+                                source,
+                                now,
+                                now + timedelta(seconds=remaining_ttl),
+                                now,
+                                stale,
+                            ],
+                        )
+                        logger.info(
+                            "legacy_cache_migrated",
+                            old_key=legacy_key,
+                            new_key=key,
+                        )
+
+                        if expires_at < now:
+                            return data, True
+                        if stale:
+                            return data, True
+                        return data, False
 
         logger.debug("cache_miss", key=key, reason="not_found")
         return None, False
@@ -236,30 +239,33 @@ class DuckDBStore:
         ttl_seconds: int,
     ) -> None:
         """Grava entrada no cache."""
-        conn = self._get_conn()
-        now = _utcnow()
-        expires_at = now + timedelta(seconds=ttl_seconds)
+        with self._lock:
+            conn = self._get_conn()
+            now = _utcnow()
+            expires_at = now + timedelta(seconds=ttl_seconds)
 
-        conn.execute(
-            """
-            INSERT OR REPLACE INTO cache_entries
-            (key, data, source, created_at, expires_at, last_accessed_at, hit_count, version, stale)
-            VALUES (?, ?, ?, ?, ?, ?, 0, 1, FALSE)
-            """,
-            [key, data, source.value, now, expires_at, now],
-        )
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO cache_entries
+                (key, data, source, created_at, expires_at, last_accessed_at, hit_count, version, stale)
+                VALUES (?, ?, ?, ?, ?, ?, 0, 1, FALSE)
+                """,
+                [key, data, source.value, now, expires_at, now],
+            )
 
         logger.debug("cache_write", key=key, ttl_seconds=ttl_seconds)
 
     def cache_invalidate(self, key: str) -> None:
         """Marca entrada como stale."""
-        conn = self._get_conn()
-        conn.execute("UPDATE cache_entries SET stale = TRUE WHERE key = ?", [key])
+        with self._lock:
+            conn = self._get_conn()
+            conn.execute("UPDATE cache_entries SET stale = TRUE WHERE key = ?", [key])
 
     def cache_delete(self, key: str) -> None:
         """Remove entrada do cache."""
-        conn = self._get_conn()
-        conn.execute("DELETE FROM cache_entries WHERE key = ?", [key])
+        with self._lock:
+            conn = self._get_conn()
+            conn.execute("DELETE FROM cache_entries WHERE key = ?", [key])
 
     def cache_clear(
         self,
@@ -267,24 +273,26 @@ class DuckDBStore:
         older_than_days: int | None = None,
     ) -> int:
         """Limpa cache com filtros opcionais. Retorna número de entradas removidas."""
-        conn = self._get_conn()
+        with self._lock:
+            conn = self._get_conn()
 
-        conditions = []
-        params: list[Any] = []
+            conditions = []
+            params: list[Any] = []
 
-        if source:
-            conditions.append("source = ?")
-            params.append(source.value)
+            if source:
+                conditions.append("source = ?")
+                params.append(source.value)
 
-        if older_than_days:
-            cutoff = _utcnow() - timedelta(days=older_than_days)
-            conditions.append("created_at < ?")
-            params.append(cutoff)
+            if older_than_days:
+                cutoff = _utcnow() - timedelta(days=older_than_days)
+                conditions.append("created_at < ?")
+                params.append(cutoff)
 
-        where = " AND ".join(conditions) if conditions else "1=1"
-        result = conn.execute(f"DELETE FROM cache_entries WHERE {where} RETURNING *", params)
+            where = " AND ".join(conditions) if conditions else "1=1"
+            result = conn.execute(f"DELETE FROM cache_entries WHERE {where} RETURNING *", params)
 
-        count = len(result.fetchall()) if result else 0
+            count = len(result.fetchall()) if result else 0
+
         logger.info("cache_cleared", count=count, source=source, older_than_days=older_than_days)
         return count
 
@@ -301,21 +309,22 @@ class DuckDBStore:
         if not self.settings.save_to_history:
             return
 
-        conn = self._get_conn()
-        now = _utcnow()
+        with self._lock:
+            conn = self._get_conn()
+            now = _utcnow()
 
-        try:
-            conn.execute(
-                """
-                INSERT INTO history_entries
-                (key, data, source, data_date, collected_at, parser_version, fingerprint_hash)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                [key, data, source.value, data_date, now, parser_version, fingerprint_hash],
-            )
-            logger.debug("history_saved", key=key, data_date=data_date)
-        except duckdb.ConstraintException:
-            logger.debug("history_exists", key=key, data_date=data_date)
+            try:
+                conn.execute(
+                    """
+                    INSERT INTO history_entries
+                    (key, data, source, data_date, collected_at, parser_version, fingerprint_hash)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    [key, data, source.value, data_date, now, parser_version, fingerprint_hash],
+                )
+                logger.debug("history_saved", key=key, data_date=data_date)
+            except duckdb.ConstraintException:
+                logger.debug("history_exists", key=key, data_date=data_date)
 
     def history_get(
         self,
@@ -323,28 +332,29 @@ class DuckDBStore:
         data_date: datetime | None = None,
     ) -> bytes | None:
         """Busca dados no histórico. Se data_date não especificado, retorna mais recente."""
-        conn = self._get_conn()
+        with self._lock:
+            conn = self._get_conn()
 
-        if data_date:
-            result = conn.execute(
-                """
-                SELECT data FROM history_entries
-                WHERE key = ? AND data_date = ?
-                ORDER BY collected_at DESC LIMIT 1
-                """,
-                [key, data_date],
-            ).fetchone()
-        else:
-            result = conn.execute(
-                """
-                SELECT data FROM history_entries
-                WHERE key = ?
-                ORDER BY data_date DESC, collected_at DESC LIMIT 1
-                """,
-                [key],
-            ).fetchone()
+            if data_date:
+                result = conn.execute(
+                    """
+                    SELECT data FROM history_entries
+                    WHERE key = ? AND data_date = ?
+                    ORDER BY collected_at DESC LIMIT 1
+                    """,
+                    [key, data_date],
+                ).fetchone()
+            else:
+                result = conn.execute(
+                    """
+                    SELECT data FROM history_entries
+                    WHERE key = ?
+                    ORDER BY data_date DESC, collected_at DESC LIMIT 1
+                    """,
+                    [key],
+                ).fetchone()
 
-        return result[0] if result else None
+            return result[0] if result else None
 
     def indicadores_query(
         self,
@@ -365,35 +375,36 @@ class DuckDBStore:
         Returns:
             Lista de dicts com dados dos indicadores
         """
-        conn = self._get_conn()
+        with self._lock:
+            conn = self._get_conn()
 
-        conditions = ["produto = ?"]
-        params: list[Any] = [produto.lower()]
+            conditions = ["produto = ?"]
+            params: list[Any] = [produto.lower()]
 
-        if inicio:
-            conditions.append("data >= ?")
-            params.append(inicio)
+            if inicio:
+                conditions.append("data >= ?")
+                params.append(inicio)
 
-        if fim:
-            conditions.append("data <= ?")
-            params.append(fim)
+            if fim:
+                conditions.append("data <= ?")
+                params.append(fim)
 
-        if praca:
-            conditions.append("praca = ?")
-            params.append(praca)
+            if praca:
+                conditions.append("praca = ?")
+                params.append(praca)
 
-        where = " AND ".join(conditions)
+            where = " AND ".join(conditions)
 
-        result = conn.execute(
-            f"""
-            SELECT produto, praca, data, valor, unidade, fonte, metodologia,
-                   variacao_percentual, collected_at, parser_version
-            FROM indicadores
-            WHERE {where}
-            ORDER BY data DESC
-            """,
-            params,
-        ).fetchall()
+            result = conn.execute(
+                f"""
+                SELECT produto, praca, data, valor, unidade, fonte, metodologia,
+                       variacao_percentual, collected_at, parser_version
+                FROM indicadores
+                WHERE {where}
+                ORDER BY data DESC
+                """,
+                params,
+            ).fetchall()
 
         columns = [
             "produto",
@@ -439,7 +450,6 @@ class DuckDBStore:
         if not indicadores:
             return 0
 
-        conn = self._get_conn()
         now = _utcnow()
 
         rows: list[tuple[Any, ...]] = []
@@ -452,30 +462,32 @@ class DuckDBStore:
         if not rows:
             return 0
 
-        count = 0
-        conn.execute(_STAGING_DDL)
+        with self._lock:
+            conn = self._get_conn()
+            count = 0
+            conn.execute(_STAGING_DDL)
 
-        for start in range(0, len(rows), UPSERT_CHUNK_SIZE):
-            chunk = rows[start : start + UPSERT_CHUNK_SIZE]
-            try:
-                conn.execute("DELETE FROM _ind_staging")
-                conn.executemany(_STAGING_INSERT, chunk)
-                conn.execute(_MERGE_SQL)
-                count += len(chunk)
-            except duckdb.Error:
-                conn.execute("DELETE FROM _ind_staging")
-                for row in chunk:
-                    try:
-                        conn.execute(_STAGING_INSERT, list(row))
-                    except duckdb.Error as e:
-                        logger.warning("indicador_upsert_failed", data=row[2], error=str(e))
+            for start in range(0, len(rows), UPSERT_CHUNK_SIZE):
+                chunk = rows[start : start + UPSERT_CHUNK_SIZE]
                 try:
+                    conn.execute("DELETE FROM _ind_staging")
+                    conn.executemany(_STAGING_INSERT, chunk)
                     conn.execute(_MERGE_SQL)
-                    row_count = conn.execute("SELECT count(*) FROM _ind_staging").fetchone()
-                    count += row_count[0] if row_count else 0
-                except duckdb.Error as e:
-                    logger.warning("indicador_merge_failed", error=str(e))
-                conn.execute("DELETE FROM _ind_staging")
+                    count += len(chunk)
+                except duckdb.Error:
+                    conn.execute("DELETE FROM _ind_staging")
+                    for row in chunk:
+                        try:
+                            conn.execute(_STAGING_INSERT, list(row))
+                        except duckdb.Error as e:
+                            logger.warning("indicador_upsert_failed", data=row[2], error=str(e))
+                    try:
+                        conn.execute(_MERGE_SQL)
+                        row_count = conn.execute("SELECT count(*) FROM _ind_staging").fetchone()
+                        count += row_count[0] if row_count else 0
+                    except duckdb.Error as e:
+                        logger.warning("indicador_merge_failed", error=str(e))
+                    conn.execute("DELETE FROM _ind_staging")
 
         logger.info("indicadores_upsert", count=count, total=len(indicadores))
         return count
@@ -497,42 +509,47 @@ class DuckDBStore:
         Returns:
             Set de datas presentes no histórico
         """
-        conn = self._get_conn()
+        with self._lock:
+            conn = self._get_conn()
 
-        conditions = ["produto = ?"]
-        params: list[Any] = [produto.lower()]
+            conditions = ["produto = ?"]
+            params: list[Any] = [produto.lower()]
 
-        if inicio:
-            conditions.append("data >= ?")
-            params.append(inicio)
+            if inicio:
+                conditions.append("data >= ?")
+                params.append(inicio)
 
-        if fim:
-            conditions.append("data <= ?")
-            params.append(fim)
+            if fim:
+                conditions.append("data <= ?")
+                params.append(fim)
 
-        where = " AND ".join(conditions)
+            where = " AND ".join(conditions)
 
-        result = conn.execute(
-            f"SELECT DISTINCT data FROM indicadores WHERE {where}",
-            params,
-        ).fetchall()
+            result = conn.execute(
+                f"SELECT DISTINCT data FROM indicadores WHERE {where}",
+                params,
+            ).fetchall()
 
         dates = {row[0] for row in result}
         return dates
 
     def close(self) -> None:
         """Fecha conexão."""
-        if self._conn:
-            self._conn.close()
-            self._conn = None
+        with self._lock:
+            if self._conn:
+                self._conn.close()
+                self._conn = None
 
 
 _store: DuckDBStore | None = None
+_store_lock = threading.Lock()
 
 
 def get_store() -> DuckDBStore:
-    """Obtém instância global do store."""
+    """Obtém instância global do store (thread-safe)."""
     global _store
     if _store is None:
-        _store = DuckDBStore()
+        with _store_lock:
+            if _store is None:
+                _store = DuckDBStore()
     return _store

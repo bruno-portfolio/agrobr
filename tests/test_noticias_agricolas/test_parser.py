@@ -24,9 +24,21 @@ class TestParseFunctions:
         """Testa parse de data válida."""
         result = _parse_date("03/02/2026")
         assert result is not None
-        assert result.day == 3
-        assert result.month == 2
-        assert result.year == 2026
+        dt, is_weekly = result
+        assert dt.day == 3
+        assert dt.month == 2
+        assert dt.year == 2026
+        assert is_weekly is False
+
+    def test_parse_date_weekly(self):
+        """Testa parse de data semanal (ex: '09 - 13/02/2026')."""
+        result = _parse_date("09 - 13/02/2026")
+        assert result is not None
+        dt, is_weekly = result
+        assert dt.day == 13
+        assert dt.month == 2
+        assert dt.year == 2026
+        assert is_weekly is True
 
     def test_parse_date_invalid(self):
         """Testa parse de data inválida."""

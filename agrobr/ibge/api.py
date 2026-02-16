@@ -493,7 +493,21 @@ async def ppm(
         classifications=classifications,
     )
 
-    df = client.parse_sidra_response(df)
+    df = client.parse_sidra_response(
+        df,
+        rename_columns={
+            "MC": "unidade_cod",
+            "MN": "unidade_medida",
+            "D1C": "localidade_cod",
+            "D1N": "localidade",
+            "D2C": "ano_cod",
+            "D2N": "ano",
+            "D3C": "variavel_cod",
+            "D3N": "variavel",
+            "D4C": "especie_cod",
+            "D4N": "especie_raw",
+        },
+    )
 
     if "ano" in df.columns:
         df["ano"] = pd.to_numeric(df["ano"], errors="coerce").astype("Int64")

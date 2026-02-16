@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from unittest import mock
@@ -153,6 +154,79 @@ class TestCacheConcurrent:
 
         data, _ = tmp_store.cache_get("race")
         assert data == b"second"
+
+    def test_threaded_reads(self, tmp_store: DuckDBStore):
+        tmp_store.cache_set("shared", b"payload", Fonte.CEPEA, ttl_seconds=3600)
+        errors: list[str] = []
+
+        def reader(tid: int) -> None:
+            try:
+                for _ in range(20):
+                    data, stale = tmp_store.cache_get("shared")
+                    assert data == b"payload"
+                    assert stale is False
+            except Exception as e:
+                errors.append(f"Thread {tid}: {e}")
+
+        threads = [threading.Thread(target=reader, args=(i,)) for i in range(5)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=10)
+
+        assert errors == [], f"Thread errors: {errors}"
+
+    def test_threaded_writes(self, tmp_store: DuckDBStore):
+        errors: list[str] = []
+
+        def writer(tid: int) -> None:
+            try:
+                for j in range(20):
+                    key = f"t{tid}_k{j}"
+                    tmp_store.cache_set(key, f"v{tid}_{j}".encode(), Fonte.CEPEA, ttl_seconds=3600)
+                    data, _ = tmp_store.cache_get(key)
+                    assert data is not None
+            except Exception as e:
+                errors.append(f"Thread {tid}: {e}")
+
+        threads = [threading.Thread(target=writer, args=(i,)) for i in range(5)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=10)
+
+        assert errors == [], f"Thread errors: {errors}"
+
+    def test_threaded_indicadores(self, tmp_store: DuckDBStore):
+        errors: list[str] = []
+
+        def worker(tid: int) -> None:
+            try:
+                for j in range(10):
+                    tmp_store.indicadores_upsert(
+                        [
+                            {
+                                "produto": f"prod_{tid}",
+                                "praca": f"p_{j}",
+                                "data": datetime(2024, 1, 1) + timedelta(days=j),
+                                "valor": 100.0 + tid + j,
+                                "unidade": "BRL/sc",
+                                "fonte": "cepea",
+                            }
+                        ]
+                    )
+                results = tmp_store.indicadores_query(f"prod_{tid}")
+                assert len(results) == 10
+            except Exception as e:
+                errors.append(f"Thread {tid}: {e}")
+
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(5)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=30)
+
+        assert errors == [], f"Thread errors: {errors}"
 
 
 class TestDBCorrupted:

@@ -62,15 +62,28 @@ PRACAS = {
 }
 
 
-def _parse_date(date_str: str) -> datetime | None:
-    """Converte string de data para datetime."""
+def _parse_date(date_str: str) -> tuple[datetime, bool] | None:
+    """Converte string de data para datetime.
+
+    Returns:
+        Tupla (datetime, is_weekly) ou None se não parseável.
+        is_weekly=True indica média semanal (ex: '09 - 13/02/2026').
+    """
     date_str = date_str.strip()
 
     match = re.match(r"(\d{2})/(\d{2})/(\d{4})", date_str)
     if match:
         day, month, year = match.groups()
         try:
-            return datetime(int(year), int(month), int(day))
+            return datetime(int(year), int(month), int(day)), False
+        except ValueError:
+            return None
+
+    weekly = re.match(r"\d{2}\s*-\s*(\d{2})/(\d{2})/(\d{4})", date_str)
+    if weekly:
+        day, month, year = weekly.groups()
+        try:
+            return datetime(int(year), int(month), int(day)), True
         except ValueError:
             return None
 
@@ -165,10 +178,10 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
                 valor_str = cells[1].get_text(strip=True)
                 var_idx = 2
 
-            data = _parse_date(data_str)
+            parsed = _parse_date(data_str)
             valor = _parse_valor(valor_str)
 
-            if data is None or valor is None:
+            if parsed is None or valor is None:
                 logger.warning(
                     "parse_row_failed",
                     source="noticias_agricolas",
@@ -177,7 +190,13 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
                 )
                 continue
 
+            data, is_weekly = parsed
+
             meta: dict[str, str | float] = {}
+            if is_weekly:
+                meta["tipo"] = "media_semanal"
+                meta["periodo"] = data_str
+
             if len(cells) > var_idx:
                 var_str = cells[var_idx].get_text(strip=True)
                 variacao = _parse_variacao(var_str)
@@ -199,6 +218,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]:
                 metodologia="CEPEA/ESALQ via Notícias Agrícolas",
                 meta=meta,
                 parser_version=2,
+                anomalies=["media_semanal"] if is_weekly else [],
             )
 
             indicadores.append(indicador)
