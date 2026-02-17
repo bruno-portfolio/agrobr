@@ -1,0 +1,47 @@
+{
+  "min_rows": 5,
+  "max_rows": 5,
+  "columns": ["nr_apolice", "ano_apolice", "uf", "municipio", "cd_ibge", "cultura", "classificacao", "area_total", "valor_premio", "valor_subvencao", "valor_limite_garantia", "valor_indenizacao", "evento", "produtividade_estimada", "produtividade_segurada", "nivel_cobertura", "taxa", "seguradora"],
+  "checks": {
+    "sorted_by_ano": true,
+    "ano_apolice_is_int": true,
+    "area_total_is_float": true
+  },
+  "rows": [
+    {
+      "nr_apolice": "AP003",
+      "ano_apolice": 2022,
+      "uf": "GO",
+      "cultura": "SOJA",
+      "valor_premio": 30000.0
+    },
+    {
+      "nr_apolice": "AP005",
+      "ano_apolice": 2022,
+      "uf": "RS",
+      "cultura": "TRIGO",
+      "valor_premio": 5000.0
+    },
+    {
+      "nr_apolice": "AP001",
+      "ano_apolice": 2023,
+      "uf": "MT",
+      "cultura": "SOJA",
+      "valor_premio": 15000.0
+    },
+    {
+      "nr_apolice": "AP002",
+      "ano_apolice": 2023,
+      "uf": "PR",
+      "cultura": "MILHO",
+      "valor_premio": 8000.0
+    },
+    {
+      "nr_apolice": "AP004",
+      "ano_apolice": 2023,
+      "uf": "MT",
+      "cultura": "SOJA",
+      "valor_premio": 22000.0
+    }
+  ]
+}

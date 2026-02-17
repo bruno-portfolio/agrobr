@@ -1,0 +1,90 @@
+{
+  "name": "mapa_psr.apolices",
+  "schema_version": "1.0",
+  "effective_from": "0.12.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "nr_apolice",
+    "ano_apolice",
+    "uf",
+    "cultura",
+    "cd_ibge"
+  ],
+  "required_columns": [
+    "nr_apolice",
+    "ano_apolice",
+    "uf",
+    "cultura"
+  ],
+  "dtypes": {
+    "nr_apolice": "str",
+    "ano_apolice": "int",
+    "uf": "str",
+    "municipio": "str",
+    "cd_ibge": "str",
+    "cultura": "str",
+    "classificacao": "str",
+    "area_total": "float",
+    "valor_premio": "float",
+    "valor_subvencao": "float",
+    "valor_limite_garantia": "float",
+    "valor_indenizacao": "float",
+    "evento": "str",
+    "produtividade_estimada": "float",
+    "produtividade_segurada": "float",
+    "nivel_cobertura": "float",
+    "taxa": "float",
+    "seguradora": "str"
+  },
+  "nullable": {
+    "nr_apolice": false,
+    "ano_apolice": false,
+    "uf": false,
+    "municipio": true,
+    "cd_ibge": true,
+    "cultura": false,
+    "classificacao": true,
+    "area_total": true,
+    "valor_premio": true,
+    "valor_subvencao": true,
+    "valor_limite_garantia": true,
+    "valor_indenizacao": true,
+    "evento": true,
+    "produtividade_estimada": true,
+    "produtividade_segurada": true,
+    "nivel_cobertura": true,
+    "taxa": true,
+    "seguradora": true
+  },
+  "columns": [
+    {"name": "nr_apolice", "type": "str", "nullable": false, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "ano_apolice", "type": "int", "nullable": false, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": 2006, "max_value": null},
+    {"name": "uf", "type": "str", "nullable": false, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "municipio", "type": "str", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "cd_ibge", "type": "str", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "cultura", "type": "str", "nullable": false, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "classificacao", "type": "str", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "area_total", "type": "float", "nullable": true, "unit": "ha", "stable": true, "deprecated": false, "description": "", "min_value": 0, "max_value": null},
+    {"name": "valor_premio", "type": "float", "nullable": true, "unit": "BRL", "stable": true, "deprecated": false, "description": "", "min_value": 0, "max_value": null},
+    {"name": "valor_subvencao", "type": "float", "nullable": true, "unit": "BRL", "stable": true, "deprecated": false, "description": "", "min_value": 0, "max_value": null},
+    {"name": "valor_limite_garantia", "type": "float", "nullable": true, "unit": "BRL", "stable": true, "deprecated": false, "description": "", "min_value": 0, "max_value": null},
+    {"name": "valor_indenizacao", "type": "float", "nullable": true, "unit": "BRL", "stable": true, "deprecated": false, "description": "", "min_value": 0, "max_value": null},
+    {"name": "evento", "type": "str", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "produtividade_estimada", "type": "float", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "produtividade_segurada", "type": "float", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "nivel_cobertura", "type": "float", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "taxa", "type": "float", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null},
+    {"name": "seguradora", "type": "str", "nullable": true, "unit": null, "stable": true, "deprecated": false, "description": "", "min_value": null, "max_value": null}
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "ano_apolice_min": 2006
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'uf' is a valid Brazilian state code",
+    "All policies with federal subsidy since 2006",
+    "'valor_indenizacao' is nullable (0 or null if no claim)",
+    "Monetary values are in BRL"
+  ]
+}

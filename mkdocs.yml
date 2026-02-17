@@ -102,6 +102,7 @@ nav:
     - UN Comtrade: api/comtrade.md
     - ANTAQ: api/antaq.md
     - ANP Diesel: api/anp_diesel.md
+    - MAPA PSR: api/mapa_psr.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -126,6 +127,7 @@ nav:
     - UN Comtrade: sources/comtrade.md
     - ANTAQ: sources/antaq.md
     - ANP Diesel: sources/anp_diesel.md
+    - MAPA PSR: sources/mapa_psr.md
   - Licenças dos Dados: licenses.md
   - Portabilidade:
     - Visão Geral: porting/index.md

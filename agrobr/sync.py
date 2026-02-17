@@ -102,15 +102,23 @@ class _SyncAnpDiesel(_SyncModule):
     pass
 
 
+class _SyncMapaPsr(_SyncModule):
+    """API sincrona do MAPA PSR."""
+
+    pass
+
+
 class _SyncAlt:
     """Container sincrono para fontes alt data."""
 
     def __init__(self) -> None:
         self._modules: dict[str, _SyncModule | None] = {
             "anp_diesel": None,
+            "mapa_psr": None,
         }
         self._classes: dict[str, type[_SyncModule]] = {
             "anp_diesel": _SyncAnpDiesel,
+            "mapa_psr": _SyncMapaPsr,
         }
 
     def __getattr__(self, name: str) -> Any:

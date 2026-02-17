@@ -1,0 +1,10 @@
+{
+  "source": "mapa_psr",
+  "format": "csv",
+  "parser_module": "agrobr.alt.mapa_psr.parser",
+  "parser_functions": ["parse_apolices"],
+  "url": "https://dados.agricultura.gov.br/dataset/sisser3",
+  "captured_at": "2026-02-17T18:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic PSR data - 5 apolices: 3 culturas (SOJA, MILHO, TRIGO), 4 UFs, mix sinistro/sem sinistro. Tests full apolice parsing."
+}

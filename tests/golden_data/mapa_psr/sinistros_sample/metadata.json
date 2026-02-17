@@ -1,0 +1,10 @@
+{
+  "source": "mapa_psr",
+  "format": "csv",
+  "parser_module": "agrobr.alt.mapa_psr.parser",
+  "parser_functions": ["parse_sinistros"],
+  "url": "https://dados.agricultura.gov.br/dataset/sisser3",
+  "captured_at": "2026-02-17T18:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic PSR data - 5 rows: 3 with sinistro (SECA, GEADA, GRANIZO), 2 without. Tests PII removal, sinistro filtering, event normalization."
+}

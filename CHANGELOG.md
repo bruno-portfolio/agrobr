@@ -8,6 +8,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **MAPA PSR — Seguro Rural** — Novo namespace `agrobr/alt/mapa_psr/` para dados de
+  apolices e sinistros do seguro rural brasileiro (SISSER/MAPA, CC-BY). Funcoes:
+  `mapa_psr.sinistros(cultura, uf, ano, evento)` para indenizacoes pagas e
+  `mapa_psr.apolices(cultura, uf, ano)` para todas as apolices com subvencao federal.
+  CSV bulk 2006+ (3 periodos), encoding auto-detect, PII removido automaticamente.
+  Contratos `MAPA_PSR_SINISTROS_V1` (17 colunas) e `MAPA_PSR_APOLICES_V1` (18 colunas).
+  Schemas JSON, golden data. 104 novos testes (models, client, parser, api). Sync wrapper
+  via `agrobr.sync.alt.mapa_psr`. Docs: `api/mapa_psr.md`, `sources/mapa_psr.md`
 - **ANP Diesel — Precos + Volumes** — Novo namespace `agrobr/alt/anp_diesel/` para dados de
   precos de revenda e volumes de venda de diesel da ANP. Funcoes:
   `anp_diesel.precos_diesel(uf, municipio, produto, nivel, agregacao)` para precos

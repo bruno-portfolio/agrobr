@@ -758,3 +758,56 @@ def test_anp_diesel_golden_parsing(_name: str, path: Path):
     ):
         diff = (df["preco_venda"] - df["preco_compra"] - df["margem"]).abs()
         assert (diff < 0.01).all(), "margem should equal preco_venda - preco_compra"
+
+
+# ============================================================================
+# MAPA PSR Golden Tests
+# ============================================================================
+
+
+def _get_mapa_psr_cases() -> list[tuple[str, Path]]:
+    return _discover_cases(source_filter="mapa_psr")
+
+
+@pytest.mark.skipif(not _get_mapa_psr_cases(), reason="No MAPA PSR golden data")
+@pytest.mark.parametrize("_name,path", _get_mapa_psr_cases())
+def test_mapa_psr_golden_parsing(_name: str, path: Path):
+    from agrobr.alt.mapa_psr.parser import parse_apolices, parse_sinistros
+
+    expected = _load_expected(path)
+    metadata = _load_metadata(path)
+
+    csv_path = path / "response.csv"
+    if not csv_path.exists():
+        pytest.skip(f"No response.csv in {path}")
+        return
+
+    data = csv_path.read_bytes()
+    parser_fns = metadata.get("parser_functions", [])
+
+    if "parse_sinistros" in parser_fns:
+        df = parse_sinistros(data)
+    elif "parse_apolices" in parser_fns:
+        df = parse_apolices(data)
+    else:
+        pytest.skip(f"Unknown parser functions: {parser_fns}")
+        return
+
+    _assert_dataframe_golden(df, expected)
+
+    if expected.get("checks", {}).get("pii_removed"):
+        assert "NM_SEGURADO" not in df.columns, "PII column NM_SEGURADO should be removed"
+        assert "NR_DOCUMENTO_SEGURADO" not in df.columns, "PII column should be removed"
+    if expected.get("checks", {}).get("all_indenizacao_positive"):
+        assert (df["valor_indenizacao"] > 0).all(), "All valor_indenizacao should be > 0"
+    if expected.get("checks", {}).get("all_evento_non_empty"):
+        assert (df["evento"].str.strip() != "").all(), "All evento should be non-empty"
+    if expected.get("checks", {}).get("evento_is_lowercase"):
+        assert all(v == v.lower() for v in df["evento"]), "evento should be lowercase"
+    if expected.get("checks", {}).get("sorted_by_ano"):
+        anos = df["ano_apolice"].tolist()
+        assert anos == sorted(anos), "Should be sorted by ano_apolice"
+    if expected.get("checks", {}).get("ano_apolice_is_int"):
+        assert df["ano_apolice"].dtype in ("int64", "int32"), "ano_apolice should be int"
+    if expected.get("checks", {}).get("area_total_is_float"):
+        assert df["area_total"].dtype == "float64", "area_total should be float64"

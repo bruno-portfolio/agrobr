@@ -26,6 +26,8 @@ from agrobr.contracts.datasets import (
     CREDITO_RURAL_V1_1,
     EXPORTACAO_V1,
     FERTILIZANTE_V1,
+    MAPA_PSR_APOLICES_V1,
+    MAPA_PSR_SINISTROS_V1,
     MOVIMENTACAO_PORTUARIA_V1,
     POSICOES_ABERTAS_V1,
 )
@@ -378,6 +380,8 @@ class TestContractRegistry:
             "balanco",
             "credito_rural",
             "custo_producao",
+            "mapa_psr_apolices",
+            "mapa_psr_sinistros",
             "estimativa_safra",
             "exportacao",
             "fertilizante",
@@ -485,7 +489,7 @@ class TestGenerateJsonSchemas:
     def test_generate_all_schemas(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             files = generate_json_schemas(tmpdir)
-            assert len(files) == 25
+            assert len(files) == 27
 
             for filepath in files:
                 path = Path(filepath)
@@ -779,6 +783,67 @@ class TestAnpDieselVendasContract:
 
     def test_effective_from(self):
         assert ANP_DIESEL_VENDAS_V1.effective_from == "0.11.0"
+
+
+class TestMapaPsrSinistrosContract:
+    def test_contract_exists(self):
+        assert MAPA_PSR_SINISTROS_V1 is not None
+        assert MAPA_PSR_SINISTROS_V1.name == "mapa_psr.sinistros"
+        assert MAPA_PSR_SINISTROS_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert "nr_apolice" in MAPA_PSR_SINISTROS_V1.primary_key
+        assert "ano_apolice" in MAPA_PSR_SINISTROS_V1.primary_key
+        assert "uf" in MAPA_PSR_SINISTROS_V1.primary_key
+        assert "cultura" in MAPA_PSR_SINISTROS_V1.primary_key
+
+    def test_columns(self):
+        col_names = [c.name for c in MAPA_PSR_SINISTROS_V1.columns]
+        assert "valor_indenizacao" in col_names
+        assert "evento" in col_names
+        assert "seguradora" in col_names
+
+    def test_valor_indenizacao_min(self):
+        col = next(
+            (c for c in MAPA_PSR_SINISTROS_V1.columns if c.name == "valor_indenizacao"),
+            None,
+        )
+        assert col is not None
+        assert col.min_value == 0
+
+    def test_registered(self):
+        assert has_contract("mapa_psr_sinistros")
+        contract = get_contract("mapa_psr_sinistros")
+        assert contract is MAPA_PSR_SINISTROS_V1
+
+    def test_effective_from(self):
+        assert MAPA_PSR_SINISTROS_V1.effective_from == "0.12.0"
+
+
+class TestMapaPsrApolicesContract:
+    def test_contract_exists(self):
+        assert MAPA_PSR_APOLICES_V1 is not None
+        assert MAPA_PSR_APOLICES_V1.name == "mapa_psr.apolices"
+        assert MAPA_PSR_APOLICES_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert "nr_apolice" in MAPA_PSR_APOLICES_V1.primary_key
+        assert "ano_apolice" in MAPA_PSR_APOLICES_V1.primary_key
+        assert "uf" in MAPA_PSR_APOLICES_V1.primary_key
+
+    def test_columns(self):
+        col_names = [c.name for c in MAPA_PSR_APOLICES_V1.columns]
+        assert "taxa" in col_names
+        assert "valor_premio" in col_names
+        assert "valor_subvencao" in col_names
+
+    def test_registered(self):
+        assert has_contract("mapa_psr_apolices")
+        contract = get_contract("mapa_psr_apolices")
+        assert contract is MAPA_PSR_APOLICES_V1
+
+    def test_effective_from(self):
+        assert MAPA_PSR_APOLICES_V1.effective_from == "0.12.0"
 
 
 class TestBreakingChangePolicy:

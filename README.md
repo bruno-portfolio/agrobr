@@ -13,7 +13,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **22 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT, UN Comtrade, ANTAQ e ANP Diesel.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **23 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT, UN Comtrade, ANTAQ, ANP Diesel e MAPA PSR.
 
 **v0.10.1** — 2778 testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
 
@@ -456,6 +456,7 @@ Use `agrobr health --all` para verificar localmente.
 | UN Comtrade | Comercio bilateral + trade mirror (~200 paises, HS codes) | ✅¹ | Funcional |
 | ANTAQ | Movimentacao portuaria de carga (granel, geral, conteiner) | ✅ | Funcional |
 | ANP Diesel | Precos revenda + volumes diesel por UF/municipio | ✅ | Funcional |
+| MAPA PSR | Apolices e sinistros seguro rural (2006+, 27 UFs) | ✅ | Funcional |
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 
@@ -472,7 +473,8 @@ list_contracts()
 #  'comercio_bilateral', 'conab_progresso', 'credito_rural', 'custo_producao',
 #  'desmatamento_deter', 'desmatamento_prodes', 'estimativa_safra', 'exportacao',
 #  'fertilizante', 'focos_queimadas', 'mapbiomas_cobertura', 'mapbiomas_transicao',
-#  'anp_diesel_precos', 'anp_diesel_vendas', 'movimentacao_portuaria',
+#  'anp_diesel_precos', 'anp_diesel_vendas', 'mapa_psr_sinistros',
+#  'mapa_psr_apolices', 'movimentacao_portuaria',
 #  'pecuaria_municipal', 'posicoes_abertas', 'preco_atacado', 'preco_diario',
 #  'producao_anual', 'trade_mirror']
 
