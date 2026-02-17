@@ -8,10 +8,10 @@ from agrobr.contracts import (
     register_contract,
 )
 
-CREDITO_RURAL_V1 = Contract(
+CREDITO_RURAL_V1_1 = Contract(
     name="bcb.credito_rural",
-    version="1.0",
-    effective_from="0.10.0",
+    version="1.1",
+    effective_from="0.10.1",
     primary_key=["safra", "produto", "uf", "finalidade"],
     columns=[
         Column(
@@ -58,6 +58,72 @@ CREDITO_RURAL_V1 = Contract(
             unit="BRL",
             stable=True,
             min_value=0,
+        ),
+        Column(
+            name="cd_programa",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="programa",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="cd_fonte_recurso",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="fonte_recurso",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="cd_tipo_seguro",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="tipo_seguro",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="cd_modalidade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="modalidade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="cd_atividade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="atividade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="regiao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
         ),
     ],
     guarantees=[
@@ -772,7 +838,7 @@ PRECO_ATACADO_V1 = Contract(
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V1)
 register_contract("preco_atacado", PRECO_ATACADO_V1)
-register_contract("credito_rural", CREDITO_RURAL_V1)
+register_contract("credito_rural", CREDITO_RURAL_V1_1)
 register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
 register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
 register_contract("exportacao", EXPORTACAO_V1)
@@ -785,7 +851,7 @@ __all__ = [
     "AJUSTE_DIARIO_V1",
     "CONAB_PROGRESSO_V1",
     "PRECO_ATACADO_V1",
-    "CREDITO_RURAL_V1",
+    "CREDITO_RURAL_V1_1",
     "DESMATAMENTO_DETER_V1",
     "DESMATAMENTO_PRODES_V1",
     "EXPORTACAO_V1",

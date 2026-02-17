@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **19 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro e CONAB CEASA/PROHORT.
 
-**v0.10.1** — 2719 testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
+**v0.10.1** — 2778 testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -183,6 +183,12 @@ async def main():
 
     # BCB/SICOR — crédito rural
     df = await bcb.credito_rural(produto="soja", safra="2024/25")
+
+    # BCB/SICOR — filtrar por programa
+    df = await bcb.credito_rural(produto="soja", safra="2024/25", programa="Pronamp")
+
+    # BCB/SICOR — agregar por programa
+    df = await bcb.credito_rural(produto="soja", safra="2024/25", agregacao="programa")
 
     # ComexStat — exportações mensais
     df = await comexstat.exportacao("soja", ano=2024, agregacao="mensal")
@@ -407,7 +413,7 @@ Use `agrobr health --all` para verificar localmente.
 | `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
 | `estimativa_safra` | Estimativas safra corrente | CONAB → IBGE LSPA |
 | `balanco` | Oferta/demanda | CONAB |
-| `credito_rural` | Crédito rural por cultura | BCB/SICOR → BigQuery |
+| `credito_rural` | Crédito rural por cultura (programa, seguro, modalidade) | BCB/SICOR → BigQuery |
 | `exportacao` | Exportações agrícolas | ComexStat → ABIOVE |
 | `fertilizante` | Entregas de fertilizantes | ANDA |
 | `custo_producao` | Custos de produção | CONAB |
@@ -422,7 +428,7 @@ Use `agrobr health --all` para verificar localmente.
 | CONAB | Safras, balanço, custos, série histórica | ✅ | Funcional |
 | IBGE | PAM (anual), LSPA (mensal) | ✅ | Funcional |
 | NASA POWER | Climatologia diária/mensal (grid 0.5°) | ✅ | Funcional |
-| BCB/SICOR | Crédito rural por cultura (+ fallback BigQuery) | ✅¹ | Funcional |
+| BCB/SICOR | Crédito rural por cultura + dimensões SICOR (+ fallback BigQuery) | ✅¹ | Funcional |
 | ComexStat | Exportações por NCM/UF | ✅¹ | Funcional |
 | ANDA | Entregas de fertilizantes | ✅ | Funcional |
 | ABIOVE | Exportação complexo soja (volume/receita) | ✅ | Funcional |
@@ -492,7 +498,7 @@ normalizar_safra("24/25")             # "2024/25"
 
 - **19/19 fontes com golden tests** — validação automatizada contra dados de referência
 - **Resiliência HTTP completa** — retry centralizado em 19/19 clients, 429 handling, Retry-After
-- **2719 testes, 78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **2778 testes, 78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Thread-safe cache** — DuckDB store com locking para uso em MCP servers e multi-thread
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints

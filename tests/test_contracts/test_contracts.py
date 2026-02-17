@@ -20,7 +20,7 @@ from agrobr.contracts import (
 )
 from agrobr.contracts.cepea import CEPEA_INDICADOR_V1
 from agrobr.contracts.conab import CONAB_BALANCO_V1, CONAB_CUSTO_PRODUCAO_V1, CONAB_SAFRA_V1
-from agrobr.contracts.datasets import CREDITO_RURAL_V1, EXPORTACAO_V1, FERTILIZANTE_V1
+from agrobr.contracts.datasets import CREDITO_RURAL_V1_1, EXPORTACAO_V1, FERTILIZANTE_V1
 from agrobr.contracts.ibge import IBGE_LSPA_V1, IBGE_PAM_V1
 from agrobr.exceptions import ContractViolationError
 
@@ -593,8 +593,9 @@ class TestIBGEContracts:
 
 class TestNewContracts:
     def test_credito_rural_contract(self):
-        assert CREDITO_RURAL_V1.name == "bcb.credito_rural"
-        assert CREDITO_RURAL_V1.primary_key == ["safra", "produto", "uf", "finalidade"]
+        assert CREDITO_RURAL_V1_1.name == "bcb.credito_rural"
+        assert CREDITO_RURAL_V1_1.version == "1.1"
+        assert CREDITO_RURAL_V1_1.primary_key == ["safra", "produto", "uf", "finalidade"]
 
     def test_exportacao_contract(self):
         assert EXPORTACAO_V1.name == "comexstat.exportacao"

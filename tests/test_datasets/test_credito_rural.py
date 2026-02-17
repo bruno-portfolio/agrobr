@@ -64,6 +64,6 @@ class TestCreditoRuralFetch:
         df, meta = await dataset.fetch("soja", safra="2023/24", return_meta=True)
 
         assert meta.dataset == "credito_rural"
-        assert meta.contract_version == "1.0"
+        assert meta.contract_version == "1.1"
         assert "bcb" in meta.attempted_sources
         assert meta.records_count == len(df)

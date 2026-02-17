@@ -1,5 +1,3 @@
-"""API pública do módulo BCB/SICOR."""
-
 from __future__ import annotations
 
 import time
@@ -13,7 +11,7 @@ from agrobr.models import MetaInfo
 
 from . import client
 from .models import UF_CODES, normalize_safra_sicor, resolve_produto_sicor
-from .parser import PARSER_VERSION, agregar_por_uf, parse_credito_rural
+from .parser import PARSER_VERSION, agregar_por_programa, agregar_por_uf, parse_credito_rural
 
 logger = structlog.get_logger()
 
@@ -25,6 +23,8 @@ async def credito_rural(
     finalidade: str = "custeio",
     uf: str | None = None,
     agregacao: str = "municipio",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
     *,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -37,6 +37,8 @@ async def credito_rural(
     finalidade: str = "custeio",
     uf: str | None = None,
     agregacao: str = "municipio",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
     *,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -48,29 +50,10 @@ async def credito_rural(
     finalidade: str = "custeio",
     uf: str | None = None,
     agregacao: str = "municipio",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Obtém dados de crédito rural do SICOR/BCB.
-
-    Busca contratos de crédito rural aprovados por município,
-    opcionalmente filtrados por produto, safra e UF.
-
-    Args:
-        produto: Nome do produto (soja, milho, arroz, etc).
-        safra: Safra no formato "2024/25" ou "2023/2024" (default: mais recente).
-        finalidade: Finalidade do crédito ("custeio", "investimento", etc).
-        uf: Filtrar por UF (ex: "MT", "PR").
-        agregacao: "municipio" (padrão) ou "uf" (agrega por UF).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: safra, uf, cd_municipio, municipio,
-        produto, valor, area_financiada, qtd_contratos.
-
-    Example:
-        >>> df = await bcb.credito_rural("soja", safra="2024/25", finalidade="custeio")
-        >>> df, meta = await bcb.credito_rural("soja", safra="2024/25", return_meta=True)
-    """
     t0 = time.monotonic()
 
     produto_sicor = resolve_produto_sicor(produto)
@@ -85,6 +68,8 @@ async def credito_rural(
         safra_sicor=safra_sicor,
         finalidade=finalidade,
         uf=uf,
+        programa=programa,
+        tipo_seguro=tipo_seguro,
     )
 
     dados, source_used = await client.fetch_credito_rural_with_fallback(
@@ -106,8 +91,16 @@ async def credito_rural(
     if uf and "uf" in df.columns:
         df = df[df["uf"] == uf.upper()].reset_index(drop=True)
 
+    if programa and "programa" in df.columns:
+        df = df[df["programa"].str.lower() == programa.lower()].reset_index(drop=True)
+
+    if tipo_seguro and "tipo_seguro" in df.columns:
+        df = df[df["tipo_seguro"].str.lower() == tipo_seguro.lower()].reset_index(drop=True)
+
     if agregacao == "uf":
         df = agregar_por_uf(df)
+    elif agregacao == "programa":
+        df = agregar_por_programa(df)
 
     parse_ms = int((time.monotonic() - t1) * 1000)
 
@@ -132,7 +125,7 @@ async def credito_rural(
             records_count=len(df),
             columns=df.columns.tolist(),
             parser_version=PARSER_VERSION,
-            schema_version="1.0",
+            schema_version="1.1",
             attempted_sources=attempted_sources,
             selected_source=f"bcb_{source_used}",
             fetch_timestamp=datetime.now(UTC),

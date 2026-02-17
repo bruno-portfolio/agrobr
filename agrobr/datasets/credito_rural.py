@@ -1,5 +1,3 @@
-"""Dataset credito_rural - Crédito rural SICOR por UF/município."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -22,6 +20,8 @@ async def _fetch_bcb_odata(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
     finalidade = kwargs.get("finalidade", "custeio")
     uf = kwargs.get("uf")
     agregacao = kwargs.get("agregacao", "municipio")
+    programa = kwargs.get("programa")
+    tipo_seguro = kwargs.get("tipo_seguro")
 
     result = await bcb.credito_rural(
         produto,
@@ -29,6 +29,8 @@ async def _fetch_bcb_odata(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
         finalidade=finalidade,
         uf=uf,
         agregacao=agregacao,
+        programa=programa,
+        tipo_seguro=tipo_seguro,
         return_meta=True,
     )
 
@@ -49,7 +51,7 @@ CREDITO_RURAL_INFO = DatasetInfo(
         ),
     ],
     products=["soja", "milho", "arroz", "feijao", "trigo", "algodao", "cafe", "cana", "sorgo"],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="monthly",
     typical_latency="M+1",
     source_url="https://olinda.bcb.gov.br",
@@ -69,27 +71,12 @@ class CreditoRuralDataset(BaseDataset):
         safra: str | None = None,
         finalidade: str = "custeio",
         uf: str | None = None,
-        agregacao: Literal["municipio", "uf"] = "municipio",
+        agregacao: Literal["municipio", "uf", "programa"] = "municipio",
+        programa: str | None = None,
+        tipo_seguro: str | None = None,
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca dados de crédito rural do SICOR/BCB.
-
-        Fontes (em ordem de prioridade):
-          1. BCB API Olinda (OData) com fallback BigQuery
-
-        Args:
-            produto: soja, milho, arroz, feijao, trigo, algodao, cafe, cana, sorgo
-            safra: Safra (ex: "2024/25"). Se None, mais recente disponível.
-            finalidade: custeio, investimento, comercializacao
-            uf: Filtrar por UF (ex: "MT", "PR")
-            agregacao: "municipio" (padrão) ou "uf"
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: safra, uf, produto, valor,
-            area_financiada, qtd_contratos
-        """
         logger.info(
             "dataset_fetch",
             dataset="credito_rural",
@@ -104,7 +91,14 @@ class CreditoRuralDataset(BaseDataset):
             safra = f"{ano_snap - 1}/{ano_snap}"
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, safra=safra, finalidade=finalidade, uf=uf, agregacao=agregacao, **kwargs
+            produto,
+            safra=safra,
+            finalidade=finalidade,
+            uf=uf,
+            agregacao=agregacao,
+            programa=programa,
+            tipo_seguro=tipo_seguro,
+            **kwargs,
         )
 
         df = self._normalize(df, produto, finalidade)
@@ -154,33 +148,20 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: Literal["municipio", "uf"] = "municipio",
+    agregacao: Literal["municipio", "uf", "programa"] = "municipio",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados de crédito rural do SICOR/BCB.
-
-    Fontes (em ordem de prioridade):
-      1. BCB API Olinda (OData) com fallback BigQuery
-
-    Args:
-        produto: soja, milho, arroz, feijao, trigo, algodao, cafe, cana, sorgo
-        safra: Safra (ex: "2024/25"). Se None, mais recente disponível.
-        finalidade: custeio, investimento, comercializacao
-        uf: Filtrar por UF (ex: "MT", "PR")
-        agregacao: "municipio" (padrão) ou "uf"
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: safra, uf, produto, valor,
-        area_financiada, qtd_contratos
-    """
     return await _credito_rural.fetch(
         produto,
         safra=safra,
         finalidade=finalidade,
         uf=uf,
         agregacao=agregacao,
+        programa=programa,
+        tipo_seguro=tipo_seguro,
         return_meta=return_meta,
         **kwargs,
     )

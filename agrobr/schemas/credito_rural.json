@@ -1,7 +1,7 @@
 {
   "name": "bcb.credito_rural",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "1.1",
+  "effective_from": "0.10.1",
   "breaking_policy": "major",
   "primary_key": [
     "safra",
@@ -21,7 +21,18 @@
     "finalidade": "str",
     "agregacao": "str",
     "volume": "float",
-    "valor": "float"
+    "valor": "float",
+    "cd_programa": "str",
+    "programa": "str",
+    "cd_fonte_recurso": "str",
+    "fonte_recurso": "str",
+    "cd_tipo_seguro": "str",
+    "tipo_seguro": "str",
+    "cd_modalidade": "str",
+    "modalidade": "str",
+    "cd_atividade": "str",
+    "atividade": "str",
+    "regiao": "str"
   },
   "nullable": {
     "safra": false,
@@ -30,7 +41,18 @@
     "finalidade": false,
     "agregacao": true,
     "volume": true,
-    "valor": true
+    "valor": true,
+    "cd_programa": true,
+    "programa": true,
+    "cd_fonte_recurso": true,
+    "fonte_recurso": true,
+    "cd_tipo_seguro": true,
+    "tipo_seguro": true,
+    "cd_modalidade": true,
+    "modalidade": true,
+    "cd_atividade": true,
+    "atividade": true,
+    "regiao": true
   },
   "columns": [
     {
@@ -108,6 +130,127 @@
       "deprecated": false,
       "description": "",
       "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "cd_programa",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "programa",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cd_fonte_recurso",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "fonte_recurso",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cd_tipo_seguro",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "tipo_seguro",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cd_modalidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "modalidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cd_atividade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "atividade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "regiao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
       "max_value": null
     }
   ],

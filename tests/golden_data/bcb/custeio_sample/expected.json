@@ -6,29 +6,60 @@
     "uf",
     "mes_emissao",
     "ano_emissao",
-    "cdPrograma",
-    "cdSubPrograma",
-    "cdFonteRecurso",
-    "cdTipoSeguro",
+    "cd_programa",
+    "cd_sub_programa",
+    "cd_fonte_recurso",
+    "cd_tipo_seguro",
     "qtd_contratos",
     "valor",
-    "Atividade",
-    "cdModalidade",
+    "cd_atividade",
+    "cd_modalidade",
     "area_financiada",
-    "finalidade"
+    "finalidade",
+    "programa",
+    "fonte_recurso",
+    "tipo_seguro",
+    "modalidade",
+    "atividade"
   ],
   "non_null_columns": [
-    "uf",
     "produto",
-    "valor"
+    "regiao",
+    "uf",
+    "mes_emissao",
+    "ano_emissao",
+    "cd_programa",
+    "cd_sub_programa",
+    "cd_fonte_recurso",
+    "cd_tipo_seguro",
+    "qtd_contratos",
+    "valor",
+    "cd_atividade",
+    "cd_modalidade",
+    "finalidade",
+    "programa",
+    "fonte_recurso",
+    "tipo_seguro",
+    "modalidade",
+    "atividade"
   ],
   "first_row": {
     "uf": "BA",
     "produto": "soja",
-    "finalidade": "custeio"
+    "finalidade": "custeio",
+    "programa": "Sem programa especifico",
+    "fonte_recurso": "FNE",
+    "tipo_seguro": "Seguro privado",
+    "modalidade": "Individual",
+    "atividade": "Agricola"
   },
   "last_row": {
     "uf": "RS",
-    "produto": "soja"
+    "produto": "soja",
+    "programa": "Pronamp",
+    "fonte_recurso": "Poupanca rural livre",
+    "tipo_seguro": "Nao se aplica",
+    "modalidade": "Individual",
+    "atividade": "Agricola"
   }
 }

@@ -7,6 +7,21 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Added
+- **BCB/SICOR dimensoes ocultas** — Expoe 5 dimensoes que a API retorna mas eram ignoradas:
+  programa, fonte de recurso, tipo de seguro, modalidade e atividade. Cada dimensao gera
+  duas colunas: codigo (`cd_programa`) e nome legivel (`programa`). Dicionarios hardcoded
+  com fallback `"Desconhecido ({code})"` + log warning para codigos novos. Enriquecimento
+  no parser (PARSER_VERSION=2). Novos parametros `programa` e `tipo_seguro` para filtro
+  client-side. Nova agregacao `agregacao="programa"`. Contract v1.1 com 11 novas colunas
+  nullable (nao quebra consumidores v1.0). Schema JSON regenerado. 87 novos testes
+  (models, parser, api). Suite: 2778 passed, 0 failed
+
+### Changed
+- `credito_rural` contract bump v1.0 → v1.1 (minor — novas colunas nullable)
+- `PARSER_VERSION` bump 1 → 2 (novas colunas + enriquecimento)
+- Golden data `custeio_sample/expected.json` atualizado com 20 colunas (era 15)
+
 ## [0.10.1] - 2026-02-16
 
 ### Fixed
