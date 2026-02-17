@@ -21,13 +21,22 @@ def _mock_response(status_code: int = 200, json_data: dict | None = None) -> htt
     resp.status_code = status_code
     resp.json.return_value = json_data if json_data is not None else {"data": []}
     resp.headers = {}
-    resp.url = "https://comtradeapi.un.org/data/v1/get/C/A/HS"
+    resp.url = "https://comtradeapi.un.org/public/v1/preview/C/A/HS"
     resp.raise_for_status = MagicMock()
     if status_code >= 400:
         resp.raise_for_status.side_effect = httpx.HTTPStatusError(
             f"HTTP {status_code}", request=MagicMock(), response=resp
         )
     return resp
+
+
+_FETCH_ARGS = {
+    "reporter": 76,
+    "partner": 156,
+    "hs_codes": ["1201"],
+    "flow": "X",
+    "period": "2024",
+}
 
 
 class TestChunkPeriod:
@@ -129,8 +138,46 @@ class TestFetchTradeData:
         assert records[0]["cmdCode"] == "1201"
 
     @pytest.mark.asyncio
-    async def test_401_raises(self):
-        resp = _mock_response(401)
+    async def test_auth_401_falls_back_to_guest(self):
+        golden = json.loads(GOLDEN_DIR.joinpath("response.json").read_text())
+        resp_401 = _mock_response(401)
+        resp_ok = _mock_response(200, golden)
+
+        call_count = 0
+
+        async def _side(*_args, **_kwargs):
+            nonlocal call_count
+            call_count += 1
+            return resp_401 if call_count == 1 else resp_ok
+
+        mock_client = AsyncMock()
+        mock_client.get = AsyncMock(side_effect=_side)
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=False)
+
+        with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
+            records, url = await client.fetch_trade_data(**_FETCH_ARGS, api_key="bad-key")
+
+        assert len(records) == 3
+        assert "public/v1/preview" in url
+
+    @pytest.mark.asyncio
+    async def test_both_endpoints_401_raises(self):
+        resp_401 = _mock_response(401)
+        mock_client = AsyncMock()
+        mock_client.get = AsyncMock(return_value=resp_401)
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=False)
+
+        with (
+            patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="401/403"),
+        ):
+            await client.fetch_trade_data(**_FETCH_ARGS, api_key="bad-key")
+
+    @pytest.mark.asyncio
+    async def test_guest_no_key_uses_preview(self):
+        resp = _mock_response(200, {"data": []})
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -138,15 +185,14 @@ class TestFetchTradeData:
 
         with (
             patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="401"),
+            patch.dict("os.environ", {}, clear=True),
         ):
-            await client.fetch_trade_data(
-                reporter=76,
-                partner=156,
-                hs_codes=["1201"],
-                flow="X",
-                period="2024",
-            )
+            _records, url = await client.fetch_trade_data(**_FETCH_ARGS)
+
+        assert "public/v1/preview" in url
+        call_kwargs = mock_client.get.call_args
+        params = call_kwargs.kwargs.get("params", call_kwargs[1].get("params", {}))
+        assert params["maxRecords"] == "500"
 
     @pytest.mark.asyncio
     async def test_500_retries(self):
@@ -161,13 +207,7 @@ class TestFetchTradeData:
             patch(RETRY_SLEEP, new_callable=AsyncMock),
             pytest.raises(SourceUnavailableError),
         ):
-            await client.fetch_trade_data(
-                reporter=76,
-                partner=156,
-                hs_codes=["1201"],
-                flow="X",
-                period="2024",
-            )
+            await client.fetch_trade_data(**_FETCH_ARGS)
 
         assert mock_client.get.call_count > 1
 
@@ -180,13 +220,7 @@ class TestFetchTradeData:
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
         with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
-            records, url = await client.fetch_trade_data(
-                reporter=76,
-                partner=156,
-                hs_codes=["1201"],
-                flow="X",
-                period="2024",
-            )
+            records, url = await client.fetch_trade_data(**_FETCH_ARGS)
 
         assert records == []
 
@@ -213,25 +247,19 @@ class TestFetchTradeData:
         assert len(records) == 9
 
     @pytest.mark.asyncio
-    async def test_guest_mode_max_records(self):
+    async def test_auth_key_uses_data_endpoint(self):
         resp = _mock_response(200, {"data": []})
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with (
-            patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client),
-            patch.dict("os.environ", {}, clear=True),
-        ):
-            await client.fetch_trade_data(
-                reporter=76,
-                partner=156,
-                hs_codes=["1201"],
-                flow="X",
-                period="2024",
-            )
+        with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
+            _records, url = await client.fetch_trade_data(**_FETCH_ARGS, api_key="valid-key")
 
+        assert "data/v1/get" in url
         call_kwargs = mock_client.get.call_args
+        headers = call_kwargs.kwargs.get("headers", call_kwargs[1].get("headers", {}))
+        assert headers["Ocp-Apim-Subscription-Key"] == "valid-key"
         params = call_kwargs.kwargs.get("params", call_kwargs[1].get("params", {}))
-        assert params["maxRecords"] == "500"
+        assert params["maxRecords"] == "100000"

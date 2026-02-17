@@ -13,7 +13,8 @@ from agrobr.http.retry import retry_on_status
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://comtradeapi.un.org/data/v1/get"
+BASE_URL_AUTH = "https://comtradeapi.un.org/data/v1/get"
+BASE_URL_GUEST = "https://comtradeapi.un.org/public/v1/preview"
 
 _settings = HTTPSettings()
 
@@ -87,6 +88,48 @@ def _chunk_period(period: str, freq: str) -> list[str]:
     return chunks
 
 
+async def _fetch_chunks(
+    http: httpx.AsyncClient,
+    url: str,
+    headers: dict[str, str],
+    params_base: dict[str, str],
+    chunks: list[str],
+) -> list[dict[str, Any]] | None:
+    records: list[dict[str, Any]] = []
+    for chunk in chunks:
+        params = {**params_base, "period": chunk}
+
+        logger.debug("comtrade_request", url=url, chunk=chunk)
+
+        def _make_getter(
+            p: dict[str, str],
+        ) -> Callable[[], Awaitable[httpx.Response]]:
+            async def _do_get() -> httpx.Response:
+                return await http.get(url, headers=headers, params=p)
+
+            return _do_get
+
+        response = await retry_on_status(
+            _make_getter(params),
+            source="comtrade",
+        )
+
+        if response.status_code in (401, 403):
+            return None
+
+        if response.status_code == 404:
+            continue
+
+        response.raise_for_status()
+
+        data = response.json()
+        recs = data.get("data", [])
+        if isinstance(recs, list):
+            records.extend(recs)
+
+    return records
+
+
 async def fetch_trade_data(
     *,
     reporter: int,
@@ -98,61 +141,43 @@ async def fetch_trade_data(
     api_key: str | None = None,
 ) -> tuple[list[dict[str, Any]], str]:
     key = _get_api_key(api_key)
-    headers = _build_headers(key)
-    max_rec = _max_records(key)
-
-    url = f"{BASE_URL}/C/{freq.upper()}/HS"
-
     chunks = _chunk_period(period, freq)
-    all_records: list[dict[str, Any]] = []
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as client:
-        for chunk in chunks:
-            params: dict[str, str] = {
-                "reporterCode": str(reporter),
-                "flowCode": flow.upper(),
-                "cmdCode": ",".join(hs_codes),
-                "period": chunk,
-                "includeDesc": "True",
-                "maxRecords": str(max_rec),
-            }
-            if partner != 0:
-                params["partnerCode"] = str(partner)
+    params_base: dict[str, str] = {
+        "reporterCode": str(reporter),
+        "flowCode": flow.upper(),
+        "cmdCode": ",".join(hs_codes),
+        "includeDesc": "True",
+    }
+    if partner != 0:
+        params_base["partnerCode"] = str(partner)
 
-            logger.debug("comtrade_request", url=url, chunk=chunk)
+    async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as http:
+        if key:
+            url = f"{BASE_URL_AUTH}/C/{freq.upper()}/HS"
+            headers = _build_headers(key)
+            params_base["maxRecords"] = str(_max_records(key))
 
-            def _make_getter(
-                p: dict[str, str],
-            ) -> Callable[[], Awaitable[httpx.Response]]:
-                async def _do_get() -> httpx.Response:
-                    return await client.get(url, headers=headers, params=p)
+            result = await _fetch_chunks(http, url, headers, params_base, chunks)
+            if result is not None:
+                return result, url
 
-                return _do_get
+            logger.warning("comtrade_auth_failed_fallback_guest", url=url)
 
-            response = await retry_on_status(
-                _make_getter(params),
-                source="comtrade",
-            )
+        url = f"{BASE_URL_GUEST}/C/{freq.upper()}/HS"
+        headers = _build_headers(None)
+        params_base["maxRecords"] = str(_max_records(None))
 
-            if response.status_code in (401, 403):
-                raise SourceUnavailableError(
-                    source="comtrade",
-                    url=url,
-                    last_error=(
-                        f"HTTP {response.status_code}. "
-                        "Verifique AGROBR_COMTRADE_API_KEY ou registre em "
-                        "https://comtradeplus.un.org"
-                    ),
-                )
+        result = await _fetch_chunks(http, url, headers, params_base, chunks)
+        if result is not None:
+            return result, url
 
-            if response.status_code == 404:
-                continue
-
-            response.raise_for_status()
-
-            data = response.json()
-            records = data.get("data", [])
-            if isinstance(records, list):
-                all_records.extend(records)
-
-    return all_records, url
+        raise SourceUnavailableError(
+            source="comtrade",
+            url=url,
+            last_error=(
+                "HTTP 401/403 em ambos endpoints (auth + guest). "
+                "Verifique AGROBR_COMTRADE_API_KEY ou registre em "
+                "https://comtradeplus.un.org"
+            ),
+        )

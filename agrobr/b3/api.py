@@ -147,8 +147,15 @@ async def historico(
                 df_dia = await ajustes(data=current, contrato=contrato)
                 if not df_dia.empty:
                     frames.append(df_dia)
-            except Exception:
-                logger.debug("b3_historico_skip", data=str(current))
+                else:
+                    logger.debug("b3_historico_empty", data=str(current), contrato=contrato)
+            except Exception as exc:
+                logger.warning(
+                    "b3_historico_skip",
+                    data=str(current),
+                    contrato=contrato,
+                    error=str(exc)[:200],
+                )
             await asyncio.sleep(1.0)
         current += timedelta(days=1)
 
@@ -316,8 +323,15 @@ async def oi_historico(
                 df_dia = await posicoes_abertas(data=current, contrato=contrato, tipo=tipo)
                 if not df_dia.empty:
                     frames.append(df_dia)
-            except Exception:
-                logger.debug("b3_oi_historico_skip", data=str(current))
+                else:
+                    logger.debug("b3_oi_historico_empty", data=str(current), contrato=contrato)
+            except Exception as exc:
+                logger.warning(
+                    "b3_oi_historico_skip",
+                    data=str(current),
+                    contrato=contrato,
+                    error=str(exc)[:200],
+                )
             await asyncio.sleep(1.0)
         current += timedelta(days=1)
 

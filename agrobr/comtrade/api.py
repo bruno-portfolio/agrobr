@@ -200,7 +200,7 @@ async def trade_mirror(
     if return_meta:
         meta = MetaInfo(
             source="comtrade_mirror",
-            source_url=client.BASE_URL,
+            source_url=client.BASE_URL_AUTH,
             source_method="httpx",
             fetched_at=datetime.now(UTC),
             fetch_duration_ms=fetch_ms,
