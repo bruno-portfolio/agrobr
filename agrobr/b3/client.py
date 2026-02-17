@@ -10,12 +10,20 @@ from agrobr.http.retry import retry_on_status
 logger = structlog.get_logger()
 
 BASE_URL = "https://www2.bmf.com.br/pages/portal/bmfbovespa/boletim1/Ajustes1.asp"
+BASE_URL_ARQUIVOS = "https://arquivos.b3.com.br/api/download"
 
 _settings = HTTPSettings()
 
 TIMEOUT = httpx.Timeout(
     connect=_settings.timeout_connect,
     read=_settings.timeout_read,
+    write=_settings.timeout_write,
+    pool=_settings.timeout_pool,
+)
+
+TIMEOUT_DOWNLOAD = httpx.Timeout(
+    connect=_settings.timeout_connect,
+    read=120.0,
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
@@ -41,3 +49,48 @@ async def fetch_ajustes(data: str) -> tuple[str, str]:
         html = response.content.decode("iso-8859-1")
         logger.info("b3_fetch_ok", url=url, size=len(html))
         return html, url
+
+
+async def fetch_posicoes_abertas(data: str) -> tuple[bytes, str]:
+    token_url = (
+        f"{BASE_URL_ARQUIVOS}/requestname"
+        f"?fileName=DerivativesOpenPosition&date={data}&recaptchaToken="
+    )
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT_DOWNLOAD, headers=HEADERS, follow_redirects=True
+    ) as http:
+        logger.debug("b3_oi_token_request", url=token_url)
+        token_resp = await retry_on_status(
+            lambda: http.get(token_url),
+            source="b3",
+        )
+
+        if token_resp.status_code in (400, 404):
+            raise SourceUnavailableError(
+                source="b3", url=token_url, last_error=f"HTTP {token_resp.status_code}"
+            )
+        token_resp.raise_for_status()
+
+        token_data = token_resp.json()
+        token = token_data.get("token")
+        if not token:
+            raise SourceUnavailableError(
+                source="b3", url=token_url, last_error="Token vazio na resposta"
+            )
+
+        download_url = f"{BASE_URL_ARQUIVOS}?token={token}"
+        logger.debug("b3_oi_download", url=download_url)
+        csv_resp = await retry_on_status(
+            lambda: http.get(download_url),
+            source="b3",
+        )
+
+        if csv_resp.status_code in (400, 404):
+            raise SourceUnavailableError(
+                source="b3", url=download_url, last_error=f"HTTP {csv_resp.status_code}"
+            )
+        csv_resp.raise_for_status()
+
+        csv_bytes = csv_resp.content
+        logger.info("b3_oi_fetch_ok", url=download_url, size=len(csv_bytes))
+        return csv_bytes, token_url

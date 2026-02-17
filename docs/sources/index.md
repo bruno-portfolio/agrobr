@@ -24,7 +24,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [Desmatamento PRODES/DETER](desmatamento.md) | Desmatamento + alertas | Anual/Diária | Amazônia, Cerrado, Pantanal |
 | [MapBiomas](mapbiomas.md) | Cobertura e uso da terra | Anual | Municípios (1985-presente) |
 | [CONAB Progresso](conab_progresso.md) | Plantio/colheita semanal | Semanal | 6 culturas, 27 UFs |
-| [B3 Futuros Agro](b3.md) | Ajustes diarios futuros | Diaria | 7 contratos agricolas |
+| [B3 Futuros Agro](b3.md) | Ajustes diarios + posicoes em aberto | Diaria | 7 contratos agricolas |
 | [CONAB CEASA](conab.md) | Precos atacado hortifruti | Diaria | 48 produtos, 43 CEASAs |
 
 ## Proveniencia e Rastreabilidade

@@ -1,0 +1,181 @@
+{
+  "name": "b3.posicoes_abertas",
+  "schema_version": "1.0",
+  "effective_from": "0.11.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "ticker_completo"
+  ],
+  "required_columns": [
+    "data",
+    "ticker",
+    "ticker_completo",
+    "vencimento_codigo",
+    "tipo",
+    "posicoes_abertas"
+  ],
+  "dtypes": {
+    "data": "date",
+    "ticker": "str",
+    "descricao": "str",
+    "ticker_completo": "str",
+    "vencimento_codigo": "str",
+    "vencimento_mes": "int",
+    "vencimento_ano": "int",
+    "tipo": "str",
+    "posicoes_abertas": "int",
+    "variacao_posicoes": "int",
+    "unidade": "str"
+  },
+  "nullable": {
+    "data": false,
+    "ticker": false,
+    "descricao": true,
+    "ticker_completo": false,
+    "vencimento_codigo": false,
+    "vencimento_mes": true,
+    "vencimento_ano": true,
+    "tipo": false,
+    "posicoes_abertas": false,
+    "variacao_posicoes": true,
+    "unidade": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ticker",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "descricao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ticker_completo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "vencimento_codigo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "vencimento_mes",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "vencimento_ano",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 2000,
+      "max_value": null
+    },
+    {
+      "name": "tipo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "posicoes_abertas",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "variacao_posicoes",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "vencimento_mes_min": 1,
+    "vencimento_mes_max": 12,
+    "vencimento_ano_min": 2000,
+    "posicoes_abertas_min": 0
+  },
+  "guarantees": [
+    "PK unica por combinacao data + ticker_completo",
+    "'ticker' sempre em {BGI, CCM, ETH, ICF, SJC, CNL}",
+    "'tipo' sempre 'futuro' ou 'opcao'",
+    "'posicoes_abertas' sempre >= 0",
+    "Dados apenas para dias uteis (sem pregao em weekends/feriados)"
+  ]
+}

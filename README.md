@@ -278,6 +278,7 @@ async def main():
 
 ```python
 from agrobr import b3
+from datetime import date
 
 async def main():
     # Ajustes diarios de futuros agricolas
@@ -286,9 +287,17 @@ async def main():
     # Filtrar por contrato
     df = await b3.ajustes(data="13/02/2025", contrato="boi")
 
-    # Serie historica
-    from datetime import date
+    # Serie historica de ajustes
     df = await b3.historico(contrato="boi", inicio=date(2025, 2, 10), fim=date(2025, 2, 14))
+
+    # Posicoes em aberto (open interest)
+    df = await b3.posicoes_abertas(data=date(2025, 12, 19))
+
+    # Filtrar OI por contrato e tipo (futuro/opcao)
+    df = await b3.posicoes_abertas(data=date(2025, 12, 19), contrato="boi", tipo="futuro")
+
+    # Serie historica de OI
+    df = await b3.oi_historico(contrato="boi", inicio=date(2025, 12, 15), fim=date(2025, 12, 19))
 
     # Listar contratos disponiveis
     print(b3.contratos())  # ['boi', 'cafe_arabica', 'cafe_conillon', 'etanol', 'milho', 'soja_cross', 'soja_fob']
@@ -361,6 +370,7 @@ df = conab.serie_historica('soja', inicio=2020)
 df = queimadas.focos(ano=2024, mes=9)
 df = desmatamento.prodes(bioma="Cerrado", ano=2022)
 df = b3.ajustes(data="13/02/2025")
+df = b3.posicoes_abertas(data="2025-12-19", contrato="boi")
 df = mapbiomas.cobertura(uf="MT", ano=2022)
 ```
 
@@ -441,7 +451,7 @@ Use `agrobr health --all` para verificar localmente.
 | Desmatamento PRODES/DETER | Desmatamento consolidado + alertas (TerraBrasilis WFS) | ✅ | Funcional |
 | MapBiomas | Cobertura e uso da terra (1985-presente) | ✅ | Funcional |
 | CONAB Progresso | Progresso semanal de plantio/colheita por cultura e UF | ✅ | Funcional |
-| B3 Futuros Agro | Ajustes diarios de futuros agricolas (7 contratos) | ✅ | Funcional |
+| B3 Futuros Agro | Ajustes diarios + posicoes em aberto (7 contratos agro) | ✅ | Funcional |
 | CONAB CEASA/PROHORT | Precos atacado hortifruti (48 produtos, 43 CEASAs) | ✅ | Funcional |
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
@@ -459,7 +469,8 @@ list_contracts()
 #  'conab_progresso', 'credito_rural', 'custo_producao', 'desmatamento_deter',
 #  'desmatamento_prodes', 'estimativa_safra', 'exportacao', 'fertilizante',
 #  'focos_queimadas', 'mapbiomas_cobertura', 'mapbiomas_transicao',
-#  'pecuaria_municipal', 'preco_atacado', 'preco_diario', 'producao_anual']
+#  'pecuaria_municipal', 'posicoes_abertas', 'preco_atacado', 'preco_diario',
+#  'producao_anual']
 
 # Inspecionar contrato
 contract = get_contract("preco_diario")

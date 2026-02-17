@@ -835,6 +835,58 @@ PRECO_ATACADO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+POSICOES_ABERTAS_V1 = Contract(
+    name="b3.posicoes_abertas",
+    version="1.0",
+    effective_from="0.11.0",
+    primary_key=["data", "ticker_completo"],
+    columns=[
+        Column(name="data", type=ColumnType.DATE, nullable=False, stable=True),
+        Column(name="ticker", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="descricao", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="ticker_completo", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(
+            name="vencimento_codigo",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="vencimento_mes",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=1,
+            max_value=12,
+        ),
+        Column(
+            name="vencimento_ano",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=2000,
+        ),
+        Column(name="tipo", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(
+            name="posicoes_abertas",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=0,
+        ),
+        Column(name="variacao_posicoes", type=ColumnType.INTEGER, nullable=True, stable=True),
+        Column(name="unidade", type=ColumnType.STRING, nullable=True, stable=True),
+    ],
+    guarantees=[
+        "PK unica por combinacao data + ticker_completo",
+        "'ticker' sempre em {BGI, CCM, ETH, ICF, SJC, CNL}",
+        "'tipo' sempre 'futuro' ou 'opcao'",
+        "'posicoes_abertas' sempre >= 0",
+        "Dados apenas para dias uteis (sem pregao em weekends/feriados)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V1)
 register_contract("preco_atacado", PRECO_ATACADO_V1)
@@ -846,6 +898,7 @@ register_contract("fertilizante", FERTILIZANTE_V1)
 register_contract("focos_queimadas", FOCOS_QUEIMADAS_V1)
 register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
 register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
+register_contract("posicoes_abertas", POSICOES_ABERTAS_V1)
 
 __all__ = [
     "AJUSTE_DIARIO_V1",
@@ -859,4 +912,5 @@ __all__ = [
     "FOCOS_QUEIMADAS_V1",
     "MAPBIOMAS_COBERTURA_V1",
     "MAPBIOMAS_TRANSICAO_V1",
+    "POSICOES_ABERTAS_V1",
 ]

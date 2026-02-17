@@ -53,6 +53,24 @@ COLUNAS_SAIDA: list[str] = [
     "unidade",
 ]
 
+B3_CONTRATOS_AGRO_INV: dict[str, str] = {v: k for k, v in B3_CONTRATOS_AGRO.items()}
+
+TICKERS_AGRO_OI: set[str] = {"BGI", "CCM", "ETH", "ICF", "SJC", "CNL"}
+
+COLUNAS_OI_SAIDA: list[str] = [
+    "data",
+    "ticker",
+    "descricao",
+    "ticker_completo",
+    "vencimento_codigo",
+    "vencimento_mes",
+    "vencimento_ano",
+    "tipo",
+    "posicoes_abertas",
+    "variacao_posicoes",
+    "unidade",
+]
+
 
 def parse_vencimento(codigo: str) -> tuple[int, int]:
     codigo = codigo.strip()

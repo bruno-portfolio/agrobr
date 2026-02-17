@@ -31,6 +31,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 - **MapBiomas**: Cobertura e uso da terra por município (1985-presente)
 - **CONAB Progresso**: Progresso semanal de plantio/colheita por cultura e UF
 - **CONAB CEASA/PROHORT**: Precos diarios de atacado hortifruti em 43 CEASAs (48 produtos)
+- **B3 Futuros Agro**: Ajustes diarios (settlement) + posicoes em aberto (open interest) de futuros e opcoes agro
 
 ## Datasets — Camada Semântica
 

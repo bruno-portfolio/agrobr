@@ -7,11 +7,17 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from agrobr.b3.models import TICKERS_AGRO
-from agrobr.b3.parser import PARSER_VERSION, parse_ajustes_html
+from agrobr.b3.models import COLUNAS_OI_SAIDA, TICKERS_AGRO, TICKERS_AGRO_OI
+from agrobr.b3.parser import (
+    PARSER_VERSION,
+    PARSER_VERSION_OI,
+    parse_ajustes_html,
+    parse_posicoes_abertas,
+)
 from agrobr.exceptions import ParseError
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "b3" / "ajustes_sample"
+GOLDEN_OI_DIR = Path(__file__).parent.parent / "golden_data" / "b3" / "posicoes_sample"
 
 
 def _golden_html() -> str:
@@ -172,3 +178,163 @@ class TestParseEdgeCases:
         df = parse_ajustes_html(html)
         assert len(df) == 1
         assert df.iloc[0]["ticker"] == "BGI"
+
+
+def _golden_oi_csv() -> bytes:
+    return GOLDEN_OI_DIR.joinpath("response.csv").read_bytes()
+
+
+def _expected_oi() -> dict:
+    return json.loads(GOLDEN_OI_DIR.joinpath("expected.json").read_text(encoding="utf-8"))
+
+
+class TestParsePosicoesAbertas:
+    def test_golden_data_returns_dataframe(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) > 0
+
+    def test_golden_data_columns(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        expected = _expected_oi()
+        for col in expected["columns"]:
+            assert col in df.columns, f"Missing column: {col}"
+
+    def test_golden_data_row_count(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        expected = _expected_oi()
+        assert len(df) == expected["total_rows"]
+
+    def test_golden_data_tickers_are_agro(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        tickers_found = set(df["ticker"].unique())
+        assert tickers_found.issubset(TICKERS_AGRO_OI)
+
+    def test_golden_data_all_expected_tickers(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        expected = _expected_oi()
+        tickers_found = set(df["ticker"].unique())
+        for ticker in expected["agro_tickers"]:
+            assert ticker in tickers_found, f"Missing ticker: {ticker}"
+
+    def test_golden_data_bgi_sample(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        expected = _expected_oi()["sample_bgi"]
+        bgi = df[df["ticker_completo"] == expected["ticker_completo"]]
+        assert len(bgi) == 1
+        row = bgi.iloc[0]
+        assert row["posicoes_abertas"] == expected["posicoes_abertas"]
+        assert row["variacao_posicoes"] == expected["variacao_posicoes"]
+
+    def test_golden_data_ccm_sample(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        expected = _expected_oi()["sample_ccm"]
+        ccm = df[df["ticker_completo"] == expected["ticker_completo"]]
+        assert len(ccm) == 1
+        row = ccm.iloc[0]
+        assert row["posicoes_abertas"] == expected["posicoes_abertas"]
+        assert row["variacao_posicoes"] == expected["variacao_posicoes"]
+
+
+class TestParsePosicoesAbertasTipos:
+    def test_futures_count(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        expected = _expected_oi()
+        assert len(df[df["tipo"] == "futuro"]) == expected["futures_count"]
+
+    def test_options_count(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        expected = _expected_oi()
+        assert len(df[df["tipo"] == "opcao"]) == expected["options_count"]
+
+    def test_tipo_only_futuro_or_opcao(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        assert set(df["tipo"].unique()).issubset({"futuro", "opcao"})
+
+
+class TestParsePosicoesAbertasVencimento:
+    def test_vencimento_mes_range(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        valid = df["vencimento_mes"].dropna()
+        assert valid.min() >= 1
+        assert valid.max() <= 12
+
+    def test_vencimento_ano_range(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        valid = df["vencimento_ano"].dropna()
+        assert valid.min() >= 2020
+        assert valid.max() <= 2035
+
+    def test_futures_have_valid_vencimento(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        futuros = df[df["tipo"] == "futuro"]
+        assert futuros["vencimento_mes"].notna().all()
+        assert futuros["vencimento_ano"].notna().all()
+
+
+class TestParsePosicoesAbertasVazio:
+    def test_empty_bytes_returns_empty(self):
+        df = parse_posicoes_abertas(b"")
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) == 0
+        for col in COLUNAS_OI_SAIDA:
+            assert col in df.columns
+
+    def test_header_only_csv_returns_empty(self):
+        csv = b"RptDt;TckrSymb;ISIN;Asst;XprtnCd;SgmtNm;OpnIntrst;VartnOpnIntrst;DstrbtnId;CvrdQty;TtlBlckdPos;UcvrdQty;TtlPos;BrrwrQty;LndrQty;CurQty;FwdPric\n"
+        df = parse_posicoes_abertas(csv)
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) == 0
+
+    def test_no_agro_rows_returns_empty(self):
+        csv = (
+            b"RptDt;TckrSymb;ISIN;Asst;XprtnCd;SgmtNm;OpnIntrst;VartnOpnIntrst;DstrbtnId;CvrdQty;TtlBlckdPos;UcvrdQty;TtlPos;BrrwrQty;LndrQty;CurQty;FwdPric\n"
+            b"2025-12-19;PETR4;BRPETRACNPR6;PETR;G26;EQUITY;1000;50;;;;;;;;\n"
+        )
+        df = parse_posicoes_abertas(csv)
+        assert len(df) == 0
+
+    def test_missing_sgmtnm_raises(self):
+        csv = b"RptDt;TckrSymb;Asst;OpnIntrst\n2025-12-19;BGIF26;BGI;1000\n"
+        with pytest.raises(ParseError, match="SgmtNm"):
+            parse_posicoes_abertas(csv)
+
+
+class TestParserVersionOI:
+    def test_is_integer(self):
+        assert isinstance(PARSER_VERSION_OI, int)
+
+    def test_at_least_one(self):
+        assert PARSER_VERSION_OI >= 1
+
+    def test_independent_of_ajustes(self):
+        assert PARSER_VERSION_OI >= 1
+        assert PARSER_VERSION >= 1
+
+
+class TestParsePosicoesAbertasDescricao:
+    def test_bgi_descricao(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        bgi = df[df["ticker"] == "BGI"]
+        assert (bgi["descricao"] == "boi").all()
+
+    def test_ccm_descricao(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        ccm = df[df["ticker"] == "CCM"]
+        assert (ccm["descricao"] == "milho").all()
+
+    def test_unidade_present(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        assert df["unidade"].notna().all()
+        assert (df["unidade"] != "").all()
+
+
+class TestParsePosicoesAbertasPK:
+    def test_no_duplicate_pk(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        pk = df[["data", "ticker_completo"]]
+        assert not pk.duplicated().any()
+
+    def test_posicoes_abertas_non_negative(self):
+        df = parse_posicoes_abertas(_golden_oi_csv())
+        assert (df["posicoes_abertas"] >= 0).all()

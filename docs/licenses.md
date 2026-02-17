@@ -95,7 +95,8 @@
   autenticação ou paywall. Dados são referência oficial para cálculo de margem
   (exigência CVM). Sem termos de uso específicos para acesso programático.
 - **Dados utilizados:** Ajustes diários (settlement prices) de futuros
-  agrícolas (BGI, CCM, ICF, CNL, ETH, SJC, SOY) via página pública.
+  agrícolas (BGI, CCM, ICF, CNL, ETH, SJC, SOY) via página pública +
+  posições em aberto (open interest) de futuros e opções via CSV público.
 - **Recomendação:** Uso educacional/pesquisa. Redistribuição em produto
   comercial deve ser verificada com B3 (marketdata@b3.com.br).
 

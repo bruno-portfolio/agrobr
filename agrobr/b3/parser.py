@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime
+from io import BytesIO
 
 import pandas as pd
 import structlog
@@ -10,8 +11,11 @@ from bs4 import BeautifulSoup
 from agrobr.exceptions import ParseError
 
 from .models import (
+    B3_CONTRATOS_AGRO_INV,
+    COLUNAS_OI_SAIDA,
     COLUNAS_SAIDA,
     TICKERS_AGRO,
+    TICKERS_AGRO_OI,
     UNIDADES,
     parse_numero_br,
     parse_vencimento,
@@ -20,6 +24,10 @@ from .models import (
 logger = structlog.get_logger()
 
 PARSER_VERSION = 1
+PARSER_VERSION_OI = 1
+
+_RE_TICKER_FUTURO = re.compile(r"^[A-Z]{2,4}[FGHJKMNQUVXZ]\d{2}$")
+_RE_TICKER_OPCAO = re.compile(r"^[A-Z]{2,4}[FGHJKMNQUVXZ]\d{2}[CP]\d+$")
 
 _RE_ATUALIZADO = re.compile(r"ATUALIZADO EM:\s*(\d{2}/\d{2}/\d{4})")
 
@@ -113,3 +121,71 @@ def parse_ajustes_html(html: str) -> pd.DataFrame:
 
     logger.info("b3_parse_ok", records=len(df), data_ref=str(data_ref))
     return df
+
+
+def _classificar_tipo(ticker_completo: str) -> str:
+    if _RE_TICKER_FUTURO.match(ticker_completo):
+        return "futuro"
+    if _RE_TICKER_OPCAO.match(ticker_completo):
+        return "opcao"
+    return "opcao" if len(ticker_completo) > 6 else "futuro"
+
+
+def _parse_vencimento_safe(codigo: str) -> tuple[int | None, int | None]:
+    try:
+        ano, mes = parse_vencimento(codigo)
+        return ano, mes
+    except (KeyError, ValueError, IndexError):
+        return None, None
+
+
+def parse_posicoes_abertas(csv_bytes: bytes) -> pd.DataFrame:
+    if not csv_bytes or len(csv_bytes.strip()) == 0:
+        return pd.DataFrame(columns=COLUNAS_OI_SAIDA)
+
+    try:
+        df_raw = pd.read_csv(BytesIO(csv_bytes), sep=";", encoding="utf-8")
+    except pd.errors.EmptyDataError:
+        return pd.DataFrame(columns=COLUNAS_OI_SAIDA)
+
+    if "SgmtNm" not in df_raw.columns:
+        raise ParseError(
+            source="b3",
+            parser_version=PARSER_VERSION_OI,
+            reason="Coluna SgmtNm ausente no CSV",
+        )
+
+    df_agro = df_raw[df_raw["SgmtNm"] == "AGRIBUSINESS"].copy()
+
+    if df_agro.empty:
+        return pd.DataFrame(columns=COLUNAS_OI_SAIDA)
+
+    df_agro = df_agro[df_agro["Asst"].isin(TICKERS_AGRO_OI)].copy()
+
+    if df_agro.empty:
+        return pd.DataFrame(columns=COLUNAS_OI_SAIDA)
+
+    df_agro["data"] = pd.to_datetime(df_agro["RptDt"])
+    df_agro["ticker"] = df_agro["Asst"]
+    df_agro["ticker_completo"] = df_agro["TckrSymb"].str.strip()
+    df_agro["vencimento_codigo"] = df_agro["XprtnCd"].str.strip()
+
+    vct = df_agro["vencimento_codigo"].apply(_parse_vencimento_safe)
+    df_agro["vencimento_ano"] = vct.apply(lambda x: x[0]).astype("Int64")
+    df_agro["vencimento_mes"] = vct.apply(lambda x: x[1]).astype("Int64")
+
+    df_agro["tipo"] = df_agro["ticker_completo"].apply(_classificar_tipo)
+    df_agro["descricao"] = df_agro["ticker"].map(lambda t: B3_CONTRATOS_AGRO_INV.get(t, ""))
+    df_agro["unidade"] = df_agro["ticker"].map(lambda t: UNIDADES.get(t, ""))
+
+    df_agro["posicoes_abertas"] = pd.to_numeric(df_agro["OpnIntrst"], errors="coerce").astype(
+        "Int64"
+    )
+    df_agro["variacao_posicoes"] = pd.to_numeric(df_agro["VartnOpnIntrst"], errors="coerce").astype(
+        "Int64"
+    )
+
+    df_out = df_agro[COLUNAS_OI_SAIDA].reset_index(drop=True)
+
+    logger.info("b3_oi_parse_ok", records=len(df_out))
+    return df_out

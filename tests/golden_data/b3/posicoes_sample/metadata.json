@@ -1,0 +1,9 @@
+{
+  "source": "b3",
+  "produto": "posicoes_abertas_agro",
+  "periodo": "2025-12-19",
+  "captured_at": "2026-02-16T12:00:00Z",
+  "parser_version": 1,
+  "url": "https://arquivos.b3.com.br/api/download/requestname?fileName=DerivativesOpenPosition",
+  "notes": "Posicoes em aberto de derivativos agro (AGRIBUSINESS segment) - sexta-feira"
+}

@@ -20,7 +20,12 @@ from agrobr.contracts import (
 )
 from agrobr.contracts.cepea import CEPEA_INDICADOR_V1
 from agrobr.contracts.conab import CONAB_BALANCO_V1, CONAB_CUSTO_PRODUCAO_V1, CONAB_SAFRA_V1
-from agrobr.contracts.datasets import CREDITO_RURAL_V1_1, EXPORTACAO_V1, FERTILIZANTE_V1
+from agrobr.contracts.datasets import (
+    CREDITO_RURAL_V1_1,
+    EXPORTACAO_V1,
+    FERTILIZANTE_V1,
+    POSICOES_ABERTAS_V1,
+)
 from agrobr.contracts.ibge import IBGE_LSPA_V1, IBGE_PAM_V1
 from agrobr.exceptions import ContractViolationError
 
@@ -371,6 +376,7 @@ class TestContractRegistry:
             "estimativa_safra",
             "exportacao",
             "fertilizante",
+            "posicoes_abertas",
             "preco_diario",
             "producao_anual",
         ]
@@ -473,7 +479,7 @@ class TestGenerateJsonSchemas:
     def test_generate_all_schemas(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             files = generate_json_schemas(tmpdir)
-            assert len(files) == 19
+            assert len(files) == 20
 
             for filepath in files:
                 path = Path(filepath)
@@ -615,6 +621,46 @@ class TestNewContracts:
         assert col is not None
         assert col.min_value == 1
         assert col.max_value == 12
+
+
+class TestPosicoesAbertasContract:
+    def test_contract_exists(self):
+        assert POSICOES_ABERTAS_V1 is not None
+        assert POSICOES_ABERTAS_V1.name == "b3.posicoes_abertas"
+        assert POSICOES_ABERTAS_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert POSICOES_ABERTAS_V1.primary_key == ["data", "ticker_completo"]
+
+    def test_required_columns(self):
+        required = [
+            "data",
+            "ticker",
+            "ticker_completo",
+            "vencimento_codigo",
+            "tipo",
+            "posicoes_abertas",
+        ]
+        for col_name in required:
+            col = POSICOES_ABERTAS_V1.get_column(col_name)
+            assert col is not None, f"Column {col_name} not found"
+            assert col.nullable is False
+
+    def test_posicoes_abertas_min(self):
+        col = POSICOES_ABERTAS_V1.get_column("posicoes_abertas")
+        assert col is not None
+        assert col.min_value == 0
+
+    def test_vencimento_mes_range(self):
+        col = POSICOES_ABERTAS_V1.get_column("vencimento_mes")
+        assert col is not None
+        assert col.min_value == 1
+        assert col.max_value == 12
+
+    def test_registered(self):
+        assert has_contract("posicoes_abertas")
+        contract = get_contract("posicoes_abertas")
+        assert contract is POSICOES_ABERTAS_V1
 
 
 class TestBreakingChangePolicy:

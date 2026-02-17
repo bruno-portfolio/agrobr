@@ -8,6 +8,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **B3 Posicoes em Aberto (Open Interest)** — Novas funcoes `b3.posicoes_abertas()` e
+  `b3.oi_historico()` para dados de open interest diario de futuros e opcoes agro
+  (BGI, CCM, ETH, ICF, SJC). CSV publico via `arquivos.b3.com.br` (2-step: token + download).
+  Parser filtra segmento AGRIBUSINESS, classifica futuro/opcao, enriquece com descricao e unidade.
+  Contrato `POSICOES_ABERTAS_V1` com PK `[data, ticker_completo]`, 11 colunas. Schema JSON,
+  golden data (518 linhas agro, 2025-12-19), 61 novos testes. Docs: `api/b3.md`, `sources/b3.md`
+  atualizados
 - **BCB/SICOR dimensoes ocultas** — Expoe 5 dimensoes que a API retorna mas eram ignoradas:
   programa, fonte de recurso, tipo de seguro, modalidade e atividade. Cada dimensao gera
   duas colunas: codigo (`cd_programa`) e nome legivel (`programa`). Dicionarios hardcoded

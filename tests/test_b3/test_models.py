@@ -4,9 +4,12 @@ import pytest
 
 from agrobr.b3.models import (
     B3_CONTRATOS_AGRO,
+    B3_CONTRATOS_AGRO_INV,
+    COLUNAS_OI_SAIDA,
     MONTH_CODES,
     TICKER_PARA_CONTRATO,
     TICKERS_AGRO,
+    TICKERS_AGRO_OI,
     UNIDADES,
     parse_numero_br,
     parse_vencimento,
@@ -95,3 +98,43 @@ class TestParseNumeroBr:
 
     def test_whitespace_stripped(self):
         assert parse_numero_br("  311,45  ") == 311.45
+
+
+class TestColunasOiSaida:
+    def test_is_list(self):
+        assert isinstance(COLUNAS_OI_SAIDA, list)
+
+    def test_has_required_columns(self):
+        required = ["data", "ticker", "ticker_completo", "tipo", "posicoes_abertas"]
+        for col in required:
+            assert col in COLUNAS_OI_SAIDA
+
+    def test_eleven_columns(self):
+        assert len(COLUNAS_OI_SAIDA) == 11
+
+
+class TestTickersAgroOi:
+    def test_is_set(self):
+        assert isinstance(TICKERS_AGRO_OI, set)
+
+    def test_contains_main_agro(self):
+        for t in ["BGI", "CCM", "ETH", "ICF", "SJC"]:
+            assert t in TICKERS_AGRO_OI
+
+    def test_subset_of_tickers_agro_plus_cnl(self):
+        assert TICKERS_AGRO_OI.issubset(TICKERS_AGRO | {"CNL"})
+
+
+class TestContratosAgroInv:
+    def test_is_inverse_of_contratos(self):
+        for nome, ticker in B3_CONTRATOS_AGRO.items():
+            assert B3_CONTRATOS_AGRO_INV[ticker] == nome
+
+    def test_same_length(self):
+        assert len(B3_CONTRATOS_AGRO_INV) == len(B3_CONTRATOS_AGRO)
+
+    def test_bgi_maps_to_boi(self):
+        assert B3_CONTRATOS_AGRO_INV["BGI"] == "boi"
+
+    def test_ccm_maps_to_milho(self):
+        assert B3_CONTRATOS_AGRO_INV["CCM"] == "milho"

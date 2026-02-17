@@ -1,0 +1,38 @@
+{
+  "date": "2025-12-19",
+  "total_rows": 518,
+  "agro_tickers": [
+    "BGI",
+    "CCM",
+    "ETH",
+    "ICF",
+    "SJC"
+  ],
+  "columns": [
+    "data",
+    "ticker",
+    "descricao",
+    "ticker_completo",
+    "vencimento_codigo",
+    "vencimento_mes",
+    "vencimento_ano",
+    "tipo",
+    "posicoes_abertas",
+    "variacao_posicoes",
+    "unidade"
+  ],
+  "futures_count": 47,
+  "options_count": 471,
+  "sample_bgi": {
+    "ticker": "BGI",
+    "ticker_completo": "BGIF26",
+    "posicoes_abertas": 12875,
+    "variacao_posicoes": -512
+  },
+  "sample_ccm": {
+    "ticker": "CCM",
+    "ticker_completo": "CCMH26",
+    "posicoes_abertas": 26178,
+    "variacao_posicoes": 232
+  }
+}

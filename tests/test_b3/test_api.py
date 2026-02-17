@@ -8,10 +8,11 @@ import pandas as pd
 import pytest
 
 from agrobr.b3 import api, client, parser
-from agrobr.b3.models import B3_CONTRATOS_AGRO, COLUNAS_SAIDA
+from agrobr.b3.models import B3_CONTRATOS_AGRO, COLUNAS_OI_SAIDA, COLUNAS_SAIDA
 from agrobr.models import MetaInfo
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "b3" / "ajustes_sample"
+GOLDEN_OI_DIR = Path(__file__).parent.parent / "golden_data" / "b3" / "posicoes_sample"
 
 
 def _golden_html() -> str:
@@ -217,3 +218,197 @@ class TestContratos:
     def test_count_matches(self):
         result = api.contratos()
         assert len(result) == len(B3_CONTRATOS_AGRO)
+
+
+def _golden_oi_csv() -> bytes:
+    return GOLDEN_OI_DIR.joinpath("response.csv").read_bytes()
+
+
+class TestPosicoesAbertas:
+    @pytest.fixture
+    def mock_fetch_oi(self):
+        csv_bytes = _golden_oi_csv()
+        with patch.object(
+            client,
+            "fetch_posicoes_abertas",
+            new_callable=AsyncMock,
+            return_value=(csv_bytes, "https://arquivos.b3.com.br/test"),
+        ) as mock:
+            yield mock
+
+    @pytest.mark.asyncio
+    async def test_returns_dataframe(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19")
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) > 0
+
+    @pytest.mark.asyncio
+    async def test_columns_match_schema(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19")
+        for col in COLUNAS_OI_SAIDA:
+            assert col in df.columns
+
+    @pytest.mark.asyncio
+    async def test_accepts_date_object(self, mock_fetch_oi):
+        df = await api.posicoes_abertas(data=date(2025, 12, 19))
+        assert isinstance(df, pd.DataFrame)
+        mock_fetch_oi.assert_called_once_with("2025-12-19")
+
+    @pytest.mark.asyncio
+    async def test_filter_contrato_by_name(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19", contrato="boi")
+        assert len(df) > 0
+        assert (df["ticker"] == "BGI").all()
+
+    @pytest.mark.asyncio
+    async def test_filter_contrato_by_ticker(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19", contrato="CCM")
+        assert len(df) > 0
+        assert (df["ticker"] == "CCM").all()
+
+    @pytest.mark.asyncio
+    async def test_filter_contrato_unknown_returns_empty(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19", contrato="XYZ")
+        assert len(df) == 0
+
+    @pytest.mark.asyncio
+    async def test_filter_tipo_futuro(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19", tipo="futuro")
+        assert len(df) > 0
+        assert (df["tipo"] == "futuro").all()
+
+    @pytest.mark.asyncio
+    async def test_filter_tipo_opcao(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19", tipo="opcao")
+        assert len(df) > 0
+        assert (df["tipo"] == "opcao").all()
+
+    @pytest.mark.asyncio
+    async def test_filter_contrato_and_tipo(self, mock_fetch_oi):  # noqa: ARG002
+        df = await api.posicoes_abertas(data="2025-12-19", contrato="boi", tipo="futuro")
+        assert len(df) > 0
+        assert (df["ticker"] == "BGI").all()
+        assert (df["tipo"] == "futuro").all()
+
+    @pytest.mark.asyncio
+    async def test_return_meta(self, mock_fetch_oi):  # noqa: ARG002
+        result = await api.posicoes_abertas(data="2025-12-19", return_meta=True)
+        assert isinstance(result, tuple)
+        df, meta = result
+        assert isinstance(df, pd.DataFrame)
+        assert isinstance(meta, MetaInfo)
+        assert meta.source == "b3"
+        assert meta.records_count == len(df)
+        assert meta.parser_version == parser.PARSER_VERSION_OI
+        assert meta.source_method == "httpx+csv"
+
+    @pytest.mark.asyncio
+    async def test_meta_fetch_duration(self, mock_fetch_oi):  # noqa: ARG002
+        _, meta = await api.posicoes_abertas(data="2025-12-19", return_meta=True)
+        assert meta.fetch_duration_ms >= 0
+        assert meta.parse_duration_ms >= 0
+
+
+class TestOiHistorico:
+    @pytest.fixture
+    def mock_fetch_oi(self):
+        csv_bytes = _golden_oi_csv()
+        with patch.object(
+            client,
+            "fetch_posicoes_abertas",
+            new_callable=AsyncMock,
+            return_value=(csv_bytes, "https://arquivos.b3.com.br/test"),
+        ) as mock:
+            yield mock
+
+    @pytest.mark.asyncio
+    async def test_returns_dataframe(self, mock_fetch_oi):  # noqa: ARG002
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            df = await api.oi_historico(
+                contrato="boi",
+                inicio=date(2025, 12, 19),
+                fim=date(2025, 12, 19),
+            )
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) > 0
+
+    @pytest.mark.asyncio
+    async def test_accepts_string_dates(self, mock_fetch_oi):  # noqa: ARG002
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            df = await api.oi_historico(
+                contrato="boi",
+                inicio="2025-12-19",
+                fim="2025-12-19",
+            )
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) > 0
+
+    @pytest.mark.asyncio
+    async def test_skips_weekends(self, mock_fetch_oi):
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            await api.oi_historico(
+                contrato="boi",
+                inicio=date(2025, 12, 20),
+                fim=date(2025, 12, 21),
+            )
+        assert mock_fetch_oi.call_count == 0
+
+    @pytest.mark.asyncio
+    async def test_multiple_days(self, mock_fetch_oi):
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            df = await api.oi_historico(
+                contrato="boi",
+                inicio=date(2025, 12, 15),
+                fim=date(2025, 12, 19),
+            )
+        assert mock_fetch_oi.call_count == 5
+        assert len(df) > 0
+
+    @pytest.mark.asyncio
+    async def test_filter_vencimento(self, mock_fetch_oi):  # noqa: ARG002
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            df = await api.oi_historico(
+                contrato="boi",
+                inicio=date(2025, 12, 19),
+                fim=date(2025, 12, 19),
+                vencimento="F26",
+            )
+        assert len(df) > 0
+        assert (df["vencimento_codigo"] == "F26").all()
+
+    @pytest.mark.asyncio
+    async def test_filter_tipo(self, mock_fetch_oi):  # noqa: ARG002
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            df = await api.oi_historico(
+                contrato="boi",
+                inicio=date(2025, 12, 19),
+                fim=date(2025, 12, 19),
+                tipo="futuro",
+            )
+        assert len(df) > 0
+        assert (df["tipo"] == "futuro").all()
+
+    @pytest.mark.asyncio
+    async def test_return_meta(self, mock_fetch_oi):  # noqa: ARG002
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            result = await api.oi_historico(
+                contrato="boi",
+                inicio=date(2025, 12, 19),
+                fim=date(2025, 12, 19),
+                return_meta=True,
+            )
+        assert isinstance(result, tuple)
+        df, meta = result
+        assert isinstance(meta, MetaInfo)
+        assert meta.source == "b3"
+
+    @pytest.mark.asyncio
+    async def test_empty_range_returns_empty(self, mock_fetch_oi):  # noqa: ARG002
+        with patch("agrobr.b3.api.asyncio.sleep", new_callable=AsyncMock):
+            df = await api.oi_historico(
+                contrato="boi",
+                inicio=date(2025, 12, 20),
+                fim=date(2025, 12, 19),
+            )
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) == 0
