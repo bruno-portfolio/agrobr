@@ -11,6 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Fonte(StrEnum):
     ABIOVE = "abiove"
     ANDA = "anda"
+    ANTAQ = "antaq"
     B3 = "b3"
     BCB = "bcb"
     CEPEA = "cepea"
@@ -37,6 +38,10 @@ URLS = {
     Fonte.ANDA: {
         "base": "https://anda.org.br",
         "estatisticas": "https://anda.org.br/recursos/",
+    },
+    Fonte.ANTAQ: {
+        "base": "https://web3.antaq.gov.br/ea/sense/download.html",
+        "bulk_txt": "https://web3.antaq.gov.br/ea/txt",
     },
     Fonte.BCB: {
         "base": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata",
@@ -238,6 +243,7 @@ class CacheSettings(BaseSettings):
     ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
     ttl_b3: int = 4 * 3600
+    ttl_antaq: int = 7 * 24 * 3600
     ttl_conab_ceasa: int = 4 * 3600
 
     stale_multiplier: float = 12.0
@@ -265,6 +271,7 @@ class HTTPSettings(BaseSettings):
 
     rate_limit_abiove: float = 3.0
     rate_limit_anda: float = 3.0
+    rate_limit_antaq: float = 1.0
     rate_limit_bcb: float = 1.0
     rate_limit_cepea: float = 2.0
     rate_limit_comexstat: float = 2.0

@@ -1,0 +1,11 @@
+{
+  "source": "antaq",
+  "format": "txt_zip",
+  "parser_module": "agrobr.antaq.parser",
+  "parser_functions": ["parse_atracacao", "parse_carga", "parse_mercadoria", "join_movimentacao"],
+  "url": "https://web3.antaq.gov.br/ea/txt/2024.zip",
+  "captured_at": "2026-02-17T12:00:00Z",
+  "parser_version": 1,
+  "ano": 2024,
+  "notes": "Synthetic ANTAQ data - 3 atracações, 4 cargas, 4 mercadorias. Tests full join pipeline."
+}

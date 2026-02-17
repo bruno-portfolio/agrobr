@@ -99,6 +99,8 @@ nav:
     - Desmatamento PRODES/DETER: api/desmatamento.md
     - MapBiomas: api/mapbiomas.md
     - B3 Futuros Agro: api/b3.md
+    - UN Comtrade: api/comtrade.md
+    - ANTAQ: api/antaq.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -120,6 +122,8 @@ nav:
     - Desmatamento PRODES/DETER: sources/desmatamento.md
     - MapBiomas: sources/mapbiomas.md
     - B3 Futuros Agro: sources/b3.md
+    - UN Comtrade: sources/comtrade.md
+    - ANTAQ: sources/antaq.md
   - Licenças dos Dados: licenses.md
   - Portabilidade:
     - Visão Geral: porting/index.md

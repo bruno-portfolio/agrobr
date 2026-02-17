@@ -1,0 +1,17 @@
+{
+  "count": 4,
+  "columns": [
+    "ano", "mes", "data_atracacao", "tipo_navegacao", "tipo_operacao",
+    "natureza_carga", "sentido", "porto", "complexo_portuario",
+    "terminal", "municipio", "uf", "regiao",
+    "cd_mercadoria", "mercadoria", "grupo_mercadoria",
+    "peso_bruto_ton", "qt_carga", "teu"
+  ],
+  "non_null_columns": ["ano", "mes"],
+  "first_row": {
+    "ano": 2024,
+    "mes": 1,
+    "porto": "Paranaguá"
+  },
+  "ufs_expected": ["BA", "PR", "SP"]
+}

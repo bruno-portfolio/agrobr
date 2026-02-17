@@ -656,3 +656,50 @@ def test_anda_golden_parsing(_name: str, path: Path):
         assert meses == expected["meses_expected"], (
             f"Meses: {meses} != {expected['meses_expected']}"
         )
+
+
+# ============================================================================
+# ANTAQ Golden Tests
+# ============================================================================
+
+
+def _get_antaq_cases() -> list[tuple[str, Path]]:
+    return _discover_cases(source_filter="antaq")
+
+
+@pytest.mark.skipif(not _get_antaq_cases(), reason="No ANTAQ golden data")
+@pytest.mark.parametrize("_name,path", _get_antaq_cases())
+def test_antaq_golden_parsing(_name: str, path: Path):
+    from agrobr.antaq.parser import (
+        join_movimentacao,
+        parse_atracacao,
+        parse_carga,
+        parse_mercadoria,
+    )
+
+    atracacao_txt = (path / "atracacao.txt").read_text(encoding="utf-8")
+    carga_txt = (path / "carga.txt").read_text(encoding="utf-8")
+    mercadoria_txt = (path / "mercadoria.txt").read_text(encoding="utf-8")
+    expected = _load_expected(path)
+
+    df_a = parse_atracacao(atracacao_txt)
+    df_c = parse_carga(carga_txt)
+    df_m = parse_mercadoria(mercadoria_txt)
+    df = join_movimentacao(df_a, df_c, df_m)
+
+    _assert_dataframe_golden(df, expected)
+
+    if "ufs_expected" in expected and "uf" in df.columns:
+        ufs = sorted(df["uf"].dropna().unique().tolist())
+        assert ufs == expected["ufs_expected"], f"UFs: {ufs} != {expected['ufs_expected']}"
+
+    if "ano" in df.columns:
+        assert pd.api.types.is_integer_dtype(df["ano"]), "ano should be integer"
+    if "mes" in df.columns:
+        assert pd.api.types.is_integer_dtype(df["mes"]), "mes should be integer"
+    if "peso_bruto_ton" in df.columns:
+        assert pd.api.types.is_numeric_dtype(df["peso_bruto_ton"]), (
+            "peso_bruto_ton should be numeric"
+        )
+        non_null_peso = df["peso_bruto_ton"].dropna()
+        assert (non_null_peso >= 0).all(), "peso_bruto_ton should be >= 0"

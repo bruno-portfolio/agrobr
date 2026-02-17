@@ -24,6 +24,7 @@ from agrobr.contracts.datasets import (
     CREDITO_RURAL_V1_1,
     EXPORTACAO_V1,
     FERTILIZANTE_V1,
+    MOVIMENTACAO_PORTUARIA_V1,
     POSICOES_ABERTAS_V1,
 )
 from agrobr.contracts.ibge import IBGE_LSPA_V1, IBGE_PAM_V1
@@ -376,6 +377,7 @@ class TestContractRegistry:
             "estimativa_safra",
             "exportacao",
             "fertilizante",
+            "movimentacao_portuaria",
             "posicoes_abertas",
             "preco_diario",
             "producao_anual",
@@ -479,7 +481,7 @@ class TestGenerateJsonSchemas:
     def test_generate_all_schemas(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             files = generate_json_schemas(tmpdir)
-            assert len(files) == 22
+            assert len(files) == 23
 
             for filepath in files:
                 path = Path(filepath)
@@ -661,6 +663,53 @@ class TestPosicoesAbertasContract:
         assert has_contract("posicoes_abertas")
         contract = get_contract("posicoes_abertas")
         assert contract is POSICOES_ABERTAS_V1
+
+
+class TestMovimentacaoPortuariaContract:
+    def test_contract_exists(self):
+        assert MOVIMENTACAO_PORTUARIA_V1 is not None
+        assert MOVIMENTACAO_PORTUARIA_V1.name == "antaq.movimentacao"
+        assert MOVIMENTACAO_PORTUARIA_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert MOVIMENTACAO_PORTUARIA_V1.primary_key == [
+            "ano",
+            "mes",
+            "porto",
+            "cd_mercadoria",
+            "sentido",
+            "tipo_navegacao",
+        ]
+
+    def test_required_columns(self):
+        required = ["ano", "mes", "porto", "cd_mercadoria", "sentido", "peso_bruto_ton"]
+        for col_name in required:
+            col = MOVIMENTACAO_PORTUARIA_V1.get_column(col_name)
+            assert col is not None, f"Column {col_name} not found"
+
+    def test_ano_min(self):
+        col = MOVIMENTACAO_PORTUARIA_V1.get_column("ano")
+        assert col is not None
+        assert col.min_value == 2010
+
+    def test_mes_range(self):
+        col = MOVIMENTACAO_PORTUARIA_V1.get_column("mes")
+        assert col is not None
+        assert col.min_value == 1
+        assert col.max_value == 12
+
+    def test_peso_bruto_min(self):
+        col = MOVIMENTACAO_PORTUARIA_V1.get_column("peso_bruto_ton")
+        assert col is not None
+        assert col.min_value == 0
+
+    def test_registered(self):
+        assert has_contract("movimentacao_portuaria")
+        contract = get_contract("movimentacao_portuaria")
+        assert contract is MOVIMENTACAO_PORTUARIA_V1
+
+    def test_effective_from(self):
+        assert MOVIMENTACAO_PORTUARIA_V1.effective_from == "0.11.0"
 
 
 class TestBreakingChangePolicy:

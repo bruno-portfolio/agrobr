@@ -162,6 +162,12 @@ class _SyncAnda(_SyncModule):
     pass
 
 
+class _SyncAntaq(_SyncModule):
+    """API síncrona da ANTAQ."""
+
+    pass
+
+
 class _SyncNasaPower(_SyncModule):
     """API síncrona do NASA POWER."""
 
@@ -207,6 +213,7 @@ class _SyncMapBiomas(_SyncModule):
 _modules: dict[str, _SyncModule | None] = {
     "abiove": None,
     "anda": None,
+    "antaq": None,
     "b3": None,
     "bcb": None,
     "cepea": None,
@@ -228,6 +235,7 @@ _modules: dict[str, _SyncModule | None] = {
 _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "abiove": _SyncAbiove,
     "anda": _SyncAnda,
+    "antaq": _SyncAntaq,
     "b3": _SyncB3,
     "bcb": _SyncBcb,
     "cepea": _SyncCepea,

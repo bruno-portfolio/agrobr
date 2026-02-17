@@ -1152,6 +1152,157 @@ TRADE_MIRROR_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+MOVIMENTACAO_PORTUARIA_V1 = Contract(
+    name="antaq.movimentacao",
+    version="1.0",
+    effective_from="0.11.0",
+    primary_key=["ano", "mes", "porto", "cd_mercadoria", "sentido", "tipo_navegacao"],
+    columns=[
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=2010,
+        ),
+        Column(
+            name="mes",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1,
+            max_value=12,
+        ),
+        Column(
+            name="data_atracacao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="tipo_navegacao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="tipo_operacao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="natureza_carga",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="sentido",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="porto",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="complexo_portuario",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="terminal",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="regiao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="cd_mercadoria",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="mercadoria",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="grupo_mercadoria",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="origem",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="destino",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="peso_bruto_ton",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="ton",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="qt_carga",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="teu",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'ano' is always >= 2010",
+        "'mes' is between 1 and 12",
+        "'uf' is always a valid Brazilian state code when present",
+        "'sentido' is always 'Embarcados' or 'Desembarcados' when present",
+        "'peso_bruto_ton' is always >= 0 when present",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V1)
 register_contract("preco_atacado", PRECO_ATACADO_V1)
@@ -1164,6 +1315,7 @@ register_contract("focos_queimadas", FOCOS_QUEIMADAS_V1)
 register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
 register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
 register_contract("comercio_bilateral", COMERCIO_BILATERAL_V1)
+register_contract("movimentacao_portuaria", MOVIMENTACAO_PORTUARIA_V1)
 register_contract("trade_mirror", TRADE_MIRROR_V1)
 register_contract("posicoes_abertas", POSICOES_ABERTAS_V1)
 
@@ -1180,6 +1332,7 @@ __all__ = [
     "FOCOS_QUEIMADAS_V1",
     "MAPBIOMAS_COBERTURA_V1",
     "MAPBIOMAS_TRANSICAO_V1",
+    "MOVIMENTACAO_PORTUARIA_V1",
     "POSICOES_ABERTAS_V1",
     "TRADE_MIRROR_V1",
 ]

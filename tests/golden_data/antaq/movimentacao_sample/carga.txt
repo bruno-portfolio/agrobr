@@ -1,0 +1,5 @@
+IDCarga;IDAtracacao;Origem;Destino;CDMercadoria;Tipo Operação da Carga;Tipo Navegação;Natureza da Carga;Sentido;TEU;QTCarga;VLPesoCargaBruta
+1;1;Brasil;China;1201;Exportação;Longo Curso;Granel Sólido;Embarcados;0;1;"34.452,28"
+2;1;Brasil;EUA;1507;Exportação;Longo Curso;Granel Líquido e Gasoso;Embarcados;0;1;"12.100,50"
+3;2;Bahia;São Paulo;2304;Cabotagem;Cabotagem;Granel Sólido;Desembarcados;0;1;"5.000,00"
+4;3;São Paulo;Bahia;1005;Exportação;Longo Curso;Carga Geral;Embarcados;2;1;"800,75"

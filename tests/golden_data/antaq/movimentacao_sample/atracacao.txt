@@ -1,0 +1,4 @@
+IDAtracacao;Porto Atracação;Complexo Portuário;Tipo da Autoridade Portuária;Data Atracação;Data Desatracação;Ano;Mes;Tipo de Navegação da Atracação;Terminal;Município;UF;SGUF;Região Geográfica
+1;Santos;Complexo Santos;Autoridade Portuária;01/01/2024;02/01/2024;2024;1;Longo Curso;Terminal 1;Santos;SP;SP;Sudeste
+2;Paranaguá;Complexo Paranaguá;Autoridade Portuária;15/01/2024;16/01/2024;2024;1;Cabotagem;Terminal 2;Paranaguá;PR;PR;Sul
+3;Salvador;Complexo Salvador;Autoridade Portuária;20/02/2024;21/02/2024;2024;2;Longo Curso;Terminal 3;Salvador;BA;BA;Nordeste

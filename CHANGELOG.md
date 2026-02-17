@@ -16,6 +16,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   Chunking automatico para periodos > 12 meses. 17 produtos agro mapeados por HS code.
   Contratos `COMERCIO_BILATERAL_V1` e `TRADE_MIRROR_V1`. Golden data (comercio + mirror).
   70 novos testes. Sync wrapper. Docs: `api/comtrade.md`, `sources/comtrade.md`
+- **ANTAQ — Movimentacao Portuaria** — Novo modulo `antaq/` para dados de movimentacao
+  portuaria de carga do Estatistico Aquaviario (ANTAQ). Funcao `antaq.movimentacao(ano)`
+  baixa ZIP bulk anual (~80MB), extrai e faz join de 3 tabelas (Atracacao + Carga + Mercadoria).
+  Filtros: tipo_navegacao, natureza_carga, mercadoria, porto, uf, sentido.
+  Encoding UTF-8-sig, separador `;`, decimal brasileiro (`,`). Historico desde 2010.
+  Contrato `MOVIMENTACAO_PORTUARIA_V1` com 21 colunas. Schema JSON, golden data.
+  72 novos testes (client, parser, models, api). Sync wrapper. Docs: `sources/antaq.md`
 - **B3 Posicoes em Aberto (Open Interest)** — Novas funcoes `b3.posicoes_abertas()` e
   `b3.oi_historico()` para dados de open interest diario de futuros e opcoes agro
   (BGI, CCM, ETH, ICF, SJC). CSV publico via `arquivos.b3.com.br` (2-step: token + download).

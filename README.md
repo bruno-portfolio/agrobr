@@ -13,7 +13,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **20 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT e UN Comtrade.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **21 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT, UN Comtrade e ANTAQ.
 
 **v0.10.1** — 2778 testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
 
@@ -453,6 +453,8 @@ Use `agrobr health --all` para verificar localmente.
 | CONAB Progresso | Progresso semanal de plantio/colheita por cultura e UF | ✅ | Funcional |
 | B3 Futuros Agro | Ajustes diarios + posicoes em aberto (7 contratos agro) | ✅ | Funcional |
 | CONAB CEASA/PROHORT | Precos atacado hortifruti (48 produtos, 43 CEASAs) | ✅ | Funcional |
+| UN Comtrade | Comercio bilateral + trade mirror (~200 paises, HS codes) | ✅¹ | Funcional |
+| ANTAQ | Movimentacao portuaria de carga (granel, geral, conteiner) | ✅ | Funcional |
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 
@@ -466,11 +468,11 @@ from agrobr.contracts import get_contract, list_contracts, validate_dataset
 # Listar contratos registrados
 list_contracts()
 # ['abate_trimestral', 'ajuste_diario', 'balanco', 'censo_agropecuario',
-#  'conab_progresso', 'credito_rural', 'custo_producao', 'desmatamento_deter',
-#  'desmatamento_prodes', 'estimativa_safra', 'exportacao', 'fertilizante',
-#  'focos_queimadas', 'mapbiomas_cobertura', 'mapbiomas_transicao',
-#  'pecuaria_municipal', 'posicoes_abertas', 'preco_atacado', 'preco_diario',
-#  'producao_anual']
+#  'comercio_bilateral', 'conab_progresso', 'credito_rural', 'custo_producao',
+#  'desmatamento_deter', 'desmatamento_prodes', 'estimativa_safra', 'exportacao',
+#  'fertilizante', 'focos_queimadas', 'mapbiomas_cobertura', 'mapbiomas_transicao',
+#  'movimentacao_portuaria', 'pecuaria_municipal', 'posicoes_abertas',
+#  'preco_atacado', 'preco_diario', 'producao_anual', 'trade_mirror']
 
 # Inspecionar contrato
 contract = get_contract("preco_diario")

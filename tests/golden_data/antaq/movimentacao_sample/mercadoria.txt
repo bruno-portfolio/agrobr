@@ -1,0 +1,5 @@
+CDMercadoria;Grupo de Mercadoria;Mercadoria;Nomenclatura Simplificada Mercadoria
+1201;Grãos;Soja em grãos;SOJA EM GRAOS
+1507;Óleos;Óleo de soja;OLEO DE SOJA
+2304;Farelos;Farelo de soja;FARELO DE SOJA
+1005;Grãos;Milho;MILHO

@@ -15,6 +15,7 @@
 | **BCB/SICOR** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [BCB OData](https://olinda.bcb.gov.br) |
 | **ComexStat** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [MDIC](https://comexstat.mdic.gov.br) |
 | **ANDA** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [anda.org.br](https://anda.org.br) |
+| **ANTAQ** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Estatístico Aquaviário](https://web3.antaq.gov.br/ea/sense/download.html) |
 | **ABIOVE** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [abiove.org.br](https://abiove.org.br) |
 | **USDA PSD** | U.S. Public Domain | Sim (governo EUA) | `livre` | [Ag Data Commons](https://data.nal.usda.gov/dataset/usda-foreign-agricultural-service-production-supply-and-distribution-database) |
 | **UN Comtrade** | Dados publicos ONU | Sim (dados publicos) | `livre` | [Comtrade](https://comtradeplus.un.org) |
