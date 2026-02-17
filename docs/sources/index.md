@@ -1,6 +1,6 @@
 # Fontes de Dados
 
-O agrobr integra dados de 21 fontes de dados agricolas.
+O agrobr integra dados de 22 fontes de dados agricolas.
 Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 
 ## Visao Geral
@@ -28,6 +28,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [CONAB CEASA](conab.md) | Precos atacado hortifruti | Diaria | 48 produtos, 43 CEASAs |
 | [UN Comtrade](comtrade.md) | Comercio bilateral + trade mirror | Mensal/Anual | ~200 paises, HS codes |
 | [ANTAQ](antaq.md) | Movimentacao portuaria de carga | Anual | Portos brasileiros, 2010+ |
+| [ANP Diesel](anp_diesel.md) | Precos revenda + volumes diesel | Semanal/Mensal | UFs, municipios, 2013+ |
 
 ## Proveniencia e Rastreabilidade
 

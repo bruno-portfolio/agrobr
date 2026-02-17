@@ -96,6 +96,39 @@ class _SyncModule:
         return attr
 
 
+class _SyncAnpDiesel(_SyncModule):
+    """API sincrona da ANP Diesel."""
+
+    pass
+
+
+class _SyncAlt:
+    """Container sincrono para fontes alt data."""
+
+    def __init__(self) -> None:
+        self._modules: dict[str, _SyncModule | None] = {
+            "anp_diesel": None,
+        }
+        self._classes: dict[str, type[_SyncModule]] = {
+            "anp_diesel": _SyncAnpDiesel,
+        }
+
+    def __getattr__(self, name: str) -> Any:
+        if name.startswith("_"):
+            raise AttributeError(name)
+        if name not in self._modules:
+            raise AttributeError(f"'_SyncAlt' has no attribute '{name}'")
+
+        if self._modules[name] is None:
+            import importlib
+
+            async_module = importlib.import_module(f"agrobr.alt.{name}")
+            cls = self._classes[name]
+            self._modules[name] = cls(async_module)
+
+        return self._modules[name]
+
+
 class _SyncAbiove(_SyncModule):
     """API síncrona da ABIOVE."""
 
@@ -255,8 +288,18 @@ _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
 }
 
 
+_alt_instance: _SyncAlt | None = None
+
+
 def __getattr__(name: str) -> Any:
     """Lazy loading para evitar imports circulares."""
+    global _alt_instance
+
+    if name == "alt":
+        if _alt_instance is None:
+            _alt_instance = _SyncAlt()
+        return _alt_instance
+
     if name not in _modules:
         raise AttributeError(f"module 'agrobr.sync' has no attribute '{name}'")
 

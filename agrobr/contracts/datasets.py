@@ -1319,8 +1319,134 @@ register_contract("movimentacao_portuaria", MOVIMENTACAO_PORTUARIA_V1)
 register_contract("trade_mirror", TRADE_MIRROR_V1)
 register_contract("posicoes_abertas", POSICOES_ABERTAS_V1)
 
+ANP_DIESEL_PRECOS_V1 = Contract(
+    name="anp_diesel.precos",
+    version="1.0",
+    effective_from="0.11.0",
+    primary_key=["data", "uf", "municipio", "produto"],
+    columns=[
+        Column(
+            name="data",
+            type=ColumnType.DATE,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="produto",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="preco_venda",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="BRL/litro",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="preco_compra",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="BRL/litro",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="margem",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="BRL/litro",
+            stable=True,
+        ),
+        Column(
+            name="n_postos",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'uf' is a valid Brazilian state code when present",
+        "'produto' is always 'DIESEL' or 'DIESEL S10'",
+        "'preco_venda' and 'preco_compra' are in BRL/litro when present",
+        "'margem' equals preco_venda - preco_compra",
+        "Data is weekly (date of collection)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+ANP_DIESEL_VENDAS_V1 = Contract(
+    name="anp_diesel.vendas",
+    version="1.0",
+    effective_from="0.11.0",
+    primary_key=["data", "uf", "produto"],
+    columns=[
+        Column(
+            name="data",
+            type=ColumnType.DATE,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="regiao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="produto",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="volume_m3",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="m3",
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'uf' is a valid Brazilian state code when present",
+        "'volume_m3' is in cubic meters when present",
+        "Data is monthly (first day of month)",
+        "'produto' contains DIESEL variants only",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+register_contract("anp_diesel_precos", ANP_DIESEL_PRECOS_V1)
+register_contract("anp_diesel_vendas", ANP_DIESEL_VENDAS_V1)
+
 __all__ = [
     "AJUSTE_DIARIO_V1",
+    "ANP_DIESEL_PRECOS_V1",
+    "ANP_DIESEL_VENDAS_V1",
     "COMERCIO_BILATERAL_V1",
     "CONAB_PROGRESSO_V1",
     "PRECO_ATACADO_V1",

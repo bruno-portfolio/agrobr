@@ -21,6 +21,8 @@ from agrobr.contracts import (
 from agrobr.contracts.cepea import CEPEA_INDICADOR_V1
 from agrobr.contracts.conab import CONAB_BALANCO_V1, CONAB_CUSTO_PRODUCAO_V1, CONAB_SAFRA_V1
 from agrobr.contracts.datasets import (
+    ANP_DIESEL_PRECOS_V1,
+    ANP_DIESEL_VENDAS_V1,
     CREDITO_RURAL_V1_1,
     EXPORTACAO_V1,
     FERTILIZANTE_V1,
@@ -371,6 +373,8 @@ class TestContract:
 class TestContractRegistry:
     def test_all_datasets_registered(self):
         expected = [
+            "anp_diesel_precos",
+            "anp_diesel_vendas",
             "balanco",
             "credito_rural",
             "custo_producao",
@@ -481,7 +485,7 @@ class TestGenerateJsonSchemas:
     def test_generate_all_schemas(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             files = generate_json_schemas(tmpdir)
-            assert len(files) == 23
+            assert len(files) == 25
 
             for filepath in files:
                 path = Path(filepath)
@@ -710,6 +714,71 @@ class TestMovimentacaoPortuariaContract:
 
     def test_effective_from(self):
         assert MOVIMENTACAO_PORTUARIA_V1.effective_from == "0.11.0"
+
+
+class TestAnpDieselPrecosContract:
+    def test_contract_exists(self):
+        assert ANP_DIESEL_PRECOS_V1 is not None
+        assert ANP_DIESEL_PRECOS_V1.name == "anp_diesel.precos"
+        assert ANP_DIESEL_PRECOS_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert ANP_DIESEL_PRECOS_V1.primary_key == ["data", "uf", "municipio", "produto"]
+
+    def test_required_columns(self):
+        required = ["data"]
+        for col_name in required:
+            col = ANP_DIESEL_PRECOS_V1.get_column(col_name)
+            assert col is not None, f"Column {col_name} not found"
+            assert col.nullable is False
+
+    def test_preco_venda_min(self):
+        col = ANP_DIESEL_PRECOS_V1.get_column("preco_venda")
+        assert col is not None
+        assert col.min_value == 0
+
+    def test_n_postos_min(self):
+        col = ANP_DIESEL_PRECOS_V1.get_column("n_postos")
+        assert col is not None
+        assert col.min_value == 0
+
+    def test_registered(self):
+        assert has_contract("anp_diesel_precos")
+        contract = get_contract("anp_diesel_precos")
+        assert contract is ANP_DIESEL_PRECOS_V1
+
+    def test_effective_from(self):
+        assert ANP_DIESEL_PRECOS_V1.effective_from == "0.11.0"
+
+
+class TestAnpDieselVendasContract:
+    def test_contract_exists(self):
+        assert ANP_DIESEL_VENDAS_V1 is not None
+        assert ANP_DIESEL_VENDAS_V1.name == "anp_diesel.vendas"
+        assert ANP_DIESEL_VENDAS_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert ANP_DIESEL_VENDAS_V1.primary_key == ["data", "uf", "produto"]
+
+    def test_required_columns(self):
+        required = ["data"]
+        for col_name in required:
+            col = ANP_DIESEL_VENDAS_V1.get_column(col_name)
+            assert col is not None, f"Column {col_name} not found"
+            assert col.nullable is False
+
+    def test_volume_m3_min(self):
+        col = ANP_DIESEL_VENDAS_V1.get_column("volume_m3")
+        assert col is not None
+        assert col.min_value == 0
+
+    def test_registered(self):
+        assert has_contract("anp_diesel_vendas")
+        contract = get_contract("anp_diesel_vendas")
+        assert contract is ANP_DIESEL_VENDAS_V1
+
+    def test_effective_from(self):
+        assert ANP_DIESEL_VENDAS_V1.effective_from == "0.11.0"
 
 
 class TestBreakingChangePolicy:

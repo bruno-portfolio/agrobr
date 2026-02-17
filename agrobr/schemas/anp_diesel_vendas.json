@@ -1,0 +1,96 @@
+{
+  "name": "anp_diesel.vendas",
+  "schema_version": "1.0",
+  "effective_from": "0.11.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "uf",
+    "produto"
+  ],
+  "required_columns": [
+    "data"
+  ],
+  "dtypes": {
+    "data": "date",
+    "uf": "str",
+    "regiao": "str",
+    "produto": "str",
+    "volume_m3": "float"
+  },
+  "nullable": {
+    "data": false,
+    "uf": true,
+    "regiao": true,
+    "produto": true,
+    "volume_m3": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "regiao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "volume_m3",
+      "type": "float",
+      "nullable": true,
+      "unit": "m3",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "volume_m3_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'uf' is a valid Brazilian state code when present",
+    "'volume_m3' is in cubic meters when present",
+    "Data is monthly (first day of month)",
+    "'produto' contains DIESEL variants only"
+  ]
+}

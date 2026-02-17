@@ -11,6 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Fonte(StrEnum):
     ABIOVE = "abiove"
     ANDA = "anda"
+    ANP_DIESEL = "anp_diesel"
     ANTAQ = "antaq"
     B3 = "b3"
     BCB = "bcb"
@@ -38,6 +39,11 @@ URLS = {
     Fonte.ANDA: {
         "base": "https://anda.org.br",
         "estatisticas": "https://anda.org.br/recursos/",
+    },
+    Fonte.ANP_DIESEL: {
+        "base": "https://www.gov.br/anp/pt-br",
+        "shlp": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp",
+        "vendas_m3": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-estatisticos/de/vdpb/vendas-combustiveis-m3.xls",
     },
     Fonte.ANTAQ: {
         "base": "https://web3.antaq.gov.br/ea/sense/download.html",
@@ -243,6 +249,7 @@ class CacheSettings(BaseSettings):
     ttl_queimadas: int = 12 * 3600
     ttl_usda: int = 24 * 3600
     ttl_b3: int = 4 * 3600
+    ttl_anp_diesel: int = 7 * 24 * 3600
     ttl_antaq: int = 7 * 24 * 3600
     ttl_conab_ceasa: int = 4 * 3600
 
@@ -271,6 +278,7 @@ class HTTPSettings(BaseSettings):
 
     rate_limit_abiove: float = 3.0
     rate_limit_anda: float = 3.0
+    rate_limit_anp_diesel: float = 2.0
     rate_limit_antaq: float = 1.0
     rate_limit_bcb: float = 1.0
     rate_limit_cepea: float = 2.0

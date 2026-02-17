@@ -703,3 +703,58 @@ def test_antaq_golden_parsing(_name: str, path: Path):
         )
         non_null_peso = df["peso_bruto_ton"].dropna()
         assert (non_null_peso >= 0).all(), "peso_bruto_ton should be >= 0"
+
+
+# ============================================================================
+# ANP Diesel Golden Tests
+# ============================================================================
+
+
+def _get_anp_diesel_cases() -> list[tuple[str, Path]]:
+    return _discover_cases(source_filter="anp_diesel")
+
+
+@pytest.mark.skipif(not _get_anp_diesel_cases(), reason="No ANP diesel golden data")
+@pytest.mark.parametrize("_name,path", _get_anp_diesel_cases())
+def test_anp_diesel_golden_parsing(_name: str, path: Path):
+    from agrobr.alt.anp_diesel.parser import parse_precos, parse_vendas
+
+    expected = _load_expected(path)
+    metadata = _load_metadata(path)
+
+    xlsx_path = path / "response.xlsx"
+    if not xlsx_path.exists():
+        pytest.skip(f"No response.xlsx in {path}")
+        return
+
+    data = xlsx_path.read_bytes()
+    parser_fns = metadata.get("parser_functions", [])
+
+    if "parse_precos" in parser_fns:
+        df = parse_precos(data)
+    elif "parse_vendas" in parser_fns:
+        df = parse_vendas(data)
+    else:
+        pytest.skip(f"Unknown parser functions: {parser_fns}")
+        return
+
+    _assert_dataframe_golden(df, expected)
+
+    if expected.get("checks", {}).get("all_products_are_diesel"):
+        assert df["produto"].str.upper().str.contains("DIESEL").all(), (
+            "All products should contain DIESEL"
+        )
+    if expected.get("checks", {}).get("all_products_contain_diesel"):
+        assert df["produto"].str.upper().str.contains("DIESEL").all(), (
+            "All products should contain DIESEL"
+        )
+    if expected.get("checks", {}).get("data_column_is_datetime"):
+        assert pd.api.types.is_datetime64_any_dtype(df["data"]), "data should be datetime"
+    if expected.get("checks", {}).get("volume_m3_positive") and "volume_m3" in df.columns:
+        assert (df["volume_m3"].dropna() > 0).all(), "volume_m3 should be positive"
+    if (
+        expected.get("checks", {}).get("margem_equals_venda_minus_compra")
+        and "margem" in df.columns
+    ):
+        diff = (df["preco_venda"] - df["preco_compra"] - df["margem"]).abs()
+        assert (diff < 0.01).all(), "margem should equal preco_venda - preco_compra"

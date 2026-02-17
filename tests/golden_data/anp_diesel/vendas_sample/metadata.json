@@ -1,0 +1,10 @@
+{
+  "source": "anp_diesel",
+  "format": "xls",
+  "parser_module": "agrobr.alt.anp_diesel.parser",
+  "parser_functions": ["parse_vendas"],
+  "url": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-estatisticos/de/vdpb/vendas-combustiveis-m3.xls",
+  "captured_at": "2026-02-17T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic ANP diesel volume data - 3 diesel rows (MT jan, SP jan, MT fev). Tests diesel filtering and volume parsing."
+}

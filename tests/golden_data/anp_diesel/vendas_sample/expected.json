@@ -1,0 +1,13 @@
+{
+  "min_rows": 3,
+  "count": 3,
+  "required_columns": ["data", "uf", "regiao", "produto", "volume_m3"],
+  "columns": ["data", "uf", "regiao", "produto", "volume_m3"],
+  "first_row": {"uf": "MT", "regiao": "CENTRO-OESTE", "produto": "\u00d3LEO DIESEL", "volume_m3": 500000.0},
+  "checks": {
+    "all_products_contain_diesel": true,
+    "volume_m3_positive": true,
+    "data_column_is_datetime": true,
+    "sorted_by_data_uf": true
+  }
+}

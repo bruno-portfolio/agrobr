@@ -1,0 +1,10 @@
+{
+  "source": "anp_diesel",
+  "format": "xlsx",
+  "parser_module": "agrobr.alt.anp_diesel.parser",
+  "parser_functions": ["parse_precos"],
+  "url": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx",
+  "captured_at": "2026-02-17T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic ANP diesel price data - 3 rows: 2 DIESEL S10 (SP, MT), 1 DIESEL (SP). Tests filtering and margem calculation."
+}

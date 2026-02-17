@@ -8,6 +8,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **ANP Diesel — Precos + Volumes** — Novo namespace `agrobr/alt/anp_diesel/` para dados de
+  precos de revenda e volumes de venda de diesel da ANP. Funcoes:
+  `anp_diesel.precos_diesel(uf, municipio, produto, nivel, agregacao)` para precos
+  semanais/mensais por municipio/UF/Brasil e `anp_diesel.vendas_diesel(uf)` para volumes
+  mensais por UF. XLSX bulk 2013+ (openpyxl), cache por periodo do arquivo.
+  Contratos `ANP_DIESEL_PRECOS_V1` (8 colunas) e `ANP_DIESEL_VENDAS_V1` (5 colunas).
+  Schemas JSON, golden data. 103 novos testes (models, client, parser, api). Sync wrapper
+  via `agrobr.sync.alt.anp_diesel`. Docs: `api/anp_diesel.md`, `sources/anp_diesel.md`
 - **UN Comtrade — Trade Mirror** — Novo modulo `comtrade/` para dados de comercio
   internacional bilateral via UN Comtrade API. Funcoes: `comtrade.comercio()` (dados
   bilaterais por HS code/pais/periodo) e `comtrade.trade_mirror()` (compara exportacoes

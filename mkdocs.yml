@@ -101,6 +101,7 @@ nav:
     - B3 Futuros Agro: api/b3.md
     - UN Comtrade: api/comtrade.md
     - ANTAQ: api/antaq.md
+    - ANP Diesel: api/anp_diesel.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -124,6 +125,7 @@ nav:
     - B3 Futuros Agro: sources/b3.md
     - UN Comtrade: sources/comtrade.md
     - ANTAQ: sources/antaq.md
+    - ANP Diesel: sources/anp_diesel.md
   - Licenças dos Dados: licenses.md
   - Portabilidade:
     - Visão Geral: porting/index.md

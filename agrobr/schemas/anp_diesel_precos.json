@@ -1,0 +1,139 @@
+{
+  "name": "anp_diesel.precos",
+  "schema_version": "1.0",
+  "effective_from": "0.11.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "uf",
+    "municipio",
+    "produto"
+  ],
+  "required_columns": [
+    "data"
+  ],
+  "dtypes": {
+    "data": "date",
+    "uf": "str",
+    "municipio": "str",
+    "produto": "str",
+    "preco_venda": "float",
+    "preco_compra": "float",
+    "margem": "float",
+    "n_postos": "int"
+  },
+  "nullable": {
+    "data": false,
+    "uf": true,
+    "municipio": true,
+    "produto": true,
+    "preco_venda": true,
+    "preco_compra": true,
+    "margem": true,
+    "n_postos": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "preco_venda",
+      "type": "float",
+      "nullable": true,
+      "unit": "BRL/litro",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "preco_compra",
+      "type": "float",
+      "nullable": true,
+      "unit": "BRL/litro",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "margem",
+      "type": "float",
+      "nullable": true,
+      "unit": "BRL/litro",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "n_postos",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "preco_venda_min": 0,
+    "preco_compra_min": 0,
+    "n_postos_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'uf' is a valid Brazilian state code when present",
+    "'produto' is always 'DIESEL' or 'DIESEL S10'",
+    "'preco_venda' and 'preco_compra' are in BRL/litro when present",
+    "'margem' equals preco_venda - preco_compra",
+    "Data is weekly (date of collection)"
+  ]
+}
