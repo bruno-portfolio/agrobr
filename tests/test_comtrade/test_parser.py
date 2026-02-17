@@ -30,7 +30,7 @@ class TestParseTradeData:
     def test_golden_data_types(self):
         records = self._load_golden_records()
         df = parse_trade_data(records)
-        assert df["periodo"].dtype == object
+        assert pd.api.types.is_string_dtype(df["periodo"])
         assert df["ano"].dtype == int
         assert pd.api.types.is_float_dtype(df["peso_liquido_kg"])
         assert pd.api.types.is_float_dtype(df["valor_fob_usd"])
