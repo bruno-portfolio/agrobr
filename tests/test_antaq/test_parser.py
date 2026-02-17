@@ -77,8 +77,8 @@ class TestReadTxt:
 
         df = _read_txt(content)
 
-        assert df["num"].dtype == object
-        assert df["dec"].dtype == object
+        assert pd.api.types.is_string_dtype(df["num"])
+        assert pd.api.types.is_string_dtype(df["dec"])
 
     def test_empty_content(self):
         content = "colA;colB\n"
