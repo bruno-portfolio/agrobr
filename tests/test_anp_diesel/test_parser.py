@@ -407,6 +407,186 @@ class TestParseVendas:
         assert len(df) >= 1
 
 
+class TestOleoDieselNormalization:
+    """Testa que OLEO DIESEL e variantes sao normalizados para DIESEL."""
+
+    def test_precos_oleo_diesel_normalizado(self):
+        rows = [
+            {
+                "ESTADO - SIGLA": "SP",
+                "MUNICÍPIO": "SAO PAULO",
+                "PRODUTO": "ÓLEO DIESEL",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "5.95",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.30",
+                "NÚMERO DE POSTOS PESQUISADOS": "120",
+            },
+            {
+                "ESTADO - SIGLA": "MT",
+                "MUNICÍPIO": "CUIABA",
+                "PRODUTO": "ÓLEO DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.20",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.60",
+                "NÚMERO DE POSTOS PESQUISADOS": "80",
+            },
+        ]
+        content = _make_precos_xlsx(rows=rows)
+        df = parser.parse_precos(content)
+        assert set(df["produto"].unique()) == {"DIESEL", "DIESEL S10"}
+
+    def test_precos_filtro_diesel_pega_oleo_diesel(self):
+        rows = [
+            {
+                "ESTADO - SIGLA": "SP",
+                "MUNICÍPIO": "SAO PAULO",
+                "PRODUTO": "ÓLEO DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.45",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.80",
+                "NÚMERO DE POSTOS PESQUISADOS": "150",
+            },
+        ]
+        content = _make_precos_xlsx(rows=rows)
+        df = parser.parse_precos(content, produto="DIESEL S10")
+        assert len(df) == 1
+        assert df["produto"].iloc[0] == "DIESEL S10"
+
+    def test_vendas_long_oleo_diesel_normalizado(self):
+        content = _make_vendas_xls_long()
+        df = parser.parse_vendas(content)
+        for p in df["produto"]:
+            assert p in ("DIESEL", "DIESEL S10"), f"Produto nao normalizado: {p}"
+
+    def test_vendas_wide_oleo_diesel_normalizado(self):
+        content = _make_vendas_xls_wide()
+        df = parser.parse_vendas(content)
+        for p in df["produto"]:
+            assert p in ("DIESEL", "DIESEL S10"), f"Produto nao normalizado: {p}"
+
+
+class TestEstadoNomeCompleto:
+    """Testa que nome completo de estado e convertido para sigla."""
+
+    def test_precos_estado_nome_completo(self):
+        rows = [
+            {
+                "ESTADO": "MATO GROSSO",
+                "MUNICÍPIO": "CUIABA",
+                "PRODUTO": "DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.20",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.60",
+                "NÚMERO DE POSTOS PESQUISADOS": "80",
+            },
+            {
+                "ESTADO": "SÃO PAULO",
+                "MUNICÍPIO": "SAO PAULO",
+                "PRODUTO": "DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.45",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.80",
+                "NÚMERO DE POSTOS PESQUISADOS": "150",
+            },
+        ]
+        columns = [
+            "ESTADO",
+            "MUNICÍPIO",
+            "PRODUTO",
+            "DATA INICIAL",
+            "DATA FINAL",
+            "PREÇO MÉDIO REVENDA",
+            "PREÇO MÉDIO DISTRIBUIÇÃO",
+            "NÚMERO DE POSTOS PESQUISADOS",
+        ]
+        content = _make_precos_xlsx(rows=rows, columns=columns)
+        df = parser.parse_precos(content)
+        assert set(df["uf"].unique()) == {"MT", "SP"}
+
+    def test_precos_filtro_uf_com_nome_completo(self):
+        rows = [
+            {
+                "ESTADO": "MATO GROSSO",
+                "MUNICÍPIO": "CUIABA",
+                "PRODUTO": "DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.20",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.60",
+                "NÚMERO DE POSTOS PESQUISADOS": "80",
+            },
+            {
+                "ESTADO": "SÃO PAULO",
+                "MUNICÍPIO": "SAO PAULO",
+                "PRODUTO": "DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.45",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.80",
+                "NÚMERO DE POSTOS PESQUISADOS": "150",
+            },
+        ]
+        columns = [
+            "ESTADO",
+            "MUNICÍPIO",
+            "PRODUTO",
+            "DATA INICIAL",
+            "DATA FINAL",
+            "PREÇO MÉDIO REVENDA",
+            "PREÇO MÉDIO DISTRIBUIÇÃO",
+            "NÚMERO DE POSTOS PESQUISADOS",
+        ]
+        content = _make_precos_xlsx(rows=rows, columns=columns)
+        df = parser.parse_precos(content, uf="MT")
+        assert len(df) == 1
+        assert df["uf"].iloc[0] == "MT"
+
+    def test_vendas_long_estado_nome_completo(self):
+        rows = [
+            {
+                "COMBUSTÍVEL": "ÓLEO DIESEL",
+                "UF": "MATO GROSSO",
+                "GRANDE REGIÃO": "CENTRO-OESTE",
+                "ANO": "2024",
+                "MÊS": "1",
+                "VENDAS": "500000",
+            },
+            {
+                "COMBUSTÍVEL": "ÓLEO DIESEL",
+                "UF": "SÃO PAULO",
+                "GRANDE REGIÃO": "SUDESTE",
+                "ANO": "2024",
+                "MÊS": "1",
+                "VENDAS": "800000",
+            },
+        ]
+        content = _make_vendas_xls_long(rows)
+        df = parser.parse_vendas(content)
+        assert set(df["uf"].unique()) == {"MT", "SP"}
+
+    def test_vendas_wide_estado_nome_completo(self):
+        rows = [
+            {
+                "COMBUSTÍVEL": "ÓLEO DIESEL",
+                "UF": "MATO GROSSO",
+                "GRANDE REGIÃO": "CENTRO-OESTE",
+                "ANO": "2024",
+                "JAN": "500000",
+                "FEV": "520000",
+            },
+        ]
+        df_in = pd.DataFrame(rows)
+        buf = io.BytesIO()
+        df_in.to_excel(buf, index=False, engine="openpyxl")
+        df = parser.parse_vendas(buf.getvalue())
+        assert all(df["uf"] == "MT")
+
+
 class TestAgregarMensal:
     def test_agregacao_basica(self):
         content = _make_precos_xlsx()

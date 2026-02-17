@@ -163,7 +163,8 @@ Culturas menores (abacaxi, acai, etc.) funcionam normalmente.
 
 ## Serie Historica (v0.8.0)
 
-Dados historicos de safras desde 2010, disponibilizados em planilhas Excel.
+Dados historicos de safras desde ~1976, disponibilizados em planilhas Excel (.xls legacy).
+O parser detecta automaticamente o formato (OLE2/BIFF → xlrd, OOXML → openpyxl).
 
 ```python
 # Serie historica de soja

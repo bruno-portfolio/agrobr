@@ -131,7 +131,7 @@
   "guarantees": [
     "Column names never change (additions only)",
     "'uf' is a valid Brazilian state code when present",
-    "'produto' is always 'DIESEL' or 'DIESEL S10'",
+    "'produto' is normalized to 'DIESEL' or 'DIESEL S10' (OLEO prefix stripped)",
     "'preco_venda' and 'preco_compra' are in BRL/litro when present",
     "'margem' equals preco_venda - preco_compra",
     "Data is weekly (date of collection)"

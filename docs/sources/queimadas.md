@@ -13,9 +13,9 @@
 ### Fonte
 
 - **URL**: `https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/`
-- **Formato**: CSV (latin-1 ou UTF-8)
+- **Formato**: CSV (latin-1 ou UTF-8), ZIP para dados historicos
 - **Acesso**: Publico, sem autenticacao
-- **Granularidade**: Diario (`focos_diario_br_YYYYMMDD.csv`) e mensal (`focos_mensal_br_YYYYMM.csv`)
+- **Granularidade**: Diario (`focos_diario_br_YYYYMMDD.csv`) e mensal (fallback em cascata)
 
 ## Dados Disponiveis
 
@@ -32,9 +32,21 @@ Deteccao por satelite de pontos de calor (hot spots) no territorio brasileiro:
 
 ### Cobertura
 
-- **Temporal**: Desde 1998 (serie historica)
+- **Temporal**: Desde 2003 (dados anuais); mensal desde 2023; CSV direto desde 2024
 - **Espacial**: Todo o territorio brasileiro
 - **Frequencia**: Diaria (atualizacao varias vezes ao dia)
+
+### Fallback em cascata (mensal)
+
+O servidor INPE mudou a organizacao dos dados historicos. O client tenta em ordem:
+
+| Periodo | Formato | URL |
+|---------|---------|-----|
+| 2024+ | `.csv` mensal | `mensal/Brasil/focos_mensal_br_YYYYMM.csv` |
+| 2023 | `.zip` mensal | `mensal/Brasil/focos_mensal_br_YYYYMM.zip` |
+| 2003-2022 | `.zip` anual | `anual/Brasil_todos_sats/focos_br_todos-sats_YYYY.zip` |
+
+Para dados anuais, o CSV completo do ano e baixado e filtrado pelo mes solicitado.
 
 ## Uso
 

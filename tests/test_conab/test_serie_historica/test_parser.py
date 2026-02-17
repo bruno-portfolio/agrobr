@@ -32,6 +32,23 @@ def _make_xls(sheets: dict[str, list[list]]) -> BytesIO:
     return buf
 
 
+def _make_xls_legacy(sheets: dict[str, list[list]]) -> BytesIO:
+    """Helper: cria arquivo .xls (formato legacy BIFF) via xlrd-compatible writer."""
+    import xlwt
+
+    wb = xlwt.Workbook()
+    for name, rows in sheets.items():
+        ws = wb.add_sheet(name)
+        for r_idx, row in enumerate(rows):
+            for c_idx, val in enumerate(row):
+                if val is not None:
+                    ws.write(r_idx, c_idx, val)
+    buf = BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+    return buf
+
+
 def _sample_area_rows() -> list[list]:
     """Cria dados de exemplo para aba de area plantada."""
     return [
@@ -361,6 +378,51 @@ class TestRecordsToDataframe:
         # Verifica que esta ordenado
         safras = df["safra"].tolist()
         assert safras == sorted(safras) or True  # relaxado - ordem por produto+safra+uf
+
+
+class TestLegacyXlsFormat:
+    """Testa parsing de .xls (BIFF/legacy) que a CONAB realmente serve."""
+
+    def _has_xlwt(self):
+        try:
+            import xlwt  # noqa: F401
+
+            return True
+        except ImportError:
+            return False
+
+    def test_parse_legacy_xls(self):
+        if not self._has_xlwt():
+            pytest.skip("xlwt not installed")
+        xls = _make_xls_legacy(
+            {
+                "Area": _sample_area_rows(),
+                "Producao": _sample_producao_rows(),
+                "Produtividade": _sample_produtividade_rows(),
+            }
+        )
+        records = parse_serie_historica(xls, "soja")
+
+        assert len(records) > 0
+        mt = [r for r in records if r.uf == "MT" and r.safra == "2022/23"]
+        assert len(mt) == 1
+        assert mt[0].area_plantada_mil_ha == pytest.approx(11400.0)
+        assert mt[0].producao_mil_ton == pytest.approx(39000.0)
+
+    def test_legacy_xls_filter_uf(self):
+        if not self._has_xlwt():
+            pytest.skip("xlwt not installed")
+        xls = _make_xls_legacy(
+            {
+                "Area": _sample_area_rows(),
+                "Producao": _sample_producao_rows(),
+                "Produtividade": _sample_produtividade_rows(),
+            }
+        )
+        records = parse_serie_historica(xls, "soja", uf="GO")
+
+        assert len(records) == 3
+        assert all(r.uf == "GO" for r in records)
 
 
 class TestParserVersion:

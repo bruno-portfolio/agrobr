@@ -7,6 +7,25 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Fixed
+- **ANP Diesel — normalizar produto** — `"OLEO DIESEL"` / `"ÓLEO DIESEL S10"` agora
+  normalizado para `"DIESEL"` / `"DIESEL S10"` no output. Afeta `parse_precos`,
+  `_parse_vendas_wide`, `_parse_vendas_long`. Regex `^[OÓ]LEO\s+` strip no produto.
+  Filtro `produto=` tambem normaliza antes de comparar. Schema guarantee atualizada.
+- **ANP Diesel — normalizar UF** — Coluna `ESTADO` com nome completo (ex: `"MATO GROSSO"`)
+  agora convertida para sigla via `normalizar_uf()`. Fallback `or v.upper()` corrigido
+  para `or ""` (antes retornava nome completo se normalizar_uf falhasse). Fix aplicado
+  em `parse_precos`, `_parse_vendas_wide`, `_parse_vendas_long`.
+- **CONAB Serie Historica — engine Excel** — `parse_serie_historica()` agora detecta
+  formato via magic bytes (OLE2 BIFF = xlrd, senao openpyxl). Antes: `pd.ExcelFile()`
+  sem engine falhava com `ValueError` para arquivos `.xls` reais da CONAB. Commit
+  `38f5112` adicionou xlrd como dep mas nao corrigiu este parser.
+- **Queimadas — fallback historico** — `fetch_focos_mensal()` agora tenta em cascata:
+  `.csv` mensal (2024+) → `.zip` mensal (2023) → `.zip` anual (2003-2022). Antes:
+  HTTP 404 para qualquer mes <2024 sem fallback. INPE migrou CSVs historicos para
+  formato ZIP e dados pre-2023 so disponiveis como ZIP anual. Filtro por mes aplicado
+  na api quando fonte e anual.
+
 ### Added
 - **MAPA PSR — Seguro Rural** — Novo namespace `agrobr/alt/mapa_psr/` para dados de
   apolices e sinistros do seguro rural brasileiro (SISSER/MAPA, CC-BY). Funcoes:

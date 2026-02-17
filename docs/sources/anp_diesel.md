@@ -93,15 +93,17 @@ df = alt.anp_diesel.vendas_diesel()
 
 ### Precos
 1. Download XLSX bulk do portal gov.br (arquivos por periodo: 2022-2023, 2024-2025, 2026)
-2. Parse com openpyxl, filtro de produtos diesel (DIESEL, DIESEL S10)
-3. Calculo de margem (preco_venda - preco_compra)
-4. Agregacao semanal ou mensal conforme parametro
+2. Parse com openpyxl, filtro de produtos diesel (DIESEL, DIESEL S10, OLEO DIESEL, OLEO DIESEL S10)
+3. Normalizacao: prefixo "OLEO"/"ÓLEO" removido, nomes de estado convertidos para sigla UF
+4. Calculo de margem (preco_venda - preco_compra)
+5. Agregacao semanal ou mensal conforme parametro
 
 ### Volumes
 1. Download XLS de vendas de combustiveis em m3
 2. Parse formato long (ANO, MES, VOLUME) ou wide (meses como colunas)
 3. Filtro de diesel (OLEO DIESEL e variantes)
-4. Conversao para formato padrao (data, uf, regiao, produto, volume_m3)
+4. Normalizacao: prefixo "OLEO"/"ÓLEO" removido do produto, nomes de estado convertidos para sigla UF
+5. Conversao para formato padrao (data, uf, regiao, produto, volume_m3)
 
 ## MetaInfo
 

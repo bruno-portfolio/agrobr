@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import re
 from datetime import date
 from typing import Any, Literal
 
@@ -155,8 +156,10 @@ def parse_precos(
 
     if produto:
         produto_upper = produto.upper()
-        produto_norm = df[col_produto].str.strip().str.upper()
-        produto_mask = (produto_norm == produto_upper) | (produto_norm == f"OLEO {produto_upper}")
+        produto_norm = (
+            df[col_produto].str.strip().str.upper().str.replace(r"^[OÓ]LEO\s+", "", regex=True)
+        )
+        produto_mask = produto_norm == produto_upper
         df = df[produto_mask].copy()
 
     if uf and col_uf:
@@ -196,12 +199,14 @@ def parse_precos(
         result["uf"] = (
             df[col_uf]
             .str.strip()
-            .apply(lambda v: normalizar_uf(v) or v.upper() if pd.notna(v) and v.strip() else "")
+            .apply(lambda v: normalizar_uf(v) or "" if pd.notna(v) and v.strip() else "")
         )
     else:
         result["uf"] = ""
     result["municipio"] = df[col_municipio].str.strip() if col_municipio else ""
-    result["produto"] = df[col_produto].str.strip().str.upper()
+    result["produto"] = (
+        df[col_produto].str.strip().str.upper().str.replace(r"^[OÓ]LEO\s+", "", regex=True)
+    )
 
     if col_preco_venda:
         result["preco_venda"] = pd.to_numeric(
@@ -376,13 +381,16 @@ def _parse_vendas_wide(
     """Parse vendas em formato wide (meses como colunas)."""
     col_ano = _find_column(df, ["ANO"])
 
+    from agrobr.normalize.regions import normalizar_uf
+
     rows: list[dict[str, Any]] = []
     for _, row in df.iterrows():
-        uf_val = str(row[col_uf]).strip().upper() if col_uf and pd.notna(row.get(col_uf)) else ""
+        raw_uf = str(row[col_uf]).strip() if col_uf and pd.notna(row.get(col_uf)) else ""
+        uf_val = normalizar_uf(raw_uf) or "" if raw_uf else ""
         regiao_val = (
             str(row[col_regiao]).strip() if col_regiao and pd.notna(row.get(col_regiao)) else ""
         )
-        produto_val = str(row[col_produto]).strip().upper()
+        produto_val = re.sub(r"^[OÓ]LEO\s+", "", str(row[col_produto]).strip().upper())
         ano_val = int(float(row[col_ano])) if col_ano and pd.notna(row.get(col_ano)) else None
 
         for mc in month_cols:
@@ -453,6 +461,8 @@ def _parse_vendas_long(
     col_vol: str,
 ) -> pd.DataFrame:
     """Parse vendas em formato long (ano, mes, volume como linhas)."""
+    from agrobr.normalize.regions import normalizar_uf
+
     rows: list[dict[str, Any]] = []
 
     for _, row in df.iterrows():
@@ -476,11 +486,12 @@ def _parse_vendas_long(
         except ValueError:
             continue
 
-        uf_val = str(row[col_uf]).strip().upper() if col_uf and pd.notna(row.get(col_uf)) else ""
+        raw_uf = str(row[col_uf]).strip() if col_uf and pd.notna(row.get(col_uf)) else ""
+        uf_val = normalizar_uf(raw_uf) or "" if raw_uf else ""
         regiao_val = (
             str(row[col_regiao]).strip() if col_regiao and pd.notna(row.get(col_regiao)) else ""
         )
-        produto_val = str(row[col_produto]).strip().upper()
+        produto_val = re.sub(r"^[OÓ]LEO\s+", "", str(row[col_produto]).strip().upper())
 
         rows.append(
             {

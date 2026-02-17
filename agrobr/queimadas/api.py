@@ -104,6 +104,11 @@ async def focos(
     df = parser.parse_focos_csv(csv_bytes)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
+    if dia is None and "anual" in source_url:
+        df["data"] = pd.to_datetime(df["data"], errors="coerce")
+        df = df[df["data"].dt.month == mes].reset_index(drop=True)
+        df["data"] = df["data"].dt.date
+
     if uf is not None:
         uf_upper = uf.strip().upper()
         df = df[df["uf"] == uf_upper].reset_index(drop=True)

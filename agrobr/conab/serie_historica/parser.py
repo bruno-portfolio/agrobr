@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import re
 from io import BytesIO
-from typing import Any
+from typing import Any, Literal
 
 import pandas as pd
 import structlog
@@ -301,13 +301,20 @@ def parse_serie_historica(
     produto_norm = normalize_produto(produto)
 
     try:
-        xls_file = pd.ExcelFile(xls)
+        header = xls.read(8)
+        xls.seek(0)
+        engine: Literal["xlrd", "openpyxl"] = (
+            "xlrd" if header[:8] == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1" else "openpyxl"
+        )
+        xls_file = pd.ExcelFile(xls, engine=engine)
         sheet_names = xls_file.sheet_names
+    except ParseError:
+        raise
     except Exception as e:
         raise ParseError(
             source="conab_serie_historica",
             parser_version=PARSER_VERSION,
-            reason=f"Erro ao ler Excel: {e}",
+            reason=f"Erro ao ler Excel ({engine}): {e}",
         ) from e
 
     if not sheet_names:
