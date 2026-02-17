@@ -1,0 +1,240 @@
+{
+  "name": "comtrade.comercio",
+  "schema_version": "1.0",
+  "effective_from": "0.11.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "periodo",
+    "reporter_iso",
+    "partner_iso",
+    "hs_code",
+    "fluxo_code"
+  ],
+  "required_columns": [
+    "periodo",
+    "ano",
+    "reporter_iso",
+    "partner_iso",
+    "fluxo_code",
+    "hs_code"
+  ],
+  "dtypes": {
+    "periodo": "str",
+    "ano": "int",
+    "mes": "int",
+    "reporter_iso": "str",
+    "reporter": "str",
+    "partner_iso": "str",
+    "partner": "str",
+    "fluxo_code": "str",
+    "hs_code": "str",
+    "produto_desc": "str",
+    "peso_liquido_kg": "float",
+    "volume_ton": "float",
+    "valor_fob_usd": "float",
+    "valor_cif_usd": "float",
+    "valor_primario_usd": "float"
+  },
+  "nullable": {
+    "periodo": false,
+    "ano": false,
+    "mes": true,
+    "reporter_iso": false,
+    "reporter": true,
+    "partner_iso": false,
+    "partner": true,
+    "fluxo_code": false,
+    "hs_code": false,
+    "produto_desc": true,
+    "peso_liquido_kg": true,
+    "volume_ton": true,
+    "valor_fob_usd": true,
+    "valor_cif_usd": true,
+    "valor_primario_usd": true
+  },
+  "columns": [
+    {
+      "name": "periodo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1988,
+      "max_value": null
+    },
+    {
+      "name": "mes",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "reporter_iso",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "reporter",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "partner_iso",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "partner",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "fluxo_code",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "hs_code",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto_desc",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "peso_liquido_kg",
+      "type": "float",
+      "nullable": true,
+      "unit": "kg",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "volume_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_fob_usd",
+      "type": "float",
+      "nullable": true,
+      "unit": "USD",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_cif_usd",
+      "type": "float",
+      "nullable": true,
+      "unit": "USD",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_primario_usd",
+      "type": "float",
+      "nullable": true,
+      "unit": "USD",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "ano_min": 1988,
+    "mes_min": 1,
+    "mes_max": 12,
+    "peso_liquido_kg_min": 0,
+    "volume_ton_min": 0,
+    "valor_fob_usd_min": 0,
+    "valor_cif_usd_min": 0,
+    "valor_primario_usd_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'ano' is always >= 1988",
+    "'mes' is between 1 and 12 when present",
+    "Numeric values are always >= 0 when present",
+    "'fluxo_code' is always 'X' (export) or 'M' (import)"
+  ]
+}

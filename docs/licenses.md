@@ -17,6 +17,7 @@
 | **ANDA** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [anda.org.br](https://anda.org.br) |
 | **ABIOVE** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [abiove.org.br](https://abiove.org.br) |
 | **USDA PSD** | U.S. Public Domain | Sim (governo EUA) | `livre` | [Ag Data Commons](https://data.nal.usda.gov/dataset/usda-foreign-agricultural-service-production-supply-and-distribution-database) |
+| **UN Comtrade** | Dados publicos ONU | Sim (dados publicos) | `livre` | [Comtrade](https://comtradeplus.un.org) |
 | **IMEA** | Restritivo: redistribuição proibida sem autorização escrita | Não | `restrito` | [Termo de Uso](https://imea.com.br/imea-site/termo-de-uso.html) |
 | **DERAL** | Dados públicos governo estadual PR | Sim (dados públicos) | `livre` | [SEAB/PR](https://www.agricultura.pr.gov.br) |
 | **INMET** | Dados públicos governo federal | Sim (dados públicos, token requerido) | `livre` | [INMET](https://portal.inmet.gov.br) |
@@ -136,3 +137,12 @@ com citação obrigatória ao NASA POWER Project.
 Dados do governo americano estão em domínio público nos EUA (17 U.S.C. 105).
 Uso livre sem restrições de copyright dentro dos EUA. Para uso internacional,
 verificar se CC0 foi aplicado explicitamente.
+
+### UN Comtrade
+
+- **Classificação:** `livre`
+- **Situação:** Dados públicos da ONU sobre comércio internacional bilateral.
+  API pública com guest mode (sem autenticação) e free tier (registro gratuito).
+- **Dados utilizados:** Comércio bilateral por HS code (valores FOB/CIF, peso,
+  quantidade) via REST API v1. Trade mirror compara declarações de exportação
+  do reporter vs importação do parceiro.

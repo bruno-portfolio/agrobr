@@ -1,0 +1,12 @@
+{
+  "source": "comtrade",
+  "format": "json",
+  "parser_module": "agrobr.comtrade.parser",
+  "parser_function": "parse_trade_data",
+  "parser_kwargs": {},
+  "url": "https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=76&partnerCode=156&cmdCode=1201,1507,2304&flowCode=X&period=2024",
+  "captured_at": "2026-02-17T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic data based on documented API schema. BR exports complexo_soja to CN, annual 2024.",
+  "needs_real_data": true
+}

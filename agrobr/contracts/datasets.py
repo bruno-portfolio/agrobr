@@ -887,6 +887,271 @@ POSICOES_ABERTAS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+COMERCIO_BILATERAL_V1 = Contract(
+    name="comtrade.comercio",
+    version="1.0",
+    effective_from="0.11.0",
+    primary_key=["periodo", "reporter_iso", "partner_iso", "hs_code", "fluxo_code"],
+    columns=[
+        Column(
+            name="periodo",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1988,
+        ),
+        Column(
+            name="mes",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=1,
+            max_value=12,
+        ),
+        Column(
+            name="reporter_iso",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="reporter",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="partner_iso",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="partner",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="fluxo_code",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="hs_code",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="produto_desc",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="peso_liquido_kg",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="kg",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="volume_ton",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="ton",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="valor_fob_usd",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="valor_cif_usd",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="valor_primario_usd",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'ano' is always >= 1988",
+        "'mes' is between 1 and 12 when present",
+        "Numeric values are always >= 0 when present",
+        "'fluxo_code' is always 'X' (export) or 'M' (import)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+TRADE_MIRROR_V1 = Contract(
+    name="comtrade.trade_mirror",
+    version="1.0",
+    effective_from="0.11.0",
+    primary_key=["periodo", "hs_code", "reporter_iso", "partner_iso"],
+    columns=[
+        Column(
+            name="periodo",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1988,
+        ),
+        Column(
+            name="mes",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=1,
+            max_value=12,
+        ),
+        Column(
+            name="hs_code",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="produto_desc",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="reporter_iso",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="partner_iso",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="peso_liquido_kg_reporter",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="kg",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="valor_fob_usd_reporter",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="volume_ton_reporter",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="ton",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="peso_liquido_kg_partner",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="kg",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="valor_fob_usd_partner",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="valor_cif_usd_partner",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="volume_ton_partner",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="ton",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="diff_peso_kg",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="kg",
+            stable=True,
+        ),
+        Column(
+            name="diff_valor_fob_usd",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=True,
+        ),
+        Column(
+            name="ratio_valor",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="ratio_peso",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'ano' is always >= 1988",
+        "'mes' is between 1 and 12 when present",
+        "Mirror compares reporter exports (FOB) vs partner imports (CIF)",
+        "'ratio_valor' expected range ~0.85-0.95 for normal trade (FOB/CIF)",
+        "'ratio_peso' expected ~1.0 for normal trade",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V1)
 register_contract("preco_atacado", PRECO_ATACADO_V1)
@@ -898,10 +1163,13 @@ register_contract("fertilizante", FERTILIZANTE_V1)
 register_contract("focos_queimadas", FOCOS_QUEIMADAS_V1)
 register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
 register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
+register_contract("comercio_bilateral", COMERCIO_BILATERAL_V1)
+register_contract("trade_mirror", TRADE_MIRROR_V1)
 register_contract("posicoes_abertas", POSICOES_ABERTAS_V1)
 
 __all__ = [
     "AJUSTE_DIARIO_V1",
+    "COMERCIO_BILATERAL_V1",
     "CONAB_PROGRESSO_V1",
     "PRECO_ATACADO_V1",
     "CREDITO_RURAL_V1_1",
@@ -913,4 +1181,5 @@ __all__ = [
     "MAPBIOMAS_COBERTURA_V1",
     "MAPBIOMAS_TRANSICAO_V1",
     "POSICOES_ABERTAS_V1",
+    "TRADE_MIRROR_V1",
 ]

@@ -1,0 +1,31 @@
+{
+  "records": 1,
+  "columns": [
+    "periodo", "ano", "mes", "hs_code", "produto_desc",
+    "reporter_iso", "partner_iso",
+    "peso_liquido_kg_reporter", "valor_fob_usd_reporter", "volume_ton_reporter",
+    "peso_liquido_kg_partner", "valor_fob_usd_partner", "valor_cif_usd_partner", "volume_ton_partner",
+    "diff_peso_kg", "diff_valor_fob_usd", "ratio_valor", "ratio_peso"
+  ],
+  "sample_values": {
+    "row_0": {
+      "periodo": "2024",
+      "ano": 2024,
+      "hs_code": "1201",
+      "reporter_iso": "BRA",
+      "partner_iso": "CHN",
+      "peso_liquido_kg_reporter": 75943216000.0,
+      "valor_fob_usd_reporter": 33815271542.0,
+      "volume_ton_reporter": 75943216.0,
+      "peso_liquido_kg_partner": 74850000000.0,
+      "valor_fob_usd_partner": 33480000000.0,
+      "valor_cif_usd_partner": 37200000000.0,
+      "volume_ton_partner": 74850000.0,
+      "diff_peso_kg": 1093216000.0,
+      "diff_valor_fob_usd": 335271542.0,
+      "ratio_valor_approx": 0.909,
+      "ratio_peso_approx": 1.015
+    }
+  },
+  "notes": "ratio_valor ~0.91 (FOB/CIF) is within expected range. ratio_peso ~1.01 shows slight discrepancy typical of trade data."
+}

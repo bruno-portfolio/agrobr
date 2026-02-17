@@ -26,6 +26,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [CONAB Progresso](conab_progresso.md) | Plantio/colheita semanal | Semanal | 6 culturas, 27 UFs |
 | [B3 Futuros Agro](b3.md) | Ajustes diarios + posicoes em aberto | Diaria | 7 contratos agricolas |
 | [CONAB CEASA](conab.md) | Precos atacado hortifruti | Diaria | 48 produtos, 43 CEASAs |
+| [UN Comtrade](comtrade.md) | Comercio bilateral + trade mirror | Mensal/Anual | ~200 paises, HS codes |
 
 ## Proveniencia e Rastreabilidade
 

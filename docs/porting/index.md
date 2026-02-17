@@ -245,7 +245,7 @@ para validar parsers em qualquer linguagem:
 2. Compare o output com o `expected.json`
 3. Se bater, seu parser está correto
 
-### Conjuntos de teste disponíveis (19 fontes, 24 casos)
+### Conjuntos de teste disponíveis (20 fontes, 26 casos)
 
 | Fonte | Caso de teste | Arquivos |
 |-------|--------------|----------|
@@ -255,6 +255,8 @@ para validar parsers em qualquer linguagem:
 | B3 | `posicoes_sample` | response.csv, expected.json |
 | BCB | `custeio_sample` | response.json, expected.json |
 | CEPEA | `soja_sample` | response.html, expected.json |
+| Comtrade | `comercio_sample` | response.json, expected.json |
+| Comtrade | `mirror_sample` | response_reporter.json, response_partner.json, expected.json |
 | ComexStat | `exportacao_soja_sample` | response.csv, expected.json |
 | CONAB | `safra_sample` | response.xlsx, expected.json |
 | CONAB CEASA | `precos_sample` | ceasas_response.json, precos_response.json, expected.json |

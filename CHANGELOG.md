@@ -8,6 +8,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **UN Comtrade — Trade Mirror** — Novo modulo `comtrade/` para dados de comercio
+  internacional bilateral via UN Comtrade API. Funcoes: `comtrade.comercio()` (dados
+  bilaterais por HS code/pais/periodo) e `comtrade.trade_mirror()` (compara exportacoes
+  do reporter vs importacoes do parceiro, calcula discrepancias peso/valor/ratio).
+  Guest mode (sem API key) + `AGROBR_COMTRADE_API_KEY` para rate limit maior.
+  Chunking automatico para periodos > 12 meses. 17 produtos agro mapeados por HS code.
+  Contratos `COMERCIO_BILATERAL_V1` e `TRADE_MIRROR_V1`. Golden data (comercio + mirror).
+  70 novos testes. Sync wrapper. Docs: `api/comtrade.md`, `sources/comtrade.md`
 - **B3 Posicoes em Aberto (Open Interest)** — Novas funcoes `b3.posicoes_abertas()` e
   `b3.oi_historico()` para dados de open interest diario de futuros e opcoes agro
   (BGI, CCM, ETH, ICF, SJC). CSV publico via `arquivos.b3.com.br` (2-step: token + download).

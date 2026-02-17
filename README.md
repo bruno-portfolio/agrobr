@@ -13,7 +13,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **19 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro e CONAB CEASA/PROHORT.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **20 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT e UN Comtrade.
 
 **v0.10.1** — 2778 testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
 

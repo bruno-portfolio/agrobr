@@ -1,0 +1,37 @@
+{
+  "records": 3,
+  "columns": [
+    "periodo", "ano", "mes", "reporter_code", "reporter_iso", "reporter",
+    "partner_code", "partner_iso", "partner", "fluxo_code", "fluxo",
+    "hs_code", "produto_desc", "nivel_hs", "peso_liquido_kg", "peso_bruto_kg",
+    "volume_ton", "valor_fob_usd", "valor_cif_usd", "valor_primario_usd",
+    "quantidade", "unidade_qtd"
+  ],
+  "sample_values": {
+    "row_0": {
+      "periodo": "2024",
+      "ano": 2024,
+      "reporter_iso": "BRA",
+      "partner_iso": "CHN",
+      "fluxo_code": "X",
+      "hs_code": "1201",
+      "peso_liquido_kg": 75943216000.0,
+      "volume_ton": 75943216.0,
+      "valor_fob_usd": 33815271542.0
+    },
+    "row_1": {
+      "periodo": "2024",
+      "hs_code": "1507",
+      "peso_liquido_kg": 215000000.0,
+      "volume_ton": 215000.0,
+      "valor_fob_usd": 198500000.0
+    },
+    "row_2": {
+      "periodo": "2024",
+      "hs_code": "2304",
+      "peso_liquido_kg": 890000000.0,
+      "volume_ton": 890000.0,
+      "valor_fob_usd": 423500000.0
+    }
+  }
+}

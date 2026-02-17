@@ -192,6 +192,12 @@ class _SyncB3(_SyncModule):
     pass
 
 
+class _SyncComtrade(_SyncModule):
+    """API síncrona do UN Comtrade."""
+
+    pass
+
+
 class _SyncMapBiomas(_SyncModule):
     """API síncrona do MapBiomas."""
 
@@ -205,6 +211,7 @@ _modules: dict[str, _SyncModule | None] = {
     "bcb": None,
     "cepea": None,
     "comexstat": None,
+    "comtrade": None,
     "conab": None,
     "datasets": None,
     "deral": None,
@@ -225,6 +232,7 @@ _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "bcb": _SyncBcb,
     "cepea": _SyncCepea,
     "comexstat": _SyncComexstat,
+    "comtrade": _SyncComtrade,
     "conab": _SyncConab,
     "datasets": _SyncDatasets,
     "deral": _SyncDeral,
