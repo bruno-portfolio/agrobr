@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import io
 from datetime import date
-from typing import Any
+from typing import Any, Literal
 
 import pandas as pd
 import structlog
@@ -13,7 +13,7 @@ from agrobr.exceptions import ParseError
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
+PARSER_VERSION = 2
 
 
 def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -29,6 +29,49 @@ def _find_column(df: pd.DataFrame, candidates: list[str]) -> str | None:
         if candidate.upper() in upper_cols:
             return upper_cols[candidate.upper()]
     return None
+
+
+def _strip_accents(text: str) -> str:
+    """Remove acentos de texto para comparacao fuzzy de headers."""
+    import unicodedata
+
+    nfkd = unicodedata.normalize("NFKD", text)
+    return "".join(c for c in nfkd if not unicodedata.combining(c))
+
+
+_ExcelEngine = Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"]
+
+
+def _detect_header_row(
+    content: bytes,
+    markers: list[str],
+    engine: _ExcelEngine | None = "openpyxl",
+    max_scan: int = 30,
+) -> int:
+    """Detecta a linha do header real escaneando por colunas marcadoras.
+
+    Args:
+        content: Bytes raw do arquivo.
+        markers: Nomes de coluna esperados (case-insensitive, accent-insensitive).
+        engine: Engine do pandas para leitura.
+        max_scan: Maximo de linhas a escanear.
+
+    Returns:
+        Indice da linha header (0-based).
+    """
+    df_raw = pd.read_excel(
+        io.BytesIO(content),
+        engine=engine,
+        header=None,
+        nrows=max_scan,
+        dtype=str,
+    )
+    markers_norm = {_strip_accents(m.upper()) for m in markers}
+    for i, row in df_raw.iterrows():
+        cells = {_strip_accents(str(c).strip().upper()) for c in row if pd.notna(c)}
+        if markers_norm.issubset(cells):
+            return int(str(i))
+    return 0
 
 
 def parse_precos(
@@ -52,14 +95,20 @@ def parse_precos(
     Raises:
         ParseError: Se dados vazios ou malformados.
     """
-    from agrobr.alt.anp_diesel.models import PRODUTOS_DIESEL
-
     try:
+        header_row = _detect_header_row(
+            content,
+            markers=["PRODUTO", "DATA INICIAL"],
+            engine="openpyxl",
+        )
         df = pd.read_excel(
             io.BytesIO(content),
             engine="openpyxl",
+            header=header_row,
             dtype=str,
         )
+    except ParseError:
+        raise
     except Exception as e:
         raise ParseError(
             source="anp_diesel",
@@ -94,7 +143,7 @@ def parse_precos(
             reason=f"Coluna PRODUTO nao encontrada. Colunas: {list(df.columns)}",
         )
 
-    diesel_mask = df[col_produto].str.strip().str.upper().isin({p.upper() for p in PRODUTOS_DIESEL})
+    diesel_mask = df[col_produto].str.strip().str.upper().str.contains("DIESEL", na=False)
     df = df[diesel_mask].copy()
 
     if df.empty:
@@ -105,12 +154,22 @@ def parse_precos(
         )
 
     if produto:
-        produto_mask = df[col_produto].str.strip().str.upper() == produto.upper()
+        produto_upper = produto.upper()
+        produto_norm = df[col_produto].str.strip().str.upper()
+        produto_mask = (produto_norm == produto_upper) | (produto_norm == f"OLEO {produto_upper}")
         df = df[produto_mask].copy()
 
     if uf and col_uf:
-        uf_mask = df[col_uf].str.strip().str.upper() == uf.upper()
+        from agrobr.normalize.regions import normalizar_uf
+
+        df["_uf_norm"] = (
+            df[col_uf]
+            .str.strip()
+            .apply(lambda v: normalizar_uf(v) if pd.notna(v) and v.strip() else "")
+        )
+        uf_mask = df["_uf_norm"] == uf.upper()
         df = df[uf_mask].copy()
+        df = df.drop(columns=["_uf_norm"])
 
     if municipio and col_municipio:
         municipio_mask = (
@@ -131,7 +190,16 @@ def parse_precos(
             reason="Coluna de data nao encontrada",
         )
 
-    result["uf"] = df[col_uf].str.strip().str.upper() if col_uf else ""
+    if col_uf:
+        from agrobr.normalize.regions import normalizar_uf
+
+        result["uf"] = (
+            df[col_uf]
+            .str.strip()
+            .apply(lambda v: normalizar_uf(v) or v.upper() if pd.notna(v) and v.strip() else "")
+        )
+    else:
+        result["uf"] = ""
     result["municipio"] = df[col_municipio].str.strip() if col_municipio else ""
     result["produto"] = df[col_produto].str.strip().str.upper()
 
@@ -192,12 +260,19 @@ def parse_vendas(
         ParseError: Se dados vazios ou malformados.
     """
     try:
+        header_row = _detect_header_row(
+            content,
+            markers=["COMBUSTÍVEL", "ANO"],
+            engine=None,
+        )
         df = pd.read_excel(
             io.BytesIO(content),
             engine=None,
+            header=header_row,
             dtype=str,
-            header=0,
         )
+    except ParseError:
+        raise
     except Exception as e:
         raise ParseError(
             source="anp_diesel",
@@ -215,7 +290,7 @@ def parse_vendas(
     df = _normalize_columns(df)
 
     col_produto = _find_column(df, ["COMBUSTÍVEL", "COMBUSTIVEL", "PRODUTO"])
-    col_uf = _find_column(df, ["UF", "ESTADO"])
+    col_uf = _find_column(df, ["UF", "ESTADO", "UN. DA FEDERAÇÃO", "UN. DA FEDERACAO"])
     col_regiao = _find_column(df, ["GRANDE REGIÃO", "GRANDE REGIAO", "REGIÃO", "REGIAO"])
 
     month_cols = [c for c in df.columns if _is_month_column(c)]
@@ -238,8 +313,16 @@ def parse_vendas(
         )
 
     if uf and col_uf:
-        uf_mask = df[col_uf].str.strip().str.upper() == uf.upper()
+        from agrobr.normalize.regions import normalizar_uf
+
+        df["_uf_norm"] = (
+            df[col_uf]
+            .str.strip()
+            .apply(lambda v: normalizar_uf(v) if pd.notna(v) and v.strip() else "")
+        )
+        uf_mask = df["_uf_norm"] == uf.upper()
         df = df[uf_mask].copy()
+        df = df.drop(columns=["_uf_norm"])
 
     if not month_cols:
         col_ano = _find_column(df, ["ANO"])

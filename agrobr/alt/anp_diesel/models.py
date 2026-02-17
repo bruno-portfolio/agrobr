@@ -31,7 +31,14 @@ MENSAL_ESTADOS_URL = f"{SHLP_BASE}/mensal/mensal-estados-desde-jan2013.xlsx"
 
 MENSAL_BRASIL_URL = f"{SHLP_BASE}/mensal/mensal-brasil-desde-jan2013.xlsx"
 
-PRODUTOS_DIESEL = frozenset({"DIESEL", "DIESEL S10"})
+PRODUTOS_DIESEL = frozenset(
+    {
+        "DIESEL",
+        "DIESEL S10",
+        "OLEO DIESEL",
+        "OLEO DIESEL S10",
+    }
+)
 
 NIVEL_MUNICIPIO = "municipio"
 NIVEL_UF = "uf"
