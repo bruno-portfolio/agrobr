@@ -27,6 +27,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   na api quando fonte e anual.
 
 ### Added
+- **ANTT Pedagio — Fluxo de Veiculos em Pracas de Pedagio** — Novo namespace `agrobr/alt/antt_pedagio/`
+  para dados de fluxo de veiculos em pracas de pedagio rodoviario (ANTT Dados Abertos, CC-BY).
+  Funcoes: `antt_pedagio.fluxo_pedagio(ano, ano_inicio, ano_fim, uf, apenas_pesados)` para
+  trafego mensal com filtros por UF/concessionaria/rodovia/tipo de veiculo e
+  `antt_pedagio.pracas_pedagio(uf, rodovia)` para cadastro georreferenciado (200+ pracas).
+  CSV bulk 2010-2025 (16 arquivos), schema V1 (2010-2023) com categorias texto e V2 (2024+)
+  com eixos numerico, encoding Windows-1252 com fallback automatico, join com cadastro de
+  pracas para enriquecimento geografico (rodovia, UF, municipio).
+  Contratos `ANTT_PEDAGIO_FLUXO_V1` (10 colunas) e `ANTT_PEDAGIO_PRACAS_V1` (9 colunas).
+  Schemas JSON, golden data. 117 novos testes (models, client, parser, api). Sync wrapper
+  via `agrobr.sync.alt.antt_pedagio`. Docs: `api/antt_pedagio.md`, `sources/antt_pedagio.md`
 - **MAPA PSR — Seguro Rural** — Novo namespace `agrobr/alt/mapa_psr/` para dados de
   apolices e sinistros do seguro rural brasileiro (SISSER/MAPA, CC-BY). Funcoes:
   `mapa_psr.sinistros(cultura, uf, ano, evento)` para indenizacoes pagas e
