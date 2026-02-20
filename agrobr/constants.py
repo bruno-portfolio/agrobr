@@ -13,6 +13,7 @@ class Fonte(StrEnum):
     ANDA = "anda"
     ANP_DIESEL = "anp_diesel"
     ANTAQ = "antaq"
+    ANTT_PEDAGIO = "antt_pedagio"
     B3 = "b3"
     BCB = "bcb"
     CEPEA = "cepea"
@@ -48,6 +49,11 @@ URLS = {
     Fonte.ANTAQ: {
         "base": "https://web3.antaq.gov.br/ea/sense/download.html",
         "bulk_txt": "https://web3.antaq.gov.br/ea/txt",
+    },
+    Fonte.ANTT_PEDAGIO: {
+        "base": "https://dados.antt.gov.br",
+        "trafego": "https://dados.antt.gov.br/dataset/fluxo-de-veiculos-nas-pracas-de-pedagio",
+        "pracas": "https://dados.antt.gov.br/dataset/cadastro-de-pracas-de-pedagio",
     },
     Fonte.BCB: {
         "base": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata",
@@ -251,6 +257,7 @@ class CacheSettings(BaseSettings):
     ttl_b3: int = 4 * 3600
     ttl_anp_diesel: int = 7 * 24 * 3600
     ttl_antaq: int = 7 * 24 * 3600
+    ttl_antt_pedagio: int = 7 * 24 * 3600
     ttl_conab_ceasa: int = 4 * 3600
 
     stale_multiplier: float = 12.0
@@ -280,6 +287,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_anda: float = 3.0
     rate_limit_anp_diesel: float = 2.0
     rate_limit_antaq: float = 1.0
+    rate_limit_antt_pedagio: float = 2.0
     rate_limit_bcb: float = 1.0
     rate_limit_cepea: float = 2.0
     rate_limit_comexstat: float = 2.0

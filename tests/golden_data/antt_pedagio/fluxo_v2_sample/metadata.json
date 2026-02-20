@@ -1,0 +1,11 @@
+{
+  "source": "antt_pedagio",
+  "format": "csv",
+  "schema_version": "v2",
+  "parser_module": "agrobr.alt.antt_pedagio.parser",
+  "parser_functions": ["parse_trafego_v2"],
+  "url": "https://dados.antt.gov.br/dataset/fluxo-de-veiculos-nas-pracas-de-pedagio",
+  "captured_at": "2026-02-20T12:00:00Z",
+  "parser_version": 1,
+  "notes": "Synthetic V2 data - 5 rows without header, Jan-Feb 2024. Tests headerless parsing, eixo numeric mapping, mm/yyyy date format."
+}

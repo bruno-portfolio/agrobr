@@ -23,6 +23,8 @@ from agrobr.contracts.conab import CONAB_BALANCO_V1, CONAB_CUSTO_PRODUCAO_V1, CO
 from agrobr.contracts.datasets import (
     ANP_DIESEL_PRECOS_V1,
     ANP_DIESEL_VENDAS_V1,
+    ANTT_PEDAGIO_FLUXO_V1,
+    ANTT_PEDAGIO_PRACAS_V1,
     CREDITO_RURAL_V1_1,
     EXPORTACAO_V1,
     FERTILIZANTE_V1,
@@ -377,6 +379,8 @@ class TestContractRegistry:
         expected = [
             "anp_diesel_precos",
             "anp_diesel_vendas",
+            "antt_pedagio_fluxo",
+            "antt_pedagio_pracas",
             "balanco",
             "credito_rural",
             "custo_producao",
@@ -489,7 +493,7 @@ class TestGenerateJsonSchemas:
     def test_generate_all_schemas(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             files = generate_json_schemas(tmpdir)
-            assert len(files) == 27
+            assert len(files) == 29
 
             for filepath in files:
                 path = Path(filepath)
@@ -844,6 +848,91 @@ class TestMapaPsrApolicesContract:
 
     def test_effective_from(self):
         assert MAPA_PSR_APOLICES_V1.effective_from == "0.12.0"
+
+
+class TestAnttPedagioFluxoContract:
+    def test_contract_exists(self):
+        assert ANTT_PEDAGIO_FLUXO_V1 is not None
+        assert ANTT_PEDAGIO_FLUXO_V1.name == "antt_pedagio.fluxo"
+        assert ANTT_PEDAGIO_FLUXO_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert "data" in ANTT_PEDAGIO_FLUXO_V1.primary_key
+        assert "concessionaria" in ANTT_PEDAGIO_FLUXO_V1.primary_key
+        assert "praca" in ANTT_PEDAGIO_FLUXO_V1.primary_key
+        assert "n_eixos" in ANTT_PEDAGIO_FLUXO_V1.primary_key
+
+    def test_required_columns(self):
+        required = ["data", "concessionaria", "praca", "n_eixos", "volume"]
+        for col_name in required:
+            col = ANTT_PEDAGIO_FLUXO_V1.get_column(col_name)
+            assert col is not None, f"Column {col_name} not found"
+            assert col.nullable is False
+
+    def test_n_eixos_range(self):
+        col = ANTT_PEDAGIO_FLUXO_V1.get_column("n_eixos")
+        assert col is not None
+        assert col.min_value == 2
+        assert col.max_value == 18
+
+    def test_volume_min(self):
+        col = ANTT_PEDAGIO_FLUXO_V1.get_column("volume")
+        assert col is not None
+        assert col.min_value == 0
+
+    def test_nullable_enrichment_cols(self):
+        for col_name in ("rodovia", "uf", "municipio", "sentido", "tipo_veiculo"):
+            col = ANTT_PEDAGIO_FLUXO_V1.get_column(col_name)
+            assert col is not None, f"Column {col_name} not found"
+            assert col.nullable is True
+
+    def test_registered(self):
+        assert has_contract("antt_pedagio_fluxo")
+        contract = get_contract("antt_pedagio_fluxo")
+        assert contract is ANTT_PEDAGIO_FLUXO_V1
+
+    def test_effective_from(self):
+        assert ANTT_PEDAGIO_FLUXO_V1.effective_from == "0.12.0"
+
+
+class TestAnttPedagioPracasContract:
+    def test_contract_exists(self):
+        assert ANTT_PEDAGIO_PRACAS_V1 is not None
+        assert ANTT_PEDAGIO_PRACAS_V1.name == "antt_pedagio.pracas"
+        assert ANTT_PEDAGIO_PRACAS_V1.version == "1.0"
+
+    def test_primary_key(self):
+        assert "concessionaria" in ANTT_PEDAGIO_PRACAS_V1.primary_key
+        assert "praca_de_pedagio" in ANTT_PEDAGIO_PRACAS_V1.primary_key
+
+    def test_columns(self):
+        col_names = [c.name for c in ANTT_PEDAGIO_PRACAS_V1.columns]
+        assert "rodovia" in col_names
+        assert "uf" in col_names
+        assert "municipio" in col_names
+        assert "lat" in col_names
+        assert "lon" in col_names
+        assert "situacao" in col_names
+
+    def test_lat_range(self):
+        col = ANTT_PEDAGIO_PRACAS_V1.get_column("lat")
+        assert col is not None
+        assert col.min_value == -35.0
+        assert col.max_value == 6.0
+
+    def test_lon_range(self):
+        col = ANTT_PEDAGIO_PRACAS_V1.get_column("lon")
+        assert col is not None
+        assert col.min_value == -74.0
+        assert col.max_value == -30.0
+
+    def test_registered(self):
+        assert has_contract("antt_pedagio_pracas")
+        contract = get_contract("antt_pedagio_pracas")
+        assert contract is ANTT_PEDAGIO_PRACAS_V1
+
+    def test_effective_from(self):
+        assert ANTT_PEDAGIO_PRACAS_V1.effective_from == "0.12.0"
 
 
 class TestBreakingChangePolicy:

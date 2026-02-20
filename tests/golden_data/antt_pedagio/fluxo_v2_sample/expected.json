@@ -1,0 +1,11 @@
+{
+  "count_min": 3,
+  "columns": ["data", "concessionaria", "n_eixos", "tipo_veiculo", "volume", "sentido"],
+  "non_null_columns": ["data", "concessionaria", "volume"],
+  "checks": {
+    "all_volumes_positive": true,
+    "no_header_in_data": true,
+    "tipo_cobranca_aggregated": true,
+    "data_is_first_of_month": true
+  }
+}

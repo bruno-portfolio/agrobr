@@ -769,6 +769,55 @@ def _get_mapa_psr_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="mapa_psr")
 
 
+# ============================================================================
+# ANTT Pedagio Golden Tests
+# ============================================================================
+
+
+def _get_antt_pedagio_cases() -> list[tuple[str, Path]]:
+    return _discover_cases(source_filter="antt_pedagio")
+
+
+@pytest.mark.skipif(not _get_antt_pedagio_cases(), reason="No ANTT Pedagio golden data")
+@pytest.mark.parametrize("_name,path", _get_antt_pedagio_cases())
+def test_antt_pedagio_golden_parsing(_name: str, path: Path):
+    from agrobr.alt.antt_pedagio.parser import parse_trafego_v1, parse_trafego_v2
+
+    expected = _load_expected(path)
+    metadata = _load_metadata(path)
+
+    csv_path = path / "response.csv"
+    if not csv_path.exists():
+        pytest.skip(f"No response.csv in {path}")
+        return
+
+    data = csv_path.read_bytes()
+    parser_fns = metadata.get("parser_functions", [])
+    schema_ver = metadata.get("schema_version", "v1")
+
+    if "parse_trafego_v1" in parser_fns or schema_ver == "v1":
+        df = parse_trafego_v1(data)
+    elif "parse_trafego_v2" in parser_fns or schema_ver == "v2":
+        df = parse_trafego_v2(data)
+    else:
+        pytest.skip(f"Unknown parser functions: {parser_fns}")
+        return
+
+    _assert_dataframe_golden(df, expected)
+
+    if expected.get("checks", {}).get("all_volumes_positive") and "volume" in df.columns:
+        assert (df["volume"] >= 0).all(), "All volumes should be >= 0"
+    if expected.get("checks", {}).get("data_is_first_of_month") and "data" in df.columns:
+        for d in df["data"].dropna():
+            assert d.day == 1, f"Date {d} should be 1st of month"
+    if expected.get("checks", {}).get("tipo_cobranca_aggregated"):
+        assert "tipo_cobranca" not in df.columns, "tipo_cobranca should be aggregated away"
+    if expected.get("checks", {}).get("no_header_in_data") and "concessionaria" in df.columns:
+        assert (
+            not df["concessionaria"].str.contains("concessionaria", case=False, na=False).any()
+        ), "Header should not appear in data rows"
+
+
 @pytest.mark.skipif(not _get_mapa_psr_cases(), reason="No MAPA PSR golden data")
 @pytest.mark.parametrize("_name,path", _get_mapa_psr_cases())
 def test_mapa_psr_golden_parsing(_name: str, path: Path):

@@ -1586,10 +1586,180 @@ MAPA_PSR_APOLICES_V1 = Contract(
 register_contract("mapa_psr_sinistros", MAPA_PSR_SINISTROS_V1)
 register_contract("mapa_psr_apolices", MAPA_PSR_APOLICES_V1)
 
+ANTT_PEDAGIO_FLUXO_V1 = Contract(
+    name="antt_pedagio.fluxo",
+    version="1.0",
+    effective_from="0.12.0",
+    primary_key=["data", "concessionaria", "praca", "sentido", "n_eixos"],
+    columns=[
+        Column(
+            name="data",
+            type=ColumnType.DATE,
+            nullable=False,
+            stable=True,
+            description="1o dia do mes",
+        ),
+        Column(
+            name="concessionaria",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="praca",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="sentido",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+            description="Crescente/Decrescente",
+        ),
+        Column(
+            name="n_eixos",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=2,
+            max_value=18,
+            description="Numero de eixos do veiculo (2-18)",
+        ),
+        Column(
+            name="tipo_veiculo",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+            description="Passeio/Comercial/Moto",
+        ),
+        Column(
+            name="volume",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=0,
+            description="Volume de veiculos no mes",
+        ),
+        Column(
+            name="rodovia",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+            description="Rodovia (do join com cadastro de pracas)",
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+            description="UF (do join com cadastro de pracas)",
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+            description="Municipio (do join com cadastro de pracas)",
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'data' is always the 1st day of the month",
+        "'n_eixos' is always between 2 and 18",
+        "'volume' is always >= 0",
+        "'uf' is a valid Brazilian state code when present",
+        "'tipo_veiculo' is always Passeio, Comercial, or Moto when present",
+        "Data since 2010 (ANTT open data inception)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+ANTT_PEDAGIO_PRACAS_V1 = Contract(
+    name="antt_pedagio.pracas",
+    version="1.0",
+    effective_from="0.12.0",
+    primary_key=["concessionaria", "praca_de_pedagio"],
+    columns=[
+        Column(
+            name="concessionaria",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="praca_de_pedagio",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="rodovia",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="km_m",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="lat",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=-35.0,
+            max_value=6.0,
+        ),
+        Column(
+            name="lon",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=-74.0,
+            max_value=-30.0,
+        ),
+        Column(
+            name="situacao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'uf' is a valid Brazilian state code when present",
+        "'lat' is within Brazil bounding box when present",
+        "'lon' is within Brazil bounding box when present",
+        "200+ toll plazas registered",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+register_contract("antt_pedagio_fluxo", ANTT_PEDAGIO_FLUXO_V1)
+register_contract("antt_pedagio_pracas", ANTT_PEDAGIO_PRACAS_V1)
+
 __all__ = [
     "AJUSTE_DIARIO_V1",
     "ANP_DIESEL_PRECOS_V1",
     "ANP_DIESEL_VENDAS_V1",
+    "ANTT_PEDAGIO_FLUXO_V1",
+    "ANTT_PEDAGIO_PRACAS_V1",
     "COMERCIO_BILATERAL_V1",
     "CONAB_PROGRESSO_V1",
     "PRECO_ATACADO_V1",

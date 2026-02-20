@@ -1,0 +1,8 @@
+concessionaria;praca;mes_ano;categoria;tipo_cobranca;sentido;quantidade
+CCR AutoBAn;Campinas;01/03/2023;Categoria 1;Automatica;Crescente;48500
+CCR AutoBAn;Campinas;01/03/2023;Categoria 1;Manual;Crescente;4200
+CCR AutoBAn;Campinas;01/03/2023;Categoria 4;Automatica;Crescente;11500
+CCR AutoBAn;Campinas;01/03/2023;Categoria 4;Manual;Crescente;800
+CCR AutoBAn;Campinas;01/03/2023;Categoria 8;Automatica;Decrescente;7200
+CCR AutoBAn;Campinas;01/04/2023;Categoria 1;Automatica;Crescente;51000
+CCR AutoBAn;Campinas;01/04/2023;Categoria 4;Automatica;Crescente;12300
