@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **25 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedágio e SICAR.
 
-**v0.10.1** — 2778 testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
+**v0.10.1** — 3500+ testes, 78% cobertura, 25/25 fontes com golden tests, retry centralizado em 25/25 clients.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -526,9 +526,9 @@ normalizar_safra("24/25")             # "2024/25"
 
 ## Diferenciais
 
-- **19/19 fontes com golden tests** — validação automatizada contra dados de referência
-- **Resiliência HTTP completa** — retry centralizado em 19/19 clients, 429 handling, Retry-After
-- **2778 testes, 78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
+- **25/25 fontes com golden tests** — validação automatizada contra dados de referência
+- **Resiliência HTTP completa** — retry centralizado em 25/25 clients, 429 handling, Retry-After
+- **3500+ testes, 78% cobertura** — benchmarks de escalabilidade (memory, volume, cache, async)
 - **Thread-safe cache** — DuckDB store com locking para uso em MCP servers e multi-thread
 - **Camada semântica** — datasets padronizados com fallback automático
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints
@@ -575,7 +575,7 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
-- [Fontes](https://www.agrobr.dev/docs/sources/) — 19 fontes documentadas
+- [Fontes](https://www.agrobr.dev/docs/sources/) — 25 fontes documentadas
 - [API Reference](https://www.agrobr.dev/docs/api/cepea/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 - [Portabilidade](https://www.agrobr.dev/docs/porting/) — Guia para portar o agrobr para R, Julia ou outras linguagens

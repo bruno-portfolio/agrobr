@@ -11,7 +11,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 25 fontes públicas.
 
-**v0.10.1** — 2778 testes | ~78% cobertura | 19/19 golden tests | retry centralizado 19/19 clients
+**v0.10.1** — 3500+ testes | ~78% cobertura | 25/25 golden tests | retry centralizado 25/25 clients
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica
@@ -119,9 +119,9 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 | Métrica | Valor |
 |---------|-------|
-| Testes | 2778 passando |
+| Testes | 3500+ passando |
 | Cobertura | ~78% |
-| Golden tests | 19/19 fontes |
+| Golden tests | 25/25 fontes |
 | Resiliência HTTP | Retry centralizado + 429/Retry-After |
 | Benchmarks | Memory, volume, cache, async, rate limiting |
 | Bugs corrigidos (v0.10.1) | DuckDB thread-safety, parser NA semanal, ANDA ano_real |
@@ -129,7 +129,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 ## Features
 
 - **25 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, CONAB Progresso, CONAB CEASA/PROHORT, B3 Futuros Agro, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedagio, SICAR
-- **21/21 golden tests** — validação automatizada contra dados de referência
+- **25/25 golden tests** — validação automatizada contra dados de referência
 - **Resiliência HTTP** — `retry_on_status()`/`retry_async()` centralizado, Retry-After, 429 handling
 - **Camada semântica** — datasets com fallback automático entre fontes
 - **Contratos públicos** — schema versionado com garantias de estabilidade
