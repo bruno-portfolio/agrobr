@@ -3,12 +3,13 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_CSV_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BULK_CSV_BASE = "https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm"
+BULK_CSV_BASE = URLS[Fonte.COMEXSTAT]["bulk_csv"]
 
 _settings = HTTPSettings()
 
@@ -19,20 +20,15 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-}
-
 
 async def download_csv(url: str) -> str:
     logger.info("comexstat_download_csv", url=url)
 
     async with httpx.AsyncClient(
-        timeout=TIMEOUT, headers=HEADERS, follow_redirects=True, verify=False
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_headers(source="comexstat"),
+        follow_redirects=True,
+        verify=False,
     ) as client:
         response = await retry_on_status(
             lambda: client.get(url),
@@ -43,7 +39,7 @@ async def download_csv(url: str) -> str:
 
         content = response.text
 
-        if len(content) < 100 or ";" not in content:
+        if len(content) < MIN_CSV_SIZE or ";" not in content:
             from agrobr.exceptions import SourceUnavailableError
 
             raise SourceUnavailableError(

@@ -6,13 +6,14 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://apps.fas.usda.gov/OpenData/api"
+BASE_URL = URLS[Fonte.USDA]["base"]
 
 _settings = HTTPSettings()
 
@@ -42,11 +43,8 @@ def _get_api_key(api_key: str | None = None) -> str:
 async def _fetch_json(
     url: str, api_key: str, params: dict[str, str] | None = None
 ) -> list[dict[str, Any]]:
-    headers = {
-        "Accept": "application/json",
-        "API_KEY": api_key,
-        "User-Agent": "agrobr/0.8.0 (https://github.com/your-org/agrobr)",
-    }
+    headers = UserAgentRotator.get_bot_headers()
+    headers["API_KEY"] = api_key
 
     async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as client:
         logger.debug("usda_request", url=url)

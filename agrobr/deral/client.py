@@ -3,13 +3,14 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_XLSX_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://www.agricultura.pr.gov.br/system/files/publico/Safras"
+BASE_URL = URLS[Fonte.DERAL]["downloads"]
 
 _settings = HTTPSettings()
 
@@ -20,14 +21,14 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": "agrobr/0.8.0 (https://github.com/your-org/agrobr)",
-    "Accept": "application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, */*",
-}
-
 
 async def _fetch_bytes(url: str) -> bytes:
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    headers = UserAgentRotator.get_bot_headers()
+    headers["Accept"] = (
+        "application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, */*"
+    )
+
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=headers, follow_redirects=True) as client:
         logger.debug("deral_request", url=url)
         response = await retry_on_status(
             lambda: client.get(url),
@@ -44,7 +45,7 @@ async def _fetch_bytes(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < 1_000:
+        if len(content) < MIN_XLSX_SIZE:
             raise SourceUnavailableError(
                 source="deral",
                 url=url,

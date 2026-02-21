@@ -7,14 +7,15 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL_AUTH = "https://comtradeapi.un.org/data/v1/get"
-BASE_URL_GUEST = "https://comtradeapi.un.org/public/v1/preview"
+BASE_URL_AUTH = URLS[Fonte.COMTRADE]["auth"]
+BASE_URL_GUEST = URLS[Fonte.COMTRADE]["guest"]
 
 _settings = HTTPSettings()
 
@@ -34,10 +35,7 @@ def _get_api_key(api_key: str | None = None) -> str | None:
 
 
 def _build_headers(api_key: str | None) -> dict[str, str]:
-    headers = {
-        "Accept": "application/json",
-        "User-Agent": "agrobr (https://github.com/bruno-portfolio/agrobr)",
-    }
+    headers = UserAgentRotator.get_bot_headers()
     if api_key:
         headers["Ocp-Apim-Subscription-Key"] = api_key
     return headers

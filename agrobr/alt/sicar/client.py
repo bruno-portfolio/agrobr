@@ -7,9 +7,10 @@ from urllib.parse import quote
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_WFS_SIZE, HTTPSettings
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 from .models import PAGE_SIZE, PROPERTY_NAMES, WFS_BASE, WFS_VERSION, layer_name
 
@@ -23,8 +24,6 @@ TIMEOUT = httpx.Timeout(
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
-
-HEADERS = {"User-Agent": "agrobr (https://github.com/bruno-portfolio/agrobr)"}
 
 
 def _build_wfs_url(
@@ -55,7 +54,9 @@ def _build_wfs_url(
 
 
 async def _fetch_url(url: str, *, base_delay: float | None = None) -> bytes:
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
+    ) as client:
         logger.debug("sicar_request", url=url)
         response = await retry_on_status(
             lambda: client.get(url),
@@ -69,7 +70,7 @@ async def _fetch_url(url: str, *, base_delay: float | None = None) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < 20:
+        if len(content) < MIN_WFS_SIZE:
             raise SourceUnavailableError(
                 source="sicar",
                 url=url,

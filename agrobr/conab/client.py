@@ -7,6 +7,7 @@ from typing import Any
 import structlog
 
 from agrobr import constants
+from agrobr.constants import MIN_HTML_PAGE_SIZE, MIN_XLSX_SIZE
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.user_agents import UserAgentRotator
@@ -53,7 +54,7 @@ async def fetch_boletim_page() -> str:
                 html: str = await page.content()
                 await browser.close()
 
-                if len(html) < 5_000 or "levantamento" not in html.lower():
+                if len(html) < MIN_HTML_PAGE_SIZE or "levantamento" not in html.lower():
                     raise SourceUnavailableError(
                         source="conab",
                         url=url,
@@ -148,7 +149,7 @@ async def download_xlsx(url: str) -> BytesIO:
                 with open(path, "rb") as f:
                     content = f.read()
 
-                if len(content) < 1_000:
+                if len(content) < MIN_XLSX_SIZE:
                     raise SourceUnavailableError(
                         source="conab",
                         url=url,

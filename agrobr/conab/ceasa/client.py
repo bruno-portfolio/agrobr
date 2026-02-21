@@ -9,6 +9,7 @@ import structlog
 from agrobr.constants import HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 from .models import (
     CDA_PROHORT,
@@ -30,11 +31,6 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": "agrobr (https://github.com/bruno-portfolio/agrobr)",
-    "Accept": "application/json",
-}
-
 
 def _build_url(cda_path: str, query_id: str) -> str:
     params = {
@@ -49,9 +45,12 @@ async def _fetch_query(cda_path: str, query_id: str) -> tuple[dict[str, Any], st
     url = _build_url(cda_path, query_id)
     logger.debug("conab_ceasa_fetch", query=query_id, url=url)
 
+    headers = UserAgentRotator.get_headers(source="conab_ceasa")
+    headers["Accept"] = "application/json"
+
     async with httpx.AsyncClient(
         timeout=TIMEOUT,
-        headers=HEADERS,
+        headers=headers,
         follow_redirects=True,
     ) as http:
         resp = await retry_on_status(

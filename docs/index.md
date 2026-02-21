@@ -11,7 +11,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 25 fontes públicas.
 
-**v0.10.1** — 3500+ testes | ~78% cobertura | 25/25 golden tests | retry centralizado 25/25 clients
+**v0.11.1** — 3466+ testes | ~78% cobertura | 25/25 golden tests | retry centralizado 25/25 clients
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica

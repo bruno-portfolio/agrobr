@@ -16,6 +16,7 @@ class Fonte(StrEnum):
     BCB = "bcb"
     CEPEA = "cepea"
     COMEXSTAT = "comexstat"
+    COMTRADE = "comtrade"
     CONAB = "conab"
     DERAL = "deral"
     IBGE = "ibge"
@@ -66,6 +67,11 @@ URLS = {
         "base": "https://comexstat.mdic.gov.br",
         "bulk_csv": "https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm",
     },
+    Fonte.COMTRADE: {
+        "base": "https://comtradeapi.un.org",
+        "auth": "https://comtradeapi.un.org/data/v1/get",
+        "guest": "https://comtradeapi.un.org/public/v1/preview",
+    },
     Fonte.CONAB: {
         "base": "https://www.gov.br/conab",
         "safras": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras",
@@ -76,6 +82,7 @@ URLS = {
         "base": "https://www.agricultura.pr.gov.br/deral",
         "safras": "https://www.agricultura.pr.gov.br/deral/safras",
         "pc_xls": "https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls",
+        "downloads": "https://www.agricultura.pr.gov.br/system/files/publico/Safras",
     },
     Fonte.IBGE: {
         "base": "https://sidra.ibge.gov.br",
@@ -122,6 +129,7 @@ URLS = {
     Fonte.B3: {
         "base": "https://www.b3.com.br",
         "ajustes": "https://www2.bmf.com.br/pages/portal/bmfbovespa/boletim1/Ajustes1.asp",
+        "arquivos": "https://arquivos.b3.com.br/api/download",
     },
 }
 
@@ -295,6 +303,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_bcb: float = 1.0
     rate_limit_cepea: float = 2.0
     rate_limit_comexstat: float = 2.0
+    rate_limit_comtrade: float = 2.0
     rate_limit_conab: float = 3.0
     rate_limit_deral: float = 3.0
     rate_limit_ibge: float = 1.0
@@ -346,3 +355,10 @@ CONFIDENCE_MEDIUM: float = 0.70
 CONFIDENCE_LOW: float = 0.50
 
 RETRIABLE_STATUS_CODES: set[int] = {408, 429, 500, 502, 503, 504}
+
+MIN_WFS_SIZE: int = 50
+MIN_CSV_SIZE: int = 100
+MIN_HTML_SIZE: int = 500
+MIN_ZIP_SIZE: int = 500
+MIN_XLSX_SIZE: int = 1_000
+MIN_HTML_PAGE_SIZE: int = 5_000

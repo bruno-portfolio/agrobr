@@ -10,6 +10,7 @@ from typing import Any
 import structlog
 
 from agrobr.constants import Fonte
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
@@ -118,11 +119,12 @@ async def check_conab() -> CheckResult:
 
     start = time.monotonic()
     details: dict[str, Any] = {}
-    url = "https://www.conab.gov.br"
+    url = "https://www.gov.br/conab/pt-br"
+    headers = UserAgentRotator.get_headers(source="health_check")
 
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            response = await client.head(url, follow_redirects=True)
+        async with httpx.AsyncClient(timeout=15.0, headers=headers) as client:
+            response = await client.get(url, follow_redirects=True)
             latency = (time.monotonic() - start) * 1000
 
             details["status_code"] = response.status_code

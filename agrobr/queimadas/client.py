@@ -6,13 +6,14 @@ import zipfile
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_WFS_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv"
+BASE_URL = URLS[Fonte.QUEIMADAS]["dados_abertos"]
 
 ANUAL_URL = f"{BASE_URL}/anual/Brasil_todos_sats"
 
@@ -24,8 +25,6 @@ TIMEOUT = httpx.Timeout(
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
-
-HEADERS = {"User-Agent": "agrobr (https://github.com/bruno-portfolio/agrobr)"}
 
 
 async def _try_fetch(client: httpx.AsyncClient, url: str) -> bytes | None:
@@ -39,7 +38,7 @@ async def _try_fetch(client: httpx.AsyncClient, url: str) -> bytes | None:
     response.raise_for_status()
 
     content = response.content
-    if len(content) < 50:
+    if len(content) < MIN_WFS_SIZE:
         logger.warning(
             "queimadas_response_too_small",
             url=url,
@@ -63,7 +62,9 @@ def _extract_csv_from_zip(data: bytes) -> bytes:
 
 async def fetch_focos_diario(data: str) -> tuple[bytes, str]:
     url = f"{BASE_URL}/diario/Brasil/focos_diario_br_{data}.csv"
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as c:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
+    ) as c:
         content = await _try_fetch(c, url)
     if content is None:
         raise SourceUnavailableError(source="queimadas", url=url, last_error="HTTP 404")
@@ -77,7 +78,9 @@ async def fetch_focos_mensal(ano: int, mes: int) -> tuple[bytes, str]:
     zip_url = f"{BASE_URL}/mensal/Brasil/focos_mensal_br_{periodo}.zip"
     anual_url = f"{ANUAL_URL}/focos_br_todos-sats_{ano:04d}.zip"
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as c:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
+    ) as c:
         content = await _try_fetch(c, csv_url)
         if content is not None:
             logger.info("queimadas_csv_found", url=csv_url, size=len(content))

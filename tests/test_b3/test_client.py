@@ -95,7 +95,10 @@ class TestFetchAjustes:
         assert "www2.bmf.com.br" in client.BASE_URL
 
     def test_headers_contain_user_agent(self):
-        assert "agrobr" in client.HEADERS["User-Agent"]
+        from agrobr.http.user_agents import UserAgentRotator
+
+        headers = UserAgentRotator.get_bot_headers()
+        assert "agrobr" in headers["User-Agent"]
 
 
 class TestFetchPosicoesAbertas:

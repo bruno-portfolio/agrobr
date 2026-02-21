@@ -5,13 +5,14 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata"
+BASE_URL = URLS[Fonte.BCB]["base"]
 
 _settings = HTTPSettings()
 
@@ -21,8 +22,6 @@ TIMEOUT = httpx.Timeout(
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
-
-HEADERS = {"User-Agent": "agrobr/0.7.1 (https://github.com/your-org/agrobr)"}
 
 PAGE_SIZE = 10000
 BCB_MAX_RETRIES = 6
@@ -55,7 +54,9 @@ async def _fetch_odata(
     if select:
         params["$select"] = ",".join(select)
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
+    ) as client:
         logger.debug(
             "bcb_odata_request",
             endpoint=endpoint,

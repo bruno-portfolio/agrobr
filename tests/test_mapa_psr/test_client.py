@@ -106,4 +106,7 @@ class TestConfig:
         assert client.TIMEOUT.read == 180.0
 
     def test_headers_user_agent(self):
-        assert "Mozilla" in client.HEADERS["User-Agent"]
+        from agrobr.http.user_agents import UserAgentRotator
+
+        headers = UserAgentRotator.get_headers(source="mapa_psr")
+        assert "Mozilla" in headers["User-Agent"]

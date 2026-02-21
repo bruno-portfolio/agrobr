@@ -7,26 +7,26 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES
+from agrobr.constants import RETRIABLE_STATUS_CODES, URLS, Fonte, HTTPSettings
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://apitempo.inmet.gov.br"
+BASE_URL = URLS[Fonte.INMET]["base"]
 
-TIMEOUT = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=10.0)
+_settings = HTTPSettings()
+
+TIMEOUT = httpx.Timeout(
+    connect=_settings.timeout_connect,
+    read=_settings.timeout_read,
+    write=_settings.timeout_write,
+    pool=_settings.timeout_pool,
+)
 
 MAX_DAYS_PER_REQUEST = 365
 
 RATE_LIMIT_DELAY = 0.5
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-}
 
 
 def _get_token() -> str | None:
@@ -34,7 +34,7 @@ def _get_token() -> str | None:
 
 
 def _build_headers() -> dict[str, str]:
-    headers = dict(HEADERS)
+    headers = UserAgentRotator.get_headers(source="inmet")
     token = _get_token()
     if token:
         headers["Authorization"] = f"Bearer {token}"

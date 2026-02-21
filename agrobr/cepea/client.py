@@ -7,6 +7,7 @@ import httpx
 import structlog
 
 from agrobr import constants
+from agrobr.constants import MIN_HTML_PAGE_SIZE
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.retry import retry_async, should_retry_status
@@ -265,7 +266,7 @@ async def fetch_series_historica(produto: str, anos: int = 5) -> str:
         source="cepea",
     )
 
-    if len(html) < 5_000:
+    if len(html) < MIN_HTML_PAGE_SIZE:
         raise SourceUnavailableError(
             source="cepea",
             url=url,

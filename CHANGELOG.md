@@ -7,6 +7,29 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-02-21
+
+### Changed
+- **URLs centralizadas em `constants.py`** — 18 clients migrados de URLs hardcoded locais
+  (`BASE_URL = "https://..."`) para `URLS[Fonte.XXX]["chave"]` importado de `agrobr.constants`.
+  Dominio ou endpoint muda em UM lugar so. Clients afetados: abiove, anda, antaq, bcb, b3,
+  comexstat, comtrade, deral, desmatamento, imea, inmet, mapbiomas, nasa_power, queimadas,
+  usda, conab/serie_historica, conab/custo_producao, conab/progresso
+- **Timeouts centralizados** — 3 clients (anda, inmet, nasa_power) migrados de
+  `httpx.Timeout(connect=10.0, read=X, ...)` hardcoded para `HTTPSettings()` com override
+  de `read` onde necessario. Todos os 25 clients agora usam `HTTPSettings`
+- **Magic numbers substituidos por constantes nomeadas** — 19 thresholds de tamanho minimo
+  (`< 50`, `< 100`, `< 500`, `< 1_000`, `< 5_000`) substituidos por `MIN_WFS_SIZE`,
+  `MIN_CSV_SIZE`, `MIN_HTML_SIZE`, `MIN_ZIP_SIZE`, `MIN_XLSX_SIZE`, `MIN_HTML_PAGE_SIZE`
+  em 16 clients. Ajuste de threshold agora requer edicao em UM lugar so
+
+### Added
+- `Fonte.COMTRADE` no StrEnum + URLs (base, auth, guest) + `rate_limit_comtrade` no HTTPSettings
+- `URLS[Fonte.B3]["arquivos"]` — endpoint `arquivos.b3.com.br` centralizado
+- `URLS[Fonte.DERAL]["downloads"]` — endpoint de downloads centralizado
+- 6 constantes de tamanho minimo em `constants.py`: `MIN_WFS_SIZE` (50), `MIN_CSV_SIZE` (100),
+  `MIN_HTML_SIZE` (500), `MIN_ZIP_SIZE` (500), `MIN_XLSX_SIZE` (1000), `MIN_HTML_PAGE_SIZE` (5000)
+
 ## [0.11.0] - 2026-02-21
 
 ### Fixed
@@ -672,7 +695,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.1...HEAD
+[0.11.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.9.0...v0.10.0

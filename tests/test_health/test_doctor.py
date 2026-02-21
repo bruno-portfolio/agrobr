@@ -131,7 +131,7 @@ class TestCheckSource:
             mock_response.status_code = 200
             mock_client.return_value.__aenter__ = AsyncMock(return_value=mock_client.return_value)
             mock_client.return_value.__aexit__ = AsyncMock()
-            mock_client.return_value.head = AsyncMock(return_value=mock_response)
+            mock_client.return_value.get = AsyncMock(return_value=mock_response)
 
             status = await _check_source("Test", "https://example.com")
             assert status.status in ("ok", "slow")
@@ -142,7 +142,7 @@ class TestCheckSource:
 
         with patch("agrobr.health.doctor.httpx.AsyncClient") as mock_client_class:
             mock_instance = MagicMock()
-            mock_instance.head = AsyncMock(side_effect=httpx.TimeoutException("timeout"))
+            mock_instance.get = AsyncMock(side_effect=httpx.TimeoutException("timeout"))
             mock_client_class.return_value.__aenter__ = AsyncMock(return_value=mock_instance)
             mock_client_class.return_value.__aexit__ = AsyncMock(return_value=None)
 

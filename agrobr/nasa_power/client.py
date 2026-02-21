@@ -7,27 +7,32 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import RETRIABLE_STATUS_CODES
+from agrobr.constants import RETRIABLE_STATUS_CODES, URLS, Fonte, HTTPSettings
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
+BASE_URL = URLS[Fonte.NASA_POWER]["daily"]
 
-TIMEOUT = httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=10.0)
+_settings = HTTPSettings()
+
+TIMEOUT = httpx.Timeout(
+    connect=_settings.timeout_connect,
+    read=60.0,
+    write=_settings.timeout_write,
+    pool=_settings.timeout_pool,
+)
 
 RATE_LIMIT_DELAY = 1.0
 
 MAX_DAYS_PER_REQUEST = 365
 
-HEADERS = {
-    "User-Agent": "agrobr/0.7.1 (https://github.com/bruno-portfolio/agrobr)",
-    "Accept": "application/json",
-}
-
 
 async def _get_json(params: dict[str, Any]) -> dict[str, Any]:
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers()
+    ) as client:
         response = await retry_on_status(
             lambda: client.get(BASE_URL, params=params),
             source="nasa_power",

@@ -48,7 +48,7 @@ class TestCheckConab:
         mock_response.status_code = 200
 
         mock_client = AsyncMock()
-        mock_client.head.return_value = mock_response
+        mock_client.get.return_value = mock_response
 
         with patch("httpx.AsyncClient") as mock_cls:
             mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
@@ -66,7 +66,7 @@ class TestCheckConab:
         mock_response.status_code = 503
 
         mock_client = AsyncMock()
-        mock_client.head.return_value = mock_response
+        mock_client.get.return_value = mock_response
 
         with patch("httpx.AsyncClient") as mock_cls:
             mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
@@ -82,7 +82,7 @@ class TestCheckConab:
         import httpx as httpx_mod
 
         mock_client = AsyncMock()
-        mock_client.head.side_effect = httpx_mod.ConnectError("connection refused")
+        mock_client.get.side_effect = httpx_mod.ConnectError("connection refused")
 
         with patch("httpx.AsyncClient") as mock_cls:
             mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)

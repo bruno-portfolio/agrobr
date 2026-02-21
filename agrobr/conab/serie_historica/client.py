@@ -6,12 +6,13 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://www.gov.br"
+BASE_URL = URLS[Fonte.CONAB]["base"]
 
 SERIES_HISTORICAS_URL = (
     f"{BASE_URL}/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas"
@@ -61,18 +62,11 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-    "Accept": (
-        "application/vnd.ms-excel,"
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
-        "*/*;q=0.8"
-    ),
-}
+ACCEPT_EXCEL = (
+    "application/vnd.ms-excel,"
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
+    "*/*;q=0.8"
+)
 
 
 def get_xls_url(produto: str) -> str:
@@ -110,7 +104,10 @@ async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
     url = get_xls_url(produto)
     logger.info("conab_serie_historica_download", produto=produto, url=url)
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    headers = UserAgentRotator.get_headers(source="conab_serie")
+    headers["Accept"] = ACCEPT_EXCEL
+
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=headers, follow_redirects=True) as client:
         try:
             response = await retry_on_status(
                 lambda: client.get(url),
@@ -148,9 +145,12 @@ async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
 async def fetch_series_page(categoria: str = "graos") -> str:
     url = f"{SERIES_HISTORICAS_URL}/{categoria}"
 
+    headers = UserAgentRotator.get_headers(source="conab_serie")
+    headers["Accept"] = "text/html,*/*;q=0.8"
+
     async with httpx.AsyncClient(
         timeout=TIMEOUT,
-        headers={**HEADERS, "Accept": "text/html,*/*;q=0.8"},
+        headers=headers,
         follow_redirects=True,
     ) as client:
         try:

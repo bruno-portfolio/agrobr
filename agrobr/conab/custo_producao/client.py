@@ -7,12 +7,13 @@ from typing import Any
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://www.gov.br"
+BASE_URL = URLS[Fonte.CONAB]["base"]
 
 CUSTOS_PAGE = (
     f"{BASE_URL}/conab/pt-br/atuacao/informacoes-agropecuarias"
@@ -34,24 +35,19 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-    "Accept": (
-        "text/html,application/xhtml+xml,application/xml;q=0.9,"
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
-        "*/*;q=0.8"
-    ),
-}
+ACCEPT_EXCEL_HTML = (
+    "text/html,application/xhtml+xml,application/xml;q=0.9,"
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
+    "*/*;q=0.8"
+)
 
 
 async def fetch_custos_page() -> str:
     combined_html = ""
+    headers = UserAgentRotator.get_headers(source="conab_custo")
+    headers["Accept"] = ACCEPT_EXCEL_HTML
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=headers, follow_redirects=True) as client:
         for slug in _TAB_SLUGS:
             url = f"{CUSTOS_PAGE}/{slug}"
             try:
@@ -86,7 +82,10 @@ async def download_xlsx(url: str) -> BytesIO:
 
     logger.info("conab_custo_download_xlsx", url=url)
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    headers = UserAgentRotator.get_headers(source="conab_custo")
+    headers["Accept"] = ACCEPT_EXCEL_HTML
+
+    async with httpx.AsyncClient(timeout=TIMEOUT, headers=headers, follow_redirects=True) as client:
         try:
             response = await retry_on_status(
                 lambda: client.get(url),

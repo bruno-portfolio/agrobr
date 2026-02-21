@@ -154,8 +154,11 @@ class TestClientConstants:
         assert client.TIMEOUT.read >= 120.0
 
     def test_headers_user_agent(self):
-        assert "User-Agent" in client.HEADERS
-        assert "Mozilla" in client.HEADERS["User-Agent"]
+        from agrobr.http.user_agents import UserAgentRotator
+
+        headers = UserAgentRotator.get_headers(source="anp_diesel")
+        assert "User-Agent" in headers
+        assert "Mozilla" in headers["User-Agent"]
 
     def test_urls_precos_municipios(self):
         for _periodo, url in PRECOS_MUNICIPIOS_URLS.items():

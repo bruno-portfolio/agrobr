@@ -5,23 +5,30 @@ import re
 import httpx
 import structlog
 
+from agrobr.constants import MIN_HTML_SIZE, MIN_ZIP_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://anda.org.br"
-ESTATISTICAS_URL = f"{BASE_URL}/recursos/"
+BASE_URL = URLS[Fonte.ANDA]["base"]
+ESTATISTICAS_URL = URLS[Fonte.ANDA]["estatisticas"]
 
-TIMEOUT = httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=10.0)
+_settings = HTTPSettings()
 
-HEADERS = {"User-Agent": "agrobr/0.7.1 (https://github.com/bruno-portfolio/agrobr)"}
+TIMEOUT = httpx.Timeout(
+    connect=_settings.timeout_connect,
+    read=60.0,
+    write=_settings.timeout_write,
+    pool=_settings.timeout_pool,
+)
 
 
 async def _get_with_retry(url: str) -> httpx.Response:
     async with httpx.AsyncClient(
         timeout=TIMEOUT,
         follow_redirects=True,
-        headers=HEADERS,
+        headers=UserAgentRotator.get_bot_headers(),
     ) as client:
         response = await retry_on_status(
             lambda: client.get(url),
@@ -38,7 +45,7 @@ async def fetch_estatisticas_page() -> str:
     response = await _get_with_retry(ESTATISTICAS_URL)
     html = response.text
 
-    if len(html) < 2_000 or "<a" not in html.lower():
+    if len(html) < MIN_HTML_SIZE or "<a" not in html.lower():
         raise SourceUnavailableError(
             source="anda",
             url=ESTATISTICAS_URL,
@@ -57,7 +64,7 @@ async def download_file(url: str) -> bytes:
     response = await _get_with_retry(url)
     content = response.content
 
-    if len(content) < 500:
+    if len(content) < MIN_ZIP_SIZE:
         raise SourceUnavailableError(
             source="anda",
             url=url,

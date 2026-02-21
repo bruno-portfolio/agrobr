@@ -6,12 +6,13 @@ import zipfile
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_ZIP_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BULK_TXT_BASE = "https://web3.antaq.gov.br/ea/txt"
+BULK_TXT_BASE = URLS[Fonte.ANTAQ]["bulk_txt"]
 
 _settings = HTTPSettings()
 
@@ -22,19 +23,13 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-}
-
 
 async def _download_zip(url: str) -> bytes:
     logger.info("antaq_download_zip", url=url)
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=UserAgentRotator.get_headers(source="antaq"), follow_redirects=True
+    ) as client:
         response = await retry_on_status(
             lambda: client.get(url),
             source="antaq",
@@ -42,7 +37,7 @@ async def _download_zip(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < 500:
+        if len(content) < MIN_ZIP_SIZE:
             from agrobr.exceptions import SourceUnavailableError
 
             raise SourceUnavailableError(

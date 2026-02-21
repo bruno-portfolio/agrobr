@@ -7,11 +7,14 @@ import httpx
 import structlog
 from bs4 import BeautifulSoup
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_XLSX_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 from .models import BASE_URL
+
+_CONAB_BASE = URLS[Fonte.CONAB]["base"]
 
 logger = structlog.get_logger()
 
@@ -23,11 +26,6 @@ TIMEOUT = httpx.Timeout(
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
-
-HEADERS = {
-    "User-Agent": "agrobr (https://github.com/bruno-portfolio/agrobr)",
-    "Accept": "*/*",
-}
 
 PAGE_SIZE = 20
 
@@ -41,7 +39,7 @@ def _extract_week_links(html: str) -> list[tuple[str, str]]:
         text = a.get_text(strip=True)
         if "acompanhamento-das-lavouras" in href and "Acompanhamento" in text and href not in seen:
             seen.add(href)
-            full = href if href.startswith("http") else f"https://www.gov.br{href}"
+            full = href if href.startswith("http") else f"{_CONAB_BASE}{href}"
             results.append((text, full))
     return results
 
@@ -51,7 +49,7 @@ def _extract_plantio_link(html: str) -> str | None:
     for a in soup.find_all("a", href=True):
         href = str(a["href"])
         if "plantio" in href.lower() and "colheita" in href.lower():
-            return href if href.startswith("http") else f"https://www.gov.br{href}"
+            return href if href.startswith("http") else f"{_CONAB_BASE}{href}"
     return None
 
 
@@ -67,7 +65,11 @@ def _parse_week_date(text: str) -> str:
 
 async def list_semanas(max_pages: int = 4) -> list[tuple[str, str]]:
     all_weeks: list[tuple[str, str]] = []
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_headers(source="conab_progresso"),
+        follow_redirects=True,
+    ) as client:
         for page in range(max_pages):
             offset = page * PAGE_SIZE
             url = f"{BASE_URL}?b_start:int={offset}" if offset else BASE_URL
@@ -83,7 +85,11 @@ async def list_semanas(max_pages: int = 4) -> list[tuple[str, str]]:
 
 
 async def fetch_xlsx_semanal(week_url: str) -> tuple[bytes, str]:
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_headers(source="conab_progresso"),
+        follow_redirects=True,
+    ) as client:
         logger.debug("conab_progresso_week", url=week_url)
         resp = await retry_on_status(lambda: client.get(week_url), source="conab")
         if resp.status_code != 200:
@@ -111,7 +117,7 @@ async def fetch_xlsx_semanal(week_url: str) -> tuple[bytes, str]:
             )
 
         ct = xlsx_resp.headers.get("content-type", "")
-        if "spreadsheet" not in ct and "excel" not in ct and len(xlsx_resp.content) < 1000:
+        if "spreadsheet" not in ct and "excel" not in ct and len(xlsx_resp.content) < MIN_XLSX_SIZE:
             raise SourceUnavailableError(
                 source="conab_progresso",
                 url=xlsx_url,

@@ -3,15 +3,16 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_XLSX_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 from .models import COLECAO_ATUAL
 
 logger = structlog.get_logger()
 
-GCS_BASE = "https://storage.googleapis.com/mapbiomas-public/initiatives/brasil"
+GCS_BASE = URLS[Fonte.MAPBIOMAS]["gcs"]
 
 _settings = HTTPSettings()
 
@@ -21,8 +22,6 @@ TIMEOUT = httpx.Timeout(
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
-
-HEADERS = {"User-Agent": "agrobr (https://github.com/bruno-portfolio/agrobr)"}
 
 
 def _build_xlsx_url(nivel: str, colecao: int = COLECAO_ATUAL) -> str:
@@ -34,7 +33,9 @@ def _build_xlsx_url(nivel: str, colecao: int = COLECAO_ATUAL) -> str:
 
 
 async def _fetch_url(url: str) -> bytes:
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
+    ) as client:
         logger.debug("mapbiomas_request", url=url)
         response = await retry_on_status(
             lambda: client.get(url),
@@ -47,7 +48,7 @@ async def _fetch_url(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < 1_000:
+        if len(content) < MIN_XLSX_SIZE:
             raise SourceUnavailableError(
                 source="mapbiomas",
                 url=url,

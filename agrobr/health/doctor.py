@@ -13,6 +13,7 @@ import structlog
 from agrobr import __version__
 from agrobr.cache.duckdb_store import get_store
 from agrobr.cache.policies import get_next_update_info
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
@@ -150,10 +151,11 @@ class DiagnosticsResult:
 
 async def _check_source(name: str, url: str, timeout: float = 10.0) -> SourceStatus:
     start = time.perf_counter()
+    headers = UserAgentRotator.get_headers(source="health_check")
 
     try:
-        async with httpx.AsyncClient(timeout=timeout) as http_client:
-            response = await http_client.head(url, follow_redirects=True)
+        async with httpx.AsyncClient(timeout=timeout, headers=headers) as http_client:
+            response = await http_client.get(url, follow_redirects=True)
             latency_ms = int((time.perf_counter() - start) * 1000)
 
             if response.status_code < 400:
@@ -262,7 +264,7 @@ def _get_last_collections() -> dict[str, datetime | None]:
 async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: ARG001
     sources_to_check = [
         ("CEPEA (Noticias Agricolas)", "https://www.noticiasagricolas.com.br"),
-        ("CONAB", "https://www.conab.gov.br"),
+        ("CONAB", "https://www.gov.br/conab/pt-br"),
         ("IBGE/SIDRA", "https://sidra.ibge.gov.br"),
     ]
 

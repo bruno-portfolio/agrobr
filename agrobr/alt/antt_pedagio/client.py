@@ -3,8 +3,9 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_CSV_SIZE, HTTPSettings
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 from .models import (
     DATASET_PRACAS_SLUG,
@@ -23,20 +24,16 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-}
-
 
 async def _get_ckan_resources(slug: str) -> list[dict[str, str]]:
     url = build_ckan_package_url(slug)
     logger.info("antt_pedagio_ckan_discover", slug=slug)
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_headers(source="antt_pedagio"),
+        follow_redirects=True,
+    ) as client:
         response = await retry_on_status(
             lambda: client.get(url),
             source="antt_pedagio",
@@ -99,7 +96,11 @@ def _match_pracas_resource(resources: list[dict[str, str]]) -> str | None:
 async def download_csv(url: str) -> bytes:
     logger.info("antt_pedagio_download", url=url)
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_headers(source="antt_pedagio"),
+        follow_redirects=True,
+    ) as client:
         response = await retry_on_status(
             lambda: client.get(url),
             source="antt_pedagio",
@@ -107,7 +108,7 @@ async def download_csv(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < 100:
+        if len(content) < MIN_CSV_SIZE:
             from agrobr.exceptions import SourceUnavailableError
 
             raise SourceUnavailableError(

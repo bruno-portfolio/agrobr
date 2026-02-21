@@ -3,14 +3,15 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_CSV_SIZE, MIN_HTML_SIZE, URLS, Fonte, HTTPSettings
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = "https://www2.bmf.com.br/pages/portal/bmfbovespa/boletim1/Ajustes1.asp"
-BASE_URL_ARQUIVOS = "https://arquivos.b3.com.br/api/download"
+BASE_URL = URLS[Fonte.B3]["ajustes"]
+BASE_URL_ARQUIVOS = URLS[Fonte.B3]["arquivos"]
 
 _settings = HTTPSettings()
 
@@ -28,13 +29,14 @@ TIMEOUT_DOWNLOAD = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {"User-Agent": "agrobr (https://github.com/bruno-portfolio/agrobr)"}
-
 
 async def fetch_ajustes(data: str) -> tuple[str, str]:
     url = f"{BASE_URL}?txtData={data}"
     async with httpx.AsyncClient(
-        timeout=TIMEOUT, headers=HEADERS, follow_redirects=True, verify=False
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_bot_headers(),
+        follow_redirects=True,
+        verify=False,
     ) as http:
         logger.debug("b3_request", url=url)
         response = await retry_on_status(
@@ -48,7 +50,7 @@ async def fetch_ajustes(data: str) -> tuple[str, str]:
         response.raise_for_status()
         html = response.content.decode("iso-8859-1")
 
-        if len(html) < 500 or "<table" not in html.lower():
+        if len(html) < MIN_HTML_SIZE or "<table" not in html.lower():
             raise SourceUnavailableError(
                 source="b3",
                 url=url,
@@ -68,7 +70,7 @@ async def fetch_posicoes_abertas(data: str) -> tuple[bytes, str]:
         f"?fileName=DerivativesOpenPosition&date={data}&recaptchaToken="
     )
     async with httpx.AsyncClient(
-        timeout=TIMEOUT_DOWNLOAD, headers=HEADERS, follow_redirects=True
+        timeout=TIMEOUT_DOWNLOAD, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
     ) as http:
         logger.debug("b3_oi_token_request", url=token_url)
         token_resp = await retry_on_status(
@@ -103,7 +105,7 @@ async def fetch_posicoes_abertas(data: str) -> tuple[bytes, str]:
         csv_resp.raise_for_status()
 
         csv_bytes = csv_resp.content
-        if len(csv_bytes) < 100:
+        if len(csv_bytes) < MIN_CSV_SIZE:
             raise SourceUnavailableError(
                 source="b3",
                 url=download_url,

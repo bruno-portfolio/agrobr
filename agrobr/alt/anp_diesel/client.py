@@ -3,8 +3,9 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import HTTPSettings
+from agrobr.constants import MIN_XLSX_SIZE, HTTPSettings
 from agrobr.http.retry import retry_on_status
+from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
@@ -17,19 +18,15 @@ TIMEOUT = httpx.Timeout(
     pool=_settings.timeout_pool,
 )
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-}
-
 
 async def download_xlsx(url: str) -> bytes:
     logger.info("anp_diesel_download", url=url)
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_headers(source="anp_diesel"),
+        follow_redirects=True,
+    ) as client:
         response = await retry_on_status(
             lambda: client.get(url),
             source="anp_diesel",
@@ -38,7 +35,7 @@ async def download_xlsx(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < 1_000:
+        if len(content) < MIN_XLSX_SIZE:
             from agrobr.exceptions import SourceUnavailableError
 
             raise SourceUnavailableError(

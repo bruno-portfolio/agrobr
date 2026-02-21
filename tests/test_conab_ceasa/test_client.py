@@ -108,5 +108,8 @@ class TestBuildUrl:
         assert "password=password" in url
 
     def test_headers_contain_user_agent(self):
-        assert "agrobr" in client.HEADERS["User-Agent"]
-        assert "application/json" in client.HEADERS["Accept"]
+        from agrobr.http.user_agents import UserAgentRotator
+
+        headers = UserAgentRotator.get_headers(source="conab_ceasa")
+        assert "User-Agent" in headers
+        assert "Mozilla" in headers["User-Agent"]
