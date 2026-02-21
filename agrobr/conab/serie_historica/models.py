@@ -1,13 +1,9 @@
-"""Modelos Pydantic para serie historica de safras CONAB."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
 
 
 class SafraHistorica(BaseModel):
-    """Registro de serie historica de uma safra CONAB."""
-
     produto: str = Field(..., min_length=2)
     safra: str = Field(..., min_length=4)
     regiao: str | None = None
@@ -123,17 +119,11 @@ REGIOES_BRASIL = ["NORTE", "NORDESTE", "CENTRO-OESTE", "SUDESTE", "SUL"]
 
 
 def normalize_produto(nome: str) -> str:
-    """Normaliza nome de produto para chave padronizada."""
     lower = nome.lower().strip()
     return SERIE_HISTORICA_PRODUTOS.get(lower, lower.replace(" ", "_"))
 
 
 def detect_safra_format(value: str) -> str:
-    """Detecta e normaliza formato de safra.
-
-    Aceita: '2023/24', '2023/2024', '2023', 'Safra 2023/24'.
-    Retorna formato curto: '2023/24'.
-    """
     import re
 
     value = value.strip()

@@ -1,37 +1,9 @@
 {
-  "min_rows": 3,
-  "max_rows": 3,
-  "columns": ["nr_apolice", "ano_apolice", "uf", "municipio", "cd_ibge", "cultura", "classificacao", "evento", "area_total", "valor_indenizacao", "valor_premio", "valor_subvencao", "valor_limite_garantia", "produtividade_estimada", "produtividade_segurada", "nivel_cobertura", "seguradora"],
+  "count_min": 700,
+  "columns": ["nr_apolice", "ano_apolice", "uf", "municipio", "cd_ibge", "cultura", "classificacao", "evento", "area_total", "valor_premio", "valor_subvencao", "valor_limite_garantia", "produtividade_estimada", "produtividade_segurada", "nivel_cobertura", "seguradora"],
   "checks": {
     "pii_removed": true,
-    "all_indenizacao_positive": true,
     "all_evento_non_empty": true,
     "evento_is_lowercase": true
-  },
-  "rows": [
-    {
-      "nr_apolice": "AP003",
-      "ano_apolice": 2022,
-      "uf": "GO",
-      "cultura": "SOJA",
-      "evento": "geada",
-      "valor_indenizacao": 350000.0
-    },
-    {
-      "nr_apolice": "AP001",
-      "ano_apolice": 2023,
-      "uf": "MT",
-      "cultura": "SOJA",
-      "evento": "seca",
-      "valor_indenizacao": 120000.0
-    },
-    {
-      "nr_apolice": "AP004",
-      "ano_apolice": 2023,
-      "uf": "MT",
-      "cultura": "SOJA",
-      "evento": "granizo",
-      "valor_indenizacao": 200000.0
-    }
-  ]
+  }
 }

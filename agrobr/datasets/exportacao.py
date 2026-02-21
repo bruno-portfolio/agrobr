@@ -1,5 +1,3 @@
-"""Dataset exportacao - Exportações agrícolas brasileiras."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -89,21 +87,6 @@ class ExportacaoDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca dados de exportação agrícola brasileira.
-
-        Fontes (em ordem de prioridade):
-          1. ComexStat/MDIC (dados oficiais)
-          2. ABIOVE (complexo soja)
-
-        Args:
-            produto: soja, milho, cafe, algodao, acucar, farelo_soja, oleo_soja
-            ano: Ano de referência (default: ano corrente)
-            uf: Filtrar por UF de origem (ex: "MT", "PR")
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: ano, mes, produto, uf, kg_liquido, valor_fob_usd
-        """
         logger.info("dataset_fetch", dataset="exportacao", produto=produto, ano=ano)
 
         snapshot = get_snapshot()
@@ -160,19 +143,4 @@ async def exportacao(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados de exportação agrícola brasileira.
-
-    Fontes (em ordem de prioridade):
-      1. ComexStat/MDIC (dados oficiais)
-      2. ABIOVE (complexo soja)
-
-    Args:
-        produto: soja, milho, cafe, algodao, acucar, farelo_soja, oleo_soja
-        ano: Ano de referência (default: ano corrente)
-        uf: Filtrar por UF de origem (ex: "MT", "PR")
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: ano, mes, produto, uf, kg_liquido, valor_fob_usd
-    """
     return await _exportacao.fetch(produto, ano=ano, uf=uf, return_meta=return_meta, **kwargs)

@@ -5,8 +5,8 @@
   "parser": "agrobr.desmatamento.parser::parse_prodes_csv()",
   "parser_version": 1,
   "parser_kwargs": {"bioma": "Cerrado"},
-  "needs_real_data": true,
-  "captured_at": "2026-02-14T12:00:00+00:00",
+  "needs_real_data": false,
+  "captured_at": "2026-02-21T08:26:00+00:00",
   "api_url": "https://terrabrasilis.dpi.inpe.br/geoserver/prodes-cerrado-nb/ows",
-  "notes": "Sample PRODES annual deforestation data with 10 records across states"
+  "notes": "Real data: 15-record sample from PRODES Cerrado/PA WFS, years 2017-2025, Landsat8+Sentinel-2"
 }

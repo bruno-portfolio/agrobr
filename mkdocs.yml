@@ -79,6 +79,7 @@ nav:
     - pecuaria_municipal: contracts/pecuaria_municipal.md
     - abate_trimestral: contracts/abate_trimestral.md
     - censo_agropecuario: contracts/censo_agropecuario.md
+    - cadastro_rural: contracts/cadastro_rural.md
   - API Reference:
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md

@@ -1,14 +1,7 @@
-"""Modelos e constantes para dados IMEA (Instituto Mato-Grossense de Economia Agropecuária).
-
-Fonte: API pública IMEA (api1.imea.com.br).
-Dados de cotações, indicadores e progresso de safra para Mato Grosso.
-"""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, field_validator
 
-# Mapeamento cadeia -> CadeiaId na API IMEA
 IMEA_CADEIAS: dict[str, int] = {
     "soja": 4,
     "soybeans": 4,
@@ -24,7 +17,6 @@ IMEA_CADEIAS: dict[str, int] = {
     "dairy": 8,
 }
 
-# Mapa reverso: CadeiaId -> nome canônico
 _CADEIA_NAMES: dict[int, str] = {
     1: "algodao",
     2: "bovinocultura",
@@ -35,7 +27,6 @@ _CADEIA_NAMES: dict[int, str] = {
     8: "leite",
 }
 
-# 7 macrorregiões de MT usadas pelo IMEA
 IMEA_MACRORREGIOES: list[str] = [
     "Centro-Sul",
     "Médio-Norte",
@@ -46,7 +37,6 @@ IMEA_MACRORREGIOES: list[str] = [
     "Sudeste",
 ]
 
-# Mapeamento colunas API -> agrobr
 IMEA_COLUMNS_MAP: dict[str, str] = {
     "Localidade": "localidade",
     "Valor": "valor",
@@ -62,21 +52,9 @@ IMEA_COLUMNS_MAP: dict[str, str] = {
 
 
 def resolve_cadeia_id(nome: str) -> int:
-    """Resolve nome de cadeia para CadeiaId IMEA.
-
-    Args:
-        nome: Nome da cadeia (ex: "soja", "milho") ou ID numérico.
-
-    Returns:
-        CadeiaId inteiro.
-
-    Raises:
-        ValueError: Se cadeia desconhecida.
-    """
     key = nome.strip().lower()
     if key in IMEA_CADEIAS:
         return IMEA_CADEIAS[key]
-    # Pode ser o próprio ID
     try:
         cadeia_id = int(key)
         if cadeia_id in _CADEIA_NAMES:
@@ -89,13 +67,10 @@ def resolve_cadeia_id(nome: str) -> int:
 
 
 def cadeia_name(cadeia_id: int) -> str:
-    """Retorna nome canônico da cadeia pelo ID."""
     return _CADEIA_NAMES.get(cadeia_id, str(cadeia_id))
 
 
 class CotacaoIMEA(BaseModel):
-    """Registro de cotação/indicador IMEA."""
-
     cadeia: str
     localidade: str
     valor: float | None = None

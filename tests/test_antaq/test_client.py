@@ -15,13 +15,25 @@ from agrobr.exceptions import SourceUnavailableError
 RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
 
 
-def _make_zip(files: dict[str, str]) -> bytes:
-    """Cria ZIP em memória com conteúdo dado."""
+def _make_zip(files: dict[str, str], *, min_size: int = 0) -> bytes:
+    """Cria ZIP em memória com conteúdo dado.
+
+    Se *min_size* > 0 e o ZIP for menor, padding é adicionado como
+    arquivo extra para ultrapassar o limite.
+    """
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         for name, content in files.items():
             zf.writestr(name, content.encode("utf-8-sig"))
-    return buf.getvalue()
+    data = buf.getvalue()
+    if min_size and len(data) < min_size:
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as zf:
+            for name, content in files.items():
+                zf.writestr(name, content.encode("utf-8-sig"))
+            zf.writestr("_padding.bin", bytes(range(256)) * ((min_size // 256) + 2))
+        data = buf.getvalue()
+    return data
 
 
 def _mock_response(
@@ -44,7 +56,7 @@ def _mock_response(
 class TestDownloadZip:
     @pytest.mark.asyncio
     async def test_success(self):
-        zip_bytes = _make_zip({"test.txt": "hello"})
+        zip_bytes = _make_zip({"test.txt": "hello"}, min_size=500)
         resp = _mock_response(200, zip_bytes)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp)
@@ -88,7 +100,7 @@ class TestDownloadZip:
 
     @pytest.mark.asyncio
     async def test_429_retries_then_succeeds(self):
-        zip_bytes = _make_zip({"test.txt": "ok"})
+        zip_bytes = _make_zip({"test.txt": "ok"}, min_size=500)
         resp_429 = _mock_response(429)
         resp_ok = _mock_response(200, zip_bytes)
         mock_client = AsyncMock()

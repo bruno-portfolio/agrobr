@@ -1,5 +1,3 @@
-"""Parser para dados INMET — converte JSON da API em DataFrames."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -53,17 +51,6 @@ SENTINEL = -9999.0
 
 
 def parse_observacoes(dados: list[dict[str, Any]]) -> pd.DataFrame:
-    """Converte lista de observações INMET em DataFrame normalizado.
-
-    Args:
-        dados: Lista de dicts da API INMET.
-
-    Returns:
-        DataFrame com colunas renomeadas, tipos corretos e sentinelas tratados.
-
-    Raises:
-        ParseError: Se dados estiverem vazios ou malformados.
-    """
     if not dados:
         raise ParseError(
             source="inmet",
@@ -105,15 +92,6 @@ def parse_observacoes(dados: list[dict[str, Any]]) -> pd.DataFrame:
 
 
 def agregar_diario(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega observações horárias em resumo diário por estação.
-
-    Args:
-        df: DataFrame com observações horárias (output de parse_observacoes).
-
-    Returns:
-        DataFrame com colunas: data, estacao, uf, temp_media, temp_max, temp_min,
-        precipitacao_mm, umidade_media, radiacao_total_kj_m2.
-    """
     if df.empty:
         return df
 
@@ -145,15 +123,6 @@ def agregar_diario(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def agregar_mensal_uf(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega observações diárias em resumo mensal por UF.
-
-    Args:
-        df: DataFrame diário (output de agregar_diario).
-
-    Returns:
-        DataFrame com colunas: mes, uf, precip_acum_mm, temp_media,
-        temp_max_media, temp_min_media, num_estacoes.
-    """
     if df.empty or "uf" not in df.columns:
         return df
 

@@ -1,5 +1,3 @@
-"""Dataset cadastro_rural - Cadastro Ambiental Rural (SICAR)."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -109,26 +107,6 @@ class CadastroRuralDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca registros de imóveis rurais do CAR.
-
-        Fontes (em ordem de prioridade):
-          1. SICAR/GeoServer WFS (Serviço Florestal Brasileiro)
-
-        Args:
-            produto: Sigla da UF (ex: "MT", "DF", "BA").
-            municipio: Filtro parcial de município (case-insensitive).
-            status: Filtro de status: AT, PE, SU, CA.
-            tipo: Filtro de tipo: IRU, AST, PCT.
-            area_min: Área mínima em hectares.
-            area_max: Área máxima em hectares.
-            criado_apos: Data mínima de criação (ISO format).
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-        Returns:
-            DataFrame com colunas: cod_imovel, status, data_criacao,
-            data_atualizacao, area_ha, condicao, uf, municipio,
-            cod_municipio_ibge, modulos_fiscais, tipo.
-        """
         logger.info(
             "dataset_fetch",
             dataset="cadastro_rural",
@@ -194,28 +172,6 @@ async def cadastro_rural(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca registros de imóveis rurais do CAR (SICAR).
-
-    Fontes (em ordem de prioridade):
-      1. SICAR/GeoServer WFS (Serviço Florestal Brasileiro)
-
-    Args:
-        uf: Sigla da UF (ex: "MT", "DF", "BA").
-        municipio: Filtro parcial de município (case-insensitive).
-        status: Filtro de status: AT (Ativo), PE (Pendente),
-            SU (Suspenso), CA (Cancelado).
-        tipo: Filtro de tipo: IRU (Rural), AST (Assentamento),
-            PCT (Terra Indígena).
-        area_min: Área mínima em hectares.
-        area_max: Área máxima em hectares.
-        criado_apos: Data mínima de criação (ISO format).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: cod_imovel, status, data_criacao,
-        data_atualizacao, area_ha, condicao, uf, municipio,
-        cod_municipio_ibge, modulos_fiscais, tipo.
-    """
     return await _cadastro_rural.fetch(
         uf,
         municipio=municipio,

@@ -1,10 +1,3 @@
-"""API pública do módulo CEPEA.
-
-Dados CEPEA/ESALQ licenciados sob CC BY-NC 4.0.
-Uso comercial requer autorização do CEPEA (cepea@usp.br).
-Ref: https://www.cepea.org.br/br/licenca-de-uso-de-dados.aspx
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -77,30 +70,6 @@ async def indicador(
     offline: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]:
-    """
-    Obtém série de indicadores de preço do CEPEA.
-
-    Usa estratégia de acumulação progressiva:
-    1. Busca dados no histórico local (DuckDB)
-    2. Se faltar dados recentes, busca da fonte (CEPEA/Notícias Agrícolas)
-    3. Salva novos dados no histórico
-    4. Retorna DataFrame completo do período solicitado
-
-    Args:
-        produto: Nome do produto (soja, milho, cafe, boi, etc)
-        praca: Praça específica (opcional)
-        inicio: Data inicial (YYYY-MM-DD ou date)
-        fim: Data final (YYYY-MM-DD ou date)
-        moeda: Moeda (BRL ou USD)
-        as_polars: Se True, retorna polars.DataFrame
-        validate_sanity: Se True, valida dados estatisticamente
-        force_refresh: Se True, ignora histórico e busca da fonte
-        offline: Se True, usa apenas histórico local
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com indicadores ou tupla (DataFrame, MetaInfo) se return_meta=True
-    """
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="unknown",
@@ -295,7 +264,6 @@ async def indicador(
 
 
 def _dicts_to_indicadores(dicts: list[dict[str, Any]]) -> list[Indicador]:
-    """Converte lista de dicts do banco para objetos Indicador."""
     indicadores = []
     for d in dicts:
         try:
@@ -316,7 +284,6 @@ def _dicts_to_indicadores(dicts: list[dict[str, Any]]) -> list[Indicador]:
 
 
 def _indicadores_to_dicts(indicadores: list[Indicador]) -> list[dict[str, Any]]:
-    """Converte lista de Indicador para dicts para salvar no banco."""
     return [
         {
             "produto": ind.produto,
@@ -334,20 +301,10 @@ def _indicadores_to_dicts(indicadores: list[Indicador]) -> list[dict[str, Any]]:
 
 
 async def produtos() -> list[str]:
-    """Lista produtos disponíveis no CEPEA."""
     return list(constants.CEPEA_PRODUTOS.keys())
 
 
 async def pracas(produto: str) -> list[str]:
-    """
-    Lista praças disponíveis para um produto.
-
-    Args:
-        produto: Nome do produto
-
-    Returns:
-        Lista de praças disponíveis
-    """
     pracas_map = {
         "soja": ["paranagua", "parana", "rio_grande_do_sul"],
         "milho": ["campinas", "parana"],
@@ -367,17 +324,6 @@ async def pracas(produto: str) -> list[str]:
 
 
 async def ultimo(produto: str, praca: str | None = None, offline: bool = False) -> Indicador:
-    """
-    Obtém último indicador disponível.
-
-    Args:
-        produto: Nome do produto
-        praca: Praça específica (opcional)
-        offline: Se True, usa apenas histórico local
-
-    Returns:
-        Último Indicador disponível
-    """
     store = get_store()
     indicadores: list[Indicador] = []
 
@@ -441,7 +387,6 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
 
 
 def _to_dataframe(indicadores: list[Indicador]) -> pd.DataFrame:
-    """Converte lista de indicadores para DataFrame."""
     if not indicadores:
         return pd.DataFrame()
 

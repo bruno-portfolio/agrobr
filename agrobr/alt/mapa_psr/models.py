@@ -1,5 +1,3 @@
-"""Constantes e modelos Pydantic para MAPA PSR (seguro rural)."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -173,7 +171,6 @@ def _resolve_periodos(
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
 ) -> list[str]:
-    """Resolve range de anos para lista de chaves de CSV_RESOURCES."""
     if ano_inicio is None and ano_fim is None:
         return list(CSV_RESOURCES.keys())
 
@@ -198,7 +195,6 @@ def _resolve_periodos(
 
 
 def get_csv_url(periodo: str) -> str:
-    """Retorna URL completa do CSV para o periodo."""
     if periodo not in CSV_RESOURCES:
         raise ValueError(f"Periodo '{periodo}' invalido. Opcoes: {sorted(CSV_RESOURCES.keys())}")
     info = CSV_RESOURCES[periodo]
@@ -209,8 +205,6 @@ def get_csv_url(periodo: str) -> str:
 
 
 class ApoliceSeguroRural(BaseModel):
-    """Apolice de seguro rural com subvencao federal."""
-
     nr_apolice: str = ""
     ano_apolice: int
     uf: str = Field("", max_length=2)

@@ -4,7 +4,8 @@
   "parser_module": "agrobr.alt.mapa_psr.parser",
   "parser_functions": ["parse_apolices"],
   "url": "https://dados.agricultura.gov.br/dataset/sisser3",
-  "captured_at": "2026-02-17T18:00:00Z",
+  "captured_at": "2026-02-21T08:39:36Z",
+  "needs_real_data": false,
   "parser_version": 1,
-  "notes": "Synthetic PSR data - 5 apolices: 3 culturas (SOJA, MILHO, TRIGO), 4 UFs, mix sinistro/sem sinistro. Tests full apolice parsing."
+  "notes": "Real PSR 2006-2015 data (first 200KB, ~795 rows). Contains anos 2007-2008, 3 culturas, 7 UFs. PII columns (NM_SEGURADO, NR_DOCUMENTO_SEGURADO) are stripped by parser. Note: VALOR_INDENIZACAO column has encoding issues (accented A) and is not mapped by parser."
 }

@@ -1,5 +1,3 @@
-"""API publica do modulo ANTT Pedagio (fluxo em pracas de pedagio)."""
-
 from __future__ import annotations
 
 import time
@@ -35,36 +33,10 @@ async def fluxo_pedagio(
     apenas_pesados: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Fluxo mensal de veiculos em pracas de pedagio rodoviario.
-
-    Proxy de escoamento de safra: veiculos comerciais pesados (3+ eixos)
-    correlacionam com transporte de graos.
-
-    Dados abertos ANTT via portal CKAN (CC-BY), cobertura 2010+.
-
-    Args:
-        ano: Filtro de ano unico (ex: 2023). None = default.
-        ano_inicio: Ano inicial do range (inclusive).
-        ano_fim: Ano final do range (inclusive).
-        concessionaria: Filtro parcial de concessionaria (case-insensitive).
-        rodovia: Filtro exato de rodovia (ex: "BR-163"), enriquecido do cadastro.
-        uf: Filtro de UF (sigla, ex: "MT"), enriquecido do cadastro.
-        praca: Filtro parcial de praca (case-insensitive).
-        tipo_veiculo: Filtro de tipo ("Passeio", "Comercial", "Moto").
-        apenas_pesados: Se True, filtra n_eixos >= 3 AND tipo_veiculo == "Comercial".
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com fluxo de veiculos por praca/mes.
-
-    Raises:
-        ValueError: Se parametros invalidos.
-    """
     _validate_params(uf=uf, ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim)
 
     anos = _resolve_anos(ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim)
 
-    # Fetch trafego + pracas
     t0 = time.monotonic()
     trafego_data = await client.fetch_trafego_anos(anos)
 
@@ -76,7 +48,6 @@ async def fluxo_pedagio(
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
-    # Parse
     t1 = time.monotonic()
     dfs: list[pd.DataFrame] = []
     for ano_val, content in trafego_data:
@@ -85,7 +56,6 @@ async def fluxo_pedagio(
 
     df_out = pd.DataFrame(columns=COLUNAS_FLUXO) if not dfs else pd.concat(dfs, ignore_index=True)
 
-    # Parse and join pracas
     if pracas_raw:
         try:
             df_pracas = parser.parse_pracas(pracas_raw)
@@ -100,7 +70,6 @@ async def fluxo_pedagio(
             if col not in df_out.columns:
                 df_out[col] = None
 
-    # Apply filters
     if concessionaria and "concessionaria" in df_out.columns:
         mask = df_out["concessionaria"].str.contains(concessionaria, case=False, na=False)
         df_out = df_out[mask].copy()
@@ -123,7 +92,6 @@ async def fluxo_pedagio(
         mask = (df_out["n_eixos"] >= 3) & (df_out["tipo_veiculo"] == "Comercial")
         df_out = df_out[mask].copy()
 
-    # Ensure final columns
     final_cols = [c for c in COLUNAS_FLUXO if c in df_out.columns]
     df_out = df_out[final_cols].copy()
 
@@ -160,22 +128,6 @@ async def pracas_pedagio(
     situacao: str | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Cadastro georreferenciado de pracas de pedagio.
-
-    Dados abertos ANTT via portal CKAN (CC-BY).
-
-    Args:
-        uf: Filtro de UF (sigla, ex: "SP").
-        rodovia: Filtro de rodovia (ex: "BR-163").
-        situacao: Filtro de situacao (ex: "Ativa").
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com cadastro de pracas.
-
-    Raises:
-        ValueError: Se parametros invalidos.
-    """
     if uf and uf.upper() not in UFS_VALIDAS:
         raise ValueError(f"UF '{uf}' invalida. Opcoes: {sorted(UFS_VALIDAS)}")
 
@@ -227,7 +179,6 @@ def _validate_params(
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
 ) -> None:
-    """Valida parametros comuns."""
     if uf and uf.upper() not in UFS_VALIDAS:
         raise ValueError(f"UF '{uf}' invalida. Opcoes: {sorted(UFS_VALIDAS)}")
 

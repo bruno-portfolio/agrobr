@@ -15,17 +15,6 @@ PARSER_VERSION = 1
 
 
 def parse_focos_csv(data: bytes) -> pd.DataFrame:
-    """Parseia CSV de focos de calor do INPE.
-
-    Args:
-        data: Bytes do CSV.
-
-    Returns:
-        DataFrame com colunas padronizadas.
-
-    Raises:
-        ParseError: Se parsing falhar.
-    """
     dtype_map: dict[str, str | type[str] | type[float]] = {
         "id": str,
         "lat": float,

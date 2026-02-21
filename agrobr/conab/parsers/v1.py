@@ -1,5 +1,3 @@
-"""Parser v1 para planilhas XLSX da CONAB."""
-
 from __future__ import annotations
 
 from datetime import date
@@ -18,8 +16,6 @@ logger = structlog.get_logger()
 
 
 class ConabParserV1:
-    """Parser para planilhas XLSX de safras da CONAB."""
-
     version: int = 1
     source: str = "conab"
     valid_from: date = date(2020, 1, 1)
@@ -32,21 +28,6 @@ class ConabParserV1:
         safra_ref: str | None = None,
         levantamento: int | None = None,
     ) -> list[Safra]:
-        """
-        Extrai dados de safra por produto.
-
-        Args:
-            xlsx: BytesIO com arquivo XLSX
-            produto: Nome do produto (soja, milho, etc)
-            safra_ref: Safra de referência (ex: "2025/26")
-            levantamento: Número do levantamento
-
-        Returns:
-            Lista de objetos Safra por UF
-
-        Raises:
-            ParseError: Se não conseguir parsear os dados
-        """
         sheet_name = constants.CONAB_PRODUTOS.get(produto.lower())
         if not sheet_name:
             raise ParseError(
@@ -152,16 +133,6 @@ class ConabParserV1:
         xlsx: BytesIO,
         produto: str | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Extrai dados de balanço de oferta/demanda.
-
-        Args:
-            xlsx: BytesIO com arquivo XLSX
-            produto: Filtrar por produto (opcional)
-
-        Returns:
-            Lista de dicts com dados de suprimento
-        """
         if produto and produto.lower() in self._SUPRIMENTO_SEPARATE_SHEETS:
             sheet_name = self._SUPRIMENTO_SEPARATE_SHEETS[produto.lower()]
             try:
@@ -375,16 +346,6 @@ class ConabParserV1:
         xlsx: BytesIO,
         safra_ref: str | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Extrai dados totais do Brasil por produto.
-
-        Args:
-            xlsx: BytesIO com arquivo XLSX
-            safra_ref: Safra de referência (opcional)
-
-        Returns:
-            Lista de dicts com totais por produto
-        """
         try:
             df = pd.read_excel(xlsx, sheet_name="Brasil - Total por Produto", header=None)
         except Exception as e:
@@ -433,7 +394,6 @@ class ConabParserV1:
         return totais
 
     def _find_header_row(self, df: pd.DataFrame) -> int | None:
-        """Encontra a linha do header."""
         for idx, row in df.iterrows():
             cell0 = str(row.iloc[0]).upper() if pd.notna(row.iloc[0]) else ""
             if "REGI" in cell0 or "UF" in cell0 or "PRODUTO" in cell0:
@@ -445,12 +405,6 @@ class ConabParserV1:
         df: pd.DataFrame,
         header_row: int,
     ) -> dict[str, dict[str, int]]:
-        """
-        Extrai mapeamento de safras para colunas.
-
-        Returns:
-            Dict com safra -> {area: col, produtividade: col, producao: col}
-        """
         safra_row = df.iloc[header_row + 1]
         header_cols = df.iloc[header_row]
         cols = {}
@@ -519,7 +473,6 @@ class ConabParserV1:
         return cols
 
     def _parse_decimal(self, value: Any) -> Decimal | None:
-        """Converte valor para Decimal."""
         if pd.isna(value):
             return None
 

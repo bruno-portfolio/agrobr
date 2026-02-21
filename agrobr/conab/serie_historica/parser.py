@@ -1,18 +1,3 @@
-"""Parser para planilhas de serie historica CONAB.
-
-Converte Excel (.xls) com dados historicos de safras em DataFrames
-estruturados. Cada arquivo cobre 1 produto com 3 abas/metricas:
-area plantada (mil ha), producao (mil ton), produtividade (kg/ha).
-
-Layout tipico CONAB serie historica:
-    - Linhas 1-4: titulo/metadata
-    - Linha de cabecalho: Regiao/UF | safra1 | safra2 | ... | safraN
-    - Linhas de dados: regioes (NORTE, NORDESTE, etc.) e UFs
-    - Pode ter linhas de total (BRASIL ou TOTAL)
-
-PARSER_VERSION incrementa quando o layout CONAB mudar ou o parser for corrigido.
-"""
-
 from __future__ import annotations
 
 import re
@@ -46,7 +31,6 @@ SHEET_METRIC_MAP: dict[str, str] = {
 
 
 def _strip_accents(text: str) -> str:
-    """Remove acentos de texto para matching robusto."""
     import unicodedata
 
     nfkd = unicodedata.normalize("NFKD", text)
@@ -54,11 +38,6 @@ def _strip_accents(text: str) -> str:
 
 
 def _detect_metric_from_sheet_name(name: str) -> str | None:
-    """Detecta metrica a partir do nome da aba.
-
-    Usa matching sem acentos para robustez contra encoding
-    issues (comum com .xls lido por openpyxl/xlrd).
-    """
     lower = _strip_accents(name).lower().strip()
     for key, metric in SHEET_METRIC_MAP.items():
         key_clean = _strip_accents(key)
@@ -68,11 +47,6 @@ def _detect_metric_from_sheet_name(name: str) -> str | None:
 
 
 def _find_header_row(df_raw: pd.DataFrame) -> int:
-    """Encontra a linha de cabecalho com nomes de safra.
-
-    Procura por linhas que contenham padroes de safra (ex: '2023/24')
-    ou anos (ex: '2023').
-    """
     for idx in range(min(20, len(df_raw))):
         row_values = [str(v).strip() for v in df_raw.iloc[idx] if pd.notna(v)]
         safra_count = sum(
@@ -89,11 +63,6 @@ def _find_header_row(df_raw: pd.DataFrame) -> int:
 
 
 def _normalize_safra_header(value: str) -> str | None:
-    """Normaliza texto de cabecalho de safra.
-
-    Aceita: '2023/24', '2023/2024', '23/24', '2023'.
-    Retorna: '2023/24' ou None se nao reconhecer.
-    """
     value = str(value).strip()
 
     match = re.match(r"(\d{4})/(\d{4})$", value)
@@ -120,11 +89,6 @@ def _normalize_safra_header(value: str) -> str | None:
 
 
 def _classify_row(label: str) -> tuple[str, str | None, str | None]:
-    """Classifica uma linha como regiao, UF, ou brasil.
-
-    Returns:
-        Tupla (tipo, regiao, uf) onde tipo = 'uf'|'regiao'|'brasil'|'unknown'.
-    """
     upper = label.upper().strip()
 
     if upper in _BRASIL_LABELS:
@@ -151,7 +115,6 @@ def _classify_row(label: str) -> tuple[str, str | None, str | None]:
 
 
 def _safe_float(value: Any) -> float | None:
-    """Converte valor para float, retornando None para invalidos."""
     if value is None or (isinstance(value, float) and pd.isna(value)):
         return None
     if isinstance(value, (int, float)):
@@ -186,19 +149,6 @@ def parse_sheet(
     fim: int | None = None,
     uf_filter: str | None = None,
 ) -> list[SafraHistorica]:
-    """Parseia uma aba (sheet) do Excel de serie historica.
-
-    Args:
-        df_raw: DataFrame lido cru do Excel (sem header).
-        produto: Nome normalizado do produto.
-        metric_field: Campo da metrica ('area_plantada_mil_ha', etc.).
-        inicio: Ano minimo de safra (inclusive).
-        fim: Ano maximo de safra (inclusive).
-        uf_filter: Filtrar por UF especifica.
-
-    Returns:
-        Lista de SafraHistorica.
-    """
     produto_norm = normalize_produto(produto)
 
     header_idx = _find_header_row(df_raw)
@@ -280,24 +230,6 @@ def parse_serie_historica(
     fim: int | None = None,
     uf: str | None = None,
 ) -> list[SafraHistorica]:
-    """Parseia arquivo Excel completo de serie historica CONAB.
-
-    Le todas as abas (area, producao, produtividade) e combina
-    os registros em uma lista unificada.
-
-    Args:
-        xls: BytesIO com conteudo do arquivo Excel.
-        produto: Nome do produto (ex: 'soja').
-        inicio: Ano minimo de safra.
-        fim: Ano maximo de safra.
-        uf: Filtrar por UF.
-
-    Returns:
-        Lista de SafraHistorica com campos preenchidos conforme disponibilidade.
-
-    Raises:
-        ParseError: Se o arquivo nao puder ser parseado.
-    """
     produto_norm = normalize_produto(produto)
 
     try:
@@ -400,12 +332,6 @@ def parse_serie_historica(
 
 
 def records_to_dataframe(records: list[SafraHistorica]) -> pd.DataFrame:
-    """Converte lista de SafraHistorica para DataFrame.
-
-    Returns:
-        DataFrame com colunas: produto, safra, regiao, uf,
-        area_plantada_mil_ha, producao_mil_ton, produtividade_kg_ha.
-    """
     if not records:
         return pd.DataFrame()
 

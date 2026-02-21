@@ -80,8 +80,9 @@ class TestDeralHTTPErrors:
 
     @pytest.mark.asyncio
     async def test_http_429_retries_then_succeeds(self):
+        ok_content = b"x" * 1500
         resp_429 = _mock_response(429)
-        resp_ok = _mock_response(200, b"data")
+        resp_ok = _mock_response(200, ok_content)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(side_effect=[resp_429, resp_ok])
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -93,7 +94,7 @@ class TestDeralHTTPErrors:
         ):
             result = await client._fetch_bytes("https://test.pr.gov.br/PC.xls")
 
-        assert result == b"data"
+        assert result == ok_content
 
     @pytest.mark.asyncio
     async def test_http_403_raises_via_raise_for_status(self):
@@ -112,17 +113,18 @@ class TestDeralHTTPErrors:
 
 class TestDeralEmptyResponse:
     @pytest.mark.asyncio
-    async def test_empty_content_returns_empty_bytes(self):
+    async def test_empty_content_raises_source_unavailable(self):
         resp = _mock_response(200, b"")
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("agrobr.deral.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client._fetch_bytes("https://test.pr.gov.br/PC.xls")
-
-        assert result == b""
+        with (
+            patch("agrobr.deral.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="too small"),
+        ):
+            await client._fetch_bytes("https://test.pr.gov.br/PC.xls")
 
 
 class TestDeralRetryBackoff:

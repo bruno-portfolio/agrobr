@@ -9,7 +9,7 @@ import pytest
 
 from agrobr.alt.mapa_psr import client
 
-FAKE_CSV_BYTES = b"ANO_APOLICE;SG_UF_PROPRIEDADE;NM_CULTURA_GLOBAL\n2023;MT;SOJA\n"
+FAKE_CSV_BYTES = b"ANO_APOLICE;SG_UF_PROPRIEDADE;NM_CULTURA_GLOBAL\n" + b"2023;MT;SOJA\n" * 10
 
 
 def _mock_response(status_code=200, content=FAKE_CSV_BYTES):
@@ -51,7 +51,7 @@ class TestDownloadCsv:
     @pytest.mark.asyncio
     @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
     async def test_download_retorna_bytes(self, mock_retry):
-        content = b"header\nrow1\nrow2\n"
+        content = b"header;col2\n" + b"row1;val1\n" * 15
         mock_retry.return_value = _mock_response(200, content)
         result = await client.download_csv("https://example.com/data.csv")
         assert isinstance(result, bytes)

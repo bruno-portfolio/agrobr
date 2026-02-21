@@ -1,7 +1,3 @@
-"""
-Geração de relatórios de health check.
-"""
-
 from __future__ import annotations
 
 import json
@@ -18,8 +14,6 @@ logger = structlog.get_logger()
 
 
 class HealthReport:
-    """Relatório consolidado de health checks."""
-
     def __init__(self, results: list[CheckResult]):
         self.results = results
         self.timestamp = datetime.utcnow()
@@ -27,13 +21,11 @@ class HealthReport:
 
     @property
     def summary(self) -> dict[str, Any]:
-        """Resumo do relatório."""
         if self._summary is None:
             self._summary = self._calculate_summary()
         return self._summary
 
     def _calculate_summary(self) -> dict[str, Any]:
-        """Calcula estatísticas do relatório."""
         total = len(self.results)
         ok_count = sum(1 for r in self.results if r.status == CheckStatus.OK)
         warning_count = sum(1 for r in self.results if r.status == CheckStatus.WARNING)
@@ -54,21 +46,17 @@ class HealthReport:
 
     @property
     def all_passed(self) -> bool:
-        """Retorna True se todos os checks passaram."""
         return bool(self.summary["all_passed"])
 
     @property
     def failures(self) -> list[CheckResult]:
-        """Retorna lista de checks que falharam."""
         return [r for r in self.results if r.status == CheckStatus.FAILED]
 
     @property
     def warnings(self) -> list[CheckResult]:
-        """Retorna lista de checks com warning."""
         return [r for r in self.results if r.status == CheckStatus.WARNING]
 
     def to_dict(self) -> dict[str, Any]:
-        """Converte relatório para dicionário."""
         return {
             "timestamp": self.timestamp.isoformat() + "Z",
             "summary": self.summary,
@@ -86,17 +74,9 @@ class HealthReport:
         }
 
     def to_json(self, indent: int = 2) -> str:
-        """Converte relatório para JSON."""
         return json.dumps(self.to_dict(), indent=indent, default=str)
 
     def save(self, path: str | Path, format: str = "json") -> None:
-        """
-        Salva relatório em arquivo.
-
-        Args:
-            path: Caminho do arquivo
-            format: Formato ('json', 'html', 'md')
-        """
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -112,7 +92,6 @@ class HealthReport:
         logger.info("health_report_saved", path=str(path), format=format)
 
     def to_markdown(self) -> str:
-        """Converte relatório para Markdown."""
         lines = [
             "# Health Check Report",
             "",
@@ -170,7 +149,6 @@ class HealthReport:
         return "\n".join(lines)
 
     def to_html(self) -> str:
-        """Converte relatório para HTML."""
         status_colors = {
             CheckStatus.OK: "#28a745",
             CheckStatus.WARNING: "#ffc107",
@@ -254,7 +232,6 @@ class HealthReport:
 """
 
     def print_summary(self) -> None:
-        """Imprime resumo no console."""
         print("\n" + "=" * 60)
         print("HEALTH CHECK REPORT")
         print("=" * 60)
@@ -290,17 +267,6 @@ async def generate_report(
     save_path: str | Path | None = None,
     format: str = "json",
 ) -> HealthReport:
-    """
-    Gera relatório de health check.
-
-    Args:
-        sources: Fontes a verificar (todas se None)
-        save_path: Caminho para salvar (opcional)
-        format: Formato do arquivo
-
-    Returns:
-        HealthReport
-    """
     results = await run_all_checks()
 
     if sources:

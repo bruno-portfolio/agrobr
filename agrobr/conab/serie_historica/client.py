@@ -1,14 +1,3 @@
-"""Cliente HTTP para download de planilhas de serie historica CONAB.
-
-A CONAB publica planilhas Excel (.xls) com dados historicos de safras
-(area plantada, producao, produtividade) por UF e regiao desde ~1976.
-
-URL pattern gov.br:
-    {BASE}/series-historicas/{categoria}/{subcategoria}/{filename}/view
-
-Fonte: https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas
-"""
-
 from __future__ import annotations
 
 from io import BytesIO
@@ -28,10 +17,7 @@ SERIES_HISTORICAS_URL = (
     f"{BASE_URL}/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas"
 )
 
-# Mapeamento: produto -> (categoria, subcategoria, filename)
-# URL final: {SERIES_HISTORICAS_URL}/{categoria}/{subcategoria}/{filename}/view
 _PRODUCT_REGISTRY: dict[str, tuple[str, str, str]] = {
-    # --- GRAOS ---
     "soja": ("graos", "soja", "sojaseriehist.xls"),
     "milho": ("graos", "milho", "milhototalseriehist.xls"),
     "milho_1": ("graos", "milho", "milho1aseriehist.xls"),
@@ -58,11 +44,9 @@ _PRODUCT_REGISTRY: dict[str, tuple[str, str, str]] = {
     "centeio": ("graos", "centeio", "centeioseriehist.xls"),
     "triticale": ("graos", "triticale", "triticaleseriehist.xls"),
     "gergelim": ("graos", "girassol", "gergelimseriehist.xls"),
-    # --- CAFE ---
     "cafe": ("cafe", "total-arabica-e-conilon", "cafetotalseriehist.xls"),
     "cafe_arabica": ("cafe", "arabica", "cafearabicaseriehist.xls"),
     "cafe_conilon": ("cafe", "conilon", "cafeconilonseriehist.xls"),
-    # --- CANA-DE-ACUCAR ---
     "cana": ("cana-de-acucar", "agricola", "canaseriehist-agricola.xls"),
     "cana_area_total": ("cana-de-acucar", "area-total", "canaseriehist-area-total.xls"),
     "cana_industria": ("cana-de-acucar", "industria", "canaseriehist-industria.xls"),
@@ -92,17 +76,6 @@ HEADERS = {
 
 
 def get_xls_url(produto: str) -> str:
-    """Constroi URL de download para produto especifico.
-
-    Args:
-        produto: Chave normalizada do produto (ex: 'soja', 'milho_2').
-
-    Returns:
-        URL completa do arquivo .xls no gov.br.
-
-    Raises:
-        SourceUnavailableError: Se produto nao for reconhecido.
-    """
     produto_lower = produto.lower().strip()
 
     if produto_lower not in _PRODUCT_REGISTRY:
@@ -118,11 +91,6 @@ def get_xls_url(produto: str) -> str:
 
 
 def list_produtos() -> list[dict[str, str]]:
-    """Lista todos os produtos disponiveis para serie historica.
-
-    Returns:
-        Lista de dicts com chaves: produto, categoria, url.
-    """
     result = []
     for prod in sorted(_PRODUCT_REGISTRY.keys()):
         categoria, _, _ = _PRODUCT_REGISTRY[prod]
@@ -137,17 +105,6 @@ def list_produtos() -> list[dict[str, str]]:
 
 
 async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
-    """Baixa arquivo Excel de serie historica para um produto.
-
-    Args:
-        produto: Chave normalizada do produto (ex: 'soja', 'cafe').
-
-    Returns:
-        Tupla (BytesIO com conteudo Excel, metadata dict).
-
-    Raises:
-        SourceUnavailableError: Se nao conseguir baixar.
-    """
     from agrobr.http.retry import retry_on_status
 
     url = get_xls_url(produto)
@@ -189,17 +146,6 @@ async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
 
 
 async def fetch_series_page(categoria: str = "graos") -> str:
-    """Busca HTML da pagina de series historicas para listar arquivos.
-
-    Args:
-        categoria: Categoria a buscar ('graos', 'cafe', 'cana-de-acucar').
-
-    Returns:
-        HTML da pagina.
-
-    Raises:
-        SourceUnavailableError: Se a pagina nao estiver acessivel.
-    """
     url = f"{SERIES_HISTORICAS_URL}/{categoria}"
 
     async with httpx.AsyncClient(
@@ -225,17 +171,6 @@ async def fetch_series_page(categoria: str = "graos") -> str:
 
 
 def parse_xls_links_from_html(html: str) -> list[dict[str, str]]:
-    """Extrai links de planilhas .xls da pagina HTML.
-
-    Usado como fallback para descobrir URLs caso a CONAB mude nomes
-    de arquivo.
-
-    Args:
-        html: HTML da pagina de series historicas.
-
-    Returns:
-        Lista de dicts com chaves: url, titulo.
-    """
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(html, "lxml")

@@ -6,8 +6,8 @@
   "parser_kwargs": {"reporter_iso": "BRA", "partner_iso": "CHN"},
   "url_reporter": "https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=76&partnerCode=156&cmdCode=1201&flowCode=X&period=2024",
   "url_partner": "https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=156&partnerCode=76&cmdCode=1201&flowCode=M&period=2024",
-  "captured_at": "2026-02-17T12:00:00Z",
+  "captured_at": "2026-02-21T08:38:35Z",
   "parser_version": 1,
-  "notes": "Trade mirror: BR soja exports (FOB) vs CN soja imports (CIF). Synthetic data based on documented API schema.",
-  "needs_real_data": true
+  "notes": "Real data captured from Comtrade API. Trade mirror: BR soja exports (FOB) vs CN soja imports (CIF), annual 2024.",
+  "needs_real_data": false
 }

@@ -1,5 +1,3 @@
-"""Wrappers síncronos para APIs async do agrobr."""
-
 from __future__ import annotations
 
 import asyncio
@@ -11,11 +9,6 @@ T = TypeVar("T")
 
 
 def _get_or_create_event_loop() -> asyncio.AbstractEventLoop:
-    """
-    Trata casos especiais:
-    - Jupyter notebooks (loop já rodando)
-    - Threads secundárias (sem loop default)
-    """
     try:
         loop = asyncio.get_running_loop()
         try:
@@ -38,15 +31,6 @@ def _get_or_create_event_loop() -> asyncio.AbstractEventLoop:
 
 
 def run_sync(coro: Awaitable[T]) -> T:
-    """
-    Executa coroutine de forma síncrona.
-
-    Args:
-        coro: Coroutine a executar
-
-    Returns:
-        Resultado da coroutine
-    """
     loop = _get_or_create_event_loop()
 
     if loop.is_running():
@@ -59,18 +43,6 @@ def run_sync(coro: Awaitable[T]) -> T:
 
 
 def sync_wrapper(async_func: Callable[..., Awaitable[T]]) -> Callable[..., T]:
-    """
-    Decorator que cria versão síncrona de função async.
-
-    Usage:
-        @sync_wrapper
-        async def fetch_data():
-            ...
-
-        # Agora pode chamar:
-        fetch_data()  # Síncrono
-    """
-
     @functools.wraps(async_func)
     def wrapper(*args: Any, **kwargs: Any) -> T:
         return run_sync(async_func(*args, **kwargs))
@@ -82,8 +54,6 @@ def sync_wrapper(async_func: Callable[..., Awaitable[T]]) -> Callable[..., T]:
 
 
 class _SyncModule:
-    """Módulo que expõe versões síncronas da API."""
-
     def __init__(self, async_module: Any) -> None:
         self._async_module = async_module
 
@@ -97,32 +67,22 @@ class _SyncModule:
 
 
 class _SyncAnpDiesel(_SyncModule):
-    """API sincrona da ANP Diesel."""
-
     pass
 
 
 class _SyncMapaPsr(_SyncModule):
-    """API sincrona do MAPA PSR."""
-
     pass
 
 
 class _SyncAnttPedagio(_SyncModule):
-    """API sincrona da ANTT Pedagio."""
-
     pass
 
 
 class _SyncSicar(_SyncModule):
-    """API sincrona do SICAR."""
-
     pass
 
 
 class _SyncAlt:
-    """Container sincrono para fontes alt data."""
-
     def __init__(self) -> None:
         self._modules: dict[str, _SyncModule | None] = {
             "anp_diesel": None,
@@ -154,116 +114,78 @@ class _SyncAlt:
 
 
 class _SyncAbiove(_SyncModule):
-    """API síncrona da ABIOVE."""
-
     pass
 
 
 class _SyncCepea(_SyncModule):
-    """API síncrona do CEPEA."""
-
     pass
 
 
 class _SyncConab(_SyncModule):
-    """API síncrona da CONAB."""
-
     pass
 
 
 class _SyncDeral(_SyncModule):
-    """API síncrona do DERAL."""
-
     pass
 
 
 class _SyncIbge(_SyncModule):
-    """API síncrona do IBGE."""
-
     pass
 
 
 class _SyncDatasets(_SyncModule):
-    """API síncrona dos datasets."""
-
     pass
 
 
 class _SyncImea(_SyncModule):
-    """API síncrona do IMEA."""
-
     pass
 
 
 class _SyncInmet(_SyncModule):
-    """API síncrona do INMET."""
-
     pass
 
 
 class _SyncBcb(_SyncModule):
-    """API síncrona do BCB/SICOR."""
-
     pass
 
 
 class _SyncComexstat(_SyncModule):
-    """API síncrona do ComexStat."""
-
     pass
 
 
 class _SyncAnda(_SyncModule):
-    """API síncrona da ANDA."""
-
     pass
 
 
 class _SyncAntaq(_SyncModule):
-    """API síncrona da ANTAQ."""
-
     pass
 
 
 class _SyncNasaPower(_SyncModule):
-    """API síncrona do NASA POWER."""
-
     pass
 
 
 class _SyncDesmatamento(_SyncModule):
-    """API síncrona do Desmatamento PRODES/DETER."""
-
     pass
 
 
 class _SyncQueimadas(_SyncModule):
-    """API síncrona do Queimadas/INPE."""
-
     pass
 
 
 class _SyncUsda(_SyncModule):
-    """API síncrona do USDA."""
-
     pass
 
 
 class _SyncB3(_SyncModule):
-    """API síncrona da B3."""
-
     pass
 
 
 class _SyncComtrade(_SyncModule):
-    """API síncrona do UN Comtrade."""
-
     pass
 
 
 class _SyncMapBiomas(_SyncModule):
-    """API síncrona do MapBiomas."""
-
     pass
 
 
@@ -311,12 +233,10 @@ _MODULE_CLASSES: dict[str, type[_SyncModule]] = {
     "usda": _SyncUsda,
 }
 
-
 _alt_instance: _SyncAlt | None = None
 
 
 def __getattr__(name: str) -> Any:
-    """Lazy loading para evitar imports circulares."""
     global _alt_instance
 
     if name == "alt":

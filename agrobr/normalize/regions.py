@@ -1,7 +1,3 @@
-"""
-Padronização de regiões, UFs e municípios brasileiros.
-"""
-
 from __future__ import annotations
 
 import re
@@ -90,23 +86,6 @@ NOMES_PARA_UF: dict[str, str] = {
 
 
 def normalizar_uf(entrada: str) -> str | None:
-    """
-    Normaliza entrada para sigla UF.
-
-    Args:
-        entrada: Sigla ou nome do estado
-
-    Returns:
-        Sigla UF ou None se não encontrado
-
-    Examples:
-        >>> normalizar_uf('mato grosso')
-        'MT'
-        >>> normalizar_uf('SP')
-        'SP'
-        >>> normalizar_uf('são paulo')
-        'SP'
-    """
     entrada_norm = remover_acentos(entrada.strip().lower())
 
     if entrada_norm.upper() in UFS:
@@ -152,17 +131,6 @@ def listar_regioes() -> list[str]:
 
 
 def normalizar_municipio(nome: str) -> str:
-    """
-    Normaliza nome de município.
-
-    Remove acentos, converte para title case, trata casos especiais.
-
-    Args:
-        nome: Nome do município
-
-    Returns:
-        Nome normalizado
-    """
     nome = nome.strip()
 
     nome = re.sub(r"\s+", " ", nome)
@@ -182,15 +150,6 @@ def normalizar_municipio(nome: str) -> str:
 
 
 def extrair_uf_municipio(texto: str) -> tuple[str | None, str | None]:
-    """
-    Extrai UF e município de texto no formato "Município - UF" ou "Município/UF".
-
-    Args:
-        texto: Texto com município e UF
-
-    Returns:
-        Tupla (uf, municipio) ou (None, None) se não identificado
-    """
     padrao = re.compile(r"^(.+?)[\s]*[-/][\s]*([A-Za-z]{2})$")
     match = padrao.match(texto.strip())
 
@@ -203,12 +162,10 @@ def extrair_uf_municipio(texto: str) -> tuple[str | None, str | None]:
 
 
 def validar_uf(uf: str) -> bool:
-    """Verifica se UF é válida."""
     return uf.upper() in UFS
 
 
 def validar_regiao(regiao: str) -> bool:
-    """Verifica se região é válida."""
     return regiao in REGIOES
 
 
@@ -237,16 +194,6 @@ PRACAS_CEPEA: dict[str, dict[str, str]] = {
 
 
 def normalizar_praca(praca: str, produto: str | None = None) -> str:
-    """
-    Normaliza nome de praça de comercialização.
-
-    Args:
-        praca: Nome da praça
-        produto: Produto (para contexto)
-
-    Returns:
-        Nome normalizado
-    """
     praca_norm = remover_acentos(praca.lower().strip())
 
     if produto and produto.lower() in PRACAS_CEPEA:

@@ -86,10 +86,10 @@ class TestFocos:
             new_callable=AsyncMock,
             return_value=(csv_bytes, "https://example.com/focos.csv"),
         ):
-            df = await api.focos(ano=2024, mes=9, satelite="AQUA_M-T")
+            df = await api.focos(ano=2024, mes=9, satelite="GOES-16")
 
         assert len(df) >= 1
-        assert (df["satelite"] == "AQUA_M-T").all()
+        assert (df["satelite"] == "GOES-16").all()
 
     @pytest.mark.asyncio
     async def test_dia_uses_diario_fetch(self):

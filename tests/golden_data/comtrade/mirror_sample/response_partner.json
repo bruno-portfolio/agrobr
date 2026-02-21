@@ -1,6 +1,4 @@
 {
-  "elapsedTime": "0.38s",
-  "count": 1,
   "data": [
     {
       "typeCode": "C",
@@ -20,7 +18,7 @@
       "partner2Code": 0,
       "partner2ISO": "W00",
       "partner2Desc": "World",
-      "classificationCode": "HS",
+      "classificationCode": "H6",
       "classificationSearchCode": "HS",
       "isOriginalClassification": true,
       "cmdCode": "1201",
@@ -31,21 +29,25 @@
       "customsDesc": "TOTAL CPC",
       "mosCode": "0",
       "motCode": 0,
-      "motDesc": "Total all MoT",
-      "qty": 74850000.0,
+      "motDesc": "TOTAL MOT",
       "qtyUnitCode": 8,
       "qtyUnitAbbr": "kg",
-      "altQty": null,
-      "altQtyUnitCode": null,
-      "altQtyUnitAbbr": null,
-      "netWgt": 74850000000.0,
-      "grossWgt": 75000000000.0,
-      "cifvalue": 37200000000.0,
-      "fobvalue": 33480000000.0,
-      "primaryValue": 37200000000.0,
+      "qty": 74647380005.0,
+      "isQtyEstimated": false,
+      "altQtyUnitCode": 8,
+      "altQtyUnitAbbr": "kg",
+      "altQty": 74647380005.0,
+      "isAltQtyEstimated": false,
+      "netWgt": 74647380005.0,
+      "isNetWgtEstimated": false,
+      "grossWgt": 0.0,
+      "isGrossWgtEstimated": false,
+      "cifvalue": 36455784932.0,
+      "fobvalue": null,
+      "primaryValue": 36455784932.0,
       "legacyEstimationFlag": 0,
-      "isReported": 1,
-      "isAggregate": 0
+      "isReported": false,
+      "isAggregate": true
     }
   ]
 }

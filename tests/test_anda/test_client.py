@@ -134,17 +134,18 @@ class TestAndaConnectError:
 
 class TestAndaEmptyResponse:
     @pytest.mark.asyncio
-    async def test_empty_html_returns_empty_string(self):
+    async def test_empty_html_raises_source_unavailable(self):
         resp = _mock_response(200, text="")
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client.fetch_estatisticas_page()
-
-        assert result == ""
+        with (
+            patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="too small"),
+        ):
+            await client.fetch_estatisticas_page()
 
     def test_parse_links_empty_html(self):
         links = client.parse_links_from_html("")

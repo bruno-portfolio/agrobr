@@ -1,5 +1,3 @@
-"""Validacao semantica avancada para dados agricolas."""
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -14,8 +12,6 @@ logger = structlog.get_logger()
 
 @dataclass
 class ValidationResult:
-    """Resultado de uma validacao."""
-
     rule_name: str
     severity: str
     passed: bool
@@ -25,22 +21,17 @@ class ValidationResult:
 
 @dataclass
 class SemanticRule(ABC):
-    """Regra de validacao semantica base."""
-
     name: str
     description: str
     severity: str = "warning"
 
     @abstractmethod
     def check(self, df: pd.DataFrame, **kwargs: Any) -> list[ValidationResult]:
-        """Executa verificacao. Retorna lista de resultados."""
         pass
 
 
 @dataclass
 class PricePositiveRule(SemanticRule):
-    """Preco deve ser positivo."""
-
     name: str = "price_positive"
     description: str = "Prices must be positive"
     severity: str = "error"
@@ -81,8 +72,6 @@ class PricePositiveRule(SemanticRule):
 
 @dataclass
 class ProductivityRangeRule(SemanticRule):
-    """Produtividade deve estar em faixa razoavel."""
-
     name: str = "productivity_range"
     description: str = "Productivity must be within historical range"
     severity: str = "warning"
@@ -147,8 +136,6 @@ class ProductivityRangeRule(SemanticRule):
 
 @dataclass
 class DailyVariationRule(SemanticRule):
-    """Variacao diaria nao deve ser extrema."""
-
     name: str = "daily_variation"
     description: str = "Daily variation should not exceed threshold"
     severity: str = "warning"
@@ -196,8 +183,6 @@ class DailyVariationRule(SemanticRule):
 
 @dataclass
 class DateSequenceRule(SemanticRule):
-    """Datas devem estar em sequencia logica."""
-
     name: str = "date_sequence"
     description: str = "Dates should be in logical sequence"
     severity: str = "warning"
@@ -245,8 +230,6 @@ class DateSequenceRule(SemanticRule):
 
 @dataclass
 class AreaConsistencyRule(SemanticRule):
-    """Area colhida nao pode ser maior que area plantada."""
-
     name: str = "area_consistency"
     description: str = "Harvested area cannot exceed planted area"
     severity: str = "error"
@@ -291,8 +274,6 @@ class AreaConsistencyRule(SemanticRule):
 
 @dataclass
 class SafraFormatRule(SemanticRule):
-    """Safra deve estar no formato correto YYYY/YY."""
-
     name: str = "safra_format"
     description: str = "Safra must match format YYYY/YY"
     severity: str = "error"
@@ -349,17 +330,6 @@ def validate_semantic(
     rules: list[SemanticRule] | None = None,
     fail_on_error: bool = False,
 ) -> tuple[bool, list[ValidationResult]]:
-    """
-    Valida DataFrame semanticamente.
-
-    Args:
-        df: DataFrame a validar
-        rules: Regras a aplicar (usa padrao se None)
-        fail_on_error: Se True, levanta excecao em erros
-
-    Returns:
-        Tupla (valido, lista de resultados)
-    """
     if rules is None:
         rules = DEFAULT_RULES
 
@@ -412,7 +382,6 @@ def validate_semantic(
 
 
 def get_validation_summary(results: list[ValidationResult]) -> dict[str, Any]:
-    """Gera resumo das validacoes."""
     total = len(results)
     passed = sum(1 for r in results if r.passed)
     failed = total - passed

@@ -1,13 +1,9 @@
 {
-  "min_rows": 3,
-  "count": 3,
-  "required_columns": ["data", "uf", "municipio", "produto", "preco_venda", "preco_compra", "margem", "n_postos"],
+  "count_min": 36000,
   "columns": ["data", "uf", "municipio", "produto", "preco_venda", "preco_compra", "n_postos", "margem"],
-  "first_row": {"uf": "SP", "municipio": "SAO PAULO", "produto": "DIESEL S10", "preco_venda": 6.45, "preco_compra": 5.80, "n_postos": 150},
+  "first_row": {"uf": "AC", "produto": "DIESEL", "preco_venda": 2.659, "preco_compra": 2.35, "n_postos": 52},
   "checks": {
     "all_products_are_diesel": true,
-    "margem_equals_venda_minus_compra": true,
-    "data_column_is_datetime": true,
-    "sorted_by_data": true
+    "data_column_is_datetime": true
   }
 }

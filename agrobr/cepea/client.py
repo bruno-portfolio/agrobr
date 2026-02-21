@@ -1,5 +1,3 @@
-"""Cliente HTTP async para CEPEA."""
-
 from __future__ import annotations
 
 import time
@@ -19,10 +17,8 @@ logger = structlog.get_logger()
 
 
 class FetchResult(NamedTuple):
-    """Resultado de fetch com identificação da fonte."""
-
     html: str
-    source: str  # "cepea", "browser", or "noticias_agricolas"
+    source: str
 
 
 _use_browser: bool = False
@@ -34,21 +30,18 @@ _CIRCUIT_RESET_SECONDS: float = 600.0
 
 
 def set_use_browser(enabled: bool) -> None:
-    """Habilita ou desabilita uso de browser para CEPEA."""
     global _use_browser
     _use_browser = enabled
     logger.info("cepea_browser_mode", enabled=enabled)
 
 
 def set_use_alternative_source(enabled: bool) -> None:
-    """Habilita ou desabilita uso de fonte alternativa (Notícias Agrícolas)."""
     global _use_alternative_source
     _use_alternative_source = enabled
     logger.info("cepea_alternative_source_mode", enabled=enabled)
 
 
 def _get_timeout() -> httpx.Timeout:
-    """Retorna configuração de timeout."""
     settings = constants.HTTPSettings()
     return httpx.Timeout(
         connect=settings.timeout_connect,
@@ -59,7 +52,6 @@ def _get_timeout() -> httpx.Timeout:
 
 
 def _is_circuit_open() -> bool:
-    """Verifica se o circuit breaker httpx→CEPEA está aberto."""
     global _httpx_circuit_open
     if not _httpx_circuit_open:
         return False
@@ -72,7 +64,6 @@ def _is_circuit_open() -> bool:
 
 
 def _open_circuit() -> None:
-    """Abre o circuit breaker após detectar Cloudflare."""
     global _httpx_circuit_open, _httpx_circuit_opened_at
     _httpx_circuit_open = True
     _httpx_circuit_opened_at = time.monotonic()
@@ -83,14 +74,12 @@ def _open_circuit() -> None:
 
 
 def _get_produto_url(produto: str) -> str:
-    """Retorna URL do indicador para o produto."""
     produto_key = constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
     base = constants.URLS[constants.Fonte.CEPEA]["indicadores"]
     return f"{base}/{produto_key}.aspx"
 
 
 async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> FetchResult:
-    """Tenta buscar com httpx (mais rápido, mas pode falhar com Cloudflare)."""
 
     async def _fetch() -> httpx.Response:
         async with (
@@ -134,7 +123,6 @@ async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> FetchResult:
 
 
 async def _fetch_with_browser(produto: str) -> FetchResult:
-    """Busca usando Playwright (contorna Cloudflare)."""
     from agrobr.http.browser import fetch_cepea_indicador
 
     logger.info("browser_fallback", source="cepea", produto=produto)
@@ -143,7 +131,6 @@ async def _fetch_with_browser(produto: str) -> FetchResult:
 
 
 async def _fetch_with_alternative_source(produto: str) -> FetchResult:
-    """Busca usando Notícias Agrícolas (fonte alternativa sem Cloudflare)."""
     from agrobr.noticias_agricolas.client import fetch_indicador_page as na_fetch
 
     logger.info(
@@ -161,25 +148,6 @@ async def fetch_indicador_page(
     force_browser: bool = False,
     force_alternative: bool = False,
 ) -> FetchResult:
-    """
-    Busca página de indicador do CEPEA.
-
-    Cadeia de fallback:
-    1. httpx direto (mais rápido)
-    2. Playwright browser (contorna Cloudflare básico)
-    3. Notícias Agrícolas (fonte alternativa sem Cloudflare)
-
-    Args:
-        produto: Nome do produto (soja, milho, cafe, boi, etc)
-        force_browser: Se True, pula httpx e usa browser diretamente
-        force_alternative: Se True, usa fonte alternativa diretamente
-
-    Returns:
-        FetchResult com HTML e identificação da fonte
-
-    Raises:
-        SourceUnavailableError: Se não conseguir acessar após todos os fallbacks
-    """
     if force_alternative:
         return await _fetch_with_alternative_source(produto)
 
@@ -249,16 +217,6 @@ async def fetch_indicador_page(
 
 
 async def fetch_series_historica(produto: str, anos: int = 5) -> str:
-    """
-    Busca série histórica do CEPEA.
-
-    Args:
-        produto: Nome do produto
-        anos: Quantidade de anos de histórico
-
-    Returns:
-        HTML da página de série histórica
-    """
     base = constants.URLS[constants.Fonte.CEPEA]["base"]
     url = f"{base}/br/consultas-ao-banco-de-dados-do-site.aspx"
 
@@ -306,5 +264,14 @@ async def fetch_series_historica(produto: str, anos: int = 5) -> str:
         declared_encoding=declared_encoding,
         source="cepea",
     )
+
+    if len(html) < 5_000:
+        raise SourceUnavailableError(
+            source="cepea",
+            url=url,
+            last_error=(
+                f"Serie historica response too small ({len(html)} bytes), expected page content"
+            ),
+        )
 
     return html

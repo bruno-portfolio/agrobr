@@ -1,5 +1,3 @@
-"""API pública do sub-módulo custo de produção CONAB."""
-
 from __future__ import annotations
 
 import time
@@ -46,27 +44,6 @@ async def custo_producao(
     tecnologia: str = "alta",
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Obtém custo de produção detalhado por hectare.
-
-    Busca planilha Excel da CONAB e retorna DataFrame com itens
-    discriminados de custo de produção por cultura e UF.
-
-    Args:
-        cultura: Nome da cultura (soja, milho, arroz, etc).
-        uf: Filtrar por UF (ex: "MT", "PR"). Se None, retorna o primeiro resultado.
-        safra: Safra no formato "2024/25" (default: mais recente).
-        tecnologia: Nível tecnológico ("alta", "media", "baixa").
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: cultura, uf, safra, tecnologia,
-        categoria, item, unidade, quantidade_ha, preco_unitario,
-        valor_ha, participacao_pct.
-
-    Example:
-        >>> df = await conab.custo_producao("soja", uf="MT")
-        >>> df, meta = await conab.custo_producao("soja", uf="MT", return_meta=True)
-    """
     t0 = time.monotonic()
 
     logger.info(
@@ -158,28 +135,6 @@ async def custo_producao_total(
     tecnologia: str = "alta",
     return_meta: bool = False,
 ) -> dict[str, Any] | tuple[dict[str, Any], MetaInfo]:
-    """Obtém agregados de custo total (COE, COT, CT) por hectare.
-
-    Retorna o Custo Operacional Efetivo (COE), Custo Operacional Total (COT)
-    e Custo Total (CT) por hectare para a cultura/UF especificada.
-
-    O COE é o valor usado como denominador do proxy de crédito no SCI:
-        area_estimada = credito_custeio / coe_ha
-
-    Args:
-        cultura: Nome da cultura (soja, milho, etc).
-        uf: Filtrar por UF (ex: "MT").
-        safra: Safra no formato "2024/25".
-        tecnologia: Nível tecnológico ("alta", "media", "baixa").
-        return_meta: Se True, retorna tupla (dict, MetaInfo).
-
-    Returns:
-        Dict com: cultura, uf, safra, tecnologia, coe_ha, cot_ha, ct_ha.
-
-    Example:
-        >>> totais = await conab.custo_producao_total("soja", uf="MT")
-        >>> print(f"COE/ha: R$ {totais['coe_ha']:.2f}")
-    """
     t0 = time.monotonic()
 
     logger.info(

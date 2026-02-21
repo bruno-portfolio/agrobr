@@ -1,5 +1,11 @@
-IDCarga;IDAtracacao;Origem;Destino;CDMercadoria;Tipo Operação da Carga;Tipo Navegação;Natureza da Carga;Sentido;TEU;QTCarga;VLPesoCargaBruta
-1;1;Brasil;China;1201;Exportação;Longo Curso;Granel Sólido;Embarcados;0;1;"34.452,28"
-2;1;Brasil;EUA;1507;Exportação;Longo Curso;Granel Líquido e Gasoso;Embarcados;0;1;"12.100,50"
-3;2;Bahia;São Paulo;2304;Cabotagem;Cabotagem;Granel Sólido;Desembarcados;0;1;"5.000,00"
-4;3;São Paulo;Bahia;1005;Exportação;Longo Curso;Carga Geral;Embarcados;2;1;"800,75"
+IDCarga;IDAtracacao;Origem;Destino;CDMercadoria;Tipo Operação da Carga;Carga Geral Acondicionamento;ConteinerEstado;Tipo Navegação;FlagAutorizacao;FlagCabotagem;FlagCabotagemMovimentacao;FlagConteinerTamanho;FlagLongoCurso;FlagMCOperacaoCarga;FlagOffshore;FlagTransporteViaInterioir;Percurso Transporte em vias Interiores;Percurso Transporte Interiores;STNaturezaCarga;STSH2;STSH4;Natureza da Carga;Sentido;TEU;QTCarga;VLPesoCargaBruta
+35450306;1405033;BRAM004;BRMAO;2201;Interior;;;Interior;S;0;0;;0;1;0;0;;;Exclusivo;Exclusivo;Exclusivo;Granel Sólido;Embarcados;0;0;2
+35452556;1406194;BRPA001;BRMA001;2606;Cabotagem;;;Cabotagem;S;0;1;;0;1;0;0;;;Exclusivo;Exclusivo;Exclusivo;Granel Sólido;Embarcados;0;0;54354
+35452557;1406195;BRPA001;IEAUG;2606;Longo Curso Exportação;;;Longo Curso;S;0;0;;1;1;0;1;;Longo Curso em vias interiores;Exclusivo;Exclusivo;Exclusivo;Granel Sólido;Embarcados;0;0;42971
+35452562;1406197;BRVDC;BRVDC;CA01;Apoio;Solta;;Apoio Portuário;S;0;0;;0;1;0;0;;;Exclusivo;Compartilhado;Compartilhado;Carga Geral;Embarcados;0;70;4,62
+35452563;1406197;BRVDC;BRVDC;CA01;Apoio;Solta;;Apoio Portuário;S;0;0;;0;1;0;0;;;Exclusivo;Compartilhado;Compartilhado;Carga Geral;Embarcados;0;27;2,1
+35452564;1406197;BRVDC;BRVDC;CA01;Apoio;Solta;;Apoio Portuário;S;0;0;;0;1;0;0;;;Exclusivo;Compartilhado;Compartilhado;Carga Geral;Embarcados;0;4;0,18
+35452565;1406197;VEJSE;BRVDC;3102;Longo Curso Importação;Solta;;Longo Curso;S;0;0;;1;1;0;1;;Longo Curso em vias interiores;Exclusivo;Compartilhado;Compartilhado;Carga Geral;Desembarcados;0;27500000;27501,04
+35452566;1406197;VEJSE;BRVDC;3102;Longo Curso Importação;Solta;;Longo Curso;S;0;0;;1;1;0;1;;Longo Curso em vias interiores;Exclusivo;Compartilhado;Compartilhado;Carga Geral;Desembarcados;0;9499136;9506,94
+35452730;1406227;BRAM004;BRMAO;2201;Interior;;;Interior;S;0;0;;0;1;0;0;;;Exclusivo;Exclusivo;Exclusivo;Granel Sólido;Embarcados;0;0;2
+35454468;1406449;BRITB;BRBEL;2207;Interior;;;Interior;S;0;0;;0;1;0;1;Interior Estadual;Navegação Interior;Exclusivo;Exclusivo;Exclusivo;Granel Líquido e Gasoso;Desembarcados;0;0;419,915

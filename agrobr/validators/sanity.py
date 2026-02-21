@@ -1,5 +1,3 @@
-"""Validação estatística de sanidade para dados agrícolas."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -16,8 +14,6 @@ logger = structlog.get_logger()
 
 @dataclass
 class SanityRule:
-    """Regra de validação estatística."""
-
     field: str
     min_value: Decimal | None
     max_value: Decimal | None
@@ -111,8 +107,6 @@ SAFRA_RULES: dict[str, dict[str, SanityRule]] = {
 
 @dataclass
 class AnomalyReport:
-    """Relatório de anomalia detectada."""
-
     field: str
     value: Any
     expected_range: str
@@ -125,16 +119,6 @@ def validate_indicador(
     indicador: Indicador,
     valor_anterior: Decimal | None = None,
 ) -> list[AnomalyReport]:
-    """
-    Valida indicador contra regras estatísticas.
-
-    Args:
-        indicador: Indicador a validar
-        valor_anterior: Valor do dia anterior (para validar variação)
-
-    Returns:
-        Lista de anomalias detectadas (vazia se OK)
-    """
     anomalies: list[AnomalyReport] = []
     rule = PRICE_RULES.get(indicador.produto.lower())
 
@@ -209,7 +193,6 @@ def validate_indicador(
 
 
 def validate_safra(safra: Safra) -> list[AnomalyReport]:
-    """Valida dados de safra contra regras estatísticas."""
     anomalies: list[AnomalyReport] = []
     rules = SAFRA_RULES.get(safra.produto.lower(), {})
 
@@ -250,16 +233,6 @@ async def validate_batch(
     indicadores: list[Indicador],
     strict: bool = False,
 ) -> tuple[list[Indicador], list[AnomalyReport]]:
-    """
-    Valida batch de indicadores.
-
-    Args:
-        indicadores: Lista de indicadores a validar
-        strict: Se True, levanta exceção em anomalias críticas
-
-    Returns:
-        tuple: (indicadores com anomalies preenchidas, todas as anomalias)
-    """
     all_anomalies: list[AnomalyReport] = []
 
     sorted_indicadores = sorted(indicadores, key=lambda x: x.data)

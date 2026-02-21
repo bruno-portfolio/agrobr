@@ -1,5 +1,3 @@
-"""Cliente HTTP para download de dados MAPA PSR (CSV bulk)."""
-
 from __future__ import annotations
 
 import httpx
@@ -29,17 +27,6 @@ HEADERS = {
 
 
 async def download_csv(url: str) -> bytes:
-    """Baixa arquivo CSV do portal MAPA dados abertos.
-
-    Args:
-        url: URL completa do arquivo CSV.
-
-    Returns:
-        Conteudo raw do arquivo em bytes.
-
-    Raises:
-        httpx.HTTPStatusError: Se download falhar.
-    """
     logger.info("mapa_psr_download", url=url)
 
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
@@ -50,6 +37,17 @@ async def download_csv(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
+        if len(content) < 100:
+            from agrobr.exceptions import SourceUnavailableError
+
+            raise SourceUnavailableError(
+                source="mapa_psr",
+                url=url,
+                last_error=(
+                    f"Downloaded CSV too small ({len(content)} bytes), expected valid CSV data"
+                ),
+            )
+
         logger.info(
             "mapa_psr_download_ok",
             url=url,
@@ -59,17 +57,6 @@ async def download_csv(url: str) -> bytes:
 
 
 async def fetch_periodo(periodo: str) -> bytes:
-    """Baixa CSV de apolices PSR para um periodo.
-
-    Args:
-        periodo: Chave do periodo (ex: "2006-2015", "2016-2024", "2025").
-
-    Returns:
-        Conteudo raw do CSV.
-
-    Raises:
-        ValueError: Se periodo invalido.
-    """
     from agrobr.alt.mapa_psr.models import get_csv_url
 
     url = get_csv_url(periodo)
@@ -77,14 +64,6 @@ async def fetch_periodo(periodo: str) -> bytes:
 
 
 async def fetch_periodos(periodos: list[str]) -> list[bytes]:
-    """Baixa multiplos CSVs em sequencia.
-
-    Args:
-        periodos: Lista de chaves de periodo.
-
-    Returns:
-        Lista de bytes raw, um por periodo.
-    """
     results: list[bytes] = []
     for periodo in periodos:
         content = await fetch_periodo(periodo)

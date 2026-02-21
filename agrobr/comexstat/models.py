@@ -1,13 +1,9 @@
-"""Modelos para dados ComexStat (exportação/importação)."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
 
 
 class ExportRecord(BaseModel):
-    """Registro de exportação mensal."""
-
     ano: int = Field(..., ge=1997)
     mes: int = Field(..., ge=1, le=12)
     ncm: str = Field(..., min_length=8, max_length=8)
@@ -23,9 +19,6 @@ class ExportRecord(BaseModel):
         return v.upper().strip()
 
 
-# Mapeamento de produtos agrobr para prefixo NCM.
-# O parser filtra com ``str.startswith(prefix)`` — prefixos de 8 dígitos
-# equivalem a match exato; prefixos menores capturam subposições.
 NCM_PRODUTOS: dict[str, str] = {
     "soja": "12019000",
     "soja_grao": "12019000",
@@ -35,8 +28,8 @@ NCM_PRODUTOS: dict[str, str] = {
     "milho": "10059010",
     "arroz": "10063021",
     "trigo": "10019900",
-    "algodao": "520100",  # 5201.00 — algodão não cardado/penteado (subposições 20/90)
-    "algodao_cardado": "520300",  # 5203.00 — algodão cardado ou penteado
+    "algodao": "520100",
+    "algodao_cardado": "520300",
     "cafe": "09011110",
     "cafe_arabica": "09011110",
     "cafe_conilon": "09011190",
@@ -49,18 +42,6 @@ NCM_PRODUTOS: dict[str, str] = {
 
 
 def resolve_ncm(produto: str) -> str:
-    """Resolve nome de produto para prefixo NCM.
-
-    Args:
-        produto: Nome do produto no formato agrobr.
-
-    Returns:
-        Prefixo NCM (6-8 dígitos).  O parser usa ``startswith``
-        para filtrar, então 8 dígitos = match exato.
-
-    Raises:
-        ValueError: Se produto não tem NCM mapeado.
-    """
     lower = produto.lower().strip()
     ncm = NCM_PRODUTOS.get(lower)
     if ncm is None:

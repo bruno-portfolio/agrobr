@@ -1,5 +1,3 @@
-"""Browser automation com Playwright para sites com proteção anti-bot."""
-
 from __future__ import annotations
 
 import asyncio
@@ -34,7 +32,6 @@ _lock = asyncio.Lock()
 
 
 def _sync_cleanup() -> None:
-    """Cleanup síncrono do Playwright no shutdown do processo."""
     global _playwright_instance, _browser
     if _browser is None and _playwright_instance is None:
         return
@@ -43,7 +40,7 @@ def _sync_cleanup() -> None:
         loop.run_until_complete(close_browser())
         loop.close()
     except Exception:
-        pass
+        logger.warning("browser_sync_cleanup_failed", exc_info=True)
 
 
 atexit.register(_sync_cleanup)

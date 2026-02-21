@@ -1,5 +1,3 @@
-"""API pública do módulo IBGE - PAM e LSPA."""
-
 from __future__ import annotations
 
 import time
@@ -26,17 +24,6 @@ _LSPA_ALIASES: dict[str, list[str]] = {
 
 
 def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
-    """Expande nome genérico de produto LSPA para sub-produtos.
-
-    Args:
-        produto: Nome do produto (pode ser genérico como "milho" ou específico como "milho_1")
-
-    Returns:
-        Lista de tuplas (nome_sub_produto, codigo_sidra)
-
-    Raises:
-        ValueError: Se o produto não for suportado
-    """
     if produto in client.PRODUTOS_LSPA:
         return [(produto, client.PRODUTOS_LSPA[produto])]
 
@@ -82,25 +69,6 @@ async def pam(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """
-    Obtém dados da Produção Agrícola Municipal (PAM).
-
-    Args:
-        produto: Nome do produto (soja, milho, arroz, feijao, trigo, etc)
-        ano: Ano ou lista de anos (default: último disponível)
-        uf: Filtrar por UF (ex: "MT", "PR"). Requer nivel="uf" ou "municipio"
-        nivel: Nível territorial ("brasil", "uf", "municipio")
-        variaveis: Lista de variáveis (area_plantada, area_colhida, producao, rendimento)
-        as_polars: Se True, retorna polars.DataFrame
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com dados da PAM ou tupla (DataFrame, MetaInfo)
-
-    Example:
-        >>> df = await ibge.pam('soja', ano=2023)
-        >>> df, meta = await ibge.pam('milho', ano=[2020, 2021, 2022], uf='MT', return_meta=True)
-    """
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_pam",
@@ -266,26 +234,6 @@ async def lspa(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """
-    Obtém dados do Levantamento Sistemático da Produção Agrícola (LSPA).
-
-    O LSPA fornece estimativas mensais de safra para os principais produtos.
-
-    Args:
-        produto: Nome do produto (soja, milho_1, milho_2, arroz, feijao_1, etc)
-        ano: Ano de referência (default: atual)
-        mes: Mês de referência (1-12). Se None, retorna todos os meses do ano.
-        uf: Filtrar por UF (ex: "MT", "PR")
-        as_polars: Se True, retorna polars.DataFrame
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com estimativas LSPA ou tupla (DataFrame, MetaInfo)
-
-    Example:
-        >>> df = await ibge.lspa('soja', ano=2024)
-        >>> df, meta = await ibge.lspa('milho_1', ano=2024, mes=6, uf='PR', return_meta=True)
-    """
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_lspa",
@@ -369,32 +317,10 @@ async def lspa(
 
 
 async def produtos_pam() -> list[str]:
-    """
-    Lista produtos disponíveis na PAM.
-
-    Returns:
-        Lista de nomes de produtos
-
-    Example:
-        >>> prods = await ibge.produtos_pam()
-        >>> print(prods)
-        ['soja', 'milho', 'arroz', ...]
-    """
     return list(client.PRODUTOS_PAM.keys())
 
 
 async def produtos_lspa() -> list[str]:
-    """
-    Lista produtos disponíveis no LSPA.
-
-    Returns:
-        Lista de nomes de produtos
-
-    Example:
-        >>> prods = await ibge.produtos_lspa()
-        >>> print(prods)
-        ['soja', 'milho_1', 'milho_2', ...]
-    """
     return list(client.PRODUTOS_LSPA.keys())
 
 

@@ -1,5 +1,3 @@
-"""API publica do modulo MAPA PSR (seguro rural)."""
-
 from __future__ import annotations
 
 import time
@@ -33,29 +31,6 @@ async def sinistros(
     evento: str | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Sinistros de seguro rural — indenizacoes pagas por cultura/municipio.
-
-    Leading indicator de revisao de producao CONAB: sinistros elevados
-    em soja Q1 antecedem cortes na estimativa CONAB Q2.
-
-    Dados do SISSER/MAPA desde 2006, licenca CC-BY.
-
-    Args:
-        cultura: Filtro de cultura (busca parcial, ex: "SOJA"). None = todas.
-        uf: Filtro de UF (sigla, ex: "MT"). None = todas.
-        ano: Filtro de ano unico (ex: 2023). None = todos.
-        ano_inicio: Ano inicial do range (inclusive). None = sem limite.
-        ano_fim: Ano final do range (inclusive). None = sem limite.
-        municipio: Filtro de municipio (busca parcial). None = todos.
-        evento: Filtro de evento preponderante (ex: "seca"). None = todos.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com sinistros de seguro rural.
-
-    Raises:
-        ValueError: Se parametros invalidos.
-    """
     _validate_params(uf=uf, ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim)
 
     effective_inicio, effective_fim = _resolve_range(ano, ano_inicio, ano_fim)
@@ -122,25 +97,6 @@ async def apolices(
     municipio: str | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Apolices de seguro rural com subvencao federal.
-
-    Dados do SISSER/MAPA desde 2006, licenca CC-BY.
-
-    Args:
-        cultura: Filtro de cultura (busca parcial, ex: "SOJA"). None = todas.
-        uf: Filtro de UF (sigla, ex: "MT"). None = todas.
-        ano: Filtro de ano unico (ex: 2023). None = todos.
-        ano_inicio: Ano inicial do range (inclusive). None = sem limite.
-        ano_fim: Ano final do range (inclusive). None = sem limite.
-        municipio: Filtro de municipio (busca parcial). None = todos.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com apolices de seguro rural.
-
-    Raises:
-        ValueError: Se parametros invalidos.
-    """
     _validate_params(uf=uf, ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim)
 
     effective_inicio, effective_fim = _resolve_range(ano, ano_inicio, ano_fim)
@@ -203,7 +159,6 @@ def _validate_params(
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
 ) -> None:
-    """Valida parametros comuns."""
     if uf and uf.upper() not in UFS_VALIDAS:
         raise ValueError(f"UF '{uf}' invalida. Opcoes: {sorted(UFS_VALIDAS)}")
 
@@ -223,7 +178,6 @@ def _resolve_range(
     ano_inicio: int | None,
     ano_fim: int | None,
 ) -> tuple[int | None, int | None]:
-    """Resolve ano unico ou range para (inicio, fim)."""
     if ano is not None:
         return ano, ano
     return ano_inicio, ano_fim

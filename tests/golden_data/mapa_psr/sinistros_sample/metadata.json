@@ -4,7 +4,8 @@
   "parser_module": "agrobr.alt.mapa_psr.parser",
   "parser_functions": ["parse_sinistros"],
   "url": "https://dados.agricultura.gov.br/dataset/sisser3",
-  "captured_at": "2026-02-17T18:00:00Z",
+  "captured_at": "2026-02-21T08:39:36Z",
+  "needs_real_data": false,
   "parser_version": 1,
-  "notes": "Synthetic PSR data - 5 rows: 3 with sinistro (SECA, GEADA, GRANIZO), 2 without. Tests PII removal, sinistro filtering, event normalization."
+  "notes": "Real PSR 2006-2015 data (first 200KB, ~795 rows). PII columns stripped. Note: VALOR_INDENIZACAO column has encoding issues in real CSV (accented characters), so it is absent from parsed output. The sinistros parser returns all rows since it cannot filter by indenizacao value."
 }

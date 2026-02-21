@@ -100,7 +100,7 @@ class TestImoveis:
             df = await imoveis("DF")
 
         assert isinstance(df, pd.DataFrame)
-        assert len(df) == 5
+        assert len(df) == 10
         for col in COLUNAS_IMOVEIS:
             assert col in df.columns
 
@@ -241,9 +241,9 @@ class TestResumo:
 
         assert isinstance(df, pd.DataFrame)
         assert len(df) == 1
-        assert df["total"].iloc[0] == 3
-        assert df["ativos"].iloc[0] == 2
-        assert df["pendentes"].iloc[0] == 1
+        assert df["total"].iloc[0] == 10
+        assert df["ativos"].iloc[0] == 10
+        assert df["pendentes"].iloc[0] == 0
 
     @pytest.mark.asyncio
     async def test_return_meta(self):

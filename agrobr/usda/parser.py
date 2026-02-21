@@ -1,9 +1,3 @@
-"""Parser para dados USDA PSD (normalização de resposta JSON).
-
-PARSER_VERSION = 1: Mapeamento de colunas API -> agrobr,
-normalização de nomes e tipos.
-"""
-
 from __future__ import annotations
 
 from typing import Any
@@ -21,18 +15,6 @@ PARSER_VERSION = 1
 def parse_psd_response(
     records: list[dict[str, Any]],
 ) -> pd.DataFrame:
-    """Parseia resposta JSON da API PSD para DataFrame padronizado.
-
-    Aplica mapeamento de colunas, normalização de nomes e
-    tradução de atributos.
-
-    Args:
-        records: Lista de dicts da resposta JSON.
-
-    Returns:
-        DataFrame: commodity_code, commodity, country_code, country,
-                   market_year, attribute, attribute_br, value, unit.
-    """
     if not records:
         return pd.DataFrame(
             columns=[
@@ -50,23 +32,18 @@ def parse_psd_response(
 
     df = pd.DataFrame(records)
 
-    # Renomear colunas
     rename = {k: v for k, v in PSD_COLUMNS_MAP.items() if k in df.columns}
     df = df.rename(columns=rename)
 
-    # Normalizar commodity name
     if "commodity_code" in df.columns:
         df["commodity"] = df["commodity_code"].apply(commodity_name)
 
-    # Adicionar nome em português do atributo
     if "attribute_id" in df.columns:
         df["attribute_br"] = df["attribute_id"].map(PSD_ATTRIBUTES).fillna("")
 
-    # Remover colunas auxiliares
     drop_cols = ["calendar_year", "month", "attribute_id", "unit_id"]
     df = df.drop(columns=[c for c in drop_cols if c in df.columns], errors="ignore")
 
-    # Ordenar
     sort_cols = [c for c in ["market_year", "country_code", "attribute"] if c in df.columns]
     if sort_cols:
         df = df.sort_values(sort_cols).reset_index(drop=True)
@@ -80,23 +57,12 @@ def filter_attributes(
     df: pd.DataFrame,
     attributes: list[str] | None = None,
 ) -> pd.DataFrame:
-    """Filtra DataFrame por atributos específicos.
-
-    Args:
-        df: DataFrame com dados PSD.
-        attributes: Lista de nomes de atributos para filtrar
-                    (ex: ["Production", "Exports"]). Se None, retorna todos.
-
-    Returns:
-        DataFrame filtrado.
-    """
     if not attributes or df.empty:
         return df
 
     attrs_lower = [a.lower() for a in attributes]
     mask = df["attribute"].str.lower().isin(attrs_lower)
 
-    # Também tentar por nome brasileiro
     if "attribute_br" in df.columns:
         mask = mask | df["attribute_br"].str.lower().isin(attrs_lower)
 
@@ -104,17 +70,6 @@ def filter_attributes(
 
 
 def pivot_attributes(df: pd.DataFrame) -> pd.DataFrame:
-    """Pivota DataFrame para ter atributos como colunas.
-
-    Transforma de formato longo (uma linha por atributo) para
-    formato largo (uma coluna por atributo).
-
-    Args:
-        df: DataFrame em formato longo.
-
-    Returns:
-        DataFrame pivotado com atributos como colunas.
-    """
     if df.empty:
         return df
 
@@ -134,8 +89,8 @@ def pivot_attributes(df: pd.DataFrame) -> pd.DataFrame:
             aggfunc="first",
         ).reset_index()
 
-        # Flatten column names
         result.columns = [c[0] if isinstance(c, tuple) else c for c in result.columns]
         return result
     except Exception:
+        logger.warning("usda_pivot_failed", exc_info=True)
         return df

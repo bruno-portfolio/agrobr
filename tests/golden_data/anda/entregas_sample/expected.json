@@ -1,8 +1,39 @@
 {
-  "count": 15,
-  "columns": ["ano", "mes", "uf", "produto_fertilizante", "volume_ton"],
-  "ufs_expected": ["GO", "MG", "MT", "PR", "SP"],
-  "meses_expected": [1, 2, 3],
-  "first_row": {"mes": 1, "uf": "MT", "produto_fertilizante": "total", "volume_ton": 850000.0},
-  "non_null_columns": ["ano", "mes", "uf", "volume_ton"]
+  "count": 12,
+  "columns": [
+    "ano",
+    "mes",
+    "uf",
+    "produto_fertilizante",
+    "volume_ton"
+  ],
+  "ufs_expected": [
+    "BR"
+  ],
+  "meses_expected": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "first_row": {
+    "mes": 1,
+    "uf": "BR",
+    "produto_fertilizante": "total",
+    "volume_ton": 3699769.0
+  },
+  "non_null_columns": [
+    "ano",
+    "mes",
+    "uf",
+    "volume_ton"
+  ]
 }

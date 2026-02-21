@@ -6,6 +6,7 @@
   "parser_functions": ["parse_trafego_v2"],
   "url": "https://dados.antt.gov.br/dataset/fluxo-de-veiculos-nas-pracas-de-pedagio",
   "captured_at": "2026-02-20T12:00:00Z",
+  "needs_real_data": true,
   "parser_version": 1,
-  "notes": "Synthetic V2 data - 5 rows without header, Jan-Feb 2024. Tests headerless parsing, eixo numeric mapping, mm/yyyy date format."
+  "notes": "CKAN API returned 404 on 2026-02-21. The dataset slug 'fluxo-de-veiculos-nas-pracas-de-pedagio' is no longer available at dados.antt.gov.br. Real data capture skipped. Keeping synthetic data."
 }

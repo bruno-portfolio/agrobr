@@ -1,5 +1,3 @@
-"""Cliente HTTP para API NASA POWER (power.larc.nasa.gov)."""
-
 from __future__ import annotations
 
 import asyncio
@@ -29,7 +27,6 @@ HEADERS = {
 
 
 async def _get_json(params: dict[str, Any]) -> dict[str, Any]:
-    """Faz GET na API NASA POWER e retorna JSON parseado."""
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS) as client:
         response = await retry_on_status(
             lambda: client.get(BASE_URL, params=params),
@@ -49,21 +46,6 @@ async def fetch_daily(
     end: date,
     parameters: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Busca dados diarios de um ponto na API NASA POWER.
-
-    Divide automaticamente em chunks de ate 365 dias para respeitar
-    limites praticos da API.
-
-    Args:
-        lat: Latitude (-90 a 90).
-        lon: Longitude (-180 a 180).
-        start: Data inicial.
-        end: Data final.
-        parameters: Lista de parametros NASA POWER. Se None, usa PARAMS_AG.
-
-    Returns:
-        Dict com estrutura NASA POWER (properties.parameter contendo os dados).
-    """
     from agrobr.nasa_power.models import PARAMS_AG
 
     if parameters is None:
@@ -81,7 +63,6 @@ async def fetch_daily(
         params=len(parameters),
     )
 
-    # Se range cabe em um unico request, faz direto.
     total_days = (end - start).days
     if total_days <= MAX_DAYS_PER_REQUEST:
         params = {
@@ -95,7 +76,6 @@ async def fetch_daily(
         }
         return await _get_json(params)
 
-    # Chunking para ranges maiores.
     merged: dict[str, Any] = {}
     chunk_start = start
 
@@ -115,7 +95,6 @@ async def fetch_daily(
         try:
             chunk_data = await _get_json(params)
 
-            # Merge properties.parameter de cada chunk.
             chunk_params = chunk_data.get("properties", {}).get("parameter", {})
             if not merged:
                 merged = chunk_data
@@ -145,7 +124,6 @@ async def fetch_daily(
 
         chunk_start = chunk_end + timedelta(days=1)
 
-        # Respeitar rate limit entre chunks.
         if chunk_start <= end:
             await asyncio.sleep(RATE_LIMIT_DELAY)
 

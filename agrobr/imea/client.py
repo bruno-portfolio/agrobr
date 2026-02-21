@@ -1,11 +1,3 @@
-"""Cliente HTTP para API pública IMEA.
-
-API: https://api1.imea.com.br/api/v2/mobile/cadeias/{CadeiaId}/cotacoes
-Sem autenticação requerida.
-
-Dados de cotações, indicadores e progresso de safra para Mato Grosso.
-"""
-
 from __future__ import annotations
 
 from typing import Any
@@ -36,17 +28,6 @@ HEADERS = {
 
 
 async def _fetch_json(url: str) -> list[dict[str, Any]]:
-    """Fetch JSON da API IMEA com retry.
-
-    Args:
-        url: URL completa.
-
-    Returns:
-        Lista de dicts com dados JSON.
-
-    Raises:
-        SourceUnavailableError: Se API indisponível.
-    """
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         logger.debug("imea_request", url=url)
         response = await retry_on_status(
@@ -60,27 +41,13 @@ async def _fetch_json(url: str) -> list[dict[str, Any]]:
 
 
 async def fetch_cotacoes(cadeia_id: int) -> list[dict[str, Any]]:
-    """Busca cotações/indicadores para uma cadeia produtiva.
-
-    Args:
-        cadeia_id: ID da cadeia (1=algodão, 2=boi, 3=milho, 4=soja).
-
-    Returns:
-        Lista de dicts com registros de cotações.
-    """
     url = f"{BASE_URL}/v2/mobile/cadeias/{cadeia_id}/cotacoes"
     logger.info("imea_fetch_cotacoes", cadeia_id=cadeia_id, url=url)
     return await _fetch_json(url)
 
 
 async def fetch_indicadores() -> list[dict[str, Any]]:
-    """Busca resumo geral de indicadores de todas as cadeias.
-
-    Returns:
-        Lista de dicts com indicadores resumidos.
-    """
     url = f"{BASE_URL}/indicador"
     logger.info("imea_fetch_indicadores", url=url)
     data = await _fetch_json(url)
-    # A API retorna um único dict com arrays internas
     return data if isinstance(data, list) else [data] if data else []

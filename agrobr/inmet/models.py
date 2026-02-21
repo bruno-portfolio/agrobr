@@ -1,5 +1,3 @@
-"""Modelos Pydantic v2 para dados INMET."""
-
 from __future__ import annotations
 
 from datetime import date, datetime
@@ -9,8 +7,6 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class Estacao(BaseModel):
-    """Metadados de uma estação meteorológica INMET."""
-
     codigo: str = Field(..., alias="CD_ESTACAO")
     nome: str = Field(..., alias="DC_NOME")
     uf: str = Field(..., alias="SG_ESTADO")
@@ -46,8 +42,6 @@ class Estacao(BaseModel):
 
 
 class ObservacaoHoraria(BaseModel):
-    """Observação horária de estação automática INMET."""
-
     estacao: str = Field(..., alias="CD_ESTACAO")
     data: date = Field(..., alias="DT_MEDICAO")
     hora: str = Field(..., alias="HR_MEDICAO")

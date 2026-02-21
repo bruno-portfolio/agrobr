@@ -1,17 +1,3 @@
-"""Parser para planilhas de custo de produção CONAB.
-
-Converte Excel (.xlsx) com custos detalhados por hectare em DataFrames
-estruturados para consumo programático.
-
-Layout típico CONAB:
-    - Cada planilha cobre 1 cultura × 1 UF × 1 sistema × 1 safra
-    - Linhas: itens de custo (sementes, fertilizantes, etc.)
-    - Colunas: unidade, qtd/ha, preço unitário, valor/ha, participação (%)
-    - Subtotais: COE, COT, CT
-
-PARSER_VERSION incrementa sempre que o layout CONAB mudar ou o parser for corrigido.
-"""
-
 from __future__ import annotations
 
 import re
@@ -29,36 +15,19 @@ logger = structlog.get_logger()
 
 PARSER_VERSION = 1
 
-# Padrões regex para detectar linhas de subtotal
 _COE_PATTERN = re.compile(r"custo\s*operacional\s*efetivo|c\.?\s*o\.?\s*e\.?", re.IGNORECASE)
 _COT_PATTERN = re.compile(r"custo\s*operacional\s*total|c\.?\s*o\.?\s*t\.?", re.IGNORECASE)
 _CT_PATTERN = re.compile(r"custo\s*total(?!\s*operacional)|c\.?\s*t\.?\s*$", re.IGNORECASE)
 
-# Padrões para detectar cabeçalhos de seção (categorias)
 _SECTION_HEADERS = re.compile(
     r"^(i+\s*[-–.]|[abc]\s*[-–.]|\d+\s*[-–.])\s*",
     re.IGNORECASE,
 )
 
-# Colunas mínimas esperadas no Excel
 MIN_COLUMNS = 4
 
 
 def _find_header_row(df_raw: pd.DataFrame) -> int:
-    """Encontra a linha de cabeçalho na planilha.
-
-    Procura por linhas que contenham palavras-chave como "item",
-    "especificação", "valor", "unidade", etc.
-
-    Args:
-        df_raw: DataFrame lido cru do Excel (sem header).
-
-    Returns:
-        Índice da linha de cabeçalho.
-
-    Raises:
-        ParseError: Se não encontrar cabeçalho.
-    """
     keywords = {
         "item",
         "especificação",
@@ -90,14 +59,6 @@ def _find_header_row(df_raw: pd.DataFrame) -> int:
 
 
 def _identify_columns(headers: list[str]) -> dict[str, int]:
-    """Mapeia colunas do Excel para campos esperados.
-
-    Args:
-        headers: Lista de textos do cabeçalho (minúsculas).
-
-    Returns:
-        Dict com mapeamento: nome_campo -> índice_coluna.
-    """
     mapping: dict[str, int] = {}
 
     for i, h in enumerate(headers):
@@ -133,7 +94,6 @@ def _identify_columns(headers: list[str]) -> dict[str, int]:
 
 
 def _safe_float(value: Any) -> float | None:
-    """Converte valor para float, retornando None para inválidos."""
     if value is None or (isinstance(value, float) and pd.isna(value)):
         return None
     if isinstance(value, (int, float)):
@@ -157,22 +117,6 @@ def parse_planilha(
     tecnologia: str = "alta",
     sheet_name: int | str = 0,
 ) -> tuple[list[ItemCusto], CustoTotal | None]:
-    """Parseia uma planilha Excel de custo de produção CONAB.
-
-    Args:
-        xlsx: BytesIO com conteúdo do arquivo Excel.
-        cultura: Nome da cultura (ex: "soja").
-        uf: Sigla da UF (ex: "MT").
-        safra: Safra no formato "2024/25".
-        tecnologia: Nível tecnológico ("alta", "media", "baixa").
-        sheet_name: Nome ou índice da sheet a ler.
-
-    Returns:
-        Tupla (lista de ItemCusto, CustoTotal ou None).
-
-    Raises:
-        ParseError: Se a planilha não puder ser parseada.
-    """
     cultura_norm = normalize_cultura(cultura)
 
     try:
@@ -221,7 +165,6 @@ def parse_planilha(
 
         valor = _safe_float(row.iloc[col_map["valor_ha"]])
 
-        # Detectar linhas de subtotal (COE, COT, CT)
         if _COE_PATTERN.search(item_name):
             if valor is not None:
                 coe_value = valor
@@ -237,14 +180,11 @@ def parse_planilha(
                 ct_value = valor
             continue
 
-        # Detectar cabeçalhos de seção para categorização
         if _SECTION_HEADERS.match(item_name):
             current_category = classify_categoria(item_name)
-            # Se o cabeçalho de seção não tem valor, é só um separador
             if valor is None or valor == 0.0:
                 continue
 
-        # Se não tem valor, pular (texto informativo)
         if valor is None:
             possible_cat = classify_categoria(item_name)
             if possible_cat != "outros":
@@ -298,7 +238,6 @@ def parse_planilha(
             ct_ha=ct_value,
         )
     elif items:
-        # Computar COE a partir da soma dos itens operacionais
         coe_categorias = {"insumos", "operacoes", "mao_de_obra"}
         coe_from_items = sum(item.valor_ha for item in items if item.categoria in coe_categorias)
         if coe_from_items > 0:
@@ -325,16 +264,6 @@ def parse_planilha(
 
 
 def items_to_dataframe(items: list[ItemCusto]) -> pd.DataFrame:
-    """Converte lista de ItemCusto para DataFrame.
-
-    Args:
-        items: Lista de modelos ItemCusto.
-
-    Returns:
-        DataFrame com colunas: cultura, uf, safra, tecnologia,
-        categoria, item, unidade, quantidade_ha, preco_unitario,
-        valor_ha, participacao_pct.
-    """
     if not items:
         return pd.DataFrame()
 

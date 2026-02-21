@@ -3,5 +3,7 @@
   "format": "csv",
   "uf": "DF",
   "parser_functions": ["parse_imoveis_csv"],
-  "description": "Sample of 5 imoveis from DF with all status types"
+  "captured_at": "2026-02-21T08:37:00Z",
+  "needs_real_data": false,
+  "description": "Real WFS GeoServer data: 10 imoveis from DF. First imovel is DF-5300108-B69B317DD02C43DAA77A0784AEEF7D47 (AT, IRU, 2.0131 ha)."
 }

@@ -1,5 +1,3 @@
-"""Constantes e modelos Pydantic para ANP Diesel."""
-
 from __future__ import annotations
 
 from datetime import date
@@ -105,7 +103,6 @@ UFS_VALIDAS = frozenset(
 
 
 def _resolve_periodo_municipio(ano: int) -> str | None:
-    """Resolve ano para chave do dict PRECOS_MUNICIPIOS_URLS."""
     for periodo, _url in PRECOS_MUNICIPIOS_URLS.items():
         partes = periodo.split("-")
         if len(partes) == 2:
@@ -119,8 +116,6 @@ def _resolve_periodo_municipio(ano: int) -> str | None:
 
 
 class PrecoDiesel(BaseModel):
-    """Observacao de preco de diesel (semanal, por municipio/UF/Brasil)."""
-
     data: date
     uf: str = Field("", max_length=2)
     municipio: str = ""
@@ -152,8 +147,6 @@ class PrecoDiesel(BaseModel):
 
 
 class VendaDiesel(BaseModel):
-    """Volume de venda de diesel (mensal, por UF)."""
-
     data: date
     uf: str = Field("", max_length=2)
     regiao: str = ""

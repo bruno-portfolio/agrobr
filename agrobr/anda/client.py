@@ -1,10 +1,3 @@
-"""Cliente HTTP para dados ANDA (Associação Nacional para Difusão de Adubos).
-
-ANDA publica relatórios em PDF e Excel com dados de entregas de fertilizantes.
-Este cliente faz download dos arquivos e retorna o conteúdo bruto (bytes)
-para o parser processar.
-"""
-
 from __future__ import annotations
 
 import re
@@ -25,17 +18,6 @@ HEADERS = {"User-Agent": "agrobr/0.7.1 (https://github.com/bruno-portfolio/agrob
 
 
 async def _get_with_retry(url: str) -> httpx.Response:
-    """GET com retry exponencial via retry_on_status centralizado.
-
-    Args:
-        url: URL para acessar.
-
-    Returns:
-        Response HTTP.
-
-    Raises:
-        SourceUnavailableError: Se URL indisponível após retries.
-    """
     async with httpx.AsyncClient(
         timeout=TIMEOUT,
         follow_redirects=True,
@@ -50,40 +32,45 @@ async def _get_with_retry(url: str) -> httpx.Response:
 
 
 async def fetch_estatisticas_page() -> str:
-    """Busca a página de estatísticas da ANDA.
+    from agrobr.exceptions import SourceUnavailableError
 
-    Returns:
-        HTML da página de estatísticas.
-    """
     logger.info("anda_fetch_page", url=ESTATISTICAS_URL)
     response = await _get_with_retry(ESTATISTICAS_URL)
-    return response.text
+    html = response.text
+
+    if len(html) < 2_000 or "<a" not in html.lower():
+        raise SourceUnavailableError(
+            source="anda",
+            url=ESTATISTICAS_URL,
+            last_error=(
+                f"HTML response too small or missing links ({len(html)} chars, no '<a' tag found)"
+            ),
+        )
+
+    return html
 
 
 async def download_file(url: str) -> bytes:
-    """Faz download de um arquivo (PDF ou Excel) da ANDA.
+    from agrobr.exceptions import SourceUnavailableError
 
-    Args:
-        url: URL completa do arquivo.
-
-    Returns:
-        Conteúdo do arquivo em bytes.
-    """
     logger.info("anda_download", url=url)
     response = await _get_with_retry(url)
-    return response.content
+    content = response.content
+
+    if len(content) < 500:
+        raise SourceUnavailableError(
+            source="anda",
+            url=url,
+            last_error=(
+                f"Downloaded file too small ({len(content)} bytes), "
+                f"expected a valid PDF or Excel file"
+            ),
+        )
+
+    return content
 
 
 def parse_links_from_html(html: str, pattern: str = r"\.pdf|\.xlsx?") -> list[dict[str, str]]:
-    """Extrai links de arquivos (PDF/Excel) da página HTML.
-
-    Args:
-        html: HTML da página de estatísticas.
-        pattern: Regex para filtrar extensões de arquivo.
-
-    Returns:
-        Lista de dicts com 'url' e 'text' (texto do link).
-    """
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(html, "lxml")
@@ -108,20 +95,6 @@ def parse_links_from_html(html: str, pattern: str = r"\.pdf|\.xlsx?") -> list[di
 
 
 async def fetch_entregas_pdf(ano: int) -> tuple[bytes, int]:
-    """Busca o PDF de entregas de fertilizantes para um ano.
-
-    Navega na página de estatísticas, localiza o link do relatório
-    e faz o download.
-
-    Args:
-        ano: Ano do relatório.
-
-    Returns:
-        Tupla (bytes do PDF, ano real do relatório).
-
-    Raises:
-        FileNotFoundError: Se PDF do ano não for encontrado.
-    """
     html = await fetch_estatisticas_page()
     links = parse_links_from_html(html, pattern=r"\.pdf")
 

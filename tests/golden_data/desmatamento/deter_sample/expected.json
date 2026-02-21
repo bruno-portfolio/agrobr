@@ -1,11 +1,35 @@
 {
-  "count_min": 10,
-  "columns": ["data", "classe", "uf", "municipio", "municipio_id", "area_km2", "satelite", "sensor", "bioma"],
-  "non_null_columns": ["data", "classe", "uf", "area_km2", "bioma"],
-  "has_multiple_ufs": true,
-  "ufs_expected": ["PA", "AP", "RR", "MT", "AM"],
+  "count_min": 15,
+  "columns": [
+    "data",
+    "classe",
+    "uf",
+    "municipio",
+    "municipio_id",
+    "area_km2",
+    "satelite",
+    "sensor",
+    "bioma"
+  ],
+  "non_null_columns": [
+    "data",
+    "classe",
+    "uf",
+    "area_km2",
+    "bioma"
+  ],
+  "has_multiple_ufs": false,
+  "ufs_expected": [
+    "PA"
+  ],
   "has_multiple_classes": true,
-  "classes_expected": ["DESMATAMENTO_CR", "DEGRADACAO", "MINERACAO", "CICATRIZ_DE_QUEIMADA"],
+  "classes_expected": [
+    "CICATRIZ_DE_QUEIMADA",
+    "CS_DESORDENADO",
+    "CS_GEOMETRICO",
+    "DEGRADACAO",
+    "DESMATAMENTO_CR"
+  ],
   "bioma": "Amazônia",
   "area_km2_min": 0
 }

@@ -1,5 +1,3 @@
-"""Dataset fertilizante - Entregas de fertilizantes ao mercado brasileiro."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -65,20 +63,6 @@ class FertilizanteDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca dados de entregas de fertilizantes.
-
-        Fontes (em ordem de prioridade):
-          1. ANDA (relatórios anuais de entregas)
-
-        Args:
-            produto: total, npk, ureia, map, dap, ssp, tsp, kcl
-            ano: Ano de referência (default: ano corrente)
-            uf: Filtrar por UF (ex: "MT", "PR")
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: ano, mes, uf, produto_fertilizante, volume_ton
-        """
         logger.info("dataset_fetch", dataset="fertilizante", produto=produto, ano=ano)
 
         snapshot = get_snapshot()
@@ -135,18 +119,4 @@ async def fertilizante(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados de entregas de fertilizantes.
-
-    Fontes (em ordem de prioridade):
-      1. ANDA (relatórios anuais de entregas)
-
-    Args:
-        produto: total, npk, ureia, map, dap, ssp, tsp, kcl
-        ano: Ano de referência (default: ano corrente)
-        uf: Filtrar por UF (ex: "MT", "PR")
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: ano, mes, uf, produto_fertilizante, volume_ton
-    """
     return await _fertilizante.fetch(produto, ano=ano, uf=uf, return_meta=return_meta, **kwargs)

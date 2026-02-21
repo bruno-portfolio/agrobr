@@ -70,7 +70,17 @@ async def _fetch_url(url: str) -> bytes:
             raise SourceUnavailableError(source="desmatamento", url=url, last_error="HTTP 404")
 
         response.raise_for_status()
-        return response.content
+
+        content = response.content
+        if len(content) < 50:
+            raise SourceUnavailableError(
+                source="desmatamento",
+                url=url,
+                last_error=(
+                    f"CSV response too small ({len(content)} bytes), expected WFS feature data"
+                ),
+            )
+        return content
 
 
 async def fetch_prodes(

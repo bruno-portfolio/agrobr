@@ -1,5 +1,3 @@
-"""Retry com exponential backoff."""
-
 from __future__ import annotations
 
 import asyncio
@@ -39,7 +37,6 @@ async def retry_async(
     max_delay: float | None = None,
     retriable_exceptions: Sequence[type[Exception]] = RETRIABLE_EXCEPTIONS,
 ) -> T:
-    """Executa função async com retry exponential backoff."""
     settings = constants.HTTPSettings()
     max_attempts = max_attempts or settings.max_retries
     base_delay = base_delay or settings.retry_base_delay
@@ -89,25 +86,6 @@ async def retry_on_status(
     base_delay: float | None = None,
     max_delay: float | None = None,
 ) -> httpx.Response:
-    """Executa request HTTP com retry em status codes retriáveis.
-
-    Diferente de retry_async, esta função inspeciona o status_code da
-    Response ao invés de depender de raise_for_status(). Respeita o
-    header Retry-After quando presente.
-
-    Args:
-        func: Callable que retorna httpx.Response.
-        source: Nome da fonte para logging.
-        max_attempts: Máximo de tentativas.
-        base_delay: Delay base em segundos.
-        max_delay: Delay máximo em segundos.
-
-    Returns:
-        httpx.Response com status não-retriável.
-
-    Raises:
-        SourceUnavailableError: Quando retry esgotado em status retriável.
-    """
     from agrobr.exceptions import SourceUnavailableError
 
     settings = constants.HTTPSettings()

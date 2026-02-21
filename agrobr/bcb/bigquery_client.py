@@ -1,19 +1,3 @@
-"""Fallback BigQuery via basedosdados para crédito rural SICOR.
-
-Quando a API Olinda do BCB está indisponível (HTTP 500, timeout),
-este módulo busca os mesmos dados via BigQuery usando a biblioteca
-basedosdados (Base dos Dados).
-
-Requer instalação opcional:
-    pip install agrobr[bigquery]
-
-A biblioteca basedosdados exige autenticação Google Cloud configurada
-(GOOGLE_APPLICATION_CREDENTIALS ou `basedosdados config`).
-
-Tabela: basedosdados.br_bcb_sicor.microdados_operacao
-Dicionário: https://basedosdados.org/dataset/br-bcb-sicor
-"""
-
 from __future__ import annotations
 
 import asyncio
@@ -26,11 +10,9 @@ from agrobr.exceptions import SourceUnavailableError
 
 logger = structlog.get_logger()
 
-# Tabela SICOR no BigQuery via basedosdados
 BQ_DATASET = "br_bcb_sicor"
 BQ_TABLE = "microdados_operacao"
 
-# Mapeamento BigQuery → nomes agrobr (colunas do microdados_operacao)
 BQ_COLUMNS_MAP: dict[str, str] = {
     "ano": "ano_emissao",
     "mes": "mes_emissao",
@@ -44,7 +26,6 @@ BQ_COLUMNS_MAP: dict[str, str] = {
 
 
 def _check_basedosdados() -> None:
-    """Verifica se basedosdados está instalado."""
     try:
         import basedosdados  # noqa: F401
     except ImportError as exc:
@@ -61,21 +42,6 @@ def _build_query(
     safra_ano: int | None = None,
     uf: str | None = None,
 ) -> str:
-    """Constrói query SQL para BigQuery.
-
-    A tabela microdados_operacao contém registros individuais de operações.
-    Agregamos por UF, produto e ano para obter totais comparáveis
-    à API Olinda.
-
-    Args:
-        finalidade: custeio, investimento, comercializacao.
-        produto: Nome do produto SICOR (ex: "SOJA").
-        safra_ano: Ano de emissão (ex: 2023).
-        uf: Sigla UF (ex: "MT").
-
-    Returns:
-        Query SQL.
-    """
     select = """
 SELECT
     ano,
@@ -123,14 +89,6 @@ ORDER BY ano, sigla_uf, nome_produto
 def _query_bigquery_sync(
     query: str,
 ) -> list[dict[str, Any]]:
-    """Executa query no BigQuery via basedosdados (sync).
-
-    Returns:
-        Lista de dicts com registros.
-
-    Raises:
-        SourceUnavailableError: Se falhar.
-    """
     _check_basedosdados()
 
     try:
@@ -170,26 +128,11 @@ async def fetch_credito_rural_bigquery(
     safra_sicor: str | None = None,
     cd_uf: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Busca dados de crédito rural via BigQuery (fallback).
-
-    Interface compatível com client.fetch_credito_rural().
-
-    Args:
-        finalidade: "custeio", "investimento", "comercializacao".
-        produto_sicor: Nome do produto SICOR (ex: "SOJA").
-        safra_sicor: Safra SICOR (ex: "2023/2024"). Extrai ano.
-        cd_uf: Código UF IBGE ou sigla (ex: "51" ou "MT").
-
-    Returns:
-        Lista de dicts com registros de crédito.
-    """
-    # Extrair ano da safra SICOR (formato "2023/2024")
     safra_ano: int | None = None
     if safra_sicor:
         with contextlib.suppress(ValueError, IndexError):
             safra_ano = int(safra_sicor.split("/")[0])
 
-    # Converter cd_uf numérico para sigla (BigQuery usa sigla_uf)
     uf_sigla: str | None = None
     if cd_uf:
         from agrobr.bcb.models import UF_CODES
@@ -216,7 +159,6 @@ async def fetch_credito_rural_bigquery(
 
 
 def is_bigquery_available() -> bool:
-    """Verifica se o fallback BigQuery está disponível."""
     try:
         _check_basedosdados()
         return True

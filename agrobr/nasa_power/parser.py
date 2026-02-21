@@ -1,5 +1,3 @@
-"""Parser para dados NASA POWER -- converte JSON da API em DataFrames."""
-
 from __future__ import annotations
 
 from datetime import date
@@ -22,21 +20,6 @@ def parse_daily(
     lon: float,
     uf: str = "",
 ) -> pd.DataFrame:
-    """Converte resposta JSON NASA POWER em DataFrame diario.
-
-    Args:
-        data: Dict completo da API NASA POWER.
-        lat: Latitude do ponto consultado.
-        lon: Longitude do ponto consultado.
-        uf: Sigla da UF (opcional, para enriquecer o DataFrame).
-
-    Returns:
-        DataFrame com colunas: data, lat, lon, uf, temp_media, temp_max,
-        temp_min, precip_mm, umidade_rel, radiacao_mj, vento_ms.
-
-    Raises:
-        ParseError: Se dados estiverem vazios ou malformados.
-    """
     if not data:
         raise ParseError(
             source="nasa_power",
@@ -53,7 +36,6 @@ def parse_daily(
             reason="Nenhum parametro encontrado em properties.parameter",
         )
 
-    # Pivot: cada parametro tem {YYYYMMDD: valor}, transformar em linhas por data.
     rows: dict[str, dict[str, Any]] = {}
 
     for nasa_param, daily_values in parameters.items():
@@ -64,7 +46,6 @@ def parse_daily(
         for date_str, value in daily_values.items():
             if date_str not in rows:
                 rows[date_str] = {}
-            # Tratar sentinel.
             if isinstance(value, (int, float)) and value == SENTINEL:
                 rows[date_str][col_name] = None
             else:
@@ -77,7 +58,6 @@ def parse_daily(
             reason="Nenhuma data encontrada nos dados",
         )
 
-    # Montar DataFrame.
     records: list[dict[str, Any]] = []
     for date_str, values in sorted(rows.items()):
         try:
@@ -90,7 +70,6 @@ def parse_daily(
 
     df = pd.DataFrame(records)
 
-    # Converter colunas numericas.
     for col in COLUNAS_MAP.values():
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -108,19 +87,6 @@ def parse_daily(
 
 
 def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega dados diarios em resumo mensal.
-
-    Precipitacao: soma mensal.
-    Temperatura, umidade, radiacao, vento: media mensal.
-
-    Args:
-        df: DataFrame diario (output de parse_daily).
-
-    Returns:
-        DataFrame mensal com colunas: mes, lat, lon, uf, precip_acum_mm,
-        temp_media, temp_max_media, temp_min_media, umidade_media,
-        radiacao_media_mj, vento_medio_ms.
-    """
     if df.empty:
         return df
 
@@ -152,7 +118,6 @@ def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
     result = df.groupby(["mes"] + group_cols).agg(**agg).reset_index()
     result["mes"] = result["mes"].dt.to_timestamp()
 
-    # Preservar lat/lon do primeiro registro de cada grupo.
     if "lat" in df.columns and "lon" in df.columns:
         coords = df.groupby(["mes"] + group_cols)[["lat", "lon"]].first().reset_index()
         coords["mes"] = coords["mes"].dt.to_timestamp()

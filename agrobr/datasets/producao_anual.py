@@ -1,5 +1,3 @@
-"""Dataset producao_anual - Produção agrícola anual consolidada."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -94,22 +92,6 @@ class ProducaoAnualDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca produção anual de um produto agrícola.
-
-        Fontes (em ordem de prioridade):
-          1. IBGE PAM (Produção Agrícola Municipal)
-          2. CONAB Safras
-
-        Args:
-            produto: soja, milho, arroz, feijao, trigo, algodao, cafe
-            ano: Ano de referência (opcional, default: último disponível)
-            nivel: Nível territorial (brasil, uf, municipio)
-            uf: Filtrar por UF (ex: "MT", "PR")
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: ano, produto, localidade, area_plantada, producao, rendimento
-        """
         logger.info("dataset_fetch", dataset="producao_anual", produto=produto, ano=ano)
 
         snapshot = get_snapshot()
@@ -170,22 +152,6 @@ async def producao_anual(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca produção anual de um produto agrícola.
-
-    Fontes (em ordem de prioridade):
-      1. IBGE PAM (Produção Agrícola Municipal)
-      2. CONAB Safras
-
-    Args:
-        produto: soja, milho, arroz, feijao, trigo, algodao, cafe
-        ano: Ano de referência (opcional, default: último disponível)
-        nivel: Nível territorial (brasil, uf, municipio)
-        uf: Filtrar por UF (ex: "MT", "PR")
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: ano, produto, localidade, area_plantada, producao, rendimento
-    """
     return await _producao_anual.fetch(
         produto, ano=ano, nivel=nivel, uf=uf, return_meta=return_meta, **kwargs
     )

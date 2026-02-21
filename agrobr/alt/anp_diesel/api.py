@@ -1,5 +1,3 @@
-"""API publica do modulo ANP Diesel."""
-
 from __future__ import annotations
 
 import time
@@ -40,27 +38,6 @@ async def precos_diesel(
     nivel: str = NIVEL_MUNICIPIO,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Precos de diesel (revenda) por municipio/UF/Brasil.
-
-    Dados semanais da ANP desde 2013.
-    Proxy de custo mecanizado para atividade agropecuaria.
-
-    Args:
-        uf: Filtro de UF (sigla, ex: "MT"). None = todas.
-        municipio: Filtro de municipio (busca parcial). None = todos.
-        produto: "DIESEL S10" (padrao) ou "DIESEL".
-        inicio: Data inicial (str "YYYY-MM-DD" ou date). None = sem filtro.
-        fim: Data final (str "YYYY-MM-DD" ou date). None = sem filtro.
-        agregacao: "semanal" (padrao) ou "mensal".
-        nivel: "municipio" (padrao), "uf" ou "brasil".
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com precos de diesel.
-
-    Raises:
-        ValueError: Se parametros invalidos.
-    """
     if agregacao not in AGREGACOES_VALIDAS:
         raise ValueError(f"Agregacao '{agregacao}' invalida. Opcoes: {sorted(AGREGACOES_VALIDAS)}")
     if nivel not in NIVEIS_VALIDOS:
@@ -126,20 +103,6 @@ async def vendas_diesel(
     fim: str | date | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Volume de vendas de diesel por UF (mensal).
-
-    Dados da ANP em metros cubicos.
-    Proxy de atividade mecanizada agricola.
-
-    Args:
-        uf: Filtro de UF (sigla, ex: "MT"). None = todas.
-        inicio: Data inicial (str "YYYY-MM-DD" ou date). None = sem filtro.
-        fim: Data final (str "YYYY-MM-DD" ou date). None = sem filtro.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com volumes de venda de diesel.
-    """
     if uf and uf.upper() not in UFS_VALIDAS:
         raise ValueError(f"UF '{uf}' invalida. Opcoes: {sorted(UFS_VALIDAS)}")
 
@@ -191,7 +154,6 @@ async def _fetch_and_parse_municipios(
     inicio: date | None,
     fim: date | None,
 ) -> pd.DataFrame:
-    """Baixa e parseia XLSX de municipios, cobrindo periodos necessarios."""
     periodos_necessarios: list[str] = []
 
     if inicio and fim:
@@ -236,7 +198,6 @@ async def _fetch_and_parse_municipios(
 
 
 def _get_source_url(nivel: str) -> str:
-    """Retorna URL da fonte baseado no nivel."""
     if nivel == NIVEL_MUNICIPIO:
         return list(PRECOS_MUNICIPIOS_URLS.values())[0]
     if nivel == NIVEL_UF:

@@ -25,7 +25,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [MapBiomas](mapbiomas.md) | Cobertura e uso da terra | Anual | Municípios (1985-presente) |
 | [CONAB Progresso](conab_progresso.md) | Plantio/colheita semanal | Semanal | 6 culturas, 27 UFs |
 | [B3 Futuros Agro](b3.md) | Ajustes diarios + posicoes em aberto | Diaria | 7 contratos agricolas |
-| [CONAB CEASA](conab.md) | Precos atacado hortifruti | Diaria | 48 produtos, 43 CEASAs |
+| [CONAB CEASA](conab_ceasa.md) | Precos atacado hortifruti | Diaria | 48 produtos, 43 CEASAs |
 | [UN Comtrade](comtrade.md) | Comercio bilateral + trade mirror | Mensal/Anual | ~200 paises, HS codes |
 | [ANTAQ](antaq.md) | Movimentacao portuaria de carga | Anual | Portos brasileiros, 2010+ |
 | [ANP Diesel](anp_diesel.md) | Precos revenda + volumes diesel | Semanal/Mensal | UFs, municipios, 2013+ |

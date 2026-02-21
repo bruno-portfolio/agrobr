@@ -1,19 +1,13 @@
-"""Exceções tipadas do agrobr."""
-
 from __future__ import annotations
 
 from typing import Any
 
 
 class AgrobrError(Exception):
-    """Base para todas as exceções do agrobr."""
-
     pass
 
 
 class SourceUnavailableError(AgrobrError):
-    """Fonte de dados não disponível após todas as tentativas."""
-
     def __init__(
         self,
         source: str,
@@ -32,8 +26,6 @@ class SourceUnavailableError(AgrobrError):
 
 
 class NetworkError(AgrobrError):
-    """Erro de rede (timeout, HTTP error, DNS)."""
-
     def __init__(self, source: str, url: str, reason: str) -> None:
         self.source = source
         self.url = url
@@ -42,8 +34,6 @@ class NetworkError(AgrobrError):
 
 
 class ContractViolationError(AgrobrError):
-    """DataFrame não atende o contrato do dataset (colunas, tipos, ranges)."""
-
     def __init__(
         self,
         dataset: str,
@@ -62,8 +52,6 @@ class ContractViolationError(AgrobrError):
 
 
 class ParseError(AgrobrError):
-    """Falha ao parsear dados da fonte."""
-
     def __init__(
         self,
         source: str,
@@ -79,8 +67,6 @@ class ParseError(AgrobrError):
 
 
 class ValidationError(AgrobrError):
-    """Dados não passaram validação Pydantic ou estatística."""
-
     def __init__(
         self,
         source: str,
@@ -96,14 +82,10 @@ class ValidationError(AgrobrError):
 
 
 class CacheError(AgrobrError):
-    """Erro de operação de cache."""
-
     pass
 
 
 class FingerprintMismatchError(AgrobrError):
-    """Estrutura da página mudou significativamente."""
-
     def __init__(self, source: str, similarity: float, threshold: float) -> None:
         self.source = source
         self.similarity = similarity
@@ -115,30 +97,20 @@ class FingerprintMismatchError(AgrobrError):
 
 
 class StaleDataWarning(UserWarning):
-    """Dados do cache estão expirados mas foram retornados."""
-
     pass
 
 
 class PartialDataWarning(UserWarning):
-    """Dados retornados estão incompletos."""
-
     pass
 
 
 class LayoutChangeWarning(UserWarning):
-    """Possível mudança de layout detectada (baixa confiança)."""
-
     pass
 
 
 class AnomalyDetectedWarning(UserWarning):
-    """Anomalia estatística detectada nos dados."""
-
     pass
 
 
 class ParserFallbackWarning(UserWarning):
-    """Parser principal falhou, usando fallback."""
-
     pass

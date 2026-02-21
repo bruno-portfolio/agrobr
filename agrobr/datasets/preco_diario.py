@@ -1,5 +1,3 @@
-"""Dataset preco_diario - Preço diário spot de commodities agrícolas."""
-
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
@@ -104,21 +102,6 @@ class PrecoDiarioDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca preço diário de um produto agrícola.
-
-        Fontes (em ordem de prioridade):
-          1. CEPEA/ESALQ via Notícias Agrícolas
-          2. Cache local
-
-        Args:
-            produto: soja, milho, boi, cafe, trigo, algodao
-            inicio: Data inicial (opcional)
-            fim: Data final (opcional)
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: data, produto, valor, unidade, variacao
-        """
         logger.info("dataset_fetch", dataset="preco_diario", produto=produto)
 
         snapshot = get_snapshot()
@@ -190,21 +173,6 @@ async def preco_diario(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca preço diário de um produto agrícola.
-
-    Fontes (em ordem de prioridade):
-      1. CEPEA/ESALQ via Notícias Agrícolas
-      2. Cache local
-
-    Args:
-        produto: soja, milho, boi, cafe, trigo, algodao
-        inicio: Data inicial (opcional)
-        fim: Data final (opcional)
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: data, produto, valor, unidade, variacao
-    """
     return await _preco_diario.fetch(
         produto, inicio=inicio, fim=fim, return_meta=return_meta, **kwargs
     )

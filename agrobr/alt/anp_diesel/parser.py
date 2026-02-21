@@ -1,5 +1,3 @@
-"""Parser para dados ANP Diesel — XLSX/XLS -> DataFrames."""
-
 from __future__ import annotations
 
 import io
@@ -18,13 +16,11 @@ PARSER_VERSION = 2
 
 
 def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Normaliza nomes de colunas removendo espacos extras e padronizando."""
     df.columns = [str(c).strip().upper() for c in df.columns]
     return df
 
 
 def _find_column(df: pd.DataFrame, candidates: list[str]) -> str | None:
-    """Encontra coluna por lista de candidatos (case-insensitive)."""
     upper_cols = {c.upper(): c for c in df.columns}
     for candidate in candidates:
         if candidate.upper() in upper_cols:
@@ -33,7 +29,6 @@ def _find_column(df: pd.DataFrame, candidates: list[str]) -> str | None:
 
 
 def _strip_accents(text: str) -> str:
-    """Remove acentos de texto para comparacao fuzzy de headers."""
     import unicodedata
 
     nfkd = unicodedata.normalize("NFKD", text)
@@ -49,17 +44,6 @@ def _detect_header_row(
     engine: _ExcelEngine | None = "openpyxl",
     max_scan: int = 30,
 ) -> int:
-    """Detecta a linha do header real escaneando por colunas marcadoras.
-
-    Args:
-        content: Bytes raw do arquivo.
-        markers: Nomes de coluna esperados (case-insensitive, accent-insensitive).
-        engine: Engine do pandas para leitura.
-        max_scan: Maximo de linhas a escanear.
-
-    Returns:
-        Indice da linha header (0-based).
-    """
     df_raw = pd.read_excel(
         io.BytesIO(content),
         engine=engine,
@@ -81,21 +65,6 @@ def parse_precos(
     uf: str | None = None,
     municipio: str | None = None,
 ) -> pd.DataFrame:
-    """Converte XLSX de precos ANP em DataFrame filtrado diesel.
-
-    Args:
-        content: Bytes raw do arquivo XLSX.
-        produto: Filtro de produto ("DIESEL", "DIESEL S10"). None = todos diesel.
-        uf: Filtro de UF (sigla). None = todas.
-        municipio: Filtro de municipio. None = todos.
-
-    Returns:
-        DataFrame com colunas: data, uf, municipio, produto, preco_venda,
-        preco_compra, margem, n_postos.
-
-    Raises:
-        ParseError: Se dados vazios ou malformados.
-    """
     try:
         header_row = _detect_header_row(
             content,
@@ -252,18 +221,6 @@ def parse_vendas(
     content: bytes,
     uf: str | None = None,
 ) -> pd.DataFrame:
-    """Converte XLS de vendas ANP em DataFrame filtrado diesel.
-
-    Args:
-        content: Bytes raw do arquivo XLS.
-        uf: Filtro de UF (sigla). None = todas.
-
-    Returns:
-        DataFrame com colunas: data, uf, regiao, produto, volume_m3.
-
-    Raises:
-        ParseError: Se dados vazios ou malformados.
-    """
     try:
         header_row = _detect_header_row(
             content,
@@ -349,7 +306,6 @@ def parse_vendas(
 
 
 def _is_month_column(col: str) -> bool:
-    """Verifica se coluna representa um mes (ex: 'JAN', 'FEV', 'MAR.2024')."""
     meses = {"JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"}
     upper = col.strip().upper()
     return any(upper.startswith(m) for m in meses)
@@ -378,7 +334,6 @@ def _parse_vendas_wide(
     col_produto: str,
     month_cols: list[str],
 ) -> pd.DataFrame:
-    """Parse vendas em formato wide (meses como colunas)."""
     col_ano = _find_column(df, ["ANO"])
 
     from agrobr.normalize.regions import normalizar_uf
@@ -460,7 +415,6 @@ def _parse_vendas_long(
     col_mes: str,
     col_vol: str,
 ) -> pd.DataFrame:
-    """Parse vendas em formato long (ano, mes, volume como linhas)."""
     from agrobr.normalize.regions import normalizar_uf
 
     rows: list[dict[str, Any]] = []
@@ -519,14 +473,6 @@ def _parse_vendas_long(
 
 
 def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega precos semanais em medias mensais.
-
-    Args:
-        df: DataFrame semanal (output de parse_precos).
-
-    Returns:
-        DataFrame mensal com media ponderada por n_postos.
-    """
     if df.empty:
         return df
 

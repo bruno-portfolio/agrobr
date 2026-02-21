@@ -101,7 +101,7 @@ class TestMatchPracasResource:
 class TestDownloadCsv:
     @pytest.mark.asyncio
     async def test_download_200(self):
-        content = b"col1;col2\nval1;val2"
+        content = b"col1;col2\n" + b"val1;val2\n" * 15
         mock_response = MagicMock(spec=httpx.Response)
         mock_response.content = content
         mock_response.status_code = 200

@@ -5,8 +5,8 @@
   "parser_function": "parse_entregas_table",
   "parser_kwargs": {"ano": 2024, "produto": "total"},
   "url": "https://anda.org.br/recursos/",
-  "captured_at": "2026-02-11T12:00:00Z",
+  "captured_at": "2026-02-21T08:28:00+00:00",
   "parser_version": 1,
-  "notes": "Synthetic table data (UFs in rows, months in cols) - 5 UFs x 3 months fertilizer deliveries",
-  "needs_real_data": true
+  "notes": "Real data: table extracted via pdfplumber from Principais_Indicadores_2024.pdf, 12 months x BR total fertilizer deliveries",
+  "needs_real_data": false
 }

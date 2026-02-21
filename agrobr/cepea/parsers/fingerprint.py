@@ -1,5 +1,3 @@
-"""Fingerprinting de layout para detecção de mudanças."""
-
 from __future__ import annotations
 
 import hashlib
@@ -22,17 +20,6 @@ def extract_fingerprint(
     source: Fonte,
     url: str,
 ) -> Fingerprint:
-    """
-    Extrai assinatura estrutural do HTML.
-
-    Args:
-        html: Conteúdo HTML
-        source: Fonte de dados
-        url: URL original
-
-    Returns:
-        Fingerprint com assinatura estrutural
-    """
     soup = BeautifulSoup(html, "lxml")
 
     table_classes: list[list[str]] = []
@@ -112,16 +99,6 @@ def compare_fingerprints(
     current: Fingerprint,
     reference: Fingerprint,
 ) -> tuple[float, dict[str, Any]]:
-    """
-    Compara duas fingerprints e retorna similaridade.
-
-    Args:
-        current: Fingerprint atual
-        reference: Fingerprint de referência (baseline)
-
-    Returns:
-        tuple[float, dict]: (similaridade 0-1, detalhes das diferenças)
-    """
     scores: dict[str, float] = {}
     details: dict[str, Any] = {}
 
@@ -210,14 +187,12 @@ def compare_fingerprints(
 
 
 def save_baseline_fingerprint(fingerprint: Fingerprint, path: str) -> None:
-    """Salva fingerprint como baseline de referência."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(fingerprint.model_dump(mode="json"), f, indent=2, default=str)
 
 
 def load_baseline_fingerprint(path: str) -> Fingerprint | None:
-    """Carrega fingerprint de referência."""
     if not Path(path).exists():
         return None
 

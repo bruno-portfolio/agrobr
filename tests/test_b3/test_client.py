@@ -38,7 +38,8 @@ class TestFetchAjustes:
 
     @pytest.mark.asyncio
     async def test_decodes_iso_8859_1(self):
-        content = "Preço de Ajuste".encode("iso-8859-1")
+        html_str = "<html><body><table>" + "Preço de Ajuste " * 40 + "</table></body></html>"
+        content = html_str.encode("iso-8859-1")
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.content = content
@@ -105,7 +106,10 @@ class TestFetchPosicoesAbertas:
         token_response.json.return_value = {"token": "abc123"}
         token_response.raise_for_status = MagicMock()
 
-        csv_content = b"RptDt;TckrSymb;ISIN;Asst;XprtnCd;SgmtNm;OpnIntrst;VartnOpnIntrst\n"
+        csv_content = (
+            b"RptDt;TckrSymb;ISIN;Asst;XprtnCd;SgmtNm;OpnIntrst;VartnOpnIntrst\n"
+            b"2025-12-19;BGI;BRBGIDBS006;BGI;J26;FUT;12345;100\n"
+        )
         csv_response = MagicMock()
         csv_response.status_code = 200
         csv_response.content = csv_content
@@ -131,7 +135,10 @@ class TestFetchPosicoesAbertas:
 
         csv_response = MagicMock()
         csv_response.status_code = 200
-        csv_response.content = b"header\ndata"
+        csv_response.content = (
+            b"RptDt;TckrSymb;ISIN;Asst;XprtnCd;SgmtNm;OpnIntrst;VartnOpnIntrst\n"
+            b"2025-12-19;BGI;BRBGIDBS006;BGI;J26;FUT;12345;100\n"
+        )
         csv_response.raise_for_status = MagicMock()
 
         with patch(

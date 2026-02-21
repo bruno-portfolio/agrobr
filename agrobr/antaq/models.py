@@ -1,5 +1,3 @@
-"""Constantes e mapeamentos para dados ANTAQ."""
-
 from __future__ import annotations
 
 TIPO_NAVEGACAO = {
@@ -92,7 +90,6 @@ MAX_ANO_DEFAULT = 2025
 
 
 def resolve_tipo_navegacao(valor: str | None) -> str | None:
-    """Resolve alias de tipo de navegação para valor do dataset."""
     if valor is None:
         return None
     key = valor.strip().lower().replace(" ", "_")
@@ -107,7 +104,6 @@ def resolve_tipo_navegacao(valor: str | None) -> str | None:
 
 
 def resolve_natureza_carga(valor: str | None) -> str | None:
-    """Resolve alias de natureza da carga para valor do dataset."""
     if valor is None:
         return None
     key = valor.strip().lower().replace(" ", "_")

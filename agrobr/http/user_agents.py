@@ -1,5 +1,3 @@
-"""Pool rotativo de User-Agents."""
-
 from __future__ import annotations
 
 import random
@@ -32,13 +30,10 @@ DEFAULT_HEADERS: dict[str, str] = {
 
 
 class UserAgentRotator:
-    """Rotaciona User-Agents de forma determinística por fonte."""
-
     _counters: dict[str, int] = {}
 
     @classmethod
     def get(cls, source: str | None = None) -> str:
-        """Retorna próximo User-Agent do pool."""
         key = source or "default"
 
         if key not in cls._counters:
@@ -51,17 +46,14 @@ class UserAgentRotator:
 
     @classmethod
     def get_random(cls) -> str:
-        """Retorna User-Agent aleatório."""
         return random.choice(USER_AGENT_POOL)
 
     @classmethod
     def get_headers(cls, source: str | None = None) -> dict[str, str]:
-        """Retorna headers completos incluindo User-Agent."""
         headers = DEFAULT_HEADERS.copy()
         headers["User-Agent"] = cls.get(source)
         return headers
 
     @classmethod
     def reset(cls) -> None:
-        """Reseta contadores."""
         cls._counters.clear()

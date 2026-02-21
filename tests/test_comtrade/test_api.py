@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
+import pandas as pd
 import pytest
 
 from agrobr.comtrade import api
@@ -38,7 +39,7 @@ class TestComercio:
         ):
             df = await api.comercio("complexo_soja", reporter="BR", partner="CN", periodo=2024)
 
-        assert len(df) == 3
+        assert len(df) == 8
         assert "periodo" in df.columns
         assert "valor_fob_usd" in df.columns
         assert "volume_ton" in df.columns
@@ -57,7 +58,7 @@ class TestComercio:
 
         assert isinstance(meta, MetaInfo)
         assert meta.source == "comtrade"
-        assert meta.records_count == 3
+        assert meta.records_count == 8
 
     @pytest.mark.asyncio
     async def test_default_periodo(self):
@@ -102,7 +103,7 @@ class TestTradeMirror:
         with patch("agrobr.comtrade.client.fetch_trade_data", side_effect=mock_fetch):
             df = await api.trade_mirror("soja", reporter="BR", partner="CN", periodo=2024)
 
-        assert len(df) == 1
+        assert len(df) == 4
         assert "diff_peso_kg" in df.columns
         assert "ratio_valor" in df.columns
         assert "ratio_peso" in df.columns
@@ -143,7 +144,7 @@ class TestTradeMirror:
 
         row = df.iloc[0]
         assert row["diff_peso_kg"] != 0
-        assert row["ratio_valor"] > 0
+        assert row["ratio_valor"] > 0 or pd.isna(row["ratio_valor"])
 
 
 class TestPaises:

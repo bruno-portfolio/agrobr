@@ -1,5 +1,3 @@
-"""Parser v1 para indicadores CEPEA - Layout 2024."""
-
 from __future__ import annotations
 
 import re
@@ -21,15 +19,12 @@ logger = structlog.get_logger()
 
 
 class CepeaParserV1(BaseParser):
-    """Parser para layout CEPEA 2024."""
-
     version = 1
     source = "cepea"
     valid_from = date(2024, 1, 1)
     valid_until = None
 
     def can_parse(self, html: str) -> tuple[bool, float]:
-        """Verifica se este parser consegue processar o HTML."""
         soup = BeautifulSoup(html, "lxml")
 
         confidence = 0.0
@@ -76,7 +71,6 @@ class CepeaParserV1(BaseParser):
         return can_parse, confidence
 
     def parse(self, html: str, produto: str) -> list[Indicador]:
-        """Parseia HTML e retorna lista de indicadores."""
         soup = BeautifulSoup(html, "lxml")
         indicadores: list[Indicador] = []
 
@@ -136,12 +130,10 @@ class CepeaParserV1(BaseParser):
         return indicadores
 
     def extract_fingerprint(self, html: str) -> dict[str, Any]:
-        """Extrai assinatura estrutural do HTML."""
         fp = extract_fingerprint(html, Fonte.CEPEA, "internal")
         return fp.model_dump()
 
     def _find_data_table(self, soup: BeautifulSoup) -> Any | None:
-        """Encontra a tabela com dados de indicadores."""
         table = soup.find("table", id=re.compile(r"indicador|preco|cotacao|dados", re.I))
         if table:
             return table
@@ -165,7 +157,6 @@ class CepeaParserV1(BaseParser):
         return None
 
     def _extract_headers(self, table: Any) -> list[str]:
-        """Extrai headers da tabela."""
         headers: list[str] = []
         header_row = table.find("tr")
 
@@ -178,7 +169,6 @@ class CepeaParserV1(BaseParser):
         return headers
 
     def _parse_row(self, cells: list[Any], headers: list[str], produto: str) -> Indicador | None:
-        """Parseia uma linha da tabela."""
         cell_texts = [c.get_text(strip=True) for c in cells]
 
         data_value = None
@@ -224,7 +214,6 @@ class CepeaParserV1(BaseParser):
         )
 
     def _parse_date(self, text: str) -> date | None:
-        """Parseia data de diferentes formatos."""
         text = text.strip()
 
         patterns = [
@@ -245,7 +234,6 @@ class CepeaParserV1(BaseParser):
         return None
 
     def _parse_decimal(self, text: str) -> Decimal | None:
-        """Parseia valor decimal."""
         text = text.strip()
 
         text = re.sub(r"[R$\s]", "", text)
@@ -267,7 +255,6 @@ class CepeaParserV1(BaseParser):
             return None
 
     def _detect_unidade(self, produto: str, headers: list[str]) -> str:
-        """Detecta unidade baseado no produto e headers."""
         produto_lower = produto.lower()
 
         unidades_produto = {

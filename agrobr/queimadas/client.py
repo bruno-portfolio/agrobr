@@ -37,7 +37,16 @@ async def _try_fetch(client: httpx.AsyncClient, url: str) -> bytes | None:
     if response.status_code == 404:
         return None
     response.raise_for_status()
-    return response.content
+
+    content = response.content
+    if len(content) < 50:
+        logger.warning(
+            "queimadas_response_too_small",
+            url=url,
+            size=len(content),
+        )
+        return None
+    return content
 
 
 def _extract_csv_from_zip(data: bytes) -> bytes:
@@ -53,17 +62,6 @@ def _extract_csv_from_zip(data: bytes) -> bytes:
 
 
 async def fetch_focos_diario(data: str) -> tuple[bytes, str]:
-    """Baixa CSV de focos diarios.
-
-    Args:
-        data: Data no formato YYYYMMDD.
-
-    Returns:
-        Tupla (bytes_csv, url_usada).
-
-    Raises:
-        SourceUnavailableError: Se CSV nao encontrado.
-    """
     url = f"{BASE_URL}/diario/Brasil/focos_diario_br_{data}.csv"
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as c:
         content = await _try_fetch(c, url)
@@ -74,23 +72,6 @@ async def fetch_focos_diario(data: str) -> tuple[bytes, str]:
 
 
 async def fetch_focos_mensal(ano: int, mes: int) -> tuple[bytes, str]:
-    """Baixa CSV de focos mensais com fallback em cascata.
-
-    Estrategia:
-        1. .csv mensal (disponivel para 2024+)
-        2. .zip mensal (disponivel para 2023)
-        3. .zip anual completo + filtro por mes (2003-2022)
-
-    Args:
-        ano: Ano (ex: 2024).
-        mes: Mes (1-12).
-
-    Returns:
-        Tupla (bytes_csv, url_usada).
-
-    Raises:
-        SourceUnavailableError: Se nenhuma fonte disponivel.
-    """
     periodo = f"{ano:04d}{mes:02d}"
     csv_url = f"{BASE_URL}/mensal/Brasil/focos_mensal_br_{periodo}.csv"
     zip_url = f"{BASE_URL}/mensal/Brasil/focos_mensal_br_{periodo}.zip"

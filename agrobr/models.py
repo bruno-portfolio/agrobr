@@ -1,5 +1,3 @@
-"""Modelos Pydantic v2 do agrobr."""
-
 from __future__ import annotations
 
 import hashlib
@@ -95,8 +93,6 @@ class Fingerprint(BaseModel):
 
 @dataclass
 class MetaInfo:
-    """Metadados de proveniencia e rastreabilidade para data lineage."""
-
     source: str
     source_url: str
     source_method: str
@@ -125,7 +121,6 @@ class MetaInfo:
     fetch_timestamp: datetime | None = None
 
     def __post_init__(self) -> None:
-        """Preenche versoes automaticamente."""
         if not self.agrobr_version:
             from agrobr import __version__
 
@@ -135,7 +130,6 @@ class MetaInfo:
             self.python_version = sys.version.split()[0]
 
     def to_dict(self) -> dict[str, Any]:
-        """Converte para dicionario serializavel."""
         return {
             "source": self.source,
             "source_url": self.source_url,
@@ -168,12 +162,10 @@ class MetaInfo:
         }
 
     def to_json(self, indent: int = 2) -> str:
-        """Serializa para JSON."""
         return json.dumps(self.to_dict(), indent=indent, ensure_ascii=False)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> MetaInfo:
-        """Reconstroi a partir de dicionario."""
         data = data.copy()
 
         for key in ["fetched_at", "timestamp", "cache_expires_at", "fetch_timestamp"]:
@@ -183,12 +175,10 @@ class MetaInfo:
         return cls(**data)
 
     def compute_dataframe_hash(self, df: pd.DataFrame) -> str:
-        """Computa hash do DataFrame para verificacao de integridade."""
         csv_bytes = df.to_csv(index=False).encode("utf-8")
         return f"sha256:{hashlib.sha256(csv_bytes).hexdigest()}"
 
     def verify_hash(self, df: pd.DataFrame) -> bool:
-        """Verifica se DataFrame corresponde ao hash original."""
         if not self.raw_content_hash:
             return True
 

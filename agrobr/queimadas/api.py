@@ -52,34 +52,6 @@ async def focos(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca focos de calor detectados por satelite (INPE/BDQueimadas).
-
-    Dados diarios ou mensais de focos de calor no Brasil, com coordenadas,
-    municipio, bioma, satelite e potencia radiativa do fogo (FRP).
-
-    Args:
-        ano: Ano (ex: 2024).
-        mes: Mes (1-12).
-        dia: Dia especifico (1-31). Se None, busca mes completo.
-        uf: Filtrar por UF (ex: "MT", "SP"). Opcional.
-        bioma: Filtrar por bioma (ex: "Amazônia", "Cerrado"). Opcional.
-        satelite: Filtrar por satelite (ex: "AQUA_M-T", "NOAA-20"). Opcional.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: data, hora_gmt, lat, lon, satelite, municipio,
-        municipio_id, estado, bioma, numero_dias_sem_chuva, precipitacao,
-        risco_fogo, frp, uf.
-
-    Raises:
-        SourceUnavailableError: Se dados INPE indisponiveis.
-        ParseError: Se nao conseguir parsear o CSV.
-
-    Example:
-        >>> df = await queimadas.focos(ano=2024, mes=9, uf="MT")
-        >>> df.columns.tolist()
-        ['data', 'hora_gmt', 'lat', 'lon', 'satelite', ...]
-    """
     logger.info(
         "queimadas_focos",
         ano=ano,

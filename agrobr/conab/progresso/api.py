@@ -46,28 +46,6 @@ async def progresso_safra(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados de progresso semanal de safra da CONAB.
-
-    Percentuais de plantio e colheita por cultura, estado e semana.
-
-    Args:
-        cultura: Filtrar por cultura (ex: "Soja", "Milho 2a", "algodao").
-            Se None, todas as culturas.
-        estado: Filtrar por UF (ex: "MT", "GO"). Se None, todos.
-        operacao: Filtrar por operacao: "Semeadura" ou "Colheita".
-            Se None, ambas.
-        semana_url: URL de uma semana especifica. Se None, busca a mais recente.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: cultura, safra, operacao, estado,
-        semana_atual, pct_ano_anterior, pct_semana_anterior,
-        pct_semana_atual, pct_media_5_anos.
-
-    Raises:
-        SourceUnavailableError: Se dados indisponiveis.
-        ParseError: Se nao conseguir parsear o XLSX.
-    """
     logger.info(
         "conab_progresso_safra",
         cultura=cultura,
@@ -124,13 +102,5 @@ async def progresso_safra(
 
 
 async def semanas_disponiveis(max_pages: int = 4) -> list[dict[str, str]]:
-    """Lista semanas disponiveis no portal CONAB Progresso de Safra.
-
-    Args:
-        max_pages: Maximo de paginas a buscar (default 4 = ~80 semanas).
-
-    Returns:
-        Lista de dicts com 'descricao' e 'url' para cada semana.
-    """
     weeks = await client.list_semanas(max_pages=max_pages)
     return [{"descricao": desc, "url": url} for desc, url in weeks]

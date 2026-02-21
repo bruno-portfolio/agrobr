@@ -123,6 +123,15 @@ async def _fetch_chunks(
         response.raise_for_status()
 
         data = response.json()
+        if not isinstance(data, dict):
+            logger.warning(
+                "comtrade_unexpected_response_type",
+                url=url,
+                chunk=chunk,
+                type=type(data).__name__,
+            )
+            continue
+
         recs = data.get("data", [])
         if isinstance(recs, list):
             records.extend(recs)

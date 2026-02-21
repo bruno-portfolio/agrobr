@@ -1,14 +1,7 @@
-"""Modelos e constantes para dados DERAL (Depto. Economia Rural — PR).
-
-Fonte: SEAB/DERAL (agricultura.pr.gov.br/deral).
-Dados semanais de condição das lavouras e progresso de safra no Paraná.
-"""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, field_validator
 
-# Produtos monitorados pelo DERAL (nomes canônicos)
 DERAL_PRODUTOS: dict[str, str] = {
     "soja": "Soja",
     "milho": "Milho",
@@ -26,10 +19,8 @@ DERAL_PRODUTOS: dict[str, str] = {
     "canola": "Canola",
 }
 
-# Condições possíveis (rating de 1 a 3)
 CONDICOES = ["boa", "media", "ruim"]
 
-# Estágios fenológicos comuns
 ESTAGIOS = [
     "germinacao",
     "vegetativo",
@@ -38,7 +29,6 @@ ESTAGIOS = [
     "maturacao",
 ]
 
-# Mapeamento de nomes no XLS -> canônicos
 _PRODUTO_ALIASES: dict[str, str] = {
     "soja": "soja",
     "milho": "milho",
@@ -63,7 +53,6 @@ _PRODUTO_ALIASES: dict[str, str] = {
     "canola": "canola",
 }
 
-# Mapeamento condição XLS -> canônico
 _CONDICAO_ALIASES: dict[str, str] = {
     "boa": "boa",
     "bom": "boa",
@@ -77,20 +66,16 @@ _CONDICAO_ALIASES: dict[str, str] = {
 
 
 def normalize_produto(nome: str) -> str:
-    """Normaliza nome de produto para chave canônica."""
     key = nome.strip().lower()
     return _PRODUTO_ALIASES.get(key, key)
 
 
 def normalize_condicao(cond: str) -> str:
-    """Normaliza condição para chave canônica (boa/media/ruim)."""
     key = cond.strip().lower()
     return _CONDICAO_ALIASES.get(key, key)
 
 
 class CondicaoLavoura(BaseModel):
-    """Registro de condição de lavoura DERAL."""
-
     produto: str
     data: str = ""
     estagio: str = ""

@@ -1,5 +1,3 @@
-"""Configuracao de logging estruturado com structlog."""
-
 from __future__ import annotations
 
 import logging
@@ -15,7 +13,6 @@ def configure_logging(
     json_format: bool = True,
     log_file: Path | str | None = None,
 ) -> None:
-    """Configura structlog para logging estruturado."""
     processors: list[Processor] = [
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,

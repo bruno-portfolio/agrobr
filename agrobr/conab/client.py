@@ -1,5 +1,3 @@
-"""Cliente HTTP para download de dados da CONAB."""
-
 from __future__ import annotations
 
 import re
@@ -22,15 +20,6 @@ logger = structlog.get_logger()
 
 
 async def fetch_boletim_page() -> str:
-    """
-    Busca página do boletim de safras de grãos da CONAB.
-
-    Returns:
-        HTML da página com lista de levantamentos
-
-    Raises:
-        SourceUnavailableError: Se não conseguir acessar a página
-    """
     import asyncio
 
     url = constants.URLS[constants.Fonte.CONAB]["boletim_graos"]
@@ -64,6 +53,16 @@ async def fetch_boletim_page() -> str:
                 html: str = await page.content()
                 await browser.close()
 
+                if len(html) < 5_000 or "levantamento" not in html.lower():
+                    raise SourceUnavailableError(
+                        source="conab",
+                        url=url,
+                        last_error=(
+                            f"Response too small or missing expected content "
+                            f"({len(html)} bytes, no 'levantamento' marker)"
+                        ),
+                    )
+
                 logger.info(
                     "conab_fetch_boletim_success",
                     content_length=len(html),
@@ -88,15 +87,6 @@ async def fetch_boletim_page() -> str:
 
 
 async def list_levantamentos(html: str | None = None) -> list[dict[str, Any]]:
-    """
-    Lista levantamentos disponíveis na página do boletim.
-
-    Args:
-        html: HTML da página (se None, busca automaticamente)
-
-    Returns:
-        Lista de dicts com informações dos levantamentos
-    """
     if html is None:
         html = await fetch_boletim_page()
 
@@ -131,18 +121,6 @@ async def list_levantamentos(html: str | None = None) -> list[dict[str, Any]]:
 
 
 async def download_xlsx(url: str) -> BytesIO:
-    """
-    Baixa arquivo XLSX da CONAB.
-
-    Args:
-        url: URL do arquivo XLSX
-
-    Returns:
-        BytesIO com conteúdo do arquivo
-
-    Raises:
-        SourceUnavailableError: Se não conseguir baixar
-    """
     logger.info("conab_download_xlsx", url=url)
 
     from agrobr.http.browser import is_available
@@ -169,6 +147,16 @@ async def download_xlsx(url: str) -> BytesIO:
             if path:
                 with open(path, "rb") as f:
                     content = f.read()
+
+                if len(content) < 1_000:
+                    raise SourceUnavailableError(
+                        source="conab",
+                        url=url,
+                        last_error=(
+                            f"Downloaded XLSX too small ({len(content)} bytes), "
+                            f"expected a valid spreadsheet"
+                        ),
+                    )
 
                 logger.info(
                     "conab_download_success",
@@ -201,12 +189,6 @@ async def download_xlsx(url: str) -> BytesIO:
 
 
 async def fetch_latest_safra_xlsx() -> tuple[BytesIO, dict[str, Any]]:
-    """
-    Baixa planilha do levantamento mais recente.
-
-    Returns:
-        tuple: (BytesIO com arquivo, metadata do levantamento)
-    """
     levantamentos = await list_levantamentos()
 
     if not levantamentos:
@@ -226,16 +208,6 @@ async def fetch_safra_xlsx(
     safra: str | None = None,
     levantamento: int | None = None,
 ) -> tuple[BytesIO, dict[str, Any]]:
-    """
-    Baixa planilha de safra específica.
-
-    Args:
-        safra: Safra no formato "2024/25" (default: mais recente)
-        levantamento: Número do levantamento (default: mais recente)
-
-    Returns:
-        tuple: (BytesIO com arquivo, metadata do levantamento)
-    """
     levantamentos = await list_levantamentos()
 
     if not levantamentos:

@@ -1,9 +1,3 @@
-"""Cliente HTTP para dados DERAL (SEAB/PR).
-
-Dados semanais: https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls
-Resumo mensal:  https://www.agricultura.pr.gov.br/system/files/publico/Safras/pss.xlsx
-"""
-
 from __future__ import annotations
 
 import httpx
@@ -33,17 +27,6 @@ HEADERS = {
 
 
 async def _fetch_bytes(url: str) -> bytes:
-    """Fetch arquivo binário com retry.
-
-    Args:
-        url: URL completa do arquivo.
-
-    Returns:
-        Conteúdo binário do arquivo.
-
-    Raises:
-        SourceUnavailableError: Se fonte indisponível.
-    """
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         logger.debug("deral_request", url=url)
         response = await retry_on_status(
@@ -59,28 +42,27 @@ async def _fetch_bytes(url: str) -> bytes:
             )
 
         response.raise_for_status()
-        return response.content
+
+        content = response.content
+        if len(content) < 1_000:
+            raise SourceUnavailableError(
+                source="deral",
+                url=url,
+                last_error=(
+                    f"Downloaded file too small ({len(content)} bytes), "
+                    f"expected a valid spreadsheet"
+                ),
+            )
+        return content
 
 
 async def fetch_pc_xls() -> bytes:
-    """Baixa planilha semanal PC (Painel de Culturas).
-
-    Atualizada semanalmente às terças-feiras.
-
-    Returns:
-        Bytes do arquivo .xls.
-    """
     url = f"{BASE_URL}/PC.xls"
     logger.info("deral_fetch_pc", url=url)
     return await _fetch_bytes(url)
 
 
 async def fetch_pss_xlsx() -> bytes:
-    """Baixa planilha mensal PSS (resumo safra).
-
-    Returns:
-        Bytes do arquivo .xlsx.
-    """
     url = f"{BASE_URL}/pss.xlsx"
     logger.info("deral_fetch_pss", url=url)
     return await _fetch_bytes(url)

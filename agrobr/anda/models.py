@@ -1,13 +1,9 @@
-"""Modelos Pydantic para dados ANDA (fertilizantes)."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
 
 
 class EntregaFertilizante(BaseModel):
-    """Registro de entrega de fertilizante por UF/mês."""
-
     ano: int = Field(..., ge=2000, le=2100)
     mes: int = Field(..., ge=1, le=12)
     uf: str = Field(..., min_length=2, max_length=2)
@@ -25,7 +21,6 @@ class EntregaFertilizante(BaseModel):
         return v.strip().lower()
 
 
-# Mapeamento de nomes comuns → nomes canônicos ANDA
 FERTILIZANTES_MAP: dict[str, str] = {
     "npk": "npk",
     "ureia": "ureia",
@@ -46,7 +41,6 @@ FERTILIZANTES_MAP: dict[str, str] = {
     "total": "total",
 }
 
-# UFs válidas para dados ANDA
 ANDA_UFS: list[str] = [
     "AC",
     "AL",
@@ -79,13 +73,5 @@ ANDA_UFS: list[str] = [
 
 
 def normalize_fertilizante(nome: str) -> str:
-    """Normaliza nome de fertilizante para forma canônica.
-
-    Args:
-        nome: Nome do fertilizante (qualquer formato).
-
-    Returns:
-        Nome canônico em minúsculas.
-    """
     key = nome.strip().lower()
     return FERTILIZANTES_MAP.get(key, key)

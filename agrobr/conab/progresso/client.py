@@ -66,14 +66,6 @@ def _parse_week_date(text: str) -> str:
 
 
 async def list_semanas(max_pages: int = 4) -> list[tuple[str, str]]:
-    """Lista semanas disponiveis com data e URL da pagina semanal.
-
-    Args:
-        max_pages: Maximo de paginas Plone a buscar (default 4 = ~80 semanas).
-
-    Returns:
-        Lista de (descricao, url_semanal) ordenada da mais recente para a mais antiga.
-    """
     all_weeks: list[tuple[str, str]] = []
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         for page in range(max_pages):
@@ -91,17 +83,6 @@ async def list_semanas(max_pages: int = 4) -> list[tuple[str, str]]:
 
 
 async def fetch_xlsx_semanal(week_url: str) -> tuple[bytes, str]:
-    """Baixa XLSX de plantio/colheita de uma semana especifica.
-
-    Args:
-        week_url: URL da pagina semanal (acompanhamento-das-lavouras-...).
-
-    Returns:
-        Tupla (bytes_xlsx, url_xlsx).
-
-    Raises:
-        SourceUnavailableError: Se XLSX nao encontrado.
-    """
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         logger.debug("conab_progresso_week", url=week_url)
         resp = await retry_on_status(lambda: client.get(week_url), source="conab")
@@ -142,14 +123,6 @@ async def fetch_xlsx_semanal(week_url: str) -> tuple[bytes, str]:
 
 
 async def fetch_latest() -> tuple[bytes, str, str]:
-    """Baixa XLSX da semana mais recente.
-
-    Returns:
-        Tupla (bytes_xlsx, url_xlsx, descricao_semana).
-
-    Raises:
-        SourceUnavailableError: Se nenhuma semana disponivel.
-    """
     weeks = await list_semanas(max_pages=1)
     if not weeks:
         raise SourceUnavailableError(

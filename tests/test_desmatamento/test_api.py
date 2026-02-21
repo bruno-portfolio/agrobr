@@ -63,10 +63,10 @@ class TestProdes:
             new_callable=AsyncMock,
             return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.csv"),
         ):
-            df = await api.prodes(bioma="Cerrado", uf="MT")
+            df = await api.prodes(bioma="Cerrado", uf="PA")
 
         assert len(df) >= 1
-        assert (df["uf"] == "MT").all()
+        assert (df["uf"] == "PA").all()
 
     @pytest.mark.asyncio
     async def test_filter_uf_case_insensitive(self):
@@ -77,10 +77,10 @@ class TestProdes:
             new_callable=AsyncMock,
             return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.csv"),
         ):
-            df = await api.prodes(bioma="Cerrado", uf="mt")
+            df = await api.prodes(bioma="Cerrado", uf="pa")
 
         assert len(df) >= 1
-        assert (df["uf"] == "MT").all()
+        assert (df["uf"] == "PA").all()
 
     @pytest.mark.asyncio
     async def test_empty_filter(self):

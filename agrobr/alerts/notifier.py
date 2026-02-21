@@ -1,5 +1,3 @@
-"""Dispatcher de alertas multi-canal."""
-
 from __future__ import annotations
 
 import asyncio
@@ -27,7 +25,6 @@ async def send_alert(
     details: dict[str, Any],
     source: str | None = None,
 ) -> None:
-    """Envia alerta para todos os canais configurados."""
     settings = constants.AlertSettings()
 
     if not settings.enabled:

@@ -4,7 +4,8 @@
   "parser_module": "agrobr.alt.anp_diesel.parser",
   "parser_functions": ["parse_precos"],
   "url": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx",
-  "captured_at": "2026-02-17T12:00:00Z",
-  "parser_version": 1,
-  "notes": "Synthetic ANP diesel price data - 3 rows: 2 DIESEL S10 (SP, MT), 1 DIESEL (SP). Tests filtering and margem calculation."
+  "captured_at": "2026-02-21T08:25:13Z",
+  "needs_real_data": false,
+  "parser_version": 2,
+  "notes": "Real ANP diesel price data from estados weekly XLSX. Contains ~36k+ rows from 2012-2026, DIESEL and DIESEL S10 by UF. First row is AC DIESEL from 2012-12-30."
 }

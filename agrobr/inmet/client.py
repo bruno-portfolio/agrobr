@@ -1,5 +1,3 @@
-"""Cliente HTTP para API INMET (apitempo.inmet.gov.br)."""
-
 from __future__ import annotations
 
 import os
@@ -32,12 +30,10 @@ HEADERS = {
 
 
 def _get_token() -> str | None:
-    """Retorna token INMET da env var AGROBR_INMET_TOKEN, se configurado."""
     return os.getenv("AGROBR_INMET_TOKEN")
 
 
 def _build_headers() -> dict[str, str]:
-    """Constrói headers incluindo Authorization se token disponível."""
     headers = dict(HEADERS)
     token = _get_token()
     if token:
@@ -46,7 +42,6 @@ def _build_headers() -> dict[str, str]:
 
 
 async def _get_json(path: str) -> list[dict[str, Any]]:
-    """Faz GET na API INMET e retorna JSON parseado."""
     url = f"{BASE_URL}{path}"
     headers = _build_headers()
 
@@ -74,14 +69,6 @@ async def _get_json(path: str) -> list[dict[str, Any]]:
 
 
 async def fetch_estacoes(tipo: str = "T") -> list[dict[str, Any]]:
-    """Lista estações meteorológicas.
-
-    Args:
-        tipo: "T" para automáticas, "M" para convencionais.
-
-    Returns:
-        Lista de dicts com metadados das estações.
-    """
     if tipo not in ("T", "M"):
         raise ValueError(f"Tipo deve ser 'T' (automática) ou 'M' (convencional), got '{tipo}'")
 
@@ -94,19 +81,6 @@ async def fetch_dados_estacao(
     inicio: date,
     fim: date,
 ) -> list[dict[str, Any]]:
-    """Busca dados observacionais de uma estação por período.
-
-    Divide automaticamente em chunks de até 365 dias para respeitar
-    limites práticos da API INMET.
-
-    Args:
-        codigo: Código da estação (ex: "A001").
-        inicio: Data inicial.
-        fim: Data final.
-
-    Returns:
-        Lista de dicts com observações horárias.
-    """
     if inicio > fim:
         raise ValueError(f"inicio ({inicio}) deve ser <= fim ({fim})")
 
@@ -157,17 +131,6 @@ async def fetch_dados_estacoes_uf(
     fim: date,
     tipo: str = "T",
 ) -> list[dict[str, Any]]:
-    """Busca dados de todas as estações operantes de uma UF.
-
-    Args:
-        uf: Sigla da UF (ex: "MT", "SP").
-        inicio: Data inicial.
-        fim: Data final.
-        tipo: "T" para automáticas, "M" para convencionais.
-
-    Returns:
-        Lista consolidada de observações de todas as estações da UF.
-    """
     import asyncio
 
     estacoes = await fetch_estacoes(tipo)

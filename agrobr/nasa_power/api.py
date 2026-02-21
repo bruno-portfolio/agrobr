@@ -1,5 +1,3 @@
-"""API publica do modulo NASA POWER."""
-
 from __future__ import annotations
 
 import time
@@ -26,19 +24,6 @@ async def clima_ponto(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Dados climaticos diarios ou mensais de um ponto (lat/lon).
-
-    Args:
-        lat: Latitude (-90 a 90).
-        lon: Longitude (-180 a 180).
-        inicio: Data inicial (str "YYYY-MM-DD" ou date).
-        fim: Data final (str "YYYY-MM-DD" ou date).
-        agregacao: "diario" (padrao) ou "mensal".
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com dados climaticos do ponto.
-    """
     if isinstance(inicio, str):
         inicio = date.fromisoformat(inicio)
     if isinstance(fim, str):
@@ -85,23 +70,6 @@ async def clima_uf(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Dados climaticos agregados por UF (ponto central).
-
-    Usa coordenadas centrais da UF como ponto representativo.
-    Para analises precisas, usar clima_ponto() com coordenadas especificas.
-
-    Args:
-        uf: Sigla da UF (ex: "MT", "SP").
-        ano: Ano de referencia.
-        agregacao: "diario" ou "mensal" (padrao).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com dados climaticos da UF.
-
-    Raises:
-        ValueError: Se UF nao reconhecida.
-    """
     uf_upper = uf.upper()
     if uf_upper not in UF_COORDS:
         raise ValueError(

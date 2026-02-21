@@ -1,5 +1,3 @@
-"""CLI do agrobr usando Typer."""
-
 from __future__ import annotations
 
 import json
@@ -33,7 +31,6 @@ def main(
         is_eager=True,
     ),
 ) -> None:
-    """agrobr - Dados agricolas brasileiros."""
     pass
 
 
@@ -49,7 +46,6 @@ def cepea_indicador(
     _ultimo: bool = typer.Option(False, "--ultimo", "-u", help="Apenas ultimo valor"),
     _formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
-    """Consulta indicador CEPEA."""
     typer.echo(f"Consultando {produto}...")
     typer.echo("Funcionalidade em desenvolvimento")
 
@@ -60,7 +56,6 @@ def health(
     _source: str | None = typer.Option(None, "--source", "-s", help="Fonte especifica"),
     output: str = typer.Option("text", "--output", "-o", help="Formato: text, json"),
 ) -> None:
-    """Executa health checks."""
     typer.echo("Health check em desenvolvimento")
 
     if output == "json":
@@ -73,7 +68,6 @@ def doctor(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Mostra informacoes detalhadas"),
     json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
 ) -> None:
-    """Diagnostica saude do sistema, conectividade e cache."""
     import asyncio
 
     from agrobr.health.doctor import run_diagnostics
@@ -97,7 +91,6 @@ app.add_typer(cache_app, name="cache")
 
 @cache_app.command("status")  # type: ignore[misc, untyped-decorator]
 def cache_status() -> None:
-    """Mostra status do cache."""
     typer.echo("Status do cache em desenvolvimento")
 
 
@@ -106,7 +99,6 @@ def cache_clear(
     _source: str | None = typer.Option(None, "--source", "-s", help="Limpar apenas fonte"),
     _older_than: str | None = typer.Option(None, "--older-than", help="Ex: 30d"),
 ) -> None:
-    """Limpa o cache."""
     typer.echo("Limpeza de cache em desenvolvimento")
 
 
@@ -121,7 +113,6 @@ def conab_safras(
     uf: str | None = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
-    """Consulta dados de safra por produto."""
     import asyncio
 
     from agrobr import conab
@@ -152,7 +143,6 @@ def conab_balanco(
     produto: str | None = typer.Argument(None, help="Produto (opcional)"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
-    """Consulta balanco de oferta e demanda."""
     import asyncio
 
     from agrobr import conab
@@ -180,7 +170,6 @@ def conab_balanco(
 
 @conab_app.command("levantamentos")  # type: ignore[misc, untyped-decorator]
 def conab_levantamentos() -> None:
-    """Lista levantamentos disponiveis."""
     import asyncio
 
     from agrobr import conab
@@ -203,7 +192,6 @@ def conab_levantamentos() -> None:
 
 @conab_app.command("produtos")  # type: ignore[misc, untyped-decorator]
 def conab_produtos() -> None:
-    """Lista produtos disponiveis."""
     import asyncio
 
     from agrobr import conab
@@ -228,7 +216,6 @@ def ibge_pam(
     nivel: str = typer.Option("uf", "--nivel", "-n", help="Nivel: brasil, uf, municipio"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
-    """Consulta dados da Producao Agricola Municipal (PAM)."""
     import asyncio
 
     from agrobr import ibge
@@ -240,7 +227,7 @@ def ibge_pam(
         if ano:
             ano_param = [int(a.strip()) for a in ano.split(",")] if "," in ano else int(ano)
 
-        nivel_typed: Any = nivel  # type validated by ibge.pam at runtime
+        nivel_typed: Any = nivel
         df = asyncio.run(ibge.pam(produto=produto, ano=ano_param, uf=uf, nivel=nivel_typed))
 
         if df.empty:
@@ -267,7 +254,6 @@ def ibge_lspa(
     uf: str | None = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
     formato: str = typer.Option("table", "--formato", "-o", help="Formato: table, csv, json"),
 ) -> None:
-    """Consulta dados do Levantamento Sistematico da Producao Agricola (LSPA)."""
     import asyncio
 
     from agrobr import ibge
@@ -297,7 +283,6 @@ def ibge_lspa(
 def ibge_produtos(
     pesquisa: str = typer.Option("pam", "--pesquisa", "-p", help="Pesquisa: pam ou lspa"),
 ) -> None:
-    """Lista produtos disponiveis."""
     import asyncio
 
     from agrobr import ibge
@@ -322,7 +307,6 @@ app.add_typer(snapshot_app, name="snapshot")
 
 @config_app.command("show")  # type: ignore[misc, untyped-decorator]
 def config_show() -> None:
-    """Mostra configuracoes atuais."""
     typer.echo("=== Cache Settings ===")
     settings = constants.CacheSettings()
     typer.echo(f"  cache_dir: {settings.cache_dir}")
@@ -344,7 +328,6 @@ def config_show() -> None:
 def snapshot_list(
     json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
 ) -> None:
-    """Lista todos os snapshots disponiveis."""
     from agrobr.snapshots import list_snapshots
 
     snapshots = list_snapshots()
@@ -386,7 +369,6 @@ def snapshot_create(
         None, "--sources", "-s", help="Fontes a incluir (ex: cepea,conab,ibge)"
     ),
 ) -> None:
-    """Cria um novo snapshot dos dados atuais."""
     import asyncio
 
     from agrobr.snapshots import create_snapshot
@@ -414,7 +396,6 @@ def snapshot_delete(
     name: str = typer.Argument(..., help="Nome do snapshot a remover"),
     force: bool = typer.Option(False, "--force", "-f", help="Nao pedir confirmacao"),
 ) -> None:
-    """Remove um snapshot."""
     from agrobr.snapshots import delete_snapshot, get_snapshot
 
     snapshot = get_snapshot(name)
@@ -439,7 +420,6 @@ def snapshot_delete(
 def snapshot_use(
     name: str = typer.Argument(..., help="Nome do snapshot a usar"),
 ) -> None:
-    """Configura agrobr para usar um snapshot (modo deterministico)."""
     from agrobr.config import set_mode
     from agrobr.snapshots import get_snapshot
 

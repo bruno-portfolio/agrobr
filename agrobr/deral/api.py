@@ -1,11 +1,3 @@
-"""API pública do módulo DERAL — condição das lavouras Paraná.
-
-Dados do Departamento de Economia Rural (SEAB/PR).
-Condição semanal das lavouras, progresso de plantio e colheita.
-
-Fonte: SEAB/DERAL (agricultura.pr.gov.br/deral), sem autenticação.
-"""
-
 from __future__ import annotations
 
 import time
@@ -44,27 +36,6 @@ async def condicao_lavouras(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca condição das lavouras do Paraná (DERAL).
-
-    Dados semanais de condição (boa/média/ruim), progresso de
-    plantio e colheita para as culturas monitoradas pelo DERAL.
-
-    Args:
-        produto: Filtrar por produto (\"soja\", \"milho\", \"trigo\").
-                 None retorna todos os produtos.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame: produto, data, condicao, pct, plantio_pct, colheita_pct.
-
-    Raises:
-        SourceUnavailableError: Se site DERAL indisponível.
-
-    Example:
-        >>> df = await deral.condicao_lavouras("soja")
-        >>> df.columns.tolist()
-        ['produto', 'data', 'condicao', 'pct', 'plantio_pct', 'colheita_pct']
-    """
     logger.info("deral_condicao_lavouras", produto=produto)
 
     t0 = time.monotonic()

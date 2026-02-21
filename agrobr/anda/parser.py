@@ -1,9 +1,3 @@
-"""Parser para relatórios ANDA de entregas de fertilizantes.
-
-Suporta PDF (via pdfplumber, optional) e Excel (.xlsx).
-Extrai tabelas de entregas por UF/mês com volumes em toneladas.
-"""
-
 from __future__ import annotations
 
 import re
@@ -19,7 +13,6 @@ logger = structlog.get_logger()
 
 PARSER_VERSION = 1
 
-# Meses em português → número
 _MESES_MAP: dict[str, int] = {
     "janeiro": 1,
     "jan": 1,
@@ -48,21 +41,12 @@ _MESES_MAP: dict[str, int] = {
     "dez": 12,
 }
 
-# Colunas possíveis nas tabelas ANDA
 _UF_PATTERNS = re.compile(r"^(UF|Estado|Unidade\s*da\s*Federa)", re.IGNORECASE)
 _MES_PATTERNS = re.compile(r"^(M[eê]s|Per[ií]odo|Month)", re.IGNORECASE)
 _VOLUME_PATTERNS = re.compile(r"(tonelada|volume|ton\.|entrega|quantidade|total)", re.IGNORECASE)
 
 
 def _check_pdfplumber() -> Any:
-    """Verifica e importa pdfplumber (dependência opcional).
-
-    Returns:
-        Módulo pdfplumber.
-
-    Raises:
-        ImportError: Se pdfplumber não está instalado.
-    """
     try:
         import pdfplumber
 
@@ -75,14 +59,6 @@ def _check_pdfplumber() -> Any:
 
 
 def _safe_float(value: Any) -> float | None:
-    """Converte valor para float, tratando formatos brasileiros.
-
-    Args:
-        value: Valor a converter.
-
-    Returns:
-        Float ou None se não conversível.
-    """
     if value is None:
         return None
     if isinstance(value, (int, float)):
@@ -92,7 +68,6 @@ def _safe_float(value: Any) -> float | None:
     if not s or s in ("-", "–", "—", "...", "n.d.", "n/d"):
         return None
 
-    # Remove separadores de milhar (pontos) e converte vírgula decimal
     s = s.replace(".", "").replace(",", ".")
 
     try:
@@ -102,25 +77,12 @@ def _safe_float(value: Any) -> float | None:
 
 
 def _detect_month(text: str) -> int | None:
-    """Detecta mês a partir de texto (nome ou número).
-
-    Rejeita padrões de acumulado/período como "Janeiro a Dezembro",
-    "Jan/Dez", "Acumulado", "Total do Ano", etc.
-
-    Args:
-        text: Texto contendo mês.
-
-    Returns:
-        Número do mês (1-12) ou None.
-    """
     s = text.strip().lower()
 
-    # Rejeita padrões de acumulado/período (ex: "janeiro a dezembro", "jan/dez")
     _ACUMULADO_PATTERNS = (" a ", "/dez", "total", "acumulado", "anual", "ano")
     if any(p in s for p in _ACUMULADO_PATTERNS):
         return None
 
-    # Tenta como número direto
     try:
         n = int(s)
         if 1 <= n <= 12:
@@ -128,7 +90,6 @@ def _detect_month(text: str) -> int | None:
     except ValueError:
         pass
 
-    # Tenta como nome em português
     for key, val in _MESES_MAP.items():
         if s.startswith(key):
             return val
@@ -137,19 +98,10 @@ def _detect_month(text: str) -> int | None:
 
 
 def _is_uf(text: str) -> bool:
-    """Verifica se texto é uma sigla de UF válida."""
     return text.strip().upper() in ANDA_UFS
 
 
 def extract_tables_from_pdf(pdf_bytes: bytes) -> list[list[list[str | None]]]:
-    """Extrai todas as tabelas de um PDF usando pdfplumber.
-
-    Args:
-        pdf_bytes: Conteúdo do PDF em bytes.
-
-    Returns:
-        Lista de tabelas, cada uma como lista de linhas (lista de células).
-    """
     pdfplumber = _check_pdfplumber()
 
     import io
@@ -167,20 +119,11 @@ def extract_tables_from_pdf(pdf_bytes: bytes) -> list[list[list[str | None]]]:
 
 
 def _expand_newline_cells(table: list[list[str | None]]) -> list[list[str]]:
-    """Expande tabelas com meses/valores compactados por \\n numa única célula.
-
-    O PDF "Principais Indicadores" da ANDA tem layout compacto:
-    row[header]  = ["", "", "2021", "2022", "2023", "2024", ...]
-    row[data]    = ["", "Janeiro\\nFevereiro\\n...", "3.397.952\\n...", ...]
-
-    Expande para uma tabela convencional com uma linha por mês.
-    """
     if not table or len(table) < 2:
         return [[str(c).strip() if c else "" for c in row] for row in table]
 
     clean = [[str(c).strip() if c else "" for c in row] for row in table]
 
-    # Detecta se alguma célula tem 5+ linhas internas (padrão compacto)
     max_lines = 0
     for row in clean:
         for cell in row:
@@ -191,7 +134,6 @@ def _expand_newline_cells(table: list[list[str | None]]) -> list[list[str]]:
     if max_lines < 5:
         return clean
 
-    # Expande: cada linha interna vira uma row na tabela
     expanded: list[list[str]] = []
     for row in clean:
         splits = [cell.split("\n") for cell in row]
@@ -211,53 +153,28 @@ def parse_entregas_table(
     ano: int,
     produto: str = "total",
 ) -> list[dict[str, Any]]:
-    """Parseia uma tabela de entregas ANDA extraída de PDF.
-
-    A tabela ANDA típica tem UFs nas linhas e meses nas colunas,
-    ou meses nas linhas e UFs nas colunas. O parser detecta
-    automaticamente a orientação.
-
-    Também suporta o layout compacto "Principais Indicadores"
-    onde meses e valores são concatenados com \\n numa célula.
-
-    Args:
-        table: Tabela como lista de linhas.
-        ano: Ano de referência.
-        produto: Tipo de fertilizante (default: "total").
-
-    Returns:
-        Lista de dicts com campos: ano, mes, uf, produto_fertilizante, volume_ton.
-    """
     if not table or len(table) < 2:
         return []
 
     records: list[dict[str, Any]] = []
 
-    # Expande células compactadas com \n (layout "Principais Indicadores")
     clean_table = _expand_newline_cells(table)
 
-    # Detecta orientação: UFs nas linhas vs UFs nas colunas
     header = clean_table[0]
     first_col_values = [row[0] for row in clean_table[1:] if row]
 
-    # Conta quantos valores na primeira coluna são UFs
     uf_in_rows = sum(1 for v in first_col_values if _is_uf(v))
-    # Conta quantos headers são UFs
     uf_in_cols = sum(1 for v in header[1:] if _is_uf(v))
 
     if uf_in_rows >= 3:
-        # UFs nas linhas, meses nas colunas
         records = _parse_uf_rows(clean_table, ano, produto)
 
     if not records and uf_in_cols >= 3:
-        # UFs nas colunas, meses nas linhas
         records = _parse_uf_cols(clean_table, ano, produto)
 
     if not records:
-        # Tenta detectar outra estrutura genérica
         records = _parse_generic(clean_table, ano, produto)
 
-    # Tenta layout "Principais Indicadores": meses na col 1, anos nas cols headers
     if not records:
         records = _parse_indicadores(clean_table, ano, produto)
 
@@ -269,11 +186,9 @@ def _parse_uf_rows(
     ano: int,
     produto: str,
 ) -> list[dict[str, Any]]:
-    """Parseia tabela com UFs nas linhas e meses nas colunas."""
     records: list[dict[str, Any]] = []
     header = table[0]
 
-    # Detecta quais colunas correspondem a meses
     month_cols: dict[int, int] = {}
     for i, h in enumerate(header[1:], 1):
         month = _detect_month(h)
@@ -313,11 +228,9 @@ def _parse_uf_cols(
     ano: int,
     produto: str,
 ) -> list[dict[str, Any]]:
-    """Parseia tabela com UFs nas colunas e meses nas linhas."""
     records: list[dict[str, Any]] = []
     header = table[0]
 
-    # Detecta quais colunas correspondem a UFs
     uf_cols: dict[int, str] = {}
     for i, h in enumerate(header[1:], 1):
         if _is_uf(h):
@@ -356,7 +269,6 @@ def _parse_generic(
     ano: int,
     produto: str,
 ) -> list[dict[str, Any]]:
-    """Tenta parsear tabela genérica detectando colunas de UF, mês e volume."""
     records: list[dict[str, Any]] = []
     header = table[0]
 
@@ -407,28 +319,8 @@ def _parse_indicadores(
     ano: int,
     produto: str,
 ) -> list[dict[str, Any]]:
-    """Parseia layout 'Principais Indicadores': meses nas linhas, anos nas colunas.
-
-    O PDF "Principais Indicadores" da ANDA contém múltiplas seções
-    (entregas, produção, importação, exportação) com layout idêntico.
-    Apenas a **primeira seção** (Fertilizantes Entregues ao Mercado)
-    é relevante — as demais são ignoradas.
-
-    Estrutura de cada seção:
-        Row titulo: ["", "Fertilizantes Entregues ao Mercado (em ton...)", ...]
-        Row header: ["", "",  "2018", "2019", "2020", "2021", ...]
-        Row dados:  ["", "Janeiro", "2.443.088", "2.762.157", ...]
-        ...
-        Row total:  ["", "Janeiro a Dezembro", "35.506.322", ...]  (ignorada)
-        Row total:  ["", "Total do Ano", "35.506.322", ...]  (ignorada)
-
-    A detecção de fim de seção usa dois sinais:
-    1. Linha com título descritivo longo (> 30 chars) na coluna de meses
-    2. Reaparição do header de ano (nova seção com layout idêntico)
-    """
     records: list[dict[str, Any]] = []
 
-    # Procura PRIMEIRO header com o ano alvo (4 dígitos)
     ano_str = str(ano)
     header_row_idx = None
     ano_col_idx = None
@@ -445,7 +337,6 @@ def _parse_indicadores(
     if header_row_idx is None or ano_col_idx is None:
         return records
 
-    # Detecta coluna de meses (coluna com nomes de mês)
     mes_col_idx = None
     for row in table[header_row_idx + 1 :]:
         for j, cell in enumerate(row):
@@ -464,7 +355,6 @@ def _parse_indicadores(
 
         cell_mes = row[mes_col_idx]
 
-        # Detecta início de nova seção: título descritivo longo ou re-aparição do ano
         if cell_mes and len(cell_mes.strip()) > 30:
             break
         if row[ano_col_idx].strip() == ano_str and cell_mes.strip() == "":
@@ -494,19 +384,6 @@ def parse_entregas_pdf(
     ano: int,
     produto: str = "total",
 ) -> pd.DataFrame:
-    """Parseia PDF de entregas ANDA e retorna DataFrame.
-
-    Args:
-        pdf_bytes: Conteúdo do PDF em bytes.
-        ano: Ano de referência.
-        produto: Tipo de fertilizante (default: "total").
-
-    Returns:
-        DataFrame com colunas: ano, mes, uf, produto_fertilizante, volume_ton.
-
-    Raises:
-        ParseError: Se nenhum dado válido for extraído.
-    """
     tables = extract_tables_from_pdf(pdf_bytes)
 
     if not tables:
@@ -530,7 +407,6 @@ def parse_entregas_pdf(
 
     df = pd.DataFrame(all_records)
 
-    # Ordena por mês e UF
     df = df.sort_values(["mes", "uf"]).reset_index(drop=True)
 
     logger.info(
@@ -549,21 +425,6 @@ def parse_entregas_excel(
     ano: int,
     produto: str = "total",
 ) -> pd.DataFrame:
-    """Parseia Excel de entregas ANDA e retorna DataFrame.
-
-    Alternativa ao PDF quando ANDA disponibiliza dados em Excel.
-
-    Args:
-        excel_bytes: Conteúdo do Excel em bytes.
-        ano: Ano de referência.
-        produto: Tipo de fertilizante (default: "total").
-
-    Returns:
-        DataFrame com colunas: ano, mes, uf, produto_fertilizante, volume_ton.
-
-    Raises:
-        ParseError: Se nenhum dado válido for extraído.
-    """
     import io
 
     try:
@@ -575,7 +436,6 @@ def parse_entregas_excel(
             reason=f"Erro ao ler Excel: {e}",
         ) from e
 
-    # Converte para lista de listas (mesma interface das tabelas PDF)
     table = df_raw.fillna("").astype(str).values.tolist()
 
     records = parse_entregas_table(table, ano, produto)
@@ -593,14 +453,6 @@ def parse_entregas_excel(
 
 
 def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega entregas por mês (soma de todas as UFs).
-
-    Args:
-        df: DataFrame com dados detalhados.
-
-    Returns:
-        DataFrame agregado por mês com volume_ton somado.
-    """
     if df.empty:
         return df
 

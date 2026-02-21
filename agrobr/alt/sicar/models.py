@@ -1,5 +1,3 @@
-"""Constantes e helpers do SICAR (Cadastro Ambiental Rural)."""
-
 from __future__ import annotations
 
 WFS_BASE = "https://geoserver.car.gov.br/geoserver/sicar/wfs"
@@ -10,11 +8,9 @@ MAX_FEATURES_WARNING = 100_000
 
 
 def layer_name(uf: str) -> str:
-    """Retorna o nome da layer WFS para uma UF."""
     return f"sicar_imoveis_{uf.lower()}"
 
 
-# Campos WFS (exclui geo_area_imovel)
 PROPERTY_NAMES = [
     "cod_imovel",
     "status_imovel",
@@ -29,7 +25,6 @@ PROPERTY_NAMES = [
     "tipo_imovel",
 ]
 
-# Mapeamento WFS -> output
 RENAME_MAP = {
     "status_imovel": "status",
     "dat_criacao": "data_criacao",
@@ -38,7 +33,6 @@ RENAME_MAP = {
     "tipo_imovel": "tipo",
 }
 
-# Colunas de saida
 COLUNAS_IMOVEIS = [
     "cod_imovel",
     "status",
@@ -53,7 +47,6 @@ COLUNAS_IMOVEIS = [
     "tipo",
 ]
 
-# Status validos
 STATUS_VALIDOS = frozenset({"AT", "PE", "SU", "CA"})
 STATUS_LABELS = {
     "AT": "Ativo",
@@ -62,7 +55,6 @@ STATUS_LABELS = {
     "CA": "Cancelado",
 }
 
-# Tipos de imovel
 TIPO_VALIDOS = frozenset({"IRU", "AST", "PCT"})
 TIPO_LABELS = {
     "IRU": "Rural",
@@ -70,7 +62,6 @@ TIPO_LABELS = {
     "PCT": "Terra Indigena",
 }
 
-# UFs brasileiras
 UFS_VALIDAS = frozenset(
     {
         "AC",

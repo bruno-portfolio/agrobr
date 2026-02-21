@@ -15,8 +15,8 @@ from agrobr.alt.anp_diesel.models import (
     VENDAS_M3_URL,
 )
 
-FAKE_XLSX_BYTES = b"PK\x03\x04fake_xlsx_content"
-FAKE_XLS_BYTES = b"\xd0\xcf\x11\xe0fake_xls_content"
+FAKE_XLSX_BYTES = b"PK\x03\x04" + b"x" * 1500
+FAKE_XLS_BYTES = b"\xd0\xcf\x11\xe0" + b"x" * 1500
 
 
 def _mock_response(status_code: int = 200, content: bytes = FAKE_XLSX_BYTES):

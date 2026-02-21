@@ -1,7 +1,3 @@
-"""
-Validação estrutural de páginas usando fingerprints.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -22,8 +18,6 @@ THRESHOLD_LOW = 0.50
 
 @dataclass
 class StructuralValidationResult:
-    """Resultado da validação estrutural."""
-
     source: Fonte
     similarity: float
     passed: bool
@@ -39,17 +33,6 @@ def validate_structure(
     baseline: Fingerprint,
     _threshold: float = THRESHOLD_HIGH,
 ) -> StructuralValidationResult:
-    """
-    Valida estrutura atual contra baseline.
-
-    Args:
-        current: Fingerprint atual
-        baseline: Fingerprint de referência
-        threshold: Limiar de similaridade (default: 0.85)
-
-    Returns:
-        StructuralValidationResult
-    """
     similarity, differences = compare_fingerprints(current, baseline)
 
     if similarity >= THRESHOLD_HIGH:
@@ -93,16 +76,6 @@ def compare_fingerprints(
     current: Fingerprint,
     reference: Fingerprint,
 ) -> tuple[float, dict[str, Any]]:
-    """
-    Compara duas fingerprints e retorna similaridade.
-
-    Args:
-        current: Fingerprint atual
-        reference: Fingerprint de referência
-
-    Returns:
-        Tupla (similaridade 0-1, detalhes das diferenças)
-    """
     scores: dict[str, float] = {}
     details: dict[str, Any] = {}
 
@@ -184,16 +157,6 @@ def compare_fingerprints(
 
 
 def load_baseline(source: Fonte, baselines_dir: str | Path = ".structures") -> Fingerprint | None:
-    """
-    Carrega fingerprint de baseline.
-
-    Args:
-        source: Fonte de dados
-        baselines_dir: Diretório de baselines
-
-    Returns:
-        Fingerprint ou None
-    """
     import json
 
     path = Path(baselines_dir) / f"{source.value}_baseline.json"
@@ -221,13 +184,6 @@ def save_baseline(
     fingerprint: Fingerprint,
     baselines_dir: str | Path = ".structures",
 ) -> None:
-    """
-    Salva fingerprint como baseline.
-
-    Args:
-        fingerprint: Fingerprint a salvar
-        baselines_dir: Diretório de baselines
-    """
     import json
 
     path = Path(baselines_dir) / f"{fingerprint.source.value}_baseline.json"
@@ -244,17 +200,6 @@ def validate_against_baseline(
     baselines_dir: str | Path = ".structures",
     threshold: float = THRESHOLD_HIGH,
 ) -> StructuralValidationResult:
-    """
-    Valida fingerprint atual contra baseline salvo.
-
-    Args:
-        current: Fingerprint atual
-        baselines_dir: Diretório de baselines
-        threshold: Limiar de similaridade
-
-    Returns:
-        StructuralValidationResult
-    """
     baseline = load_baseline(current.source, baselines_dir)
 
     if baseline is None:
@@ -273,22 +218,11 @@ def validate_against_baseline(
 
 
 class StructuralMonitor:
-    """Monitor contínuo de estrutura."""
-
     def __init__(self, baselines_dir: str | Path = ".structures"):
         self.baselines_dir = Path(baselines_dir)
         self.history: list[StructuralValidationResult] = []
 
     async def check(self, source: Fonte) -> StructuralValidationResult:
-        """
-        Verifica estrutura de uma fonte.
-
-        Args:
-            source: Fonte a verificar
-
-        Returns:
-            StructuralValidationResult
-        """
         from ..cepea import client as cepea_client
         from ..cepea.parsers.fingerprint import extract_fingerprint
 
@@ -301,7 +235,6 @@ class StructuralMonitor:
         return result
 
     async def check_all(self) -> list[StructuralValidationResult]:
-        """Verifica todas as fontes."""
         import asyncio
 
         sources = [Fonte.CEPEA]
@@ -309,5 +242,4 @@ class StructuralMonitor:
         return list(results)
 
     def get_drift_history(self) -> list[StructuralValidationResult]:
-        """Retorna histórico de drifts detectados."""
         return [r for r in self.history if not r.passed]

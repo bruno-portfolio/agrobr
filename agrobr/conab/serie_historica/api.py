@@ -1,5 +1,3 @@
-"""API publica do sub-modulo serie historica CONAB."""
-
 from __future__ import annotations
 
 import time
@@ -46,26 +44,6 @@ async def serie_historica(
     uf: str | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Obtem serie historica de safras CONAB.
-
-    Busca planilha Excel com dados historicos (area, producao,
-    produtividade) por UF desde ~1976 ate a safra mais recente.
-
-    Args:
-        produto: Nome do produto (soja, milho, arroz, cafe, etc).
-        inicio: Ano inicial (inclusive). Ex: 2020.
-        fim: Ano final (inclusive). Ex: 2025.
-        uf: Filtrar por UF (ex: 'MT', 'PR'). Se None, retorna todas.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: produto, safra, regiao, uf,
-        area_plantada_mil_ha, producao_mil_ton, produtividade_kg_ha.
-
-    Example:
-        >>> df = await conab.serie_historica("soja", inicio=2020, fim=2025, uf="MT")
-        >>> df, meta = await conab.serie_historica("soja", return_meta=True)
-    """
     t0 = time.monotonic()
 
     logger.info(
@@ -121,14 +99,4 @@ async def serie_historica(
 
 
 def produtos_disponiveis() -> list[dict[str, str]]:
-    """Lista produtos disponiveis para serie historica.
-
-    Returns:
-        Lista de dicts com chaves: produto, categoria, url.
-
-    Example:
-        >>> produtos = conab.serie_historica.produtos_disponiveis()
-        >>> for p in produtos:
-        ...     print(p['produto'], p['categoria'])
-    """
     return client.list_produtos()

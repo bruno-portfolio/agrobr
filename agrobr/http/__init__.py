@@ -1,5 +1,3 @@
-"""HTTP utilities - retry, rate limiting, user-agents, settings."""
-
 from __future__ import annotations
 
 from agrobr.http.rate_limiter import RateLimiter

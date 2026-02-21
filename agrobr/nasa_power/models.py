@@ -1,5 +1,3 @@
-"""Modelos e constantes para dados NASA POWER."""
-
 from __future__ import annotations
 
 from datetime import date
@@ -7,8 +5,6 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
-# Coordenadas centrais aproximadas de cada UF brasileira (lat, lon).
-# Usadas como ponto representativo para consultas NASA POWER.
 UF_COORDS: dict[str, tuple[float, float]] = {
     "AC": (-9.0, -70.8),
     "AL": (-9.6, -36.8),
@@ -39,18 +35,16 @@ UF_COORDS: dict[str, tuple[float, float]] = {
     "TO": (-10.2, -48.3),
 }
 
-# Parametros agroclimáticos da API NASA POWER (comunidade AG).
 PARAMS_AG: list[str] = [
-    "T2M",  # Temperatura media a 2m (C)
-    "T2M_MAX",  # Temperatura maxima a 2m (C)
-    "T2M_MIN",  # Temperatura minima a 2m (C)
-    "PRECTOTCORR",  # Precipitacao corrigida (mm/dia)
-    "RH2M",  # Umidade relativa a 2m (%)
-    "ALLSKY_SFC_SW_DWN",  # Radiacao solar incidente (MJ/m2/dia)
-    "WS2M",  # Velocidade do vento a 2m (m/s)
+    "T2M",
+    "T2M_MAX",
+    "T2M_MIN",
+    "PRECTOTCORR",
+    "RH2M",
+    "ALLSKY_SFC_SW_DWN",
+    "WS2M",
 ]
 
-# Mapeamento parametro NASA -> nome normalizado agrobr.
 COLUNAS_MAP: dict[str, str] = {
     "T2M": "temp_media",
     "T2M_MAX": "temp_max",
@@ -61,13 +55,10 @@ COLUNAS_MAP: dict[str, str] = {
     "WS2M": "vento_ms",
 }
 
-# Valor sentinela da NASA POWER para dados indisponiveis.
 SENTINEL: float = -999.0
 
 
 class ClimaObservacao(BaseModel):
-    """Observacao climatica diaria de um ponto NASA POWER."""
-
     data: date
     lat: float
     lon: float

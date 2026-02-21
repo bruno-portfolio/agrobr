@@ -47,6 +47,17 @@ async def fetch_ajustes(data: str) -> tuple[str, str]:
 
         response.raise_for_status()
         html = response.content.decode("iso-8859-1")
+
+        if len(html) < 500 or "<table" not in html.lower():
+            raise SourceUnavailableError(
+                source="b3",
+                url=url,
+                last_error=(
+                    f"Ajustes HTML too small or missing table "
+                    f"({len(html)} chars, no '<table' found)"
+                ),
+            )
+
         logger.info("b3_fetch_ok", url=url, size=len(html))
         return html, url
 
@@ -92,5 +103,15 @@ async def fetch_posicoes_abertas(data: str) -> tuple[bytes, str]:
         csv_resp.raise_for_status()
 
         csv_bytes = csv_resp.content
+        if len(csv_bytes) < 100:
+            raise SourceUnavailableError(
+                source="b3",
+                url=download_url,
+                last_error=(
+                    f"Posicoes abertas CSV too small ({len(csv_bytes)} bytes), "
+                    f"expected derivative position data"
+                ),
+            )
+
         logger.info("b3_oi_fetch_ok", url=download_url, size=len(csv_bytes))
         return csv_bytes, token_url

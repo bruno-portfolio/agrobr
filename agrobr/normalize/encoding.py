@@ -1,5 +1,3 @@
-"""Tratamento de encoding com fallback chain."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -23,17 +21,6 @@ def decode_content(
     declared_encoding: str | None = None,
     source: str | None = None,
 ) -> tuple[str, str]:
-    """
-    Decodifica bytes com fallback chain inteligente.
-
-    Args:
-        content: Bytes a decodificar
-        declared_encoding: Encoding declarado pelo servidor (Content-Type)
-        source: Nome da fonte para logging
-
-    Returns:
-        tuple[str, str]: (texto decodificado, encoding usado)
-    """
     if declared_encoding:
         try:
             decoded = content.decode(declared_encoding)

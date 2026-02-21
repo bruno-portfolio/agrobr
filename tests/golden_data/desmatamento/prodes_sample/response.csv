@@ -1,11 +1,16 @@
 FID,uid,state,path_row,main_class,class_name,year,area_km,publish_year,source,satellite,sensor
-yearly_deforestation.1,1,MINAS GERAIS,220/72,desmatamento,d2022,2022,21.5259,2022-01-01,,Landsat8,OLI
-yearly_deforestation.2,33575,MARANHÃO,221/64,desmatamento,d2022,2022,0.0002,2022-01-01,,Landsat8,OLI
-yearly_deforestation.3,33576,MATO GROSSO,222/64,desmatamento,d2022,2022,15.3200,2022-01-01,,Landsat8,OLI
-yearly_deforestation.4,33577,PIAUÍ,219/64,desmatamento,d2022,2022,0.0106,2022-01-01,,Landsat8,OLI
-yearly_deforestation.5,33578,BAHIA,219/63,desmatamento,d2022,2022,0.0124,2022-01-01,,Landsat8,OLI
-yearly_deforestation.6,33579,GOIÁS,217/72,desmatamento,d2022,2022,0.0277,2022-01-01,,Landsat8,OLI
-yearly_deforestation.7,33580,TOCANTINS,218/69,desmatamento,d2022,2022,0.0102,2022-01-01,,Landsat8,OLI
-yearly_deforestation.8,33581,MATO GROSSO,218/70,desmatamento,d2022,2022,8.7300,2022-01-01,,Landsat8,OLI
-yearly_deforestation.9,33582,MATO GROSSO DO SUL,218/70,desmatamento,d2022,2022,0.0151,2022-01-01,,Landsat8,OLI
-yearly_deforestation.10,33583,SÃO PAULO,219/63,desmatamento,d2020,2020,0.0127,2020-01-01,,Landsat8,OLI
+yearly_deforestation.83b9c0c2-159a-4205-b819-432046c1b751,181111,PARÁ,223/65,desmatamento,d2017,2017,0.1324,2017-01-01,,Landsat8,OLI
+yearly_deforestation.3b17cef5-20f0-4b35-9f4d-329d4248359d,181114,PARÁ,223/65,desmatamento,d2017,2017,0.191,2017-01-01,,Landsat8,OLI
+yearly_deforestation.678211aa-f10b-4417-9409-31e07fababb4,194090,PARÁ,223/66,desmatamento,d2017,2017,0.7675,2017-01-01,,Landsat8,OLI
+yearly_deforestation.dcbe19e0-b9e2-467c-b14d-3dc1f854ef58,37937,PARÁ,223/65,desmatamento,d2018,2018,0.0116,2018-01-01,,Landsat8,OLI
+yearly_deforestation.20da4deb-2e07-4e11-98e9-5d2422a71a94,38044,PARÁ,223/65,desmatamento,d2018,2018,0.0511,2018-01-01,,Landsat8,OLI
+yearly_deforestation.caa76189-68a0-4f4e-9535-0769af9a4f66,38101,PARÁ,223/66,desmatamento,d2018,2018,0.0155,2018-01-01,,Landsat8,OLI
+yearly_deforestation.d3e80919-52cd-4dbc-bab5-61572c31265b,155747,PARÁ,223/66,desmatamento,d2019,2019,0.0343,2019-01-01,,Landsat8,OLI
+yearly_deforestation.2a886e17-8615-4cf4-a502-3f0cc26b449f,181364,PARÁ,223/65,desmatamento,d2019,2019,0.1191,2019-01-01,,Landsat8,OLI
+yearly_deforestation.e61cf445-6b37-4f87-aa5b-b208c5dbddc9,181406,PARÁ,223/65,desmatamento,d2019,2019,0.0653,2019-01-01,,Landsat8,OLI
+yearly_deforestation.68318e57-1413-4ef0-8361-8ece750e22cc,26,PARÁ,223/66,desmatamento,d2020,2020,16.5566,2020-01-01,,Landsat8,OLI
+yearly_deforestation.a1059094-702c-4379-827d-f28241e773b2,38046,PARÁ,223/65,desmatamento,d2020,2020,0.0324,2020-01-01,,Landsat8,OLI
+yearly_deforestation.4077b9e7-6630-416c-9cd5-c92863d1c8ea,38093,PARÁ,223/66,desmatamento,d2020,2020,0.022,2020-01-01,,Landsat8,OLI
+yearly_deforestation.39f5ed5c-7d9e-4bfd-8dd7-9f42b190cc55,321615,PARÁ,026014,desmatamento,d2025,2025,1.2831,2025-01-01,cerrado,Sentinel-2,MSI
+yearly_deforestation.7c42e806-d8ff-4544-99cb-ec8db8ca145b,321616,PARÁ,026015,desmatamento,d2025,2025,13.1434,2025-01-01,cerrado,Sentinel-2,MSI
+yearly_deforestation.0b57acbe-f316-48a4-8dc2-44c3e3fc959f,321661,PARÁ,026013,desmatamento,d2025,2025,0.0137,2025-01-01,cerrado,Sentinel-2,MSI

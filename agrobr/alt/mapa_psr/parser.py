@@ -1,5 +1,3 @@
-"""Parser para dados MAPA PSR — CSV -> DataFrames."""
-
 from __future__ import annotations
 
 import io
@@ -16,7 +14,6 @@ PARSER_VERSION = 1
 
 
 def _detect_encoding(content: bytes) -> str:
-    """Detecta encoding do CSV com fallback chain."""
     for enc in ("utf-8", "utf-8-sig", "iso-8859-1", "windows-1252"):
         try:
             content[:4096].decode(enc)
@@ -29,7 +26,6 @@ def _detect_encoding(content: bytes) -> str:
 
 
 def _detect_separator(text: str) -> str:
-    """Detecta separador do CSV (`;` ou `,`)."""
     first_line = text.split("\n", 1)[0]
     if first_line.count(";") > first_line.count(","):
         return ";"
@@ -37,7 +33,6 @@ def _detect_separator(text: str) -> str:
 
 
 def _normalize_column_name(col: str) -> str:
-    """Normaliza nome de coluna removendo espacos e acentos comuns."""
     return col.strip()
 
 
@@ -48,21 +43,6 @@ def parse_apolices(
     ano: int | None = None,
     municipio: str | None = None,
 ) -> pd.DataFrame:
-    """Converte CSV de apolices PSR em DataFrame.
-
-    Args:
-        content: Bytes raw do arquivo CSV.
-        cultura: Filtro de cultura (busca parcial, case-insensitive).
-        uf: Filtro de UF (sigla). None = todas.
-        ano: Filtro de ano. None = todos.
-        municipio: Filtro de municipio (busca parcial). None = todos.
-
-    Returns:
-        DataFrame com colunas normalizadas.
-
-    Raises:
-        ParseError: Se dados vazios ou malformados.
-    """
     from agrobr.alt.mapa_psr.models import (
         COLUNAS_CSV,
         COLUNAS_DROP,
@@ -209,25 +189,6 @@ def parse_sinistros(
     municipio: str | None = None,
     evento: str | None = None,
 ) -> pd.DataFrame:
-    """Converte CSV de apolices PSR em DataFrame filtrado para sinistros.
-
-    Filtra apenas registros com VALOR_INDENIZACAO > 0 e EVENTO_PREPONDERANTE
-    nao vazio.
-
-    Args:
-        content: Bytes raw do arquivo CSV.
-        cultura: Filtro de cultura (busca parcial, case-insensitive).
-        uf: Filtro de UF (sigla). None = todas.
-        ano: Filtro de ano. None = todos.
-        municipio: Filtro de municipio (busca parcial). None = todos.
-        evento: Filtro de evento preponderante (busca parcial). None = todos.
-
-    Returns:
-        DataFrame com sinistros.
-
-    Raises:
-        ParseError: Se dados vazios ou malformados.
-    """
     df = parse_apolices(content, cultura=cultura, uf=uf, ano=ano, municipio=municipio)
 
     if "valor_indenizacao" in df.columns:
@@ -259,7 +220,6 @@ def parse_sinistros(
 
 
 def _parse_numeric(v: object) -> float | None:
-    """Converte string numerica (com possivel virgula decimal) para float."""
     if v is None or (isinstance(v, str) and v.strip() in ("", "-")):
         return None
     if isinstance(v, (int, float)):

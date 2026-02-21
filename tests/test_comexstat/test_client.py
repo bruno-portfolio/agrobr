@@ -78,8 +78,12 @@ class TestComexstatHTTPErrors:
 
     @pytest.mark.asyncio
     async def test_http_429_retries_then_succeeds(self):
+        ok_text = (
+            "CO_ANO;CO_MES;CO_NCM;CO_PAIS;SG_UF;KG_LIQUIDO;VL_FOB\n"
+            + "2024;01;12019010;160;SP;1000;5000\n" * 5
+        )
         resp_429 = _mock_response(429)
-        resp_ok = _mock_response(200, "data;here")
+        resp_ok = _mock_response(200, ok_text)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(side_effect=[resp_429, resp_429, resp_ok])
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -91,22 +95,23 @@ class TestComexstatHTTPErrors:
         ):
             result = await client.download_csv("https://test.gov.br/EXP_2024.csv")
 
-        assert result == "data;here"
+        assert result == ok_text
 
 
 class TestComexstatEmptyResponse:
     @pytest.mark.asyncio
-    async def test_empty_body_returns_empty_string(self):
+    async def test_empty_body_raises_source_unavailable(self):
         resp = _mock_response(200, "")
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client.download_csv("https://test.gov.br/EXP_2024.csv")
-
-        assert result == ""
+        with (
+            patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="too small"),
+        ):
+            await client.download_csv("https://test.gov.br/EXP_2024.csv")
 
 
 class TestComexstatRetryBackoff:

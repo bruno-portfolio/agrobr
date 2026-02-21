@@ -1,5 +1,3 @@
-"""Diagnóstico completo do sistema agrobr."""
-
 from __future__ import annotations
 
 import asyncio
@@ -21,8 +19,6 @@ logger = structlog.get_logger()
 
 @dataclass
 class SourceStatus:
-    """Status de conectividade de uma fonte."""
-
     name: str
     url: str
     status: str
@@ -32,8 +28,6 @@ class SourceStatus:
 
 @dataclass
 class CacheStats:
-    """Estatísticas do cache."""
-
     location: str
     size_bytes: int
     total_records: int
@@ -42,8 +36,6 @@ class CacheStats:
 
 @dataclass
 class DiagnosticsResult:
-    """Resultado do diagnóstico completo."""
-
     version: str
     timestamp: datetime
     sources: list[SourceStatus]
@@ -54,7 +46,6 @@ class DiagnosticsResult:
     overall_status: str
 
     def to_dict(self) -> dict[str, Any]:
-        """Converte para dicionário serializável."""
         return {
             "version": self.version,
             "timestamp": self.timestamp.isoformat(),
@@ -83,7 +74,6 @@ class DiagnosticsResult:
         }
 
     def to_rich(self) -> str:
-        """Formata para output no terminal."""
         lines = [
             "",
             f"agrobr diagnostics v{self.version}",
@@ -159,7 +149,6 @@ class DiagnosticsResult:
 
 
 async def _check_source(name: str, url: str, timeout: float = 10.0) -> SourceStatus:
-    """Verifica conectividade de uma fonte."""
     start = time.perf_counter()
 
     try:
@@ -219,7 +208,7 @@ def _get_cache_stats() -> CacheStats:
                         "newest": str(result[2]) if result[2] else None,
                     }
             except Exception:
-                pass
+                logger.warning("cache_stats_source_query_failed", fonte=fonte, exc_info=True)
 
         total_records = sum(s.get("count", 0) for s in by_source.values())
 
@@ -261,24 +250,16 @@ def _get_last_collections() -> dict[str, datetime | None]:
                 collections[fonte] = result[0] if result and result[0] else None
 
             except Exception:
+                logger.warning("last_collection_query_failed", fonte=fonte, exc_info=True)
                 collections[fonte] = None
 
     except Exception:
-        pass
+        logger.warning("last_collections_failed", exc_info=True)
 
     return collections
 
 
 async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: ARG001
-    """
-    Executa diagnóstico completo do sistema.
-
-    Args:
-        verbose: Se True, inclui informações detalhadas (reservado para uso futuro)
-
-    Returns:
-        DiagnosticsResult com status completo
-    """
     sources_to_check = [
         ("CEPEA (Noticias Agricolas)", "https://www.noticiasagricolas.com.br"),
         ("CONAB", "https://www.conab.gov.br"),

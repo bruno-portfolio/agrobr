@@ -1,5 +1,3 @@
-"""Rate limiter por fonte usando semáforos."""
-
 from __future__ import annotations
 
 import asyncio
@@ -15,8 +13,6 @@ logger = structlog.get_logger()
 
 
 class RateLimiter:
-    """Garante intervalo mínimo entre requests para cada fonte."""
-
     _semaphores: dict[str, asyncio.Semaphore] = {}
     _last_request: dict[str, float] = {}
     _lock = asyncio.Lock()
@@ -44,7 +40,6 @@ class RateLimiter:
     @classmethod
     @asynccontextmanager
     async def acquire(cls, source: constants.Fonte) -> AsyncIterator[None]:
-        """Context manager que garante rate limiting."""
         source_key = source.value
 
         async with cls._lock:

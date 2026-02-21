@@ -4,8 +4,9 @@
   "parser_module": "agrobr.antaq.parser",
   "parser_functions": ["parse_atracacao", "parse_carga", "parse_mercadoria", "join_movimentacao"],
   "url": "https://web3.antaq.gov.br/ea/txt/2024.zip",
-  "captured_at": "2026-02-17T12:00:00Z",
+  "captured_at": "2026-02-21T08:35:17Z",
+  "needs_real_data": false,
   "parser_version": 1,
   "ano": 2024,
-  "notes": "Synthetic ANTAQ data - 3 atracações, 4 cargas, 4 mercadorias. Tests full join pipeline."
+  "notes": "Real ANTAQ 2024 data. 10 atracacao rows matched with 10 carga rows by IDAtracacao, plus full Mercadoria lookup table. UFs are AM and PA (northern ports). Note: mes column is text ('jan') in 2024 data, converted to null by to_numeric."
 }

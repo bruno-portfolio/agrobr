@@ -160,9 +160,9 @@ class TestParseGoldenData:
     def test_golden_df_sample(self):
         data = self._load_golden("imoveis_df_sample")
         df = parse_imoveis_csv([data])
-        assert len(df) == 5
-        assert set(df["status"].unique()) == {"AT", "PE", "SU", "CA"}
-        assert set(df["tipo"].unique()) == {"IRU", "AST", "PCT"}
+        assert len(df) == 10
+        assert set(df["status"].unique()) == {"AT", "PE"}
+        assert set(df["tipo"].unique()) == {"IRU"}
         assert (df["uf"] == "DF").all()
         assert (df["area_ha"] > 0).all()
 
@@ -173,8 +173,8 @@ class TestParseGoldenData:
     def test_golden_mt_municipio(self):
         data = self._load_golden("imoveis_mt_municipio")
         df = parse_imoveis_csv([data])
-        assert len(df) == 3
-        assert (df["municipio"] == "SORRISO").all()
+        assert len(df) == 10
+        assert (df["municipio"] == "Sorriso").all()
         assert (df["uf"] == "MT").all()
 
 

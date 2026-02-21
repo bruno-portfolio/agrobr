@@ -7,6 +7,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-02-21
+
 ### Fixed
 - **CEPEA/NA — parser failure em soft block (#14)** — `cepea.indicador("soja")` e
   `datasets.preco_diario("soja")` falhavam com `ParseError` quando Noticias Agricolas
@@ -670,7 +672,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.8.0...v0.9.0

@@ -1,11 +1,3 @@
-"""Cliente HTTP para download de dados ABIOVE.
-
-ABIOVE publica planilhas Excel de exportação do complexo soja+milho.
-URL pattern: https://abiove.org.br/abiove_content/Abiove/exp_YYYYMM.xlsx
-
-O cliente tenta do mês mais recente para trás até encontrar arquivo válido.
-"""
-
 from __future__ import annotations
 
 import httpx
@@ -32,17 +24,6 @@ HEADERS = {"User-Agent": "agrobr/0.8.0 (https://github.com/your-org/agrobr)"}
 
 
 async def _fetch_url(url: str) -> bytes:
-    """Fetch URL com retry exponencial.
-
-    Args:
-        url: URL para download.
-
-    Returns:
-        Bytes do conteúdo.
-
-    Raises:
-        SourceUnavailableError: Se URL indisponível após retries.
-    """
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         logger.debug("abiove_request", url=url)
         response = await retry_on_status(
@@ -54,24 +35,20 @@ async def _fetch_url(url: str) -> bytes:
             raise SourceUnavailableError(source="abiove", url=url, last_error="HTTP 404")
 
         response.raise_for_status()
-        return response.content
+
+        content = response.content
+        if len(content) < 1_000:
+            raise SourceUnavailableError(
+                source="abiove",
+                url=url,
+                last_error=(
+                    f"Downloaded file too small ({len(content)} bytes), expected a valid XLSX"
+                ),
+            )
+        return content
 
 
 async def fetch_exportacao_excel(ano: int, mes: int | None = None) -> tuple[bytes, str]:
-    """Baixa planilha de exportação ABIOVE.
-
-    Tenta do mês mais recente para trás até encontrar arquivo válido.
-
-    Args:
-        ano: Ano de referência.
-        mes: Mês específico. Se None, tenta do 12 ao 1.
-
-    Returns:
-        Tupla (bytes_excel, url_usada).
-
-    Raises:
-        SourceUnavailableError: Se nenhum arquivo encontrado.
-    """
     meses = [mes] if mes else list(range(12, 0, -1))
 
     last_error = ""

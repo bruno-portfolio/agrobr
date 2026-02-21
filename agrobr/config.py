@@ -1,5 +1,3 @@
-"""Configuracao global do agrobr."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,8 +10,6 @@ _config: AgrobrConfig | None = None
 
 @dataclass
 class AgrobrConfig:
-    """Configuracao global do agrobr."""
-
     mode: Literal["normal", "deterministic"] = "normal"
     snapshot_date: date | None = None
     snapshot_path: Path | None = None
@@ -48,18 +44,6 @@ def set_mode(
     snapshot: str | date | None = None,
     snapshot_path: str | Path | None = None,
 ) -> None:
-    """
-    Define modo de operacao do agrobr.
-
-    Args:
-        mode: "normal" ou "deterministic"
-        snapshot: Data do snapshot (YYYY-MM-DD ou date)
-        snapshot_path: Caminho customizado para snapshots
-
-    Example:
-        agrobr.set_mode("normal")
-        agrobr.set_mode("deterministic", snapshot="2025-12-31")
-    """
     global _config
 
     if isinstance(snapshot, str):

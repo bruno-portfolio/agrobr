@@ -8,8 +8,6 @@ from ..constants import Fonte
 
 
 class CachePolicy(NamedTuple):
-    """Política de cache para uma fonte."""
-
     ttl_seconds: int
     stale_max_seconds: int
     description: str
@@ -17,8 +15,6 @@ class CachePolicy(NamedTuple):
 
 
 class TTL(Enum):
-    """TTLs pré-definidos."""
-
     MINUTES_15 = 15 * 60
     MINUTES_30 = 30 * 60
     HOUR_1 = 60 * 60
@@ -32,7 +28,6 @@ class TTL(Enum):
 
 CEPEA_UPDATE_HOUR = 18
 CEPEA_UPDATE_MINUTE = 0
-
 
 POLICIES: dict[str, CachePolicy] = {
     "cepea_diario": CachePolicy(
@@ -147,16 +142,6 @@ SOURCE_POLICY_MAP: dict[Fonte, str] = {
 
 
 def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
-    """
-    Retorna política de cache para uma fonte/endpoint.
-
-    Args:
-        source: Fonte de dados
-        endpoint: Endpoint específico (opcional)
-
-    Returns:
-        CachePolicy aplicável
-    """
     if isinstance(source, str):
         if source in POLICIES:
             return POLICIES[source]
@@ -175,15 +160,6 @@ def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
 
 
 def _get_smart_expiry_time() -> datetime:
-    """
-    Calcula próximo horário de expiração para CEPEA (18h).
-
-    CEPEA atualiza dados por volta das 17-18h.
-    Cache expira às 18h para pegar dados novos.
-
-    Returns:
-        Datetime da próxima expiração
-    """
     now = datetime.now()
     today_expiry = datetime.combine(now.date(), time(CEPEA_UPDATE_HOUR, CEPEA_UPDATE_MINUTE))
 
@@ -194,12 +170,6 @@ def _get_smart_expiry_time() -> datetime:
 
 
 def _get_last_expiry_time() -> datetime:
-    """
-    Retorna o último horário de expiração (18h anterior).
-
-    Returns:
-        Datetime da última expiração
-    """
     return _get_smart_expiry_time() - timedelta(days=1)
 
 
@@ -212,20 +182,6 @@ def get_stale_max(source: Fonte | str, endpoint: str | None = None) -> int:
 
 
 def is_expired(created_at: datetime, source: Fonte | str, endpoint: str | None = None) -> bool:
-    """
-    Verifica se entrada de cache está expirada.
-
-    Para fontes com smart_expiry (CEPEA), expira às 18h.
-    Para outras fontes, usa TTL fixo.
-
-    Args:
-        created_at: Data de criação
-        source: Fonte de dados
-        endpoint: Endpoint específico
-
-    Returns:
-        True se expirado
-    """
     policy = get_policy(source, endpoint)
 
     if policy.smart_expiry:
@@ -237,35 +193,12 @@ def is_expired(created_at: datetime, source: Fonte | str, endpoint: str | None =
 
 
 def is_stale_acceptable(created_at: datetime, source: Fonte | str) -> bool:
-    """
-    Verifica se dados stale ainda são aceitáveis.
-
-    Args:
-        created_at: Data de criação
-        source: Fonte de dados
-
-    Returns:
-        True se stale ainda é aceitável
-    """
     stale_max = get_stale_max(source)
     max_acceptable = created_at + timedelta(seconds=stale_max)
     return datetime.now() <= max_acceptable
 
 
 def calculate_expiry(source: Fonte | str, endpoint: str | None = None) -> datetime:
-    """
-    Calcula data de expiração para nova entrada.
-
-    Para fontes com smart_expiry (CEPEA), retorna próximas 18h.
-    Para outras fontes, usa TTL fixo.
-
-    Args:
-        source: Fonte de dados
-        endpoint: Endpoint específico
-
-    Returns:
-        Data de expiração
-    """
     policy = get_policy(source, endpoint)
 
     if policy.smart_expiry:
@@ -275,8 +208,6 @@ def calculate_expiry(source: Fonte | str, endpoint: str | None = None) -> dateti
 
 
 class InvalidationReason(Enum):
-    """Razões para invalidação de cache."""
-
     EXPIRED = "expired"
     MANUAL = "manual"
     SOURCE_UPDATE = "source_update"
@@ -291,18 +222,6 @@ def should_refresh(
     force: bool = False,
     endpoint: str | None = None,
 ) -> tuple[bool, str]:
-    """
-    Determina se cache deve ser atualizado.
-
-    Args:
-        created_at: Data de criação do cache
-        source: Fonte de dados
-        force: Forçar atualização
-        endpoint: Endpoint específico
-
-    Returns:
-        Tupla (deve_atualizar, razão)
-    """
     if force:
         return True, "force_refresh"
 
@@ -313,15 +232,6 @@ def should_refresh(
 
 
 def format_ttl(seconds: int) -> str:
-    """
-    Formata TTL para exibição.
-
-    Args:
-        seconds: TTL em segundos
-
-    Returns:
-        String formatada (ex: "4 horas", "7 dias")
-    """
     if seconds < 60:
         return f"{seconds} segundos"
     if seconds < 3600:
@@ -336,15 +246,6 @@ def format_ttl(seconds: int) -> str:
 
 
 def get_next_update_info(source: Fonte | str) -> dict[str, str]:
-    """
-    Retorna informações sobre próxima atualização.
-
-    Args:
-        source: Fonte de dados
-
-    Returns:
-        Dict com info de expiração
-    """
     policy = get_policy(source)
 
     if policy.smart_expiry:

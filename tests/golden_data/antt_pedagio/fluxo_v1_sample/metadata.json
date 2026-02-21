@@ -6,6 +6,7 @@
   "parser_functions": ["parse_trafego_v1"],
   "url": "https://dados.antt.gov.br/dataset/fluxo-de-veiculos-nas-pracas-de-pedagio",
   "captured_at": "2026-02-20T12:00:00Z",
+  "needs_real_data": true,
   "parser_version": 1,
-  "notes": "Synthetic V1 data - 7 rows covering Mar-Apr 2023, CCR AutoBAn/Campinas. Tests tipo_cobranca aggregation, categoria mapping, date V1 parsing."
+  "notes": "CKAN API returned 404 on 2026-02-21. The dataset slug 'fluxo-de-veiculos-nas-pracas-de-pedagio' is no longer available at dados.antt.gov.br. Real data capture skipped. Keeping synthetic data."
 }

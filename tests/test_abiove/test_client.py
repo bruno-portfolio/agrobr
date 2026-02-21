@@ -97,7 +97,8 @@ class TestAbioveHTTPErrors:
     @pytest.mark.asyncio
     async def test_http_429_retries(self):
         resp_429 = _mock_response(429)
-        resp_ok = _mock_response(200, b"ok")
+        ok_content = b"x" * 1500
+        resp_ok = _mock_response(200, ok_content)
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(side_effect=[resp_429, resp_429, resp_ok])
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -109,22 +110,23 @@ class TestAbioveHTTPErrors:
         ):
             result = await client._fetch_url("https://abiove.org.br/test.xlsx")
 
-        assert result == b"ok"
+        assert result == ok_content
 
 
 class TestAbioveEmptyResponse:
     @pytest.mark.asyncio
-    async def test_empty_body_returns_empty_bytes(self):
+    async def test_empty_body_raises_source_unavailable(self):
         resp = _mock_response(200, b"")
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=resp)
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client._fetch_url("https://abiove.org.br/test.xlsx")
-
-        assert result == b""
+        with (
+            patch("agrobr.abiove.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="too small"),
+        ):
+            await client._fetch_url("https://abiove.org.br/test.xlsx")
 
 
 class TestAbioveRetry:

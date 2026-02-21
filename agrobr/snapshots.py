@@ -1,5 +1,3 @@
-"""Gerenciamento de snapshots para modo deterministico."""
-
 from __future__ import annotations
 
 import json
@@ -19,8 +17,6 @@ logger = structlog.get_logger()
 
 @dataclass
 class SnapshotManifest:
-    """Manifesto de um snapshot."""
-
     name: str
     created_at: datetime
     agrobr_version: str
@@ -48,8 +44,6 @@ class SnapshotManifest:
 
 @dataclass
 class SnapshotInfo:
-    """Informacoes resumidas de um snapshot."""
-
     name: str
     path: Path
     created_at: datetime

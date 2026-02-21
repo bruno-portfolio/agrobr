@@ -1,5 +1,3 @@
-"""Helpers centralizados para configuracao HTTP."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -20,7 +18,6 @@ def get_timeout(settings: HTTPSettings | None = None) -> httpx.Timeout:
 
 
 def get_rate_limit(fonte: Fonte, settings: HTTPSettings | None = None) -> float:
-    """Lookup ``rate_limit_{fonte.value}`` em HTTPSettings; fallback para ``rate_limit_default``."""
     s = settings or HTTPSettings()
     attr = f"rate_limit_{fonte.value}"
     return getattr(s, attr, s.rate_limit_default)

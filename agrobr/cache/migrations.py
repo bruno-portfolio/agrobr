@@ -1,5 +1,3 @@
-"""Schema migrations para DuckDB."""
-
 from __future__ import annotations
 
 import contextlib
@@ -34,20 +32,15 @@ MIGRATIONS: dict[int, str] = {
 
 
 def get_current_version(conn: duckdb.DuckDBPyConnection) -> int:
-    """Retorna versão atual do schema."""
     try:
         result = conn.execute("SELECT MAX(version) FROM schema_version").fetchone()
         return int(result[0]) if result and result[0] else 0
     except Exception:
+        logger.debug("schema_version_table_missing", exc_info=True)
         return 0
 
 
 def migrate(conn: duckdb.DuckDBPyConnection) -> None:
-    """
-    Executa migrations pendentes.
-
-    Migrations são idempotentes e podem ser re-executadas com segurança.
-    """
     current = get_current_version(conn)
 
     if current >= SCHEMA_VERSION:

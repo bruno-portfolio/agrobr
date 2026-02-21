@@ -1,18 +1,14 @@
 {
-  "count": 5,
-  "output_type": "list_indicador",
+  "count": 10,
   "first": {
-    "data": "2025-02-07",
-    "valor": "138.25",
+    "data": "2026-02-20",
+    "valor": "128.49",
     "unidade": "BRL/sc60kg",
-    "praca": "Paranaguá/PR",
-    "produto": "soja"
+    "praca": "Paranagu\u00e1/PR"
   },
   "last": {
-    "data": "2025-02-03",
-    "valor": "136.27",
-    "unidade": "BRL/sc60kg",
-    "praca": "Paranaguá/PR",
-    "produto": "soja"
+    "data": "2026-02-05",
+    "valor": "125.61",
+    "unidade": "BRL/sc60kg"
   }
 }

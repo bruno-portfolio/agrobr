@@ -45,21 +45,21 @@ async def _fetch_url(url: str) -> bytes:
             raise SourceUnavailableError(source="mapbiomas", url=url, last_error="HTTP 404")
 
         response.raise_for_status()
-        return response.content
+
+        content = response.content
+        if len(content) < 1_000:
+            raise SourceUnavailableError(
+                source="mapbiomas",
+                url=url,
+                last_error=(
+                    f"Downloaded XLSX too small ({len(content)} bytes), "
+                    f"expected a valid spreadsheet"
+                ),
+            )
+        return content
 
 
 async def fetch_biome_state(colecao: int = COLECAO_ATUAL) -> tuple[bytes, str]:
-    """Baixa XLSX de cobertura por bioma x estado.
-
-    Args:
-        colecao: Numero da colecao MapBiomas (default: colecao atual).
-
-    Returns:
-        Tupla (bytes_xlsx, url_usada).
-
-    Raises:
-        SourceUnavailableError: Se XLSX nao encontrado.
-    """
     url = _build_xlsx_url("BIOME_STATE", colecao)
     content = await _fetch_url(url)
     logger.info("mapbiomas_xlsx_found", url=url, size=len(content))
@@ -67,17 +67,6 @@ async def fetch_biome_state(colecao: int = COLECAO_ATUAL) -> tuple[bytes, str]:
 
 
 async def fetch_biome_state_municipality(colecao: int = COLECAO_ATUAL) -> tuple[bytes, str]:
-    """Baixa XLSX de cobertura por bioma x estado x municipio.
-
-    Args:
-        colecao: Numero da colecao MapBiomas (default: colecao atual).
-
-    Returns:
-        Tupla (bytes_xlsx, url_usada).
-
-    Raises:
-        SourceUnavailableError: Se XLSX nao encontrado.
-    """
     url = _build_xlsx_url("BIOME_STATE_MUNICIPALITY", colecao)
     content = await _fetch_url(url)
     logger.info("mapbiomas_xlsx_found", url=url, size=len(content))

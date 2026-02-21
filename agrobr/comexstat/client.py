@@ -1,12 +1,3 @@
-"""Cliente HTTP para download de dados ComexStat (bulk CSV).
-
-Fonte primária: CSVs anuais em
-    https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/
-
-Arquivos: EXP_YYYY.csv (exportação), IMP_YYYY.csv (importação)
-Separador: ponto-e-vírgula (;)
-"""
-
 from __future__ import annotations
 
 import httpx
@@ -23,7 +14,7 @@ _settings = HTTPSettings()
 
 TIMEOUT = httpx.Timeout(
     connect=_settings.timeout_connect,
-    read=120.0,  # Arquivos grandes, download pode demorar
+    read=120.0,
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
@@ -38,17 +29,6 @@ HEADERS = {
 
 
 async def download_csv(url: str) -> str:
-    """Baixa arquivo CSV da ComexStat.
-
-    Args:
-        url: URL completa do CSV.
-
-    Returns:
-        Conteúdo do CSV como string.
-
-    Raises:
-        SourceUnavailableError: Se não conseguir baixar.
-    """
     logger.info("comexstat_download_csv", url=url)
 
     async with httpx.AsyncClient(
@@ -62,6 +42,19 @@ async def download_csv(url: str) -> str:
         response.raise_for_status()
 
         content = response.text
+
+        if len(content) < 100 or ";" not in content:
+            from agrobr.exceptions import SourceUnavailableError
+
+            raise SourceUnavailableError(
+                source="comexstat",
+                url=url,
+                last_error=(
+                    f"CSV response too small or missing delimiter "
+                    f"({len(content)} chars, no ';' separator found)"
+                ),
+            )
+
         logger.info(
             "comexstat_download_ok",
             url=url,
@@ -71,26 +64,10 @@ async def download_csv(url: str) -> str:
 
 
 async def fetch_exportacao_csv(ano: int) -> str:
-    """Baixa CSV de exportação de um ano específico.
-
-    Args:
-        ano: Ano (ex: 2024).
-
-    Returns:
-        Conteúdo do CSV como string.
-    """
     url = f"{BULK_CSV_BASE}/EXP_{ano}.csv"
     return await download_csv(url)
 
 
 async def fetch_importacao_csv(ano: int) -> str:
-    """Baixa CSV de importação de um ano específico.
-
-    Args:
-        ano: Ano (ex: 2024).
-
-    Returns:
-        Conteúdo do CSV como string.
-    """
     url = f"{BULK_CSV_BASE}/IMP_{ano}.csv"
     return await download_csv(url)

@@ -1,5 +1,3 @@
-"""Health checks automatizados."""
-
 from __future__ import annotations
 
 from .checker import (

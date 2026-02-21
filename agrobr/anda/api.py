@@ -1,5 +1,3 @@
-"""API pública do módulo ANDA — entregas de fertilizantes."""
-
 from __future__ import annotations
 
 import time
@@ -50,31 +48,6 @@ async def entregas(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca entregas de fertilizantes por UF/mês.
-
-    Dados da ANDA (Associação Nacional para Difusão de Adubos).
-    Requer pdfplumber instalado (pip install agrobr[pdf]).
-
-    Args:
-        ano: Ano de referência (2010+).
-        uf: Filtrar por UF (ex: "MT"). None retorna todas.
-        produto: Tipo de fertilizante (default: "total").
-        agregacao: "detalhado" (por UF/mês) ou "mensal" (soma por mês).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: ano, mes, uf, produto_fertilizante, volume_ton.
-
-    Raises:
-        FileNotFoundError: Se PDF do ano não for encontrado.
-        ImportError: Se pdfplumber não está instalado.
-        ParseError: Se dados não puderem ser extraídos.
-
-    Example:
-        >>> df = await anda.entregas(ano=2024, uf="MT")
-        >>> df.columns.tolist()
-        ['ano', 'mes', 'uf', 'produto_fertilizante', 'volume_ton']
-    """
     global _WARNED  # noqa: PLW0603
     if not _WARNED:
         warnings.warn(
@@ -96,12 +69,10 @@ async def entregas(
     df = parser.parse_entregas_pdf(pdf_bytes, ano=ano_real, produto=produto)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    # Filtra por UF
     if uf:
         uf_upper = uf.upper().strip()
         df = df[df["uf"] == uf_upper].reset_index(drop=True)
 
-    # Agrega se solicitado
     if agregacao == "mensal":
         df = parser.agregar_mensal(df)
 

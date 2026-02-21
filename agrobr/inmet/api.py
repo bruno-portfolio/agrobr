@@ -1,5 +1,3 @@
-"""API pública do módulo INMET."""
-
 from __future__ import annotations
 
 import time
@@ -21,16 +19,6 @@ async def estacoes(
     uf: str | None = None,
     apenas_operantes: bool = True,
 ) -> pd.DataFrame:
-    """Lista estações meteorológicas INMET.
-
-    Args:
-        tipo: "T" para automáticas, "M" para convencionais.
-        uf: Filtrar por UF (ex: "MT").
-        apenas_operantes: Se True, retorna apenas estações ativas.
-
-    Returns:
-        DataFrame com metadados das estações.
-    """
     dados = await client.fetch_estacoes(tipo)
 
     if not dados:
@@ -75,18 +63,6 @@ async def estacao(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados observacionais de uma estação INMET.
-
-    Args:
-        codigo: Código da estação (ex: "A001").
-        inicio: Data inicial (str "YYYY-MM-DD" ou date).
-        fim: Data final (str "YYYY-MM-DD" ou date).
-        agregacao: "horario" (padrão) ou "diario".
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com observações meteorológicas.
-    """
     if isinstance(inicio, str):
         inicio = date.fromisoformat(inicio)
     if isinstance(fim, str):
@@ -130,20 +106,6 @@ async def clima_uf(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Dados climáticos agregados mensalmente por UF.
-
-    Busca dados de todas as estações automáticas operantes da UF,
-    agrega por dia e depois por mês.
-
-    Args:
-        uf: Sigla da UF (ex: "MT", "SP").
-        ano: Ano de referência.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: mes, uf, precip_acum_mm, temp_media,
-        temp_max_media, temp_min_media, num_estacoes.
-    """
     inicio = date(ano, 1, 1)
     fim = date(ano, 12, 31)
 

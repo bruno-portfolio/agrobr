@@ -1,5 +1,3 @@
-"""Dataset balanco - Balanço de oferta e demanda."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -68,20 +66,6 @@ class BalancoDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca balanço de oferta e demanda.
-
-        Fontes:
-          1. CONAB Balanço de Oferta e Demanda
-
-        Args:
-            produto: soja, milho, arroz, feijao, trigo, algodao
-            safra: Safra no formato "2024/25" (opcional, default: corrente)
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: safra, produto, estoque_inicial, producao,
-                                   importacao, consumo, exportacao, estoque_final
-        """
         logger.info("dataset_fetch", dataset="balanco", produto=produto, safra=safra)
 
         snapshot = get_snapshot()
@@ -141,18 +125,4 @@ async def balanco(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca balanço de oferta e demanda.
-
-    Fontes:
-      1. CONAB Balanço de Oferta e Demanda
-
-    Args:
-        produto: soja, milho, arroz, feijao, trigo, algodao
-        safra: Safra no formato "2024/25" (opcional, default: corrente)
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: safra, produto, estoque_inicial, producao,
-                               importacao, consumo, exportacao, estoque_final
-    """
     return await _balanco.fetch(produto, safra=safra, return_meta=return_meta, **kwargs)

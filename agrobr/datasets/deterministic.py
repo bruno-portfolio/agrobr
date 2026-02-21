@@ -1,5 +1,3 @@
-"""Context manager para modo determinístico (reprodutibilidade)."""
-
 from __future__ import annotations
 
 import contextvars
@@ -17,28 +15,15 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 
 def get_snapshot() -> str | None:
-    """Retorna snapshot ativo no contexto atual (ou None)."""
     return _snapshot_var.get()
 
 
 def is_deterministic() -> bool:
-    """Retorna True se estamos em modo determinístico."""
     return _snapshot_var.get() is not None
 
 
 @asynccontextmanager
 async def deterministic(snapshot: str) -> AsyncIterator[None]:
-    """Context manager para modo determinístico.
-
-    Args:
-        snapshot: Data de corte no formato "YYYY-MM-DD".
-            Todas as consultas filtram data <= snapshot.
-            Rede é bloqueada, apenas cache local é usado.
-
-    Example:
-        async with deterministic("2025-12-31"):
-            df = await datasets.preco_diario("soja")
-    """
     date.fromisoformat(snapshot)
     token = _snapshot_var.set(snapshot)
     try:
@@ -48,17 +33,6 @@ async def deterministic(snapshot: str) -> AsyncIterator[None]:
 
 
 def deterministic_decorator(snapshot: str) -> Callable[[F], F]:
-    """Decorator para modo determinístico em funções async.
-
-    Args:
-        snapshot: Data de corte no formato "YYYY-MM-DD".
-
-    Example:
-        @deterministic_decorator("2025-12-31")
-        async def meu_pipeline():
-            df = await datasets.preco_diario("soja")
-            return df
-    """
     date.fromisoformat(snapshot)
 
     def decorator(func: F) -> F:

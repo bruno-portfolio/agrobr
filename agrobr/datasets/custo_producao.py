@@ -1,5 +1,3 @@
-"""Dataset custo_producao - Custo de produção agrícola por cultura e UF."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -66,23 +64,6 @@ class CustoProducaoDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca custos de produção agrícola.
-
-        Fontes (em ordem de prioridade):
-          1. CONAB Custo de Produção
-
-        Args:
-            produto: soja, milho, arroz, feijao, trigo, algodao, cafe
-            uf: Filtrar por UF (ex: "MT", "PR")
-            safra: Safra (ex: "2024/25"). Se None, mais recente.
-            tecnologia: Nível tecnológico ("alta", "media", "baixa")
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: cultura, uf, safra, tecnologia,
-            categoria, item, unidade, quantidade_ha, preco_unitario,
-            valor_ha, participacao_pct
-        """
         logger.info(
             "dataset_fetch",
             dataset="custo_producao",
@@ -147,23 +128,6 @@ async def custo_producao(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca custos de produção agrícola.
-
-    Fontes (em ordem de prioridade):
-      1. CONAB Custo de Produção
-
-    Args:
-        produto: soja, milho, arroz, feijao, trigo, algodao, cafe
-        uf: Filtrar por UF (ex: "MT", "PR")
-        safra: Safra (ex: "2024/25"). Se None, mais recente.
-        tecnologia: Nível tecnológico ("alta", "media", "baixa")
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: cultura, uf, safra, tecnologia,
-        categoria, item, unidade, quantidade_ha, preco_unitario,
-        valor_ha, participacao_pct
-    """
     return await _custo_producao.fetch(
         produto,
         uf=uf,

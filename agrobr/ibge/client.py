@@ -1,5 +1,3 @@
-"""Cliente para API SIDRA do IBGE usando sidrapy."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -12,7 +10,6 @@ from agrobr import constants
 from agrobr.http.rate_limiter import RateLimiter
 
 logger = structlog.get_logger()
-
 
 TABELAS = {
     "pam_temporarias": "1612",
@@ -185,21 +182,6 @@ async def fetch_sidra(
     classifications: dict[str, str | list[str]] | None = None,
     header: str = "n",
 ) -> pd.DataFrame:
-    """
-    Busca dados do SIDRA/IBGE usando sidrapy.
-
-    Args:
-        table_code: Código da tabela SIDRA
-        territorial_level: Nível territorial (1=Brasil, 3=UF, 6=Município)
-        ibge_territorial_code: Código territorial IBGE ou "all"
-        variable: Código(s) da variável
-        period: Período (ex: "2023", "last 5", "2019-2023")
-        classifications: Classificações/filtros adicionais
-        header: "n" para header numérico, "y" para descritivo
-
-    Returns:
-        DataFrame com dados do SIDRA
-    """
     logger.info(
         "ibge_fetch_start",
         table=table_code,
@@ -256,16 +238,6 @@ def parse_sidra_response(
     df: pd.DataFrame,
     rename_columns: dict[str, str] | None = None,
 ) -> pd.DataFrame:
-    """
-    Processa resposta do SIDRA para formato mais legível.
-
-    Args:
-        df: DataFrame retornado pelo sidrapy
-        rename_columns: Mapeamento de renomeação de colunas
-
-    Returns:
-        DataFrame processado
-    """
     default_rename = {
         "NC": "nivel_territorial_cod",
         "NN": "nivel_territorial",
@@ -295,7 +267,6 @@ def parse_sidra_response(
 
 
 def get_uf_codes() -> dict[str, str]:
-    """Retorna mapeamento de sigla UF para código IBGE."""
     return {
         "RO": "11",
         "AC": "12",
@@ -328,6 +299,5 @@ def get_uf_codes() -> dict[str, str]:
 
 
 def uf_to_ibge_code(uf: str) -> str:
-    """Converte sigla UF para código IBGE."""
     codes = get_uf_codes()
     return codes.get(uf.upper(), uf)

@@ -1,5 +1,3 @@
-"""Detector e seletor de parser com fallback em cascata."""
-
 from __future__ import annotations
 
 from datetime import date
@@ -27,7 +25,6 @@ async def get_parser_with_fallback(
     data_referencia: date | None = None,
     strict: bool = False,
 ) -> tuple[base.BaseParser, list[models.Indicador]]:
-    """Seleciona parser e executa com fallback em cascata."""
     if not PARSERS:
         raise exceptions.ParseError(
             source="cepea",

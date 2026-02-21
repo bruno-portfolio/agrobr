@@ -4,7 +4,8 @@
   "parser_module": "agrobr.alt.anp_diesel.parser",
   "parser_functions": ["parse_vendas"],
   "url": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-estatisticos/de/vdpb/vendas-combustiveis-m3.xls",
-  "captured_at": "2026-02-17T12:00:00Z",
-  "parser_version": 1,
-  "notes": "Synthetic ANP diesel volume data - 3 diesel rows (MT jan, SP jan, MT fev). Tests diesel filtering and volume parsing."
+  "captured_at": "2026-02-21T08:25:42Z",
+  "needs_real_data": true,
+  "parser_version": 2,
+  "notes": "Real XLS downloaded (1.2MB) but parser cannot detect header row. The vendas-combustiveis-m3.xls uses Excel pivot table format with sections for different products/regions. The _detect_header_row markers ['COMBUSTIVEL', 'ANO'] are not found on the same row. Parser needs update to handle this multi-section pivot table XLS. Response file saved but parsing fails."
 }

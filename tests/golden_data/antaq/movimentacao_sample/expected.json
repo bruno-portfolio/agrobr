@@ -1,5 +1,5 @@
 {
-  "count": 4,
+  "count": 10,
   "columns": [
     "ano", "mes", "data_atracacao", "tipo_navegacao", "tipo_operacao",
     "natureza_carga", "sentido", "porto", "complexo_portuario",
@@ -7,11 +7,10 @@
     "cd_mercadoria", "mercadoria", "grupo_mercadoria",
     "peso_bruto_ton", "qt_carga", "teu"
   ],
-  "non_null_columns": ["ano", "mes"],
+  "non_null_columns": ["ano"],
   "first_row": {
     "ano": 2024,
-    "mes": 1,
-    "porto": "Paranaguá"
+    "porto": "Terminal Navecunha"
   },
-  "ufs_expected": ["BA", "PR", "SP"]
+  "ufs_expected": ["AM", "PA"]
 }

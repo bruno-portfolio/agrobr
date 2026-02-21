@@ -1,5 +1,3 @@
-"""API publica do modulo SICAR (Cadastro Ambiental Rural)."""
-
 from __future__ import annotations
 
 import time
@@ -32,7 +30,6 @@ def _build_cql_filter(
     area_max: float | None = None,
     criado_apos: str | None = None,
 ) -> str | None:
-    """Compoe CQL_FILTER para o WFS."""
     parts: list[str] = []
 
     if municipio:
@@ -97,39 +94,6 @@ async def imoveis(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Registros individuais de imoveis rurais do CAR (sem geometria).
-
-    Dados do Sistema Nacional de Cadastro Ambiental Rural (SICAR),
-    via WFS do GeoServer gov.br. Cobertura: 27 UFs, 7.4M+ imoveis.
-
-    Args:
-        uf: Sigla da UF (obrigatorio). Ex: "MT", "BA", "DF".
-        municipio: Filtro parcial de municipio (case-insensitive).
-        status: Filtro de status: AT (Ativo), PE (Pendente),
-            SU (Suspenso), CA (Cancelado).
-        tipo: Filtro de tipo: IRU (Rural), AST (Assentamento),
-            PCT (Terra Indigena).
-        area_min: Area minima em hectares.
-        area_max: Area maxima em hectares.
-        criado_apos: Data minima de criacao (ISO format, ex: "2020-01-01").
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: cod_imovel, status, data_criacao,
-        data_atualizacao, area_ha, condicao, uf, municipio,
-        cod_municipio_ibge, modulos_fiscais, tipo.
-
-    Raises:
-        ValueError: Se UF, status ou tipo invalidos.
-        SourceUnavailableError: Se WFS indisponivel.
-        ParseError: Se CSV invalido.
-
-    Example:
-        >>> df = await sicar.imoveis("DF")
-        >>> df.columns.tolist()
-        ['cod_imovel', 'status', 'data_criacao', ...]
-    """
-    # Validacao
     uf_upper = uf.strip().upper()
     if uf_upper not in UFS_VALIDAS:
         raise ValueError(f"UF '{uf}' invalida. Opcoes: {sorted(UFS_VALIDAS)}")
@@ -159,7 +123,6 @@ async def imoveis(
         criado_apos=criado_apos,
     )
 
-    # Safety check: warn if too many features without municipio filter
     if municipio is None:
         try:
             total = await client.fetch_hits(uf_upper, cql)
@@ -172,7 +135,7 @@ async def imoveis(
                     hint="Considere filtrar por municipio para reduzir volume",
                 )
         except Exception:
-            pass  # Non-critical, proceed with fetch
+            logger.warning("sicar_hit_count_check_failed", uf=uf_upper, exc_info=True)
 
     t0 = time.monotonic()
     pages, source_url = await client.fetch_imoveis(uf_upper, cql)
@@ -182,7 +145,6 @@ async def imoveis(
     df = parser.parse_imoveis_csv(pages)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    # Sort by cod_imovel
     if not df.empty and "cod_imovel" in df.columns:
         df = df.sort_values("cod_imovel").reset_index(drop=True)
 
@@ -232,30 +194,6 @@ async def resumo(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Estatisticas agregadas de imoveis rurais por UF ou municipio.
-
-    Sem municipio: usa resultType=hits (4 requests rapidos, sem download).
-    Com municipio: busca registros e agrega client-side.
-
-    Args:
-        uf: Sigla da UF (obrigatorio).
-        municipio: Filtro de municipio. Se informado, agrega client-side.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com estatisticas: total, ativos, pendentes, suspensos,
-        cancelados. Com municipio, inclui area_total_ha, area_media_ha,
-        modulos_fiscais_medio, por_tipo_IRU/AST/PCT.
-
-    Raises:
-        ValueError: Se UF invalida.
-        SourceUnavailableError: Se WFS indisponivel.
-
-    Example:
-        >>> df = await sicar.resumo("DF")
-        >>> df.columns.tolist()
-        ['total', 'ativos', 'pendentes', 'suspensos', 'cancelados']
-    """
     uf_upper = uf.strip().upper()
     if uf_upper not in UFS_VALIDAS:
         raise ValueError(f"UF '{uf}' invalida. Opcoes: {sorted(UFS_VALIDAS)}")
@@ -265,7 +203,6 @@ async def resumo(
     t0 = time.monotonic()
 
     if municipio is None:
-        # Mode UF-level: hits requests only (no data download)
         total = await client.fetch_hits(uf_upper)
         ativos = await client.fetch_hits(uf_upper, "status_imovel='AT'")
         pendentes = await client.fetch_hits(uf_upper, "status_imovel='PE'")
@@ -289,7 +226,6 @@ async def resumo(
         source_url = WFS_BASE
         parse_ms = 0
     else:
-        # Mode municipio: fetch all records, aggregate client-side
         escaped = municipio.replace("'", "''")
         cql = f"municipio ILIKE '%{escaped}%'"
 

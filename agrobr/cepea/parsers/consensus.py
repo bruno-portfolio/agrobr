@@ -1,10 +1,3 @@
-"""
-Multi-parser consensus para validação cruzada.
-
-Executa múltiplos parsers e compara resultados para detectar
-problemas de parsing.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -30,8 +23,6 @@ DIVERGENCE_THRESHOLD_VALUE = 0.01
 
 @dataclass
 class ConsensusResult:
-    """Resultado de parsing com consensus."""
-
     indicadores: list[Indicador]
     parser_used: BaseParser
     all_results: dict[int, list[Indicador]]
@@ -42,8 +33,6 @@ class ConsensusResult:
 
 @dataclass
 class ParserDivergence:
-    """Divergência entre parsers."""
-
     divergence_type: str
     versions: list[int]
     details: dict[str, Any]
@@ -54,20 +43,6 @@ async def parse_with_consensus(
     produto: str,
     require_consensus: bool = False,
 ) -> ConsensusResult:
-    """
-    Executa múltiplos parsers e compara resultados.
-
-    Args:
-        html: Conteúdo HTML
-        produto: Produto a parsear
-        require_consensus: Se True, levanta erro se parsers divergem
-
-    Returns:
-        ConsensusResult
-
-    Raises:
-        ParseError: Se require_consensus e parsers divergem
-    """
     results: dict[int, list[Indicador]] = {}
     errors: dict[int, str] = {}
 
@@ -136,16 +111,6 @@ def analyze_consensus(
     results: dict[int, list[Indicador]],
     errors: dict[int, str],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """
-    Analisa resultados de múltiplos parsers.
-
-    Args:
-        results: Resultados por versão de parser
-        errors: Erros por versão de parser
-
-    Returns:
-        Tupla (lista de divergências, relatório completo)
-    """
     report = {
         "parser_count": len(CONSENSUS_PARSERS),
         "successful": list(results.keys()),
@@ -229,21 +194,6 @@ def select_best_result(
     results: dict[int, list[Indicador]],
     divergences: list[dict[str, Any]],
 ) -> tuple[int, list[Indicador]]:
-    """
-    Seleciona melhor resultado quando há divergência.
-
-    Estratégia:
-    1. Prefere parser mais recente
-    2. Se contagens diferem, prefere quem tem mais dados
-    3. Em último caso, usa mais recente
-
-    Args:
-        results: Resultados por versão
-        divergences: Divergências detectadas
-
-    Returns:
-        Tupla (versão selecionada, indicadores)
-    """
     if not results:
         return 0, []
 
@@ -258,23 +208,11 @@ def select_best_result(
 
 
 class ConsensusValidator:
-    """Validador de consensus para uso contínuo."""
-
     def __init__(self) -> None:
         self.history: list[ConsensusResult] = []
         self.divergence_count = 0
 
     async def validate(self, html: str, produto: str) -> ConsensusResult:
-        """
-        Executa validação com tracking de histórico.
-
-        Args:
-            html: Conteúdo HTML
-            produto: Produto
-
-        Returns:
-            ConsensusResult
-        """
         result = await parse_with_consensus(html, produto, require_consensus=False)
 
         self.history.append(result)
@@ -285,13 +223,11 @@ class ConsensusValidator:
 
     @property
     def divergence_rate(self) -> float:
-        """Taxa de divergência no histórico."""
         if not self.history:
             return 0.0
         return self.divergence_count / len(self.history)
 
     def get_statistics(self) -> dict[str, Any]:
-        """Retorna estatísticas do validador."""
         return {
             "total_validations": len(self.history),
             "divergence_count": self.divergence_count,

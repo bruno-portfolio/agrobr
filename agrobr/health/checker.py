@@ -1,5 +1,3 @@
-"""Health checks automatizados para fontes de dados."""
-
 from __future__ import annotations
 
 import asyncio
@@ -24,8 +22,6 @@ class CheckStatus(StrEnum):
 
 @dataclass
 class CheckResult:
-    """Resultado de um health check."""
-
     source: Fonte
     status: CheckStatus
     latency_ms: float
@@ -35,7 +31,6 @@ class CheckResult:
 
 
 async def check_cepea() -> CheckResult:
-    """Executa health check para CEPEA."""
     from agrobr.cepea import client as cepea_client
     from agrobr.cepea.parsers import fingerprint as fp
     from agrobr.cepea.parsers.detector import get_parser_with_fallback
@@ -119,7 +114,6 @@ async def check_cepea() -> CheckResult:
 
 
 async def check_conab() -> CheckResult:
-    """Executa health check para CONAB."""
     import httpx
 
     start = time.monotonic()
@@ -177,7 +171,6 @@ async def check_conab() -> CheckResult:
 
 
 async def check_ibge() -> CheckResult:
-    """Executa health check para IBGE (API SIDRA)."""
     import httpx
 
     start = time.monotonic()
@@ -248,15 +241,6 @@ async def check_ibge() -> CheckResult:
 
 
 async def check_source(source: Fonte) -> CheckResult:
-    """
-    Executa health check para uma fonte específica.
-
-    Args:
-        source: Fonte a verificar
-
-    Returns:
-        CheckResult com status do check
-    """
     checkers = {
         Fonte.CEPEA: check_cepea,
         Fonte.CONAB: check_conab,
@@ -278,14 +262,12 @@ async def check_source(source: Fonte) -> CheckResult:
 
 
 async def run_all_checks() -> list[CheckResult]:
-    """Executa health checks para todas as fontes."""
     sources = [Fonte.CEPEA, Fonte.CONAB, Fonte.IBGE]
     results = await asyncio.gather(*[check_source(s) for s in sources])
     return list(results)
 
 
 def format_results(results: list[CheckResult]) -> str:
-    """Formata resultados para exibição."""
     lines = ["Health Check Results", "=" * 40]
 
     for result in results:

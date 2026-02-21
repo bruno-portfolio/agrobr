@@ -159,26 +159,6 @@ CANONICAL_CROPS: set[str] = set(CULTURAS.values())
 
 
 def normalizar_cultura(nome: str) -> str:
-    """Normaliza nome de cultura para forma canonica agrobr.
-
-    Busca case-insensitive e accent-insensitive.
-
-    Args:
-        nome: Nome da cultura (qualquer variante).
-
-    Returns:
-        Nome canonico em minusculas.
-
-    Examples:
-        >>> normalizar_cultura("SOJA")
-        'soja'
-        >>> normalizar_cultura("Soja em Grão")
-        'soja'
-        >>> normalizar_cultura("milho 2ª safra")
-        'milho_2'
-        >>> normalizar_cultura("café arábica")
-        'cafe_arabica'
-    """
     key = nome.strip().lower()
     if key in CULTURAS:
         return CULTURAS[key]
@@ -195,12 +175,10 @@ def normalizar_cultura(nome: str) -> str:
 
 
 def listar_culturas() -> list[str]:
-    """Retorna lista ordenada de nomes canonicos de culturas."""
     return sorted(CANONICAL_CROPS)
 
 
 def is_cultura_valida(nome: str) -> bool:
-    """Verifica se o nome resolve para uma cultura conhecida."""
     return normalizar_cultura(nome) in CANONICAL_CROPS
 
 

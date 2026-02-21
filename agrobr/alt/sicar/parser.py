@@ -1,5 +1,3 @@
-"""Parser de CSV do WFS SICAR."""
-
 from __future__ import annotations
 
 import io
@@ -17,17 +15,6 @@ PARSER_VERSION = 1
 
 
 def parse_imoveis_csv(pages: list[bytes]) -> pd.DataFrame:
-    """Parseia paginas CSV do WFS e retorna DataFrame normalizado.
-
-    Args:
-        pages: Lista de bytes (CSV) retornados pelo WFS paginado.
-
-    Returns:
-        DataFrame com colunas padrao COLUNAS_IMOVEIS.
-
-    Raises:
-        ParseError: Se CSV invalido ou colunas obrigatorias ausentes.
-    """
     if not pages:
         return pd.DataFrame(columns=COLUNAS_IMOVEIS)
 
@@ -52,7 +39,6 @@ def parse_imoveis_csv(pages: list[bytes]) -> pd.DataFrame:
 
     df = pd.concat(dfs, ignore_index=True)
 
-    # Validar colunas obrigatorias
     required = {"cod_imovel", "status_imovel", "dat_criacao", "area", "uf"}
     missing = required - set(df.columns)
     if missing:
@@ -62,16 +48,13 @@ def parse_imoveis_csv(pages: list[bytes]) -> pd.DataFrame:
             reason=f"Colunas obrigatorias ausentes: {missing}",
         )
 
-    # Rename
     df = df.rename(columns=RENAME_MAP)
 
-    # Parse datas
     df["data_criacao"] = pd.to_datetime(df["data_criacao"], errors="coerce")
     df["data_atualizacao"] = pd.to_datetime(
         df.get("data_atualizacao", pd.Series(dtype=str)), errors="coerce"
     )
 
-    # Cast numericos
     df["area_ha"] = pd.to_numeric(df["area_ha"], errors="coerce")
     df["cod_municipio_ibge"] = pd.to_numeric(
         df.get("cod_municipio_ibge", pd.Series(dtype=str)), errors="coerce"
@@ -80,7 +63,6 @@ def parse_imoveis_csv(pages: list[bytes]) -> pd.DataFrame:
         df.get("modulos_fiscais", pd.Series(dtype=str)), errors="coerce"
     )
 
-    # Normalizar strings
     df["uf"] = df["uf"].fillna("").str.strip().str.upper()
     df["status"] = df["status"].fillna("").str.strip().str.upper()
     df["tipo"] = df.get("tipo", pd.Series(dtype=str)).fillna("").str.strip().str.upper()
@@ -88,7 +70,6 @@ def parse_imoveis_csv(pages: list[bytes]) -> pd.DataFrame:
     df["condicao"] = df.get("condicao", pd.Series(dtype=str)).fillna("").str.strip()
     df["cod_imovel"] = df["cod_imovel"].fillna("").astype(str).str.strip()
 
-    # Selecionar e ordenar colunas de saida
     output_cols = [c for c in COLUNAS_IMOVEIS if c in df.columns]
     df = df[output_cols].copy()
     df = df.reset_index(drop=True)
@@ -98,14 +79,6 @@ def parse_imoveis_csv(pages: list[bytes]) -> pd.DataFrame:
 
 
 def agregar_resumo(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega DataFrame de imoveis em resumo estatistico.
-
-    Args:
-        df: DataFrame com colunas padrao de imoveis.
-
-    Returns:
-        DataFrame com uma linha contendo estatisticas agregadas.
-    """
     total = len(df)
 
     if total == 0:

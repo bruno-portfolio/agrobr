@@ -1,5 +1,3 @@
-"""Parser para indicadores CEPEA via Notícias Agrícolas."""
-
 from __future__ import annotations
 
 import re
@@ -63,12 +61,6 @@ PRACAS = {
 
 
 def _parse_date(date_str: str) -> tuple[datetime, bool] | None:
-    """Converte string de data para datetime.
-
-    Returns:
-        Tupla (datetime, is_weekly) ou None se não parseável.
-        is_weekly=True indica média semanal (ex: '09 - 13/02/2026').
-    """
     date_str = date_str.strip()
 
     match = re.match(r"(\d{2})/(\d{2})/(\d{4})", date_str)
@@ -91,7 +83,6 @@ def _parse_date(date_str: str) -> tuple[datetime, bool] | None:
 
 
 def _parse_valor(valor_str: str) -> Decimal | None:
-    """Converte string de valor para Decimal."""
     valor_str = valor_str.strip()
 
     valor_str = re.sub(r"R\$\s*", "", valor_str)
@@ -105,7 +96,6 @@ def _parse_valor(valor_str: str) -> Decimal | None:
 
 
 def _parse_variacao(var_str: str) -> Decimal | None:
-    """Converte string de variação para Decimal."""
     var_str = var_str.strip()
 
     var_str = re.sub(r"[%\s]", "", var_str)
@@ -119,16 +109,6 @@ def _parse_variacao(var_str: str) -> Decimal | None:
 
 
 def parse_indicador(html: str, produto: str) -> list[Indicador]:
-    """
-    Faz parse do HTML do Notícias Agrícolas e extrai indicadores CEPEA.
-
-    Args:
-        html: HTML da página
-        produto: Nome do produto (soja, milho, boi, etc)
-
-    Returns:
-        Lista de objetos Indicador
-    """
     soup = BeautifulSoup(html, "lxml")
     indicadores: list[Indicador] = []
 

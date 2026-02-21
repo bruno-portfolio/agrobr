@@ -1,5 +1,3 @@
-"""API pública do módulo CONAB."""
-
 from __future__ import annotations
 
 import time
@@ -51,24 +49,6 @@ async def safras(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """
-    Obtém dados de safra por produto.
-
-    Args:
-        produto: Nome do produto (soja, milho, arroz, feijao, algodao, trigo, etc)
-        safra: Safra no formato "2024/25" (default: mais recente)
-        uf: Filtrar por UF (ex: "MT", "PR")
-        levantamento: Número do levantamento (default: mais recente)
-        as_polars: Se True, retorna polars.DataFrame
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com dados de safra por UF ou tupla (DataFrame, MetaInfo)
-
-    Example:
-        >>> df = await conab.safras('soja', safra='2025/26')
-        >>> df, meta = await conab.safras('milho', uf='MT', return_meta=True)
-    """
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="conab",
@@ -186,21 +166,6 @@ async def balanco(
     safra: str | None = None,
     as_polars: bool = False,
 ) -> pd.DataFrame:
-    """
-    Obtém dados de balanço de oferta e demanda.
-
-    Args:
-        produto: Filtrar por produto (soja, milho, etc). None para todos.
-        safra: Safra de referência para o levantamento (default: mais recente)
-        as_polars: Se True, retorna polars.DataFrame
-
-    Returns:
-        DataFrame com balanço de oferta/demanda
-
-    Example:
-        >>> df = await conab.balanco('soja')
-        >>> df = await conab.balanco()  # Todos os produtos
-    """
     logger.info(
         "conab_balanco_request",
         produto=produto,
@@ -257,20 +222,6 @@ async def brasil_total(
     safra: str | None = None,
     as_polars: bool = False,
 ) -> pd.DataFrame:
-    """
-    Obtém totais do Brasil por produto.
-
-    Args:
-        safra: Safra de referência (default: mais recente)
-        as_polars: Se True, retorna polars.DataFrame
-
-    Returns:
-        DataFrame com totais por produto
-
-    Example:
-        >>> df = await conab.brasil_total()
-        >>> df = await conab.brasil_total(safra='2025/26')
-    """
     logger.info(
         "conab_brasil_total_request",
         safra=safra,
@@ -304,45 +255,12 @@ async def brasil_total(
 
 
 async def levantamentos() -> list[dict[str, Any]]:
-    """
-    Lista levantamentos de safra disponíveis.
-
-    Returns:
-        Lista de dicts com informações dos levantamentos
-
-    Example:
-        >>> levs = await conab.levantamentos()
-        >>> for lev in levs[:5]:
-        ...     print(f"{lev['safra']} - {lev['levantamento']}º levantamento")
-    """
     return await client.list_levantamentos()
 
 
 async def produtos() -> list[str]:
-    """
-    Lista produtos disponíveis.
-
-    Returns:
-        Lista de nomes de produtos
-
-    Example:
-        >>> prods = await conab.produtos()
-        >>> print(prods)
-        ['soja', 'milho', 'arroz', 'feijao', ...]
-    """
     return list(constants.CONAB_PRODUTOS.keys())
 
 
 async def ufs() -> list[str]:
-    """
-    Lista UFs disponíveis.
-
-    Returns:
-        Lista de siglas de UF
-
-    Example:
-        >>> estados = await conab.ufs()
-        >>> print(estados)
-        ['AC', 'AL', 'AM', ...]
-    """
     return constants.CONAB_UFS.copy()

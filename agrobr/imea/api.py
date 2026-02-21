@@ -1,16 +1,3 @@
-"""API pública do módulo IMEA — cotações e indicadores Mato Grosso.
-
-Dados do Instituto Mato-Grossense de Economia Agropecuária.
-Cotações diárias, indicadores de preço, progresso de safra e
-comercialização para as cadeias produtivas de MT.
-
-Fonte: API pública IMEA (api1.imea.com.br), sem autenticação.
-
-LICENÇA: Termos de uso IMEA proíbem redistribuição de dados sem
-autorização escrita. Uso pessoal/educacional apenas.
-Ref: https://imea.com.br/imea-site/termo-de-uso.html
-"""
-
 from __future__ import annotations
 
 import time
@@ -59,31 +46,6 @@ async def cotacoes(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca cotações e indicadores IMEA para Mato Grosso.
-
-    Dados de preços, progresso de safra, comercialização e custos
-    para as cadeias produtivas de Mato Grosso.
-
-    Args:
-        cadeia: Cadeia produtiva ("soja", "milho", "algodao", "bovinocultura").
-        safra: Filtrar por safra (ex: "24/25"). None retorna todas.
-        unidade: Filtrar por unidade (ex: "R$/sc", "R$/t", "%").
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame: cadeia, localidade, valor, variacao, safra,
-                   unidade, unidade_descricao, data_publicacao.
-
-    Raises:
-        SourceUnavailableError: Se API IMEA indisponível.
-        ValueError: Se cadeia desconhecida.
-
-    Example:
-        >>> df = await imea.cotacoes("soja")
-        >>> df.columns.tolist()
-        ['cadeia', 'localidade', 'valor', 'variacao', 'safra',
-         'unidade', 'unidade_descricao', 'data_publicacao']
-    """
     global _WARNED  # noqa: PLW0603
     if not _WARNED:
         warnings.warn(
@@ -112,11 +74,9 @@ async def cotacoes(
     t1 = time.monotonic()
     df = parser.parse_cotacoes(records)
 
-    # Filtrar por safra
     if safra:
         df = parser.filter_by_safra(df, safra)
 
-    # Filtrar por unidade
     if unidade:
         df = parser.filter_by_unidade(df, unidade)
 

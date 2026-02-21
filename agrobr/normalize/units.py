@@ -1,14 +1,3 @@
-"""
-Conversão de unidades agrícolas.
-
-Suporta conversões entre:
-- Sacas (sc) de diferentes pesos
-- Toneladas (ton/t)
-- Bushels (bu)
-- Quilogramas (kg)
-- Arrobas (@)
-"""
-
 from __future__ import annotations
 
 from decimal import Decimal
@@ -83,31 +72,6 @@ def converter(
     para: UnidadeDestino,
     produto: str | None = None,
 ) -> Decimal:
-    """
-    Converte valor entre unidades.
-
-    Args:
-        valor: Valor a converter
-        de: Unidade de origem
-        para: Unidade de destino
-        produto: Produto (necessário para conversões com bushel)
-
-    Returns:
-        Valor convertido como Decimal
-
-    Raises:
-        ValueError: Se conversão não suportada
-
-    Examples:
-        >>> converter(100, 'sc60kg', 'ton')
-        Decimal('6.0')
-
-        >>> converter(1, 'ton', 'sc60kg')
-        Decimal('16.666...')
-
-        >>> converter(100, 'kg', 'arroba')
-        Decimal('6.666...')
-    """
     if not isinstance(valor, Decimal):
         valor = Decimal(str(valor))
 
@@ -129,7 +93,6 @@ def converter(
 
 
 def _normalizar_unidade(unidade: str) -> str:
-    """Normaliza nome da unidade."""
     unidade = unidade.lower().strip()
 
     aliases = {
@@ -153,7 +116,6 @@ def _normalizar_unidade(unidade: str) -> str:
 
 
 def _para_kg(valor: Decimal, unidade: str) -> Decimal:
-    """Converte qualquer unidade para kg."""
     if unidade == "kg":
         return valor
     if unidade == "ton":
@@ -171,7 +133,6 @@ def _para_kg(valor: Decimal, unidade: str) -> Decimal:
 
 
 def _de_kg(valor_kg: Decimal, unidade: str) -> Decimal:
-    """Converte kg para qualquer unidade."""
     if unidade == "kg":
         return valor_kg
     if unidade == "ton":
@@ -194,7 +155,6 @@ def _converter_bushel(
     para: str,
     produto: str | None,
 ) -> Decimal:
-    """Converte envolvendo bushels (requer produto)."""
     if produto is None:
         raise ValueError("Produto é necessário para conversões com bushel")
 

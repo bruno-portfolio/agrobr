@@ -1,12 +1,3 @@
-"""API pública do módulo USDA — Production, Supply, Distribution (PSD).
-
-Estimativas internacionais de produção, oferta e demanda agrícola.
-Fonte: USDA FAS OpenData API v2.
-
-Requer API key gratuita: https://api.data.gov/signup/
-Configuração: variável de ambiente AGROBR_USDA_API_KEY
-"""
-
 from __future__ import annotations
 
 import time
@@ -61,32 +52,6 @@ async def psd(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados PSD (Production, Supply, Distribution) do USDA.
-
-    Args:
-        commodity: Commodity ("soja", "milho", "trigo") ou código USDA.
-        country: País ("BR", "brasil", "US"). Default: Brasil.
-                 Use "world" para dados mundiais agregados,
-                 "all" para todos os países.
-        market_year: Marketing year (ex: 2024). None usa o mais recente.
-        attributes: Filtrar por atributos (ex: ["Production", "Exports"]).
-        pivot: Se True, pivota atributos como colunas.
-        api_key: USDA API key (ou usa AGROBR_USDA_API_KEY).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com dados PSD.
-
-    Raises:
-        SourceUnavailableError: Se API USDA indisponível ou key inválida.
-        ValueError: Se commodity ou país desconhecido.
-
-    Example:
-        >>> df = await usda.psd("soja", country="BR", market_year=2024)
-        >>> df.columns.tolist()
-        ['commodity_code', 'commodity', 'country_code', 'country',
-         'market_year', 'attribute', 'attribute_br', 'value', 'unit']
-    """
     commodity_code = resolve_commodity_code(commodity)
     year = market_year or datetime.now(UTC).year
 
@@ -115,11 +80,9 @@ async def psd(
     t1 = time.monotonic()
     df = parser.parse_psd_response(records)
 
-    # Filtrar atributos
     if attributes:
         df = parser.filter_attributes(df, attributes)
 
-    # Pivotar se solicitado
     if pivot:
         df = parser.pivot_attributes(df)
 

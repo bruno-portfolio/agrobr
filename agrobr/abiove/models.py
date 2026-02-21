@@ -1,10 +1,7 @@
-"""Modelos e constantes para dados ABIOVE (complexo soja)."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, field_validator
 
-# Produtos do complexo soja na nomenclatura ABIOVE
 ABIOVE_PRODUTOS: dict[str, str] = {
     "grao": "grao",
     "grão": "grao",
@@ -33,7 +30,6 @@ ABIOVE_PRODUTOS: dict[str, str] = {
     "total": "total",
 }
 
-# Meses em português para detecção no Excel
 MESES_PT: dict[str, int] = {
     "janeiro": 1,
     "fevereiro": 2,
@@ -64,21 +60,11 @@ MESES_PT: dict[str, int] = {
 
 
 def normalize_produto(nome: str) -> str:
-    """Normaliza nome de produto ABIOVE para forma canônica.
-
-    Args:
-        nome: Nome do produto (qualquer casing/formato).
-
-    Returns:
-        Nome canônico: "grao", "farelo", "oleo", "milho", "total".
-    """
     key = nome.strip().lower()
     return ABIOVE_PRODUTOS.get(key, key)
 
 
 class ExportacaoSoja(BaseModel):
-    """Registro de exportação do complexo soja."""
-
     ano: int
     mes: int
     produto: str

@@ -1,5 +1,3 @@
-"""Cliente WFS para o GeoServer SICAR."""
-
 from __future__ import annotations
 
 import math
@@ -37,7 +35,6 @@ def _build_wfs_url(
     start_index: int = 0,
     result_type: str | None = None,
 ) -> str:
-    """Constroi URL WFS 2.0.0 para a layer da UF."""
     props = ",".join(PROPERTY_NAMES)
     layer = layer_name(uf)
 
@@ -58,7 +55,6 @@ def _build_wfs_url(
 
 
 async def _fetch_url(url: str, *, base_delay: float | None = None) -> bytes:
-    """Faz GET com retry."""
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
         logger.debug("sicar_request", url=url)
         response = await retry_on_status(
@@ -71,11 +67,20 @@ async def _fetch_url(url: str, *, base_delay: float | None = None) -> bytes:
             raise SourceUnavailableError(source="sicar", url=url, last_error="HTTP 404")
 
         response.raise_for_status()
-        return response.content
+
+        content = response.content
+        if len(content) < 20:
+            raise SourceUnavailableError(
+                source="sicar",
+                url=url,
+                last_error=(
+                    f"WFS response too small ({len(content)} bytes), expected CSV feature data"
+                ),
+            )
+        return content
 
 
 async def fetch_hits(uf: str, cql_filter: str | None = None) -> int:
-    """Retorna contagem de features sem baixar dados (resultType=hits)."""
     url = _build_wfs_url(uf, cql_filter=cql_filter, result_type="hits")
     content = await _fetch_url(url)
 
@@ -96,7 +101,6 @@ async def fetch_hits(uf: str, cql_filter: str | None = None) -> int:
 
 
 async def fetch_imoveis(uf: str, cql_filter: str | None = None) -> tuple[list[bytes], str]:
-    """Busca imoveis paginados. Retorna (lista de CSVs, url base)."""
     total = await fetch_hits(uf, cql_filter)
     logger.info("sicar_hits", uf=uf, total=total, cql_filter=cql_filter)
 

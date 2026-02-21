@@ -1,10 +1,3 @@
-"""Parser para dados DERAL (planilha PC.xls semanal).
-
-PARSER_VERSION = 1: Parse do Painel de Culturas (PC.xls),
-detecção dinâmica de sheets por produto, extração de
-condição/estágio/progresso.
-"""
-
 from __future__ import annotations
 
 import io
@@ -22,7 +15,6 @@ PARSER_VERSION = 1
 
 
 def _safe_float(val: Any) -> float | None:
-    """Converte valor para float, retornando None se inválido."""
     if val is None:
         return None
     if isinstance(val, (int, float)):
@@ -33,7 +25,6 @@ def _safe_float(val: Any) -> float | None:
     if not s or s in ("-", "–", "...", "n.d.", "n.d", "*"):
         return None
     s = s.replace("%", "").strip()
-    # BR format: 1.234,56
     if "," in s:
         s = s.replace(".", "").replace(",", ".")
     try:
@@ -43,7 +34,6 @@ def _safe_float(val: Any) -> float | None:
 
 
 def _detect_produto_from_sheet(sheet_name: str) -> str | None:
-    """Detecta produto a partir do nome da sheet."""
     name = sheet_name.strip().lower()
     for alias, canonical in sorted(
         _build_sheet_map().items(),
@@ -55,12 +45,10 @@ def _detect_produto_from_sheet(sheet_name: str) -> str | None:
 
 
 def _build_sheet_map() -> dict[str, str]:
-    """Mapa de substrings -> produto canônico para detecção de sheet."""
     m: dict[str, str] = {}
     for key, label in DERAL_PRODUTOS.items():
         m[label.lower()] = key
         m[key] = key
-    # Aliases extras
     m["safrinha"] = "milho_2"
     m["milho verão"] = "milho_1"
     m["milho verao"] = "milho_1"
@@ -68,18 +56,6 @@ def _build_sheet_map() -> dict[str, str]:
 
 
 def parse_pc_xls(data: bytes) -> pd.DataFrame:
-    """Parseia planilha PC.xls do DERAL.
-
-    Suporta dois layouts:
-      - Sheets nomeadas por produto (legado)
-      - Sheets nomeadas por data/semana com tabela multi-produto (formato atual)
-
-    Args:
-        data: Bytes do arquivo .xls.
-
-    Returns:
-        DataFrame: produto, data, condicao, pct, plantio_pct, colheita_pct.
-    """
     try:
         xls = pd.ExcelFile(io.BytesIO(data))
     except Exception as exc:
@@ -119,7 +95,6 @@ def parse_pc_xls(data: bytes) -> pd.DataFrame:
 
 
 def _is_multi_produto_sheet(df: pd.DataFrame) -> bool:
-    """Detecta se a sheet tem layout multi-produto (formato atual PC.xls)."""
     if len(df) < 6 or len(df.columns) < 7:
         return False
 
@@ -136,19 +111,6 @@ def _extract_multi_produto_sheet(
     df: pd.DataFrame,
     sheet_name: str,
 ) -> list[dict[str, Any]]:
-    """Extrai dados de sheet com layout multi-produto.
-
-    Layout esperado (formato atual PC.xls):
-      Col 0: SAFRAS / nome-do-produto (ex: "Soja (1ª safra)")
-      Col 1: Plantada (%)
-      Col 2: Colhida (%)
-      Col 3: (vazio)
-      Col 4: Ruim (%)
-      Col 5: Média (%)
-      Col 6: Boa (%)
-      Col 7: (vazio)
-      Col 8..12: Fases fenológicas (%)
-    """
     records: list[dict[str, Any]] = []
 
     header_row = -1
@@ -220,7 +182,6 @@ def _extract_multi_produto_sheet(
 
 
 def _detect_produto_from_row_label(label: str) -> str | None:
-    """Detecta produto a partir do label da linha (ex: 'Soja (1ª safra)')."""
     s = label.strip().lower()
     s = re.sub(r"\(.*?\)", "", s).strip()
     s = re.sub(r"\d+[ªa]\s*safra", "", s).strip()
@@ -241,12 +202,6 @@ def _extract_condicao_from_sheet(
     df: pd.DataFrame,
     produto: str,
 ) -> list[dict[str, Any]]:
-    """Extrai registros de condição de uma sheet do PC.xls.
-
-    Procura padrões de:
-    - Linhas com "boa"/"média"/"ruim" e percentuais
-    - Linhas com "plantio" ou "colheita" e percentuais
-    """
     records: list[dict[str, Any]] = []
     data_ref = _find_data_referencia(df)
 
@@ -254,7 +209,6 @@ def _extract_condicao_from_sheet(
         row = df.iloc[row_idx]
         row_values = [str(v).strip().lower() for v in row if pd.notna(v)]
 
-        # Procurar padrão condição (boa/média/ruim) com percentuais
         for col_idx in range(len(row)):
             cell = row.iloc[col_idx]
             if pd.isna(cell):
@@ -274,7 +228,6 @@ def _extract_condicao_from_sheet(
                     }
                 )
 
-        # Procurar progresso plantio/colheita
         row_text = " ".join(row_values)
         if "plantio" in row_text or "semeadura" in row_text:
             pct = _find_pct_in_row(row)
@@ -308,14 +261,12 @@ def _extract_condicao_from_sheet(
 
 
 def _find_data_referencia(df: pd.DataFrame) -> str:
-    """Tenta encontrar data de referência na planilha."""
     for row_idx in range(min(10, len(df))):
         for col_idx in range(min(10, len(df.columns))):
             cell = df.iloc[row_idx, col_idx]
             if pd.isna(cell):
                 continue
             cell_str = str(cell).strip()
-            # Padrão dd/mm/yyyy ou dd/mm/yy
             match = re.search(r"\d{2}/\d{2}/\d{2,4}", cell_str)
             if match:
                 return match.group(0)
@@ -323,8 +274,6 @@ def _find_data_referencia(df: pd.DataFrame) -> str:
 
 
 def _find_pct_near(row: pd.Series, col_idx: int) -> float | None:
-    """Procura percentual na célula adjacente à condição."""
-    # Procura na próxima coluna
     for offset in [1, -1, 2, -2]:
         idx = col_idx + offset
         if 0 <= idx < len(row):
@@ -335,7 +284,6 @@ def _find_pct_near(row: pd.Series, col_idx: int) -> float | None:
 
 
 def _find_pct_in_row(row: pd.Series) -> float | None:
-    """Procura primeiro percentual numérico na row."""
     for val in row:
         if pd.isna(val):
             continue
@@ -346,7 +294,6 @@ def _find_pct_in_row(row: pd.Series) -> float | None:
 
 
 def filter_by_produto(df: pd.DataFrame, produto: str) -> pd.DataFrame:
-    """Filtra DataFrame por produto."""
     if df.empty or not produto:
         return df
     key = normalize_produto(produto)
@@ -354,7 +301,6 @@ def filter_by_produto(df: pd.DataFrame, produto: str) -> pd.DataFrame:
 
 
 def _empty_df() -> pd.DataFrame:
-    """Retorna DataFrame vazio com schema correto."""
     return pd.DataFrame(
         columns=[
             "produto",

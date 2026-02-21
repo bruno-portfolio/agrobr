@@ -1,9 +1,3 @@
-"""Parser para dados ComexStat (CSVs de exportação/importação).
-
-Os CSVs da ComexStat usam ponto-e-vírgula (;) como separador.
-O parser detecta o separador automaticamente para robustez.
-"""
-
 from __future__ import annotations
 
 from io import StringIO
@@ -17,7 +11,6 @@ logger = structlog.get_logger()
 
 PARSER_VERSION = 1
 
-# Mapeamento de colunas CSV → nomes agrobr
 COLUNAS_MAP: dict[str, str] = {
     "CO_ANO": "ano",
     "CO_MES": "mes",
@@ -34,14 +27,6 @@ COLUNAS_MAP: dict[str, str] = {
 
 
 def _detect_separator(csv_text: str) -> str:
-    """Detecta separador do CSV (';' ou ',').
-
-    Args:
-        csv_text: Primeiras linhas do CSV.
-
-    Returns:
-        Separador detectado.
-    """
     first_line = csv_text.split("\n")[0]
     if ";" in first_line:
         return ";"
@@ -53,19 +38,6 @@ def parse_exportacao(
     ncm: str | None = None,
     uf: str | None = None,
 ) -> pd.DataFrame:
-    """Parseia CSV de exportação da ComexStat.
-
-    Args:
-        csv_text: Conteúdo do CSV como string.
-        ncm: Filtrar por NCM (ex: "12019000").
-        uf: Filtrar por UF (ex: "MT").
-
-    Returns:
-        DataFrame com exportações filtradas.
-
-    Raises:
-        ParseError: Se CSV estiver vazio ou malformado.
-    """
     if not csv_text or len(csv_text.strip()) < 10:
         raise ParseError(
             source="comexstat",
@@ -96,23 +68,18 @@ def parse_exportacao(
             reason="CSV parseado mas sem registros",
         )
 
-    # Normalizar nomes de coluna
     rename = {k: v for k, v in COLUNAS_MAP.items() if k in df.columns}
     df = df.rename(columns=rename)
 
-    # Garantir NCM como string de 8 dígitos
     if "ncm" in df.columns:
         df["ncm"] = df["ncm"].astype(str).str.zfill(8)
 
-    # Filtrar por NCM (prefix match — 8 dígitos = exato, <8 = subposições)
     if ncm and "ncm" in df.columns:
         df = df[df["ncm"].str.startswith(ncm)]
 
-    # Filtrar por UF
     if uf and "uf" in df.columns:
         df = df[df["uf"] == uf.upper()]
 
-    # Conversões numéricas
     for col in ("kg_liquido", "valor_fob_usd", "qtd_estatistica"):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -121,7 +88,6 @@ def parse_exportacao(
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
 
-    # Normalizar UF
     if "uf" in df.columns:
         df["uf"] = df["uf"].str.upper().str.strip()
 
@@ -140,14 +106,6 @@ def parse_exportacao(
 
 
 def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega exportação por mês e NCM.
-
-    Args:
-        df: DataFrame parseado (nível registro).
-
-    Returns:
-        DataFrame agregado com volume_kg, valor_usd, num_operacoes por mês.
-    """
     if df.empty:
         return df
 
@@ -166,7 +124,6 @@ def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
 
     result = df.groupby(group_cols, as_index=False).agg(agg_dict)
 
-    # Adicionar coluna de toneladas
     if "kg_liquido" in result.columns:
         result["volume_ton"] = result["kg_liquido"] / 1000.0
 

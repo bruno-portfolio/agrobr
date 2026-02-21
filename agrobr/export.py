@@ -1,5 +1,3 @@
-"""Export para formatos auditaveis."""
-
 from __future__ import annotations
 
 import csv
@@ -25,18 +23,6 @@ def export_parquet(
     meta: MetaInfo | None = None,
     compression: str = "snappy",
 ) -> Path:
-    """
-    Exporta DataFrame para Parquet com metadados.
-
-    Args:
-        df: DataFrame a exportar
-        path: Caminho do arquivo
-        meta: Metadados opcionais
-        compression: Compressao (snappy, gzip, zstd)
-
-    Returns:
-        Path do arquivo criado
-    """
     import pyarrow as pa
     import pyarrow.parquet as pq
 
@@ -74,19 +60,6 @@ def export_csv(
     include_header: bool = True,
     include_sidecar: bool = True,
 ) -> tuple[Path, Path | None]:
-    """
-    Exporta DataFrame para CSV com arquivo sidecar de metadados.
-
-    Args:
-        df: DataFrame a exportar
-        path: Caminho do arquivo
-        meta: Metadados opcionais
-        include_header: Incluir linha de cabecalho
-        include_sidecar: Criar arquivo .meta.json
-
-    Returns:
-        Tupla (path_csv, path_sidecar ou None)
-    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -110,19 +83,6 @@ def export_json(
     orient: str = "records",
     include_metadata: bool = True,
 ) -> Path:
-    """
-    Exporta DataFrame para JSON com metadados embutidos.
-
-    Args:
-        df: DataFrame a exportar
-        path: Caminho do arquivo
-        meta: Metadados opcionais
-        orient: Orientacao do JSON (records, split, index, etc)
-        include_metadata: Incluir metadados no JSON
-
-    Returns:
-        Path do arquivo criado
-    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -141,7 +101,6 @@ def export_json(
 
 
 def _create_sidecar(df: pd.DataFrame, meta: MetaInfo | None = None) -> dict[str, Any]:
-    """Cria metadados para arquivo sidecar."""
     csv_bytes = df.to_csv(index=False).encode("utf-8")
     content_hash = hashlib.sha256(csv_bytes).hexdigest()
 
@@ -171,16 +130,6 @@ def _create_sidecar(df: pd.DataFrame, meta: MetaInfo | None = None) -> dict[str,
 
 
 def verify_export(path: str | Path, expected_hash: str | None = None) -> dict[str, Any]:
-    """
-    Verifica integridade de um arquivo exportado.
-
-    Args:
-        path: Caminho do arquivo
-        expected_hash: Hash esperado (opcional)
-
-    Returns:
-        Dict com status da verificacao
-    """
     path = Path(path)
 
     if not path.exists():
@@ -234,7 +183,6 @@ def verify_export(path: str | Path, expected_hash: str | None = None) -> dict[st
 
 
 def _get_version() -> str:
-    """Retorna versao do agrobr."""
     try:
         import agrobr
 

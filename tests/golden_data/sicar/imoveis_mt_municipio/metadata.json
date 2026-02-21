@@ -4,5 +4,7 @@
   "uf": "MT",
   "municipio": "SORRISO",
   "parser_functions": ["parse_imoveis_csv"],
-  "description": "Sample of imoveis from SORRISO-MT (filtered by municipio)"
+  "captured_at": "2026-02-21T08:37:00Z",
+  "needs_real_data": false,
+  "description": "Real WFS GeoServer data: 10 imoveis from Sorriso-MT filtered by municipio. First imovel is MT-5107925-D6C8D851BCE54F42A51A5DC123B0108B (AT, IRU, 91.12 ha)."
 }

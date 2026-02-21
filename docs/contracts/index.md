@@ -32,6 +32,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | [pecuaria_municipal](./pecuaria_municipal.md) | Rebanhos e produção animal | IBGE PPM |
 | [abate_trimestral](./abate_trimestral.md) | Abate de bovinos, suínos e frangos | IBGE Abate |
 | [censo_agropecuario](./censo_agropecuario.md) | Censo Agropecuário 2017 | IBGE Censo Agro |
+| [cadastro_rural](./cadastro_rural.md) | Cadastro Ambiental Rural | SICAR |
 
 ## Schemas JSON
 
@@ -65,7 +66,7 @@ from agrobr import datasets
 datasets.list_datasets()
 # ['abate_trimestral', 'balanco', 'censo_agropecuario', 'credito_rural',
 #  'custo_producao', 'estimativa_safra', 'exportacao', 'fertilizante',
-#  'pecuaria_municipal', 'preco_diario', 'producao_anual']
+#  'pecuaria_municipal', 'preco_diario', 'producao_anual', 'cadastro_rural']
 
 # Listar produtos de um dataset
 datasets.list_products("preco_diario")

@@ -1,13 +1,3 @@
-"""
-Utilitários para datas de safra agrícola.
-
-No Brasil, a safra agrícola não coincide com o ano civil:
-- Safra de verão (soja, milho 1ª): plantio Set-Dez, colheita Jan-Abr
-- Safra de inverno (milho 2ª, trigo): plantio Fev-Mar, colheita Jun-Set
-
-Notação: "2024/25" significa plantio em 2024 e colheita em 2025.
-"""
-
 from __future__ import annotations
 
 import re
@@ -26,17 +16,6 @@ INICIO_SAFRA_MES = 7
 
 
 def safra_atual(data: date | None = None) -> str:
-    """
-    A safra é determinada pelo mês:
-    - Jul a Dez: safra do ano atual / próximo ano
-    - Jan a Jun: safra do ano anterior / ano atual
-
-    Examples:
-        >>> safra_atual(date(2024, 10, 15))
-        '2024/25'
-        >>> safra_atual(date(2025, 3, 15))
-        '2024/25'
-    """
     if data is None:
         data = date.today()
 
@@ -47,9 +26,6 @@ def safra_atual(data: date | None = None) -> str:
 
 
 def validar_safra(safra: str) -> bool:
-    """
-    Formatos aceitos: '2024/25' (padrão), '24/25' (curto), '2024/2025' (completo).
-    """
     if REGEX_SAFRA_COMPLETA.match(safra):
         return True
     if REGEX_SAFRA_CURTA.match(safra):
@@ -58,24 +34,6 @@ def validar_safra(safra: str) -> bool:
 
 
 def normalizar_safra(safra: str) -> str:
-    """
-    Normaliza safra para formato padrão '2024/25'.
-
-    Args:
-        safra: Safra em qualquer formato aceito
-
-    Returns:
-        Safra no formato '2024/25'
-
-    Raises:
-        ValueError: Se formato inválido
-
-    Examples:
-        >>> normalizar_safra('24/25')
-        '2024/25'
-        >>> normalizar_safra('2024/2025')
-        '2024/25'
-    """
     safra = re.sub(r"\s*/\s*", "/", safra.strip())
 
     match_completa = REGEX_SAFRA_COMPLETA.match(safra)
@@ -99,19 +57,6 @@ def normalizar_safra(safra: str) -> str:
 
 
 def safra_para_anos(safra: str) -> tuple[int, int]:
-    """
-    Converte safra para anos de início e fim.
-
-    Args:
-        safra: Safra no formato '2024/25'
-
-    Returns:
-        Tupla (ano_inicio, ano_fim)
-
-    Examples:
-        >>> safra_para_anos('2024/25')
-        (2024, 2025)
-    """
     safra_norm = normalizar_safra(safra)
     match = REGEX_SAFRA_COMPLETA.match(safra_norm)
 
@@ -131,22 +76,6 @@ def safra_para_anos(safra: str) -> tuple[int, int]:
 
 
 def anos_para_safra(ano_inicio: int, ano_fim: int | None = None) -> str:
-    """
-    Converte anos para formato de safra.
-
-    Args:
-        ano_inicio: Ano de início (plantio)
-        ano_fim: Ano de fim (colheita). Se None, assume ano_inicio + 1
-
-    Returns:
-        Safra no formato '2024/25'
-
-    Examples:
-        >>> anos_para_safra(2024)
-        '2024/25'
-        >>> anos_para_safra(2024, 2025)
-        '2024/25'
-    """
     if ano_fim is None:
         ano_fim = ano_inicio + 1
 
@@ -154,60 +83,16 @@ def anos_para_safra(ano_inicio: int, ano_fim: int | None = None) -> str:
 
 
 def safra_anterior(safra: str, n: int = 1) -> str:
-    """
-    Retorna a safra N anos antes.
-
-    Args:
-        safra: Safra de referência
-        n: Número de safras anteriores (default: 1)
-
-    Returns:
-        Safra anterior
-
-    Examples:
-        >>> safra_anterior('2024/25')
-        '2023/24'
-        >>> safra_anterior('2024/25', 3)
-        '2021/22'
-    """
     ano_inicio, _ = safra_para_anos(safra)
     return anos_para_safra(ano_inicio - n)
 
 
 def safra_posterior(safra: str, n: int = 1) -> str:
-    """
-    Retorna a safra N anos depois.
-
-    Args:
-        safra: Safra de referência
-        n: Número de safras posteriores (default: 1)
-
-    Returns:
-        Safra posterior
-
-    Examples:
-        >>> safra_posterior('2024/25')
-        '2025/26'
-    """
     ano_inicio, _ = safra_para_anos(safra)
     return anos_para_safra(ano_inicio + n)
 
 
 def lista_safras(inicio: str, fim: str) -> list[str]:
-    """
-    Gera lista de safras entre início e fim (inclusive).
-
-    Args:
-        inicio: Safra inicial
-        fim: Safra final
-
-    Returns:
-        Lista de safras
-
-    Examples:
-        >>> lista_safras('2020/21', '2024/25')
-        ['2020/21', '2021/22', '2022/23', '2023/24', '2024/25']
-    """
     ano_inicio, _ = safra_para_anos(inicio)
     ano_fim, _ = safra_para_anos(fim)
 
@@ -215,28 +100,10 @@ def lista_safras(inicio: str, fim: str) -> list[str]:
 
 
 def data_para_safra(data: date) -> str:
-    """
-    Determina a safra de uma data.
-
-    Args:
-        data: Data
-
-    Returns:
-        Safra correspondente
-    """
     return safra_atual(data)
 
 
 def periodo_safra(safra: str) -> tuple[date, date]:
-    """
-    Retorna período aproximado da safra (Jul a Jun).
-
-    Args:
-        safra: Safra no formato '2024/25'
-
-    Returns:
-        Tupla (data_inicio, data_fim)
-    """
     ano_inicio, ano_fim = safra_para_anos(safra)
 
     data_inicio = date(ano_inicio, INICIO_SAFRA_MES, 1)

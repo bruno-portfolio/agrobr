@@ -59,7 +59,7 @@ class TestExtractCsvFromZip:
 class TestFetchFocosMensal:
     @pytest.mark.asyncio
     async def test_csv_hit_returns_directly(self):
-        csv_data = b"lat,lon\n-15.0,-47.0"
+        csv_data = b"lat,lon,satelite,municipio,estado\n" + b"-15.0,-47.0,AQUA,Brasilia,DF\n" * 3
         resp_ok = _mock_response(200, csv_data)
 
         with patch(

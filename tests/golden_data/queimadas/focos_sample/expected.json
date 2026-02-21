@@ -1,10 +1,47 @@
 {
-  "count_min": 8,
-  "columns": ["data", "hora_gmt", "lat", "lon", "satelite", "municipio", "municipio_id", "estado", "bioma", "numero_dias_sem_chuva", "precipitacao", "risco_fogo", "frp", "uf"],
-  "non_null_columns": ["data", "lat", "lon", "satelite"],
-  "has_multiple_biomas": true,
-  "biomas_expected": ["Amaz√¥nia", "Caatinga", "Cerrado", "Mata Atl√¢ntica", "Pampa", "Pantanal"],
-  "has_multiple_satelites": true,
-  "satelites_expected": ["AQUA_M-T", "GOES-19", "NOAA-20", "NOAA-21", "TERRA_M-M", "TERRA_M-T"],
-  "ufs_expected": ["AM", "DF", "MS", "MT", "PE", "RS", "SP", "TO"]
+  "record_count": 10,
+  "columns": [
+    "data",
+    "hora_gmt",
+    "lat",
+    "lon",
+    "satelite",
+    "municipio",
+    "municipio_id",
+    "estado",
+    "bioma",
+    "numero_dias_sem_chuva",
+    "precipitacao",
+    "risco_fogo",
+    "frp",
+    "uf"
+  ],
+  "first_row": {
+    "data": "2025-01-01",
+    "hora_gmt": "00:00",
+    "lat": -15.2723,
+    "lon": -60.2078,
+    "satelite": "GOES-16",
+    "municipio": "VILA BELA DA SANTÕSSIMA TRINDADE",
+    "municipio_id": 5105507,
+    "estado": "MATO GROSSO",
+    "bioma": "AmazÙnia",
+    "numero_dias_sem_chuva": NaN,
+    "precipitacao": NaN,
+    "risco_fogo": NaN,
+    "frp": 89.1,
+    "uf": "MT"
+  },
+  "non_null_columns": [
+    "data",
+    "hora_gmt",
+    "lat",
+    "lon",
+    "satelite",
+    "municipio",
+    "municipio_id",
+    "estado",
+    "bioma",
+    "uf"
+  ]
 }

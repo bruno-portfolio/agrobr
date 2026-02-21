@@ -134,7 +134,7 @@ class TestFetchTradeData:
                 freq="A",
             )
 
-        assert len(records) == 3
+        assert len(records) == 8
         assert records[0]["cmdCode"] == "1201"
 
     @pytest.mark.asyncio
@@ -158,7 +158,7 @@ class TestFetchTradeData:
         with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
             records, url = await client.fetch_trade_data(**_FETCH_ARGS, api_key="bad-key")
 
-        assert len(records) == 3
+        assert len(records) == 8
         assert "public/v1/preview" in url
 
     @pytest.mark.asyncio
@@ -244,7 +244,7 @@ class TestFetchTradeData:
             )
 
         assert mock_client.get.call_count == 3
-        assert len(records) == 9
+        assert len(records) == 24
 
     @pytest.mark.asyncio
     async def test_auth_key_uses_data_endpoint(self):

@@ -1,10 +1,3 @@
-"""API pública do módulo ANTAQ — movimentação portuária.
-
-Dados: Estatístico Aquaviário (ANTAQ)
-URL: https://web3.antaq.gov.br/ea/sense/download.html
-Licença: livre (dados públicos governo federal)
-"""
-
 from __future__ import annotations
 
 import time
@@ -66,32 +59,6 @@ async def movimentacao(
     sentido: str | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Obtém movimentação portuária de carga de um ano.
-
-    Args:
-        ano: Ano dos dados (2010 a 2025).
-        tipo_navegacao: Filtro por tipo de navegação.
-            Valores: longo_curso, cabotagem, interior, apoio_maritimo, apoio_portuario.
-        natureza_carga: Filtro por natureza da carga.
-            Valores: granel_solido, granel_liquido, carga_geral, conteiner.
-        mercadoria: Filtro por mercadoria (substring case-insensitive).
-        porto: Filtro por nome do porto (substring case-insensitive).
-        uf: Filtro por UF do porto (ex: SP, RJ, PR).
-        sentido: Filtro por sentido (embarque ou desembarque).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com movimentação portuária, ou tupla (DataFrame, MetaInfo).
-
-    Raises:
-        ValueError: Se ano fora do range válido.
-        SourceUnavailableError: Se não conseguir baixar dados.
-
-    Example:
-        >>> import agrobr
-        >>> df = await agrobr.antaq.movimentacao(2024, uf="SP")
-        >>> df.head()
-    """
     if ano < MIN_ANO or ano > MAX_ANO_DEFAULT:
         raise ValueError(f"Ano deve estar entre {MIN_ANO} e {MAX_ANO_DEFAULT}, recebido: {ano}")
 

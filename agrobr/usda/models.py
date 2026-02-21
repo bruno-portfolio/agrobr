@@ -1,14 +1,7 @@
-"""Modelos e constantes para dados USDA PSD (Production, Supply, Distribution).
-
-Fonte: USDA FAS OpenData API v2
-https://apps.fas.usda.gov/OpenData/api
-"""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, field_validator
 
-# Commodity codes (7 dígitos) — confirmados via fas.usda.gov
 PSD_COMMODITIES: dict[str, str] = {
     "soja": "2222000",
     "soybeans": "2222000",
@@ -28,7 +21,6 @@ PSD_COMMODITIES: dict[str, str] = {
     "soybean_oil": "4232000",
 }
 
-# Mapa reverso: código -> nome canônico
 _COMMODITY_NAMES: dict[str, str] = {
     "2222000": "soja",
     "0440000": "milho",
@@ -40,7 +32,6 @@ _COMMODITY_NAMES: dict[str, str] = {
     "4232000": "oleo_soja",
 }
 
-# Atributos PSD mais relevantes (id -> nome agrobr)
 PSD_ATTRIBUTES: dict[int, str] = {
     4: "area_colhida",
     28: "estoque_inicial",
@@ -53,7 +44,6 @@ PSD_ATTRIBUTES: dict[int, str] = {
     184: "produtividade",
 }
 
-# Country codes usados pelo USDA FAS (podem diferir de ISO 3166)
 PSD_COUNTRIES: dict[str, str] = {
     "brasil": "BR",
     "brazil": "BR",
@@ -70,7 +60,6 @@ PSD_COUNTRIES: dict[str, str] = {
     "eu": "E2",
 }
 
-# Mapeamento API -> nomes agrobr (colunas do response JSON)
 PSD_COLUMNS_MAP: dict[str, str] = {
     "CommodityCode": "commodity_code",
     "CommodityDescription": "commodity",
@@ -88,21 +77,9 @@ PSD_COLUMNS_MAP: dict[str, str] = {
 
 
 def resolve_commodity_code(nome: str) -> str:
-    """Resolve nome de commodity para código USDA PSD.
-
-    Args:
-        nome: Nome ou código da commodity (ex: "soja", "2222000").
-
-    Returns:
-        Código de 7 dígitos.
-
-    Raises:
-        ValueError: Se commodity desconhecida.
-    """
     key = nome.strip().lower()
     if key in PSD_COMMODITIES:
         return PSD_COMMODITIES[key]
-    # Pode ser o próprio código
     if len(key) == 7 and key.isdigit():
         return key
     raise ValueError(
@@ -111,21 +88,9 @@ def resolve_commodity_code(nome: str) -> str:
 
 
 def resolve_country_code(nome: str) -> str:
-    """Resolve nome de país para código USDA FAS.
-
-    Args:
-        nome: Nome ou código do país (ex: "brasil", "BR").
-
-    Returns:
-        Código de país USDA FAS (ex: "BR").
-
-    Raises:
-        ValueError: Se país desconhecido.
-    """
     key = nome.strip().lower()
     if key in PSD_COUNTRIES:
         return PSD_COUNTRIES[key]
-    # Pode ser o próprio código (2 letras)
     if len(key) <= 3:
         return key.upper()
     raise ValueError(
@@ -134,13 +99,10 @@ def resolve_country_code(nome: str) -> str:
 
 
 def commodity_name(code: str) -> str:
-    """Retorna nome canônico da commodity pelo código."""
     return _COMMODITY_NAMES.get(code, code)
 
 
 class PSDRecord(BaseModel):
-    """Registro de dados PSD."""
-
     commodity_code: str
     commodity: str
     country_code: str

@@ -1,11 +1,3 @@
-"""Cliente HTTP para download de planilhas de custo de produção CONAB.
-
-A CONAB publica planilhas Excel (.xlsx) com custos detalhados por hectare.
-Não há API REST — os arquivos são baixados diretamente via HTTP.
-
-Fonte: https://www.conab.gov.br/info-agro/custos-de-producao
-"""
-
 from __future__ import annotations
 
 import re
@@ -28,9 +20,9 @@ CUSTOS_PAGE = (
 )
 
 _TAB_SLUGS = [
-    "copy_of_agricolas",  # Hortícolas / sociobiodiversidade
-    "pecuarios",  # Pecuários
-    "copy",  # Grãos / fibras (custos-de-producao/custos-de-producao)
+    "copy_of_agricolas",
+    "pecuarios",
+    "copy",
 ]
 
 _settings = HTTPSettings()
@@ -57,17 +49,6 @@ HEADERS = {
 
 
 async def fetch_custos_page() -> str:
-    """Busca HTML combinado das tabs de planilhas de custo de produção.
-
-    O gov.br carrega as tabs via sub-URLs separadas.  Concatenamos o HTML
-    de todas para que ``parse_links_from_html`` encontre todos os xlsx.
-
-    Returns:
-        HTML combinado de todas as tabs.
-
-    Raises:
-        SourceUnavailableError: Se nenhuma tab estiver acessível.
-    """
     combined_html = ""
 
     async with httpx.AsyncClient(timeout=TIMEOUT, headers=HEADERS, follow_redirects=True) as client:
@@ -82,7 +63,6 @@ async def fetch_custos_page() -> str:
                 logger.warning("conab_custo_tab_error", slug=slug, error=str(e))
 
         if not combined_html:
-            # Fallback: tenta a página principal
             try:
                 response = await client.get(CUSTOS_PAGE)
                 response.raise_for_status()
@@ -99,17 +79,6 @@ async def fetch_custos_page() -> str:
 
 
 async def download_xlsx(url: str) -> BytesIO:
-    """Baixa um arquivo Excel diretamente via HTTP.
-
-    Args:
-        url: URL completa do arquivo .xlsx.
-
-    Returns:
-        BytesIO com conteúdo do arquivo.
-
-    Raises:
-        SourceUnavailableError: Se não conseguir baixar.
-    """
     from agrobr.http.retry import retry_on_status
 
     if not url.startswith("http"):
@@ -142,14 +111,6 @@ async def download_xlsx(url: str) -> BytesIO:
 
 
 def parse_links_from_html(html: str) -> list[dict[str, str]]:
-    """Extrai links de planilhas .xlsx da página HTML.
-
-    Args:
-        html: HTML combinado das tabs de custos CONAB (gov.br).
-
-    Returns:
-        Lista de dicts com chaves: url, titulo, cultura_hint, uf_hint, safra_hint.
-    """
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(html, "lxml")
@@ -200,22 +161,6 @@ async def fetch_xlsx_for_cultura(
     uf: str | None = None,
     safra: str | None = None,
 ) -> tuple[BytesIO, dict[str, Any]]:
-    """Busca e baixa planilha de custo para uma cultura específica.
-
-    Faz scraping da página de custos, encontra o link correto,
-    e baixa o arquivo Excel.
-
-    Args:
-        cultura: Nome da cultura (ex: "soja", "milho").
-        uf: Filtrar por UF (ex: "MT").
-        safra: Filtrar por safra (ex: "2023/24").
-
-    Returns:
-        Tupla (BytesIO com Excel, metadata dict).
-
-    Raises:
-        SourceUnavailableError: Se não encontrar planilha adequada.
-    """
     html = await fetch_custos_page()
     links = parse_links_from_html(html)
 

@@ -1,5 +1,3 @@
-"""Construção de cache keys versionadas."""
-
 from __future__ import annotations
 
 import hashlib

@@ -1,11 +1,3 @@
-"""Parser para planilhas de exportação ABIOVE.
-
-PARSER_VERSION = 1: Parse dinâmico de Excel com detecção de layout.
-Suporta dois formatos:
-  - Meses nas linhas, produtos nas colunas (mais comum)
-  - Formato tabular com colunas nomeadas
-"""
-
 from __future__ import annotations
 
 import io
@@ -24,14 +16,6 @@ PARSER_VERSION = 1
 
 
 def _safe_float(value: Any) -> float | None:
-    """Converte valor para float, tratando formatos brasileiros.
-
-    Formatos aceitos:
-    - Inteiro/float Python
-    - "150.000" (milhares BR) -> 150000.0
-    - "1.234,56" (decimal BR) -> 1234.56
-    - "-", "–", "n.d.", "" -> None
-    """
     if value is None:
         return None
 
@@ -44,17 +28,13 @@ def _safe_float(value: Any) -> float | None:
     if not s or s in ("-", "–", "—", "n.d.", "n/d", "...", "nd"):
         return None
 
-    # Formato BR: 1.234.567,89 -> 1234567.89
     if "," in s and "." in s:
         s = s.replace(".", "").replace(",", ".")
     elif "," in s:
         s = s.replace(",", ".")
     elif s.count(".") > 1:
-        # Múltiplos pontos = separador de milhar: 1.234.567
         s = s.replace(".", "")
     elif "." in s:
-        # Ponto único: verificar se parece separador de milhar BR
-        # (exatamente 3 dígitos após o ponto)
         parts = s.split(".")
         if len(parts) == 2 and len(parts[1]) == 3 and parts[1].isdigit():
             s = s.replace(".", "")
@@ -66,25 +46,15 @@ def _safe_float(value: Any) -> float | None:
 
 
 def _detect_month(text: Any) -> int | None:
-    """Detecta mês a partir de texto (nome ou número).
-
-    Args:
-        text: Texto com nome ou número do mês.
-
-    Returns:
-        Número do mês (1-12) ou None se não reconhecido.
-    """
     if text is None:
         return None
 
     s = str(text).strip().lower()
 
-    # Exclui acumulados e totais
     skip_patterns = ["total", "acumulad", "anual", " a ", "/"]
     if any(p in s for p in skip_patterns):
         return None
 
-    # Numérico
     try:
         n = int(s)
         return n if 1 <= n <= 12 else None
@@ -95,14 +65,6 @@ def _detect_month(text: Any) -> int | None:
 
 
 def _detect_produto_from_header(header: str) -> str | None:
-    """Detecta produto a partir de texto do cabeçalho.
-
-    Args:
-        header: Texto do cabeçalho da coluna ou sheet.
-
-    Returns:
-        Nome canônico do produto ou None.
-    """
     h = header.strip().lower()
 
     if (
@@ -130,21 +92,6 @@ def parse_exportacao_excel(
     data: bytes,
     ano: int | None = None,
 ) -> pd.DataFrame:
-    """Parseia planilha Excel de exportação ABIOVE.
-
-    Detecta dinamicamente a estrutura da planilha e extrai
-    dados de exportação do complexo soja.
-
-    Args:
-        data: Bytes do arquivo Excel.
-        ano: Ano de referência (para preencher coluna ano).
-
-    Returns:
-        DataFrame: ano, mes, produto, volume_ton, receita_usd_mil.
-
-    Raises:
-        ParseError: Se não conseguir extrair dados.
-    """
     try:
         xls = pd.ExcelFile(io.BytesIO(data))
     except Exception as e:
@@ -173,11 +120,9 @@ def parse_exportacao_excel(
 
     df = pd.DataFrame(all_records)
 
-    # Normalizar produto
     if "produto" in df.columns:
         df["produto"] = df["produto"].apply(normalize_produto)
 
-    # Ordenar
     sort_cols = [c for c in ["ano", "mes", "produto"] if c in df.columns]
     if sort_cols:
         df = df.sort_values(sort_cols).reset_index(drop=True)
@@ -196,18 +141,15 @@ def _parse_sheet(
     sheet_name: str,
     ano: int | None,
 ) -> list[dict[str, Any]]:
-    """Parseia uma sheet do Excel ABIOVE."""
     df_raw = pd.read_excel(xls, sheet_name=sheet_name, header=None)
 
     if df_raw.empty or len(df_raw) < 2:
         return []
 
-    # Estratégia 1: meses nas linhas, produtos nas colunas
     records = _parse_meses_rows(df_raw, ano, sheet_name)
     if records:
         return records
 
-    # Estratégia 2: formato tabular simples
     records = _parse_tabular(df_raw, ano)
     if records:
         return records
@@ -216,13 +158,6 @@ def _parse_sheet(
 
 
 def _find_month_col(df: pd.DataFrame) -> int:
-    """Detecta qual coluna contém os nomes de mês.
-
-    Testa colunas 0 e 1 procurando >= 3 meses reconhecíveis.
-
-    Returns:
-        Índice da coluna com meses (0 ou 1), default 0.
-    """
     for col in (0, 1):
         if col >= len(df.columns):
             continue
@@ -241,13 +176,6 @@ def _parse_meses_rows(
     ano: int | None,
     sheet_name: str,
 ) -> list[dict[str, Any]]:
-    """Parseia formato com meses nas linhas.
-
-    Suporta dois layouts:
-      - Clássico: meses na coluna 0, produto por sheet
-      - Multi-seção: meses na coluna 1, seções produto dentro da sheet
-        (ex: "1.1. Exportações de soja em grão", depois meses Jan-Dez)
-    """
     records: list[dict[str, Any]] = []
 
     month_col = _find_month_col(df)
@@ -303,12 +231,6 @@ def _split_sections(
     month_rows: list[tuple[int, int]],
     sheet_name: str,
 ) -> list[tuple[str, list[tuple[int, int]], dict[int, str]]]:
-    """Divide month_rows em seções por produto.
-
-    Dois modos:
-      - Multi-coluna (clássico): um bloco de meses, múltiplos produtos nas colunas
-      - Multi-seção (novo): blocos separados de meses, cada um com seu produto
-    """
     groups: list[tuple[int, list[tuple[int, int]]]] = []
     current: list[tuple[int, int]] = []
 
@@ -348,7 +270,6 @@ def _detect_column_products(
     month_col: int,
     first_month_row: int,
 ) -> dict[int, str]:
-    """Detecta produtos mapeados a colunas (formato clássico multi-coluna)."""
     col_products: dict[int, str] = {}
     for offset in range(1, 5):
         hdr_row = first_month_row - offset
@@ -371,7 +292,6 @@ def _build_column_sections(
     month_col: int,
     first_month_row: int,
 ) -> list[tuple[str, list[tuple[int, int]], dict[int, str]]]:
-    """Constrói seções a partir de produtos mapeados por coluna."""
     produto_cols: dict[str, list[int]] = {}
     for col_idx, produto in sorted(col_products.items()):
         produto_cols.setdefault(produto, []).append(col_idx)
@@ -394,7 +314,6 @@ def _detect_col_types(
     month_col: int,
     first_month_row: int,
 ) -> dict[int, str]:
-    """Detecta tipos de coluna (volume/receita) a partir dos sub-headers."""
     type_map: dict[int, str] = {}
     for offset in range(1, 4):
         hdr_row = first_month_row - offset
@@ -420,7 +339,6 @@ def _detect_section_produto(
     first_month_row: int,
     sheet_name: str,
 ) -> str:
-    """Detecta produto de uma seção olhando linhas acima do primeiro mês."""
     for offset in range(1, 6):
         check_row = first_month_row - offset
         if check_row < 0:
@@ -442,13 +360,6 @@ def _detect_data_cols(
     month_col: int,
     first_month_row: int,
 ) -> dict[int, str]:
-    """Mapeia colunas de dados para tipo (volume/receita).
-
-    Procura sub-cabeçalhos como "Peso Líquido" (volume) e
-    "Valor FOB" (receita) nas linhas acima dos meses.
-    Assume que cada grupo tem colunas de ano consecutivas;
-    pega a coluna do ano mais recente (segunda do grupo).
-    """
     col_map: dict[int, str] = {}
 
     for offset in range(1, 5):
@@ -483,11 +394,6 @@ def _pick_latest_year_col(
     header_row: int,
     group_start: int,
 ) -> int:
-    """Dentro de um grupo de sub-colunas (ex: 2024 | 2025 | Var.%), retorna
-    a coluna do ano mais recente com dados numéricos.
-
-    Olha a linha abaixo do header_row para encontrar anos.
-    """
     year_row = header_row + 1
     if year_row >= len(df):
         return group_start
@@ -514,7 +420,6 @@ def _parse_tabular(
     df: pd.DataFrame,
     ano: int | None,
 ) -> list[dict[str, Any]]:
-    """Parseia formato tabular simples com colunas nomeadas."""
     for hdr_idx in range(min(10, len(df))):
         row = df.iloc[hdr_idx]
         cols = [str(v).strip().lower() for v in row if pd.notna(v)]
@@ -535,7 +440,6 @@ def _extract_tabular_records(
     df: pd.DataFrame,
     ano: int | None,
 ) -> list[dict[str, Any]]:
-    """Extrai registros de DataFrame tabular."""
     records: list[dict[str, Any]] = []
 
     mes_col = next((c for c in df.columns if "mes" in c or "mês" in c), None)
@@ -581,14 +485,6 @@ def _extract_tabular_records(
 
 
 def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
-    """Agrega dados por mês (soma volumes de todos os produtos).
-
-    Args:
-        df: DataFrame com dados detalhados.
-
-    Returns:
-        DataFrame agregado por ano/mês com produto="total".
-    """
     if df.empty:
         return df
 

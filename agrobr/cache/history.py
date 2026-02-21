@@ -1,10 +1,3 @@
-"""
-Gerenciamento de histórico permanente.
-
-O histórico é separado do cache volátil e nunca expira automaticamente.
-Permite reconstruir séries históricas e auditar mudanças de parsing.
-"""
-
 from __future__ import annotations
 
 from datetime import date, datetime
@@ -19,28 +12,11 @@ logger = structlog.get_logger()
 
 
 class HistoryManager:
-    """
-    Gerenciador de histórico permanente.
-
-    O histórico armazena dados imutáveis coletados ao longo do tempo,
-    permitindo:
-    - Reconstrução de séries históricas
-    - Auditoria de mudanças de parsing
-    - Fallback quando fonte está indisponível
-    """
-
     def __init__(self, store: Any = None):
-        """
-        Inicializa o gerenciador.
-
-        Args:
-            store: DuckDBStore (opcional, usa singleton se não fornecido)
-        """
         self._store = store
 
     @property
     def store(self) -> Any:
-        """Obtém store, criando se necessário."""
         if self._store is None:
             from .duckdb_store import get_store
 
@@ -56,20 +32,6 @@ class HistoryManager:
         parser_version: int,
         fingerprint_hash: str | None = None,
     ) -> bool:
-        """
-        Salva dados no histórico.
-
-        Args:
-            key: Chave identificadora (ex: 'cepea:soja')
-            data: Dados serializados
-            source: Fonte de dados
-            data_date: Data dos dados (não da coleta)
-            parser_version: Versão do parser usado
-            fingerprint_hash: Hash do fingerprint (opcional)
-
-        Returns:
-            True se salvo, False se já existia
-        """
         try:
             self.store.history_save(
                 key=key,
@@ -95,30 +57,11 @@ class HistoryManager:
         key: str,
         data_date: date | None = None,
     ) -> bytes | None:
-        """
-        Busca dados no histórico.
-
-        Args:
-            key: Chave identificadora
-            data_date: Data específica (ou mais recente se None)
-
-        Returns:
-            Dados ou None
-        """
         dt = datetime.combine(data_date, datetime.min.time()) if data_date else None
         result: bytes | None = self.store.history_get(key, dt)
         return result
 
     def get_latest(self, key: str) -> bytes | None:
-        """
-        Busca dados mais recentes no histórico.
-
-        Args:
-            key: Chave identificadora
-
-        Returns:
-            Dados mais recentes ou None
-        """
         return self.get(key, None)
 
     def query(
@@ -128,18 +71,6 @@ class HistoryManager:
         end_date: date | None = None,
         key_prefix: str | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Consulta histórico com filtros.
-
-        Args:
-            source: Filtrar por fonte
-            start_date: Data inicial
-            end_date: Data final
-            key_prefix: Prefixo da chave
-
-        Returns:
-            Lista de metadados das entradas
-        """
         start_dt = datetime.combine(start_date, datetime.min.time()) if start_date else None
         end_dt = datetime.combine(end_date, datetime.max.time()) if end_date else None
 
@@ -160,17 +91,6 @@ class HistoryManager:
         start_date: date | None = None,
         end_date: date | None = None,
     ) -> list[date]:
-        """
-        Retorna datas disponíveis no histórico para uma chave.
-
-        Args:
-            key: Chave identificadora
-            start_date: Data inicial (opcional)
-            end_date: Data final (opcional)
-
-        Returns:
-            Lista de datas
-        """
         entries = self.query(key_prefix=key, start_date=start_date, end_date=end_date)
         dates = set()
 
@@ -191,17 +111,6 @@ class HistoryManager:
         start_date: date,
         end_date: date,
     ) -> list[date]:
-        """
-        Encontra lacunas no histórico.
-
-        Args:
-            key: Chave identificadora
-            start_date: Data inicial
-            end_date: Data final
-
-        Returns:
-            Lista de datas sem dados
-        """
         available = set(self.get_dates(key, start_date, end_date))
 
         all_dates = []
@@ -218,16 +127,6 @@ class HistoryManager:
         source: Fonte | None = None,
         key_prefix: str | None = None,
     ) -> int:
-        """
-        Conta entradas no histórico.
-
-        Args:
-            source: Filtrar por fonte
-            key_prefix: Prefixo da chave
-
-        Returns:
-            Número de entradas
-        """
         entries = self.query(source=source, key_prefix=key_prefix)
         return len(entries)
 
@@ -239,19 +138,6 @@ class HistoryManager:
         end_date: date | None = None,
         format: str = "parquet",
     ) -> int:
-        """
-        Exporta histórico para arquivo.
-
-        Args:
-            path: Caminho do arquivo
-            source: Filtrar por fonte
-            start_date: Data inicial
-            end_date: Data final
-            format: Formato ('parquet', 'csv', 'json')
-
-        Returns:
-            Número de registros exportados
-        """
         import pandas as pd
 
         entries = self.query(source=source, start_date=start_date, end_date=end_date)
@@ -281,18 +167,6 @@ class HistoryManager:
         older_than_days: int | None = None,
         source: Fonte | None = None,
     ) -> int:
-        """
-        Remove entradas antigas do histórico.
-
-        ATENÇÃO: Operação destrutiva! O histórico normalmente não deve ser limpo.
-
-        Args:
-            older_than_days: Remover entradas mais antigas que N dias
-            source: Filtrar por fonte
-
-        Returns:
-            Número de entradas removidas
-        """
         if older_than_days is None:
             logger.warning("history_cleanup_skipped", reason="no_age_specified")
             return 0
@@ -310,7 +184,6 @@ _history_manager: HistoryManager | None = None
 
 
 def get_history_manager() -> HistoryManager:
-    """Obtém instância singleton do HistoryManager."""
     global _history_manager
     if _history_manager is None:
         _history_manager = HistoryManager()

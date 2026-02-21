@@ -16,8 +16,6 @@ logger = structlog.get_logger()
 
 @dataclass
 class BenchmarkResult:
-    """Resultado de um benchmark."""
-
     name: str
     iterations: int
     total_time_ms: float
@@ -31,7 +29,6 @@ class BenchmarkResult:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        """Converte para dicionario."""
         return {
             "name": self.name,
             "iterations": self.iterations,
@@ -46,7 +43,6 @@ class BenchmarkResult:
         }
 
     def summary(self) -> str:
-        """Retorna resumo formatado."""
         return (
             f"{self.name}: "
             f"mean={self.mean_time_ms:.2f}ms, "
@@ -59,18 +55,14 @@ class BenchmarkResult:
 
 @dataclass
 class BenchmarkSuite:
-    """Suite de benchmarks."""
-
     name: str
     results: list[BenchmarkResult] = field(default_factory=list)
     timestamp: datetime = field(default_factory=datetime.now)
 
     def add_result(self, result: BenchmarkResult) -> None:
-        """Adiciona resultado."""
         self.results.append(result)
 
     def to_dict(self) -> dict[str, Any]:
-        """Converte para dicionario."""
         return {
             "name": self.name,
             "timestamp": self.timestamp.isoformat(),
@@ -78,7 +70,6 @@ class BenchmarkSuite:
         }
 
     def summary(self) -> str:
-        """Retorna resumo formatado."""
         lines = [f"Benchmark Suite: {self.name}", "=" * 50]
         for result in self.results:
             lines.append(result.summary())
@@ -92,19 +83,6 @@ async def benchmark_async(
     warmup: int = 1,
     **kwargs: Any,
 ) -> BenchmarkResult:
-    """
-    Executa benchmark de funcao async.
-
-    Args:
-        name: Nome do benchmark
-        func: Funcao async a testar
-        iterations: Numero de iteracoes
-        warmup: Iteracoes de aquecimento
-        **kwargs: Argumentos para a funcao
-
-    Returns:
-        BenchmarkResult com estatisticas
-    """
     for _ in range(warmup):
         await func(**kwargs)
 
@@ -136,19 +114,6 @@ def benchmark_sync(
     warmup: int = 1,
     **kwargs: Any,
 ) -> BenchmarkResult:
-    """
-    Executa benchmark de funcao sincrona.
-
-    Args:
-        name: Nome do benchmark
-        func: Funcao a testar
-        iterations: Numero de iteracoes
-        warmup: Iteracoes de aquecimento
-        **kwargs: Argumentos para a funcao
-
-    Returns:
-        BenchmarkResult com estatisticas
-    """
     for _ in range(warmup):
         func(**kwargs)
 
@@ -174,15 +139,6 @@ def benchmark_sync(
 
 
 async def run_api_benchmarks(iterations: int = 5) -> BenchmarkSuite:
-    """
-    Executa benchmarks das APIs principais.
-
-    Args:
-        iterations: Numero de iteracoes por benchmark
-
-    Returns:
-        BenchmarkSuite com resultados
-    """
     from agrobr import cepea, conab, ibge
 
     suite = BenchmarkSuite(name="agrobr_api_benchmarks")
@@ -233,15 +189,6 @@ async def run_api_benchmarks(iterations: int = 5) -> BenchmarkSuite:
 
 
 def run_contract_benchmarks(iterations: int = 100) -> BenchmarkSuite:
-    """
-    Executa benchmarks de validacao de contratos.
-
-    Args:
-        iterations: Numero de iteracoes por benchmark
-
-    Returns:
-        BenchmarkSuite com resultados
-    """
     import pandas as pd
 
     from agrobr.contracts.cepea import CEPEA_INDICADOR_V1
@@ -294,15 +241,6 @@ def run_contract_benchmarks(iterations: int = 100) -> BenchmarkSuite:
 
 
 def run_semantic_benchmarks(iterations: int = 50) -> BenchmarkSuite:
-    """
-    Executa benchmarks de validacao semantica.
-
-    Args:
-        iterations: Numero de iteracoes por benchmark
-
-    Returns:
-        BenchmarkSuite com resultados
-    """
     import pandas as pd
 
     from agrobr.validators.semantic import validate_semantic

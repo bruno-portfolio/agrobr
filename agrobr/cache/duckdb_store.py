@@ -1,5 +1,3 @@
-"""Storage DuckDB com separação cache/histórico."""
-
 from __future__ import annotations
 
 import threading
@@ -78,7 +76,6 @@ CREATE INDEX IF NOT EXISTS idx_ind_data ON indicadores(data);
 CREATE INDEX IF NOT EXISTS idx_ind_produto_data ON indicadores(produto, data);
 """
 
-
 UPSERT_CHUNK_SIZE = 5000
 
 _STAGING_DDL = """
@@ -106,8 +103,6 @@ DO UPDATE SET
 
 
 class DuckDBStore:
-    """Storage com DuckDB separando cache volátil e histórico permanente."""
-
     def __init__(self, settings: constants.CacheSettings | None = None) -> None:
         self.settings = settings or constants.CacheSettings()
         self.db_path = self.settings.cache_dir / self.settings.db_name
@@ -132,15 +127,6 @@ class DuckDBStore:
             migrate(conn)
 
     def cache_get(self, key: str) -> tuple[bytes | None, bool]:
-        """Busca entrada no cache. Retorna (dados, is_stale).
-
-        Comportamentos extras de versionamento:
-        - **Strict mode** (``AGROBR_CACHE_STRICT=1``): se a key existir mas
-          a ``lib_version`` nao bater com ``agrobr.__version__``, retorna miss.
-        - **Migracao legacy**: se a key versionada nao existir, busca key
-          legacy (sem versao) com mesmo prefixo, migra para o novo formato
-          e retorna os dados.
-        """
         from agrobr import __version__
         from agrobr.cache.keys import is_legacy_key, legacy_key_prefix, parse_cache_key
 
@@ -238,7 +224,6 @@ class DuckDBStore:
         source: constants.Fonte,
         ttl_seconds: int,
     ) -> None:
-        """Grava entrada no cache."""
         with self._lock:
             conn = self._get_conn()
             now = _utcnow()
@@ -256,13 +241,11 @@ class DuckDBStore:
         logger.debug("cache_write", key=key, ttl_seconds=ttl_seconds)
 
     def cache_invalidate(self, key: str) -> None:
-        """Marca entrada como stale."""
         with self._lock:
             conn = self._get_conn()
             conn.execute("UPDATE cache_entries SET stale = TRUE WHERE key = ?", [key])
 
     def cache_delete(self, key: str) -> None:
-        """Remove entrada do cache."""
         with self._lock:
             conn = self._get_conn()
             conn.execute("DELETE FROM cache_entries WHERE key = ?", [key])
@@ -272,7 +255,6 @@ class DuckDBStore:
         source: constants.Fonte | None = None,
         older_than_days: int | None = None,
     ) -> int:
-        """Limpa cache com filtros opcionais. Retorna número de entradas removidas."""
         with self._lock:
             conn = self._get_conn()
 
@@ -305,7 +287,6 @@ class DuckDBStore:
         parser_version: int,
         fingerprint_hash: str | None = None,
     ) -> None:
-        """Salva dados no histórico permanente."""
         if not self.settings.save_to_history:
             return
 
@@ -331,7 +312,6 @@ class DuckDBStore:
         key: str,
         data_date: datetime | None = None,
     ) -> bytes | None:
-        """Busca dados no histórico. Se data_date não especificado, retorna mais recente."""
         with self._lock:
             conn = self._get_conn()
 
@@ -363,18 +343,6 @@ class DuckDBStore:
         fim: datetime | None = None,
         praca: str | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Busca indicadores no histórico local.
-
-        Args:
-            produto: Nome do produto
-            inicio: Data inicial
-            fim: Data final
-            praca: Praça específica (opcional)
-
-        Returns:
-            Lista de dicts com dados dos indicadores
-        """
         with self._lock:
             conn = self._get_conn()
 
@@ -498,17 +466,6 @@ class DuckDBStore:
         inicio: datetime | None = None,
         fim: datetime | None = None,
     ) -> set[datetime]:
-        """
-        Retorna conjunto de datas com indicadores no histórico.
-
-        Args:
-            produto: Nome do produto
-            inicio: Data inicial
-            fim: Data final
-
-        Returns:
-            Set de datas presentes no histórico
-        """
         with self._lock:
             conn = self._get_conn()
 
@@ -534,7 +491,6 @@ class DuckDBStore:
         return dates
 
     def close(self) -> None:
-        """Fecha conexão."""
         with self._lock:
             if self._conn:
                 self._conn.close()
@@ -546,7 +502,6 @@ _store_lock = threading.Lock()
 
 
 def get_store() -> DuckDBStore:
-    """Obtém instância global do store (thread-safe)."""
     global _store
     if _store is None:
         with _store_lock:

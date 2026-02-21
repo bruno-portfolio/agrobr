@@ -1,9 +1,3 @@
-"""Parser para dados ANTAQ — Estatístico Aquaviário.
-
-Transforma TXTs brutos (Atracacao + Carga + Mercadoria) em DataFrame
-normalizado de movimentação portuária.
-"""
-
 from __future__ import annotations
 
 import io
@@ -23,15 +17,6 @@ logger = structlog.get_logger()
 
 
 def _read_txt(content: str, usecols: list[str] | None = None) -> pd.DataFrame:
-    """Lê TXT separado por ; com encoding utf-8-sig já decodificado.
-
-    Args:
-        content: Conteúdo do TXT já decodificado.
-        usecols: Colunas a manter (otimização de memória).
-
-    Returns:
-        DataFrame com colunas selecionadas.
-    """
     df = pd.read_csv(
         io.StringIO(content),
         sep=";",
@@ -45,14 +30,6 @@ def _read_txt(content: str, usecols: list[str] | None = None) -> pd.DataFrame:
 
 
 def parse_atracacao(content: str) -> pd.DataFrame:
-    """Parse do arquivo de atracação.
-
-    Args:
-        content: Conteúdo do TXT de atracação.
-
-    Returns:
-        DataFrame com colunas selecionadas de atracação.
-    """
     available_cols = (
         pd.read_csv(io.StringIO(content), sep=";", nrows=0).columns.str.strip().tolist()
     )
@@ -65,14 +42,6 @@ def parse_atracacao(content: str) -> pd.DataFrame:
 
 
 def parse_carga(content: str) -> pd.DataFrame:
-    """Parse do arquivo de carga.
-
-    Args:
-        content: Conteúdo do TXT de carga.
-
-    Returns:
-        DataFrame com colunas selecionadas de carga.
-    """
     available_cols = (
         pd.read_csv(io.StringIO(content), sep=";", nrows=0).columns.str.strip().tolist()
     )
@@ -103,14 +72,6 @@ def parse_carga(content: str) -> pd.DataFrame:
 
 
 def parse_mercadoria(content: str) -> pd.DataFrame:
-    """Parse da tabela de referência de mercadorias.
-
-    Args:
-        content: Conteúdo do TXT de mercadorias.
-
-    Returns:
-        DataFrame com CDMercadoria, Grupo, Mercadoria, Nomenclatura.
-    """
     available_cols = (
         pd.read_csv(io.StringIO(content), sep=";", nrows=0).columns.str.strip().tolist()
     )
@@ -127,16 +88,6 @@ def join_movimentacao(
     df_carga: pd.DataFrame,
     df_mercadoria: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Junta Carga + Atracação + Mercadoria em DataFrame final.
-
-    Args:
-        df_atracacao: DataFrame de atracação.
-        df_carga: DataFrame de carga.
-        df_mercadoria: DataFrame de mercadorias.
-
-    Returns:
-        DataFrame normalizado com colunas renomeadas.
-    """
     df = df_carga.merge(
         df_atracacao[
             [

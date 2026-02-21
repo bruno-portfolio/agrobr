@@ -49,33 +49,6 @@ async def cobertura(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados de cobertura e uso da terra do MapBiomas.
-
-    Area em hectares por classe de cobertura x bioma x estado x ano.
-    Serie historica anual de 1985 a 2024 (Colecao 10).
-
-    Args:
-        bioma: Filtrar por bioma (ex: "Cerrado", "Amazonia").
-            Se None, todos os biomas.
-        estado: Filtrar por UF (ex: "MT", "SP") ou nome do estado.
-        ano: Filtrar por ano (ex: 2020). Se None, todos os anos.
-        classe_id: Filtrar por codigo de classe MapBiomas (ex: 15 para Pastagem).
-        colecao: Numero da colecao MapBiomas (default: colecao atual).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: bioma, estado, classe_id, classe,
-        nivel_0, ano, area_ha.
-
-    Raises:
-        SourceUnavailableError: Se dados MapBiomas indisponiveis.
-        ParseError: Se nao conseguir parsear o XLSX.
-
-    Example:
-        >>> df = await mapbiomas.cobertura(bioma="Cerrado", ano=2020)
-        >>> df.columns.tolist()
-        ['bioma', 'estado', 'classe_id', 'classe', 'nivel_0', 'ano', 'area_ha']
-    """
     logger.info("mapbiomas_cobertura", bioma=bioma, estado=estado, ano=ano)
 
     fetch_kwargs = {}
@@ -165,33 +138,6 @@ async def transicao(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados de transicao entre classes de uso da terra do MapBiomas.
-
-    Area em hectares de transicao entre classes x bioma x estado x periodo.
-    Periodos anuais consecutivos (ex: 2019-2020) e agregados (ex: 1985-2024).
-
-    Args:
-        bioma: Filtrar por bioma (ex: "Cerrado", "Amazonia").
-        estado: Filtrar por UF (ex: "MT") ou nome do estado.
-        periodo: Filtrar por periodo (ex: "2019-2020", "1985-2024").
-        classe_de_id: Filtrar por codigo da classe de origem.
-        classe_para_id: Filtrar por codigo da classe de destino.
-        colecao: Numero da colecao MapBiomas (default: colecao atual).
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: bioma, estado, classe_de_id, classe_de,
-        classe_para_id, classe_para, periodo, area_ha.
-
-    Raises:
-        SourceUnavailableError: Se dados MapBiomas indisponiveis.
-        ParseError: Se nao conseguir parsear o XLSX.
-
-    Example:
-        >>> df = await mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
-        >>> df.columns.tolist()
-        ['bioma', 'estado', 'classe_de_id', 'classe_de', ...]
-    """
     logger.info("mapbiomas_transicao", bioma=bioma, estado=estado, periodo=periodo)
 
     fetch_kwargs = {}

@@ -1,5 +1,3 @@
-"""Dataset estimativa_safra - Estimativas de safra corrente."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -91,21 +89,6 @@ class EstimativaSafraDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        """Busca estimativa de safra corrente.
-
-        Fontes (em ordem de prioridade):
-          1. CONAB Acompanhamento de Safra
-          2. IBGE LSPA
-
-        Args:
-            produto: soja, milho, arroz, feijao, trigo, algodao
-            safra: Safra no formato "2024/25" (opcional, default: corrente)
-            uf: Filtrar por UF (ex: "MT", "PR")
-            return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-        Returns:
-            DataFrame com colunas: safra, produto, uf, area_plantada, producao, produtividade
-        """
         logger.info("dataset_fetch", dataset="estimativa_safra", produto=produto, safra=safra)
 
         snapshot = get_snapshot()
@@ -163,21 +146,6 @@ async def estimativa_safra(
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca estimativa de safra corrente.
-
-    Fontes (em ordem de prioridade):
-      1. CONAB Acompanhamento de Safra
-      2. IBGE LSPA
-
-    Args:
-        produto: soja, milho, arroz, feijao, trigo, algodao
-        safra: Safra no formato "2024/25" (opcional, default: corrente)
-        uf: Filtrar por UF (ex: "MT", "PR")
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo)
-
-    Returns:
-        DataFrame com colunas: safra, produto, uf, area_plantada, producao, produtividade
-    """
     return await _estimativa_safra.fetch(
         produto, safra=safra, uf=uf, return_meta=return_meta, **kwargs
     )

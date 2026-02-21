@@ -42,32 +42,6 @@ async def prodes(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca dados anuais de desmatamento do PRODES (INPE/TerraBrasilis).
-
-    Dados de desmatamento consolidados por poligono, com area em km2,
-    estado, classe de cobertura, satelite e sensor. Serie historica
-    desde 2000 para a maioria dos biomas.
-
-    Args:
-        bioma: Bioma a consultar. Opcoes: "Cerrado", "Caatinga",
-            "Mata Atlantica", "Pantanal", "Pampa". Default: "Cerrado".
-        ano: Filtrar por ano (ex: 2023). Se None, todos os anos.
-        uf: Filtrar por UF (ex: "MT"). Usado como CQL_FILTER no WFS.
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: ano, uf, classe, area_km2, satelite,
-        sensor, bioma.
-
-    Raises:
-        SourceUnavailableError: Se dados TerraBrasilis indisponiveis.
-        ParseError: Se nao conseguir parsear o CSV.
-
-    Example:
-        >>> df = await desmatamento.prodes(bioma="Cerrado", ano=2022, uf="MT")
-        >>> df.columns.tolist()
-        ['ano', 'uf', 'classe', 'area_km2', 'satelite', 'sensor', 'bioma']
-    """
     logger.info("desmatamento_prodes", bioma=bioma, ano=ano, uf=uf)
 
     t0 = time.monotonic()
@@ -137,35 +111,6 @@ async def deter(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Busca alertas de desmatamento em tempo real do DETER (INPE/TerraBrasilis).
-
-    Alertas diarios de desmatamento, degradacao, mineracao e cicatriz de
-    queimada com area em km2, municipio, UF e sensor. Disponivel para
-    Amazonia (desde 2016) e Cerrado (desde 2020).
-
-    Args:
-        bioma: Bioma a consultar. Opcoes: "Amazonia", "Cerrado".
-            Default: "Amazonia".
-        uf: Filtrar por UF (ex: "PA"). Usado como CQL_FILTER no WFS.
-        data_inicio: Data inicial YYYY-MM-DD (ex: "2024-01-01").
-        data_fim: Data final YYYY-MM-DD (ex: "2024-12-31").
-        classe: Filtrar por classe (ex: "DESMATAMENTO_CR", "DEGRADACAO").
-        return_meta: Se True, retorna tupla (DataFrame, MetaInfo).
-
-    Returns:
-        DataFrame com colunas: data, classe, uf, municipio, municipio_id,
-        area_km2, satelite, sensor, bioma.
-
-    Raises:
-        SourceUnavailableError: Se dados TerraBrasilis indisponiveis.
-        ParseError: Se nao conseguir parsear o CSV.
-
-    Example:
-        >>> df = await desmatamento.deter(bioma="Amazonia", uf="PA",
-        ...     data_inicio="2024-01-01", data_fim="2024-06-30")
-        >>> df.columns.tolist()
-        ['data', 'classe', 'uf', 'municipio', 'municipio_id', ...]
-    """
     logger.info(
         "desmatamento_deter",
         bioma=bioma,
