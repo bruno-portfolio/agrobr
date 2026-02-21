@@ -27,8 +27,8 @@ async def fetch_all_structures(output_path: str) -> None:
 
     print("Fetching CEPEA structure...")
     try:
-        html = await cepea_client.fetch_indicador_page("soja")
-        fp = extract_fingerprint(html, Fonte.CEPEA, "soja")
+        fetch_result = await cepea_client.fetch_indicador_page("soja")
+        fp = extract_fingerprint(fetch_result.html, Fonte.CEPEA, "soja")
         structures["sources"]["cepea"] = fp.model_dump(mode="json")
         print(f"  CEPEA: OK (hash: {fp.structure_hash})")
     except Exception as e:

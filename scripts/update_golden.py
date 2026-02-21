@@ -509,7 +509,8 @@ async def capture_cepea(produto: str) -> None:
 
     print(f"Capturing cepea/{produto}...")
 
-    html = await cepea_client.fetch_indicador_page(produto)
+    fetch_result = await cepea_client.fetch_indicador_page(produto)
+    html = fetch_result.html
     parser, results = await get_parser_with_fallback(html, produto)
 
     periodo = datetime.now().strftime("%Y_%m")

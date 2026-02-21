@@ -12,6 +12,7 @@ import pytest
 
 from agrobr import cepea, constants
 from agrobr.cepea import api
+from agrobr.cepea.client import FetchResult
 from agrobr.exceptions import ParseError, SourceUnavailableError, StaleDataWarning
 from agrobr.models import Indicador
 
@@ -156,7 +157,7 @@ class TestIndicador:
                 "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
             ) as mock_parser,
         ):
-            mock_fetch.return_value = html
+            mock_fetch.return_value = FetchResult(html, "cepea")
             mock_parser.return_value = (MagicMock(version=1), [new_ind])
 
             await api.indicador("soja", force_refresh=True)
@@ -179,7 +180,7 @@ class TestIndicador:
                 "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
             ) as mock_parser,
         ):
-            mock_fetch.return_value = html
+            mock_fetch.return_value = FetchResult(html, "cepea")
             mock_parser.return_value = (MagicMock(version=1), [fresh])
 
             df = await api.indicador(
@@ -202,7 +203,7 @@ class TestIndicador:
             ) as mock_fetch,
             patch("agrobr.noticias_agricolas.parser.parse_indicador") as mock_na_parse,
         ):
-            mock_fetch.return_value = html
+            mock_fetch.return_value = FetchResult(html, "noticias_agricolas")
             mock_na_parse.return_value = [ind]
 
             result = await api.indicador("soja", force_refresh=True, return_meta=True)
@@ -266,7 +267,7 @@ class TestIndicador:
             warnings.catch_warnings(record=True) as w,
         ):
             warnings.simplefilter("always")
-            mock_fetch.return_value = html
+            mock_fetch.return_value = FetchResult(html, "cepea")
             mock_parser.return_value = (MagicMock(version=1), [])
             await api.indicador(
                 "soja",
@@ -285,6 +286,29 @@ class TestIndicador:
         self.mock_store.indicadores_query.assert_called_once()
         call_kwargs = self.mock_store.indicadores_query.call_args
         assert call_kwargs.kwargs["produto"] == "soja"
+
+    async def test_na_soft_block_falls_back_to_cache(self):
+        """When NA returns a soft block (SourceUnavailableError), cached data is used."""
+        today = date.today()
+        cached = _make_indicador(data=today - timedelta(days=3))
+        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(cached)]
+
+        with patch(
+            "agrobr.cepea.api.client.fetch_indicador_page",
+            new_callable=AsyncMock,
+            side_effect=SourceUnavailableError(
+                source="noticias_agricolas",
+                last_error="Soft block detected",
+            ),
+        ):
+            df = await api.indicador(
+                "soja",
+                inicio=today - timedelta(days=10),
+                fim=today,
+                force_refresh=True,
+            )
+
+        assert not df.empty
 
     async def test_cache_hit_sets_meta_source(self):
         ind = _make_indicador()
@@ -360,7 +384,7 @@ class TestUltimo:
                 "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
             ) as mock_parser,
         ):
-            mock_fetch.return_value = html
+            mock_fetch.return_value = FetchResult(html, "cepea")
             mock_parser.return_value = (MagicMock(version=1), [fresh_ind])
 
             result = await api.ultimo("soja")
@@ -417,7 +441,7 @@ class TestUltimo:
             ) as mock_fetch,
             patch("agrobr.noticias_agricolas.parser.parse_indicador") as mock_na,
         ):
-            mock_fetch.return_value = html
+            mock_fetch.return_value = FetchResult(html, "noticias_agricolas")
             mock_na.return_value = [ind]
 
             result = await api.ultimo("soja")

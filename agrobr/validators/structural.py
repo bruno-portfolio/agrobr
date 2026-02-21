@@ -292,8 +292,8 @@ class StructuralMonitor:
         from ..cepea import client as cepea_client
         from ..cepea.parsers.fingerprint import extract_fingerprint
 
-        html = await cepea_client.fetch_indicador_page("soja")
-        current = extract_fingerprint(html, source, "soja")
+        fetch_result = await cepea_client.fetch_indicador_page("soja")
+        current = extract_fingerprint(fetch_result.html, source, "soja")
 
         result = validate_against_baseline(current, self.baselines_dir)
         self.history.append(result)

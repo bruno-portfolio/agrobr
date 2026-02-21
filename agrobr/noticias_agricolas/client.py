@@ -25,6 +25,25 @@ logger = structlog.get_logger()
 
 _WARNED = False
 
+_SOFT_BLOCK_SIZE_THRESHOLD = 20_000
+
+
+def _validate_html_has_data(html: str, url: str) -> None:
+    """Valida que o HTML contém dados reais (não é página de consent/challenge).
+
+    Páginas normais do NA são ~75KB com tabelas. Páginas de challenge/consent
+    são ~10KB sem tabela. Se o HTML é pequeno E não tem <table, é soft block.
+    """
+    if len(html) < _SOFT_BLOCK_SIZE_THRESHOLD and "<table" not in html.lower():
+        raise SourceUnavailableError(
+            source="noticias_agricolas",
+            url=url,
+            last_error=(
+                "Soft block detected: response too small "
+                f"({len(html)} bytes) and contains no table element"
+            ),
+        )
+
 
 def _get_timeout() -> httpx.Timeout:
     """Retorna configuração de timeout."""
@@ -138,5 +157,7 @@ async def fetch_indicador_page(produto: str) -> str:
         content_length=len(response.content),
         encoding=actual_encoding,
     )
+
+    _validate_html_has_data(html, url)
 
     return html

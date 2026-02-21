@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from typing import NamedTuple
 
 import httpx
 import structlog
@@ -15,6 +16,14 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import decode_content
 
 logger = structlog.get_logger()
+
+
+class FetchResult(NamedTuple):
+    """Resultado de fetch com identificação da fonte."""
+
+    html: str
+    source: str  # "cepea", "browser", or "noticias_agricolas"
+
 
 _use_browser: bool = False
 _use_alternative_source: bool = True
@@ -80,7 +89,7 @@ def _get_produto_url(produto: str) -> str:
     return f"{base}/{produto_key}.aspx"
 
 
-async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> str:
+async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> FetchResult:
     """Tenta buscar com httpx (mais rápido, mas pode falhar com Cloudflare)."""
 
     async def _fetch() -> httpx.Response:
@@ -121,18 +130,19 @@ async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> str:
         method="httpx",
     )
 
-    return html
+    return FetchResult(html=html, source="cepea")
 
 
-async def _fetch_with_browser(produto: str) -> str:
+async def _fetch_with_browser(produto: str) -> FetchResult:
     """Busca usando Playwright (contorna Cloudflare)."""
     from agrobr.http.browser import fetch_cepea_indicador
 
     logger.info("browser_fallback", source="cepea", produto=produto)
-    return await fetch_cepea_indicador(produto)
+    html = await fetch_cepea_indicador(produto)
+    return FetchResult(html=html, source="browser")
 
 
-async def _fetch_with_alternative_source(produto: str) -> str:
+async def _fetch_with_alternative_source(produto: str) -> FetchResult:
     """Busca usando Notícias Agrícolas (fonte alternativa sem Cloudflare)."""
     from agrobr.noticias_agricolas.client import fetch_indicador_page as na_fetch
 
@@ -142,14 +152,15 @@ async def _fetch_with_alternative_source(produto: str) -> str:
         alternative="noticias_agricolas",
         produto=produto,
     )
-    return await na_fetch(produto)
+    html = await na_fetch(produto)
+    return FetchResult(html=html, source="noticias_agricolas")
 
 
 async def fetch_indicador_page(
     produto: str,
     force_browser: bool = False,
     force_alternative: bool = False,
-) -> str:
+) -> FetchResult:
     """
     Busca página de indicador do CEPEA.
 
@@ -164,7 +175,7 @@ async def fetch_indicador_page(
         force_alternative: Se True, usa fonte alternativa diretamente
 
     Returns:
-        HTML da página como string
+        FetchResult com HTML e identificação da fonte
 
     Raises:
         SourceUnavailableError: Se não conseguir acessar após todos os fallbacks

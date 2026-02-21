@@ -9,6 +9,7 @@ import httpx
 import pytest
 
 from agrobr.cepea import client
+from agrobr.cepea.client import FetchResult
 from agrobr.exceptions import SourceUnavailableError
 
 
@@ -112,10 +113,11 @@ class TestCepeaFallbackChain:
         with patch(
             "agrobr.cepea.client._fetch_with_alternative_source", new_callable=AsyncMock
         ) as mock_alt:
-            mock_alt.return_value = "<html>NA data</html>"
+            mock_alt.return_value = FetchResult("<html>NA data</html>", "noticias_agricolas")
             result = await client.fetch_indicador_page("soja", force_alternative=True)
 
-        assert result == "<html>NA data</html>"
+        assert result.html == "<html>NA data</html>"
+        assert result.source == "noticias_agricolas"
 
     @pytest.mark.asyncio
     async def test_httpx_fail_falls_to_browser(self):
@@ -127,10 +129,11 @@ class TestCepeaFallbackChain:
             with patch(
                 "agrobr.cepea.client._fetch_with_browser", new_callable=AsyncMock
             ) as mock_browser:
-                mock_browser.return_value = "<html>browser</html>"
+                mock_browser.return_value = FetchResult("<html>browser</html>", "browser")
                 result = await client.fetch_indicador_page("soja")
 
-        assert result == "<html>browser</html>"
+        assert result.html == "<html>browser</html>"
+        assert result.source == "browser"
 
     @pytest.mark.asyncio
     async def test_all_methods_fail_raises(self):
@@ -163,7 +166,8 @@ class TestCepeaEncoding:
                 mock_decode.return_value = ("Preço médio café", "iso-8859-1")
                 result = await client._fetch_with_httpx("https://test.cepea.esalq.usp.br", {})
 
-        assert result == "Preço médio café"
+        assert result.html == "Preço médio café"
+        assert result.source == "cepea"
         mock_decode.assert_called_once_with(iso_content, declared_encoding="utf-8", source="cepea")
 
     @pytest.mark.asyncio
@@ -177,7 +181,7 @@ class TestCepeaEncoding:
                 mock_decode.return_value = ("Produção agrícola", "iso-8859-1")
                 result = await client._fetch_with_httpx("https://test.cepea.esalq.usp.br", {})
 
-        assert "Produção" in result
+        assert "Produção" in result.html
         mock_decode.assert_called_once_with(content, declared_encoding=None, source="cepea")
 
 
@@ -192,7 +196,8 @@ class TestCepeaEmptyResponse:
                 mock_decode.return_value = ("", "utf-8")
                 result = await client._fetch_with_httpx("https://test.cepea.esalq.usp.br", {})
 
-        assert result == ""
+        assert result.html == ""
+        assert result.source == "cepea"
 
 
 class TestCepeaSetters:

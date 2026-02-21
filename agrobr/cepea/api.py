@@ -168,13 +168,13 @@ async def indicador(
 
         try:
             parse_start = time.perf_counter()
-            html = await client.fetch_indicador_page(produto)
+            fetch_result = await client.fetch_indicador_page(produto)
+            html = fetch_result.html
+            source_name = fetch_result.source
             raw_content_size = len(html.encode("utf-8"))
             raw_content_hash = f"sha256:{hashlib.sha256(html.encode('utf-8')).hexdigest()[:16]}"
 
-            is_noticias_agricolas = "noticiasagricolas" in html.lower() or "cot-fisicas" in html
-
-            if is_noticias_agricolas:
+            if source_name == "noticias_agricolas":
                 from agrobr.noticias_agricolas.parser import parse_indicador as na_parse
 
                 new_indicadores = na_parse(html, produto)
@@ -399,11 +399,11 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
 
         if not has_recent:
             try:
-                html = await client.fetch_indicador_page(produto)
+                fetch_result = await client.fetch_indicador_page(produto)
+                html = fetch_result.html
+                source_name = fetch_result.source
 
-                is_noticias_agricolas = "noticiasagricolas" in html.lower() or "cot-fisicas" in html
-
-                if is_noticias_agricolas:
+                if source_name == "noticias_agricolas":
                     from agrobr.noticias_agricolas.parser import parse_indicador as na_parse
 
                     new_indicadores = na_parse(html, produto)

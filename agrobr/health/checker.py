@@ -44,7 +44,8 @@ async def check_cepea() -> CheckResult:
     details: dict[str, Any] = {}
 
     try:
-        html = await cepea_client.fetch_indicador_page("soja")
+        fetch_result = await cepea_client.fetch_indicador_page("soja")
+        html = fetch_result.html
         latency = (time.monotonic() - start) * 1000
 
         details["fetch_ok"] = True
