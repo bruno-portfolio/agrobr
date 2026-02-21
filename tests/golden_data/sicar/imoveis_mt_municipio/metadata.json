@@ -1,0 +1,8 @@
+{
+  "source": "sicar",
+  "format": "csv",
+  "uf": "MT",
+  "municipio": "SORRISO",
+  "parser_functions": ["parse_imoveis_csv"],
+  "description": "Sample of imoveis from SORRISO-MT (filtered by municipio)"
+}

@@ -1,0 +1,171 @@
+{
+  "name": "antt_pedagio.fluxo",
+  "schema_version": "1.0",
+  "effective_from": "0.12.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "data",
+    "concessionaria",
+    "praca",
+    "sentido",
+    "n_eixos"
+  ],
+  "required_columns": [
+    "data",
+    "concessionaria",
+    "praca",
+    "n_eixos",
+    "volume"
+  ],
+  "dtypes": {
+    "data": "date",
+    "concessionaria": "str",
+    "praca": "str",
+    "sentido": "str",
+    "n_eixos": "int",
+    "tipo_veiculo": "str",
+    "volume": "int",
+    "rodovia": "str",
+    "uf": "str",
+    "municipio": "str"
+  },
+  "nullable": {
+    "data": false,
+    "concessionaria": false,
+    "praca": false,
+    "sentido": true,
+    "n_eixos": false,
+    "tipo_veiculo": true,
+    "volume": false,
+    "rodovia": true,
+    "uf": true,
+    "municipio": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "1o dia do mes",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "concessionaria",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "praca",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "sentido",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Crescente/Decrescente",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "n_eixos",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Numero de eixos do veiculo (2-18)",
+      "min_value": 2,
+      "max_value": 18
+    },
+    {
+      "name": "tipo_veiculo",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Passeio/Comercial/Moto",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "volume",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Volume de veiculos no mes",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "rodovia",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Rodovia (do join com cadastro de pracas)",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "UF (do join com cadastro de pracas)",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Municipio (do join com cadastro de pracas)",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "n_eixos_min": 2,
+    "n_eixos_max": 18,
+    "volume_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'data' is always the 1st day of the month",
+    "'n_eixos' is always between 2 and 18",
+    "'volume' is always >= 0",
+    "'uf' is a valid Brazilian state code when present",
+    "'tipo_veiculo' is always Passeio, Comercial, or Moto when present",
+    "Data since 2010 (ANTT open data inception)"
+  ]
+}

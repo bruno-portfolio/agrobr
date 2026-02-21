@@ -1754,6 +1754,95 @@ ANTT_PEDAGIO_PRACAS_V1 = Contract(
 register_contract("antt_pedagio_fluxo", ANTT_PEDAGIO_FLUXO_V1)
 register_contract("antt_pedagio_pracas", ANTT_PEDAGIO_PRACAS_V1)
 
+SICAR_IMOVEIS_V1 = Contract(
+    name="sicar.imoveis",
+    version="1.0",
+    effective_from="0.12.0",
+    primary_key=["cod_imovel"],
+    columns=[
+        Column(
+            name="cod_imovel",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="status",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="data_criacao",
+            type=ColumnType.DATETIME,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="data_atualizacao",
+            type=ColumnType.DATETIME,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="area_ha",
+            type=ColumnType.FLOAT,
+            nullable=False,
+            unit="ha",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="condicao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="cod_municipio_ibge",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="modulos_fiscais",
+            type=ColumnType.FLOAT,
+            nullable=False,
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="tipo",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'cod_imovel' is always non-empty",
+        "'status' is always AT, PE, SU, or CA",
+        "'tipo' is always IRU, AST, or PCT",
+        "'area_ha' is always >= 0",
+        "'uf' is always a valid Brazilian state code",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+register_contract("sicar_imoveis", SICAR_IMOVEIS_V1)
+
 __all__ = [
     "AJUSTE_DIARIO_V1",
     "ANP_DIESEL_PRECOS_V1",
@@ -1775,5 +1864,6 @@ __all__ = [
     "MAPBIOMAS_TRANSICAO_V1",
     "MOVIMENTACAO_PORTUARIA_V1",
     "POSICOES_ABERTAS_V1",
+    "SICAR_IMOVEIS_V1",
     "TRADE_MIRROR_V1",
 ]

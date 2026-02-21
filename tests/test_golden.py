@@ -818,6 +818,44 @@ def test_antt_pedagio_golden_parsing(_name: str, path: Path):
         ), "Header should not appear in data rows"
 
 
+# ============================================================================
+# SICAR Golden Tests
+# ============================================================================
+
+
+def _get_sicar_cases() -> list[tuple[str, Path]]:
+    return _discover_cases(source_filter="sicar")
+
+
+@pytest.mark.skipif(not _get_sicar_cases(), reason="No SICAR golden data")
+@pytest.mark.parametrize("_name,path", _get_sicar_cases())
+def test_sicar_golden_parsing(_name: str, path: Path):
+    from agrobr.alt.sicar.parser import parse_imoveis_csv
+
+    expected = _load_expected(path)
+
+    csv_path = path / "response.csv"
+    if not csv_path.exists():
+        pytest.skip(f"No response.csv in {path}")
+        return
+
+    data = csv_path.read_bytes()
+    df = parse_imoveis_csv([data])
+
+    _assert_dataframe_golden(df, expected)
+
+    if expected.get("checks", {}).get("all_uf_uppercase") and "uf" in df.columns:
+        assert df["uf"].str.isupper().all(), "UF should be uppercase"
+    if expected.get("checks", {}).get("all_status_valid") and "status" in df.columns:
+        from agrobr.alt.sicar.models import STATUS_VALIDOS
+
+        assert set(df["status"].unique()).issubset(STATUS_VALIDOS), "All status should be valid"
+    if expected.get("checks", {}).get("area_ha_positive") and "area_ha" in df.columns:
+        assert (df["area_ha"] > 0).all(), "All area_ha should be > 0"
+    if expected.get("checks", {}).get("all_municipio_sorriso") and "municipio" in df.columns:
+        assert (df["municipio"] == "SORRISO").all(), "All municipio should be SORRISO"
+
+
 @pytest.mark.skipif(not _get_mapa_psr_cases(), reason="No MAPA PSR golden data")
 @pytest.mark.parametrize("_name,path", _get_mapa_psr_cases())
 def test_mapa_psr_golden_parsing(_name: str, path: Path):

@@ -13,7 +13,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **24 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR e ANTT Pedágio.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **25 fontes públicas**: CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA PSD, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento PRODES/DETER, MapBiomas, CONAB Progresso, B3 Futuros Agro, CONAB CEASA/PROHORT, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedágio e SICAR.
 
 **v0.10.1** — 2778 testes, 78% cobertura, 19/19 fontes com golden tests, retry centralizado em 19/19 clients.
 
@@ -349,6 +349,7 @@ async def main():
 from agrobr.sync import cepea, conab, ibge, datasets, nasa_power, bcb, comexstat
 from agrobr.sync import abiove, usda, imea, deral, queimadas, desmatamento, b3
 from agrobr.sync import mapbiomas
+from agrobr.sync import alt
 
 # Mesmo API, sem async/await
 df = cepea.indicador('soja', inicio='2024-01-01')
@@ -372,6 +373,10 @@ df = desmatamento.prodes(bioma="Cerrado", ano=2022)
 df = b3.ajustes(data="13/02/2025")
 df = b3.posicoes_abertas(data="2025-12-19", contrato="boi")
 df = mapbiomas.cobertura(uf="MT", ano=2022)
+
+# SICAR — Cadastro Ambiental Rural
+df = alt.sicar.imoveis("DF")
+df = alt.sicar.resumo("MT", municipio="Sorriso")
 ```
 
 ### Suporte Polars
@@ -458,6 +463,7 @@ Use `agrobr health --all` para verificar localmente.
 | ANP Diesel | Precos revenda + volumes diesel por UF/municipio | ✅ | Funcional |
 | MAPA PSR | Apolices e sinistros seguro rural (2006+, 27 UFs) | ✅ | Funcional |
 | ANTT Pedagio | Fluxo de veiculos em pracas de pedagio (2010+, 200+ pracas) | ✅ | Funcional |
+| SICAR | Cadastro Ambiental Rural — imoveis rurais por UF (7.4M+ registros, WFS) | ✅ | Funcional |
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 
@@ -478,7 +484,7 @@ list_contracts()
 #  'antt_pedagio_pracas', 'mapa_psr_sinistros',
 #  'mapa_psr_apolices', 'movimentacao_portuaria',
 #  'pecuaria_municipal', 'posicoes_abertas', 'preco_atacado', 'preco_diario',
-#  'producao_anual', 'trade_mirror']
+#  'producao_anual', 'sicar_imoveis', 'trade_mirror']
 
 # Inspecionar contrato
 contract = get_contract("preco_diario")

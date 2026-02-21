@@ -1,0 +1,24 @@
+{
+  "count": 5,
+  "columns": [
+    "cod_imovel", "status", "data_criacao", "data_atualizacao",
+    "area_ha", "condicao", "uf", "municipio", "cod_municipio_ibge",
+    "modulos_fiscais", "tipo"
+  ],
+  "first_row": {
+    "cod_imovel": "DF-5300108-A1B2C3D4E5F6",
+    "status": "AT",
+    "area_ha": 120.5,
+    "uf": "DF",
+    "municipio": "BRASILIA",
+    "cod_municipio_ibge": "5300108",
+    "modulos_fiscais": 5.0,
+    "tipo": "IRU"
+  },
+  "non_null_columns": ["cod_imovel", "status", "uf", "municipio", "tipo"],
+  "checks": {
+    "all_uf_uppercase": true,
+    "all_status_valid": true,
+    "area_ha_positive": true
+  }
+}

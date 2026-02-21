@@ -1,0 +1,22 @@
+{
+  "count": 3,
+  "columns": [
+    "cod_imovel", "status", "data_criacao", "data_atualizacao",
+    "area_ha", "condicao", "uf", "municipio", "cod_municipio_ibge",
+    "modulos_fiscais", "tipo"
+  ],
+  "first_row": {
+    "cod_imovel": "MT-5107248-AAAA11112222",
+    "status": "AT",
+    "area_ha": 500.0,
+    "uf": "MT",
+    "municipio": "SORRISO",
+    "tipo": "IRU"
+  },
+  "non_null_columns": ["cod_imovel", "status", "uf", "municipio", "tipo"],
+  "checks": {
+    "all_uf_uppercase": true,
+    "all_municipio_sorriso": true,
+    "area_ha_positive": true
+  }
+}

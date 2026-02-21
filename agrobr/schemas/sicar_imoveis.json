@@ -1,0 +1,182 @@
+{
+  "name": "sicar.imoveis",
+  "schema_version": "1.0",
+  "effective_from": "0.12.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "cod_imovel"
+  ],
+  "required_columns": [
+    "cod_imovel",
+    "status",
+    "data_criacao",
+    "area_ha",
+    "uf",
+    "municipio",
+    "cod_municipio_ibge",
+    "modulos_fiscais",
+    "tipo"
+  ],
+  "dtypes": {
+    "cod_imovel": "str",
+    "status": "str",
+    "data_criacao": "datetime",
+    "data_atualizacao": "datetime",
+    "area_ha": "float",
+    "condicao": "str",
+    "uf": "str",
+    "municipio": "str",
+    "cod_municipio_ibge": "int",
+    "modulos_fiscais": "float",
+    "tipo": "str"
+  },
+  "nullable": {
+    "cod_imovel": false,
+    "status": false,
+    "data_criacao": false,
+    "data_atualizacao": true,
+    "area_ha": false,
+    "condicao": true,
+    "uf": false,
+    "municipio": false,
+    "cod_municipio_ibge": false,
+    "modulos_fiscais": false,
+    "tipo": false
+  },
+  "columns": [
+    {
+      "name": "cod_imovel",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "status",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_criacao",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_atualizacao",
+      "type": "datetime",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_ha",
+      "type": "float",
+      "nullable": false,
+      "unit": "ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "condicao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_municipio_ibge",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "modulos_fiscais",
+      "type": "float",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "tipo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "area_ha_min": 0,
+    "modulos_fiscais_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'cod_imovel' is always non-empty",
+    "'status' is always AT, PE, SU, or CA",
+    "'tipo' is always IRU, AST, or PCT",
+    "'area_ha' is always >= 0",
+    "'uf' is always a valid Brazilian state code"
+  ]
+}

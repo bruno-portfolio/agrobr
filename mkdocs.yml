@@ -104,6 +104,7 @@ nav:
     - ANP Diesel: api/anp_diesel.md
     - ANTT Pedagio: api/antt_pedagio.md
     - MAPA PSR: api/mapa_psr.md
+    - SICAR: api/sicar.md
   - Fontes:
     - Visão Geral: sources/index.md
     - CEPEA: sources/cepea.md
@@ -130,6 +131,7 @@ nav:
     - ANP Diesel: sources/anp_diesel.md
     - ANTT Pedagio: sources/antt_pedagio.md
     - MAPA PSR: sources/mapa_psr.md
+    - SICAR: sources/sicar.md
   - Licenças dos Dados: licenses.md
   - Portabilidade:
     - Visão Geral: porting/index.md

@@ -27,6 +27,16 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   na api quando fonte e anual.
 
 ### Added
+- **SICAR — Cadastro Ambiental Rural** — Novo namespace `agrobr/alt/sicar/` para dados do
+  Cadastro Ambiental Rural (CAR) via GeoServer WFS (OGC 2.0.0, CSV sem geometria, sem auth).
+  Funcoes: `sicar.imoveis(uf, municipio, status, tipo, area_min, area_max, criado_apos)` para
+  registros individuais de imoveis rurais e `sicar.resumo(uf, municipio)` para estatisticas
+  agregadas (total, por status, area, modulos fiscais, por tipo). Pagination transparente
+  (resultType=hits + startIndex/count=10000), progressive delay apos pagina 5, timeout 180s.
+  CQL_FILTER server-side para municipio (ILIKE), status, tipo, area range, data criacao.
+  Contrato `SICAR_IMOVEIS_V1` (11 colunas, PK cod_imovel). Schema JSON, golden data (DF + MT).
+  114 novos testes (models, client, parser, api). Sync wrapper via `agrobr.sync.alt.sicar`.
+  Docs: `api/sicar.md`, `sources/sicar.md`
 - **ANTT Pedagio — Fluxo de Veiculos em Pracas de Pedagio** — Novo namespace `agrobr/alt/antt_pedagio/`
   para dados de fluxo de veiculos em pracas de pedagio rodoviario (ANTT Dados Abertos, CC-BY).
   Funcoes: `antt_pedagio.fluxo_pedagio(ano, ano_inicio, ano_fim, uf, apenas_pesados)` para

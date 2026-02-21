@@ -114,6 +114,12 @@ class _SyncAnttPedagio(_SyncModule):
     pass
 
 
+class _SyncSicar(_SyncModule):
+    """API sincrona do SICAR."""
+
+    pass
+
+
 class _SyncAlt:
     """Container sincrono para fontes alt data."""
 
@@ -122,11 +128,13 @@ class _SyncAlt:
             "anp_diesel": None,
             "antt_pedagio": None,
             "mapa_psr": None,
+            "sicar": None,
         }
         self._classes: dict[str, type[_SyncModule]] = {
             "anp_diesel": _SyncAnpDiesel,
             "antt_pedagio": _SyncAnttPedagio,
             "mapa_psr": _SyncMapaPsr,
+            "sicar": _SyncSicar,
         }
 
     def __getattr__(self, name: str) -> Any:

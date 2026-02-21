@@ -1,41 +1,42 @@
 {
-  "name": "anp_diesel.precos",
+  "name": "antt_pedagio.pracas",
   "schema_version": "1.0",
-  "effective_from": "0.11.0",
+  "effective_from": "0.12.0",
   "breaking_policy": "major",
   "primary_key": [
-    "data",
-    "uf",
-    "municipio",
-    "produto"
+    "concessionaria",
+    "praca_de_pedagio"
   ],
   "required_columns": [
-    "data"
+    "concessionaria",
+    "praca_de_pedagio"
   ],
   "dtypes": {
-    "data": "date",
+    "concessionaria": "str",
+    "praca_de_pedagio": "str",
+    "rodovia": "str",
     "uf": "str",
+    "km_m": "str",
     "municipio": "str",
-    "produto": "str",
-    "preco_venda": "float",
-    "preco_compra": "float",
-    "margem": "float",
-    "n_postos": "int"
+    "lat": "float",
+    "lon": "float",
+    "situacao": "str"
   },
   "nullable": {
-    "data": false,
+    "concessionaria": false,
+    "praca_de_pedagio": false,
+    "rodovia": true,
     "uf": true,
+    "km_m": true,
     "municipio": true,
-    "produto": true,
-    "preco_venda": true,
-    "preco_compra": true,
-    "margem": true,
-    "n_postos": true
+    "lat": true,
+    "lon": true,
+    "situacao": true
   },
   "columns": [
     {
-      "name": "data",
-      "type": "date",
+      "name": "concessionaria",
+      "type": "str",
       "nullable": false,
       "unit": null,
       "stable": true,
@@ -45,7 +46,40 @@
       "max_value": null
     },
     {
+      "name": "praca_de_pedagio",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "rodovia",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
       "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "km_m",
       "type": "str",
       "nullable": true,
       "unit": null,
@@ -67,7 +101,29 @@
       "max_value": null
     },
     {
-      "name": "produto",
+      "name": "lat",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": -35.0,
+      "max_value": 6.0
+    },
+    {
+      "name": "lon",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": -74.0,
+      "max_value": -30.0
+    },
+    {
+      "name": "situacao",
       "type": "str",
       "nullable": true,
       "unit": null,
@@ -76,64 +132,20 @@
       "description": "",
       "min_value": null,
       "max_value": null
-    },
-    {
-      "name": "preco_venda",
-      "type": "float",
-      "nullable": true,
-      "unit": "BRL/litro",
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": 0,
-      "max_value": null
-    },
-    {
-      "name": "preco_compra",
-      "type": "float",
-      "nullable": true,
-      "unit": "BRL/litro",
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": 0,
-      "max_value": null
-    },
-    {
-      "name": "margem",
-      "type": "float",
-      "nullable": true,
-      "unit": "BRL/litro",
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "n_postos",
-      "type": "int",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": 0,
-      "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "preco_venda_min": 0,
-    "preco_compra_min": 0,
-    "n_postos_min": 0
+    "lat_min": -35.0,
+    "lat_max": 6.0,
+    "lon_min": -74.0,
+    "lon_max": -30.0
   },
   "guarantees": [
     "Column names never change (additions only)",
     "'uf' is a valid Brazilian state code when present",
-    "'produto' is always 'DIESEL' or 'DIESEL S10'",
-    "'preco_venda' and 'preco_compra' are in BRL/litro when present",
-    "'margem' equals preco_venda - preco_compra",
-    "Data is weekly (date of collection)"
+    "'lat' is within Brazil bounding box when present",
+    "'lon' is within Brazil bounding box when present",
+    "200+ toll plazas registered"
   ]
 }

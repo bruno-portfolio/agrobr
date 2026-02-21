@@ -28,6 +28,7 @@ class Fonte(StrEnum):
     DESMATAMENTO = "desmatamento"
     MAPBIOMAS = "mapbiomas"
     QUEIMADAS = "queimadas"
+    SICAR = "sicar"
     USDA = "usda"
 
 
@@ -115,6 +116,10 @@ URLS = {
     Fonte.QUEIMADAS: {
         "base": "https://terrabrasilis.dpi.inpe.br/queimadas/portal/",
         "dados_abertos": "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv",
+    },
+    Fonte.SICAR: {
+        "base": "https://www.car.gov.br",
+        "geoserver": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
     },
     Fonte.B3: {
         "base": "https://www.b3.com.br",
@@ -258,6 +263,7 @@ class CacheSettings(BaseSettings):
     ttl_anp_diesel: int = 7 * 24 * 3600
     ttl_antaq: int = 7 * 24 * 3600
     ttl_antt_pedagio: int = 7 * 24 * 3600
+    ttl_sicar: int = 7 * 24 * 3600
     ttl_conab_ceasa: int = 4 * 3600
 
     stale_multiplier: float = 12.0
@@ -301,6 +307,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_desmatamento: float = 2.0
     rate_limit_mapbiomas: float = 2.0
     rate_limit_queimadas: float = 1.0
+    rate_limit_sicar: float = 2.0
     rate_limit_usda: float = 1.0
     rate_limit_b3: float = 1.0
     rate_limit_conab_ceasa: float = 2.0

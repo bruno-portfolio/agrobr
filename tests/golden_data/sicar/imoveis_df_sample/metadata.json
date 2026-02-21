@@ -1,0 +1,7 @@
+{
+  "source": "sicar",
+  "format": "csv",
+  "uf": "DF",
+  "parser_functions": ["parse_imoveis_csv"],
+  "description": "Sample of 5 imoveis from DF with all status types"
+}

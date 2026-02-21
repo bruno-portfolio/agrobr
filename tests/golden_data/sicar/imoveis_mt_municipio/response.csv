@@ -1,0 +1,4 @@
+FID,cod_imovel,status_imovel,dat_criacao,data_atualizacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel
+sicar_imoveis_mt.1,MT-5107248-AAAA11112222,AT,2015-04-10T09:00:00Z,2024-02-15T10:30:00Z,500.0,,MT,SORRISO,5107248,6.25,IRU
+sicar_imoveis_mt.2,MT-5107248-BBBB33334444,AT,2016-07-20T14:00:00Z,2023-11-01T08:00:00Z,1200.0,,MT,SORRISO,5107248,15.0,IRU
+sicar_imoveis_mt.3,MT-5107248-CCCC55556666,PE,2020-01-15T11:30:00Z,,250.0,Inscricao,MT,SORRISO,5107248,3.125,IRU

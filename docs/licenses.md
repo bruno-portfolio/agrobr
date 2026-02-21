@@ -19,6 +19,7 @@
 | **ANP Diesel** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [ANP](https://www.gov.br/anp/) |
 | **ANTT Pedagio** | CC-BY (Creative Commons Attribution) | Sim (dados públicos) | `livre` | [ANTT Dados Abertos](https://dados.antt.gov.br) |
 | **MAPA PSR** | Dados públicos governo federal (CC-BY) | Sim (dados públicos) | `livre` | [SISSER/MAPA](https://dados.agricultura.gov.br/dataset/sisser3) |
+| **SICAR** | Dados públicos governo federal (CC-BY) | Sim (dados públicos) | `livre` | [CAR](https://www.car.gov.br) |
 | **ABIOVE** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [abiove.org.br](https://abiove.org.br) |
 | **USDA PSD** | U.S. Public Domain | Sim (governo EUA) | `livre` | [Ag Data Commons](https://data.nal.usda.gov/dataset/usda-foreign-agricultural-service-production-supply-and-distribution-database) |
 | **UN Comtrade** | Dados publicos ONU | Sim (dados publicos) | `livre` | [Comtrade](https://comtradeplus.un.org) |
@@ -120,7 +121,7 @@
 
 ### Fontes Governamentais Brasileiras
 
-CONAB (incluindo Progresso de Safra), IBGE, BCB, ComexStat, DERAL, INMET, INPE (Queimadas, PRODES/DETER), ANP e ANTT são órgãos públicos brasileiros.
+CONAB (incluindo Progresso de Safra), IBGE, BCB, ComexStat, DERAL, INMET, INPE (Queimadas, PRODES/DETER), ANP, ANTT e SICAR (Serviço Florestal Brasileiro) são órgãos públicos brasileiros.
 MapBiomas é um projeto multi-institucional que disponibiliza dados abertos com citação obrigatória.
 Dados produzidos por órgãos públicos no exercício de suas funções são, em regra,
 de acesso público (Lei de Acesso à Informação — Lei 12.527/2011). Não há
