@@ -326,6 +326,9 @@ def parse_pracas(content: bytes) -> pd.DataFrame:
     if "uf" in df.columns:
         df["uf"] = df["uf"].str.upper()
 
+    lat_lon_remap = {"latitude": "lat", "longitude": "lon"}
+    df = df.rename(columns={k: v for k, v in lat_lon_remap.items() if k in df.columns})
+
     for col in ("lat", "lon"):
         if col in df.columns:
             df[col] = df[col].apply(_parse_numeric)

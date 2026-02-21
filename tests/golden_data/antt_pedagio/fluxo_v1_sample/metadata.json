@@ -4,9 +4,9 @@
   "schema_version": "v1",
   "parser_module": "agrobr.alt.antt_pedagio.parser",
   "parser_functions": ["parse_trafego_v1"],
-  "url": "https://dados.antt.gov.br/dataset/fluxo-de-veiculos-nas-pracas-de-pedagio",
+  "url": "https://dados.antt.gov.br/dataset/volume-trafego-praca-pedagio",
   "captured_at": "2026-02-20T12:00:00Z",
   "needs_real_data": true,
   "parser_version": 1,
-  "notes": "CKAN API returned 404 on 2026-02-21. The dataset slug 'fluxo-de-veiculos-nas-pracas-de-pedagio' is no longer available at dados.antt.gov.br. Real data capture skipped. Keeping synthetic data."
+  "notes": "CKAN slug updated from 'fluxo-de-veiculos-nas-pracas-de-pedagio' to 'volume-trafego-praca-pedagio' on 2026-02-21. Real data capture pending."
 }

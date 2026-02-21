@@ -52,8 +52,8 @@ URLS = {
     },
     Fonte.ANTT_PEDAGIO: {
         "base": "https://dados.antt.gov.br",
-        "trafego": "https://dados.antt.gov.br/dataset/fluxo-de-veiculos-nas-pracas-de-pedagio",
-        "pracas": "https://dados.antt.gov.br/dataset/cadastro-de-pracas-de-pedagio",
+        "trafego": "https://dados.antt.gov.br/dataset/volume-trafego-praca-pedagio",
+        "pracas": "https://dados.antt.gov.br/dataset/praca-de-pedagio",
     },
     Fonte.BCB: {
         "base": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata",

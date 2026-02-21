@@ -5,8 +5,8 @@ from datetime import date
 CKAN_BASE = "https://dados.antt.gov.br"
 CKAN_API = f"{CKAN_BASE}/api/3/action"
 
-DATASET_TRAFEGO_SLUG = "fluxo-de-veiculos-nas-pracas-de-pedagio"
-DATASET_PRACAS_SLUG = "cadastro-de-pracas-de-pedagio"
+DATASET_TRAFEGO_SLUG = "volume-trafego-praca-pedagio"
+DATASET_PRACAS_SLUG = "praca-de-pedagio"
 
 ANO_INICIO = 2010
 ANO_FIM_V1 = 2023

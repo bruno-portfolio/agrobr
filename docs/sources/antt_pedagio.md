@@ -17,7 +17,7 @@ Os dados sao um proxy de escoamento de safra: veiculos comerciais pesados (3+ ei
 
 ### Cadastro de Pracas (referencia)
 - **Formato:** CSV unico (~200+ pracas ativas)
-- **Colunas:** concessionaria, praca, rodovia, UF, km, municipio, lat/lon, situacao
+- **Colunas:** concessionaria, praca, rodovia, UF, km, municipio, latitude/longitude, situacao
 - **Uso:** Join automatico com dados de trafego para enriquecer com UF/rodovia/municipio
 
 ## Licenca
