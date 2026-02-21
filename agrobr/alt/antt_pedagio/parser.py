@@ -64,11 +64,13 @@ def _parse_date_v1(val: str) -> date | None:
 
 
 def _parse_date_v2(val: str) -> date | None:
-    val = val.strip()
+    val = val.strip().strip('"')
     if not val:
         return None
     try:
         parts = val.split("/")
+        if len(parts) == 3:
+            return date(int(parts[2]), int(parts[1]), 1)
         if len(parts) == 2:
             return date(int(parts[1]), int(parts[0]), 1)
     except (ValueError, IndexError):
@@ -235,13 +237,22 @@ def parse_trafego_v2(content: bytes) -> pd.DataFrame:
             break
     if eixo_col:
         df["n_eixos"] = pd.to_numeric(df[eixo_col], errors="coerce").astype("Int64")
+
+    tipo_col = None
+    for candidate in ("tipo_de_veiculo", "tipo_veiculo"):
+        if candidate in df.columns:
+            tipo_col = candidate
+            break
+    if tipo_col:
+        df["tipo_veiculo"] = df[tipo_col].str.strip()
+    elif eixo_col:
         df["tipo_veiculo"] = df["n_eixos"].map(EIXOS_TIPO_MAP)
     else:
         df["n_eixos"] = None
         df["tipo_veiculo"] = None
 
     vol_col = None
-    for candidate in ("quantidade", "volume", "qtd"):
+    for candidate in ("volume_total", "quantidade", "volume", "qtd"):
         if candidate in df.columns:
             vol_col = candidate
             break
