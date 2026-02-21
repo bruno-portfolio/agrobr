@@ -12,7 +12,7 @@ from agrobr.alt.anp_diesel.models import (
     PRECOS_BRASIL_URL,
     PRECOS_ESTADOS_URL,
     PRECOS_MUNICIPIOS_URLS,
-    VENDAS_M3_URL,
+    VENDAS_DIESEL_CSV_URL,
 )
 
 FAKE_XLSX_BYTES = b"PK\x03\x04" + b"x" * 1500
@@ -134,10 +134,13 @@ class TestFetchPrecosBrasil:
             assert result == FAKE_XLSX_BYTES
 
 
+FAKE_CSV_BYTES = b"ANO;MES;GRANDE REGIAO;UNIDADE DA FEDERACAO;PRODUTO;VENDAS\n" + b"x" * 200
+
+
 class TestFetchVendasM3:
     @pytest.mark.asyncio
     async def test_fetch_ok(self, _mock_retry):
-        resp = _mock_response(200, FAKE_XLS_BYTES)
+        resp = _mock_response(200, FAKE_CSV_BYTES)
         with patch("agrobr.alt.anp_diesel.client.httpx.AsyncClient") as mock_client:
             instance = AsyncMock()
             instance.get = AsyncMock(return_value=resp)
@@ -146,7 +149,7 @@ class TestFetchVendasM3:
             mock_client.return_value = instance
 
             result = await client.fetch_vendas_m3()
-            assert result == FAKE_XLS_BYTES
+            assert result == FAKE_CSV_BYTES
 
 
 class TestClientConstants:
@@ -170,5 +173,5 @@ class TestClientConstants:
     def test_url_precos_brasil(self):
         assert PRECOS_BRASIL_URL.startswith("https://www.gov.br/anp")
 
-    def test_url_vendas_m3(self):
-        assert VENDAS_M3_URL.startswith("https://www.gov.br/anp")
+    def test_url_vendas_diesel_csv(self):
+        assert VENDAS_DIESEL_CSV_URL.startswith("https://www.gov.br/anp")

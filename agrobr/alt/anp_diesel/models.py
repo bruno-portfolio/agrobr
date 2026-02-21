@@ -10,9 +10,10 @@ SHLP_BASE = (
     "/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp"
 )
 
-VENDAS_M3_URL = (
+VENDAS_DIESEL_CSV_URL = (
     "https://www.gov.br/anp/pt-br/centrais-de-conteudo"
-    "/dados-estatisticos/de/vdpb/vendas-combustiveis-m3.xls"
+    "/dados-abertos/arquivos/vdpb/vct"
+    "/vendas-oleo-diesel-tipo-m3-2013-2025.csv"
 )
 
 PRECOS_MUNICIPIOS_URLS: dict[str, str] = {

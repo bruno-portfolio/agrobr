@@ -99,8 +99,8 @@ df = alt.anp_diesel.vendas_diesel()
 5. Agregacao semanal ou mensal conforme parametro
 
 ### Volumes
-1. Download XLS de vendas de combustiveis em m3
-2. Parse formato long (ANO, MES, VOLUME) ou wide (meses como colunas)
+1. Download CSV de vendas de diesel por tipo (dados abertos ANP)
+2. Parse CSV semicolon-delimited (ANO, MES, GRANDE REGIAO, UNIDADE DA FEDERACAO, PRODUTO, VENDAS)
 3. Filtro de diesel (OLEO DIESEL e variantes)
 4. Normalizacao: prefixo "OLEO"/"ÓLEO" removido do produto, nomes de estado convertidos para sigla UF
 5. Conversao para formato padrao (data, uf, regiao, produto, volume_m3)
@@ -125,8 +125,8 @@ TTL de cache: 7 dias.
 ## Fonte
 
 - URL precos: `https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/`
-- URL volumes: `https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-estatisticos/de/vdpb/vendas-combustiveis-m3.xls`
-- Formato: XLSX (precos 2013+), XLS (volumes)
+- URL volumes: `https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/arquivos/vdpb/vct/vendas-oleo-diesel-tipo-m3-2013-2025.csv`
+- Formato: XLSX (precos 2013+), CSV (volumes 2013+)
 - Atualizacao: semanal (precos), mensal (volumes)
-- Historico: 2013+ (precos), variavel (volumes)
+- Historico: 2013+ (precos e volumes)
 - Licenca: `livre` (dados publicos governo federal, Decreto 8.777/2016)

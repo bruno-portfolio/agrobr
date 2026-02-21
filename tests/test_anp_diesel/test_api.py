@@ -76,38 +76,36 @@ def _make_precos_xlsx_bytes(**kwargs) -> bytes:
     return buf.getvalue()
 
 
-def _make_vendas_xls_bytes() -> bytes:
-    """Gera XLSX sintetico de vendas."""
+def _make_vendas_csv_bytes() -> bytes:
+    """Gera CSV sintetico de vendas diesel (formato dados abertos ANP)."""
     rows = [
         {
-            "COMBUSTÍVEL": "ÓLEO DIESEL",
-            "UF": "MT",
-            "GRANDE REGIÃO": "CENTRO-OESTE",
             "ANO": "2024",
-            "MÊS": "1",
+            "MES": "JAN",
+            "GRANDE REGIAO": "REGIAO CENTRO-OESTE",
+            "UNIDADE DA FEDERACAO": "MATO GROSSO",
+            "PRODUTO": "OLEO DIESEL",
             "VENDAS": "500000",
         },
         {
-            "COMBUSTÍVEL": "ÓLEO DIESEL",
-            "UF": "SP",
-            "GRANDE REGIÃO": "SUDESTE",
             "ANO": "2024",
-            "MÊS": "1",
+            "MES": "JAN",
+            "GRANDE REGIAO": "REGIAO SUDESTE",
+            "UNIDADE DA FEDERACAO": "SAO PAULO",
+            "PRODUTO": "OLEO DIESEL",
             "VENDAS": "800000",
         },
         {
-            "COMBUSTÍVEL": "ÓLEO DIESEL S10",
-            "UF": "MT",
-            "GRANDE REGIÃO": "CENTRO-OESTE",
             "ANO": "2024",
-            "MÊS": "2",
+            "MES": "FEV",
+            "GRANDE REGIAO": "REGIAO CENTRO-OESTE",
+            "UNIDADE DA FEDERACAO": "MATO GROSSO",
+            "PRODUTO": "OLEO DIESEL S-10",
             "VENDAS": "520000",
         },
     ]
     df = pd.DataFrame(rows)
-    buf = io.BytesIO()
-    df.to_excel(buf, index=False, engine="openpyxl")
-    return buf.getvalue()
+    return df.to_csv(index=False, sep=";").encode("utf-8")
 
 
 class TestPrecosDiesel:
@@ -227,26 +225,26 @@ class TestPrecosDiesel:
 class TestVendasDiesel:
     @pytest.mark.asyncio
     async def test_basico(self):
-        xls = _make_vendas_xls_bytes()
+        csv_bytes = _make_vendas_csv_bytes()
         with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = xls
+            mock.return_value = csv_bytes
             df = await api.vendas_diesel()
             assert not df.empty
             assert "volume_m3" in df.columns
 
     @pytest.mark.asyncio
     async def test_filtro_uf(self):
-        xls = _make_vendas_xls_bytes()
+        csv_bytes = _make_vendas_csv_bytes()
         with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = xls
+            mock.return_value = csv_bytes
             df = await api.vendas_diesel(uf="MT")
             assert all(df["uf"] == "MT")
 
     @pytest.mark.asyncio
     async def test_filtro_data(self):
-        xls = _make_vendas_xls_bytes()
+        csv_bytes = _make_vendas_csv_bytes()
         with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = xls
+            mock.return_value = csv_bytes
             df = await api.vendas_diesel(
                 inicio="2024-02-01",
                 fim="2024-12-31",
@@ -255,9 +253,9 @@ class TestVendasDiesel:
 
     @pytest.mark.asyncio
     async def test_return_meta(self):
-        xls = _make_vendas_xls_bytes()
+        csv_bytes = _make_vendas_csv_bytes()
         with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = xls
+            mock.return_value = csv_bytes
             result = await api.vendas_diesel(return_meta=True)
             assert isinstance(result, tuple)
             df, meta = result
@@ -271,9 +269,9 @@ class TestVendasDiesel:
 
     @pytest.mark.asyncio
     async def test_inicio_string_iso(self):
-        xls = _make_vendas_xls_bytes()
+        csv_bytes = _make_vendas_csv_bytes()
         with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = xls
+            mock.return_value = csv_bytes
             df = await api.vendas_diesel(inicio="2024-01-01")
             assert not df.empty
 

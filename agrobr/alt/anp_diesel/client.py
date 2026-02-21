@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.constants import MIN_XLSX_SIZE, HTTPSettings
+from agrobr.constants import MIN_CSV_SIZE, MIN_XLSX_SIZE, HTTPSettings
 from agrobr.http.retry import retry_on_status
 from agrobr.http.user_agents import UserAgentRotator
 
@@ -79,7 +79,42 @@ async def fetch_precos_brasil() -> bytes:
     return await download_xlsx(PRECOS_BRASIL_URL)
 
 
-async def fetch_vendas_m3() -> bytes:
-    from agrobr.alt.anp_diesel.models import VENDAS_M3_URL
+async def download_csv(url: str) -> bytes:
+    logger.info("anp_diesel_download_csv", url=url)
 
-    return await download_xlsx(VENDAS_M3_URL)
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_headers(source="anp_diesel"),
+        follow_redirects=True,
+    ) as client:
+        response = await retry_on_status(
+            lambda: client.get(url),
+            source="anp_diesel",
+        )
+
+        response.raise_for_status()
+
+        content = response.content
+        if len(content) < MIN_CSV_SIZE:
+            from agrobr.exceptions import SourceUnavailableError
+
+            raise SourceUnavailableError(
+                source="anp_diesel",
+                url=url,
+                last_error=(
+                    f"Downloaded CSV too small ({len(content)} bytes), expected valid CSV data"
+                ),
+            )
+
+        logger.info(
+            "anp_diesel_download_csv_ok",
+            url=url,
+            size_bytes=len(content),
+        )
+        return content
+
+
+async def fetch_vendas_m3() -> bytes:
+    from agrobr.alt.anp_diesel.models import VENDAS_DIESEL_CSV_URL
+
+    return await download_csv(VENDAS_DIESEL_CSV_URL)

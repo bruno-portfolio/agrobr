@@ -88,95 +88,56 @@ def _make_precos_xlsx(
     return buf.getvalue()
 
 
-def _make_vendas_xls_long(
+def _make_vendas_csv(
     rows: list[dict] | None = None,
 ) -> bytes:
-    """Gera XLSX sintetico de vendas em formato long."""
+    """Gera CSV sintetico de vendas diesel (formato dados abertos ANP)."""
     if rows is None:
         rows = [
             {
-                "COMBUSTÍVEL": "ÓLEO DIESEL",
-                "UF": "MT",
-                "GRANDE REGIÃO": "CENTRO-OESTE",
                 "ANO": "2024",
-                "MÊS": "1",
+                "MES": "JAN",
+                "GRANDE REGIAO": "REGIAO CENTRO-OESTE",
+                "UNIDADE DA FEDERACAO": "MATO GROSSO",
+                "PRODUTO": "OLEO DIESEL",
                 "VENDAS": "500000",
             },
             {
-                "COMBUSTÍVEL": "ÓLEO DIESEL",
-                "UF": "SP",
-                "GRANDE REGIÃO": "SUDESTE",
                 "ANO": "2024",
-                "MÊS": "1",
+                "MES": "JAN",
+                "GRANDE REGIAO": "REGIAO SUDESTE",
+                "UNIDADE DA FEDERACAO": "SAO PAULO",
+                "PRODUTO": "OLEO DIESEL",
                 "VENDAS": "800000",
             },
             {
-                "COMBUSTÍVEL": "ÓLEO DIESEL",
-                "UF": "MT",
-                "GRANDE REGIÃO": "CENTRO-OESTE",
                 "ANO": "2024",
-                "MÊS": "2",
+                "MES": "FEV",
+                "GRANDE REGIAO": "REGIAO CENTRO-OESTE",
+                "UNIDADE DA FEDERACAO": "MATO GROSSO",
+                "PRODUTO": "OLEO DIESEL",
                 "VENDAS": "520000",
             },
             {
-                "COMBUSTÍVEL": "GASOLINA C",
-                "UF": "MT",
-                "GRANDE REGIÃO": "CENTRO-OESTE",
                 "ANO": "2024",
-                "MÊS": "1",
+                "MES": "JAN",
+                "GRANDE REGIAO": "REGIAO CENTRO-OESTE",
+                "UNIDADE DA FEDERACAO": "MATO GROSSO",
+                "PRODUTO": "GASOLINA C",
                 "VENDAS": "300000",
             },
             {
-                "COMBUSTÍVEL": "ÓLEO DIESEL S10",
-                "UF": "SP",
-                "GRANDE REGIÃO": "SUDESTE",
                 "ANO": "2024",
-                "MÊS": "2",
+                "MES": "FEV",
+                "GRANDE REGIAO": "REGIAO SUDESTE",
+                "UNIDADE DA FEDERACAO": "SAO PAULO",
+                "PRODUTO": "OLEO DIESEL S-10",
                 "VENDAS": "850000",
             },
         ]
 
     df = pd.DataFrame(rows)
-    buf = io.BytesIO()
-    df.to_excel(buf, index=False, engine="openpyxl")
-    return buf.getvalue()
-
-
-def _make_vendas_xls_wide() -> bytes:
-    """Gera XLSX sintetico de vendas em formato wide (meses como colunas)."""
-    rows = [
-        {
-            "COMBUSTÍVEL": "ÓLEO DIESEL",
-            "UF": "MT",
-            "GRANDE REGIÃO": "CENTRO-OESTE",
-            "ANO": "2024",
-            "JAN": "500000",
-            "FEV": "520000",
-            "MAR": "540000",
-        },
-        {
-            "COMBUSTÍVEL": "ÓLEO DIESEL",
-            "UF": "SP",
-            "GRANDE REGIÃO": "SUDESTE",
-            "ANO": "2024",
-            "JAN": "800000",
-            "FEV": "850000",
-            "MAR": "830000",
-        },
-        {
-            "COMBUSTÍVEL": "GASOLINA C",
-            "UF": "MT",
-            "GRANDE REGIÃO": "CENTRO-OESTE",
-            "ANO": "2024",
-            "JAN": "300000",
-            "FEV": "310000",
-            "MAR": "320000",
-        },
-    ]
-    df = pd.DataFrame(rows)
-    buf = io.BytesIO()
-    df.to_excel(buf, index=False, engine="openpyxl")
-    return buf.getvalue()
+    return df.to_csv(index=False, sep=";").encode("utf-8")
 
 
 class TestParsePrecos:
@@ -316,95 +277,90 @@ class TestParsePrecos:
 
 
 class TestParseVendas:
-    def test_parse_long_basico(self):
-        content = _make_vendas_xls_long()
+    def test_parse_csv_basico(self):
+        content = _make_vendas_csv()
         df = parser.parse_vendas(content)
         assert not df.empty
         assert "data" in df.columns
         assert "volume_m3" in df.columns
         assert "uf" in df.columns
 
-    def test_filtra_diesel_somente_long(self):
-        content = _make_vendas_xls_long()
+    def test_filtra_diesel_somente(self):
+        content = _make_vendas_csv()
         df = parser.parse_vendas(content)
         assert all("DIESEL" in p.upper() for p in df["produto"])
         assert not any("GASOLINA" in p.upper() for p in df["produto"])
 
-    def test_filtro_uf_long(self):
-        content = _make_vendas_xls_long()
-        df = parser.parse_vendas(content, uf="MT")
-        assert all(df["uf"] == "MT")
-
-    def test_parse_wide_basico(self):
-        content = _make_vendas_xls_wide()
-        df = parser.parse_vendas(content)
-        assert not df.empty
-        assert "volume_m3" in df.columns
-
-    def test_filtra_diesel_somente_wide(self):
-        content = _make_vendas_xls_wide()
-        df = parser.parse_vendas(content)
-        assert all("DIESEL" in p.upper() for p in df["produto"])
-
-    def test_filtro_uf_wide(self):
-        content = _make_vendas_xls_wide()
+    def test_filtro_uf(self):
+        content = _make_vendas_csv()
         df = parser.parse_vendas(content, uf="MT")
         assert all(df["uf"] == "MT")
 
     def test_ordenado_por_data(self):
-        content = _make_vendas_xls_long()
+        content = _make_vendas_csv()
         df = parser.parse_vendas(content)
         datas = df.groupby("uf")["data"].apply(lambda x: x.is_monotonic_increasing)
         assert datas.all()
 
-    def test_xlsx_vazio_raise(self):
-        df_vazio = pd.DataFrame()
-        buf = io.BytesIO()
-        df_vazio.to_excel(buf, index=False, engine="openpyxl")
+    def test_csv_vazio_raise(self):
+        content = b"ANO;MES;PRODUTO;VENDAS\n"
         with pytest.raises(ParseError, match="vazio"):
-            parser.parse_vendas(buf.getvalue())
+            parser.parse_vendas(content)
 
-    def test_sem_coluna_produto_raise(self):
-        df = pd.DataFrame({"OUTRA": ["valor"]})
-        buf = io.BytesIO()
-        df.to_excel(buf, index=False, engine="openpyxl")
-        with pytest.raises(ParseError, match="produto"):
-            parser.parse_vendas(buf.getvalue())
+    def test_sem_colunas_obrigatorias_raise(self):
+        content = b"OUTRA;COLUNA\nval1;val2\n"
+        with pytest.raises(ParseError, match="obrigatorias"):
+            parser.parse_vendas(content)
 
     def test_sem_diesel_raise(self):
         rows = [
             {
-                "COMBUSTÍVEL": "GASOLINA C",
-                "UF": "SP",
-                "GRANDE REGIÃO": "SUDESTE",
                 "ANO": "2024",
-                "MÊS": "1",
+                "MES": "JAN",
+                "GRANDE REGIAO": "SUDESTE",
+                "UNIDADE DA FEDERACAO": "SAO PAULO",
+                "PRODUTO": "GASOLINA C",
                 "VENDAS": "800000",
             },
         ]
-        content = _make_vendas_xls_long(rows)
+        content = _make_vendas_csv(rows)
         with pytest.raises(ParseError, match="diesel"):
             parser.parse_vendas(content)
 
     def test_bytes_invalidos_raise(self):
-        with pytest.raises(ParseError, match="Erro ao ler"):
-            parser.parse_vendas(b"nao eh excel")
+        with pytest.raises(ParseError, match="(Erro ao ler|vazio)"):
+            parser.parse_vendas(b"\x00\x01\x02\x03")
 
-    def test_volume_com_virgula_wide(self):
+    def test_volume_com_virgula(self):
         rows = [
             {
-                "COMBUSTÍVEL": "ÓLEO DIESEL",
-                "UF": "MT",
-                "GRANDE REGIÃO": "CENTRO-OESTE",
                 "ANO": "2024",
-                "JAN": "500.000,50",
+                "MES": "JAN",
+                "GRANDE REGIAO": "REGIAO CENTRO-OESTE",
+                "UNIDADE DA FEDERACAO": "MATO GROSSO",
+                "PRODUTO": "OLEO DIESEL",
+                "VENDAS": "500.000,50",
             },
         ]
-        df_in = pd.DataFrame(rows)
-        buf = io.BytesIO()
-        df_in.to_excel(buf, index=False, engine="openpyxl")
-        df = parser.parse_vendas(buf.getvalue())
-        assert len(df) >= 1
+        content = _make_vendas_csv(rows)
+        df = parser.parse_vendas(content)
+        assert len(df) == 1
+        assert abs(df["volume_m3"].iloc[0] - 500000.50) < 0.01
+
+    def test_mes_texto_resolve(self):
+        rows = [
+            {
+                "ANO": "2024",
+                "MES": "MAR",
+                "GRANDE REGIAO": "SUDESTE",
+                "UNIDADE DA FEDERACAO": "SAO PAULO",
+                "PRODUTO": "OLEO DIESEL S-10",
+                "VENDAS": "100000",
+            },
+        ]
+        content = _make_vendas_csv(rows)
+        df = parser.parse_vendas(content)
+        assert df["data"].iloc[0].month == 3
 
 
 class TestOleoDieselNormalization:
@@ -455,17 +411,11 @@ class TestOleoDieselNormalization:
         assert len(df) == 1
         assert df["produto"].iloc[0] == "DIESEL S10"
 
-    def test_vendas_long_oleo_diesel_normalizado(self):
-        content = _make_vendas_xls_long()
+    def test_vendas_oleo_diesel_normalizado(self):
+        content = _make_vendas_csv()
         df = parser.parse_vendas(content)
         for p in df["produto"]:
-            assert p in ("DIESEL", "DIESEL S10"), f"Produto nao normalizado: {p}"
-
-    def test_vendas_wide_oleo_diesel_normalizado(self):
-        content = _make_vendas_xls_wide()
-        df = parser.parse_vendas(content)
-        for p in df["produto"]:
-            assert p in ("DIESEL", "DIESEL S10"), f"Produto nao normalizado: {p}"
+            assert p in ("DIESEL", "DIESEL S-10"), f"Produto nao normalizado: {p}"
 
 
 class TestEstadoNomeCompleto:
@@ -546,45 +496,28 @@ class TestEstadoNomeCompleto:
         assert len(df) == 1
         assert df["uf"].iloc[0] == "MT"
 
-    def test_vendas_long_estado_nome_completo(self):
+    def test_vendas_estado_nome_completo(self):
         rows = [
             {
-                "COMBUSTÍVEL": "ÓLEO DIESEL",
-                "UF": "MATO GROSSO",
-                "GRANDE REGIÃO": "CENTRO-OESTE",
                 "ANO": "2024",
-                "MÊS": "1",
+                "MES": "JAN",
+                "GRANDE REGIAO": "REGIAO CENTRO-OESTE",
+                "UNIDADE DA FEDERACAO": "MATO GROSSO",
+                "PRODUTO": "OLEO DIESEL",
                 "VENDAS": "500000",
             },
             {
-                "COMBUSTÍVEL": "ÓLEO DIESEL",
-                "UF": "SÃO PAULO",
-                "GRANDE REGIÃO": "SUDESTE",
                 "ANO": "2024",
-                "MÊS": "1",
+                "MES": "JAN",
+                "GRANDE REGIAO": "REGIAO SUDESTE",
+                "UNIDADE DA FEDERACAO": "SAO PAULO",
+                "PRODUTO": "OLEO DIESEL",
                 "VENDAS": "800000",
             },
         ]
-        content = _make_vendas_xls_long(rows)
+        content = _make_vendas_csv(rows)
         df = parser.parse_vendas(content)
         assert set(df["uf"].unique()) == {"MT", "SP"}
-
-    def test_vendas_wide_estado_nome_completo(self):
-        rows = [
-            {
-                "COMBUSTÍVEL": "ÓLEO DIESEL",
-                "UF": "MATO GROSSO",
-                "GRANDE REGIÃO": "CENTRO-OESTE",
-                "ANO": "2024",
-                "JAN": "500000",
-                "FEV": "520000",
-            },
-        ]
-        df_in = pd.DataFrame(rows)
-        buf = io.BytesIO()
-        df_in.to_excel(buf, index=False, engine="openpyxl")
-        df = parser.parse_vendas(buf.getvalue())
-        assert all(df["uf"] == "MT")
 
 
 class TestAgregarMensal:
@@ -613,17 +546,22 @@ class TestAgregarMensal:
 
 
 class TestHelpers:
-    def test_is_month_column_jan(self):
-        assert parser._is_month_column("JAN") is True
+    def test_resolve_mes_texto(self):
+        assert parser._resolve_mes("JAN") == 1
+        assert parser._resolve_mes("DEZ") == 12
 
-    def test_is_month_column_fev_2024(self):
-        assert parser._is_month_column("FEV.2024") is True
+    def test_resolve_mes_numerico(self):
+        assert parser._resolve_mes("3") == 3
 
-    def test_is_month_column_nao_mes(self):
-        assert parser._is_month_column("PRODUTO") is False
+    def test_resolve_mes_invalido(self):
+        assert parser._resolve_mes("XYZ") is None
+        assert parser._resolve_mes("") is None
 
-    def test_is_month_column_vazio(self):
-        assert parser._is_month_column("") is False
+    def test_parse_numeric_br(self):
+        assert parser._parse_numeric_br("3517,6") == 3517.6
+        assert parser._parse_numeric_br("1.234,5") == 1234.5
+        assert parser._parse_numeric_br("-") is None
+        assert parser._parse_numeric_br("") is None
 
     def test_normalize_columns(self):
         df = pd.DataFrame({"  produto  ": [1], "Estado - Sigla": [2]})

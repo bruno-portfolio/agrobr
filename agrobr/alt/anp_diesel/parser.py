@@ -217,100 +217,6 @@ def parse_precos(
     return out
 
 
-def parse_vendas(
-    content: bytes,
-    uf: str | None = None,
-) -> pd.DataFrame:
-    try:
-        header_row = _detect_header_row(
-            content,
-            markers=["COMBUSTÍVEL", "ANO"],
-            engine=None,
-        )
-        df = pd.read_excel(
-            io.BytesIO(content),
-            engine=None,
-            header=header_row,
-            dtype=str,
-        )
-    except ParseError:
-        raise
-    except Exception as e:
-        raise ParseError(
-            source="anp_diesel",
-            parser_version=PARSER_VERSION,
-            reason=f"Erro ao ler XLS de vendas: {e}",
-        ) from e
-
-    if df.empty:
-        raise ParseError(
-            source="anp_diesel",
-            parser_version=PARSER_VERSION,
-            reason="XLS de vendas vazio",
-        )
-
-    df = _normalize_columns(df)
-
-    col_produto = _find_column(df, ["COMBUSTÍVEL", "COMBUSTIVEL", "PRODUTO"])
-    col_uf = _find_column(df, ["UF", "ESTADO", "UN. DA FEDERAÇÃO", "UN. DA FEDERACAO"])
-    col_regiao = _find_column(df, ["GRANDE REGIÃO", "GRANDE REGIAO", "REGIÃO", "REGIAO"])
-
-    month_cols = [c for c in df.columns if _is_month_column(c)]
-
-    if col_produto is None:
-        raise ParseError(
-            source="anp_diesel",
-            parser_version=PARSER_VERSION,
-            reason=f"Coluna de produto nao encontrada. Colunas: {list(df.columns)}",
-        )
-
-    diesel_mask = df[col_produto].str.strip().str.upper().str.contains("DIESEL", na=False)
-    df = df[diesel_mask].copy()
-
-    if df.empty:
-        raise ParseError(
-            source="anp_diesel",
-            parser_version=PARSER_VERSION,
-            reason="Nenhum registro de diesel encontrado em vendas",
-        )
-
-    if uf and col_uf:
-        from agrobr.normalize.regions import normalizar_uf
-
-        df["_uf_norm"] = (
-            df[col_uf]
-            .str.strip()
-            .apply(lambda v: normalizar_uf(v) if pd.notna(v) and v.strip() else "")
-        )
-        uf_mask = df["_uf_norm"] == uf.upper()
-        df = df[uf_mask].copy()
-        df = df.drop(columns=["_uf_norm"])
-
-    if not month_cols:
-        col_ano = _find_column(df, ["ANO"])
-        col_mes = _find_column(df, ["MÊS", "MES"])
-        col_vol = _find_column(df, ["VENDAS", "VOLUME", "TOTAL"])
-
-        if col_ano and col_mes and col_vol:
-            return _parse_vendas_long(
-                df, col_uf, col_regiao, col_produto, col_ano, col_mes, col_vol
-            )
-
-        raise ParseError(
-            source="anp_diesel",
-            parser_version=PARSER_VERSION,
-            reason="Nao encontrou colunas mensais ou formato long (ano/mes/volume)",
-        )
-
-    return _parse_vendas_wide(df, col_uf, col_regiao, col_produto, month_cols)
-
-
-def _is_month_column(col: str) -> bool:
-    meses = {"JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"}
-    upper = col.strip().upper()
-    return any(upper.startswith(m) for m in meses)
-
-
 _MONTH_MAP: dict[str, int] = {
     "JAN": 1,
     "FEV": 2,
@@ -327,93 +233,109 @@ _MONTH_MAP: dict[str, int] = {
 }
 
 
-def _parse_vendas_wide(
-    df: pd.DataFrame,
-    col_uf: str | None,
-    col_regiao: str | None,
-    col_produto: str,
-    month_cols: list[str],
+def _parse_numeric_br(val: object) -> float | None:
+    if val is None or (isinstance(val, str) and val.strip() in ("", "-")):
+        return None
+    try:
+        raw = str(val).replace(" ", "")
+        if "," in raw and "." in raw:
+            raw = raw.replace(".", "").replace(",", ".")
+        elif "," in raw:
+            raw = raw.replace(",", ".")
+        return float(raw)
+    except (ValueError, TypeError):
+        return None
+
+
+def _resolve_mes(val: str) -> int | None:
+    key = val.strip().upper()[:3]
+    mes = _MONTH_MAP.get(key)
+    if mes is not None:
+        return mes
+    try:
+        return int(float(val))
+    except (ValueError, TypeError):
+        return None
+
+
+def parse_vendas(
+    content: bytes,
+    uf: str | None = None,
 ) -> pd.DataFrame:
-    col_ano = _find_column(df, ["ANO"])
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError:
+        text = content.decode("utf-8-sig", errors="replace")
 
-    from agrobr.normalize.regions import normalizar_uf
-
-    rows: list[dict[str, Any]] = []
-    for _, row in df.iterrows():
-        raw_uf = str(row[col_uf]).strip() if col_uf and pd.notna(row.get(col_uf)) else ""
-        uf_val = normalizar_uf(raw_uf) or "" if raw_uf else ""
-        regiao_val = (
-            str(row[col_regiao]).strip() if col_regiao and pd.notna(row.get(col_regiao)) else ""
-        )
-        produto_val = re.sub(r"^[OÓ]LEO\s+", "", str(row[col_produto]).strip().upper())
-        ano_val = int(float(row[col_ano])) if col_ano and pd.notna(row.get(col_ano)) else None
-
-        for mc in month_cols:
-            vol_str = row.get(mc)
-            if pd.isna(vol_str) or str(vol_str).strip() in ("", "-"):
-                continue
-
-            try:
-                raw = str(vol_str).replace(" ", "")
-                if "," in raw and "." in raw:
-                    raw = raw.replace(".", "").replace(",", ".")
-                elif "," in raw:
-                    raw = raw.replace(",", ".")
-                volume = float(raw)
-            except ValueError:
-                continue
-
-            upper_mc = mc.strip().upper()
-            mes_key = upper_mc[:3]
-            mes_num = _MONTH_MAP.get(mes_key)
-            if mes_num is None:
-                continue
-
-            if ano_val:
-                ano = ano_val
-            else:
-                parts = upper_mc.split(".")
-                if len(parts) == 2:
-                    try:
-                        ano = int(parts[1])
-                    except ValueError:
-                        continue
-                else:
-                    continue
-
-            rows.append(
-                {
-                    "data": date(ano, mes_num, 1),
-                    "uf": uf_val,
-                    "regiao": regiao_val,
-                    "produto": produto_val,
-                    "volume_m3": volume,
-                }
-            )
-
-    if not rows:
+    try:
+        df = pd.read_csv(io.StringIO(text), sep=";", dtype=str)
+    except Exception as e:
         raise ParseError(
             source="anp_diesel",
             parser_version=PARSER_VERSION,
-            reason="Nenhuma venda extraida do formato wide",
+            reason=f"Erro ao ler CSV de vendas: {e}",
+        ) from e
+
+    if df.empty:
+        raise ParseError(
+            source="anp_diesel",
+            parser_version=PARSER_VERSION,
+            reason="CSV de vendas vazio",
         )
 
-    out = pd.DataFrame(rows)
-    out["data"] = pd.to_datetime(out["data"])
-    out = out.sort_values(["data", "uf"]).reset_index(drop=True)
+    df = _normalize_columns(df)
 
-    logger.debug("anp_diesel_parse_vendas_ok", records=len(out))
-    return out
+    col_ano = _find_column(df, ["ANO"])
+    col_mes = _find_column(df, ["MES", "MÊS"])
+    col_vol = _find_column(df, ["VENDAS", "VOLUME", "TOTAL"])
+    col_produto = _find_column(df, ["PRODUTO", "COMBUSTÍVEL", "COMBUSTIVEL"])
+    col_uf = _find_column(df, ["UNIDADE DA FEDERACAO", "UN. DA FEDERACAO", "UF", "ESTADO"])
+    col_regiao = _find_column(df, ["GRANDE REGIAO", "GRANDE REGIÃO", "REGIAO", "REGIÃO"])
+
+    if not all([col_ano, col_mes, col_vol]):
+        raise ParseError(
+            source="anp_diesel",
+            parser_version=PARSER_VERSION,
+            reason=(
+                f"Colunas obrigatorias (ANO/MES/VENDAS) nao encontradas. "
+                f"Colunas: {list(df.columns)}"
+            ),
+        )
+
+    if col_produto:
+        diesel_mask = df[col_produto].str.strip().str.upper().str.contains("DIESEL", na=False)
+        df = df[diesel_mask].copy()
+
+    if df.empty:
+        raise ParseError(
+            source="anp_diesel",
+            parser_version=PARSER_VERSION,
+            reason="Nenhum registro de diesel encontrado em vendas",
+        )
+
+    if uf and col_uf:
+        from agrobr.normalize.regions import normalizar_uf
+
+        df["_uf_norm"] = (
+            df[col_uf]
+            .str.strip()
+            .apply(lambda v: normalizar_uf(v) if pd.notna(v) and v.strip() else "")
+        )
+        df = df[df["_uf_norm"] == uf.upper()].copy()
+        df = df.drop(columns=["_uf_norm"])
+
+    assert col_ano is not None and col_mes is not None and col_vol is not None
+    return _build_vendas_df(df, col_ano, col_mes, col_vol, col_produto, col_uf, col_regiao)
 
 
-def _parse_vendas_long(
+def _build_vendas_df(
     df: pd.DataFrame,
-    col_uf: str | None,
-    col_regiao: str | None,
-    col_produto: str,
     col_ano: str,
     col_mes: str,
     col_vol: str,
+    col_produto: str | None,
+    col_uf: str | None,
+    col_regiao: str | None,
 ) -> pd.DataFrame:
     from agrobr.normalize.regions import normalizar_uf
 
@@ -422,22 +344,15 @@ def _parse_vendas_long(
     for _, row in df.iterrows():
         try:
             ano = int(float(row[col_ano]))
-            mes = int(float(row[col_mes]))
         except (ValueError, TypeError):
             continue
 
-        vol_str = row.get(col_vol)
-        if pd.isna(vol_str) or str(vol_str).strip() in ("", "-"):
+        mes = _resolve_mes(str(row[col_mes]))
+        if mes is None:
             continue
 
-        try:
-            raw = str(vol_str).replace(" ", "")
-            if "," in raw and "." in raw:
-                raw = raw.replace(".", "").replace(",", ".")
-            elif "," in raw:
-                raw = raw.replace(",", ".")
-            volume = float(raw)
-        except ValueError:
+        volume = _parse_numeric_br(row.get(col_vol))
+        if volume is None:
             continue
 
         raw_uf = str(row[col_uf]).strip() if col_uf and pd.notna(row.get(col_uf)) else ""
@@ -445,7 +360,11 @@ def _parse_vendas_long(
         regiao_val = (
             str(row[col_regiao]).strip() if col_regiao and pd.notna(row.get(col_regiao)) else ""
         )
-        produto_val = re.sub(r"^[OÓ]LEO\s+", "", str(row[col_produto]).strip().upper())
+        produto_val = (
+            re.sub(r"^[OÓ]LEO\s+", "", str(row[col_produto]).strip().upper())
+            if col_produto and pd.notna(row.get(col_produto))
+            else ""
+        )
 
         rows.append(
             {
@@ -461,7 +380,7 @@ def _parse_vendas_long(
         raise ParseError(
             source="anp_diesel",
             parser_version=PARSER_VERSION,
-            reason="Nenhuma venda extraida do formato long",
+            reason="Nenhuma venda extraida do CSV",
         )
 
     out = pd.DataFrame(rows)

@@ -44,7 +44,7 @@ URLS = {
     Fonte.ANP_DIESEL: {
         "base": "https://www.gov.br/anp/pt-br",
         "shlp": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp",
-        "vendas_m3": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-estatisticos/de/vdpb/vendas-combustiveis-m3.xls",
+        "vendas_diesel_csv": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/arquivos/vdpb/vct/vendas-oleo-diesel-tipo-m3-2013-2025.csv",
     },
     Fonte.ANTAQ: {
         "base": "https://web3.antaq.gov.br/ea/sense/download.html",

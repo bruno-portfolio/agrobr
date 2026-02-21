@@ -18,7 +18,7 @@ from agrobr.alt.anp_diesel.models import (
     PRODUTOS_DIESEL,
     SHLP_BASE,
     UFS_VALIDAS,
-    VENDAS_M3_URL,
+    VENDAS_DIESEL_CSV_URL,
     PrecoDiesel,
     VendaDiesel,
     _resolve_periodo_municipio,
@@ -30,9 +30,9 @@ class TestConstantes:
         assert SHLP_BASE.startswith("https://www.gov.br/anp")
         assert "shlp" in SHLP_BASE
 
-    def test_vendas_m3_url_valida(self):
-        assert VENDAS_M3_URL.endswith(".xls")
-        assert "vendas-combustiveis" in VENDAS_M3_URL
+    def test_vendas_diesel_csv_url_valida(self):
+        assert VENDAS_DIESEL_CSV_URL.endswith(".csv")
+        assert "vendas-oleo-diesel" in VENDAS_DIESEL_CSV_URL
 
     def test_precos_municipios_urls_nao_vazio(self):
         assert len(PRECOS_MUNICIPIOS_URLS) >= 3

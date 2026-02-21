@@ -21,7 +21,7 @@ from .models import (
     PRECOS_MUNICIPIOS_URLS,
     PRODUTOS_DIESEL,
     UFS_VALIDAS,
-    VENDAS_M3_URL,
+    VENDAS_DIESEL_CSV_URL,
     _resolve_periodo_municipio,
 )
 
@@ -129,7 +129,7 @@ async def vendas_diesel(
     if return_meta:
         meta = MetaInfo(
             source="anp_diesel",
-            source_url=VENDAS_M3_URL,
+            source_url=VENDAS_DIESEL_CSV_URL,
             source_method="httpx",
             fetched_at=datetime.now(UTC),
             fetch_duration_ms=fetch_ms,

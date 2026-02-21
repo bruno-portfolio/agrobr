@@ -1,11 +1,11 @@
 {
   "source": "anp_diesel",
-  "format": "xls",
+  "format": "csv",
   "parser_module": "agrobr.alt.anp_diesel.parser",
   "parser_functions": ["parse_vendas"],
-  "url": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-estatisticos/de/vdpb/vendas-combustiveis-m3.xls",
+  "url": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/arquivos/vdpb/vct/vendas-oleo-diesel-tipo-m3-2013-2025.csv",
   "captured_at": "2026-02-21T08:25:42Z",
   "needs_real_data": true,
   "parser_version": 2,
-  "notes": "Real XLS downloaded (1.2MB) but parser cannot detect header row. The vendas-combustiveis-m3.xls uses Excel pivot table format with sections for different products/regions. The _detect_header_row markers ['COMBUSTIVEL', 'ANO'] are not found on the same row. Parser needs update to handle this multi-section pivot table XLS. Response file saved but parsing fails."
+  "notes": "Migrated from XLS pivot table to CSV dados abertos. Old XLS (vendas-combustiveis-m3.xls) uses Excel pivot tables that broke the header detection parser. New CSV is flat, semicolon-delimited, long format (ANO;MES;GRANDE REGIAO;UNIDADE DA FEDERACAO;PRODUTO;VENDAS). Real data capture pending."
 }
