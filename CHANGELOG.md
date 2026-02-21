@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Fixed
+- **SICAR**: SSLContext customizado com `@SECLEVEL=1` para contornar TLS handshake failure do `geoserver.car.gov.br` (servidor usa cipher suite legado)
+- **ANTT Pedagio**: slugs CKAN atualizados — `fluxo-de-veiculos-nas-pracas-de-pedagio` → `volume-trafego-praca-pedagio`, `cadastro-de-pracas-de-pedagio` → `praca-de-pedagio`. Parser de pracas ajustado para colunas renomeadas (`latitude`/`longitude` → `lat`/`lon`)
+
 ## [0.11.1] - 2026-02-21
 
 ### Changed

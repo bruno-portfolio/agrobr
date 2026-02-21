@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import re
+import ssl
 from urllib.parse import quote
 
 import httpx
@@ -24,6 +25,11 @@ TIMEOUT = httpx.Timeout(
     write=_settings.timeout_write,
     pool=_settings.timeout_pool,
 )
+
+_ssl_ctx = ssl.create_default_context()
+_ssl_ctx.check_hostname = False
+_ssl_ctx.verify_mode = ssl.CERT_NONE
+_ssl_ctx.set_ciphers("DEFAULT:@SECLEVEL=1")
 
 
 def _build_wfs_url(
@@ -55,7 +61,10 @@ def _build_wfs_url(
 
 async def _fetch_url(url: str, *, base_delay: float | None = None) -> bytes:
     async with httpx.AsyncClient(
-        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_bot_headers(),
+        follow_redirects=True,
+        verify=_ssl_ctx,
     ) as client:
         logger.debug("sicar_request", url=url)
         response = await retry_on_status(

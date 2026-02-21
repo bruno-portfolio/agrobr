@@ -45,6 +45,8 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
 - **Sem geometria:** o agrobr extrai apenas dados tabulares (sem poligonos/shapefiles)
 - **Paginacao transparente:** queries grandes sao paginadas automaticamente (10.000 registros por pagina)
 - **Timeout estendido:** read timeout de 180s para UFs com muitos registros (BA, MG, MT)
+- **SSL:** o GeoServer do CAR usa cipher suite legado que rejeita handshake TLS padrao.
+  O client usa SSLContext customizado com `@SECLEVEL=1` para liberar ciphers compativeis.
 - **Relevancia EUDR:** dados essenciais para compliance com o EU Deforestation Regulation
 
 ## Licenca
