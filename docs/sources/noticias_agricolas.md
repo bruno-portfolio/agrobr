@@ -37,6 +37,14 @@ O parser extrai a data final do intervalo e marca esses registros com
 `meta["periodo"]="09 - 13/02/2026"`. Isso permite distinguir cotações
 diárias de médias semanais no DataFrame retornado.
 
+## Validação de Conteúdo (Soft Block)
+
+Alguns usuários recebem do NA uma página de consent/challenge (HTTP 200,
+~10KB sem tabela) em vez da página de dados (~75KB com tabela). O client
+valida o conteúdo antes de retornar: se o HTML é < 20KB e não contém
+`<table`, levanta `SourceUnavailableError` com mensagem "soft block",
+ativando o cache fallback no módulo CEPEA.
+
 ## Fonte
 
 - URL: `https://www.noticiasagricolas.com.br/cotacoes/`

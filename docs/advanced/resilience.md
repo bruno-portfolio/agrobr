@@ -142,11 +142,16 @@ Chain de fallback para encoding:
 CEPEA (www.cepea.org.br)
         ↓ bloqueado (Cloudflare)?
 Notícias Agrícolas (httpx direto, SSR)
-        ↓ falhou?
+        ↓ soft block (consent/challenge page)?
+        ↓ falhou (HTTP error)?
 Cache local (DuckDB)
 ```
 
 O Notícias Agrícolas republica os mesmos indicadores CEPEA/ESALQ via HTML server-side rendered, sem necessidade de Playwright.
+
+Cada etapa retorna um `FetchResult(html, source)` que identifica explicitamente a origem do HTML ("cepea", "browser" ou "noticias_agricolas"), evitando detecção frágil por markers no conteúdo.
+
+**Soft block detection:** Alguns usuários recebem do NA uma página de consent/challenge (HTTP 200, ~10KB sem tabela) em vez da página de dados (~75KB com tabela). O client NA valida o conteúdo antes de retornar: se o HTML é < 20KB e não contém `<table`, levanta `SourceUnavailableError`, ativando o cache fallback.
 
 ## Cache e Histórico
 

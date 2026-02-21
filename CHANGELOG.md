@@ -8,6 +8,15 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Fixed
+- **CEPEA/NA — parser failure em soft block (#14)** — `cepea.indicador("soja")` e
+  `datasets.preco_diario("soja")` falhavam com `ParseError` quando Noticias Agricolas
+  retornava pagina de consent/challenge (~10KB sem tabela) em vez dos dados (~75KB com
+  tabela). Tres mudancas: (1) `FetchResult(html, source)` NamedTuple no client CEPEA
+  identifica explicitamente a fonte do HTML ("cepea", "browser", "noticias_agricolas"),
+  eliminando deteccao fragil por markers no conteudo (`"noticiasagricolas" in html`);
+  (2) `_validate_html_has_data()` no client NA rejeita respostas < 20KB sem `<table`
+  (soft block) com `SourceUnavailableError`, ativando cache fallback; (3) roteamento
+  no `api.py` usa `FetchResult.source` em vez de inspecionar HTML
 - **ANP Diesel — normalizar produto** — `"OLEO DIESEL"` / `"ÓLEO DIESEL S10"` agora
   normalizado para `"DIESEL"` / `"DIESEL S10"` no output. Afeta `parse_precos`,
   `_parse_vendas_wide`, `_parse_vendas_long`. Regex `^[OÓ]LEO\s+` strip no produto.
