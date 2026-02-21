@@ -1842,6 +1842,7 @@ SICAR_IMOVEIS_V1 = Contract(
 )
 
 register_contract("sicar_imoveis", SICAR_IMOVEIS_V1)
+register_contract("cadastro_rural", SICAR_IMOVEIS_V1)
 
 __all__ = [
     "AJUSTE_DIARIO_V1",

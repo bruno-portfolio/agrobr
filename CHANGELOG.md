@@ -37,6 +37,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   Contrato `SICAR_IMOVEIS_V1` (11 colunas, PK cod_imovel). Schema JSON, golden data (DF + MT).
   114 novos testes (models, client, parser, api). Sync wrapper via `agrobr.sync.alt.sicar`.
   Docs: `api/sicar.md`, `sources/sicar.md`
+- **Dataset semantico `cadastro_rural`** — `datasets.cadastro_rural(uf, municipio, status, tipo,
+  area_min, area_max, criado_apos)` na camada semantica. Wraps `sicar.imoveis()` com validacao
+  de contrato, return_meta, modo deterministico e fallback pattern. Registrado no registry com
+  contrato `SICAR_IMOVEIS_V1`. 10 novos testes.
 - **ANTT Pedagio — Fluxo de Veiculos em Pracas de Pedagio** — Novo namespace `agrobr/alt/antt_pedagio/`
   para dados de fluxo de veiculos em pracas de pedagio rodoviario (ANTT Dados Abertos, CC-BY).
   Funcoes: `antt_pedagio.fluxo_pedagio(ano, ano_inicio, ano_fim, uf, apenas_pesados)` para

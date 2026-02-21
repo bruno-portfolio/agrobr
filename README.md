@@ -153,11 +153,15 @@ async def main():
     # Censo Agropecuário 2017 (IBGE Censo Agro)
     df = await datasets.censo_agropecuario("efetivo_rebanho")
 
+    # Cadastro Ambiental Rural (SICAR)
+    df = await datasets.cadastro_rural("DF")
+    df = await datasets.cadastro_rural("MT", municipio="Sorriso", status="AT")
+
     # Listar datasets disponíveis
     print(datasets.list_datasets())
-    # ['balanco', 'censo_agropecuario', 'credito_rural', 'custo_producao',
-    #  'estimativa_safra', 'exportacao', 'fertilizante', 'pecuaria_municipal',
-    #  'preco_diario', 'producao_anual']
+    # ['abate_trimestral', 'balanco', 'cadastro_rural', 'censo_agropecuario',
+    #  'credito_rural', 'custo_producao', 'estimativa_safra', 'exportacao',
+    #  'fertilizante', 'pecuaria_municipal', 'preco_diario', 'producao_anual']
 ```
 
 ### Modo Determinístico (Reprodutibilidade)
@@ -433,6 +437,7 @@ Use `agrobr health --all` para verificar localmente.
 | `fertilizante` | Entregas de fertilizantes | ANDA |
 | `custo_producao` | Custos de produção | CONAB |
 | `abate_trimestral` | Abate de bovinos, suínos e frangos por UF | IBGE Abate |
+| `cadastro_rural` | Cadastro Ambiental Rural (imóveis rurais por UF) | SICAR/GeoServer WFS |
 | `censo_agropecuario` | Censo Agropecuário 2017 (rebanho, uso terra, lavouras) | IBGE Censo Agro |
 
 ## Fontes Suportadas

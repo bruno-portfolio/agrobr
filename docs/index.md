@@ -55,6 +55,7 @@ Peça o que quer, a fonte é detalhe interno:
 | `custo_producao` | Custos de produção | CONAB |
 | `pecuaria_municipal` | Rebanhos e produção animal | IBGE PPM |
 | `abate_trimestral` | Abate de bovinos, suínos e frangos | IBGE Abate |
+| `cadastro_rural` | Cadastro Ambiental Rural (imóveis rurais) | SICAR/GeoServer WFS |
 | `censo_agropecuario` | Censo Agropecuário 2017 | IBGE Censo Agro |
 
 ```python
