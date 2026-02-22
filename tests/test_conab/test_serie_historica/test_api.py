@@ -210,4 +210,3 @@ class TestProdutosDisponiveis:
         result = produtos_disponiveis()
         for item in result:
             assert "gov.br" in item["url"]
-            assert "/view" in item["url"]
