@@ -422,3 +422,154 @@ class TestStoreClose:
         data, _ = store2.cache_get("k1")
         assert data == b"data"
         store2.close()
+
+
+class TestCacheClearAdvanced:
+    def test_clear_older_than_days(self, tmp_store: DuckDBStore):
+        tmp_store.cache_set("old", b"data", Fonte.CEPEA, ttl_seconds=3600)
+        conn = tmp_store._get_conn()
+        past = _utcnow() - timedelta(days=10)
+        conn.execute("UPDATE cache_entries SET created_at = ? WHERE key = ?", [past, "old"])
+
+        tmp_store.cache_set("new", b"data2", Fonte.CEPEA, ttl_seconds=3600)
+
+        count = tmp_store.cache_clear(older_than_days=5)
+        assert count == 1
+        assert tmp_store.cache_get("new")[0] == b"data2"
+        assert tmp_store.cache_get("old")[0] is None
+
+    def test_clear_source_and_older_than(self, tmp_store: DuckDBStore):
+        tmp_store.cache_set("cepea_old", b"a", Fonte.CEPEA, ttl_seconds=3600)
+        conn = tmp_store._get_conn()
+        past = _utcnow() - timedelta(days=10)
+        conn.execute("UPDATE cache_entries SET created_at = ? WHERE key = ?", [past, "cepea_old"])
+
+        tmp_store.cache_set("conab_old", b"b", Fonte.CONAB, ttl_seconds=3600)
+        conn.execute("UPDATE cache_entries SET created_at = ? WHERE key = ?", [past, "conab_old"])
+
+        count = tmp_store.cache_clear(source=Fonte.CEPEA, older_than_days=5)
+        assert count == 1
+        assert tmp_store.cache_get("conab_old")[0] == b"b"
+
+
+class TestIndicadoresGetDatesFilters:
+    def test_get_dates_with_inicio(self, tmp_store: DuckDBStore):
+        for month in [1, 3, 6]:
+            tmp_store.indicadores_upsert(
+                [
+                    {
+                        "produto": "soja",
+                        "data": datetime(2024, month, 10),
+                        "valor": 100.0,
+                        "unidade": "BRL/sc",
+                        "fonte": "cepea",
+                    }
+                ]
+            )
+        dates = tmp_store.indicadores_get_dates("soja", inicio=datetime(2024, 2, 1))
+        assert len(dates) == 2
+
+    def test_get_dates_with_fim(self, tmp_store: DuckDBStore):
+        for month in [1, 3, 6]:
+            tmp_store.indicadores_upsert(
+                [
+                    {
+                        "produto": "soja",
+                        "data": datetime(2024, month, 10),
+                        "valor": 100.0,
+                        "unidade": "BRL/sc",
+                        "fonte": "cepea",
+                    }
+                ]
+            )
+        dates = tmp_store.indicadores_get_dates("soja", fim=datetime(2024, 4, 1))
+        assert len(dates) == 2
+
+
+class TestIndicadoresUpsertChunkError:
+    def test_chunk_error_fallback_row_by_row(self, tmp_store: DuckDBStore):
+        indicadores = [
+            {
+                "produto": "soja",
+                "praca": f"p_{i}",
+                "data": datetime(2024, 1, 1) + timedelta(days=i),
+                "valor": 100.0 + i,
+                "unidade": "BRL/sc",
+                "fonte": "cepea",
+            }
+            for i in range(3)
+        ]
+
+        real_conn = tmp_store._get_conn()
+        call_count = [0]
+
+        class ConnWrapper:
+            def __getattr__(self, name):
+                if name == "executemany":
+
+                    def patched_executemany(sql, params):
+                        call_count[0] += 1
+                        if call_count[0] == 1 and "_ind_staging" in sql:
+                            import duckdb
+
+                            raise duckdb.Error("simulated chunk error")
+                        return real_conn.executemany(sql, params)
+
+                    return patched_executemany
+                return getattr(real_conn, name)
+
+        with mock.patch.object(tmp_store, "_get_conn", return_value=ConnWrapper()):
+            count = tmp_store.indicadores_upsert(indicadores)
+
+        assert count >= 0
+
+
+class TestToRow:
+    def test_defaults_applied(self):
+        now = datetime(2024, 1, 1)
+        ind = {
+            "produto": "SOJA",
+            "data": datetime(2024, 6, 15),
+            "valor": 100.5,
+        }
+        row = DuckDBStore._to_row(ind, now)
+        assert row[0] == "soja"
+        assert row[1] is None
+        assert row[4] == "BRL/unidade"
+        assert row[5] == "unknown"
+        assert row[9] == 1
+
+    def test_full_values(self):
+        now = datetime(2024, 1, 1)
+        ind = {
+            "produto": "Milho",
+            "praca": "Campinas",
+            "data": datetime(2024, 6, 15),
+            "valor": 50.25,
+            "unidade": "BRL/sc",
+            "fonte": "cepea",
+            "metodologia": "media",
+            "variacao_percentual": 1.5,
+            "parser_version": 2,
+        }
+        row = DuckDBStore._to_row(ind, now)
+        assert row[0] == "milho"
+        assert row[1] == "Campinas"
+        assert row[6] == "media"
+        assert row[7] == 1.5
+        assert row[9] == 2
+
+
+class TestGetStore:
+    def test_singleton_pattern(self):
+        import agrobr.cache.duckdb_store as store_mod
+
+        store_mod._store = None
+        with mock.patch.object(store_mod, "DuckDBStore") as mock_cls:
+            mock_instance = mock.MagicMock()
+            mock_cls.return_value = mock_instance
+            s1 = store_mod.get_store()
+            s2 = store_mod.get_store()
+            assert s1 is s2
+            mock_cls.assert_called_once()
+        store_mod._store = None

@@ -6,6 +6,7 @@ from decimal import Decimal
 from io import BytesIO
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from agrobr.conab.parsers.v1 import ConabParserV1
@@ -176,3 +177,48 @@ class TestConabParserV1:
 
         assert header_row is not None
         assert header_row >= 0
+
+
+class TestConabParserEdgeCases:
+    def test_parse_decimal_nan(self, parser):
+        assert parser._parse_decimal(float("nan")) is None
+
+    def test_parse_decimal_zero_string(self, parser):
+        assert parser._parse_decimal("0") is None
+
+    def test_parse_decimal_integer(self, parser):
+        assert parser._parse_decimal(42) == Decimal("42")
+
+    def test_find_header_row_no_match(self, parser):
+        df = pd.DataFrame({"A": ["hello", "world"], "B": [1, 2]})
+        assert parser._find_header_row(df) is None
+
+    def test_find_header_row_with_uf(self, parser):
+        df = pd.DataFrame({"A": ["header", "UF/REGIÃO", "data"], "B": [1, 2, 3]})
+        result = parser._find_header_row(df)
+        assert result == 1
+
+    def test_parse_safra_excel_read_error(self, parser):
+        from agrobr.exceptions import ParseError
+
+        bad_xlsx = BytesIO(b"not an excel file")
+        with pytest.raises(ParseError, match="Erro ao ler"):
+            parser.parse_safra_produto(bad_xlsx, "soja")
+
+    def test_parse_brasil_total_no_header(self, parser):
+        from openpyxl import Workbook
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Brasil - Total por Produto"
+        ws.append(["random", "data", "here"])
+        buf = BytesIO()
+        wb.save(buf)
+        buf.seek(0)
+        result = parser.parse_brasil_total(buf)
+        assert result == []
+
+    def test_parse_suprimento_long_fallback(self, parser, sample_xlsx):
+        sample_xlsx.seek(0)
+        result = parser._parse_suprimento_long(sample_xlsx, produto="milho")
+        assert isinstance(result, list)

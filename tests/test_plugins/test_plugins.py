@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from agrobr.plugins import (
     ExporterPlugin,
     ParserPlugin,
@@ -205,3 +207,180 @@ class TestPluginTypes:
         valid, errors = plugin.validate({"test": "data"})
         assert valid is True
         assert errors == []
+
+
+class TestLoadPluginFromFile:
+    def setup_method(self):
+        unload_all()
+
+    def teardown_method(self):
+        unload_all()
+
+    def test_file_not_found(self, tmp_path):
+        from agrobr.plugins import load_plugin_from_file
+
+        result = load_plugin_from_file(tmp_path / "nonexistent.py")
+        assert result is None
+
+    def test_load_valid_plugin(self, tmp_path):
+        from agrobr.plugins import load_plugin_from_file
+
+        plugin_file = tmp_path / "my_plugin.py"
+        plugin_file.write_text("""
+from agrobr.plugins import Plugin, PluginMeta
+
+class MyFilePlugin(Plugin):
+    meta = PluginMeta(name="file-plugin", version="1.0", description="From file")
+    def setup(self):
+        pass
+    def teardown(self):
+        pass
+""")
+        result = load_plugin_from_file(plugin_file)
+        assert result is not None
+        assert any(p.name == "file-plugin" for p in list_plugins())
+
+    def test_no_plugin_in_file(self, tmp_path):
+        from agrobr.plugins import load_plugin_from_file
+
+        plugin_file = tmp_path / "empty_plugin.py"
+        plugin_file.write_text("x = 42\n")
+        result = load_plugin_from_file(plugin_file)
+        assert result is None
+
+
+class TestLoadPluginsFromDir:
+    def setup_method(self):
+        unload_all()
+
+    def teardown_method(self):
+        unload_all()
+
+    def test_empty_dir(self, tmp_path):
+        from agrobr.plugins import load_plugins_from_dir
+
+        result = load_plugins_from_dir(tmp_path)
+        assert result == []
+
+    def test_nonexistent_dir(self, tmp_path):
+        from agrobr.plugins import load_plugins_from_dir
+
+        result = load_plugins_from_dir(tmp_path / "does_not_exist")
+        assert result == []
+
+    def test_skips_underscore_files(self, tmp_path):
+        from agrobr.plugins import load_plugins_from_dir
+
+        (tmp_path / "__init__.py").write_text("")
+        (tmp_path / "_private.py").write_text("")
+        result = load_plugins_from_dir(tmp_path)
+        assert result == []
+
+    def test_loads_valid_plugins(self, tmp_path):
+        from agrobr.plugins import load_plugins_from_dir
+
+        (tmp_path / "plug1.py").write_text("""
+from agrobr.plugins import Plugin, PluginMeta
+
+class DirPlugin(Plugin):
+    meta = PluginMeta(name="dir-plugin", version="1.0", description="From dir")
+    def setup(self):
+        pass
+    def teardown(self):
+        pass
+""")
+        result = load_plugins_from_dir(tmp_path)
+        assert len(result) == 1
+
+
+class TestPluginLifecycle:
+    def setup_method(self):
+        unload_all()
+
+    def teardown_method(self):
+        unload_all()
+
+    def test_setup_called_on_get(self):
+        calls = []
+
+        @register
+        class LifecyclePlugin(Plugin):
+            meta = PluginMeta(name="lifecycle", version="1.0", description="Test")
+
+            def setup(self):
+                calls.append("setup")
+
+            def teardown(self):
+                calls.append("teardown")
+
+        get_plugin("lifecycle")
+        assert "setup" in calls
+        unload_plugin("lifecycle")
+        assert "teardown" in calls
+
+    def test_register_without_meta_raises(self):
+        with pytest.raises(ValueError, match="meta"):
+
+            @register
+            class NoMeta(Plugin):
+                def setup(self):
+                    pass
+
+                def teardown(self):
+                    pass
+
+    def test_override_plugin(self):
+        @register
+        class First(Plugin):
+            meta = PluginMeta(name="override-test", version="1.0", description="First")
+
+            def setup(self):
+                pass
+
+            def teardown(self):
+                pass
+
+        @register
+        class Second(Plugin):
+            meta = PluginMeta(name="override-test", version="2.0", description="Second")
+
+            def setup(self):
+                pass
+
+            def teardown(self):
+                pass
+
+        plugins = list_plugins()
+        override_plugins = [p for p in plugins if p.name == "override-test"]
+        assert len(override_plugins) == 1
+        assert override_plugins[0].version == "2.0"
+
+
+class TestUnloadAll:
+    def setup_method(self):
+        unload_all()
+
+    def test_clears_all(self):
+        @register
+        class P1(Plugin):
+            meta = PluginMeta(name="p1", version="1.0", description="")
+
+            def setup(self):
+                pass
+
+            def teardown(self):
+                pass
+
+        @register
+        class P2(Plugin):
+            meta = PluginMeta(name="p2", version="1.0", description="")
+
+            def setup(self):
+                pass
+
+            def teardown(self):
+                pass
+
+        assert len(list_plugins()) == 2
+        unload_all()
+        assert len(list_plugins()) == 0
