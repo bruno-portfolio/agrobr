@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from datetime import datetime
 
+import pytest
+
 from agrobr.constants import Fonte
 from agrobr.models import Fingerprint
 from agrobr.validators.structural import (
@@ -39,7 +41,7 @@ class TestCompareFingerprints:
     def test_identical_fingerprints(self):
         fp = _make_fingerprint()
         similarity, diffs = compare_fingerprints(fp, fp)
-        assert similarity == 1.0
+        assert similarity == pytest.approx(1.0)
         assert diffs == {}
 
     def test_different_structure_hash(self):

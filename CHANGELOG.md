@@ -5,7 +5,10 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [Unreleased]
+## [0.11.2] - 2026-02-22
+
+### Added
+- **Cobertura de testes 80% → 84%** — 157 novos testes (3501 → 3658), 462 linhas adicionais cobertas em 15 módulos. Módulos com maior ganho: telemetry/collector (0%→100%), utils/logging (0%→100%), validators/sanity (59%→100%), mapbiomas/client (39%→100%), desmatamento/client (22%→97%), cache/policies (56%→96%), cache/duckdb_store (83%→94%), validators/structural (18%→85%), http/browser (23%→77%), plugins/__init__ (58%→87%), cepea/parsers/consensus (72%→100%), cepea/parsers/detector (92%→100%)
 
 ### Fixed
 - **CONAB serie_historica**: URL corrigida — `/conab/conab/pt-br/` duplicado removido (BASE_URL ja inclui `/conab`)
@@ -702,7 +705,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.1...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.2...HEAD
+[0.11.2]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/bruno-portfolio/agrobr/compare/v0.10.0...v0.10.1

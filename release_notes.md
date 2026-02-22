@@ -1,13 +1,11 @@
-# agrobr 0.9.0 — Quality & Resilience
+# agrobr 0.11.2 — Test Coverage Boost
 
 ## Highlights
 
-- **1640 testes** (era 949), cobertura **~78%** (era 57.5%)
-- **13/13 fontes** com golden tests (era 2/13)
-- **10 bugs corrigidos** incluindo histórico DuckDB que nunca salvava dados
-- **Resiliência HTTP** completa: retry centralizado, 429 handling, Retry-After
-- **INMET** atualizado: novo endpoint + suporte a token de autenticação
-- **Benchmark de escalabilidade** validado: memory, volume, cache, async
+- **3658 testes** (era 3501), cobertura **84%** (era 80%)
+- **157 novos testes** cobrindo 15 módulos, 462 linhas adicionais
+- **12 módulos** com ganho significativo de cobertura
+- Nenhuma dependência nova — todos os testes usam `unittest.mock`
 
 ## Breaking Changes
 
@@ -21,38 +19,27 @@ pip install --upgrade agrobr
 
 ## Added
 
-- 1640 testes (era 949), cobertura ~78% (era 57.5%)
-- Golden tests para todas as 13 fontes de dados
-- Cobertura CLI (51 testes), alerts (17 testes), health (39 testes)
-- Benchmark de escalabilidade (memory, volume, cache, async, rate limiting)
-- Suporte a token INMET (`AGROBR_INMET_TOKEN` via env var)
-- `retry_on_status()` e `retry_async()` centralizados em `http/retry.py`
-- Retry-After header respeitado em respostas 429
-- Testes de resiliência HTTP para todos os 13 clients (timeout, 429, 500, 403, resposta vazia)
-- Testes para API pública: `cepea.indicador()`/`ultimo()`, `conab.safras()`/`balanco()`/`brasil_total()`/`levantamentos()`
-- Pre-commit hooks atualizados (ruff v0.15, mypy v1.19)
+- **Cobertura de testes 80% → 84%** — 157 novos testes em 15 módulos:
+  - `telemetry/collector` 0% → 100% (async track, flush, conveniences)
+  - `utils/logging` 0% → 100% (structlog configure, get_logger)
+  - `validators/sanity` 59% → 100% (validate_safra, validate_batch)
+  - `mapbiomas/client` 39% → 100% (URL building, fetch mock)
+  - `desmatamento/client` 22% → 97% (WFS URL, UF mapping, fetch)
+  - `cache/policies` 56% → 96% (format_ttl, next_update, should_refresh)
+  - `cache/duckdb_store` 83% → 94% (chunks, _to_row, error paths)
+  - `validators/structural` 18% → 85% (Jaccard, fingerprint, baseline)
+  - `http/browser` 23% → 77% (Playwright mock, Cloudflare detect)
+  - `plugins/__init__` 58% → 87% (load from file/dir, lifecycle)
+  - `cepea/parsers/consensus` 72% → 100% (analyze, select_best, validator)
+  - `cepea/parsers/detector` 92% → 100% (fallback chain, confidence)
 
 ## Fixed
 
-- **Cache DuckDB** — `history_entries.id` sem autoincrement: histórico permanente nunca salvava dados
-- **normalize/dates** — `normalizar_safra()` não fazia strip no input
-- **6 clients sem retry para HTTP 429**: inmet, nasa_power, conab_custo, conab_serie, conab main, ibge
-- **Graceful degradation silenciosa** trocada por `SourceUnavailableError` quando retry esgota
-- **except Exception genérico** em `duckdb_store.py` restringido para exceções específicas
-- **INMET** — endpoint `/estacao/dados/` atualizado para `/estacao/` (API mudou)
-- **INMET** — tratamento de HTTP 204 (No Content) retorna DataFrame vazio
-
-## Changed
-
-- Retry loops de todos 13 clients migrados para `http/retry.py` centralizado
-- Testes de datasets refatorados: 98 funções duplicadas → 27 parametrizadas (115 cenários)
-- mypy override para `tests.*` (`ignore_errors = true`, strict mantido no core)
-
-## Known Issues
-
-- 4 golden tests com dados sintéticos (INMET, USDA, NA, ANDA) — `needs_real_data`
-  (BCB, IBGE, ComexStat, DERAL, ABIOVE migrados para dados reais na issue #10)
-- DuckDB 1.4.4 incompatível com coverage no Python 3.14
+- **CONAB serie_historica**: URL corrigida — `/conab/conab/pt-br/` duplicado removido
+- **MapBiomas**: URLs migradas de GCS (404) para Dataverse (`data.mapbiomas.org`)
+- **SICAR**: SSLContext customizado com `@SECLEVEL=1` para TLS handshake failure
+- **ANTT Pedagio**: slugs CKAN atualizados, parser V2 ajustado para novo layout CSV
+- **ANP Diesel**: `vendas_diesel` migrado de XLS pivot (quebrado) para CSV dados abertos
 
 ## Links
 
