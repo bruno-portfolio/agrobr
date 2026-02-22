@@ -116,7 +116,9 @@ URLS = {
     Fonte.MAPBIOMAS: {
         "base": "https://brasil.mapbiomas.org",
         "estatisticas": "https://brasil.mapbiomas.org/estatisticas/",
-        "gcs": "https://storage.googleapis.com/mapbiomas-public/initiatives/brasil",
+        "dataverse": "https://data.mapbiomas.org/api/access/datafile",
+        "biome_state_file_id": "457",
+        "biome_state_municipality_file_id": "254",
     },
     Fonte.QUEIMADAS: {
         "base": "https://terrabrasilis.dpi.inpe.br/queimadas/portal/",

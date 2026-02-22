@@ -8,11 +8,11 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.user_agents import UserAgentRotator
 
-from .models import COLECAO_ATUAL
-
 logger = structlog.get_logger()
 
-GCS_BASE = URLS[Fonte.MAPBIOMAS]["gcs"]
+DATAVERSE_BASE = URLS[Fonte.MAPBIOMAS]["dataverse"]
+BIOME_STATE_FILE_ID = URLS[Fonte.MAPBIOMAS]["biome_state_file_id"]
+BIOME_STATE_MUNICIPALITY_FILE_ID = URLS[Fonte.MAPBIOMAS]["biome_state_municipality_file_id"]
 
 _settings = HTTPSettings()
 
@@ -24,12 +24,10 @@ TIMEOUT = httpx.Timeout(
 )
 
 
-def _build_xlsx_url(nivel: str, colecao: int = COLECAO_ATUAL) -> str:
-    sufixo = nivel.upper()
-    return (
-        f"{GCS_BASE}/collection_{colecao}/lulc/statistics/"
-        f"MAPBIOMAS_BRAZIL-COL.{colecao}-{sufixo}.xlsx"
-    )
+def _build_xlsx_url(nivel: str) -> str:
+    if "MUNICIPALITY" in nivel.upper():
+        return f"{DATAVERSE_BASE}/{BIOME_STATE_MUNICIPALITY_FILE_ID}"
+    return f"{DATAVERSE_BASE}/{BIOME_STATE_FILE_ID}?format=original"
 
 
 async def _fetch_url(url: str) -> bytes:
@@ -60,15 +58,15 @@ async def _fetch_url(url: str) -> bytes:
         return content
 
 
-async def fetch_biome_state(colecao: int = COLECAO_ATUAL) -> tuple[bytes, str]:
-    url = _build_xlsx_url("BIOME_STATE", colecao)
+async def fetch_biome_state() -> tuple[bytes, str]:
+    url = _build_xlsx_url("BIOME_STATE")
     content = await _fetch_url(url)
     logger.info("mapbiomas_xlsx_found", url=url, size=len(content))
     return content, url
 
 
-async def fetch_biome_state_municipality(colecao: int = COLECAO_ATUAL) -> tuple[bytes, str]:
-    url = _build_xlsx_url("BIOME_STATE_MUNICIPALITY", colecao)
+async def fetch_biome_state_municipality() -> tuple[bytes, str]:
+    url = _build_xlsx_url("BIOME_STATE_MUNICIPALITY")
     content = await _fetch_url(url)
     logger.info("mapbiomas_xlsx_found", url=url, size=len(content))
     return content, url

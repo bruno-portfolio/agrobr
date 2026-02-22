@@ -45,18 +45,14 @@ async def cobertura(
     estado: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
-    colecao: int | None = None,
+    colecao: int | None = None,  # noqa: ARG001
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     logger.info("mapbiomas_cobertura", bioma=bioma, estado=estado, ano=ano)
 
-    fetch_kwargs = {}
-    if colecao is not None:
-        fetch_kwargs["colecao"] = colecao
-
     t0 = time.monotonic()
-    xlsx_bytes, source_url = await client.fetch_biome_state(**fetch_kwargs)
+    xlsx_bytes, source_url = await client.fetch_biome_state()
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
@@ -92,8 +88,8 @@ async def cobertura(
             columns=df.columns.tolist(),
             parser_version=parser.PARSER_VERSION,
             schema_version="1.0",
-            attempted_sources=["mapbiomas_gcs"],
-            selected_source="mapbiomas_gcs",
+            attempted_sources=["mapbiomas_dataverse"],
+            selected_source="mapbiomas_dataverse",
             fetch_timestamp=datetime.now(UTC),
         )
         return df, meta
@@ -134,18 +130,14 @@ async def transicao(
     periodo: str | None = None,
     classe_de_id: int | None = None,
     classe_para_id: int | None = None,
-    colecao: int | None = None,
+    colecao: int | None = None,  # noqa: ARG001
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     logger.info("mapbiomas_transicao", bioma=bioma, estado=estado, periodo=periodo)
 
-    fetch_kwargs = {}
-    if colecao is not None:
-        fetch_kwargs["colecao"] = colecao
-
     t0 = time.monotonic()
-    xlsx_bytes, source_url = await client.fetch_biome_state(**fetch_kwargs)
+    xlsx_bytes, source_url = await client.fetch_biome_state()
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
@@ -184,8 +176,8 @@ async def transicao(
             columns=df.columns.tolist(),
             parser_version=parser.PARSER_VERSION,
             schema_version="1.0",
-            attempted_sources=["mapbiomas_gcs"],
-            selected_source="mapbiomas_gcs",
+            attempted_sources=["mapbiomas_dataverse"],
+            selected_source="mapbiomas_dataverse",
             fetch_timestamp=datetime.now(UTC),
         )
         return df, meta

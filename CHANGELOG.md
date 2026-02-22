@@ -8,6 +8,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Fixed
+- **CONAB serie_historica**: URL corrigida — `/conab/conab/pt-br/` duplicado removido (BASE_URL ja inclui `/conab`)
+- **MapBiomas**: URLs migradas de GCS (`storage.googleapis.com`, 404) para Dataverse (`data.mapbiomas.org/api/access/datafile/`). File IDs: BIOME_STATE=457, BIOME_STATE_MUNICIPALITY=254
 - **SICAR**: SSLContext customizado com `@SECLEVEL=1` para contornar TLS handshake failure do `geoserver.car.gov.br` (servidor usa cipher suite legado)
 - **ANTT Pedagio**: slugs CKAN atualizados — `fluxo-de-veiculos-nas-pracas-de-pedagio` → `volume-trafego-praca-pedagio`, `cadastro-de-pracas-de-pedagio` → `praca-de-pedagio`. Parser de pracas ajustado para colunas renomeadas (`latitude`/`longitude` → `lat`/`lon`). Parser V2 ajustado para novo layout CSV: `_parse_date_v2` aceita DD/MM/YYYY, `volume_total` como candidate de volume, `tipo_de_veiculo` usado direto quando presente (fallback para `EIXOS_TIPO_MAP`)
 - **ANP Diesel**: `vendas_diesel` migrado de XLS pivot table (quebrado) para CSV dados abertos. Fonte: `vendas-oleo-diesel-tipo-m3-2013-2025.csv` — formato long, flat, semicolon-delimited. Removidos helpers `_parse_vendas_wide`/`_parse_vendas_long`/`_is_month_column`

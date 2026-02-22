@@ -15,7 +15,7 @@ logger = structlog.get_logger()
 BASE_URL = URLS[Fonte.CONAB]["base"]
 
 SERIES_HISTORICAS_URL = (
-    f"{BASE_URL}/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas"
+    f"{BASE_URL}/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas"
 )
 
 _PRODUCT_REGISTRY: dict[str, tuple[str, str, str]] = {

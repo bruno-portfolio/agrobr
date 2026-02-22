@@ -6,7 +6,7 @@
 |-------|-------|
 | **Provedor** | Projeto MapBiomas — Rede multi-institucional |
 | **Dados** | Cobertura e uso da terra, transicoes entre classes |
-| **Acesso** | Download XLSX publico (Google Cloud Storage) |
+| **Acesso** | Download XLSX publico (data.mapbiomas.org Dataverse) |
 | **Formato** | XLSX (openpyxl) |
 | **Autenticacao** | Nenhuma |
 | **Licenca** | Dados publicos — livre com citacao |

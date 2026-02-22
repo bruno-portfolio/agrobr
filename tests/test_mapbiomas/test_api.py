@@ -49,7 +49,7 @@ class TestCobertura:
         assert meta.records_count == len(df)
         assert meta.parser_version == 1
         assert meta.fetch_timestamp is not None
-        assert "mapbiomas_gcs" in meta.attempted_sources
+        assert "mapbiomas_dataverse" in meta.attempted_sources
 
     @pytest.mark.asyncio
     async def test_filter_bioma(self):
@@ -187,7 +187,7 @@ class TestTransicao:
         assert meta.source == "mapbiomas"
         assert meta.records_count == len(df)
         assert meta.parser_version == 1
-        assert "mapbiomas_gcs" in meta.attempted_sources
+        assert "mapbiomas_dataverse" in meta.attempted_sources
 
     @pytest.mark.asyncio
     async def test_filter_bioma(self):
