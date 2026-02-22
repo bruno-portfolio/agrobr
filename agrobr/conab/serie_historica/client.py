@@ -81,7 +81,7 @@ def get_xls_url(produto: str) -> str:
         )
 
     categoria, subcategoria, filename = _PRODUCT_REGISTRY[produto_lower]
-    return f"{SERIES_HISTORICAS_URL}/{categoria}/{subcategoria}/{filename}/view"
+    return f"{SERIES_HISTORICAS_URL}/{categoria}/{subcategoria}/{filename}"
 
 
 def list_produtos() -> list[dict[str, str]]:
