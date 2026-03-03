@@ -5,7 +5,7 @@ from datetime import datetime
 import httpx
 import structlog
 
-from agrobr.constants import MIN_CSV_SIZE, MIN_HTML_SIZE, MIN_ZIP_SIZE, URLS, Fonte
+from agrobr.constants import MIN_CSV_SIZE, MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -13,45 +13,11 @@ from agrobr.http.user_agents import UserAgentRotator
 
 logger = structlog.get_logger()
 
-BASE_URL = URLS[Fonte.B3]["ajustes"]
 BASE_URL_ZIP = URLS[Fonte.B3]["ajustes_zip"]
 BASE_URL_ARQUIVOS = URLS[Fonte.B3]["arquivos"]
 
 TIMEOUT = get_timeout()
 TIMEOUT_DOWNLOAD = get_timeout(read=120.0)
-
-
-async def fetch_ajustes(data: str) -> tuple[str, str]:
-    url = f"{BASE_URL}?txtData={data}"
-    async with httpx.AsyncClient(
-        timeout=TIMEOUT,
-        headers=UserAgentRotator.get_bot_headers(),
-        follow_redirects=True,
-    ) as http:
-        logger.debug("b3_request", url=url)
-        response = await retry_on_status(
-            lambda: http.get(BASE_URL, params={"txtData": data}),
-            source="b3",
-        )
-
-        if response.status_code == 404:
-            raise SourceUnavailableError(source="b3", url=url, last_error="HTTP 404")
-
-        response.raise_for_status()
-        html = response.content.decode("iso-8859-1")
-
-        if len(html) < MIN_HTML_SIZE or "<table" not in html.lower():
-            raise SourceUnavailableError(
-                source="b3",
-                url=url,
-                last_error=(
-                    f"Ajustes HTML too small or missing table "
-                    f"({len(html)} chars, no '<table' found)"
-                ),
-            )
-
-        logger.info("b3_fetch_ok", url=url, size=len(html))
-        return html, url
 
 
 async def fetch_ajustes_zip(data: str) -> tuple[bytes, str]:

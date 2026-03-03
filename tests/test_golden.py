@@ -920,32 +920,7 @@ def _get_b3_cases() -> list[tuple[str, Path]]:
 def test_b3_golden_parsing(_name: str, path: Path):
     expected = _load_expected(path)
 
-    if (path / "response.html").exists():
-        from agrobr.b3.parser import parse_ajustes_html
-
-        html = (path / "response.html").read_text(encoding="utf-8")
-        df = parse_ajustes_html(html)
-
-        for col in expected["columns"]:
-            assert col in df.columns, f"Missing column: {col}"
-        assert len(df) >= expected["agro_row_count_min"]
-        tickers = sorted(df["ticker"].unique().tolist())
-        assert tickers == expected["agro_tickers"]
-
-        for sample_key in ("sample_bgi", "sample_sjc"):
-            if sample_key in expected:
-                sample = expected[sample_key]
-                row = df[
-                    (df["ticker"] == sample["ticker"])
-                    & (df["vencimento_codigo"] == sample["vencimento_codigo"])
-                ].iloc[0]
-                for key in ("ajuste_anterior", "ajuste_atual", "variacao"):
-                    if key in sample:
-                        assert row[key] == pytest.approx(sample[key], rel=1e-4), (
-                            f"{sample_key}.{key}: {row[key]} != {sample[key]}"
-                        )
-
-    elif (path / "response.csv").exists():
+    if (path / "response.csv").exists():
         from agrobr.b3.parser import parse_posicoes_abertas
 
         csv_bytes = (path / "response.csv").read_bytes()

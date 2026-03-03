@@ -127,7 +127,6 @@ URLS = {
     },
     Fonte.B3: {
         "base": "https://www.b3.com.br",
-        "ajustes": "https://www2.bmf.com.br/pages/portal/bmfbovespa/boletim1/Ajustes1.asp",
         "ajustes_zip": "https://www.b3.com.br/pesquisapregao/download",
         "arquivos": "https://arquivos.b3.com.br/api/download",
     },

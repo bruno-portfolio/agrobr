@@ -66,25 +66,11 @@ async def ajustes(
     data_str = data.strftime("%d/%m/%Y") if isinstance(data, date) else data
 
     t0 = time.monotonic()
-    source_method = "httpx+zip+xml"
-    parser_ver = parser.PARSER_VERSION_ZIP
-
-    try:
-        zip_bytes, source_url = await client.fetch_ajustes_zip(data_str)
-        fetch_ms = int((time.monotonic() - t0) * 1000)
-        t1 = time.monotonic()
-        df = parser.parse_ajustes_zip(zip_bytes)
-        parse_ms = int((time.monotonic() - t1) * 1000)
-    except (SourceUnavailableError, ParseError, httpx.HTTPStatusError) as exc:
-        logger.warning("b3_zip_fallback_html", error=str(exc)[:200])
-        t0 = time.monotonic()
-        html, source_url = await client.fetch_ajustes(data_str)
-        fetch_ms = int((time.monotonic() - t0) * 1000)
-        t1 = time.monotonic()
-        df = parser.parse_ajustes_html(html)
-        parse_ms = int((time.monotonic() - t1) * 1000)
-        source_method = "httpx+html"
-        parser_ver = parser.PARSER_VERSION
+    zip_bytes, source_url = await client.fetch_ajustes_zip(data_str)
+    fetch_ms = int((time.monotonic() - t0) * 1000)
+    t1 = time.monotonic()
+    df = parser.parse_ajustes_zip(zip_bytes)
+    parse_ms = int((time.monotonic() - t1) * 1000)
 
     if contrato is not None:
         ticker = B3_CONTRATOS_AGRO.get(contrato, contrato.upper())
@@ -96,11 +82,11 @@ async def ajustes(
     meta = build_source_meta(
         "b3",
         source_url,
-        source_method,
+        "httpx+zip+xml",
         fetch_ms,
         parse_ms,
         df,
-        parser_ver,
+        parser.PARSER_VERSION_ZIP,
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -178,12 +164,12 @@ async def historico(
 
     meta = build_source_meta(
         "b3",
-        client.BASE_URL,
-        "httpx+html",
+        client.BASE_URL_ZIP,
+        "httpx+zip+xml",
         fetch_ms,
         0,
         df,
-        parser.PARSER_VERSION,
+        parser.PARSER_VERSION_ZIP,
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 

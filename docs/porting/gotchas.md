@@ -444,12 +444,13 @@ trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
     Redistribuição em produto comercial deve ser verificada com B3
     (marketdata@b3.com.br).
 
-**Acesso:** scraping de HTML.
+**Acesso:** BVBG-086 ZIP/XML.
 
-**URL:** `https://www2.bmf.com.br/pages/portal/bmfbovespa/boletim1/Ajustes1.asp`
+**URL:** `https://www.b3.com.br/pesquisapregao/download?filelist=PR{yymmdd}.zip`
 
-- Parâmetro: `txtData` (data no formato DD/MM/YYYY)
-- **Encoding:** ISO-8859-1 (não UTF-8)
+- ZIP nested: externo → interno (`BVBG086.zip`) → snapshots XML (usar último, definitivo)
+- Namespace XML: `urn:bvmf.217.01.xsd`
+- Parsing via `lxml.etree.iterparse` (streaming)
 - Rate limit: 1s
 - Tratamento de fins de semana necessário (bolsa não opera)
 
