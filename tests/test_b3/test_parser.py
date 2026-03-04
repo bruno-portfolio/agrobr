@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from agrobr.b3.models import COLUNAS_OI_SAIDA, COLUNAS_SAIDA, TICKERS_AGRO, TICKERS_AGRO_OI
+from agrobr.b3.models import COLUNAS_OI_SAIDA, COLUNAS_SAIDA, TICKERS_AGRO_OI
 from agrobr.b3.parser import (
     PARSER_VERSION_OI,
     PARSER_VERSION_ZIP,
