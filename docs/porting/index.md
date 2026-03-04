@@ -245,13 +245,12 @@ para validar parsers em qualquer linguagem:
 2. Compare o output com o `expected.json`
 3. Se bater, seu parser está correto
 
-### Conjuntos de teste disponíveis (21 fontes, 31 casos)
+### Conjuntos de teste disponíveis (21 fontes, 30 casos)
 
 | Fonte | Caso de teste | Arquivos |
 |-------|--------------|----------|
 | ABIOVE | `exportacao_sample` | response.xlsx, expected.json |
 | ANDA | `entregas_sample` | response.json, expected.json |
-| B3 | `ajustes_sample` | response.html, response_weekend.html, expected.json |
 | B3 | `posicoes_sample` | response.csv, expected.json |
 | BCB | `custeio_sample` | response.json, expected.json |
 | CEPEA | `soja_sample` | response.html, expected.json |
