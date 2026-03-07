@@ -107,11 +107,11 @@
 <path data-from="agrobr.cepea" data-to="agrobr.cache" d="M751.1,430.9 Q652.9,520.9 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.http" d="M751.1,430.9 Q619.4,486.7 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.normalize" d="M751.1,430.9 Q657.5,587.2 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.cepea" data-to="agrobr.noticias_agricolas" d="M751.1,430.9 Q602.1,439.7 454.9,396.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.cepea" data-to="agrobr.noticias_agricolas" d="M751.1,430.9 Q658.2,419.7 615.2,339.7" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.utils" d="M751.1,430.9 Q742.6,376.3 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.validators" d="M751.1,430.9 Q551.2,514.1 309.3,609.3" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.comexstat" data-to="agrobr.http" d="M615.2,339.7 Q571.9,454.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.comexstat" data-to="agrobr.utils" d="M615.2,339.7 Q695.0,344.4 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.comexstat" data-to="agrobr.http" d="M454.9,396.9 Q515.8,474.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.comexstat" data-to="agrobr.utils" d="M454.9,396.9 Q639.0,364.4 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.comtrade" data-to="agrobr.http" d="M462.5,562.9 Q518.4,532.9 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.comtrade" data-to="agrobr.utils" d="M462.5,562.9 Q641.6,422.6 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.conab" data-to="agrobr" d="M815.5,524.7 Q754.3,384.6 825.4,145.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -151,10 +151,10 @@
 <path data-from="agrobr.mapbiomas" data-to="agrobr.utils" d="M326.5,565.5 Q594.0,423.5 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.nasa_power" data-to="agrobr.http" d="M425.1,317.5 Q505.4,447.0 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.nasa_power" data-to="agrobr.utils" d="M425.1,317.5 Q628.5,336.6 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.noticias_agricolas" data-to="agrobr" d="M454.9,396.9 Q628.1,339.9 825.4,145.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.noticias_agricolas" data-to="agrobr.http" d="M454.9,396.9 Q515.8,474.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.noticias_agricolas" data-to="agrobr.normalize" d="M454.9,396.9 Q553.8,575.3 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.noticias_agricolas" data-to="agrobr.utils" d="M454.9,396.9 Q639.0,364.4 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.noticias_agricolas" data-to="agrobr" d="M615.2,339.7 Q684.2,319.9 825.4,145.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.noticias_agricolas" data-to="agrobr.http" d="M615.2,339.7 Q571.9,454.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.noticias_agricolas" data-to="agrobr.normalize" d="M615.2,339.7 Q609.9,555.3 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.noticias_agricolas" data-to="agrobr.utils" d="M615.2,339.7 Q695.0,344.4 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.queimadas" data-to="agrobr.http" d="M855.0,437.5 Q655.8,489.0 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.queimadas" data-to="agrobr.normalize" d="M855.0,437.5 Q693.8,589.5 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.queimadas" data-to="agrobr.utils" d="M855.0,437.5 Q779.0,378.7 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -167,7 +167,6 @@
 <path data-from="agrobr.zarc" data-to="agrobr.utils" d="M678.1,231.6 Q717.1,306.6 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <g data-module="agrobr.cli">
 <circle cx="600.0" cy="423.6" r="47.5" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="600.0" cy="423.6" r="19.0" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="19.0;23.0;19.0" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
 <circle cx="601.0" cy="424.6" r="19.0" fill="#000000" opacity="0.3"/>
 <circle cx="600.0" cy="423.6" r="19.0" fill="#da3633" filter="url(#nodeGlow)"/>
 <circle cx="600.0" cy="417.9" r="11.4" fill="#f85149" opacity="0.15"/>
@@ -403,29 +402,30 @@
 <text x="462.5" y="562.9" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">comtrade</text>
 <text x="462.5" y="597.3" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">740 loc</text>
 </g>
-<g data-module="agrobr.noticias_agricolas">
-<circle cx="454.9" cy="396.9" r="35.3" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="454.9" cy="396.9" r="14.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="14.1;18.1;14.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="455.9" cy="397.9" r="14.1" fill="#000000" opacity="0.3"/>
-<circle cx="454.9" cy="396.9" r="14.1" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="454.9" cy="392.6" r="8.5" fill="#e3b341" opacity="0.15"/>
-<circle cx="452.8" cy="391.9" r="2.8" fill="#ffffff" opacity="0.08"/>
-<text x="454.9" y="396.9" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">noticias_..</text>
-</g>
 <g data-module="agrobr.comexstat">
-<circle cx="615.2" cy="339.7" r="35.2" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="454.9" cy="396.9" r="37.9" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="454.9" cy="396.9" r="15.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="15.1;19.1;15.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="455.9" cy="397.9" r="15.1" fill="#000000" opacity="0.3"/>
+<circle cx="454.9" cy="396.9" r="15.1" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="454.9" cy="392.3" r="9.1" fill="#e3b341" opacity="0.15"/>
+<circle cx="452.7" cy="391.6" r="3.0" fill="#ffffff" opacity="0.08"/>
+<circle cx="453.8" cy="397.2" r="2.7" fill="#1b1f23" opacity="0.7"/>
+<circle cx="456.1" cy="393.8" r="2.3" fill="#1b1f23" opacity="0.7"/>
+<circle cx="450.1" cy="397.0" r="2.2" fill="#1b1f23" opacity="0.7"/>
+<circle cx="460.0" cy="393.7" r="1.7" fill="#1b1f23" opacity="0.7"/>
+<circle cx="461.5" cy="391.2" r="1.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="450.3" cy="399.6" r="1.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="456.6" cy="398.2" r="2.2" fill="#1b1f23" opacity="0.7"/>
+<text x="454.9" y="396.9" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">comexstat</text>
+</g>
+<g data-module="agrobr.noticias_agricolas">
+<circle cx="615.2" cy="339.7" r="35.3" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
 <circle cx="615.2" cy="339.7" r="14.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="14.1;18.1;14.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
 <circle cx="616.2" cy="340.7" r="14.1" fill="#000000" opacity="0.3"/>
 <circle cx="615.2" cy="339.7" r="14.1" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="615.2" cy="335.5" r="8.5" fill="#e3b341" opacity="0.15"/>
-<circle cx="613.1" cy="334.8" r="2.8" fill="#ffffff" opacity="0.08"/>
-<circle cx="608.9" cy="334.4" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="614.8" cy="337.8" r="2.8" fill="#1b1f23" opacity="0.7"/>
-<circle cx="611.7" cy="343.3" r="1.7" fill="#1b1f23" opacity="0.7"/>
-<circle cx="617.6" cy="335.2" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="617.1" cy="343.0" r="2.2" fill="#1b1f23" opacity="0.7"/>
-<circle cx="613.9" cy="340.1" r="1.8" fill="#1b1f23" opacity="0.7"/>
-<text x="615.2" y="339.7" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">comexstat</text>
+<circle cx="613.1" cy="334.7" r="2.8" fill="#ffffff" opacity="0.08"/>
+<text x="615.2" y="339.7" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">noticias_..</text>
 </g>
 <g data-module="agrobr.conab">
 <circle cx="815.5" cy="524.7" r="80.0" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -639,7 +639,6 @@
 </g>
 <g data-module="agrobr.validators">
 <circle cx="309.3" cy="609.3" r="57.9" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="309.3" cy="609.3" r="23.2" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="23.2;27.2;23.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
 <circle cx="310.3" cy="610.3" r="23.2" fill="#000000" opacity="0.3"/>
 <circle cx="309.3" cy="609.3" r="23.2" fill="#da3633" filter="url(#nodeGlow)"/>
 <circle cx="309.3" cy="602.3" r="13.9" fill="#f85149" opacity="0.15"/>
@@ -749,6 +748,6 @@
 <text x="825.4" y="145.6" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">44 modules | 35374 lines | 9% healthy 55% moderate 36% complex | 324 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">44 modules | 35429 lines | 9% healthy 55% moderate 36% complex | 325 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
