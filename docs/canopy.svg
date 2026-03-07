@@ -80,7 +80,7 @@
 <text x="490.8" y="200.8" font-family="monospace" font-size="8" font-weight="600" fill="#484f58" text-anchor="start" transform="rotate(-70 490.8 200.8)">Quality</text>
 <text x="473.4" y="153.2" font-family="monospace" font-size="8" font-weight="600" fill="#484f58" text-anchor="start" transform="rotate(-70 473.4 153.2)">Infrastructure</text>
 <text x="456.0" y="105.5" font-family="monospace" font-size="8" font-weight="600" fill="#484f58" text-anchor="start" transform="rotate(-70 456.0 105.5)">Uncategorized</text>
-<path data-from="agrobr" data-to="agrobr.datasets" d="M825.4,145.6 Q714.9,387.0 702.7,531.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr" data-to="agrobr.datasets" d="M825.4,145.6 Q702.6,343.3 667.8,406.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.abiove" data-to="agrobr.http" d="M409.2,566.4 Q499.8,534.1 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.abiove" data-to="agrobr.normalize" d="M409.2,566.4 Q537.8,634.6 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.abiove" data-to="agrobr.utils" d="M409.2,566.4 Q622.9,423.8 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -98,7 +98,7 @@
 <path data-from="agrobr.bcb" data-to="agrobr.http" d="M728.8,591.8 Q611.6,543.0 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.bcb" data-to="agrobr.utils" d="M728.8,591.8 Q734.8,432.7 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.benchmark" data-to="agrobr" d="M768.2,247.3 Q737.8,287.5 825.4,145.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.benchmark" data-to="agrobr.contracts" d="M768.2,247.3 Q682.6,378.9 667.8,406.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.benchmark" data-to="agrobr.contracts" d="M768.2,247.3 Q694.8,422.6 702.7,531.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.benchmark" data-to="agrobr.validators" d="M768.2,247.3 Q557.1,449.8 309.3,609.3" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cache" data-to="agrobr" d="M600.0,628.9 Q678.9,421.1 825.4,145.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cache" data-to="agrobr.utils" d="M600.0,628.9 Q689.7,445.6 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -119,13 +119,14 @@
 <path data-from="agrobr.conab" data-to="agrobr.http" d="M815.5,524.7 Q642.0,519.5 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.conab" data-to="agrobr.normalize" d="M815.5,524.7 Q680.0,620.0 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.conab" data-to="agrobr.utils" d="M815.5,524.7 Q765.2,409.2 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr" d="M702.7,531.5 Q714.9,387.0 825.4,145.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr.alt" d="M702.7,531.5 Q549.4,607.0 352.7,774.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr.cache" d="M702.7,531.5 Q636.0,556.1 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr.conab" d="M702.7,531.5 Q711.4,519.7 815.5,524.7" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr.contracts" d="M702.7,531.5 Q659.7,478.3 667.8,406.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr.ibge" d="M702.7,531.5 Q674.8,573.0 710.9,677.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr.utils" d="M702.7,531.5 Q725.7,411.6 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr" d="M667.8,406.6 Q702.6,343.3 825.4,145.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.alt" d="M667.8,406.6 Q537.2,563.3 352.7,774.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.b3" d="M667.8,406.6 Q617.8,529.9 583.1,678.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.cache" d="M667.8,406.6 Q623.7,512.4 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.conab" d="M667.8,406.6 Q699.2,476.0 815.5,524.7" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.contracts" d="M667.8,406.6 Q659.7,478.3 702.7,531.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.ibge" d="M667.8,406.6 Q662.5,529.3 710.9,677.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.utils" d="M667.8,406.6 Q713.5,367.9 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.deral" data-to="agrobr.http" d="M406.5,377.9 Q498.8,468.1 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.deral" data-to="agrobr.normalize" d="M406.5,377.9 Q536.9,568.6 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.deral" data-to="agrobr.utils" d="M406.5,377.9 Q622.0,357.8 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -285,7 +286,7 @@
 <text x="555.1" y="438.2" font-family="monospace" font-size="11" font-weight="700" fill="#c9d1d9" text-anchor="middle" dy="0.35em">exception..</text>
 <text x="555.1" y="471.2" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">96 loc</text>
 </g>
-<g data-module="agrobr.contracts">
+<g data-module="agrobr.datasets">
 <circle cx="667.8" cy="406.6" r="80.0" fill="#2ea04355" opacity="0.1" filter="url(#softGlow)"/>
 <circle cx="667.8" cy="406.6" r="32.0" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="32.0;36.0;32.0" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
 <circle cx="668.8" cy="407.6" r="32.0" fill="#000000" opacity="0.3"/>
@@ -293,24 +294,24 @@
 <circle cx="667.8" cy="397.0" r="19.2" fill="#56d364" opacity="0.15"/>
 <circle cx="663.0" cy="395.4" r="6.4" fill="#ffffff" opacity="0.08"/>
 <circle cx="663.4" cy="403.6" r="2.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="681.7" cy="416.1" r="2.1" fill="#1b1f23" opacity="0.7"/>
-<circle cx="679.4" cy="407.3" r="3.0" fill="#1b1f23" opacity="0.7"/>
-<circle cx="682.4" cy="393.1" r="2.7" fill="#1b1f23" opacity="0.7"/>
-<circle cx="671.5" cy="410.0" r="1.8" fill="#1b1f23" opacity="0.7"/>
-<circle cx="663.5" cy="404.6" r="2.8" fill="#1b1f23" opacity="0.7"/>
-<text x="667.8" y="406.6" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">contracts</text>
-<text x="667.8" y="452.6" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3447 loc</text>
+<text x="667.8" y="406.6" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">datasets</text>
+<text x="667.8" y="452.6" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3604 loc</text>
 </g>
-<g data-module="agrobr.datasets">
-<circle cx="702.7" cy="531.5" r="80.0" fill="#2ea04355" opacity="0.1" filter="url(#softGlow)"/>
+<g data-module="agrobr.contracts">
+<circle cx="702.7" cy="531.5" r="80.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
 <circle cx="702.7" cy="531.5" r="32.0" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="32.0;36.0;32.0" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
 <circle cx="703.7" cy="532.5" r="32.0" fill="#000000" opacity="0.3"/>
-<circle cx="702.7" cy="531.5" r="32.0" fill="#2ea043" filter="url(#nodeGlow)"/>
-<circle cx="702.7" cy="521.9" r="19.2" fill="#56d364" opacity="0.15"/>
+<circle cx="702.7" cy="531.5" r="32.0" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="702.7" cy="521.9" r="19.2" fill="#e3b341" opacity="0.15"/>
 <circle cx="697.9" cy="520.3" r="6.4" fill="#ffffff" opacity="0.08"/>
 <circle cx="693.2" cy="519.3" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<text x="702.7" y="531.5" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">datasets</text>
-<text x="702.7" y="577.5" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3248 loc</text>
+<circle cx="693.8" cy="549.0" r="1.8" fill="#1b1f23" opacity="0.7"/>
+<circle cx="688.9" cy="519.7" r="2.3" fill="#1b1f23" opacity="0.7"/>
+<circle cx="719.0" cy="521.4" r="2.5" fill="#1b1f23" opacity="0.7"/>
+<circle cx="692.0" cy="544.7" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="703.0" cy="532.0" r="3.0" fill="#1b1f23" opacity="0.7"/>
+<text x="702.7" y="531.5" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">contracts</text>
+<text x="702.7" y="577.5" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3580 loc</text>
 </g>
 <g data-module="agrobr.cache">
 <circle cx="600.0" cy="628.9" r="46.9" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -748,6 +749,6 @@
 <text x="825.4" y="145.6" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">44 modules | 36255 lines | 9% healthy 55% moderate 36% complex | 325 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">44 modules | 36744 lines | 7% healthy 57% moderate 36% complex | 325 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
