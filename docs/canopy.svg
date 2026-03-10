@@ -184,7 +184,7 @@
 <circle cx="602.5" cy="428.8" r="2.9" fill="#1b1f23" opacity="0.7"/>
 <circle cx="597.0" cy="434.4" r="2.8" fill="#1b1f23" opacity="0.7"/>
 <text x="600.0" y="423.6" font-family="monospace" font-size="11" font-weight="700" fill="#c9d1d9" text-anchor="middle" dy="0.35em">cli</text>
-<text x="600.0" y="456.6" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">542 loc</text>
+<text x="600.0" y="456.6" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">539 loc</text>
 </g>
 <g data-module="agrobr.constants">
 <circle cx="644.9" cy="438.2" r="47.5" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -350,21 +350,21 @@
 <text x="525.2" y="397.1" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">schemas</text>
 </g>
 <g data-module="agrobr.cepea">
-<circle cx="751.1" cy="430.9" r="75.3" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="751.1" cy="430.9" r="30.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="30.1;34.1;30.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="752.1" cy="431.9" r="30.1" fill="#000000" opacity="0.3"/>
-<circle cx="751.1" cy="430.9" r="30.1" fill="#da3633" filter="url(#nodeGlow)"/>
-<circle cx="751.1" cy="421.8" r="18.1" fill="#f85149" opacity="0.15"/>
-<circle cx="746.6" cy="420.3" r="6.0" fill="#ffffff" opacity="0.08"/>
-<circle cx="755.1" cy="411.8" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="751.1" cy="430.9" r="75.7" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="751.1" cy="430.9" r="30.3" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="30.3;34.3;30.3" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="752.1" cy="431.9" r="30.3" fill="#000000" opacity="0.3"/>
+<circle cx="751.1" cy="430.9" r="30.3" fill="#da3633" filter="url(#nodeGlow)"/>
+<circle cx="751.1" cy="421.8" r="18.2" fill="#f85149" opacity="0.15"/>
+<circle cx="746.5" cy="420.3" r="6.1" fill="#ffffff" opacity="0.08"/>
+<circle cx="755.1" cy="411.7" r="2.9" fill="#1b1f23" opacity="0.7"/>
 <circle cx="743.4" cy="432.3" r="1.7" fill="#1b1f23" opacity="0.7"/>
 <circle cx="745.8" cy="443.8" r="2.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="741.5" cy="417.8" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="744.7" cy="424.8" r="2.7" fill="#1b1f23" opacity="0.7"/>
-<circle cx="734.7" cy="427.8" r="2.2" fill="#1b1f23" opacity="0.7"/>
-<circle cx="761.4" cy="435.6" r="1.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="741.5" cy="417.7" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="744.6" cy="424.7" r="2.7" fill="#1b1f23" opacity="0.7"/>
+<circle cx="734.6" cy="427.8" r="2.2" fill="#1b1f23" opacity="0.7"/>
+<circle cx="761.5" cy="435.6" r="1.9" fill="#1b1f23" opacity="0.7"/>
 <text x="751.1" y="430.9" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">cepea</text>
-<text x="751.1" y="475.0" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1614 loc</text>
+<text x="751.1" y="475.1" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1631 loc</text>
 </g>
 <g data-module="agrobr.bcb">
 <circle cx="728.8" cy="591.8" r="56.5" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -749,6 +749,6 @@
 <text x="825.4" y="145.6" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">44 modules | 38225 lines | 7% healthy 57% moderate 36% complex | 323 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">44 modules | 38239 lines | 7% healthy 57% moderate 36% complex | 321 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
