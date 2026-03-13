@@ -509,7 +509,6 @@
 </g>
 <g data-module="agrobr.usda">
 <circle cx="576.7" cy="289.5" r="39.4" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="576.7" cy="289.5" r="15.8" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="15.8;19.8;15.8" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
 <circle cx="577.7" cy="290.5" r="15.8" fill="#000000" opacity="0.3"/>
 <circle cx="576.7" cy="289.5" r="15.8" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="576.7" cy="284.8" r="9.5" fill="#e3b341" opacity="0.15"/>
