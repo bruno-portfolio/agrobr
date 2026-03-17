@@ -524,7 +524,6 @@
 </g>
 <g data-module="agrobr.imea">
 <circle cx="751.5" cy="349.1" r="32.7" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="751.5" cy="349.1" r="13.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="13.1;17.1;13.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
 <circle cx="752.5" cy="350.1" r="13.1" fill="#000000" opacity="0.3"/>
 <circle cx="751.5" cy="349.1" r="13.1" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="751.5" cy="345.2" r="7.9" fill="#e3b341" opacity="0.15"/>
