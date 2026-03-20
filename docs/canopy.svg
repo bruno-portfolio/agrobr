@@ -204,7 +204,7 @@
 <circle cx="644.9" cy="438.2" r="2.7" fill="#1b1f23" opacity="0.7"/>
 <circle cx="644.9" cy="438.2" r="2.7" fill="#1b1f23" opacity="0.7"/>
 <text x="644.9" y="438.2" font-family="monospace" font-size="11" font-weight="700" fill="#c9d1d9" text-anchor="middle" dy="0.35em">constants</text>
-<text x="644.9" y="471.2" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">350 loc</text>
+<text x="644.9" y="471.2" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">355 loc</text>
 </g>
 <g data-module="agrobr.quality">
 <circle cx="672.7" cy="476.4" r="47.5" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -334,10 +334,10 @@
 <text x="600.0" y="661.9" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">641 loc</text>
 </g>
 <g data-module="agrobr.http">
-<circle cx="504.4" cy="531.0" r="44.7" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="504.4" cy="531.0" r="17.9" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="17.9;21.9;17.9" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="505.4" cy="532.0" r="17.9" fill="#000000" opacity="0.3"/>
-<circle cx="504.4" cy="531.0" r="17.9" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="504.4" cy="531.0" r="44.5" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="504.4" cy="531.0" r="17.8" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="17.8;21.8;17.8" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="505.4" cy="532.0" r="17.8" fill="#000000" opacity="0.3"/>
+<circle cx="504.4" cy="531.0" r="17.8" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="504.4" cy="525.7" r="10.7" fill="#e3b341" opacity="0.15"/>
 <circle cx="501.8" cy="524.8" r="3.6" fill="#ffffff" opacity="0.08"/>
 <text x="504.4" y="531.0" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">http</text>
@@ -351,21 +351,21 @@
 <text x="525.2" y="397.1" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">schemas</text>
 </g>
 <g data-module="agrobr.cepea">
-<circle cx="751.1" cy="430.9" r="75.7" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="751.1" cy="430.9" r="30.3" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="30.3;34.3;30.3" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="752.1" cy="431.9" r="30.3" fill="#000000" opacity="0.3"/>
-<circle cx="751.1" cy="430.9" r="30.3" fill="#da3633" filter="url(#nodeGlow)"/>
-<circle cx="751.1" cy="421.8" r="18.2" fill="#f85149" opacity="0.15"/>
-<circle cx="746.5" cy="420.3" r="6.1" fill="#ffffff" opacity="0.08"/>
-<circle cx="755.1" cy="411.7" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="743.4" cy="432.3" r="1.7" fill="#1b1f23" opacity="0.7"/>
-<circle cx="745.8" cy="443.8" r="2.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="741.5" cy="417.7" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="751.1" cy="430.9" r="76.4" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="751.1" cy="430.9" r="30.6" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="30.6;34.6;30.6" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="752.1" cy="431.9" r="30.6" fill="#000000" opacity="0.3"/>
+<circle cx="751.1" cy="430.9" r="30.6" fill="#da3633" filter="url(#nodeGlow)"/>
+<circle cx="751.1" cy="421.7" r="18.3" fill="#f85149" opacity="0.15"/>
+<circle cx="746.5" cy="420.2" r="6.1" fill="#ffffff" opacity="0.08"/>
+<circle cx="755.1" cy="411.6" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="743.3" cy="432.3" r="1.7" fill="#1b1f23" opacity="0.7"/>
+<circle cx="745.7" cy="444.0" r="2.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="741.4" cy="417.6" r="2.9" fill="#1b1f23" opacity="0.7"/>
 <circle cx="744.6" cy="424.7" r="2.7" fill="#1b1f23" opacity="0.7"/>
-<circle cx="734.6" cy="427.8" r="2.2" fill="#1b1f23" opacity="0.7"/>
-<circle cx="761.5" cy="435.6" r="1.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="734.4" cy="427.8" r="2.2" fill="#1b1f23" opacity="0.7"/>
+<circle cx="761.6" cy="435.6" r="1.9" fill="#1b1f23" opacity="0.7"/>
 <text x="751.1" y="430.9" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">cepea</text>
-<text x="751.1" y="475.2" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1632 loc</text>
+<text x="751.1" y="475.4" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1662 loc</text>
 </g>
 <g data-module="agrobr.bcb">
 <circle cx="728.8" cy="591.9" r="56.9" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -407,9 +407,9 @@
 </g>
 <g data-module="agrobr.comexstat">
 <circle cx="454.9" cy="396.9" r="37.9" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="454.9" cy="396.9" r="15.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="15.1;19.1;15.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="455.9" cy="397.9" r="15.1" fill="#000000" opacity="0.3"/>
-<circle cx="454.9" cy="396.9" r="15.1" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="454.9" cy="396.9" r="15.2" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="15.2;19.2;15.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="455.9" cy="397.9" r="15.2" fill="#000000" opacity="0.3"/>
+<circle cx="454.9" cy="396.9" r="15.2" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="454.9" cy="392.3" r="9.1" fill="#e3b341" opacity="0.15"/>
 <circle cx="452.7" cy="391.6" r="3.0" fill="#ffffff" opacity="0.08"/>
 <circle cx="453.8" cy="397.2" r="2.7" fill="#1b1f23" opacity="0.7"/>
@@ -422,10 +422,10 @@
 <text x="454.9" y="396.9" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">comexstat</text>
 </g>
 <g data-module="agrobr.noticias_agricolas">
-<circle cx="615.2" cy="339.7" r="36.7" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="616.2" cy="340.7" r="14.7" fill="#000000" opacity="0.3"/>
-<circle cx="615.2" cy="339.7" r="14.7" fill="#da3633" filter="url(#nodeGlow)"/>
-<circle cx="615.2" cy="335.3" r="8.8" fill="#f85149" opacity="0.15"/>
+<circle cx="615.2" cy="339.7" r="36.5" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="616.2" cy="340.7" r="14.6" fill="#000000" opacity="0.3"/>
+<circle cx="615.2" cy="339.7" r="14.6" fill="#da3633" filter="url(#nodeGlow)"/>
+<circle cx="615.2" cy="335.3" r="8.7" fill="#f85149" opacity="0.15"/>
 <circle cx="613.0" cy="334.6" r="2.9" fill="#ffffff" opacity="0.08"/>
 <text x="615.2" y="339.7" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">noticias_..</text>
 </g>
@@ -445,7 +445,7 @@
 <circle cx="811.9" cy="529.7" r="2.7" fill="#1b1f23" opacity="0.7"/>
 <circle cx="811.0" cy="520.7" r="2.7" fill="#1b1f23" opacity="0.7"/>
 <text x="815.5" y="524.7" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">conab</text>
-<text x="815.5" y="570.7" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3813 loc</text>
+<text x="815.5" y="570.7" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3816 loc</text>
 </g>
 <g data-module="agrobr.ibge">
 <circle cx="710.9" cy="677.2" r="80.0" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -461,9 +461,9 @@
 </g>
 <g data-module="agrobr.anda">
 <circle cx="513.9" cy="713.7" r="50.1" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="513.9" cy="713.7" r="20.0" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="20.0;24.0;20.0" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="514.9" cy="714.7" r="20.0" fill="#000000" opacity="0.3"/>
-<circle cx="513.9" cy="713.7" r="20.0" fill="#da3633" filter="url(#nodeGlow)"/>
+<circle cx="513.9" cy="713.7" r="20.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="20.1;24.1;20.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="514.9" cy="714.7" r="20.1" fill="#000000" opacity="0.3"/>
+<circle cx="513.9" cy="713.7" r="20.1" fill="#da3633" filter="url(#nodeGlow)"/>
 <circle cx="513.9" cy="707.7" r="12.0" fill="#f85149" opacity="0.15"/>
 <circle cx="510.9" cy="706.7" r="4.0" fill="#ffffff" opacity="0.08"/>
 <circle cx="514.7" cy="722.2" r="2.6" fill="#1b1f23" opacity="0.7"/>
@@ -472,7 +472,7 @@
 <circle cx="504.9" cy="714.0" r="2.8" fill="#1b1f23" opacity="0.7"/>
 <circle cx="511.5" cy="718.5" r="1.6" fill="#1b1f23" opacity="0.7"/>
 <text x="513.9" y="713.7" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">anda</text>
-<text x="513.9" y="747.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">714 loc</text>
+<text x="513.9" y="747.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">715 loc</text>
 </g>
 <g data-module="agrobr.abiove">
 <circle cx="409.2" cy="566.4" r="49.8" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -553,7 +553,7 @@
 <circle cx="536.0" cy="751.7" r="19.2" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="536.0" cy="746.0" r="11.5" fill="#e3b341" opacity="0.15"/>
 <circle cx="533.1" cy="745.0" r="3.8" fill="#ffffff" opacity="0.08"/>
-<circle cx="532.5" cy="741.7" r="2.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="532.6" cy="741.7" r="2.6" fill="#1b1f23" opacity="0.7"/>
 <circle cx="531.2" cy="757.6" r="2.9" fill="#1b1f23" opacity="0.7"/>
 <circle cx="531.1" cy="760.4" r="2.7" fill="#1b1f23" opacity="0.7"/>
 <circle cx="534.5" cy="738.6" r="2.2" fill="#1b1f23" opacity="0.7"/>
@@ -610,10 +610,11 @@
 </g>
 <g data-module="agrobr.queimadas">
 <circle cx="855.0" cy="437.5" r="37.6" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="856.0" cy="438.5" r="15.0" fill="#000000" opacity="0.3"/>
-<circle cx="855.0" cy="437.5" r="15.0" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="855.0" cy="437.5" r="15.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="15.1;19.1;15.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="856.0" cy="438.5" r="15.1" fill="#000000" opacity="0.3"/>
+<circle cx="855.0" cy="437.5" r="15.1" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="855.0" cy="433.0" r="9.0" fill="#e3b341" opacity="0.15"/>
-<circle cx="852.8" cy="432.3" r="3.0" fill="#ffffff" opacity="0.08"/>
+<circle cx="852.8" cy="432.2" r="3.0" fill="#ffffff" opacity="0.08"/>
 <circle cx="858.5" cy="434.5" r="2.2" fill="#1b1f23" opacity="0.7"/>
 <circle cx="852.9" cy="441.1" r="2.9" fill="#1b1f23" opacity="0.7"/>
 <text x="855.0" y="437.5" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">queimadas</text>
@@ -763,6 +764,6 @@
 <text x="947.7" y="721.2" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">45 modules | 38948 lines | 7% healthy 56% moderate 38% complex | 336 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">45 modules | 38980 lines | 7% healthy 56% moderate 38% complex | 336 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
