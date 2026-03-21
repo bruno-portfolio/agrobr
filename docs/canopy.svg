@@ -166,6 +166,7 @@
 <path data-from="agrobr.queimadas" data-to="agrobr.utils" d="M855.0,437.5 Q779.0,378.7 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.usda" data-to="agrobr.http" d="M576.7,289.5 Q558.4,437.2 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.usda" data-to="agrobr.utils" d="M576.7,289.5 Q681.6,326.9 856.4,215.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.utils" data-to="agrobr.http" d="M856.4,215.8 Q656.3,411.4 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.utils" data-to="agrobr.normalize" d="M856.4,215.8 Q694.3,511.9 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.validators" data-to="agrobr.cepea" d="M309.3,609.3 Q551.2,514.1 751.1,430.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.zarc" data-to="agrobr.http" d="M678.1,231.6 Q593.9,416.9 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -536,16 +537,16 @@
 <text x="751.5" y="349.1" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">imea</text>
 </g>
 <g data-module="agrobr.desmatamento">
-<circle cx="785.2" cy="693.3" r="58.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="785.2" cy="693.3" r="23.2" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="23.2;27.2;23.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="786.2" cy="694.3" r="23.2" fill="#000000" opacity="0.3"/>
-<circle cx="785.2" cy="693.3" r="23.2" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="785.2" cy="686.4" r="13.9" fill="#e3b341" opacity="0.15"/>
-<circle cx="781.7" cy="685.2" r="4.6" fill="#ffffff" opacity="0.08"/>
+<circle cx="785.2" cy="693.3" r="56.8" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="785.2" cy="693.3" r="22.7" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="22.7;26.7;22.7" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="786.2" cy="694.3" r="22.7" fill="#000000" opacity="0.3"/>
+<circle cx="785.2" cy="693.3" r="22.7" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="785.2" cy="686.5" r="13.6" fill="#e3b341" opacity="0.15"/>
+<circle cx="781.8" cy="685.4" r="4.5" fill="#ffffff" opacity="0.08"/>
 <circle cx="785.6" cy="693.2" r="2.4" fill="#1b1f23" opacity="0.7"/>
-<circle cx="778.5" cy="692.8" r="1.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="778.6" cy="692.8" r="1.9" fill="#1b1f23" opacity="0.7"/>
 <text x="785.2" y="693.3" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">desmatame..</text>
-<text x="785.2" y="730.5" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">958 loc</text>
+<text x="785.2" y="730.1" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">919 loc</text>
 </g>
 <g data-module="agrobr.inmet">
 <circle cx="536.0" cy="751.7" r="48.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -700,7 +701,7 @@
 <circle cx="352.8" cy="775.8" r="2.5" fill="#1b1f23" opacity="0.7"/>
 <circle cx="338.6" cy="770.9" r="1.9" fill="#1b1f23" opacity="0.7"/>
 <text x="352.7" y="774.2" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">alt</text>
-<text x="352.7" y="820.2" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3145 loc</text>
+<text x="352.7" y="820.2" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3135 loc</text>
 </g>
 <g data-module="agrobr.antaq">
 <circle cx="331.7" cy="258.0" r="42.9" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -713,14 +714,15 @@
 <text x="331.7" y="258.0" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">antaq</text>
 </g>
 <g data-module="agrobr.utils">
-<circle cx="856.4" cy="215.8" r="34.3" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="856.4" cy="215.8" r="13.7" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="13.7;17.7;13.7" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
-<circle cx="857.4" cy="216.8" r="13.7" fill="#000000" opacity="0.3"/>
-<circle cx="856.4" cy="215.8" r="13.7" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="856.4" cy="211.7" r="8.2" fill="#e3b341" opacity="0.15"/>
-<circle cx="854.3" cy="211.0" r="2.7" fill="#ffffff" opacity="0.08"/>
-<circle cx="853.8" cy="217.6" r="1.6" fill="#1b1f23" opacity="0.7"/>
-<text x="856.4" y="215.8" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">utils</text>
+<circle cx="856.4" cy="215.8" r="37.8" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="856.4" cy="215.8" r="15.1" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="15.1;19.1;15.1" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="857.4" cy="216.8" r="15.1" fill="#000000" opacity="0.3"/>
+<circle cx="856.4" cy="215.8" r="15.1" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="856.4" cy="211.3" r="9.1" fill="#e3b341" opacity="0.15"/>
+<circle cx="854.1" cy="210.5" r="3.0" fill="#ffffff" opacity="0.08"/>
+<circle cx="853.5" cy="217.7" r="1.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="853.1" cy="219.8" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<text x="856.4" y="215.8" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">utils</text>
 </g>
 <g data-module="agrobr.plugins">
 <circle cx="863.1" cy="737.3" r="26.8" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -765,6 +767,6 @@
 <text x="947.7" y="721.2" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">45 modules | 38990 lines | 7% healthy 56% moderate 38% complex | 336 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">45 modules | 39013 lines | 7% healthy 56% moderate 38% complex | 337 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
