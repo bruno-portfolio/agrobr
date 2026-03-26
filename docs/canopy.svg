@@ -351,11 +351,12 @@
 <text x="600.0" y="661.9" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">646 loc</text>
 </g>
 <g data-module="agrobr.http">
-<circle cx="504.4" cy="531.0" r="44.5" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="505.4" cy="532.0" r="17.8" fill="#000000" opacity="0.3"/>
-<circle cx="504.4" cy="531.0" r="17.8" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="504.4" cy="525.7" r="10.7" fill="#e3b341" opacity="0.15"/>
-<circle cx="501.8" cy="524.8" r="3.6" fill="#ffffff" opacity="0.08"/>
+<circle cx="504.4" cy="531.0" r="45.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="504.4" cy="531.0" r="18.0" fill="none" stroke="#bc8cff" stroke-width="1.5" opacity="0.4" filter="url(#churnPulse)"><animate attributeName="r" values="18.0;22.0;18.0" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>
+<circle cx="505.4" cy="532.0" r="18.0" fill="#000000" opacity="0.3"/>
+<circle cx="504.4" cy="531.0" r="18.0" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="504.4" cy="525.6" r="10.8" fill="#e3b341" opacity="0.15"/>
+<circle cx="501.7" cy="524.7" r="3.6" fill="#ffffff" opacity="0.08"/>
 <text x="504.4" y="531.0" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">http</text>
 </g>
 <g data-module="agrobr.schemas">
@@ -845,6 +846,6 @@
 <text x="491.5" y="920.5" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">53 modules | 43114 lines | 9% healthy 57% moderate 34% complex | 347 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">53 modules | 43126 lines | 9% healthy 57% moderate 34% complex | 347 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
