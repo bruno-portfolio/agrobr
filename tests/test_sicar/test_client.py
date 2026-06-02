@@ -191,8 +191,8 @@ class TestFetchImoveisGeo:
     async def test_successful_fetch(self):
         geojson = b'{"type":"FeatureCollection","features":[]}'
         with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=geojson):
-            content, url = await fetch_imoveis_geo("DF")
-        assert content == geojson
+            pages, url = await fetch_imoveis_geo("DF")
+        assert pages == [geojson]
         assert "sicar" in url
 
     @pytest.mark.asyncio

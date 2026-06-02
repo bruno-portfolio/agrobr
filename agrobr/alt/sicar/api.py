@@ -199,6 +199,7 @@ async def imoveis_geo(
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
+    max_features: int | None = 5000,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -214,6 +215,7 @@ async def imoveis_geo(
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
+    max_features: int | None = 5000,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
@@ -228,6 +230,7 @@ async def imoveis_geo(
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
+    max_features: int | None = 5000,
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> Any:
@@ -265,11 +268,11 @@ async def imoveis_geo(
     )
 
     t0 = time.monotonic()
-    content, source_url = await client.fetch_imoveis_geo(uf_upper, cql)
+    pages, source_url = await client.fetch_imoveis_geo(uf_upper, cql, max_features=max_features)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    gdf = parser.parse_imoveis_geojson(content)
+    gdf = parser.parse_imoveis_geojson(pages, max_features=max_features)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if not gdf.empty and "cod_imovel" in gdf.columns:

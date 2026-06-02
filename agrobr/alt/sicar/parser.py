@@ -70,21 +70,36 @@ def parse_imoveis_csv(pages: list[bytes]) -> pd.DataFrame:
     return df
 
 
-def parse_imoveis_geojson(data: bytes) -> Any:
+def parse_imoveis_geojson(
+    pages: list[bytes], *, max_features: int | None = MAX_FEATURES_GEO
+) -> Any:
     gpd = check_geopandas()
-    gdf = parse_geojson_base(
-        data,
-        gpd,
-        source="sicar",
-        parser_version=PARSER_VERSION,
-        required_cols=_REQUIRED_COLS_RAW,
-        max_features=MAX_FEATURES_GEO,
-        output_cols_empty=COLUNAS_IMOVEIS_GEO,
-        truncation_event="sicar_geo_truncated",
-    )
-    if gdf.empty:
-        return gdf
 
+    if not pages:
+        empty = gpd.GeoDataFrame(columns=COLUNAS_IMOVEIS_GEO)
+        return empty.set_geometry("geometry")
+
+    per_page_max = max_features if len(pages) == 1 else None
+    gdfs = []
+    for page in pages:
+        gdf = parse_geojson_base(
+            page,
+            gpd,
+            source="sicar",
+            parser_version=PARSER_VERSION,
+            required_cols=_REQUIRED_COLS_RAW,
+            max_features=per_page_max,
+            output_cols_empty=COLUNAS_IMOVEIS_GEO,
+            truncation_event="sicar_geo_truncated",
+        )
+        if not gdf.empty:
+            gdfs.append(gdf)
+
+    if not gdfs:
+        empty = gpd.GeoDataFrame(columns=COLUNAS_IMOVEIS_GEO)
+        return empty.set_geometry("geometry")
+
+    gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True), crs="EPSG:4326")
     gdf = _normalize_columns(gdf, COLUNAS_IMOVEIS_GEO)
     logger.info("sicar_geojson_parse_ok", records=len(gdf))
     return gdf

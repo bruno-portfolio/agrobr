@@ -236,8 +236,8 @@ class TestParseImoveisGeojson:
     gpd = pytest.importorskip("geopandas")
 
     @pytest.fixture()
-    def golden_geojson(self) -> bytes:
-        return (GOLDEN_GEO_DIR / "response.geojson").read_bytes()
+    def golden_geojson(self) -> list[bytes]:
+        return [(GOLDEN_GEO_DIR / "response.geojson").read_bytes()]
 
     @pytest.fixture()
     def parse(self):
@@ -283,13 +283,13 @@ class TestParseImoveisGeojson:
 
     def test_empty_features_returns_empty_gdf(self, parse):
         empty = b'{"type":"FeatureCollection","features":[]}'
-        gdf = parse(empty)
+        gdf = parse([empty])
         assert len(gdf) == 0
         assert list(gdf.columns) == COLUNAS_IMOVEIS_GEO
 
     def test_invalid_json_raises(self, parse):
         with pytest.raises(ParseError, match="GeoJSON"):
-            parse(b"not json at all {{{")
+            parse([b"not json at all {{{"])
 
     def test_geopandas_not_installed(self):
         from unittest.mock import patch
@@ -300,19 +300,19 @@ class TestParseImoveisGeojson:
             patch.object(_parser, "check_geopandas", side_effect=ImportError("no geopandas")),
             pytest.raises(ImportError, match="geopandas"),
         ):
-            _parser.parse_imoveis_geojson(b'{"type":"FeatureCollection","features":[]}')
+            _parser.parse_imoveis_geojson([b'{"type":"FeatureCollection","features":[]}'])
 
     def test_truncation_warning(self, parse, golden_geojson):
         import json
         from unittest.mock import patch
 
-        geojson = json.loads(golden_geojson)
+        geojson = json.loads(golden_geojson[0])
         while len(geojson["features"]) < MAX_FEATURES_GEO:
             geojson["features"].extend(geojson["features"])
         geojson["features"] = geojson["features"][:MAX_FEATURES_GEO]
         data = json.dumps(geojson).encode()
 
         with patch("agrobr.utils.geo.logger") as mock_logger:
-            parse(data)
+            parse([data])
             mock_logger.warning.assert_called_once()
             assert mock_logger.warning.call_args[0][0] == "sicar_geo_truncated"

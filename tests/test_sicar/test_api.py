@@ -421,7 +421,7 @@ class TestImoveisGeo:
             api.client,
             "fetch_imoveis_geo",
             new_callable=AsyncMock,
-            return_value=(geojson, "https://test.url"),
+            return_value=([geojson], "https://test.url"),
         ):
             gdf = await imoveis_geo("DF")
 
@@ -437,7 +437,7 @@ class TestImoveisGeo:
             api.client,
             "fetch_imoveis_geo",
             new_callable=AsyncMock,
-            return_value=(geojson, "https://test.url"),
+            return_value=([geojson], "https://test.url"),
         ):
             gdf, meta = await imoveis_geo("DF", return_meta=True)
 
@@ -449,7 +449,7 @@ class TestImoveisGeo:
     @pytest.mark.asyncio
     async def test_filter_municipio(self):
         geojson = _load_golden_geojson()
-        mock_fetch = AsyncMock(return_value=(geojson, "https://test.url"))
+        mock_fetch = AsyncMock(return_value=([geojson], "https://test.url"))
         with patch.object(api.client, "fetch_imoveis_geo", mock_fetch):
             await imoveis_geo("DF", municipio="Brasilia")
 
@@ -471,7 +471,7 @@ class TestImoveisGeo:
     @pytest.mark.asyncio
     async def test_cod_municipio_filter(self):
         geojson = _load_golden_geojson()
-        mock_fetch = AsyncMock(return_value=(geojson, "https://test.url"))
+        mock_fetch = AsyncMock(return_value=([geojson], "https://test.url"))
         with patch.object(api.client, "fetch_imoveis_geo", mock_fetch):
             await imoveis_geo("PA", cod_municipio=1508159)
 
@@ -490,7 +490,7 @@ class TestImoveisGeo:
             api.client,
             "fetch_imoveis_geo",
             new_callable=AsyncMock,
-            return_value=(data, "https://test.url"),
+            return_value=([data], "https://test.url"),
         ):
             gdf = await imoveis_geo("DF")
 
@@ -505,7 +505,7 @@ class TestImoveisGeo:
             api.client,
             "fetch_imoveis_geo",
             new_callable=AsyncMock,
-            return_value=(empty, "https://test.url"),
+            return_value=([empty], "https://test.url"),
         ):
             gdf = await imoveis_geo("DF")
 

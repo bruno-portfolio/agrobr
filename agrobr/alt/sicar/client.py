@@ -43,7 +43,7 @@ def _build_wfs_url(
     uf: str,
     *,
     cql_filter: str | None = None,
-    count: int = PAGE_SIZE,
+    count: int | None = PAGE_SIZE,
     start_index: int = 0,
     result_type: str | None = None,
     output_format: str = "csv",
@@ -58,9 +58,10 @@ def _build_wfs_url(
         f"&typeNames=sicar:{layer}"
         f"&outputFormat={output_format}"
         f"&propertyName={props}"
-        f"&count={count}"
-        f"&startIndex={start_index}"
     )
+    if count is not None:
+        url += f"&count={count}"
+    url += f"&startIndex={start_index}"
     if result_type:
         url += f"&resultType={result_type}"
     if cql_filter:
@@ -123,15 +124,66 @@ async def fetch_imoveis(uf: str, cql_filter: str | None = None) -> tuple[list[by
 async def fetch_imoveis_geo(
     uf: str,
     cql_filter: str | None = None,
-) -> tuple[bytes, str]:
-    url = _build_wfs_url(
-        uf,
-        cql_filter=cql_filter,
-        count=MAX_FEATURES_GEO,
-        output_format="application/json",
-        property_names=PROPERTY_NAMES_GEO,
-    )
+    max_features: int | None = MAX_FEATURES_GEO,
+) -> tuple[list[bytes], str]:
+    if max_features is not None and max_features <= PAGE_SIZE:
+        url = _build_wfs_url(
+            uf,
+            cql_filter=cql_filter,
+            count=max_features,
+            output_format="application/json",
+            property_names=PROPERTY_NAMES_GEO,
+        )
+        async with make_session() as http:
+            content = await fetch_wfs(url, source="sicar", timeout=TIMEOUT, client=http)
+        logger.info("sicar_imoveis_geojson", source="sicar", size=len(content), uf=uf)
+        return [content], url
+
     async with make_session() as http:
-        content = await fetch_wfs(url, source="sicar", timeout=TIMEOUT, client=http)
-    logger.info("sicar_imoveis_geojson", source="sicar", size=len(content), uf=uf)
-    return content, url
+        total = await fetch_hits(uf, cql_filter, client=http)
+        logger.info("sicar_geo_hits", uf=uf, total=total, cql_filter=cql_filter)
+
+        limit = min(total, max_features) if max_features is not None else total
+
+        base_url = _build_wfs_url(
+            uf,
+            cql_filter=cql_filter,
+            output_format="application/json",
+            property_names=PROPERTY_NAMES_GEO,
+        )
+
+        if limit == 0:
+            return [], base_url
+
+        n_pages = math.ceil(limit / PAGE_SIZE)
+        pages: list[bytes] = []
+
+        for i in range(n_pages):
+            count = min(PAGE_SIZE, limit - i * PAGE_SIZE)
+            url = _build_wfs_url(
+                uf,
+                cql_filter=cql_filter,
+                count=count,
+                start_index=i * PAGE_SIZE,
+                output_format="application/json",
+                property_names=PROPERTY_NAMES_GEO,
+            )
+            delay = 2.0 if i >= 5 else None
+            content = await fetch_wfs(
+                url,
+                source="sicar",
+                timeout=TIMEOUT,
+                base_delay=delay,
+                client=http,
+            )
+            pages.append(content)
+            logger.debug(
+                "sicar_geo_page",
+                uf=uf,
+                page=i + 1,
+                total_pages=n_pages,
+                size=len(content),
+            )
+
+    logger.info("sicar_imoveis_geojson", source="sicar", pages=n_pages, uf=uf)
+    return pages, base_url

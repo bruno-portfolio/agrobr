@@ -161,7 +161,7 @@ def parse_geojson_base(
     source: str,
     parser_version: int,
     required_cols: set[str],
-    max_features: int,
+    max_features: int | None,
     output_cols_empty: list[str],
     truncation_event: str,
     on_empty: Literal["empty", "raise"] = "empty",
@@ -189,7 +189,7 @@ def parse_geojson_base(
         empty = empty.set_geometry("geometry")
         return empty
 
-    if len(features) >= max_features:
+    if max_features is not None and len(features) >= max_features:
         logger.warning(
             truncation_event,
             features=len(features),
