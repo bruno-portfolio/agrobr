@@ -82,22 +82,22 @@
 <text x="456.0" y="105.5" font-family="monospace" font-size="8" font-weight="600" fill="#484f58" text-anchor="start" transform="rotate(-70 456.0 105.5)">Uncategorized</text>
 <path data-from="agrobr" data-to="agrobr.datasets" d="M447.9,907.5 Q570.5,610.0 667.8,406.6" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.abiove" data-to="agrobr.http" d="M409.2,566.4 Q499.8,534.1 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.abiove" data-to="agrobr.normalize" d="M409.2,566.4 Q537.8,634.6 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.abiove" data-to="agrobr.normalize" d="M409.2,566.4 Q431.7,561.9 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.abiove" data-to="agrobr.utils" d="M409.2,566.4 Q439.3,438.5 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.acervo_fundiario" data-to="agrobr.http" d="M216.7,651.3 Q432.4,563.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.acervo_fundiario" data-to="agrobr.normalize" d="M216.7,651.3 Q470.4,664.3 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.acervo_fundiario" data-to="agrobr.normalize" d="M216.7,651.3 Q364.3,591.6 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.acervo_fundiario" data-to="agrobr.utils" d="M216.7,651.3 Q372.0,468.2 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.alerts" data-to="agrobr" d="M918.1,589.1 Q658.1,673.8 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.alerts" data-to="agrobr" d="M768.2,247.3 Q605.6,554.2 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.alt" data-to="agrobr.http" d="M362.6,782.8 Q483.5,609.9 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.alt" data-to="agrobr.normalize" d="M362.6,782.8 Q521.5,710.4 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.alt" data-to="agrobr.normalize" d="M362.6,782.8 Q415.4,637.7 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.alt" data-to="agrobr.utils" d="M362.6,782.8 Q423.0,514.3 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ana" data-to="agrobr.http" d="M237.4,319.5 Q439.6,447.7 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ana" data-to="agrobr.utils" d="M237.4,319.5 Q379.2,352.1 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.anda" data-to="agrobr.http" d="M513.9,713.7 Q536.4,585.7 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.anda" data-to="agrobr.normalize" d="M513.9,713.7 Q574.5,686.2 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.anda" data-to="agrobr.normalize" d="M513.9,713.7 Q468.3,613.5 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.anda" data-to="agrobr.utils" d="M513.9,713.7 Q476.0,490.1 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.anec" data-to="agrobr.http" d="M297.7,791.6 Q460.8,612.9 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.anec" data-to="agrobr.normalize" d="M297.7,791.6 Q498.8,713.4 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.anec" data-to="agrobr.normalize" d="M297.7,791.6 Q392.6,640.7 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.anec" data-to="agrobr.utils" d="M297.7,791.6 Q400.3,517.4 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.antaq" data-to="agrobr.http" d="M856.4,215.8 Q656.3,411.4 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.antaq" data-to="agrobr.utils" d="M856.4,215.8 Q595.8,315.8 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -105,19 +105,19 @@
 <path data-from="agrobr.b3" data-to="agrobr.utils" d="M583.1,678.8 Q500.2,477.9 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.bcb" data-to="agrobr.http" d="M727.6,593.6 Q611.2,543.6 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.bcb" data-to="agrobr.utils" d="M727.6,593.6 Q550.8,448.0 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.benchmark" data-to="agrobr" d="M768.2,247.3 Q605.6,554.2 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.benchmark" data-to="agrobr.contracts" d="M768.2,247.3 Q695.8,418.4 705.7,519.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.benchmark" data-to="agrobr.validators" d="M768.2,247.3 Q557.1,449.8 309.3,609.3" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.benchmark" data-to="agrobr" d="M918.1,589.1 Q658.1,673.8 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.benchmark" data-to="agrobr.contracts" d="M918.1,589.1 Q748.3,538.0 705.7,519.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.benchmark" data-to="agrobr.validators" d="M918.1,589.1 Q639.2,440.1 394.0,239.7" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cache" data-to="agrobr" d="M600.0,628.9 Q546.8,687.7 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cache" data-to="agrobr.utils" d="M600.0,628.9 Q506.1,460.4 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr" d="M751.1,430.9 Q599.7,618.4 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.cepea" data-to="agrobr.alerts" d="M751.1,430.9 Q764.2,507.0 918.1,589.1" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.cepea" data-to="agrobr.alerts" d="M751.1,430.9 Q711.7,387.4 768.2,247.3" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.cache" d="M751.1,430.9 Q652.9,520.9 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.http" d="M751.1,430.9 Q619.4,486.7 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.cepea" data-to="agrobr.normalize" d="M751.1,430.9 Q657.5,587.2 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.cepea" data-to="agrobr.normalize" d="M751.1,430.9 Q551.3,514.5 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.noticias_agricolas" d="M751.1,430.9 Q658.2,419.7 615.2,339.7" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.cepea" data-to="agrobr.utils" d="M751.1,430.9 Q559.0,391.1 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.cepea" data-to="agrobr.validators" d="M751.1,430.9 Q551.2,514.1 309.3,609.3" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.cepea" data-to="agrobr.validators" d="M751.1,430.9 Q580.8,384.7 394.0,239.7" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.comexstat" data-to="agrobr.http" d="M454.9,396.9 Q515.8,474.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.comexstat" data-to="agrobr.utils" d="M454.9,396.9 Q455.3,379.2 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.comtrade" data-to="agrobr.http" d="M462.5,562.9 Q518.4,532.9 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -125,7 +125,7 @@
 <path data-from="agrobr.conab" data-to="agrobr" d="M815.5,524.7 Q622.2,651.3 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.conab" data-to="agrobr.cache" d="M815.5,524.7 Q675.4,553.7 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.conab" data-to="agrobr.http" d="M815.5,524.7 Q642.0,519.5 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.conab" data-to="agrobr.normalize" d="M815.5,524.7 Q680.0,620.0 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.conab" data-to="agrobr.normalize" d="M815.5,524.7 Q573.9,547.3 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.conab" data-to="agrobr.utils" d="M815.5,524.7 Q581.5,423.9 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.datasets" data-to="agrobr" d="M667.8,406.6 Q570.5,610.0 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.datasets" data-to="agrobr.alt" d="M667.8,406.6 Q540.7,566.3 362.6,782.8" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -136,31 +136,33 @@
 <path data-from="agrobr.datasets" data-to="agrobr.contracts" d="M667.8,406.6 Q660.7,474.1 705.7,519.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.datasets" data-to="agrobr.deral" d="M667.8,406.6 Q556.0,424.6 406.5,377.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.datasets" data-to="agrobr.ibge" d="M667.8,406.6 Q662.5,529.3 710.9,677.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.datasets" data-to="agrobr.normalize" d="M667.8,406.6 Q628.3,578.7 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.datasets" data-to="agrobr.normalize" d="M667.8,406.6 Q522.2,506.0 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.datasets" data-to="agrobr.utils" d="M667.8,406.6 Q529.8,382.6 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.defensivos" data-to="agrobr.http" d="M166.9,481.4 Q415.0,504.3 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.defensivos" data-to="agrobr.utils" d="M166.9,481.4 Q354.5,408.8 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.deral" data-to="agrobr.http" d="M406.5,377.9 Q498.8,468.1 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.deral" data-to="agrobr.normalize" d="M406.5,377.9 Q536.9,568.6 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.deral" data-to="agrobr.normalize" d="M406.5,377.9 Q430.7,496.0 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.deral" data-to="agrobr.utils" d="M406.5,377.9 Q438.4,372.6 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.desmatamento" data-to="agrobr.http" d="M785.2,693.3 Q631.4,578.5 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.desmatamento" data-to="agrobr.normalize" d="M785.2,693.3 Q669.4,679.0 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.desmatamento" data-to="agrobr.normalize" d="M785.2,693.3 Q563.2,606.3 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.desmatamento" data-to="agrobr.utils" d="M785.2,693.3 Q570.9,483.0 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.embrapa_solos" data-to="agrobr.http" d="M325.1,167.0 Q470.3,394.3 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.embrapa_solos" data-to="agrobr.utils" d="M325.1,167.0 Q409.9,298.7 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.funai" data-to="agrobr.http" d="M997.3,602.5 Q705.6,546.7 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.funai" data-to="agrobr.utils" d="M997.3,602.5 Q645.2,451.2 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.health" data-to="agrobr" d="M394.0,239.7 Q474.7,551.5 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.health" data-to="agrobr.cache" d="M394.0,239.7 Q527.9,454.0 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.health" data-to="agrobr.cepea" d="M394.0,239.7 Q580.8,384.7 751.1,430.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.health" data-to="agrobr.http" d="M394.0,239.7 Q494.5,419.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.health" data-to="agrobr" d="M613.1,818.2 Q551.4,754.0 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.health" data-to="agrobr.alerts" d="M613.1,818.2 Q663.4,522.9 768.2,247.3" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.health" data-to="agrobr.cache" d="M613.1,818.2 Q604.6,656.5 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.health" data-to="agrobr.cepea" d="M613.1,818.2 Q657.5,587.2 751.1,430.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.health" data-to="agrobr.http" d="M613.1,818.2 Q571.1,622.2 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.health" data-to="agrobr.utils" d="M613.1,818.2 Q510.7,526.7 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.http" data-to="agrobr" d="M504.4,531.0 Q513.3,653.5 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ibama" data-to="agrobr.http" d="M930.5,762.6 Q682.2,602.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ibama" data-to="agrobr.utils" d="M930.5,762.6 Q621.8,507.2 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ibge" data-to="agrobr" d="M710.9,677.2 Q585.6,704.6 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ibge" data-to="agrobr.cache" d="M710.9,677.2 Q638.8,607.1 600.0,628.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ibge" data-to="agrobr.http" d="M710.9,677.2 Q605.4,572.9 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.ibge" data-to="agrobr.normalize" d="M710.9,677.2 Q643.4,673.4 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.ibge" data-to="agrobr.normalize" d="M710.9,677.2 Q537.2,600.7 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.ibge" data-to="agrobr.utils" d="M710.9,677.2 Q544.9,477.3 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.icmbio" data-to="agrobr.http" d="M1028.3,428.1 Q716.4,485.7 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.icmbio" data-to="agrobr.utils" d="M1028.3,428.1 Q656.0,390.1 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -172,22 +174,22 @@
 <path data-from="agrobr.inmet" data-to="agrobr.utils" d="M536.0,751.7 Q483.7,503.4 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.lista_suja" data-to="agrobr.http" d="M625.1,906.8 Q575.4,653.2 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.lista_suja" data-to="agrobr.utils" d="M625.1,906.8 Q514.9,557.7 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.mapbiomas" data-to="agrobr.http" d="M326.5,565.5 Q470.8,533.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.mapbiomas" data-to="agrobr.normalize" d="M326.5,565.5 Q508.9,634.3 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.mapbiomas" data-to="agrobr.utils" d="M326.5,565.5 Q410.4,438.2 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.mapbiomas" data-to="agrobr.http" d="M326.2,564.0 Q470.7,533.3 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.mapbiomas" data-to="agrobr.normalize" d="M326.2,564.0 Q402.6,561.1 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.mapbiomas" data-to="agrobr.utils" d="M326.2,564.0 Q410.3,437.7 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.mapbiomas_alerta" data-to="agrobr.http" d="M661.4,87.7 Q588.0,366.5 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.mapbiomas_alerta" data-to="agrobr.utils" d="M661.4,87.7 Q527.6,271.0 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.nasa_power" data-to="agrobr.http" d="M678.1,231.6 Q593.9,416.9 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.nasa_power" data-to="agrobr.utils" d="M678.1,231.6 Q533.5,321.4 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.noticias_agricolas" data-to="agrobr" d="M615.2,339.7 Q552.1,586.5 447.9,907.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.noticias_agricolas" data-to="agrobr.http" d="M615.2,339.7 Q571.9,454.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.noticias_agricolas" data-to="agrobr.normalize" d="M615.2,339.7 Q609.9,555.3 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.noticias_agricolas" data-to="agrobr.normalize" d="M615.2,339.7 Q503.8,482.6 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.noticias_agricolas" data-to="agrobr.utils" d="M615.2,339.7 Q511.4,359.2 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.queimadas" data-to="agrobr.http" d="M425.1,317.5 Q505.4,447.0 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.queimadas" data-to="agrobr.normalize" d="M425.1,317.5 Q543.4,547.5 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.queimadas" data-to="agrobr.normalize" d="M425.1,317.5 Q437.2,474.8 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.queimadas" data-to="agrobr.utils" d="M425.1,317.5 Q444.9,351.4 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.rio_verde" data-to="agrobr.http" d="M797.0,877.8 Q635.5,643.1 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.rio_verde" data-to="agrobr.normalize" d="M797.0,877.8 Q673.5,743.6 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.rio_verde" data-to="agrobr.normalize" d="M797.0,877.8 Q567.4,670.9 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.rio_verde" data-to="agrobr.utils" d="M797.0,877.8 Q575.1,547.5 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.rnc" data-to="agrobr.http" d="M831.0,136.8 Q647.4,383.8 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.rnc" data-to="agrobr.utils" d="M831.0,136.8 Q587.0,288.2 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
@@ -196,10 +198,10 @@
 <path data-from="agrobr.usda" data-to="agrobr.http" d="M576.7,289.5 Q558.4,437.2 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.usda" data-to="agrobr.utils" d="M576.7,289.5 Q497.9,341.6 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.utils" data-to="agrobr.http" d="M331.7,258.0 Q472.7,426.2 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.utils" data-to="agrobr.normalize" d="M331.7,258.0 Q510.7,526.7 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.validators" data-to="agrobr.cepea" d="M309.3,609.3 Q551.2,514.1 751.1,430.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.utils" data-to="agrobr.normalize" d="M331.7,258.0 Q404.5,454.0 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.validators" data-to="agrobr.cepea" d="M394.0,239.7 Q580.8,384.7 751.1,430.9" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.zarc" data-to="agrobr.http" d="M855.0,437.5 Q655.8,489.0 504.4,531.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
-<path data-from="agrobr.zarc" data-to="agrobr.normalize" d="M855.0,437.5 Q693.8,589.5 613.1,818.2" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
+<path data-from="agrobr.zarc" data-to="agrobr.normalize" d="M855.0,437.5 Q587.7,516.8 309.8,610.5" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <path data-from="agrobr.zarc" data-to="agrobr.utils" d="M855.0,437.5 Q595.4,393.4 331.7,258.0" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0"/>
 <g data-module="agrobr.cli">
 <circle cx="600.0" cy="423.6" r="47.5" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -427,7 +429,7 @@
 <text x="462.5" y="597.4" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">742 loc</text>
 </g>
 <g data-module="agrobr.comexstat">
-<circle cx="454.9" cy="396.9" r="38.4" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="454.9" cy="396.9" r="38.5" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
 <circle cx="455.9" cy="397.9" r="15.4" fill="#000000" opacity="0.3"/>
 <circle cx="454.9" cy="396.9" r="15.4" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="454.9" cy="392.3" r="9.2" fill="#e3b341" opacity="0.15"/>
@@ -578,20 +580,20 @@
 <text x="536.0" y="784.9" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">654 loc</text>
 </g>
 <g data-module="agrobr.mapbiomas">
-<circle cx="326.5" cy="565.5" r="45.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="327.5" cy="566.5" r="18.0" fill="#000000" opacity="0.3"/>
-<circle cx="326.5" cy="565.5" r="18.0" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="326.5" cy="560.1" r="10.8" fill="#e3b341" opacity="0.15"/>
-<circle cx="323.9" cy="559.2" r="3.6" fill="#ffffff" opacity="0.08"/>
-<circle cx="328.4" cy="558.5" r="2.1" fill="#1b1f23" opacity="0.7"/>
-<circle cx="316.3" cy="563.3" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="325.8" cy="569.0" r="2.5" fill="#1b1f23" opacity="0.7"/>
-<circle cx="330.9" cy="555.6" r="1.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="325.6" cy="565.0" r="1.8" fill="#1b1f23" opacity="0.7"/>
-<circle cx="326.8" cy="565.2" r="2.3" fill="#1b1f23" opacity="0.7"/>
-<circle cx="326.5" cy="565.4" r="1.8" fill="#1b1f23" opacity="0.7"/>
-<circle cx="321.8" cy="559.8" r="2.1" fill="#1b1f23" opacity="0.7"/>
-<text x="326.5" y="565.5" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">mapbiomas</text>
+<circle cx="326.2" cy="564.0" r="45.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="327.2" cy="565.0" r="18.0" fill="#000000" opacity="0.3"/>
+<circle cx="326.2" cy="564.0" r="18.0" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="326.2" cy="558.6" r="10.8" fill="#e3b341" opacity="0.15"/>
+<circle cx="323.5" cy="557.7" r="3.6" fill="#ffffff" opacity="0.08"/>
+<circle cx="321.0" cy="563.7" r="2.5" fill="#1b1f23" opacity="0.7"/>
+<circle cx="322.3" cy="570.7" r="3.0" fill="#1b1f23" opacity="0.7"/>
+<circle cx="331.9" cy="560.7" r="2.4" fill="#1b1f23" opacity="0.7"/>
+<circle cx="332.5" cy="562.5" r="2.3" fill="#1b1f23" opacity="0.7"/>
+<circle cx="318.6" cy="570.6" r="2.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="318.6" cy="563.9" r="2.2" fill="#1b1f23" opacity="0.7"/>
+<circle cx="323.9" cy="557.0" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="330.9" cy="567.1" r="2.0" fill="#1b1f23" opacity="0.7"/>
+<text x="326.2" y="564.0" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">mapbiomas</text>
 </g>
 <g data-module="agrobr.queimadas">
 <circle cx="425.1" cy="317.5" r="41.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -628,68 +630,71 @@
 <circle cx="858.8" cy="434.2" r="2.2" fill="#1b1f23" opacity="0.7"/>
 <text x="855.0" y="437.5" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">zarc</text>
 </g>
-<g data-module="agrobr.normalize">
-<circle cx="613.1" cy="818.2" r="63.5" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="614.1" cy="819.2" r="25.4" fill="#000000" opacity="0.3"/>
-<circle cx="613.1" cy="818.2" r="25.4" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="613.1" cy="810.6" r="15.2" fill="#e3b341" opacity="0.15"/>
-<circle cx="609.3" cy="809.3" r="5.1" fill="#ffffff" opacity="0.08"/>
-<circle cx="612.1" cy="809.6" r="1.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="597.1" cy="818.7" r="1.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="598.4" cy="821.9" r="2.8" fill="#1b1f23" opacity="0.7"/>
+<g data-module="agrobr.health">
+<circle cx="613.1" cy="818.2" r="64.4" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="614.1" cy="819.2" r="25.7" fill="#000000" opacity="0.3"/>
+<circle cx="613.1" cy="818.2" r="25.7" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="613.1" cy="810.5" r="15.4" fill="#e3b341" opacity="0.15"/>
+<circle cx="609.2" cy="809.2" r="5.1" fill="#ffffff" opacity="0.08"/>
+<circle cx="612.1" cy="809.5" r="1.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="596.9" cy="818.7" r="1.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="598.2" cy="821.9" r="2.8" fill="#1b1f23" opacity="0.7"/>
 <circle cx="615.0" cy="822.1" r="2.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="603.2" cy="815.0" r="1.8" fill="#1b1f23" opacity="0.7"/>
-<circle cx="624.0" cy="811.4" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="627.5" cy="812.4" r="1.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="601.8" cy="811.3" r="1.7" fill="#1b1f23" opacity="0.7"/>
-<text x="613.1" y="818.2" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">normalize</text>
-<text x="613.1" y="857.6" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1148 loc</text>
+<circle cx="603.1" cy="814.9" r="1.8" fill="#1b1f23" opacity="0.7"/>
+<circle cx="624.1" cy="811.3" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<text x="613.1" y="818.2" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">health</text>
+<text x="613.1" y="857.9" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1178 loc</text>
+</g>
+<g data-module="agrobr.normalize">
+<circle cx="309.8" cy="610.5" r="63.5" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="310.8" cy="611.5" r="25.4" fill="#000000" opacity="0.3"/>
+<circle cx="309.8" cy="610.5" r="25.4" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="309.8" cy="602.9" r="15.2" fill="#e3b341" opacity="0.15"/>
+<circle cx="306.0" cy="601.6" r="5.1" fill="#ffffff" opacity="0.08"/>
+<circle cx="321.4" cy="612.4" r="1.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="312.7" cy="610.5" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="300.9" cy="613.3" r="2.1" fill="#1b1f23" opacity="0.7"/>
+<circle cx="309.9" cy="600.5" r="2.4" fill="#1b1f23" opacity="0.7"/>
+<circle cx="307.7" cy="615.9" r="1.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="313.6" cy="604.6" r="2.8" fill="#1b1f23" opacity="0.7"/>
+<circle cx="310.0" cy="608.3" r="1.7" fill="#1b1f23" opacity="0.7"/>
+<circle cx="303.2" cy="607.8" r="2.3" fill="#1b1f23" opacity="0.7"/>
+<text x="309.8" y="610.5" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">normalize</text>
+<text x="309.8" y="649.9" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1148 loc</text>
 </g>
 <g data-module="agrobr.validators">
-<circle cx="309.3" cy="609.3" r="57.9" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="310.3" cy="610.3" r="23.2" fill="#000000" opacity="0.3"/>
-<circle cx="309.3" cy="609.3" r="23.2" fill="#da3633" filter="url(#nodeGlow)"/>
-<circle cx="309.3" cy="602.3" r="13.9" fill="#f85149" opacity="0.15"/>
-<circle cx="305.9" cy="601.2" r="4.6" fill="#ffffff" opacity="0.08"/>
-<circle cx="309.6" cy="607.9" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="306.8" cy="623.3" r="2.1" fill="#1b1f23" opacity="0.7"/>
-<circle cx="306.1" cy="596.1" r="1.8" fill="#1b1f23" opacity="0.7"/>
-<circle cx="298.4" cy="610.8" r="2.8" fill="#1b1f23" opacity="0.7"/>
-<circle cx="305.2" cy="599.7" r="2.7" fill="#1b1f23" opacity="0.7"/>
-<circle cx="320.8" cy="602.1" r="1.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="312.5" cy="598.2" r="2.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="298.7" cy="606.2" r="2.4" fill="#1b1f23" opacity="0.7"/>
-<text x="309.3" y="609.3" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">validator..</text>
-<text x="309.3" y="646.4" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">953 loc</text>
-</g>
-<g data-module="agrobr.health">
-<circle cx="394.0" cy="239.7" r="56.3" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="395.0" cy="240.7" r="22.5" fill="#000000" opacity="0.3"/>
-<circle cx="394.0" cy="239.7" r="22.5" fill="#da3633" filter="url(#nodeGlow)"/>
-<circle cx="394.0" cy="232.9" r="13.5" fill="#f85149" opacity="0.15"/>
-<circle cx="390.6" cy="231.8" r="4.5" fill="#ffffff" opacity="0.08"/>
+<circle cx="394.0" cy="239.7" r="57.9" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="395.0" cy="240.7" r="23.2" fill="#000000" opacity="0.3"/>
+<circle cx="394.0" cy="239.7" r="23.2" fill="#da3633" filter="url(#nodeGlow)"/>
+<circle cx="394.0" cy="232.8" r="13.9" fill="#f85149" opacity="0.15"/>
+<circle cx="390.5" cy="231.6" r="4.6" fill="#ffffff" opacity="0.08"/>
 <circle cx="393.9" cy="238.8" r="3.0" fill="#1b1f23" opacity="0.7"/>
-<circle cx="397.2" cy="239.3" r="2.8" fill="#1b1f23" opacity="0.7"/>
-<text x="394.0" y="239.7" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">health</text>
-<text x="394.0" y="276.2" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">901 loc</text>
-</g>
-<g data-module="agrobr.benchmark">
-<circle cx="768.2" cy="247.3" r="31.4" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="769.2" cy="248.3" r="12.6" fill="#000000" opacity="0.3"/>
-<circle cx="768.2" cy="247.3" r="12.6" fill="#da3633" filter="url(#nodeGlow)"/>
-<circle cx="768.2" cy="243.5" r="7.5" fill="#f85149" opacity="0.15"/>
-<circle cx="766.3" cy="242.9" r="2.5" fill="#ffffff" opacity="0.08"/>
-<circle cx="767.5" cy="249.0" r="2.1" fill="#1b1f23" opacity="0.7"/>
-<text x="768.2" y="247.3" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">benchmark</text>
+<circle cx="397.3" cy="239.3" r="2.8" fill="#1b1f23" opacity="0.7"/>
+<circle cx="391.1" cy="224.9" r="2.4" fill="#1b1f23" opacity="0.7"/>
+<circle cx="399.7" cy="249.2" r="2.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="390.2" cy="239.1" r="2.6" fill="#1b1f23" opacity="0.7"/>
+<circle cx="393.0" cy="236.8" r="2.9" fill="#1b1f23" opacity="0.7"/>
+<circle cx="391.3" cy="226.3" r="2.4" fill="#1b1f23" opacity="0.7"/>
+<circle cx="395.7" cy="230.2" r="1.8" fill="#1b1f23" opacity="0.7"/>
+<text x="394.0" y="239.7" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">validator..</text>
+<text x="394.0" y="276.9" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">953 loc</text>
 </g>
 <g data-module="agrobr.alerts">
-<circle cx="918.1" cy="589.1" r="25.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="919.1" cy="590.1" r="10.0" fill="#000000" opacity="0.3"/>
-<circle cx="918.1" cy="589.1" r="10.0" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="918.1" cy="586.1" r="6.0" fill="#e3b341" opacity="0.15"/>
-<circle cx="916.6" cy="585.6" r="2.0" fill="#ffffff" opacity="0.08"/>
-<circle cx="917.6" cy="589.5" r="2.8" fill="#1b1f23" opacity="0.7"/>
-<text x="918.1" y="589.1" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">alerts</text>
+<circle cx="768.2" cy="247.3" r="31.7" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="769.2" cy="248.3" r="12.7" fill="#000000" opacity="0.3"/>
+<circle cx="768.2" cy="247.3" r="12.7" fill="#da3633" filter="url(#nodeGlow)"/>
+<circle cx="768.2" cy="243.5" r="7.6" fill="#f85149" opacity="0.15"/>
+<circle cx="766.3" cy="242.9" r="2.5" fill="#ffffff" opacity="0.08"/>
+<text x="768.2" y="247.3" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">alerts</text>
+</g>
+<g data-module="agrobr.benchmark">
+<circle cx="918.1" cy="589.1" r="31.4" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="919.1" cy="590.1" r="12.6" fill="#000000" opacity="0.3"/>
+<circle cx="918.1" cy="589.1" r="12.6" fill="#da3633" filter="url(#nodeGlow)"/>
+<circle cx="918.1" cy="585.3" r="7.5" fill="#f85149" opacity="0.15"/>
+<circle cx="916.2" cy="584.7" r="2.5" fill="#ffffff" opacity="0.08"/>
+<circle cx="917.5" cy="589.7" r="2.8" fill="#1b1f23" opacity="0.7"/>
+<text x="918.1" y="589.1" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">benchmark</text>
 </g>
 <g data-module="agrobr.alt">
 <circle cx="362.6" cy="782.8" r="80.0" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -706,7 +711,7 @@
 <circle cx="371.0" cy="792.8" r="1.9" fill="#1b1f23" opacity="0.7"/>
 <circle cx="378.8" cy="788.0" r="1.8" fill="#1b1f23" opacity="0.7"/>
 <text x="362.6" y="782.8" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">alt</text>
-<text x="362.6" y="828.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3092 loc</text>
+<text x="362.6" y="828.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3119 loc</text>
 </g>
 <g data-module="agrobr.utils">
 <circle cx="331.7" cy="258.0" r="57.5" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -887,6 +892,6 @@
 <text x="447.9" y="907.5" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">58 modules | 48127 lines | 9% healthy 59% moderate 33% complex | 357 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">58 modules | 48548 lines | 9% healthy 59% moderate 33% complex | 351 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
