@@ -14,6 +14,7 @@ from agrobr.health.doctor import (
     _check_source,
     run_diagnostics,
 )
+from agrobr.health.registry import HEALTH_REGISTRY
 
 
 class TestSourceStatus:
@@ -170,3 +171,21 @@ class TestRunDiagnostics:
 
                         assert isinstance(result, DiagnosticsResult)
                         assert result.version is not None
+
+    @pytest.mark.asyncio
+    async def test_run_diagnostics_checks_all_sources(self):
+        with patch("agrobr.health.doctor._check_source") as mock_check:
+            mock_check.return_value = SourceStatus("Test", "https://example.com", "ok", 100)
+
+            with patch("agrobr.health.doctor._get_cache_stats") as mock_cache:
+                mock_cache.return_value = CacheStats("/tmp", 0, 0, {})
+
+                with patch("agrobr.health.doctor._get_last_collections") as mock_collections:
+                    mock_collections.return_value = {}
+
+                    with patch("agrobr.health.doctor.get_next_update_info") as mock_expiry:
+                        mock_expiry.return_value = {"type": "ttl", "ttl": "24h"}
+
+                        result = await run_diagnostics()
+
+                        assert len(result.sources) == len(HEALTH_REGISTRY)

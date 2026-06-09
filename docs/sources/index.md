@@ -1,6 +1,6 @@
 # Fontes de Dados
 
-O agrobr integra dados de 39 fontes de dados agricolas.
+O agrobr integra dados de 38 fontes de dados agricolas.
 Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 
 ## Visao Geral
@@ -8,13 +8,14 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | Fonte | Tipo | Atualizacao | Cobertura |
 |-------|------|-------------|-----------|
 | [CEPEA/ESALQ](cepea.md) | Precos | Diaria | Commodities agricolas |
-| [CONAB](conab.md) | Safras, custos, serie historica | Mensal | Producao nacional |
+| [CONAB](conab.md) | Safras, custos, serie historica, [progresso semanal](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Mensal/Semanal/Diaria | Producao nacional |
 | [IBGE/SIDRA](ibge.md) | Estatisticas | Anual/Mensal/Trimestral | Dados oficiais (PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo) |
 | [NASA POWER](nasa_power.md) | Climatologia | Diaria | Global, grid 0.5 grau |
 | [BCB/SICOR](bcb.md) | Credito rural, series temporais, cambio, expectativas | Mensal | Cultura/UF (+ BigQuery) |
 | [ComexStat](comexstat.md) | Exportacoes | Semanal | NCM/UF |
 | [ANDA](anda.md) | Fertilizantes | Mensal | UF/mes |
 | [ABIOVE](abiove.md) | Exportacao complexo soja | Mensal | Volume/receita |
+| [ANEC](anec.md) | Embarques semanais por porto | Semanal | 19 portos, 6 produtos |
 | [USDA PSD](usda.md) | Oferta/demanda internacional | Mensal | Commodities globais |
 | [IMEA](imea.md) | Cotacoes e indicadores MT | Diaria | Mato Grosso |
 | [DERAL](deral.md) | Condicao lavouras PR | Semanal | Parana |
@@ -23,9 +24,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [Queimadas/INPE](queimadas.md) | Focos de calor | Diária | 6 biomas, 13 satélites |
 | [Desmatamento PRODES/DETER](desmatamento.md) | Desmatamento + alertas | Anual/Diária | Amazônia, Cerrado, Pantanal |
 | [MapBiomas](mapbiomas.md) | Cobertura e uso da terra | Anual | Municípios (1985-presente) |
-| [CONAB Progresso](conab_progresso.md) | Plantio/colheita semanal | Semanal | 6 culturas, 27 UFs |
 | [B3 Futuros Agro](b3.md) | Ajustes diarios + posicoes em aberto | Diaria | 7 contratos agricolas |
-| [CONAB CEASA](conab_ceasa.md) | Precos atacado hortifruti | Diaria | 48 produtos, 43 CEASAs |
 | [UN Comtrade](comtrade.md) | Comercio bilateral + trade mirror | Mensal/Anual | ~200 paises, HS codes |
 | [ANTAQ](antaq.md) | Movimentacao portuaria de carga | Anual | Portos brasileiros, 2010+ |
 | [ANP Diesel](anp_diesel.md) | Precos revenda + volumes diesel | Semanal/Mensal | UFs, municipios, 2013+ |

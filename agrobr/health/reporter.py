@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import structlog
 
 from ..constants import Fonte
+from ..utils.time import utcnow
 from .checker import CheckResult, CheckStatus, run_all_checks
 
 logger = structlog.get_logger()
@@ -16,7 +16,7 @@ logger = structlog.get_logger()
 class HealthReport:
     def __init__(self, results: list[CheckResult]):
         self.results = results
-        self.timestamp = datetime.utcnow()
+        self.timestamp = utcnow()
         self._summary: dict[str, Any] | None = None
 
     @property
@@ -267,10 +267,7 @@ async def generate_report(
     save_path: str | Path | None = None,
     format: str = "json",
 ) -> HealthReport:
-    results = await run_all_checks()
-
-    if sources:
-        results = [r for r in results if r.source in sources]
+    results = await run_all_checks(sources)
 
     report = HealthReport(results)
 

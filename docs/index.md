@@ -11,10 +11,10 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 38 fontes públicas.
 
-**v1.0.5** — 6000+ testes | 92% cobertura | 38/38 golden tests | retry centralizado 38/38 clients
+**v1.0.5** — 6000+ testes | 92% cobertura | golden tests com fixtures por fonte | retry centralizado em todos os clients HTTP
 
 - **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
-- **CONAB**: Safras, balanço oferta/demanda, custos de produção e série histórica
+- **CONAB**: Safras, balanço oferta/demanda, custos de produção, série histórica, progresso semanal de plantio/colheita e preços atacado hortifruti (CEASA/PROHORT)
 - **IBGE/SIDRA**: PAM (anual), LSPA (mensal), PPM, Abate, PEVS (silvicultura + extracao vegetal), Leite Trimestral, PIB Agro, Censo Agro
 - **NASA POWER**: Climatologia gridded diária (temperatura, precipitação, radiação, umidade, vento)
 - **BCB/SICOR**: Crédito rural por cultura e UF + séries temporais SGS (Selic, IPCA, PIB agro) + cotação PTAX + expectativas Focus
@@ -29,8 +29,6 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 - **Queimadas/INPE**: Focos de calor por satélite (6 biomas, 13 satélites)
 - **Desmatamento PRODES/DETER**: Desmatamento consolidado + alertas em tempo real + geometria (GeoDataFrame)
 - **MapBiomas**: Cobertura e uso da terra por município (1985-presente)
-- **CONAB Progresso**: Progresso semanal de plantio/colheita por cultura e UF
-- **CONAB CEASA/PROHORT**: Precos diarios de atacado hortifruti em 43 CEASAs (48 produtos)
 - **B3 Futuros Agro**: Ajustes diarios (settlement) + posicoes em aberto (open interest) de futuros e opcoes agro
 - **UN Comtrade**: Comercio bilateral + trade mirror (exportacoes vs importacoes por HS code, ~200 paises)
 - **ANTAQ**: Movimentacao portuaria de carga (granel solido/liquido, carga geral, conteiner, 2010+)
@@ -156,15 +154,15 @@ df = nasa_power.clima_uf('MT', ano=2025)
 |---------|-------|
 | Testes | 5500+ passando |
 | Cobertura | 88% |
-| Golden tests | 38/38 fontes |
+| Golden tests | fixtures por fonte (dados reais ou sintéticos) |
 | Resiliência HTTP | Retry centralizado + 429/Retry-After |
 | Benchmarks | Memory, volume, cache, async, rate limiting |
 | Bugs corrigidos (v1.0.1) | Parser NA 3 layouts, B3 ISO date, SICAR WFS field, BCB timeout |
 
 ## Features
 
-- **38 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, CONAB Progresso, CONAB CEASA/PROHORT, B3 Futuros Agro, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedagio, SICAR, ZARC, Agrofit/MAPA (Defensivos), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde
-- **38/38 golden tests** — validação automatizada contra dados de referência
+- **38 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, B3 Futuros Agro, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedagio, SICAR, ZARC, Agrofit/MAPA (Defensivos), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA
+- **Golden tests** — fixtures de referência por fonte (dados reais ou sintéticos documentados)
 - **Resiliência HTTP** — `retry_on_status()`/`retry_async()` centralizado, Retry-After, 429 handling
 - **Camada semântica** — datasets com fallback automático entre fontes
 - **Contratos públicos** — schema versionado com garantias de estabilidade

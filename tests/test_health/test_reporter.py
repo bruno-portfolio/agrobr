@@ -243,16 +243,15 @@ class TestGenerateReport:
     async def test_generate_filtered_sources(self):
         mock_results = [
             _make_result(Fonte.CEPEA, CheckStatus.OK),
-            _make_result(Fonte.CONAB, CheckStatus.OK),
-            _make_result(Fonte.IBGE, CheckStatus.OK),
         ]
         with patch(
             "agrobr.health.reporter.run_all_checks",
             new_callable=AsyncMock,
             return_value=mock_results,
-        ):
+        ) as mock_run:
             report = await generate_report(sources=[Fonte.CEPEA])
 
+        mock_run.assert_called_once_with([Fonte.CEPEA])
         assert len(report.results) == 1
         assert report.results[0].source == Fonte.CEPEA
 

@@ -63,6 +63,7 @@ async def sgs(
         codigo,
         data_inicial=data_inicial,
         data_final=data_final,
+        ultimos=ultimos,
     )
 
     fetch_ms = int((time.monotonic() - t0) * 1000)

@@ -13,7 +13,10 @@ import structlog
 from agrobr import __version__
 from agrobr.cache.duckdb_store import get_store
 from agrobr.cache.policies import get_next_update_info
+from agrobr.constants import Fonte
+from agrobr.health.registry import HEALTH_REGISTRY
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils.time import utcnow
 
 logger = structlog.get_logger()
 
@@ -192,7 +195,7 @@ def _get_cache_stats() -> CacheStats:
         by_source: dict[str, dict[str, Any]] = {}
         conn = store._get_conn()
 
-        for fonte in ["cepea", "conab", "ibge"]:
+        for fonte in Fonte:
             try:
                 result = conn.execute(
                     """
@@ -200,17 +203,17 @@ def _get_cache_stats() -> CacheStats:
                     FROM indicadores
                     WHERE LOWER(fonte) = ?
                     """,
-                    [fonte],
+                    [fonte.value],
                 ).fetchone()
 
                 if result and result[0] > 0:
-                    by_source[fonte] = {
+                    by_source[fonte.value] = {
                         "count": result[0],
                         "oldest": str(result[1]) if result[1] else None,
                         "newest": str(result[2]) if result[2] else None,
                     }
             except Exception:
-                logger.warning("cache_stats_source_query_failed", fonte=fonte, exc_info=True)
+                logger.warning("cache_stats_source_query_failed", fonte=fonte.value, exc_info=True)
 
         total_records = sum(s.get("count", 0) for s in by_source.values())
 
@@ -238,7 +241,7 @@ def _get_last_collections() -> dict[str, datetime | None]:
         store = get_store()
         conn = store._get_conn()
 
-        for fonte in ["cepea", "conab", "ibge"]:
+        for fonte in Fonte:
             try:
                 result = conn.execute(
                     """
@@ -246,14 +249,14 @@ def _get_last_collections() -> dict[str, datetime | None]:
                     FROM indicadores
                     WHERE LOWER(fonte) = ?
                     """,
-                    [fonte],
+                    [fonte.value],
                 ).fetchone()
 
-                collections[fonte] = result[0] if result and result[0] else None
+                collections[fonte.value] = result[0] if result and result[0] else None
 
             except Exception:
-                logger.warning("last_collection_query_failed", fonte=fonte, exc_info=True)
-                collections[fonte] = None
+                logger.warning("last_collection_query_failed", fonte=fonte.value, exc_info=True)
+                collections[fonte.value] = None
 
     except Exception:
         logger.warning("last_collections_failed", exc_info=True)
@@ -262,10 +265,9 @@ def _get_last_collections() -> dict[str, datetime | None]:
 
 
 async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: ARG001
+    # Build check list from registry (all 22 sources)
     sources_to_check = [
-        ("CEPEA (Noticias Agricolas)", "https://www.noticiasagricolas.com.br"),
-        ("CONAB", "https://www.gov.br/conab/pt-br"),
-        ("IBGE/SIDRA", "https://sidra.ibge.gov.br"),
+        (config.source.value.upper(), config.url) for config in HEALTH_REGISTRY.values()
     ]
 
     source_tasks = [_check_source(name, url) for name, url in sources_to_check]
@@ -273,9 +275,9 @@ async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: 
 
     cache = _get_cache_stats()
 
-    cache_expiry = {}
-    for fonte in ["cepea", "conab", "ibge"]:
-        cache_expiry[fonte] = get_next_update_info(fonte)
+    cache_expiry: dict[str, dict[str, str]] = {}
+    for fonte in Fonte:
+        cache_expiry[fonte.value] = get_next_update_info(fonte.value)
 
     last_collections = _get_last_collections()
 
@@ -289,7 +291,7 @@ async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: 
 
     return DiagnosticsResult(
         version=__version__,
-        timestamp=datetime.now(),
+        timestamp=utcnow(),
         sources=list(sources),
         cache=cache,
         last_collections=last_collections,

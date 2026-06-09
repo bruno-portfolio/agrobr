@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>agrobr — Dados agrícolas brasileiros em uma linha de código</title>
-<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. 40 fontes públicas — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, CONAB Progresso, CONAB CEASA/PROHORT, B3 Futuros Agro, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedagio, SICAR, ZARC, Agrofit/MAPA (Defensivos), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA — uma API, fallback automático, cache DuckDB.">
+<meta name="description" content="Infraestrutura Python para dados agrícolas brasileiros. 38 fontes públicas — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, B3 Futuros Agro, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedagio, SICAR, ZARC, Agrofit/MAPA (Defensivos), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA — uma API, fallback automático, cache DuckDB.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -584,7 +584,7 @@
   <div class="hero-content">
     <p class="hero-eyebrow">Python · Open Source · PyPI</p>
     <h1 class="hero-title">Dados agrícolas brasileiros em <em>uma linha</em> de código</h1>
-    <p class="hero-subtitle"><span class="hero-sources">CEPEA, CONAB, IBGE, NASA POWER, USDA, B3</span> e mais 33 fontes — 39 origens, uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
+    <p class="hero-subtitle"><span class="hero-sources">CEPEA, CONAB, IBGE, NASA POWER, USDA, B3</span> e mais 32 fontes — 38 origens, uma API unificada com fallback automático, cache inteligente e contratos versionados.</p>
     <div class="hero-install" onclick="copyInstall(this)" title="Copiar">
       <span><span class="pip">$</span> pip install agrobr</span>
       <span class="copy-icon">⎘</span>
@@ -810,7 +810,7 @@
       <div class="feature-icon">⛁</div>
       <div class="feature-text">
         <h3>Cache DuckDB</h3>
-        <p>Histórico permanente local. Sem re-download. Séries temporais acumuladas.</p>
+        <p>Cache local para CEPEA indicadores (smart TTL, expira 18h). Snapshots opcionais para reprodutibilidade.</p>
       </div>
     </div>
     <div class="feature-item">
@@ -848,7 +848,7 @@
 <section id="sources">
   <div class="reveal">
     <p class="section-label">Fontes de dados</p>
-    <h2 class="section-title">40 origens. Uma API.</h2>
+    <h2 class="section-title">38 origens. Uma API.</h2>
     <p class="section-desc">Cada fonte tem seu próprio parser com versionamento, fingerprinting e tratamento de encoding. Você só vê o DataFrame.</p>
   </div>
 
@@ -861,8 +861,8 @@
     </div>
     <div class="source-card">
       <div class="source-name">CONAB</div>
-      <div class="source-count">Safras + Balanço + Custos + Série</div>
-      <div class="source-detail">Estimativas mensais, oferta e demanda, custos, série histórica 2010+</div>
+      <div class="source-count">Safras + Balanço + Custos + Série + Progresso + CEASA</div>
+      <div class="source-detail">Estimativas mensais, oferta e demanda, custos, série histórica 2010+, progresso semanal de plantio/colheita, preços atacado hortifrúti (PROHORT)</div>
     </div>
     <div class="source-card">
       <div class="source-name">IBGE/SIDRA</div>
@@ -935,17 +935,6 @@
       <div class="source-name">MapBiomas</div>
       <div class="source-count">Cobertura da terra</div>
       <div class="source-detail">Uso e cobertura anual por município (1985-presente)</div>
-    </div>
-    <div class="source-card">
-      <div class="source-name">CONAB Progresso</div>
-      <div class="source-count">Plantio/Colheita</div>
-      <div class="source-detail">Progresso semanal por cultura e UF (6 culturas, 27 UFs)</div>
-    </div>
-    <div class="source-card">
-      <div class="source-name">CONAB CEASA</div>
-      <div class="source-count">43 CEASAs · 48 produtos</div>
-      <div class="source-detail">Preços diários de atacado hortifruti via PROHORT</div>
-      <div class="source-badge nc">Zona cinza</div>
     </div>
     <div class="source-card">
       <div class="source-name">B3 Futuros Agro</div>
@@ -1070,7 +1059,7 @@
   <div class="reveal">
     <p class="section-label">Começar</p>
     <h2 class="section-title">pip install agrobr</h2>
-    <p class="section-desc" style="margin: 0 auto 0;">MIT License (código). 6000+ testes. 40 fontes. 35 datasets. <a href="https://www.agrobr.dev/docs/licenses/" style="color: var(--accent-gold-dim);">Licenças dos dados →</a></p>
+    <p class="section-desc" style="margin: 0 auto 0;">MIT License (código). 6000+ testes. 38 fontes. 35 datasets. <a href="https://www.agrobr.dev/docs/licenses/" style="color: var(--accent-gold-dim);">Licenças dos dados →</a></p>
     <div class="cta-links">
       <a href="https://www.agrobr.dev/docs/" class="cta-btn primary">Documentação →</a>
       <a href="https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb" class="cta-btn secondary">Abrir no Colab ↗</a>

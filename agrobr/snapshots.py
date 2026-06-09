@@ -6,7 +6,7 @@ import shutil
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 import structlog
@@ -172,7 +172,10 @@ async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
     for produto in produtos:
         try:
             df = await cepea.indicador(produto, offline=True)
-            if df is not None and not df.empty:
+            if df is None:
+                continue
+            df = cast(pd.DataFrame, df)
+            if not df.empty:
                 file_path = path / f"{produto}.parquet"
                 df.to_parquet(file_path, index=False)
                 manifest.files[f"cepea/{produto}.parquet"] = {

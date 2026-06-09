@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 import typer
 
 from agrobr import __version__, constants
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def _output_df(df: Any, formato: str) -> None:
@@ -63,7 +66,7 @@ def cepea_indicador(
     typer.echo(f"Consultando {produto}...")
 
     try:
-        df = asyncio.run(cepea.indicador(produto, inicio=inicio, fim=fim))
+        df = cast("pd.DataFrame", asyncio.run(cepea.indicador(produto, inicio=inicio, fim=fim)))
 
         if df.empty:
             typer.echo("Nenhum dado encontrado")

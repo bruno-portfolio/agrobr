@@ -366,3 +366,122 @@ class TestDownloadCsvSmall:
                 mock_retry.return_value = mock_response
                 with pytest.raises(SourceUnavailableError, match="too small"):
                     await download_csv("https://example.com/test.csv")
+
+
+# ============================================================================
+# WAF / portal outage scenarios (resilience)
+# ============================================================================
+
+
+class TestGetCkanResourcesWafHtml:
+    @pytest.mark.asyncio
+    async def test_html_response_raises_source_unavailable(self):
+        html = (
+            "<html><head><title>Request Rejected</title></head><body>"
+            "The requested URL was rejected. Please consult with your administrator.<br><br>"
+            "Your support ID is: 4431997519019677401<br><br>"
+            "<a href='javascript:history.back();'>[Go Back]</a></body></html>"
+        )
+        mock_response = make_mock_response(
+            200,
+            text=html,
+            headers={"content-type": "text/html; charset=UTF-8"},
+        )
+        mock_response.json.side_effect = ValueError("Expecting value: line 1 column 1 (char 0)")
+
+        with patch("agrobr.alt.antt_pedagio.client.httpx.AsyncClient") as mock_client_cls:
+            mock_client = make_mock_async_client()
+            mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            with patch(
+                "agrobr.alt.antt_pedagio.client.retry_on_status", new_callable=AsyncMock
+            ) as mock_retry:
+                mock_retry.return_value = mock_response
+                with pytest.raises(SourceUnavailableError) as exc_info:
+                    await _get_ckan_resources("praca-de-pedagio")
+
+        msg = str(exc_info.value)
+        assert "not JSON" in msg
+        assert "WAF block" in msg or "outage" in msg
+        assert "text/html" in msg
+        assert "Request Rejected" in msg
+
+    @pytest.mark.asyncio
+    async def test_truncated_json_raises_source_unavailable(self):
+        mock_response = make_mock_response(200, text='{"result": {"resources":')
+        mock_response.json.side_effect = ValueError("Unterminated string")
+
+        with patch("agrobr.alt.antt_pedagio.client.httpx.AsyncClient") as mock_client_cls:
+            mock_client = make_mock_async_client()
+            mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            with patch(
+                "agrobr.alt.antt_pedagio.client.retry_on_status", new_callable=AsyncMock
+            ) as mock_retry:
+                mock_retry.return_value = mock_response
+                with pytest.raises(SourceUnavailableError, match="not JSON"):
+                    await _get_ckan_resources("praca-de-pedagio")
+
+
+class TestDownloadCsvWafHtml:
+    @pytest.mark.asyncio
+    async def test_html_body_raises_source_unavailable(self):
+        html = (
+            b"<html><head><title>Request Rejected</title></head><body>"
+            b"The requested URL was rejected. Please consult with your administrator.<br><br>"
+            b"Your support ID is: 4431997519019677401<br><br>"
+            b"<a href='javascript:history.back();'>[Go Back]</a></body></html>"
+        )
+        mock_response = make_mock_response(200, content=html)
+
+        with patch("agrobr.alt.antt_pedagio.client.httpx.AsyncClient") as mock_client_cls:
+            mock_client = make_mock_async_client()
+            mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            with patch(
+                "agrobr.alt.antt_pedagio.client.retry_on_status", new_callable=AsyncMock
+            ) as mock_retry:
+                mock_retry.return_value = mock_response
+                with pytest.raises(SourceUnavailableError) as exc_info:
+                    await download_csv("https://example.com/test.csv")
+
+        msg = str(exc_info.value)
+        assert "HTML instead of CSV" in msg
+        assert "Request Rejected" in msg
+
+    @pytest.mark.asyncio
+    async def test_doctype_html_raises_source_unavailable(self):
+        html = b"<!DOCTYPE html>\n<html><body>error page placeholder body content...</body></html>"
+        mock_response = make_mock_response(200, content=html)
+
+        with patch("agrobr.alt.antt_pedagio.client.httpx.AsyncClient") as mock_client_cls:
+            mock_client = make_mock_async_client()
+            mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            with patch(
+                "agrobr.alt.antt_pedagio.client.retry_on_status", new_callable=AsyncMock
+            ) as mock_retry:
+                mock_retry.return_value = mock_response
+                with pytest.raises(SourceUnavailableError, match="HTML instead of CSV"):
+                    await download_csv("https://example.com/test.csv")
+
+    @pytest.mark.asyncio
+    async def test_leading_whitespace_before_html_still_detected(self):
+        html = b"   \n\t<html><body>blocked page placeholder content padding to bypass size...</body></html>"
+        mock_response = make_mock_response(200, content=html)
+
+        with patch("agrobr.alt.antt_pedagio.client.httpx.AsyncClient") as mock_client_cls:
+            mock_client = make_mock_async_client()
+            mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            with patch(
+                "agrobr.alt.antt_pedagio.client.retry_on_status", new_callable=AsyncMock
+            ) as mock_retry:
+                mock_retry.return_value = mock_response
+                with pytest.raises(SourceUnavailableError, match="HTML instead of CSV"):
+                    await download_csv("https://example.com/test.csv")

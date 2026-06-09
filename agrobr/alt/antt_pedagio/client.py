@@ -33,7 +33,21 @@ async def _get_ckan_resources(slug: str) -> list[dict[str, str]]:
             source="antt_pedagio",
         )
         response.raise_for_status()
-        data = response.json()
+        try:
+            data = response.json()
+        except ValueError as e:
+            from agrobr.exceptions import SourceUnavailableError
+
+            preview = response.text[:200].strip().replace("\n", " ")
+            raise SourceUnavailableError(
+                source="antt_pedagio",
+                url=url,
+                last_error=(
+                    f"CKAN response is not JSON (likely WAF block or portal outage). "
+                    f"Content-Type: {response.headers.get('content-type', 'unknown')!r}. "
+                    f"Body preview: {preview!r}"
+                ),
+            ) from e
 
     if not isinstance(data, dict) or "result" not in data:
         from agrobr.exceptions import SourceUnavailableError
@@ -102,6 +116,19 @@ async def download_csv(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
+        if content[:50].lstrip().lower().startswith((b"<!doctype", b"<html")):
+            from agrobr.exceptions import SourceUnavailableError
+
+            preview = content[:200].decode("utf-8", errors="replace").replace("\n", " ")
+            raise SourceUnavailableError(
+                source="antt_pedagio",
+                url=url,
+                last_error=(
+                    f"Server returned HTML instead of CSV (likely WAF block or portal outage). "
+                    f"Size: {len(content)} bytes. Preview: {preview!r}"
+                ),
+            )
+
         if len(content) < MIN_CSV_SIZE:
             from agrobr.exceptions import SourceUnavailableError
 

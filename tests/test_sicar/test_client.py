@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import ssl
+import warnings
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -10,6 +12,7 @@ from agrobr.alt.sicar import client
 from agrobr.alt.sicar.client import _build_wfs_url, fetch_hits, fetch_imoveis, fetch_imoveis_geo
 from agrobr.alt.sicar.models import MAX_FEATURES_GEO, PAGE_SIZE, WFS_BASE, WFS_VERSION
 from agrobr.exceptions import ParseError
+from agrobr.utils.warnings import warn_once_reset
 
 
 class TestBuildWfsUrl:
@@ -160,7 +163,6 @@ class TestFetchImoveis:
             pages, url = await fetch_imoveis("BA")
 
         assert len(pages) == 7
-        # Pages 0-4 have None delay, pages 5-6 have 2.0 delay
         assert delays[0] is None
         assert delays[4] is None
         assert delays[5] == 2.0
@@ -181,7 +183,6 @@ class TestFetchImoveis:
         with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
             await fetch_imoveis("GO", "status_imovel='AT'")
 
-        # Both hits and data request should have the filter
         for u in fetched_urls:
             assert "status_imovel" in u
 
@@ -246,3 +247,51 @@ class TestTimeout:
         from agrobr.alt.sicar.client import TIMEOUT
 
         assert TIMEOUT.read == 180.0
+
+
+class TestSSLContext:
+    """SSL: geoserver.car.gov.br envia o root Sectigo R46 dentro da cadeia.
+
+    Truststores sem esse root (certifi pre-2024, macOS Python 3.13 via uv)
+    rejeitam com `CERTIFICATE_VERIFY_FAILED: self-signed certificate in
+    certificate chain`. Por isso o client usa verify=False com warning
+    estruturado one-shot por sessao.
+    """
+
+    def test_ssl_ctx_has_verify_disabled(self):
+        assert client._ssl_ctx.verify_mode == ssl.CERT_NONE
+        assert client._ssl_ctx.check_hostname is False
+
+    def test_ssl_ctx_keeps_seclevel_1(self):
+        assert "AES256-GCM-SHA384" in {c["name"] for c in client._ssl_ctx.get_ciphers()}
+
+    def test_make_session_uses_ssl_ctx(self):
+        warn_once_reset("sicar_ssl_verify_off")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            session = client.make_session()
+        try:
+            assert session._transport._pool._ssl_context is client._ssl_ctx  # type: ignore[attr-defined]
+        finally:
+            warn_once_reset("sicar_ssl_verify_off")
+
+    def test_warn_once_emitted_on_first_call(self):
+        warn_once_reset("sicar_ssl_verify_off")
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            client.make_session()
+        ssl_warns = [w for w in caught if "verify=False" in str(w.message)]
+        assert len(ssl_warns) == 1
+        assert "Sectigo" in str(ssl_warns[0].message) or "verify=False" in str(ssl_warns[0].message)
+        warn_once_reset("sicar_ssl_verify_off")
+
+    def test_warn_once_not_duplicated_in_subsequent_calls(self):
+        warn_once_reset("sicar_ssl_verify_off")
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            client.make_session()
+            client.make_session()
+            client.make_session()
+        ssl_warns = [w for w in caught if "verify=False" in str(w.message)]
+        assert len(ssl_warns) == 1
+        warn_once_reset("sicar_ssl_verify_off")
