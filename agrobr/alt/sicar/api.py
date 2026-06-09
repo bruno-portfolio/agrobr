@@ -267,6 +267,23 @@ async def imoveis_geo(
         criado_apos=criado_apos,
     )
 
+    if municipio is None and cod_municipio is None:
+        try:
+            async with client.make_session() as http:
+                total = await client.fetch_hits(uf_upper, cql, client=http)
+            effective = total if max_features is None else min(total, max_features)
+            if effective > MAX_FEATURES_WARNING:
+                logger.warning(
+                    "sicar_geo_large_query",
+                    uf=uf_upper,
+                    total=total,
+                    max_features=max_features,
+                    threshold=MAX_FEATURES_WARNING,
+                    hint="Considere definir max_features ou filtrar por municipio para reduzir volume",
+                )
+        except httpx.HTTPError:
+            logger.warning("sicar_geo_hit_count_check_failed", uf=uf_upper, exc_info=True)
+
     t0 = time.monotonic()
     pages, source_url = await client.fetch_imoveis_geo(uf_upper, cql, max_features=max_features)
     fetch_ms = int((time.monotonic() - t0) * 1000)

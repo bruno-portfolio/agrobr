@@ -243,6 +243,102 @@ class TestImoveis:
         assert cods == sorted(cods)
 
 
+class TestImoveisLargeQueryWarning:
+    def _warning_events(self, mock_logger) -> list[str]:
+        return [c.args[0] for c in mock_logger.warning.call_args_list]
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
+        reason="No golden data",
+    )
+    async def test_warns_when_total_exceeds_threshold(self):
+        pages = _load_golden_pages("imoveis_df_sample")
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=200_000),
+            patch.object(
+                api.client,
+                "fetch_imoveis",
+                new_callable=AsyncMock,
+                return_value=(pages, "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            await imoveis("MT")
+
+        assert "sicar_large_query" in self._warning_events(mock_logger)
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
+        reason="No golden data",
+    )
+    async def test_no_warning_when_total_below_threshold(self):
+        pages = _load_golden_pages("imoveis_df_sample")
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
+            patch.object(
+                api.client,
+                "fetch_imoveis",
+                new_callable=AsyncMock,
+                return_value=(pages, "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            await imoveis("DF")
+
+        assert "sicar_large_query" not in self._warning_events(mock_logger)
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
+        reason="No golden data",
+    )
+    async def test_skips_preflight_check_when_municipio_filter(self):
+        pages = _load_golden_pages("imoveis_df_sample")
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock) as mock_hits,
+            patch.object(
+                api.client,
+                "fetch_imoveis",
+                new_callable=AsyncMock,
+                return_value=(pages, "https://test.url"),
+            ),
+        ):
+            await imoveis("DF", municipio="Brasilia")
+
+        mock_hits.assert_not_called()
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
+        reason="No golden data",
+    )
+    async def test_hit_count_check_source_unavailable_is_logged_and_swallowed(self):
+        from agrobr.exceptions import SourceUnavailableError
+
+        pages = _load_golden_pages("imoveis_df_sample")
+        with (
+            patch.object(
+                api.client,
+                "fetch_hits",
+                new_callable=AsyncMock,
+                side_effect=SourceUnavailableError(source="sicar", last_error="TLS handshake"),
+            ),
+            patch.object(
+                api.client,
+                "fetch_imoveis",
+                new_callable=AsyncMock,
+                return_value=(pages, "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            df = await imoveis("DF")
+
+        assert len(df) == 10
+        assert "sicar_hit_count_check_failed" in self._warning_events(mock_logger)
+
+
 class TestResumo:
     @pytest.mark.asyncio
     async def test_invalid_uf_raises(self):
@@ -417,11 +513,14 @@ class TestImoveisGeo:
         import geopandas
 
         geojson = _load_golden_geojson()
-        with patch.object(
-            api.client,
-            "fetch_imoveis_geo",
-            new_callable=AsyncMock,
-            return_value=([geojson], "https://test.url"),
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
         ):
             gdf = await imoveis_geo("DF")
 
@@ -433,11 +532,14 @@ class TestImoveisGeo:
     @pytest.mark.asyncio
     async def test_return_meta(self):
         geojson = _load_golden_geojson()
-        with patch.object(
-            api.client,
-            "fetch_imoveis_geo",
-            new_callable=AsyncMock,
-            return_value=([geojson], "https://test.url"),
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
         ):
             gdf, meta = await imoveis_geo("DF", return_meta=True)
 
@@ -486,11 +588,14 @@ class TestImoveisGeo:
         geojson_data["features"].append(geojson_data["features"][0])
         data = json.dumps(geojson_data).encode()
 
-        with patch.object(
-            api.client,
-            "fetch_imoveis_geo",
-            new_callable=AsyncMock,
-            return_value=([data], "https://test.url"),
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=11),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([data], "https://test.url"),
+            ),
         ):
             gdf = await imoveis_geo("DF")
 
@@ -501,16 +606,160 @@ class TestImoveisGeo:
         import geopandas
 
         empty = b'{"type":"FeatureCollection","features":[]}'
-        with patch.object(
-            api.client,
-            "fetch_imoveis_geo",
-            new_callable=AsyncMock,
-            return_value=([empty], "https://test.url"),
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=0),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([empty], "https://test.url"),
+            ),
         ):
             gdf = await imoveis_geo("DF")
 
         assert isinstance(gdf, geopandas.GeoDataFrame)
         assert len(gdf) == 0
+
+
+class TestImoveisGeoLargeQueryWarning:
+    gpd = pytest.importorskip("geopandas")
+
+    def _warning_events(self, mock_logger) -> list[str]:
+        return [c.args[0] for c in mock_logger.warning.call_args_list]
+
+    @pytest.mark.asyncio
+    async def test_warns_when_unbounded_total_exceeds_threshold(self):
+        geojson = _load_golden_geojson()
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=200_000),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            await imoveis_geo("MT", max_features=None)
+
+        assert "sicar_geo_large_query" in self._warning_events(mock_logger)
+
+    @pytest.mark.asyncio
+    async def test_no_warning_when_max_features_caps_below_threshold(self):
+        geojson = _load_golden_geojson()
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=200_000),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            await imoveis_geo("MT", max_features=5_000)
+
+        assert "sicar_geo_large_query" not in self._warning_events(mock_logger)
+
+    @pytest.mark.asyncio
+    async def test_warns_when_max_features_itself_exceeds_threshold(self):
+        geojson = _load_golden_geojson()
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=500_000),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            await imoveis_geo("MT", max_features=150_000)
+
+        assert "sicar_geo_large_query" in self._warning_events(mock_logger)
+
+    @pytest.mark.asyncio
+    async def test_no_warning_when_total_below_threshold(self):
+        geojson = _load_golden_geojson()
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            await imoveis_geo("DF", max_features=None)
+
+        assert "sicar_geo_large_query" not in self._warning_events(mock_logger)
+
+    @pytest.mark.asyncio
+    async def test_skips_preflight_check_when_municipio_filter(self):
+        geojson = _load_golden_geojson()
+        with (
+            patch.object(api.client, "fetch_hits", new_callable=AsyncMock) as mock_hits,
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
+        ):
+            await imoveis_geo("MT", municipio="Sorriso", max_features=None)
+
+        mock_hits.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_hit_count_check_httpx_error_is_logged_and_swallowed(self):
+        import httpx
+
+        geojson = _load_golden_geojson()
+        with (
+            patch.object(
+                api.client,
+                "fetch_hits",
+                new_callable=AsyncMock,
+                side_effect=httpx.ConnectError("boom"),
+            ),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            gdf = await imoveis_geo("MT", max_features=None)
+
+        assert len(gdf) == 10
+        assert "sicar_geo_hit_count_check_failed" in self._warning_events(mock_logger)
+
+    @pytest.mark.asyncio
+    async def test_hit_count_check_source_unavailable_is_logged_and_swallowed(self):
+        from agrobr.exceptions import SourceUnavailableError
+
+        geojson = _load_golden_geojson()
+        with (
+            patch.object(
+                api.client,
+                "fetch_hits",
+                new_callable=AsyncMock,
+                side_effect=SourceUnavailableError(source="sicar", last_error="TLS handshake"),
+            ),
+            patch.object(
+                api.client,
+                "fetch_imoveis_geo",
+                new_callable=AsyncMock,
+                return_value=([geojson], "https://test.url"),
+            ),
+            patch.object(api, "logger") as mock_logger,
+        ):
+            gdf = await imoveis_geo("MT", max_features=None)
+
+        assert len(gdf) == 10
+        assert "sicar_geo_hit_count_check_failed" in self._warning_events(mock_logger)
 
 
 class TestImoveisNullDataCriacao:

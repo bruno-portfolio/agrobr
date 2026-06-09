@@ -316,3 +316,64 @@ class TestParseImoveisGeojson:
             parse([data])
             mock_logger.warning.assert_called_once()
             assert mock_logger.warning.call_args[0][0] == "sicar_geo_truncated"
+
+
+class TestParseImoveisGeojsonPagination:
+    gpd = pytest.importorskip("geopandas")
+
+    @pytest.fixture()
+    def split_pages(self) -> list[bytes]:
+        import json
+
+        geojson = json.loads((GOLDEN_GEO_DIR / "response.geojson").read_bytes())
+        features = geojson["features"]
+        assert len(features) == 10
+
+        def page(feats: list[dict[str, object]]) -> bytes:
+            return json.dumps({"type": "FeatureCollection", "features": feats}).encode()
+
+        return [page(features[:6]), page(features[6:])]
+
+    @pytest.fixture()
+    def parse(self):
+        from agrobr.alt.sicar.parser import parse_imoveis_geojson
+
+        return parse_imoveis_geojson
+
+    def test_empty_pages_list_returns_empty_gdf(self, parse):
+        gdf = parse([])
+        assert len(gdf) == 0
+        assert list(gdf.columns) == COLUNAS_IMOVEIS_GEO
+        assert gdf.geometry.name == "geometry"
+
+    def test_concat_multi_page_record_count(self, parse, split_pages):
+        gdf = parse(split_pages)
+        assert len(gdf) == 10
+
+    def test_concat_multi_page_preserves_crs(self, parse, split_pages):
+        gdf = parse(split_pages)
+        assert gdf.crs is not None
+        assert gdf.crs.to_epsg() == 4326
+
+    def test_concat_multi_page_preserves_columns(self, parse, split_pages):
+        gdf = parse(split_pages)
+        assert list(gdf.columns) == COLUNAS_IMOVEIS_GEO
+
+    def test_concat_skips_empty_pages(self, parse):
+        empty = b'{"type":"FeatureCollection","features":[]}'
+        full = (GOLDEN_GEO_DIR / "response.geojson").read_bytes()
+        gdf = parse([empty, full, empty])
+        assert len(gdf) == 10
+
+    def test_all_pages_empty_returns_empty_gdf(self, parse):
+        empty = b'{"type":"FeatureCollection","features":[]}'
+        gdf = parse([empty, empty])
+        assert len(gdf) == 0
+        assert list(gdf.columns) == COLUNAS_IMOVEIS_GEO
+
+    def test_multi_page_no_truncation_warning_per_page(self, parse, split_pages):
+        from unittest.mock import patch
+
+        with patch("agrobr.utils.geo.logger") as mock_logger:
+            parse(split_pages, max_features=1)
+            mock_logger.warning.assert_not_called()

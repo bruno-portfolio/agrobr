@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -239,6 +240,83 @@ class TestFetchImoveisGeo:
         with patch.object(client, "fetch_wfs", mock_fetch):
             await fetch_imoveis_geo("SP")
         assert mock_fetch.call_count == 1
+
+
+def _geo_paginated_mock(numbers_matched: int, geojson: bytes):
+    """Side_effect de fetch_wfs: responde hits e registra o count de cada pagina pedida."""
+    xml_hits = f'<wfs:FeatureCollection numberMatched="{numbers_matched}"/>'.encode()
+    counts: list[int] = []
+
+    async def mock_fetch(url, **_kwargs):
+        if "resultType=hits" in url:
+            return xml_hits
+        m = re.search(r"count=(\d+)", url)
+        assert m is not None
+        counts.append(int(m.group(1)))
+        return geojson
+
+    return mock_fetch, counts
+
+
+class TestFetchImoveisGeoPaginated:
+    GEOJSON = b'{"type":"FeatureCollection","features":[]}'
+
+    @pytest.mark.asyncio
+    async def test_max_features_none_paginates_using_hits_total(self):
+        mock_fetch, counts = _geo_paginated_mock(12_345, self.GEOJSON)
+        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
+            pages, url = await fetch_imoveis_geo("MT", max_features=None)
+
+        assert len(pages) == 2
+        assert "sicar" in url
+
+    @pytest.mark.asyncio
+    async def test_max_features_greater_than_page_size_paginates(self):
+        mock_fetch, counts = _geo_paginated_mock(50_000, self.GEOJSON)
+        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
+            pages, _url = await fetch_imoveis_geo("MT", max_features=15_000)
+
+        assert len(pages) == 2
+        assert sum(counts) == 15_000
+
+    @pytest.mark.asyncio
+    async def test_max_features_equal_page_size_fetches_single_page(self):
+        mock_fetch = AsyncMock(return_value=self.GEOJSON)
+        with patch.object(client, "fetch_wfs", mock_fetch):
+            pages, _url = await fetch_imoveis_geo("MT", max_features=PAGE_SIZE)
+
+        assert len(pages) == 1
+        assert mock_fetch.call_count == 1
+        call_url = mock_fetch.call_args[0][0]
+        assert f"count={PAGE_SIZE}" in call_url
+        assert "resultType=hits" not in call_url
+
+    @pytest.mark.asyncio
+    async def test_max_features_page_size_plus_one_paginates(self):
+        mock_fetch, counts = _geo_paginated_mock(20_000, self.GEOJSON)
+        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
+            pages, _url = await fetch_imoveis_geo("MT", max_features=PAGE_SIZE + 1)
+
+        assert len(pages) == 2
+        assert counts == [PAGE_SIZE, 1]
+
+    @pytest.mark.asyncio
+    async def test_total_zero_returns_no_pages(self):
+        xml_hits = b'<wfs:FeatureCollection numberMatched="0"/>'
+        with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=xml_hits):
+            pages, url = await fetch_imoveis_geo("DF", max_features=None)
+
+        assert pages == []
+        assert "sicar" in url
+
+    @pytest.mark.asyncio
+    async def test_last_chunk_uses_min_total_and_max_features(self):
+        mock_fetch, counts = _geo_paginated_mock(10_500, self.GEOJSON)
+        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
+            pages, _url = await fetch_imoveis_geo("MT", max_features=50_000)
+
+        assert len(pages) == 2
+        assert counts == [PAGE_SIZE, 500]
 
 
 class TestTimeout:
