@@ -712,7 +712,7 @@
 <circle cx="371.0" cy="792.8" r="1.9" fill="#1b1f23" opacity="0.7"/>
 <circle cx="378.8" cy="788.0" r="1.8" fill="#1b1f23" opacity="0.7"/>
 <text x="362.6" y="782.8" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">alt</text>
-<text x="362.6" y="828.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3119 loc</text>
+<text x="362.6" y="828.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">3140 loc</text>
 </g>
 <g data-module="agrobr.utils">
 <circle cx="331.7" cy="258.0" r="57.5" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
@@ -893,6 +893,6 @@
 <text x="447.9" y="907.5" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">agrobr</text>
 </g>
 <circle cx="600.0" cy="500.0" r="105.4" fill="none" stroke="#da3633" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 600.0 500.0" to="360 600.0 500.0" dur="60s" repeatCount="indefinite"/></circle>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">58 modules | 48692 lines | 9% healthy 59% moderate 33% complex | 351 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#30363d" text-anchor="middle" dy="0.35em">58 modules | 48713 lines | 9% healthy 59% moderate 33% complex | 351 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
