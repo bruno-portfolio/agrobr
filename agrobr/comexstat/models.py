@@ -48,6 +48,8 @@ NCM_PRODUTOS: dict[str, str] = {
     "map": "31054000",
     "dap": "31053000",
     "npk": "3105",
+    "defensivos": "3808",
+    "agrotoxicos": "3808",
 }
 
 

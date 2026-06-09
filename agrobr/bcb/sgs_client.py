@@ -20,8 +20,12 @@ async def fetch_sgs(
     codigo: int,
     data_inicial: str | None = None,
     data_final: str | None = None,
+    ultimos: int | None = None,
 ) -> tuple[list[dict[str, str]], str]:
-    url = f"{SGS_BASE}.{codigo}/dados"
+    if ultimos and ultimos > 0 and not data_inicial and not data_final:
+        url = f"{SGS_BASE}.{codigo}/dados/ultimos/{ultimos}"
+    else:
+        url = f"{SGS_BASE}.{codigo}/dados"
 
     params: dict[str, str] = {"formato": "json"}
     if data_inicial:
@@ -29,7 +33,13 @@ async def fetch_sgs(
     if data_final:
         params["dataFinal"] = data_final
 
-    logger.info("bcb_sgs_request", codigo=codigo, data_inicial=data_inicial, data_final=data_final)
+    logger.info(
+        "bcb_sgs_request",
+        codigo=codigo,
+        data_inicial=data_inicial,
+        data_final=data_final,
+        ultimos=ultimos,
+    )
 
     async with httpx.AsyncClient(
         timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True

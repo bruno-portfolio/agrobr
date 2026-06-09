@@ -1,3 +1,14 @@
+"""SICAR WFS client.
+
+TLS: verify=False is required — geoserver.car.gov.br ships the Sectigo Root R46
+inside the chain (self-signed leaf at position 2). Clients whose truststore
+does not include that root (ex.: certifi pre-2024, uv-managed Python on macOS)
+fail with ``CERTIFICATE_VERIFY_FAILED: self-signed certificate in certificate
+chain``. Data is public, no credentials trafficked, payload validated downstream
+(``utils/geo.fetch_wfs`` rejects HTML/ServiceException/short bodies; parser
+enforces ``required_cols``). SECLEVEL=1 kept for the GeoServer cipher set.
+"""
+
 from __future__ import annotations
 
 import math
@@ -10,6 +21,7 @@ import structlog
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils.geo import fetch_wfs, parse_wfs_hits
+from agrobr.utils.warnings import warn_once
 
 from .models import (
     MAX_FEATURES_GEO,
@@ -26,11 +38,20 @@ logger = structlog.get_logger()
 TIMEOUT = get_timeout(read=180.0)
 
 _ssl_ctx = ssl.create_default_context()
+_ssl_ctx.check_hostname = False
+_ssl_ctx.verify_mode = ssl.CERT_NONE
 _ssl_ctx.set_ciphers("DEFAULT:@SECLEVEL=1")
+
+_SSL_WARNING = (
+    "SICAR (geoserver.car.gov.br) usa verify=False: o servidor envia o root "
+    "CA Sectigo R46 dentro da cadeia, quebrando a validacao em truststores "
+    "sem esse root. Dado e publico e payload e validado downstream."
+)
 
 
 def make_session() -> httpx.AsyncClient:
-    """Cria `AsyncClient` com config padrao SICAR (TLS legacy + UA + redirects)."""
+    """Cria `AsyncClient` com config padrao SICAR (TLS verify off + UA + redirects)."""
+    warn_once("sicar_ssl_verify_off", _SSL_WARNING)
     return httpx.AsyncClient(
         timeout=TIMEOUT,
         headers=UserAgentRotator.get_bot_headers(),

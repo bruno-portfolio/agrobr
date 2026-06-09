@@ -104,7 +104,6 @@ docker run -it --rm \
 
 ## Limitações
 
-- **`agrobr health` / `agrobr doctor`** retornam `ImportError` no container. Esses modulos sao privados e excluidos do wheel. Mesmo comportamento de `pip install agrobr` do PyPI.
 - **Cache efemero** sem volume mount. Use `-v agrobr-cache:/home/agrobr/.agrobr`.
 - **Imagem ~2.3GB** (Chromium ~1.5GB + pandas ~100MB + duckdb ~80MB + demais deps).
 - **`agrobr/data/censo_1985/`** — 11MB de CSVs estaticos incluidos na imagem (dados runtime do `ibge.censo_municipal_1985()`).

@@ -19,9 +19,9 @@
   </a>
 </p>
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **40 fontes públicas** — preços de mercado, produção e safras, comércio exterior, crédito rural, clima, monitoramento ambiental, cadastros territoriais e regulatório.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **38 fontes públicas** — preços de mercado, produção e safras, comércio exterior, crédito rural, clima, monitoramento ambiental, cadastros territoriais e regulatório.
 
-**v1.0.5** — 6000+ testes, 92% de cobertura, golden tests em 40/40 fontes, retry centralizado em todos os clients HTTP.
+**v1.0.5** — 6000+ testes, 92% de cobertura, golden tests com fixtures de referência por fonte, retry centralizado em todos os clients HTTP.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -456,7 +456,7 @@ Disponibilidade monitorada automaticamente. Use `agrobr health` para verificar l
 | Fonte | Dados | Golden Test | Status |
 |-------|-------|:-----------:|--------|
 | CEPEA | Indicadores de preços (20 produtos) | ✅ | Funcional |
-| CONAB | Safras, balanço, custos, série histórica | ✅ | Funcional |
+| CONAB | Safras, balanço, custos, série histórica, progresso semanal, CEASA/PROHORT preços atacado | ✅ | Funcional |
 | IBGE | PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo Agro (1985/1995-96/2006/2017 + série histórica) | ✅ | Funcional |
 | NASA POWER | Climatologia diária/mensal (grid 0.5°) | ✅ | Funcional |
 | BCB/SICOR | Crédito rural por cultura + séries SGS + PTAX + Focus | ✅¹ | Funcional |
@@ -472,9 +472,7 @@ Disponibilidade monitorada automaticamente. Use `agrobr health` para verificar l
 | Queimadas/INPE | Focos de calor por satélite (6 biomas, 13 satélites) | ✅ | Funcional |
 | Desmatamento PRODES/DETER | Desmatamento consolidado + alertas (TerraBrasilis WFS) | ✅ | Funcional |
 | MapBiomas | Cobertura e uso da terra (1985-presente), nível estado e município | ✅ | Funcional |
-| CONAB Progresso | Progresso semanal de plantio/colheita por cultura e UF | ✅ | Funcional |
 | B3 Futuros Agro | Ajustes diários + posições em aberto (7 contratos agro) | ✅ | Funcional |
-| CONAB CEASA/PROHORT | Preços atacado hortifrúti (48 produtos, 43 CEASAs) | ✅ | Funcional |
 | UN Comtrade | Comércio bilateral + trade mirror (~200 países, HS codes) | ✅¹ | Funcional |
 | ANTAQ | Movimentação portuária de carga (granel, geral, contêiner) | ✅ | Funcional |
 | ANP Diesel | Preços revenda + volumes diesel por UF/município | ✅ | Funcional |
@@ -549,7 +547,7 @@ normalizar_safra("24/25")                 # "2024/25"
 
 ## Diferenciais
 
-- **40/40 fontes com golden tests** — validação automatizada contra dados de referência
+- **Golden tests com fixtures de referência por fonte** — validação automatizada contra dados reais ou sintéticos documentados
 - **Resiliência HTTP completa** — retry centralizado em todos os clients, 429 handling, Retry-After
 - **6000+ testes, 92% cobertura** — incluindo benchmarks de escalabilidade (memory, volume, async)
 - **Camada semântica** — datasets padronizados com fallback automático e proveniência rastreada
@@ -595,7 +593,7 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
-- [Fontes](https://www.agrobr.dev/docs/sources/) — 40 fontes documentadas
+- [Fontes](https://www.agrobr.dev/docs/sources/) — 38 fontes documentadas
 - [API Reference](https://www.agrobr.dev/docs/api/cepea/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 - [Portabilidade](https://www.agrobr.dev/docs/porting/) — Guia para portar o agrobr para R, Julia ou outras linguagens

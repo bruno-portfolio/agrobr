@@ -44,6 +44,7 @@ class Fonte(StrEnum):
     INCRA = "incra"
     INMET = "inmet"
     LISTA_SUJA = "lista_suja"
+    MAPA_PSR = "mapa_psr"
     MAPBIOMAS_ALERTA = "mapbiomas_alerta"
     NASA_POWER = "nasa_power"
     NOTICIAS_AGRICOLAS = "noticias_agricolas"
@@ -140,6 +141,10 @@ URLS = {
     Fonte.LISTA_SUJA: {
         "base": "https://www.gov.br/trabalho-e-emprego",
         "download": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.pdf",
+    },
+    Fonte.MAPA_PSR: {
+        "base": "https://dados.agricultura.gov.br",
+        "dataset": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48",
     },
     Fonte.IMEA: {
         "base": "https://api1.imea.com.br/api",

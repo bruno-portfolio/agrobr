@@ -62,6 +62,35 @@ class TestSgsUrlConstruction:
         url = mock_client.get.call_args[0][0]
         assert "bcdata.sgs.1/dados" in url
 
+    @pytest.mark.asyncio
+    async def test_url_with_ultimos_uses_ultimos_endpoint(self):
+        resp = make_mock_response(200, json_data=SGS_SAMPLE)
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(return_value=resp)
+
+        with patch("agrobr.bcb.sgs_client.httpx.AsyncClient", return_value=mock_client):
+            await sgs_client.fetch_sgs(432, ultimos=12)
+
+        url = mock_client.get.call_args[0][0]
+        assert "bcdata.sgs.432/dados/ultimos/12" in url
+        params = mock_client.get.call_args[1]["params"]
+        assert "dataInicial" not in params
+        assert "dataFinal" not in params
+
+    @pytest.mark.asyncio
+    async def test_url_ultimos_with_dates_falls_back_to_range(self):
+        resp = make_mock_response(200, json_data=SGS_SAMPLE)
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(return_value=resp)
+
+        with patch("agrobr.bcb.sgs_client.httpx.AsyncClient", return_value=mock_client):
+            await sgs_client.fetch_sgs(432, data_inicial="01/01/2026", ultimos=12)
+
+        url = mock_client.get.call_args[0][0]
+        assert "/dados/ultimos/" not in url
+        params = mock_client.get.call_args[1]["params"]
+        assert params["dataInicial"] == "01/01/2026"
+
 
 class TestSgsRetry:
     @pytest.mark.asyncio

@@ -75,6 +75,7 @@ class TestSgsStringCode:
             SGS_SERIES["selic"],
             data_inicial=None,
             data_final=None,
+            ultimos=None,
         )
         assert all(df["nome_serie"] == "selic")
 

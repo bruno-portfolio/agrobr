@@ -29,58 +29,81 @@ jobs:
         run: |
           pip install -e ".[dev]"
 
-      - name: Run health checks
+      - name: Restore health DB cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.agrobr/cache/agrobr.duckdb
+          key: health-db-${{ github.run_number }}
+          restore-keys: |
+            health-db-
+
+      - name: Run health checks with state
         id: health
         run: |
           python -c "
           import asyncio, json, sys
-          from agrobr.health.doctor import run_diagnostics
+          from agrobr.health.checker import run_checks_with_state, format_results
+          from agrobr.health.registry import get_affected_datasets
+          from agrobr.health.state import get_consecutive_failures, get_last_success
+          from agrobr.alerts.notifier import send_alert
 
-          result = asyncio.run(run_diagnostics(verbose=True))
-          report = result.to_dict()
+          async def main():
+              results = await run_checks_with_state()
 
-          with open('health_report.json', 'w') as f:
-              json.dump(report, f, indent=2)
+              check_results = [r for r, _, _ in results]
+              print(format_results(check_results))
 
-          print(result.to_rich())
+              report = {
+                  'checks': [
+                      {
+                          'source': r.source.value,
+                          'status': r.status.value,
+                          'category': r.category,
+                          'latency_ms': round(r.latency_ms, 1),
+                          'message': r.message,
+                      }
+                      for r in check_results
+                  ]
+              }
 
-          # Set outputs for alert step
-          print(f\"overall_status={report['overall_status']}\", file=open('$GITHUB_OUTPUT', 'a') if '$GITHUB_OUTPUT' != '' else sys.stdout)
+              with open('health_report.json', 'w') as f:
+                  json.dump(report, f, indent=2)
 
-          failed = [s['name'] for s in report['sources'] if s['status'] == 'error']
-          if failed:
-              print(f\"failed_sources={','.join(failed)}\", file=open('$GITHUB_OUTPUT', 'a') if '$GITHUB_OUTPUT' != '' else sys.stdout)
+              failed = [r.source.value for r in check_results if r.status.value == 'failed']
+              overall = 'error' if len(failed) == len(check_results) else ('degraded' if failed else 'healthy')
+
+              with open('$GITHUB_OUTPUT' if '$GITHUB_OUTPUT' != '' else '/dev/null', 'a') as out:
+                  print(f'overall_status={overall}', file=out)
+
+              for result, should_alert, level in results:
+                  if should_alert and level:
+                      datasets = get_affected_datasets(result.source)
+                      failures = get_consecutive_failures(result.source)
+                      last_ok = get_last_success(result.source)
+                      if result.status.value == 'ok':
+                          title = f'Source recovered: {result.source.value}'
+                      elif result.category == 'soft_block':
+                          title = f'Source blocked (Cloudflare): {result.source.value}'
+                      else:
+                          title = f'Source {result.status.value}: {result.source.value}'
+                      await send_alert(
+                          level=level,
+                          title=title,
+                          details={'message': result.message, 'category': result.category},
+                          source=result.source.value,
+                          category=result.category,
+                          affected_datasets=datasets or None,
+                          consecutive_failures=failures,
+                          last_success_at=last_ok,
+                      )
+                      print(f'Alert sent: {level.value} - {result.source.value}')
+
+              if failed:
+                  sys.exit(1)
+
+          asyncio.run(main())
           "
-          echo "overall_status=$(python -c "import json; r=json.load(open('health_report.json')); print(r['overall_status'])")" >> $GITHUB_OUTPUT
-
-      - name: Alert on degraded/error
-        if: steps.health.outputs.overall_status != 'healthy'
-        run: |
-          python -c "
-          import asyncio, json
-
-          report = json.load(open('health_report.json'))
-          failed = [s for s in report['sources'] if s['status'] == 'error']
-
-          if not failed:
-              print('No failed sources to alert on')
-              exit(0)
-
-          from agrobr.alerts.notifier import AlertLevel, send_alert
-
-          level = AlertLevel.CRITICAL if report['overall_status'] == 'error' else AlertLevel.WARNING
-
-          asyncio.run(send_alert(
-              level=level,
-              title=f\"Health check: {report['overall_status']}\",
-              details={
-                  'failed_sources': {s['name']: s.get('error', 'unknown') for s in failed},
-                  'ok_sources': [s['name'] for s in report['sources'] if s['status'] == 'ok'],
-                  'version': report['version'],
-              },
-          ))
-          print(f'Alert sent: {level.value} - {len(failed)} sources down')
-          "
+          echo "overall_status=$(python -c "import json; r=json.load(open('health_report.json')); fs=[c for c in r['checks'] if c['status']=='failed']; print('error' if len(fs)==len(r['checks']) else ('degraded' if fs else 'healthy'))")" >> $GITHUB_OUTPUT
 
       - name: Upload report
         if: always()
