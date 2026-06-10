@@ -8,6 +8,7 @@ import httpx
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_year_uf
@@ -156,7 +157,7 @@ async def imoveis(
                     threshold=MAX_FEATURES_WARNING,
                     hint="Considere filtrar por municipio para reduzir volume",
                 )
-        except httpx.HTTPError:
+        except (httpx.HTTPError, SourceUnavailableError):
             logger.warning("sicar_hit_count_check_failed", uf=uf_upper, exc_info=True)
 
     t0 = time.monotonic()
@@ -281,7 +282,7 @@ async def imoveis_geo(
                     threshold=MAX_FEATURES_WARNING,
                     hint="Considere definir max_features ou filtrar por municipio para reduzir volume",
                 )
-        except httpx.HTTPError:
+        except (httpx.HTTPError, SourceUnavailableError):
             logger.warning("sicar_geo_hit_count_check_failed", uf=uf_upper, exc_info=True)
 
     t0 = time.monotonic()
