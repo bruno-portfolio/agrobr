@@ -513,13 +513,13 @@
 <text x="581.2" y="733.7" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">676 loc</text>
 </g>
 <g data-module="agrobr.anda">
-<circle cx="459.4" cy="679.3" r="48.2" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="459.4" cy="679.3" r="48.4" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
 <circle cx="460.4" cy="680.3" r="19.3" fill="#000000" opacity="0.3"/>
-<circle cx="459.4" cy="679.3" r="19.3" fill="#da3633" filter="url(#nodeGlow)"/>
-<circle cx="459.4" cy="673.5" r="11.6" fill="#f85149" opacity="0.15"/>
-<circle cx="456.5" cy="672.6" r="3.9" fill="#ffffff" opacity="0.08"/>
+<circle cx="459.4" cy="679.3" r="19.3" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="459.4" cy="673.5" r="11.6" fill="#e3b341" opacity="0.15"/>
+<circle cx="456.5" cy="672.5" r="3.9" fill="#ffffff" opacity="0.08"/>
 <text x="459.4" y="679.3" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">anda</text>
-<text x="459.4" y="712.6" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">660 loc</text>
+<text x="459.4" y="712.7" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">665 loc</text>
 </g>
 <g data-module="agrobr.defensivos">
 <circle cx="400.8" cy="569.3" r="46.3" fill="#2ea04355" opacity="0.1" filter="url(#softGlow)"/>
@@ -831,7 +831,7 @@
 <text x="28.0" y="46.0" font-family="monospace" font-size="8" letter-spacing="2" fill="#8b949e">CODE HEALTH</text>
 <text x="26.0" y="86.0" font-family="monospace" font-size="44" font-weight="700" fill="#d29922">C</text>
 <text x="64.0" y="72.0" font-family="monospace" font-size="12" font-weight="600" fill="#c9d1d9">74/100</text>
-<text x="64.0" y="85.0" font-family="monospace" font-size="10" font-weight="600" fill="#2ea043">&#9650; 3.8</text>
+<text x="64.0" y="85.0" font-family="monospace" font-size="10" font-weight="600" fill="#2ea043">&#9650; 4.1</text>
 <circle cx="1117.4" cy="25.0" r="2.5" fill="#1b1f23" stroke="#484f58" stroke-width="0.5"/>
 <text x="1127.4" y="28.0" font-family="monospace" font-size="8" fill="#8b949e">Dead code</text>
 <line x1="1061.4" y1="25.0" x2="1071.4" y2="25.0" stroke="#f85149" stroke-width="1.5"/>
@@ -844,6 +844,6 @@
 <text x="874.8" y="28.0" font-family="monospace" font-size="8" fill="#8b949e">Moderate</text>
 <circle cx="803.0" cy="25.0" r="4" fill="#2ea043"/>
 <text x="813.0" y="28.0" font-family="monospace" font-size="8" fill="#8b949e">Healthy</text>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#484f58" text-anchor="middle" dy="0.35em">60 modules | 50032 lines | 48% healthy 35% moderate 17% unhealthy (by loc) | 165 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#484f58" text-anchor="middle" dy="0.35em">60 modules | 50037 lines | 48% healthy 36% moderate 16% unhealthy (by loc) | 165 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
