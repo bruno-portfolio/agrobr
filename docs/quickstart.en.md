@@ -408,11 +408,12 @@ agrobr ibge pam soja --ano 2023 --nivel uf
 agrobr ibge lspa milho --ano 2024 --mes 6
 
 # Health check
-agrobr health --all
+agrobr health          # all sources
+agrobr health --deep   # deep check (fingerprint + parse)
 
-# Cache
-agrobr cache status
-agrobr cache clear --older-than 30d
+# Cache (status via doctor; clear = remove the file)
+agrobr doctor
+rm ~/.agrobr/cache/agrobr.duckdb
 ```
 
 ## Configuration
@@ -422,7 +423,7 @@ agrobr cache clear --older-than 30d
 ```bash
 # Cache
 export AGROBR_CACHE_CACHE_DIR=~/.agrobr/cache
-export AGROBR_CACHE_OFFLINE_MODE=false
+export AGROBR_CACHE_DB_NAME=agrobr.duckdb
 
 # HTTP
 export AGROBR_HTTP_TIMEOUT_READ=30
