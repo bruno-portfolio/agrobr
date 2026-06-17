@@ -38,21 +38,28 @@ pode quebrar codigo downstream que depende do schema atual.
 |---|---|---|---|
 | `produto` | `str` | obrigatória | v0.4.0 |
 | `safra` | `str` | obrigatória, formato `YYYY/YY` | v0.4.0 |
-| `uf` | `str` | obrigatória | v0.4.0 |
-| `area_plantada` | `float` | obrigatória, >= 0 | v0.4.0 |
-| `producao` | `float` | obrigatória, >= 0 | v0.4.0 |
-| `produtividade` | `float` | obrigatória, >= 0 | v0.4.0 |
+| `uf` | `str` | opcional | v0.4.0 |
+| `area_plantada` | `float` | opcional, >= 0 | v0.4.0 |
+| `area_colhida` | `float` | opcional, >= 0 | v0.4.0 |
+| `produtividade` | `float` | opcional, >= 0 | v0.4.0 |
+| `producao` | `float` | opcional, >= 0 | v0.4.0 |
 | `levantamento` | `int` | obrigatória, 1-12 | v0.6.0 |
+| `data_publicacao` | `date` | obrigatória | v0.6.0 |
+| `fonte` | `str` | obrigatória | v0.6.0 |
 
 ### `producao_anual` (IBGE PAM)
 
 | Coluna | Tipo | Garantia | Desde |
 |---|---|---|---|
-| `ano` | `int` | obrigatória | v0.4.0 |
+| `ano` | `int` | obrigatória, >= 1974 | v0.4.0 |
+| `localidade` | `str` | opcional | v0.4.0 |
 | `produto` | `str` | obrigatória | v0.4.0 |
-| `localidade` | `str` | obrigatória | v0.4.0 |
-| `producao` | `float` | obrigatória, >= 0 | v0.4.0 |
-| `area_plantada` | `float` | obrigatória, >= 0 | v0.4.0 |
+| `area_plantada` | `float` | opcional, >= 0 | v0.4.0 |
+| `area_colhida` | `float` | opcional, >= 0 | v0.4.0 |
+| `producao` | `float` | opcional, >= 0 | v0.4.0 |
+| `rendimento` | `float` | opcional, >= 0 | v0.4.0 |
+| `valor_producao` | `float` | opcional, >= 0 | v0.4.0 |
+| `fonte` | `str` | obrigatória | v0.6.0 |
 
 ### Source Layer — Contratos por módulo
 

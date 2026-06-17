@@ -21,9 +21,11 @@ Estimativas de safra corrente por UF.
 | `produto` | str | ❌ | Nome do produto |
 | `uf` | str | ✅ | Unidade Federativa |
 | `area_plantada` | float64 | ✅ | Área plantada (mil ha) |
-| `producao` | float64 | ✅ | Produção (mil ton) |
+| `area_colhida` | float64 | ✅ | Área colhida (mil ha) |
 | `produtividade` | float64 | ✅ | Produtividade (kg/ha) |
-| `levantamento` | int | ✅ | Número do levantamento |
+| `producao` | float64 | ✅ | Produção (mil ton) |
+| `levantamento` | int | ❌ | Número do levantamento (1-12) |
+| `data_publicacao` | date | ❌ | Data de publicação CONAB |
 | `fonte` | str | ❌ | Origem dos dados |
 
 ## Garantias

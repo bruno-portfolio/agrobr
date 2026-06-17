@@ -22,7 +22,7 @@ Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
 | `unidade` | str | ❌ | - | Sim |
 | `ceasa` | str | ❌ | - | Sim |
 | `ceasa_uf` | str | ❌ | - | Sim |
-| `preco` | float | ✅ | BRL | Sim |
+| `preco` | float | ❌ | BRL | Sim |
 
 **Primary key:** `[data, produto, ceasa]`
 
@@ -34,6 +34,7 @@ Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
 - `data` sempre no formato date
 - `ceasa_uf` código UF de 2 letras uppercase
 - Valores monetários em BRL
+- `preco` sempre > 0 (nulls filtrados)
 
 ## Exemplo
 

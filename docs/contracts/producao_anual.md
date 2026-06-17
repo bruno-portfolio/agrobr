@@ -24,6 +24,7 @@ Produção agrícola anual consolidada por UF ou município.
 | `area_colhida` | float64 | ✅ | Área colhida (ha) |
 | `producao` | float64 | ✅ | Produção (toneladas) |
 | `rendimento` | float64 | ✅ | Rendimento (kg/ha) |
+| `valor_producao` | float64 | ✅ | Valor da produção (mil reais) |
 | `fonte` | str | ❌ | Origem dos dados |
 
 ## Primary Key

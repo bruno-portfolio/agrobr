@@ -30,15 +30,13 @@ Custos de produção detalhados por cultura, UF e safra.
 
 **Primary key:** `[cultura, uf, safra, categoria, item]`
 
-**Constraints:** todos os numéricos >= 0, `participacao_pct` entre 0 e 100
+**Constraints:** `quantidade_ha >= 0`, `preco_unitario >= 0`
 
 ## Garantias
 
 - Nomes de coluna nunca mudam (só adicionam)
 - `safra` sempre no formato YYYY/YY
 - `uf` sempre é código de estado brasileiro válido
-- Valores numéricos sempre >= 0
-- `participacao_pct` entre 0 e 100
 
 ## Exemplo
 

@@ -38,21 +38,28 @@ can break downstream code that depends on the current schema.
 |---|---|---|---|
 | `produto` | `str` | required | v0.4.0 |
 | `safra` | `str` | required, format `YYYY/YY` | v0.4.0 |
-| `uf` | `str` | required | v0.4.0 |
-| `area_plantada` | `float` | required, >= 0 | v0.4.0 |
-| `producao` | `float` | required, >= 0 | v0.4.0 |
-| `produtividade` | `float` | required, >= 0 | v0.4.0 |
+| `uf` | `str` | optional | v0.4.0 |
+| `area_plantada` | `float` | optional, >= 0 | v0.4.0 |
+| `area_colhida` | `float` | optional, >= 0 | v0.4.0 |
+| `produtividade` | `float` | optional, >= 0 | v0.4.0 |
+| `producao` | `float` | optional, >= 0 | v0.4.0 |
 | `levantamento` | `int` | required, 1-12 | v0.6.0 |
+| `data_publicacao` | `date` | required | v0.6.0 |
+| `fonte` | `str` | required | v0.6.0 |
 
 ### `producao_anual` (IBGE PAM)
 
 | Column | Type | Guarantee | Since |
 |---|---|---|---|
-| `ano` | `int` | required | v0.4.0 |
+| `ano` | `int` | required, >= 1974 | v0.4.0 |
+| `localidade` | `str` | optional | v0.4.0 |
 | `produto` | `str` | required | v0.4.0 |
-| `localidade` | `str` | required | v0.4.0 |
-| `producao` | `float` | required, >= 0 | v0.4.0 |
-| `area_plantada` | `float` | required, >= 0 | v0.4.0 |
+| `area_plantada` | `float` | optional, >= 0 | v0.4.0 |
+| `area_colhida` | `float` | optional, >= 0 | v0.4.0 |
+| `producao` | `float` | optional, >= 0 | v0.4.0 |
+| `rendimento` | `float` | optional, >= 0 | v0.4.0 |
+| `valor_producao` | `float` | optional, >= 0 | v0.4.0 |
+| `fonte` | `str` | required | v0.6.0 |
 
 ### Source Layer — Per-module Contracts
 

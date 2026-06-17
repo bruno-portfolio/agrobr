@@ -68,4 +68,4 @@ print(contract.to_json())
 
 ## Unidades
 
-Todos os valores em **mil toneladas** (exceto estoque que pode ser em mil sacas para alguns produtos).
+Todos os valores numéricos em **mil toneladas**.

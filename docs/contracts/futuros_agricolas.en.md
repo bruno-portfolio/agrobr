@@ -1,46 +1,46 @@
 # futuros_agricolas
 
-Futuros agrícolas B3 — ajustes diários, histórico e posições abertas.
+B3 agricultural futures — daily settlements, history and open interest.
 
-## Fonte
+## Source
 
-| Prioridade | Fonte | Descrição |
-|------------|-------|-----------|
-| 1 | B3 | Bolsa de Valores do Brasil |
+| Priority | Source | Description |
+|----------|--------|-------------|
+| 1 | B3 | Brazilian stock exchange |
 
-## Modos (`tipo=`)
+## Modes (`tipo=`)
 
-### Ajustes (default)
+### Settlements (default)
 
 ```python
 df = await datasets.futuros_agricolas("boi", data="2025-03-05")
 ```
 
-### Histórico
+### History
 
 ```python
 df = await datasets.futuros_agricolas("boi", tipo="historico", inicio="2025-01-01", fim="2025-03-05")
 ```
 
-### Posições abertas
+### Open interest
 
 ```python
 df = await datasets.futuros_agricolas("boi", tipo="posicoes", data="2025-03-05")
 ```
 
-## Produtos
+## Products
 
 `boi`, `milho`, `cafe_arabica`, `cafe_conillon`, `etanol`, `soja_cross`, `soja_fob`
 
-> `soja_fob` não possui dados de posições abertas (SOY ausente de `TICKERS_AGRO_OI`).
+> `soja_fob` has no open interest data (SOY absent from `TICKERS_AGRO_OI`).
 
-## Contratos
+## Contracts
 
 ### `tipo="ajustes"` / `tipo="historico"` → `AJUSTE_DIARIO_V1`
 
 PK: `[data, ticker, vencimento_codigo]`
 
-| Coluna | Tipo | Nullable |
+| Column | Type | Nullable |
 |--------|------|----------|
 | `data` | DATE | N |
 | `ticker` | STRING | N |
@@ -58,7 +58,7 @@ PK: `[data, ticker, vencimento_codigo]`
 
 PK: `[data, ticker_completo]`
 
-| Coluna | Tipo | Nullable |
+| Column | Type | Nullable |
 |--------|------|----------|
 | `data` | DATE | N |
 | `ticker` | STRING | N |
@@ -72,6 +72,6 @@ PK: `[data, ticker_completo]`
 | `variacao_posicoes` | INTEGER | Y |
 | `unidade` | STRING | Y |
 
-## Licença
+## License
 
-`zona_cinza` — B3 é empresa privada. Dados públicos sem termos claros para acesso programático.
+`zona_cinza` — B3 is a private company. Public data without clear terms for programmatic access.

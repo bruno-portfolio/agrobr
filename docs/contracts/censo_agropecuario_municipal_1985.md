@@ -12,7 +12,7 @@ Censo Agropecuario 1985 — dados municipais extraidos via OCR de PDFs do IBGE (
 
 53 temas cobrindo estrutura fundiaria, uso da terra, pessoal, mecanizacao, pecuaria, lavouras e producao:
 
-`propriedade_terras`, `condicao_produtor`, `condicao_legal_terras`, `area_total`, `uso_terra_lavoura`, `uso_terra_pastagem`, `uso_terra_matas`, `uso_terra_outros`, `irrigacao`, `pessoal_total`, `pessoal_familiar`, `pessoal_empregados`, `mecanizacao_tratores`, `mecanizacao_implementos`, `bovinos`, `suinos`, `aves`, `ovinos_caprinos`, `equinos_muares`, `bubalinos_coelhos`, `inseminacao_ordenha`, `leite_la`, `producao_ovos_mel`, `producao_casulos_cera`, `lavoura_permanente_area`, `lavoura_permanente_prod`, `lavoura_temporaria_area`, `lavoura_temporaria_prod`, `lavoura_temp_flores`, `horticultura`, `silvicultura_area`, `silvicultura_prod`, `extracao_vegetal`, `forrageiras`, `efetivo_aves_detalhe`, `producao_particular`, ...
+`assistencia_tecnica`, `bens_despesas`, `classe_atividade_economica`, `colheita_lav_temporaria`, `condicao_legal_terras`, `condicao_produtor`, `conservacao_solo`, `cooperativas`, `despesas`, `efetivo_asininos`, `efetivo_aves`, `efetivo_bovinos`, `efetivo_bubalinos_femeas`, `efetivo_bubalinos_machos`, `efetivo_caprinos`, `efetivo_coelhos`, `efetivo_equinos`, `efetivo_muares`, `efetivo_ovinos`, `efetivo_suinos`, `energia_eletrica`, `fertilizantes_defensivos`, `forma_administracao`, `grupos_area_complemento`, `grupos_area_total`, `grupos_pessoal_ocupado`, `horticultura`, `inseminacao_ordenha`, `investimentos`, `irrigacao`, `lavoura_permanente`, `maquinas_instrumentos`, `meios_transporte`, `parcelas`, `pessoal_ocupado`, `producao_animal_cont`, `producao_la_mel`, `producao_leite_ovos`, `producao_particular`, `produtos_extrativos`, `propriedade_terras`, `residencia_produtor`, `servicos_empreitada`, `silos_armazenamento`, `silvicultura`, `silvicultura_cont`, `terras_fora_area`, `terras_proprias_terceiros`, `transformacao_beneficiamento`, `transformacao_cont`, `uso_forca_trabalho`, `utilizacao_terras`, `valor_bens_invest_financ`
 
 Use `temas_censo_agro_municipal_1985()` para a lista completa.
 
@@ -70,7 +70,7 @@ Long format: cada linha tem um par variavel/valor.
 
 ## UFs Disponiveis (22)
 
-AC, AL, AM, AP, BA, ES, GO, MG, MS, MT, PA, PB, PE, PR, RJ, RN (parcial), RO, RR, RS, SC, SE, SP
+AC, AL, AM, AP, BA, DF, ES, GO, MG, MS, MT, PA, PB, PE, PR, RJ, RO, RR, RS, SC, SE, SP
 
 **Excluidos:** MA, PI, CE, RN — PDFs sem camada OCR (Tesseract insuficiente).
 
@@ -101,14 +101,14 @@ from agrobr import ibge
 df = await ibge.censo_agro_municipal_1985('propriedade_terras', uf='SP')
 
 # Apenas municipios
-df = await ibge.censo_agro_municipal_1985('bovinos', nivel='municipio')
+df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', nivel='municipio')
 
 # Listar temas
 temas = await ibge.temas_censo_agro_municipal_1985()
 
 # Via dataset semantico
 from agrobr import datasets
-df = await datasets.censo_agropecuario_municipal_1985('uso_terra_lavoura', uf='MG')
+df = await datasets.censo_agropecuario_municipal_1985('utilizacao_terras', uf='MG')
 
 # Com metadados
 df, meta = await ibge.censo_agro_municipal_1985('propriedade_terras', return_meta=True)
@@ -121,7 +121,7 @@ df, meta = await ibge.censo_agro_municipal_1985('propriedade_terras', return_met
 agrobr ibge censo-municipal-1985 propriedade_terras --uf SP
 
 # Formato CSV
-agrobr ibge censo-municipal-1985 bovinos --formato csv
+agrobr ibge censo-municipal-1985 efetivo_bovinos --formato csv
 
 # Listar temas disponiveis
 agrobr ibge temas-municipal-1985
