@@ -10,9 +10,16 @@ from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 
 from . import client, parser
-from .models import BIOMAS_VALIDOS, normalizar_bioma
+from .models import BIOMAS_VALIDOS, COLECAO_ATUAL, normalizar_bioma
 
 logger = structlog.get_logger()
+
+
+def _validar_colecao(colecao: int | None) -> None:
+    if colecao is not None and colecao != COLECAO_ATUAL:
+        raise ValueError(
+            f"colecao {colecao} nao suportada; apenas a colecao {COLECAO_ATUAL} (atual) esta disponivel"
+        )
 
 
 @overload
@@ -53,7 +60,7 @@ async def cobertura(
     classe_id: int | None = None,
     nivel: Literal["estado", "municipio"] = "estado",
     municipio: str | None = None,
-    colecao: int | None = None,  # noqa: ARG001
+    colecao: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
@@ -66,6 +73,8 @@ async def cobertura(
         nivel=nivel,
         municipio=municipio,
     )
+
+    _validar_colecao(colecao)
 
     t0 = time.monotonic()
     if nivel == "municipio":
@@ -152,12 +161,14 @@ async def transicao(
     periodo: str | None = None,
     classe_de_id: int | None = None,
     classe_para_id: int | None = None,
-    colecao: int | None = None,  # noqa: ARG001
+    colecao: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     logger.info("mapbiomas_transicao", bioma=bioma, estado=estado, periodo=periodo)
+
+    _validar_colecao(colecao)
 
     t0 = time.monotonic()
     xlsx_bytes, source_url = await client.fetch_biome_state()

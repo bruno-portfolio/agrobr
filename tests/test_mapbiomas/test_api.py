@@ -365,3 +365,27 @@ class TestTransicao:
             df = await api.transicao(estado="XX")
 
         assert len(df) == 0
+
+
+class TestValidacaoColecao:
+    @pytest.mark.asyncio
+    async def test_cobertura_colecao_invalida(self):
+        with pytest.raises(ValueError, match="nao suportada"):
+            await api.cobertura(colecao=9)
+
+    @pytest.mark.asyncio
+    async def test_transicao_colecao_invalida(self):
+        with pytest.raises(ValueError, match="nao suportada"):
+            await api.transicao(colecao=9)
+
+    @pytest.mark.asyncio
+    async def test_cobertura_colecao_atual_passa_validacao(self):
+        xlsx_bytes = _golden_xlsx()
+        with patch.object(
+            api.client,
+            "fetch_biome_state",
+            new_callable=AsyncMock,
+            return_value=(xlsx_bytes, "https://storage.googleapis.com/mapbiomas-public/test.xlsx"),
+        ):
+            df = await api.cobertura(colecao=10)
+        assert len(df) >= 1

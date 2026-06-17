@@ -22,7 +22,7 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 | `classe_id` | `int` | Nao | Codigo de classe MapBiomas (ex: 15 para Pastagem) |
 | `nivel` | `str` | Nao | `"estado"` (default) ou `"municipio"`. Municipal baixa ~660 MB |
 | `municipio` | `str` | Nao | Filtro parcial por nome de municipio (case-insensitive). Requer `nivel="municipio"` |
-| `colecao` | `int` | Nao | Reservado para selecao de colecao (ainda nao aplicado; sempre serve a colecao 10) |
+| `colecao` | `int` | Nao | Aceita apenas a colecao atual (10) ou None; outros valores levantam ValueError |
 | `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 
@@ -77,7 +77,7 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 | `periodo` | `str` | Nao | Periodo (ex: "2019-2020", "1985-2024") |
 | `classe_de_id` | `int` | Nao | Codigo da classe de origem |
 | `classe_para_id` | `int` | Nao | Codigo da classe de destino |
-| `colecao` | `int` | Nao | Reservado para selecao de colecao (ainda nao aplicado; sempre serve a colecao 10) |
+| `colecao` | `int` | Nao | Aceita apenas a colecao atual (10) ou None; outros valores levantam ValueError |
 | `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 

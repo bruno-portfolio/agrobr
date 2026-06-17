@@ -46,6 +46,7 @@ CLASSES_LEGENDA: dict[int, str] = {
     75: "Não definido",
 }
 
+COLECAO_ATUAL = 10
 SHEET_COBERTURA = "COVERAGE_10"
 SHEET_TRANSICAO = "TRANSITION_10"
 

@@ -1,5 +1,5 @@
 """Lista Suja — Cadastro de empregadores que submeteram trabalhadores a condicoes de escravidao.
-Fonte: portaldatransparencia.gov.br (XLSX download, sem auth).
+Fonte: gov.br/trabalho-e-emprego (PDF download, sem auth).
 Licenca: Livre (Lei de Acesso a Informacao).
 """
 

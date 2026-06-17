@@ -26,7 +26,7 @@ MapBiomas publishes annual collections with methodological improvements:
 |---------|------|---------|
 | 10 (current) | August 2025 | 1985-2024 |
 
-agrobr always uses the most recent collection. The `colecao` parameter is accepted (reserved for collection selection) but the current implementation does not apply it yet — it always serves collection 10.
+agrobr uses the current collection (10). The `colecao` parameter accepts only 10 (or None); other values raise `ValueError`.
 
 ## Data Structure
 

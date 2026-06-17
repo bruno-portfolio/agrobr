@@ -26,7 +26,7 @@ O MapBiomas publica colecoes anuais com melhorias metodologicas:
 |---------|------|---------|
 | 10 (atual) | Agosto 2025 | 1985-2024 |
 
-O agrobr usa sempre a colecao mais recente. O parametro `colecao` e aceito (reservado para selecao de colecao), mas a implementacao atual ainda nao o aplica — sempre serve a colecao 10.
+O agrobr usa a colecao atual (10). O parametro `colecao` aceita apenas 10 (ou None); outros valores levantam `ValueError`.
 
 ## Estrutura dos Dados
 

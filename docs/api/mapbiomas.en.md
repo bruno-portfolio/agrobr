@@ -22,7 +22,7 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 | `classe_id` | `int` | No | MapBiomas class code (e.g. 15 for Pasture) |
 | `nivel` | `str` | No | `"estado"` (default) or `"municipio"`. Municipal downloads ~660 MB |
 | `municipio` | `str` | No | Partial filter by municipality name (case-insensitive). Requires `nivel="municipio"` |
-| `colecao` | `int` | No | Reserved for collection selection (not applied yet; always serves collection 10) |
+| `colecao` | `int` | No | Accepts only the current collection (10) or None; other values raise ValueError |
 | `as_polars` | `bool` | No | Return as polars.DataFrame |
 | `return_meta` | `bool` | No | If True, returns `(DataFrame, MetaInfo)` |
 
@@ -77,7 +77,7 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 | `periodo` | `str` | No | Period (e.g. "2019-2020", "1985-2024") |
 | `classe_de_id` | `int` | No | Source class code |
 | `classe_para_id` | `int` | No | Target class code |
-| `colecao` | `int` | No | Reserved for collection selection (not applied yet; always serves collection 10) |
+| `colecao` | `int` | No | Accepts only the current collection (10) or None; other values raise ValueError |
 | `as_polars` | `bool` | No | Return as polars.DataFrame |
 | `return_meta` | `bool` | No | If True, returns `(DataFrame, MetaInfo)` |
 
