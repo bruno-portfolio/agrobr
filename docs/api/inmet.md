@@ -27,7 +27,7 @@ async def historico(
     agregacao: str = "horario",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
 **Parametros:**
@@ -37,6 +37,8 @@ async def historico(
 | `codigo` | `str` | Codigo da estacao (ex: `"A701"`) |
 | `ano` | `int` | Ano (2000+) |
 | `agregacao` | `str` | `"horario"` (default) ou `"diario"` |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
 
@@ -65,7 +67,9 @@ async def estacoes(
     tipo: str = "T",
     uf: str | None = None,
     apenas_operantes: bool = True,
-) -> pd.DataFrame
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
 **Parametros:**
@@ -75,6 +79,8 @@ async def estacoes(
 | `tipo` | `str` | `"T"` para automaticas, `"M"` para convencionais |
 | `uf` | `str \| None` | Filtrar por UF |
 | `apenas_operantes` | `bool` | Se True, retorna apenas estacoes ativas |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
 
@@ -92,6 +98,7 @@ async def estacao(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -104,6 +111,7 @@ async def estacao(
 | `inicio` | `str \| date` | Data inicial (YYYY-MM-DD) |
 | `fim` | `str \| date` | Data final (YYYY-MM-DD) |
 | `agregacao` | `str` | `"horario"` (default) ou `"diario"` |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
@@ -120,6 +128,7 @@ Clima agregado por UF a partir de todas as estacoes do estado.
 async def clima_uf(
     uf: str,
     ano: int,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -130,6 +139,7 @@ async def clima_uf(
 |-----------|------|-----------|
 | `uf` | `str` | Sigla UF (ex: `"MT"`, `"SP"`) |
 | `ano` | `int` | Ano de referencia |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
