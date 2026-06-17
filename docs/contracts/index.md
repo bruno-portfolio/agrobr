@@ -19,6 +19,8 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 
 ## Datasets
 
+> A tabela lista os contratos **documentados** (uma página cada) — não é idêntica a `datasets.list_datasets()`. `lspa` é contrato de uma API fonte (via `ibge.lspa()`, sem dataset wrapper); `embarques_anec` é dataset + contrato registrado, mas ainda sem página.
+
 | Dataset | Descrição | Fontes |
 |---------|-----------|--------|
 | [preco_diario](./preco_diario.md) | Preços diários spot | CEPEA → cache |
@@ -51,6 +53,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | [progresso_safra](./progresso_safra.md) | Progresso semanal semeadura/colheita | CONAB |
 | [queimadas](./queimadas.md) | Focos de calor por satélite | INPE |
 | [futuros_agricolas](./futuros_agricolas.md) | Futuros agrícolas B3 (ajustes, histórico, posições) | B3 |
+| [posicionamento_fundos](./posicionamento_fundos.md) | Posicionamento de fundos por categoria de trader (COT) | CFTC |
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Movimentação portuária de cargas | ANTAQ |
 | [seguro_rural](./seguro_rural.md) | Seguro rural — apólices e sinistros | MAPA PSR |
 | [serie_historica_safra](./serie_historica_safra.md) | Série histórica de safras (32 culturas) | CONAB |
@@ -88,11 +91,16 @@ from agrobr import datasets
 # Listar datasets
 datasets.list_datasets()
 # ['abate_trimestral', 'balanco', 'cadastro_rural', 'censo_agropecuario',
-#  'censo_agropecuario_historico', 'censo_agropecuario_municipal_1985',
-#  'credito_rural', 'custo_producao', 'estimativa_safra', 'exportacao',
-#  'extrativismo_vegetal', 'fertilizante', 'importacao', 'leite_industrial',
-#  'pecuaria_municipal', 'pib_agro', 'preco_diario', 'producao_anual',
-#  'progresso_safra', 'silvicultura']
+#  'censo_agropecuario_historico', 'censo_agropecuario_legado',
+#  'censo_agropecuario_municipal_1985', 'clima', 'comercio_internacional',
+#  'condicao_lavouras', 'credito_rural', 'custo_producao', 'desmatamento',
+#  'embarques_anec', 'estimativa_safra', 'exportacao', 'extrativismo_vegetal',
+#  'fertilizante', 'futuros_agricolas', 'importacao', 'leite_industrial',
+#  'movimentacao_portuaria', 'oferta_demanda_global', 'pecuaria_municipal',
+#  'pib_agro', 'posicionamento_fundos', 'preco_atacado', 'preco_diario',
+#  'producao_anual', 'progresso_safra', 'queimadas', 'seguro_rural',
+#  'serie_historica_safra', 'silvicultura', 'uso_do_solo', 'zoneamento_agricola']
+# (36 datasets)
 
 # Listar produtos de um dataset
 datasets.list_products("preco_diario")
