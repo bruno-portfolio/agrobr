@@ -1,54 +1,54 @@
-# Normalização
+# Normalization
 
-O módulo `agrobr.normalize` padroniza dados agrícolas brasileiros para garantir cruzamento entre fontes diferentes. São 39 funções organizadas em 7 sub-módulos.
+The `agrobr.normalize` module standardizes Brazilian agricultural data to enable cross-referencing across different sources. It has 39 functions organized into 7 sub-modules.
 
-## Municípios IBGE
+## IBGE Municipalities
 
-5571 municípios com código IBGE de 7 dígitos. Busca accent/case insensitive.
+5,571 municipalities with 7-digit IBGE codes. Accent/case-insensitive lookup.
 
 ```python
 from agrobr.normalize import municipio_para_ibge, ibge_para_municipio, buscar_municipios
 
-# Nome para código IBGE
+# Name to IBGE code
 municipio_para_ibge("Rondonópolis")        # 5107602
-municipio_para_ibge("RONDONOPOLIS")        # 5107602 (sem acento, uppercase)
-municipio_para_ibge("rondonopolis", "MT")  # 5107602 (desambiguar por UF)
+municipio_para_ibge("RONDONOPOLIS")        # 5107602 (no accent, uppercase)
+municipio_para_ibge("rondonopolis", "MT")  # 5107602 (disambiguate by state)
 
-# Código IBGE para info
+# IBGE code to info
 ibge_para_municipio(5107602)
 # {'codigo_ibge': 5107602, 'nome': 'Rondonópolis', 'uf': 'MT'}
 
-# Busca parcial
+# Partial search
 buscar_municipios("sorriso", uf="MT")
 # [{'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}]
 
-# Homônimos — sem UF retorna o primeiro, com UF desambigua
+# Homonyms — without state returns the first; with state it disambiguates
 municipio_para_ibge("Brasília")            # 5300108 (DF)
 municipio_para_ibge("Brasília", "MG")      # 3108909 (Brasília de Minas)
 ```
 
-Dados da [API IBGE Localidades](https://servicodados.ibge.gov.br/api/docs/localidades) — livre para uso.
+Data from the [IBGE Localities API](https://servicodados.ibge.gov.br/api/docs/localidades) — free to use.
 
-## Geocodificação Reversa
+## Reverse Geocoding
 
-Lookup `(lat, lon) → município` via centroide mais próximo. Zero HTTP, sub-ms. 5571 municípios com centroides da [API IBGE Malhas](https://servicodados.ibge.gov.br/api/v3/malhas/).
+Lookup `(lat, lon) → municipality` via nearest centroid. Zero HTTP, sub-ms. 5,571 municipalities with centroids from the [IBGE Meshes API](https://servicodados.ibge.gov.br/api/v3/malhas/).
 
 ```python
 from agrobr.normalize import coordenada_para_municipio
 
-# Coordenada para município mais próximo
+# Coordinate to nearest municipality
 coordenada_para_municipio(-12.74, -55.68)
 # {'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}
 
 coordenada_para_municipio(-15.78, -47.93)
 # {'codigo_ibge': 5300108, 'nome': 'Brasília', 'uf': 'DF'}
 
-# Oceano / fora do Brasil → None (threshold 1.5° ~167km)
+# Ocean / outside Brazil → None (threshold 1.5° ~167km)
 coordenada_para_municipio(0, -30)
 # None
 ```
 
-Caso de uso típico — filtrar SICAR por município a partir de coordenada:
+Typical use case — filter SICAR by municipality from a coordinate:
 
 ```python
 from agrobr.normalize import coordenada_para_municipio
@@ -58,14 +58,14 @@ info = coordenada_para_municipio(lat, lon)
 gdf = await sicar.imoveis_geo(info["uf"], municipio=info["nome"])
 ```
 
-## Culturas
+## Crops
 
-144 variantes mapeando para 41 culturas canônicas. Aceita português, inglês, com/sem acento.
+144 variants mapping to 41 canonical crops. Accepts Portuguese, English, with/without accents.
 
 ```python
 from agrobr.normalize import normalizar_cultura, listar_culturas, is_cultura_valida
 
-# Padronização
+# Standardization
 normalizar_cultura("SOJA")             # "soja"
 normalizar_cultura("Soja em Grão")     # "soja"
 normalizar_cultura("soybean")          # "soja"
@@ -74,7 +74,7 @@ normalizar_cultura("café arábica")     # "cafe_arabica"
 normalizar_cultura("boi gordo")        # "boi"
 normalizar_cultura("cotton")           # "algodao"
 
-# Listar canônicas
+# List canonical
 listar_culturas()
 # ['acucar', 'acucar_cristal', 'acucar_refinado', 'algodao', 'algodao_pluma',
 #  'amendoim', 'arroz', 'aveia', 'batata', 'boi', 'cafe', 'cafe_arabica',
@@ -85,14 +85,14 @@ listar_culturas()
 #  'milho_1', 'milho_2', 'milho_3', 'oleo_soja', 'soja', 'sorgo', 'suino',
 #  'tomate', 'trigo']
 
-# Validação
+# Validation
 is_cultura_valida("soja em grão")  # True
 is_cultura_valida("batata doce")   # False
 ```
 
-## UFs e Regiões
+## States and Regions
 
-27 UFs com código IBGE, nome completo e região. Aceita sigla, nome completo, com/sem acento.
+27 states with IBGE code, full name and region. Accepts abbreviation, full name, with/without accents.
 
 ```python
 from agrobr.normalize import (
@@ -117,9 +117,9 @@ listar_ufs()                   # ['AC', 'AL', 'AM', ..., 'TO']
 listar_regioes()               # ['Centro-Oeste', 'Nordeste', 'Norte', 'Sudeste', 'Sul']
 ```
 
-## Biomas
+## Biomes
 
-6 biomas brasileiros. Aceita com/sem acento, case insensitive. Usada automaticamente em `desmatamento`, `queimadas` e `mapbiomas`.
+6 Brazilian biomes. Accepts with/without accents, case-insensitive. Used automatically in `desmatamento`, `queimadas` and `mapbiomas`.
 
 ```python
 from agrobr.normalize import normalizar_bioma, BIOMAS_VALIDOS
@@ -134,9 +134,9 @@ BIOMAS_VALIDOS
 # {'Amazônia', 'Caatinga', 'Cerrado', 'Mata Atlântica', 'Pampa', 'Pantanal'}
 ```
 
-## Safras
+## Crop Years
 
-Datas de safra agrícola no formato brasileiro `YYYY/YY`. A safra agrícola vai de julho a junho.
+Crop-year dates in the Brazilian `YYYY/YY` format. The crop year runs from July to June.
 
 ```python
 from agrobr.normalize import (
@@ -145,7 +145,7 @@ from agrobr.normalize import (
     periodo_safra, lista_safras,
 )
 
-safra_atual()                    # "2025/26" (se estiver entre jul/2025 e jun/2026)
+safra_atual()                    # "2025/26" (if between Jul/2025 and Jun/2026)
 normalizar_safra("24/25")        # "2024/25"
 normalizar_safra("2024/2025")    # "2024/25"
 validar_safra("2024/25")         # True
@@ -160,9 +160,9 @@ lista_safras("2020/21", "2024/25")
 # ['2020/21', '2021/22', '2022/23', '2023/24', '2024/25']
 ```
 
-## Unidades
+## Units
 
-Conversão entre unidades agrícolas brasileiras: sacas, toneladas, bushels, arrobas, hectares.
+Conversion between Brazilian agricultural units: bags, tonnes, bushels, arrobas, hectares.
 
 ```python
 from agrobr.normalize import (
@@ -170,43 +170,43 @@ from agrobr.normalize import (
     preco_saca_para_tonelada, preco_tonelada_para_saca,
 )
 
-# Conversão genérica
-converter(1, "ton", "sc60kg")           # 16.6667 (sacas de 60kg)
+# Generic conversion
+converter(1, "ton", "sc60kg")           # 16.6667 (60kg bags)
 converter(100, "sc60kg", "ton")         # 6.0
 converter(1, "ton", "bu", produto="soja")  # 36.7437 (bushels)
 converter(1, "arroba", "kg")            # 15.0
 
-# Atalhos para preços
-preco_saca_para_tonelada(145.50)        # 2425.0 (R$/ton a partir de R$/sc60kg)
-preco_tonelada_para_saca(2425.0)        # 145.5  (R$/sc60kg a partir de R$/ton)
+# Price shortcuts
+preco_saca_para_tonelada(145.50)        # 2425.0 (BRL/ton from BRL/sc60kg)
+preco_tonelada_para_saca(2425.0)        # 145.5  (BRL/sc60kg from BRL/ton)
 
-# Peso para volume
+# Weight to volume
 sacas_para_toneladas(1000)              # 60.0
 toneladas_para_sacas(60)                # 1000.0
 ```
 
 ## Encoding
 
-Detecção e decodificação de encoding para HTML/CSV de fontes brasileiras (ISO-8859-1, Windows-1252, UTF-8).
+Encoding detection and decoding for HTML/CSV from Brazilian sources (ISO-8859-1, Windows-1252, UTF-8).
 
 ```python
 from agrobr.normalize import detect_encoding, decode_content, detect_encoding_chain
 
-# Detectar encoding de bytes (chardet)
+# Detect encoding of bytes (chardet)
 encoding, confidence = detect_encoding(raw_bytes)   # ("iso-8859-1", 0.95)
 
-# Decodificar com fallback chain completa
+# Decode with full fallback chain
 text, enc = decode_content(raw_bytes)               # (str, "utf-8")
 
-# Chain rápida sem chardet (UTF-8 → UTF-8-sig → Windows-1252 → ISO-8859-1)
+# Fast chain without chardet (UTF-8 → UTF-8-sig → Windows-1252 → ISO-8859-1)
 enc = detect_encoding_chain(raw_bytes)              # "windows-1252"
 ```
 
-`detect_encoding_chain` usa probe de 4KB na ordem UTF-8, UTF-8-sig, Windows-1252, ISO-8859-1 — com chardet como fallback final. Usada internamente pelos parsers `alt/` para CSVs de governo.
+`detect_encoding_chain` probes the first 4KB in the order UTF-8, UTF-8-sig, Windows-1252, ISO-8859-1 — with chardet as the final fallback. Used internally by the `alt/` parsers for government CSVs.
 
-## Numérico BR
+## Brazilian Numbers
 
-Parsing de valores numéricos no formato brasileiro (ponto como milhar, vírgula como decimal).
+Parsing of numeric values in the Brazilian format (dot as thousands, comma as decimal).
 
 ```python
 from agrobr.normalize import parse_numeric_br
@@ -214,20 +214,20 @@ from agrobr.normalize import parse_numeric_br
 parse_numeric_br("1.234,56")     # 1234.56
 parse_numeric_br("1234,56")      # 1234.56
 parse_numeric_br("500.000,50")   # 500000.5
-parse_numeric_br(42)             # 42.0 (passthrough int/float)
-parse_numeric_br("-")            # None (marcador de dado ausente)
+parse_numeric_br(42)             # 42.0 (int/float passthrough)
+parse_numeric_br("-")            # None (missing-data marker)
 parse_numeric_br(None)           # None
-parse_numeric_br("abc")          # None (inválido retorna None)
+parse_numeric_br("abc")          # None (invalid returns None)
 ```
 
-## Referência Rápida
+## Quick Reference
 
-| Sub-módulo | Funções | Dados |
+| Sub-module | Functions | Data |
 |---|---|---|
-| `municipalities` | `municipio_para_ibge`, `ibge_para_municipio`, `buscar_municipios`, `coordenada_para_municipio`, `total_municipios` | 5571 municípios + centroides |
-| `crops` | `normalizar_cultura`, `listar_culturas`, `is_cultura_valida` | 144 variantes, 41 canônicas |
-| `regions` | `normalizar_uf`, `validar_uf`, `uf_para_nome`, `uf_para_regiao`, `uf_para_ibge`, `ibge_para_uf`, `listar_ufs`, `listar_regioes`, `normalizar_municipio`, `normalizar_praca`, `normalizar_bioma` | 27 UFs, 6 biomas |
-| `dates` | `safra_atual`, `normalizar_safra`, `validar_safra`, `safra_para_anos`, `anos_para_safra`, `safra_anterior`, `safra_posterior`, `periodo_safra`, `lista_safras` | Safras Jul-Jun |
+| `municipalities` | `municipio_para_ibge`, `ibge_para_municipio`, `buscar_municipios`, `coordenada_para_municipio`, `total_municipios` | 5,571 municipalities + centroids |
+| `crops` | `normalizar_cultura`, `listar_culturas`, `is_cultura_valida` | 144 variants, 41 canonical |
+| `regions` | `normalizar_uf`, `validar_uf`, `uf_para_nome`, `uf_para_regiao`, `uf_para_ibge`, `ibge_para_uf`, `listar_ufs`, `listar_regioes`, `normalizar_municipio`, `normalizar_praca`, `normalizar_bioma` | 27 states, 6 biomes |
+| `dates` | `safra_atual`, `normalizar_safra`, `validar_safra`, `safra_para_anos`, `anos_para_safra`, `safra_anterior`, `safra_posterior`, `periodo_safra`, `lista_safras` | Jul-Jun crop years |
 | `units` | `converter`, `sacas_para_toneladas`, `toneladas_para_sacas`, `preco_saca_para_tonelada`, `preco_tonelada_para_saca` | sc, ton, bu, @, ha |
 | `encoding` | `detect_encoding`, `decode_content`, `detect_encoding_chain` | ISO-8859-1, CP1252, UTF-8 |
-| `numeric` | `parse_numeric_br` | Formato BR (1.234,56) |
+| `numeric` | `parse_numeric_br` | BR format (1.234,56) |

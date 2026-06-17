@@ -22,23 +22,29 @@ Instaladas com `pip install agrobr`:
 | `python-calamine` | Fallback Excel (Rust, ignora estilos) | `>=0.3.0` |
 | `xlrd` | Leitura de Excel legado (.xls) | `>=2.0.1` |
 | `sidrapy` | API IBGE SIDRA | `>=0.1.4` |
+| `requests` | HTTP síncrono (basedosdados, utilitários) | `>=2.32.0` |
 
 ### Opcionais
 
 Instaladas via extras:
 
 ```bash
-pip install agrobr[pdf]       # pdfplumber para ANDA
+pip install agrobr[pdf]       # pdfplumber para PDFs
 pip install agrobr[browser]   # Playwright para sites com JS
 pip install agrobr[polars]    # Suporte a Polars DataFrames
-pip install agrobr[all]       # Tudo
+pip install agrobr[geo]       # GeoDataFrames (SICAR, desmatamento, etc)
+pip install agrobr[bigquery]  # Fallback BigQuery (BCB/SICOR)
+pip install agrobr[all]       # Tudo (exceto app)
 ```
 
 | Extra | Dependência | Uso |
 |---|---|---|
-| `[pdf]` | `pdfplumber>=0.10.0` | Parsing de PDFs ANDA |
-| `[browser]` | `playwright>=1.40.0` | Sites que requerem JS |
+| `[pdf]` | `pdfplumber>=0.10.0` | Parsing de PDFs |
+| `[browser]` | `playwright>=1.55.1` | Sites que requerem JS |
 | `[polars]` | `polars>=0.19.0` | DataFrames Polars |
+| `[bigquery]` | `basedosdados>=2.0.0` | Fallback BigQuery (BCB/SICOR) |
+| `[geo]` | `geopandas>=1.0.0` | GeoDataFrames (SICAR, desmatamento, etc) |
+| `[app]` | `streamlit>=1.54.0` | App/dashboard Streamlit |
 
 ### Dev
 
@@ -46,7 +52,7 @@ pip install agrobr[all]       # Tudo
 pip install agrobr[dev]
 ```
 
-Inclui: pytest, ruff, mypy, black, pre-commit, pandas-stubs.
+Inclui: pytest (+asyncio, cov, recording, timeout), ruff, mypy, pre-commit, pandas-stubs, types-requests, xlwt.
 
 ## Regras de Pin
 
