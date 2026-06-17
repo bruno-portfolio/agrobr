@@ -11,14 +11,15 @@ Obtém série histórica de indicadores de preço.
 ```python
 async def indicador(
     produto: str,
+    praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    moeda: str = 'BRL',
     as_polars: bool = False,
+    validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-    validate_sanity: bool = True,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -26,22 +27,26 @@ async def indicador(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Produto CEPEA (21 disponíveis). Veja `produtos()` para lista completa |
-| `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 30 dias atrás |
+| `praca` | `str \| None` | Praça de cotação. `None` retorna todas |
+| `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 365 dias atrás |
 | `fim` | `str \| date \| None` | Data final. Default: hoje |
-| `moeda` | `str` | Moeda: 'BRL' ou 'USD'. Default: 'BRL' |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `validate_sanity` | `bool` | Executar validação estatística (outliers, gaps). Default: `False` |
 | `force_refresh` | `bool` | Ignorar cache e buscar dados frescos |
 | `offline` | `bool` | Usar apenas cache/histórico local |
-| `validate_sanity` | `bool` | Executar validação estatística |
+| `return_meta` | `bool` | Retorna tupla `(df, MetaInfo)` com proveniência |
 
 **Retorno:**
 
 DataFrame com colunas:
 - `data`: Data do indicador
 - `produto`: Nome do produto
+- `praca`: Praça de cotação
 - `valor`: Valor em R$/unidade
-- `variacao_pct`: Variação percentual (quando disponível)
+- `unidade`: Unidade (ex: 'BRL/sc60kg')
 - `fonte`: Fonte dos dados ('cepea' ou 'noticias_agricolas')
+- `metodologia`: Metodologia do indicador
+- `anomalies`: Anomalias/marcadores detectados (ex: `media_semanal` do fallback, ou outliers do `validate_sanity`); `None` quando vazio
 
 **Exemplo:**
 
@@ -74,6 +79,7 @@ Obtém o indicador mais recente disponível.
 ```python
 async def ultimo(
     produto: str,
+    praca: str | None = None,
     offline: bool = False,
 ) -> Indicador
 ```
@@ -83,6 +89,7 @@ async def ultimo(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Produto desejado |
+| `praca` | `str \| None` | Praça de cotação. `None` não filtra por praça |
 | `offline` | `bool` | Usar apenas cache local |
 
 **Retorno:**
@@ -123,10 +130,10 @@ Lista de strings com nomes dos produtos.
 from agrobr import cepea
 
 prods = await cepea.produtos()
-# ['soja', 'soja_parana', 'milho', 'boi', 'cafe', 'cafe_robusta', 'algodao',
-#  'trigo', 'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado',
-#  'etanol_anidro', 'frango_congelado', 'frango_resfriado', 'suino', 'leite',
-#  'laranja_industria', 'laranja_in_natura']
+# ['soja', 'soja_parana', 'milho', 'cafe', 'cafe_arabica', 'cafe_robusta',
+#  'boi', 'boi_gordo', 'trigo', 'algodao', 'arroz', 'acucar', 'acucar_refinado',
+#  'frango_congelado', 'frango_resfriado', 'suino', 'etanol_hidratado',
+#  'etanol_anidro', 'leite', 'laranja_industria', 'laranja_in_natura']
 # 'cafe'/'cafe_arabica' = Arábica (SP); 'cafe_robusta' = Robusta/Conilon (ES)
 # Aliases: boi_gordo → boi, cafe_arabica → cafe
 ```
@@ -160,17 +167,17 @@ Lista de praças disponíveis — vazia para produto válido sem praças mapeada
 ```python
 class Indicador(BaseModel):
     fonte: Fonte
-    produto: str
-    praca: str | None
+    produto: str = Field(..., min_length=2)
+    praca: str | None = None
     data: date
-    valor: Decimal
+    valor: Decimal = Field(..., gt=0)
     unidade: str
-    metodologia: str | None
-    revisao: int = 0
-    meta: dict[str, Any] = {}
-    parsed_at: datetime
-    parser_version: int = 1
-    anomalies: list[str] = []
+    metodologia: str | None = None
+    revisao: int = Field(default=0, ge=0)
+    meta: dict[str, Any] = Field(default_factory=dict)
+    parsed_at: datetime = Field(default_factory=utcnow)
+    parser_version: int = Field(default=1)
+    anomalies: list[str] = Field(default_factory=list)
 ```
 
 ## Versão Síncrona
@@ -186,7 +193,7 @@ produtos = cepea.produtos()
 
 ## Comportamento de Cache
 
-1. **Cache fresh**: Retorna imediatamente do cache (< 4h para CEPEA diário)
+1. **Cache fresh**: Retorna imediatamente do cache (smart expiry — válido até as 18h BRT, horário de atualização do CEPEA)
 2. **Cache stale**: Tenta atualizar, mas retorna cache se falhar
 3. **Sem cache**: Busca da fonte e salva no cache
 
