@@ -22,7 +22,7 @@ da EMBRAPA GeoInfo.
 
 | Parametro | Valor |
 |-----------|-------|
-| Endpoint | `geoinfo.dados.embrapa.br/geoserver/wfs` |
+| Endpoint | `geoinfo.dados.embrapa.br/geoserver/ows` |
 | WFS Version | 2.0.0 |
 | Layer perfis | `geonode:perfis_pronasolos_2020` |
 | Layer mapa | `geonode:brasil_solos_5m_20201104` |

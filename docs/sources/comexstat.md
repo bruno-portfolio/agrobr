@@ -35,7 +35,7 @@ df = await comexstat.exportacao("soja", ano=2024, uf="MT")
 
 ## Produtos
 
-19 produtos mapeados por prefixo NCM:
+16 produtos agrícolas mapeados por prefixo NCM (mapeamento completo: 30 chaves, incluindo fertilizantes e defensivos):
 
 | Produto | NCM | Tipo |
 |---|---|---|

@@ -88,7 +88,7 @@ items = await anec.articles_disponiveis(2026)
 
 | Input | Canônico |
 |---|---|
-| `soja`, `soybean`, `soybeans`, `grao` | `soybean` |
+| `soja`, `soybean`, `soybeans`, `soja grao` | `soybean` |
 | `farelo`, `farelo de soja`, `meal`, `soybean meal` | `soybean_meal` |
 | `milho`, `maize`, `corn` | `maize` |
 | `trigo`, `wheat` | `wheat` |

@@ -31,7 +31,7 @@ df = await deral.condicao_lavouras("trigo")
 ## Produtos
 
 soja, milho, milho_1 (verão), milho_2 (safrinha), trigo, feijao,
-feijao_1, feijao_2, feijao_3, aveia, cevada, canola, sorgo, mandioca.
+feijao_1, feijao_2, mandioca, cana, cafe, aveia, cevada, canola.
 
 ## Nota de Risco
 

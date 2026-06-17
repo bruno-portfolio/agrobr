@@ -121,7 +121,7 @@ export AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1
 | nome_projeto | str | Nome do projeto |
 | municipio | str | Município |
 | uf | str | Sigla UF |
-| area_ha | str | Área declarada (vem como string do DBF) |
+| area_ha | float | Área declarada em hectares |
 | capacidade | int | Capacidade de famílias |
 | num_familias | int | Número de famílias assentadas |
 | fase | int | Fase do projeto |

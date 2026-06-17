@@ -4,10 +4,10 @@
 
 | Item | Detalhe |
 |------|---------|
-| Provedor | Ministerio do Trabalho / Portal da Transparencia |
+| Provedor | Ministerio do Trabalho e Emprego |
 | Dados | Empregadores flagrados com trabalho escravo |
-| Acesso | Download XLSX |
-| Formato | Excel (.xlsx) |
+| Acesso | Download PDF |
+| Formato | PDF |
 | Autenticacao | Nenhuma |
 | Licenca | Livre (Lei de Acesso a Informacao) |
 
@@ -41,10 +41,10 @@ asyncio.run(main())
 | cpf_cnpj | str | CPF ou CNPJ |
 | estabelecimento | str | Nome do estabelecimento |
 | uf | str | UF |
-| municipio | str | Municipio |
 | cnae | str | Codigo CNAE |
 | data_inclusao | datetime | Data de inclusao na lista |
 | trabalhadores_resgatados | int | Numero de trabalhadores resgatados |
+| ano_acao_fiscal | int | Ano da acao fiscal |
 
 ## Particularidades
 

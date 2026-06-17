@@ -47,7 +47,7 @@
 | **IBAMA Embargoes** | ODbL (Open Database License) | Yes (with citation) | `livre` | [IBAMA Open Data](https://dadosabertos.ibama.gov.br) |
 | **ICMBio Federal UCs** | Public federal government data | Yes (public data) | `livre` | [geoservicos.inde.gov.br](https://geoservicos.inde.gov.br) |
 | **INCRA Quilombolas** | Public federal government data | Yes (public data) | `livre` | [cmr.funai.gov.br](https://cmr.funai.gov.br) |
-| **Lista Suja** | Freedom of Information Act | Yes | `livre` | [Transparency Portal](https://portaldatransparencia.gov.br) |
+| **Lista Suja** | Freedom of Information Act | Yes | `livre` | [Ministry of Labor and Employment](https://www.gov.br/trabalho-e-emprego) |
 | **MapBiomas Alerta** | Free (citation required) | Yes | `livre` | [MapBiomas Alerta](https://plataforma.alerta.mapbiomas.org) |
 | **SFB** | Public data | Yes | `livre` | [SFB](https://mapas.florestal.gov.br) |
 | **RNC/CultivarWeb** | Public federal government data | Yes (public data) | `livre` | [CultivarWeb](https://sistemas.agricultura.gov.br/snpc/cultivarweb) |

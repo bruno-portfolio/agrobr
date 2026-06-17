@@ -26,7 +26,7 @@
 | Base URL | `https://mapas.florestal.gov.br/server/rest/services` |
 | CNFP Service | `Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9` |
 | Concessoes Service | `Hosted/unidades_concessoes_florestais/FeatureServer/0` |
-| IFN Service | `DadosAbertos_IFN/Conglomerado/FeatureServer/0` |
+| IFN Service | `DadosAbertos-IFN/Conglomerado/FeatureServer/0` |
 | Paginacao | Automatica (2K features/pagina) |
 | Throttle | 2s delay apos 5 paginas |
 
@@ -73,37 +73,42 @@ asyncio.run(main())
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| OBJECTID | int | ID do registro |
+| fid | int | ID do registro |
 | nome | str | Nome da floresta publica |
-| UF | str | UF (sigla) |
+| uf | str | UF (sigla) |
 | bioma | str | Bioma |
 | categoria | str | Categoria da floresta |
 | tipo | str | Tipo |
+| governo | str | Esfera de governo |
+| classe | str | Classe |
 | area_ha | float | Area em hectares |
 | ano_criacao | int | Ano de criacao |
+| municipio | str | Municipio |
 
 ### concessoes
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| OBJECTID | int | ID do registro |
+| fid | int | ID do registro |
 | nome | str | Nome da unidade |
-| UF | str | UF (sigla) |
+| uf | str | UF (sigla) |
+| bioma | str | Bioma |
 | area_ha | float | Area em hectares |
-| status | str | Status da concessao |
-| ano_contrato | int | Ano do contrato |
+| ano_criacao | int | Ano de criacao |
+| grupo | str | Grupo |
+| categoria | str | Categoria |
 
 ### ifn_conglomerados
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| OBJECTID | int | ID do registro |
-| UF | str | UF (sigla) |
+| id | int | ID do registro |
+| codigo_lote | int | Codigo do lote |
+| lote | str | Lote |
+| conglomerado | str | Conglomerado |
+| uf | str | UF (sigla) |
+| municipio | str | Municipio |
 | bioma | str | Bioma |
-| numero | int | Numero do conglomerado |
-| lat | float | Latitude |
-| lon | float | Longitude |
-| situacao | str | Situacao do conglomerado |
 
 ## Particularidades
 

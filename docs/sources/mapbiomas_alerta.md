@@ -39,9 +39,6 @@ async def main():
         start_date="2024-01-01",
     )
 
-    # Filtrar por UF
-    df = await mapbiomas_alerta.alertas(uf="PA")
-
     # Filtrar por bounding box
     df = await mapbiomas_alerta.alertas(
         bbox=(-56, -16, -54, -14),
@@ -75,9 +72,6 @@ asyncio.run(main())
 | data_publicacao | datetime | Data de publicacao |
 | status | str | Status do alerta |
 | fonte | str | Fonte de deteccao (DETER, SAD, GLAD, SAD Caatinga) |
-| bioma | str | Bioma |
-| uf | str | UF |
-| municipio | str | Municipio |
 | lat | float | Latitude |
 | lon | float | Longitude |
 | geometry | Polygon | Geometria WKT (apenas alertas_geo) |

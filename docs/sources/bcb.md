@@ -208,6 +208,7 @@ df = await bcb.focus("PIB Agropecuária")
 | minimo | float | Valor minimo |
 | maximo | float | Valor maximo |
 | numero_respondentes | int | Numero de respondentes |
+| base_calculo | int | Base de calculo (0 ou 1) |
 
 ---
 

@@ -12,7 +12,7 @@
 
 ### Fonte
 
-- **URL**: `https://www.conab.gov.br/info-agro/safras/graos`
+- **URL**: `https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos`
 - **Formato**: XLSX (planilhas Excel)
 - **Acesso**: Publico, sem restricoes
 

@@ -432,7 +432,7 @@ temas = await ibge.temas_censo_agro()
 | LSPA | 24 horas | 30 dias |
 | PPM | 7 dias | 90 dias |
 | Abate | 7 dias | 90 dias |
-| Censo Agro | 30 dias | 365 dias |
+| Censo Agro | 30 dias | 90 dias |
 | Censo Agro Legado | 90 dias | 90 dias |
 | Silvicultura (PEVS) | 7 dias | 90 dias |
 | Extracao Vegetal (PEVS) | 7 dias | 90 dias |

@@ -74,44 +74,45 @@ asyncio.run(main())
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
 | codigo_curso | str | Codigo do curso d'agua |
-| nome_rio | str | Nome do rio |
-| comprimento_m | float | Comprimento em metros |
-| area_m2 | float | Area em metros quadrados |
-| nivel_otto | str | Nivel de ottocodificacao |
 | codigo_bacia | str | Codigo da bacia |
+| nome_rio | str | Nome do rio |
+| dominio | str | Dominio |
 
 ### pivos_irrigacao
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
-| UF | str | UF (sigla) |
+| codigo_municipio | str | Codigo do municipio |
 | municipio | str | Municipio |
+| estado | str | Estado |
+| regiao_hidro | str | Regiao hidrografica |
 | area_ha | float | Area em hectares |
-| ano_mapeamento | int | Ano do mapeamento |
-| lat | float | Latitude |
-| lon | float | Longitude |
 
 ### demanda_irrigacao
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
+| ID | int | ID |
 | codigo_bacia | str | Codigo da bacia |
-| nivel_otto | str | Nivel de ottocodificacao |
-| demanda_m3_s | float | Demanda em m3/segundo |
-| demanda_m3_ano | float | Demanda em m3/ano |
+| versao | str | Versao |
+| vazao_max_mensal | float | Vazao maxima mensal |
+| vazao_mes_seco | float | Vazao no mes seco |
+| vazao_mes_irrigacao | float | Vazao no mes de irrigacao |
+| vazao_media_anual | float | Vazao media anual |
 
 ### disponibilidade_hidrica
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
-| codigo_curso | str | Codigo do curso d'agua |
+| ID | int | ID |
+| area_montante_km2 | float | Area de montante em km2 |
+| disponibilidade_m3_s | float | Disponibilidade em m3/segundo |
 | nome_rio | str | Nome do rio |
-| q95_l_s | float | Vazao Q95 em litros/segundo |
-| qmlt_l_s | float | Vazao media de longo termo em litros/segundo |
-| codigo_bacia | str | Codigo da bacia |
+| dominio | str | Dominio |
+| versao | str | Versao |
 
 ## Particularidades
 

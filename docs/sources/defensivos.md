@@ -34,14 +34,14 @@ Relacao 1:N com formulados — cada autorizacao vincula um produto a uma cultura
 e praga especifica.
 
 **Colunas:** `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`,
-`classe`, `cultura`, `praga`, `modalidade_de_emprego`
+`classe`, `cultura`, `praga`, `praga_nome_comum`, `modalidade_de_emprego`
 
 ### Produtos Tecnicos
 
 Ingredientes ativos antes da formulacao comercial.
 
 **Colunas:** `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`,
-`classe`, `grupo_quimico`, `nome_cientifico`
+`classe`, `grupo_quimico`, `nome_cientifico`, `classe_toxicologica`, `classe_ambiental`
 
 ## API
 

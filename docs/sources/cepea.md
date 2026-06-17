@@ -10,7 +10,7 @@
 | Campo | Valor |
 |-------|-------|
 | **Instituição** | ESALQ/USP |
-| **Website** | [cepea.esalq.usp.br](https://www.cepea.esalq.usp.br) |
+| **Website** | [cepea.org.br](https://www.cepea.org.br) |
 | **Licença** | CC BY-NC 4.0 |
 | **Acesso agrobr** | Via Notícias Agrícolas (mirror autorizado) |
 
@@ -18,7 +18,7 @@
 
 ### Fonte Primaria
 
-- **URL oficial**: `https://www.cepea.esalq.usp.br/br/indicador/soja.aspx`
+- **URL oficial**: `https://www.cepea.org.br/br/indicador/soja.aspx`
 - **Status**: Bloqueado por Cloudflare (acesso programatico negado)
 
 ### Fonte Alternativa (atual)
@@ -110,7 +110,7 @@ print(meta.from_cache)  # True/False
 | `data` | date | Nao | Data do indicador |
 | `produto` | str | Nao | Nome do produto |
 | `praca` | str | Sim | Praca de referencia |
-| `valor` | Decimal | Nao | Preco em BRL |
+| `valor` | float | Nao | Preco em BRL |
 | `unidade` | str | Nao | Unidade (BRL/sc60kg, etc) |
 | `fonte` | str | Nao | Fonte dos dados |
 | `metodologia` | str | Sim | Descricao da metodologia |

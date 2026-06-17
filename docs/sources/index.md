@@ -39,7 +39,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [Acervo Fundiario/INCRA](acervo_fundiario.md) | Parcelas certificadas + assentamentos (shapefile ZIP) | Continua | SIGEF (15 UFs) + SNCI (10 UFs) + assentamentos Brasil |
 | [IBAMA Embargos](ibama.md) | Embargos ambientais (CSV SIFISC + WKT) | Mensal | ~114K embargos |
 | [MapBiomas Alerta](mapbiomas_alerta.md) | Alertas de desmatamento (GraphQL) | Semanal | Nacional |
-| [Lista Suja](lista_suja.md) | Cadastro de trabalho escravo (XLSX) | Semestral | Nacional |
+| [Lista Suja](lista_suja.md) | Cadastro de trabalho escravo (PDF) | Semestral | Nacional |
 | [ANA/SNIRH](ana.md) | Hidrografia, irrigacao, disponibilidade hidrica (ArcGIS REST) | Variavel | Nacional |
 | [SFB](sfb.md) | Florestas publicas, concessoes, IFN (ArcGIS REST) | Anual | Nacional |
 | [RNC/CultivarWeb](rnc.md) | Cultivares registradas/protegidas | Contínua | ~37K registradas, ~5K protegidas |

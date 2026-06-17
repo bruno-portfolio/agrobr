@@ -29,7 +29,7 @@ O agrobr acessa os dados via Pentaho BA Server (backend do portal), usando a API
 
 ## CEASAs Cobertas
 
-43 CEASAs em 21 UFs, incluindo:
+43 CEASAs em 20 UFs, incluindo:
 - CEAGESP (12 unidades em SP)
 - CEASAMINAS (3 unidades em MG)
 - CEASAs estaduais (PR, RS, SC, RJ, BA, CE, GO, DF, etc.)
