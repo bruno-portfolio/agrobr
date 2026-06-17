@@ -62,7 +62,7 @@ O intervalo é **por fonte**, não global.
 | IBGE/SIDRA | 1.0s | Alta |
 | INMET | 0.5s | Média |
 | BCB/SICOR | 1.0s | Média |
-| CEPEA | 2.0s | Alta (Cloudflare) |
+| CEPEA | 5.0s | Alta (Cloudflare) |
 | CONAB | 3.0s | Média |
 | CONAB CEASA | 2.0s | Média |
 | ANDA | 3.0s | Baixa |
@@ -127,8 +127,10 @@ ComexStat também exige User-Agent de browser (Mozilla).
 **Cadeia de fallback do agrobr:**
 
 ```
-httpx direto → Playwright headless → Notícias Agrícolas (restrito)
+httpx direto → Notícias Agrícolas (restrito)
 ```
+
+Playwright headless é um fallback **opcional/interno** (`_use_browser=False` por padrão); quando ativado, entra entre o httpx direto e o Notícias Agrícolas. Não faz parte da cadeia padrão.
 
 **Anti-detecção no headless browser:**
 
@@ -593,7 +595,7 @@ USDA:      "Soybeans"
 ComexStat: "SOJA MESMO TRITURADA"
 ```
 
-O agrobr normaliza **156 variantes → 41 nomes canônicos**,
+O agrobr normaliza **144 variantes → 41 nomes canônicos**,
 com busca case-insensitive e accent-insensitive.
 
 Mapeamento completo em `agrobr/normalize/crops.py`.
@@ -617,6 +619,6 @@ bushels — 14 tipos).
 
 ### Municípios
 
-JSON com 5.570 municípios BR + código IBGE de 7 dígitos.
+JSON com 5.571 municípios BR + código IBGE de 7 dígitos.
 Necessário para cruzar dados municipais entre fontes.
-Arquivo: `agrobr/normalize/_municipios_ibge.json` (164 KB).
+Arquivo: `agrobr/normalize/_municipios_ibge.json` (259 KB).

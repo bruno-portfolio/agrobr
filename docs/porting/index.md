@@ -117,7 +117,6 @@ consistente.
 | `ParseError` | Layout mudou, HTML/JSON inesperado |
 | `ContractViolationError` | DataFrame não bate com contrato (colunas, tipos) |
 | `ValidationError` | Pydantic ou validação estatística falhou |
-| `CacheError` | Operação de cache falhou |
 | `FingerprintMismatchError` | Estrutura da página mudou significativamente |
 
 **Warnings** (não interrompem execução):
@@ -125,10 +124,6 @@ consistente.
 | Warning | Quando |
 |---------|--------|
 | `StaleDataWarning` | Dados do cache expirados mas retornados |
-| `PartialDataWarning` | Dados retornados incompletos |
-| `LayoutChangeWarning` | Possível mudança de layout (baixa confiança) |
-| `AnomalyDetectedWarning` | Anomalia estatística nos dados |
-| `ParserFallbackWarning` | Parser primário falhou, usando fallback |
 
 ---
 
@@ -139,7 +134,7 @@ primeiro**, antes de qualquer client HTTP.
 
 ### Culturas (`normalize/crops.py`)
 
-**156 variantes → 41 nomes canônicos**, com busca case-insensitive e
+**144 variantes → 41 nomes canônicos**, com busca case-insensitive e
 accent-insensitive.
 
 ```
@@ -233,7 +228,7 @@ Algumas fontes exigem configuração via variáveis de ambiente:
 | `AGROBR_INMET_TOKEN` | INMET | Sim | HTTP 204 — retorna vazio sem erro |
 
 Rate limits e timeouts também são configuráveis via env vars com prefixo
-`AGROBR_HTTP_` (ex: `AGROBR_HTTP_RATE_LIMIT_CEPEA=2.0`).
+`AGROBR_HTTP_` (ex: `AGROBR_HTTP_RATE_LIMIT_CEPEA=5.0`).
 
 ---
 
@@ -246,7 +241,7 @@ para validar parsers em qualquer linguagem:
 2. Compare o output com o `expected.json`
 3. Se bater, seu parser está correto
 
-### Conjuntos de teste disponíveis (23 fontes, 35 casos)
+### Conjuntos de teste disponíveis (amostra: 26 fontes, 35 casos)
 
 | Fonte | Caso de teste | Arquivos |
 |-------|--------------|----------|
@@ -286,7 +281,7 @@ para validar parsers em qualquer linguagem:
 | BCB Focus | `focus_sample` | focus_sample.json (5 rows), expected.json |
 | ZARC | `tabua_risco_sample` | response.csv, expected.json |
 
-Cada diretório também contém `metadata.json` com contexto do teste.
+A tabela acima é uma amostra; o diretório `tests/golden_data/` contém 41 fontes e 60 casos no total. Cada diretório também contém `metadata.json` com contexto do teste.
 
 ---
 

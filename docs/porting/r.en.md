@@ -1,66 +1,66 @@
-# Guia para Desenvolvedores R
+# R Developer Guide
 
-Guia prático para acessar dados agrícolas brasileiros em R,
-usando o agrobr como referência de implementação.
+Practical guide to accessing Brazilian agricultural data in R,
+using agrobr as the reference implementation.
 
-!!! warning "Licenças dos Dados"
-    Antes de implementar acesso a qualquer fonte, consulte a
-    [página de licenças](../licenses.md). Este guia inclui exemplos
-    apenas para fontes com licença `livre` ou `CC BY-NC` (não-comercial
-    com atribuição). Para armadilhas técnicas de todas as fontes
-    (incluindo as restritas), veja [Armadilhas por Fonte](gotchas.md).
+!!! warning "Data Licenses"
+    Before implementing access to any source, check the
+    [licenses page](../licenses.md). This guide includes examples
+    only for sources with a `livre` or `CC BY-NC` license (non-commercial
+    with attribution). For technical pitfalls of all sources
+    (including restricted ones), see [Pitfalls by Source](gotchas.md).
 
 ---
 
-## Equivalências Python → R
+## Python → R Equivalences
 
-| Python (agrobr) | R equivalente | Pacote |
+| Python (agrobr) | R equivalent | Package |
 |-----------------|---------------|--------|
 | `httpx` (async HTTP) | `httr2::request()` | httr2 |
 | `BeautifulSoup` + `lxml` | `rvest::read_html()` | rvest, xml2 |
 | `Playwright` (headless) | `chromote::ChromoteSession` | chromote |
 | `pandas.DataFrame` | `tibble` / `data.frame` | tibble |
 | `DuckDB` (cache) | `DBI` + `duckdb` | duckdb |
-| `Pydantic v2` (validação) | `checkmate` ou validação manual | checkmate |
+| `Pydantic v2` (validation) | `checkmate` or manual validation | checkmate |
 | `structlog` (logging) | `logger::log_info()` | logger |
 | `chardet` (encoding) | `stringi::stri_enc_detect()` | stringi |
 | `openpyxl` / `calamine` / `read_excel` | `readxl::read_excel()` | readxl |
 | `pdfplumber` (PDF) | `pdftools::pdf_text()` | pdftools |
-| `asyncio` (paralelismo) | `furrr` + `future` | furrr |
+| `asyncio` (parallelism) | `furrr` + `future` | furrr |
 
-!!! note "Sobre async"
-    O agrobr é async-first (`httpx` + `asyncio`). R é single-thread,
-    então requests sequenciais com `httr2` + `Sys.sleep()` para rate
-    limiting funcionam bem. Para paralelismo, `furrr` + `future` ajuda.
+!!! note "About async"
+    agrobr is async-first (`httpx` + `asyncio`). R is single-threaded,
+    so sequential requests with `httr2` + `Sys.sleep()` for rate
+    limiting work well. For parallelism, `furrr` + `future` helps.
 
 ---
 
-## Pacotes R Existentes
+## Existing R Packages
 
-Estes pacotes já cobrem parte do escopo:
+These packages already cover part of the scope:
 
-| Pacote | O que faz | Cobre qual fonte |
+| Package | What it does | Covers which source |
 |--------|-----------|-----------------|
-| [`sidrar`](https://CRAN.R-project.org/package=sidrar) | Acesso à API SIDRA/IBGE | IBGE (PAM, LSPA, PPM) |
-| [`nasapower`](https://CRAN.R-project.org/package=nasapower) | Dados NASA POWER | NASA POWER |
-| [`GetBCBData`](https://CRAN.R-project.org/package=GetBCBData) | Séries BCB | BCB (parcial) |
-| [`rbcb`](https://github.com/wilsonfreitas/rbcb) | API BCB | BCB (parcial) |
-| [`deflateBR`](https://CRAN.R-project.org/package=deflateBR) | Deflacionar séries BR | Utilidade auxiliar |
+| [`sidrar`](https://CRAN.R-project.org/package=sidrar) | Access to the SIDRA/IBGE API | IBGE (PAM, LSPA, PPM) |
+| [`nasapower`](https://CRAN.R-project.org/package=nasapower) | NASA POWER data | NASA POWER |
+| [`GetBCBData`](https://CRAN.R-project.org/package=GetBCBData) | BCB series | BCB (partial) |
+| [`rbcb`](https://github.com/wilsonfreitas/rbcb) | BCB API | BCB (partial) |
+| [`deflateBR`](https://CRAN.R-project.org/package=deflateBR) | Deflate BR series | Auxiliary utility |
 
-Nenhum pacote R cobre CEPEA, CONAB (nenhum módulo), ANDA, ABIOVE,
-IMEA, DERAL, ComexStat, Desmatamento, Queimadas, MapBiomas ou B3.
+No R package covers CEPEA, CONAB (any module), ANDA, ABIOVE,
+IMEA, DERAL, ComexStat, Desmatamento, Queimadas, MapBiomas or B3.
 
 ---
 
-## Exemplos por Fonte
+## Examples by Source
 
 ### CEPEA (headless browser)
 
-!!! info "Licença: CC BY-NC 4.0"
-    Uso não-comercial livre com atribuição.
+!!! info "License: CC BY-NC 4.0"
+    Free non-commercial use with attribution.
 
-O CEPEA usa Cloudflare, então `httr2` direto recebe 403.
-Usar `chromote` (headless Chrome nativo do R):
+CEPEA uses Cloudflare, so `httr2` directly gets a 403.
+Use `chromote` (R-native headless Chrome):
 
 ```r
 library(chromote)
@@ -75,7 +75,7 @@ buscar_cepea <- function(produto) {
     laranja = "laranja"
   )
   slug <- slugs[[produto]]
-  if (is.null(slug)) stop(paste("Produto nao suportado:", produto))
+  if (is.null(slug)) stop(paste("Unsupported product:", produto))
 
   url <- paste0("https://www.cepea.org.br/br/indicador/", slug, ".aspx")
 
@@ -94,11 +94,11 @@ buscar_cepea <- function(produto) {
 df_soja <- buscar_cepea("soja")
 ```
 
-### CONAB CEASA (HTTP puro)
+### CONAB CEASA (pure HTTP)
 
-!!! info "Licença: Dados públicos"
-!!! tip "Sem browser"
-    API REST do Pentaho acessível com `httr2` direto.
+!!! info "License: Public data"
+!!! tip "No browser"
+    Pentaho REST API accessible with `httr2` directly.
 
 ```r
 library(httr2)
@@ -146,11 +146,11 @@ buscar_ceasa <- function(produto = NULL) {
 df <- buscar_ceasa("tomate")
 ```
 
-### CONAB Série Histórica (HTTP puro)
+### CONAB Historical Series (pure HTTP)
 
-!!! info "Licença: Dados públicos"
-!!! tip "Sem browser"
-    Download direto de XLS via URLs fixas.
+!!! info "License: Public data"
+!!! tip "No browser"
+    Direct XLS download via fixed URLs.
 
 ```r
 library(httr2)
@@ -163,7 +163,7 @@ buscar_serie_historica <- function(produto) {
   )
 
   url <- urls[[produto]]
-  if (is.null(url)) stop(paste("Produto nao mapeado:", produto))
+  if (is.null(url)) stop(paste("Unmapped product:", produto))
 
   tmp <- tempfile(fileext = ".xls")
   req <- request(url) |>
@@ -191,8 +191,8 @@ lspa <- get_sidra(
 )
 ```
 
-!!! warning "Rate limit SIDRA"
-    Adicione `Sys.sleep(1)` entre chamadas ao SIDRA.
+!!! warning "SIDRA rate limit"
+    Add `Sys.sleep(1)` between SIDRA calls.
 
 ### NASA POWER
 
@@ -208,7 +208,7 @@ clima <- get_power(
 )
 ```
 
-### ComexStat (HTTP puro)
+### ComexStat (pure HTTP)
 
 ```r
 library(httr2)
@@ -234,17 +234,17 @@ buscar_exportacao <- function(ano) {
 df <- buscar_exportacao(2024)
 ```
 
-!!! note "Separador ponto e vírgula"
-    CSVs do ComexStat usam `;` como separador. Usar `read.csv2()` ou
-    `readr::read_csv2()` em vez de `read.csv()`.
+!!! note "Semicolon separator"
+    ComexStat CSVs use `;` as the separator. Use `read.csv2()` or
+    `readr::read_csv2()` instead of `read.csv()`.
 
 ---
 
-## Normalização em R
+## Normalization in R
 
-### Culturas
+### Crops
 
-Porte essencial do `agrobr/normalize/crops.py` (144 variantes → 41 canônicos):
+Essential port of `agrobr/normalize/crops.py` (144 variants → 41 canonical):
 
 ```r
 CULTURAS <- c(
@@ -261,7 +261,7 @@ CULTURAS <- c(
   "boi" = "boi", "boi gordo" = "boi", "cattle" = "boi",
   "acucar" = "acucar", "sugar" = "acucar",
   "cana" = "cana", "sugarcane" = "cana"
-  # Mapeamento completo (144 variantes) em agrobr/normalize/crops.py
+  # Full mapping (144 variants) in agrobr/normalize/crops.py
 )
 
 normalizar_cultura <- function(nome) {
@@ -282,10 +282,10 @@ normalizar_cultura("milho 2a safra")  # "milho_2"
 normalizar_cultura("ALGODAO")         # "algodao"
 ```
 
-### Safras
+### Crop Years
 
 ```r
-INICIO_SAFRA_MES <- 7L  # Julho
+INICIO_SAFRA_MES <- 7L  # July
 
 normalizar_safra <- function(safra) {
   safra <- trimws(safra)
@@ -304,7 +304,7 @@ normalizar_safra <- function(safra) {
     return(paste0(partes[1], "/", substr(partes[2], 3, 4)))
   }
 
-  stop(paste("Formato de safra invalido:", safra))
+  stop(paste("Invalid crop-year format:", safra))
 }
 
 safra_atual <- function(data = Sys.Date()) {
@@ -319,10 +319,10 @@ safra_atual <- function(data = Sys.Date()) {
 
 normalizar_safra("24/25")       # "2024/25"
 normalizar_safra("2024/2025")   # "2024/25"
-safra_atual()                   # depende da data
+safra_atual()                   # depends on the date
 ```
 
-### Unidades
+### Units
 
 ```r
 PESO_SACA_KG <- list(sc60kg = 60, sc50kg = 50, sc40kg = 40)
@@ -331,7 +331,7 @@ PESO_BUSHEL_KG <- list(soja = 27.2155, milho = 25.4012, trigo = 27.2155)
 
 sacas_para_toneladas <- function(sacas, tipo = "sc60kg") {
   peso <- PESO_SACA_KG[[tipo]]
-  if (is.null(peso)) stop(paste("Tipo de saca invalido:", tipo))
+  if (is.null(peso)) stop(paste("Invalid bag type:", tipo))
   sacas * peso / 1000
 }
 
@@ -371,7 +371,7 @@ decodificar_response <- function(raw_bytes) {
 
 ---
 
-## Rate Limiting em R
+## Rate Limiting in R
 
 ```r
 rate_limiters <- new.env(parent = emptyenv())
@@ -388,22 +388,22 @@ com_rate_limit <- function(fonte, delay_s, expr) {
   resultado
 }
 
-# Uso com httr2:
+# Usage with httr2:
 com_rate_limit("cepea", 5.0, {
   request("https://...") |> req_perform()
 })
 ```
 
-Alternativa idiomática com `httr2`:
+Idiomatic alternative with `httr2`:
 
 ```r
 req <- request("https://apisidra.ibge.gov.br/...") |>
-  req_throttle(rate = 1 / 1)  # 1 request por segundo
+  req_throttle(rate = 1 / 1)  # 1 request per second
 ```
 
 ---
 
-## Retry com httr2
+## Retry with httr2
 
 ```r
 req <- request("https://...") |>
@@ -416,7 +416,7 @@ req <- request("https://...") |>
 
 ---
 
-## Cache com DuckDB
+## Cache with DuckDB
 
 ```r
 library(DBI)
@@ -436,14 +436,14 @@ cache_get <- function(con, fonte, produto, ttl_horas = 4) {
 }
 
 cache_set <- function(con, fonte, produto, dados) {
-  # Criar tabela se nao existe, inserir dados com timestamp
-  # Historico acumula -- nunca deletar dados antigos
+  # Create table if not exists, insert data with timestamp
+  # History accumulates -- never delete old data
 }
 ```
 
 ---
 
-## Estrutura Sugerida para Pacote R
+## Suggested Structure for an R Package
 
 ```
 agrobr.r/
@@ -451,69 +451,70 @@ agrobr.r/
 +-- NAMESPACE
 +-- R/
 |   +-- cepea.R              # Via chromote (CC BY-NC)
-|   +-- conab_ceasa.R        # HTTP puro (httr2)
-|   +-- conab_serie.R        # HTTP puro (httr2)
-|   +-- conab_progresso.R    # HTTP puro (httr2)
-|   +-- conab_custo.R        # HTTP puro (httr2)
+|   +-- conab_ceasa.R        # Pure HTTP (httr2)
+|   +-- conab_serie.R        # Pure HTTP (httr2)
+|   +-- conab_progresso.R    # Pure HTTP (httr2)
+|   +-- conab_custo.R        # Pure HTTP (httr2)
 |   +-- conab_safras.R       # Via chromote
-|   +-- ibge.R               # Via sidrar ou direto
-|   +-- nasa_power.R         # Via nasapower ou direto
+|   +-- ibge.R               # Via sidrar or direct
+|   +-- nasa_power.R         # Via nasapower or direct
 |   +-- bcb.R
-|   +-- comexstat.R          # HTTP puro (httr2)
-|   +-- normalize_crops.R    # Essencial desde o dia 1
-|   +-- normalize_dates.R    # Safras
-|   +-- normalize_units.R    # Conversoes
+|   +-- comexstat.R          # Pure HTTP (httr2)
+|   +-- normalize_crops.R    # Essential from day 1
+|   +-- normalize_dates.R    # Crop years
+|   +-- normalize_units.R    # Conversions
 |   +-- normalize_encoding.R
 |   +-- http_utils.R         # Rate limit, retry, user-agent
 |   +-- cache.R              # DuckDB
 +-- inst/
-|   +-- golden_data/         # Copiar de tests/golden_data/
-|   +-- municipios_ibge.json # Copiar de agrobr/normalize/_municipios_ibge.json
+|   +-- golden_data/         # Copy from tests/golden_data/
+|   +-- municipios_ibge.json # Copy from agrobr/normalize/_municipios_ibge.json
 +-- tests/
 |   +-- testthat/
 |       +-- test-cepea.R
 |       +-- test-conab.R
 |       +-- test-normalize.R
-|       +-- test-golden.R    # Validar contra golden data
+|       +-- test-golden.R    # Validate against golden data
 +-- man/
 ```
 
-!!! tip "4 dos 5 módulos CONAB funcionam sem browser"
-    CEASA, custo de produção, progresso e série histórica usam HTTP puro.
-    Apenas o boletim de safras correntes precisa de `chromote`. Isso
-    simplifica significativamente um port em R.
+!!! tip "4 of the 5 CONAB modules work without a browser"
+    CEASA, production cost, progress and historical series use pure HTTP.
+    Only the current-crop bulletin needs `chromote`. This
+    significantly simplifies an R port.
 
 ---
 
-## Prioridade de Implementação
+## Implementation Priority
 
-| Fase | O que implementar | Browser? | Pacote R existente? |
+| Phase | What to implement | Browser? | Existing R package? |
 |:----:|-------------------|:--------:|:-------------------:|
-| **1** | `normalize_crops.R` + `http_utils.R` | Nenhum | -- |
-| **2** | CONAB CEASA (HTTP puro) | Nenhum | -- |
-| **3** | CONAB Série Histórica (HTTP puro) | Nenhum | -- |
-| **4** | IBGE/SIDRA | Nenhum | `sidrar` |
-| **5** | NASA POWER | Nenhum | `nasapower` |
-| **6** | ComexStat (HTTP puro) | Nenhum | -- |
+| **1** | `normalize_crops.R` + `http_utils.R` | None | -- |
+| **2** | CONAB CEASA (pure HTTP) | None | -- |
+| **3** | CONAB Historical Series (pure HTTP) | None | -- |
+| **4** | IBGE/SIDRA | None | `sidrar` |
+| **5** | NASA POWER | None | `nasapower` |
+| **6** | ComexStat (pure HTTP) | None | -- |
 | **7** | CEPEA (headless) | `chromote` | -- |
-| **8** | CONAB Boletim (headless) | `chromote` | -- |
-| **9** | Cache DuckDB | Nenhum | -- |
-| **10** | Demais fontes livres | Varia | -- |
+| **8** | CONAB Bulletin (headless) | `chromote` | -- |
+| **9** | DuckDB cache | None | -- |
+| **10** | Other free sources | Varies | -- |
 
-!!! note "Ordem diferente do Python"
-    No Python, CEPEA é prioridade 1 por ter fallback via Notícias Agrícolas
-    (HTTP puro). Em R, fontes HTTP puro devem vir primeiro pois `chromote`
-    adiciona complexidade. CONAB CEASA e Série Histórica fornecem dados
-    valiosos sem nenhuma dependência de browser.
+!!! note "Different order from Python"
+    In Python, CEPEA is priority 1 because it has a fallback via Notícias
+    Agrícolas (pure HTTP). In R, pure-HTTP sources should come first since
+    `chromote` adds complexity. CONAB CEASA and Historical Series provide
+    valuable data without any browser dependency.
 
 ---
 
-## Recursos
+## Resources
 
-- **Mapeamento de culturas completo:** `agrobr/normalize/crops.py`
-- **Safras e datas:** `agrobr/normalize/dates.py`
-- **Conversão de unidades:** `agrobr/normalize/units.py`
-- **UFs e regiões:** `agrobr/normalize/regions.py`
-- **Municípios IBGE (JSON):** `agrobr/normalize/_municipios_ibge.json`
+- **Full crop mapping:** `agrobr/normalize/crops.py`
+- **Crop years and dates:** `agrobr/normalize/dates.py`
+- **Unit conversion:** `agrobr/normalize/units.py`
+- **States and regions:** `agrobr/normalize/regions.py`
+- **IBGE municipalities (JSON):** `agrobr/normalize/_municipios_ibge.json`
 - **Golden tests:** `tests/golden_data/`
-- **Mapeamentos de URLs:** `agrobr/constants.py`
+- **URL mappings:** `agrobr/constants.py`
+```

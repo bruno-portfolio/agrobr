@@ -51,6 +51,31 @@ plugins:
         - locale: en
           name: English
           build: true
+          nav_translations:
+            Guia Rápido: Quick Start
+            Visão Geral: Overview
+            Fontes: Sources
+            Licenças dos Dados: Data Licenses
+            Portabilidade: Porting
+            Armadilhas por Fonte: Pitfalls by Source
+            Guia R: R Guide
+            Guias: Guides
+            Normalização: Normalization
+            Dependências: Dependencies
+            Avançado: Advanced
+            Reprodutibilidade: Reproducibility
+            Integração Pipelines: Pipeline Integration
+            Resiliência: Resilience
+            Contratos: Contracts
+            Desmatamento PRODES/DETER: Deforestation PRODES/DETER
+            Queimadas/INPE: Wildfires/INPE
+            Defensivos: Pesticides
+            FUNAI Terras Indígenas: FUNAI Indigenous Lands
+            ICMBio UCs Federais: ICMBio Federal UCs
+            Acervo Fundiário/INCRA: Land Registry/INCRA
+            IBAMA Embargos: IBAMA Embargoes
+            Fundação Rio Verde: Rio Verde Foundation
+            Lista Suja: Dirty List
   - mkdocstrings:
       handlers:
         python:

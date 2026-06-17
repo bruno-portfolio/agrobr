@@ -31,7 +31,6 @@ pode quebrar codigo downstream que depende do schema atual.
 | `valor` | `float` | obrigatória, > 0 | v0.4.0 |
 | `unidade` | `str` | obrigatória | v0.4.0 |
 | `fonte` | `str` | obrigatória | v0.6.0 |
-| `variacao_pct` | `float` | opcional | v0.4.0 |
 
 ### `estimativa_safra`
 
