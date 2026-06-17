@@ -11,12 +11,13 @@ Obtém dados da Produção Agrícola Municipal.
 ```python
 async def pam(
     produto: str,
-    ano: int | list[int] | None = None,
+    ano: int | str | list[int] | None = None,
     uf: str | None = None,
-    nivel: str = 'uf',
+    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
     variaveis: list[str] | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -24,11 +25,12 @@ async def pam(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Código do produto (ex: 'soja', 'milho') |
-| `ano` | `int \| list[int] \| None` | Ano(s). Default: último disponível |
+| `ano` | `int \| str \| list[int] \| None` | Ano(s). Default: último disponível |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'MT') |
-| `nivel` | `str` | Nível: 'brasil', 'uf', 'municipio' |
+| `nivel` | `Literal['brasil', 'uf', 'municipio']` | Nível: 'brasil', 'uf', 'municipio' |
 | `variaveis` | `list[str] \| None` | Variáveis específicas |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
 **Variáveis disponíveis:**
 
@@ -66,11 +68,12 @@ Obtém dados do Levantamento Sistemático da Produção Agrícola.
 ```python
 async def lspa(
     produto: str,
-    ano: int | None = None,
-    mes: int | None = None,
+    ano: int | str | None = None,
+    mes: int | str | None = None,
     uf: str | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -78,10 +81,11 @@ async def lspa(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Código do produto |
-| `ano` | `int \| None` | Ano. Default: atual |
-| `mes` | `int \| None` | Mês (1-12). Default: último |
+| `ano` | `int \| str \| None` | Ano. Default: atual |
+| `mes` | `int \| str \| None` | Mês (1-12). Default: último |
 | `uf` | `str \| None` | Filtrar por UF |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
 **Produtos LSPA:**
 
@@ -159,11 +163,12 @@ Obtém dados da Pesquisa da Pecuária Municipal.
 ```python
 async def ppm(
     especie: str,
-    ano: int | list[int] | None = None,
+    ano: int | str | list[int] | None = None,
     uf: str | None = None,
-    nivel: str = 'uf',
+    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
     as_polars: bool = False,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -171,10 +176,11 @@ async def ppm(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `especie` | `str` | Espécie ou produto (ex: 'bovino', 'leite') |
-| `ano` | `int \| list[int] \| None` | Ano(s). Default: último disponível |
+| `ano` | `int \| str \| list[int] \| None` | Ano(s). Default: último disponível |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'MT') |
-| `nivel` | `str` | Nível: 'brasil', 'uf', 'municipio' |
+| `nivel` | `Literal['brasil', 'uf', 'municipio']` | Nível: 'brasil', 'uf', 'municipio' |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
 **Espécies disponíveis (rebanhos):**
 
@@ -239,10 +245,11 @@ Obtém dados da Pesquisa Trimestral do Abate de Animais.
 ```python
 async def abate(
     especie: str,
-    trimestre: str | None = None,
+    trimestre: str | list[str] | None = None,
     uf: str | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -250,9 +257,10 @@ async def abate(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `especie` | `str` | Espécie: 'bovino', 'suino', 'frango' |
-| `trimestre` | `str \| None` | Trimestre YYYYQQ (ex: '202303'). Default: último disponível |
+| `trimestre` | `str \| list[str] \| None` | Trimestre YYYYQQ (ex: '202303'). Default: último disponível |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'PR') |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
 **Espécies disponíveis:**
 
@@ -308,9 +316,10 @@ async def censo_agro(
     tema: str,
     ano: int | str | None = None,
     uf: str | None = None,
-    nivel: str = 'uf',
+    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
     as_polars: bool = False,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -320,8 +329,9 @@ async def censo_agro(
 | `tema` | `str` | Tema do censo (ver tabela abaixo) |
 | `ano` | `int \| str \| None` | Ano censal (1995, 2006 ou 2017). Default: todos os anos disponíveis |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'MT') |
-| `nivel` | `str` | Nível: 'brasil', 'uf', 'municipio' |
+| `nivel` | `Literal['brasil', 'uf', 'municipio']` | Nível: 'brasil', 'uf', 'municipio' |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
 **Temas disponíveis:**
 
@@ -407,13 +417,16 @@ async def temas_censo_agro() -> list[str]
 
 Obtém dados do Censo Agropecuário 1995/96 — 6 temas legados via FTP (XLS).
 
+> **Nota:** `nivel='uf'` retorna dados por **mesorregião** (não por UF individual) — particularidade do formato legado; `nivel='municipio'` e `nivel='brasil'` funcionam normalmente.
+
 ```python
 async def censo_agro_legado(
     tema: str,
     uf: str | None = None,
-    nivel: str = 'uf',
+    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
     as_polars: bool = False,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -422,8 +435,9 @@ async def censo_agro_legado(
 |-----------|------|-----------|
 | `tema` | `str` | Tema legado (ver tabela abaixo) |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'SP') |
-| `nivel` | `str` | Nível: 'brasil', 'uf', 'municipio' |
+| `nivel` | `Literal['brasil', 'uf', 'municipio']` | Nível: 'brasil', 'uf', 'municipio' |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
 **Temas disponíveis:**
 
@@ -475,9 +489,10 @@ async def censo_agro_historico(
     tema: str,
     ano: int | list[int] | None = None,
     uf: str | None = None,
-    nivel: str = 'uf',
+    nivel: Literal['brasil', 'regiao', 'uf'] = 'uf',
     as_polars: bool = False,
-) -> pd.DataFrame | pl.DataFrame
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
 
 **Parâmetros:**
@@ -487,8 +502,9 @@ async def censo_agro_historico(
 | `tema` | `str` | Tema da série histórica (ver tabela abaixo) |
 | `ano` | `int \| list[int] \| None` | Ano(s) censal(ais). Default: todos os disponíveis |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'SP'). Só aplicado em nivel='uf' |
-| `nivel` | `str` | Nível: 'brasil', 'regiao', 'uf' (municipal NÃO disponível) |
+| `nivel` | `Literal['brasil', 'regiao', 'uf']` | Nível: 'brasil', 'regiao', 'uf' (municipal NÃO disponível) |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
 **Temas disponíveis:**
 
@@ -566,6 +582,7 @@ async def censo_agro_municipal_1985(
     *,
     uf: str | None = None,
     nivel: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -577,6 +594,7 @@ async def censo_agro_municipal_1985(
 | `tema` | `str` | Tema (53 disponíveis — use `temas_censo_agro_municipal_1985()`) |
 | `uf` | `str \| None` | Filtrar por UF (22 UFs disponíveis) |
 | `nivel` | `str \| None` | Filtrar: total, mesorregiao, microrregiao, municipio |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retornar MetaInfo |
 
 **Exemplo:**
@@ -639,9 +657,9 @@ Obtém dados da Produção da Extração Vegetal e da Silvicultura (PEVS) — si
 ```python
 async def silvicultura(
     produto: str,
-    ano: int | list[int] | None = None,
+    ano: int | str | list[int] | None = None,
     uf: str | None = None,
-    nivel: str = 'uf',
+    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
     variavel: str = 'quantidade_produzida',
     as_polars: bool = False,
     return_meta: bool = False,
@@ -653,9 +671,9 @@ async def silvicultura(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Código do produto (ex: 'madeira_tora', 'carvao') ou espécie de área (ex: 'eucalipto') |
-| `ano` | `int \| list[int] \| None` | Ano(s). Default: último disponível |
+| `ano` | `int \| str \| list[int] \| None` | Ano(s). Default: último disponível |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'MG') |
-| `nivel` | `str` | Nível: 'brasil', 'uf', 'municipio' |
+| `nivel` | `Literal['brasil', 'uf', 'municipio']` | Nível: 'brasil', 'uf', 'municipio' |
 | `variavel` | `str` | 'quantidade_produzida', 'valor_producao' (tab 291) ou 'area' (tab 5930) |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retornar MetaInfo |
@@ -715,9 +733,9 @@ Obtém dados da Produção da Extração Vegetal e da Silvicultura (PEVS) — ex
 ```python
 async def extracao_vegetal(
     produto: str,
-    ano: int | list[int] | None = None,
+    ano: int | str | list[int] | None = None,
     uf: str | None = None,
-    nivel: str = 'uf',
+    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
     variavel: str = 'quantidade_produzida',
     as_polars: bool = False,
     return_meta: bool = False,
@@ -729,9 +747,9 @@ async def extracao_vegetal(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Código do produto (ex: 'acai', 'castanha_para') |
-| `ano` | `int \| list[int] \| None` | Ano(s). Default: último disponível |
+| `ano` | `int \| str \| list[int] \| None` | Ano(s). Default: último disponível |
 | `uf` | `str \| None` | Filtrar por UF |
-| `nivel` | `str` | Nível: 'brasil', 'uf', 'municipio' |
+| `nivel` | `Literal['brasil', 'uf', 'municipio']` | Nível: 'brasil', 'uf', 'municipio' |
 | `variavel` | `str` | 'quantidade_produzida' ou 'valor_producao' |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retornar MetaInfo |
