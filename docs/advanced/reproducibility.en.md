@@ -1,8 +1,8 @@
-# Reprodutibilidade
+# Reproducibility
 
-O agrobr permite análises 100% reproduzíveis.
+agrobr enables 100% reproducible analyses.
 
-## Modo Determinístico
+## Deterministic Mode
 
 ```python
 from agrobr import datasets
@@ -11,7 +11,7 @@ async with datasets.deterministic(snapshot="2025-12-31"):
     df = await datasets.preco_diario("soja")
 ```
 
-Também disponível como decorator:
+Also available as a decorator:
 
 ```python
 from agrobr.datasets.deterministic import deterministic_decorator
@@ -22,20 +22,20 @@ async def meu_pipeline():
     return df
 ```
 
-## Semântica do Snapshot
+## Snapshot Semantics
 
-| Aspecto | Definição |
+| Aspect | Definition |
 |---------|-----------|
-| **Formato** | `"YYYY-MM-DD"` — data máxima de corte |
-| **Filtro** | Datasets com suporte a snapshot (ex.: `preco_diario`) filtram por `data <= snapshot` |
-| **Rede** | Datasets com suporte a snapshot consultam apenas o cache local (offline) |
-| **Escopo** | Isolado por contexto async (contextvars) — não afeta outras tasks |
-| **MetaInfo** | Campo `snapshot` preenchido automaticamente em todos os datasets |
+| **Format** | `"YYYY-MM-DD"` — maximum cutoff date |
+| **Filter** | Datasets with snapshot support (e.g. `preco_diario`) filter by `data <= snapshot` |
+| **Network** | Datasets with snapshot support query the local cache only (offline) |
+| **Scope** | Isolated per async context (contextvars) — does not affect other tasks |
+| **MetaInfo** | `snapshot` field filled automatically in all datasets |
 
-!!! note "Suporte por dataset"
-    O filtro por data e o modo offline são aplicados pelos datasets que implementam suporte a snapshot (hoje `preco_diario`). Os demais registram o `snapshot` no `MetaInfo` para proveniência, mas consultam as fontes normalmente.
+!!! note "Per-dataset support"
+    The date filter and offline mode are applied by datasets that implement snapshot support (currently `preco_diario`). The others record the `snapshot` in `MetaInfo` for provenance but query the sources normally.
 
-## Verificando o Modo
+## Checking the Mode
 
 ```python
 from agrobr.datasets import is_deterministic, get_snapshot
@@ -48,9 +48,9 @@ print(is_deterministic())  # False
 print(get_snapshot())      # None
 ```
 
-## Casos de Uso
+## Use Cases
 
-### Papers Acadêmicos
+### Academic Papers
 
 ```python
 async with datasets.deterministic("2024-12-31"):
@@ -69,7 +69,7 @@ async def backtest(data_corte: str):
 resultados = [await backtest(f"2024-{m:02d}-01") for m in range(1, 13)]
 ```
 
-### Auditoria
+### Auditing
 
 ```python
 df, meta = await datasets.preco_diario("soja", return_meta=True)
@@ -85,11 +85,11 @@ audit_log = {
 
 ## Thread/Async Safety
 
-O modo determinístico usa `contextvars`, garantindo isolamento:
+Deterministic mode uses `contextvars`, ensuring isolation:
 
-- Cada task async tem seu próprio contexto
-- Threads diferentes não interferem
-- Contextos aninhados funcionam corretamente
+- Each async task has its own context
+- Different threads do not interfere
+- Nested contexts work correctly
 
 ```python
 async def task_a():
@@ -103,12 +103,12 @@ async def task_b():
 await asyncio.gather(task_a(), task_b())
 ```
 
-## Pré-Requisitos
+## Prerequisites
 
-Para reprodutibilidade total, o cache local deve conter os dados históricos:
+For full reproducibility, the local cache must contain the historical data:
 
-1. Execute as consultas normalmente primeiro (popula o cache)
-2. Use modo determinístico para reproduzir
+1. Run the queries normally first (populates the cache)
+2. Use deterministic mode to reproduce
 
 ```python
 df = await datasets.preco_diario("soja")

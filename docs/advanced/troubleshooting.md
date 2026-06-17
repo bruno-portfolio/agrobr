@@ -92,9 +92,11 @@ Guia para resolver problemas comuns.
    df = await cepea.indicador('soja', validate_sanity=False)
    ```
 
-### `AnomalyDetectedWarning`
+### Anomalias estatísticas
 
 **Causa:** Valores fora do range histórico esperado.
+
+Com `validate_sanity=True`, anomalias são marcadas na coluna `anomalies` do DataFrame (não bloqueiam o retorno) e registradas no log. Não há exceção nem warning específico para anomalias.
 
 **Isso é normal quando:**
 - Preços tiveram variação atípica (eventos de mercado)
@@ -120,20 +122,15 @@ atualize:
 pip install --upgrade agrobr
 ```
 
-### `CacheError`
+### Cache corrompido
 
 **Causa:** Problema com DuckDB ou arquivo de cache corrompido.
 
-**Soluções:**
+**Solução:** delete o arquivo de cache (recriado no próximo uso):
 
-1. Limpe o cache:
-   ```bash
-   agrobr cache clear
-   ```
-2. Se persistir, delete o arquivo:
-   ```bash
-   rm ~/.agrobr/cache/agrobr.duckdb
-   ```
+```bash
+rm ~/.agrobr/cache/agrobr.duckdb
+```
 
 ### Cache não Atualizando
 
@@ -179,7 +176,7 @@ pip install agrobr[polars]
    ```
 3. Use via Python:
    ```bash
-   python -m agrobr.cli cepea soja
+   python -m agrobr.cli cepea indicador soja
    ```
 
 ### Encoding no Windows
@@ -201,7 +198,7 @@ agrobr cepea indicador soja --formato csv > soja.csv
 
 ```bash
 # Via CLI
-agrobr --log-level DEBUG cepea soja
+agrobr --verbose cepea indicador soja
 
 # Via código
 import logging
@@ -217,13 +214,14 @@ agrobr config show
 ### Verificar Health das Fontes
 
 ```bash
-agrobr health --all --verbose
+agrobr health           # todas as fontes
+agrobr health --deep    # checagem profunda (faz parsing real)
 ```
 
 ### Inspecionar Cache
 
 ```bash
-agrobr cache status
+agrobr doctor
 ```
 
 ## Reportando Bugs
@@ -235,7 +233,7 @@ Se o problema persistir:
    ```bash
    python --version
    pip show agrobr
-   agrobr health --all
+   agrobr doctor
    ```
 3. Abra issue com:
    - Versão do Python e agrobr

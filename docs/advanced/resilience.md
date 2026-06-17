@@ -27,7 +27,6 @@ O agrobr foi projetado para ser robusto e resiliente a falhas. Este documento ex
 │  CAMADA 4: FALLBACK                                             │
 │  ├─ Parser Cascade             → Tenta próximo parser           │
 │  ├─ Cache Fallback             → Retorna cache stale            │
-│  ├─ History Fallback           → Busca histórico permanente     │
 │  └─ Source Fallback            → Fonte alternativa (NA)         │
 │                                                                  │
 │  CAMADA 5: ALERTAS                                              │
@@ -69,7 +68,7 @@ Cada fonte tem seu próprio rate limit, configurável via env vars:
 | ABIOVE | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_ABIOVE` |
 | ANDA | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_ANDA` |
 | BCB | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_BCB` |
-| CEPEA | 2 segundos | `AGROBR_HTTP_RATE_LIMIT_CEPEA` |
+| CEPEA | 5 segundos | `AGROBR_HTTP_RATE_LIMIT_CEPEA` |
 | ComexStat | 2 segundos | `AGROBR_HTTP_RATE_LIMIT_COMEXSTAT` |
 | CONAB | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_CONAB` |
 | DERAL | 3 segundos | `AGROBR_HTTP_RATE_LIMIT_DERAL` |
@@ -82,7 +81,7 @@ Cada fonte tem seu próprio rate limit, configurável via env vars:
 | ZARC | 2 segundos | `AGROBR_HTTP_RATE_LIMIT_ZARC` |
 | Default | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` |
 
-O rate limiter usa semáforos por fonte, permitindo requests paralelos a fontes diferentes.
+A tabela mostra as principais fontes; cada uma das fontes suportadas tem seu próprio rate limit (default 1 segundo). Além do intervalo entre requisições, a concorrência por fonte é controlada por `max_concurrent_<fonte>` (default 1; B3 e IBGE usam 3), via semáforos que permitem requests paralelos a fontes diferentes.
 
 ## Configuração HTTP Centralizada
 
@@ -104,12 +103,10 @@ export AGROBR_HTTP_RETRY_MAX_DELAY=30.0
 Via código:
 
 ```python
-from agrobr.http import get_timeout, get_rate_limit, get_client_kwargs
-from agrobr.constants import Fonte
+from agrobr.http import get_timeout
 
-timeout = get_timeout()                      # httpx.Timeout
-rate = get_rate_limit(Fonte.CEPEA)           # 2.0
-kwargs = get_client_kwargs(Fonte.CEPEA)      # dict para httpx.AsyncClient(**kwargs)
+timeout = get_timeout()             # httpx.Timeout (defaults)
+timeout = get_timeout(read=60.0)    # sobrescreve só o read timeout
 ```
 
 ## User-Agent Rotativo
@@ -132,8 +129,9 @@ Chain de fallback para encoding:
 2. Windows-1252 (CP1252, padrão Excel BR — superset do Latin-1, vem antes porque ISO-8859-1 decodifica qualquer byte e mataria o resto da chain)
 3. ISO-8859-1 (Latin-1, comum em sites BR antigos)
 4. UTF-16 (raro)
-5. Detecção automática (chardet)
-6. UTF-8 com replacement (último recurso)
+5. ASCII
+6. Detecção automática (chardet, confiança > 0.7)
+7. UTF-8 com replacement (último recurso)
 
 ## Fallback de Engine Excel
 
@@ -174,18 +172,9 @@ Cada etapa retorna um `FetchResult(html, source)` que identifica explicitamente 
 
 **Soft block detection:** Alguns usuários recebem do NA uma página de consent/challenge (HTTP 200, ~10KB sem tabela) em vez da página de dados (~75KB com tabela). O client NA valida o conteúdo antes de retornar: se o HTML é < 20KB e não contém `<table`, levanta `SourceUnavailableError`, ativando o cache fallback.
 
-## Cache e Histórico
+## Cache
 
-### Cache Volátil
-- TTL configurável por fonte
-- Usado para respostas rápidas
-- Expira automaticamente
-
-### Histórico Permanente
-- Nunca expira
-- Acumula dados progressivamente
-- Permite reconstruir séries históricas
-- Útil em modo offline
+O cache local usa DuckDB. CEPEA expira às 18h (smart TTL); demais fontes usam TTL fixo por política (ex.: CONAB 24h, IBGE 7 dias). Quando o fetch falha, o cache stale é retornado com warning. Sem cache stale, o comportamento depende da camada: a fonte direta `cepea.indicador()` retorna um DataFrame vazio (com aviso no `MetaInfo`); os datasets (`datasets.*`, que tentam fontes em cascata) levantam `SourceUnavailableError` quando todas as fontes se esgotam.
 
 ### Fluxo de Cache
 
@@ -198,15 +187,13 @@ Cache fresh? ──yes──→ Retorna cache
    ▼
 Fetch fonte
    │
-   ├─success──→ Atualiza cache + histórico
+   ├─success──→ Atualiza cache
    │
    └─fail──→ Cache stale? ──yes──→ Retorna stale + warning
                  │no
                  ▼
-           Histórico? ──yes──→ Retorna histórico + warning
-                 │no
-                 ▼
-           SourceUnavailableError
+           cepea.indicador() → DataFrame vazio
+           datasets.* → SourceUnavailableError
 ```
 
 ## Fingerprinting de Layout
@@ -285,14 +272,10 @@ export AGROBR_ALERT_EMAIL_TO=["admin@example.com"]
 Para trabalhar sem conexão:
 
 ```python
-# Via código
 df = await cepea.indicador('soja', offline=True)
-
-# Via ambiente
-export AGROBR_CACHE_OFFLINE_MODE=true
 ```
 
-Usa apenas cache e histórico local.
+Usa apenas o cache local.
 
 ## Comando Doctor
 
