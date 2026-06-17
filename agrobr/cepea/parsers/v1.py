@@ -22,6 +22,7 @@ PRACAS: dict[str, str] = {
     "milho": "Campinas/SP",
     "cafe": "São Paulo/SP",
     "cafe_arabica": "São Paulo/SP",
+    "cafe_robusta": "Espírito Santo",
     "boi": "São Paulo/SP",
     "boi_gordo": "São Paulo/SP",
     "boi-gordo": "São Paulo/SP",
@@ -38,6 +39,11 @@ PRACAS: dict[str, str] = {
     "laranja_industria": "São Paulo/SP",
     "laranja_in_natura": "São Paulo/SP",
 }
+
+
+def _is_robusta(text: str) -> bool:
+    t = text.lower()
+    return "robust" in t or "conil" in t
 
 
 class CepeaParserV1(BaseParser):
@@ -105,7 +111,7 @@ class CepeaParserV1(BaseParser):
                 html_snippet=html[:500],
             )
 
-        data_table = self._find_data_table(soup)
+        data_table = self._find_data_table(soup, produto)
         if not data_table:
             raise ParseError(
                 source=self.source,
@@ -155,7 +161,10 @@ class CepeaParserV1(BaseParser):
         fp = extract_fingerprint(html, Fonte.CEPEA, "internal")
         return fp.model_dump()
 
-    def _find_data_table(self, soup: BeautifulSoup) -> Any | None:
+    def _find_data_table(self, soup: BeautifulSoup, produto: str | None = None) -> Any | None:
+        if produto and _is_robusta(produto):
+            return self._find_table_by_titulo(soup, want_robusta=True)
+
         table = soup.find("table", id=re.compile(r"indicador|preco|cotacao|dados", re.I))
         if table:
             return table
@@ -176,6 +185,14 @@ class CepeaParserV1(BaseParser):
             if len(largest_table.find_all("tr")) >= 3:
                 return largest_table
 
+        return None
+
+    def _find_table_by_titulo(self, soup: BeautifulSoup, want_robusta: bool) -> Any | None:
+        for titulo in soup.find_all("div", class_="imagenet-table-titulo"):
+            if _is_robusta(titulo.get_text()) == want_robusta:
+                table = titulo.find_next("table")
+                if table is not None:
+                    return table
         return None
 
     def _extract_headers(self, table: Any) -> list[str]:

@@ -27,7 +27,7 @@
 - **Tipo**: Mirror autorizado dos indicadores CEPEA
 - **Status**: Funcional
 
-## Produtos Disponiveis (20 indicadores)
+## Produtos Disponiveis (21 produtos)
 
 | Produto | Praca Principal | Unidade | Frequencia |
 |---------|-----------------|---------|------------|
@@ -36,6 +36,7 @@
 | Milho | Campinas/SP | BRL/sc 60kg | Diaria |
 | Boi Gordo | Sao Paulo/SP | BRL/@ | Diaria |
 | Cafe Arabica | Sao Paulo/SP | BRL/sc 60kg | Diaria |
+| Cafe Robusta | Espirito Santo | BRL/sc 60kg | Diaria |
 | Trigo | Parana + RS | BRL/ton | Diaria |
 | Algodao | Sao Paulo/SP | cBRL/lb | Diaria |
 | Arroz em casca | ESALQ/BBM | BRL/sc 50kg | Diaria |
@@ -130,9 +131,9 @@ O CEPEA usa Smart TTL - o cache expira automaticamente as 18:00:
 ```python
 # Lista produtos disponiveis
 produtos = await cepea.produtos()
-# ['soja', 'soja_parana', 'milho', 'boi', 'cafe', 'algodao', 'trigo',
-#  'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado', 'etanol_anidro',
-#  'frango_congelado', 'frango_resfriado', 'suino', 'leite',
+# ['soja', 'soja_parana', 'milho', 'boi', 'cafe', 'cafe_robusta', 'algodao',
+#  'trigo', 'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado',
+#  'etanol_anidro', 'frango_congelado', 'frango_resfriado', 'suino', 'leite',
 #  'laranja_industria', 'laranja_in_natura']
 
 # Lista pracas para um produto

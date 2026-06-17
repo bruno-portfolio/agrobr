@@ -37,6 +37,7 @@ class TestRegistry:
         assert isinstance(products, list)
         assert "soja" in products
         assert "milho" in products
+        assert "cafe_robusta" in products
 
     def test_list_products_not_found(self):
         with pytest.raises(KeyError):

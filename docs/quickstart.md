@@ -80,7 +80,8 @@ print(f"Milho: R$ {ultimo.valor}")
 | `soja_parana` | Soja (Paraná) | BRL/sc 60kg |
 | `milho` | Milho (Campinas) | BRL/sc 60kg |
 | `boi` / `boi_gordo` | Boi gordo (São Paulo) | BRL/@ |
-| `cafe` / `cafe_arabica` | Café Arábica | BRL/sc 60kg |
+| `cafe` / `cafe_arabica` | Café Arábica (São Paulo) | BRL/sc 60kg |
+| `cafe_robusta` | Café Robusta/Conilon (Espírito Santo) | BRL/sc 60kg |
 | `algodao` | Algodão em pluma | cBRL/lb |
 | `trigo` | Trigo (Paraná + RS) | BRL/ton |
 | `arroz` | Arroz em casca (ESALQ/BBM) | BRL/sc 50kg |

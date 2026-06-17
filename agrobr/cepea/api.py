@@ -85,6 +85,16 @@ class _FetchResult(NamedTuple):
     parse_ms: int
 
 
+def _cepea_source_url(produto: str) -> str:
+    produto_key = constants.CEPEA_PRODUTOS.get(produto.lower(), produto.lower())
+    return f"{constants.URLS[constants.Fonte.CEPEA]['indicadores']}/{produto_key}.aspx"
+
+
+def _noticias_agricolas_source_url(produto: str) -> str:
+    produto_key = constants.NOTICIAS_AGRICOLAS_PRODUTOS.get(produto.lower(), produto.lower())
+    return f"{constants.URLS[constants.Fonte.NOTICIAS_AGRICOLAS]['cotacoes']}/{produto_key}"
+
+
 async def _fetch_and_parse(produto: str) -> _FetchResult:
     parse_start = time.perf_counter()
     fetch_result = await client.fetch_indicador_page(produto)
@@ -94,11 +104,11 @@ async def _fetch_and_parse(produto: str) -> _FetchResult:
     raw_hash = f"sha256:{hashlib.sha256(html.encode('utf-8')).hexdigest()[:16]}"
 
     if source_name == "noticias_agricolas":
-        from agrobr.noticias_agricolas.parser import parse_indicador as na_parse
+        from agrobr.noticias_agricolas import parser as na_parser
 
-        new_indicadores = na_parse(html, produto)
-        source_url = f"https://www.noticiasagricolas.com.br/cotacoes/{produto}"
-        parser_version = 1
+        new_indicadores = na_parser.parse_indicador(html, produto)
+        source_url = _noticias_agricolas_source_url(produto)
+        parser_version = na_parser.PARSER_VERSION
         logger.info(
             "parse_success",
             source="noticias_agricolas",
@@ -106,7 +116,7 @@ async def _fetch_and_parse(produto: str) -> _FetchResult:
         )
     else:
         parser, new_indicadores = await get_parser_with_fallback(html, produto)
-        source_url = f"https://www.cepea.esalq.usp.br/br/indicador/{produto}.aspx"
+        source_url = _cepea_source_url(produto)
         parser_version = parser.version
 
     parse_ms = int((time.perf_counter() - parse_start) * 1000)
@@ -369,6 +379,7 @@ async def pracas(produto: str) -> list[str]:
         "soja": ["paranagua", "parana", "rio_grande_do_sul"],
         "milho": ["campinas", "parana"],
         "cafe": ["mogiana", "sul_de_minas"],
+        "cafe_robusta": ["espirito_santo"],
         "boi": ["sao_paulo"],
         "trigo": ["parana", "rio_grande_do_sul"],
         "arroz": ["rio_grande_do_sul"],

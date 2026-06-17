@@ -233,6 +233,13 @@ class TestParseIndicador:
             assert indicadores[0].produto == produto
             assert indicadores[0].unidade == UNIDADES[produto]
 
+    def test_parse_indicador_cafe_robusta(self, sample_html):
+        indicadores = parse_indicador(sample_html, "cafe_robusta")
+        assert len(indicadores) == 2
+        assert indicadores[0].produto == "cafe_robusta"
+        assert indicadores[0].unidade == "BRL/sc60kg"
+        assert indicadores[0].praca == "Espírito Santo"
+
     @pytest.fixture
     def sample_html_vencimento(self):
         return """
@@ -383,6 +390,7 @@ class TestConstants:
         assert UNIDADES["milho"] == "BRL/sc60kg"
         assert UNIDADES["boi"] == "BRL/@"
         assert UNIDADES["cafe"] == "BRL/sc60kg"
+        assert UNIDADES["cafe_robusta"] == "BRL/sc60kg"
         assert UNIDADES["algodao"] == "cBRL/lb"
         assert UNIDADES["trigo"] == "BRL/ton"
         assert UNIDADES["arroz"] == "BRL/sc50kg"
@@ -401,6 +409,7 @@ class TestConstants:
         assert PRACAS["milho"] == "Campinas/SP"
         assert PRACAS["boi"] == "São Paulo/SP"
         assert PRACAS["cafe"] == "São Paulo/SP"
+        assert PRACAS["cafe_robusta"] == "Espírito Santo"
         assert PRACAS["trigo"] is None
         assert PRACAS["leite"] is None
         assert PRACAS["arroz"] == "Rio Grande do Sul"

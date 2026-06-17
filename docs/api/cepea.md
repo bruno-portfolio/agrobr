@@ -25,7 +25,7 @@ async def indicador(
 
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `produto` | `str` | Produto CEPEA (20 disponíveis). Veja `produtos()` para lista completa |
+| `produto` | `str` | Produto CEPEA (21 disponíveis). Veja `produtos()` para lista completa |
 | `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 30 dias atrás |
 | `fim` | `str \| date \| None` | Data final. Default: hoje |
 | `moeda` | `str` | Moeda: 'BRL' ou 'USD'. Default: 'BRL' |
@@ -123,10 +123,11 @@ Lista de strings com nomes dos produtos.
 from agrobr import cepea
 
 prods = await cepea.produtos()
-# ['soja', 'soja_parana', 'milho', 'boi', 'cafe', 'algodao', 'trigo',
-#  'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado', 'etanol_anidro',
-#  'frango_congelado', 'frango_resfriado', 'suino', 'leite',
+# ['soja', 'soja_parana', 'milho', 'boi', 'cafe', 'cafe_robusta', 'algodao',
+#  'trigo', 'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado',
+#  'etanol_anidro', 'frango_congelado', 'frango_resfriado', 'suino', 'leite',
 #  'laranja_industria', 'laranja_in_natura']
+# 'cafe'/'cafe_arabica' = Arábica (SP); 'cafe_robusta' = Robusta/Conilon (ES)
 # Aliases: boi_gordo → boi, cafe_arabica → cafe
 ```
 

@@ -7,7 +7,7 @@ from decimal import Decimal
 
 import pytest
 
-from agrobr.cepea.parsers.v1 import PRACAS, CepeaParserV1
+from agrobr.cepea.parsers.v1 import PRACAS, CepeaParserV1, _is_robusta
 from agrobr.exceptions import ParseError
 
 
@@ -277,3 +277,67 @@ class TestCepeaParserV1EdgeCases:
         result = self.parser.extract_fingerprint(sample_html_cepea)
         assert isinstance(result, dict)
         assert "table_count" in result or "row_count" in result or len(result) > 0
+
+
+class TestCepeaCafeRobusta:
+    """Seleção entre arábica e robusta na página de café (2 tabelas, mesma URL)."""
+
+    def setup_method(self):
+        self.parser = CepeaParserV1()
+
+    @staticmethod
+    def _html_cafe_duas_tabelas() -> str:
+        return """
+        <html><body>
+        <div class="imagenet-table-titulo">INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ</div>
+        <table id="imagenet-indicador1" class="imagenet-table">
+            <tr><th></th><th>Valor R$</th><th>Var./Dia</th><th>Var./Mês</th><th>Valor US$</th></tr>
+            <tr><td>16/06/2026</td><td>1.474,18</td><td>3,26%</td><td>-5,24%</td><td>289,74</td></tr>
+        </table>
+        <div class="imagenet-table-titulo">INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ</div>
+        <table id="imagenet-indicador2" class="imagenet-table">
+            <tr><th></th><th>Valor R$</th><th>Var./Dia</th><th>Var./Mês</th><th>Valor US$</th></tr>
+            <tr><td>16/06/2026</td><td>988,50</td><td>1,48%</td><td>3,77%</td><td>194,28</td></tr>
+        </table>
+        <p>Indicador CEPEA/ESALQ</p>
+        </body></html>
+        """
+
+    def test_robusta_seleciona_tabela_robusta(self):
+        inds = self.parser.parse(self._html_cafe_duas_tabelas(), "cafe_robusta")
+        assert len(inds) == 1
+        assert inds[0].valor == Decimal("988.50")
+        assert inds[0].produto == "cafe_robusta"
+        assert inds[0].praca == "Espírito Santo"
+        assert inds[0].unidade == "BRL/sc60kg"
+
+    def test_cafe_seleciona_tabela_arabica(self):
+        inds = self.parser.parse(self._html_cafe_duas_tabelas(), "cafe")
+        assert len(inds) == 1
+        assert inds[0].valor == Decimal("1474.18")
+        assert inds[0].praca == "São Paulo/SP"
+
+    def test_cafe_arabica_seleciona_tabela_arabica(self):
+        inds = self.parser.parse(self._html_cafe_duas_tabelas(), "cafe_arabica")
+        assert inds[0].valor == Decimal("1474.18")
+
+    def test_robusta_sem_titulo_nao_cai_em_arabica(self):
+        html = """
+        <html><body>
+        <table id="imagenet-indicador1" class="imagenet-table">
+            <tr><th></th><th>Valor R$</th><th>Var./Dia</th></tr>
+            <tr><td>16/06/2026</td><td>1.474,18</td><td>3,26%</td></tr>
+        </table>
+        <p>Indicador CEPEA/ESALQ</p>
+        </body></html>
+        """
+        with pytest.raises(ParseError):
+            self.parser.parse(html, "cafe_robusta")
+
+    def test_is_robusta_detection(self):
+        assert _is_robusta("cafe_robusta")
+        assert _is_robusta("INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ")
+        assert _is_robusta("conilon")
+        assert _is_robusta("conillon")
+        assert not _is_robusta("cafe")
+        assert not _is_robusta("INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ")

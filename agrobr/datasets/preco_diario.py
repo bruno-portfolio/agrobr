@@ -74,7 +74,7 @@ PRECO_DIARIO_INFO = DatasetInfo(
             description="Cache local DuckDB",
         ),
     ],
-    products=["soja", "milho", "boi", "cafe", "trigo", "algodao"],
+    products=["soja", "milho", "boi", "cafe", "cafe_robusta", "trigo", "algodao"],
     contract_version="1.0",
     update_frequency="daily",
     typical_latency="D+0",

@@ -24,6 +24,7 @@ async def test_produtos_returns_list():
     assert "soja" in result
     assert "milho" in result
     assert "cafe" in result
+    assert "cafe_robusta" in result
 
 
 @pytest.mark.integration
@@ -41,6 +42,11 @@ async def test_pracas_unknown_product_raises():
 async def test_pracas_valid_product_without_mapped_pracas():
     result = await cepea.pracas("algodao")
     assert result == []
+
+
+async def test_pracas_cafe_robusta():
+    result = await cepea.pracas("cafe_robusta")
+    assert result == ["espirito_santo"]
 
 
 def _make_indicador(
@@ -213,6 +219,58 @@ class TestIndicador:
 
         df, meta = result
         assert meta.source == "noticias_agricolas"
+
+    async def test_cafe_robusta_meta_uses_cepea_canonical_url(self):
+        today = date.today()
+        ind = _make_indicador(produto="cafe_robusta", data=today)
+        html = "<html>CEPEA cafe data</html>"
+        with (
+            patch(
+                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
+            ) as mock_fetch,
+            patch(
+                "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
+            ) as mock_parser,
+        ):
+            mock_fetch.return_value = FetchResult(html, "cepea")
+            mock_parser.return_value = (MagicMock(version=1), [ind])
+
+            _, meta = await api.indicador(
+                "cafe_robusta",
+                inicio=today,
+                fim=today,
+                force_refresh=True,
+                return_meta=True,
+            )
+
+        assert meta.source_url == "https://www.cepea.org.br/br/indicador/cafe.aspx"
+
+    async def test_cafe_robusta_meta_uses_noticias_agricolas_slug(self):
+        today = date.today()
+        ind = _make_indicador(produto="cafe_robusta", data=today)
+        html = '<html><div class="cot-fisicas">noticiasagricolas data</div></html>'
+        with (
+            patch(
+                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
+            ) as mock_fetch,
+            patch("agrobr.noticias_agricolas.parser.parse_indicador") as mock_na_parse,
+        ):
+            mock_fetch.return_value = FetchResult(html, "noticias_agricolas")
+            mock_na_parse.return_value = [ind]
+
+            _, meta = await api.indicador(
+                "cafe_robusta",
+                inicio=today,
+                fim=today,
+                force_refresh=True,
+                return_meta=True,
+            )
+
+        assert (
+            meta.source_url
+            == "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-conillon"
+        )
+        assert meta.parser_version == 2
 
     async def test_source_fetch_failure_falls_back_to_cache(self):
         today = date.today()

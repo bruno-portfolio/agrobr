@@ -96,7 +96,7 @@ datasets.list_datasets()
 
 # Listar produtos de um dataset
 datasets.list_products("preco_diario")
-# ['soja', 'milho', 'boi', 'cafe', 'trigo', 'algodao']
+# ['soja', 'milho', 'boi', 'cafe', 'cafe_robusta', 'trigo', 'algodao']
 
 # Info de um dataset
 datasets.info("preco_diario")

@@ -1,0 +1,8 @@
+{
+  "source": "cepea",
+  "produto": "cafe_robusta",
+  "periodo": "2026-06",
+  "parser_version": 1,
+  "url": "https://www.cepea.org.br/br/indicador/cafe.aspx",
+  "notes": "Pagina real do CEPEA contem 2 tabelas (arabica + robusta); golden valida selecao da tabela robusta"
+}

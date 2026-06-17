@@ -88,7 +88,7 @@ df = await cepea.indicador('soja', inicio='2024-01-01')
 ultimo = await cepea.ultimo('soja')
 print(f"Soja: R$ {ultimo.valor}/sc em {ultimo.data}")
 
-print(await cepea.produtos())       # 20 produtos disponíveis
+print(await cepea.produtos())       # 21 produtos disponíveis
 print(await cepea.pracas('soja'))   # praças de comercialização por produto
 ```
 
@@ -460,7 +460,7 @@ Disponibilidade monitorada automaticamente. Use `agrobr health` para verificar l
 
 | Fonte | Dados | Golden Test | Status |
 |-------|-------|:-----------:|--------|
-| CEPEA | Indicadores de preços (20 produtos) | ✅ | Funcional |
+| CEPEA | Indicadores de preços (21 produtos) | ✅ | Funcional |
 | CONAB | Safras, balanço, custos, série histórica, progresso semanal, CEASA/PROHORT preços atacado | ✅ | Funcional |
 | IBGE | PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo Agro (1985/1995-96/2006/2017 + série histórica) | ✅ | Funcional |
 | NASA POWER | Climatologia diária/mensal (grid 0.5°) | ✅ | Funcional |

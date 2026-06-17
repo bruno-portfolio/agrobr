@@ -47,6 +47,9 @@ class TestPrecoDiarioSpecific:
         cache_source = next(s for s in PRECO_DIARIO_INFO.sources if s.name == "cache")
         assert cepea_source.priority < cache_source.priority
 
+    def test_info_includes_cafe_robusta(self):
+        assert "cafe_robusta" in PRECO_DIARIO_INFO.products
+
 
 class TestPrecoDiarioFetch:
     @pytest.mark.asyncio
@@ -78,6 +81,28 @@ class TestPrecoDiarioFetch:
         dataset = PrecoDiarioDataset()
         with pytest.raises(ValueError, match="não suportado"):
             await dataset.fetch("aveia")
+
+    @pytest.mark.asyncio
+    async def test_fetch_accepts_cafe_robusta(self):
+        df = pd.DataFrame(
+            [
+                {
+                    "data": pd.Timestamp("2026-06-16"),
+                    "valor": 988.50,
+                    "unidade": "BRL/sc60kg",
+                    "produto": "cafe_robusta",
+                    "fonte": "cepea",
+                    "praca": "Espírito Santo",
+                }
+            ]
+        )
+        dataset = PrecoDiarioDataset()
+        dataset.info.sources[0].fetch_fn = make_source(df)
+
+        result = await dataset.fetch("cafe_robusta")
+
+        assert len(result) == 1
+        assert result.iloc[0]["produto"] == "cafe_robusta"
 
     @pytest.mark.asyncio
     async def test_fetch_snapshot_filters_dates(self):
