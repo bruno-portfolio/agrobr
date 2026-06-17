@@ -13,7 +13,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 
 **v1.0.5** — 6000+ testes | 92% cobertura | golden tests com fixtures por fonte | retry centralizado em todos os clients HTTP
 
-- **CEPEA/ESALQ**: 20 indicadores de preços (soja, milho, boi, café, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
+- **CEPEA/ESALQ**: 21 indicadores de preços (soja, milho, boi, café arábica, café robusta, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção, série histórica, progresso semanal de plantio/colheita e preços atacado hortifruti (CEASA/PROHORT)
 - **IBGE/SIDRA**: PAM (anual), LSPA (mensal), PPM, Abate, PEVS (silvicultura + extracao vegetal), Leite Trimestral, PIB Agro, Censo Agro
 - **NASA POWER**: Climatologia gridded diária (temperatura, precipitação, radiação, umidade, vento)

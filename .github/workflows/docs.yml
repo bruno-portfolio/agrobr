@@ -28,7 +28,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install mkdocs-material mkdocstrings mkdocstrings-python "Pygments>=2.17,<2.19"
+        run: pip install -e ".[docs]"
 
       - name: Build MkDocs
         run: mkdocs build -d site_mkdocs

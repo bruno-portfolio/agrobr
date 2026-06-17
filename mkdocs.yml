@@ -21,7 +21,6 @@ theme:
         icon: material/brightness-4
         name: Modo claro
   features:
-    - navigation.instant
     - navigation.tracking
     - navigation.tabs
     - navigation.sections
@@ -36,7 +35,22 @@ theme:
 
 plugins:
   - search:
-      lang: pt
+      lang:
+        - pt
+        - en
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: pt
+          name: Português
+          default: true
+          build: true
+        - locale: en
+          name: English
+          build: true
   - mkdocstrings:
       handlers:
         python:
