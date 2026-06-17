@@ -29,7 +29,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 - **Queimadas/INPE**: Satellite fire hotspots (6 biomes, 13 satellites)
 - **Deforestation PRODES/DETER**: Consolidated deforestation + real-time alerts + geometry (GeoDataFrame)
 - **MapBiomas**: Land cover and use by municipality (1985-present)
-- **B3 Agri Futures**: Daily settlements + open interest for agri futures and options
+- **B3 Agricultural Futures**: Daily settlements + open interest for agricultural futures and options
 - **UN Comtrade**: Bilateral trade + trade mirror (exports vs imports by HS code, ~200 countries)
 - **ANTAQ**: Port cargo movement (solid/liquid bulk, general cargo, containers, 2010+)
 - **ANP Diesel**: Diesel resale prices and sales volumes by state/municipality (mechanized-activity proxy)
@@ -71,9 +71,9 @@ Ask for what you want; the source is an internal detail:
 | `desmatamento` | PRODES/DETER deforestation — consolidated + alerts | INPE TerraBrasilis |
 | `estimativa_safra` | Current-season estimates | CONAB → IBGE LSPA |
 | `exportacao` | Agricultural exports | ComexStat → ABIOVE |
-| `extrativismo_vegetal` | Plant extraction output (açaí, brazil nut, yerba mate) | IBGE PEVS |
+| `extrativismo_vegetal` | Extractive plant production (açaí, brazil nut, yerba mate) | IBGE PEVS |
 | `fertilizante` | Fertilizer deliveries | ANDA |
-| `futuros_agricolas` | B3 agri futures (settlements, history, positions) | B3 |
+| `futuros_agricolas` | B3 agricultural futures (settlements, history, positions) | B3 |
 | `importacao` | Agricultural imports | ComexStat |
 | `leite_industrial` | Quarterly milk acquisition and processing by state | IBGE Milk |
 | `movimentacao_portuaria` | Port cargo movement (bulk, general, container) | ANTAQ |
@@ -160,7 +160,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 ## Features
 
-- **40 public sources** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Deforestation, MapBiomas, B3 Agri Futures, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Tolls, SICAR, ZARC, Agrofit/MAPA (Pesticides), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA, CFTC COT, UNICA
+- **40 public sources** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Deforestation, MapBiomas, B3 Agricultural Futures, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Tolls, SICAR, ZARC, Agrofit/MAPA (Pesticides), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA, CFTC COT, UNICA
 - **Golden tests** — per-source reference fixtures (real or documented synthetic data)
 - **HTTP resilience** — centralized `retry_on_status()`/`retry_async()`, Retry-After, 429 handling
 - **Semantic layer** — datasets with automatic fallback across sources
