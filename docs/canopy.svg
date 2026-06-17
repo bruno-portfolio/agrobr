@@ -247,7 +247,7 @@
 <circle cx="632.8" cy="430.5" r="2.6" fill="#1b1f23" opacity="0.7"/>
 <circle cx="631.7" cy="430.5" r="2.5" fill="#1b1f23" opacity="0.7"/>
 <text x="632.8" y="430.3" font-family="monospace" font-size="11" font-weight="700" fill="#c9d1d9" text-anchor="middle" dy="0.35em">constants</text>
-<text x="632.8" y="461.3" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">461 loc</text>
+<text x="632.8" y="461.3" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">463 loc</text>
 </g>
 <g data-module="agrobr.quality">
 <circle cx="670.3" cy="468.5" r="42.5" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -398,15 +398,15 @@
 <text x="746.1" y="468.4" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1716 loc</text>
 </g>
 <g data-module="agrobr.cepea">
-<circle cx="753.1" cy="535.1" r="73.3" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="754.1" cy="536.1" r="29.3" fill="#000000" opacity="0.3"/>
-<circle cx="753.1" cy="535.1" r="29.3" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="753.1" cy="526.3" r="17.6" fill="#e3b341" opacity="0.15"/>
-<circle cx="748.7" cy="524.8" r="5.9" fill="#ffffff" opacity="0.08"/>
+<circle cx="753.1" cy="535.1" r="74.0" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="754.1" cy="536.1" r="29.6" fill="#000000" opacity="0.3"/>
+<circle cx="753.1" cy="535.1" r="29.6" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="753.1" cy="526.2" r="17.8" fill="#e3b341" opacity="0.15"/>
+<circle cx="748.7" cy="524.7" r="5.9" fill="#ffffff" opacity="0.08"/>
 <circle cx="752.3" cy="534.8" r="2.5" fill="#1b1f23" opacity="0.7"/>
 <circle cx="753.5" cy="535.7" r="2.9" fill="#1b1f23" opacity="0.7"/>
 <text x="753.1" y="535.1" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">cepea</text>
-<text x="753.1" y="578.4" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1528 loc</text>
+<text x="753.1" y="578.7" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1556 loc</text>
 </g>
 <g data-module="agrobr.bcb">
 <circle cx="697.0" cy="649.8" r="72.4" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -453,8 +453,8 @@
 </g>
 <g data-module="agrobr.noticias_agricolas">
 <circle cx="514.0" cy="362.8" r="36.6" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="515.0" cy="363.8" r="14.6" fill="#000000" opacity="0.3"/>
-<circle cx="514.0" cy="362.8" r="14.6" fill="#d29922" filter="url(#nodeGlow)"/>
+<circle cx="515.0" cy="363.8" r="14.7" fill="#000000" opacity="0.3"/>
+<circle cx="514.0" cy="362.8" r="14.7" fill="#d29922" filter="url(#nodeGlow)"/>
 <circle cx="514.0" cy="358.4" r="8.8" fill="#e3b341" opacity="0.15"/>
 <circle cx="511.8" cy="357.7" r="2.9" fill="#ffffff" opacity="0.08"/>
 <text x="514.0" y="362.8" font-family="monospace" font-size="7" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">noti..las</text>
@@ -616,17 +616,11 @@
 <text x="443.1" y="763.5" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">642 loc</text>
 </g>
 <g data-module="agrobr.mapbiomas">
-<circle cx="377.4" cy="637.9" r="44.2" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
-<circle cx="378.4" cy="638.9" r="17.7" fill="#000000" opacity="0.3"/>
-<circle cx="377.4" cy="637.9" r="17.7" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="377.4" cy="632.6" r="10.6" fill="#e3b341" opacity="0.15"/>
-<circle cx="374.7" cy="631.7" r="3.5" fill="#ffffff" opacity="0.08"/>
-<circle cx="378.5" cy="632.2" r="2.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="373.0" cy="633.7" r="2.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="375.2" cy="643.1" r="2.6" fill="#1b1f23" opacity="0.7"/>
-<circle cx="378.9" cy="646.9" r="2.2" fill="#1b1f23" opacity="0.7"/>
-<circle cx="378.4" cy="639.4" r="1.9" fill="#1b1f23" opacity="0.7"/>
-<circle cx="378.9" cy="647.0" r="2.8" fill="#1b1f23" opacity="0.7"/>
+<circle cx="377.4" cy="637.9" r="44.6" fill="#2ea04355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="378.4" cy="638.9" r="17.9" fill="#000000" opacity="0.3"/>
+<circle cx="377.4" cy="637.9" r="17.9" fill="#2ea043" filter="url(#nodeGlow)"/>
+<circle cx="377.4" cy="632.5" r="10.7" fill="#56d364" opacity="0.15"/>
+<circle cx="374.7" cy="631.6" r="3.6" fill="#ffffff" opacity="0.08"/>
 <text x="377.4" y="637.9" font-family="monospace" font-size="8" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">mapbiomas</text>
 </g>
 <g data-module="agrobr.sfb">
@@ -734,11 +728,11 @@
 <text x="356.9" y="731.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">1148 loc</text>
 </g>
 <g data-module="agrobr.validators">
-<circle cx="291.9" cy="377.7" r="57.6" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="291.9" cy="377.7" r="57.9" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
 <circle cx="292.9" cy="378.7" r="23.1" fill="#000000" opacity="0.3"/>
 <circle cx="291.9" cy="377.7" r="23.1" fill="#d29922" filter="url(#nodeGlow)"/>
-<circle cx="291.9" cy="370.8" r="13.8" fill="#e3b341" opacity="0.15"/>
-<circle cx="288.4" cy="369.7" r="4.6" fill="#ffffff" opacity="0.08"/>
+<circle cx="291.9" cy="370.8" r="13.9" fill="#e3b341" opacity="0.15"/>
+<circle cx="288.4" cy="369.6" r="4.6" fill="#ffffff" opacity="0.08"/>
 <circle cx="292.3" cy="374.9" r="1.7" fill="#1b1f23" opacity="0.7"/>
 <circle cx="298.4" cy="377.4" r="2.1" fill="#1b1f23" opacity="0.7"/>
 <circle cx="293.3" cy="377.2" r="2.9" fill="#1b1f23" opacity="0.7"/>
@@ -746,7 +740,7 @@
 <circle cx="305.6" cy="380.3" r="2.9" fill="#1b1f23" opacity="0.7"/>
 <circle cx="290.0" cy="385.0" r="1.8" fill="#1b1f23" opacity="0.7"/>
 <text x="291.9" y="377.7" font-family="monospace" font-size="9" font-weight="600" fill="#c9d1d9" text-anchor="middle" dy="0.35em">validators</text>
-<text x="291.9" y="414.8" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">945 loc</text>
+<text x="291.9" y="414.9" font-family="monospace" font-size="7" fill="#484f58" text-anchor="middle" dy="0.35em">952 loc</text>
 </g>
 <g data-module="agrobr.alerts">
 <circle cx="555.9" cy="200.1" r="31.9" fill="#d2992255" opacity="0.1" filter="url(#softGlow)"/>
@@ -830,7 +824,7 @@
 <text x="28.0" y="46.0" font-family="monospace" font-size="8" letter-spacing="2" fill="#8b949e">CODE HEALTH</text>
 <text x="26.0" y="86.0" font-family="monospace" font-size="44" font-weight="700" fill="#d29922">C</text>
 <text x="64.0" y="72.0" font-family="monospace" font-size="12" font-weight="600" fill="#c9d1d9">74/100</text>
-<text x="64.0" y="85.0" font-family="monospace" font-size="10" font-weight="600" fill="#da3633">&#9660; 0.1</text>
+<text x="64.0" y="85.0" font-family="monospace" font-size="10" font-weight="600" fill="#2ea043">&#9650; 0.2</text>
 <circle cx="1117.4" cy="25.0" r="2.5" fill="#1b1f23" stroke="#484f58" stroke-width="0.5"/>
 <text x="1127.4" y="28.0" font-family="monospace" font-size="8" fill="#8b949e">Dead code</text>
 <line x1="1061.4" y1="25.0" x2="1071.4" y2="25.0" stroke="#f85149" stroke-width="1.5"/>
@@ -843,6 +837,6 @@
 <text x="874.8" y="28.0" font-family="monospace" font-size="8" fill="#8b949e">Moderate</text>
 <circle cx="803.0" cy="25.0" r="4" fill="#2ea043"/>
 <text x="813.0" y="28.0" font-family="monospace" font-size="8" fill="#8b949e">Healthy</text>
-<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#484f58" text-anchor="middle" dy="0.35em">60 modules | 50083 lines | 48% healthy 37% moderate 15% unhealthy (by loc) | 165 dead</text>
+<text x="600.0" y="980.0" font-family="monospace" font-size="9" fill="#484f58" text-anchor="middle" dy="0.35em">60 modules | 50134 lines | 49% healthy 35% moderate 15% unhealthy (by loc) | 159 dead</text>
 <text x="1185.0" y="990.0" font-family="monospace" font-size="10" fill="#161b22" text-anchor="end" dy="0.35em">canopy-code</text>
 </svg>
