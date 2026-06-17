@@ -17,6 +17,7 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = "semanal",
     nivel: str = "municipio",
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -32,6 +33,7 @@ async def precos_diesel(
 | `fim` | `str \| date \| None` | Data final (YYYY-MM-DD) |
 | `agregacao` | `str` | "semanal" (default) ou "mensal" |
 | `nivel` | `str` | "municipio" (default), "uf" ou "brasil" |
+| `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
@@ -67,6 +69,7 @@ async def vendas_diesel(
     uf: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -78,6 +81,7 @@ async def vendas_diesel(
 | `uf` | `str \| None` | Filtro por UF (ex: SP, MT, PR) |
 | `inicio` | `str \| date \| None` | Data inicial |
 | `fim` | `str \| date \| None` | Data final |
+| `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

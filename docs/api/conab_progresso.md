@@ -20,6 +20,7 @@ df = await agrobr.conab.progresso_safra(cultura="Soja", estado="MT")
 | `estado` | `str` | Nao | Filtrar por UF (ex: "MT", "GO", "PR"). Se None, todos |
 | `operacao` | `str` | Nao | "Semeadura" ou "Colheita". Se None, ambas |
 | `semana_url` | `str` | Nao | URL de uma semana especifica. Se None, busca a mais recente |
+| `as_polars` | `bool` | Nao | Se True, retorna `polars.DataFrame` |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno

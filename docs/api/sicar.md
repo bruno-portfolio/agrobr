@@ -25,6 +25,7 @@ df = await agrobr.alt.sicar.imoveis("DF")
 | area_max | float | Nao | Area maxima em hectares |
 | criado_apos | str | Nao | Data minima de criacao (ISO, ex: "2020-01-01") |
 | atualizado_apos | str | Nao | Filtra server-side por `data_atualizacao` posterior a esta data (ISO, ex: "2026-06-07" ou "2026-06-07T00:00:00"). A coluna `data_atualizacao` nao e retornada pelo WFS (vem vazia no resultado). Indisponivel para SP, RS, PR, SC, RJ, TO (campo nao existe nesses layers WFS) |
+| as_polars | bool | Nao | Se True, retorna polars.DataFrame |
 | return_meta | bool | Nao | Se True, retorna (DataFrame, MetaInfo) |
 
 ### Colunas de retorno
@@ -87,6 +88,7 @@ df = await agrobr.alt.sicar.resumo("MT")
 | uf | str | Sim | Sigla da UF |
 | municipio | str | Nao | Filtro parcial de municipio (case-insensitive). Mutuamente exclusivo com `cod_municipio` |
 | cod_municipio | int | Nao | Codigo IBGE do municipio. Mutuamente exclusivo com `municipio` |
+| as_polars | bool | Nao | Se True, retorna polars.DataFrame |
 | return_meta | bool | Nao | Se True, retorna (DataFrame, MetaInfo) |
 
 ### Retorno sem municipio (UF-level)
@@ -152,6 +154,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 | area_max | float | Nao | Area maxima em hectares |
 | criado_apos | str | Nao | Data minima de criacao (ISO, ex: "2020-01-01") |
 | atualizado_apos | str | Nao | Filtra server-side por `data_atualizacao` posterior a esta data (ISO, ex: "2026-06-07" ou "2026-06-07T00:00:00"). A coluna `data_atualizacao` nao e retornada pelo WFS (vem vazia no resultado). Indisponivel para SP, RS, PR, SC, RJ, TO (campo nao existe nesses layers WFS) |
+| max_features | int \| None | Nao | Limite de features retornadas. Default: 5000. `None` desativa o limite |
 | return_meta | bool | Nao | Se True, retorna (GeoDataFrame, MetaInfo) |
 
 ### Colunas de retorno

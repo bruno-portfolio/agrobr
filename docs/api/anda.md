@@ -26,6 +26,7 @@ async def entregas(
     uf: str | None = None,
     produto: str = "total",
     agregacao: str = "detalhado",
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -38,6 +39,7 @@ async def entregas(
 | `uf` | `str \| None` | Filtrar por UF. None retorna todos |
 | `produto` | `str` | Tipo de fertilizante. Default: `"total"` |
 | `agregacao` | `str` | `"detalhado"` (por UF/mes) ou `"mensal"` (soma por mes) |
+| `as_polars` | `bool` | Se True, retorna `polars.DataFrame` |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

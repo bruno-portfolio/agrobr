@@ -17,6 +17,7 @@ async def focos(
     uf: str | None = None,
     bioma: str | None = None,
     satelite: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -31,6 +32,7 @@ async def focos(
 | `uf` | `str \| None` | Filtrar por UF (ex: "MT", "SP"). Case insensitive |
 | `bioma` | `str \| None` | Filtrar por bioma (ex: "Amazonia", "Cerrado") |
 | `satelite` | `str \| None` | Filtrar por satelite (ex: "AQUA_M-T", "NOAA-20") |
+| `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
@@ -81,6 +83,48 @@ print(meta.source, meta.records_count)
 
 ---
 
+### `focos_geo`
+
+Mesmos focos de calor de `focos`, mas com geometria de pontos. Retorna `GeoDataFrame` com coluna `geometry` (Point EPSG:4326).
+
+Requer dependencia opcional: `pip install agrobr[geo]`
+
+```python
+async def focos_geo(
+    *,
+    ano: int,
+    mes: int,
+    dia: int | None = None,
+    uf: str | None = None,
+    bioma: str | None = None,
+    satelite: str | None = None,
+    return_meta: bool = False,
+) -> gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]
+```
+
+**Parametros:** identicos a `focos` (sem `as_polars`).
+
+**Retorno:**
+
+`GeoDataFrame` com as mesmas colunas de `focos` mais:
+
+- `geometry`: Ponto Point EPSG:4326 derivado de `lon`/`lat`
+
+**Exemplo:**
+
+```python
+from agrobr import queimadas
+
+gdf = await queimadas.focos_geo(ano=2024, mes=9, uf="MT")
+
+# Cruzamento geoespacial com biomas/municipios
+import geopandas as gpd
+municipios = gpd.read_file("municipios.geojson")
+focos_por_municipio = gpd.sjoin(gdf, municipios)
+```
+
+---
+
 ## Satelites Disponiveis
 
 | Satelite | Descricao |
@@ -117,4 +161,5 @@ from agrobr.sync import queimadas
 
 df = queimadas.focos(ano=2024, mes=9, uf="MT")
 df, meta = queimadas.focos(ano=2024, mes=9, return_meta=True)
+gdf = queimadas.focos_geo(ano=2024, mes=9, uf="MT")
 ```

@@ -19,6 +19,7 @@ df = await agrobr.desmatamento.prodes(bioma="Cerrado", ano=2022, uf="MT")
 | `bioma` | `str` | Nao | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pantanal", "Pampa". Default: "Cerrado" |
 | `ano` | `int` | Nao | Ano (ex: 2022). Se None, todos os anos |
 | `uf` | `str` | Nao | Filtrar por UF (ex: "MT") |
+| `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno
@@ -121,6 +122,7 @@ df = await agrobr.desmatamento.deter(
 | `data_inicio` | `str` | Nao | Data inicial YYYY-MM-DD |
 | `data_fim` | `str` | Nao | Data final YYYY-MM-DD |
 | `classe` | `str` | Nao | Filtrar por classe de alerta |
+| `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno

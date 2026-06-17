@@ -18,6 +18,7 @@ async def movimentacao(
     porto: str | None = None,
     uf: str | None = None,
     sentido: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -33,6 +34,7 @@ async def movimentacao(
 | `porto` | `str \| None` | Filtro por porto (substring case-insensitive) |
 | `uf` | `str \| None` | Filtro por UF (ex: SP, PR, MT) |
 | `sentido` | `str \| None` | embarque ou desembarque |
+| `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

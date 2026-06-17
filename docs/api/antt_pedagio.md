@@ -35,6 +35,7 @@ df, meta = await antt_pedagio.fluxo_pedagio(ano=2023, return_meta=True)
 | `praca` | `str \| None` | `None` | Busca parcial |
 | `tipo_veiculo` | `str \| None` | `None` | "Passeio"/"Comercial"/"Moto" |
 | `apenas_pesados` | `bool` | `False` | n_eixos >= 3 AND Comercial |
+| `as_polars` | `bool` | `False` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | `False` | Retorna MetaInfo |
 
 ### Colunas de saida
@@ -74,6 +75,7 @@ df = await antt_pedagio.pracas_pedagio(rodovia="BR-163")
 | `uf` | `str \| None` | `None` | Filtro de UF |
 | `rodovia` | `str \| None` | `None` | Filtro de rodovia |
 | `situacao` | `str \| None` | `None` | Ex: "Ativa" |
+| `as_polars` | `bool` | `False` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | `False` | Retorna MetaInfo |
 
 ## Uso sincrono

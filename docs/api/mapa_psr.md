@@ -17,6 +17,7 @@ async def sinistros(
     ano_fim: int | None = None,
     municipio: str | None = None,
     evento: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -32,6 +33,7 @@ async def sinistros(
 | `ano_fim` | `int \| None` | Ano final do range (inclusive) |
 | `municipio` | `str \| None` | Filtro por municipio (busca parcial) |
 | `evento` | `str \| None` | Filtro por evento preponderante (ex: "seca") |
+| `as_polars` | `bool` | Se True, retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
@@ -71,6 +73,7 @@ async def apolices(
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
     municipio: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -85,6 +88,7 @@ async def apolices(
 | `ano_inicio` | `int \| None` | Ano inicial do range (inclusive) |
 | `ano_fim` | `int \| None` | Ano final do range (inclusive) |
 | `municipio` | `str \| None` | Filtro por municipio (busca parcial) |
+| `as_polars` | `bool` | Se True, retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

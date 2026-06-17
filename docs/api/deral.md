@@ -12,6 +12,7 @@ Condicao semanal das lavouras paranaenses.
 async def condicao_lavouras(
     produto: str | None = None,
     *,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -20,7 +21,8 @@ async def condicao_lavouras(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `produto` | `str \| None` | Filtrar por produto (`"soja"`, `"milho"`, `"trigo"`). None retorna todos |
+| `produto` | `str \| None` | Filtrar por produto (`"soja"`, `"milho"`, `"milho_1"`, `"milho_2"`, `"trigo"`, `"feijao"`, `"cana"`, `"cafe"`, etc.). None retorna todos |
+| `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

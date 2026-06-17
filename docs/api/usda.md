@@ -24,6 +24,7 @@ async def psd(
     attributes: list[str] | None = None,
     pivot: bool = False,
     api_key: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -38,6 +39,7 @@ async def psd(
 | `attributes` | `list[str] \| None` | Filtrar atributos (ex: `["Production", "Exports"]`) |
 | `pivot` | `bool` | Se True, pivota atributos como colunas |
 | `api_key` | `str \| None` | Chave API (ou usa `AGROBR_USDA_API_KEY`) |
+| `as_polars` | `bool` | Se True, retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

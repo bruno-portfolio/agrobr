@@ -27,7 +27,7 @@ async def perfis(
 | `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Retorna tupla (DataFrame, MetaInfo) |
 
-**Retorno:** DataFrame com colunas: `id_perfil`, `uf`, `municipio`, `latitude`, `longitude`, `classe_solo`, `ordem`, `subordem`, `grande_grupo`, `subgrupo`, `textura`, `relevo`, `vegetacao`, `drenagem`, `profundidade_cm`, `ph_agua`, `carbono_org`, `argila`, `areia`
+**Retorno:** DataFrame com colunas: `fid`, `uf`, `municipio`, `latitude`, `longitude`, `horizonte`, `profundidade`, `areia_total`, `silte`, `argila`, `ph_h2o`, `carbono_organico`, `ctc`, `saturacao_bases`, `aluminio`, `fosforo`, `classe_textural`, `nivel_levantamento`, `uso_atual`
 
 **Exemplo:**
 
@@ -64,7 +64,7 @@ async def perfis_geo(
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `return_meta` | `bool` | Retorna tupla (GeoDataFrame, MetaInfo) |
 
-**Retorno:** GeoDataFrame (Point, EPSG:4674) com mesmas colunas de `perfis()` + `geometry`
+**Retorno:** GeoDataFrame (Point, EPSG:4326) com mesmas colunas de `perfis()` + `geometry`
 
 **Exemplo:**
 
@@ -137,7 +137,7 @@ async def mapa_solos_geo(
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `return_meta` | `bool` | Retorna tupla (GeoDataFrame, MetaInfo) |
 
-**Retorno:** GeoDataFrame (MultiPolygon, EPSG:4674) com mesmas colunas de `mapa_solos()` + `geometry`
+**Retorno:** GeoDataFrame (MultiPolygon, EPSG:4326) com mesmas colunas de `mapa_solos()` + `geometry`
 
 **Exemplo:**
 
@@ -163,4 +163,4 @@ df = embrapa_solos.mapa_solos()
 - Funcoes `_geo()` requerem `pip install agrobr[geo]` (geopandas)
 - ~34K perfis de solo (PronaSolos 2020), ~2.8K poligonos pedologicos
 - Paginacao WFS automatica
-- CRS: EPSG:4674 (SIRGAS 2000)
+- CRS de consulta BBOX: EPSG:4674 (SIRGAS 2000); GeoDataFrame retornado em EPSG:4326

@@ -15,6 +15,7 @@ async def clima_ponto(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "diario",
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -28,11 +29,14 @@ async def clima_ponto(
 | `inicio` | `str \| date` | Data inicial (YYYY-MM-DD) |
 | `fim` | `str \| date` | Data final (YYYY-MM-DD) |
 | `agregacao` | `str` | `"diario"` (default) ou `"mensal"` |
+| `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
 
-DataFrame com colunas: `data`, `lat`, `lon`, `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
+DataFrame com colunas (diario): `data`, `lat`, `lon`, `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
+
+Com `agregacao="mensal"`, as colunas agregadas sao renomeadas: `mes` (timestamp), `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `umidade_media`, `radiacao_media_mj`, `vento_medio_ms` (mais `lat`/`lon`).
 
 **Exemplo:**
 
@@ -64,6 +68,7 @@ async def clima_uf(
     uf: str,
     ano: int,
     agregacao: str = "mensal",
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -75,6 +80,7 @@ async def clima_uf(
 | `uf` | `str` | Sigla UF (ex: "MT", "SP") |
 | `ano` | `int` | Ano de referencia |
 | `agregacao` | `str` | `"diario"` ou `"mensal"` (default) |
+| `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Exemplo:**

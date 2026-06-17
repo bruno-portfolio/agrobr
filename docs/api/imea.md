@@ -17,6 +17,7 @@ async def cotacoes(
     *,
     safra: str | None = None,
     unidade: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -25,9 +26,10 @@ async def cotacoes(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `cadeia` | `str` | Cadeia produtiva: `"soja"`, `"milho"`, `"algodao"`, `"bovinocultura"` |
+| `cadeia` | `str` | Cadeia produtiva: `"soja"`, `"milho"`, `"algodao"`, `"bovinocultura"`, `"suinocultura"`, `"leite"` |
 | `safra` | `str \| None` | Filtrar por safra (ex: `"24/25"`). None retorna todas |
 | `unidade` | `str \| None` | Filtrar por unidade (ex: `"R$/sc"`, `"R$/t"`, `"%"`) |
+| `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

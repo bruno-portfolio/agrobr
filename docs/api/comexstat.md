@@ -79,6 +79,6 @@ df = comexstat.importacao("soja", ano=2024)
 ## Notas
 
 - Fonte: [ComexStat/MDIC](https://comexstat.mdic.gov.br) — licenca livre
-- 19 produtos mapeados por prefixo NCM
+- 30 produtos mapeados por prefixo NCM
 - Arquivos CSV anuais de ~100MB cada
 - Dados disponiveis a partir de 1997

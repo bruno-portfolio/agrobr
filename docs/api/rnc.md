@@ -70,7 +70,7 @@ async def protegidas(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `cultivar` | `str \| None` | Filtro por nome da cultivar (contains, case-insensitive) |
-| `especie` | `str \| None` | Filtro por especie / nome cientifico |
+| `especie` | `str \| None` | Filtro por especie / nome comum |
 | `situacao` | `str \| None` | Filtro por situacao (ex: "PROTECAO DEFINITIVA") |
 | `titular` | `str \| None` | Filtro por titular da protecao |
 | `as_polars` | `bool` | Retorna polars DataFrame |

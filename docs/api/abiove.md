@@ -18,6 +18,7 @@ async def exportacao(
     mes: int | None = None,
     produto: str | None = None,
     agregacao: str = "detalhado",
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -30,6 +31,7 @@ async def exportacao(
 | `mes` | `int \| None` | Mes especifico (1-12). None retorna todos |
 | `produto` | `str \| None` | Filtrar: `"grao"`, `"farelo"`, `"oleo"`, `"milho"` |
 | `agregacao` | `str` | `"detalhado"` (por produto/mes) ou `"mensal"` (soma) |
+| `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**

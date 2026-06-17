@@ -82,7 +82,7 @@ async def autorizacoes(
 | `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Retorna tupla (DataFrame, MetaInfo) |
 
-**Retorno:** DataFrame com colunas: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `cultura`, `praga`, `modalidade_de_emprego`
+**Retorno:** DataFrame com colunas: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `cultura`, `praga`, `praga_nome_comum`, `modalidade_de_emprego`
 
 **Exemplo:**
 
@@ -125,7 +125,7 @@ async def tecnicos(
 | `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Retorna tupla (DataFrame, MetaInfo) |
 
-**Retorno:** DataFrame com colunas: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `grupo_quimico`, `nome_cientifico`
+**Retorno:** DataFrame com colunas: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `grupo_quimico`, `nome_cientifico`, `classe_toxicologica`, `classe_ambiental`
 
 **Exemplo:**
 

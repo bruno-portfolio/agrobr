@@ -25,6 +25,7 @@ async def comercio(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
@@ -40,6 +41,7 @@ async def comercio(
 | `periodo` | `str \| int \| None` | Ano, mes ou range: `2024`, `202401`, `"2022-2024"`. None = ano corrente |
 | `freq` | `str` | `"A"` (anual) ou `"M"` (mensal). Default: `"A"` |
 | `api_key` | `str \| None` | API key (ou usa `AGROBR_COMTRADE_API_KEY`) |
+| `as_polars` | `bool` | Se True, retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
@@ -59,6 +61,7 @@ async def trade_mirror(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```

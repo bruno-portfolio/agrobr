@@ -18,6 +18,7 @@ df = await agrobr.conab.ceasa_precos(produto="tomate")
 |-----------|------|-------------|-----------|
 | `produto` | `str` | Nao | Filtrar por produto (ex: "tomate", "ABACAXI"). Case-insensitive |
 | `ceasa` | `str` | Nao | Filtrar por CEASA (ex: "CEAGESP - SAO PAULO", "SAO PAULO"). Case-insensitive, busca parcial |
+| `as_polars` | `bool` | Nao | Se True, retorna `polars.DataFrame` |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno
@@ -127,7 +128,7 @@ print(df[["ceasa", "ceasa_uf", "preco"]].sort_values("preco"))
 - **Provedor:** CONAB — Companhia Nacional de Abastecimento
 - **Sistema:** PROHORT (Programa Brasileiro de Modernizacao do Mercado Hortigranjeiro)
 - **Frequencia:** Diaria (precos de atacado)
-- **Cobertura:** 48 produtos (20 frutas, 28 hortalicas), 43 CEASAs, 21 UFs
+- **Cobertura:** 48 produtos (20 frutas, 28 hortalicas), 43 CEASAs, 20 UFs
 - **Formato:** JSON (Pentaho CDA REST API)
 - **Licenca:** zona_cinza (credenciais publicas embutidas, API nao documentada oficialmente)
 - **Portal:** [Portal de Informacoes CONAB](https://portaldeinformacoes.conab.gov.br/mercado-atacadista-hortigranjeiro.html)

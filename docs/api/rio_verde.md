@@ -56,7 +56,7 @@ Lista as safras com dados disponíveis.
 async def safras_disponiveis() -> list[str]
 ```
 
-**Retorno:** Lista de strings com as safras disponiveis (ex: `["2024/25", "2025/26"]`)
+**Retorno:** Lista de strings com as safras disponiveis (ex: `["2024/2025", "2025/2026"]`)
 
 **Exemplo:**
 
@@ -71,7 +71,7 @@ safras = await rio_verde.safras_disponiveis()
 ```python
 from agrobr.sync import rio_verde
 
-df = rio_verde.ensaio_soja(safra="2025/26")
+df = rio_verde.ensaio_soja(safra="2025/2026")
 safras = rio_verde.safras_disponiveis()
 ```
 
