@@ -68,14 +68,12 @@ plugins:
             Resiliência: Resilience
             Contratos: Contracts
             Desmatamento PRODES/DETER: Deforestation PRODES/DETER
-            Queimadas/INPE: Wildfires/INPE
             Defensivos: Pesticides
+            B3 Futuros Agro: B3 Agricultural Futures
             FUNAI Terras Indígenas: FUNAI Indigenous Lands
-            ICMBio UCs Federais: ICMBio Federal UCs
+            ICMBio UCs Federais: ICMBio Federal Conservation Units
             Acervo Fundiário/INCRA: Land Registry/INCRA
-            IBAMA Embargos: IBAMA Embargoes
-            Fundação Rio Verde: Rio Verde Foundation
-            Lista Suja: Dirty List
+            IBAMA Embargos: IBAMA Environmental Embargoes
   - mkdocstrings:
       handlers:
         python:
