@@ -25,7 +25,7 @@ Python infrastructure for Brazilian agricultural data with a semantic layer over
 
 Brazil is one of the world's largest agricultural producers, but its public data is scattered across dozens of government portals, each with its own format, encoding and quirks. agrobr turns all of that into clean, validated DataFrames.
 
-**v1.0.5** — 6,000+ tests, 92% coverage, golden tests with reference fixtures per source, centralized retry in every HTTP client.
+**v1.1.0** — 6,400+ passing tests, 92% coverage, golden tests with reference fixtures per source, centralized retry in every HTTP client.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -560,7 +560,7 @@ normalizar_safra("24/25")                 # "2024/25"
 
 - **Golden tests with reference fixtures per source** — automated validation against real or documented synthetic data
 - **Full HTTP resilience** — centralized retry in every client, 429 handling, Retry-After
-- **6,000+ tests, 92% coverage** — including scalability benchmarks (memory, volume, async)
+- **6,400+ passing tests, 92% coverage** — including scalability benchmarks (memory, volume, async)
 - **Semantic layer** — standardized datasets with automatic fallback and tracked provenance
 - **Formal contracts** — versioned schemas with automatic validation, primary keys and constraints
 - **JSON schemas** exported under `agrobr/schemas/`

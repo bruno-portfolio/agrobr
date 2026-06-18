@@ -23,7 +23,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **40 fontes públicas** — preços de mercado, produção e safras, comércio exterior, crédito rural, clima, monitoramento ambiental, cadastros territoriais e regulatório.
 
-**v1.0.5** — 6000+ testes, 92% de cobertura, golden tests com fixtures de referência por fonte, retry centralizado em todos os clients HTTP.
+**v1.1.0** — 6.400+ testes passando, 92% de cobertura, golden tests com fixtures de referência por fonte, retry centralizado em todos os clients HTTP.
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -556,7 +556,7 @@ normalizar_safra("24/25")                 # "2024/25"
 
 - **Golden tests com fixtures de referência por fonte** — validação automatizada contra dados reais ou sintéticos documentados
 - **Resiliência HTTP completa** — retry centralizado em todos os clients, 429 handling, Retry-After
-- **6000+ testes, 92% cobertura** — incluindo benchmarks de escalabilidade (memory, volume, async)
+- **6.400+ testes passando, 92% cobertura** — incluindo benchmarks de escalabilidade (memory, volume, async)
 - **Camada semântica** — datasets padronizados com fallback automático e proveniência rastreada
 - **Contratos formais** — schema versionado com validação automática, primary keys e constraints
 - **Schemas JSON** exportados em `agrobr/schemas/`
