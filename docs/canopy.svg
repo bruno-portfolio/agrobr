@@ -824,7 +824,6 @@
 <text x="28.0" y="46.0" font-family="monospace" font-size="8" letter-spacing="2" fill="#8b949e">CODE HEALTH</text>
 <text x="26.0" y="86.0" font-family="monospace" font-size="44" font-weight="700" fill="#d29922">C</text>
 <text x="64.0" y="72.0" font-family="monospace" font-size="12" font-weight="600" fill="#c9d1d9">74/100</text>
-<text x="64.0" y="85.0" font-family="monospace" font-size="10" font-weight="600" fill="#2ea043">&#9650; 0.2</text>
 <circle cx="1117.4" cy="25.0" r="2.5" fill="#1b1f23" stroke="#484f58" stroke-width="0.5"/>
 <text x="1127.4" y="28.0" font-family="monospace" font-size="8" fill="#8b949e">Dead code</text>
 <line x1="1061.4" y1="25.0" x2="1071.4" y2="25.0" stroke="#f85149" stroke-width="1.5"/>
