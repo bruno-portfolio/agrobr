@@ -17,7 +17,7 @@ accept = ["200..=204", "429", "403"]
 user_agent = "Mozilla/5.0 (compatible; agrobr-link-checker/1.0; +https://github.com/bruno-portfolio/agrobr)"
 
 # ── Escopo ───────────────────────────────────────────────────
-include_fragments = false
+include_fragments = "none"
 exclude_all_private = true
 include_mail = false
 

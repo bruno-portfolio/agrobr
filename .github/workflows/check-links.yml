@@ -34,6 +34,7 @@ jobs:
         id: lychee
         uses: lycheeverse/lychee-action@v2
         with:
+          lycheeVersion: v0.24.2
           args: >-
             --no-progress
             --format markdown
@@ -54,6 +55,12 @@ jobs:
             const exitCode = '${{ steps.lychee.outputs.exit_code }}';
             const reportPath = './lychee/out.md';
 
+            // lychee: 0 = OK, 1 = falha inesperada, 2 = links quebrados, 3 = erro de config
+            if (exitCode !== '0' && exitCode !== '2') {
+              core.setFailed(`lychee não chegou a checar os links (exit ${exitCode})`);
+              return;
+            }
+
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -63,8 +70,7 @@ jobs:
             });
             const existing = issues[0] || null;
 
-            // exit_code 0 = OK, 2 = erros de rede (timeouts) — não são links mortos
-            if (exitCode === '0' || exitCode === '2') {
+            if (exitCode === '0') {
               if (existing) {
                 await github.rest.issues.update({
                   owner: context.repo.owner,
