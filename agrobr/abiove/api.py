@@ -11,7 +11,7 @@ from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
-from .models import normalize_produto
+from .models import resolve_produto
 
 logger = structlog.get_logger()
 
@@ -77,7 +77,7 @@ async def exportacao(
         df = df[df["mes"] == mes].reset_index(drop=True)
 
     if produto:
-        produto_norm = normalize_produto(produto)
+        produto_norm = resolve_produto(produto)
         df = df[df["produto"] == produto_norm].reset_index(drop=True)
 
     if agregacao == "mensal":

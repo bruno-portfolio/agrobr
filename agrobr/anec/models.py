@@ -46,6 +46,15 @@ def normalize_produto(nome: str) -> str:
     return PRODUTO_ALIASES.get(key, key)
 
 
+def resolve_produto(nome: str) -> str:
+    key = nome.strip().lower()
+    if key not in PRODUTO_ALIASES:
+        raise ValueError(
+            f"produto desconhecido: {nome!r}. Válidos: {sorted(set(PRODUTO_ALIASES.values()))}"
+        )
+    return PRODUTO_ALIASES[key]
+
+
 _TITLE_WEEK_RE = re.compile(r"ANEC\s*-\s*(\d{1,2})\.(\d{4})", re.IGNORECASE)
 
 

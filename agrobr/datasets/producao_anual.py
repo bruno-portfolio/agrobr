@@ -87,6 +87,9 @@ class ProducaoAnualDataset(BaseDataset):
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="producao_anual", produto=produto, ano=ano)
 
+        if nivel not in ("brasil", "uf", "municipio"):
+            raise ValueError(f"nível inválido: {nivel!r}. Use: 'brasil', 'uf' ou 'municipio'")
+
         snapshot = get_snapshot()
         if snapshot and ano is None:
             ano = int(snapshot[:4]) - 1

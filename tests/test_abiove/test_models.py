@@ -1,6 +1,8 @@
 """Testes para os modelos ABIOVE."""
 
-from agrobr.abiove.models import ABIOVE_PRODUTOS, MESES_PT, normalize_produto
+import pytest
+
+from agrobr.abiove.models import ABIOVE_PRODUTOS, MESES_PT, normalize_produto, resolve_produto
 
 
 class TestNormalizeProduto:
@@ -72,3 +74,14 @@ class TestAbioveeProdutos:
     def test_accent_variants(self):
         assert ABIOVE_PRODUTOS["grão"] == "grao"
         assert ABIOVE_PRODUTOS["óleo"] == "oleo"
+
+
+class TestResolveProduto:
+    def test_valid_returns_canonical(self):
+        assert resolve_produto("soja em grão") == "grao"
+        assert resolve_produto("Farelo") == "farelo"
+        assert resolve_produto("corn") == "milho"
+
+    def test_invalid_raises_valueerror(self):
+        with pytest.raises(ValueError, match="produto desconhecido"):
+            resolve_produto("banana")

@@ -34,3 +34,12 @@ ABIOVE_PRODUTOS: dict[str, str] = {
 def normalize_produto(nome: str) -> str:
     key = nome.strip().lower()
     return ABIOVE_PRODUTOS.get(key, key)
+
+
+def resolve_produto(nome: str) -> str:
+    key = nome.strip().lower()
+    if key not in ABIOVE_PRODUTOS:
+        raise ValueError(
+            f"produto desconhecido: {nome!r}. Válidos: {sorted(set(ABIOVE_PRODUTOS.values()))}"
+        )
+    return ABIOVE_PRODUTOS[key]

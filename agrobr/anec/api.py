@@ -11,7 +11,7 @@ from agrobr.anec.models import (
     TIPO_EFETIVADO,
     TIPO_PROGRAMADO,
     ANECArticle,
-    normalize_produto,
+    resolve_produto,
 )
 from agrobr.anec.parser import PERIODO_CURRENT_WEEK, PERIODO_LAST_WEEK
 from agrobr.exceptions import SourceUnavailableError
@@ -77,7 +77,7 @@ async def _fetch_and_parse(
 def _apply_produto_filter(df: pd.DataFrame, produto: str | None) -> pd.DataFrame:
     if produto is None:
         return df
-    produto_canon = normalize_produto(produto)
+    produto_canon = resolve_produto(produto)
     return df[df["produto"] == produto_canon]
 
 
@@ -101,7 +101,7 @@ def _filter_weekly(
         canon_porto = parser.resolve_port(porto) or porto.strip().upper()
         df = df[df["porto"] == canon_porto]
     if produto is not None:
-        df = df[df["produto"] == normalize_produto(produto)]
+        df = df[df["produto"] == resolve_produto(produto)]
     if tipo is not None:
         df = df[df["periodo"] == _tipo_to_periodo(tipo)]
     return df.reset_index(drop=True)

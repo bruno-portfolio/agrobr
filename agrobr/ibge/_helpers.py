@@ -28,7 +28,9 @@ def resolve_ibge_code(
 ) -> tuple[str, str]:
     if nivel_map is None:
         nivel_map = NIVEL_MAP
-    territorial_level = nivel_map.get(nivel, "3")
+    if nivel not in nivel_map:
+        raise ValueError(f"nível inválido: {nivel!r}. Use um de: {sorted(nivel_map)}")
+    territorial_level = nivel_map[nivel]
     ibge_code = "all"
     if uf:
         uf_ibge = client.uf_to_ibge_code(uf)

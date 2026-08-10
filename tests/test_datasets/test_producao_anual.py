@@ -37,6 +37,13 @@ class TestProducaoAnualSpecific:
         conab_source = next(s for s in PRODUCAO_ANUAL_INFO.sources if s.name == "conab")
         assert ibge_source.priority < conab_source.priority
 
+    @pytest.mark.asyncio
+    async def test_nivel_invalido_raises(self):
+        with pytest.raises(ValueError, match="nível inválido"):
+            await producao_anual("soja", nivel="Brasil")
+        with pytest.raises(ValueError, match="nível inválido"):
+            await producao_anual("soja", nivel="estado")
+
 
 class TestProducaoAnualFetch:
     @pytest.mark.asyncio

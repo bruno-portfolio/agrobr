@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 import pytest
 from pydantic import ValidationError
 
-from agrobr.anec.models import CATEGORIES_BY_YEAR, ANECArticle, normalize_produto
+from agrobr.anec.models import CATEGORIES_BY_YEAR, ANECArticle, normalize_produto, resolve_produto
 
 
 class TestNormalizeProduto:
@@ -29,6 +29,17 @@ class TestNormalizeProduto:
 
     def test_unknown_returns_lowercase(self):
         assert normalize_produto("ProdutoDesconhecido") == "produtodesconhecido"
+
+
+class TestResolveProduto:
+    def test_valid_returns_canonical(self):
+        assert resolve_produto("soja") == "soybean"
+        assert resolve_produto("corn") == "maize"
+        assert resolve_produto("trigo") == "wheat"
+
+    def test_invalid_raises_valueerror(self):
+        with pytest.raises(ValueError, match="produto desconhecido"):
+            resolve_produto("banana")
 
 
 class TestANECArticleValidation:
