@@ -34,6 +34,44 @@ def _mock_df():
     )
 
 
+def _sidra_lspa_df(ano: int = 2022) -> pd.DataFrame:
+    unidade = {
+        "Área plantada": "Hectares",
+        "Área colhida": "Hectares",
+        "Produção": "Toneladas",
+        "Rendimento médio": "Quilogramas por Hectare",
+    }
+    dados = {
+        f"novembro {ano}": {
+            "Área plantada": 39_000_000,
+            "Área colhida": 38_000_000,
+            "Produção": 110_000_000,
+            "Rendimento médio": 2894,
+        },
+        f"dezembro {ano}": {
+            "Área plantada": 41_000_000,
+            "Área colhida": 40_000_000,
+            "Produção": 120_000_000,
+            "Rendimento médio": 3000,
+        },
+    }
+    rows = [
+        {
+            "nivel_territorial": "Brasil",
+            "localidade": unidade[var],
+            "variavel": mes,
+            "classificacao": var,
+            "ano": ano,
+            "valor": valor,
+            "produto": "soja",
+            "fonte": "ibge_lspa",
+        }
+        for mes, variaveis in dados.items()
+        for var, valor in variaveis.items()
+    ]
+    return pd.DataFrame(rows)
+
+
 class TestEstimativaSafraSpecific:
     def test_info_conab_priority(self):
         conab_source = next(s for s in ESTIMATIVA_SAFRA_INFO.sources if s.name == "conab")
@@ -118,6 +156,70 @@ class TestEstimativaSafraNormalize:
         assert result["fonte"].iloc[0] == "conab"
 
 
+class TestNormalizeLspa:
+    def test_reduces_to_latest_month_and_converts_units(self):
+        from agrobr.datasets.estimativa_safra import _normalize_lspa
+
+        df = _normalize_lspa(_sidra_lspa_df(2022), "soja", "2022/23", None)
+
+        assert len(df) == 1
+        row = df.iloc[0]
+        assert row["fonte"] == "ibge_lspa"
+        assert row["produto"] == "soja"
+        assert row["safra"] == "2022/23"
+        assert row["uf"] is None
+        assert row["area_plantada"] == pytest.approx(41000.0)
+        assert row["area_colhida"] == pytest.approx(40000.0)
+        assert row["producao"] == pytest.approx(120000.0)
+        assert row["produtividade"] == pytest.approx(3000.0)
+        assert pd.isna(row["levantamento"])
+        assert pd.isna(row["data_publicacao"])
+
+    def test_aggregates_subsafras_and_recomputes_yield(self):
+        from agrobr.datasets.estimativa_safra import _normalize_lspa
+
+        df_multi = pd.concat([_sidra_lspa_df(2023), _sidra_lspa_df(2023)], ignore_index=True)
+
+        df = _normalize_lspa(df_multi, "milho", "2023/24", None)
+
+        row = df.iloc[0]
+        assert row["area_plantada"] == pytest.approx(82000.0)
+        assert row["area_colhida"] == pytest.approx(80000.0)
+        assert row["producao"] == pytest.approx(240000.0)
+        assert row["produtividade"] == pytest.approx(3000.0)
+
+    def test_uf_is_uppercased(self):
+        from agrobr.datasets.estimativa_safra import _normalize_lspa
+
+        df = _normalize_lspa(_sidra_lspa_df(2022), "soja", "2022/23", "mt")
+
+        assert df.iloc[0]["uf"] == "MT"
+
+    def test_empty_input_returns_contract_columns(self):
+        from agrobr.datasets.estimativa_safra import _SAFRA_OUTPUT_COLS, _normalize_lspa
+
+        df = _normalize_lspa(pd.DataFrame(), "soja", "2022/23", None)
+
+        assert len(df) == 0
+        assert list(df.columns) == _SAFRA_OUTPUT_COLS
+
+    def test_non_sidra_input_returns_empty_contract(self):
+        from agrobr.datasets.estimativa_safra import _SAFRA_OUTPUT_COLS, _normalize_lspa
+
+        df = _normalize_lspa(_mock_df(), "soja", "2022/23", None)
+
+        assert len(df) == 0
+        assert list(df.columns) == _SAFRA_OUTPUT_COLS
+
+    def test_output_passes_contract(self):
+        from agrobr.contracts import validate_dataset
+        from agrobr.datasets.estimativa_safra import _normalize_lspa
+
+        df = _normalize_lspa(_sidra_lspa_df(2022), "soja", "2022/23", None)
+
+        validate_dataset(df, "estimativa_safra")
+
+
 class TestEstimativaSafraFallback:
     @pytest.mark.asyncio
     async def test_conab_fails_falls_back_to_lspa(self):
@@ -139,6 +241,33 @@ class TestEstimativaSafraFallback:
 
         with pytest.raises(SourceUnavailableError):
             await dataset.fetch("soja")
+
+    @pytest.mark.asyncio
+    async def test_conab_unavailable_lspa_fallback_passes_contract(self):
+        from agrobr.datasets.estimativa_safra import _fetch_conab, _fetch_ibge_lspa
+
+        dataset = EstimativaSafraDataset()
+        dataset.info.sources[0].fetch_fn = _fetch_conab
+        dataset.info.sources[1].fetch_fn = _fetch_ibge_lspa
+
+        with (
+            patch(
+                "agrobr.conab.safras",
+                new_callable=AsyncMock,
+                side_effect=SourceUnavailableError(source="conab"),
+            ),
+            patch(
+                "agrobr.ibge.lspa",
+                new_callable=AsyncMock,
+                return_value=(_sidra_lspa_df(2022), mock_source_meta()),
+            ),
+        ):
+            df, meta = await dataset.fetch("soja", safra="2022/23", return_meta=True)
+
+        assert meta.selected_source == "ibge_lspa"
+        assert len(df) == 1
+        assert df.iloc[0]["fonte"] == "ibge_lspa"
+        assert df.iloc[0]["safra"] == "2022/23"
 
 
 class TestEstimativaSafraPublicAPI:
@@ -176,14 +305,19 @@ class TestEstimativaSafraFetchFunctions:
         mock_fn.assert_called_once_with("soja", safra="2024/25", uf="PR", return_meta=True)
 
     @pytest.mark.asyncio
-    async def test_fetch_ibge_lspa_safra_to_ano(self):
+    async def test_fetch_ibge_lspa_maps_ano_and_normalizes(self):
         meta = mock_source_meta()
         with patch(
             "agrobr.ibge.lspa",
             new_callable=AsyncMock,
-            return_value=(_mock_df(), meta),
+            return_value=(_sidra_lspa_df(2024), meta),
         ) as mock_fn:
             from agrobr.datasets.estimativa_safra import _fetch_ibge_lspa
 
-            await _fetch_ibge_lspa("soja", safra="2024/25", uf="PR")
+            df, _ = await _fetch_ibge_lspa("soja", safra="2024/25", uf="PR")
+
         mock_fn.assert_called_once_with("soja", ano=2024, uf="PR", return_meta=True)
+        assert len(df) == 1
+        assert df.iloc[0]["safra"] == "2024/25"
+        assert df.iloc[0]["uf"] == "PR"
+        assert df.iloc[0]["produtividade"] == pytest.approx(3000.0)

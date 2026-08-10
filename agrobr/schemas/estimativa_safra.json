@@ -12,9 +12,7 @@
   "required_columns": [
     "fonte",
     "produto",
-    "safra",
-    "levantamento",
-    "data_publicacao"
+    "safra"
   ],
   "dtypes": {
     "fonte": "str",
@@ -37,8 +35,8 @@
     "area_colhida": true,
     "produtividade": true,
     "producao": true,
-    "levantamento": false,
-    "data_publicacao": false
+    "levantamento": true,
+    "data_publicacao": true
   },
   "columns": [
     {
@@ -132,7 +130,7 @@
     {
       "name": "levantamento",
       "type": "int",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -143,7 +141,7 @@
     {
       "name": "data_publicacao",
       "type": "date",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,

@@ -73,7 +73,7 @@ CONAB_SAFRA_V1 = Contract(
         Column(
             name="levantamento",
             type=ColumnType.INTEGER,
-            nullable=False,
+            nullable=True,
             stable=True,
             min_value=1,
             max_value=12,
@@ -81,7 +81,7 @@ CONAB_SAFRA_V1 = Contract(
         Column(
             name="data_publicacao",
             type=ColumnType.DATE,
-            nullable=False,
+            nullable=True,
             stable=True,
         ),
     ],

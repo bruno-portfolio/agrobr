@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Fixed
+- **antaq** — `_download_zip` valida os magic bytes de ZIP (`PK\x03\x04`) antes de repassar o conteúdo. Com a fonte de volta atrás de um Cloudflare managed challenge (HTTP 200 servindo a página de challenge de ~174 KB no lugar do ZIP), o guard de tamanho mínimo passava e o `zipfile.ZipFile` estourava `BadZipFile` cru na API direta — ou `source_unexpected_error` no `_try_sources` do dataset. Agora vira `SourceUnavailableError` com URL e motivo, categorizado como fonte indisponível. Simetria com o `acervo_fundiario`, que já validava
+- **estimativa_safra** — o fallback IBGE LSPA passou a normalizar a resposta SIDRA para o schema do contrato. Para safras que a CONAB não disponibiliza mais (ex.: `safra="2022/23"`), o fallback devolvia o SIDRA cru (`nivel_territorial`, `localidade`, `valor`, `variavel`…) e estourava `ContractViolationError: Missing required columns {safra, levantamento, data_publicacao}`. `_normalize_lspa` reduz a série mensal ao levantamento mais recente, soma as sub-safras que o LSPA separa (milho 1ª/2ª, algodão) e converte Hectares/Toneladas para mil_ha/mil_ton (produtividade recalculada como produção/área colhida). `levantamento` e `data_publicacao` passam a `nullable` no contrato `conab.safras` — o LSPA não os possui
+
 ## [1.1.0] - 2026-06-18
 
 ### Added

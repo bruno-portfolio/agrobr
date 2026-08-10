@@ -9,6 +9,8 @@ Estimativas de safra corrente por UF.
 | 1 | CONAB | Acompanhamento de Safra |
 | 2 | IBGE LSPA | Levantamento Sistemático da Produção Agrícola |
 
+> A CONAB cobre a safra corrente e as recentes. Para safras que a CONAB não disponibiliza mais, o fallback IBGE LSPA fornece o agregado nacional (`uf` nulo, exceto se você filtrar por UF), com `levantamento` e `data_publicacao` nulos.
+
 ## Produtos
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`
@@ -24,8 +26,8 @@ Estimativas de safra corrente por UF.
 | `area_colhida` | float64 | ✅ | Área colhida (mil ha) |
 | `produtividade` | float64 | ✅ | Produtividade (kg/ha) |
 | `producao` | float64 | ✅ | Produção (mil ton) |
-| `levantamento` | int | ❌ | Número do levantamento (1-12) |
-| `data_publicacao` | date | ❌ | Data de publicação CONAB |
+| `levantamento` | int | ✅ | Número do levantamento CONAB (1-12); nulo quando a fonte é o LSPA |
+| `data_publicacao` | date | ✅ | Data de publicação CONAB; nula quando a fonte é o LSPA |
 | `fonte` | str | ❌ | Origem dos dados |
 
 ## Garantias

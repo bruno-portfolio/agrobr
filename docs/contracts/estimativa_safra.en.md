@@ -9,6 +9,8 @@ Current crop-year estimates by state.
 | 1 | CONAB | Crop Monitoring (Acompanhamento de Safra) |
 | 2 | IBGE LSPA | Systematic Survey of Agricultural Production |
 
+> CONAB covers the current and recent crop years. For crop years CONAB no longer publishes, the IBGE LSPA fallback provides the national aggregate (`uf` null, unless you filter by state), with `levantamento` and `data_publicacao` null.
+
 ## Products
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`
@@ -24,8 +26,8 @@ Current crop-year estimates by state.
 | `area_colhida` | float64 | ✅ | Harvested area (thousand ha) |
 | `produtividade` | float64 | ✅ | Yield (kg/ha) |
 | `producao` | float64 | ✅ | Production (thousand tons) |
-| `levantamento` | int | ❌ | Survey number (1-12) |
-| `data_publicacao` | date | ❌ | CONAB publication date |
+| `levantamento` | int | ✅ | CONAB survey number (1-12); null when the source is LSPA |
+| `data_publicacao` | date | ✅ | CONAB publication date; null when the source is LSPA |
 | `fonte` | str | ❌ | Data origin |
 
 ## Guarantees
