@@ -112,6 +112,17 @@ class TestDownloadZip:
 
         assert mock_get.call_count == 1
 
+    @pytest.mark.asyncio
+    async def test_html_challenge_raises_source_unavailable(self):
+        html = b"<!DOCTYPE html>\n" + b"x" * 600
+        resp = _make_requests_response(200, html)
+
+        with (
+            patch("agrobr.antaq.client.requests.get", return_value=resp),
+            pytest.raises(SourceUnavailableError, match="not a ZIP"),
+        ):
+            await client._download_zip(_ANTAQ_URL)
+
 
 class TestExtractTxtFromZip:
     def test_extracts_utf8_sig(self):

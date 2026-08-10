@@ -66,6 +66,16 @@ async def _download_zip(url: str) -> bytes:
             ),
         )
 
+    if not content.startswith(b"PK\x03\x04"):
+        raise SourceUnavailableError(
+            source="antaq",
+            url=url,
+            last_error=(
+                f"Downloaded content is not a ZIP ({len(content)} bytes, missing PK signature) "
+                "— likely a WAF/Cloudflare challenge page"
+            ),
+        )
+
     logger.info(
         "antaq_download_ok",
         source="antaq",
