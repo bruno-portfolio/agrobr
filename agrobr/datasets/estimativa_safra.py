@@ -8,6 +8,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.normalize.dates import anos_para_safra, month_to_number
 
@@ -98,6 +99,11 @@ async def _fetch_ibge_lspa(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
     result = await ibge.lspa(produto, ano=ano, uf=uf, return_meta=True)
     df, meta = _unpack_result(result)
     df = _normalize_lspa(df, produto, safra or anos_para_safra(ano), uf)
+    if df.empty:
+        raise SourceUnavailableError(
+            source="ibge_lspa",
+            last_error=f"LSPA sem dados de {produto} em {ano}" + (f"/{uf}" if uf else ""),
+        )
     return df, meta
 
 

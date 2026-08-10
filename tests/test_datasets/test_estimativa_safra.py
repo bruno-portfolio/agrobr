@@ -72,6 +72,12 @@ def _sidra_lspa_df(ano: int = 2022) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _sidra_lspa_all_nan(ano: int = 2022) -> pd.DataFrame:
+    df = _sidra_lspa_df(ano)
+    df["valor"] = float("nan")
+    return df
+
+
 class TestEstimativaSafraSpecific:
     def test_info_conab_priority(self):
         conab_source = next(s for s in ESTIMATIVA_SAFRA_INFO.sources if s.name == "conab")
@@ -219,6 +225,13 @@ class TestNormalizeLspa:
 
         validate_dataset(df, "estimativa_safra")
 
+    def test_all_nan_returns_empty(self):
+        from agrobr.datasets.estimativa_safra import _normalize_lspa
+
+        df = _normalize_lspa(_sidra_lspa_all_nan(2022), "trigo", "2022/23", None)
+
+        assert len(df) == 0
+
 
 class TestEstimativaSafraFallback:
     @pytest.mark.asyncio
@@ -268,6 +281,43 @@ class TestEstimativaSafraFallback:
         assert len(df) == 1
         assert df.iloc[0]["fonte"] == "ibge_lspa"
         assert df.iloc[0]["safra"] == "2022/23"
+
+    @pytest.mark.asyncio
+    async def test_lspa_all_nan_raises_source_unavailable(self):
+        from agrobr.datasets.estimativa_safra import _fetch_ibge_lspa
+
+        with (
+            patch(
+                "agrobr.ibge.lspa",
+                new_callable=AsyncMock,
+                return_value=(_sidra_lspa_all_nan(2022), mock_source_meta()),
+            ),
+            pytest.raises(SourceUnavailableError),
+        ):
+            await _fetch_ibge_lspa("trigo", safra="2022/23", uf=None)
+
+    @pytest.mark.asyncio
+    async def test_no_source_has_data_raises_not_contract_violation(self):
+        from agrobr.datasets.estimativa_safra import _fetch_conab, _fetch_ibge_lspa
+
+        dataset = EstimativaSafraDataset()
+        dataset.info.sources[0].fetch_fn = _fetch_conab
+        dataset.info.sources[1].fetch_fn = _fetch_ibge_lspa
+
+        with (
+            patch(
+                "agrobr.conab.safras",
+                new_callable=AsyncMock,
+                side_effect=SourceUnavailableError(source="conab"),
+            ),
+            patch(
+                "agrobr.ibge.lspa",
+                new_callable=AsyncMock,
+                return_value=(_sidra_lspa_all_nan(2022), mock_source_meta()),
+            ),
+            pytest.raises(SourceUnavailableError),
+        ):
+            await dataset.fetch("trigo", safra="2022/23")
 
 
 class TestEstimativaSafraPublicAPI:
