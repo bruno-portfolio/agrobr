@@ -6,6 +6,7 @@ repo_url: https://github.com/bruno-portfolio/agrobr
 
 theme:
   name: material
+  custom_dir: overrides
   language: pt-BR
   palette:
     - scheme: default
