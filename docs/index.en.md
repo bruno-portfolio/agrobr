@@ -31,7 +31,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 - **MapBiomas**: Land cover and use by municipality (1985-present)
 - **B3 Agricultural Futures**: Daily settlements + open interest for agricultural futures and options
 - **UN Comtrade**: Bilateral trade + trade mirror (exports vs imports by HS code, ~200 countries)
-- **ANTAQ**: Port cargo movement (solid/liquid bulk, general cargo, containers, 2010+)
+- **ANTAQ**: Port cargo movement (solid/liquid bulk, general cargo, containers, 2010+) — ⚠️ source offline since 2026-06-23
 - **ANP Diesel**: Diesel resale prices and sales volumes by state/municipality (mechanized-activity proxy)
 - **ANTT Tolls**: Vehicle flow at highway toll plazas (ANTT Open Data, CC-BY, 2010+)
 - **MAPA PSR**: Federally subsidized rural insurance policies and claims (SISSER/MAPA, 2006+)

@@ -33,10 +33,10 @@ jobs:
           pip install -e ".[dev]"
 
       - name: Restore health DB cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/.agrobr/cache/agrobr.duckdb
-          key: health-db-${{ github.run_number }}
+          key: health-db-${{ github.run_number }}-${{ github.run_attempt }}
           restore-keys: |
             health-db-
 
@@ -44,7 +44,7 @@ jobs:
         id: health
         run: |
           python -c "
-          import asyncio, json, sys
+          import asyncio, json
           from agrobr.health.checker import run_checks_with_state, format_results
           from agrobr.health.registry import get_affected_datasets
           from agrobr.health.state import get_consecutive_failures, get_last_success
@@ -101,12 +101,16 @@ jobs:
                       )
                       print(f'Alert sent: {level.value} - {result.source.value}')
 
-              if failed:
-                  sys.exit(1)
-
           asyncio.run(main())
           "
           echo "overall_status=$(python -c "import json; r=json.load(open('health_report.json')); fs=[c for c in r['checks'] if c['status']=='failed']; print('error' if len(fs)==len(r['checks']) else ('degraded' if fs else 'healthy'))")" >> $GITHUB_OUTPUT
+
+      - name: Save health DB cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.agrobr/cache/agrobr.duckdb
+          key: health-db-${{ github.run_number }}-${{ github.run_attempt }}
 
       - name: Upload report
         if: always()
@@ -115,3 +119,17 @@ jobs:
           name: health-report-${{ github.run_number }}
           path: health_report.json
           retention-days: 30
+
+      - name: Fail if any source is down
+        if: always() && steps.health.outputs.overall_status != 'healthy'
+        run: |
+          python -c "
+          import json, pathlib, sys
+          report_path = pathlib.Path('health_report.json')
+          if not report_path.exists():
+              sys.exit('Health check did not produce a report')
+          report = json.loads(report_path.read_text())
+          failed = [c['source'] for c in report['checks'] if c['status'] == 'failed']
+          print('Sources failed:', ', '.join(failed) or 'none')
+          sys.exit(1 if failed else 0)
+          "

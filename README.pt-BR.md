@@ -479,7 +479,7 @@ Disponibilidade monitorada automaticamente. Use `agrobr health` para verificar l
 | MapBiomas | Cobertura e uso da terra (1985-presente), nível estado e município | ✅ | Funcional |
 | B3 Futuros Agro | Ajustes diários + posições em aberto (7 contratos agro) | ✅ | Funcional |
 | UN Comtrade | Comércio bilateral + trade mirror (~200 países, HS codes) | ✅¹ | Funcional |
-| ANTAQ | Movimentação portuária de carga (granel, geral, contêiner) | ✅ | Funcional |
+| ANTAQ | Movimentação portuária de carga (granel, geral, contêiner) | ⚠️ | Fonte fora do ar desde 23/06/2026 |
 | ANP Diesel | Preços revenda + volumes diesel por UF/município | ✅ | Funcional |
 | MAPA PSR | Apólices e sinistros seguro rural (2006+, 27 UFs) | ✅ | Funcional |
 | ANTT Pedágio | Fluxo de veículos em praças de pedágio (2010+, 200+ praças) | ✅ | Funcional |

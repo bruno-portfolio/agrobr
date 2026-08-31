@@ -4,6 +4,14 @@
     The data from INCRA's Land Registry is public-use data with a commercial-use restriction.
     The first call emits a `UserWarning` reminding you of this restriction.
 
+!!! note "Not reachable from outside Brazil in the environments tested"
+    The `certificacao.incra.gov.br` host answered normally from Brazil, but did not answer
+    (connection timeout) from GitHub Actions runners nor from any of the 8 international
+    nodes tested on 2026-08-31 (Austria, Cyprus, Finland, Iran, Serbia, Ukraine).
+    If you run agrobr outside Brazil and get `httpx.ConnectTimeout` on this source,
+    that network restriction is the likely cause — not a library bug.
+    That is why this source's live tests carry the `integration_br` marker and are excluded from CI.
+
 ## Overview
 
 | Item | Detail |

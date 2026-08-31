@@ -54,6 +54,9 @@ exclude = [
   "queimadas\\.dgi\\.inpe\\.br",
   "plataforma\\.alerta\\.mapbiomas\\.org",
 
+  # --- Hosts que nao responderam dos runners de CI nem dos nos internacionais testados ---
+  "certificacao\\.incra\\.gov\\.br",
+
   # --- Sites com Cloudflare agressivo ou bloqueio de bots ---
   "cepea\\.org\\.br",
   "cepea\\.esalq\\.usp\\.br",

@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import io
 import zipfile
+from typing import NamedTuple
 
 import requests
 import structlog
@@ -17,13 +18,20 @@ logger = structlog.get_logger()
 BULK_TXT_BASE = URLS[Fonte.ANTAQ]["bulk_txt"]
 
 ANTAQ_TIMEOUT = 180.0
+OUTAGE_NOTICE_SLUG = "painel-estatistico-aquaviario-indisponivel"
 
 
 class _RetriableHTTPError(requests.exceptions.HTTPError):
     pass
 
 
-def _get_sync(url: str) -> bytes:
+class _Download(NamedTuple):
+    content: bytes
+    content_type: str
+    final_url: str
+
+
+def _get_sync(url: str) -> _Download:
     """Baixa via requests: o WAF da ANTAQ rejeita o fingerprint do httpx (HTTP 403)."""
     response = requests.get(
         url,
@@ -34,14 +42,31 @@ def _get_sync(url: str) -> bytes:
     if should_retry_status(response.status_code):
         raise _RetriableHTTPError(f"Retriable status: {response.status_code}")
     response.raise_for_status()
-    return response.content
+    return _Download(
+        content=response.content,
+        content_type=response.headers.get("Content-Type", "?"),
+        final_url=response.url,
+    )
+
+
+def _rejection_reason(download: _Download, problem: str) -> str:
+    detail = (
+        f"{problem}: {len(download.content)} bytes of "
+        f"{download.content_type} from {download.final_url}"
+    )
+    if OUTAGE_NOTICE_SLUG in download.final_url:
+        return (
+            f"ANTAQ redirected to the official outage notice ({detail}). "
+            "The Estatistico Aquaviario has been offline since 2026-06-23."
+        )
+    return detail
 
 
 async def _download_zip(url: str) -> bytes:
     logger.debug("antaq_download_zip", url=url)
 
     try:
-        content = await retry_async(
+        download = await retry_async(
             lambda: asyncio.to_thread(_get_sync, url),
             retriable_exceptions=(
                 requests.exceptions.ConnectionError,
@@ -57,23 +82,20 @@ async def _download_zip(url: str) -> bytes:
             last_error=f"{type(e).__name__}: {e}",
         ) from e
 
-    if len(content) < MIN_ZIP_SIZE:
-        raise SourceUnavailableError(
-            source="antaq",
-            url=url,
-            last_error=(
-                f"Downloaded ZIP too small ({len(content)} bytes), expected a valid ZIP archive"
-            ),
-        )
+    content = download.content
 
     if not content.startswith(b"PK\x03\x04"):
         raise SourceUnavailableError(
             source="antaq",
             url=url,
-            last_error=(
-                f"Downloaded content is not a ZIP ({len(content)} bytes, missing PK signature) "
-                "— likely a WAF/Cloudflare challenge page"
-            ),
+            last_error=_rejection_reason(download, "not a ZIP (missing PK signature)"),
+        )
+
+    if len(content) < MIN_ZIP_SIZE:
+        raise SourceUnavailableError(
+            source="antaq",
+            url=url,
+            last_error=_rejection_reason(download, "ZIP too small"),
         )
 
     logger.info(

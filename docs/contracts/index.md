@@ -54,7 +54,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | [queimadas](./queimadas.md) | Focos de calor por satélite | INPE |
 | [futuros_agricolas](./futuros_agricolas.md) | Futuros agrícolas B3 (ajustes, histórico, posições) | B3 |
 | [posicionamento_fundos](./posicionamento_fundos.md) | Posicionamento de fundos por categoria de trader (COT) | CFTC |
-| [movimentacao_portuaria](./movimentacao_portuaria.md) | Movimentação portuária de cargas | ANTAQ |
+| [movimentacao_portuaria](./movimentacao_portuaria.md) | Movimentação portuária de cargas ⚠️ (fonte fora do ar) | ANTAQ |
 | [seguro_rural](./seguro_rural.md) | Seguro rural — apólices e sinistros | MAPA PSR |
 | [serie_historica_safra](./serie_historica_safra.md) | Série histórica de safras (32 culturas) | CONAB |
 | [uso_do_solo](./uso_do_solo.md) | Cobertura e uso da terra (MapBiomas) | MapBiomas |

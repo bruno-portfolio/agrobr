@@ -10,6 +10,7 @@ import pytest
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.constants import AlertSettings, Fonte
 from agrobr.health.state import (
+    get_alertable_failures,
     get_consecutive_failures,
     get_last_success,
     record_check,
@@ -92,32 +93,38 @@ class TestShouldSendAlert:
 
     def test_first_failure_no_alert(self, mock_conn):
         # 1 failure (current) < consecutive_failures_warning (2)
-        mock_conn.execute.return_value.fetchone.return_value = (1,)
+        mock_conn.execute.return_value.fetchall.return_value = [("source_down",)]
         alert, level = should_send_alert(Fonte.CEPEA, "failed", "source_down")
         assert alert is False
         assert level is None
 
     def test_second_failure_warning(self, mock_conn):
-        mock_conn.execute.return_value.fetchone.return_value = (2,)
+        mock_conn.execute.return_value.fetchall.return_value = [("source_down",)] * 2
         alert, level = should_send_alert(Fonte.CEPEA, "failed", "source_down")
         assert alert is True
         assert level == AlertLevel.WARNING
 
     def test_third_failure_critical(self, mock_conn):
-        mock_conn.execute.return_value.fetchone.return_value = (3,)
+        mock_conn.execute.return_value.fetchall.return_value = [("source_down",)] * 3
         alert, level = should_send_alert(Fonte.CEPEA, "failed", "source_down")
         assert alert is True
         assert level == AlertLevel.CRITICAL
 
     def test_recovery_sends_info(self, mock_conn):
-        # current_status=ok but there were prior failures
-        mock_conn.execute.return_value.fetchone.return_value = (2,)
+        # current_status=ok but there were prior alertable failures
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("source_down",),
+            ("source_down",),
+        ]
         alert, level = should_send_alert(Fonte.CEPEA, "ok", None)
         assert alert is True
         assert level == AlertLevel.INFO
 
     def test_recovery_disabled(self, mock_conn):
-        mock_conn.execute.return_value.fetchone.return_value = (2,)
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("source_down",),
+            ("source_down",),
+        ]
         settings = self._settings(alert_on_recovery=False)
         alert, level = should_send_alert(Fonte.CEPEA, "ok", None, settings=settings)
         assert alert is False
@@ -154,7 +161,7 @@ class TestShouldSendAlert:
         assert level is None
 
     def test_parse_error_flag_enabled_critical(self, mock_conn):
-        mock_conn.execute.return_value.fetchone.return_value = (3,)
+        mock_conn.execute.return_value.fetchall.return_value = [("parse_error",)] * 3
         settings = self._settings(alert_on_parse_error=True)
         alert, level = should_send_alert(
             Fonte.CEPEA,
@@ -178,14 +185,117 @@ class TestShouldSendAlert:
         assert level is None
 
     def test_ok_no_prior_failures(self, mock_conn):
-        mock_conn.execute.return_value.fetchone.return_value = (0,)
+        mock_conn.execute.return_value.fetchall.return_value = []
         alert, level = should_send_alert(Fonte.CEPEA, "ok", None)
         assert alert is False
         assert level is None
 
     def test_soft_block_never_critical(self, mock_conn):
-        mock_conn.execute.return_value.fetchone.return_value = (5,)
+        mock_conn.execute.return_value.fetchall.return_value = [("soft_block",)] * 3
         alert, level = should_send_alert(Fonte.CEPEA, "failed", "soft_block")
+        assert alert is True
+        assert level == AlertLevel.WARNING
+
+    def test_no_repeat_above_threshold(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [("source_down",)] * 7
+        alert, level = should_send_alert(Fonte.CEPEA, "failed", "source_down")
+        assert alert is False
+        assert level is None
+
+    def test_recovery_uses_prior_failures(self, mock_conn):
+        mock_conn.execute.return_value.fetchone.return_value = (0,)
+        alert, level = should_send_alert(Fonte.CEPEA, "ok", None, prior_failures=4)
+        assert alert is True
+        assert level == AlertLevel.INFO
+
+    def test_recovery_below_threshold_is_silent(self, mock_conn):
+        mock_conn.execute.return_value.fetchone.return_value = (0,)
+        alert, level = should_send_alert(Fonte.CEPEA, "ok", None, prior_failures=1)
+        assert alert is False
+        assert level is None
+
+    def test_recovery_after_api_key_missing_is_silent(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("api_key_missing",),
+            ("api_key_missing",),
+        ]
+        prior = get_alertable_failures(Fonte.USDA)
+        assert prior == 0
+
+        alert, level = should_send_alert(Fonte.USDA, "ok", None, prior_failures=prior)
+        assert alert is False
+        assert level is None
+
+    def test_recovery_after_disabled_source_down_is_silent(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("source_down",),
+            ("source_down",),
+        ]
+        settings = self._settings(alert_on_source_down=False)
+        prior = get_alertable_failures(Fonte.CONAB, settings)
+        assert prior == 0
+
+        alert, level = should_send_alert(
+            Fonte.CONAB, "ok", None, settings=settings, prior_failures=prior
+        )
+        assert alert is False
+        assert level is None
+
+    def test_recovery_after_alertable_outage_fires(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("source_down",),
+            ("source_down",),
+        ]
+        prior = get_alertable_failures(Fonte.CONAB)
+        assert prior == 2
+
+        alert, level = should_send_alert(Fonte.CONAB, "ok", None, prior_failures=prior)
+        assert alert is True
+        assert level == AlertLevel.INFO
+
+    def test_mixed_incident_does_not_reach_threshold(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("api_key_missing",),
+            ("source_down",),
+        ]
+        alert, level = should_send_alert(Fonte.CONAB, "failed", "source_down")
+        assert alert is False
+        assert level is None
+
+    def test_mixed_incident_escalates_on_alertable_count(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("api_key_missing",),
+            ("source_down",),
+            ("source_down",),
+        ]
+        alert, level = should_send_alert(Fonte.CONAB, "failed", "source_down")
+        assert alert is True
+        assert level == AlertLevel.WARNING
+
+    def test_mixed_incident_recovery_fires(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("api_key_missing",),
+            ("source_down",),
+            ("source_down",),
+        ]
+        prior = get_alertable_failures(Fonte.CONAB)
+        assert prior == 2
+
+        alert, level = should_send_alert(Fonte.CONAB, "ok", None, prior_failures=prior)
+        assert alert is True
+        assert level == AlertLevel.INFO
+
+    def test_alertable_failures_ignores_suppressed_categories(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [
+            ("api_key_missing",),
+            ("source_down",),
+            (None,),
+        ]
+        assert get_alertable_failures(Fonte.CONAB) == 2
+
+    def test_warning_status_never_critical(self, mock_conn):
+        mock_conn.execute.return_value.fetchall.return_value = [(None,)] * 3
+        alert, level = should_send_alert(Fonte.ACERVO_FUNDIARIO, "warning", None)
         assert alert is True
         assert level == AlertLevel.WARNING
 

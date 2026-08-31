@@ -15,7 +15,7 @@
 | **BCB/SICOR** | Public federal government data | Yes (public data) | `livre` | [BCB OData](https://olinda.bcb.gov.br) |
 | **ComexStat** | Public federal government data | Yes (public data) | `livre` | [MDIC](https://comexstat.mdic.gov.br) |
 | **ANDA** | No public terms; authorization requested (Feb/2026) | Awaiting response | `zona_cinza` | [anda.org.br](https://anda.org.br) |
-| **ANTAQ** | Public federal government data | Yes (public data) | `livre` | [Aquaviário Statistics](https://estatistica.antaq.gov.br/ea/sense/download.html) |
+| **ANTAQ** | Public federal government data | Yes (public data) | `livre` | [Source offline since 2026-06-23](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel) |
 | **ANP Diesel** | Public federal government data | Yes (public data) | `livre` | [ANP](https://www.gov.br/anp/) |
 | **ANTT Pedágio** | CC-BY (Creative Commons Attribution) | Yes (public data) | `livre` | [ANTT Open Data](https://dados.antt.gov.br) |
 | **MAPA PSR** | Public federal government data (CC-BY) | Yes (public data) | `livre` | [SISSER/MAPA](https://dados.agricultura.gov.br/dataset/sisser3) |
@@ -31,7 +31,7 @@
 | **Notícias Agrícolas** | All rights reserved (Law 9.610/98) | No | `restrito` | — |
 | **Queimadas/INPE** | Public federal government data | Yes (public data, with citation) | `livre` | [BDQueimadas](https://queimadas.dgi.inpe.br) |
 | **Desmatamento PRODES/DETER** | Public federal government data | Yes (public data, with citation) | `livre` | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) |
-| **MapBiomas** | Public data, free with citation | Yes (with citation to the project) | `livre` | [Terms of Use](https://brasil.mapbiomas.org/termos-de-uso/) |
+| **MapBiomas** | CC BY 4.0 — public data, free with citation | Yes (with citation to the project) | `livre` | [FAQ / data citation](https://brasil.mapbiomas.org/faq/?tema=dados) |
 | **CONAB Progresso** | Public federal government data | Yes (public data) | `livre` | [Gov.br](https://www.gov.br/conab/) |
 | **IBGE PPM** | Public federal government data | Yes (public data) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
 | **IBGE Abate** | Public federal government data | Yes (public data) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |

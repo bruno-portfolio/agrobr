@@ -36,13 +36,21 @@ def _make_zip(files: dict[str, str], *, min_size: int = 0) -> bytes:
     return data
 
 
-def _make_requests_response(status: int, content: bytes = b""):
+def _make_requests_response(
+    status: int,
+    content: bytes = b"",
+    *,
+    content_type: str | None = None,
+    url: str = _ANTAQ_URL,
+):
     import requests
 
     response = requests.Response()
     response.status_code = status
     response._content = content
-    response.url = _ANTAQ_URL
+    response.url = url
+    if content_type:
+        response.headers["Content-Type"] = content_type
     return response
 
 
@@ -113,13 +121,59 @@ class TestDownloadZip:
         assert mock_get.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_html_challenge_raises_source_unavailable(self):
+    async def test_html_challenge_reports_size_type_and_final_url(self):
         html = b"<!DOCTYPE html>\n" + b"x" * 600
-        resp = _make_requests_response(200, html)
+        resp = _make_requests_response(
+            200,
+            html,
+            content_type="text/html;charset=utf-8",
+            url="https://estatistica.antaq.gov.br/redirected",
+        )
 
         with (
             patch("agrobr.antaq.client.requests.get", return_value=resp),
-            pytest.raises(SourceUnavailableError, match="not a ZIP"),
+            pytest.raises(SourceUnavailableError) as exc,
+        ):
+            await client._download_zip(_ANTAQ_URL)
+
+        message = str(exc.value)
+        assert "not a ZIP (missing PK signature)" in message
+        assert f"{len(html)} bytes" in message
+        assert "text/html;charset=utf-8" in message
+        assert "https://estatistica.antaq.gov.br/redirected" in message
+
+    @pytest.mark.asyncio
+    async def test_small_valid_zip_reports_size_not_signature(self):
+        tiny = b"PK\x03\x04" + b"\x00" * 10
+        resp = _make_requests_response(200, tiny, content_type="application/zip")
+
+        with (
+            patch("agrobr.antaq.client.requests.get", return_value=resp),
+            pytest.raises(SourceUnavailableError) as exc,
+        ):
+            await client._download_zip(_ANTAQ_URL)
+
+        message = str(exc.value)
+        assert "ZIP too small" in message
+        assert "missing PK signature" not in message
+        assert "application/zip" in message
+
+    @pytest.mark.asyncio
+    async def test_outage_notice_redirect_is_named(self):
+        html = b"<!DOCTYPE html>\n" + b"x" * 600
+        resp = _make_requests_response(
+            200,
+            html,
+            content_type="text/html",
+            url=(
+                "https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq"
+                "/publicacoes-off/painel-estatistico-aquaviario-indisponivel"
+            ),
+        )
+
+        with (
+            patch("agrobr.antaq.client.requests.get", return_value=resp),
+            pytest.raises(SourceUnavailableError, match="official outage notice"),
         ):
             await client._download_zip(_ANTAQ_URL)
 

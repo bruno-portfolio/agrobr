@@ -26,7 +26,7 @@ All sources support `return_meta=True` for full traceability.
 | [MapBiomas](mapbiomas.md) | Land cover and use | Annual | Municipalities (1985-present) |
 | [B3 Agricultural Futures](b3.md) | Daily settlements + open interest | Daily | 7 agricultural contracts |
 | [UN Comtrade](comtrade.md) | Bilateral trade + trade mirror | Monthly/Annual | ~200 countries, HS codes |
-| [ANTAQ](antaq.md) | Port cargo movement | Annual | Brazilian ports, 2010+ |
+| [ANTAQ](antaq.md) | Port cargo movement | Annual | ⚠️ Source offline since 2026-06-23 |
 | [ANP Diesel](anp_diesel.md) | Resale prices + diesel volumes | Weekly/Monthly | States, municipalities, 2013+ |
 | [ANTT Pedagio](antt_pedagio.md) | Vehicle traffic at toll plazas | Monthly | 200+ plazas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Rural insurance policies and claims | Annual | 27 states, 2006+ |

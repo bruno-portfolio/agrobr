@@ -483,7 +483,7 @@ Availability is monitored automatically. Run `agrobr health` to check locally (o
 | MapBiomas | Land use and cover (1985-present), state and municipality level | ✅ | Working |
 | B3 Agri Futures | Daily settlements + open interest (7 agri contracts) | ✅ | Working |
 | UN Comtrade | Bilateral trade + trade mirror (~200 countries, HS codes) | ✅¹ | Working |
-| ANTAQ | Port cargo throughput (bulk, general, container) | ✅ | Working |
+| ANTAQ | Port cargo throughput (bulk, general, container) | ⚠️ | Source offline since 2026-06-23 |
 | ANP Diesel | Retail prices + diesel volumes by state/municipality | ✅ | Working |
 | MAPA PSR | Rural insurance policies and claims (2006+, 27 states) | ✅ | Working |
 | ANTT | Toll plaza vehicle traffic (2010+, 200+ plazas) | ✅ | Working |

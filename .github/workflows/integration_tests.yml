@@ -33,7 +33,7 @@ jobs:
       - name: Run integration tests
         id: integration
         run: |
-          pytest -m integration --tb=short -v --timeout=120 2>&1 | tee integration_results.txt
+          pytest -m "integration and not integration_br" --tb=short -v --timeout=120 2>&1 | tee integration_results.txt
           echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
         continue-on-error: true
 
@@ -45,29 +45,111 @@ jobs:
           path: integration_results.txt
           retention-days: 30
 
-      - name: Create issue on failure
-        if: steps.integration.outputs.exit_code != '0'
+      - name: Manage issue
+        if: always()
         uses: actions/github-script@v7
+        env:
+          EXIT_CODE: ${{ steps.integration.outputs.exit_code }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
         with:
           script: |
             const fs = require('fs');
+            const label = 'integration-tests';
+            const failed = process.env.EXIT_CODE !== '0';
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: label,
+              state: 'open',
+              per_page: 1,
+            });
+            const existing = issues[0] || null;
+
+            if (!failed) {
+              if (existing) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: 'Testes de integracao voltaram a passar. Fechando automaticamente.',
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  state: 'closed',
+                  state_reason: 'completed',
+                });
+                core.info(`Issue #${existing.number} fechada`);
+              }
+              return;
+            }
+
             let results = '';
             try {
-              results = fs.readFileSync('integration_results.txt', 'utf8');
-              results = results.slice(-2000);
+              results = fs.readFileSync('integration_results.txt', 'utf8').slice(-2000);
             } catch (e) {
               results = 'Could not read results file';
             }
-            await github.rest.issues.create({
+
+            const fence = '```';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const title = `Integration tests failed (run #${context.runNumber})`;
+            const body = [
+              '## Weekly integration tests failed',
+              '',
+              `**Run:** [#${context.runNumber}](${runUrl}) (attempt ${process.env.RUN_ATTEMPT})`,
+              `**Date:** ${new Date().toISOString().slice(0, 10)}`,
+              '',
+              '<details>',
+              '<summary>Last 2000 chars of output</summary>',
+              '',
+              fence,
+              results,
+              fence,
+              '</details>',
+            ].join('\n');
+
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                title: title,
+                body: body,
+              });
+              core.info(`Issue #${existing.number} atualizada`);
+              return;
+            }
+
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+              });
+            } catch {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+                color: 'd93f0b',
+                description: 'Falhas do workflow semanal de integration tests',
+              });
+            }
+
+            const { data: newIssue } = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Integration tests failed (run #${context.runNumber})`,
-              body: `## Weekly integration tests failed\n\n**Run:** [#${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})\n**Date:** ${new Date().toISOString().slice(0, 10)}\n\n<details>\n<summary>Last 2000 chars of output</summary>\n\n\`\`\`\n${results}\n\`\`\`\n</details>`,
-              labels: ['source-changed']
+              title: title,
+              body: body,
+              labels: [label],
             });
+            core.info(`Issue #${newIssue.number} criada`);
 
       - name: Alert on failure
-        if: steps.integration.outputs.exit_code != '0'
+        if: always() && steps.integration.outputs.exit_code != '0' && github.run_attempt == '1'
         env:
           AGROBR_ALERT_ENABLED: "true"
           AGROBR_ALERT_DISCORD_WEBHOOK: ${{ secrets.AGROBR_DISCORD_WEBHOOK }}
@@ -83,3 +165,7 @@ jobs:
               details={'run': '${{ github.run_number }}', 'url': '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'},
           ))
           "
+
+      - name: Fail if integration tests failed
+        if: always() && steps.integration.outputs.exit_code != '0'
+        run: exit 1

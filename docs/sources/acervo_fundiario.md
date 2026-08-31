@@ -4,6 +4,14 @@
     Os dados do Acervo Fundiário do INCRA são de uso público com restrição de uso comercial.
     A primeira chamada emite `UserWarning` lembrando dessa restrição.
 
+!!! note "Nao acessivel de fora do Brasil nos ambientes testados"
+    O host `certificacao.incra.gov.br` respondeu normalmente do Brasil, mas nao respondeu
+    (connection timeout) a partir dos runners do GitHub Actions nem de nenhum dos 8 nos
+    internacionais testados em 31/08/2026 (Austria, Chipre, Finlandia, Ira, Servia, Ucrania).
+    Se voce roda o agrobr fora do Brasil e recebe `httpx.ConnectTimeout` nesta fonte,
+    a causa provavel e essa restricao de rede — nao um bug da biblioteca.
+    Por isso os testes live desta fonte usam o marker `integration_br` e ficam fora do CI.
+
 ## Visão Geral
 
 | Item | Detalhe |

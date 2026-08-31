@@ -305,13 +305,18 @@ async def run_checks_with_state(
 
     Returns list of (result, should_alert, alert_level).
     """
-    from agrobr.health.state import record_check, should_send_alert
+    from agrobr.health.state import (
+        get_alertable_failures,
+        record_check,
+        should_send_alert,
+    )
 
     settings = settings or AlertSettings()
     results = await run_all_checks(sources, deep=deep, concurrency=concurrency)
     out: list[tuple[CheckResult, bool, AlertLevel | None]] = []
 
     for result in results:
+        prior_failures = get_alertable_failures(result.source, settings)
         record_check(
             source=result.source,
             status=result.status.value,
@@ -324,6 +329,7 @@ async def run_checks_with_state(
             current_status=result.status.value,
             category=result.category,
             settings=settings,
+            prior_failures=prior_failures,
         )
         out.append((result, alert, level))
 

@@ -48,6 +48,12 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
     """Build the registry by iterating constants.URLS with per-source overrides."""
     stable_year = date.today().year - 2
     overrides: dict[Fonte, dict[str, Any]] = {
+        Fonte.ACERVO_FUNDIARIO: {
+            "url": f"{URLS[Fonte.ACERVO_FUNDIARIO]['download']}Sigef%20Brasil_AC.zip",
+            "method": "HEAD",
+            "tier": "best_effort",
+            "verify": False,
+        },
         Fonte.ANA: {
             "url": _arcgis_directory_url(URLS[Fonte.ANA]["arcgis"]),
         },

@@ -1,5 +1,13 @@
 # ANTAQ API
 
+!!! warning "Source unavailable since 2026-06-23"
+    ANTAQ took the Estatistico Aquaviario offline ([official notice](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel)).
+    The `estatistica.antaq.gov.br` host no longer serves the files: it returns `403`
+    (Cloudflare challenge) or redirects to the unavailability notice, depending on the client.
+    Calls to `antaq.movimentacao()` raise `SourceUnavailableError`. No alternative source
+    offers equivalent coverage — Base dos Dados only covers 2014-2020.
+    Last checked: 2026-08-31.
+
 The ANTAQ module provides port cargo movement data from the Estatístico Aquaviário, published by the National Waterway Transportation Agency.
 
 ## Functions
@@ -76,7 +84,7 @@ df = antaq.movimentacao(2024)
 
 ## Notes
 
-- Source: [ANTAQ Estatístico Aquaviário](https://estatistica.antaq.gov.br/ea/sense/download.html) — `livre` license
+- Source: ANTAQ Estatístico Aquaviário (`estatistica.antaq.gov.br`) — `livre` license. [Offline since 2026-06-23](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel)
 - Data: bulk ZIP (`;`-delimited TXT, UTF-8-sig encoding)
 - History: 2010+
 - Annual ZIPs (~80MB) — download may take a few seconds

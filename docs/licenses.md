@@ -15,7 +15,7 @@
 | **BCB/SICOR** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [BCB OData](https://olinda.bcb.gov.br) |
 | **ComexStat** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [MDIC](https://comexstat.mdic.gov.br) |
 | **ANDA** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [anda.org.br](https://anda.org.br) |
-| **ANTAQ** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Estatístico Aquaviário](https://estatistica.antaq.gov.br/ea/sense/download.html) |
+| **ANTAQ** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Fonte fora do ar desde 23/06/2026](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel) |
 | **ANP Diesel** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [ANP](https://www.gov.br/anp/) |
 | **ANTT Pedagio** | CC-BY (Creative Commons Attribution) | Sim (dados públicos) | `livre` | [ANTT Dados Abertos](https://dados.antt.gov.br) |
 | **MAPA PSR** | Dados públicos governo federal (CC-BY) | Sim (dados públicos) | `livre` | [SISSER/MAPA](https://dados.agricultura.gov.br/dataset/sisser3) |
@@ -31,7 +31,7 @@
 | **Notícias Agrícolas** | Todos os direitos reservados (Lei 9.610/98) | Não | `restrito` | — |
 | **Queimadas/INPE** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [BDQueimadas](https://queimadas.dgi.inpe.br) |
 | **Desmatamento PRODES/DETER** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) |
-| **MapBiomas** | Dados públicos, livre com citação | Sim (com citação ao projeto) | `livre` | [Termos de Uso](https://brasil.mapbiomas.org/termos-de-uso/) |
+| **MapBiomas** | CC BY 4.0 — dados públicos, livre com citação | Sim (com citação ao projeto) | `livre` | [FAQ / citação dos dados](https://brasil.mapbiomas.org/faq/?tema=dados) |
 | **CONAB Progresso** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Gov.br](https://www.gov.br/conab/) |
 | **IBGE PPM** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
 | **IBGE Abate** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |

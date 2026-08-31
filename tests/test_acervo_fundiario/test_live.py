@@ -11,7 +11,7 @@ from agrobr.acervo_fundiario.models import (
     SNCI_UFS_DISPONIVEIS,
 )
 
-pytestmark = pytest.mark.integration
+pytestmark = [pytest.mark.integration, pytest.mark.integration_br]
 
 
 @pytest.mark.asyncio
