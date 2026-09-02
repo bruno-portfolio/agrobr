@@ -46,6 +46,14 @@ pip install agrobr[geo]             # GeoPandas — enables _geo variants (PRODE
 pip install agrobr[all]             # Everything included
 ```
 
+CONAB crop surveys and supply/demand balances require the browser extra and a local
+Chromium installation:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
 ### Docker
 
 ```bash

@@ -16,6 +16,19 @@
 - **Formato**: XLSX (planilhas Excel)
 - **Acesso**: Publico, sem restricoes
 
+## Requisito de Navegador
+
+As funcoes `safras`, `balanco`, `brasil_total` e `levantamentos` leem uma pagina
+dinamica e exigem Playwright com Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Sem ambos, a fonte levanta `SourceUnavailableError`. O dataset
+`estimativa_safra` tenta o fallback IBGE LSPA; `balanco` nao possui fallback.
+
 ## Levantamentos
 
 A CONAB publica levantamentos mensais de safra:

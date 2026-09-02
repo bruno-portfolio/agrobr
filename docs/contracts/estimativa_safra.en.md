@@ -13,6 +13,16 @@ Current crop-year estimates by state.
 >
 > LSPA uses the calendar reference year. When harmonized with CONAB, this is the second year of the crop year: LSPA 2025 corresponds to crop year `2024/25`.
 
+The primary CONAB source requires Playwright and Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Without this requirement, CONAB raises `SourceUnavailableError` and the dataset
+tries the IBGE LSPA fallback.
+
 ## Products
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`

@@ -35,7 +35,10 @@ async def fetch_boletim_page() -> str:
         raise SourceUnavailableError(
             source="conab",
             url=url,
-            last_error="Playwright not available for CONAB page fetch",
+            last_error=(
+                "Playwright not available for CONAB page fetch. Install with "
+                "pip install agrobr[browser] and python -m playwright install chromium"
+            ),
         )
 
     settings = constants.HTTPSettings()
@@ -75,6 +78,12 @@ async def fetch_boletim_page() -> str:
 
         except Exception as e:
             last_error = e
+            if "executable doesn't exist" in str(e).lower():
+                raise SourceUnavailableError(
+                    source="conab",
+                    url=url,
+                    last_error=f"{e}. Install Chromium with: python -m playwright install chromium",
+                ) from e
             if attempt < settings.max_retries - 1:
                 delay = settings.retry_base_delay * (settings.retry_exponential_base**attempt)
                 logger.warning(
@@ -133,7 +142,10 @@ async def download_xlsx(url: str) -> BytesIO:
         raise SourceUnavailableError(
             source="conab",
             url=url,
-            last_error="Playwright not available for CONAB download",
+            last_error=(
+                "Playwright not available for CONAB download. Install with "
+                "pip install agrobr[browser] and python -m playwright install chromium"
+            ),
         )
 
     async with RateLimiter.acquire(constants.Fonte.CONAB), async_playwright() as p:

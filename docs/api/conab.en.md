@@ -2,6 +2,20 @@
 
 The CONAB module provides access to crop surveys, supply/demand balance, Brazil totals, production costs, historical series, crop progress and wholesale (CEASA) prices from the National Supply Company.
 
+## Browser Requirement
+
+The crop and balance APIs read a dynamic page and require Playwright with
+Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Without both, `safras`, `balanco`, `brasil_total`, and `levantamentos` raise
+`SourceUnavailableError`. In the dataset layer, `estimativa_safra` tries the
+IBGE LSPA fallback; `balanco` has no fallback.
+
 ## Functions
 
 ### `safras`

@@ -2,6 +2,20 @@
 
 O módulo CONAB fornece acesso a safras, balanço oferta/demanda, totais Brasil, custos de produção, série histórica, progresso de safra e preços de atacado (CEASA) da Companhia Nacional de Abastecimento.
 
+## Requisito de Navegador
+
+As APIs de safras e balanço leem uma página dinâmica e exigem Playwright com
+Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Sem ambos, `safras`, `balanco`, `brasil_total` e `levantamentos` levantam
+`SourceUnavailableError`. Na camada de datasets, `estimativa_safra` tenta o
+fallback IBGE LSPA; `balanco` não possui fallback.
+
 ## Funções
 
 ### `safras`

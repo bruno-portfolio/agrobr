@@ -8,6 +8,16 @@ Supply/demand balance for commodities.
 |----------|--------|-------------|
 | 1 | CONAB | Supply and Demand Balance |
 
+The CONAB source requires Playwright and Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Without this requirement, the dataset raises `SourceUnavailableError`; `balanco`
+has no fallback source.
+
 ## Products
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`

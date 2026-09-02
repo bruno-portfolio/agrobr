@@ -44,6 +44,14 @@ pip install agrobr[geo]             # GeoPandas — habilita variantes _geo (PRO
 pip install agrobr[all]             # Tudo incluído
 ```
 
+Os levantamentos de safra e balanços de oferta/demanda da CONAB exigem o extra de
+navegador e uma instalação local do Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
 ### Docker
 
 ```bash

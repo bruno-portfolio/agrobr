@@ -65,17 +65,41 @@ class TestConabFetchSafra:
             await client.fetch_safra_xlsx(safra="2020/21")
 
     @pytest.mark.asyncio
-    async def test_timeout_no_retry(self):
+    async def test_fetch_boletim_missing_chromium_fails_first_attempt(self):
+        launch = AsyncMock(side_effect=Exception("Executable doesn't exist at chromium"))
+
         with (
             patch("agrobr.http.browser.is_available", return_value=True),
             patch("agrobr.conab.client.async_playwright") as mock_pw,
-            pytest.raises(SourceUnavailableError),
+            pytest.raises(
+                SourceUnavailableError,
+                match="python -m playwright install chromium",
+            ),
         ):
-            mock_browser = AsyncMock()
-            mock_browser.new_page.side_effect = Exception("Timeout")
             mock_pw.return_value.__aenter__ = AsyncMock(
-                return_value=MagicMock(
-                    chromium=MagicMock(launch=AsyncMock(return_value=mock_browser))
-                )
+                return_value=MagicMock(chromium=MagicMock(launch=launch))
             )
             await client.fetch_boletim_page()
+
+        assert mock_pw.call_count == 1
+        assert launch.await_count == 1
+
+    @pytest.mark.asyncio
+    async def test_fetch_boletim_transient_error_retries(self):
+        launch = AsyncMock(side_effect=Exception("Timeout"))
+        max_retries = client.constants.HTTPSettings().max_retries
+
+        with (
+            patch("agrobr.http.browser.is_available", return_value=True),
+            patch("agrobr.conab.client.async_playwright") as mock_pw,
+            patch("asyncio.sleep", new_callable=AsyncMock),
+            patch("agrobr.http.rate_limiter._async_sleep", new_callable=AsyncMock),
+            pytest.raises(SourceUnavailableError),
+        ):
+            mock_pw.return_value.__aenter__ = AsyncMock(
+                return_value=MagicMock(chromium=MagicMock(launch=launch))
+            )
+            await client.fetch_boletim_page()
+
+        assert mock_pw.call_count == max_retries
+        assert launch.await_count == max_retries

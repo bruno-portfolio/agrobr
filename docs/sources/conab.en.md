@@ -16,6 +16,19 @@
 - **Format**: XLSX (Excel spreadsheets)
 - **Access**: Public, no restrictions
 
+## Browser Requirement
+
+The `safras`, `balanco`, `brasil_total`, and `levantamentos` functions read a
+dynamic page and require Playwright with Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Without both, the source raises `SourceUnavailableError`. The
+`estimativa_safra` dataset tries the IBGE LSPA fallback; `balanco` has no fallback.
+
 ## Surveys
 
 CONAB publishes monthly crop surveys:

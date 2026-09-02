@@ -13,6 +13,16 @@ Estimativas de safra corrente por UF.
 >
 > O LSPA usa o ano civil de referência. Na harmonização com a CONAB, esse é o segundo ano da safra: LSPA 2025 corresponde à safra `2024/25`.
 
+A fonte primária CONAB exige Playwright e Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Sem esse requisito, a CONAB levanta `SourceUnavailableError` e o dataset tenta o
+fallback IBGE LSPA.
+
 ## Produtos
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`

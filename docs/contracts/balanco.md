@@ -8,6 +8,16 @@ Balanço de oferta e demanda de commodities.
 |------------|-------|-----------|
 | 1 | CONAB | Balanço de Oferta e Demanda |
 
+A fonte CONAB exige Playwright e Chromium:
+
+```bash
+pip install agrobr[browser]
+python -m playwright install chromium
+```
+
+Sem esse requisito, o dataset levanta `SourceUnavailableError`; `balanco` não
+possui fonte de fallback.
+
 ## Produtos
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`
