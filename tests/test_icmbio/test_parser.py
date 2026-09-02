@@ -78,7 +78,7 @@ class TestParseUcsCsv:
         csv_bytes = UCS_DIR.joinpath("response.csv").read_bytes()
         df = parse_ucs_csv(csv_bytes)
 
-        multi_uf = df[df["uf"].str.contains(";", na=False)]
+        multi_uf = df[df["uf"].str.contains("/", na=False, regex=False)]
         assert len(multi_uf) >= 1
 
     def test_area_ha_non_negative(self):
@@ -95,7 +95,7 @@ class TestParseUcsCsv:
             assert col in df.columns, f"Missing output column: {col}"
 
     def test_empty_csv_returns_empty_dataframe(self):
-        csv = b"cnuc,nomeuc,siglacateg,grupouc,areahaalb,ufabrang,biomaibge,criacaoano,criacaoato\n"
+        csv = b"cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato\n"
         df = parse_ucs_csv(csv)
         assert len(df) == 0
         assert list(df.columns) == COLUNAS_SAIDA

@@ -54,7 +54,7 @@ asyncio.run(main())
 | nome | str | Conservation unit name |
 | categoria | str | Category abbreviation (PARNA, ESEC, FLONA, etc) |
 | grupo | str | PI (strict protection) or US (sustainable use) |
-| uf | str | State(s) covered (separated by ;) |
+| uf | str | State(s) covered (separated by /) |
 | bioma | str | IBGE biome |
 | area_ha | float | Area in hectares |
 | ano_criacao | Int64 | Creation year |
@@ -63,5 +63,5 @@ asyncio.run(main())
 ## Limitations
 
 - Only federal conservation units (344). State and municipal ones are not in this WFS.
-- The `uf` field may contain multiple states (e.g., "MT;PA")
+- The `uf` field may contain multiple states (e.g., "MT/PA")
 - Data reflects the current state of the INDE/ICMBio GeoServer

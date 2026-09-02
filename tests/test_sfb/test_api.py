@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.sfb import api
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "sfb" / "cnfp_sample"
@@ -288,6 +289,24 @@ class TestIfnConglomerados:
         df, meta = result
         assert meta.source == "sfb"
         assert "sfb_ifn_conglomerados" in meta.attempted_sources
+
+    @pytest.mark.asyncio
+    async def test_ifn_conglomerados_propagates_source_unavailable(self):
+        error = SourceUnavailableError(
+            source="sfb",
+            url="https://mapas.florestal.gov.br/arcgis",
+            last_error="ArcGIS error 500: MapServer not started",
+        )
+        with (
+            patch.object(
+                api.client,
+                "fetch_layer",
+                new_callable=AsyncMock,
+                side_effect=error,
+            ),
+            pytest.raises(SourceUnavailableError, match="not started"),
+        ):
+            await api.ifn_conglomerados()
 
 
 class TestIfnConglomeradosGeo:

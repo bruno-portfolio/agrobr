@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import ssl
+from urllib.parse import parse_qs, urlparse
 
+from agrobr.ana import models as ana_models
 from agrobr.constants import URLS, Fonte
 from agrobr.health.registry import (
     HEALTH_REGISTRY,
@@ -11,6 +13,8 @@ from agrobr.health.registry import (
     SourceHealthConfig,
     get_affected_datasets,
 )
+from agrobr.icmbio import models as icmbio_models
+from agrobr.sfb import models as sfb_models
 
 
 class TestHealthRegistry:
@@ -76,6 +80,31 @@ class TestHealthRegistry:
 
         for fonte, url_part in expected.items():
             assert url_part in HEALTH_REGISTRY[fonte].url
+
+    def test_icmbio_probe_fetches_current_properties(self):
+        config = HEALTH_REGISTRY[Fonte.ICMBIO]
+        query = parse_qs(urlparse(config.url).query)
+
+        assert query["request"] == ["GetFeature"]
+        assert query["maxFeatures"] == ["1"]
+        assert query["propertyName"][0].split(",") == icmbio_models.PROPERTY_NAMES
+        assert config.body_error_markers == ("ExceptionReport", "ServiceException")
+
+    def test_sfb_probe_counts_ifn_conglomerados(self):
+        config = HEALTH_REGISTRY[Fonte.SFB]
+        query = parse_qs(urlparse(config.url).query)
+
+        assert sfb_models.LAYERS["ifn_conglomerados"]["service_path"] in config.url
+        assert query["returnCountOnly"] == ["true"]
+        assert config.body_error_markers == ('"error"',)
+
+    def test_ana_probe_counts_hidrografia(self):
+        config = HEALTH_REGISTRY[Fonte.ANA]
+        query = parse_qs(urlparse(config.url).query)
+
+        assert ana_models.LAYERS["hidrografia"]["service_path"] in config.url
+        assert query["returnCountOnly"] == ["true"]
+        assert config.body_error_markers == ('"error"',)
 
     def test_file_download_sources_use_head(self):
         sources = [

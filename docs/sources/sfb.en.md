@@ -118,6 +118,9 @@ asyncio.run(main())
 
 ## Limitations
 
+- As of September 2, 2026, `ifn_conglomerados()` and `ifn_conglomerados_geo()` are
+  unavailable because the IFN ArcGIS service reports `MapServer not started`. Until the
+  service is restored, these calls raise `SourceUnavailableError`.
 - Data reflects the current state of the SFB ArcGIS Server
 - Forest concessions have few records (~8 polygons)
 - 2s throttle after 5 pages to avoid overloading the server

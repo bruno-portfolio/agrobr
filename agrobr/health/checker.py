@@ -120,6 +120,22 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
                 category="source_down",
             )
 
+        if config.body_error_markers:
+            body = response.text[:4000]
+            for marker in config.body_error_markers:
+                if marker in body:
+                    excerpt = " ".join(body.split())[:500]
+                    details["body_error_marker"] = marker
+                    return CheckResult(
+                        source=config.source,
+                        status=_source_down_status(config),
+                        latency_ms=latency,
+                        message=f"Response contains {marker!r}: {excerpt}",
+                        details=details,
+                        timestamp=utcnow(),
+                        category="source_down",
+                    )
+
         if latency > 5000:
             return CheckResult(
                 source=config.source,

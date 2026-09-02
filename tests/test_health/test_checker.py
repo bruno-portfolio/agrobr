@@ -96,6 +96,54 @@ class TestCheckHttp:
         assert "503" in result.message
 
     @pytest.mark.asyncio
+    async def test_body_error_marker_returns_source_down(self):
+        config = SourceHealthConfig(
+            source=Fonte.SFB,
+            url="https://example.com",
+            body_error_markers=('"error"',),
+        )
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = '{"error":{"code":500,"message":"Service MapServer not started"}}'
+
+        mock_client = AsyncMock()
+        mock_client.get.return_value = mock_response
+
+        with patch("httpx.AsyncClient") as mock_cls:
+            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
+
+            result = await _check_http(config)
+
+        assert result.status == CheckStatus.FAILED
+        assert result.category == "source_down"
+        assert '"error"' in result.message
+        assert "not started" in result.message
+
+    @pytest.mark.asyncio
+    async def test_body_error_marker_absent_returns_ok(self):
+        config = SourceHealthConfig(
+            source=Fonte.SFB,
+            url="https://example.com",
+            body_error_markers=('"error"',),
+        )
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = '{"count":42}'
+
+        mock_client = AsyncMock()
+        mock_client.get.return_value = mock_response
+
+        with patch("httpx.AsyncClient") as mock_cls:
+            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
+
+            result = await _check_http(config)
+
+        assert result.status == CheckStatus.OK
+        assert result.category is None
+
+    @pytest.mark.asyncio
     async def test_best_effort_http_error_returns_warning(self):
         config = SourceHealthConfig(
             source=Fonte.ANTAQ,

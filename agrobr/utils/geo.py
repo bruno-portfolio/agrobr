@@ -28,6 +28,17 @@ class LayerConfig(TypedDict):
     required_cols: set[str]
 
 
+def _arcgis_error_message(data: object) -> str | None:
+    if not isinstance(data, dict) or "error" not in data:
+        return None
+    error = data["error"]
+    if not isinstance(error, dict):
+        return f"ArcGIS error unknown: {error}"
+    code = error.get("code", "unknown")
+    message = error.get("message", "unknown error")
+    return f"ArcGIS error {code}: {message}"
+
+
 def check_geopandas() -> Any:
     try:
         import geopandas
@@ -135,6 +146,18 @@ async def fetch_wfs(
                 source=source,
                 url=url,
                 last_error=f"WFS server exception: {msg}",
+            )
+        if head.lstrip().startswith(b'{"error"'):
+            try:
+                data = json.loads(content)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                message = content.decode("utf-8", errors="replace")[:300].strip()
+            else:
+                message = _arcgis_error_message(data) or str(data)[:300]
+            raise SourceUnavailableError(
+                source=source,
+                url=url,
+                last_error=message,
             )
         if len(content) < MIN_WFS_SIZE:
             raise SourceUnavailableError(
@@ -274,7 +297,23 @@ async def fetch_arcgis_count(
     ) as http:
         response = await retry_on_status(lambda: http.get(url), source=source)
         response.raise_for_status()
-        data = response.json()
+        try:
+            data = response.json()
+        except ValueError as error:
+            raise SourceUnavailableError(
+                source=source,
+                url=url,
+                last_error=f"ArcGIS returned invalid JSON: {error}",
+            ) from error
+    error_message = _arcgis_error_message(data)
+    if error_message is not None:
+        raise SourceUnavailableError(source=source, url=url, last_error=error_message)
+    if not isinstance(data, dict):
+        raise SourceUnavailableError(
+            source=source,
+            url=url,
+            last_error="ArcGIS returned JSON that is not an object",
+        )
     count: int = data.get("count", 0)
     logger.info(f"{source}_arcgis_count", count=count, url=url[:120])
     return count

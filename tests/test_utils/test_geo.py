@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
+import httpx
 import pytest
 
-from agrobr.exceptions import ParseError
-from agrobr.utils.geo import parse_wfs_hits
+from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.utils.geo import fetch_arcgis_count, fetch_wfs, parse_wfs_hits
 
 
 class TestParseWfsHits:
@@ -299,6 +300,92 @@ class TestFetchWfsHtmlGuard:
                     timeout=httpx.Timeout(10),
                     client=client,
                 )
+
+    @pytest.mark.asyncio
+    async def test_arcgis_error_json_raises_with_message(self):
+        body = b'{"error":{"code":500,"message":"MapServer not started","details":[]}}'
+        resp = self._mock_resp(200, body)
+
+        with patch.object(httpx.AsyncClient, "get", return_value=resp):
+            client = httpx.AsyncClient(timeout=httpx.Timeout(10))
+            with pytest.raises(SourceUnavailableError, match="not started"):
+                await fetch_wfs(
+                    "http://example.com/FeatureServer/0/query",
+                    source="test",
+                    timeout=httpx.Timeout(10),
+                    client=client,
+                )
+
+
+class TestFetchArcgisCount:
+    @pytest.mark.asyncio
+    async def test_count_normal(self):
+        request = httpx.Request("GET", "http://example.com/FeatureServer/0/query")
+        response = httpx.Response(200, json={"count": 42}, request=request)
+
+        with patch.object(
+            httpx.AsyncClient,
+            "get",
+            new_callable=AsyncMock,
+            return_value=response,
+        ):
+            count = await fetch_arcgis_count(
+                "http://example.com/FeatureServer/0",
+                source="test",
+                timeout=httpx.Timeout(10),
+            )
+
+        assert count == 42
+
+    @pytest.mark.asyncio
+    async def test_error_payload_raises_source_unavailable(self):
+        request = httpx.Request("GET", "http://example.com/FeatureServer/0/query")
+        response = httpx.Response(
+            200,
+            json={
+                "error": {
+                    "code": 500,
+                    "message": "Service MapServer not started",
+                    "details": [],
+                }
+            },
+            request=request,
+        )
+
+        with (
+            patch.object(
+                httpx.AsyncClient,
+                "get",
+                new_callable=AsyncMock,
+                return_value=response,
+            ),
+            pytest.raises(SourceUnavailableError, match="not started"),
+        ):
+            await fetch_arcgis_count(
+                "http://example.com/FeatureServer/0",
+                source="test",
+                timeout=httpx.Timeout(10),
+            )
+
+    @pytest.mark.asyncio
+    async def test_non_json_payload_raises_source_unavailable(self):
+        request = httpx.Request("GET", "http://example.com/FeatureServer/0/query")
+        response = httpx.Response(200, text="not json", request=request)
+
+        with (
+            patch.object(
+                httpx.AsyncClient,
+                "get",
+                new_callable=AsyncMock,
+                return_value=response,
+            ),
+            pytest.raises(SourceUnavailableError, match="invalid JSON"),
+        ):
+            await fetch_arcgis_count(
+                "http://example.com/FeatureServer/0",
+                source="test",
+                timeout=httpx.Timeout(10),
+            )
 
 
 class TestCheckGeopandas:

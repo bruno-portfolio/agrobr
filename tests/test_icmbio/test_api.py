@@ -51,7 +51,7 @@ class TestUcs:
         assert meta.source == "icmbio"
         assert meta.source_method == "httpx+wfs+csv"
         assert meta.records_count == len(df)
-        assert meta.parser_version == 1
+        assert meta.parser_version == 2
         assert meta.fetch_timestamp is not None
         assert "icmbio_wfs" in meta.attempted_sources
 

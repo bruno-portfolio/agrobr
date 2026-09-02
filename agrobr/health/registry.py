@@ -7,7 +7,11 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, Literal
 
+from agrobr.ana import models as ana_models
 from agrobr.constants import URLS, Fonte
+from agrobr.icmbio import models as icmbio_models
+from agrobr.sfb import models as sfb_models
+from agrobr.utils import geo
 
 
 @dataclass(frozen=True)
@@ -24,6 +28,7 @@ class SourceHealthConfig:
     requires_api_key: bool = False
     api_key_env_var: str | None = None
     soft_block_codes: tuple[int, ...] = ()
+    body_error_markers: tuple[str, ...] = ()
 
 
 def _ckan_package_url(api_url: str, slug: str) -> str:
@@ -32,10 +37,6 @@ def _ckan_package_url(api_url: str, slug: str) -> str:
 
 def _wfs_capabilities_url(url: str) -> str:
     return f"{url}?service=WFS&request=GetCapabilities"
-
-
-def _arcgis_directory_url(url: str) -> str:
-    return f"{url}?f=pjson"
 
 
 def _legacy_tls_context() -> ssl.SSLContext:
@@ -55,7 +56,12 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             "verify": False,
         },
         Fonte.ANA: {
-            "url": _arcgis_directory_url(URLS[Fonte.ANA]["arcgis"]),
+            "url": geo.build_arcgis_query_url(
+                f"{ana_models.ANA_BASE}/{ana_models.LAYERS['hidrografia']['service_path']}",
+                return_count_only=True,
+                f="json",
+            ),
+            "body_error_markers": ('"error"',),
         },
         Fonte.ANP_DIESEL: {
             "url": URLS[Fonte.ANP_DIESEL]["vendas_diesel_csv"],
@@ -106,7 +112,15 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             "url": _wfs_capabilities_url(URLS[Fonte.FUNAI]["geoserver"]),
         },
         Fonte.ICMBIO: {
-            "url": _wfs_capabilities_url(URLS[Fonte.ICMBIO]["geoserver"]),
+            "url": geo.build_wfs_url(
+                icmbio_models.WFS_BASE,
+                icmbio_models.NAMESPACE,
+                icmbio_models.LAYER,
+                icmbio_models.WFS_VERSION,
+                icmbio_models.PROPERTY_NAMES,
+                max_features=1,
+            ),
+            "body_error_markers": ("ExceptionReport", "ServiceException"),
         },
         Fonte.INCRA: {
             "url": _wfs_capabilities_url(URLS[Fonte.INCRA]["geoserver"]),
@@ -133,7 +147,12 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             "api_key_env_var": "AGROBR_COMTRADE_API_KEY",
         },
         Fonte.SFB: {
-            "url": _arcgis_directory_url(URLS[Fonte.SFB]["arcgis"]),
+            "url": geo.build_arcgis_query_url(
+                f"{sfb_models.SFB_BASE}/{sfb_models.LAYERS['ifn_conglomerados']['service_path']}",
+                return_count_only=True,
+                f="json",
+            ),
+            "body_error_markers": ('"error"',),
         },
         Fonte.SICAR: {
             "url": _wfs_capabilities_url(URLS[Fonte.SICAR]["geoserver"]),

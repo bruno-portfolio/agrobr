@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
-from urllib.parse import unquote
+from urllib.parse import parse_qs, unquote, urlparse
 
 import pytest
 
@@ -52,7 +52,20 @@ class TestFetchUcs:
         ):
             _, url = await fetch_ucs(uf="MT")
         decoded = unquote(url)
-        assert "ufabrang LIKE '%MT%'" in decoded
+        assert "uf LIKE '%MT%'" in decoded
+
+    @pytest.mark.asyncio
+    async def test_url_uses_current_property_names(self):
+        with patch(
+            "agrobr.icmbio.client.fetch_wfs", new_callable=AsyncMock, return_value=b"x" * 5000
+        ):
+            _, url = await fetch_ucs()
+
+        property_names = parse_qs(urlparse(url).query)["propertyName"][0].split(",")
+        assert "sigla_cate" in property_names
+        assert "uf" in property_names
+        assert "siglacateg" not in property_names
+        assert "ufabrang" not in property_names
 
     @pytest.mark.asyncio
     async def test_grupo_filter_cql(self):
@@ -70,7 +83,7 @@ class TestFetchUcs:
         ):
             _, url = await fetch_ucs(uf="MT", grupo="PI")
         decoded = unquote(url)
-        assert "ufabrang LIKE '%MT%'" in decoded
+        assert "uf LIKE '%MT%'" in decoded
         assert "grupouc='PI'" in decoded
         assert " AND " in decoded
 

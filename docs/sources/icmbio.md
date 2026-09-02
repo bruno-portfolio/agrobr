@@ -54,7 +54,7 @@ asyncio.run(main())
 | nome | str | Nome da UC |
 | categoria | str | Sigla da categoria (PARNA, ESEC, FLONA, etc) |
 | grupo | str | PI (protecao integral) ou US (uso sustentavel) |
-| uf | str | UF(s) abrangidas (separadas por ;) |
+| uf | str | UF(s) abrangidas (separadas por /) |
 | bioma | str | Bioma IBGE |
 | area_ha | float | Area em hectares |
 | ano_criacao | Int64 | Ano de criacao |
@@ -63,5 +63,5 @@ asyncio.run(main())
 ## Limitacoes
 
 - Apenas UCs federais (344). Estaduais e municipais nao estao neste WFS.
-- Campo `uf` pode conter multiplas UFs (ex: "MT;PA")
+- Campo `uf` pode conter multiplas UFs (ex: "MT/PA")
 - Dados refletem o estado atual do GeoServer INDE/ICMBio

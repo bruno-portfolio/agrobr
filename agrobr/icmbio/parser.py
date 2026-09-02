@@ -18,7 +18,7 @@ from .models import (
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
+PARSER_VERSION = 2
 
 _REQUIRED_COLS_RAW = {"cnuc", "nomeuc", "grupouc", "areahaalb"}
 

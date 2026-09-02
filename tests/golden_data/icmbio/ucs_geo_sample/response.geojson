@@ -10,10 +10,10 @@
       "properties": {
         "cnuc": "UC001",
         "nomeuc": "Parque Nacional da Chapada dos Guimaraes",
-        "siglacateg": "PARNA",
+        "sigla_cate": "PARNA",
         "grupouc": "PI",
         "areahaalb": 32630.0,
-        "ufabrang": "MT",
+        "uf": "MT",
         "biomas": "Cerrado",
         "criacaoano": "1989",
         "criacaoato": "Decreto 97656"
@@ -28,10 +28,10 @@
       "properties": {
         "cnuc": "UC002",
         "nomeuc": "Estacao Ecologica Serra das Araras",
-        "siglacateg": "ESEC",
+        "sigla_cate": "ESEC",
         "grupouc": "PI",
         "areahaalb": 28700.0,
-        "ufabrang": "MT",
+        "uf": "MT",
         "biomas": "Cerrado",
         "criacaoano": "1982",
         "criacaoato": "Decreto 87222"
@@ -46,10 +46,10 @@
       "properties": {
         "cnuc": "UC003",
         "nomeuc": "Reserva Biologica Nascentes da Serra do Cachimbo",
-        "siglacateg": "REBIO",
+        "sigla_cate": "REBIO",
         "grupouc": "PI",
         "areahaalb": 342000.0,
-        "ufabrang": "MT;PA",
+        "uf": "MT/PA",
         "biomas": "Amazonia",
         "criacaoano": "2005",
         "criacaoato": "Decreto s/n"
@@ -64,10 +64,10 @@
       "properties": {
         "cnuc": "UC004",
         "nomeuc": "Floresta Nacional de Carajas",
-        "siglacateg": "FLONA",
+        "sigla_cate": "FLONA",
         "grupouc": "US",
         "areahaalb": 395827.0,
-        "ufabrang": "PA",
+        "uf": "PA",
         "biomas": "Amazonia",
         "criacaoano": "1998",
         "criacaoato": "Decreto 2486"
@@ -82,10 +82,10 @@
       "properties": {
         "cnuc": "UC005",
         "nomeuc": "Area de Protecao Ambiental da Chapada dos Guimaraes",
-        "siglacateg": "APA",
+        "sigla_cate": "APA",
         "grupouc": "US",
         "areahaalb": 25100.0,
-        "ufabrang": "MT",
+        "uf": "MT",
         "biomas": "Cerrado",
         "criacaoano": "1992",
         "criacaoato": "Decreto 537"
@@ -100,10 +100,10 @@
       "properties": {
         "cnuc": "UC006",
         "nomeuc": "Parque Nacional do Pantanal Matogrossense",
-        "siglacateg": "PARNA",
+        "sigla_cate": "PARNA",
         "grupouc": "PI",
         "areahaalb": 135000.0,
-        "ufabrang": "MT",
+        "uf": "MT",
         "biomas": "Pantanal",
         "criacaoano": "1981",
         "criacaoato": "Decreto 86392"
@@ -118,10 +118,10 @@
       "properties": {
         "cnuc": "UC007",
         "nomeuc": "Reserva Extrativista Guariba Roosevelt",
-        "siglacateg": "RESEX",
+        "sigla_cate": "RESEX",
         "grupouc": "US",
         "areahaalb": 138000.0,
-        "ufabrang": "MT",
+        "uf": "MT",
         "biomas": "Amazonia",
         "criacaoano": "1996",
         "criacaoato": "Decreto 1845"
@@ -136,10 +136,10 @@
       "properties": {
         "cnuc": "UC008",
         "nomeuc": "Estacao Ecologica de Ique",
-        "siglacateg": "ESEC",
+        "sigla_cate": "ESEC",
         "grupouc": "PI",
         "areahaalb": 200000.0,
-        "ufabrang": "MT",
+        "uf": "MT",
         "biomas": "Cerrado",
         "criacaoano": "1981",
         "criacaoato": "Decreto 86061"
@@ -154,10 +154,10 @@
       "properties": {
         "cnuc": "UC009",
         "nomeuc": "Parque Nacional de Brasilia",
-        "siglacateg": "PARNA",
+        "sigla_cate": "PARNA",
         "grupouc": "PI",
         "areahaalb": 42389.0,
-        "ufabrang": "DF",
+        "uf": "DF",
         "biomas": "Cerrado",
         "criacaoano": "1961",
         "criacaoato": "Decreto 241"
@@ -172,10 +172,10 @@
       "properties": {
         "cnuc": "UC010",
         "nomeuc": "Area de Relevante Interesse Ecologico Capetinga/Taquara",
-        "siglacateg": "ARIE",
+        "sigla_cate": "ARIE",
         "grupouc": "US",
         "areahaalb": 1050.0,
-        "ufabrang": "DF",
+        "uf": "DF",
         "biomas": "Cerrado",
         "criacaoano": "1986",
         "criacaoato": "Decreto 91303"

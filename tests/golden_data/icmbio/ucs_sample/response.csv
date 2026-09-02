@@ -1,7 +1,7 @@
-cnuc,nomeuc,siglacateg,grupouc,areahaalb,ufabrang,biomas,criacaoano,criacaoato
+cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato
 UC001,Parque Nacional da Chapada dos Guimaraes,PARNA,PI,32630.0,MT,Cerrado,1989,Decreto 97656
 UC002,Estacao Ecologica Serra das Araras,ESEC,PI,28700.0,MT,Cerrado,1982,Decreto 87222
-UC003,Reserva Biologica Nascentes da Serra do Cachimbo,REBIO,PI,342000.0,MT;PA,Amazonia,2005,Decreto s/n
+UC003,Reserva Biologica Nascentes da Serra do Cachimbo,REBIO,PI,342000.0,MT/PA,Amazonia,2005,Decreto s/n
 UC004,Floresta Nacional de Carajas,FLONA,US,395827.0,PA,Amazonia,1998,Decreto 2486
 UC005,Area de Protecao Ambiental da Chapada dos Guimaraes,APA,US,25100.0,MT,Cerrado,1992,Decreto 537
 UC006,Parque Nacional do Pantanal Matogrossense,PARNA,PI,135000.0,MT,Pantanal,1981,Decreto 86392

@@ -29,7 +29,7 @@ def _build_cql_filters(
 ) -> str | None:
     filters: list[str] = []
     if uf is not None:
-        filters.append(f"ufabrang LIKE '%{uf}%'")
+        filters.append(f"uf LIKE '%{uf}%'")
     if grupo is not None:
         grupo_upper = grupo.strip().upper()
         filters.append(f"grupouc='{grupo_upper}'")
