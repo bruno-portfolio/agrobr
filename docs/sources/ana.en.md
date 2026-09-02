@@ -6,7 +6,7 @@
 |------|---------|
 | Provider | ANA (Agencia Nacional de Aguas e Saneamento Basico) |
 | Data | Hydrography, irrigation pivots, irrigation demand, water availability |
-| Access | ArcGIS REST API |
+| Access | ArcGIS REST MapServer API |
 | Format | JSON (tabular) / GeoJSON (geo) |
 | Authentication | None |
 | License | Public data |
@@ -25,6 +25,7 @@
 | Parameter | Value |
 |-----------|-------|
 | Base URL | `https://portal1.snirh.gov.br/server/rest/services/dados_abertos` |
+| Service | `MapServer/0` |
 | Pagination | Automatic (1K features/page) |
 | Throttle | 2s delay after 5 pages |
 

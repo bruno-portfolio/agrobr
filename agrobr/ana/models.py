@@ -7,7 +7,7 @@ ANA_BASE: str = URLS[Fonte.ANA]["arcgis"]
 
 LAYERS: dict[str, LayerConfig] = {
     "hidrografia": {
-        "service_path": "Hidrografia/FeatureServer/0",
+        "service_path": "Hidrografia/MapServer/0",
         "max_record_count": 1000,
         "fields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
         "rename_map": {
@@ -26,7 +26,7 @@ LAYERS: dict[str, LayerConfig] = {
         "required_cols": {"COCURSODAG"},
     },
     "pivos_irrigacao": {
-        "service_path": "Pivos_Mapeados/FeatureServer/0",
+        "service_path": "Pivos_Mapeados/MapServer/0",
         "max_record_count": 1000,
         "fields": "OBJECTID,CD_GEOCMU,NM_MUNICIP,NM_ESTADO,REGIAO_HID,HECTARES",
         "rename_map": {
@@ -47,7 +47,7 @@ LAYERS: dict[str, LayerConfig] = {
         "required_cols": {"NM_ESTADO"},
     },
     "demanda_irrigacao": {
-        "service_path": "Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/FeatureServer/0",
+        "service_path": "Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0",
         "max_record_count": 1000,
         "fields": "OBJECTID,ID,COBACIA,DSVERSAO,VZMAXMEN,VZMESSEC,VZMESIRR,VZMEDANO",
         "rename_map": {
@@ -71,7 +71,7 @@ LAYERS: dict[str, LayerConfig] = {
         "required_cols": {"COBACIA"},
     },
     "disponibilidade_hidrica": {
-        "service_path": "Disponibilidade_Hidrica_Superficial/FeatureServer/0",
+        "service_path": "Disponibilidade_Hidrica_Superficial/MapServer/0",
         "max_record_count": 1000,
         "fields": "OBJECTID,ID,NUAREAMONT,DISPQ95,NMRIO,DEDOMINIAL,DSVERSAO",
         "rename_map": {

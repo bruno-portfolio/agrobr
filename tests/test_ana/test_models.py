@@ -27,6 +27,9 @@ class TestLayers:
             for rk in required_keys:
                 assert rk in config, f"Layer {key!r} missing config key {rk!r}"
 
+    def test_each_layer_uses_mapserver(self):
+        assert all(config["service_path"].endswith("MapServer/0") for config in LAYERS.values())
+
 
 class TestAnaBase:
     def test_base_url_https(self):

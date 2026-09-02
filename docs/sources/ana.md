@@ -6,7 +6,7 @@
 |------|---------|
 | Provedor | ANA (Agencia Nacional de Aguas e Saneamento Basico) |
 | Dados | Hidrografia, pivos de irrigacao, demanda de irrigacao, disponibilidade hidrica |
-| Acesso | ArcGIS REST API |
+| Acesso | ArcGIS REST MapServer API |
 | Formato | JSON (tabular) / GeoJSON (geo) |
 | Autenticacao | Nenhuma |
 | Licenca | Dados publicos |
@@ -25,6 +25,7 @@
 | Parametro | Valor |
 |-----------|-------|
 | Base URL | `https://portal1.snirh.gov.br/server/rest/services/dados_abertos` |
+| Servico | `MapServer/0` |
 | Paginacao | Automatica (1K features/pagina) |
 | Throttle | 2s delay apos 5 paginas |
 
