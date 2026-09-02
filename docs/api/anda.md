@@ -37,7 +37,7 @@ async def entregas(
 |-----------|------|-----------|
 | `ano` | `int` | Ano de referencia. Ano indisponivel no site levanta `SourceUnavailableError` listando os anos disponiveis |
 | `uf` | `str \| None` | Filtrar por UF. None retorna todos |
-| `produto` | `str` | Tipo de fertilizante. Default: `"total"` |
+| `produto` | `str` | Mantido por compatibilidade. O único valor disponível é `"total"`; outros valores levantam `ValueError` antes do download |
 | `agregacao` | `str` | `"detalhado"` (por UF/mes) ou `"mensal"` (soma por mes) |
 | `as_polars` | `bool` | Se True, retorna `polars.DataFrame` |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
@@ -46,6 +46,10 @@ async def entregas(
 
 DataFrame com colunas: `ano`, `mes`, `uf`, `produto_fertilizante`, `volume_ton`
 
+`produto_fertilizante` é sempre `"total"`: os boletins de entregas da ANDA
+não publicam esse indicador separado por formulação. Versões anteriores
+apenas copiavam o parâmetro `produto` para essa coluna, sem filtrar os dados.
+
 **Exemplo:**
 
 ```python
@@ -53,6 +57,9 @@ from agrobr import anda
 
 # Entregas 2024
 df = await anda.entregas(2024)
+
+# Equivalente; o parâmetro é mantido por compatibilidade
+df = await anda.entregas(2024, produto="total")
 
 # Filtrar por UF
 df = await anda.entregas(2024, uf="MT")

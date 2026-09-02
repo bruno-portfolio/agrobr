@@ -60,6 +60,33 @@ def _mock_parsed_df():
 
 class TestEntregas:
     @pytest.mark.asyncio
+    async def test_rejects_specific_product_before_download(self):
+        with (
+            patch.object(api.client, "fetch_entregas_pdf", new_callable=AsyncMock) as mock_fetch,
+            pytest.raises(ValueError, match="apenas entregas totais"),
+        ):
+            await api.entregas(ano=2024, produto="ureia")
+
+        mock_fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_accepts_normalized_total(self):
+        mock_df = _mock_parsed_df()
+        with (
+            patch.object(
+                api.client,
+                "fetch_entregas_pdf",
+                new_callable=AsyncMock,
+                return_value=(b"fake_pdf", 2024),
+            ),
+            patch.object(api.parser, "parse_entregas_pdf", return_value=mock_df) as mock_parse,
+        ):
+            df = await api.entregas(ano=2024, produto=" TOTAL ")
+
+        assert set(df["produto_fertilizante"]) == {"total"}
+        mock_parse.assert_called_once_with(b"fake_pdf", ano=2024)
+
+    @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         mock_df = _mock_parsed_df()
         with (
@@ -148,3 +175,15 @@ class TestEntregas:
 
         assert len(df) == 3
         assert all(df["uf"] == "MT")
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_entregas_live_returns_only_total():
+    df = await api.entregas(ano=2024)
+
+    assert len(df) == 12
+    assert set(df["mes"]) == set(range(1, 13))
+    assert set(df["uf"]) == {"BR"}
+    assert set(df["produto_fertilizante"]) == {"total"}
+    assert df["volume_ton"].sum() == pytest.approx(45_615_968.0)

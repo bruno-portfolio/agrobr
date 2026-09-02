@@ -67,6 +67,27 @@ class TestQueimadasFetch:
         assert call_kwargs["satelite"] == "NOAA-20"
 
     @pytest.mark.asyncio
+    async def test_fetch_normalizes_bioma(self):
+        mock_fn = make_source(_make_df(bioma="Amazônia"))
+        dataset = QueimadasDataset()
+        dataset.info.sources[0].fetch_fn = mock_fn
+
+        await dataset.fetch(ano=2025, mes=1, bioma="Amazonia")
+
+        assert mock_fn.call_args.kwargs["bioma"] == "Amazônia"
+
+    @pytest.mark.asyncio
+    async def test_fetch_invalid_bioma_raises_before_source(self):
+        mock_fn = make_source(_make_df())
+        dataset = QueimadasDataset()
+        dataset.info.sources[0].fetch_fn = mock_fn
+
+        with pytest.raises(ValueError, match="Bioma inválido.*Atlantida"):
+            await dataset.fetch(ano=2025, mes=1, bioma="Atlantida")
+
+        mock_fn.assert_not_awaited()
+
+    @pytest.mark.asyncio
     async def test_fetch_return_meta(self):
         dataset = QueimadasDataset()
         dataset.info.sources[0].fetch_fn = make_source(_make_df())

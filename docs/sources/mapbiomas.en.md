@@ -49,7 +49,7 @@ import agrobr
 df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020)
 
 # Pasture (class 15) in Goias
-df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", estado="GO", classe_id=15)
+df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", estado="Goiás", classe_id=15)
 
 # Forest→pasture transition in Cerrado
 df = await agrobr.mapbiomas.transicao(

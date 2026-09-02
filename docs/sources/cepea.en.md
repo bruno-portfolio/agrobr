@@ -138,5 +138,5 @@ produtos = await cepea.produtos()
 
 # List markets for a product
 pracas = await cepea.pracas('soja')
-# ['paranagua', 'parana', 'rio_grande_do_sul']
+# ['paranagua'] - corresponds to "Paranaguá/PR" in the praca column
 ```

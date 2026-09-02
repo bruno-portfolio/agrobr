@@ -27,7 +27,7 @@ async def indicador(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Produto CEPEA (21 disponíveis). Veja `produtos()` para lista completa |
-| `praca` | `str \| None` | Praça de cotação. `None` retorna todas |
+| `praca` | `str \| None` | Praça de cotação. Aceita o slug de `pracas()` ou o rótulo exibido pela fonte; `None` retorna todas |
 | `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 365 dias atrás |
 | `fim` | `str \| date \| None` | Data final. Default: hoje |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
@@ -63,6 +63,9 @@ df = await cepea.indicador(
     fim='2024-06-30'
 )
 
+# Filtrar pela praça retornada por pracas(); o DataFrame preserva "Paranaguá/PR"
+df = await cepea.indicador('soja', praca='paranagua')
+
 # Forçar atualização
 df = await cepea.indicador('soja', force_refresh=True)
 
@@ -89,7 +92,7 @@ async def ultimo(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Produto desejado |
-| `praca` | `str \| None` | Praça de cotação. `None` não filtra por praça |
+| `praca` | `str \| None` | Praça de cotação. Aceita o slug de `pracas()` ou o rótulo exibido pela fonte; `None` não filtra |
 | `offline` | `bool` | Usar apenas cache local |
 
 **Retorno:**
@@ -156,7 +159,12 @@ async def pracas(produto: str) -> list[str]
 
 **Retorno:**
 
-Lista de praças disponíveis — vazia para produto válido sem praças mapeadas. Produto desconhecido levanta `ValueError`.
+Lista de praças mapeadas pelo parser, como slugs normalizados aceitos por `indicador()` e `ultimo()`. O DataFrame e o modelo `Indicador` preservam o rótulo exibido pela fonte. A lista é vazia para produto válido sem praça mapeada; produto desconhecido levanta `ValueError`.
+
+```python
+pracas_soja = await cepea.pracas('soja')
+# ['paranagua'] — corresponde ao rótulo "Paranaguá/PR" nos dados
+```
 
 ---
 

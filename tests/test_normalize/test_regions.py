@@ -12,6 +12,7 @@ from agrobr.normalize.regions import (
     normalizar_praca,
     normalizar_uf,
     remover_acentos,
+    slugificar_praca,
     uf_para_ibge,
     uf_para_nome,
     uf_para_regiao,
@@ -161,6 +162,21 @@ class TestNormalizarPraca:
     def test_praca_generica(self):
         result = normalizar_praca("  rio verde  ", produto="milho")
         assert result == "Rio Verde"
+
+
+class TestSlugificarPraca:
+    @pytest.mark.parametrize(
+        ("praca", "esperado"),
+        [
+            ("Paranaguá/PR", "paranagua"),
+            ("paranagua", "paranagua"),
+            (" São Paulo / SP ", "sao_paulo"),
+            ("Espírito Santo", "espirito_santo"),
+            ("rio_grande_do_sul", "rio_grande_do_sul"),
+        ],
+    )
+    def test_normaliza_rotulo_e_slug(self, praca: str, esperado: str):
+        assert slugificar_praca(praca) == esperado
 
 
 class TestCompletude:

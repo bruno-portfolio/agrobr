@@ -30,8 +30,7 @@ async def test_produtos_returns_list():
 @pytest.mark.integration
 async def test_pracas_returns_list():
     result = await cepea.pracas("soja")
-    assert isinstance(result, list)
-    assert len(result) > 0
+    assert result == ["paranagua"]
 
 
 async def test_pracas_unknown_product_raises():
@@ -39,8 +38,13 @@ async def test_pracas_unknown_product_raises():
         await cepea.pracas("unknown_product")
 
 
-async def test_pracas_valid_product_without_mapped_pracas():
+async def test_pracas_uses_parser_mapping():
     result = await cepea.pracas("algodao")
+    assert result == ["sao_paulo"]
+
+
+async def test_pracas_valid_product_without_parser_mapping():
+    result = await cepea.pracas("soja_parana")
     assert result == []
 
 
@@ -145,14 +149,14 @@ class TestIndicador:
         assert isinstance(df, pd.DataFrame)
 
     async def test_praca_filter(self):
-        ind_sp = _make_indicador(praca="sao_paulo")
-        ind_pr = _make_indicador(praca="parana")
-        dicts = [_indicador_to_dict(ind_sp), _indicador_to_dict(ind_pr)]
+        ind_paranagua = _make_indicador(praca="Paranaguá/PR")
+        ind_parana = _make_indicador(praca="Paraná")
+        dicts = [_indicador_to_dict(ind_paranagua), _indicador_to_dict(ind_parana)]
         self.mock_store.indicadores_query.return_value = dicts
 
-        df = await api.indicador("soja", praca="sao_paulo", offline=True)
+        df = await api.indicador("soja", praca="paranagua", offline=True)
 
-        assert all(df["praca"].str.lower() == "sao_paulo")
+        assert df["praca"].tolist() == ["Paranaguá/PR"]
 
     async def test_force_refresh_skips_cache_and_fetches(self):
         html = "<html><table class='indicador'>CEPEA</table></html>"
@@ -411,16 +415,16 @@ class TestUltimo:
 
     async def test_praca_filter(self):
         today = date.today()
-        ind_sp = _make_indicador(data=today - timedelta(days=1), praca="sao_paulo")
-        ind_pr = _make_indicador(data=today - timedelta(days=1), praca="parana")
+        ind_paranagua = _make_indicador(data=today - timedelta(days=1), praca="Paranaguá/PR")
+        ind_parana = _make_indicador(data=today - timedelta(days=1), praca="Paraná")
         self.mock_store.indicadores_query.return_value = [
-            _indicador_to_dict(ind_sp),
-            _indicador_to_dict(ind_pr),
+            _indicador_to_dict(ind_paranagua),
+            _indicador_to_dict(ind_parana),
         ]
 
-        result = await api.ultimo("soja", praca="sao_paulo", offline=True)
+        result = await api.ultimo("soja", praca="paranagua", offline=True)
 
-        assert result.praca == "sao_paulo"
+        assert result.praca == "Paranaguá/PR"
 
     async def test_praca_filter_no_match_raises(self):
         today = date.today()

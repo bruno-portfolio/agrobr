@@ -27,7 +27,7 @@ async def indicador(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `produto` | `str` | CEPEA product (21 available). See `produtos()` for the full list |
-| `praca` | `str \| None` | Quotation location. `None` returns all |
+| `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` returns all |
 | `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD). Default: 365 days ago |
 | `fim` | `str \| date \| None` | End date. Default: today |
 | `as_polars` | `bool` | Return as polars.DataFrame |
@@ -63,6 +63,9 @@ df = await cepea.indicador(
     fim='2024-06-30'
 )
 
+# Filter with a slug from pracas(); the DataFrame preserves "Paranaguá/PR"
+df = await cepea.indicador('soja', praca='paranagua')
+
 # Force refresh
 df = await cepea.indicador('soja', force_refresh=True)
 
@@ -89,7 +92,7 @@ async def ultimo(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `produto` | `str` | Desired product |
-| `praca` | `str \| None` | Quotation location. `None` does not filter by location |
+| `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` does not filter |
 | `offline` | `bool` | Use local cache only |
 
 **Returns:**
@@ -156,7 +159,12 @@ async def pracas(produto: str) -> list[str]
 
 **Returns:**
 
-List of available locations — empty for a valid product with no mapped locations. An unknown product raises `ValueError`.
+List of parser-mapped locations as normalized slugs accepted by `indicador()` and `ultimo()`. The DataFrame and `Indicador` model preserve the label displayed by the source. The list is empty for a valid product without a mapped location; an unknown product raises `ValueError`.
+
+```python
+soy_locations = await cepea.pracas('soja')
+# ['paranagua'] — corresponds to the "Paranaguá/PR" label in the data
+```
 
 ---
 

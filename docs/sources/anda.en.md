@@ -42,12 +42,16 @@ df = await anda.entregas(ano=2024, agregacao="mensal")
 | `ano` | int | Year |
 | `mes` | int | Month (1-12) |
 | `uf` | str | State |
-| `produto_fertilizante` | str | Fertilizer type |
+| `produto_fertilizante` | str | Always `total`; the source does not publish deliveries broken down by formulation |
 | `volume_ton` | float | Delivered volume (tonnes) |
 
 ## Risk Note
 
 ANDA publishes data in PDF. The layout may change without notice between years.
+The available delivery bulletins contain only aggregated fertilizer totals.
+Therefore, `produto="total"` is the only accepted value; formulations such as
+`ureia`, `map`, or `kcl` raise `ValueError` before download.
+
 The agrobr parser automatically detects the orientation of the tables
 (states in rows vs columns), and also supports the "Principais
 Indicadores" layout (aggregated national data with months/values in cells

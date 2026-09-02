@@ -1,7 +1,7 @@
 {
   "name": "anda.fertilizante",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "2.0",
+  "effective_from": "1.2.0",
   "breaking_policy": "major",
   "primary_key": [
     "ano",
@@ -96,6 +96,7 @@
     "Column names never change (additions only)",
     "'ano' is always >= 2000",
     "'mes' is between 1 and 12",
-    "Numeric values are always >= 0"
+    "Numeric values are always >= 0",
+    "'produto_fertilizante' is always 'total'"
   ]
 }

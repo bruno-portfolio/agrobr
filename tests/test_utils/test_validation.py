@@ -2,7 +2,31 @@ from __future__ import annotations
 
 import pytest
 
-from agrobr.utils.validation import validate_uf, validate_year_uf
+from agrobr.utils.validation import validate_bioma, validate_uf, validate_year_uf
+
+
+class TestValidateBioma:
+    @pytest.mark.parametrize(
+        ("entrada", "esperado"),
+        [
+            ("Amazonia", "Amazônia"),
+            ("AMAZÔNIA", "Amazônia"),
+            (" mata atlantica ", "Mata Atlântica"),
+            ("Cerrado", "Cerrado"),
+            ("Caatinga", "Caatinga"),
+            ("Pampa", "Pampa"),
+            ("Pantanal", "Pantanal"),
+        ],
+    )
+    def test_valid_bioma(self, entrada, esperado):
+        assert validate_bioma(entrada) == esperado
+
+    def test_none_returns_none(self):
+        assert validate_bioma(None) is None
+
+    def test_invalid_bioma(self):
+        with pytest.raises(ValueError, match="Bioma inválido.*Atlantida"):
+            validate_bioma("Atlantida")
 
 
 class TestValidateUf:

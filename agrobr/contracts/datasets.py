@@ -249,6 +249,19 @@ FERTILIZANTE_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+FERTILIZANTE_V2 = Contract(
+    name="anda.fertilizante",
+    version="2.0",
+    effective_from="1.2.0",
+    primary_key=FERTILIZANTE_V1.primary_key.copy(),
+    columns=FERTILIZANTE_V1.columns.copy(),
+    guarantees=[
+        *FERTILIZANTE_V1.guarantees,
+        "'produto_fertilizante' is always 'total'",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 FOCOS_QUEIMADAS_V1 = Contract(
     name="queimadas.focos",
     version="1.0",
@@ -1314,7 +1327,7 @@ register_contract("credito_rural", CREDITO_RURAL_V1_1)
 register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
 register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
 register_contract("exportacao", EXPORTACAO_V1)
-register_contract("fertilizante", FERTILIZANTE_V1)
+register_contract("fertilizante", FERTILIZANTE_V2)
 register_contract("focos_queimadas", FOCOS_QUEIMADAS_V1)
 register_contract("queimadas", FOCOS_QUEIMADAS_V1)
 register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
@@ -2529,6 +2542,7 @@ __all__ = [
     "DESMATAMENTO_PRODES_V1",
     "EXPORTACAO_V1",
     "FERTILIZANTE_V1",
+    "FERTILIZANTE_V2",
     "FOCOS_QUEIMADAS_V1",
     "IMPORTACAO_V1",
     "MAPA_PSR_APOLICES_V1",

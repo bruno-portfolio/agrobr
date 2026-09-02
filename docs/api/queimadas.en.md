@@ -30,7 +30,7 @@ async def focos(
 | `mes` | `int` | Month (1-12) |
 | `dia` | `int \| None` | Specific day (1-31). If None, fetches the whole month |
 | `uf` | `str \| None` | Filter by state (e.g. "MT", "SP"). Case insensitive |
-| `bioma` | `str \| None` | Filter by biome (e.g. "Amazonia", "Cerrado") |
+| `bioma` | `str \| None` | Filter by biome (e.g. "Amazonia", "Cerrado"). Accents are optional; unknown values raise `ValueError` |
 | `satelite` | `str \| None` | Filter by satellite (e.g. "AQUA_M-T", "NOAA-20") |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
@@ -46,7 +46,7 @@ DataFrame with columns:
 - `municipio`: Municipality name (str)
 - `municipio_id`: IBGE municipality code (Int64)
 - `estado`: State name (str)
-- `bioma`: Biome (str) — Amazonia, Cerrado, Mata Atlantica, Caatinga, Pampa, Pantanal
+- `bioma`: Canonical biome (str) — Amazônia, Cerrado, Mata Atlântica, Caatinga, Pampa, Pantanal
 - `numero_dias_sem_chuva`: Days without precipitation (float)
 - `precipitacao`: Precipitation in mm (float)
 - `risco_fogo`: Fire risk index 0-1 (float)

@@ -28,6 +28,10 @@ Satellite-detected fire hotspots — INPE Queimadas.
 - `ano: int` — hotspot year
 - `mes: int` — hotspot month
 
+## Biome filter
+
+`bioma` accepts Amazônia, Cerrado, Mata Atlântica, Caatinga, Pampa, and Pantanal, with optional accents and case-insensitively. Unknown values raise `ValueError` before the source is queried.
+
 ## Example
 
 ```python

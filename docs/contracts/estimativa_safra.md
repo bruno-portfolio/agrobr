@@ -10,6 +10,8 @@ Estimativas de safra corrente por UF.
 | 2 | IBGE LSPA | Levantamento Sistemático da Produção Agrícola |
 
 > A CONAB cobre a safra corrente e as recentes. Para safras que a CONAB não disponibiliza mais, o fallback IBGE LSPA fornece o agregado nacional (`uf` nulo, exceto se você filtrar por UF), com `levantamento` e `data_publicacao` nulos.
+>
+> O LSPA usa o ano civil de referência. Na harmonização com a CONAB, esse é o segundo ano da safra: LSPA 2025 corresponde à safra `2024/25`.
 
 ## Produtos
 

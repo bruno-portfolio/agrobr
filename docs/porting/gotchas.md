@@ -506,6 +506,7 @@ trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
 - **Acesso indireto:** scraping de HTML para extrair links de PDF, depois parsing do PDF
 - URL: `https://anda.org.br/recursos/`
 - Busca por keywords "entrega" ou "fertilizante" nos links
+- Os boletins de entregas expõem apenas o total agregado; não há recorte por formulação
 - **Dependência opcional:** requer `pdfplumber` (`pip install agrobr[pdf]`)
 - Timeout: 60s
 - Rate limit: 3s

@@ -3,10 +3,10 @@
   "format": "table",
   "parser_module": "agrobr.anda.parser",
   "parser_function": "parse_entregas_table",
-  "parser_kwargs": {"ano": 2024, "produto": "total"},
+  "parser_kwargs": {"ano": 2024},
   "url": "https://anda.org.br/recursos/",
   "captured_at": "2026-02-21T08:28:00+00:00",
-  "parser_version": 1,
+  "parser_version": 2,
   "notes": "Real data: table extracted via pdfplumber from Principais_Indicadores_2024.pdf, 12 months x BR total fertilizer deliveries",
   "needs_real_data": false
 }

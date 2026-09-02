@@ -49,7 +49,7 @@ import agrobr
 df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020)
 
 # Pastagem (classe 15) em Goias
-df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", estado="GO", classe_id=15)
+df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", estado="Goiás", classe_id=15)
 
 # Transicao floresta→pastagem no Cerrado
 df = await agrobr.mapbiomas.transicao(

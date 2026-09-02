@@ -42,12 +42,17 @@ df = await anda.entregas(ano=2024, agregacao="mensal")
 | `ano` | int | Ano |
 | `mes` | int | Mês (1-12) |
 | `uf` | str | UF |
-| `produto_fertilizante` | str | Tipo de fertilizante |
+| `produto_fertilizante` | str | Sempre `total`; a fonte não publica entregas separadas por formulação |
 | `volume_ton` | float | Volume entregue (toneladas) |
 
 ## Nota de Risco
 
 ANDA publica dados em PDF. O layout pode mudar sem aviso entre anos.
+Os boletins de entregas disponíveis trazem apenas o total agregado de
+fertilizantes. Por isso, `produto="total"` é o único valor aceito;
+formulações como `ureia`, `map` ou `kcl` levantam `ValueError` antes do
+download.
+
 O parser do agrobr detecta automaticamente a orientacao das tabelas
 (UFs nas linhas vs colunas), e tambem suporta o layout "Principais
 Indicadores" (dados nacionais agregados com meses/valores em celulas

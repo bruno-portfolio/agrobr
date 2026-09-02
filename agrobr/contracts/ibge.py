@@ -84,7 +84,7 @@ IBGE_PAM_V1 = Contract(
         "Column names never change (additions only)",
         "'ano' is always a valid year (>= 1974)",
         "Numeric values are always >= 0",
-        "'fonte' is always 'ibge_pam'",
+        "'fonte' identifies 'ibge_pam' or the 'conab' fallback",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )

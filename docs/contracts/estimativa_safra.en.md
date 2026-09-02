@@ -10,6 +10,8 @@ Current crop-year estimates by state.
 | 2 | IBGE LSPA | Systematic Survey of Agricultural Production |
 
 > CONAB covers the current and recent crop years. For crop years CONAB no longer publishes, the IBGE LSPA fallback provides the national aggregate (`uf` null, unless you filter by state), with `levantamento` and `data_publicacao` null.
+>
+> LSPA uses the calendar reference year. When harmonized with CONAB, this is the second year of the crop year: LSPA 2025 corresponds to crop year `2024/25`.
 
 ## Products
 

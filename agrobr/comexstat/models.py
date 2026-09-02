@@ -23,6 +23,7 @@ NCM_PRODUTOS: dict[str, str] = {
     "soja": "12019000",
     "soja_grao": "12019000",
     "soja_semeadura": "12011000",
+    "oleo_soja": "1507",
     "oleo_soja_bruto": "15071000",
     "farelo_soja": "23040010",
     "milho": "10059010",

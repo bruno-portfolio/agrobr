@@ -8,6 +8,7 @@ import structlog
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils.validation import validate_uf
 
 logger = structlog.get_logger()
 
@@ -86,6 +87,8 @@ class CreditoRuralDataset(BaseDataset):
         if snapshot and safra is None:
             ano_snap = int(snapshot[:4])
             safra = f"{ano_snap - 1}/{ano_snap}"
+
+        uf = validate_uf(uf)
 
         df, source_name, source_meta, attempted = await self._try_sources(
             produto,

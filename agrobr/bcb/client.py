@@ -11,6 +11,9 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.normalize.dates import INICIO_SAFRA_MES
+
+from . import models
 
 logger = structlog.get_logger()
 
@@ -87,8 +90,6 @@ async def _fetch_odata(
 
 
 def _pertence_a_safra(record: dict[str, Any], ano_inicio: int) -> bool:
-    from agrobr.normalize.dates import INICIO_SAFRA_MES
-
     try:
         ano = int(record.get("AnoEmissao") or 0)
         mes = int(record.get("MesEmissao") or 0)
@@ -97,6 +98,34 @@ def _pertence_a_safra(record: dict[str, Any], ano_inicio: int) -> bool:
     if mes >= INICIO_SAFRA_MES:
         return ano == ano_inicio
     return ano == ano_inicio + 1
+
+
+def _resolve_uf_sigla(cd_uf: str | None) -> str | None:
+    if cd_uf is None:
+        return None
+
+    value = cd_uf.strip().upper()
+    if value in models.UF_CODES:
+        return value
+
+    for sigla, codigo in models.UF_CODES.items():
+        if codigo == value:
+            return sigla
+
+    raise ValueError(f"Codigo de UF invalido: {cd_uf!r}")
+
+
+def _safra_odata_filter(safra_sicor: str) -> str:
+    try:
+        ano_inicio = int(safra_sicor.split("/")[0])
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Safra SICOR invalida: {safra_sicor!r}") from exc
+
+    mes_inicio = f"{INICIO_SAFRA_MES:02d}"
+    return (
+        f"((AnoEmissao eq '{ano_inicio}' and MesEmissao ge '{mes_inicio}') or "
+        f"(AnoEmissao eq '{ano_inicio + 1}' and MesEmissao lt '{mes_inicio}'))"
+    )
 
 
 async def fetch_credito_rural(
@@ -111,18 +140,23 @@ async def fetch_credito_rural(
             f"Finalidade inválida: '{finalidade}'. Opções: {list(ENDPOINT_MAP.keys())}"
         )
 
-    server_filter: list[str] | None = None
+    uf_sigla = _resolve_uf_sigla(cd_uf)
+    server_filters: list[str] = []
     if produto_sicor:
         safe = produto_sicor.replace("'", "''")
-        server_filter = [f"contains(nomeProduto,'{safe}')"]
+        server_filters.append(f"contains(nomeProduto,'{safe}')")
+    if uf_sigla:
+        server_filters.append(f"nomeUF eq '{uf_sigla}'")
+    if safra_sicor:
+        server_filters.append(_safra_odata_filter(safra_sicor))
 
     logger.info(
         "bcb_fetch_credito",
         endpoint=endpoint,
         produto=produto_sicor,
         safra=safra_sicor,
-        uf=cd_uf,
-        server_filter=server_filter,
+        uf=uf_sigla,
+        server_filters=server_filters,
     )
 
     all_records: list[dict[str, Any]] = []
@@ -135,7 +169,7 @@ async def fetch_credito_rural(
         try:
             data = await _fetch_odata(
                 endpoint=endpoint,
-                filters=server_filter,
+                filters=server_filters or None,
                 select=select,
                 top=page_size,
                 skip=skip,
@@ -185,13 +219,8 @@ async def fetch_credito_rural(
         ano_inicio = int(safra_sicor.split("/")[0])
         filtered = [r for r in filtered if _pertence_a_safra(r, ano_inicio)]
 
-    if cd_uf:
-        filtered = [
-            r
-            for r in filtered
-            if str(r.get("cdEstado", "")) == cd_uf
-            or str(r.get("nomeUF", "")).upper() == cd_uf.upper()
-        ]
+    if uf_sigla:
+        filtered = [r for r in filtered if str(r.get("nomeUF", "")).strip().upper() == uf_sigla]
 
     logger.info(
         "bcb_fetch_credito_ok",

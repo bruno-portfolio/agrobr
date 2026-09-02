@@ -9,6 +9,11 @@ Consolidated annual agricultural output by state or municipality.
 | 1 | IBGE PAM | Municipal Agricultural Production |
 | 2 | CONAB | Crop Monitoring |
 
+For the CONAB fallback, the calendar year is the second year of the crop season:
+`ano=2023` queries crop season `2022/23`. CONAB provides state-level data; the
+`brasil` level is computed by summing states and `municipio` has no fallback.
+Because the bulletin does not publish harvested area, `area_colhida` is null in this fallback.
+
 ## Products
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`, `cafe`, `cacau`
@@ -25,7 +30,7 @@ Consolidated annual agricultural output by state or municipality.
 | `producao` | float64 | ✅ | Production (tons) |
 | `rendimento` | float64 | ✅ | Yield (kg/ha) |
 | `valor_producao` | float64 | ✅ | Output value (thousand reais) |
-| `fonte` | str | ❌ | Data origin |
+| `fonte` | str | ❌ | Data origin: `ibge_pam` or `conab` |
 
 ## Primary Key
 
@@ -35,6 +40,7 @@ Consolidated annual agricultural output by state or municipality.
 
 - Consolidated data for the complete crop year
 - Typical latency: Y+1 (data available the following year)
+- CONAB area and production are converted from thousand ha/thousand tons to ha/tons
 
 ## Example
 
@@ -70,4 +76,4 @@ print(contract.to_json())
 |-------|-------------|
 | `brasil` | National total |
 | `uf` | By state (default) |
-| `municipio` | By municipality |
+| `municipio` | By municipality; available only from the primary IBGE PAM source |

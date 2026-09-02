@@ -8,6 +8,7 @@ import structlog
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils.validation import validate_bioma
 
 logger = structlog.get_logger()
 
@@ -70,6 +71,7 @@ class QueimadasDataset(BaseDataset):
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+        bioma = validate_bioma(bioma)
         snapshot = get_snapshot()
 
         logger.info(

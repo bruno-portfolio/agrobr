@@ -506,6 +506,7 @@ wheat, cotton, coffee (arabica, conilon), sugar, ethanol, meats
 - **Indirect access:** HTML scraping to extract PDF links, then PDF parsing
 - URL: `https://anda.org.br/recursos/`
 - Search by keywords "entrega" or "fertilizante" in the links
+- Delivery bulletins expose aggregated totals only; there is no formulation breakdown
 - **Optional dependency:** requires `pdfplumber` (`pip install agrobr[pdf]`)
 - Timeout: 60s
 - Rate limit: 3s

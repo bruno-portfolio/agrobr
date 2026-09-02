@@ -142,7 +142,7 @@ class TestIsUf:
 
 class TestParseUfRows:
     def test_basic(self):
-        records = _parse_uf_rows(_uf_rows_table(), 2024, "total")
+        records = _parse_uf_rows(_uf_rows_table(), 2024)
 
         assert len(records) == 12  # 4 UFs × 3 meses
         mt_jan = [r for r in records if r["uf"] == "MT" and r["mes"] == 1]
@@ -151,13 +151,13 @@ class TestParseUfRows:
         assert mt_jan[0]["ano"] == 2024
 
     def test_empty_table(self):
-        records = _parse_uf_rows([["UF", "Jan"]], 2024, "total")
+        records = _parse_uf_rows([["UF", "Jan"]], 2024)
         assert records == []
 
 
 class TestParseUfCols:
     def test_basic(self):
-        records = _parse_uf_cols(_uf_cols_table(), 2024, "total")
+        records = _parse_uf_cols(_uf_cols_table(), 2024)
 
         assert len(records) == 12  # 3 meses × 4 UFs
         sp_fev = [r for r in records if r["uf"] == "SP" and r["mes"] == 2]
@@ -167,7 +167,7 @@ class TestParseUfCols:
 
 class TestParseGeneric:
     def test_basic(self):
-        records = _parse_generic(_generic_table(), 2024, "total")
+        records = _parse_generic(_generic_table(), 2024)
 
         assert len(records) == 4
         mt_records = [r for r in records if r["uf"] == "MT"]
@@ -194,11 +194,6 @@ class TestParseEntregasTable:
     def test_single_row(self):
         records = parse_entregas_table([["UF", "Jan"]], 2024)
         assert records == []
-
-    def test_product_passthrough(self):
-        records = parse_entregas_table(_uf_rows_table(), 2024, produto="ureia")
-        for r in records:
-            assert r["produto_fertilizante"] == "ureia"
 
 
 class TestAgregarMensal:
@@ -296,48 +291,44 @@ def _indicadores_multi_section():
 
 class TestParseIndicadores:
     def test_single_section_12_records(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2022, "total")
+        records = _parse_indicadores(_indicadores_single_section(), 2022)
         assert len(records) == 12
 
     def test_single_section_values(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2022, "total")
+        records = _parse_indicadores(_indicadores_single_section(), 2022)
         jan = [r for r in records if r["mes"] == 1][0]
         assert jan["volume_ton"] == 3200000.0
         dez = [r for r in records if r["mes"] == 12][0]
         assert dez["volume_ton"] == 3100000.0
 
     def test_single_section_uf_is_br(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2022, "total")
+        records = _parse_indicadores(_indicadores_single_section(), 2022)
         assert all(r["uf"] == "BR" for r in records)
 
     def test_acumulado_excluded(self):
         """'Janeiro a Dezembro' nao deve gerar registro."""
-        records = _parse_indicadores(_indicadores_single_section(), 2022, "total")
+        records = _parse_indicadores(_indicadores_single_section(), 2022)
         assert len(records) == 12  # nao 13
 
     def test_multi_section_only_first(self):
         """Deve parar na primeira secao e ignorar producao/importacao."""
-        records = _parse_indicadores(_indicadores_multi_section(), 2022, "total")
+        records = _parse_indicadores(_indicadores_multi_section(), 2022)
         assert len(records) == 12
 
     def test_multi_section_volume_is_entregas(self):
         """Volumes devem ser da secao entregas, nao producao."""
-        records = _parse_indicadores(_indicadores_multi_section(), 2022, "total")
+        records = _parse_indicadores(_indicadores_multi_section(), 2022)
         jan = [r for r in records if r["mes"] == 1][0]
         # Entregas Janeiro = 3.200.000, Producao Janeiro = 650.000
         assert jan["volume_ton"] == 3200000.0
 
     def test_wrong_year_returns_empty(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2025, "total")
+        records = _parse_indicadores(_indicadores_single_section(), 2025)
         assert records == []
 
     def test_empty_table(self):
-        records = _parse_indicadores([], 2022, "total")
+        records = _parse_indicadores([], 2022)
         assert records == []
-
-    def test_product_passthrough(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2022, "ureia")
-        assert all(r["produto_fertilizante"] == "ureia" for r in records)
 
 
 class TestParserVersion:
@@ -348,7 +339,7 @@ class TestParserVersion:
 
 class TestMakeRecord:
     def test_positive_volume(self):
-        assert _make_record(2024, 1, "MT", "total", 100.0) == {
+        assert _make_record(2024, 1, "MT", 100.0) == {
             "ano": 2024,
             "mes": 1,
             "uf": "MT",
@@ -357,21 +348,16 @@ class TestMakeRecord:
         }
 
     def test_zero_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", "total", 0.0) is None
+        assert _make_record(2024, 1, "MT", 0.0) is None
 
     def test_negative_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", "total", -5.0) is None
+        assert _make_record(2024, 1, "MT", -5.0) is None
 
     def test_none_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", "total", None) is None
+        assert _make_record(2024, 1, "MT", None) is None
 
     def test_nan_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", "total", float("nan")) is None
-
-    def test_product_normalized(self):
-        rec = _make_record(2024, 1, "MT", "uréia", 100.0)
-        assert rec is not None
-        assert rec["produto_fertilizante"] == "ureia"
+        assert _make_record(2024, 1, "MT", float("nan")) is None
 
 
 class TestExpandNewlineCells:

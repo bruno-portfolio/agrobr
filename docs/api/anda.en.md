@@ -37,7 +37,7 @@ async def entregas(
 |-----------|------|-------------|
 | `ano` | `int` | Reference year. A year unavailable on the site raises `SourceUnavailableError` listing the available years |
 | `uf` | `str \| None` | Filter by state. None returns all |
-| `produto` | `str` | Fertilizer type. Default: `"total"` |
+| `produto` | `str` | Kept for compatibility. The only available value is `"total"`; other values raise `ValueError` before download |
 | `agregacao` | `str` | `"detalhado"` (per state/month) or `"mensal"` (sum per month) |
 | `as_polars` | `bool` | If True, returns `polars.DataFrame` |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
@@ -46,6 +46,10 @@ async def entregas(
 
 DataFrame with columns: `ano`, `mes`, `uf`, `produto_fertilizante`, `volume_ton`
 
+`produto_fertilizante` is always `"total"`: ANDA's delivery bulletins do not
+publish this indicator broken down by formulation. Previous versions merely
+copied the `produto` argument into this column without filtering the data.
+
 **Example:**
 
 ```python
@@ -53,6 +57,9 @@ from agrobr import anda
 
 # 2024 deliveries
 df = await anda.entregas(2024)
+
+# Equivalent; the argument is kept for compatibility
+df = await anda.entregas(2024, produto="total")
 
 # Filter by state
 df = await anda.entregas(2024, uf="MT")

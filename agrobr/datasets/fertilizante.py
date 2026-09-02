@@ -38,8 +38,8 @@ FERTILIZANTE_INFO = DatasetInfo(
             description="ANDA (Associação Nacional para Difusão de Adubos)",
         ),
     ],
-    products=["total", "npk", "ureia", "map", "dap", "ssp", "tsp", "kcl"],
-    contract_version="1.0",
+    products=["total"],
+    contract_version="2.0",
     update_frequency="yearly",
     typical_latency="Y+1",
     source_url="https://anda.org.br",
@@ -71,7 +71,7 @@ class FertilizanteDataset(BaseDataset):
             produto, ano=ano, uf=uf, **kwargs
         )
 
-        df = self._normalize(df, produto)
+        df = self._normalize(df)
         self._validate_contract(df)
 
         if return_meta:
@@ -79,9 +79,9 @@ class FertilizanteDataset(BaseDataset):
 
         return df
 
-    def _normalize(self, df: pd.DataFrame, produto: str) -> pd.DataFrame:
+    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
         if "produto_fertilizante" not in df.columns:
-            df["produto_fertilizante"] = produto
+            df["produto_fertilizante"] = "total"
 
         return df
 

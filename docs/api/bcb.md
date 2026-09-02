@@ -29,7 +29,7 @@ async def credito_rural(
 | `produto` | `str` | Produto (soja, milho, arroz, feijao, trigo, algodao, cafe, cana, sorgo) |
 | `safra` | `str \| None` | Safra formato "2024/25". Default: safra mais recente |
 | `finalidade` | `str` | `"custeio"`, `"investimento"` ou `"comercializacao"` |
-| `uf` | `str \| None` | Filtrar por UF (ex: "MT", "PR") |
+| `uf` | `str \| None` | Sigla da UF (ex: "MT", "PR"); espaços/caixa são normalizados e valores inválidos levantam `ValueError` |
 | `agregacao` | `str` | `"municipio"` (default), `"uf"` ou `"programa"` |
 | `programa` | `str \| None` | Filtrar por programa (ex: "Pronamp", "Pronaf") |
 | `tipo_seguro` | `str \| None` | Filtrar por tipo de seguro (ex: "Proagro", "Seguro privado") |

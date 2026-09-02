@@ -9,9 +9,9 @@ import structlog
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import check_geopandas
 from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.validation import validate_bioma
 
 from . import client, parser
-from .models import BIOMAS_VALIDOS
 
 if TYPE_CHECKING:
     import geopandas as gpd
@@ -59,6 +59,7 @@ async def focos(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    bioma = validate_bioma(bioma)
     logger.info(
         "queimadas_focos",
         ano=ano,
@@ -93,9 +94,7 @@ async def focos(
         df = df[df["uf"] == uf_upper].reset_index(drop=True)
 
     if bioma is not None:
-        bioma_set = {b for b in BIOMAS_VALIDOS if bioma.lower() in b.lower()}
-        if bioma_set:
-            df = df[df["bioma"].isin(bioma_set)].reset_index(drop=True)
+        df = df[df["bioma"] == bioma].reset_index(drop=True)
 
     if satelite is not None:
         df = df[df["satelite"] == satelite].reset_index(drop=True)

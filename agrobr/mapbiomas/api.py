@@ -7,6 +7,7 @@ import pandas as pd
 import structlog
 
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
 from agrobr.utils.result import build_source_meta, finalize_result
 
 from . import client, parser
@@ -20,6 +21,17 @@ def _validar_colecao(colecao: int | None) -> None:
         raise ValueError(
             f"colecao {colecao} nao suportada; apenas a colecao {COLECAO_ATUAL} (atual) esta disponivel"
         )
+
+
+def _normalizar_estado(estado: str | None) -> str | None:
+    if estado is None:
+        return None
+
+    estado_key = regions.remover_acentos(estado.strip().lower())
+    estado_uf = regions.NOMES_PARA_UF.get(estado_key)
+    if estado_uf is None:
+        raise ValueError(f"Estado inválido: {estado!r}. Use a sigla ou o nome completo de uma UF")
+    return estado_uf
 
 
 @overload
@@ -65,6 +77,9 @@ async def cobertura(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    _validar_colecao(colecao)
+    estado = _normalizar_estado(estado)
+
     logger.info(
         "mapbiomas_cobertura",
         bioma=bioma,
@@ -73,8 +88,6 @@ async def cobertura(
         nivel=nivel,
         municipio=municipio,
     )
-
-    _validar_colecao(colecao)
 
     t0 = time.monotonic()
     if nivel == "municipio":
@@ -99,8 +112,7 @@ async def cobertura(
             df = df[df["bioma"].str.lower().str.contains(bioma.lower())].reset_index(drop=True)
 
     if estado is not None:
-        estado_upper = estado.strip().upper()
-        df = df[df["estado"].str.upper() == estado_upper].reset_index(drop=True)
+        df = df[df["estado"] == estado].reset_index(drop=True)
 
     if municipio is not None and "municipio" in df.columns:
         mun_lower = municipio.strip().lower()
@@ -166,9 +178,10 @@ async def transicao(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    logger.info("mapbiomas_transicao", bioma=bioma, estado=estado, periodo=periodo)
-
     _validar_colecao(colecao)
+    estado = _normalizar_estado(estado)
+
+    logger.info("mapbiomas_transicao", bioma=bioma, estado=estado, periodo=periodo)
 
     t0 = time.monotonic()
     xlsx_bytes, source_url = await client.fetch_biome_state()
@@ -186,8 +199,7 @@ async def transicao(
             df = df[df["bioma"].str.lower().str.contains(bioma.lower())].reset_index(drop=True)
 
     if estado is not None:
-        estado_upper = estado.strip().upper()
-        df = df[df["estado"].str.upper() == estado_upper].reset_index(drop=True)
+        df = df[df["estado"] == estado].reset_index(drop=True)
 
     if periodo is not None:
         df = df[df["periodo"] == periodo].reset_index(drop=True)

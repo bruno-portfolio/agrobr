@@ -35,12 +35,13 @@ df = await comexstat.exportacao("soja", ano=2024, uf="MT")
 
 ## Products
 
-16 agricultural products mapped by NCM prefix (full mapping: 30 keys, including fertilizers and pesticides):
+17 agricultural products mapped by NCM prefix (full mapping: 31 keys, including fertilizers and pesticides):
 
 | Product | NCM | Type |
 |---|---|---|
 | soja | 12019000 | exact |
 | soja_semeadura | 12011000 | exact |
+| oleo_soja | 1507 | prefix (crude, refined, and other soybean oils) |
 | oleo_soja_bruto | 15071000 | exact |
 | farelo_soja | 23040010 | exact |
 | milho | 10059010 | exact |
@@ -60,6 +61,10 @@ df = await comexstat.exportacao("soja", ano=2024, uf="MT")
 > are equivalent to an exact match; shorter prefixes (6 digits) capture all
 > subheadings. This is necessary because some products (e.g. algodao) do not
 > have a generic NCM in the CSV — Brazil uses detailed subheadings.
+
+`oleo_soja` uses the `1507` prefix, and the standalone API preserves one row
+per NCM code. The semantic `exportacao` dataset consolidates those codes by
+year, month, and state; `oleo_soja_bruto` remains limited to code `15071000`.
 
 ## MetaInfo
 

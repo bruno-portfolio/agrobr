@@ -41,7 +41,7 @@ class TestDatasetInfo:
     def test_info_contract_version(self, dataset_name):
         ds = registry.get_dataset(dataset_name)
         assert isinstance(ds.info.contract_version, str)
-        assert ds.info.contract_version in {"1.0", "1.1"}
+        assert ds.info.contract_version in {"1.0", "1.1", "2.0"}
 
     def test_info_update_frequency(self, dataset_name):
         ds = registry.get_dataset(dataset_name)

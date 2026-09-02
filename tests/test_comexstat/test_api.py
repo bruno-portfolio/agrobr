@@ -90,6 +90,26 @@ class TestExportacao:
         assert len(df) == 1
         assert df.iloc[0]["uf"] == "PR"
 
+    @pytest.mark.asyncio
+    async def test_soybean_oil_generic_and_crude_scopes(self):
+        csv = (
+            "CO_ANO;CO_MES;CO_NCM;SG_UF_NCM;KG_LIQUIDO;VL_FOB\n"
+            "2024;1;15071000;MT;1000;500\n"
+            "2024;1;15079011;MT;2000;1000\n"
+            "2024;1;23040010;MT;3000;1500\n"
+        )
+        with patch.object(
+            api.client,
+            "fetch_exportacao_csv",
+            new_callable=AsyncMock,
+            return_value=csv,
+        ):
+            generic = await api.exportacao("oleo_soja", ano=2024)
+            crude = await api.exportacao("oleo_soja_bruto", ano=2024)
+
+        assert generic["ncm"].tolist() == ["15071000", "15079011"]
+        assert crude["ncm"].tolist() == ["15071000"]
+
 
 class TestImportacao:
     @pytest.mark.asyncio

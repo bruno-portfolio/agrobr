@@ -17,7 +17,7 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `bioma` | `str` | No | Biome: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pampa", "Pantanal". If None, all |
-| `estado` | `str` | No | Filter by state (e.g. "MT", "SP") or state name |
+| `estado` | `str` | No | State code or full state name (e.g. `"MT"`, `"Mato Grosso"`). Case and accents are optional; invalid values raise `ValueError` before download |
 | `ano` | `int` | No | Year (1985-2024). If None, all years |
 | `classe_id` | `int` | No | MapBiomas class code (e.g. 15 for Pasture) |
 | `nivel` | `str` | No | `"estado"` (default) or `"municipio"`. Municipal downloads ~660 MB |
@@ -73,7 +73,7 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `bioma` | `str` | No | Filter by biome. If None, all |
-| `estado` | `str` | No | Filter by state or state name |
+| `estado` | `str` | No | State code or full state name. Case and accents are optional; invalid values raise `ValueError` before download |
 | `periodo` | `str` | No | Period (e.g. "2019-2020", "1985-2024") |
 | `classe_de_id` | `int` | No | Source class code |
 | `classe_para_id` | `int` | No | Target class code |
@@ -136,7 +136,7 @@ import agrobr
 
 # Downloads ~660 MB on the first call — filter biome/state/municipality to reduce
 df = await agrobr.mapbiomas.cobertura(
-    nivel="municipio", estado="PA", municipio="Belém", ano=2020
+    nivel="municipio", estado="Pará", municipio="Belém", ano=2020
 )
 print(df[["municipio", "classe", "area_ha"]].head())
 ```

@@ -64,6 +64,34 @@ class TestIndicadores:
         )
         assert len(results) == 2
 
+    @pytest.mark.parametrize("praca", ["paranagua", "Paranaguá/PR"])
+    def test_query_praca_normalizada(self, tmp_store: DuckDBStore, praca: str):
+        tmp_store.indicadores_upsert(
+            [
+                {
+                    "produto": "soja",
+                    "praca": "Paranaguá/PR",
+                    "data": datetime(2024, 6, 15),
+                    "valor": 135.50,
+                    "unidade": "BRL/sc",
+                    "fonte": "cepea",
+                },
+                {
+                    "produto": "soja",
+                    "praca": "Paraná",
+                    "data": datetime(2024, 6, 15),
+                    "valor": 130.00,
+                    "unidade": "BRL/sc",
+                    "fonte": "cepea",
+                },
+            ]
+        )
+
+        results = tmp_store.indicadores_query("soja", praca=praca)
+
+        assert len(results) == 1
+        assert results[0]["praca"] == "Paranaguá/PR"
+
     def test_query_empty_result(self, tmp_store: DuckDBStore):
         results = tmp_store.indicadores_query("inexistente")
         assert results == []

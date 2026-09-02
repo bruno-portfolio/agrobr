@@ -17,7 +17,7 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | `bioma` | `str` | Nao | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pampa", "Pantanal". Se None, todos |
-| `estado` | `str` | Nao | Filtrar por UF (ex: "MT", "SP") ou nome do estado |
+| `estado` | `str` | Nao | Sigla ou nome completo da UF (ex: `"MT"`, `"Mato Grosso"`). Caixa e acentos são opcionais; valor inválido levanta `ValueError` antes do download |
 | `ano` | `int` | Nao | Ano (1985-2024). Se None, todos os anos |
 | `classe_id` | `int` | Nao | Codigo de classe MapBiomas (ex: 15 para Pastagem) |
 | `nivel` | `str` | Nao | `"estado"` (default) ou `"municipio"`. Municipal baixa ~660 MB |
@@ -73,7 +73,7 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | `bioma` | `str` | Nao | Filtrar por bioma. Se None, todos |
-| `estado` | `str` | Nao | Filtrar por UF ou nome do estado |
+| `estado` | `str` | Nao | Sigla ou nome completo da UF. Caixa e acentos são opcionais; valor inválido levanta `ValueError` antes do download |
 | `periodo` | `str` | Nao | Periodo (ex: "2019-2020", "1985-2024") |
 | `classe_de_id` | `int` | Nao | Codigo da classe de origem |
 | `classe_para_id` | `int` | Nao | Codigo da classe de destino |
@@ -136,7 +136,7 @@ import agrobr
 
 # Baixa ~660 MB na primeira chamada — filtre bioma/estado/municipio para reduzir
 df = await agrobr.mapbiomas.cobertura(
-    nivel="municipio", estado="PA", municipio="Belém", ano=2020
+    nivel="municipio", estado="Pará", municipio="Belém", ano=2020
 )
 print(df[["municipio", "classe", "area_ha"]].head())
 ```

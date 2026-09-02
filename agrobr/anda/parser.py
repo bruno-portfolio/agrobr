@@ -6,14 +6,14 @@ from typing import Any
 import pandas as pd
 import structlog
 
-from agrobr.anda.models import ANDA_UFS, normalize_fertilizante
+from agrobr.anda.models import ANDA_UFS
 from agrobr.exceptions import ParseError
 from agrobr.normalize.dates import month_to_number
 from agrobr.normalize.numeric import safe_float
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
+PARSER_VERSION = 2
 
 _UF_PATTERNS = re.compile(r"^(UF|Estado|Unidade\s*da\s*Federa)", re.IGNORECASE)
 _MES_PATTERNS = re.compile(r"^(M[eê]s|Per[ií]odo|Month)", re.IGNORECASE)
@@ -112,7 +112,6 @@ def _expand_newline_cells(table: list[list[str | None]]) -> list[list[str]]:
 def parse_entregas_table(
     table: list[list[str | None]],
     ano: int,
-    produto: str = "total",
 ) -> list[dict[str, Any]]:
     if not table or len(table) < 2:
         return []
@@ -128,16 +127,16 @@ def parse_entregas_table(
     uf_in_cols = sum(1 for v in header[1:] if _is_uf(v))
 
     if uf_in_rows >= _MIN_UFS_FOR_LAYOUT:
-        records = _parse_uf_rows(clean_table, ano, produto)
+        records = _parse_uf_rows(clean_table, ano)
 
     if not records and uf_in_cols >= _MIN_UFS_FOR_LAYOUT:
-        records = _parse_uf_cols(clean_table, ano, produto)
+        records = _parse_uf_cols(clean_table, ano)
 
     if not records:
-        records = _parse_generic(clean_table, ano, produto)
+        records = _parse_generic(clean_table, ano)
 
     if not records:
-        records = _parse_indicadores(clean_table, ano, produto)
+        records = _parse_indicadores(clean_table, ano)
 
     return records
 
@@ -146,7 +145,6 @@ def _make_record(
     ano: int,
     mes: int,
     uf: str,
-    produto: str,
     vol: float | None,
 ) -> dict[str, Any] | None:
     if vol is None or not vol > 0:
@@ -155,7 +153,7 @@ def _make_record(
         "ano": ano,
         "mes": mes,
         "uf": uf,
-        "produto_fertilizante": normalize_fertilizante(produto),
+        "produto_fertilizante": "total",
         "volume_ton": vol,
     }
 
@@ -163,7 +161,6 @@ def _make_record(
 def _parse_uf_rows(
     table: list[list[str]],
     ano: int,
-    produto: str,
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     header = table[0]
@@ -187,7 +184,7 @@ def _parse_uf_rows(
         for col_idx, mes in month_cols.items():
             if col_idx >= len(row):
                 continue
-            rec = _make_record(ano, mes, uf_candidate, produto, safe_float(row[col_idx]))
+            rec = _make_record(ano, mes, uf_candidate, safe_float(row[col_idx]))
             if rec is not None:
                 records.append(rec)
 
@@ -197,7 +194,6 @@ def _parse_uf_rows(
 def _parse_uf_cols(
     table: list[list[str]],
     ano: int,
-    produto: str,
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     header = table[0]
@@ -220,7 +216,7 @@ def _parse_uf_cols(
         for col_idx, uf in uf_cols.items():
             if col_idx >= len(row):
                 continue
-            rec = _make_record(ano, mes, uf, produto, safe_float(row[col_idx]))
+            rec = _make_record(ano, mes, uf, safe_float(row[col_idx]))
             if rec is not None:
                 records.append(rec)
 
@@ -230,7 +226,6 @@ def _parse_uf_cols(
 def _parse_generic(
     table: list[list[str]],
     ano: int,
-    produto: str,
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     header = table[0]
@@ -265,7 +260,7 @@ def _parse_generic(
             detected = _detect_month(row[mes_col])
             mes_val = detected if detected is not None else 0
 
-        rec = _make_record(ano, mes_val, uf_val, produto, safe_float(row[vol_col]))
+        rec = _make_record(ano, mes_val, uf_val, safe_float(row[vol_col]))
         if rec is not None:
             records.append(rec)
 
@@ -291,7 +286,6 @@ def _find_month_col(rows: list[list[str]]) -> int | None:
 def _parse_indicadores(
     table: list[list[str]],
     ano: int,
-    produto: str,
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     ano_str = str(ano)
@@ -323,7 +317,7 @@ def _parse_indicadores(
         if mes is None:
             continue
 
-        rec = _make_record(ano, mes, "BR", produto, safe_float(row[ano_col_idx]))
+        rec = _make_record(ano, mes, "BR", safe_float(row[ano_col_idx]))
         if rec is not None:
             records.append(rec)
 
@@ -333,7 +327,6 @@ def _parse_indicadores(
 def parse_entregas_pdf(
     pdf_bytes: bytes,
     ano: int,
-    produto: str = "total",
 ) -> pd.DataFrame:
     tables = extract_tables_from_pdf(pdf_bytes)
 
@@ -346,7 +339,7 @@ def parse_entregas_pdf(
 
     all_records: list[dict[str, Any]] = []
     for table in tables:
-        records = parse_entregas_table(table, ano, produto)
+        records = parse_entregas_table(table, ano)
         all_records.extend(records)
 
     if not all_records:
@@ -363,7 +356,7 @@ def parse_entregas_pdf(
     logger.info(
         "anda_parsed",
         ano=ano,
-        produto=produto,
+        produto="total",
         records=len(df),
         ufs=sorted(df["uf"].unique().tolist()),
     )

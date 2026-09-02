@@ -8,6 +8,7 @@ import structlog
 
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.validation import validate_uf
 
 from . import client
 from .models import UF_CODES, normalize_safra_sicor, resolve_produto_sicor
@@ -61,7 +62,8 @@ async def credito_rural(
 
     produto_sicor = resolve_produto_sicor(produto)
     safra_sicor = normalize_safra_sicor(safra) if safra else None
-    cd_uf = UF_CODES.get(uf.upper()) if uf else None
+    uf = validate_uf(uf)
+    cd_uf = UF_CODES[uf] if uf else None
 
     logger.info(
         "bcb_credito_rural_request",
@@ -92,7 +94,7 @@ async def credito_rural(
     df = parse_credito_rural(dados, finalidade=finalidade)
 
     if uf and "uf" in df.columns:
-        df = df[df["uf"] == uf.upper()].reset_index(drop=True)
+        df = df[df["uf"] == uf].reset_index(drop=True)
 
     if programa and "programa" in df.columns:
         df = df[df["programa"].str.lower() == programa.lower()].reset_index(drop=True)

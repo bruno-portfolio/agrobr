@@ -1,6 +1,13 @@
 """Testes para os modelos ANDA."""
 
-from agrobr.anda.models import ANDA_UFS, FERTILIZANTES_MAP, normalize_fertilizante
+import pytest
+
+from agrobr.anda.models import (
+    ANDA_UFS,
+    FERTILIZANTES_MAP,
+    normalize_fertilizante,
+    resolve_produto,
+)
 
 
 class TestNormalizeFertilizante:
@@ -37,3 +44,16 @@ class TestFertilizantesMap:
         assert "map" in FERTILIZANTES_MAP
         assert "kcl" in FERTILIZANTES_MAP
         assert "total" in FERTILIZANTES_MAP
+
+
+class TestResolveProduto:
+    def test_total(self):
+        assert resolve_produto(" TOTAL ") == "total"
+
+    def test_produto_especifico(self):
+        with pytest.raises(ValueError, match="apenas entregas totais"):
+            resolve_produto("ureia")
+
+    def test_produto_desconhecido(self):
+        with pytest.raises(ValueError, match="fosfato natural"):
+            resolve_produto("fosfato natural")

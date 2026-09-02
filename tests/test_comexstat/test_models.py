@@ -52,6 +52,10 @@ class TestResolveNcm:
         assert resolve_ncm("cafe") == "09011110"
         assert resolve_ncm("algodao") == "520100"
 
+    def test_soybean_oil_generic_and_crude_mappings(self):
+        assert resolve_ncm("oleo_soja") == "1507"
+        assert resolve_ncm("oleo_soja_bruto") == "15071000"
+
     def test_case_insensitive(self):
         assert resolve_ncm("SOJA") == "12019000"
         assert resolve_ncm("Soja") == "12019000"

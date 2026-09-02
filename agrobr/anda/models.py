@@ -54,3 +54,12 @@ ANDA_UFS: list[str] = [
 def normalize_fertilizante(nome: str) -> str:
     key = nome.strip().lower()
     return FERTILIZANTES_MAP.get(key, key)
+
+
+def resolve_produto(nome: str) -> str:
+    produto = normalize_fertilizante(nome)
+    if produto != "total":
+        raise ValueError(
+            f"A ANDA disponibiliza apenas entregas totais; produto {nome!r} não está disponível"
+        )
+    return produto

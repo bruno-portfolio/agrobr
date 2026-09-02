@@ -46,6 +46,9 @@ class TestFertilizanteInfo:
         assert len(FERTILIZANTE_INFO.sources) == 1
         assert FERTILIZANTE_INFO.sources[0].name == "anda"
 
+    def test_only_total_product(self):
+        assert FERTILIZANTE_INFO.products == ["total"]
+
 
 class TestFertilizanteFetch:
     @pytest.mark.asyncio
@@ -65,7 +68,7 @@ class TestFertilizanteFetch:
         df, meta = await dataset.fetch("total", ano=2024, return_meta=True)
 
         assert meta.dataset == "fertilizante"
-        assert meta.contract_version == "1.0"
+        assert meta.contract_version == "2.0"
         assert "anda" in meta.attempted_sources
         assert meta.records_count == len(df)
 
@@ -73,7 +76,7 @@ class TestFertilizanteFetch:
     async def test_fetch_invalid_produto(self):
         dataset = FertilizanteDataset()
         with pytest.raises(ValueError, match="não suportado"):
-            await dataset.fetch("glifosato")
+            await dataset.fetch("ureia")
 
     @pytest.mark.asyncio
     async def test_source_failure(self):
@@ -126,9 +129,9 @@ class TestFertilizanteNormalize:
         dataset = FertilizanteDataset()
         dataset.info.sources[0].fetch_fn = make_source(df)
 
-        result = await dataset.fetch("npk", ano=2024)
+        result = await dataset.fetch("total", ano=2024)
 
-        assert result["produto_fertilizante"].iloc[0] == "npk"
+        assert result["produto_fertilizante"].iloc[0] == "total"
 
     @pytest.mark.asyncio
     async def test_normalize_keeps_existing_produto_fertilizante(self):
@@ -168,8 +171,8 @@ class TestFertilizanteFetchFunctions:
         ) as mock_fn:
             from agrobr.datasets.fertilizante import _fetch_anda
 
-            await _fetch_anda("npk", ano=2023, uf="MT")
-        mock_fn.assert_called_once_with(2023, produto="npk", uf="MT", return_meta=True)
+            await _fetch_anda("total", ano=2023, uf="MT")
+        mock_fn.assert_called_once_with(2023, produto="total", uf="MT", return_meta=True)
 
     @pytest.mark.asyncio
     async def test_fetch_anda_defaults_ano_to_current_year(self):

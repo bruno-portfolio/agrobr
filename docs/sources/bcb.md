@@ -81,16 +81,17 @@ print(meta.source)          # "bcb"
 print(meta.schema_version)  # "1.1"
 ```
 
-## Status (fev/2026)
+## Status (set/2026)
 
 A API SICOR foi reestruturada (~2024). Endpoints antigos (`CusteioMunicipio`,
 `InvestimentoMunicipio`) foram substituidos por `CusteioRegiaoUFProduto`,
 `InvestRegiaoUFProduto`, `ComercRegiaoUFProduto`.
 
-O operador OData `$filter eq` nao funciona nos novos endpoints. O client usa
-`contains(nomeProduto,'...')` para filtro server-side por produto, e filtra
-ano/UF client-side apos download paginado. Filtros por programa e tipo de
-seguro tambem sao client-side (API nao suporta `$filter` nesses campos).
+O client usa `contains(nomeProduto,'...')` para produto e igualdade em
+`nomeUF` para UF. A safra tambem e limitada no servidor por `AnoEmissao` e
+`MesEmissao`; os dois filtros sao conferidos novamente no client para evitar
+que uma resposta inconsistente da fonte atravesse o parser. Filtros por
+programa e tipo de seguro permanecem client-side.
 
 Retry com backoff exponencial (6 tentativas, timeout read 120s).
 A API retorna HTTP 500 de forma intermitente. Desde v0.8.0, o agrobr

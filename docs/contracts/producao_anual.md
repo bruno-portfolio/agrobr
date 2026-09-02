@@ -9,6 +9,11 @@ Produção agrícola anual consolidada por UF ou município.
 | 1 | IBGE PAM | Produção Agrícola Municipal |
 | 2 | CONAB | Acompanhamento de Safras |
 
+No fallback CONAB, o ano civil corresponde ao segundo ano da safra:
+`ano=2023` consulta a safra `2022/23`. A fonte fornece dados estaduais; o nível
+`brasil` é calculado pela soma das UFs e o nível `municipio` não possui fallback.
+Como o boletim não publica área colhida, `area_colhida` fica nula nesse fallback.
+
 ## Produtos
 
 `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`, `cafe`, `cacau`
@@ -25,7 +30,7 @@ Produção agrícola anual consolidada por UF ou município.
 | `producao` | float64 | ✅ | Produção (toneladas) |
 | `rendimento` | float64 | ✅ | Rendimento (kg/ha) |
 | `valor_producao` | float64 | ✅ | Valor da produção (mil reais) |
-| `fonte` | str | ❌ | Origem dos dados |
+| `fonte` | str | ❌ | Origem dos dados: `ibge_pam` ou `conab` |
 
 ## Primary Key
 
@@ -35,6 +40,7 @@ Produção agrícola anual consolidada por UF ou município.
 
 - Dados consolidados do ano agrícola completo
 - Latência típica: Y+1 (dados disponíveis no ano seguinte)
+- Área e produção da CONAB são convertidas de mil ha/mil ton para ha/ton
 
 ## Exemplo
 
@@ -70,4 +76,4 @@ print(contract.to_json())
 |-------|-----------|
 | `brasil` | Total nacional |
 | `uf` | Por Unidade Federativa (default) |
-| `municipio` | Por município |
+| `municipio` | Por município; disponível apenas na fonte primária IBGE PAM |

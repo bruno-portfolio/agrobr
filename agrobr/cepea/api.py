@@ -17,9 +17,11 @@ from agrobr.cache.duckdb_store import get_store
 from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
 from agrobr.cepea import client
+from agrobr.cepea.parsers import v1
 from agrobr.cepea.parsers.detector import get_parser_with_fallback
 from agrobr.exceptions import ParseError, SourceUnavailableError, StaleDataWarning
 from agrobr.models import Indicador, MetaInfo
+from agrobr.normalize import regions
 from agrobr.utils.result import finalize_result
 from agrobr.utils.time import utcnow
 from agrobr.validators.sanity import validate_batch
@@ -182,7 +184,8 @@ async def indicador(
 
     Args:
         produto: Código do produto (ex: "soja", "milho", "boi_gordo").
-        praca: Praça de cotação. ``None`` retorna todas.
+        praca: Praça de cotação. Aceita slug de ``pracas()`` ou rótulo da fonte.
+            ``None`` retorna todas.
         inicio: Data inicial (ISO string ou ``date``). Default: 365 dias atrás.
         fim: Data final. Default: hoje.
         _moeda: Reservado para conversão futura de moeda. Sem efeito atual.
@@ -310,8 +313,11 @@ async def indicador(
     indicadores = [ind for ind in indicadores if inicio <= ind.data <= fim]
 
     if praca:
+        praca_slug = regions.slugificar_praca(praca)
         indicadores = [
-            ind for ind in indicadores if ind.praca and ind.praca.lower() == praca.lower()
+            ind
+            for ind in indicadores
+            if ind.praca and regions.slugificar_praca(ind.praca) == praca_slug
         ]
 
     df = _to_dataframe(indicadores)
@@ -371,27 +377,13 @@ async def produtos() -> list[str]:
 
 
 async def pracas(produto: str) -> list[str]:
-    if produto.lower() not in constants.CEPEA_PRODUTOS:
+    produto_slug = produto.lower()
+    if produto_slug not in constants.CEPEA_PRODUTOS:
         raise ValueError(
             f"Produto inválido: '{produto}'. Opções: {sorted(constants.CEPEA_PRODUTOS)}"
         )
-    pracas_map = {
-        "soja": ["paranagua", "parana", "rio_grande_do_sul"],
-        "milho": ["campinas", "parana"],
-        "cafe": ["mogiana", "sul_de_minas"],
-        "cafe_robusta": ["espirito_santo"],
-        "boi": ["sao_paulo"],
-        "trigo": ["parana", "rio_grande_do_sul"],
-        "arroz": ["rio_grande_do_sul"],
-        "acucar": ["sao_paulo"],
-        "frango_congelado": ["sao_paulo"],
-        "frango_resfriado": ["sao_paulo"],
-        "suino": ["sao_paulo"],
-        "leite": ["minas_gerais", "goias", "parana", "rio_grande_do_sul", "sao_paulo"],
-        "laranja_industria": ["sao_paulo"],
-        "laranja_in_natura": ["sao_paulo"],
-    }
-    return pracas_map.get(produto.lower(), [])
+    praca = v1.PRACAS.get(produto_slug)
+    return [regions.slugificar_praca(praca)] if praca else []
 
 
 async def ultimo(produto: str, praca: str | None = None, offline: bool = False) -> Indicador:
@@ -440,8 +432,11 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
                 logger.warning("source_fetch_failed", produto=produto, error=str(e))
 
     if praca:
+        praca_slug = regions.slugificar_praca(praca)
         indicadores = [
-            ind for ind in indicadores if ind.praca and ind.praca.lower() == praca.lower()
+            ind
+            for ind in indicadores
+            if ind.praca and regions.slugificar_praca(ind.praca) == praca_slug
         ]
 
     if not indicadores:

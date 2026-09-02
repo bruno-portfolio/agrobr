@@ -79,6 +79,7 @@ df = comexstat.importacao("soja", ano=2024)
 ## Notas
 
 - Fonte: [ComexStat/MDIC](https://comexstat.mdic.gov.br) — licenca livre
-- 30 produtos mapeados por prefixo NCM
+- 31 produtos mapeados por prefixo NCM; `oleo_soja` cobre `1507` e
+  `oleo_soja_bruto` permanece específico para `15071000`
 - Arquivos CSV anuais de ~100MB cada
 - Dados disponiveis a partir de 1997

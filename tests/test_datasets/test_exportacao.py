@@ -1,5 +1,6 @@
 """Testes específicos para o dataset exportacao (fetch com mock + prioridade)."""
 
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -7,7 +8,13 @@ import pandas as pd
 import pytest
 
 from agrobr.datasets.deterministic import deterministic
-from agrobr.datasets.exportacao import EXPORTACAO_INFO, ExportacaoDataset, exportacao
+from agrobr.datasets.exportacao import (
+    EXPORTACAO_INFO,
+    ExportacaoDataset,
+    _fetch_abiove,
+    _fetch_comexstat,
+    exportacao,
+)
 from agrobr.exceptions import SourceUnavailableError
 
 from .conftest import make_source, mock_source_meta
@@ -142,6 +149,63 @@ class TestExportacaoFallback:
         with pytest.raises(SourceUnavailableError):
             await dataset.fetch("soja", ano=2024)
 
+    @pytest.mark.asyncio
+    async def test_uf_does_not_fallback_to_national_abiove(self):
+        dataset = ExportacaoDataset()
+        comexstat_fetch = AsyncMock(side_effect=httpx.ConnectError("down"))
+
+        with (
+            patch.object(dataset.info.sources[0], "fetch_fn", comexstat_fetch),
+            patch.object(dataset.info.sources[1], "fetch_fn", _fetch_abiove),
+            patch("agrobr.abiove.exportacao", new_callable=AsyncMock) as abiove_exportacao,
+            pytest.raises(SourceUnavailableError) as exc_info,
+        ):
+            await dataset.fetch("milho", ano=2024, uf="MT")
+
+        assert exc_info.value.errors[1][0:2] == ("abiove", "unavailable")
+        assert "apenas totais nacionais" in exc_info.value.errors[1][2]
+        abiove_exportacao.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_soja_fallback_normalizes_abiove_result(self):
+        dataset = ExportacaoDataset()
+        abiove_df = pd.DataFrame(
+            {
+                "ano": [2024],
+                "mes": [1],
+                "produto": ["grao"],
+                "volume_ton": [100.0],
+                "receita_usd_mil": [50.0],
+            }
+        )
+        source_meta = mock_source_meta()
+
+        with (
+            patch.object(
+                dataset.info.sources[0],
+                "fetch_fn",
+                AsyncMock(side_effect=httpx.ConnectError("down")),
+            ),
+            patch.object(dataset.info.sources[1], "fetch_fn", _fetch_abiove),
+            patch(
+                "agrobr.abiove.exportacao",
+                new_callable=AsyncMock,
+                return_value=(abiove_df, source_meta),
+            ) as abiove_exportacao,
+        ):
+            df, meta = await dataset.fetch("soja", ano=2024, return_meta=True)
+
+        assert df["produto"].tolist() == ["soja"]
+        assert df["uf"].isna().all()
+        assert df["kg_liquido"].tolist() == [100000.0]
+        assert meta.selected_source == "abiove"
+        abiove_exportacao.assert_awaited_once_with(
+            ano=2024,
+            mes=None,
+            produto="grao",
+            return_meta=True,
+        )
+
 
 class TestExportacaoPublicAPI:
     @pytest.mark.asyncio
@@ -172,10 +236,88 @@ class TestExportacaoFetchFunctions:
             new_callable=AsyncMock,
             return_value=(_mock_export_df(), meta),
         ) as mock_fn:
-            from agrobr.datasets.exportacao import _fetch_comexstat
-
             await _fetch_comexstat("soja", ano=2024, uf="PR")
         mock_fn.assert_called_once_with("soja", ano=2024, uf="PR", return_meta=True)
+
+    @pytest.mark.asyncio
+    async def test_fetch_comexstat_aggregates_soybean_oil_ncms(self):
+        source_df = pd.DataFrame(
+            {
+                "ano": [2024, 2024, 2024, 2024],
+                "mes": [1, 1, 1, 2],
+                "ncm": ["15071000", "15079011", "15079090", "15071000"],
+                "uf": ["MT", "MT", "PR", "MT"],
+                "kg_liquido": [1000.0, 2500.0, 3000.0, 4000.0],
+                "valor_fob_usd": [500.0, 1000.0, 1500.0, 2000.0],
+                "volume_ton": [1.0, 2.5, 3.0, 4.0],
+            }
+        )
+
+        with patch(
+            "agrobr.comexstat.exportacao",
+            new_callable=AsyncMock,
+            return_value=(source_df, mock_source_meta()),
+        ):
+            result_df, _ = await _fetch_comexstat("oleo_soja", ano=2024)
+
+        jan_mt = result_df[(result_df["mes"] == 1) & (result_df["uf"] == "MT")].iloc[0]
+        assert len(result_df) == 3
+        assert "ncm" not in result_df.columns
+        assert jan_mt["kg_liquido"] == 3500.0
+        assert jan_mt["valor_fob_usd"] == 1500.0
+        assert jan_mt["volume_ton"] == 3.5
+
+    @pytest.mark.asyncio
+    async def test_fetch_comexstat_keeps_specific_product_rows(self):
+        source_df = pd.DataFrame(
+            {
+                "ano": [2024],
+                "mes": [1],
+                "ncm": ["15071000"],
+                "uf": ["MT"],
+                "kg_liquido": [1000.0],
+                "valor_fob_usd": [500.0],
+                "volume_ton": [1.0],
+            }
+        )
+
+        with patch(
+            "agrobr.comexstat.exportacao",
+            new_callable=AsyncMock,
+            return_value=(source_df, mock_source_meta()),
+        ):
+            result_df, _ = await _fetch_comexstat("oleo_soja_bruto", ano=2024)
+
+        pd.testing.assert_frame_equal(result_df, source_df)
+
+    @pytest.mark.asyncio
+    async def test_soybean_oil_has_unique_contract_key(self):
+        dataset = ExportacaoDataset()
+        source_df = pd.DataFrame(
+            {
+                "ano": [2024, 2024],
+                "mes": [1, 1],
+                "ncm": ["15071000", "15079019"],
+                "uf": ["MT", "MT"],
+                "kg_liquido": [1000.0, 2000.0],
+                "valor_fob_usd": [500.0, 1000.0],
+                "volume_ton": [1.0, 2.0],
+            }
+        )
+
+        with (
+            patch.object(dataset.info.sources[0], "fetch_fn", _fetch_comexstat),
+            patch(
+                "agrobr.comexstat.exportacao",
+                new_callable=AsyncMock,
+                return_value=(source_df, mock_source_meta()),
+            ),
+        ):
+            result_df = await dataset.fetch("oleo_soja", ano=2024)
+
+        key = ["ano", "mes", "produto", "uf"]
+        assert result_df["produto"].tolist() == ["oleo_soja"]
+        assert not result_df.duplicated(subset=key).any()
 
     @pytest.mark.asyncio
     async def test_fetch_abiove_column_transform(self):
@@ -187,6 +329,96 @@ class TestExportacaoFetchFunctions:
             result_df, _ = await _fetch_abiove("soja", ano=2024)
         assert result_df["kg_liquido"].iloc[0] == 100000.0
         assert result_df["valor_fob_usd"].iloc[0] == 50000.0
+
+    @pytest.mark.asyncio
+    async def test_fetch_abiove_defaults_none_ano(self):
+        df = pd.DataFrame({"volume_ton": [100.0], "receita_usd_mil": [50.0]})
+        meta = mock_source_meta()
+
+        with (
+            patch(
+                "agrobr.datasets.exportacao.utcnow",
+                return_value=datetime(2026, 9, 2, tzinfo=UTC),
+            ),
+            patch(
+                "agrobr.abiove.exportacao",
+                new_callable=AsyncMock,
+                return_value=(df, meta),
+            ) as mock_fn,
+        ):
+            await _fetch_abiove("milho", ano=None)
+
+        mock_fn.assert_awaited_once_with(
+            ano=2025,
+            mes=None,
+            produto="milho",
+            return_meta=True,
+        )
+
+    @pytest.mark.asyncio
+    async def test_fetch_abiove_rejects_uf_before_source_call(self):
+        with (
+            patch("agrobr.abiove.exportacao", new_callable=AsyncMock) as mock_fn,
+            pytest.raises(SourceUnavailableError, match="apenas totais nacionais"),
+        ):
+            await _fetch_abiove("milho", ano=2024, uf="MT")
+
+        mock_fn.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("produto", "produto_abiove"),
+        [
+            ("soja", "grao"),
+            ("farelo_soja", "farelo"),
+            ("oleo_soja", "oleo"),
+            ("milho", "milho"),
+        ],
+    )
+    async def test_fetch_abiove_maps_produto_and_normalizes_output(
+        self,
+        produto: str,
+        produto_abiove: str,
+    ):
+        source_df = pd.DataFrame(
+            {
+                "ano": [2024],
+                "mes": [1],
+                "produto": [produto_abiove],
+                "volume_ton": [100.0],
+                "receita_usd_mil": [50.0],
+            }
+        )
+
+        with patch(
+            "agrobr.abiove.exportacao",
+            new_callable=AsyncMock,
+            return_value=(source_df, mock_source_meta()),
+        ) as mock_fn:
+            result_df, _ = await _fetch_abiove(produto, ano=2024)
+
+        assert result_df["produto"].tolist() == [produto]
+        assert result_df["uf"].isna().all()
+        mock_fn.assert_awaited_once_with(
+            ano=2024,
+            mes=None,
+            produto=produto_abiove,
+            return_meta=True,
+        )
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("produto", ["cafe", "algodao", "acucar"])
+    async def test_fetch_abiove_rejects_unsupported_produto_before_source_call(
+        self,
+        produto: str,
+    ):
+        with (
+            patch("agrobr.abiove.exportacao", new_callable=AsyncMock) as mock_fn,
+            pytest.raises(SourceUnavailableError, match="não disponível"),
+        ):
+            await _fetch_abiove(produto, ano=2024)
+
+        mock_fn.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_fetch_abiove_skip_transform_if_cols_exist(self):

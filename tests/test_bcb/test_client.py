@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -166,6 +168,56 @@ class TestBcbFetchCreditoRural:
             ("2023", "09"),
             ("2024", "02"),
         }
+
+    @pytest.mark.asyncio
+    async def test_filter_uf_uses_nome_uf_with_real_golden(self):
+        path = Path(__file__).parents[1] / "golden_data" / "bcb" / "custeio_sample"
+        records = json.loads((path / "response.json").read_text(encoding="utf-8"))
+
+        with patch.object(
+            client,
+            "_fetch_odata",
+            new_callable=AsyncMock,
+            return_value={"value": records},
+        ) as mock_fetch:
+            result = await client.fetch_credito_rural(
+                finalidade="custeio",
+                produto_sicor="SOJA",
+                cd_uf="51",
+            )
+
+        assert len(result) == 3
+        assert {record["nomeUF"] for record in result} == {"MT"}
+        filters = mock_fetch.call_args.kwargs["filters"]
+        assert "contains(nomeProduto,'SOJA')" in filters
+        assert "nomeUF eq 'MT'" in filters
+        assert all("cdEstado" not in item for item in filters)
+
+    @pytest.mark.asyncio
+    async def test_server_filter_includes_safra(self):
+        with patch.object(
+            client,
+            "_fetch_odata",
+            new_callable=AsyncMock,
+            return_value={"value": []},
+        ) as mock_fetch:
+            await client.fetch_credito_rural(safra_sicor="2023/2024")
+
+        filters = mock_fetch.call_args.kwargs["filters"]
+        assert filters == [
+            "((AnoEmissao eq '2023' and MesEmissao ge '07') or "
+            "(AnoEmissao eq '2024' and MesEmissao lt '07'))"
+        ]
+
+    @pytest.mark.asyncio
+    async def test_invalid_uf_code_raises_before_request(self):
+        with (
+            patch.object(client, "_fetch_odata", new_callable=AsyncMock) as mock_fetch,
+            pytest.raises(ValueError, match="Codigo de UF invalido"),
+        ):
+            await client.fetch_credito_rural(cd_uf="99")
+
+        mock_fetch.assert_not_awaited()
 
 
 class TestBcbFallback:

@@ -115,7 +115,7 @@ class TestCreditoRuralFetch:
             "soja",
             safra="2023/24",
             finalidade="investimento",
-            uf="MT",
+            uf=" mt ",
             agregacao="uf",
             programa="pronaf",
             tipo_seguro="proagro",
@@ -128,6 +128,17 @@ class TestCreditoRuralFetch:
         assert kwargs["agregacao"] == "uf"
         assert kwargs["programa"] == "pronaf"
         assert kwargs["tipo_seguro"] == "proagro"
+
+    @pytest.mark.asyncio
+    async def test_invalid_uf_raises_before_source(self):
+        dataset = CreditoRuralDataset()
+        mock_fn = AsyncMock(return_value=(_mock_df(), mock_source_meta()))
+        dataset.info.sources[0].fetch_fn = mock_fn
+
+        with pytest.raises(ValueError, match="UF invalida"):
+            await dataset.fetch("soja", uf="XX")
+
+        mock_fn.assert_not_awaited()
 
 
 class TestCreditoRuralNormalize:

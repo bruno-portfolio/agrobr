@@ -78,6 +78,34 @@ class TestFocos:
         assert (df["bioma"] == "Cerrado").all()
 
     @pytest.mark.asyncio
+    async def test_filter_bioma_without_accent(self):
+        csv_bytes = _golden_csv_bytes()
+        with patch.object(
+            api.client,
+            "fetch_focos_mensal",
+            new_callable=AsyncMock,
+            return_value=(csv_bytes, "https://example.com/focos.csv"),
+        ):
+            df = await api.focos(ano=2025, mes=1, bioma="Amazonia")
+
+        assert len(df) == 8
+        assert (df["bioma"] == "Amazônia").all()
+
+    @pytest.mark.asyncio
+    async def test_invalid_bioma_raises_before_fetch(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_focos_mensal",
+                new_callable=AsyncMock,
+            ) as mock_fetch,
+            pytest.raises(ValueError, match="Bioma inválido.*Atlantida"),
+        ):
+            await api.focos(ano=2025, mes=1, bioma="Atlantida")
+
+        mock_fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
     async def test_filter_satelite(self):
         csv_bytes = _golden_csv_bytes()
         with patch.object(
@@ -283,3 +311,14 @@ class TestFocosGeo:
 
         assert len(gdf) == 0
         assert isinstance(gdf, local_gpd.GeoDataFrame)
+
+
+@pytest.mark.integration
+class TestFocosIntegration:
+    @pytest.mark.asyncio
+    @pytest.mark.slow
+    async def test_filter_bioma_without_accent_real(self):
+        df = await api.focos(ano=2025, mes=1, uf="MT", bioma="Amazonia")
+
+        assert not df.empty
+        assert (df["bioma"] == "Amazônia").all()

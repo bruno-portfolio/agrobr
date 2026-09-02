@@ -134,11 +134,26 @@ class TestCreditoRural:
             "fetch_credito_rural_with_fallback",
             new_callable=AsyncMock,
             return_value=(_mock_sicor_data(), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24", uf="MT")
+        ) as mock_fetch:
+            df = await api.credito_rural("soja", safra="2023/24", uf=" mt ")
 
         assert len(df) == 2
         assert all(df["uf"] == "MT")
+        assert mock_fetch.call_args.kwargs["cd_uf"] == "51"
+
+    @pytest.mark.asyncio
+    async def test_invalid_uf_raises_before_request(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_credito_rural_with_fallback",
+                new_callable=AsyncMock,
+            ) as mock_fetch,
+            pytest.raises(ValueError, match="UF invalida"),
+        ):
+            await api.credito_rural("soja", safra="2023/24", uf="XX")
+
+        mock_fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_schema_version_1_1(self):
@@ -361,3 +376,13 @@ class TestCreditoRuralAsPolars:
         ):
             result = await api.credito_rural("soja", safra="2023/24", as_polars=True)
         assert isinstance(result, pl.DataFrame)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_credito_rural_live_filtra_uf_e_safra():
+    df = await api.credito_rural("soja", safra="2024/25", uf="MT")
+
+    assert not df.empty
+    assert set(df["uf"]) == {"MT"}
+    assert set(df["safra"]) == {"2024/2025"}

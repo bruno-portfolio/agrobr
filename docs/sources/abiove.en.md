@@ -36,7 +36,7 @@ df = await abiove.exportacao(ano=2024, agregacao="mensal")
 |---|---|---|
 | `ano` | int | Reference year |
 | `mes` | int | Month (1-12) |
-| `produto` | str | Product (grao, farelo, oleo, milho) |
+| `produto` | str | Product (grao, farelo, oleo, milho, total) |
 | `volume_ton` | float | Exported volume (tonnes) |
 | `receita_usd_mil` | float | FOB revenue (thousand USD) |
 

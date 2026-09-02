@@ -10,7 +10,7 @@ from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
-from . import client, parser
+from . import client, models, parser
 
 logger = structlog.get_logger()
 
@@ -49,6 +49,8 @@ async def entregas(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    produto_normalizado = models.resolve_produto(produto)
+
     warn_once(
         "anda",
         "ANDA: termos de uso não encontrados publicamente. "
@@ -56,14 +58,20 @@ async def entregas(
         "Veja docs/licenses.md para detalhes.",
     )
 
-    logger.info("anda_entregas", ano=ano, uf=uf, produto=produto, agregacao=agregacao)
+    logger.info(
+        "anda_entregas",
+        ano=ano,
+        uf=uf,
+        produto=produto_normalizado,
+        agregacao=agregacao,
+    )
 
     t0 = time.monotonic()
     pdf_bytes, ano_real = await client.fetch_entregas_pdf(ano)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_entregas_pdf(pdf_bytes, ano=ano_real, produto=produto)
+    df = parser.parse_entregas_pdf(pdf_bytes, ano=ano_real)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if uf:

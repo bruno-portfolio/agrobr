@@ -29,7 +29,7 @@ async def exportacao(
 |-----------|------|-------------|
 | `ano` | `int` | Reference year |
 | `mes` | `int \| None` | Specific month (1-12). None returns all |
-| `produto` | `str \| None` | Filter: `"grao"`, `"farelo"`, `"oleo"`, `"milho"` |
+| `produto` | `str \| None` | Filter: `"grao"`, `"farelo"`, `"oleo"`, `"milho"`, `"total"` (aggregate) |
 | `agregacao` | `str` | `"detalhado"` (by product/month) or `"mensal"` (sum) |
 | `as_polars` | `bool` | Return as polars DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |

@@ -82,6 +82,12 @@ def remover_acentos(texto: str) -> str:
     return "".join(c for c in nfkd if not unicodedata.combining(c))
 
 
+def slugificar_praca(praca: str) -> str:
+    sem_uf = re.sub(r"\s*/\s*[A-Za-z]{2}\s*$", "", praca.strip())
+    sem_acentos = remover_acentos(sem_uf).lower()
+    return re.sub(r"[^a-z0-9]+", "_", sem_acentos).strip("_")
+
+
 NOMES_PARA_UF: dict[str, str] = {
     remover_acentos(str(info["nome"]).lower()): uf for uf, info in UFS.items()
 } | {uf.lower(): uf for uf in UFS}

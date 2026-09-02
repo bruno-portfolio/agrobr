@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -272,7 +273,7 @@ class TestEstimativaSafraFallback:
             patch(
                 "agrobr.ibge.lspa",
                 new_callable=AsyncMock,
-                return_value=(_sidra_lspa_df(2022), mock_source_meta()),
+                return_value=(_sidra_lspa_df(2023), mock_source_meta()),
             ),
         ):
             df, meta = await dataset.fetch("soja", safra="2022/23", return_meta=True)
@@ -355,19 +356,66 @@ class TestEstimativaSafraFetchFunctions:
         mock_fn.assert_called_once_with("soja", safra="2024/25", uf="PR", return_meta=True)
 
     @pytest.mark.asyncio
-    async def test_fetch_ibge_lspa_maps_ano_and_normalizes(self):
+    async def test_fetch_ibge_lspa_maps_safra_to_harvest_year(self):
         meta = mock_source_meta()
         with patch(
             "agrobr.ibge.lspa",
             new_callable=AsyncMock,
-            return_value=(_sidra_lspa_df(2024), meta),
+            return_value=(_sidra_lspa_df(2025), meta),
         ) as mock_fn:
             from agrobr.datasets.estimativa_safra import _fetch_ibge_lspa
 
             df, _ = await _fetch_ibge_lspa("soja", safra="2024/25", uf="PR")
 
-        mock_fn.assert_called_once_with("soja", ano=2024, uf="PR", return_meta=True)
+        mock_fn.assert_called_once_with("soja", ano=2025, uf="PR", return_meta=True)
         assert len(df) == 1
         assert df.iloc[0]["safra"] == "2024/25"
         assert df.iloc[0]["uf"] == "PR"
         assert df.iloc[0]["produtividade"] == pytest.approx(3000.0)
+
+    @pytest.mark.asyncio
+    async def test_fetch_ibge_lspa_default_uses_current_harvest_year(self):
+        meta = mock_source_meta()
+        with (
+            patch("agrobr.datasets.estimativa_safra.date") as mock_date,
+            patch(
+                "agrobr.ibge.lspa",
+                new_callable=AsyncMock,
+                return_value=(_sidra_lspa_df(2026), meta),
+            ) as mock_fn,
+        ):
+            from agrobr.datasets.estimativa_safra import _fetch_ibge_lspa
+
+            mock_date.today.return_value = date(2026, 9, 2)
+            df, _ = await _fetch_ibge_lspa("soja")
+
+        mock_fn.assert_called_once_with("soja", ano=2026, uf=None, return_meta=True)
+        assert df.iloc[0]["safra"] == "2025/26"
+
+    @pytest.mark.asyncio
+    async def test_fetch_ibge_lspa_maps_century_rollover(self):
+        meta = mock_source_meta()
+        with patch(
+            "agrobr.ibge.lspa",
+            new_callable=AsyncMock,
+            return_value=(_sidra_lspa_df(2000), meta),
+        ) as mock_fn:
+            from agrobr.datasets.estimativa_safra import _fetch_ibge_lspa
+
+            df, _ = await _fetch_ibge_lspa("soja", safra="1999/00")
+
+        mock_fn.assert_called_once_with("soja", ano=2000, uf=None, return_meta=True)
+        assert df.iloc[0]["safra"] == "1999/00"
+
+
+@pytest.mark.integration
+class TestEstimativaSafraIntegration:
+    @pytest.mark.asyncio
+    @pytest.mark.slow
+    async def test_fetch_ibge_lspa_uses_harvest_year_real(self):
+        from agrobr.datasets.estimativa_safra import _fetch_ibge_lspa
+
+        df, _ = await _fetch_ibge_lspa("soja", safra="2022/23")
+
+        assert df.iloc[0]["safra"] == "2022/23"
+        assert 150_000 < df.iloc[0]["producao"] < 153_000

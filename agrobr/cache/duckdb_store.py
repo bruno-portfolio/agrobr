@@ -9,6 +9,7 @@ import duckdb
 import structlog
 
 from agrobr import constants
+from agrobr.normalize import regions
 from agrobr.utils.time import utcnow
 
 logger = structlog.get_logger()
@@ -159,10 +160,6 @@ class DuckDBStore:
                 conditions.append("data <= ?")
                 params.append(fim)
 
-            if praca:
-                conditions.append("praca = ?")
-                params.append(praca)
-
             where = " AND ".join(conditions)
 
             result = conn.execute(
@@ -191,12 +188,22 @@ class DuckDBStore:
 
         indicadores = [dict(zip(columns, row)) for row in result]
 
+        if praca:
+            praca_slug = regions.slugificar_praca(praca)
+            indicadores = [
+                indicador
+                for indicador in indicadores
+                if indicador["praca"]
+                and regions.slugificar_praca(str(indicador["praca"])) == praca_slug
+            ]
+
         logger.debug(
             "indicadores_query",
             produto=produto,
             count=len(indicadores),
             inicio=inicio,
             fim=fim,
+            praca=praca,
         )
 
         return indicadores

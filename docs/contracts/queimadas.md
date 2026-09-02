@@ -28,6 +28,10 @@ Focos de calor detectados por satélite — INPE Queimadas.
 - `ano: int` — ano dos focos
 - `mes: int` — mês dos focos
 
+## Filtro de bioma
+
+`bioma` aceita Amazônia, Cerrado, Mata Atlântica, Caatinga, Pampa e Pantanal, com ou sem acentos e sem distinção entre maiúsculas e minúsculas. Valores desconhecidos levantam `ValueError` antes da consulta à fonte.
+
 ## Exemplo
 
 ```python

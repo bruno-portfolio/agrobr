@@ -14,6 +14,19 @@ def validate_uf(uf: str | None) -> str | None:
     return uf_upper
 
 
+def validate_bioma(bioma: str | None) -> str | None:
+    if bioma is None:
+        return None
+
+    from agrobr.normalize.regions import BIOMAS_VALIDOS, normalizar_bioma
+
+    bioma_normalizado = normalizar_bioma(bioma)
+    if bioma_normalizado not in BIOMAS_VALIDOS:
+        validos = ", ".join(sorted(BIOMAS_VALIDOS))
+        raise ValueError(f"Bioma inválido: {bioma!r}. Valores válidos: {validos}")
+    return bioma_normalizado
+
+
 def validate_year_uf(
     *,
     uf: str | None = None,

@@ -29,7 +29,7 @@ async def credito_rural(
 | `produto` | `str` | Product (soja, milho, arroz, feijao, trigo, algodao, cafe, cana, sorgo) |
 | `safra` | `str \| None` | Crop year, "2024/25" format. Default: latest crop year |
 | `finalidade` | `str` | `"custeio"`, `"investimento"` or `"comercializacao"` |
-| `uf` | `str \| None` | Filter by state (e.g. "MT", "PR") |
+| `uf` | `str \| None` | State abbreviation (e.g. "MT", "PR"); whitespace/case are normalized and invalid values raise `ValueError` |
 | `agregacao` | `str` | `"municipio"` (default), `"uf"` or `"programa"` |
 | `programa` | `str \| None` | Filter by program (e.g. "Pronamp", "Pronaf") |
 | `tipo_seguro` | `str \| None` | Filter by insurance type (e.g. "Proagro", "Seguro privado") |

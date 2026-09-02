@@ -28,6 +28,7 @@ from agrobr.contracts.datasets import (
     CREDITO_RURAL_V1_1,
     EXPORTACAO_V1,
     FERTILIZANTE_V1,
+    FERTILIZANTE_V2,
     MAPA_PSR_APOLICES_V1,
     MAPA_PSR_SINISTROS_V1,
     MOVIMENTACAO_PORTUARIA_V1,
@@ -585,11 +586,14 @@ class TestNewContracts:
         assert col.min_value == 1997
 
     def test_fertilizante_contract(self):
-        assert FERTILIZANTE_V1.name == "anda.fertilizante"
-        assert FERTILIZANTE_V1.primary_key == ["ano", "mes", "uf", "produto_fertilizante"]
+        assert FERTILIZANTE_V2.name == "anda.fertilizante"
+        assert FERTILIZANTE_V2.version == "2.0"
+        assert FERTILIZANTE_V2.primary_key == ["ano", "mes", "uf", "produto_fertilizante"]
+        assert get_contract("fertilizante") is FERTILIZANTE_V2
+        assert FERTILIZANTE_V1.version == "1.0"
 
     def test_fertilizante_mes_range(self):
-        col = FERTILIZANTE_V1.get_column("mes")
+        col = FERTILIZANTE_V2.get_column("mes")
         assert col is not None
         assert col.min_value == 1
         assert col.max_value == 12

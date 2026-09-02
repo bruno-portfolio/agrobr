@@ -10,7 +10,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.normalize.dates import anos_para_safra, month_to_number
+from agrobr.normalize.dates import anos_para_safra, month_to_number, safra_para_anos
 
 logger = structlog.get_logger()
 
@@ -94,11 +94,12 @@ async def _fetch_ibge_lspa(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
 
     safra = kwargs.get("safra")
     uf = kwargs.get("uf")
-    ano = int(safra.split("/")[0]) if safra else date.today().year
+    ano = safra_para_anos(safra)[1] if safra else date.today().year
+    safra_resultado = safra or anos_para_safra(ano - 1)
 
     result = await ibge.lspa(produto, ano=ano, uf=uf, return_meta=True)
     df, meta = _unpack_result(result)
-    df = _normalize_lspa(df, produto, safra or anos_para_safra(ano), uf)
+    df = _normalize_lspa(df, produto, safra_resultado, uf)
     if df.empty:
         raise SourceUnavailableError(
             source="ibge_lspa",

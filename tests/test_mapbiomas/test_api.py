@@ -113,6 +113,29 @@ class TestCobertura:
         assert (df["estado"].str.upper() == "AC").all()
 
     @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("estado", "esperado"),
+        [
+            ("Acre", "AC"),
+            (" acre ", "AC"),
+            ("Goiás", "GO"),
+            ("Goias", "GO"),
+        ],
+    )
+    async def test_filter_estado_nome_completo(self, estado: str, esperado: str):
+        xlsx_bytes = _golden_xlsx()
+        with patch.object(
+            api.client,
+            "fetch_biome_state",
+            new_callable=AsyncMock,
+            return_value=(xlsx_bytes, "https://storage.googleapis.com/mapbiomas-public/test.xlsx"),
+        ):
+            df = await api.cobertura(estado=estado)
+
+        assert not df.empty
+        assert set(df["estado"]) == {esperado}
+
+    @pytest.mark.asyncio
     async def test_filter_ano(self):
         xlsx_bytes = _golden_xlsx()
         with patch.object(
@@ -141,17 +164,19 @@ class TestCobertura:
         assert (df["classe_id"] == 3).all()
 
     @pytest.mark.asyncio
-    async def test_empty_filter(self):
-        xlsx_bytes = _golden_xlsx()
-        with patch.object(
-            api.client,
-            "fetch_biome_state",
-            new_callable=AsyncMock,
-            return_value=(xlsx_bytes, "https://storage.googleapis.com/mapbiomas-public/test.xlsx"),
+    @pytest.mark.parametrize("estado", ["XX", " ", "Goi"])
+    async def test_invalid_estado_raises_before_fetch(self, estado: str):
+        with (
+            patch.object(
+                api.client,
+                "fetch_biome_state",
+                new_callable=AsyncMock,
+            ) as mock_fetch,
+            pytest.raises(ValueError, match="Estado inválido"),
         ):
-            df = await api.cobertura(estado="XX")
+            await api.cobertura(estado=estado)
 
-        assert len(df) == 0
+        mock_fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_combined_filters(self):
@@ -223,12 +248,26 @@ class TestCoberturaMunicipal:
             new_callable=AsyncMock,
             return_value=(xlsx_bytes, "https://data.mapbiomas.org/test_mun.xlsx"),
         ):
-            df = await api.cobertura(nivel="municipio", estado="PA", municipio="Belém", ano=2020)
+            df = await api.cobertura(nivel="municipio", estado="Pará", municipio="Belém", ano=2020)
 
         assert len(df) >= 1
         assert (df["estado"].str.upper() == "PA").all()
         assert (df["municipio"].str.contains("Belém")).all()
         assert (df["ano"] == 2020).all()
+
+    @pytest.mark.asyncio
+    async def test_invalid_estado_raises_before_municipal_fetch(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_biome_state_municipality",
+                new_callable=AsyncMock,
+            ) as mock_fetch,
+            pytest.raises(ValueError, match="Estado inválido"),
+        ):
+            await api.cobertura(nivel="municipio", estado="XX")
+
+        mock_fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_return_meta_municipal(self):
@@ -312,6 +351,20 @@ class TestTransicao:
         assert (df["bioma"] == "Cerrado").all()
 
     @pytest.mark.asyncio
+    async def test_filter_estado_nome_completo(self):
+        xlsx_bytes = _golden_xlsx()
+        with patch.object(
+            api.client,
+            "fetch_biome_state",
+            new_callable=AsyncMock,
+            return_value=(xlsx_bytes, "https://storage.googleapis.com/mapbiomas-public/test.xlsx"),
+        ):
+            df = await api.transicao(estado="Goiás")
+
+        assert not df.empty
+        assert set(df["estado"]) == {"GO"}
+
+    @pytest.mark.asyncio
     async def test_filter_periodo(self):
         xlsx_bytes = _golden_xlsx()
         with patch.object(
@@ -354,17 +407,18 @@ class TestTransicao:
         assert (df["classe_para_id"] == 3).all()
 
     @pytest.mark.asyncio
-    async def test_empty_filter(self):
-        xlsx_bytes = _golden_xlsx()
-        with patch.object(
-            api.client,
-            "fetch_biome_state",
-            new_callable=AsyncMock,
-            return_value=(xlsx_bytes, "https://storage.googleapis.com/mapbiomas-public/test.xlsx"),
+    async def test_invalid_estado_raises_before_fetch(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_biome_state",
+                new_callable=AsyncMock,
+            ) as mock_fetch,
+            pytest.raises(ValueError, match="Estado inválido"),
         ):
-            df = await api.transicao(estado="XX")
+            await api.transicao(estado="XX")
 
-        assert len(df) == 0
+        mock_fetch.assert_not_awaited()
 
 
 class TestValidacaoColecao:

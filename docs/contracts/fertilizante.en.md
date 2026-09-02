@@ -1,4 +1,4 @@
-# fertilizante v1.0
+# fertilizante v2.0
 
 Fertilizer deliveries by state and month.
 
@@ -10,7 +10,12 @@ Fertilizer deliveries by state and month.
 
 ## Products
 
-`total`, `npk`, `ureia`, `map`, `dap`, `ssp`, `tsp`, `kcl`
+`total`
+
+!!! warning "Migrating from v1.0"
+    `npk`, `ureia`, `map`, `dap`, `ssp`, `tsp`, and `kcl` were never filtered
+    at the source: the total volume was merely relabeled with the requested
+    value. v2.0 rejects them with `ValueError` to prevent incorrect data.
 
 ## Schema
 
@@ -32,6 +37,7 @@ Fertilizer deliveries by state and month.
 - `ano` is always >= 2000
 - `mes` between 1 and 12
 - Numeric values are always >= 0
+- `produto_fertilizante` is always `total`
 
 ## Example
 
@@ -41,7 +47,7 @@ from agrobr import datasets
 # Async
 df = await datasets.fertilizante(ano=2024)
 df = await datasets.fertilizante(ano=2024, uf="MT")
-df = await datasets.fertilizante(ano=2024, produto="ureia")
+df = await datasets.fertilizante(ano=2024, produto="total")
 
 # With metadata
 df, meta = await datasets.fertilizante(ano=2024, return_meta=True)

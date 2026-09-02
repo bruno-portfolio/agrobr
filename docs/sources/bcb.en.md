@@ -81,16 +81,17 @@ print(meta.source)          # "bcb"
 print(meta.schema_version)  # "1.1"
 ```
 
-## Status (Feb/2026)
+## Status (Sep/2026)
 
 The SICOR API was restructured (~2024). Old endpoints (`CusteioMunicipio`,
 `InvestimentoMunicipio`) were replaced by `CusteioRegiaoUFProduto`,
 `InvestRegiaoUFProduto`, `ComercRegiaoUFProduto`.
 
-The OData operator `$filter eq` does not work on the new endpoints. The client uses
-`contains(nomeProduto,'...')` for server-side filtering by product, and filters
-year/state client-side after paginated download. Filters by program and insurance
-type are also client-side (the API does not support `$filter` on those fields).
+The client uses `contains(nomeProduto,'...')` for products and equality on
+`nomeUF` for states. Crop years are also constrained server-side through
+`AnoEmissao` and `MesEmissao`; both filters are checked again client-side so an
+inconsistent source response cannot reach the parser. Program and insurance type
+filters remain client-side.
 
 Retry with exponential backoff (6 attempts, 120s read timeout).
 The API returns HTTP 500 intermittently. Since v0.8.0, agrobr
