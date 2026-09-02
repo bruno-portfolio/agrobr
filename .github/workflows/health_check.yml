@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   health:
     runs-on: ubuntu-latest
@@ -20,10 +23,10 @@ jobs:
       AGROBR_ALERT_DISCORD_WEBHOOK: ${{ secrets.AGROBR_DISCORD_WEBHOOK }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -33,7 +36,7 @@ jobs:
           pip install -e ".[dev]"
 
       - name: Restore health DB cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: ~/.agrobr/cache/agrobr.duckdb
           key: health-db-${{ github.run_number }}-${{ github.run_attempt }}
@@ -107,14 +110,14 @@ jobs:
 
       - name: Save health DB cache
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: ~/.agrobr/cache/agrobr.duckdb
           key: health-db-${{ github.run_number }}-${{ github.run_attempt }}
 
       - name: Upload report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: health-report-${{ github.run_number }}
           path: health_report.json
