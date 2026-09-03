@@ -8,7 +8,10 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
+from agrobr import constants
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.ibge import client
+from tests.helpers import RETRY_SLEEP, make_sleep_tracker
 
 
 class TestIbgeSidraTimeout:
@@ -33,6 +36,41 @@ class TestIbgeSidraTimeout:
 
 
 class TestIbgeSidraHTTPErrors:
+    @pytest.mark.asyncio
+    async def test_sidrapy_value_error_retries_as_source_unavailable(self):
+        max_retries = constants.HTTPSettings().max_retries
+        sleep_calls, track_sleep = make_sleep_tracker()
+
+        with (
+            patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra,
+            patch(RETRY_SLEEP, side_effect=track_sleep),
+            pytest.raises(SourceUnavailableError, match="Service Unavailable") as exc_info,
+        ):
+            mock_sidra.side_effect = ValueError("<html>Service Unavailable")
+            await client.fetch_sidra(table_code="5457")
+
+        assert mock_sidra.call_count == max_retries
+        assert len(sleep_calls) == max_retries - 1
+        assert exc_info.value.url.endswith("/values/t/5457")
+
+    @pytest.mark.asyncio
+    async def test_sidrapy_value_error_then_success(self):
+        sleep_calls, track_sleep = make_sleep_tracker()
+
+        with (
+            patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra,
+            patch(RETRY_SLEEP, side_effect=track_sleep),
+        ):
+            mock_sidra.side_effect = [
+                ValueError("<html>Service Unavailable"),
+                pd.DataFrame({"V": ["100"]}),
+            ]
+            result = await client.fetch_sidra(table_code="5457")
+
+        assert result["V"].tolist() == ["100"]
+        assert mock_sidra.call_count == 2
+        assert len(sleep_calls) == 1
+
     @pytest.mark.asyncio
     async def test_http_500_propagates(self):
         with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:

@@ -379,7 +379,7 @@ class TestFetchArcgisCount:
                 new_callable=AsyncMock,
                 return_value=response,
             ),
-            pytest.raises(SourceUnavailableError, match="invalid JSON"),
+            pytest.raises(SourceUnavailableError, match="Resposta não é JSON"),
         ):
             await fetch_arcgis_count(
                 "http://example.com/FeatureServer/0",

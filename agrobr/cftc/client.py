@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -62,7 +63,7 @@ async def fetch_cot(
             source="cftc",
         )
         response.raise_for_status()
-        data = response.json()
+        data = responses.parse_json_response(response, source="cftc", url=url)
 
     if not data or not isinstance(data, list):
         raise SourceUnavailableError(

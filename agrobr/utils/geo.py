@@ -13,6 +13,7 @@ import structlog
 
 from agrobr.constants import MIN_WFS_SIZE
 from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.user_agents import UserAgentRotator
 
@@ -47,6 +48,17 @@ def check_geopandas() -> Any:
     except ImportError:
         raise ImportError(
             "geopandas is required for geo functions. Install with: pip install agrobr[geo]"
+        ) from None
+
+
+def check_pyogrio() -> Any:
+    try:
+        import pyogrio
+
+        return pyogrio
+    except ImportError:
+        raise ImportError(
+            "pyogrio is required for Acervo Fundiario. Install with: pip install agrobr[geo]"
         ) from None
 
 
@@ -297,14 +309,7 @@ async def fetch_arcgis_count(
     ) as http:
         response = await retry_on_status(lambda: http.get(url), source=source)
         response.raise_for_status()
-        try:
-            data = response.json()
-        except ValueError as error:
-            raise SourceUnavailableError(
-                source=source,
-                url=url,
-                last_error=f"ArcGIS returned invalid JSON: {error}",
-            ) from error
+        data = responses.parse_json_response(response, source=source, url=url)
     error_message = _arcgis_error_message(data)
     if error_message is not None:
         raise SourceUnavailableError(source=source, url=url, last_error=error_message)

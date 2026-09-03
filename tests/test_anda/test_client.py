@@ -198,7 +198,7 @@ class TestFetchEstatisticasPage:
 class TestDownloadFile:
     @pytest.mark.asyncio
     async def test_valid_file_returns_bytes(self):
-        content = b"x" * 600
+        content = b"%PDF" + b"x" * 596
         resp = make_mock_response(200, text="ok", content=content, url="https://anda.org.br/f.pdf")
         mock_client = make_mock_async_client()
         mock_client.get = AsyncMock(return_value=resp)

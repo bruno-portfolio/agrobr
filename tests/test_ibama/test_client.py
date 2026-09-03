@@ -63,7 +63,7 @@ class TestFetchEmbargosZip:
                 new_callable=AsyncMock,
                 return_value=_mock_response(b"<html>erro</html>" * 100),
             ),
-            pytest.raises(SourceUnavailableError, match="ZIP válido"),
+            pytest.raises(SourceUnavailableError, match="Assinatura inválida para zip"),
         ):
             await client.fetch_embargos_zip()
 

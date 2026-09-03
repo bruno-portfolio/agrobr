@@ -7,6 +7,7 @@ from agrobr.constants import MIN_CSV_SIZE
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 logger = structlog.get_logger()
 
@@ -28,16 +29,13 @@ async def download_csv(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < MIN_CSV_SIZE:
-            from agrobr.exceptions import SourceUnavailableError
-
-            raise SourceUnavailableError(
-                source="mapa_psr",
-                url=url,
-                last_error=(
-                    f"Downloaded CSV too small ({len(content)} bytes), expected valid CSV data"
-                ),
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("csv",),
+            source="mapa_psr",
+            url=url,
+            min_size=MIN_CSV_SIZE,
+        )
 
         logger.info(
             "mapa_psr_download_ok",

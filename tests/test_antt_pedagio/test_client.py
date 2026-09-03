@@ -366,8 +366,8 @@ class TestGetCkanResourcesWafHtml:
                     await _get_ckan_resources("praca-de-pedagio")
 
         msg = str(exc_info.value)
-        assert "not JSON" in msg
-        assert "WAF block" in msg or "outage" in msg
+        assert "Resposta não é JSON" in msg
+        assert "WAF" in msg or "manutenção" in msg
         assert "text/html" in msg
         assert "Request Rejected" in msg
 
@@ -385,7 +385,7 @@ class TestGetCkanResourcesWafHtml:
                 "agrobr.alt.antt_pedagio.client.retry_on_status", new_callable=AsyncMock
             ) as mock_retry:
                 mock_retry.return_value = mock_response
-                with pytest.raises(SourceUnavailableError, match="not JSON"):
+                with pytest.raises(SourceUnavailableError, match="Resposta não é JSON"):
                     await _get_ckan_resources("praca-de-pedagio")
 
 

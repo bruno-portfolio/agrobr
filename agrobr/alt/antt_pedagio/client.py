@@ -4,6 +4,7 @@ import httpx
 import structlog
 
 from agrobr.constants import MIN_CSV_SIZE
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -33,21 +34,7 @@ async def _get_ckan_resources(slug: str) -> list[dict[str, str]]:
             source="antt_pedagio",
         )
         response.raise_for_status()
-        try:
-            data = response.json()
-        except ValueError as e:
-            from agrobr.exceptions import SourceUnavailableError
-
-            preview = response.text[:200].strip().replace("\n", " ")
-            raise SourceUnavailableError(
-                source="antt_pedagio",
-                url=url,
-                last_error=(
-                    f"CKAN response is not JSON (likely WAF block or portal outage). "
-                    f"Content-Type: {response.headers.get('content-type', 'unknown')!r}. "
-                    f"Body preview: {preview!r}"
-                ),
-            ) from e
+        data = responses.parse_json_response(response, source="antt_pedagio", url=url)
 
     if not isinstance(data, dict) or "result" not in data:
         from agrobr.exceptions import SourceUnavailableError

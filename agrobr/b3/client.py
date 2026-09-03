@@ -7,9 +7,11 @@ import structlog
 
 from agrobr.constants import MIN_CSV_SIZE, MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 logger = structlog.get_logger()
 
@@ -42,13 +44,19 @@ async def fetch_ajustes_zip(data: str) -> tuple[bytes, str]:
         response.raise_for_status()
         content = response.content
 
-        if len(content) < MIN_ZIP_SIZE:
-            last_error = (
-                f"ZIP vazio ({len(content)} bytes) — pregão de {data} ainda não publicado"
-                if len(content) <= 100
-                else f"ZIP too small ({len(content)} bytes)"
+        if len(content) <= 100:
+            raise SourceUnavailableError(
+                source="b3",
+                url=url,
+                last_error=f"ZIP vazio ({len(content)} bytes) — pregão de {data} ainda não publicado",
             )
-            raise SourceUnavailableError(source="b3", url=url, last_error=last_error)
+        io_utils.validate_download(
+            content,
+            kinds=("zip",),
+            source="b3",
+            url=url,
+            min_size=MIN_ZIP_SIZE,
+        )
 
         logger.info("b3_zip_fetch_ok", source="b3", size=len(content))
         return content, url
@@ -74,7 +82,7 @@ async def fetch_posicoes_abertas(data: str) -> tuple[bytes, str]:
             )
         token_resp.raise_for_status()
 
-        token_data = token_resp.json()
+        token_data = responses.parse_json_response(token_resp, source="b3", url=token_url)
         token = token_data.get("token")
         if not token:
             raise SourceUnavailableError(

@@ -9,6 +9,7 @@ import sidrapy
 import structlog
 
 from agrobr import constants
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.rate_limiter import RateLimiter
 
 logger = structlog.get_logger()
@@ -643,11 +644,20 @@ async def fetch_sidra(
 
         from agrobr.http.retry import retry_async
 
+        sidra_url = f"{constants.URLS[constants.Fonte.IBGE]['api']}/values/t/{table_code}"
+
         async def _do_fetch() -> pd.DataFrame:
-            df = await asyncio.wait_for(
-                asyncio.to_thread(sidrapy.get_table, **kwargs),
-                timeout=SIDRA_FETCH_TIMEOUT,
-            )
+            try:
+                df = await asyncio.wait_for(
+                    asyncio.to_thread(sidrapy.get_table, **kwargs),
+                    timeout=SIDRA_FETCH_TIMEOUT,
+                )
+            except ValueError as exc:
+                raise SourceUnavailableError(
+                    source="ibge",
+                    url=sidra_url,
+                    last_error=str(exc)[:300],
+                ) from exc
             return pd.DataFrame(df)
 
         df = await retry_async(
@@ -659,6 +669,7 @@ async def fetch_sidra(
                 requests.exceptions.ConnectionError,
                 requests.exceptions.Timeout,
                 TimeoutError,
+                SourceUnavailableError,
             ),
         )
 

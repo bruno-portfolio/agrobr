@@ -20,7 +20,7 @@ async def test_fetch_unknown_safra_raises():
 async def test_fetch_returns_bytes():
     fake_resp = MagicMock(spec=httpx.Response)
     fake_resp.status_code = 200
-    fake_resp.content = b"A" * 100_000
+    fake_resp.content = b"%PDF" + b"A" * 99_996
     fake_resp.raise_for_status = MagicMock()
 
     with patch("agrobr.rio_verde.client.retry_on_status", new_callable=AsyncMock) as mock_retry:

@@ -65,7 +65,7 @@ class TestDeralHTTPErrors:
 
     @pytest.mark.asyncio
     async def test_http_429_retries_then_succeeds(self):
-        ok_content = b"x" * 1500
+        ok_content = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1" + b"x" * 1500
         resp_429 = make_mock_response(429, content=b"xls-data", url="https://test.pr.gov.br/PC.xls")
         resp_ok = make_mock_response(200, content=ok_content, url="https://test.pr.gov.br/PC.xls")
         mock_client = make_mock_async_client()

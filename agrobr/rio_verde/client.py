@@ -6,6 +6,7 @@ import structlog
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 from .models import MIN_PDF_SIZE, SAFRAS_URLS
 
@@ -39,14 +40,13 @@ async def fetch_ensaio_soja(safra: str) -> tuple[bytes, str]:
         response.raise_for_status()
         content = response.content
 
-        if len(content) < MIN_PDF_SIZE:
-            from agrobr.exceptions import SourceUnavailableError
-
-            raise SourceUnavailableError(
-                source="rio_verde",
-                url=url,
-                last_error=f"PDF too small ({len(content)} bytes)",
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("pdf",),
+            source="rio_verde",
+            url=url,
+            min_size=MIN_PDF_SIZE,
+        )
 
     logger.info("rio_verde_fetch_ok", safra=safra, size_bytes=len(content))
     return content, url

@@ -8,6 +8,7 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 from agrobr.utils.io import extract_csv_from_zip
 
 from .models import MIN_CSV_BYTES, ZIP_URL
@@ -31,12 +32,13 @@ async def fetch_embargos_zip() -> tuple[bytes, str]:
         response.raise_for_status()
         content = response.content
 
-    if len(content) < MIN_ZIP_SIZE:
-        raise SourceUnavailableError(
-            source="ibama",
-            url=ZIP_URL,
-            last_error=f"ZIP too small ({len(content)} bytes)",
-        )
+    io_utils.validate_download(
+        content,
+        kinds=("zip",),
+        source="ibama",
+        url=ZIP_URL,
+        min_size=MIN_ZIP_SIZE,
+    )
 
     csv_bytes = extract_csv_from_zip(content, source="ibama", url=ZIP_URL)
     if len(csv_bytes) < MIN_CSV_BYTES:

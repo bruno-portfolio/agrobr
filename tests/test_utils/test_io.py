@@ -2,8 +2,52 @@ from __future__ import annotations
 
 import pytest
 
-from agrobr.exceptions import ParseError
-from agrobr.utils.io import read_csv_safe
+from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.utils.io import read_csv_safe, validate_download
+
+
+class TestValidateDownload:
+    @pytest.mark.parametrize(
+        ("kind", "content"),
+        [
+            ("zip", b"PK\x03\x04" + b"x" * 100),
+            ("xlsx", b"PK\x03\x04" + b"x" * 100),
+            ("xls", b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1" + b"x" * 100),
+            ("pdf", b"%PDF-1.7" + b"x" * 100),
+            ("csv", b"coluna,valor\nsoja,1" + b"x" * 100),
+        ],
+    )
+    def test_assinatura_valida(self, kind, content):
+        validate_download(
+            content,
+            kinds=(kind,),
+            source="test",
+            url="https://example.test/file",
+            min_size=10,
+        )
+
+    @pytest.mark.parametrize("kind", ["zip", "xlsx", "xls", "pdf", "csv"])
+    def test_html_disfarcado(self, kind):
+        content = b"  <!DOCTYPE html><html>manutencao</html>" + b"x" * 100
+
+        with pytest.raises(SourceUnavailableError, match="Assinatura inválida"):
+            validate_download(
+                content,
+                kinds=(kind,),
+                source="test",
+                url="https://example.test/file",
+                min_size=10,
+            )
+
+    def test_arquivo_pequeno(self):
+        with pytest.raises(SourceUnavailableError, match="Download muito pequeno"):
+            validate_download(
+                b"PK\x03\x04",
+                kinds=("zip",),
+                source="test",
+                url="https://example.test/file",
+                min_size=10,
+            )
 
 
 class TestReadCsvSafe:

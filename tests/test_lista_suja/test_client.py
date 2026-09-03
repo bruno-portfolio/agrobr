@@ -11,7 +11,7 @@ from agrobr.lista_suja import client
 class TestFetchEmpregadores:
     @pytest.mark.asyncio
     async def test_valid_download(self):
-        xlsx_bytes = b"\x00" * 5000
+        xlsx_bytes = b"%PDF" + b"\x00" * 4996
         mock_resp = MagicMock()
         mock_resp.status_code = 200
         mock_resp.content = xlsx_bytes

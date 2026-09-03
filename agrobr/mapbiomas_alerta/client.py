@@ -8,6 +8,7 @@ import httpx
 import structlog
 
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -58,7 +59,11 @@ async def _graphql_request(
             source="mapbiomas_alerta",
         )
         response.raise_for_status()
-        data = response.json()
+        data = responses.parse_json_response(
+            response,
+            source="mapbiomas_alerta",
+            url=GRAPHQL_URL,
+        )
         if "errors" in data:
             errors = data["errors"]
             msg = errors[0].get("message", str(errors)) if errors else "Unknown GraphQL error"

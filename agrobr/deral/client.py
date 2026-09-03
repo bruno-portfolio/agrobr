@@ -8,6 +8,7 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 logger = structlog.get_logger()
 
@@ -39,15 +40,13 @@ async def _fetch_bytes(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < MIN_XLSX_SIZE:
-            raise SourceUnavailableError(
-                source="deral",
-                url=url,
-                last_error=(
-                    f"Downloaded file too small ({len(content)} bytes), "
-                    f"expected a valid spreadsheet"
-                ),
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("xls",),
+            source="deral",
+            url=url,
+            min_size=MIN_XLSX_SIZE,
+        )
         return content
 
 

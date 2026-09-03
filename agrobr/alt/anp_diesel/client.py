@@ -7,6 +7,7 @@ from agrobr.constants import MIN_CSV_SIZE, MIN_XLSX_SIZE
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 logger = structlog.get_logger()
 
@@ -29,17 +30,13 @@ async def download_xlsx(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < MIN_XLSX_SIZE:
-            from agrobr.exceptions import SourceUnavailableError
-
-            raise SourceUnavailableError(
-                source="anp_diesel",
-                url=url,
-                last_error=(
-                    f"Downloaded file too small ({len(content)} bytes), "
-                    f"expected a valid XLSX/XLS spreadsheet"
-                ),
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("xlsx",),
+            source="anp_diesel",
+            url=url,
+            min_size=MIN_XLSX_SIZE,
+        )
 
         logger.info(
             "anp_diesel_download_ok",
@@ -89,16 +86,13 @@ async def download_csv(url: str) -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < MIN_CSV_SIZE:
-            from agrobr.exceptions import SourceUnavailableError
-
-            raise SourceUnavailableError(
-                source="anp_diesel",
-                url=url,
-                last_error=(
-                    f"Downloaded CSV too small ({len(content)} bytes), expected valid CSV data"
-                ),
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("csv",),
+            source="anp_diesel",
+            url=url,
+            min_size=MIN_CSV_SIZE,
+        )
 
         logger.info(
             "anp_diesel_download_csv_ok",

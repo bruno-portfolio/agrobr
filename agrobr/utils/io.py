@@ -13,6 +13,52 @@ _ExcelEngine = Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"]
 
 logger = structlog.get_logger()
 
+_DOWNLOAD_SIGNATURES = {
+    "zip": b"PK\x03\x04",
+    "xlsx": b"PK\x03\x04",
+    "xls": b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",
+    "pdf": b"%PDF",
+}
+
+
+def validate_download(
+    content: bytes,
+    *,
+    kinds: tuple[str, ...],
+    source: str,
+    url: str,
+    min_size: int,
+) -> None:
+    preview = repr(content[:60])
+    if len(content) < min_size:
+        raise SourceUnavailableError(
+            source=source,
+            url=url,
+            last_error=(
+                f"Download muito pequeno (too small): {len(content)} bytes; mínimo {min_size}; "
+                f"início={preview}"
+            ),
+        )
+
+    valid = False
+    for kind in kinds:
+        if kind == "csv":
+            prefix = content[:512].lstrip().lower()
+            valid = not (prefix.startswith(b"<") or b"<html" in prefix or b"<!doctype" in prefix)
+        elif kind in _DOWNLOAD_SIGNATURES:
+            valid = content.startswith(_DOWNLOAD_SIGNATURES[kind])
+        else:
+            raise ValueError(f"Tipo de download desconhecido: {kind!r}")
+        if valid:
+            return
+
+    expected = ", ".join(kinds)
+    raise SourceUnavailableError(
+        source=source,
+        url=url,
+        last_error=f"Assinatura inválida para {expected}; início={preview}",
+    )
+
 
 def _extract_bytes(data: bytes | io.BytesIO) -> bytes:
     if isinstance(data, io.BytesIO):

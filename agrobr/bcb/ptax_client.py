@@ -7,6 +7,7 @@ import httpx
 import structlog
 
 from agrobr.constants import URLS, Fonte
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -61,7 +62,7 @@ async def fetch_ptax(
             max_attempts=PTAX_MAX_RETRIES,
         )
         response.raise_for_status()
-        payload = response.json()
+        payload = responses.parse_json_response(response, source="bcb_ptax", url=url)
 
     records = payload.get("value", [])
 

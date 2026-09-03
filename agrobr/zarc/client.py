@@ -4,9 +4,11 @@ import httpx
 import structlog
 
 from agrobr.constants import MIN_CSV_SIZE
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 from .models import DATASET_SLUG, build_ckan_package_url
 
@@ -29,7 +31,7 @@ async def discover_resources() -> list[dict[str, str]]:
             source="zarc",
         )
         response.raise_for_status()
-        data = response.json()
+        data = responses.parse_json_response(response, source="zarc", url=url)
 
     if not isinstance(data, dict) or "result" not in data:
         from agrobr.exceptions import SourceUnavailableError
@@ -69,14 +71,13 @@ async def download_csv(url: str) -> bytes:
         response.raise_for_status()
         content = response.content
 
-        if len(content) < MIN_CSV_SIZE:
-            from agrobr.exceptions import SourceUnavailableError
-
-            raise SourceUnavailableError(
-                source="zarc",
-                url=url,
-                last_error=f"CSV too small ({len(content)} bytes)",
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("csv",),
+            source="zarc",
+            url=url,
+            min_size=MIN_CSV_SIZE,
+        )
 
     logger.info("zarc_download_ok", source="zarc", size_bytes=len(content))
     return content

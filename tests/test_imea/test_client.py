@@ -90,15 +90,16 @@ class TestImeaEmptyResponse:
         assert result == []
 
     @pytest.mark.asyncio
-    async def test_non_list_response_returns_empty(self):
+    async def test_non_list_response_raises_source_unavailable(self):
         resp = make_mock_response(200, json_data={"error": "unexpected"})
         mock_client = make_mock_async_client()
         mock_client.get = AsyncMock(return_value=resp)
 
-        with patch("agrobr.imea.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client._fetch_json("https://api1.imea.com.br/test")
-
-        assert result == []
+        with (
+            patch("agrobr.imea.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="JSON inesperado: dict"),
+        ):
+            await client._fetch_json("https://api1.imea.com.br/test")
 
 
 class TestImeaRetryBackoff:

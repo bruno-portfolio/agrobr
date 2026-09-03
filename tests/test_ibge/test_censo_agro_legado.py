@@ -159,7 +159,7 @@ class TestFtpClientDownload:
 
             from agrobr.exceptions import SourceUnavailableError
 
-            with pytest.raises(SourceUnavailableError, match="ZIP too small"):
+            with pytest.raises(SourceUnavailableError, match="too small"):
                 await ftp_client.download_legacy_zip("Tab_3")
 
     @pytest.mark.asyncio
@@ -312,6 +312,15 @@ class TestDetectNivelGeo:
 
 
 class TestParseLegacyXls:
+    def test_marcador_nao_disponivel_vira_nulo(self):
+        records = legacy_parser._extract_from_sheet(
+            pd.DataFrame([["Brasil", ".."]]),
+            "tecnologia",
+            {1: ("assistencia_tecnica", "estabelecimentos", "estabelecimentos")},
+        )
+
+        assert records[0][6] is None
+
     def test_tema_invalido_raises(self):
         from agrobr.exceptions import ParseError
 

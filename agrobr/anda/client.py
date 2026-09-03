@@ -10,6 +10,7 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 from agrobr.utils.html import parse_links_from_html as _parse_links
 
 logger = structlog.get_logger()
@@ -58,15 +59,24 @@ async def download_file(url: str) -> bytes:
     response = await _get_with_retry(url)
     content = response.content
 
-    if len(content) < MIN_ZIP_SIZE:
-        raise SourceUnavailableError(
-            source="anda",
-            url=url,
-            last_error=(
-                f"Downloaded file too small ({len(content)} bytes), "
-                f"expected a valid PDF or Excel file"
-            ),
-        )
+    clean_url = url.lower().split("?", 1)[0]
+    kinds: tuple[str, ...]
+    if clean_url.endswith(".pdf"):
+        kinds = ("pdf",)
+    elif clean_url.endswith(".xlsx"):
+        kinds = ("xlsx",)
+    elif clean_url.endswith(".xls"):
+        kinds = ("xls",)
+    else:
+        kinds = ("pdf", "xls", "xlsx")
+
+    io_utils.validate_download(
+        content,
+        kinds=kinds,
+        source="anda",
+        url=url,
+        min_size=MIN_ZIP_SIZE,
+    )
 
     return content
 

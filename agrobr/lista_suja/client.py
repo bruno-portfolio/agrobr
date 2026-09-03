@@ -3,10 +3,10 @@ from __future__ import annotations
 import httpx
 import structlog
 
-from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 from .models import DOWNLOAD_URL
 
@@ -29,12 +29,13 @@ async def fetch_empregadores() -> tuple[bytes, str]:
         response.raise_for_status()
         content = response.content
 
-        if len(content) < MIN_PDF_SIZE:
-            raise SourceUnavailableError(
-                source="lista_suja",
-                url=DOWNLOAD_URL,
-                last_error=f"PDF muito pequeno ({len(content)} bytes)",
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("pdf",),
+            source="lista_suja",
+            url=DOWNLOAD_URL,
+            min_size=MIN_PDF_SIZE,
+        )
 
         logger.info("lista_suja_download_ok", size=len(content))
         return content, DOWNLOAD_URL

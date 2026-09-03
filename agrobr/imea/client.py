@@ -6,6 +6,8 @@ import httpx
 import structlog
 
 from agrobr.constants import URLS, Fonte
+from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -28,8 +30,14 @@ async def _fetch_json(url: str) -> list[dict[str, Any]]:
         )
 
         response.raise_for_status()
-        data = response.json()
-        return data if isinstance(data, list) else []
+        data = responses.parse_json_response(response, source="imea", url=url)
+        if not isinstance(data, list):
+            raise SourceUnavailableError(
+                source="imea",
+                url=url,
+                last_error=f"JSON inesperado: {type(data).__name__}",
+            )
+        return data
 
 
 async def fetch_cotacoes(cadeia_id: int) -> list[dict[str, Any]]:

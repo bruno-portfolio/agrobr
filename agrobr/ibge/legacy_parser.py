@@ -6,6 +6,8 @@ from typing import Any
 import pandas as pd
 import structlog
 
+from agrobr.normalize.numeric import safe_float
+
 logger = structlog.get_logger()
 
 PARSER_VERSION = 1
@@ -153,11 +155,7 @@ def _extract_from_sheet(
                 continue
 
             val = row.iloc[col_idx]
-            valor = (
-                float(val)
-                if pd.notna(val) and str(val).strip() not in ("", "-", "...", "X")
-                else None
-            )
+            valor = safe_float(val)
 
             records.append(
                 [

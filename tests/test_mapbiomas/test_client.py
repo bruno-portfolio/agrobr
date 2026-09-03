@@ -28,7 +28,7 @@ class TestFetchBiomeState:
     async def test_successful_fetch(self):
         from agrobr.mapbiomas.client import fetch_biome_state
 
-        mock_response = make_mock_response(200, content=b"x" * 10000)
+        mock_response = make_mock_response(200, content=b"PK\x03\x04" + b"x" * 9996)
         mock_client = make_mock_async_client()
         mock_client.get = AsyncMock(return_value=mock_response)
 
@@ -87,7 +87,7 @@ class TestFetchBiomeStateMunicipality:
     async def test_successful_fetch(self):
         from agrobr.mapbiomas.client import fetch_biome_state_municipality
 
-        mock_response = make_mock_response(200, content=b"x" * 10000)
+        mock_response = make_mock_response(200, content=b"PK\x03\x04" + b"x" * 9996)
         mock_client = make_mock_async_client()
         mock_client.get = AsyncMock(return_value=mock_response)
 

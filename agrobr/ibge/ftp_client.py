@@ -10,6 +10,7 @@ from agrobr.constants import MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io as io_utils
 
 logger = structlog.get_logger()
 
@@ -74,14 +75,13 @@ async def download_legacy_zip(filename: str, uf_dir: str = "Brasil") -> bytes:
         response.raise_for_status()
 
         content = response.content
-        if len(content) < MIN_ZIP_SIZE:
-            from agrobr.exceptions import SourceUnavailableError
-
-            raise SourceUnavailableError(
-                source="ibge_censo_agro_legado",
-                url=url,
-                last_error=f"ZIP too small ({len(content)} bytes)",
-            )
+        io_utils.validate_download(
+            content,
+            kinds=("zip",),
+            source="ibge_censo_agro_legado",
+            url=url,
+            min_size=MIN_ZIP_SIZE,
+        )
 
         logger.info(
             "ibge_legacy_download_ok",

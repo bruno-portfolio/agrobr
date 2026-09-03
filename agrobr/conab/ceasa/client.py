@@ -7,6 +7,7 @@ import httpx
 import structlog
 
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -58,7 +59,8 @@ async def _fetch_query(cda_path: str, query_id: str) -> tuple[dict[str, Any], st
         )
 
     resp.raise_for_status()
-    return resp.json(), PENTAHO_BASE
+    data = responses.parse_json_response(resp, source="conab_ceasa", url=url)
+    return data, PENTAHO_BASE
 
 
 async def fetch_precos() -> tuple[dict[str, Any], str]:

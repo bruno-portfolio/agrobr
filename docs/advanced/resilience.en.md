@@ -55,6 +55,12 @@ exponential_base = 2
 - 503 Service Unavailable
 - 504 Gateway Timeout
 
+Beyond the HTTP status and minimum size, responses are validated before they
+reach parsers. JSON clients convert maintenance HTML, WAF blocks, and empty
+bodies into `SourceUnavailableError`. Downloads verify ZIP/XLSX, XLS, and PDF
+magic bytes; CSV files reject content that starts as HTML. This prevents a
+source outage from being misclassified as a parser layout failure.
+
 ## Rate Limiting
 
 Each source has its own rate limit, configurable via env vars:

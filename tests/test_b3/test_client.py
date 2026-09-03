@@ -169,7 +169,7 @@ class TestFetchAjustesZip:
     async def test_success(self):
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.content = b"\x00" * 1000
+        mock_response.content = b"PK\x03\x04" + b"\x00" * 996
         mock_response.raise_for_status = MagicMock()
 
         with patch(
@@ -212,7 +212,7 @@ class TestFetchAjustesZip:
                 new_callable=AsyncMock,
                 return_value=mock_response,
             ),
-            pytest.raises(SourceUnavailableError, match="ZIP too small"),
+            pytest.raises(SourceUnavailableError, match="too small"),
         ):
             await client.fetch_ajustes_zip("03/03/2026")
 
@@ -237,7 +237,7 @@ class TestFetchAjustesZip:
     async def test_date_format(self):
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.content = b"\x00" * 1000
+        mock_response.content = b"PK\x03\x04" + b"\x00" * 996
         mock_response.raise_for_status = MagicMock()
 
         with patch(
