@@ -1,5 +1,6 @@
 """Testes para exceções do agrobr."""
 
+import agrobr
 from agrobr.exceptions import (
     AgrobrError,
     ContractViolationError,
@@ -24,6 +25,10 @@ class TestInvalidParameterError:
 
         assert isinstance(err, AgrobrError)
         assert isinstance(err, ValueError)
+
+    def test_is_exported_by_package(self):
+        assert agrobr.InvalidParameterError is InvalidParameterError
+        assert "InvalidParameterError" in agrobr.__all__
 
 
 class TestSourceFallbackWarning:

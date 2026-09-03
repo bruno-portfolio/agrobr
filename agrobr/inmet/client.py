@@ -259,7 +259,11 @@ async def fetch_dados_estacoes_uf(
     ]
 
     if not estacoes_uf:
-        raise ValueError(f"Nenhuma estação operante encontrada para UF={uf_upper} tipo={tipo}")
+        raise SourceUnavailableError(
+            source="inmet",
+            url=f"{BASE_URL}/estacoes/{tipo}",
+            last_error=f"Nenhuma estação operante encontrada para UF={uf_upper} tipo={tipo}",
+        )
 
     logger.info(
         "inmet_fetch_uf",

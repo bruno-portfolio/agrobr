@@ -51,6 +51,7 @@ from agrobr.datasets.deterministic import deterministic
 from agrobr.exceptions import (
     AgrobrError,
     ContractViolationError,
+    InvalidParameterError,
     ParseError,
     SourceUnavailableError,
 )
@@ -100,6 +101,7 @@ __all__ = [
     "zarc",
     "AgrobrError",
     "ContractViolationError",
+    "InvalidParameterError",
     "ParseError",
     "SourceUnavailableError",
     "MetaInfo",

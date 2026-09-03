@@ -8,6 +8,7 @@ import pandas as pd
 import structlog
 
 from agrobr.models import MetaInfo
+from agrobr.utils import validation
 from agrobr.utils.result import build_source_meta, finalize_result
 
 from . import client, parser
@@ -140,6 +141,7 @@ async def clima_uf(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    validation.validate_uf(uf)
     inicio = date(ano, 1, 1)
     fim = date(ano, 12, 31)
 

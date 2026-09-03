@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.inmet import api
 
 
@@ -152,6 +153,16 @@ class TestEstacao:
 
 
 class TestClimaUf:
+    @pytest.mark.asyncio
+    async def test_clima_uf_rejects_invalid_uf_before_request(self):
+        with (
+            patch.object(api.client, "fetch_dados_estacoes_uf", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="UF invalida"),
+        ):
+            await api.clima_uf("XX", 2024)
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_clima_uf_return_meta(self):
         mock_data = [

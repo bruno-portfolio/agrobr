@@ -304,6 +304,14 @@ class TestInmetFetchDadosEstacaoChunking:
 
 class TestInmet403InEstacoeUf:
     @pytest.mark.asyncio
+    async def test_sem_estacao_operante_raises_source_unavailable(self):
+        with (
+            patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=[]),
+            pytest.raises(SourceUnavailableError, match="Nenhuma estação operante"),
+        ):
+            await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
+
+    @pytest.mark.asyncio
     async def test_403_surfaces_through_estacoes_uf(self):
         estacoes = [{"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"}]
 
