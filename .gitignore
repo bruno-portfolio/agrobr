@@ -15,6 +15,7 @@ venv/
 # Build
 dist/
 *.egg-info/
+site/
 
 # Tool caches & coverage
 .pytest_cache/
@@ -25,7 +26,8 @@ coverage*.json
 htmlcov/
 .pytest
 
-# Runtime & temporary
+# Runtime
 *.duckdb
-tmp_*/
-tmp_*.*
+assets/mapbiomas/municipal/
+/index2.html
+/en/index2.html

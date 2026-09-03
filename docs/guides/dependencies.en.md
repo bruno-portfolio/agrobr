@@ -34,7 +34,7 @@ pip install agrobr[browser]   # Playwright for JS-heavy sites
 pip install agrobr[polars]    # Polars DataFrame support
 pip install agrobr[geo]       # GeoDataFrames (SICAR, deforestation, etc)
 pip install agrobr[bigquery]  # BigQuery fallback (BCB/SICOR)
-pip install agrobr[all]       # Everything (except app)
+pip install agrobr[all]       # All optional runtime integrations
 ```
 
 | Extra | Dependency | Use |
@@ -44,7 +44,6 @@ pip install agrobr[all]       # Everything (except app)
 | `[polars]` | `polars>=0.19.0` | Polars DataFrames |
 | `[bigquery]` | `basedosdados>=2.0.0` | BigQuery fallback (BCB/SICOR) |
 | `[geo]` | `geopandas>=1.0.0` | GeoDataFrames (SICAR, deforestation, etc) |
-| `[app]` | `streamlit>=1.54.0` | Streamlit app/dashboard |
 
 ### Dev
 

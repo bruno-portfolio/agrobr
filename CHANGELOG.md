@@ -12,6 +12,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **datasets** — `SourceFallbackWarning` avisa quando a fonte primária falha e uma fonte alternativa é selecionada, com categoria e resumo do erro original
 
 ### Changed
+- **packaging** — o sdist contém apenas o pacote, README, LICENSE e CHANGELOG; o extra `all` contém apenas integrações opcionais de runtime, sem `dev`/`docs`, e o extra `app` sem código correspondente foi removido
+- **ci** — o `pip-audit` não ignora mais uma vulnerabilidade já corrigida do pip, e os nomes dos artefatos de health e integração incluem `github.run_attempt` para não colidirem em re-runs
 - **contracts** — toda coluna `stable` passa a ser obrigatória no DataFrame, mesmo quando `nullable`; `nullable` governa apenas os valores nulos. Chaves primárias incompletas agora geram erro próprio antes da validação de duplicatas
 - **cepea** — `indicador()` e `ultimo()` emitem aviso de licença na primeira chamada: dados sob CC BY-NC 4.0, com autorização do CEPEA necessária para uso comercial. O fallback automático Notícias Agrícolas foi mantido com seu aviso próprio de fonte `restrito`
 - **ci** — actions JavaScript atualizadas para releases compatíveis com Node 24 e `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` habilitado em todos os workflows; runners self-hosted precisam ser 2.327.1 ou mais recentes. A integração semanal agora instala Playwright/Chromium e exercita a CONAB ao vivo
@@ -23,6 +25,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **docs** — ANTAQ marcada como fonte indisponível (desde 23/06/2026) no README PT/EN, nos índices de fontes e contratos e nas páginas da fonte, com link para o aviso oficial; nota sobre a restrição de rede do INCRA em `acervo_fundiario`; link de licença do MapBiomas atualizado para o FAQ (a página `/termos-de-uso/` saiu do ar na reformulação do site), declarando CC BY 4.0
 
 ### Fixed
+- **health** — o Comtrade passa a ser sondado pelo endpoint guest sem chave, o dataset `embarques_anec` entra no mapa de impacto, o DuckDB é fechado antes do cache e falhas de abertura tornam o workflow explicitamente degradado. Alertas de recuperação recebem a contagem anterior e `is_recovery`, enquanto probes HTTP lentos repetem a consulta uma vez para descontar cold starts como o da ANA
+- **inmet** — `clima_uf()` valida a UF antes de qualquer request, e a ausência de estações operantes passa a levantar `SourceUnavailableError`, permitindo o fallback do dataset em vez de aparecer como erro inesperado
 - **datasets** — validações de parâmetros do usuário propagam `InvalidParameterError` imediatamente e não são mais engolidas pela cascata como `SourceUnavailableError: All sources failed`; erros derivados de parsing e dados continuam elegíveis para fallback
 - **datasets** — `MetaInfo` preserva cascatas internas das fontes em `attempted_sources`/`selected_source` e propaga `from_cache`, sem renomear adaptadores de fonte simples
 - **ana** — consultas ArcGIS migradas de `FeatureServer/0`, indisponível nas quatro camadas publicadas, para `MapServer/0`; os endpoints voltam a responder e a latência deixa de sofrer o timeout do serviço inexistente

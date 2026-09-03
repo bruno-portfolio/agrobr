@@ -41,7 +41,7 @@ pip install agrobr[polars]          # Suporte a Polars
 pip install agrobr[browser]         # Playwright (opcional, para fontes com JS)
 pip install agrobr[bigquery]        # Base dos Dados (fallback BCB/SICOR)
 pip install agrobr[geo]             # GeoPandas — habilita variantes _geo (PRODES, DETER, SICAR, FUNAI, ICMBio, INCRA, IBAMA, Queimadas, MapBiomas Alerta, ANA, SFB, EMBRAPA Solos, Acervo Fundiário)
-pip install agrobr[all]             # Tudo incluído
+pip install agrobr[all]             # Todas as integrações opcionais de runtime
 ```
 
 Os levantamentos de safra e balanços de oferta/demanda da CONAB exigem o extra de

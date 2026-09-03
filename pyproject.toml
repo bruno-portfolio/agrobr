@@ -84,9 +84,6 @@ polars = [
 geo = [
     "geopandas>=1.0.0",
 ]
-app = [
-    "streamlit>=1.54.0",
-]
 dev = [
     "pytest>=7.4.0",
     "pytest-asyncio>=0.21.0",
@@ -108,7 +105,7 @@ docs = [
     "Pygments>=2.17,<2.19",
 ]
 all = [
-    "agrobr[polars,browser,pdf,bigquery,geo,dev,docs]",
+    "agrobr[polars,browser,pdf,bigquery,geo]",
 ]
 
 [project.scripts]
@@ -122,6 +119,16 @@ Issues = "https://github.com/bruno-portfolio/agrobr/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["agrobr"]
+exclude = ["agrobr/benchmark/**"]
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "agrobr",
+    "README.md",
+    "README.pt-BR.md",
+    "LICENSE",
+    "CHANGELOG.md",
+]
 exclude = ["agrobr/benchmark/**"]
 
 [tool.ruff]
