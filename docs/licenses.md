@@ -119,9 +119,10 @@
 - **Situação:** Empresa privada (Olivi Produções de Vídeo e Comunicação LTDA)
   sem termos de uso públicos sobre republicação de cotações. Pela Lei 9.610/98,
   ausência de licença explícita implica todos os direitos reservados.
-- **Decisão no agrobr:** Mantido temporariamente como fallback técnico do CEPEA
-  (contorna Cloudflare). Pendente deprecação em favor de acesso direto ao CEPEA
-  ou outras fontes primárias (DERAL, etc.).
+- **Decisão no agrobr (02/09/2026):** O fallback automático do CEPEA foi mantido.
+  `cepea.indicador()` e `cepea.ultimo()` avisam sobre a licença CC BY-NC 4.0 do
+  CEPEA, e o client do Notícias Agrícolas emite seu próprio aviso de fonte
+  `restrito`; assim, os dois caminhos alertam o usuário na primeira chamada.
 
 ### B3 (Brasil, Bolsa, Balcão)
 

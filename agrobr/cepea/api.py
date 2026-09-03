@@ -19,11 +19,17 @@ from agrobr.cache.policies import calculate_expiry
 from agrobr.cepea import client
 from agrobr.cepea.parsers import v1
 from agrobr.cepea.parsers.detector import get_parser_with_fallback
-from agrobr.exceptions import ParseError, SourceUnavailableError, StaleDataWarning
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    SourceUnavailableError,
+    StaleDataWarning,
+)
 from agrobr.models import Indicador, MetaInfo
 from agrobr.normalize import regions
 from agrobr.utils.result import finalize_result
 from agrobr.utils.time import utcnow
+from agrobr.utils.warnings import warn_once
 from agrobr.validators.sanity import validate_batch
 
 if TYPE_CHECKING:
@@ -32,6 +38,15 @@ if TYPE_CHECKING:
 logger = structlog.get_logger()
 
 SOURCE_WINDOW_DAYS = 10
+
+_LICENSE_WARNING = (
+    "CEPEA/ESALQ: dados sob CC BY-NC 4.0; uso comercial requer autorização do "
+    "CEPEA (cepea@usp.br). Veja docs/licenses.md."
+)
+
+
+def _warn_license() -> None:
+    warn_once("cepea_license", _LICENSE_WARNING)
 
 
 def _normalize_dates(
@@ -195,6 +210,7 @@ async def indicador(
         offline: Usa apenas cache local, sem requests HTTP.
         return_meta: Retorna tupla ``(df, MetaInfo)`` com metadados de proveniência.
     """
+    _warn_license()
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="unknown",
@@ -379,7 +395,7 @@ async def produtos() -> list[str]:
 async def pracas(produto: str) -> list[str]:
     produto_slug = produto.lower()
     if produto_slug not in constants.CEPEA_PRODUTOS:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Produto inválido: '{produto}'. Opções: {sorted(constants.CEPEA_PRODUTOS)}"
         )
     praca = v1.PRACAS.get(produto_slug)
@@ -387,6 +403,7 @@ async def pracas(produto: str) -> list[str]:
 
 
 async def ultimo(produto: str, praca: str | None = None, offline: bool = False) -> Indicador:
+    _warn_license()
     store = get_store()
     indicadores: list[Indicador] = []
 

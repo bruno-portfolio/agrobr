@@ -7,7 +7,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Added
+- **exceptions** — `InvalidParameterError`, compatível com `AgrobrError` e `ValueError`, distingue erros de parâmetros do usuário de falhas de dados ou layout sem quebrar handlers existentes
+- **datasets** — `SourceFallbackWarning` avisa quando a fonte primária falha e uma fonte alternativa é selecionada, com categoria e resumo do erro original
+
 ### Changed
+- **contracts** — toda coluna `stable` passa a ser obrigatória no DataFrame, mesmo quando `nullable`; `nullable` governa apenas os valores nulos. Chaves primárias incompletas agora geram erro próprio antes da validação de duplicatas
+- **cepea** — `indicador()` e `ultimo()` emitem aviso de licença na primeira chamada: dados sob CC BY-NC 4.0, com autorização do CEPEA necessária para uso comercial. O fallback automático Notícias Agrícolas foi mantido com seu aviso próprio de fonte `restrito`
 - **ci** — actions JavaScript atualizadas para releases compatíveis com Node 24 e `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` habilitado em todos os workflows; runners self-hosted precisam ser 2.327.1 ou mais recentes. A integração semanal agora instala Playwright/Chromium e exercita a CONAB ao vivo
 - **health** — os probes de ICMBio, SFB e ANA agora exercitam consultas reais (`GetFeature` ou contagem ArcGIS) e inspecionam o corpo de respostas HTTP 200 em busca de erros da fonte. Antes, `GetCapabilities` e diretórios ArcGIS podiam ficar verdes enquanto as operações de dados estavam quebradas
 - **health** — alertas passam a disparar apenas no **cruzamento** dos limiares (`consecutive_failures_warning`, `consecutive_failures_critical`), não em todo run acima deles. Antes, uma fonte fora do ar por semanas repetia o mesmo alerta a cada execução
@@ -17,6 +23,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **docs** — ANTAQ marcada como fonte indisponível (desde 23/06/2026) no README PT/EN, nos índices de fontes e contratos e nas páginas da fonte, com link para o aviso oficial; nota sobre a restrição de rede do INCRA em `acervo_fundiario`; link de licença do MapBiomas atualizado para o FAQ (a página `/termos-de-uso/` saiu do ar na reformulação do site), declarando CC BY 4.0
 
 ### Fixed
+- **datasets** — validações de parâmetros do usuário propagam `InvalidParameterError` imediatamente e não são mais engolidas pela cascata como `SourceUnavailableError: All sources failed`; erros derivados de parsing e dados continuam elegíveis para fallback
+- **datasets** — `MetaInfo` preserva cascatas internas das fontes em `attempted_sources`/`selected_source` e propaga `from_cache`, sem renomear adaptadores de fonte simples
 - **ana** — consultas ArcGIS migradas de `FeatureServer/0`, indisponível nas quatro camadas publicadas, para `MapServer/0`; os endpoints voltam a responder e a latência deixa de sofrer o timeout do serviço inexistente
 - **conab** — ausência do executável Chromium agora falha na primeira tentativa e informa `python -m playwright install chromium`, em vez de repetir um erro permanente até esgotar os retries
 - **icmbio** — nomes de campos atualizados para o layout atual do WFS (`sigla_cate` e `uf`): todas as chamadas falhavam porque a fonte aceita HTTP 200 com `ExceptionReport` quando recebe os nomes antigos (`siglacateg` e `ufabrang`). O separador de UFs múltiplas foi alinhado de `;` para `/`

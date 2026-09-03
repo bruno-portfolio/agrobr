@@ -15,6 +15,7 @@ from agrobr.cepea import api
 from agrobr.cepea.client import FetchResult
 from agrobr.exceptions import ParseError, SourceUnavailableError, StaleDataWarning
 from agrobr.models import Indicador
+from agrobr.utils.warnings import warn_once_reset
 
 
 @pytest.mark.integration
@@ -87,12 +88,22 @@ def _indicador_to_dict(ind: Indicador) -> dict:
 class TestIndicador:
     @pytest.fixture(autouse=True)
     def _setup_mocks(self):
+        warn_once_reset("cepea_license")
         self.mock_store = MagicMock()
         self.mock_store.indicadores_query.return_value = []
         self.mock_store.indicadores_upsert.return_value = 0
 
         with patch("agrobr.cepea.api.get_store", return_value=self.mock_store):
             yield
+
+        warn_once_reset("cepea_license")
+
+    async def test_license_warning_emitted_once(self):
+        with pytest.warns(UserWarning, match="CC BY-NC 4.0") as warning_info:
+            await api.indicador("soja", offline=True)
+            await api.indicador("soja", offline=True)
+
+        assert len(warning_info) == 1
 
     async def test_valid_product_returns_dataframe(self):
         ind = _make_indicador()
@@ -388,12 +399,25 @@ class TestIndicador:
 class TestUltimo:
     @pytest.fixture(autouse=True)
     def _setup_mocks(self):
+        warn_once_reset("cepea_license")
         self.mock_store = MagicMock()
         self.mock_store.indicadores_query.return_value = []
         self.mock_store.indicadores_upsert.return_value = 0
 
         with patch("agrobr.cepea.api.get_store", return_value=self.mock_store):
             yield
+
+        warn_once_reset("cepea_license")
+
+    async def test_license_warning_emitted_once(self):
+        ind = _make_indicador()
+        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
+
+        with pytest.warns(UserWarning, match="CC BY-NC 4.0") as warning_info:
+            await api.ultimo("soja", offline=True)
+            await api.ultimo("soja", offline=True)
+
+        assert len(warning_info) == 1
 
     async def test_returns_latest_indicador(self):
         today = date.today()

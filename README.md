@@ -515,7 +515,7 @@ Availability is monitored automatically. Run `agrobr health` to check locally (o
 
 > ¹ Golden test with synthetic data — `needs_real_data` for validation against the live API.
 >
-> Several sources have restrictive or gray-area licenses — CEPEA `nc`, IMEA `restrito`, INCRA land registry `nc`, B3/ABIOVE/ANDA/ANEC/UNICA/Notícias Agrícolas `zona_cinza`. They emit `warnings.warn` on first call. See [docs/licenses.md](docs/licenses.md) for the full table.
+> Several sources have restrictive or gray-area licenses — CEPEA `nc`, IMEA and Notícias Agrícolas `restrito`, INCRA land registry `nc`, and B3/ABIOVE/ANDA/ANEC/UNICA `zona_cinza`. They emit `warnings.warn` on first call. See [docs/licenses.md](docs/licenses.md) for the full table.
 
 ## Contracts & Schemas
 

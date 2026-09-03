@@ -511,7 +511,7 @@ Disponibilidade monitorada automaticamente. Use `agrobr health` para verificar l
 
 > ¹ Golden test com dados sintéticos — `needs_real_data` para validação com API real.
 >
-> Várias fontes têm licença restritiva ou zona cinzenta — CEPEA `nc`, IMEA `restrito`, Acervo Fundiário `nc`, B3/ABIOVE/ANDA/ANEC/UNICA/Notícias Agrícolas `zona_cinza`. Emitem `warnings.warn` na primeira chamada. Veja [docs/licenses.md](docs/licenses.md) para a tabela completa.
+> Várias fontes têm licença restritiva ou zona cinzenta — CEPEA `nc`, IMEA e Notícias Agrícolas `restrito`, Acervo Fundiário `nc` e B3/ABIOVE/ANDA/ANEC/UNICA `zona_cinza`. Emitem `warnings.warn` na primeira chamada. Veja [docs/licenses.md](docs/licenses.md) para a tabela completa.
 
 ## Contratos & Schemas
 

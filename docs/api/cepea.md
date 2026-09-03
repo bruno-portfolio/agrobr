@@ -210,3 +210,5 @@ O histórico é acumulado progressivamente no DuckDB local, permitindo consultas
 ## Fallback
 
 Quando o CEPEA está indisponível (Cloudflare), o agrobr automaticamente usa o Notícias Agrícolas como fonte alternativa, que republica os mesmos indicadores CEPEA/ESALQ.
+
+Na primeira chamada de `indicador()` ou `ultimo()`, o módulo emite um `UserWarning`: os dados CEPEA estão sob CC BY-NC 4.0, e o uso comercial requer autorização do CEPEA (`cepea@usp.br`). O fallback Notícias Agrícolas mantém seu próprio aviso de licença `restrito`; consulte `docs/licenses.md`.
