@@ -12,6 +12,11 @@
     a causa provavel e essa restricao de rede — nao um bug da biblioteca.
     Por isso os testes live desta fonte usam o marker `integration_br` e ficam fora do CI.
 
+!!! info "Dependência geoespacial"
+    Instale `pip install agrobr[geo]` antes de qualquer consulta. O extra inclui
+    `geopandas` e `pyogrio`; a disponibilidade é conferida antes do download dos
+    ZIPs, que podem ter centenas de megabytes.
+
 ## Visão Geral
 
 | Item | Detalhe |

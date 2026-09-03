@@ -12,6 +12,11 @@
     that network restriction is the likely cause — not a library bug.
     That is why this source's live tests carry the `integration_br` marker and are excluded from CI.
 
+!!! info "Geospatial dependency"
+    Install `pip install agrobr[geo]` before any query. The extra includes
+    `geopandas` and `pyogrio`; availability is checked before downloading ZIP
+    files that may be hundreds of megabytes.
+
 ## Overview
 
 | Item | Detail |

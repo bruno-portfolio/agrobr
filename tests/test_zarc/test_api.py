@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.zarc import api
 
@@ -88,6 +89,22 @@ class TestZoneamento:
         mock_fetch.assert_awaited_once()
         called_safra = mock_fetch.call_args[0][0]
         assert called_safra == "2025/2026"
+
+    @pytest.mark.asyncio
+    async def test_zoneamento_sem_recursos_de_safra(self):
+        with (
+            patch.object(
+                api.client,
+                "discover_resources",
+                new_callable=AsyncMock,
+                return_value=[],
+            ),
+            patch.object(api.client, "fetch_tabua_risco", new_callable=AsyncMock) as fetch,
+            pytest.raises(SourceUnavailableError, match="CKAN sem recursos de safra"),
+        ):
+            await api.zoneamento()
+
+        fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_zoneamento_return_meta(self):

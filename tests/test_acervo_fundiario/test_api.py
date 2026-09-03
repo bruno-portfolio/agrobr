@@ -13,6 +13,22 @@ from agrobr.exceptions import SourceUnavailableError
 @pytest.mark.asyncio
 class TestSigef:
     @patch.object(api.client, "download_and_cache", new_callable=AsyncMock)
+    async def test_pyogrio_ausente_falha_antes_do_download(self, mock_download):
+        with (
+            patch.object(
+                api,
+                "check_pyogrio",
+                side_effect=ImportError(
+                    "pyogrio is required. Install with: pip install agrobr[geo]"
+                ),
+            ),
+            pytest.raises(ImportError, match=r"pip install agrobr\[geo\]"),
+        ):
+            await api.sigef("ES")
+
+        mock_download.assert_not_awaited()
+
+    @patch.object(api.client, "download_and_cache", new_callable=AsyncMock)
     async def test_returns_dataframe(self, mock_dl, synthetic_sigef_zip: Path):
         mock_dl.return_value = synthetic_sigef_zip
         df = await api.sigef("ES")

@@ -6,7 +6,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.normalize.crops import _remover_acentos
 from agrobr.normalize.regions import UFS_VALIDAS
@@ -84,7 +84,12 @@ async def zoneamento(
     if safra is None:
         resources = await client.discover_resources()
         safras = extract_safras(resources)
-        safra = next((s for s in reversed(safras) if s != "perene"), safras[-1])
+        safra = next((s for s in reversed(safras) if s != "perene"), None)
+        if safra is None:
+            raise SourceUnavailableError(
+                source="zarc",
+                last_error="CKAN sem recursos de safra",
+            )
 
     if safra in _cache:
         df, source_url = _cache[safra]

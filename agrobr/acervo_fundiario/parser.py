@@ -8,7 +8,7 @@ import structlog
 
 from agrobr.exceptions import ParseError
 from agrobr.normalize.regions import UFS_VALIDAS, ibge_para_uf
-from agrobr.utils.geo import check_geopandas
+from agrobr.utils.geo import check_geopandas, check_pyogrio
 
 from .models import (
     ASSENTAMENTOS_COLUNAS_SAIDA,
@@ -39,8 +39,7 @@ BBox = tuple[float, float, float, float]
 
 
 def _read_tabular(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
-    import pyogrio
-
+    pyogrio = check_pyogrio()
     df = pyogrio.read_dataframe(zip_path, encoding=DBF_ENCODING, read_geometry=False, bbox=bbox)
     return cast(pd.DataFrame, df)
 

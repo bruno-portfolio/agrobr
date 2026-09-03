@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import time
 from io import BytesIO
 from typing import Any, Literal, overload
@@ -7,6 +8,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.time import utcnow
@@ -22,6 +24,16 @@ from .parser import (
 
 logger = structlog.get_logger()
 
+_SAFRA_RE = re.compile(r"^\d{4}/\d{2}$")
+
+
+def _validate_safra(safra: str | None) -> str | None:
+    if safra is not None and (not isinstance(safra, str) or not _SAFRA_RE.fullmatch(safra)):
+        raise InvalidParameterError(
+            f"Safra inválida: {safra!r}. Use o padrão AAAA/AA, por exemplo '2024/25'"
+        )
+    return safra
+
 
 def _resolve_sheet_context(
     xlsx: bytes | BytesIO,
@@ -32,11 +44,15 @@ def _resolve_sheet_context(
     sheet = select_data_sheet(xlsx, uf=uf, safra=safra)
     sheet_uf, sheet_year = _parse_sheet_info(sheet)
     resolved_uf = metadata.get("uf") or sheet_uf or uf or "BR"
-    resolved_safra = (
-        metadata.get("safra")
-        or safra
-        or (f"{sheet_year}/{(int(sheet_year[-2:]) + 1) % 100:02d}" if sheet_year else "latest")
-    )
+    resolved_safra = metadata.get("safra") or safra
+    if not resolved_safra and sheet_year:
+        resolved_safra = f"{sheet_year}/{(int(sheet_year[-2:]) + 1) % 100:02d}"
+    if not isinstance(resolved_safra, str) or not _SAFRA_RE.fullmatch(resolved_safra):
+        raise ParseError(
+            source="conab_custo",
+            parser_version=PARSER_VERSION,
+            reason="safra não identificada na planilha nem nos metadados",
+        )
     return sheet, resolved_uf, resolved_safra
 
 
@@ -72,6 +88,7 @@ async def custo_producao(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    safra = _validate_safra(safra)
     t0 = time.monotonic()
 
     logger.info(
@@ -156,6 +173,7 @@ async def custo_producao_total(
     tecnologia: str = "alta",
     return_meta: bool = False,
 ) -> dict[str, Any] | tuple[dict[str, Any], MetaInfo]:
+    safra = _validate_safra(safra)
     t0 = time.monotonic()
 
     logger.info(

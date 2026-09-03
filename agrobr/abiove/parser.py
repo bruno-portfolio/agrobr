@@ -72,8 +72,8 @@ def parse_exportacao_excel(
         try:
             records = _parse_sheet(xls, str(sheet_name), ano)
             all_records.extend(records)
-        except Exception:
-            logger.warning("abiove_sheet_parse_error", sheet=sheet_name)
+        except Exception as exc:
+            logger.warning("abiove_sheet_parse_error", sheet=sheet_name, error=str(exc))
             continue
 
     if not all_records:

@@ -4,6 +4,7 @@ import io
 
 import openpyxl
 import pandas as pd
+import pytest
 
 from agrobr.deral.parser import (
     PARSER_VERSION,
@@ -12,6 +13,7 @@ from agrobr.deral.parser import (
     filter_by_produto,
     parse_pc_xls,
 )
+from agrobr.exceptions import ParseError
 from agrobr.normalize.numeric import safe_float
 
 
@@ -163,19 +165,18 @@ class TestParsePcXls:
             ],
         }
         data = _make_xls_bytes(sheets)
-        df = parse_pc_xls(data)
-        assert df.empty
+        with pytest.raises(ParseError, match="Nenhum registro reconhecido"):
+            parse_pc_xls(data)
 
     def test_empty_file(self):
         sheets = {"Sheet1": []}
         data = _make_xls_bytes(sheets)
-        df = parse_pc_xls(data)
-        assert df.empty
-        assert "produto" in df.columns
+        with pytest.raises(ParseError, match="Nenhum registro reconhecido"):
+            parse_pc_xls(data)
 
     def test_invalid_bytes(self):
-        df = parse_pc_xls(b"not a valid excel file")
-        assert df.empty
+        with pytest.raises(ParseError, match="Falha ao abrir PC.xls"):
+            parse_pc_xls(b"not a valid excel file")
 
     def test_data_columns(self):
         sheets = {

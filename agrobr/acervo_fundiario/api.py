@@ -8,7 +8,7 @@ import structlog
 
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import validate_bbox
+from agrobr.utils.geo import check_pyogrio, validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_uf as _validate_uf_optional
 from agrobr.utils.warnings import warn_once
@@ -111,6 +111,7 @@ async def sigef(
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     warn_once("acervo_fundiario_license", _NC_WARNING)
+    check_pyogrio()
     uf = _validate_uf_for_dataset(uf, SIGEF_UFS_DISPONIVEIS, "sigef")
     bbox = validate_bbox(bbox)
     logger.info("acervo_fundiario_sigef", uf=uf, bbox=bbox)
@@ -156,6 +157,7 @@ async def sigef_geo(
     **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     warn_once("acervo_fundiario_license", _NC_WARNING)
+    check_pyogrio()
     uf = _validate_uf_for_dataset(uf, SIGEF_UFS_DISPONIVEIS, "sigef")
     bbox = validate_bbox(bbox)
     logger.info("acervo_fundiario_sigef_geo", uf=uf, bbox=bbox)
@@ -206,6 +208,7 @@ async def snci(
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     warn_once("acervo_fundiario_license", _NC_WARNING)
+    check_pyogrio()
     uf = _validate_uf_for_dataset(uf, SNCI_UFS_DISPONIVEIS, "snci")
     bbox = validate_bbox(bbox)
     logger.info("acervo_fundiario_snci", uf=uf, bbox=bbox)
@@ -251,6 +254,7 @@ async def snci_geo(
     **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     warn_once("acervo_fundiario_license", _NC_WARNING)
+    check_pyogrio()
     uf = _validate_uf_for_dataset(uf, SNCI_UFS_DISPONIVEIS, "snci")
     bbox = validate_bbox(bbox)
     logger.info("acervo_fundiario_snci_geo", uf=uf, bbox=bbox)
@@ -301,6 +305,7 @@ async def assentamentos(
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     warn_once("acervo_fundiario_license", _NC_WARNING)
+    check_pyogrio()
     uf_norm = _validate_uf(uf) if uf is not None else None
     bbox = validate_bbox(bbox)
     logger.info("acervo_fundiario_assentamentos", uf=uf_norm, bbox=bbox)
@@ -346,6 +351,7 @@ async def assentamentos_geo(
     **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     warn_once("acervo_fundiario_license", _NC_WARNING)
+    check_pyogrio()
     uf_norm = _validate_uf(uf) if uf is not None else None
     bbox = validate_bbox(bbox)
     logger.info("acervo_fundiario_assentamentos_geo", uf=uf_norm, bbox=bbox)

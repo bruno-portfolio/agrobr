@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from agrobr.conab.custo_producao import api
+from agrobr.exceptions import InvalidParameterError, ParseError
 
 
 def _make_sample_xlsx() -> BytesIO:
@@ -40,6 +41,34 @@ def _make_sample_xlsx() -> BytesIO:
 
 
 class TestCustoProducao:
+    @pytest.mark.asyncio
+    async def test_safra_invalida_falha_antes_da_rede(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_xlsx_for_cultura",
+                new_callable=AsyncMock,
+            ) as fetch,
+            pytest.raises(InvalidParameterError, match="padrão AAAA/AA"),
+        ):
+            await api.custo_producao("soja", safra="2024/2025")
+
+        fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_planilha_sem_safra_levanta_parse_error(self):
+        xlsx = _make_sample_xlsx()
+        with (
+            patch.object(
+                api.client,
+                "fetch_xlsx_for_cultura",
+                new_callable=AsyncMock,
+                return_value=(xlsx, {}),
+            ),
+            pytest.raises(ParseError, match="safra não identificada"),
+        ):
+            await api.custo_producao("soja")
+
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         xlsx = _make_sample_xlsx()

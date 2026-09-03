@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import ParseError
 from agrobr.normalize.numeric import safe_float
 from agrobr.utils.io import open_excel_safe
 
@@ -42,8 +43,11 @@ def parse_pc_xls(data: bytes) -> pd.DataFrame:
     try:
         xls = open_excel_safe(data, source="deral", parser_version=PARSER_VERSION)
     except Exception as exc:
-        logger.error("deral_parse_error", error=str(exc))
-        return _empty_df()
+        raise ParseError(
+            source="deral",
+            parser_version=PARSER_VERSION,
+            reason=f"Falha ao abrir PC.xls: {exc}",
+        ) from exc
 
     all_records: list[dict[str, Any]] = []
 
@@ -65,7 +69,11 @@ def parse_pc_xls(data: bytes) -> pd.DataFrame:
             logger.debug("deral_skip_sheet", sheet=sheet_name)
 
     if not all_records:
-        return _empty_df()
+        raise ParseError(
+            source="deral",
+            parser_version=PARSER_VERSION,
+            reason=f"Nenhum registro reconhecido nas abas: {xls.sheet_names}",
+        )
 
     result = pd.DataFrame(all_records)
 
@@ -285,16 +293,3 @@ def filter_by_produto(df: pd.DataFrame, produto: str) -> pd.DataFrame:
         return df
     key = normalize_produto(produto)
     return df[df["produto"] == key].reset_index(drop=True)
-
-
-def _empty_df() -> pd.DataFrame:
-    return pd.DataFrame(
-        columns=[
-            "produto",
-            "data",
-            "condicao",
-            "pct",
-            "plantio_pct",
-            "colheita_pct",
-        ]
-    )

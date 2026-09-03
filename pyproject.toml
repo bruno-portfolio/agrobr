@@ -83,6 +83,7 @@ polars = [
 ]
 geo = [
     "geopandas>=1.0.0",
+    "pyogrio>=0.7",
 ]
 dev = [
     "pytest>=7.4.0",
