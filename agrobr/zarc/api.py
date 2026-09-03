@@ -6,6 +6,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.normalize.crops import _remover_acentos
 from agrobr.normalize.regions import UFS_VALIDAS
@@ -75,7 +76,7 @@ async def zoneamento(
     if uf is not None:
         uf_upper = uf.upper()
         if uf_upper not in UFS_VALIDAS:
-            raise ValueError(f"UF invalida: '{uf}'. Validas: {sorted(UFS_VALIDAS)}")
+            raise InvalidParameterError(f"UF invalida: '{uf}'. Validas: {sorted(UFS_VALIDAS)}")
     else:
         uf_upper = None
 
@@ -107,7 +108,7 @@ async def zoneamento(
         culturas_tabua = df["cultura"].dropna().unique().tolist()
         matches = [c for c in culturas_tabua if _remover_acentos(str(c)) == cultura_key]
         if not matches:
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Cultura '{cultura}' nao encontrada na tabua {safra}. "
                 f"Disponiveis: {sorted(culturas_tabua)}"
             )

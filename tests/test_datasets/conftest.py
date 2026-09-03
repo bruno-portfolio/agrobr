@@ -13,6 +13,9 @@ def mock_source_meta(
     meta.source_url = source_url
     meta.fetched_at = None
     meta.parser_version = parser_version
+    meta.from_cache = False
+    meta.attempted_sources = []
+    meta.selected_source = ""
     return meta
 
 

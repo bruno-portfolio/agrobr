@@ -102,6 +102,11 @@ completa.
 - `fetch_timestamp` — hora da coleta
 - `schema_version` — versão do contrato
 
+Quando uma fonte executa uma cascata interna, o dataset incorpora essa sequência
+em `attempted_sources`, preserva a `selected_source` real e propaga
+`from_cache=True`. Fontes simples continuam identificadas pelo nome do adaptador
+do dataset.
+
 Datasets são registrados automaticamente via registry com auto-descoberta.
 
 ### Hierarquia de Exceções
@@ -112,6 +117,7 @@ consistente.
 | Exceção | Quando |
 |---------|--------|
 | `AgrobrError` | Base de todas as exceções |
+| `InvalidParameterError` | Parâmetro do usuário inválido; também é `ValueError` e interrompe a cascata |
 | `SourceUnavailableError` | Todas as fontes falharam após retries |
 | `NetworkError` | Timeout, HTTP error, DNS |
 | `ParseError` | Layout mudou, HTML/JSON inesperado |
@@ -123,6 +129,7 @@ consistente.
 
 | Warning | Quando |
 |---------|--------|
+| `SourceFallbackWarning` | Fonte primária falhou e o dataset devolveu um fallback |
 | `StaleDataWarning` | Dados do cache expirados mas retornados |
 
 ---

@@ -3,8 +3,10 @@
 from agrobr.exceptions import (
     AgrobrError,
     ContractViolationError,
+    InvalidParameterError,
     NetworkError,
     ParseError,
+    SourceFallbackWarning,
     SourceUnavailableError,
 )
 
@@ -14,6 +16,19 @@ class TestAgrobrError:
         err = AgrobrError("test error")
         assert str(err) == "test error"
         assert isinstance(err, Exception)
+
+
+class TestInvalidParameterError:
+    def test_inherits_agrobr_error_and_value_error(self):
+        err = InvalidParameterError("parâmetro inválido")
+
+        assert isinstance(err, AgrobrError)
+        assert isinstance(err, ValueError)
+
+
+class TestSourceFallbackWarning:
+    def test_inherits_user_warning(self):
+        assert issubclass(SourceFallbackWarning, UserWarning)
 
 
 class TestSourceUnavailableError:

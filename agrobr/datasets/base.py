@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
@@ -15,7 +16,9 @@ if TYPE_CHECKING:
 
 from agrobr.exceptions import (
     ContractViolationError,
+    InvalidParameterError,
     ParseError,
+    SourceFallbackWarning,
     SourceUnavailableError,
 )
 
@@ -92,20 +95,25 @@ class BaseDataset(ABC):
         from agrobr.utils.time import utcnow
 
         now = utcnow()
+        selected = source_name
+        resolved_attempted = attempted
+        if source_meta and len(source_meta.attempted_sources) > 1:
+            resolved_attempted = attempted[:-1] + source_meta.attempted_sources
+            selected = source_meta.selected_source
         return _MetaInfo(
-            source=f"datasets.{self.info.name}/{source_name}",
+            source=f"datasets.{self.info.name}/{selected}",
             source_url=source_meta.source_url if source_meta else "",
             source_method="dataset",
             fetched_at=source_meta.fetched_at if source_meta else now,
             records_count=len(df),
             columns=df.columns.tolist(),
-            from_cache=from_cache,
+            from_cache=from_cache or bool(source_meta and source_meta.from_cache),
             parser_version=source_meta.parser_version if source_meta else 1,
             dataset=self.info.name,
             contract_version=self.info.contract_version,
             snapshot=snapshot,
-            attempted_sources=attempted,
-            selected_source=source_name,
+            attempted_sources=resolved_attempted,
+            selected_source=selected,
             fetch_timestamp=now,
         )
 
@@ -120,7 +128,7 @@ class BaseDataset(ABC):
 
     def _validate_produto(self, produto: str) -> None:
         if produto not in self.info.products:
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Produto '{produto}' não suportado por {self.info.name}. "
                 f"Válidos: {self.info.products}"
             )
@@ -164,9 +172,20 @@ class BaseDataset(ABC):
                         source=source.name,
                         hint="Filtros podem nao casar com os dados atuais da fonte",
                     )
+                if len(attempted) > 1:
+                    warnings.warn(
+                        f"{self.info.name}: fonte primária '{attempted[0]}' indisponível "
+                        f"({errors[0][1]}: {errors[0][2][:120]}); usando fallback "
+                        f"'{source.name}'",
+                        SourceFallbackWarning,
+                        stacklevel=2,
+                    )
                 return df, source.name, meta, attempted
 
             except TypeError:
+                raise
+
+            except InvalidParameterError:
                 raise
 
             except (httpx.HTTPError, httpx.TimeoutException, OSError) as e:

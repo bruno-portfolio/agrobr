@@ -11,7 +11,7 @@ from agrobr.datasets.estimativa_safra import (
     EstimativaSafraDataset,
     estimativa_safra,
 )
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import SourceFallbackWarning, SourceUnavailableError
 
 from .conftest import make_source, mock_source_meta
 
@@ -241,7 +241,8 @@ class TestEstimativaSafraFallback:
         dataset.info.sources[0].fetch_fn = AsyncMock(side_effect=httpx.ConnectError("test"))
         dataset.info.sources[1].fetch_fn = make_source(_mock_df())
 
-        df, meta = await dataset.fetch("soja", return_meta=True)
+        with pytest.warns(SourceFallbackWarning, match="ibge_lspa"):
+            df, meta = await dataset.fetch("soja", return_meta=True)
 
         assert len(df) == 1
         assert meta.attempted_sources == ["conab", "ibge_lspa"]
@@ -275,6 +276,7 @@ class TestEstimativaSafraFallback:
                 new_callable=AsyncMock,
                 return_value=(_sidra_lspa_df(2023), mock_source_meta()),
             ),
+            pytest.warns(SourceFallbackWarning, match="ibge_lspa"),
         ):
             df, meta = await dataset.fetch("soja", safra="2022/23", return_meta=True)
 

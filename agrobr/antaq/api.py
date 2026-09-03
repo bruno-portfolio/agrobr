@@ -14,6 +14,7 @@ from agrobr.antaq.models import (
     resolve_natureza_carga,
     resolve_tipo_navegacao,
 )
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 
@@ -63,7 +64,9 @@ async def movimentacao(
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     if ano < MIN_ANO or ano > MAX_ANO_DEFAULT:
-        raise ValueError(f"Ano deve estar entre {MIN_ANO} e {MAX_ANO_DEFAULT}, recebido: {ano}")
+        raise InvalidParameterError(
+            f"Ano deve estar entre {MIN_ANO} e {MAX_ANO_DEFAULT}, recebido: {ano}"
+        )
 
     tipo_nav_filtro = resolve_tipo_navegacao(tipo_navegacao)
     nat_carga_filtro = resolve_natureza_carga(natureza_carga)

@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
@@ -91,7 +92,7 @@ class ClimaDataset(BaseDataset):
             )
 
         if uf is None:
-            raise ValueError("uf é obrigatório para modo UF")
+            raise InvalidParameterError("uf é obrigatório para modo UF")
 
         snapshot = get_snapshot()
         if snapshot and ano is None:
@@ -124,7 +125,7 @@ class ClimaDataset(BaseDataset):
         from agrobr import inmet
 
         if inicio is None or fim is None:
-            raise ValueError("inicio e fim são obrigatórios para modo estacao")
+            raise InvalidParameterError("inicio e fim são obrigatórios para modo estacao")
 
         result = await inmet.estacao(codigo, inicio, fim, agregacao=agregacao, return_meta=True)
         df, meta = _unpack_result(result)

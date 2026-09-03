@@ -6,6 +6,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -18,7 +19,7 @@ logger = structlog.get_logger()
 
 def _validar_colecao(colecao: int | None) -> None:
     if colecao is not None and colecao != COLECAO_ATUAL:
-        raise ValueError(
+        raise InvalidParameterError(
             f"colecao {colecao} nao suportada; apenas a colecao {COLECAO_ATUAL} (atual) esta disponivel"
         )
 
@@ -30,7 +31,9 @@ def _normalizar_estado(estado: str | None) -> str | None:
     estado_key = regions.remover_acentos(estado.strip().lower())
     estado_uf = regions.NOMES_PARA_UF.get(estado_key)
     if estado_uf is None:
-        raise ValueError(f"Estado inválido: {estado!r}. Use a sigla ou o nome completo de uma UF")
+        raise InvalidParameterError(
+            f"Estado inválido: {estado!r}. Use a sigla ou o nome completo de uma UF"
+        )
     return estado_uf
 
 

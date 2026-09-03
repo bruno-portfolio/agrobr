@@ -4,6 +4,8 @@ import re
 import unicodedata
 from typing import Literal
 
+from agrobr.exceptions import InvalidParameterError
+
 UF = Literal[
     "AC",
     "AL",
@@ -125,7 +127,7 @@ def ibge_para_uf(codigo: int) -> str:
     for uf, info in UFS.items():
         if info["ibge"] == codigo:
             return uf
-    raise ValueError(f"Código IBGE inválido: {codigo}")
+    raise InvalidParameterError(f"Código IBGE inválido: {codigo}")
 
 
 def listar_ufs(regiao: str | None = None) -> list[str]:

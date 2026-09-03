@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
@@ -89,7 +90,9 @@ class UsodoSoloDataset(BaseDataset):
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         if tipo not in ("cobertura", "transicao"):
-            raise ValueError(f"tipo deve ser 'cobertura' ou 'transicao', recebeu '{tipo}'")
+            raise InvalidParameterError(
+                f"tipo deve ser 'cobertura' ou 'transicao', recebeu '{tipo}'"
+            )
 
         snapshot = get_snapshot()
 

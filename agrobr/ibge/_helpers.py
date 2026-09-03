@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from agrobr.constants import URLS, Fonte
+from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import client
 
 SIDRA_BASE = URLS[Fonte.IBGE]["base"]
@@ -29,7 +30,7 @@ def resolve_ibge_code(
     if nivel_map is None:
         nivel_map = NIVEL_MAP
     if nivel not in nivel_map:
-        raise ValueError(f"nível inválido: {nivel!r}. Use um de: {sorted(nivel_map)}")
+        raise InvalidParameterError(f"nível inválido: {nivel!r}. Use um de: {sorted(nivel_map)}")
     territorial_level = nivel_map[nivel]
     ibge_code = "all"
     if uf:

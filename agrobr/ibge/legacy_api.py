@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Literal
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import ftp_client, legacy_parser
 from agrobr.utils.result import build_source_meta, finalize_result
 
@@ -31,7 +32,7 @@ async def censo_agro_legado(
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     if tema not in TEMAS_LEGADO:
-        raise ValueError(f"Tema '{tema}' não suportado. Disponíveis: {TEMAS_LEGADO}")
+        raise InvalidParameterError(f"Tema '{tema}' não suportado. Disponíveis: {TEMAS_LEGADO}")
 
     t0 = time.monotonic()
 
@@ -40,7 +41,9 @@ async def censo_agro_legado(
     if uf:
         uf_upper = uf.upper()
         if uf_upper not in ftp_client.UF_DIRS:
-            raise ValueError(f"UF '{uf}' inválida. Disponíveis: {sorted(ftp_client.UF_DIRS)}")
+            raise InvalidParameterError(
+                f"UF '{uf}' inválida. Disponíveis: {sorted(ftp_client.UF_DIRS)}"
+            )
         uf_dir = ftp_client.UF_DIRS[uf_upper]
 
     suffix = "Mn" if uf_dir != "Brasil" else ""

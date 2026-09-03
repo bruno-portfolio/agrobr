@@ -8,6 +8,7 @@ import structlog
 from agrobr.b3.models import B3_CONTRATOS_AGRO
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
@@ -54,7 +55,7 @@ async def _fetch_b3(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo
 
     if tipo == "historico":
         if not kwargs.get("inicio") or not kwargs.get("fim"):
-            raise ValueError("tipo='historico' requer inicio e fim (YYYY-MM-DD)")
+            raise InvalidParameterError("tipo='historico' requer inicio e fim (YYYY-MM-DD)")
         result = await b3.historico(
             contrato=contrato or "",
             inicio=kwargs["inicio"],
@@ -104,7 +105,7 @@ class FuturosAgricolasDataset(BaseDataset):
         if not produto:
             return
         if produto not in self.info.products:
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Produto '{produto}' não suportado por {self.info.name}. "
                 f"Válidos: {self.info.products}"
             )
@@ -118,11 +119,11 @@ class FuturosAgricolasDataset(BaseDataset):
     ) -> None:
         if tipo == "historico":
             if not produto:
-                raise ValueError("produto é obrigatório para tipo='historico'")
+                raise InvalidParameterError("produto é obrigatório para tipo='historico'")
             if not inicio or not fim:
-                raise ValueError("inicio e fim são obrigatórios para tipo='historico'")
+                raise InvalidParameterError("inicio e fim são obrigatórios para tipo='historico'")
         if tipo == "posicoes" and produto == "soja_fob":
-            raise ValueError(
+            raise InvalidParameterError(
                 "soja_fob não possui dados de posições abertas na B3 (SOY ausente de TICKERS_AGRO_OI)"
             )
 
@@ -139,7 +140,7 @@ class FuturosAgricolasDataset(BaseDataset):
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         if tipo not in ("ajustes", "historico", "posicoes"):
-            raise ValueError(
+            raise InvalidParameterError(
                 f"tipo deve ser 'ajustes', 'historico' ou 'posicoes', recebeu '{tipo}'"
             )
 

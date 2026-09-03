@@ -9,7 +9,7 @@ import httpx
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_year_uf
@@ -65,12 +65,14 @@ def _build_cql_filter(
 
     if criado_apos:
         if not _DATE_RE.match(criado_apos):
-            raise ValueError(f"criado_apos invalido (esperado YYYY-MM-DD): {criado_apos!r}")
+            raise InvalidParameterError(
+                f"criado_apos invalido (esperado YYYY-MM-DD): {criado_apos!r}"
+            )
         parts.append(f"dat_criacao>='{criado_apos}'")
 
     if atualizado_apos:
         if not _DATETIME_RE.match(atualizado_apos):
-            raise ValueError(
+            raise InvalidParameterError(
                 f"atualizado_apos invalido (esperado YYYY-MM-DD ou YYYY-MM-DDTHH:MM:SS): "
                 f"{atualizado_apos!r}"
             )
@@ -81,7 +83,7 @@ def _build_cql_filter(
 
 def _check_atualizado_apos_uf(uf: str, atualizado_apos: str | None) -> None:
     if atualizado_apos and uf in UFS_SEM_DATA_ATUALIZACAO:
-        raise ValueError(
+        raise InvalidParameterError(
             f"atualizado_apos nao suportado para UF '{uf}': campo 'data_atualizacao' "
             f"nao existe neste layer WFS (UFs sem suporte: {sorted(UFS_SEM_DATA_ATUALIZACAO)})"
         )
@@ -97,13 +99,13 @@ def _validar_filtros_imoveis(
     validate_year_uf(uf=uf)
 
     if municipio is not None and cod_municipio is not None:
-        raise ValueError("Use 'municipio' ou 'cod_municipio', nao ambos")
+        raise InvalidParameterError("Use 'municipio' ou 'cod_municipio', nao ambos")
 
     if status is not None and status.upper() not in STATUS_VALIDOS:
-        raise ValueError(f"Status '{status}' invalido. Opcoes: {sorted(STATUS_VALIDOS)}")
+        raise InvalidParameterError(f"Status '{status}' invalido. Opcoes: {sorted(STATUS_VALIDOS)}")
 
     if tipo is not None and tipo.upper() not in TIPO_VALIDOS:
-        raise ValueError(f"Tipo '{tipo}' invalido. Opcoes: {sorted(TIPO_VALIDOS)}")
+        raise InvalidParameterError(f"Tipo '{tipo}' invalido. Opcoes: {sorted(TIPO_VALIDOS)}")
 
     return uf.strip().upper()
 
@@ -441,7 +443,7 @@ async def resumo(
     uf_upper = uf.strip().upper()
 
     if municipio is not None and cod_municipio is not None:
-        raise ValueError("Use 'municipio' ou 'cod_municipio', nao ambos")
+        raise InvalidParameterError("Use 'municipio' ou 'cod_municipio', nao ambos")
 
     logger.info("sicar_resumo", uf=uf_upper, municipio=municipio, cod_municipio=cod_municipio)
 

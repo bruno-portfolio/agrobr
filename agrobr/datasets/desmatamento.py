@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.normalize.regions import BIOMAS_VALIDOS, normalizar_bioma
 
@@ -68,7 +69,9 @@ class DesmatamentoDataset(BaseDataset):
     @staticmethod
     def _validate_params(tipo: str, bioma: str) -> None:
         if tipo == "deter" and bioma not in _DETER_BIOMAS:
-            raise ValueError(f"DETER só está disponível para Amazônia e Cerrado, recebeu '{bioma}'")
+            raise InvalidParameterError(
+                f"DETER só está disponível para Amazônia e Cerrado, recebeu '{bioma}'"
+            )
 
     async def fetch(  # type: ignore[override]
         self,
@@ -84,7 +87,7 @@ class DesmatamentoDataset(BaseDataset):
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         if tipo not in ("prodes", "deter"):
-            raise ValueError(f"tipo deve ser 'prodes' ou 'deter', recebeu '{tipo}'")
+            raise InvalidParameterError(f"tipo deve ser 'prodes' ou 'deter', recebeu '{tipo}'")
 
         bioma = normalizar_bioma(bioma)
         self._validate_params(tipo, bioma)

@@ -6,6 +6,7 @@ from typing import Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 
@@ -54,7 +55,9 @@ async def sgs(
         nome_serie = codigo
         resolved = SGS_SERIES.get(codigo)
         if resolved is None:
-            raise ValueError(f"Serie '{codigo}' nao encontrada. Opcoes: {list(SGS_SERIES.keys())}")
+            raise InvalidParameterError(
+                f"Serie '{codigo}' nao encontrada. Opcoes: {list(SGS_SERIES.keys())}"
+            )
         codigo = resolved
 
     t0 = time.monotonic()

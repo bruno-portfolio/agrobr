@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -25,7 +26,9 @@ def _validate_grupo(grupo: str | None) -> str | None:
         return None
     grupo_upper = grupo.strip().upper()
     if grupo_upper not in GRUPOS_VALIDOS:
-        raise ValueError(f"Grupo invalido: {grupo!r}. Valores validos: {sorted(GRUPOS_VALIDOS)}")
+        raise InvalidParameterError(
+            f"Grupo invalido: {grupo!r}. Valores validos: {sorted(GRUPOS_VALIDOS)}"
+        )
     return grupo_upper
 
 

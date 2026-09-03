@@ -9,6 +9,7 @@ import structlog
 
 from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
+from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import client
 from agrobr.ibge._helpers import SIDRA_BASE, resolve_ibge_code, resolve_period
 from agrobr.models import MetaInfo
@@ -33,7 +34,7 @@ def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
         return [(sub, client.PRODUTOS_LSPA[sub]) for sub in _LSPA_ALIASES[produto]]
 
     all_valid = sorted(set(list(client.PRODUTOS_LSPA.keys()) + list(_LSPA_ALIASES.keys())))
-    raise ValueError(f"Produto não suportado: {produto}. Disponíveis: {all_valid}")
+    raise InvalidParameterError(f"Produto não suportado: {produto}. Disponíveis: {all_valid}")
 
 
 @overload
@@ -90,7 +91,7 @@ async def pam(
 
     produto_lower = produto.lower()
     if produto_lower not in client.PRODUTOS_PAM:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Produto não suportado: {produto}. Disponíveis: {list(client.PRODUTOS_PAM.keys())}"
         )
 
@@ -346,7 +347,9 @@ async def ppm(
     is_producao = especie_lower in client.PRODUTOS_ORIGEM_ANIMAL
 
     if not is_rebanho and not is_producao:
-        raise ValueError(f"Espécie/produto não suportado: {especie}. Disponíveis: {all_valid}")
+        raise InvalidParameterError(
+            f"Espécie/produto não suportado: {especie}. Disponíveis: {all_valid}"
+        )
 
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
     period = resolve_period(ano)
@@ -554,7 +557,9 @@ async def abate(
 
     especie_lower = especie.lower()
     if especie_lower not in client.ESPECIES_ABATE:
-        raise ValueError(f"Espécie não suportada: {especie}. Disponíveis: {client.ESPECIES_ABATE}")
+        raise InvalidParameterError(
+            f"Espécie não suportada: {especie}. Disponíveis: {client.ESPECIES_ABATE}"
+        )
 
     table_code = client.TABELAS_ABATE[especie_lower]
     var_codes = ",".join(client.VARIAVEIS_ABATE.values())

@@ -1,13 +1,19 @@
 """Testes parametrizados comuns a todos os datasets."""
 
+import warnings
 from unittest.mock import AsyncMock
 
 import pandas as pd
 import pytest
 
 from agrobr.datasets import registry
-from agrobr.exceptions import ContractViolationError, SourceUnavailableError
-from tests.test_datasets.conftest import make_source
+from agrobr.exceptions import (
+    ContractViolationError,
+    InvalidParameterError,
+    SourceFallbackWarning,
+    SourceUnavailableError,
+)
+from tests.test_datasets.conftest import make_source, mock_source_meta
 
 ALL_DATASETS = sorted(registry.list_datasets())
 
@@ -119,6 +125,7 @@ _VALID_DF = pd.DataFrame(
             "data": pd.Timestamp("2025-01-15"),
             "valor": 145.0,
             "unidade": "R$/sc60kg",
+            "praca": "Paranaguá/PR",
         }
     ]
 )
@@ -137,7 +144,8 @@ class TestTrySourcesErrorPaths:
         )
         dataset.info.sources[1].fetch_fn = make_source(_VALID_DF)
 
-        df, meta = await dataset.fetch("soja", return_meta=True)
+        with pytest.warns(SourceFallbackWarning, match="usando fallback 'cache'"):
+            df, meta = await dataset.fetch("soja", return_meta=True)
         assert meta.attempted_sources == ["cepea", "cache"]
         assert meta.selected_source == "cache"
 
@@ -151,7 +159,8 @@ class TestTrySourcesErrorPaths:
         )
         dataset.info.sources[1].fetch_fn = make_source(_VALID_DF)
 
-        df, meta = await dataset.fetch("soja", return_meta=True)
+        with pytest.warns(SourceFallbackWarning, match="usando fallback 'cache'"):
+            df, meta = await dataset.fetch("soja", return_meta=True)
         assert meta.attempted_sources == ["cepea", "cache"]
         assert meta.selected_source == "cache"
 
@@ -164,14 +173,13 @@ class TestTrySourcesErrorPaths:
             _DUMMY_DF,
             raises=SourceUnavailableError(source="cepea", last_error="HTTP 500 after 3 retries"),
         )
-        dataset.info.sources[1].fetch_fn = AsyncMock(side_effect=RuntimeError("boom"))
+        dataset.info.sources[1].fetch_fn = make_source(_VALID_DF)
 
-        with pytest.raises(SourceUnavailableError) as exc_info:
-            await dataset.fetch("soja")
+        with pytest.warns(SourceFallbackWarning, match="unavailable"):
+            df, meta = await dataset.fetch("soja", return_meta=True)
 
-        errors = exc_info.value.errors
-        assert errors[0][1] == "unavailable"
-        assert errors[1][1] == "unexpected"
+        assert meta.attempted_sources == ["cepea", "cache"]
+        assert meta.selected_source == "cache"
 
     @pytest.mark.asyncio
     async def test_all_fail_mixed_errors(self):
@@ -193,3 +201,78 @@ class TestTrySourcesErrorPaths:
         assert len(errors) == 2
         assert errors[0][1] == "contract"
         assert errors[1][1] == "unexpected"
+
+    @pytest.mark.asyncio
+    async def test_invalid_parameter_propagates_without_fallback(self):
+        from agrobr.datasets.preco_diario import PrecoDiarioDataset
+
+        dataset = PrecoDiarioDataset()
+        dataset.info.sources[0].fetch_fn = make_source(
+            _DUMMY_DF,
+            raises=InvalidParameterError("produto inválido"),
+        )
+        fallback = make_source(_VALID_DF)
+        dataset.info.sources[1].fetch_fn = fallback
+
+        with pytest.raises(InvalidParameterError, match="produto inválido"):
+            await dataset.fetch("soja")
+
+        fallback.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_primary_source_success_does_not_warn_about_fallback(self):
+        from agrobr.datasets.preco_diario import PrecoDiarioDataset
+
+        dataset = PrecoDiarioDataset()
+        dataset.info.sources[0].fetch_fn = make_source(_VALID_DF)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", SourceFallbackWarning)
+            await dataset.fetch("soja")
+
+
+class TestDatasetMetaProvenance:
+    @pytest.mark.asyncio
+    async def test_internal_source_cascade_is_preserved(self):
+        from agrobr.datasets.preco_diario import PrecoDiarioDataset
+
+        source_meta = mock_source_meta()
+        source_meta.attempted_sources = ["cepea", "noticias_agricolas"]
+        source_meta.selected_source = "noticias_agricolas"
+        dataset = PrecoDiarioDataset()
+        dataset.info.sources[0].fetch_fn = make_source(_VALID_DF, source_meta)
+
+        _, meta = await dataset.fetch("soja", return_meta=True)
+
+        assert meta.attempted_sources == ["cepea", "noticias_agricolas"]
+        assert meta.selected_source == "noticias_agricolas"
+        assert meta.source == "datasets.preco_diario/noticias_agricolas"
+
+    @pytest.mark.asyncio
+    async def test_source_cache_provenance_is_preserved(self):
+        from agrobr.datasets.preco_diario import PrecoDiarioDataset
+
+        source_meta = mock_source_meta()
+        source_meta.from_cache = True
+        dataset = PrecoDiarioDataset()
+        dataset.info.sources[0].fetch_fn = make_source(_VALID_DF, source_meta)
+
+        _, meta = await dataset.fetch("soja", return_meta=True)
+
+        assert meta.from_cache is True
+
+    @pytest.mark.asyncio
+    async def test_single_internal_source_keeps_dataset_source_name(self):
+        from agrobr.datasets.preco_diario import PrecoDiarioDataset
+
+        source_meta = mock_source_meta()
+        source_meta.attempted_sources = ["cepea_api"]
+        source_meta.selected_source = "cepea_api"
+        dataset = PrecoDiarioDataset()
+        dataset.info.sources[0].fetch_fn = make_source(_VALID_DF, source_meta)
+
+        _, meta = await dataset.fetch("soja", return_meta=True)
+
+        assert meta.attempted_sources == ["cepea"]
+        assert meta.selected_source == "cepea"
+        assert meta.source == "datasets.preco_diario/cepea"

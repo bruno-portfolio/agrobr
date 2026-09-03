@@ -14,7 +14,7 @@ from agrobr.anec.models import (
     resolve_produto,
 )
 from agrobr.anec.parser import PERIODO_CURRENT_WEEK, PERIODO_LAST_WEEK
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
@@ -87,7 +87,9 @@ def _tipo_to_periodo(tipo: str) -> str:
         return PERIODO_LAST_WEEK
     if tipo_norm == TIPO_PROGRAMADO:
         return PERIODO_CURRENT_WEEK
-    raise ValueError(f"tipo inválido: {tipo!r}. Use {TIPO_EFETIVADO!r} ou {TIPO_PROGRAMADO!r}.")
+    raise InvalidParameterError(
+        f"tipo inválido: {tipo!r}. Use {TIPO_EFETIVADO!r} ou {TIPO_PROGRAMADO!r}."
+    )
 
 
 def _filter_weekly(

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -37,7 +37,7 @@ _SOURCE_METHOD = "httpx+pyogrio+shapefile_zip"
 def _validate_uf(uf: str) -> str:
     result = _validate_uf_optional(uf)
     if result is None:
-        raise ValueError(f"UF invalida: {uf!r}")
+        raise InvalidParameterError(f"UF invalida: {uf!r}")
     return result
 
 

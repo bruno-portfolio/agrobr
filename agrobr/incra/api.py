@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -24,7 +25,9 @@ def _validate_fase(fase: str | None) -> str | None:
     if fase is None:
         return None
     if fase not in FASES_VALIDAS:
-        raise ValueError(f"Fase invalida: {fase!r}. Valores aceitos: {sorted(FASES_VALIDAS)}")
+        raise InvalidParameterError(
+            f"Fase invalida: {fase!r}. Valores aceitos: {sorted(FASES_VALIDAS)}"
+        )
     return fase
 
 

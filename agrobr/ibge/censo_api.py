@@ -9,6 +9,7 @@ import structlog
 
 from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
+from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import client
 from agrobr.ibge._helpers import NIVEL_MAP_HISTORICO, SIDRA_BASE, resolve_ibge_code
 from agrobr.ibge.censo_tables import (
@@ -345,14 +346,16 @@ async def censo_agro(
 
     tema_lower = tema.lower()
     if tema_lower not in client.TABELAS_CENSO_AGRO:
-        raise ValueError(f"Tema não suportado: {tema}. Disponíveis: {client.TEMAS_CENSO_AGRO}")
+        raise InvalidParameterError(
+            f"Tema não suportado: {tema}. Disponíveis: {client.TEMAS_CENSO_AGRO}"
+        )
 
     anos_disponiveis = list(client.TABELAS_CENSO_AGRO[tema_lower].keys())
 
     if ano is not None:
         ano_str = str(ano)
         if ano_str not in anos_disponiveis:
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Ano {ano} não disponível para tema '{tema_lower}'. Disponíveis: {anos_disponiveis}"
             )
         anos_fetch = [ano_str]
@@ -526,11 +529,13 @@ async def censo_agro_historico(
 
     tema_lower = tema.lower()
     if tema_lower not in client.TABELAS_CENSO_HISTORICO:
-        raise ValueError(f"Tema não suportado: {tema}. Disponíveis: {client.TEMAS_CENSO_HISTORICO}")
+        raise InvalidParameterError(
+            f"Tema não suportado: {tema}. Disponíveis: {client.TEMAS_CENSO_HISTORICO}"
+        )
 
     niveis_validos = client.NIVEIS_CENSO_HISTORICO[tema_lower]
     if nivel not in niveis_validos:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Nível '{nivel}' não disponível para tema '{tema_lower}'. "
             f"Disponíveis: {niveis_validos}"
         )
@@ -540,14 +545,14 @@ async def censo_agro_historico(
         anos = periodos
     elif isinstance(ano, int):
         if ano not in periodos:
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Ano {ano} não disponível para tema '{tema_lower}'. Disponíveis: {periodos}"
             )
         anos = [ano]
     else:
         for a in ano:
             if a not in periodos:
-                raise ValueError(
+                raise InvalidParameterError(
                     f"Ano {a} não disponível para tema '{tema_lower}'. Disponíveis: {periodos}"
                 )
         anos = ano

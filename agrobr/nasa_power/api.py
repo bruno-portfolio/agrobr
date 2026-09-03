@@ -7,6 +7,7 @@ from typing import Any
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 
@@ -67,7 +68,7 @@ async def clima_uf(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf_upper = uf.upper()
     if uf_upper not in UF_COORDS:
-        raise ValueError(
+        raise InvalidParameterError(
             f"UF '{uf_upper}' nao reconhecida. UFs disponiveis: {sorted(UF_COORDS.keys())}"
         )
 

@@ -6,8 +6,10 @@ __all__ = [
     "AgrobrError",
     "ContractViolationError",
     "FingerprintMismatchError",
+    "InvalidParameterError",
     "NetworkError",
     "ParseError",
+    "SourceFallbackWarning",
     "SourceUnavailableError",
     "StaleDataWarning",
     "ValidationError",
@@ -15,6 +17,10 @@ __all__ = [
 
 
 class AgrobrError(Exception):
+    pass
+
+
+class InvalidParameterError(AgrobrError, ValueError):
     pass
 
 
@@ -104,4 +110,8 @@ class FingerprintMismatchError(AgrobrError):
 
 
 class StaleDataWarning(UserWarning):
+    pass
+
+
+class SourceFallbackWarning(UserWarning):
     pass

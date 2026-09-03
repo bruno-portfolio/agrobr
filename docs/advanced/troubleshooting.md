@@ -18,6 +18,12 @@ Guia para resolver problemas comuns.
 3. Aguarde e tente novamente (fonte pode estar temporariamente fora)
 4. Verifique se há um proxy configurado que pode estar bloqueando
 
+### `SourceFallbackWarning`
+
+**Causa:** A fonte primária falhou, mas o dataset conseguiu devolver dados de uma
+fonte alternativa. A mensagem informa a fonte original, o motivo resumido da
+falha e o fallback usado. A execução continua normalmente.
+
 ### `TimeoutError`
 
 **Causa:** Requisição demorou muito.
@@ -79,6 +85,13 @@ Guia para resolver problemas comuns.
 3. Tente um período menor
 
 ## Erros de Validação
+
+### `InvalidParameterError`
+
+**Causa:** Um parâmetro fornecido pelo usuário é inválido. Essa exceção também é
+um `ValueError`, para preservar compatibilidade com código que já captura
+`ValueError`, e interrompe a cascata sem mascarar o problema como fonte
+indisponível.
 
 ### `ValidationError`
 

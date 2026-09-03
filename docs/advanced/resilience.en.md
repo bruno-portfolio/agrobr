@@ -151,6 +151,12 @@ in `agrobr/utils/io.py`.
 
 ## Source Fallback
 
+When a dataset's primary source fails and a later source succeeds, agrobr emits
+`SourceFallbackWarning` with the primary source, the error category and summary,
+and the selected fallback. The notice uses `warnings.warn`, so standard Python
+tools can capture or filter it, and applications such as the private MCP receive
+it on stderr.
+
 ### CEPEA
 
 ```

@@ -14,7 +14,7 @@ from agrobr.datasets.producao_anual import (
     _fetch_conab,
     producao_anual,
 )
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import SourceFallbackWarning, SourceUnavailableError
 
 from .conftest import make_source, mock_source_meta
 
@@ -27,8 +27,10 @@ def _mock_df():
                 "localidade": "Mato Grosso",
                 "produto": "soja",
                 "area_plantada": 12000000.0,
+                "area_colhida": 11900000.0,
                 "producao": 43000000.0,
                 "rendimento": 3583.0,
+                "valor_producao": 200000000000.0,
                 "fonte": "ibge_pam",
             },
         ]
@@ -177,11 +179,14 @@ class TestProducaoAnualFallback:
         dataset.info.sources[0].fetch_fn = AsyncMock(side_effect=httpx.ConnectError("test"))
         dataset.info.sources[1].fetch_fn = _fetch_conab
 
-        with patch(
-            "agrobr.conab.safras",
-            new_callable=AsyncMock,
-            return_value=(_mock_conab_df(), mock_source_meta()),
-        ) as mock_safras:
+        with (
+            patch(
+                "agrobr.conab.safras",
+                new_callable=AsyncMock,
+                return_value=(_mock_conab_df(), mock_source_meta()),
+            ) as mock_safras,
+            pytest.warns(SourceFallbackWarning, match="conab"),
+        ):
             df, meta = await dataset.fetch(
                 "soja",
                 ano=2023,

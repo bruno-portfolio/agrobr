@@ -8,6 +8,7 @@ import structlog
 
 from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
+from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import client
 from agrobr.ibge._helpers import SIDRA_BASE, resolve_ibge_code, resolve_period
 from agrobr.models import MetaInfo
@@ -80,7 +81,7 @@ async def silvicultura(
 
     if variavel_lower == "area":
         if produto_lower not in client.ESPECIES_SILVICULTURA_AREA:
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Espécie não suportada para área: {produto}. "
                 f"Disponíveis: {list(client.ESPECIES_SILVICULTURA_AREA.keys())}"
             )
@@ -90,7 +91,7 @@ async def silvicultura(
         classification_val = client.ESPECIES_SILVICULTURA_AREA[produto_lower]
     elif variavel_lower in ("quantidade_produzida", "valor_producao"):
         if produto_lower not in client.PRODUTOS_SILVICULTURA:
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Produto não suportado: {produto}. "
                 f"Disponíveis: {list(client.PRODUTOS_SILVICULTURA.keys())}"
             )
@@ -99,7 +100,7 @@ async def silvicultura(
         classification_key = "194"
         classification_val = client.PRODUTOS_SILVICULTURA[produto_lower]
     else:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Variável não suportada: {variavel}. "
             f"Disponíveis: ['quantidade_produzida', 'valor_producao', 'area']"
         )
@@ -239,13 +240,13 @@ async def extracao_vegetal(
     variavel_lower = variavel.lower()
 
     if produto_lower not in client.PRODUTOS_EXTRACAO_VEGETAL:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Produto não suportado: {produto}. "
             f"Disponíveis: {list(client.PRODUTOS_EXTRACAO_VEGETAL.keys())}"
         )
 
     if variavel_lower not in client.VARIAVEIS_EXTRACAO_VEGETAL:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Variável não suportada: {variavel}. "
             f"Disponíveis: {list(client.VARIAVEIS_EXTRACAO_VEGETAL.keys())}"
         )
@@ -516,13 +517,13 @@ async def pib_agro(
     setor_lower = setor.lower()
 
     if precos_lower not in client.VARIAVEIS_PIB:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Tipo de preços não suportado: {precos}. "
             f"Disponíveis: {list(client.VARIAVEIS_PIB.keys())}"
         )
 
     if setor_lower not in client.SETORES_PIB:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Setor não suportado: {setor}. Disponíveis: {list(client.SETORES_PIB.keys())}"
         )
 

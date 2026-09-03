@@ -6,7 +6,7 @@ import pytest
 
 from agrobr.datasets.clima import CLIMA_INFO, ClimaDataset, clima
 from agrobr.datasets.deterministic import deterministic
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import SourceFallbackWarning, SourceUnavailableError
 
 from .conftest import make_source, mock_source_meta
 
@@ -148,7 +148,8 @@ class TestClimaFallback:
         df_nasa = _add_nasa_nullable_cols(_mock_nasa_df().drop(columns=["lat", "lon"]))
         dataset.info.sources[1].fetch_fn = make_source(df_nasa)
 
-        df, meta = await dataset.fetch("SP", ano=2024, return_meta=True)
+        with pytest.warns(SourceFallbackWarning, match="nasa_power"):
+            df, meta = await dataset.fetch("SP", ano=2024, return_meta=True)
 
         assert meta.selected_source == "nasa_power"
         assert "inmet" in meta.attempted_sources
@@ -208,7 +209,8 @@ class TestClimaNormalize:
         df_nasa = _add_nasa_nullable_cols(_mock_nasa_df().drop(columns=["lat", "lon"]))
         dataset.info.sources[1].fetch_fn = make_source(df_nasa)
 
-        df = await dataset.fetch("SP", ano=2024)
+        with pytest.warns(SourceFallbackWarning, match="nasa_power"):
+            df = await dataset.fetch("SP", ano=2024)
 
         assert df["umidade_media"].notna().all()
         assert df["num_estacoes"].isna().all()
@@ -274,6 +276,11 @@ class TestClimaEstacao:
                 "estacao": ["A301"],
                 "uf": ["SP"],
                 "temp_media": [25.0],
+                "temp_max": [30.0],
+                "temp_min": [20.0],
+                "precipitacao_mm": [0.0],
+                "umidade_media": [70.0],
+                "radiacao_total_kj_m2": [0.0],
             }
         )
 

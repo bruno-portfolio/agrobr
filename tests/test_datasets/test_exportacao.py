@@ -15,7 +15,7 @@ from agrobr.datasets.exportacao import (
     _fetch_comexstat,
     exportacao,
 )
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import SourceFallbackWarning, SourceUnavailableError
 
 from .conftest import make_source, mock_source_meta
 
@@ -134,7 +134,8 @@ class TestExportacaoFallback:
         dataset.info.sources[0].fetch_fn = AsyncMock(side_effect=httpx.ConnectError("down"))
         dataset.info.sources[1].fetch_fn = make_source(_mock_export_df())
 
-        df, meta = await dataset.fetch("soja", ano=2024, return_meta=True)
+        with pytest.warns(SourceFallbackWarning, match="abiove"):
+            df, meta = await dataset.fetch("soja", ano=2024, return_meta=True)
 
         assert len(df) == 1
         assert meta.attempted_sources == ["comexstat", "abiove"]
@@ -192,6 +193,7 @@ class TestExportacaoFallback:
                 new_callable=AsyncMock,
                 return_value=(abiove_df, source_meta),
             ) as abiove_exportacao,
+            pytest.warns(SourceFallbackWarning, match="abiove"),
         ):
             df, meta = await dataset.fetch("soja", ano=2024, return_meta=True)
 

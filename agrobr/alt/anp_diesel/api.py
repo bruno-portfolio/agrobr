@@ -6,6 +6,7 @@ from datetime import date, datetime
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_year_uf
@@ -41,11 +42,15 @@ async def precos_diesel(
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     if agregacao not in AGREGACOES_VALIDAS:
-        raise ValueError(f"Agregacao '{agregacao}' invalida. Opcoes: {sorted(AGREGACOES_VALIDAS)}")
+        raise InvalidParameterError(
+            f"Agregacao '{agregacao}' invalida. Opcoes: {sorted(AGREGACOES_VALIDAS)}"
+        )
     if nivel not in NIVEIS_VALIDOS:
-        raise ValueError(f"Nivel '{nivel}' invalido. Opcoes: {sorted(NIVEIS_VALIDOS)}")
+        raise InvalidParameterError(f"Nivel '{nivel}' invalido. Opcoes: {sorted(NIVEIS_VALIDOS)}")
     if produto.upper() not in {p.upper() for p in PRODUTOS_DIESEL}:
-        raise ValueError(f"Produto '{produto}' invalido. Opcoes: {sorted(PRODUTOS_DIESEL)}")
+        raise InvalidParameterError(
+            f"Produto '{produto}' invalido. Opcoes: {sorted(PRODUTOS_DIESEL)}"
+        )
     validate_year_uf(uf=uf)
 
     if isinstance(inicio, str):

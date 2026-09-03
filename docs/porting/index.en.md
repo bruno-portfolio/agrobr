@@ -102,6 +102,10 @@ provenance.
 - `fetch_timestamp` — collection time
 - `schema_version` — contract version
 
+When a source runs its own internal cascade, the dataset folds that sequence into
+`attempted_sources`, preserves the actual `selected_source`, and propagates
+`from_cache=True`. Simple sources remain identified by the dataset adapter name.
+
 Datasets are registered automatically via a registry with auto-discovery.
 
 ### Exception Hierarchy
@@ -112,6 +116,7 @@ handling.
 | Exception | When |
 |---------|--------|
 | `AgrobrError` | Base of all exceptions |
+| `InvalidParameterError` | Invalid user parameter; also a `ValueError` and stops the cascade |
 | `SourceUnavailableError` | All sources failed after retries |
 | `NetworkError` | Timeout, HTTP error, DNS |
 | `ParseError` | Layout changed, unexpected HTML/JSON |
@@ -123,6 +128,7 @@ handling.
 
 | Warning | When |
 |---------|--------|
+| `SourceFallbackWarning` | Primary source failed and the dataset returned a fallback |
 | `StaleDataWarning` | Expired cache data, but returned |
 
 ---

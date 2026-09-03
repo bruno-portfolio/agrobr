@@ -6,6 +6,7 @@ from typing import Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
@@ -69,7 +70,7 @@ async def moagem_quinzenal(
     _warn_license()
     produto_canonico = resolve_produto(produto, PRODUTOS_QUINZENAL)
     if regiao is not None and regiao not in REGIOES_QUINZENAL:
-        raise ValueError(f"Região '{regiao}' inválida. Opções: {REGIOES_QUINZENAL}")
+        raise InvalidParameterError(f"Região '{regiao}' inválida. Opções: {REGIOES_QUINZENAL}")
 
     parsed, source_url, fetch_ms, parse_ms = await _fetch_and_parse_quinzenal()
 
@@ -124,7 +125,9 @@ async def safra_resumo(
     """
     _warn_license()
     if periodo not in ("acumulado", "quinzena"):
-        raise ValueError(f"Período '{periodo}' inválido. Opções: ['acumulado', 'quinzena']")
+        raise InvalidParameterError(
+            f"Período '{periodo}' inválido. Opções: ['acumulado', 'quinzena']"
+        )
 
     parsed, source_url, fetch_ms, parse_ms = await _fetch_and_parse_quinzenal()
 

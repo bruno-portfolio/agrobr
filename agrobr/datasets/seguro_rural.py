@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
@@ -92,7 +93,9 @@ class SeguroRuralDataset(BaseDataset):
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         if tipo not in ("apolices", "sinistros"):
-            raise ValueError(f"tipo deve ser 'apolices' ou 'sinistros', recebeu '{tipo}'")
+            raise InvalidParameterError(
+                f"tipo deve ser 'apolices' ou 'sinistros', recebeu '{tipo}'"
+            )
 
         logger.info(
             "dataset_fetch",

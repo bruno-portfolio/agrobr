@@ -18,6 +18,12 @@ Guide to solving common problems.
 3. Wait and try again (the source may be temporarily down)
 4. Check whether a configured proxy might be blocking
 
+### `SourceFallbackWarning`
+
+**Cause:** The primary source failed, but the dataset returned data from an
+alternative source. The message identifies the original source, a short failure
+reason, and the fallback used. Execution continues normally.
+
 ### `TimeoutError`
 
 **Cause:** The request took too long.
@@ -79,6 +85,13 @@ Guide to solving common problems.
 3. Try a smaller period
 
 ## Validation Errors
+
+### `InvalidParameterError`
+
+**Cause:** A user-supplied parameter is invalid. This exception is also a
+`ValueError`, preserving compatibility with code that already catches
+`ValueError`, and it stops the cascade instead of masking the issue as source
+unavailability.
 
 ### `ValidationError`
 

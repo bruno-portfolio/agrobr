@@ -7,7 +7,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
 from agrobr.normalize.dates import anos_para_safra, safra_para_anos
@@ -171,7 +171,9 @@ class ProducaoAnualDataset(BaseDataset):
         logger.info("dataset_fetch", dataset="producao_anual", produto=produto, ano=ano)
 
         if nivel not in ("brasil", "uf", "municipio"):
-            raise ValueError(f"nível inválido: {nivel!r}. Use: 'brasil', 'uf' ou 'municipio'")
+            raise InvalidParameterError(
+                f"nível inválido: {nivel!r}. Use: 'brasil', 'uf' ou 'municipio'"
+            )
 
         uf = validate_uf(uf)
 

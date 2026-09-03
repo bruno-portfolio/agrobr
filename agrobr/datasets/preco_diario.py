@@ -8,6 +8,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot, is_deterministic
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
@@ -49,7 +50,7 @@ async def _fetch_cache(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, None]
     )
 
     if not indicadores:
-        raise ValueError(f"No cached data for {produto}")
+        raise SourceUnavailableError(source="cache", last_error=f"No cached data for {produto}")
 
     df = pd.DataFrame(indicadores)
     df["data"] = pd.to_datetime(df["data"])

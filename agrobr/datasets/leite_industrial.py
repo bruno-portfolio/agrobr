@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
 
@@ -55,7 +56,7 @@ class LeiteIndustrialDataset(BaseDataset):
 
     def _validate_produto(self, produto: str) -> None:
         if produto not in ("leite", *self.info.products):
-            raise ValueError(
+            raise InvalidParameterError(
                 f"Produto '{produto}' não suportado por {self.info.name}. "
                 f"Válidos: {self.info.products}"
             )

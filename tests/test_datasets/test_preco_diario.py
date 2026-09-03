@@ -13,7 +13,7 @@ from agrobr.datasets.preco_diario import (
     _fetch_cepea,
     preco_diario,
 )
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError, SourceFallbackWarning, SourceUnavailableError
 
 from .conftest import make_source, mock_source_meta
 
@@ -113,16 +113,19 @@ class TestPrecoDiarioFetch:
                     "data": pd.Timestamp("2025-01-20"),
                     "valor": 150.0,
                     "unidade": "R$/saca 60kg",
+                    "praca": "Paranaguá",
                 },
                 {
                     "data": pd.Timestamp("2025-01-15"),
                     "valor": 145.0,
                     "unidade": "R$/saca 60kg",
+                    "praca": "Paranaguá",
                 },
                 {
                     "data": pd.Timestamp("2025-01-10"),
                     "valor": 140.0,
                     "unidade": "R$/saca 60kg",
+                    "praca": "Paranaguá",
                 },
             ]
         )
@@ -168,11 +171,13 @@ class TestPrecoDiarioNormalize:
                     "data": pd.Timestamp("2025-01-10"),
                     "valor": 140.0,
                     "unidade": "R$/saca 60kg",
+                    "praca": "Paranaguá",
                 },
                 {
                     "data": pd.Timestamp("2025-01-15"),
                     "valor": 145.0,
                     "unidade": "R$/saca 60kg",
+                    "praca": "Paranaguá",
                 },
             ]
         )
@@ -191,6 +196,7 @@ class TestPrecoDiarioNormalize:
                     "data": pd.Timestamp("2025-01-15"),
                     "valor": 145.0,
                     "unidade": "R$/saca 60kg",
+                    "praca": "Paranaguá",
                 },
             ]
         )
@@ -212,6 +218,7 @@ class TestPrecoDiarioNormalize:
                     "unidade": "R$/saca 60kg",
                     "produto": "milho",
                     "fonte": "custom",
+                    "praca": "Paranaguá",
                 },
             ]
         )
@@ -280,7 +287,8 @@ class TestPrecoDiarioFallback:
         cache_meta = mock_source_meta()
         dataset.info.sources[1].fetch_fn = make_source(_mock_df(), cache_meta)
 
-        df, meta = await dataset.fetch("soja", return_meta=True)
+        with pytest.warns(SourceFallbackWarning, match="cache"):
+            df, meta = await dataset.fetch("soja", return_meta=True)
 
         assert len(df) == 2
         assert meta.attempted_sources == ["cepea", "cache"]
@@ -295,7 +303,8 @@ class TestPrecoDiarioFallback:
         )
         dataset.info.sources[1].fetch_fn = make_source(_mock_df())
 
-        df, meta = await dataset.fetch("soja", return_meta=True)
+        with pytest.warns(SourceFallbackWarning, match="cache"):
+            df, meta = await dataset.fetch("soja", return_meta=True)
 
         assert meta.selected_source == "cache"
         assert meta.attempted_sources == ["cepea", "cache"]
@@ -335,6 +344,7 @@ class TestPrecoDiarioDedup:
                     "unidade": "R$/saca 60kg",
                     "produto": "soja",
                     "fonte": "cepea",
+                    "praca": "Paranaguá",
                 },
                 {
                     "data": pd.Timestamp("2025-01-15"),
@@ -342,6 +352,7 @@ class TestPrecoDiarioDedup:
                     "unidade": "R$/saca 60kg",
                     "produto": "soja",
                     "fonte": "cache",
+                    "praca": "Paranaguá",
                 },
                 {
                     "data": pd.Timestamp("2025-01-14"),
@@ -349,6 +360,7 @@ class TestPrecoDiarioDedup:
                     "unidade": "R$/saca 60kg",
                     "produto": "soja",
                     "fonte": "cepea",
+                    "praca": "Paranaguá",
                 },
             ]
         )
@@ -427,6 +439,6 @@ class TestPrecoDiarioFetchFunctions:
         mock_store.indicadores_query.return_value = []
         with (
             patch("agrobr.cache.duckdb_store.get_store", return_value=mock_store),
-            pytest.raises(ValueError, match="No cached data"),
+            pytest.raises(SourceUnavailableError, match="No cached data"),
         ):
             await _fetch_cache("soja")
