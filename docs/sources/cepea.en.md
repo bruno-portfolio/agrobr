@@ -27,7 +27,7 @@
 - **Type**: Authorized mirror of CEPEA indicators
 - **Status**: Working
 
-## Available Products (21 products)
+## Available Products (22 products)
 
 | Product | Main Market | Unit | Frequency |
 |---------|-----------------|---------|------------|
@@ -35,6 +35,7 @@
 | Soybean Parana | Parana | BRL/sc 60kg | Daily |
 | Corn | Campinas/SP | BRL/sc 60kg | Daily |
 | Live Cattle | Sao Paulo/SP | BRL/@ | Daily |
+| Calf | Mato Grosso do Sul | BRL/@ | Daily |
 | Arabica Coffee | Sao Paulo/SP | BRL/sc 60kg | Daily |
 | Robusta Coffee | Espirito Santo | BRL/sc 60kg | Daily |
 | Wheat | Parana + RS | BRL/ton | Daily |
@@ -131,7 +132,7 @@ CEPEA uses Smart TTL - the cache expires automatically at 18:00:
 ```python
 # List available products
 produtos = await cepea.produtos()
-# ['soja', 'soja_parana', 'milho', 'boi', 'cafe', 'cafe_robusta', 'algodao',
+# ['soja', 'soja_parana', 'milho', 'boi', 'bezerro', 'cafe', 'cafe_robusta', 'algodao',
 #  'trigo', 'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado',
 #  'etanol_anidro', 'frango_congelado', 'frango_resfriado', 'suino', 'leite',
 #  'laranja_industria', 'laranja_in_natura']

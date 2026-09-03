@@ -26,6 +26,7 @@ PRACAS: dict[str, str] = {
     "boi": "São Paulo/SP",
     "boi_gordo": "São Paulo/SP",
     "boi-gordo": "São Paulo/SP",
+    "bezerro": "Mato Grosso do Sul",
     "trigo": "Paraná",
     "algodao": "São Paulo/SP",
     "arroz": "Rio Grande do Sul",
@@ -213,6 +214,8 @@ class CepeaParserV1(BaseParser):
         data_value = None
         valor_value = None
         variacao_value = None
+        peso_medio_value = None
+        valor_usd_value = None
 
         for _i, (header, cell_text) in enumerate(zip(headers, cell_texts)):
             header_lower = header.lower()
@@ -227,6 +230,10 @@ class CepeaParserV1(BaseParser):
                 and "usd" not in header_lower
             ):
                 valor_value = self._parse_decimal(cell_text)
+            elif "us$" in header_lower or "usd" in header_lower:
+                valor_usd_value = self._parse_decimal(cell_text)
+            elif "peso" in header_lower and "médio" in header_lower:
+                peso_medio_value = self._parse_decimal(cell_text)
 
         if not data_value and cell_texts:
             data_value = self._parse_date(cell_texts[0])
@@ -243,6 +250,14 @@ class CepeaParserV1(BaseParser):
 
         unidade = self._detect_unidade(produto, headers)
 
+        meta: dict[str, Any] = {}
+        if variacao_value:
+            meta["variacao"] = variacao_value
+        if peso_medio_value:
+            meta["peso_medio"] = str(peso_medio_value)
+        if valor_usd_value:
+            meta["valor_usd"] = str(valor_usd_value)
+
         return Indicador(
             fonte=Fonte.CEPEA,
             produto=produto,
@@ -252,7 +267,7 @@ class CepeaParserV1(BaseParser):
             unidade=unidade,
             metodologia="indicador_esalq",
             revisao=0,
-            meta={"variacao": variacao_value} if variacao_value else {},
+            meta=meta,
             parser_version=self.version,
         )
 
@@ -309,6 +324,7 @@ class CepeaParserV1(BaseParser):
             "boi": "BRL/@",
             "boi_gordo": "BRL/@",
             "boi-gordo": "BRL/@",
+            "bezerro": "BRL/@",
             "algodao": "cBRL/lb",
             "frango": "BRL/kg",
             "suino": "BRL/kg",

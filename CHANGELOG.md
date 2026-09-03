@@ -7,6 +7,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Added
+- **cepea** — Bezerro (Indicador CEPEA/ESALQ, base Mato Grosso do Sul): novo produto `bezerro` em `indicador()`, `ultimo()` e `pracas()` e no dataset `preco_diario`. Inclui campos adicionais no `meta`: `peso_medio` (kg) e `valor_usd` (preço em dólares). Unidade `BRL/@`, praça Mato Grosso do Sul. Parser v1 atualizado para extrair peso médio e preço em USD quando disponíveis. Golden data e testes específicos para validação
+
 ### Changed
 - **health** — alertas passam a disparar apenas no **cruzamento** dos limiares (`consecutive_failures_warning`, `consecutive_failures_critical`), não em todo run acima deles. Antes, uma fonte fora do ar por semanas repetia o mesmo alerta a cada execução
 - **acervo_fundiario** — probe de health passa a bater em um ZIP real via `HEAD`, com a mesma política TLS do client (`verify=False`, cadeia de certificados do INCRA incompleta), e sobe para `tier: best_effort`: a fonte não respondeu a partir dos runners do GitHub Actions nem dos 8 nós internacionais testados em 31/08/2026, então a indisponibilidade esperada vira `warning` em vez de derrubar o workflow

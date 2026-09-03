@@ -92,7 +92,7 @@ df = await cepea.indicador('soja', inicio='2024-01-01')
 ultimo = await cepea.ultimo('soja')
 print(f"Soybean: R$ {ultimo.valor}/60kg bag on {ultimo.data}")
 
-print(await cepea.produtos())       # 21 products available
+print(await cepea.produtos())       # 22 products available
 print(await cepea.pracas('soja'))   # trading locations per product
 ```
 
@@ -464,7 +464,7 @@ Availability is monitored automatically. Run `agrobr health` to check locally (o
 
 | Source | Data | Golden Test | Status |
 |--------|------|:-----------:|--------|
-| CEPEA | Price indicators (21 products) | ✅ | Working |
+| CEPEA | Price indicators (22 products) | ✅ | Working |
 | CONAB | Crop surveys, supply/demand, costs, historical series, weekly progress, CEASA wholesale prices | ✅ | Working |
 | IBGE | PAM, LSPA, PPM, slaughter, PEVS, milk, GDP, agricultural census (1985/1995-96/2006/2017 + historical series) | ✅ | Working |
 | NASA POWER | Daily/monthly climatology (0.5° grid) | ✅ | Working |

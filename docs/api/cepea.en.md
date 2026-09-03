@@ -26,7 +26,7 @@ async def indicador(
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `produto` | `str` | CEPEA product (21 available). See `produtos()` for the full list |
+| `produto` | `str` | CEPEA product (22 available). See `produtos()` for the full list |
 | `praca` | `str \| None` | Quotation location. `None` returns all |
 | `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD). Default: 365 days ago |
 | `fim` | `str \| date \| None` | End date. Default: today |
@@ -131,7 +131,7 @@ from agrobr import cepea
 
 prods = await cepea.produtos()
 # ['soja', 'soja_parana', 'milho', 'cafe', 'cafe_arabica', 'cafe_robusta',
-#  'boi', 'boi_gordo', 'trigo', 'algodao', 'arroz', 'acucar', 'acucar_refinado',
+#  'boi', 'boi_gordo', 'bezerro', 'trigo', 'algodao', 'arroz', 'acucar', 'acucar_refinado',
 #  'frango_congelado', 'frango_resfriado', 'suino', 'etanol_hidratado',
 #  'etanol_anidro', 'leite', 'laranja_industria', 'laranja_in_natura']
 # 'cafe'/'cafe_arabica' = Arabica (SP); 'cafe_robusta' = Robusta/Conilon (ES)

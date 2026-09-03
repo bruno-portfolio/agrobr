@@ -275,6 +275,7 @@ CEPEA_PRODUTOS = {
     "cafe_robusta": "cafe",
     "boi": "boi-gordo",
     "boi_gordo": "boi-gordo",
+    "bezerro": "bezerro",
     "trigo": "trigo",
     "algodao": "algodao",
     "arroz": "arroz",

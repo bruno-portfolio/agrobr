@@ -341,3 +341,95 @@ class TestCepeaCafeRobusta:
         assert _is_robusta("conillon")
         assert not _is_robusta("cafe")
         assert not _is_robusta("INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ")
+
+
+class TestCepeaBezerro:
+    """Testes específicos para o indicador de bezerro com peso médio e preço em USD."""
+
+    def setup_method(self):
+        self.parser = CepeaParserV1()
+
+    @staticmethod
+    def _html_bezerro_completo() -> str:
+        return """
+        <html><body>
+        <table class="indicador" id="imagenet-indicador1">
+            <tr>
+                <th></th>
+                <th>Valor R$*</th>
+                <th>Var./Dia</th>
+                <th>Var./Mês</th>
+                <th>Valor US$*</th>
+                <th>Peso Médio (kg)</th>
+            </tr>
+            <tr>
+                <td>01/03/2024</td>
+                <td>280,50</td>
+                <td>+0,8%</td>
+                <td>+2,1%</td>
+                <td>56,10</td>
+                <td>185,00</td>
+            </tr>
+            <tr>
+                <td>02/03/2024</td>
+                <td>281,00</td>
+                <td>+0,2%</td>
+                <td>+2,3%</td>
+                <td>56,20</td>
+                <td>186,00</td>
+            </tr>
+        </table>
+        <p>Indicador CEPEA/ESALQ</p>
+        </body></html>
+        """
+
+    def test_bezerro_extrai_dados_completos(self):
+        indicadores = self.parser.parse(self._html_bezerro_completo(), "bezerro")
+        assert len(indicadores) == 2
+
+        first = indicadores[0]
+        assert first.produto == "bezerro"
+        assert first.praca == "Mato Grosso do Sul"
+        assert first.valor == Decimal("280.50")
+        assert first.unidade == "BRL/@"
+        assert "variacao" in first.meta
+        assert "peso_medio" in first.meta
+        assert "valor_usd" in first.meta
+        assert first.meta["peso_medio"] == "185.00"
+        assert first.meta["valor_usd"] == "56.10"
+
+    def test_bezerro_unidade_correta(self):
+        unidade = self.parser._detect_unidade("bezerro", [])
+        assert unidade == "BRL/@"
+
+    def test_bezerro_sem_peso_medio(self):
+        html = """
+        <html><body>
+        <table class="indicador" id="imagenet-indicador1">
+            <tr><th></th><th>Valor R$*</th><th>Var./Dia</th><th>Valor US$*</th></tr>
+            <tr><td>01/03/2024</td><td>280,50</td><td>+0,8%</td><td>56,10</td></tr>
+        </table>
+        <p>Indicador CEPEA/ESALQ</p>
+        </body></html>
+        """
+        indicadores = self.parser.parse(html, "bezerro")
+        assert len(indicadores) == 1
+        assert indicadores[0].valor == Decimal("280.50")
+        assert "valor_usd" in indicadores[0].meta
+        assert "peso_medio" not in indicadores[0].meta
+
+    def test_bezerro_sem_usd(self):
+        html = """
+        <html><body>
+        <table class="indicador" id="imagenet-indicador1">
+            <tr><th></th><th>Valor R$*</th><th>Var./Dia</th><th>Peso Médio (kg)</th></tr>
+            <tr><td>01/03/2024</td><td>280,50</td><td>+0,8%</td><td>185,00</td></tr>
+        </table>
+        <p>Indicador CEPEA/ESALQ</p>
+        </body></html>
+        """
+        indicadores = self.parser.parse(html, "bezerro")
+        assert len(indicadores) == 1
+        assert indicadores[0].valor == Decimal("280.50")
+        assert "peso_medio" in indicadores[0].meta
+        assert "valor_usd" not in indicadores[0].meta
