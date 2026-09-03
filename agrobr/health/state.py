@@ -17,6 +17,14 @@ if TYPE_CHECKING:
 logger = structlog.get_logger()
 
 
+def close_store() -> None:
+    get_store().close()
+
+
+def store_degraded() -> bool:
+    return get_store()._degraded
+
+
 def record_check(
     source: Fonte,
     status: str,

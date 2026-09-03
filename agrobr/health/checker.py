@@ -95,6 +95,18 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
                 )
             latency = (time.monotonic() - start) * 1000
 
+            if config.method == "GET" and response.status_code == 200 and latency > 5000:
+                details["cold_start_ms"] = latency
+                retry_start = time.monotonic()
+                retry_response = await client.get(
+                    config.url,
+                    follow_redirects=config.follow_redirects,
+                )
+                retry_latency = (time.monotonic() - retry_start) * 1000
+                if retry_response.status_code == 200 and retry_latency < latency:
+                    response = retry_response
+                    latency = retry_latency
+
         details["status_code"] = response.status_code
         details["latency_ms"] = latency
 
@@ -316,10 +328,10 @@ async def run_checks_with_state(
     deep: bool = False,
     concurrency: int = 8,
     settings: AlertSettings | None = None,
-) -> list[tuple[CheckResult, bool, AlertLevel | None]]:
+) -> list[tuple[CheckResult, bool, AlertLevel | None, int]]:
     """Run checks, persist to health_checks table, compute alert decisions.
 
-    Returns list of (result, should_alert, alert_level).
+    Returns list of (result, should_alert, alert_level, prior_failures).
     """
     from agrobr.health.state import (
         get_alertable_failures,
@@ -329,7 +341,7 @@ async def run_checks_with_state(
 
     settings = settings or AlertSettings()
     results = await run_all_checks(sources, deep=deep, concurrency=concurrency)
-    out: list[tuple[CheckResult, bool, AlertLevel | None]] = []
+    out: list[tuple[CheckResult, bool, AlertLevel | None, int]] = []
 
     for result in results:
         prior_failures = get_alertable_failures(result.source, settings)
@@ -347,7 +359,7 @@ async def run_checks_with_state(
             settings=settings,
             prior_failures=prior_failures,
         )
-        out.append((result, alert, level))
+        out.append((result, alert, level, prior_failures))
 
     return out
 

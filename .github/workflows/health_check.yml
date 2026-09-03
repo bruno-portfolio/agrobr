@@ -50,13 +50,13 @@ jobs:
           import asyncio, json
           from agrobr.health.checker import run_checks_with_state, format_results
           from agrobr.health.registry import get_affected_datasets
-          from agrobr.health.state import get_consecutive_failures, get_last_success
+          from agrobr.health.state import close_store, get_last_success, store_degraded
           from agrobr.alerts.notifier import send_alert
 
-          async def main():
+          async def run():
               results = await run_checks_with_state()
 
-              check_results = [r for r, _, _ in results]
+              check_results = [r for r, _, _, _ in results]
               print(format_results(check_results))
 
               report = {
@@ -81,10 +81,9 @@ jobs:
               with open('$GITHUB_OUTPUT' if '$GITHUB_OUTPUT' != '' else '/dev/null', 'a') as out:
                   print(f'overall_status={overall}', file=out)
 
-              for result, should_alert, level in results:
+              for result, should_alert, level, prior_failures in results:
                   if should_alert and level:
                       datasets = get_affected_datasets(result.source)
-                      failures = get_consecutive_failures(result.source)
                       last_ok = get_last_success(result.source)
                       if result.status.value == 'ok':
                           title = f'Source recovered: {result.source.value}'
@@ -98,11 +97,22 @@ jobs:
                           details={'message': result.message, 'category': result.category},
                           source=result.source.value,
                           category=result.category,
+                          is_recovery=result.status.value == 'ok',
                           affected_datasets=datasets or None,
-                          consecutive_failures=failures,
+                          consecutive_failures=prior_failures,
                           last_success_at=last_ok,
                       )
                       print(f'Alert sent: {level.value} - {result.source.value}')
+
+          async def main():
+              try:
+                  await run()
+              finally:
+                  degraded = store_degraded()
+                  close_store()
+                  if degraded:
+                      print('::error::Health state store degraded; persisted counters unavailable')
+                      raise SystemExit(1)
 
           asyncio.run(main())
           "
@@ -119,7 +129,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: health-report-${{ github.run_number }}
+          name: health-report-${{ github.run_number }}-${{ github.run_attempt }}
           path: health_report.json
           retention-days: 30
 

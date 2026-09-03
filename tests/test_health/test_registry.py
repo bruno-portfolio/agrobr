@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import ssl
+from collections import defaultdict
 from urllib.parse import parse_qs, urlparse
 
 from agrobr.ana import models as ana_models
 from agrobr.constants import URLS, Fonte
+from agrobr.datasets import registry as dataset_registry
 from agrobr.health.registry import (
     HEALTH_REGISTRY,
     SOURCE_DATASET_MAP,
@@ -50,9 +52,11 @@ class TestHealthRegistry:
         assert config.requires_api_key is True
         assert config.api_key_env_var == "AGROBR_INMET_TOKEN"
 
-    def test_comtrade_requires_api_key(self):
+    def test_comtrade_uses_guest_endpoint(self):
         config = HEALTH_REGISTRY[Fonte.COMTRADE]
-        assert config.requires_api_key is True
+        assert config.requires_api_key is False
+        assert config.url.startswith(f"{URLS[Fonte.COMTRADE]['guest']}/C/A/HS?")
+        assert config.body_error_markers == ('"error"',)
 
     def test_ibge_uses_api_url(self):
         config = HEALTH_REGISTRY[Fonte.IBGE]
@@ -139,6 +143,29 @@ class TestHealthRegistry:
 
 
 class TestSourceDatasetMap:
+    def test_map_matches_dataset_registry_sources(self):
+        source_keys = sorted(SOURCE_DATASET_MAP, key=len, reverse=True)
+        expected: defaultdict[str, list[str]] = defaultdict(list)
+
+        for dataset_name in dataset_registry.list_datasets():
+            dataset = dataset_registry.get_dataset(dataset_name)
+            for source in dataset.info.sources:
+                if source.name == "cache":
+                    continue
+                if source.name == "inpe":
+                    source_key = dataset_name
+                else:
+                    matches = [
+                        key
+                        for key in source_keys
+                        if source.name == key or source.name.startswith(f"{key}_")
+                    ]
+                    assert len(matches) == 1, f"Fonte sem mapeamento: {source.name}"
+                    source_key = matches[0]
+                expected[source_key].append(dataset_name)
+
+        assert dict(expected) == SOURCE_DATASET_MAP
+
     def test_cepea_datasets(self):
         assert "preco_diario" in SOURCE_DATASET_MAP["cepea"]
 

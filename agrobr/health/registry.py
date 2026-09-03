@@ -143,8 +143,12 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             "api_key_env_var": "AGROBR_INMET_TOKEN",
         },
         Fonte.COMTRADE: {
-            "requires_api_key": True,
-            "api_key_env_var": "AGROBR_COMTRADE_API_KEY",
+            "url": (
+                f"{URLS[Fonte.COMTRADE]['guest']}/C/A/HS"
+                "?reporterCode=76&period=2023&cmdCode=1201&partnerCode=0&maxRecords=1"
+            ),
+            "requires_api_key": False,
+            "body_error_markers": ('"error"',),
         },
         Fonte.SFB: {
             "url": geo.build_arcgis_query_url(
@@ -189,6 +193,7 @@ HEALTH_REGISTRY: dict[Fonte, SourceHealthConfig] = _build_registry()
 SOURCE_DATASET_MAP: dict[str, list[str]] = {
     "abiove": ["exportacao"],
     "anda": ["fertilizante"],
+    "anec": ["embarques_anec"],
     "antaq": ["movimentacao_portuaria"],
     "b3": ["futuros_agricolas"],
     "bcb": ["credito_rural"],

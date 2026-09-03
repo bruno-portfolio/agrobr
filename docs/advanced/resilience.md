@@ -243,6 +243,16 @@ Verificações automáticas:
 3. **Parsing**: Parser extrai dados?
 4. **Fingerprint**: Estrutura similar ao baseline?
 
+Consultas HTTP que levam mais de 5 segundos são repetidas uma vez. O health usa
+a menor latência e registra a primeira medição em `cold_start_ms`, evitando que o
+cold start de serviços como o ArcGIS da ANA seja contado como falha. O Comtrade é
+sondado pelo endpoint público guest, sem exigir chave de API.
+
+O workflow persiste os contadores no DuckDB, fecha o store antes de salvar o cache
+e envia a quantidade de falhas anterior nos alertas de recuperação. Se o store não
+puder ser aberto por corrupção, lock ou permissão, o run informa a degradação e
+termina com erro em vez de zerar os contadores silenciosamente.
+
 ### GitHub Actions
 
 - **Daily Health Check**: 2x ao dia (9h e 21h BRT)

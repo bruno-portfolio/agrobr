@@ -258,6 +258,30 @@ class TestCheckHttp:
         assert result.status == CheckStatus.WARNING
         assert result.category == "api_key_missing"
 
+    @pytest.mark.asyncio
+    async def test_slow_http_uses_warm_retry_latency(self):
+        config = SourceHealthConfig(source=Fonte.ANA, url="https://example.com")
+        first_response = MagicMock(status_code=200, text='{"count": 1}')
+        second_response = MagicMock(status_code=200, text='{"count": 1}')
+        mock_client = AsyncMock()
+        mock_client.get.side_effect = [first_response, second_response]
+
+        with (
+            patch("httpx.AsyncClient") as mock_cls,
+            patch(
+                "agrobr.health.checker.time.monotonic",
+                side_effect=[0.0, 12.0, 12.0, 12.3],
+            ),
+        ):
+            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
+            result = await _check_http(config)
+
+        assert mock_client.get.await_count == 2
+        assert result.status == CheckStatus.OK
+        assert result.latency_ms == pytest.approx(300.0)
+        assert result.details["cold_start_ms"] == pytest.approx(12_000.0)
+
 
 class TestCheckSource:
     @pytest.mark.asyncio
@@ -359,16 +383,19 @@ class TestRunChecksWithState:
                 "agrobr.health.state.should_send_alert",
                 return_value=(False, None),
             ) as mock_alert,
+            patch("agrobr.health.state.get_alertable_failures", return_value=2),
         ):
             results = await run_checks_with_state([Fonte.CEPEA])
 
         assert len(results) == 1
-        result, should_alert, level = results[0]
+        result, should_alert, level, prior_failures = results[0]
         assert result.source == Fonte.CEPEA
         assert should_alert is False
         assert level is None
+        assert prior_failures == 2
         mock_record.assert_called_once()
         mock_alert.assert_called_once()
+        assert mock_alert.call_args.kwargs["prior_failures"] == 2
 
 
 class TestFormatResults:

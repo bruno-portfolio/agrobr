@@ -10,11 +10,13 @@ import pytest
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.constants import AlertSettings, Fonte
 from agrobr.health.state import (
+    close_store,
     get_alertable_failures,
     get_consecutive_failures,
     get_last_success,
     record_check,
     should_send_alert,
+    store_degraded,
 )
 
 
@@ -29,6 +31,23 @@ def mock_conn():
     store._get_conn.return_value = conn
     with patch("agrobr.health.state.get_store", return_value=store):
         yield conn
+
+
+class TestStoreLifecycle:
+    def test_close_store_closes_shared_store(self):
+        store = MagicMock()
+
+        with patch("agrobr.health.state.get_store", return_value=store):
+            close_store()
+
+        store.close.assert_called_once_with()
+
+    def test_store_degraded_reflects_shared_store(self):
+        store = MagicMock()
+        store._degraded = True
+
+        with patch("agrobr.health.state.get_store", return_value=store):
+            assert store_degraded() is True
 
 
 class TestRecordCheck:

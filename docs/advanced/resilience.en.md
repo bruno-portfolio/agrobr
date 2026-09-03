@@ -239,6 +239,16 @@ Automatic checks:
 3. **Parsing**: Does the parser extract data?
 4. **Fingerprint**: Structure similar to baseline?
 
+HTTP requests that take more than 5 seconds are retried once. Health checks use
+the lower latency and record the first measurement in `cold_start_ms`, preventing
+the cold start of services such as ANA's ArcGIS from counting as a failure.
+Comtrade is probed through the public guest endpoint without requiring an API key.
+
+The workflow persists counters in DuckDB, closes the store before saving the
+cache, and sends the previous failure count with recovery alerts. If corruption,
+a lock, or permissions prevent the store from opening, the run reports the
+degraded state and fails instead of silently resetting the counters.
+
 ### GitHub Actions
 
 - **Daily Health Check**: twice a day (9h and 21h BRT)
