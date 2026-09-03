@@ -176,6 +176,22 @@ class TestContract:
         assert valid is False
         assert any("Missing required columns" in e for e in errors)
 
+    def test_contract_validate_missing_nullable_stable_column(self):
+        contract = Contract(
+            name="test",
+            version="1.0",
+            columns=[
+                Column(name="id", type=ColumnType.INTEGER),
+                Column(name="optional_value", type=ColumnType.FLOAT, nullable=True),
+            ],
+        )
+        df = pd.DataFrame({"id": [1, 2, 3]})
+
+        valid, errors = contract.validate(df)
+
+        assert valid is False
+        assert any("optional_value" in error for error in errors)
+
     def test_contract_validate_dtype_wrong(self):
         contract = Contract(
             name="test",
@@ -217,6 +233,23 @@ class TestContract:
         df = pd.DataFrame({"id": [1, 2, 3], "name": ["a", "b", "c"]})
         valid, errors = contract.validate(df)
         assert valid is True
+
+    def test_contract_validate_primary_key_column_missing(self):
+        contract = Contract(
+            name="test",
+            version="1.0",
+            primary_key=["id", "uf"],
+            columns=[
+                Column(name="id", type=ColumnType.INTEGER),
+                Column(name="uf", type=ColumnType.STRING),
+            ],
+        )
+        df = pd.DataFrame({"id": [1, 2, 3]})
+
+        valid, errors = contract.validate(df)
+
+        assert valid is False
+        assert "Primary key columns missing: ['uf']" in errors
 
     def test_contract_validate_composite_primary_key(self):
         contract = Contract(

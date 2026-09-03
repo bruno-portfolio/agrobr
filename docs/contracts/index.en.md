@@ -10,11 +10,12 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 | Guarantee | Description |
 |-----------|-------------|
 | **Stable names** | Columns are never renamed (only added) |
+| **Stable columns present** | Every `stable` column exists in the DataFrame; `nullable` permits null values, not an absent column |
 | **Types only widen** | int→float ok, float→int never |
 | **ISO-8601 dates** | Always YYYY-MM-DD |
 | **Explicit units** | Dedicated column |
 | **Breaking = Major** | Breaking changes only in major versions |
-| **Primary keys** | Each dataset has a defined primary key (no duplicates) |
+| **Primary keys** | Every key column exists and rows are not duplicated |
 | **Min/max constraints** | Numeric values validated against bounds |
 
 ## Datasets
@@ -141,5 +142,11 @@ print(meta.dataset)           # Dataset name
 print(meta.contract_version)  # Contract version
 print(meta.records_count)     # Records returned
 print(meta.from_cache)        # Whether it came from cache
+print(meta.attempted_sources) # Sources tried, including internal cascades
+print(meta.selected_source)   # Actual source that supplied the data
 print(meta.snapshot)          # Cutoff date (deterministic mode)
 ```
+
+If an adapter invokes an internal cascade, `attempted_sources`,
+`selected_source`, and `from_cache` preserve that provenance. A simple source
+keeps the dataset adapter name.

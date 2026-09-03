@@ -10,11 +10,12 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | Garantia | Descrição |
 |----------|-----------|
 | **Nomes estáveis** | Colunas nunca mudam de nome (só adicionam) |
+| **Colunas estáveis presentes** | Toda coluna `stable` existe no DataFrame; `nullable` permite valores nulos, não ausência da coluna |
 | **Tipos só alargam** | int→float ok, float→int nunca |
 | **Datas ISO-8601** | Sempre YYYY-MM-DD |
 | **Unidades explícitas** | Coluna dedicada |
 | **Breaking = Major** | Quebras só em versão major |
-| **Primary keys** | Cada dataset tem chave primária definida (sem duplicatas) |
+| **Primary keys** | Todas as colunas da chave existem e não há linhas duplicadas |
 | **Min/max constraints** | Valores numéricos validados contra limites |
 
 ## Datasets
@@ -141,5 +142,11 @@ print(meta.dataset)           # Nome do dataset
 print(meta.contract_version)  # Versão do contrato
 print(meta.records_count)     # Registros retornados
 print(meta.from_cache)        # Se veio do cache
+print(meta.attempted_sources) # Fontes tentadas, incluindo cascatas internas
+print(meta.selected_source)   # Fonte real que forneceu os dados
 print(meta.snapshot)          # Data de corte (modo determinístico)
 ```
+
+Se um adaptador aciona uma cascata interna, `attempted_sources`,
+`selected_source` e `from_cache` preservam essa proveniência. Uma fonte simples
+mantém o nome do adaptador do dataset.

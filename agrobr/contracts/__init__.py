@@ -96,7 +96,7 @@ class Contract:
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         errors: list[str] = []
 
-        required_cols = [c.name for c in self.columns if not c.nullable and c.stable]
+        required_cols = [c.name for c in self.columns if c.stable]
         missing = set(required_cols) - set(df.columns)
         if missing:
             errors.append(f"Missing required columns: {missing}")
@@ -106,13 +106,15 @@ class Contract:
                 col_errors = col_def.validate(df[col_def.name])
                 errors.extend(col_errors)
 
-        if self.primary_key and len(df) > 0:
-            pk_cols = [c for c in self.primary_key if c in df.columns]
-            if pk_cols == self.primary_key:
-                duplicates = df.duplicated(subset=pk_cols, keep=False)
+        if self.primary_key:
+            missing_pk = sorted(set(self.primary_key) - set(df.columns))
+            if missing_pk:
+                errors.append(f"Primary key columns missing: {missing_pk}")
+            elif len(df) > 0:
+                duplicates = df.duplicated(subset=self.primary_key, keep=False)
                 if duplicates.any():
                     dup_count = int(duplicates.sum())
-                    errors.append(f"Primary key {pk_cols} has {dup_count} duplicate rows")
+                    errors.append(f"Primary key {self.primary_key} has {dup_count} duplicate rows")
 
         return len(errors) == 0, errors
 
