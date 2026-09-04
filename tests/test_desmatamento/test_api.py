@@ -3,9 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
+import pandas as pd
 import pytest
 
 from agrobr.desmatamento import api
+from agrobr.exceptions import InvalidParameterError
 
 PRODES_DIR = Path(__file__).parent.parent / "golden_data" / "desmatamento" / "prodes_sample"
 PRODES_GEO_DIR = Path(__file__).parent.parent / "golden_data" / "desmatamento" / "prodes_geo_sample"
@@ -30,6 +32,43 @@ def _deter_geojson_bytes() -> bytes:
 
 
 class TestProdes:
+    @pytest.mark.parametrize(
+        ("fn_name", "fetch_name"),
+        [
+            ("prodes", "fetch_prodes"),
+            ("deter", "fetch_deter"),
+            ("prodes_geo", "fetch_prodes_geo"),
+            ("deter_geo", "fetch_deter_geo"),
+        ],
+    )
+    @pytest.mark.asyncio
+    async def test_invalid_bioma_raises_before_request(self, fn_name, fetch_name):
+        with (
+            patch.object(api.client, fetch_name, new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="Bioma inválido"),
+        ):
+            await getattr(api, fn_name)(bioma="Atlantida")
+
+        fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_result_at_limit_emits_filter_warning(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_prodes",
+                new_callable=AsyncMock,
+                return_value=(b"csv", "https://example.com/prodes.csv"),
+            ),
+            patch.object(
+                api.parser,
+                "parse_prodes_csv",
+                return_value=pd.DataFrame(index=range(api.client.MAX_FEATURES_PER_REQUEST)),
+            ),
+            pytest.warns(UserWarning, match="filtre por ano e/ou UF"),
+        ):
+            await api.prodes()
+
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         csv_bytes = _prodes_csv_bytes()

@@ -15,7 +15,7 @@ import structlog
 
 from agrobr.anec.models import CATEGORIES_BY_YEAR, MIN_YEAR, ANECArticle
 from agrobr.constants import MIN_PDF_SIZE, URLS, CacheSettings, Fonte
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -171,20 +171,16 @@ def _dedupe_articles(articles: list[ANECArticle]) -> list[ANECArticle]:
 
 async def list_articles(year: int) -> list[ANECArticle]:
     if year < MIN_YEAR:
-        raise NotImplementedError(
+        raise InvalidParameterError(
             f"Suporte a anos anteriores a {MIN_YEAR} não implementado (recebido: {year}). "
             f"Layout dos PDFs antigos não foi validado. "
             f"Para suportar, adicione cuid em CATEGORIES_BY_YEAR e ajuste MIN_YEAR."
         )
     if year not in CATEGORIES_BY_YEAR:
         mapped = sorted(CATEGORIES_BY_YEAR.keys())
-        raise SourceUnavailableError(
-            source="anec",
-            url=_SEARCH_URL,
-            last_error=(
-                f"Ano {year} não mapeado em CATEGORIES_BY_YEAR (mapeados: {mapped}). "
-                f"Atualize agrobr/anec/models.py::CATEGORIES_BY_YEAR com o cuid do ano."
-            ),
+        raise InvalidParameterError(
+            f"Ano {year} não mapeado em CATEGORIES_BY_YEAR (mapeados: {mapped}). "
+            "Atualize agrobr/anec/models.py::CATEGORIES_BY_YEAR com o cuid do ano."
         )
 
     ttl = _list_ttl_seconds()

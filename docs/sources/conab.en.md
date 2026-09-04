@@ -156,6 +156,8 @@ df = await conab.custo_producao("soja", uf="MT")
 totais = await conab.custo_producao_total("soja", uf="MT", safra="2024/25")
 ```
 
+`uf` is validated before the request. If the state is not present in the selected workbook, the API raises `SourceUnavailableError` and lists the available states. With `uf=None`, it uses the first compatible workbook found and reports the state inferred from metadata or the sheet name in the `uf` column; the result is not a national aggregation.
+
 ### Schema - custo_producao
 
 | Column | Type | Description |

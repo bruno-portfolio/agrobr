@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from agrobr.conab.custo_producao import api
-from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 
 
 def _make_sample_xlsx() -> BytesIO:
@@ -40,7 +40,49 @@ def _make_sample_xlsx() -> BytesIO:
     return buf
 
 
+def _make_multi_uf_xlsx() -> BytesIO:
+    buf = BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        pd.DataFrame([["dados"]]).to_excel(
+            writer, sheet_name="Soja MT 2024", index=False, header=False
+        )
+        pd.DataFrame([["dados"]]).to_excel(
+            writer, sheet_name="Soja TO 2024", index=False, header=False
+        )
+    buf.seek(0)
+    return buf
+
+
 class TestCustoProducao:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("fn_name", ["custo_producao", "custo_producao_total"])
+    async def test_uf_invalida_falha_antes_da_rede(self, fn_name):
+        fn = getattr(api, fn_name)
+        with (
+            patch.object(
+                api.client,
+                "fetch_xlsx_for_cultura",
+                new_callable=AsyncMock,
+            ) as fetch,
+            pytest.raises(InvalidParameterError, match="UF invalida"),
+        ):
+            await fn("soja", uf="XX")
+
+        fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_uf_sem_aba_lista_ufs_disponiveis(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_xlsx_for_cultura",
+                new_callable=AsyncMock,
+                return_value=(_make_multi_uf_xlsx(), {"safra": "2023/24"}),
+            ),
+            pytest.raises(SourceUnavailableError, match="MT, TO"),
+        ):
+            await api.custo_producao("soja", uf="SP", safra="2023/24")
+
     @pytest.mark.asyncio
     async def test_safra_invalida_falha_antes_da_rede(self):
         with (

@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.zarc.client import discover_resources, download_csv, fetch_tabua_risco
 from tests.helpers import make_mock_async_client, make_mock_response
 
@@ -99,5 +99,5 @@ class TestFetchTabuaRisco:
             "agrobr.zarc.client.discover_resources", new_callable=AsyncMock
         ) as mock_discover:
             mock_discover.return_value = resources
-            with pytest.raises(SourceUnavailableError, match="nao encontrada"):
+            with pytest.raises(InvalidParameterError, match="não encontrada"):
                 await fetch_tabua_risco("2020/2021")

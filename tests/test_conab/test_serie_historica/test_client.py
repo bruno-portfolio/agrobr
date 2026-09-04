@@ -8,7 +8,7 @@ import httpx
 import pytest
 
 from agrobr.conab.serie_historica import client
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from tests.helpers import RETRY_SLEEP, make_mock_async_client, make_mock_response
 
 _URL = "https://www.gov.br/conab/test"
@@ -107,7 +107,7 @@ class TestConabSerieProductRegistry:
         assert "sojaseriehist.xls" in url
 
     def test_get_xls_url_invalid_product(self):
-        with pytest.raises(SourceUnavailableError, match="nao encontrado"):
+        with pytest.raises(InvalidParameterError, match="não encontrado"):
             client.get_xls_url("banana")
 
     def test_list_produtos_returns_all(self):

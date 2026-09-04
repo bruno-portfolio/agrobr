@@ -4,13 +4,19 @@ import httpx
 import structlog
 
 from agrobr.constants import MIN_CSV_SIZE
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import io as io_utils
 
-from .models import DATASET_SLUG, build_ckan_package_url
+from .models import (
+    DATASET_SLUG,
+    build_ckan_package_url,
+    extract_safras,
+    match_safra_resource,
+)
 
 logger = structlog.get_logger()
 
@@ -34,8 +40,6 @@ async def discover_resources() -> list[dict[str, str]]:
         data = responses.parse_json_response(response, source="zarc", url=url)
 
     if not isinstance(data, dict) or "result" not in data:
-        from agrobr.exceptions import SourceUnavailableError
-
         raise SourceUnavailableError(
             source="zarc",
             url=url,
@@ -86,20 +90,12 @@ async def download_csv(url: str) -> bytes:
 async def fetch_tabua_risco(
     safra: str, resources: list[dict[str, str]] | None = None
 ) -> tuple[bytes, str]:
-    from .models import extract_safras, match_safra_resource
-
     if resources is None:
         resources = await discover_resources()
     url = match_safra_resource(resources, safra)
     if not url:
-        from agrobr.exceptions import SourceUnavailableError
-
-        raise SourceUnavailableError(
-            source="zarc",
-            url=build_ckan_package_url(DATASET_SLUG),
-            last_error=(
-                f"Safra '{safra}' nao encontrada. Disponiveis: {extract_safras(resources)}"
-            ),
+        raise InvalidParameterError(
+            f"Safra '{safra}' não encontrada. Disponíveis: {extract_safras(resources)}"
         )
     content = await download_csv(url)
     return content, url

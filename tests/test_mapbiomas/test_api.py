@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.mapbiomas import api
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "mapbiomas"
@@ -34,6 +35,17 @@ def _make_municipal_xlsx() -> bytes:
 
 
 class TestCobertura:
+    @pytest.mark.parametrize("kwargs", [{"bioma": "Atlantida"}, {"ano": 1984}, {"ano": 2025}])
+    @pytest.mark.asyncio
+    async def test_invalid_collection_filters_raise_before_download(self, kwargs):
+        with (
+            patch.object(api.client, "fetch_biome_state", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError),
+        ):
+            await api.cobertura(**kwargs)
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         xlsx_bytes = _golden_xlsx()
@@ -312,6 +324,16 @@ class TestCoberturaMunicipal:
 
 
 class TestTransicao:
+    @pytest.mark.asyncio
+    async def test_invalid_bioma_raises_before_download(self):
+        with (
+            patch.object(api.client, "fetch_biome_state", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="Bioma inválido"),
+        ):
+            await api.transicao(bioma="Atlantida")
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         xlsx_bytes = _golden_xlsx()

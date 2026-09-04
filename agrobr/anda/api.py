@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import time
+from datetime import date
 from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
@@ -49,6 +51,8 @@ async def entregas(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    if not isinstance(ano, int) or isinstance(ano, bool) or ano > date.today().year:
+        raise InvalidParameterError(f"ano deve ser inteiro e não pode superar {date.today().year}")
     produto_normalizado = models.resolve_produto(produto)
 
     warn_once(

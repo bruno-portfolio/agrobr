@@ -720,14 +720,11 @@ class TestCensoHistoricoParsing:
     @patch("agrobr.ibge.client.fetch_sidra", new_callable=AsyncMock)
     async def test_as_polars(self, mock_fetch):
         mock_fetch.return_value = _mock_sidra_pessoal_tratores()
-        try:
-            import polars as pl
+        pl = pytest.importorskip("polars")
 
-            result = await censo_agro_historico("pessoal_tratores", ano=1985, as_polars=True)
-            assert isinstance(result, pl.DataFrame)
-        except ImportError:
-            result = await censo_agro_historico("pessoal_tratores", ano=1985, as_polars=True)
-            assert isinstance(result, pd.DataFrame)
+        result = await censo_agro_historico("pessoal_tratores", ano=1985, as_polars=True)
+
+        assert isinstance(result, pl.DataFrame)
 
     @pytest.mark.asyncio
     @patch("agrobr.ibge.client.fetch_sidra", new_callable=AsyncMock)

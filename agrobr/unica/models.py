@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize.crops import normalizar_cultura
 
 PARSER_VERSION: int = 1
@@ -132,7 +133,11 @@ SANIDADE_MAX_HISTORICO: dict[str, float] = {
 
 
 def resolve_produto(nome: str, validos: dict[str, tuple[int, str]] | list[str]) -> str:
+    if not isinstance(nome, str):
+        raise InvalidParameterError("produto deve ser uma string")
     canonico = normalizar_cultura(nome)
     if canonico not in validos:
-        raise ValueError(f"Produto '{nome}' inválido para UNICA. Opções: {sorted(validos)}")
+        raise InvalidParameterError(
+            f"Produto '{nome}' inválido para UNICA. Opções: {sorted(validos)}"
+        )
     return canonico

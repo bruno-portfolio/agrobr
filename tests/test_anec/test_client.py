@@ -9,7 +9,7 @@ import pytest
 
 from agrobr.anec import client
 from agrobr.anec.models import ANECArticle
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from tests.helpers import RETRY_SLEEP, make_mock_async_client, make_mock_response
 
 
@@ -155,13 +155,13 @@ class TestParseArticles:
 
 class TestListArticles:
     @pytest.mark.asyncio
-    async def test_year_too_old_raises_not_implemented(self):
-        with pytest.raises(NotImplementedError, match="2026"):
+    async def test_year_too_old_raises_invalid_parameter(self):
+        with pytest.raises(InvalidParameterError, match="2026"):
             await client.list_articles(2025)
 
     @pytest.mark.asyncio
-    async def test_year_unmapped_raises_source_unavailable(self):
-        with pytest.raises(SourceUnavailableError, match="não mapeado"):
+    async def test_year_unmapped_raises_invalid_parameter(self):
+        with pytest.raises(InvalidParameterError, match="não mapeado"):
             await client.list_articles(2099)
 
     @pytest.mark.asyncio

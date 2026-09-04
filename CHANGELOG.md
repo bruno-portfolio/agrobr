@@ -8,6 +8,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
+- **tests** — matriz live parametrizada cobre todos os datasets registrados, com argumentos mínimos, limite de 300 segundos por fonte e diagnóstico explícito de violações de contrato
 - **cepea** — indicador do bezerro CEPEA/ESALQ de Mato Grosso do Sul (issue #102), para animais de 8–12 meses, em `BRL/cabeca`, disponível na API CEPEA e no dataset `preco_diario` com fallback Notícias Agrícolas
 - **exceptions** — `InvalidParameterError`, compatível com `AgrobrError` e `ValueError`, distingue erros de parâmetros do usuário de falhas de dados ou layout sem quebrar handlers existentes
 - **datasets** — `SourceFallbackWarning` avisa quando a fonte primária falha e uma fonte alternativa é selecionada, com categoria e resumo do erro original
@@ -16,6 +17,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **anp_diesel** — planilhas de preços municipais usam calamine como engine primária, com openpyxl como fallback, e os períodos necessários são baixados e processados concorrentemente com limite de três operações
 
 ### Changed
+- **bcb.credito_rural** — contrato atualizado de 1.1 para 2.0 e alinhado às saídas reais do SICOR: agregação padrão por UF, opção por programa, 11 colunas documentadas e remoção de `volume` e das dimensões que não pertenciam à saída; `agregacao="municipio"` agora é rejeitada com orientação para o extra `agrobr[bigquery]`
+- **deral** — `produto` preserva a distinção entre primeira e segunda safra de feijão e milho (`feijao_1`, `feijao_2`, `milho_1`, `milho_2`), eliminando combinações ambíguas na chave primária
 - **estimativa_safra** — contrato `conab.safras` atualizado de 1.0 para 2.0: `levantamento` e `data_publicacao` passam a opcionais e ficam nulos quando a fonte é o IBGE LSPA
 - **anda / fertilizante (breaking)** — `produto` não é mais copiado para os registros como se tivesse filtrado o PDF. Os boletins da ANDA publicam apenas entregas totais: `produto="total"` permanece aceito e qualquer produto específico agora levanta `ValueError` antes do download. O parser grava `produto_fertilizante="total"` por construção, e o contrato do dataset passa a `2.0`; antes, por exemplo, o volume total podia ser devolvido falsamente rotulado como `ureia`
 - **packaging** — o sdist contém apenas o pacote, README, LICENSE e CHANGELOG; o extra `all` contém apenas integrações opcionais de runtime, sem `dev`/`docs`, e o extra `app` sem código correspondente foi removido
@@ -73,6 +76,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **ibge / producao_anual** — nível territorial inválido (typo ou capitalização, ex.: `"Brasil"`, `"estado"`) caía em UF silenciosamente no `resolve_ibge_code` (`.get(nivel, "3")`), retornando dados de UF rotulados como o nível pedido. Agora `resolve_ibge_code` levanta `ValueError` com os níveis válidos (respeitando `NIVEL_MAP_HISTORICO`, que inclui `regiao`), e `producao_anual` valida o nível antes de tentar as fontes — evita o `ContractViolationError` enganoso do fallback CONAB
 - **abiove / anec** — produto desconhecido em `exportacao()`/`embarques()` e afins passava cru pelo filtro (`ABIOVE_PRODUTOS.get(key, key)` / `PRODUTO_ALIASES.get(key, key)`) e retornava DataFrame vazio, indistinguível de "fonte sem dados". Novo `resolve_produto` valida o input do usuário e levanta `ValueError` com a lista de produtos válidos, consistente com as demais fontes. O `normalize_produto` usado pelos parsers para normalizar os dados brutos mantém o passthrough
 
+### Security
+- **deps** — o teto `Pygments<2.19` do extra `docs` foi removido: a 2.18 carrega a PYSEC-2026-2987 (corrigida na 2.20) e o mkdocs-material 9.7 constrói normalmente com a 2.21
+
 ## [1.1.0] - 2026-06-18
 
 ### Added
@@ -108,6 +114,16 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **mapbiomas** — `cobertura()` e `transicao()` passam a validar o parâmetro `colecao`: valores diferentes da coleção atual (10) levantam `ValueError` em vez de serem ignorados silenciosamente — antes o caller pedia `colecao=9` e recebia a coleção 10 sem aviso. `colecao=10`/`None` permanece inalterado. Docs PT/EN atualizadas. Seleção real de coleções anteriores fica para o futuro (formato/URL diferem por coleção)
 
 ### Fixed
+- **producao_anual** — adaptador da PAM inclui `valor_producao` como `Float64` nulo quando a fonte não devolve a variável, mantendo o schema estrito do contrato
+- **queimadas** — sentinela `-999` do CSV do INPE é convertida em nulo nas colunas numéricas, inclusive `risco_fogo` e `numero_dias_sem_chuva`
+- **embarques_anec** — associação das colunas semanais do PDF a `last_week` e `current_week` corrigida; o relatório real deixa de produzir 38 linhas duplicadas na chave primária
+- **seguro_rural** — parser de apólices do MAPA/PSR inclui `valor_indenizacao` como `Float64` nulo quando ausente na fonte, conforme o contrato estável
+- **bcb.sgs** — consultas sem janela passam a usar os últimos dez anos; respostas 4xx da API viram `InvalidParameterError` com a mensagem do BCB e demais falhas HTTP viram `SourceUnavailableError`
+- **cepea** — `indicador()`, `ultimo()` e `pracas()` validam produto, praça e datas antes da rede; intervalos invertidos e formatos inválidos geram `InvalidParameterError`, e resultados vazios preservam as colunas do contrato
+- **polars** — `as_polars=True` sem a dependência opcional agora levanta `ImportError` com a instrução `pip install agrobr[polars]`, em vez de devolver pandas silenciosamente
+- **conab.custo_producao** — UFs inválidas são rejeitadas antes da rede e UFs válidas sem aba levantam `SourceUnavailableError` com a lista disponível; `uf=None` mantém a seleção explícita da primeira aba compatível
+- **validação de parâmetros** — IBGE PAM, Queimadas, Comex Stat, NASA POWER, MapBiomas, desmatamento, ANDA, ANEC, Comtrade, USDA, UNICA, INMET, CONAB série histórica, Rio Verde e ZARC passam a classificar entradas inválidas antes do download como `InvalidParameterError`; o desmatamento também avisa quando atinge o teto de 50 mil registros
+- **compatibilidade** — limpeza textual inclui colunas pandas `StringDtype` nos parsers de defensivos e RNC, e o wrapper síncrono usa `inspect.iscoroutinefunction`, compatível com as versões novas do Python
 - **validators** — `compare_fingerprints` podia retornar similaridade acima de 1.0 quando o fingerprint atual tinha classes de tabela duplicadas (a contagem de matches iterava o conjunto atual em vez do de referência): inflava a similaridade e podia mascarar drift de layout. Corrigido por construção, com teste de regressão
 - **noticias_agricolas** — `parser_version` unificado na constante `PARSER_VERSION = 2`: o `Indicador` reportava versão 2 enquanto o `ParseError` do mesmo parser reportava 1, gerando proveniência inconsistente
 - **ibama (fonte restaurada)** — o GeoServer WFS do siscom.ibama.gov.br foi desativado pela fonte (404 definitivo; infra do IBAMA migrou para Azure). `embargos()`/`embargos_geo()` migrados para o dump oficial do SIFISC em dadosabertos.ibama.gov.br (~47 MB zipado, ~114K termos, atualização mensal): schema novo com 15 colunas (seq_tad, status, cancelado, desembargo, lat/lon — `area_embargada_ha` substitui `area_desmatada_ha`; `infracao`/`legislacao`/`respeita_embargo` não existem no dump), geometrias WKT do próprio CSV (sem segundo download), filtros `uf`/`bbox` client-side, validação de truncamento, PII da fonte (nome/CPF/CNPJ) continua fora por política do projeto. Assinaturas públicas inalteradas; validado live (MT 12.970 registros em ~4s; geo RR 2.071 polígonos)

@@ -7,6 +7,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import validation
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -106,10 +107,15 @@ async def estacao(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    if isinstance(inicio, str):
-        inicio = date.fromisoformat(inicio)
-    if isinstance(fim, str):
-        fim = date.fromisoformat(fim)
+    try:
+        if isinstance(inicio, str):
+            inicio = date.fromisoformat(inicio)
+        if isinstance(fim, str):
+            fim = date.fromisoformat(fim)
+    except ValueError as exc:
+        raise InvalidParameterError("inicio e fim devem usar YYYY-MM-DD") from exc
+    if inicio > fim:
+        raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
 
     t0 = time.monotonic()
     dados = await client.fetch_dados_estacao(codigo, inicio, fim)
@@ -181,6 +187,9 @@ async def historico(
     e extrai a estação pedida — alternativa ao apitempo, que exige token para
     dados observacionais. Mesmo schema de saída de `estacao()`.
     """
+    if not isinstance(ano, int) or isinstance(ano, bool) or not 2000 <= ano <= date.today().year:
+        raise InvalidParameterError(f"ano deve estar entre 2000 e {date.today().year}")
+
     t0 = time.monotonic()
     raw, source_url = await client.fetch_historico_estacao(codigo, ano)
     fetch_ms = int((time.monotonic() - t0) * 1000)

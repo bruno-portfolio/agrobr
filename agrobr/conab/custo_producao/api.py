@@ -8,15 +8,17 @@ from typing import Any, Literal, overload
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.time import utcnow
+from agrobr.utils.validation import validate_uf
 
 from . import client
 from .parser import (
     PARSER_VERSION,
     _parse_sheet_info,
+    available_sheet_ufs,
     items_to_dataframe,
     parse_planilha,
     select_data_sheet,
@@ -41,9 +43,19 @@ def _resolve_sheet_context(
     uf: str | None,
     safra: str | None,
 ) -> tuple[str, str, str]:
+    available_ufs = set(available_sheet_ufs(xlsx))
+    metadata_uf = metadata.get("uf")
+    if isinstance(metadata_uf, str):
+        available_ufs.add(metadata_uf.upper())
+    if uf and available_ufs and uf not in available_ufs:
+        listed = ", ".join(sorted(available_ufs))
+        raise SourceUnavailableError(
+            source="conab_custo",
+            last_error=f"UF {uf} não disponível na planilha. UFs disponíveis: {listed}",
+        )
     sheet = select_data_sheet(xlsx, uf=uf, safra=safra)
     sheet_uf, sheet_year = _parse_sheet_info(sheet)
-    resolved_uf = metadata.get("uf") or sheet_uf or uf or "BR"
+    resolved_uf = uf or metadata_uf or sheet_uf or "BR"
     resolved_safra = metadata.get("safra") or safra
     if not resolved_safra and sheet_year:
         resolved_safra = f"{sheet_year}/{(int(sheet_year[-2:]) + 1) % 100:02d}"
@@ -89,6 +101,7 @@ async def custo_producao(
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     safra = _validate_safra(safra)
+    uf = validate_uf(uf)
     t0 = time.monotonic()
 
     logger.info(
@@ -174,6 +187,7 @@ async def custo_producao_total(
     return_meta: bool = False,
 ) -> dict[str, Any] | tuple[dict[str, Any], MetaInfo]:
     safra = _validate_safra(safra)
+    uf = validate_uf(uf)
     t0 = time.monotonic()
 
     logger.info(

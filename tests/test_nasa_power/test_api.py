@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.nasa_power import api
 
 
@@ -33,6 +34,24 @@ def _mock_nasa_response(dates=None):
 
 
 class TestClimaPonto:
+    @pytest.mark.parametrize(
+        "args",
+        [
+            (91, 0, "2024-01-01", "2024-01-02"),
+            (0, 181, "2024-01-01", "2024-01-02"),
+            (0, 0, "2024-02-01", "2024-01-01"),
+        ],
+    )
+    @pytest.mark.asyncio
+    async def test_invalid_parameters_raise_before_request(self, args):
+        with (
+            patch.object(api.client, "fetch_daily", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError),
+        ):
+            await api.clima_ponto(*args)
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         mock_data = _mock_nasa_response()

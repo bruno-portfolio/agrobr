@@ -407,7 +407,7 @@ class TestPpmPolarsSupport:
             assert isinstance(df, pl.DataFrame)
 
     @pytest.mark.asyncio
-    async def test_ppm_polars_fallback_pandas(self, mock_response, monkeypatch):
+    async def test_ppm_polars_missing_raises(self, mock_response, monkeypatch):
         import builtins
 
         real_import = builtins.__import__
@@ -420,8 +420,8 @@ class TestPpmPolarsSupport:
         with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
             mock_fetch.return_value = mock_response
             monkeypatch.setattr(builtins, "__import__", mock_import)
-            df = await ibge.ppm("bovino", ano=2023, as_polars=True)
-            assert isinstance(df, pd.DataFrame)
+            with pytest.raises(ImportError, match=r"pip install agrobr\[polars\]"):
+                await ibge.ppm("bovino", ano=2023, as_polars=True)
 
 
 class TestPpmGoldenData:

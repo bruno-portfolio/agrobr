@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.zarc import api
 
@@ -33,6 +33,16 @@ def _clear_cache():
 
 
 class TestZoneamento:
+    @pytest.mark.asyncio
+    async def test_invalid_safra_raises_before_download(self):
+        with (
+            patch.object(api.client, "fetch_tabua_risco", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="YYYY/YYYY"),
+        ):
+            await api.zoneamento(safra="2025/26")
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_zoneamento_returns_dataframe(self):
         with patch.object(api.client, "fetch_tabua_risco", new_callable=AsyncMock) as mock_fetch:

@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 
 
 @pytest.mark.asyncio
 async def test_fetch_unknown_safra_raises():
     from agrobr.rio_verde.client import fetch_ensaio_soja
 
-    with pytest.raises(SourceUnavailableError, match="não disponível"):
+    with pytest.raises(InvalidParameterError, match="não disponível"):
         await fetch_ensaio_soja("1999/2000")
 
 

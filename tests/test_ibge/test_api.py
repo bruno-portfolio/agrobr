@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 from agrobr import ibge
+from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import client
 
 
@@ -66,6 +67,17 @@ class TestPamValidation:
 
         assert "Disponíveis:" in str(exc.value)
         assert "soja" in str(exc.value)
+
+    @pytest.mark.parametrize("ano", [1973, 9999, "invalido"])
+    @pytest.mark.asyncio
+    async def test_pam_ano_invalido_antes_da_rede(self, ano):
+        with (
+            patch.object(client, "fetch_sidra", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="ano"),
+        ):
+            await ibge.pam("soja", ano=ano)
+
+        fetch.assert_not_awaited()
 
 
 class TestLspaValidation:
@@ -165,6 +177,28 @@ class TestPamMocked:
 
             assert isinstance(df, pd.DataFrame)
             mock_fetch.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_pam_empty_result_has_contract_columns(self):
+        with patch.object(
+            client,
+            "fetch_sidra",
+            new_callable=AsyncMock,
+            return_value=pd.DataFrame(),
+        ):
+            df = await ibge.pam("soja", ano=2023)
+
+        assert list(df.columns) == [
+            "ano",
+            "localidade",
+            "produto",
+            "area_plantada",
+            "area_colhida",
+            "producao",
+            "rendimento",
+            "valor_producao",
+            "fonte",
+        ]
 
     @pytest.mark.asyncio
     async def test_pam_adds_produto_column(self, mock_sidra_response):
@@ -331,9 +365,7 @@ class TestPolarsSupport:
             assert isinstance(df, pl.DataFrame)
 
     @pytest.mark.asyncio
-    async def test_pam_polars_fallback_pandas(self, mock_response, monkeypatch):
-        """Testa fallback para pandas quando polars nao instalado."""
-        # Simula polars nao instalado
+    async def test_pam_polars_missing_raises(self, mock_response, monkeypatch):
         import builtins
 
         real_import = builtins.__import__
@@ -348,10 +380,8 @@ class TestPolarsSupport:
 
             monkeypatch.setattr(builtins, "__import__", mock_import)
 
-            df = await ibge.pam("soja", ano=2023, as_polars=True)
-
-            # Deve retornar pandas
-            assert isinstance(df, pd.DataFrame)
+            with pytest.raises(ImportError, match=r"pip install agrobr\[polars\]"):
+                await ibge.pam("soja", ano=2023, as_polars=True)
 
 
 class TestPamMunicipal:

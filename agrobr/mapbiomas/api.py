@@ -12,7 +12,7 @@ from agrobr.normalize import regions
 from agrobr.utils.result import build_source_meta, finalize_result
 
 from . import client, parser
-from .models import BIOMAS_VALIDOS, COLECAO_ATUAL, normalizar_bioma
+from .models import ANO_FIM, ANO_INICIO, BIOMAS_VALIDOS, COLECAO_ATUAL, normalizar_bioma
 
 logger = structlog.get_logger()
 
@@ -35,6 +35,26 @@ def _normalizar_estado(estado: str | None) -> str | None:
             f"Estado inválido: {estado!r}. Use a sigla ou o nome completo de uma UF"
         )
     return estado_uf
+
+
+def _normalizar_bioma(bioma: str | None) -> str | None:
+    if bioma is None:
+        return None
+    if not isinstance(bioma, str):
+        raise InvalidParameterError("bioma deve ser uma string")
+    normalized = normalizar_bioma(bioma)
+    if normalized not in BIOMAS_VALIDOS:
+        raise InvalidParameterError(f"Bioma inválido: {bioma!r}. Opções: {sorted(BIOMAS_VALIDOS)}")
+    return normalized
+
+
+def _validar_ano(ano: int | None) -> None:
+    if ano is not None and (
+        not isinstance(ano, int) or isinstance(ano, bool) or not ANO_INICIO <= ano <= ANO_FIM
+    ):
+        raise InvalidParameterError(
+            f"ano deve estar entre {ANO_INICIO} e {ANO_FIM} na coleção {COLECAO_ATUAL}"
+        )
 
 
 @overload
@@ -82,6 +102,10 @@ async def cobertura(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     _validar_colecao(colecao)
     estado = _normalizar_estado(estado)
+    bioma = _normalizar_bioma(bioma)
+    _validar_ano(ano)
+    if nivel not in {"estado", "municipio"}:
+        raise InvalidParameterError("nivel deve ser 'estado' ou 'municipio'")
 
     logger.info(
         "mapbiomas_cobertura",
@@ -108,13 +132,7 @@ async def cobertura(
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if bioma is not None:
-        bioma_norm = normalizar_bioma(bioma)
-        if bioma_norm in BIOMAS_VALIDOS:
-            df = df[df["bioma"] == bioma_norm].reset_index(drop=True)
-        else:
-            df = df[
-                df["bioma"].str.lower().str.contains(bioma.lower(), na=False, regex=False)
-            ].reset_index(drop=True)
+        df = df[df["bioma"] == bioma].reset_index(drop=True)
 
     if estado is not None:
         df = df[df["estado"] == estado].reset_index(drop=True)
@@ -187,6 +205,7 @@ async def transicao(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     _validar_colecao(colecao)
     estado = _normalizar_estado(estado)
+    bioma = _normalizar_bioma(bioma)
 
     logger.info("mapbiomas_transicao", bioma=bioma, estado=estado, periodo=periodo)
 
@@ -199,13 +218,7 @@ async def transicao(
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if bioma is not None:
-        bioma_norm = normalizar_bioma(bioma)
-        if bioma_norm in BIOMAS_VALIDOS:
-            df = df[df["bioma"] == bioma_norm].reset_index(drop=True)
-        else:
-            df = df[
-                df["bioma"].str.lower().str.contains(bioma.lower(), na=False, regex=False)
-            ].reset_index(drop=True)
+        df = df[df["bioma"] == bioma].reset_index(drop=True)
 
     if estado is not None:
         df = df[df["estado"] == estado].reset_index(drop=True)

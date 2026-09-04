@@ -9,7 +9,7 @@ import pytest
 
 from agrobr.anec import api, parser
 from agrobr.anec.models import ANECArticle
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.utils.warnings import warn_once_reset
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "anec"
@@ -151,7 +151,7 @@ class TestEmbarques:
 
     @pytest.mark.asyncio
     async def test_year_too_old(self):
-        with pytest.raises(NotImplementedError, match="2026"):
+        with pytest.raises(InvalidParameterError, match="2026"):
             await api.embarques(ano=2025)
 
     @pytest.mark.asyncio
@@ -272,5 +272,5 @@ class TestEndToEndWithRealParser:
 
     @pytest.mark.asyncio
     async def test_articles_disponiveis_year_too_old_raises(self):
-        with pytest.raises(NotImplementedError, match="2026"):
+        with pytest.raises(InvalidParameterError, match="2026"):
             await api.articles_disponiveis(2025)

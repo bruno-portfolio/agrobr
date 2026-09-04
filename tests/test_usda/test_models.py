@@ -2,6 +2,7 @@
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.usda.models import (
     PSD_ATTRIBUTES,
     PSD_COLUMNS_MAP,
@@ -45,7 +46,7 @@ class TestResolveCommodityCode:
         assert resolve_commodity_code("2222000") == "2222000"
 
     def test_unknown_raises(self):
-        with pytest.raises(ValueError, match="desconhecida"):
+        with pytest.raises(InvalidParameterError, match="Opções.*soja"):
             resolve_commodity_code("banana")
 
     def test_case_insensitive(self):
@@ -72,7 +73,7 @@ class TestResolveCountryCode:
         assert resolve_country_code("IN") == "IN"
 
     def test_unknown_long_name_raises(self):
-        with pytest.raises(ValueError, match="desconhecido"):
+        with pytest.raises(InvalidParameterError, match="Opções.*brasil"):
             resolve_country_code("pais_inventado")
 
 

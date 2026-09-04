@@ -47,6 +47,7 @@ async def serie_historica(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    client.get_xls_url(produto)
     t0 = time.monotonic()
 
     logger.info(

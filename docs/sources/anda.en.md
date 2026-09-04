@@ -50,7 +50,7 @@ df = await anda.entregas(ano=2024, agregacao="mensal")
 ANDA publishes data in PDF. The layout may change without notice between years.
 The available delivery bulletins contain only aggregated fertilizer totals.
 Therefore, `produto="total"` is the only accepted value; formulations such as
-`ureia`, `map`, or `kcl` raise `ValueError` before download.
+`ureia`, `map`, or `kcl` raise `InvalidParameterError` before download.
 
 The agrobr parser automatically detects the orientation of the tables
 (states in rows vs columns), and also supports the "Principais
@@ -58,7 +58,7 @@ Indicadores" layout (aggregated national data with months/values in cells
 concatenated with `\n`). Drastic format changes may require a parser update.
 
 There is no year fallback. If no PDF link matches the requested year, the client
-raises `SourceUnavailableError` and reports the years available on the site.
+raises `InvalidParameterError` and reports the years available on the site.
 For the selected link, the actual year is extracted from the link text or file
 name and passed to the parser.
 

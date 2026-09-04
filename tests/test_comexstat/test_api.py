@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agrobr.comexstat import api
+from agrobr.exceptions import InvalidParameterError
 
 
 def _mock_csv():
@@ -18,6 +19,24 @@ def _mock_csv():
 
 
 class TestExportacao:
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"ano": 9999},
+            {"ano": 2024, "uf": "XX"},
+            {"ano": 2024, "agregacao": "diaria"},
+        ],
+    )
+    @pytest.mark.asyncio
+    async def test_invalid_parameters_raise_before_download(self, kwargs):
+        with (
+            patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError),
+        ):
+            await api.exportacao("soja", **kwargs)
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_default_ano_is_previous_year(self):
         from agrobr.utils.time import utcnow

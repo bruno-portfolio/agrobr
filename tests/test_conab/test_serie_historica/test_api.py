@@ -8,6 +8,7 @@ import pytest
 
 from agrobr.conab.serie_historica import api
 from agrobr.conab.serie_historica.api import produtos_disponiveis
+from agrobr.exceptions import InvalidParameterError
 
 
 def _make_sample_xls() -> BytesIO:
@@ -62,6 +63,16 @@ def _make_sample_xls() -> BytesIO:
 
 
 class TestSerieHistorica:
+    @pytest.mark.asyncio
+    async def test_invalid_product_raises_before_download(self):
+        with (
+            patch.object(api.client, "download_xls", new_callable=AsyncMock) as download,
+            pytest.raises(InvalidParameterError, match="Disponíveis"),
+        ):
+            await api.serie_historica("banana")
+
+        download.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         xls = _make_sample_xls()

@@ -107,6 +107,16 @@ class TestEstacoes:
 
 class TestEstacao:
     @pytest.mark.asyncio
+    async def test_reverse_range_raises_before_request(self):
+        with (
+            patch.object(api.client, "fetch_dados_estacao", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="inicio"),
+        ):
+            await api.estacao("A001", "2025-02-01", "2025-01-01")
+
+        fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
     async def test_estacao_horario(self):
         mock_data = [_mock_obs(hora="1200 UTC"), _mock_obs(hora="1300 UTC")]
 

@@ -2,14 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, overload
 
-import structlog
-
 if TYPE_CHECKING:
     import pandas as pd
 
     from agrobr.models import MetaInfo
-
-logger = structlog.get_logger(__name__)
 
 
 def build_source_meta(
@@ -94,7 +90,9 @@ def finalize_result(
                 return result_df, meta  # type: ignore[return-value]
             return result_df  # type: ignore[return-value,no-any-return]
         except ImportError:
-            logger.warning("polars_not_installed", fallback="pandas")
+            raise ImportError(
+                "polars é necessário para as_polars=True. Instale com: pip install agrobr[polars]"
+            ) from None
 
     if return_meta:
         return df, meta

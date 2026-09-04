@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.nasa_power import client
 from tests.helpers import RETRY_SLEEP, make_mock_async_client, make_mock_response
 
@@ -57,7 +57,7 @@ class TestNasaPowerHTTPErrors:
 
         with (
             patch("agrobr.nasa_power.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(httpx.HTTPStatusError),
+            pytest.raises(SourceUnavailableError),
         ):
             await client._get_json({"test": "1"})
 
@@ -101,7 +101,7 @@ class TestNasaPowerEmptyResponse:
 class TestNasaPowerValidation:
     @pytest.mark.asyncio
     async def test_start_after_end_raises(self):
-        with pytest.raises(ValueError, match="start.*deve ser"):
+        with pytest.raises(InvalidParameterError, match="start.*deve ser"):
             await client.fetch_daily(-15.0, -47.0, date(2024, 12, 31), date(2024, 1, 1))
 
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import httpx
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -18,12 +19,8 @@ TIMEOUT = get_timeout(read=60.0)
 async def fetch_ensaio_soja(safra: str) -> tuple[bytes, str]:
     url = SAFRAS_URLS.get(safra)
     if url is None:
-        from agrobr.exceptions import SourceUnavailableError
-
-        raise SourceUnavailableError(
-            source="rio_verde",
-            url="",
-            last_error=f"Safra '{safra}' não disponível. Safras: {list(SAFRAS_URLS.keys())}",
+        raise InvalidParameterError(
+            f"Safra '{safra}' não disponível. Safras: {list(SAFRAS_URLS.keys())}"
         )
 
     logger.debug("rio_verde_fetch", safra=safra, url=url)

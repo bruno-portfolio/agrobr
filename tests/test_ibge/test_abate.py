@@ -311,7 +311,7 @@ class TestAbatePolarsSupport:
 
             assert isinstance(df, pl.DataFrame)
 
-    async def test_polars_fallback_pandas(self):
+    async def test_polars_missing_raises(self):
         from agrobr.ibge.api import abate
 
         with (
@@ -319,8 +319,8 @@ class TestAbatePolarsSupport:
             patch.dict("sys.modules", {"polars": None}),
         ):
             mock.return_value = _build_mock_df()
-            df = await abate("bovino", trimestre="202303", as_polars=True)
-            assert isinstance(df, pd.DataFrame)
+            with pytest.raises(ImportError, match=r"pip install agrobr\[polars\]"):
+                await abate("bovino", trimestre="202303", as_polars=True)
 
 
 class TestAbateGoldenData:

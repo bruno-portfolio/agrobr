@@ -7,7 +7,7 @@ import httpx
 import structlog
 
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -32,7 +32,12 @@ async def _get_json(
             lambda: c.get(BASE_URL, params=params),
             source="nasa_power",
         )
-        response.raise_for_status()
+        if response.status_code >= 400:
+            raise SourceUnavailableError(
+                source="nasa_power",
+                url=BASE_URL,
+                last_error=f"HTTP {response.status_code}",
+            )
         data = responses.parse_json_response(response, source="nasa_power", url=BASE_URL)
         if not isinstance(data, dict):
             return {}
@@ -60,7 +65,7 @@ async def fetch_daily(
         parameters = PARAMS_AG
 
     if start > end:
-        raise ValueError(f"start ({start}) deve ser <= end ({end})")
+        raise InvalidParameterError(f"start ({start}) deve ser <= end ({end})")
 
     logger.info(
         "nasa_power_fetch",

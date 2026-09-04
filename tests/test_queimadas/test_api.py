@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.queimadas import api
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "queimadas" / "focos_sample"
@@ -160,17 +161,35 @@ class TestFocos:
         assert (df["uf"] == "MT").all()
 
     @pytest.mark.asyncio
-    async def test_empty_filter_returns_empty(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
+    @pytest.mark.parametrize(
+        ("kwargs", "message"),
+        [
+            ({"ano": 2025, "mes": 13}, "mes"),
+            ({"ano": 2025, "mes": "1"}, "inteiro"),
+            ({"ano": 2025, "mes": 2, "dia": 30}, "data inválida"),
+            ({"ano": 9999, "mes": 1}, "ano"),
+            ({"ano": 2025, "mes": 1, "uf": "XX"}, "UF invalida"),
+        ],
+    )
+    @pytest.mark.asyncio
+    async def test_invalid_parameters_raise_before_fetch(self, kwargs, message):
+        with (
+            patch.object(
+                api.client,
+                "fetch_focos_mensal",
+                new_callable=AsyncMock,
+            ) as monthly,
+            patch.object(
+                api.client,
+                "fetch_focos_diario",
+                new_callable=AsyncMock,
+            ) as daily,
+            pytest.raises(InvalidParameterError, match=message),
         ):
-            df = await api.focos(ano=2024, mes=9, uf="XX")
+            await api.focos(**kwargs)
 
-        assert len(df) == 0
+        monthly.assert_not_awaited()
+        daily.assert_not_awaited()
 
 
 class TestFocosAsPolars:

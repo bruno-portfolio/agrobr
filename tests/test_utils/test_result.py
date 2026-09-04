@@ -57,16 +57,19 @@ class TestFinalizeResultPolars:
         assert isinstance(result_df, pl.DataFrame)
         assert meta is sample_meta
 
-    def test_polars_import_error_fallback(self, sample_df):
-        with patch.dict("sys.modules", {"polars": None}):
-            result = finalize_result(sample_df, as_polars=True)
-            pd.testing.assert_frame_equal(result, sample_df)
+    def test_polars_import_error_raises_with_install_hint(self, sample_df):
+        with (
+            patch.dict("sys.modules", {"polars": None}),
+            pytest.raises(ImportError, match=r"pip install agrobr\[polars\]"),
+        ):
+            finalize_result(sample_df, as_polars=True)
 
-    def test_polars_import_error_fallback_with_meta(self, sample_df, sample_meta):
-        with patch.dict("sys.modules", {"polars": None}):
-            df, meta = finalize_result(sample_df, sample_meta, as_polars=True, return_meta=True)
-            pd.testing.assert_frame_equal(df, sample_df)
-            assert meta is sample_meta
+    def test_polars_import_error_with_meta_raises(self, sample_df, sample_meta):
+        with (
+            patch.dict("sys.modules", {"polars": None}),
+            pytest.raises(ImportError, match=r"pip install agrobr\[polars\]"),
+        ):
+            finalize_result(sample_df, sample_meta, as_polars=True, return_meta=True)
 
 
 class TestBuildSourceMeta:

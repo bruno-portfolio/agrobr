@@ -27,7 +27,7 @@ _RE_COMPOSITE_IA = re.compile(r"^(.+?)\s*\(([^)]*)\)\s*\(([^)]*)\)$")
 
 
 def _strip_all_str_cols(df: pd.DataFrame) -> pd.DataFrame:
-    for col in df.select_dtypes(include="object").columns:
+    for col in df.select_dtypes(include=["object", "string"]).columns:
         df[col] = df[col].str.replace("\x96", "–", regex=False).str.strip()
     return df
 

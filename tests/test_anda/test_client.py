@@ -8,7 +8,7 @@ import httpx
 import pytest
 
 from agrobr.anda import client
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from tests.helpers import (
     RETRY_SLEEP,
     make_mock_async_client,
@@ -229,7 +229,7 @@ class TestFetchEntregasPdf:
             patch(
                 "agrobr.anda.client.fetch_estatisticas_page", new_callable=AsyncMock
             ) as mock_page,
-            pytest.raises(SourceUnavailableError, match="não encontrado"),
+            pytest.raises(InvalidParameterError, match="não encontrado"),
         ):
             mock_page.return_value = "<html><body>no links</body></html>"
             await client.fetch_entregas_pdf(2024)
@@ -313,7 +313,7 @@ class TestFetchEntregasPdf:
                 "agrobr.anda.client.fetch_estatisticas_page", new_callable=AsyncMock
             ) as mock_page,
             patch("agrobr.anda.client.download_file", new_callable=AsyncMock) as mock_dl,
-            pytest.raises(SourceUnavailableError) as exc_info,
+            pytest.raises(InvalidParameterError) as exc_info,
         ):
             mock_page.return_value = html
             await client.fetch_entregas_pdf(2025)

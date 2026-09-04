@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from datetime import date
 from typing import Literal, overload
 
 import pandas as pd
@@ -24,6 +25,31 @@ _LSPA_ALIASES: dict[str, list[str]] = {
     "amendoim": ["amendoim_1", "amendoim_2"],
     "batata": ["batata_1", "batata_2"],
 }
+
+_PAM_COLUMNS = [
+    "ano",
+    "localidade",
+    "produto",
+    "area_plantada",
+    "area_colhida",
+    "producao",
+    "rendimento",
+    "valor_producao",
+    "fonte",
+]
+
+
+def _validate_pam_years(ano: int | str | list[int] | None) -> None:
+    if ano is None:
+        return
+    values: list[int | str] = list(ano) if isinstance(ano, list) else [ano]
+    current_year = date.today().year
+    try:
+        years = [int(value) for value in values if not isinstance(value, bool)]
+    except (TypeError, ValueError) as exc:
+        raise InvalidParameterError("ano deve conter anos inteiros") from exc
+    if len(years) != len(values) or any(year < 1974 or year > current_year for year in years):
+        raise InvalidParameterError(f"ano deve estar entre 1974 e {current_year}")
 
 
 def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
@@ -72,6 +98,7 @@ async def pam(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    _validate_pam_years(ano)
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_pam",
@@ -159,6 +186,8 @@ async def pam(
 
     df["produto"] = produto_lower
     df["fonte"] = "ibge_pam"
+    if df.empty:
+        df = pd.DataFrame(columns=_PAM_COLUMNS)
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)

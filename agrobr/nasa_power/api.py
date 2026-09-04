@@ -17,6 +17,27 @@ from .models import UF_COORDS
 logger = structlog.get_logger()
 
 
+def _validate_point(lat: object, lon: object) -> tuple[float, float]:
+    if not isinstance(lat, (int, float)) or isinstance(lat, bool) or not -90 <= lat <= 90:
+        raise InvalidParameterError("lat deve estar entre -90 e 90")
+    if not isinstance(lon, (int, float)) or isinstance(lon, bool) or not -180 <= lon <= 180:
+        raise InvalidParameterError("lon deve estar entre -180 e 180")
+    return float(lat), float(lon)
+
+
+def _normalize_range(inicio: str | date, fim: str | date) -> tuple[date, date]:
+    try:
+        start = date.fromisoformat(inicio) if isinstance(inicio, str) else inicio
+        end = date.fromisoformat(fim) if isinstance(fim, str) else fim
+    except ValueError as exc:
+        raise InvalidParameterError("inicio e fim devem usar o formato YYYY-MM-DD") from exc
+    if not isinstance(start, date) or not isinstance(end, date):
+        raise InvalidParameterError("inicio e fim devem ser datas ou strings YYYY-MM-DD")
+    if start > end:
+        raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
+    return start, end
+
+
 async def clima_ponto(
     lat: float,
     lon: float,
@@ -27,10 +48,10 @@ async def clima_ponto(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    if isinstance(inicio, str):
-        inicio = date.fromisoformat(inicio)
-    if isinstance(fim, str):
-        fim = date.fromisoformat(fim)
+    lat, lon = _validate_point(lat, lon)
+    inicio, fim = _normalize_range(inicio, fim)
+    if agregacao not in {"diario", "mensal"}:
+        raise InvalidParameterError("agregacao deve ser 'diario' ou 'mensal'")
 
     t0 = time.monotonic()
     dados = await client.fetch_daily(lat, lon, inicio, fim)

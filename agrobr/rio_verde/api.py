@@ -6,6 +6,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
@@ -47,6 +48,10 @@ async def ensaio_soja(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    if safra not in SAFRAS_URLS:
+        raise InvalidParameterError(
+            f"Safra {safra!r} não disponível. Opções: {sorted(SAFRAS_URLS)}"
+        )
     warn_once(
         "rio_verde",
         "Fundação Rio Verde: termos de uso não encontrados. "

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.unica.models import (
     MIX_LABELS,
     PRODUTOS_HISTORICO,
@@ -52,10 +53,10 @@ class TestResolveProduto:
         assert resolve_produto("etanol", PRODUTOS_QUINZENAL) == "etanol_hidratado"
 
     def test_produto_fora_do_dominio_raises(self):
-        with pytest.raises(ValueError, match="inválido para UNICA"):
+        with pytest.raises(InvalidParameterError, match="inválido para UNICA"):
             resolve_produto("soja", PRODUTOS_QUINZENAL)
 
     def test_historico_mesmos_produtos(self):
         assert resolve_produto("cana", PRODUTOS_HISTORICO) == "cana"
-        with pytest.raises(ValueError, match="inválido para UNICA"):
+        with pytest.raises(InvalidParameterError, match="inválido para UNICA"):
             resolve_produto("milho", PRODUTOS_HISTORICO)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import functools
+import inspect
 from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar
 
@@ -61,7 +62,7 @@ class _SyncModule:
     def __getattr__(self, name: str) -> Any:
         attr = getattr(self._async_module, name)
 
-        if asyncio.iscoroutinefunction(attr):
+        if inspect.iscoroutinefunction(attr):
             return sync_wrapper(attr)
 
         return attr

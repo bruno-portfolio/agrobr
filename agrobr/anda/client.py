@@ -6,7 +6,7 @@ import httpx
 import structlog
 
 from agrobr.constants import MIN_HTML_SIZE, MIN_ZIP_SIZE, URLS, Fonte
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -125,13 +125,9 @@ async def fetch_entregas_pdf(ano: int) -> tuple[bytes, int]:
             {m.group(0) for link in links for m in re.finditer(r"20\d{2}", link["text"])},
             reverse=True,
         )
-        raise SourceUnavailableError(
-            source="anda",
-            url=ESTATISTICAS_URL,
-            last_error=(
-                f"PDF de entregas ANDA para {ano} não encontrado. "
-                f"Anos disponíveis no site: {anos_disponiveis or 'nenhum'}"
-            ),
+        raise InvalidParameterError(
+            f"PDF de entregas ANDA para {ano} não encontrado. "
+            f"Anos disponíveis no site: {anos_disponiveis or 'nenhum'}"
         )
 
     ano_real = _extract_ano_real(target, ano)

@@ -156,6 +156,8 @@ df = await conab.custo_producao("soja", uf="MT")
 totais = await conab.custo_producao_total("soja", uf="MT", safra="2024/25")
 ```
 
+`uf` é validada antes da consulta. Se a UF não existir na planilha selecionada, a API levanta `SourceUnavailableError` e lista as UFs disponíveis. Com `uf=None`, ela usa a primeira planilha compatível encontrada e informa na coluna `uf` a UF identificada nos metadados ou no nome da aba; o resultado não é uma agregação nacional.
+
 ### Schema - custo_producao
 
 | Coluna | Tipo | Descricao |

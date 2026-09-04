@@ -7,7 +7,7 @@ import httpx
 import structlog
 
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 
@@ -64,14 +64,14 @@ ACCEPT_EXCEL = (
 
 
 def get_xls_url(produto: str) -> str:
+    if not isinstance(produto, str):
+        raise InvalidParameterError("produto deve ser uma string")
     produto_lower = produto.lower().strip()
 
     if produto_lower not in _PRODUCT_REGISTRY:
         available = sorted(_PRODUCT_REGISTRY.keys())
-        raise SourceUnavailableError(
-            source="conab_serie_historica",
-            url=SERIES_HISTORICAS_URL,
-            last_error=(f"Produto '{produto}' nao encontrado. Disponiveis: {', '.join(available)}"),
+        raise InvalidParameterError(
+            f"Produto '{produto}' não encontrado. Disponíveis: {', '.join(available)}"
         )
 
     categoria, subcategoria, filename = _PRODUCT_REGISTRY[produto_lower]

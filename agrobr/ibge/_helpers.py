@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import client
+from agrobr.utils.validation import validate_uf
 
 SIDRA_BASE = URLS[Fonte.IBGE]["base"]
 
@@ -31,6 +32,7 @@ def resolve_ibge_code(
         nivel_map = NIVEL_MAP
     if nivel not in nivel_map:
         raise InvalidParameterError(f"nível inválido: {nivel!r}. Use um de: {sorted(nivel_map)}")
+    uf = validate_uf(uf)
     territorial_level = nivel_map[nivel]
     ibge_code = "all"
     if uf:

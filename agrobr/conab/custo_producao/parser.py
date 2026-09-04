@@ -210,6 +210,13 @@ def _parse_sheet_info(sheet_name: str) -> tuple[str | None, str | None]:
     return uf, year
 
 
+def available_sheet_ufs(xlsx: bytes | BytesIO) -> list[str]:
+    xf = open_excel_safe(xlsx, source="conab_custo", parser_version=PARSER_VERSION)
+    return sorted(
+        {uf for name in xf.sheet_names if (uf := _parse_sheet_info(str(name))[0]) is not None}
+    )
+
+
 def _refine_valor_column(
     df_raw: pd.DataFrame,
     data_start: int,

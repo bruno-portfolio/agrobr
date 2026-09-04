@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import time
+from datetime import date
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import check_geopandas
 from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.validation import validate_bioma
+from agrobr.utils.validation import validate_bioma, validate_uf
 
 from . import client, parser
 
@@ -17,6 +19,29 @@ if TYPE_CHECKING:
     import geopandas as gpd
 
 logger = structlog.get_logger()
+
+
+def _require_int(name: str, value: object) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise InvalidParameterError(f"{name} deve ser inteiro")
+    return value
+
+
+def _validate_period(ano: object, mes: object, dia: object | None) -> tuple[int, int, int | None]:
+    ano_int = _require_int("ano", ano)
+    mes_int = _require_int("mes", mes)
+    dia_int = _require_int("dia", dia) if dia is not None else None
+    if ano_int > date.today().year:
+        raise InvalidParameterError(f"ano não pode ser posterior a {date.today().year}")
+    if not 1 <= mes_int <= 12:
+        raise InvalidParameterError("mes deve estar entre 1 e 12")
+    try:
+        date(ano_int, mes_int, dia_int or 1)
+    except ValueError as exc:
+        raise InvalidParameterError(
+            f"data inválida: ano={ano_int}, mes={mes_int}, dia={dia_int}"
+        ) from exc
+    return ano_int, mes_int, dia_int
 
 
 @overload
@@ -59,6 +84,8 @@ async def focos(
     return_meta: bool = False,
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ano, mes, dia = _validate_period(ano, mes, dia)
+    uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
     logger.info(
         "queimadas_focos",
@@ -90,8 +117,7 @@ async def focos(
         df["data"] = df["data"].dt.date
 
     if uf is not None:
-        uf_upper = uf.strip().upper()
-        df = df[df["uf"] == uf_upper].reset_index(drop=True)
+        df = df[df["uf"] == uf].reset_index(drop=True)
 
     if bioma is not None:
         df = df[df["bioma"] == bioma].reset_index(drop=True)

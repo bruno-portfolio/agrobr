@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pandas as pd
 import pytest
 
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.inmet import api, client, parser
 
 GOLDEN = Path(__file__).parent.parent / "golden_data" / "inmet" / "historico_a701_sample.csv"
@@ -176,6 +176,16 @@ class TestFetchHistoricoEstacao:
 
 
 class TestHistoricoApi:
+    @pytest.mark.asyncio
+    async def test_year_before_2000_raises_before_download(self):
+        with (
+            patch.object(api.client, "fetch_historico_estacao", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="2000"),
+        ):
+            await api.historico("A701", 1999)
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_retorna_dataframe_horario(self):
         with patch(

@@ -122,6 +122,20 @@ class TestSyncModule:
         result = sync_mod.regular()
         assert result == "sync"
 
+    def test_coroutine_detection_uses_inspect(self):
+        mock_module = mock.MagicMock()
+        regular = mock.Mock(return_value="sync")
+        mock_module.regular = regular
+        sync_mod = _SyncModule(mock_module)
+
+        with mock.patch(
+            "agrobr.sync.inspect.iscoroutinefunction",
+            return_value=False,
+        ) as is_coroutine:
+            assert sync_mod.regular() == "sync"
+
+        is_coroutine.assert_called_once_with(regular)
+
     def test_async_exception_propagation(self):
         mock_module = mock.MagicMock()
 

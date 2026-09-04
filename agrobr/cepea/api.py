@@ -53,15 +53,50 @@ def _normalize_dates(
     inicio: str | date | None,
     fim: str | date | None,
 ) -> tuple[date, date]:
-    if isinstance(inicio, str):
-        inicio = datetime.strptime(inicio, "%Y-%m-%d").date()
-    if isinstance(fim, str):
-        fim = datetime.strptime(fim, "%Y-%m-%d").date()
+    try:
+        if isinstance(inicio, str):
+            inicio = datetime.strptime(inicio, "%Y-%m-%d").date()
+        elif inicio is not None and not isinstance(inicio, date):
+            raise TypeError
+        if isinstance(fim, str):
+            fim = datetime.strptime(fim, "%Y-%m-%d").date()
+        elif fim is not None and not isinstance(fim, date):
+            raise TypeError
+    except (TypeError, ValueError) as exc:
+        raise InvalidParameterError(
+            "Datas inválidas. Use objetos date ou strings no formato YYYY-MM-DD."
+        ) from exc
     if fim is None:
         fim = date.today()
     if inicio is None:
         inicio = fim - timedelta(days=365)
+    if inicio > fim:
+        raise InvalidParameterError("inicio deve ser anterior ou igual a fim (YYYY-MM-DD)")
     return inicio, fim
+
+
+def _normalize_produto(produto: object) -> str:
+    if not isinstance(produto, str):
+        raise InvalidParameterError("produto deve ser uma string")
+    normalized = produto.strip().lower()
+    if normalized not in constants.CEPEA_PRODUTOS:
+        raise InvalidParameterError(
+            f"Produto inválido: {produto!r}. Opções: {sorted(constants.CEPEA_PRODUTOS)}"
+        )
+    return normalized
+
+
+def _normalize_praca(produto: str, praca: object | None) -> str | None:
+    if praca is None:
+        return None
+    if not isinstance(praca, str):
+        raise InvalidParameterError("praca deve ser uma string")
+    requested = regions.slugificar_praca(praca.strip())
+    source_label = v1.PRACAS.get(produto)
+    valid = [regions.slugificar_praca(source_label)] if source_label else []
+    if requested not in valid:
+        raise InvalidParameterError(f"Praça inválida para {produto!r}: {praca!r}. Opções: {valid}")
+    return requested
 
 
 def _needs_fetch(
@@ -210,6 +245,9 @@ async def indicador(
         offline: Usa apenas cache local, sem requests HTTP.
         return_meta: Retorna tupla ``(df, MetaInfo)`` com metadados de proveniência.
     """
+    produto = _normalize_produto(produto)
+    praca = _normalize_praca(produto, praca)
+    inicio, fim = _normalize_dates(inicio, fim)
     _warn_license()
     fetch_start = time.perf_counter()
     meta = MetaInfo(
@@ -218,8 +256,6 @@ async def indicador(
         source_method="unknown",
         fetched_at=utcnow(),
     )
-    inicio, fim = _normalize_dates(inicio, fim)
-
     store = get_store()
     indicadores: list[Indicador] = []
 
@@ -340,7 +376,7 @@ async def indicador(
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
-    meta.columns = df.columns.tolist() if not df.empty else []
+    meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "cepea",
         {"produto": produto, "praca": praca or "all"},
@@ -393,16 +429,14 @@ async def produtos() -> list[str]:
 
 
 async def pracas(produto: str) -> list[str]:
-    produto_slug = produto.lower()
-    if produto_slug not in constants.CEPEA_PRODUTOS:
-        raise InvalidParameterError(
-            f"Produto inválido: '{produto}'. Opções: {sorted(constants.CEPEA_PRODUTOS)}"
-        )
+    produto_slug = _normalize_produto(produto)
     praca = v1.PRACAS.get(produto_slug)
     return [regions.slugificar_praca(praca)] if praca else []
 
 
 async def ultimo(produto: str, praca: str | None = None, offline: bool = False) -> Indicador:
+    produto = _normalize_produto(produto)
+    praca = _normalize_praca(produto, praca)
     _warn_license()
     store = get_store()
     indicadores: list[Indicador] = []
@@ -469,7 +503,18 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
 
 def _to_dataframe(indicadores: list[Indicador]) -> pd.DataFrame:
     if not indicadores:
-        return pd.DataFrame()
+        return pd.DataFrame(
+            {
+                "data": pd.Series(dtype="datetime64[ns]"),
+                "produto": pd.Series(dtype="object"),
+                "praca": pd.Series(dtype="object"),
+                "valor": pd.Series(dtype="float64"),
+                "unidade": pd.Series(dtype="object"),
+                "fonte": pd.Series(dtype="object"),
+                "metodologia": pd.Series(dtype="object"),
+                "anomalies": pd.Series(dtype="object"),
+            }
+        )
 
     data = [
         {

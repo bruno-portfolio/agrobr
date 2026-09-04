@@ -6,6 +6,8 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
+
 GOLDEN_DIR = Path(__file__).resolve().parent.parent / "golden_data" / "rio_verde"
 
 
@@ -66,6 +68,19 @@ async def test_safras_disponiveis():
     assert isinstance(safras, list)
     assert len(safras) >= 2
     assert "2025/2026" in safras
+
+
+@pytest.mark.asyncio
+async def test_invalid_safra_raises_before_download():
+    with (
+        patch("agrobr.rio_verde.client.fetch_ensaio_soja", new_callable=AsyncMock) as fetch,
+        pytest.raises(InvalidParameterError, match="Opções"),
+    ):
+        from agrobr.rio_verde import ensaio_soja
+
+        await ensaio_soja("2023/2024")
+
+    fetch.assert_not_awaited()
 
 
 @pytest.mark.asyncio

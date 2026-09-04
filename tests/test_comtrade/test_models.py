@@ -9,6 +9,7 @@ from agrobr.comtrade.models import (
     resolve_hs,
     resolve_pais,
 )
+from agrobr.exceptions import InvalidParameterError
 
 
 class TestResolvePais:
@@ -45,7 +46,7 @@ class TestResolvePais:
         assert resolve_pais("China") == 156
 
     def test_unknown_raises(self):
-        with pytest.raises(ValueError, match="desconhecido"):
+        with pytest.raises(InvalidParameterError, match="desconhecido"):
             resolve_pais("pais_inventado")
 
     def test_strip_whitespace(self):
@@ -77,7 +78,7 @@ class TestResolveHs:
         assert resolve_hs("1201") == ["1201"]
 
     def test_unknown_raises(self):
-        with pytest.raises(ValueError, match="desconhecido"):
+        with pytest.raises(InvalidParameterError, match="desconhecido"):
             resolve_hs("produto_inventado")
 
     def test_case_insensitive(self):

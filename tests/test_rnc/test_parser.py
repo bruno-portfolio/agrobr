@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import io
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -53,6 +55,16 @@ class TestParseRegistradasCsv:
             values = df[col].dropna()
             if len(values) > 0:
                 assert not any(v != v.strip() for v in values)
+
+    def test_string_dtype_columns_are_stripped(self, registradas_bytes):
+        raw_df = pd.read_csv(io.BytesIO(registradas_bytes), dtype="string")
+        text_column = raw_df.columns[0]
+        raw_df[text_column] = raw_df[text_column].map(lambda value: f" {value} ")
+
+        with patch("agrobr.rnc.parser.read_csv_safe", return_value=raw_df):
+            df = parse_registradas_csv(registradas_bytes)
+
+        assert all(value == value.strip() for value in df["cultivar"].dropna())
 
     def test_empty_csv_raises(self):
         with pytest.raises(ParseError):

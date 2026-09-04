@@ -5,6 +5,7 @@ from agrobr.normalize.regions import BIOMAS_VALIDOS as BIOMAS_VALIDOS  # noqa: F
 from agrobr.normalize.regions import normalizar_bioma as normalizar_bioma  # noqa: F401
 
 ANO_INICIO = 1985
+ANO_FIM = 2024
 CLASSES_LEGENDA: dict[int, str] = {
     1: "Floresta",
     3: "Formação Florestal",

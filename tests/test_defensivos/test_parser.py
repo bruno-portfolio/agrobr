@@ -157,6 +157,21 @@ class TestHelpers:
         assert result["a"].tolist() == ["hello", "world"]
         assert result["b"].tolist() == [1, 2]
 
+    def test_strip_all_str_cols_supports_string_dtype(self):
+        df = pd.DataFrame(
+            {
+                "object_col": pd.Series([" A \x96 B "], dtype="object"),
+                "string_col": pd.Series([" C \x96 D "], dtype="string"),
+            }
+        )
+
+        result = _strip_all_str_cols(df)
+
+        assert result.iloc[0].to_dict() == {
+            "object_col": "A – B",
+            "string_col": "C – D",
+        }
+
 
 class TestSplitCompositeIA:
     def test_composite_format_splits(self):

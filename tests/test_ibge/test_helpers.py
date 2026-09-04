@@ -26,6 +26,10 @@ class TestResolveIbgeCode:
         with pytest.raises(ValueError, match="nível inválido"):
             resolve_ibge_code(None, "estado")
 
+    def test_invalid_uf_raises_before_lookup(self):
+        with pytest.raises(ValueError, match="UF invalida"):
+            resolve_ibge_code("XX", "uf")
+
     def test_nivel_map_historico_permite_regiao(self):
         level, _ = resolve_ibge_code(None, "regiao", nivel_map=NIVEL_MAP_HISTORICO)
         assert level == "2"

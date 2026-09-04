@@ -59,7 +59,7 @@ def _parse_csv(
 
     df = df.rename(columns=rename)
 
-    for col in df.select_dtypes(include="object").columns:
+    for col in df.select_dtypes(include=["object", "string"]).columns:
         df[col] = df[col].str.strip()
 
     for col in date_cols:

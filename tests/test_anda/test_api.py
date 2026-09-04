@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 from agrobr.anda import api
+from agrobr.exceptions import InvalidParameterError
 
 
 def _mock_parsed_df():
@@ -59,6 +60,16 @@ def _mock_parsed_df():
 
 
 class TestEntregas:
+    @pytest.mark.asyncio
+    async def test_future_year_raises_before_download(self):
+        with (
+            patch.object(api.client, "fetch_entregas_pdf", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="ano"),
+        ):
+            await api.entregas(ano=9999)
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_rejects_specific_product_before_download(self):
         with (

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agrobr.exceptions import InvalidParameterError
+
 COMTRADE_PAISES: dict[str, int] = {
     "br": 76,
     "bra": 76,
@@ -161,20 +163,26 @@ COLUNAS_MIRROR: list[str] = [
 
 
 def resolve_pais(nome: str) -> int:
+    if not isinstance(nome, str):
+        raise InvalidParameterError("país deve ser uma string")
     key = nome.strip().lower()
     if key in COMTRADE_PAISES:
         return COMTRADE_PAISES[key]
     if key.isdigit():
         return int(key)
-    raise ValueError(
+    raise InvalidParameterError(
         f"Pais desconhecido: '{nome}'. Opcoes: {sorted(set(COMTRADE_PAISES_INV.values()))}"
     )
 
 
 def resolve_hs(produto: str) -> list[str]:
+    if not isinstance(produto, str):
+        raise InvalidParameterError("produto deve ser uma string")
     key = produto.strip().lower()
     if key in HS_PRODUTOS_AGRO:
         return HS_PRODUTOS_AGRO[key]
     if key.isdigit() and 2 <= len(key) <= 6:
         return [key]
-    raise ValueError(f"Produto desconhecido: '{produto}'. Opcoes: {list(HS_PRODUTOS_AGRO.keys())}")
+    raise InvalidParameterError(
+        f"Produto desconhecido: '{produto}'. Opcoes: {list(HS_PRODUTOS_AGRO.keys())}"
+    )

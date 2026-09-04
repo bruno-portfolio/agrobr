@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
 
+from agrobr.exceptions import InvalidParameterError
+
 
 class ExportRecord(BaseModel):
     ano: int = Field(..., ge=1997)
@@ -55,10 +57,12 @@ NCM_PRODUTOS: dict[str, str] = {
 
 
 def resolve_ncm(produto: str) -> str:
+    if not isinstance(produto, str):
+        raise InvalidParameterError("produto deve ser uma string")
     lower = produto.lower().strip()
     ncm = NCM_PRODUTOS.get(lower)
     if ncm is None:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Produto '{produto}' sem mapeamento NCM. "
             f"Produtos disponíveis: {list(NCM_PRODUTOS.keys())}"
         )

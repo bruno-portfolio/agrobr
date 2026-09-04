@@ -6,7 +6,7 @@ import httpx
 import pytest
 
 from agrobr.bcb import sgs_client
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from tests.helpers import (
     RETRY_SLEEP,
     make_mock_async_client,
@@ -34,7 +34,7 @@ class TestSgsUrlConstruction:
         assert "432" in call_args[0][0]
         params = call_args[1]["params"]
         assert params["formato"] == "json"
-        assert "dataInicial" not in params
+        assert params["dataInicial"] == sgs_client._default_start_date()
         assert "dataFinal" not in params
 
     @pytest.mark.asyncio
@@ -135,6 +135,23 @@ class TestSgsRetry:
             await sgs_client.fetch_sgs(999999)
 
         assert mock_client.get.call_count == 2
+
+
+class TestSgsHttpErrors:
+    @pytest.mark.asyncio
+    async def test_api_4xx_error_becomes_invalid_parameter(self):
+        response = make_mock_response(
+            406,
+            json_data={"error": "O sistema aceita uma janela de consulta de, no máximo, 10 anos"},
+        )
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(return_value=response)
+
+        with (
+            patch("agrobr.bcb.sgs_client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(InvalidParameterError, match="no máximo, 10 anos"),
+        ):
+            await sgs_client.fetch_sgs(432, data_inicial="01/01/2000")
 
 
 class TestSgsEmptyResponse:

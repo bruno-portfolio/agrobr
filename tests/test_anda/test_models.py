@@ -8,6 +8,7 @@ from agrobr.anda.models import (
     normalize_fertilizante,
     resolve_produto,
 )
+from agrobr.exceptions import InvalidParameterError
 
 
 class TestNormalizeFertilizante:
@@ -51,9 +52,9 @@ class TestResolveProduto:
         assert resolve_produto(" TOTAL ") == "total"
 
     def test_produto_especifico(self):
-        with pytest.raises(ValueError, match="apenas entregas totais"):
+        with pytest.raises(InvalidParameterError, match="apenas entregas totais"):
             resolve_produto("ureia")
 
     def test_produto_desconhecido(self):
-        with pytest.raises(ValueError, match="fosfato natural"):
+        with pytest.raises(InvalidParameterError, match="fosfato natural"):
             resolve_produto("fosfato natural")

@@ -50,7 +50,7 @@ df = await anda.entregas(ano=2024, agregacao="mensal")
 ANDA publica dados em PDF. O layout pode mudar sem aviso entre anos.
 Os boletins de entregas disponíveis trazem apenas o total agregado de
 fertilizantes. Por isso, `produto="total"` é o único valor aceito;
-formulações como `ureia`, `map` ou `kcl` levantam `ValueError` antes do
+formulações como `ureia`, `map` ou `kcl` levantam `InvalidParameterError` antes do
 download.
 
 O parser do agrobr detecta automaticamente a orientacao das tabelas
@@ -60,7 +60,7 @@ concatenadas com `\n`). Mudancas drasticas de formato podem exigir
 atualizacao do parser.
 
 Não há fallback de ano. Se nenhum link de PDF corresponder ao ano solicitado,
-o client levanta `SourceUnavailableError` e informa os anos disponíveis no site.
+o client levanta `InvalidParameterError` e informa os anos disponíveis no site.
 No link selecionado, o ano real é extraído do texto do link ou do nome do arquivo
 e repassado ao parser.
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agrobr.exceptions import InvalidParameterError
+
 FERTILIZANTES_MAP: dict[str, str] = {
     "npk": "npk",
     "ureia": "ureia",
@@ -57,9 +59,11 @@ def normalize_fertilizante(nome: str) -> str:
 
 
 def resolve_produto(nome: str) -> str:
+    if not isinstance(nome, str):
+        raise InvalidParameterError("produto deve ser uma string")
     produto = normalize_fertilizante(nome)
     if produto != "total":
-        raise ValueError(
+        raise InvalidParameterError(
             f"A ANDA disponibiliza apenas entregas totais; produto {nome!r} não está disponível"
         )
     return produto

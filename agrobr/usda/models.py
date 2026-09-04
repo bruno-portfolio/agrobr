@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agrobr.exceptions import InvalidParameterError
+
 PSD_COMMODITIES: dict[str, str] = {
     "soja": "2222000",
     "soybeans": "2222000",
@@ -78,25 +80,27 @@ PSD_COLUMNS_MAP: dict[str, str] = {
 
 
 def resolve_commodity_code(nome: str) -> str:
+    if not isinstance(nome, str):
+        raise InvalidParameterError("commodity deve ser uma string")
     key = nome.strip().lower()
     if key in PSD_COMMODITIES:
         return PSD_COMMODITIES[key]
     if len(key) == 7 and key.isdigit():
         return key
-    raise ValueError(
-        f"Commodity desconhecida: '{nome}'. Opções: {list(dict.fromkeys(PSD_COMMODITIES.values()))}"
+    raise InvalidParameterError(
+        f"Commodity desconhecida: '{nome}'. Opções: {sorted(set(_COMMODITY_NAMES.values()))}"
     )
 
 
 def resolve_country_code(nome: str) -> str:
+    if not isinstance(nome, str):
+        raise InvalidParameterError("país deve ser uma string")
     key = nome.strip().lower()
     if key in PSD_COUNTRIES:
         return PSD_COUNTRIES[key]
     if len(key) <= 3:
         return key.upper()
-    raise ValueError(
-        f"País desconhecido: '{nome}'. Opções: {list(dict.fromkeys(PSD_COUNTRIES.values()))}"
-    )
+    raise InvalidParameterError(f"País desconhecido: '{nome}'. Opções: {sorted(PSD_COUNTRIES)}")
 
 
 def commodity_name(code: str) -> str:

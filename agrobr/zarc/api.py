@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import time
 from typing import Any, Literal, overload
 
@@ -16,6 +17,8 @@ from . import client, parser
 from .models import CULTURAS_ZARC, extract_safras
 
 logger = structlog.get_logger()
+
+_SAFRA_RE = re.compile(r"^(?:\d{4}/\d{4}|perene)$", re.IGNORECASE)
 
 _MAX_CACHED_SAFRAS = 2
 _cache: dict[str, tuple[pd.DataFrame, str]] = {}
@@ -73,6 +76,10 @@ async def zoneamento(
         solo: codigo tipo de solo (1-3 antigo, 11-16 novo 6-AD)
         ciclo: codigo ciclo cultivar (20, 21, 22, 24)
     """
+    if safra is not None and (not isinstance(safra, str) or not _SAFRA_RE.fullmatch(safra)):
+        raise InvalidParameterError(
+            "safra deve usar YYYY/YYYY ou 'perene', por exemplo '2025/2026'"
+        )
     if uf is not None:
         uf_upper = uf.upper()
         if uf_upper not in UFS_VALIDAS:

@@ -13,7 +13,12 @@ import pytest
 from agrobr import cepea, constants
 from agrobr.cepea import api
 from agrobr.cepea.client import FetchResult
-from agrobr.exceptions import ParseError, SourceUnavailableError, StaleDataWarning
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    SourceUnavailableError,
+    StaleDataWarning,
+)
 from agrobr.models import Indicador
 from agrobr.utils.warnings import warn_once_reset
 
@@ -323,6 +328,46 @@ class TestIndicador:
             df = await api.indicador("soja", force_refresh=True)
 
         assert df.empty
+        assert df.columns.tolist() == [
+            "data",
+            "produto",
+            "praca",
+            "valor",
+            "unidade",
+            "fonte",
+            "metodologia",
+            "anomalies",
+        ]
+
+    @pytest.mark.parametrize("produto", ["banana", 123])
+    async def test_invalid_product_raises_before_network(self, produto):
+        with (
+            patch(
+                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
+            ) as mock_fetch,
+            pytest.raises(InvalidParameterError, match="produto|Produto"),
+        ):
+            await api.indicador(produto)
+
+        mock_fetch.assert_not_awaited()
+
+    async def test_product_whitespace_is_normalized(self):
+        await api.indicador(" soja ", offline=True)
+
+        assert self.mock_store.indicadores_query.call_args.kwargs["produto"] == "soja"
+
+    async def test_invalid_praca_raises_before_network(self):
+        with pytest.raises(InvalidParameterError, match="Praça inválida"):
+            await api.indicador("soja", praca="marte")
+
+    @pytest.mark.parametrize("value", ["2025-13-01", "01/01/2025"])
+    async def test_invalid_date_format_raises(self, value):
+        with pytest.raises(InvalidParameterError, match="YYYY-MM-DD"):
+            await api.indicador("soja", inicio=value)
+
+    async def test_reverse_date_range_raises(self):
+        with pytest.raises(InvalidParameterError, match="inicio"):
+            await api.indicador("soja", inicio="2025-02-01", fim="2025-01-01")
 
     async def test_offline_mode_never_fetches(self):
         with patch(
@@ -456,13 +501,21 @@ class TestUltimo:
 
         assert result.praca == "Paranaguá/PR"
 
-    async def test_praca_filter_no_match_raises(self):
+    async def test_valid_praca_filter_no_match_raises(self):
         today = date.today()
         ind = _make_indicador(data=today - timedelta(days=1), praca="parana")
         self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
 
         with pytest.raises(ParseError, match="No indicators found"):
-            await api.ultimo("soja", praca="campinas", offline=True)
+            await api.ultimo("soja", praca="paranagua", offline=True)
+
+    async def test_invalid_product_and_praca_raise_before_cache(self):
+        with pytest.raises(InvalidParameterError, match="Produto inválido"):
+            await api.ultimo("banana", offline=True)
+        with pytest.raises(InvalidParameterError, match="Praça inválida"):
+            await api.ultimo("soja", praca="marte", offline=True)
+
+        self.mock_store.indicadores_query.assert_not_called()
 
     async def test_fetches_when_no_recent_data(self):
         today = date.today()
@@ -555,3 +608,16 @@ class TestUltimo:
 
         mock_fetch.assert_not_awaited()
         assert result.data == ind.data
+
+
+class TestToDataframeVazio:
+    def test_vazio_preserva_colunas_e_dtypes_do_contrato(self):
+        from agrobr.contracts import validate_dataset
+
+        df = api._to_dataframe([])
+
+        assert df.empty
+        assert list(df.columns)[:6] == ["data", "produto", "praca", "valor", "unidade", "fonte"]
+        assert pd.api.types.is_datetime64_any_dtype(df["data"])
+        assert pd.api.types.is_float_dtype(df["valor"])
+        validate_dataset(df, "preco_diario")

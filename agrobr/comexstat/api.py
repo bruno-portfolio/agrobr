@@ -6,9 +6,11 @@ from typing import Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.time import utcnow
+from agrobr.utils.validation import validate_uf
 
 from . import client
 from .models import resolve_ncm
@@ -32,6 +34,11 @@ async def _fetch_comexstat(
     if ano is None:
         ano = utcnow().year - 1
         logger.info("comexstat_default_ano", ano=ano)
+    if not isinstance(ano, int) or isinstance(ano, bool) or not 1997 <= ano <= utcnow().year:
+        raise InvalidParameterError(f"ano deve estar entre 1997 e {utcnow().year}")
+    uf = validate_uf(uf)
+    if agregacao not in {"mensal", "detalhado"}:
+        raise InvalidParameterError("agregacao deve ser 'mensal' ou 'detalhado'")
 
     ncm = resolve_ncm(produto)
 
