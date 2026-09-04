@@ -20,7 +20,7 @@ def _make_municipal_xlsx() -> bytes:
     data = {
         "biome": ["Amazônia", "Amazônia", "Cerrado", "Cerrado"],
         "state": ["Pará", "Pará", "Goiás", "Goiás"],
-        "municipality": ["Belém", "Marabá", "Goiânia", "Anápolis"],
+        "municipality": ["Belém", "Marabá", "Goiânia", "Anápolis (GO)"],
         "class": [3, 15, 3, 15],
         "class_level_0": ["Natural", "Antropic", "Natural", "Antropic"],
         2020: [100.0, 200.0, 150.0, 250.0],
@@ -238,6 +238,19 @@ class TestCoberturaMunicipal:
 
         assert len(df) >= 1
         assert (df["municipio"].str.contains("Belém")).all()
+
+    @pytest.mark.asyncio
+    async def test_filter_municipio_literal(self):
+        xlsx_bytes = _make_municipal_xlsx()
+        with patch.object(
+            api.client,
+            "fetch_biome_state_municipality",
+            new_callable=AsyncMock,
+            return_value=(xlsx_bytes, "https://data.mapbiomas.org/test_mun.xlsx"),
+        ):
+            df = await api.cobertura(nivel="municipio", municipio="Anápolis (GO)")
+
+        assert set(df["municipio"]) == {"Anápolis (GO)"}
 
     @pytest.mark.asyncio
     async def test_filter_municipio_combined(self):

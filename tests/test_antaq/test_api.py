@@ -121,6 +121,15 @@ class TestMovimentacao:
         assert df["porto"].str.contains("Santos", case=False, na=False).all()
 
     @pytest.mark.asyncio
+    async def test_filter_porto_literal(self):
+        source = pd.DataFrame({"porto": ["Terminal (Sul)", "Terminal Sul"]})
+        p1, p2 = _patch_client()
+        with p1, p2, patch.object(api.parser, "join_movimentacao", return_value=source):
+            df = await api.movimentacao(2024, porto="Terminal (Sul)")
+
+        assert df["porto"].tolist() == ["Terminal (Sul)"]
+
+    @pytest.mark.asyncio
     async def test_filter_uf(self):
         p1, p2 = _patch_client()
         with p1, p2:

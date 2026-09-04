@@ -112,14 +112,18 @@ async def cobertura(
         if bioma_norm in BIOMAS_VALIDOS:
             df = df[df["bioma"] == bioma_norm].reset_index(drop=True)
         else:
-            df = df[df["bioma"].str.lower().str.contains(bioma.lower())].reset_index(drop=True)
+            df = df[
+                df["bioma"].str.lower().str.contains(bioma.lower(), na=False, regex=False)
+            ].reset_index(drop=True)
 
     if estado is not None:
         df = df[df["estado"] == estado].reset_index(drop=True)
 
     if municipio is not None and "municipio" in df.columns:
         mun_lower = municipio.strip().lower()
-        df = df[df["municipio"].str.lower().str.contains(mun_lower)].reset_index(drop=True)
+        df = df[
+            df["municipio"].str.lower().str.contains(mun_lower, na=False, regex=False)
+        ].reset_index(drop=True)
 
     if ano is not None:
         df = df[df["ano"] == ano].reset_index(drop=True)
@@ -199,7 +203,9 @@ async def transicao(
         if bioma_norm in BIOMAS_VALIDOS:
             df = df[df["bioma"] == bioma_norm].reset_index(drop=True)
         else:
-            df = df[df["bioma"].str.lower().str.contains(bioma.lower())].reset_index(drop=True)
+            df = df[
+                df["bioma"].str.lower().str.contains(bioma.lower(), na=False, regex=False)
+            ].reset_index(drop=True)
 
     if estado is not None:
         df = df[df["estado"] == estado].reset_index(drop=True)

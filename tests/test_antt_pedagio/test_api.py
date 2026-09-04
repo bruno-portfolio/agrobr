@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 
 from agrobr.alt.antt_pedagio.api import (
+    _filtrar_fluxo,
     fluxo_pedagio,
     pracas_pedagio,
 )
@@ -37,6 +38,21 @@ PRACAS_CSV = (
 
 
 class TestFluxoPedagio:
+    def test_filter_concessionaria_literal(self):
+        source = pd.DataFrame({"concessionaria": ["CCR (Sul)", "CCR Sul"], "n_eixos": [2, 2]})
+
+        df = _filtrar_fluxo(
+            source,
+            concessionaria="CCR (Sul)",
+            praca=None,
+            rodovia=None,
+            uf=None,
+            tipo_veiculo=None,
+            apenas_pesados=False,
+        )
+
+        assert df["concessionaria"].tolist() == ["CCR (Sul)"]
+
     @pytest.mark.asyncio
     async def test_basic_call(self):
         with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:

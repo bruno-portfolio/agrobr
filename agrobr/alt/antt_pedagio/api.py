@@ -64,7 +64,7 @@ def _filtrar_fluxo(
         if not valor or col not in df_out.columns:
             continue
         if modo == "contains":
-            df_out = df_out[df_out[col].str.contains(valor, case=False, na=False)]
+            df_out = df_out[df_out[col].str.contains(valor, case=False, na=False, regex=False)]
         elif modo == "upper_eq":
             df_out = df_out[df_out[col].str.upper() == valor.upper()]
         else:
@@ -162,7 +162,7 @@ async def pracas_pedagio(
         df = df[mask]
 
     if situacao and "situacao" in df.columns:
-        mask = df["situacao"].str.contains(situacao, case=False, na=False)
+        mask = df["situacao"].str.contains(situacao, case=False, na=False, regex=False)
         df = df[mask]
 
     df = df.reset_index(drop=True)

@@ -124,7 +124,7 @@ async def zoneamento(
         if isinstance(municipio, int) or (isinstance(municipio, str) and municipio.isdigit()):
             df = df[df["geocodigo"] == str(municipio)]
         else:
-            df = df[df["municipio"].str.contains(str(municipio), case=False, na=False)]
+            df = df[df["municipio"].str.contains(str(municipio), case=False, na=False, regex=False)]
     if solo is not None:
         df = df[df["solo_codigo"] == solo]
     if ciclo is not None:

@@ -171,7 +171,7 @@ def _filter_apolices(
         df = df[df["ano_apolice"] == ano]
 
     if municipio and "municipio" in df.columns:
-        mask = df["municipio"].str.contains(municipio.upper(), na=False)
+        mask = df["municipio"].str.contains(municipio.upper(), na=False, regex=False)
         df = df[mask]
 
     return df
@@ -225,7 +225,7 @@ def parse_sinistros(
         df = df[mask_evento]
 
     if evento and "evento" in df.columns:
-        mask = df["evento"].str.contains(evento.lower(), na=False)
+        mask = df["evento"].str.contains(evento.lower(), na=False, regex=False)
         df = df[mask]
 
     from agrobr.alt.mapa_psr.models import COLUNAS_SINISTROS

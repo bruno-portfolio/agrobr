@@ -88,21 +88,31 @@ async def formulados(
     df = df.copy()
 
     if ingrediente_ativo is not None:
-        df = df[df["ingrediente_ativo"].str.contains(ingrediente_ativo, case=False, na=False)]
+        df = df[
+            df["ingrediente_ativo"].str.contains(
+                ingrediente_ativo, case=False, na=False, regex=False
+            )
+        ]
     if classe_toxicologica is not None:
-        df = df[df["classe_toxicologica"].str.contains(classe_toxicologica, case=False, na=False)]
+        df = df[
+            df["classe_toxicologica"].str.contains(
+                classe_toxicologica, case=False, na=False, regex=False
+            )
+        ]
     if classe_ambiental is not None:
-        df = df[df["classe_ambiental"].str.contains(classe_ambiental, case=False, na=False)]
+        df = df[
+            df["classe_ambiental"].str.contains(classe_ambiental, case=False, na=False, regex=False)
+        ]
     if titular is not None:
-        df = df[df["titular"].str.contains(titular, case=False, na=False)]
+        df = df[df["titular"].str.contains(titular, case=False, na=False, regex=False)]
     if organicos is not None:
         df = df[df["organicos"] == organicos]
     if marca is not None:
-        df = df[df["marca_comercial"].str.contains(marca, case=False, na=False)]
+        df = df[df["marca_comercial"].str.contains(marca, case=False, na=False, regex=False)]
     if formulacao is not None:
-        df = df[df["formulacao"].str.contains(formulacao, case=False, na=False)]
+        df = df[df["formulacao"].str.contains(formulacao, case=False, na=False, regex=False)]
     if classe is not None:
-        df = df[df["classe"].str.contains(classe, case=False, na=False)]
+        df = df[df["classe"].str.contains(classe, case=False, na=False, regex=False)]
 
     df = df.reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)
@@ -163,11 +173,15 @@ async def autorizacoes(
     if nr_registro is not None:
         df = df[df["nr_registro"] == nr_registro]
     if cultura is not None:
-        df = df[df["cultura"].str.contains(cultura, case=False, na=False)]
+        df = df[df["cultura"].str.contains(cultura, case=False, na=False, regex=False)]
     if ingrediente_ativo is not None:
-        df = df[df["ingrediente_ativo"].str.contains(ingrediente_ativo, case=False, na=False)]
+        df = df[
+            df["ingrediente_ativo"].str.contains(
+                ingrediente_ativo, case=False, na=False, regex=False
+            )
+        ]
     if classe is not None:
-        df = df[df["classe"].str.contains(classe, case=False, na=False)]
+        df = df[df["classe"].str.contains(classe, case=False, na=False, regex=False)]
 
     df = df.reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)
@@ -238,13 +252,17 @@ async def tecnicos(
     df = df.copy()
 
     if ingrediente_ativo is not None:
-        df = df[df["ingrediente_ativo"].str.contains(ingrediente_ativo, case=False, na=False)]
+        df = df[
+            df["ingrediente_ativo"].str.contains(
+                ingrediente_ativo, case=False, na=False, regex=False
+            )
+        ]
     if titular is not None:
-        df = df[df["titular"].str.contains(titular, case=False, na=False)]
+        df = df[df["titular"].str.contains(titular, case=False, na=False, regex=False)]
     if classe is not None:
-        df = df[df["classe"].str.contains(classe, case=False, na=False)]
+        df = df[df["classe"].str.contains(classe, case=False, na=False, regex=False)]
     if marca is not None:
-        df = df[df["marca_comercial"].str.contains(marca, case=False, na=False)]
+        df = df[df["marca_comercial"].str.contains(marca, case=False, na=False, regex=False)]
 
     df = df.reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)

@@ -299,6 +299,11 @@ class TestParseApolices:
         df = parse_apolices(csv_bytes, municipio="SORRISO")
         assert len(df) == 1
 
+    def test_filtro_municipio_literal(self):
+        csv_bytes = _make_csv().replace(b"SORRISO", b"SORRISO (NORTE)")
+        df = parse_apolices(csv_bytes, municipio="SORRISO (NORTE)")
+        assert df["municipio"].tolist() == ["SORRISO (NORTE)"]
+
     def test_csv_vazio_raise(self):
         csv_bytes = b""
         with pytest.raises(ParseError):

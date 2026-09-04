@@ -73,7 +73,9 @@ async def progresso_safra(
         if cultura_norm in CULTURAS_VALIDAS:
             df = df[df["cultura"] == cultura_norm].reset_index(drop=True)
         else:
-            df = df[df["cultura"].str.lower().str.contains(cultura.lower())].reset_index(drop=True)
+            df = df[
+                df["cultura"].str.lower().str.contains(cultura.lower(), na=False, regex=False)
+            ].reset_index(drop=True)
 
     if estado is not None:
         estado_upper = estado.strip().upper()

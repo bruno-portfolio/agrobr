@@ -75,6 +75,20 @@ class TestZoneamento:
         assert (df["geocodigo"] == "5103403").all()
 
     @pytest.mark.asyncio
+    async def test_zoneamento_filter_municipio_literal(self):
+        cached = pd.DataFrame(
+            {
+                "municipio": ["Vila (Nova)", "Vila Nova"],
+                "geocodigo": ["1", "2"],
+            }
+        )
+        api._cache["2025/2026"] = (cached, "https://x/25.csv")
+
+        df = await api.zoneamento(safra="2025/2026", municipio="Vila (Nova)")
+
+        assert df["municipio"].tolist() == ["Vila (Nova)"]
+
+    @pytest.mark.asyncio
     async def test_zoneamento_default_safra_latest(self):
         with patch.object(
             api.client, "discover_resources", new_callable=AsyncMock

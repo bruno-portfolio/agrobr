@@ -66,3 +66,21 @@ async def test_safras_disponiveis():
     assert isinstance(safras, list)
     assert len(safras) >= 2
     assert "2025/2026" in safras
+
+
+@pytest.mark.asyncio
+async def test_ensaio_soja_filter_empresa_literal():
+    source = pd.DataFrame({"empresa": ["Sementes (Brasil)", "Sementes Brasil"]})
+    with (
+        patch(
+            "agrobr.rio_verde.client.fetch_ensaio_soja",
+            new_callable=AsyncMock,
+            return_value=(b"pdf", "https://example.com"),
+        ),
+        patch("agrobr.rio_verde.parser.parse_ensaio_soja", return_value=source),
+    ):
+        from agrobr.rio_verde import ensaio_soja
+
+        df = await ensaio_soja("2025/2026", empresa="Sementes (Brasil)")
+
+    assert df["empresa"].tolist() == ["Sementes (Brasil)"]

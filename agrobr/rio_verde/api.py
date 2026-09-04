@@ -63,9 +63,9 @@ async def ensaio_soja(
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if cultivar is not None:
-        df = df[df["cultivar"].str.contains(cultivar, case=False, na=False)]
+        df = df[df["cultivar"].str.contains(cultivar, case=False, na=False, regex=False)]
     if empresa is not None:
-        df = df[df["empresa"].str.contains(empresa, case=False, na=False)]
+        df = df[df["empresa"].str.contains(empresa, case=False, na=False, regex=False)]
 
     df = df.reset_index(drop=True)
 

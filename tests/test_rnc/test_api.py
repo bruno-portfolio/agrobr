@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
+from agrobr.rnc import api
 from agrobr.rnc import cache as rnc_cache
 
 GOLDEN_DIR = Path(__file__).resolve().parent.parent / "golden_data" / "rnc"
@@ -142,6 +143,17 @@ async def test_registradas_filter_mantenedor():
         df = await registradas(mantenedor="IAC")
         assert len(df) > 0
         assert all("IAC" in v for v in df["mantenedor"].values)
+
+
+@pytest.mark.asyncio
+async def test_registradas_filter_mantenedor_literal():
+    source = pd.DataFrame({"mantenedor": ["BASF S/A", "BASF S.A"]})
+    cached = AsyncMock(return_value=(0, "https://example.com/registradas.csv", source))
+
+    with patch.object(api, "_ensure_registradas", cached):
+        df = await api.registradas(mantenedor="BASF S.A")
+
+    assert df["mantenedor"].tolist() == ["BASF S.A"]
 
 
 @pytest.mark.asyncio

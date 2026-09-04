@@ -65,6 +65,20 @@ class TestProgressoSafra:
         df = await progresso_safra(cultura="soja")
         assert all(df["cultura"] == "Soja")
 
+    async def test_filter_cultura_tolerates_null(self, golden_xlsx: bytes) -> None:
+        source = pd.DataFrame({"cultura": [pd.NA, "Cultura (Nova)"]})
+        with (
+            patch(
+                "agrobr.conab.progresso.client.fetch_latest",
+                new_callable=AsyncMock,
+                return_value=(golden_xlsx, "https://example.com", "Semana"),
+            ),
+            patch("agrobr.conab.progresso.parser.parse_progresso_xlsx", return_value=source),
+        ):
+            df = await progresso_safra(cultura="Cultura (Nova)")
+
+        assert df["cultura"].tolist() == ["Cultura (Nova)"]
+
     async def test_filter_estado(self, mock_fetch_latest: AsyncMock) -> None:  # noqa: ARG002
         df = await progresso_safra(estado="MT")
         assert all(df["estado"] == "MT")

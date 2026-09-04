@@ -66,6 +66,21 @@ class TestFormulados:
         assert all("GLIFOSATO" in str(v).upper() for v in df["ingrediente_ativo"])
 
     @pytest.mark.asyncio
+    async def test_filter_ingrediente_ativo_literal(self):
+        form_df = pd.DataFrame(
+            {
+                "ingrediente_ativo": ["2,4-D (sal dimetilamina", "2,4-D sal dimetilamina"],
+            }
+        )
+        cached = AsyncMock(
+            return_value=(0, "https://example.com/formulados.csv", form_df, pd.DataFrame())
+        )
+        with patch.object(api, "_ensure_formulados_cached", cached):
+            df = await api.formulados(ingrediente_ativo="2,4-D (sal")
+
+        assert df["ingrediente_ativo"].tolist() == ["2,4-D (sal dimetilamina"]
+
+    @pytest.mark.asyncio
     async def test_filter_organicos(self):
         df = await api.formulados(organicos="SIM")
         assert len(df) >= 1

@@ -80,6 +80,24 @@ async def test_mapa_solos_filter_ordem():
 
 
 @pytest.mark.asyncio
+async def test_mapa_solos_filter_ordem_literal():
+    source = pd.DataFrame({"ordem1": ["Classe (Nova)", "Classe Nova"]})
+    with (
+        patch(
+            "agrobr.embrapa_solos.client.fetch_mapa_solos",
+            new_callable=AsyncMock,
+            return_value=([b"csv"], "https://example.com"),
+        ),
+        patch("agrobr.embrapa_solos.parser.parse_mapa_csv", return_value=source),
+    ):
+        from agrobr.embrapa_solos import mapa_solos
+
+        df = await mapa_solos(ordem="Classe (Nova)")
+
+    assert df["ordem1"].tolist() == ["Classe (Nova)"]
+
+
+@pytest.mark.asyncio
 async def test_perfis_uf_filter_post_download():
     with patch("agrobr.embrapa_solos.client.fetch_perfis", new_callable=AsyncMock) as mock:
         mock.return_value = (_perfis_pages(), "https://example.com")

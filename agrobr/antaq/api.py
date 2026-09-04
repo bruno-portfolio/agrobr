@@ -107,10 +107,10 @@ async def movimentacao(
         df = df[df["natureza_carga"] == nat_carga_filtro]
 
     if mercadoria and "mercadoria" in df.columns:
-        df = df[df["mercadoria"].str.contains(mercadoria, case=False, na=False)]
+        df = df[df["mercadoria"].str.contains(mercadoria, case=False, na=False, regex=False)]
 
     if porto and "porto" in df.columns:
-        df = df[df["porto"].str.contains(porto, case=False, na=False)]
+        df = df[df["porto"].str.contains(porto, case=False, na=False, regex=False)]
 
     if uf and "uf" in df.columns:
         df = df[df["uf"].str.upper() == uf.strip().upper()]

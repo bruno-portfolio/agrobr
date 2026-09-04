@@ -179,7 +179,9 @@ async def mapa_solos(
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if ordem is not None and not df.empty:
-        df = df[df["ordem1"].str.contains(ordem, case=False, na=False)].reset_index(drop=True)
+        df = df[df["ordem1"].str.contains(ordem, case=False, na=False, regex=False)].reset_index(
+            drop=True
+        )
 
     meta = build_source_meta(
         "embrapa_solos",
@@ -233,7 +235,9 @@ async def mapa_solos_geo(
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if ordem is not None and not gdf.empty:
-        gdf = gdf[gdf["ordem1"].str.contains(ordem, case=False, na=False)].reset_index(drop=True)
+        gdf = gdf[gdf["ordem1"].str.contains(ordem, case=False, na=False, regex=False)].reset_index(
+            drop=True
+        )
 
     if return_meta:
         meta = build_source_meta(

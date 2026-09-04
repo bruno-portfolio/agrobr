@@ -95,15 +95,15 @@ async def registradas(
     df = df.copy()
 
     if cultivar is not None:
-        df = df[df["cultivar"].str.contains(cultivar, case=False, na=False)]
+        df = df[df["cultivar"].str.contains(cultivar, case=False, na=False, regex=False)]
     if especie is not None:
-        df = df[df["nome_comum"].str.contains(especie, case=False, na=False)]
+        df = df[df["nome_comum"].str.contains(especie, case=False, na=False, regex=False)]
     if grupo is not None:
-        df = df[df["grupo"].str.contains(grupo, case=False, na=False)]
+        df = df[df["grupo"].str.contains(grupo, case=False, na=False, regex=False)]
     if situacao is not None:
-        df = df[df["situacao"].str.contains(situacao, case=False, na=False)]
+        df = df[df["situacao"].str.contains(situacao, case=False, na=False, regex=False)]
     if mantenedor is not None:
-        df = df[df["mantenedor"].str.contains(mantenedor, case=False, na=False)]
+        df = df[df["mantenedor"].str.contains(mantenedor, case=False, na=False, regex=False)]
 
     df = df.reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)
@@ -164,13 +164,13 @@ async def protegidas(
     df = df.copy()
 
     if cultivar is not None:
-        df = df[df["cultivar"].str.contains(cultivar, case=False, na=False)]
+        df = df[df["cultivar"].str.contains(cultivar, case=False, na=False, regex=False)]
     if especie is not None:
-        df = df[df["nome_comum"].str.contains(especie, case=False, na=False)]
+        df = df[df["nome_comum"].str.contains(especie, case=False, na=False, regex=False)]
     if situacao is not None:
-        df = df[df["situacao"].str.contains(situacao, case=False, na=False)]
+        df = df[df["situacao"].str.contains(situacao, case=False, na=False, regex=False)]
     if titular is not None:
-        df = df[df["titular"].str.contains(titular, case=False, na=False)]
+        df = df[df["titular"].str.contains(titular, case=False, na=False, regex=False)]
 
     df = df.reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)
