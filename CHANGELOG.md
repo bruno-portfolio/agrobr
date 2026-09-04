@@ -17,6 +17,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **anp_diesel** — planilhas de preços municipais usam calamine como engine primária, com openpyxl como fallback, e os períodos necessários são baixados e processados concorrentemente com limite de três operações
 
 ### Changed
+- **limpeza** — os módulos `quality`, `sla`, `export`, `plugins` e `validators.semantic`, nunca documentados, nunca exportados em `agrobr` e sem uso interno, foram removidos; `validators.validate_safra` e `SAFRA_RULES`, também sem consumidores de produção, foram eliminados junto com seus testes autocontidos
 - **bcb.credito_rural** — contrato atualizado de 1.1 para 2.0 e alinhado às saídas reais do SICOR: agregação padrão por UF, opção por programa, 11 colunas documentadas e remoção de `volume` e das dimensões que não pertenciam à saída; `agregacao="municipio"` agora é rejeitada com orientação para o extra `agrobr[bigquery]`
 - **deral** — `produto` preserva a distinção entre primeira e segunda safra de feijão e milho (`feijao_1`, `feijao_2`, `milho_1`, `milho_2`), eliminando combinações ambíguas na chave primária
 - **estimativa_safra** — contrato `conab.safras` atualizado de 1.0 para 2.0: `levantamento` e `data_publicacao` passam a opcionais e ficam nulos quando a fonte é o IBGE LSPA

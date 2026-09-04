@@ -240,36 +240,6 @@ def run_contract_benchmarks(iterations: int = 100) -> BenchmarkSuite:
     return suite
 
 
-def run_semantic_benchmarks(iterations: int = 50) -> BenchmarkSuite:
-    import pandas as pd
-
-    from agrobr.validators.semantic import validate_semantic
-
-    suite = BenchmarkSuite(name="semantic_validation_benchmarks")
-
-    df = pd.DataFrame(
-        {
-            "data": pd.date_range("2024-01-01", periods=100),
-            "valor": [150.0 + i * 0.5 for i in range(100)],
-            "produto": ["soja"] * 100,
-            "produtividade": [3500.0] * 100,
-            "area_plantada": [1000.0] * 100,
-            "area_colhida": [950.0] * 100,
-            "safra": ["2024/25"] * 100,
-        }
-    )
-
-    result = benchmark_sync(
-        "validate_semantic(100 rows)",
-        validate_semantic,
-        iterations=iterations,
-        df=df,
-    )
-    suite.add_result(result)
-
-    return suite
-
-
 __all__ = [
     "BenchmarkResult",
     "BenchmarkSuite",
@@ -277,5 +247,4 @@ __all__ = [
     "benchmark_sync",
     "run_api_benchmarks",
     "run_contract_benchmarks",
-    "run_semantic_benchmarks",
 ]

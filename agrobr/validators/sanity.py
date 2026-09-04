@@ -7,7 +7,7 @@ from typing import Any
 import structlog
 
 from agrobr.exceptions import ValidationError
-from agrobr.models import Indicador, Safra
+from agrobr.models import Indicador
 
 logger = structlog.get_logger()
 
@@ -85,37 +85,6 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_daily_change_pct=Decimal("10"),
         description="Algodão (BRL/@)",
     ),
-}
-
-SAFRA_RULES: dict[str, dict[str, SanityRule]] = {
-    "soja": {
-        "area_plantada": SanityRule(
-            field="area_plantada",
-            min_value=Decimal("20000"),
-            max_value=Decimal("50000"),
-            description="Área plantada soja Brasil (mil ha)",
-        ),
-        "producao": SanityRule(
-            field="producao",
-            min_value=Decimal("50000"),
-            max_value=Decimal("200000"),
-            description="Produção soja Brasil (mil ton)",
-        ),
-    },
-    "milho": {
-        "area_plantada": SanityRule(
-            field="area_plantada",
-            min_value=Decimal("10000"),
-            max_value=Decimal("30000"),
-            description="Área plantada milho Brasil (mil ha)",
-        ),
-        "producao": SanityRule(
-            field="producao",
-            min_value=Decimal("50000"),
-            max_value=Decimal("150000"),
-            description="Produção milho Brasil (mil ton)",
-        ),
-    },
 }
 
 
@@ -202,43 +171,6 @@ def validate_indicador(
         )
     else:
         logger.debug("sanity_check_passed", produto=indicador.produto)
-
-    return anomalies
-
-
-def validate_safra(safra: Safra) -> list[AnomalyReport]:
-    anomalies: list[AnomalyReport] = []
-    rules = SAFRA_RULES.get(safra.produto.lower(), {})
-
-    for field_name, rule in rules.items():
-        value = getattr(safra, field_name)
-
-        if value is None:
-            continue
-
-        if rule.min_value and value < rule.min_value:
-            anomalies.append(
-                AnomalyReport(
-                    field=field_name,
-                    value=value,
-                    expected_range=f"[{rule.min_value}, {rule.max_value}]",
-                    anomaly_type="out_of_range",
-                    severity="critical",
-                    details={"rule": rule.description},
-                )
-            )
-
-        if rule.max_value and value > rule.max_value:
-            anomalies.append(
-                AnomalyReport(
-                    field=field_name,
-                    value=value,
-                    expected_range=f"[{rule.min_value}, {rule.max_value}]",
-                    anomaly_type="out_of_range",
-                    severity="critical",
-                    details={"rule": rule.description},
-                )
-            )
 
     return anomalies
 

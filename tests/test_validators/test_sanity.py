@@ -8,12 +8,11 @@ from decimal import Decimal
 import pytest
 
 from agrobr.constants import Fonte
-from agrobr.models import Indicador, Safra
+from agrobr.models import Indicador
 from agrobr.validators.sanity import (
     PRICE_RULES,
     validate_batch,
     validate_indicador,
-    validate_safra,
 )
 
 
@@ -139,88 +138,6 @@ class TestSanityValidation:
         assert rule.max_daily_change_pct == Decimal("10")
         assert rule.description == "Bezerro MS (BRL/cabeca)"
         assert validate_indicador(indicador) == []
-
-
-class TestValidateSafra:
-    def test_valid_soja_safra(self):
-        safra = Safra(
-            fonte=Fonte.CONAB,
-            produto="soja",
-            safra="2024/25",
-            area_plantada=Decimal("35000"),
-            producao=Decimal("120000"),
-            produtividade=Decimal("3500"),
-            unidade_area="mil_ha",
-            unidade_producao="mil_ton",
-            levantamento=1,
-            data_publicacao=date(2024, 1, 1),
-        )
-        anomalies = validate_safra(safra)
-        assert len(anomalies) == 0
-
-    def test_area_below_min(self):
-        safra = Safra(
-            fonte=Fonte.CONAB,
-            produto="soja",
-            safra="2024/25",
-            area_plantada=Decimal("100"),
-            producao=Decimal("120000"),
-            produtividade=Decimal("3500"),
-            unidade_area="mil_ha",
-            unidade_producao="mil_ton",
-            levantamento=1,
-            data_publicacao=date(2024, 1, 1),
-        )
-        anomalies = validate_safra(safra)
-        assert len(anomalies) >= 1
-        assert any(a.anomaly_type == "out_of_range" for a in anomalies)
-
-    def test_producao_above_max(self):
-        safra = Safra(
-            fonte=Fonte.CONAB,
-            produto="soja",
-            safra="2024/25",
-            area_plantada=Decimal("35000"),
-            producao=Decimal("999999"),
-            produtividade=Decimal("3500"),
-            unidade_area="mil_ha",
-            unidade_producao="mil_ton",
-            levantamento=1,
-            data_publicacao=date(2024, 1, 1),
-        )
-        anomalies = validate_safra(safra)
-        assert len(anomalies) >= 1
-
-    def test_none_values_skipped(self):
-        safra = Safra(
-            fonte=Fonte.CONAB,
-            produto="soja",
-            safra="2024/25",
-            area_plantada=None,
-            producao=None,
-            produtividade=None,
-            unidade_area="mil_ha",
-            unidade_producao="mil_ton",
-            levantamento=1,
-            data_publicacao=date(2024, 1, 1),
-        )
-        anomalies = validate_safra(safra)
-        assert len(anomalies) == 0
-
-    def test_unknown_product_no_rules(self):
-        safra = Safra(
-            fonte=Fonte.CONAB,
-            produto="quinoa",
-            safra="2024/25",
-            area_plantada=Decimal("1"),
-            producao=Decimal("1"),
-            unidade_area="mil_ha",
-            unidade_producao="mil_ton",
-            levantamento=1,
-            data_publicacao=date(2024, 1, 1),
-        )
-        anomalies = validate_safra(safra)
-        assert len(anomalies) == 0
 
 
 class TestValidateBatch:

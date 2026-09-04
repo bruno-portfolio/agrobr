@@ -7,7 +7,6 @@ from .sanity import (
     SanityRule,
     validate_batch,
     validate_indicador,
-    validate_safra,
 )
 from .structural import (
     StructuralValidationResult,
@@ -23,7 +22,6 @@ __all__: list[str] = [
     "SanityRule",
     "validate_batch",
     "validate_indicador",
-    "validate_safra",
     "StructuralValidationResult",
     "validate_structure",
     "validate_against_baseline",
