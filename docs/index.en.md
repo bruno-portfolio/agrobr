@@ -59,7 +59,7 @@ Ask for what you want; the source is an internal detail:
 | `abate_trimestral` | Slaughter of cattle, hogs and poultry by state | IBGE Slaughter |
 | `balanco` | Supply/demand balance | CONAB |
 | `cadastro_rural` | Rural Environmental Registry (rural properties) | SICAR/GeoServer WFS |
-| `censo_agropecuario` | Agricultural Census 1995/2006/2017 (10 themes) | IBGE Agri Census |
+| `censo_agropecuario` | Agricultural Census 1995/2006/2017 (11 themes) | IBGE Agri Census |
 | `censo_agropecuario_historico` | Agricultural Census historical series 1920-2006 (9 themes) | IBGE SIDRA |
 | `censo_agropecuario_legado` | Agricultural Census 1995/96 — 6 legacy themes | IBGE FTP |
 | `censo_agropecuario_municipal_1985` | 1985 municipal census — 53 themes via OCR (22 states) | IBGE PDFs |

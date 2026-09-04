@@ -75,6 +75,7 @@ plugins:
             ICMBio UCs Federais: ICMBio Federal Conservation Units
             Acervo Fundiário/INCRA: Land Registry/INCRA
             IBAMA Embargos: IBAMA Environmental Embargoes
+            Embarques ANEC: ANEC Shipments
   - mkdocstrings:
       handlers:
         python:
@@ -119,6 +120,7 @@ nav:
     - credito_rural: contracts/credito_rural.md
     - custo_producao: contracts/custo_producao.md
     - desmatamento: contracts/desmatamento.md
+    - embarques_anec: contracts/embarques_anec.md
     - estimativa_safra: contracts/estimativa_safra.md
     - exportacao: contracts/exportacao.md
     - extrativismo_vegetal: contracts/extrativismo_vegetal.md
@@ -153,6 +155,7 @@ nav:
     - ComexStat: api/comexstat.md
     - ANDA: api/anda.md
     - ABIOVE: api/abiove.md
+    - Embarques ANEC: api/anec.md
     - USDA PSD: api/usda.md
     - IMEA: api/imea.md
     - DERAL: api/deral.md

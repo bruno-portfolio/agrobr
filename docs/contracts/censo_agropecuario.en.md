@@ -10,7 +10,7 @@ Agricultural Census 1995/2006/2017 data by theme, state and territorial level.
 
 ## Themes
 
-`efetivo_rebanho`, `uso_terra`, `lavoura_temporaria`, `lavoura_permanente`, `preparo_solo`, `adubacao`, `calagem`, `agrotoxicos`, `praticas_agricolas`, `irrigacao`
+`efetivo_rebanho`, `uso_terra`, `lavoura_temporaria`, `lavoura_permanente`, `preparo_solo`, `adubacao`, `calagem`, `agrotoxicos`, `praticas_agricolas`, `irrigacao`, `despesa_adubos`
 
 ### Temporal coverage by theme
 
@@ -26,6 +26,7 @@ Agricultural Census 1995/2006/2017 data by theme, state and territorial level.
 | `agrotoxicos` | — | ✅ | ✅ |
 | `praticas_agricolas` | — | ✅ | ✅ |
 | `irrigacao` | — | ✅ | ✅ |
+| `despesa_adubos` | — | — | ✅ |
 
 ## Schema
 

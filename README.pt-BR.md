@@ -132,7 +132,7 @@ df = await ibge.abate('frango', trimestre='202303', uf='PR')
 # Censo Agropecuário — 1995/2006/2017 + série histórica 1920-2006 + 1985 municipal
 df = await ibge.censo_agro('efetivo_rebanho')
 df = await ibge.censo_agro_historico('estabelecimentos_area')
-df = await ibge.censo_agro_municipal_1985('bovinos', uf='SP')
+df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', uf='SP')
 ```
 
 | Fonte | Função carro-chefe | Doc |
@@ -145,7 +145,7 @@ df = await ibge.censo_agro_municipal_1985('bovinos', uf='SP')
 | **ABIOVE** complexo soja | `abiove.exportacao(ano=2024, produto='grao')` | [docs/sources/abiove.md](docs/sources/abiove.md) |
 | **ANEC** embarques semanais | `anec.embarques(ano=2026)`, `anec.destinos(ano=2026)` | [docs/sources/anec.md](docs/sources/anec.md) |
 | **UNICA** moagem Centro-Sul | `unica.moagem_quinzenal('cana')`, `unica.safra_resumo()`, `unica.producao_historica('acucar')` | [docs/sources/unica.md](docs/sources/unica.md) |
-| **Rio Verde** ensaios cultivares MT | `rio_verde.ensaio_soja(safra='2023/24')` | [docs/sources/rio_verde.md](docs/sources/rio_verde.md) |
+| **Rio Verde** ensaios cultivares MT | `rio_verde.ensaio_soja(safra='2025/2026')` | [docs/sources/rio_verde.md](docs/sources/rio_verde.md) |
 
 ### Comércio e logística
 
@@ -307,7 +307,7 @@ df = await lista_suja.empregadores(uf='PA')
 
 # ZARC — Zoneamento Agrícola de Risco Climático
 df = await zarc.zoneamento(cultura='soja', uf='MT')
-print(zarc.culturas())   # 40+ culturas disponíveis
+print(zarc.culturas())   # 32 culturas disponíveis
 ```
 
 ## Camada semântica — datasets
@@ -428,7 +428,7 @@ agrobr snapshot use 2025-Q4   # valida o snapshot e mostra como ativa-lo no codi
 | `abate_trimestral` | Abate de bovinos, suínos e frangos por UF | IBGE Abate |
 | `balanco` | Oferta/demanda | CONAB |
 | `cadastro_rural` | Cadastro Ambiental Rural (imóveis rurais por UF) | SICAR/GeoServer WFS |
-| `censo_agropecuario` | Censo Agropecuário 1995/2006/2017 (10 temas) | IBGE Censo Agro |
+| `censo_agropecuario` | Censo Agropecuário 1995/2006/2017 (11 temas) | IBGE Censo Agro |
 | `censo_agropecuario_historico` | Série histórica Censo Agropecuário 1920-2006 (9 temas) | IBGE SIDRA |
 | `censo_agropecuario_legado` | Censo 1995/96 — 6 temas legados (FTP) | IBGE FTP |
 | `censo_agropecuario_municipal_1985` | Censo 1985 municipal — 53 temas via OCR (22 UFs) | IBGE PDFs |
@@ -558,7 +558,7 @@ normalizar_uf("São Paulo")                # "SP"
 normalizar_safra("24/25")                 # "2024/25"
 ```
 
-5571 municípios IBGE com centroides (geocodificação reversa offline), 35 culturas canônicas, 27 UFs. Dados via API IBGE Localidades e Malhas (livre para uso).
+5571 municípios IBGE com centroides (geocodificação reversa offline), 42 culturas canônicas, 27 UFs. Dados via API IBGE Localidades e Malhas (livre para uso).
 
 ## Diferenciais
 

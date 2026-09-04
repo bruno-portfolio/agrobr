@@ -14,10 +14,12 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
+    _moeda: str = "BRL",
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
+    *,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
@@ -30,6 +32,7 @@ async def indicador(
 | `praca` | `str \| None` | Praça de cotação. Aceita o slug de `pracas()` ou o rótulo exibido pela fonte; `None` retorna todas |
 | `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 365 dias atrás |
 | `fim` | `str \| date \| None` | Data final. Default: hoje |
+| `_moeda` | `str` | Reservado para conversão futura de moeda; atualmente não altera o resultado |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `validate_sanity` | `bool` | Executar validação estatística (outliers, gaps). Default: `False` |
 | `force_refresh` | `bool` | Ignorar cache e buscar dados frescos |

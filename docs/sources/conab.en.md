@@ -163,10 +163,14 @@ totais = await conab.custo_producao_total("soja", uf="MT", safra="2024/25")
 | `cultura` | str | Crop name |
 | `uf` | str | State code |
 | `safra` | str | Crop year (e.g. "2024/25") |
+| `tecnologia` | str | Production technology or system, when provided |
 | `item` | str | Cost item |
 | `categoria` | str | Category (insumos, operacoes, mao_de_obra, etc) |
-| `valor_ha` | float | Value per hectare (R$/ha) |
 | `unidade` | str | Item unit |
+| `quantidade_ha` | float | Item quantity per hectare |
+| `preco_unitario` | float | Unit price (BRL) |
+| `valor_ha` | float | Value per hectare (R$/ha) |
+| `participacao_pct` | float | Share of total cost (%) |
 
 ### Status (Mar/2026)
 

@@ -24,6 +24,19 @@ df = await unica.producao_historica("acucar", safra_inicio="2010/2011")
 
 Requires the `[pdf]` extra for the biweekly report: `pip install agrobr[pdf]`.
 
+## Parameters
+
+| Function | Parameter | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `moagem_quinzenal` | `produto` | str | `"cana"` | `cana`, `acucar`, `etanol_total`, `etanol_anidro`, or `etanol_hidratado` |
+| `moagem_quinzenal` | `regiao` | str \| None | None | `sao_paulo`, `centro_sul`, `demais_estados`, or all regions |
+| `safra_resumo` | `periodo` | str | `"acumulado"` | `acumulado` or `quinzena` |
+| `producao_historica` | `produto` | str | `"cana"` | `cana`, `acucar`, `etanol_anidro`, `etanol_hidratado`, or `etanol_total` |
+| `producao_historica` | `safra_inicio` | str \| None | None | Initial crop year in `YYYY/YYYY` format |
+| `producao_historica` | `safra_fim` | str \| None | None | Final crop year in `YYYY/YYYY` format |
+| All | `as_polars` | bool | False | If True, returns a `polars.DataFrame` |
+| All | `return_meta` | bool | False | If True, returns `(DataFrame, MetaInfo)` |
+
 ## Columns — `moagem_quinzenal`
 
 | Column | Type | Description |

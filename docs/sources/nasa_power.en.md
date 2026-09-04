@@ -125,11 +125,7 @@ points with `clima_ponto()`.
 
 ## Cache
 
-| Aspect | Value |
-|---------|-------|
-| **TTL** | 24 hours |
-| **Maximum stale** | 30 days |
-| **Policy** | Fixed TTL |
+There is no local cache: every call downloads the data from NASA POWER.
 
 ## Updating
 

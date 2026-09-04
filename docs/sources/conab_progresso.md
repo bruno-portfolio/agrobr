@@ -57,8 +57,9 @@ Valores sao fracoes (0.0-1.0), nao percentuais.
 
 ## Cache e Atualizacao
 
-- **TTL**: 12 horas (publicacao semanal, tipicamente sexta-feira)
-- Recomendado: usar `semanas_disponiveis()` para listar datas e buscar especifica
+- Não há cache local: cada chamada baixa os dados da CONAB.
+- A publicação é semanal, tipicamente às sextas-feiras.
+- Recomenda-se usar `semanas_disponiveis()` para listar as datas e buscar uma semana específica.
 
 ## Links
 

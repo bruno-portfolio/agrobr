@@ -13,7 +13,7 @@ Dados publicados como CSV no portal [dados.agricultura.gov.br](https://dados.agr
 ## Dados disponiveis
 
 - **Tabua de Risco:** janelas de plantio (36 decendios) por municipio/cultura/solo/ciclo
-- **Culturas:** 40+ culturas (soja, milho, trigo, cafe, cana, feijao, arroz, etc.)
+- **Culturas:** 32 culturas (soja, milho, trigo, café, cana, feijão, arroz, etc.)
 - **Safras:** 2016/2017 a atual + perene (cafe, cana, banana, etc.)
 - **Solos:** 3 tipos classicos (arenoso/medio/argiloso) + 6 niveis AD (agua disponivel)
 - **Cobertura:** todos os municipios brasileiros (~5.600)

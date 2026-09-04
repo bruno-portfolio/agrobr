@@ -77,7 +77,7 @@ sorgo, aveia, cevada, entre outros. Use o nome canonico do agrobr.
 
 ```python
 df, meta = await bcb.credito_rural(produto="soja", safra="2024/25", return_meta=True)
-print(meta.source)          # "bcb"
+print(meta.source)          # "bcb_credito"
 print(meta.schema_version)  # "1.1"
 ```
 

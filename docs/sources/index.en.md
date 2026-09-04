@@ -31,7 +31,7 @@ All sources support `return_meta=True` for full traceability.
 | [ANTT Pedagio](antt_pedagio.md) | Vehicle traffic at toll plazas | Monthly | 200+ plazas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Rural insurance policies and claims | Annual | 27 states, 2006+ |
 | [SICAR](sicar.md) | Rural Environmental Registry (CAR) | Continuous | 27 states, 7.4M+ properties |
-| [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 40+ crops, all municipalities |
+| [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 32 crops, all municipalities |
 | [Agrofit/MAPA](defensivos.md) | Registered pesticides | Continuous | ~8K formulated products, ~267K authorizations |
 | [FUNAI Indigenous Lands](funai.md) | Indigenous lands (WFS geo) | Continuous | ~740 TIs, all states |
 | [ICMBio Federal Conservation Units](icmbio.md) | Federal conservation units (WFS geo) | Continuous | 344 federal UCs |

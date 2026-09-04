@@ -17,12 +17,14 @@ Daily spot prices of Brazilian agricultural commodities.
 
 | Column | Type | Nullable | Unit | Description |
 |--------|------|----------|------|-------------|
-| `data` | datetime64 | ❌ | - | Indicator date |
+| `data` | date | ❌ | - | Indicator date |
 | `produto` | str | ❌ | - | Product name |
 | `praca` | str | ✅ | - | Reference market |
 | `valor` | float64 | ❌ | BRL | Price in reais |
 | `unidade` | str | ❌ | - | E.g. "BRL/sc60kg" |
 | `fonte` | str | ❌ | - | Data origin |
+| `metodologia` | str | ✅ | - | Indicator methodology, when available |
+| `anomalies` | str | ✅ | - | Detected anomalies or markers, when present |
 
 **Precision note:** `valor` uses `float64` (not `Decimal`) for
 compatibility with pandas/polars and pipeline performance. IEEE 754

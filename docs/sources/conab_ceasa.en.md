@@ -52,8 +52,8 @@ The parser unpivots the matrix into long-form format with 7 columns.
 
 ## Cache and Update
 
-- **TTL:** 4 hours (prices updated daily)
-- Recommended: use once per day for a price snapshot
+- There is no local cache: every call downloads prices from CONAB.
+- The source updates prices daily; one call per day is recommended for the snapshot.
 
 ## Datasets
 

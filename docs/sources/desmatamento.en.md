@@ -127,13 +127,15 @@ gdf = await agrobr.desmatamento.deter_geo(
 - The Source API (`agrobr.desmatamento.*`) returns individual polygons (fine granularity); the `datasets.desmatamento` dataset delivers the annual aggregate by uf/class/biome according to the contract
 - After the BiomasBR migration (03/2026), the PRODES layers for Amazonia, Pantanal, Caatinga and Mata Atlantica are temporarily broken in the INPE GeoServer (ServiceException for any client); Cerrado and Pampa operational
 - DETER is an alert system, not a consolidation one — there may be overlap
+- In DETER Cerrado, `municipio_id` is always null because the source layer does not provide this identifier.
 - `prodes_geo()` and `deter_geo()` return geometry (~10x more volume than tabular) — use filters to reduce data
 
 ## Cache and Updating
 
-- **PRODES**: TTL 24h (consolidated annual data, updated ~1x/year)
-- **DETER**: TTL 24h (daily alerts, updated frequently)
-- Recommended: use state and year filters to reduce data volume
+- There is no local cache: every call downloads the data from TerraBrasilis.
+- PRODES publishes consolidated annual data, updated approximately once a year.
+- DETER publishes daily alerts, updated frequently.
+- State and year filters are recommended to reduce data volume.
 
 ## Links
 

@@ -23,7 +23,7 @@ df = await deral.condicao_lavouras("trigo")
 |---|---|---|
 | `produto` | str | Monitored crop |
 | `data` | str | Reference date (dd/mm/yyyy) |
-| `condicao` | str | Condition: "boa", "media", "ruim" |
+| `condicao` | str | `boa`, `media` or `ruim`; empty for planting and harvest progress records |
 | `pct` | float | Percentage of the crop in that condition |
 | `plantio_pct` | float | Planting progress (%) |
 | `colheita_pct` | float | Harvest progress (%) |

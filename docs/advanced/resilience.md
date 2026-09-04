@@ -310,7 +310,7 @@ agrobr doctor
 ### Exemplo de saída
 
 ```
-agrobr diagnostics v1.0.2
+agrobr diagnostics v1.1.0
 ==================================================
 
 Sources Connectivity

@@ -20,7 +20,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 
 ## Datasets
 
-> A tabela lista os contratos **documentados** (uma página cada) — não é idêntica a `datasets.list_datasets()`. `lspa` é contrato de uma API fonte (via `ibge.lspa()`, sem dataset wrapper); `embarques_anec` é dataset + contrato registrado, mas ainda sem página.
+> A tabela lista os contratos **documentados** (uma página cada) — não é idêntica a `datasets.list_datasets()`. `lspa` é contrato de uma API fonte (via `ibge.lspa()`, sem dataset wrapper).
 
 | Dataset | Descrição | Fontes |
 |---------|-----------|--------|
@@ -35,7 +35,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | [custo_producao](./custo_producao.md) | Custos de produção | CONAB |
 | [pecuaria_municipal](./pecuaria_municipal.md) | Rebanhos e produção animal | IBGE PPM |
 | [abate_trimestral](./abate_trimestral.md) | Abate de bovinos, suínos e frangos | IBGE Abate |
-| [censo_agropecuario](./censo_agropecuario.md) | Censo Agropecuário 1995/2006/2017 (10 temas) | IBGE Censo Agro |
+| [censo_agropecuario](./censo_agropecuario.md) | Censo Agropecuário 1995/2006/2017 (11 temas) | IBGE Censo Agro |
 | [censo_agropecuario_legado](./censo_agropecuario_legado.md) | Censo Agropecuário 1995/96 — 6 temas legados (FTP) | IBGE FTP |
 | [censo_agropecuario_historico](./censo_agropecuario_historico.md) | Série histórica Censo Agropecuário 1920-2006 (9 temas, até UF) | IBGE SIDRA |
 | [censo_agropecuario_municipal_1985](./censo_agropecuario_municipal_1985.md) | Censo 1985 municipal — 53 temas via OCR de PDFs (22 UFs) | IBGE PDFs |
@@ -44,6 +44,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | [comercio_internacional](./comercio_internacional.md) | Comércio internacional bilateral (HS codes) | UN Comtrade |
 | [condicao_lavouras](./condicao_lavouras.md) | Condição das lavouras paranaenses | SEAB/DERAL |
 | [desmatamento](./desmatamento.md) | Desmatamento PRODES e alertas DETER por bioma | INPE |
+| [embarques_anec](./embarques_anec.md) | Embarques semanais por porto e produto | ANEC |
 | [silvicultura](./silvicultura.md) | Producao silvicultural (IBGE PEVS) | IBGE PEVS |
 | [extrativismo_vegetal](./extrativismo_vegetal.md) | Producao extrativista vegetal (IBGE PEVS) | IBGE PEVS |
 | [leite_industrial](./leite_industrial.md) | Leite trimestral (aquisicao/industrializacao) | IBGE Leite |

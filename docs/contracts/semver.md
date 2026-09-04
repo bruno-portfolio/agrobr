@@ -67,49 +67,65 @@ Módulos da source layer (`agrobr.cepea`, `agrobr.conab`, etc.) retornam
 DataFrames com colunas documentadas, mas com garantia **menor** que a
 camada de datasets. A camada de datasets normaliza e valida.
 
-#### `comexstat.exportacao` (v0.7.0)
+#### `comexstat.exportacao` (v1.0)
 
 | Coluna | Tipo | Garantia |
 |---|---|---|
 | `ano` | `int` | obrigatória |
 | `mes` | `int` | obrigatória, 1-12 |
-| `ncm` | `str` | obrigatória, 8 dígitos |
-| `uf` | `str` | obrigatória |
-| `kg_liquido` | `float` | obrigatória, >= 0 |
-| `valor_fob_usd` | `float` | obrigatória, >= 0 |
-| `volume_ton` | `float` | apenas em agregação mensal |
+| `produto` | `str` | obrigatória |
+| `uf` | `str` | opcional |
+| `kg_liquido` | `float` | opcional, >= 0 |
+| `valor_fob_usd` | `float` | opcional, >= 0 |
 
-#### `bcb.credito_rural` (v0.7.0)
+#### `bcb.credito_rural` (v1.1)
 
 | Coluna | Tipo | Garantia |
 |---|---|---|
 | `safra` | `str` | obrigatória |
-| `uf` | `str` | obrigatória |
 | `produto` | `str` | obrigatória |
+| `uf` | `str` | opcional |
 | `finalidade` | `str` | obrigatória |
-| `valor` | `float` | obrigatória, >= 0 |
-| `area_financiada` | `float` | obrigatória, >= 0 |
-| `qtd_contratos` | `int` | obrigatória, >= 0 |
+| `agregacao` | `str` | opcional |
+| `volume` | `float` | opcional, >= 0 |
+| `valor` | `float` | opcional, >= 0 |
+| `cd_programa` | `str` | opcional |
+| `programa` | `str` | opcional |
+| `cd_fonte_recurso` | `str` | opcional |
+| `fonte_recurso` | `str` | opcional |
+| `cd_tipo_seguro` | `str` | opcional |
+| `tipo_seguro` | `str` | opcional |
+| `cd_modalidade` | `str` | opcional |
+| `modalidade` | `str` | opcional |
+| `cd_atividade` | `str` | opcional |
+| `atividade` | `str` | opcional |
+| `regiao` | `str` | opcional |
 
-#### `inmet.clima_uf` (v0.7.0)
+#### `inmet.clima_uf` (v1.0)
 
 | Coluna | Tipo | Garantia |
 |---|---|---|
-| `mes` | `int` | obrigatória, 1-12 |
+| `mes` | `date` | obrigatória |
 | `uf` | `str` | obrigatória |
-| `precip_acum_mm` | `float` | obrigatória |
+| `precip_acum_mm` | `float` | obrigatória, >= 0 |
 | `temp_media` | `float` | obrigatória |
-| `num_estacoes` | `int` | obrigatória |
+| `temp_max_media` | `float` | obrigatória |
+| `temp_min_media` | `float` | obrigatória |
+| `num_estacoes` | `int` | opcional, >= 0 |
+| `umidade_media` | `float` | opcional, 0-100 |
+| `radiacao_media_mj` | `float` | opcional, >= 0 |
+| `vento_medio_ms` | `float` | opcional, >= 0 |
+| `fonte` | `str` | obrigatória |
 
-#### `anda.entregas` (v0.7.0)
+#### `anda.entregas` (v2.0)
 
 | Coluna | Tipo | Garantia |
 |---|---|---|
 | `ano` | `int` | obrigatória |
 | `mes` | `int` | obrigatória, 1-12 |
-| `uf` | `str` | obrigatória |
+| `uf` | `str` | opcional |
 | `produto_fertilizante` | `str` | obrigatória |
-| `volume_ton` | `float` | obrigatória, >= 0 |
+| `volume_ton` | `float` | opcional, >= 0 |
 
 ## MetaInfo
 

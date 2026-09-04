@@ -120,10 +120,7 @@ most consistent time series.
 
 ## Cache
 
-| Aspect | Value |
-|---------|-------|
-| **TTL** | 12 hours |
-| **Policy** | Fixed TTL |
+There is no local cache: every call downloads the data from INPE.
 
 ## Updating
 

@@ -23,7 +23,7 @@ df = await deral.condicao_lavouras("trigo")
 |---|---|---|
 | `produto` | str | Cultura monitorada |
 | `data` | str | Data de referência (dd/mm/yyyy) |
-| `condicao` | str | Condição: "boa", "media", "ruim" |
+| `condicao` | str | `boa`, `media` ou `ruim`; fica vazia nos registros de plantio e colheita |
 | `pct` | float | Percentual da lavoura nessa condição |
 | `plantio_pct` | float | Progresso do plantio (%) |
 | `colheita_pct` | float | Progresso da colheita (%) |

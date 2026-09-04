@@ -57,10 +57,10 @@ The agrobr parser automatically detects the orientation of the tables
 Indicadores" layout (aggregated national data with months/values in cells
 concatenated with `\n`). Drastic format changes may require a parser update.
 
-The client automatically detects the actual data year in the PDF
-(based on the link text, not the upload URL) and passes it to the parser,
-avoiding a mismatch when the requested year has no PDF of its own and the
-fallback points to the most recent year available.
+There is no year fallback. If no PDF link matches the requested year, the client
+raises `SourceUnavailableError` and reports the years available on the site.
+For the selected link, the actual year is extracted from the link text or file
+name and passed to the parser.
 
 In agrobr-insights, ANDA data is handled with dynamic weighting: when it
 looks distorted, its weight in the SCI is automatically reduced.

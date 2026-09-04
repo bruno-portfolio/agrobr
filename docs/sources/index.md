@@ -31,7 +31,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [ANTT Pedagio](antt_pedagio.md) | Fluxo de veiculos em pracas de pedagio | Mensal | 200+ pracas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Apolices e sinistros seguro rural | Anual | 27 UFs, 2006+ |
 | [SICAR](sicar.md) | Cadastro Ambiental Rural | Continua | 27 UFs, 7.4M+ imoveis |
-| [ZARC](zarc.md) | Zoneamento Agricola de Risco Climatico | Semanal | 40+ culturas, todos municipios |
+| [ZARC](zarc.md) | Zoneamento Agrícola de Risco Climático | Semanal | 32 culturas, todos os municípios |
 | [Agrofit/MAPA](defensivos.md) | Agrotoxicos registrados | Continua | ~8K formulados, ~267K autorizacoes |
 | [FUNAI Terras Indigenas](funai.md) | Terras indigenas (WFS geo) | Continua | ~740 TIs, todas UFs |
 | [ICMBio UCs Federais](icmbio.md) | Unidades de conservacao federais (WFS geo) | Continua | 344 UCs federais |

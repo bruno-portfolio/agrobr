@@ -17,7 +17,7 @@ The data is a proxy for crop outflow: heavy commercial vehicles (3+ axles) corre
 
 ### Toll Plaza Registry (reference)
 - **Format:** Single CSV (~200+ active plazas)
-- **Columns:** concessionaire, plaza, highway, state, km, municipality, latitude/longitude, status
+- **Columns:** `concessionaria`, `praca`, `rodovia`, `uf`, `km`, `municipio`, `latitude`, `longitude`, `situacao`
 - **Use:** Automatic join with traffic data to enrich with state/highway/municipality
 
 ## License

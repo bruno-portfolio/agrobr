@@ -123,7 +123,7 @@ print(contract.to_json())
 
 | Contract | Scope | Periods |
 |----------|-------|---------|
-| `censo_agropecuario` | 10 thematic themes (SIDRA) | 1995, 2006, 2017 |
+| `censo_agropecuario` | 11 themes (SIDRA) | 1995, 2006, 2017 |
 | `censo_agropecuario_legado` | 6 legacy themes (FTP) | 1995 |
 | **`censo_agropecuario_historico`** | **9 historical-series themes (SIDRA)** | **1920-2006** |
 

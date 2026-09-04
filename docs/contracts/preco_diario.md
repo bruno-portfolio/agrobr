@@ -17,12 +17,14 @@ Preço diário spot de commodities agrícolas brasileiras.
 
 | Coluna | Tipo | Nullable | Unidade | Descrição |
 |--------|------|----------|---------|-----------|
-| `data` | datetime64 | ❌ | - | Data do indicador |
+| `data` | date | ❌ | - | Data do indicador |
 | `produto` | str | ❌ | - | Nome do produto |
 | `praca` | str | ✅ | - | Praça de referência |
 | `valor` | float64 | ❌ | BRL | Preço em reais |
 | `unidade` | str | ❌ | - | Ex: "BRL/sc60kg" |
 | `fonte` | str | ❌ | - | Origem dos dados |
+| `metodologia` | str | ✅ | - | Metodologia do indicador, quando disponível |
+| `anomalies` | str | ✅ | - | Anomalias ou marcadores detectados, quando presentes |
 
 **Nota sobre precisão:** `valor` usa `float64` (não `Decimal`) para
 compatibilidade com pandas/polars e performance em pipelines. Precisão

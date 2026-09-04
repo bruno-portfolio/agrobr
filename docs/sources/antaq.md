@@ -70,6 +70,7 @@ df = antaq_sync.movimentacao(2024, uf="SP")
 | `porto` | str \| None | None | Filtro por porto (substring case-insensitive) |
 | `uf` | str \| None | None | Filtro por UF (ex: SP, PR, MT) |
 | `sentido` | str \| None | None | embarque ou desembarque |
+| `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
 
 ## Colunas — `movimentacao`

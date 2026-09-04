@@ -50,11 +50,12 @@ df = alt.anp_diesel.vendas_diesel()
 |---|---|---|---|
 | `uf` | str \| None | None | Filtro por UF (ex: SP, MT, PR) |
 | `municipio` | str \| None | None | Filtro por municipio (substring) |
-| `produto` | str | "DIESEL S10" | "DIESEL" ou "DIESEL S10" |
+| `produto` | str | "DIESEL S10" | `DIESEL`, `OLEO DIESEL`, `OLEO DIESEL S10` ou `DIESEL S10` |
 | `inicio` | str \| date \| None | None | Data inicial (YYYY-MM-DD) |
 | `fim` | str \| date \| None | None | Data final (YYYY-MM-DD) |
 | `agregacao` | str | "semanal" | "semanal" ou "mensal" |
 | `nivel` | str | "municipio" | "municipio", "uf" ou "brasil" |
+| `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
 
 ## Colunas — `precos_diesel`
@@ -64,7 +65,7 @@ df = alt.anp_diesel.vendas_diesel()
 | `data` | datetime | Nao | Data da coleta |
 | `uf` | str | Sim | Sigla UF (2 chars) |
 | `municipio` | str | Sim | Nome do municipio |
-| `produto` | str | Sim | "DIESEL" ou "DIESEL S10" |
+| `produto` | str | Sim | Produto normalizado: `DIESEL` ou `DIESEL S10` |
 | `preco_venda` | float | Sim | Preco medio revenda (R$/litro) |
 | `preco_compra` | float | Sim | Preco medio distribuicao (R$/litro) |
 | `margem` | float | Sim | preco_venda - preco_compra |
@@ -77,6 +78,7 @@ df = alt.anp_diesel.vendas_diesel()
 | `uf` | str \| None | None | Filtro por UF (ex: SP, MT, PR) |
 | `inicio` | str \| date \| None | None | Data inicial |
 | `fim` | str \| date \| None | None | Data final |
+| `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
 
 ## Colunas — `vendas_diesel`

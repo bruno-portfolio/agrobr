@@ -59,6 +59,7 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `ano_fim` | int \| None | None | End year of the range (inclusive) |
 | `municipio` | str \| None | None | Filter by municipality (partial match) |
 | `evento` | str \| None | None | Filter by predominant event (e.g. "seca") |
+| `as_polars` | bool | False | If True, returns a `polars.DataFrame` |
 | `return_meta` | bool | False | Returns a (DataFrame, MetaInfo) tuple |
 
 ## Columns — `sinistros`
@@ -93,6 +94,7 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `ano_inicio` | int \| None | None | Start year of the range |
 | `ano_fim` | int \| None | None | End year of the range |
 | `municipio` | str \| None | None | Filter by municipality |
+| `as_polars` | bool | False | If True, returns a `polars.DataFrame` |
 | `return_meta` | bool | False | Returns a (DataFrame, MetaInfo) tuple |
 
 ## Columns — `apolices`

@@ -10,7 +10,7 @@ Dados do Censo Agropecuario 1995/2006/2017 por tema, UF e nivel territorial.
 
 ## Temas
 
-`efetivo_rebanho`, `uso_terra`, `lavoura_temporaria`, `lavoura_permanente`, `preparo_solo`, `adubacao`, `calagem`, `agrotoxicos`, `praticas_agricolas`, `irrigacao`
+`efetivo_rebanho`, `uso_terra`, `lavoura_temporaria`, `lavoura_permanente`, `preparo_solo`, `adubacao`, `calagem`, `agrotoxicos`, `praticas_agricolas`, `irrigacao`, `despesa_adubos`
 
 ### Cobertura temporal por tema
 
@@ -26,6 +26,7 @@ Dados do Censo Agropecuario 1995/2006/2017 por tema, UF e nivel territorial.
 | `agrotoxicos` | — | ✅ | ✅ |
 | `praticas_agricolas` | — | ✅ | ✅ |
 | `irrigacao` | — | ✅ | ✅ |
+| `despesa_adubos` | — | — | ✅ |
 
 ## Schema
 

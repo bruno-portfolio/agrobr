@@ -69,15 +69,15 @@ print(meta.records_count, meta.fetch_duration_ms)
 ## Limitacoes
 
 - Apenas dados tabulares (estatisticas). Dados geoespaciais (rasters/GEE) ficam para versao futura
-- O XLSX estadual (~23 MB) e baixado inteiro na primeira chamada (o parsing seleciona os filtros)
+- O XLSX estadual (~23 MB) é baixado inteiro em cada chamada (o parsing seleciona os filtros)
 - Nivel municipal (~660 MB) disponivel via `cobertura(nivel="municipio")` — download pesado, recomendado filtrar por estado/municipio/bioma. Sem cache local integrado ainda
 - Nomes de classes seguem a legenda oficial do MapBiomas (em portugues)
 
 ## Cache e Atualizacao
 
-- **TTL**: 7 dias (colecoes sao publicadas anualmente)
-- MapBiomas publica uma nova colecao por ano com dados retroativos recalculados
-- Recomendado: especificar filtros para reduzir volume de dados no DataFrame
+- Não há cache local: cada chamada baixa a planilha correspondente da fonte.
+- O MapBiomas publica uma nova coleção por ano, com dados retroativos recalculados.
+- Recomenda-se especificar filtros para reduzir o volume de dados no DataFrame.
 
 ## Links
 

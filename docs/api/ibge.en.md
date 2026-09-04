@@ -87,7 +87,7 @@ async def lspa(
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | Returns a `(df, MetaInfo)` tuple with provenance |
 
-**LSPA products:**
+**LSPA products (19 codes):**
 
 | Code | Product |
 |------|---------|
@@ -100,10 +100,16 @@ async def lspa(
 | `feijao_3` | Beans 3rd crop |
 | `trigo` | Wheat |
 | `algodao` | Herbaceous cotton |
+| `cafe` | Coffee |
 | `amendoim_1` | Peanut 1st crop |
 | `amendoim_2` | Peanut 2nd crop |
+| `aveia` | Oats |
 | `batata_1` | Potato 1st crop |
 | `batata_2` | Potato 2nd crop |
+| `cevada` | Barley |
+| `mamona` | Castor bean |
+| `sorgo` | Sorghum |
+| `triticale` | Triticale |
 
 **Generic aliases:**
 
@@ -347,6 +353,7 @@ async def censo_agro(
 | `agrotoxicos` | Pesticide use | — | 1459 | 6851 |
 | `praticas_agricolas` | Agricultural practices | — | 837 | 8561 |
 | `irrigacao` | Irrigation | — | 855 | 6857 |
+| `despesa_adubos` | Fertilizer and soil amendment expenses | — | — | 6899 |
 
 **Variables returned per theme (original themes):**
 
@@ -373,6 +380,7 @@ async def censo_agro(
 | `agrotoxicos` | Used, Did not use |
 | `praticas_agricolas` | Contour planting, Crop rotation, Fallow |
 | `irrigacao` | Drip, Center pivot, Flooding, Sprinkler |
+| `despesa_adubos` | Establishments with expenses, expense value |
 
 **Example:**
 
@@ -606,7 +614,7 @@ from agrobr import ibge
 df = await ibge.censo_agro_municipal_1985('propriedade_terras', uf='SP')
 
 # Municipalities only
-df = await ibge.censo_agro_municipal_1985('bovinos', nivel='municipio')
+df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', nivel='municipio')
 
 # With metadata
 df, meta = await ibge.censo_agro_municipal_1985('propriedade_terras', return_meta=True)
@@ -629,10 +637,10 @@ async def temas_censo_agro_municipal_1985() -> list[str]
 agrobr ibge censo-municipal-1985 propriedade_terras --uf SP
 
 # CSV format
-agrobr ibge censo-municipal-1985 bovinos --formato csv
+agrobr ibge censo-municipal-1985 efetivo_bovinos --formato csv
 
 # Filter by level
-agrobr ibge censo-municipal-1985 uso_terra_lavoura --nivel municipio --uf MG
+agrobr ibge censo-municipal-1985 utilizacao_terras --nivel municipio --uf MG
 
 # List available themes
 agrobr ibge temas-municipal-1985
@@ -967,7 +975,7 @@ df = ibge.pib_agro(trimestre='202501')
 - PAM is consolidated annually after harvest
 - PPM is consolidated annually (September), series since 1974
 - Quarterly Slaughter available since 1997, updated each quarter (Q+2 months)
-- Agricultural Census: 10 themes, data from 1995, 2006 and/or 2017 depending on availability. 2017 reference: Oct/2016 to Sep/2017. 30-day cache
+- Agricultural Census: 11 themes, data from 1995, 2006 and/or 2017 depending on availability. 2017 reference: Oct/2016 to Sep/2017. 30-day cache
 - Legacy Agricultural Census: 6 FTP themes (tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro). Fixed year 1995. 90-day cache
 - Historical Series: 9 themes, 1920-2006, up to state (municipal NOT available). Mixed units per category (Poultry=Thousand head, etc). 30-day cache
 - Municipal Census 1985: 53 themes, municipal data for 22 states, extracted via OCR from IBGE state PDFs. Static (bundled) data. The `confianca` field indicates OCR quality

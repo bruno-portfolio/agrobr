@@ -125,11 +125,7 @@ pontos com `clima_ponto()`.
 
 ## Cache
 
-| Aspecto | Valor |
-|---------|-------|
-| **TTL** | 24 horas |
-| **Stale maximo** | 30 dias |
-| **Politica** | TTL fixo |
+Não há cache local: cada chamada baixa os dados da NASA POWER.
 
 ## Atualizacao
 

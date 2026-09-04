@@ -20,7 +20,7 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 
 ## Datasets
 
-> This table lists the **documented** contracts (one page each) — it is not identical to `datasets.list_datasets()`. `lspa` is a source-API contract (via `ibge.lspa()`, no dataset wrapper); `embarques_anec` is a registered dataset + contract but has no page yet.
+> This table lists the **documented** contracts (one page each) — it is not identical to `datasets.list_datasets()`. `lspa` is a source-API contract (via `ibge.lspa()`, no dataset wrapper).
 
 | Dataset | Description | Sources |
 |---------|-------------|---------|
@@ -35,7 +35,7 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 | [custo_producao](./custo_producao.md) | Production costs | CONAB |
 | [pecuaria_municipal](./pecuaria_municipal.md) | Herds and animal production | IBGE PPM |
 | [abate_trimestral](./abate_trimestral.md) | Slaughter of cattle, hogs and poultry | IBGE Slaughter |
-| [censo_agropecuario](./censo_agropecuario.md) | Agricultural Census 1995/2006/2017 (10 themes) | IBGE Agri Census |
+| [censo_agropecuario](./censo_agropecuario.md) | Agricultural Census 1995/2006/2017 (11 themes) | IBGE Agri Census |
 | [censo_agropecuario_legado](./censo_agropecuario_legado.md) | Agricultural Census 1995/96 — 6 legacy themes (FTP) | IBGE FTP |
 | [censo_agropecuario_historico](./censo_agropecuario_historico.md) | Agricultural Census historical series 1920-2006 (9 themes, up to state) | IBGE SIDRA |
 | [censo_agropecuario_municipal_1985](./censo_agropecuario_municipal_1985.md) | 1985 municipal census — 53 themes via OCR of PDFs (22 states) | IBGE PDFs |
@@ -44,6 +44,7 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 | [comercio_internacional](./comercio_internacional.md) | Bilateral international trade (HS codes) | UN Comtrade |
 | [condicao_lavouras](./condicao_lavouras.md) | Paraná crop conditions | SEAB/DERAL |
 | [desmatamento](./desmatamento.md) | PRODES deforestation and DETER alerts by biome | INPE |
+| [embarques_anec](./embarques_anec.md) | Weekly shipments by port and product | ANEC |
 | [silvicultura](./silvicultura.md) | Silvicultural output (IBGE PEVS) | IBGE PEVS |
 | [extrativismo_vegetal](./extrativismo_vegetal.md) | Extractive plant production (IBGE PEVS) | IBGE PEVS |
 | [leite_industrial](./leite_industrial.md) | Quarterly milk (acquisition/processing) | IBGE Milk |

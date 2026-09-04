@@ -57,8 +57,9 @@ Values are fractions (0.0-1.0), not percentages.
 
 ## Cache and Update
 
-- **TTL**: 12 hours (weekly publication, typically on Fridays)
-- Recommended: use `semanas_disponiveis()` to list dates and fetch a specific one
+- There is no local cache: every call downloads the data from CONAB.
+- Publication is weekly, typically on Fridays.
+- Use `semanas_disponiveis()` to list dates and fetch a specific week.
 
 ## Links
 

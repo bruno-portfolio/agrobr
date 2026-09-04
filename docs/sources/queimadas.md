@@ -120,10 +120,7 @@ mais longa e consistente.
 
 ## Cache
 
-| Aspecto | Valor |
-|---------|-------|
-| **TTL** | 12 horas |
-| **Politica** | TTL fixo |
+Não há cache local: cada chamada baixa os dados do INPE.
 
 ## Atualizacao
 

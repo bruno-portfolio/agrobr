@@ -13,7 +13,7 @@ Data published as CSV on the [dados.agricultura.gov.br](https://dados.agricultur
 ## Available data
 
 - **Risk Table:** planting windows (36 ten-day periods) by municipality/crop/soil/cycle
-- **Crops:** 40+ crops (soybean, corn, wheat, coffee, sugarcane, beans, rice, etc.)
+- **Crops:** 32 crops (soybean, corn, wheat, coffee, sugarcane, beans, rice, etc.)
 - **Crop years:** 2016/2017 to current + perennial (coffee, sugarcane, banana, etc.)
 - **Soils:** 3 classic types (sandy/medium/clayey) + 6 AW levels (available water)
 - **Coverage:** all Brazilian municipalities (~5,600)

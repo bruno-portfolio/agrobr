@@ -59,10 +59,10 @@ Indicadores" (dados nacionais agregados com meses/valores em celulas
 concatenadas com `\n`). Mudancas drasticas de formato podem exigir
 atualizacao do parser.
 
-O client detecta automaticamente o ano real dos dados no PDF
-(baseado no texto do link, nao na URL de upload) e passa ao parser,
-evitando mismatch quando o ano solicitado nao tem PDF proprio e o
-fallback aponta para o ano mais recente disponivel.
+Não há fallback de ano. Se nenhum link de PDF corresponder ao ano solicitado,
+o client levanta `SourceUnavailableError` e informa os anos disponíveis no site.
+No link selecionado, o ano real é extraído do texto do link ou do nome do arquivo
+e repassado ao parser.
 
 No agrobr-insights, dados ANDA sao tratados com peso dinamico: quando
 parecem distorcidos, o peso no SCI e reduzido automaticamente.

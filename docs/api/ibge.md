@@ -87,7 +87,7 @@ async def lspa(
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
-**Produtos LSPA:**
+**Produtos LSPA (19 códigos):**
 
 | Código | Produto |
 |--------|---------|
@@ -100,10 +100,16 @@ async def lspa(
 | `feijao_3` | Feijão 3ª safra |
 | `trigo` | Trigo |
 | `algodao` | Algodão herbáceo |
+| `cafe` | Café |
 | `amendoim_1` | Amendoim 1ª safra |
 | `amendoim_2` | Amendoim 2ª safra |
+| `aveia` | Aveia |
 | `batata_1` | Batata-inglesa 1ª safra |
 | `batata_2` | Batata-inglesa 2ª safra |
+| `cevada` | Cevada |
+| `mamona` | Mamona |
+| `sorgo` | Sorgo |
+| `triticale` | Triticale |
 
 **Aliases genéricos:**
 
@@ -347,6 +353,7 @@ async def censo_agro(
 | `agrotoxicos` | Uso de agrotóxicos | — | 1459 | 6851 |
 | `praticas_agricolas` | Práticas agrícolas | — | 837 | 8561 |
 | `irrigacao` | Irrigação | — | 855 | 6857 |
+| `despesa_adubos` | Despesa com adubos e corretivos | — | — | 6899 |
 
 **Variáveis retornadas por tema (temas originais):**
 
@@ -373,6 +380,7 @@ async def censo_agro(
 | `agrotoxicos` | Utilizou, Não utilizou |
 | `praticas_agricolas` | Plantio em nível, Rotação de culturas, Pousio |
 | `irrigacao` | Gotejamento, Pivô central, Inundação, Aspersão |
+| `despesa_adubos` | Estabelecimentos com despesa, valor da despesa |
 
 **Exemplo:**
 
@@ -606,7 +614,7 @@ from agrobr import ibge
 df = await ibge.censo_agro_municipal_1985('propriedade_terras', uf='SP')
 
 # Apenas municípios
-df = await ibge.censo_agro_municipal_1985('bovinos', nivel='municipio')
+df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', nivel='municipio')
 
 # Com metadados
 df, meta = await ibge.censo_agro_municipal_1985('propriedade_terras', return_meta=True)
@@ -629,10 +637,10 @@ async def temas_censo_agro_municipal_1985() -> list[str]
 agrobr ibge censo-municipal-1985 propriedade_terras --uf SP
 
 # Formato CSV
-agrobr ibge censo-municipal-1985 bovinos --formato csv
+agrobr ibge censo-municipal-1985 efetivo_bovinos --formato csv
 
 # Filtrar por nível
-agrobr ibge censo-municipal-1985 uso_terra_lavoura --nivel municipio --uf MG
+agrobr ibge censo-municipal-1985 utilizacao_terras --nivel municipio --uf MG
 
 # Listar temas disponíveis
 agrobr ibge temas-municipal-1985
@@ -967,7 +975,7 @@ df = ibge.pib_agro(trimestre='202501')
 - PAM é consolidada anualmente após colheita
 - PPM é consolidada anualmente (setembro), série desde 1974
 - Abate Trimestral disponível desde 1997, atualizado a cada trimestre (T+2 meses)
-- Censo Agropecuário: 10 temas, dados de 1995, 2006 e/ou 2017 conforme disponibilidade. Referência 2017: out/2016 a set/2017. Cache 30 dias
+- Censo Agropecuário: 11 temas, dados de 1995, 2006 e/ou 2017 conforme disponibilidade. Referência 2017: out/2016 a set/2017. Cache 30 dias
 - Censo Agropecuário Legado: 6 temas FTP (tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro). Ano fixo 1995. Cache 90 dias
 - Série Histórica: 9 temas, 1920-2006, até UF (municipal NÃO disponível). Unidades mistas por categoria (Aves=Mil cabeças, etc). Cache 30 dias
 - Censo Municipal 1985: 53 temas, dados municipais de 22 UFs, extraídos via OCR de PDFs estaduais do IBGE. Dados estáticos (bundled). Campo `confianca` indica qualidade OCR

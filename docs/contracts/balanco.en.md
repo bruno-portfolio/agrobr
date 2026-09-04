@@ -35,7 +35,6 @@ has no fallback source.
 | `consumo` | float64 | ✅ | Domestic consumption (thousand tons) |
 | `exportacao` | float64 | ✅ | Exports (thousand tons) |
 | `estoque_final` | float64 | ✅ | Ending stock (thousand tons) |
-| `fonte` | str | ❌ | Data origin |
 
 ## Guarantees
 

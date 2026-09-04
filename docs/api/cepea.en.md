@@ -14,10 +14,12 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
+    _moeda: str = "BRL",
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
+    *,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
 ```
@@ -30,6 +32,7 @@ async def indicador(
 | `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` returns all |
 | `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD). Default: 365 days ago |
 | `fim` | `str \| date \| None` | End date. Default: today |
+| `_moeda` | `str` | Reserved for future currency conversion; currently has no effect on the result |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `validate_sanity` | `bool` | Run statistical validation (outliers, gaps). Default: `False` |
 | `force_refresh` | `bool` | Bypass cache and fetch fresh data |

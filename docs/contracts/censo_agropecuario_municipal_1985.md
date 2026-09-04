@@ -141,7 +141,7 @@ print(contract.to_json())
 
 | Contrato | Escopo | Periodos |
 |----------|--------|----------|
-| `censo_agropecuario` | 10 temas tematicos (SIDRA) | 1995, 2006, 2017 |
+| `censo_agropecuario` | 11 temas temáticos (SIDRA) | 1995, 2006, 2017 |
 | `censo_agropecuario_legado` | 6 temas legados (FTP) | 1995 |
 | `censo_agropecuario_historico` | 9 temas serie historica (SIDRA, ate UF) | 1920-2006 |
 | **`censo_agropecuario_municipal_1985`** | **53 temas municipais (OCR de PDFs)** | **1985** |

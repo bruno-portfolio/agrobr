@@ -35,7 +35,6 @@ possui fonte de fallback.
 | `consumo` | float64 | ✅ | Consumo interno (mil ton) |
 | `exportacao` | float64 | ✅ | Exportação (mil ton) |
 | `estoque_final` | float64 | ✅ | Estoque final (mil ton) |
-| `fonte` | str | ❌ | Origem dos dados |
 
 ## Garantias
 

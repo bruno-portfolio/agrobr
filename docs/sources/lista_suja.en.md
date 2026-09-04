@@ -11,6 +11,14 @@
 | Authentication | None |
 | License | Free (Lei de Acesso a Informacao) |
 
+## Installation
+
+The PDF parser requires the optional `pdfplumber` dependency:
+
+```bash
+pip install agrobr[pdf]
+```
+
 ## Usage Example
 
 ```python

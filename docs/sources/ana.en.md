@@ -52,7 +52,7 @@ async def main():
     df = await ana.demanda_irrigacao(bbox=(-50, -20, -48, -18))
 
     # Water availability
-    df = await ana.disponibilidade_hidrica(uf="MG")
+    df = await ana.disponibilidade_hidrica(bbox=(-46, -20, -44, -18))
     gdf = await ana.disponibilidade_hidrica_geo(bbox=(-46, -20, -44, -18))
 
     # With metadata

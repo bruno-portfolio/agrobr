@@ -136,7 +136,7 @@ df = await ibge.abate('frango', trimestre='202303', uf='PR')
 # Agricultural Census — 1995/2006/2017 + historical series 1920-2006 + 1985 municipal
 df = await ibge.censo_agro('efetivo_rebanho')
 df = await ibge.censo_agro_historico('estabelecimentos_area')
-df = await ibge.censo_agro_municipal_1985('bovinos', uf='SP')
+df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', uf='SP')
 ```
 
 | Source | Flagship function | Doc |
@@ -149,7 +149,7 @@ df = await ibge.censo_agro_municipal_1985('bovinos', uf='SP')
 | **ABIOVE** soybean complex | `abiove.exportacao(ano=2024, produto='grao')` | [docs/sources/abiove.md](docs/sources/abiove.md) |
 | **ANEC** weekly shipments | `anec.embarques(ano=2026)`, `anec.destinos(ano=2026)` | [docs/sources/anec.md](docs/sources/anec.md) |
 | **UNICA** Center-South sugarcane crush | `unica.moagem_quinzenal('cana')`, `unica.safra_resumo()`, `unica.producao_historica('acucar')` | [docs/sources/unica.md](docs/sources/unica.md) |
-| **Rio Verde** cultivar trials (MT) | `rio_verde.ensaio_soja(safra='2023/24')` | [docs/sources/rio_verde.md](docs/sources/rio_verde.md) |
+| **Rio Verde** cultivar trials (MT) | `rio_verde.ensaio_soja(safra='2025/2026')` | [docs/sources/rio_verde.md](docs/sources/rio_verde.md) |
 
 ### Trade and logistics
 
@@ -311,7 +311,7 @@ df = await lista_suja.empregadores(uf='PA')
 
 # ZARC — agricultural climate risk zoning (planting windows)
 df = await zarc.zoneamento(cultura='soja', uf='MT')
-print(zarc.culturas())   # 40+ crops available
+print(zarc.culturas())   # 32 crops available
 ```
 
 ## Semantic layer — datasets
@@ -432,7 +432,7 @@ agrobr snapshot use 2025-Q4   # validates the snapshot and shows how to activate
 | `abate_trimestral` | Cattle, hog and poultry slaughter by state | IBGE |
 | `balanco` | Supply/demand balance | CONAB |
 | `cadastro_rural` | Rural environmental registry (properties by state) | SICAR/GeoServer WFS |
-| `censo_agropecuario` | Agricultural census 1995/2006/2017 (10 themes) | IBGE |
+| `censo_agropecuario` | Agricultural census 1995/2006/2017 (11 themes) | IBGE |
 | `censo_agropecuario_historico` | Census historical series 1920-2006 (9 themes) | IBGE SIDRA |
 | `censo_agropecuario_legado` | 1995/96 census — 6 legacy themes (FTP) | IBGE FTP |
 | `censo_agropecuario_municipal_1985` | 1985 municipal census — 53 themes via OCR (22 states) | IBGE PDFs |
@@ -562,7 +562,7 @@ normalizar_uf("São Paulo")                # "SP"
 normalizar_safra("24/25")                 # "2024/25"
 ```
 
-5,571 IBGE municipalities with centroids (offline reverse geocoding), 35 canonical crops, 27 states. Data from the IBGE Localities and Meshes APIs (free to use).
+5,571 IBGE municipalities with centroids (offline reverse geocoding), 42 canonical crops, 27 states. Data from the IBGE Localities and Meshes APIs (free to use).
 
 ## Highlights
 

@@ -4,7 +4,8 @@ Comercio internacional bilateral via UN Comtrade API. Feature principal: trade m
 
 ## API Key (Opcional)
 
-Funciona em guest mode (sem key, 500 records/call). Para mais capacidade:
+Sem `api_key` e sem `AGROBR_COMTRADE_API_KEY`, o client usa o endpoint
+`/public/v1/preview`, limitado a 500 registros por chamada. Para mais capacidade:
 
 1. Registre em [comtradeplus.un.org](https://comtradeplus.un.org)
 2. Configure: `export AGROBR_COMTRADE_API_KEY=sua_chave`
@@ -38,7 +39,7 @@ async def comercio(
 | `reporter` | `str` | Pais reporter: `"BR"`, `"CN"`, `"US"`. Default: `"BR"` |
 | `partner` | `str \| None` | Pais parceiro. None = World (todos). Default: None |
 | `fluxo` | `str` | `"X"` (exportacao) ou `"M"` (importacao). Default: `"X"` |
-| `periodo` | `str \| int \| None` | Ano, mes ou range: `2024`, `202401`, `"2022-2024"`. None = ano corrente |
+| `periodo` | `str \| int \| None` | Ano, mês ou intervalo: `2024`, `202401`, `"2022-2024"`. `None` usa o ano-calendário anterior |
 | `freq` | `str` | `"A"` (anual) ou `"M"` (mensal). Default: `"A"` |
 | `api_key` | `str \| None` | API key (ou usa `AGROBR_COMTRADE_API_KEY`) |
 | `as_polars` | `bool` | Se True, retorna polars.DataFrame |
@@ -46,7 +47,11 @@ async def comercio(
 
 **Retorno:**
 
-DataFrame com colunas: `periodo`, `ano`, `mes`, `reporter_iso`, `partner_iso`, `fluxo_code`, `hs_code`, `produto_desc`, `peso_liquido_kg`, `volume_ton`, `valor_fob_usd`, `valor_cif_usd`, `valor_primario_usd`
+DataFrame com colunas: `periodo`, `ano`, `mes`, `reporter_code`, `reporter_iso`,
+`reporter`, `partner_code`, `partner_iso`, `partner`, `fluxo_code`, `fluxo`,
+`hs_code`, `produto_desc`, `nivel_hs`, `peso_liquido_kg`, `peso_bruto_kg`,
+`volume_ton`, `valor_fob_usd`, `valor_cif_usd`, `valor_primario_usd`,
+`quantidade`, `unidade_qtd`.
 
 ### `trade_mirror`
 

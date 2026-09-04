@@ -55,7 +55,7 @@ items = await anec.articles_disponiveis(2026)
 | `porto` | str | Canonical port name (UPPER) |
 | `produto` | str | `soybean`, `soybean_meal`, `maize`, `wheat`, `ddgs`, `sorghum` |
 | `periodo` | str | `last_week` (efetivado) or `current_week` (programado) |
-| `valor_ton` | float | Shipped volume (tonnes), `NaN` when empty |
+| `valor_ton` | Float64 | Shipped volume (tonnes), `pd.NA` when missing |
 
 ## Schema — `embarques_mensais()`
 
@@ -88,8 +88,8 @@ items = await anec.articles_disponiveis(2026)
 
 | Input | Canonical |
 |---|---|
-| `soja`, `soybean`, `soybeans`, `soja grao` | `soybean` |
-| `farelo`, `farelo de soja`, `meal`, `soybean meal` | `soybean_meal` |
+| `soja`, `soja grão`, `soja grao`, `soja em grão`, `soja em grao`, `soybean`, `soybeans` | `soybean` |
+| `farelo`, `farelo de soja`, `soybean meal`, `soybeanmeal`, `soymeal`, `meal` | `soybean_meal` |
 | `milho`, `maize`, `corn` | `maize` |
 | `trigo`, `wheat` | `wheat` |
 | `sorgo`, `sorghum` | `sorghum` |

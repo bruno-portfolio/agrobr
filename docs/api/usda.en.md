@@ -35,7 +35,7 @@ async def psd(
 |-----------|------|-------------|
 | `commodity` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` or a USDA code |
 | `country` | `str` | Country: `"BR"`, `"US"`, `"world"` (aggregate), `"all"` (every country). Default: `"BR"` |
-| `market_year` | `int \| None` | Market year. None uses the most recent |
+| `market_year` | `int \| None` | Market year. `None` uses the current calendar year |
 | `attributes` | `list[str] \| None` | Filter attributes (e.g. `["Production", "Exports"]`) |
 | `pivot` | `bool` | If True, pivots attributes into columns |
 | `api_key` | `str \| None` | API key (or uses `AGROBR_USDA_API_KEY`) |

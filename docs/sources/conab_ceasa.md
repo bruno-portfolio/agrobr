@@ -52,8 +52,8 @@ O parser unpivota a matriz para formato long-form com 7 colunas.
 
 ## Cache e Atualizacao
 
-- **TTL:** 4 horas (precos atualizados diariamente)
-- Recomendado: usar uma vez por dia para snapshot de precos
+- Não há cache local: cada chamada baixa os preços da CONAB.
+- A fonte atualiza os preços diariamente; recomenda-se uma chamada por dia para obter o snapshot.
 
 ## Datasets
 

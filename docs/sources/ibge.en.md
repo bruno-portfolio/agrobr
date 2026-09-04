@@ -49,13 +49,13 @@
 
 ### Agricultural Census 1995/2006/2017
 
-- **SIDRA tables 2017**: 6907 (livestock numbers), 6881 (land use), 6957 (temporary crops), 6956 (permanent crops), 6855 (soil preparation), 6848 (fertilization), 6849 (liming), 6851 (pesticides), 8561 (agricultural practices), 6857 (irrigation)
+- **SIDRA tables 2017**: 6907 (livestock numbers), 6881 (land use), 6957 (temporary crops), 6956 (permanent crops), 6855 (soil preparation), 6848 (fertilization), 6849 (liming), 6851 (pesticides), 8561 (agricultural practices), 6857 (irrigation), 6899 (fertilizer expenses)
 - **SIDRA tables 2006**: 791 (soil preparation), 1249 (fertilization), 1245 (liming), 1459 (pesticides), 837 (agricultural practices), 855 (irrigation)
 - **SIDRA tables 1995**: 323 (livestock numbers), 316/311 (land use), 497/492/503 (temporary crops), 509/504/510 (permanent crops)
 - **Coverage**: Brazil + state + municipality
 - **Frequency**: Decennial
 - **Periods**: 1995, 2006 and 2017 (by theme)
-- **Themes**: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente, preparo_solo, adubacao, calagem, agrotoxicos, praticas_agricolas, irrigacao
+- **Themes**: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente, preparo_solo, adubacao, calagem, agrotoxicos, praticas_agricolas, irrigacao, despesa_adubos
 - **Format**: Long format (variable/value per row)
 
 ### Agricultural Census — Historical Series (1920-2006)
@@ -132,9 +132,10 @@
 
 | Code | Name | Unit |
 |--------|------|---------|
-| 214 | Planted area | hectares |
-| 215 | Harvested area | hectares |
-| 216 | Quantity produced | tonnes |
+| 214 | Quantity produced | tonnes |
+| 215 | Production value | thousand BRL |
+| 216 | Harvested area | hectares |
+| 8331 | Planted area | hectares |
 | 112 | Average yield | kg/ha |
 
 ## Usage - PAM
@@ -421,7 +422,8 @@ asyncio.run(main())
 ```python
 temas = await ibge.temas_censo_agro()
 # ['efetivo_rebanho', 'uso_terra', 'lavoura_temporaria', 'lavoura_permanente',
-#  'preparo_solo', 'adubacao', 'calagem', 'agrotoxicos', 'praticas_agricolas', 'irrigacao']
+#  'preparo_solo', 'adubacao', 'calagem', 'agrotoxicos', 'praticas_agricolas', 'irrigacao',
+#  'despesa_adubos']
 ```
 
 ## Cache

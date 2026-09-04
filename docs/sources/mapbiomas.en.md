@@ -69,15 +69,15 @@ print(meta.records_count, meta.fetch_duration_ms)
 ## Limitations
 
 - Tabular data only (statistics). Geospatial data (rasters/GEE) is left for a future version
-- The state XLSX (~23 MB) is downloaded in full on the first call (parsing selects the filters)
+- The state XLSX (~23 MB) is downloaded in full on every call (parsing selects the filters)
 - Municipality level (~660 MB) available via `cobertura(nivel="municipio")` — heavy download, recommended to filter by state/municipality/biome. No integrated local cache yet
 - Class names follow the official MapBiomas legend (in Portuguese)
 
 ## Cache and Updating
 
-- **TTL**: 7 days (collections are published annually)
-- MapBiomas publishes a new collection per year with retroactively recalculated data
-- Recommended: specify filters to reduce data volume in the DataFrame
+- There is no local cache: every call downloads the corresponding spreadsheet from the source.
+- MapBiomas publishes one new collection per year with retroactively recalculated data.
+- Specifying filters is recommended to reduce the DataFrame size.
 
 ## Links
 
