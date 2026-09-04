@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -172,6 +173,31 @@ class TestModuleLazyLoading:
                 assert result is sentinel
         finally:
             sync_module._modules["cepea"] = original
+
+    def test_anec_embarques_is_synchronous_callable(self):
+        import agrobr.sync as sync_module
+
+        async_module = mock.MagicMock()
+        async_module.embarques = mock.AsyncMock(return_value="ok")
+        original = sync_module._modules["anec"]
+        sync_module._modules["anec"] = None
+
+        try:
+            with mock.patch("importlib.import_module", return_value=async_module):
+                embarques = sync_module.__getattr__("anec").embarques
+                assert callable(embarques)
+                assert embarques() == "ok"
+                async_module.embarques.assert_awaited_once_with()
+        finally:
+            sync_module._modules["anec"] = original
+
+    def test_modules_match_top_level_api_packages(self):
+        import agrobr.sync as sync_module
+
+        package_root = Path(sync_module.__file__).parent
+        expected = {path.parent.name for path in package_root.glob("*/api.py")}
+        expected.update({"datasets", "noticias_agricolas", "sicar"})
+        assert set(sync_module._modules) == expected
 
 
 class TestGetOrCreateEventLoop:

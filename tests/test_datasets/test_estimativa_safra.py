@@ -106,7 +106,7 @@ class TestEstimativaSafraFetch:
         df, meta = await dataset.fetch("soja", return_meta=True)
 
         assert meta.dataset == "estimativa_safra"
-        assert meta.contract_version == "1.0"
+        assert meta.contract_version == "2.0"
         assert meta.attempted_sources == ["conab"]
         assert meta.selected_source == "conab"
         assert meta.records_count == len(df)

@@ -1,65 +1,72 @@
-# Snapshots e Modo Determinístico
+# Snapshots e modo determinístico
 
-Snapshots capturam dados locais em arquivos parquet, permitindo reprodutibilidade total em papers, auditorias e pipelines CI. Nenhum request HTTP é feito durante consultas em modo determinístico.
+Snapshots exportam conjuntos de dados para arquivos Parquet. O modo determinístico é um recurso separado e, atualmente, atua somente no dataset `preco_diario`. Não há garantia global de execução sem rede para todos os datasets.
 
-## Criando um Snapshot
+## Criando um snapshot
 
-### Programático
+### Programaticamente
 
 ```python
 from agrobr.snapshots import create_snapshot
 
-# Nome automático (data atual)
 info = await create_snapshot()
 
-# Nome customizado + fontes específicas
-info = await create_snapshot("2025-Q4", sources=["cepea", "conab", "ibge"])
+info = await create_snapshot(
+    "2025-Q4",
+    sources=["cepea", "conab", "ibge"],
+)
 print(info.name, info.path, info.file_count)
 ```
+
+`create_snapshot()` cobre somente estas fontes e arquivos:
+
+| Fonte | Arquivos | Cobertura |
+|---|---|---|
+| CEPEA | `cepea/<produto>.parquet` | Um arquivo por produto disponível no cache DuckDB; a coleta usa `indicador(..., offline=True)` |
+| CONAB | `conab/safras.parquet`, `conab/balanco.parquet` | Safras somente de soja e balanço de oferta e demanda |
+| IBGE | `ibge/pam.parquet`, `ibge/lspa.parquet` | PAM e LSPA somente de soja |
+
+A criação pode acessar a rede nas coletas da CONAB e do IBGE. Na CEPEA, apenas dados já presentes no cache DuckDB são exportados.
 
 ### CLI
 
 ```bash
-# Nome automático
 agrobr snapshot create
-
-# Nome customizado com fontes
 agrobr snapshot create 2025-Q4 --sources cepea,conab,ibge
 ```
 
-Os snapshots são salvos em `~/.agrobr/snapshots/<nome>/` com um `manifest.json` e arquivos parquet por fonte/dataset.
+Sem nome explícito, a data atual é usada. Os snapshots ficam em `~/.agrobr/snapshots/<nome>/`, salvo quando outro diretório é configurado.
 
-## Listando Snapshots
+## Listando snapshots
 
 ```python
 from agrobr.snapshots import list_snapshots
 
-for s in list_snapshots():
-    print(f"{s.name} — {s.file_count} arquivos, {s.size_bytes/1024/1024:.1f} MB")
-    print(f"  Fontes: {', '.join(s.sources)}")
-    print(f"  Criado em: {s.created_at}")
+for snapshot in list_snapshots():
+    size_mb = snapshot.size_bytes / 1024 / 1024
+    print(f"{snapshot.name} — {snapshot.file_count} arquivos, {size_mb:.1f} MB")
+    print(f"  Fontes: {', '.join(snapshot.sources)}")
+    print(f"  Criado em: {snapshot.created_at}")
 ```
 
 ```bash
 agrobr snapshot list
-agrobr snapshot list --json    # saída estruturada
+agrobr snapshot list --json
 ```
 
-## Usando um Snapshot (Modo Determinístico)
+## Modo determinístico em `preco_diario`
 
-### Context Manager (recomendado)
+O context manager força `preco_diario` a consultar o cache DuckDB do CEPEA com `offline=True` e limita `fim` à data do snapshot. Se o usuário informar um `fim` anterior, essa data prevalece.
 
 ```python
 from agrobr import datasets
 
 async with datasets.deterministic("2025-12-31"):
-    # Todas as consultas filtram data <= snapshot
-    # Usa apenas cache local — sem rede
     df = await datasets.preco_diario("soja")
-    df2 = await datasets.producao_anual("milho", ano=2023)
+    historico = await datasets.preco_diario("milho", fim="2025-06-30")
 ```
 
-O context manager usa `contextvars`, sendo thread-safe e async-safe.
+Os demais datasets não consultam esse modo e podem acessar a rede normalmente. O context manager usa `contextvars`, portanto o estado é seguro entre threads e tarefas assíncronas.
 
 ### Decorator
 
@@ -69,41 +76,54 @@ from agrobr.datasets.deterministic import deterministic_decorator
 
 @deterministic_decorator("2025-12-31")
 async def meu_pipeline():
-    df = await datasets.preco_diario("soja")
-    return df
+    return await datasets.preco_diario("soja")
 ```
 
-!!! note "Context manager vs CLI"
-    O context manager `deterministic()` e o decorator recebem uma **data ISO** (ex: `"2025-12-31"`) e filtram consultas por data.
-    O CLI `snapshot use` recebe o **nome do snapshot**, valida que ele existe e mostra como ativar o modo determinístico no código — o modo vale por processo Python, então um comando de CLI não consegue ativá-lo para execuções futuras.
-
-### CLI
-
-```bash
-agrobr snapshot use 2025-Q4
-# Valida o snapshot e mostra como ativa-lo no codigo
-```
-
-### Configuração global
+### Configuração de snapshots
 
 ```python
 from agrobr.config import set_mode
+from agrobr.snapshots import load_from_snapshot
 
 set_mode("deterministic", snapshot="2025-12-31")
+df = load_from_snapshot("cepea", "soja")
 
-# Voltar ao normal
 set_mode("normal")
 ```
 
-## Carregando Dados de um Snapshot
+O argumento `snapshot` define o nome padrão usado por `load_from_snapshot()`. `snapshot_path` define o diretório base usado tanto na criação quanto na leitura. `set_mode()` não ativa o context manager de `datasets`, e o campo `network_enabled` da configuração não bloqueia requests HTTP.
+
+O comando `agrobr snapshot use <nome>` apenas valida a existência do snapshot e mostra como configurar o processo Python; ele não altera execuções futuras.
+
+## Carregando dados de um snapshot
 
 ```python
 from agrobr.snapshots import load_from_snapshot
 
-df = load_from_snapshot("cepea", "indicador", snapshot_name="2025-Q4")
+df = load_from_snapshot("cepea", "soja", snapshot_name="2025-Q4")
 ```
 
-## Removendo Snapshots
+O segundo argumento é o nome real do arquivo sem a extensão `.parquet`.
+
+## Estrutura no disco
+
+```text
+~/.agrobr/snapshots/
+  2025-Q4/
+    manifest.json
+    cepea/
+      soja.parquet
+      milho.parquet
+      <produto>.parquet
+    conab/
+      safras.parquet
+      balanco.parquet
+    ibge/
+      pam.parquet
+      lspa.parquet
+```
+
+## Removendo snapshots
 
 ```python
 from agrobr.snapshots import delete_snapshot
@@ -113,27 +133,12 @@ delete_snapshot("2025-Q4")
 
 ```bash
 agrobr snapshot delete 2025-Q4
-agrobr snapshot delete 2025-Q4 --force   # sem confirmação
+agrobr snapshot delete 2025-Q4 --force
 ```
 
-## Estrutura no Disco
+## Boas práticas
 
-```
-~/.agrobr/snapshots/
-  2025-Q4/
-    manifest.json          # metadados (nome, data, fontes, versão agrobr)
-    cepea/
-      indicador.parquet
-    conab/
-      safras.parquet
-      balanco.parquet
-    ibge/
-      pam.parquet
-```
-
-## Boas Práticas
-
-- Crie snapshots após coleta completa dos dados necessários
-- Use nomes descritivos (ex: `2025-Q4`, `paper-submission-v2`)
-- Em CI, crie o snapshot uma vez e reutilize em todos os jobs
-- Combine `deterministic()` com testes para garantir reprodutibilidade
+- Confirme quais fontes e produtos foram gravados no `manifest.json`.
+- Não trate o modo determinístico como bloqueio global de rede.
+- Use nomes descritivos, como `2025-Q4` ou `paper-submission-v2`.
+- Em CI, crie o snapshot uma vez e reutilize os mesmos arquivos.

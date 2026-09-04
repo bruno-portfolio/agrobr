@@ -1,4 +1,4 @@
-# estimativa_safra v1.0
+# estimativa_safra v2.0
 
 Current crop-year estimates by state.
 

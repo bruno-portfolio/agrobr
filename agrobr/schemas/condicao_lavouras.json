@@ -1,0 +1,116 @@
+{
+  "name": "deral.condicao_lavouras",
+  "schema_version": "1.0",
+  "effective_from": "0.13.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "produto",
+    "data",
+    "condicao"
+  ],
+  "required_columns": [
+    "produto",
+    "data",
+    "condicao"
+  ],
+  "dtypes": {
+    "produto": "str",
+    "data": "str",
+    "condicao": "str",
+    "pct": "float",
+    "plantio_pct": "float",
+    "colheita_pct": "float"
+  },
+  "nullable": {
+    "produto": false,
+    "data": false,
+    "condicao": false,
+    "pct": true,
+    "plantio_pct": true,
+    "colheita_pct": true
+  },
+  "columns": [
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "dd/mm/yyyy",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "condicao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "boa|media|ruim|plantio|colheita",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "pct",
+      "type": "float",
+      "nullable": true,
+      "unit": "%",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 100
+    },
+    {
+      "name": "plantio_pct",
+      "type": "float",
+      "nullable": true,
+      "unit": "%",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 100
+    },
+    {
+      "name": "colheita_pct",
+      "type": "float",
+      "nullable": true,
+      "unit": "%",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 100
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "pct_min": 0,
+    "pct_max": 100,
+    "plantio_pct_min": 0,
+    "plantio_pct_max": 100,
+    "colheita_pct_min": 0,
+    "colheita_pct_max": 100
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'produto' is always a normalized DERAL key (lowercase)",
+    "'condicao' is always one of: boa, media, ruim, plantio, colheita",
+    "'pct', 'plantio_pct', 'colheita_pct' are percentages 0-100 when present",
+    "Data covers only Paraná (PR)"
+  ]
+}

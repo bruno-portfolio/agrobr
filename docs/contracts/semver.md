@@ -43,8 +43,8 @@ pode quebrar codigo downstream que depende do schema atual.
 | `area_colhida` | `float` | opcional, >= 0 | v0.4.0 |
 | `produtividade` | `float` | opcional, >= 0 | v0.4.0 |
 | `producao` | `float` | opcional, >= 0 | v0.4.0 |
-| `levantamento` | `int` | obrigatória, 1-12 | v0.6.0 |
-| `data_publicacao` | `date` | obrigatória | v0.6.0 |
+| `levantamento` | `int` | opcional, 1-12; nulo quando a fonte é o LSPA | v1.2.0 |
+| `data_publicacao` | `date` | opcional; nula quando a fonte é o LSPA | v1.2.0 |
 | `fonte` | `str` | obrigatória | v0.6.0 |
 
 ### `producao_anual` (IBGE PAM)

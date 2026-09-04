@@ -194,16 +194,44 @@ Every agrobr module is available in the sync API:
 
 ```python
 from agrobr.sync import (
-    anda,                 # Fertilizers (ANDA)
-    bcb,                  # Rural credit (BCB/SICOR)
-    cepea,                # Price indicators (CEPEA)
-    comexstat,            # Exports/imports (MDIC)
-    conab,                # Crop surveys + costs (CONAB)
-    datasets,             # Semantic layer
-    ibge,                 # PAM/LSPA (IBGE)
-    inmet,                # Meteorology (INMET)
-    noticias_agricolas,   # Agricultural quotes (Notícias Agrícolas)
-    zarc,                 # Agricultural Climate Risk Zoning
+    abiove,
+    acervo_fundiario,
+    alt,
+    ana,
+    anda,
+    anec,
+    antaq,
+    b3,
+    bcb,
+    cepea,
+    cftc,
+    comexstat,
+    comtrade,
+    conab,
+    datasets,
+    defensivos,
+    deral,
+    desmatamento,
+    embrapa_solos,
+    funai,
+    ibama,
+    ibge,
+    icmbio,
+    imea,
+    incra,
+    inmet,
+    lista_suja,
+    mapbiomas,
+    mapbiomas_alerta,
+    nasa_power,
+    noticias_agricolas,
+    queimadas,
+    rio_verde,
+    rnc,
+    sfb,
+    unica,
+    usda,
+    zarc,
 )
 ```
 

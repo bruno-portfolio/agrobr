@@ -1,47 +1,46 @@
 {
-  "name": "ibama.embargos_geo",
+  "name": "usda.psd",
   "schema_version": "1.0",
-  "effective_from": "1.1.0",
+  "effective_from": "0.13.0",
   "breaking_policy": "major",
   "primary_key": [
-    "numero_tad"
+    "commodity_code",
+    "country_code",
+    "market_year",
+    "attribute"
   ],
   "required_columns": [
-    "numero_tad",
-    "data_embargo",
-    "uf",
-    "area_desmatada_ha",
-    "geometry"
+    "commodity_code",
+    "commodity",
+    "country_code",
+    "market_year",
+    "attribute"
   ],
   "dtypes": {
-    "numero_tad": "str",
-    "data_embargo": "datetime",
-    "uf": "str",
-    "municipio": "str",
-    "area_desmatada_ha": "float",
-    "infracao": "str",
-    "legislacao": "str",
-    "status": "str",
-    "situacao_poligono": "str",
-    "respeita_embargo": "str",
-    "geometry": "geometry"
+    "commodity_code": "str",
+    "commodity": "str",
+    "country_code": "str",
+    "country": "str",
+    "market_year": "int",
+    "attribute": "str",
+    "attribute_br": "str",
+    "value": "float",
+    "unit": "str"
   },
   "nullable": {
-    "numero_tad": false,
-    "data_embargo": false,
-    "uf": false,
-    "municipio": true,
-    "area_desmatada_ha": true,
-    "infracao": true,
-    "legislacao": true,
-    "status": true,
-    "situacao_poligono": true,
-    "respeita_embargo": true,
-    "geometry": true
+    "commodity_code": false,
+    "commodity": false,
+    "country_code": false,
+    "country": true,
+    "market_year": false,
+    "attribute": false,
+    "attribute_br": true,
+    "value": true,
+    "unit": true
   },
   "columns": [
     {
-      "name": "numero_tad",
+      "name": "commodity_code",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -52,18 +51,7 @@
       "max_value": null
     },
     {
-      "name": "data_embargo",
-      "type": "datetime",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "uf",
+      "name": "commodity",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -74,7 +62,18 @@
       "max_value": null
     },
     {
-      "name": "municipio",
+      "name": "country_code",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "country",
       "type": "str",
       "nullable": true,
       "unit": null,
@@ -85,20 +84,42 @@
       "max_value": null
     },
     {
-      "name": "area_desmatada_ha",
+      "name": "market_year",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1960,
+      "max_value": null
+    },
+    {
+      "name": "attribute",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "attribute_br",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "value",
       "type": "float",
       "nullable": true,
-      "unit": "ha",
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": 0,
-      "max_value": null
-    },
-    {
-      "name": "infracao",
-      "type": "str",
-      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -107,71 +128,25 @@
       "max_value": null
     },
     {
-      "name": "legislacao",
+      "name": "unit",
       "type": "str",
       "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "status",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "situacao_poligono",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "respeita_embargo",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "geometry",
-      "type": "geometry",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "MultiPolygon EPSG:4326 (nullable — some embargos lack polygon data)",
       "min_value": null,
       "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "area_desmatada_ha_min": 0
+    "market_year_min": 1960
   },
   "guarantees": [
     "Column names never change (additions only)",
-    "'numero_tad' is always non-empty",
-    "'uf' is always a valid Brazilian state code",
-    "'area_desmatada_ha' is always >= 0 when present",
-    "'geometry' may be null for embargos without polygon data",
-    "PII fields (nom_pessoa, cpf_cnpj_infrator) are never included"
+    "'market_year' is always >= 1960",
+    "Long format: one row per commodity/country/year/attribute",
+    "Contract validates long format only; pivot=True skips validation"
   ]
 }

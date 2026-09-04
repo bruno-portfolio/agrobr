@@ -1,0 +1,127 @@
+{
+  "name": "conab.serie_historica_safra",
+  "schema_version": "1.0",
+  "effective_from": "0.13.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "produto",
+    "safra",
+    "regiao",
+    "uf"
+  ],
+  "required_columns": [
+    "produto",
+    "safra"
+  ],
+  "dtypes": {
+    "produto": "str",
+    "safra": "str",
+    "regiao": "str",
+    "uf": "str",
+    "area_plantada_mil_ha": "float",
+    "producao_mil_ton": "float",
+    "produtividade_kg_ha": "float"
+  },
+  "nullable": {
+    "produto": false,
+    "safra": false,
+    "regiao": true,
+    "uf": true,
+    "area_plantada_mil_ha": true,
+    "producao_mil_ton": true,
+    "produtividade_kg_ha": true
+  },
+  "columns": [
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "regiao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_plantada_mil_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "producao_mil_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "produtividade_kg_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "area_plantada_mil_ha_min": 0,
+    "producao_mil_ton_min": 0,
+    "produtividade_kg_ha_min": 0
+  },
+  "guarantees": [
+    "PK unica por combinacao produto + safra + regiao + uf",
+    "'produto' lowercase (ex: soja, milho_2)",
+    "'safra' formato YYYY/YY (ex: 2023/24)",
+    "'regiao' quando presente: NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL",
+    "'uf' quando presente: codigo UF de 2 letras uppercase",
+    "Metricas (area, producao, produtividade) >= 0 quando presentes"
+  ]
+}

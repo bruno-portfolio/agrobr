@@ -508,6 +508,24 @@ class TestGenerateJsonSchemas:
                 assert "required_columns" in data
                 assert "dtypes" in data
 
+    def test_committed_schemas_match_registry(self):
+        schema_dir = Path(__file__).parents[2] / "agrobr" / "schemas"
+        schema_paths = {path.stem: path for path in schema_dir.glob("*.json")}
+        contract_names = set(list_contracts())
+        regenerate = (
+            'python -c "from agrobr.contracts import generate_json_schemas; '
+            "generate_json_schemas('agrobr/schemas')\""
+        )
+
+        assert set(schema_paths) == contract_names, (
+            f"Schemas em disco não correspondem ao registry. Regenere com: {regenerate}"
+        )
+        for name in sorted(contract_names):
+            schema = json.loads(schema_paths[name].read_text(encoding="utf-8"))
+            assert schema == get_contract(name).to_dict(), (
+                f"Schema {name}.json diverge do contrato. Regenere com: {regenerate}"
+            )
+
 
 class TestCEPEAContract:
     def test_cepea_indicador_contract_exists(self):
@@ -549,6 +567,7 @@ class TestCONABContracts:
     def test_conab_safra_contract_exists(self):
         assert CONAB_SAFRA_V1 is not None
         assert CONAB_SAFRA_V1.name == "conab.safras"
+        assert CONAB_SAFRA_V1.version == "2.0"
         assert CONAB_SAFRA_V1.primary_key == ["safra", "produto", "uf", "levantamento"]
 
     def test_conab_safra_levantamento_range(self):

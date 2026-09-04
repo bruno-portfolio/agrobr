@@ -1,0 +1,83 @@
+{
+  "name": "anec.embarques",
+  "schema_version": "1.0",
+  "effective_from": "1.0.6",
+  "breaking_policy": "major",
+  "primary_key": [
+    "porto",
+    "produto",
+    "periodo"
+  ],
+  "required_columns": [
+    "porto",
+    "produto",
+    "periodo"
+  ],
+  "dtypes": {
+    "porto": "str",
+    "produto": "str",
+    "periodo": "str",
+    "valor_ton": "float"
+  },
+  "nullable": {
+    "porto": false,
+    "produto": false,
+    "periodo": false,
+    "valor_ton": true
+  },
+  "columns": [
+    {
+      "name": "porto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "periodo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "last_week|current_week",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "valor_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "valor_ton_min": 0
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'valor_ton' is always >= 0 when present",
+    "One row per porto x produto x periodo"
+  ]
+}

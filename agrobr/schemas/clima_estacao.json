@@ -1,46 +1,37 @@
 {
-  "name": "desmatamento.deter_geo",
+  "name": "datasets.clima_estacao",
   "schema_version": "1.0",
-  "effective_from": "0.12.0",
+  "effective_from": "0.13.0",
   "breaking_policy": "major",
   "primary_key": [
     "data",
-    "classe",
-    "uf",
-    "municipio",
-    "bioma"
+    "estacao"
   ],
   "required_columns": [
     "data",
-    "classe",
-    "uf",
-    "area_km2",
-    "bioma",
-    "geometry"
+    "estacao"
   ],
   "dtypes": {
     "data": "date",
-    "classe": "str",
+    "estacao": "str",
     "uf": "str",
-    "municipio": "str",
-    "municipio_id": "int",
-    "area_km2": "float",
-    "satelite": "str",
-    "sensor": "str",
-    "bioma": "str",
-    "geometry": "geometry"
+    "temp_media": "float",
+    "temp_max": "float",
+    "temp_min": "float",
+    "precipitacao_mm": "float",
+    "umidade_media": "float",
+    "radiacao_total_kj_m2": "float"
   },
   "nullable": {
     "data": false,
-    "classe": false,
-    "uf": false,
-    "municipio": true,
-    "municipio_id": true,
-    "area_km2": false,
-    "satelite": true,
-    "sensor": true,
-    "bioma": false,
-    "geometry": false
+    "estacao": false,
+    "uf": true,
+    "temp_media": true,
+    "temp_max": true,
+    "temp_min": true,
+    "precipitacao_mm": true,
+    "umidade_media": true,
+    "radiacao_total_kj_m2": true
   },
   "columns": [
     {
@@ -55,7 +46,7 @@
       "max_value": null
     },
     {
-      "name": "classe",
+      "name": "estacao",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -68,17 +59,6 @@
     {
       "name": "uf",
       "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "municipio",
-      "type": "str",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -88,21 +68,43 @@
       "max_value": null
     },
     {
-      "name": "municipio_id",
-      "type": "int",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "area_km2",
+      "name": "temp_media",
       "type": "float",
-      "nullable": false,
-      "unit": "km2",
+      "nullable": true,
+      "unit": "°C",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "temp_max",
+      "type": "float",
+      "nullable": true,
+      "unit": "°C",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "temp_min",
+      "type": "float",
+      "nullable": true,
+      "unit": "°C",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "precipitacao_mm",
+      "type": "float",
+      "nullable": true,
+      "unit": "mm",
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -110,60 +112,39 @@
       "max_value": null
     },
     {
-      "name": "satelite",
-      "type": "str",
+      "name": "umidade_media",
+      "type": "float",
       "nullable": true,
-      "unit": null,
+      "unit": "%",
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": null,
-      "max_value": null
+      "min_value": 0,
+      "max_value": 100
     },
     {
-      "name": "sensor",
-      "type": "str",
+      "name": "radiacao_total_kj_m2",
+      "type": "float",
       "nullable": true,
-      "unit": null,
+      "unit": "kJ/m²",
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "bioma",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "geometry",
-      "type": "geometry",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "MultiPolygon EPSG:4326",
-      "min_value": null,
+      "min_value": 0,
       "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "area_km2_min": 0
+    "precipitacao_mm_min": 0,
+    "umidade_media_min": 0,
+    "umidade_media_max": 100,
+    "radiacao_total_kj_m2_min": 0
   },
   "guarantees": [
-    "Column names never change (additions only)",
-    "'data' is always a valid date",
-    "'area_km2' is always >= 0",
-    "'uf' is always a valid Brazilian state code",
-    "'bioma' is always 'Amazônia' or 'Cerrado'",
-    "'geometry' is always a valid Shapely geometry in EPSG:4326"
+    "PK unica por combinacao data + estacao",
+    "'estacao' codigo INMET (ex: A301)",
+    "Apenas agregacao='diario' validada contra este contrato",
+    "Todas as colunas de medicao sao nullable (estacoes podem falhar)"
   ]
 }

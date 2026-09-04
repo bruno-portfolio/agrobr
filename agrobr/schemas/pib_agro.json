@@ -1,0 +1,112 @@
+{
+  "name": "ibge.pib_agro",
+  "schema_version": "1.0",
+  "effective_from": "0.13.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "trimestre",
+    "setor",
+    "precos"
+  ],
+  "required_columns": [
+    "trimestre",
+    "unidade",
+    "setor",
+    "precos",
+    "fonte"
+  ],
+  "dtypes": {
+    "trimestre": "str",
+    "valor": "float",
+    "unidade": "str",
+    "setor": "str",
+    "precos": "str",
+    "fonte": "str"
+  },
+  "nullable": {
+    "trimestre": false,
+    "valor": true,
+    "unidade": false,
+    "setor": false,
+    "precos": false,
+    "fonte": false
+  },
+  "columns": [
+    {
+      "name": "trimestre",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Trimestre no formato YYYYQQ",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "valor",
+      "type": "float",
+      "nullable": true,
+      "unit": "R$ (milhões)",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "setor",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Setor: agropecuaria, industria, servicos, pib_total",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "precos",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Tipo de precos: corrente, real_1995 (injetado pelo dataset)",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "fonte",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true
+  },
+  "guarantees": [
+    "Column names never change (additions only)",
+    "'trimestre' always matches pattern YYYYQQ",
+    "'setor' is one of: agropecuaria, industria, servicos, pib_total",
+    "'precos' is one of: corrente, real_1995",
+    "'precos' in PK prevents collision between different deflator calls"
+  ]
+}

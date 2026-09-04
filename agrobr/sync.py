@@ -96,6 +96,7 @@ _modules: dict[str, _SyncModule | None] = {
     "acervo_fundiario": None,
     "ana": None,
     "anda": None,
+    "anec": None,
     "antaq": None,
     "b3": None,
     "bcb": None,

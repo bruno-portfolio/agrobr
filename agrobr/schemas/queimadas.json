@@ -1,7 +1,7 @@
 {
-  "name": "queimadas.focos_geo",
+  "name": "queimadas.focos",
   "schema_version": "1.0",
-  "effective_from": "1.1.0",
+  "effective_from": "0.10.0",
   "breaking_policy": "major",
   "primary_key": [
     "data",
@@ -14,8 +14,7 @@
     "data",
     "lat",
     "lon",
-    "satelite",
-    "geometry"
+    "satelite"
   ],
   "dtypes": {
     "data": "date",
@@ -31,8 +30,7 @@
     "numero_dias_sem_chuva": "float",
     "precipitacao": "float",
     "risco_fogo": "float",
-    "frp": "float",
-    "geometry": "geometry"
+    "frp": "float"
   },
   "nullable": {
     "data": false,
@@ -48,8 +46,7 @@
     "numero_dias_sem_chuva": true,
     "precipitacao": true,
     "risco_fogo": true,
-    "frp": true,
-    "geometry": false
+    "frp": true
   },
   "columns": [
     {
@@ -205,17 +202,6 @@
       "description": "",
       "min_value": 0,
       "max_value": null
-    },
-    {
-      "name": "geometry",
-      "type": "geometry",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "Point EPSG:4326 derived from lat/lon",
-      "min_value": null,
-      "max_value": null
     }
   ],
   "constraints": {
@@ -232,8 +218,6 @@
   },
   "guarantees": [
     "Column names never change (additions only)",
-    "'geometry' is always a valid Point in EPSG:4326",
-    "'geometry' x/y always matches lon/lat columns",
     "'lat' is always between -35 and 6 (Brazil bounding box)",
     "'lon' is always between -74 and -30 (Brazil bounding box)",
     "'data' is always a valid date",

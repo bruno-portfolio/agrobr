@@ -141,9 +141,9 @@ class TestParseTecnicosCsv:
             parse_tecnicos_csv(csv)
 
     def test_c1_en_dash_normalized(self):
-        csv = ("CLASSE;NR_REGISTRO;INGREDIENTE_ATIVO\nHerbicida;T00001;ALFA\x96BETA\n").encode()
+        csv = ("CLASSE;NR_REGISTRO;INGREDIENTE_ATIVO\nHerbicida;T00001;A \x96 B\n").encode()
         df = parse_tecnicos_csv(csv)
-        assert df.iloc[0]["ingrediente_ativo"] == "ALFA–BETA"
+        assert df.iloc[0]["ingrediente_ativo"] == "A – B"
 
 
 class TestHelpers:

@@ -126,7 +126,7 @@ ESTIMATIVA_SAFRA_INFO = DatasetInfo(
         ),
     ],
     products=["soja", "milho", "arroz", "feijao", "trigo", "algodao"],
-    contract_version="1.0",
+    contract_version="2.0",
     update_frequency="monthly",
     typical_latency="M+0",
     source_url="https://www.gov.br/conab/",

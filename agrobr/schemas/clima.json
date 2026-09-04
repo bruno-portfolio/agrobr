@@ -1,52 +1,51 @@
 {
-  "name": "conab.custo_producao",
+  "name": "datasets.clima",
   "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "effective_from": "0.13.0",
   "breaking_policy": "major",
   "primary_key": [
-    "cultura",
-    "uf",
-    "safra",
-    "categoria",
-    "item"
+    "mes",
+    "uf"
   ],
   "required_columns": [
-    "cultura",
+    "mes",
     "uf",
-    "safra",
-    "categoria",
-    "item"
+    "precip_acum_mm",
+    "temp_media",
+    "temp_max_media",
+    "temp_min_media",
+    "fonte"
   ],
   "dtypes": {
-    "cultura": "str",
+    "mes": "date",
     "uf": "str",
-    "safra": "str",
-    "tecnologia": "str",
-    "categoria": "str",
-    "item": "str",
-    "unidade": "str",
-    "quantidade_ha": "float",
-    "preco_unitario": "float",
-    "valor_ha": "float",
-    "participacao_pct": "float"
+    "precip_acum_mm": "float",
+    "temp_media": "float",
+    "temp_max_media": "float",
+    "temp_min_media": "float",
+    "num_estacoes": "int",
+    "umidade_media": "float",
+    "radiacao_media_mj": "float",
+    "vento_medio_ms": "float",
+    "fonte": "str"
   },
   "nullable": {
-    "cultura": false,
+    "mes": false,
     "uf": false,
-    "safra": false,
-    "tecnologia": true,
-    "categoria": false,
-    "item": false,
-    "unidade": true,
-    "quantidade_ha": true,
-    "preco_unitario": true,
-    "valor_ha": true,
-    "participacao_pct": true
+    "precip_acum_mm": false,
+    "temp_media": false,
+    "temp_max_media": false,
+    "temp_min_media": false,
+    "num_estacoes": true,
+    "umidade_media": true,
+    "radiacao_media_mj": true,
+    "vento_medio_ms": true,
+    "fonte": false
   },
   "columns": [
     {
-      "name": "cultura",
-      "type": "str",
+      "name": "mes",
+      "type": "date",
       "nullable": false,
       "unit": null,
       "stable": true,
@@ -67,65 +66,10 @@
       "max_value": null
     },
     {
-      "name": "safra",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "tecnologia",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "categoria",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "item",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "unidade",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "quantidade_ha",
+      "name": "precip_acum_mm",
       "type": "float",
-      "nullable": true,
-      "unit": "unidade/ha",
+      "nullable": false,
+      "unit": "mm",
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -133,21 +77,10 @@
       "max_value": null
     },
     {
-      "name": "preco_unitario",
+      "name": "temp_media",
       "type": "float",
-      "nullable": true,
-      "unit": "BRL",
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": 0,
-      "max_value": null
-    },
-    {
-      "name": "valor_ha",
-      "type": "float",
-      "nullable": true,
-      "unit": "BRL/ha",
+      "nullable": false,
+      "unit": "°C",
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -155,10 +88,76 @@
       "max_value": null
     },
     {
-      "name": "participacao_pct",
+      "name": "temp_max_media",
+      "type": "float",
+      "nullable": false,
+      "unit": "°C",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "temp_min_media",
+      "type": "float",
+      "nullable": false,
+      "unit": "°C",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "num_estacoes",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "umidade_media",
       "type": "float",
       "nullable": true,
       "unit": "%",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 100
+    },
+    {
+      "name": "radiacao_media_mj",
+      "type": "float",
+      "nullable": true,
+      "unit": "MJ/m²",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "vento_medio_ms",
+      "type": "float",
+      "nullable": true,
+      "unit": "m/s",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "fonte",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -168,12 +167,19 @@
   ],
   "constraints": {
     "no_duplicates": true,
-    "quantidade_ha_min": 0,
-    "preco_unitario_min": 0
+    "precip_acum_mm_min": 0,
+    "num_estacoes_min": 0,
+    "umidade_media_min": 0,
+    "umidade_media_max": 100,
+    "radiacao_media_mj_min": 0,
+    "vento_medio_ms_min": 0
   },
   "guarantees": [
-    "Column names never change (additions only)",
-    "'safra' always matches pattern YYYY/YY",
-    "'uf' is always a valid Brazilian state code"
+    "PK unica por combinacao mes + uf",
+    "'uf' sempre uppercase 2 letras",
+    "'fonte' sempre 'inmet' ou 'nasa_power'",
+    "'num_estacoes' presente apenas quando fonte='inmet'",
+    "'umidade_media', 'radiacao_media_mj', 'vento_medio_ms' presentes apenas quando fonte='nasa_power'",
+    "Agregacao mensal: 'mes' sempre primeiro dia do mes"
   ]
 }
