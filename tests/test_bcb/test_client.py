@@ -53,6 +53,21 @@ class TestBcbTimeout:
         assert mock_client.get.call_count == client.BCB_MAX_RETRIES
 
 
+class TestBcbRequest:
+    @pytest.mark.asyncio
+    async def test_odata_url_omits_skip(self):
+        response = make_mock_response(200, json_data={"value": []})
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(return_value=response)
+
+        with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client):
+            await client._fetch_odata("CusteioRegiaoUFProduto", top=1)
+
+        url = mock_client.get.await_args.args[0]
+        assert "$top=1" in url
+        assert "$skip" not in url
+
+
 class TestBcbHTTPErrors:
     @pytest.mark.asyncio
     async def test_http_500_retries(self):
@@ -208,6 +223,61 @@ class TestBcbFetchCreditoRural:
             "((AnoEmissao eq '2023' and MesEmissao ge '07') or "
             "(AnoEmissao eq '2024' and MesEmissao lt '07'))"
         ]
+
+    @pytest.mark.asyncio
+    async def test_record_limit_triggers_monthly_slicing(self):
+        safra_filter = (
+            "((AnoEmissao eq '2023' and MesEmissao ge '07') or "
+            "(AnoEmissao eq '2024' and MesEmissao lt '07'))"
+        )
+        monthly_records = [
+            {
+                "AnoEmissao": "2024" if mes < 7 else "2023",
+                "MesEmissao": f"{mes:02d}",
+            }
+            for mes in range(1, 13)
+        ]
+        responses = [
+            {"value": [{"truncated": 1}, {"truncated": 2}]},
+            *({"value": [record]} for record in monthly_records),
+        ]
+
+        with (
+            patch.object(client, "SICOR_RECORD_LIMIT", 2),
+            patch.object(
+                client,
+                "_fetch_odata",
+                new_callable=AsyncMock,
+                side_effect=responses,
+            ) as mock_fetch,
+        ):
+            result = await client.fetch_credito_rural(safra_sicor="2023/2024")
+
+        assert result == monthly_records
+        assert mock_fetch.await_count == 13
+        assert mock_fetch.await_args_list[0].kwargs["filters"] == [safra_filter]
+        for mes, call in enumerate(mock_fetch.await_args_list[1:], start=1):
+            assert call.kwargs["filters"] == [
+                safra_filter,
+                f"MesEmissao eq '{mes:02d}'",
+            ]
+            assert call.kwargs["top"] == 2
+
+    @pytest.mark.asyncio
+    async def test_month_at_record_limit_raises_source_unavailable(self):
+        full_response = {"value": [{"id": 1}, {"id": 2}]}
+
+        with (
+            patch.object(client, "SICOR_RECORD_LIMIT", 2),
+            patch.object(
+                client,
+                "_fetch_odata",
+                new_callable=AsyncMock,
+                side_effect=[full_response, full_response],
+            ),
+            pytest.raises(SourceUnavailableError, match="volume acima do limite da Olinda"),
+        ):
+            await client.fetch_credito_rural()
 
     @pytest.mark.asyncio
     async def test_invalid_uf_code_raises_before_request(self):

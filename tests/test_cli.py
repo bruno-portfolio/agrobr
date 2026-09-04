@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import io
 import json
+import sys
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
 from typer.testing import CliRunner
 
+from agrobr import cli
 from agrobr.cli import app
 
 runner = CliRunner()
@@ -91,6 +94,31 @@ class TestHealthCommand:
         ):
             result = runner.invoke(app, ["health"])
         assert result.exit_code == 1
+
+    def test_health_cp1252_stdout_does_not_raise(self):
+        stdout_buffer = io.BytesIO()
+        stderr_buffer = io.BytesIO()
+        stdout = io.TextIOWrapper(stdout_buffer, encoding="cp1252")
+        stderr = io.TextIOWrapper(stderr_buffer, encoding="cp1252")
+
+        with (
+            patch.object(sys, "stdout", stdout),
+            patch.object(sys, "stderr", stderr),
+            patch("agrobr.cli._configure_cli_logging"),
+            patch(
+                "agrobr.health.checker.run_all_checks",
+                new_callable=AsyncMock,
+                return_value=[self._mock_check_result()],
+            ),
+        ):
+            cli.main(_version=False, verbose=False)
+            cli.health(source=None, deep=False, output="text")
+            stdout.flush()
+            output = stdout_buffer.getvalue().decode("cp1252")
+
+        assert stdout.errors == "replace"
+        assert stderr.errors == "replace"
+        assert "? CEPEA: ok" in output
 
 
 class TestDoctorCommand:

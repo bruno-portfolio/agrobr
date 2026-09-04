@@ -83,7 +83,7 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             ),
         },
         Fonte.BCB: {
-            "url": URLS[Fonte.BCB]["base"],
+            "url": (f"{URLS[Fonte.BCB]['base']}/CusteioRegiaoUFProduto?$format=json&$top=1"),
         },
         Fonte.CEPEA: {
             "has_deep_check": True,

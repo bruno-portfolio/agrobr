@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from typing import TYPE_CHECKING, Any, cast
 
 import typer
@@ -62,6 +63,11 @@ def main(
         help="Mostra logs INFO no stderr",
     ),
 ) -> None:
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(errors="replace")
+
     _configure_cli_logging(verbose)
 
 

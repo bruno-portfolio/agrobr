@@ -31,6 +31,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **docs** — ANTAQ marcada como fonte indisponível (desde 23/06/2026) no README PT/EN, nos índices de fontes e contratos e nas páginas da fonte, com link para o aviso oficial; nota sobre a restrição de rede do INCRA em `acervo_fundiario`; link de licença do MapBiomas atualizado para o FAQ (a página `/termos-de-uso/` saiu do ar na reformulação do site), declarando CC BY 4.0
 
 ### Fixed
+- **bcb** — a coleta SICOR deixa de enviar `$skip`, que passou a causar HTTP 500 na Olinda; usa uma busca de até 100.000 registros e, ao atingir o limite, refaz a consulta em fatias mensais; o health check agora consulta o endpoint real de crédito rural
+- **cli** — a saída redirecionada ou encadeada no Windows não falha mais com `UnicodeEncodeError` em terminais `cp1252`; caracteres indisponíveis são substituídos sem alterar o encoding
+- **docs** — documentação PT/EN alinhada ao código e aos contratos: exemplos inválidos, caches/TTLs inexistentes, contagens, parâmetros, colunas e páginas contratuais corrigidos; referência de API e contrato do dataset `embarques_anec` adicionadas à navegação
 - **preco_diario** — o modo determinístico limita a consulta ao CEPEA à data do snapshot sem sobrescrever um `fim` anterior informado pelo usuário
 - **docs/snapshots** — documentação alinhada à cobertura real do modo determinístico, à coleta limitada a CEPEA/CONAB/IBGE e aos nomes efetivos dos arquivos Parquet
 - **sync** — `agrobr.sync.anec` passa a expor as corrotinas públicas da ANEC como funções síncronas; um teste estrutural mantém o registry sync alinhado aos módulos públicos, enquanto integrações de `alt` permanecem em `sync.alt`

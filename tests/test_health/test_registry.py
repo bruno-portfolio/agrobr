@@ -63,6 +63,13 @@ class TestHealthRegistry:
         assert "apisidra" in config.url
         assert "/values/t/5457/" in config.url
 
+    def test_bcb_probe_queries_sicor_resource(self):
+        config = HEALTH_REGISTRY[Fonte.BCB]
+        assert "/CusteioRegiaoUFProduto?" in config.url
+        assert "$format=json" in config.url
+        assert "$top=1" in config.url
+        assert "$skip" not in config.url
+
     def test_gov_sources_use_dataset_endpoints(self):
         expected = {
             Fonte.ANA: URLS[Fonte.ANA]["arcgis"],

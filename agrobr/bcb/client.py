@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 from urllib.parse import quote
 
 import httpx
@@ -22,8 +22,7 @@ BASE_URL = URLS[Fonte.BCB]["base"]
 
 TIMEOUT = get_timeout(read=120.0)
 
-PAGE_SIZE = 10000
-FALLBACK_PAGE_SIZES = (2000, 500)
+SICOR_RECORD_LIMIT = 100_000
 BCB_MAX_RETRIES = 6
 
 ENDPOINT_MAP: dict[str, str] = {
@@ -57,10 +56,9 @@ async def _fetch_odata(
     endpoint: str,
     filters: list[str] | None = None,
     select: list[str] | None = None,
-    top: int = PAGE_SIZE,
-    skip: int = 0,
+    top: int = SICOR_RECORD_LIMIT,
 ) -> dict[str, Any]:
-    parts = [f"$format=json&$top={top}&$skip={skip}"]
+    parts = [f"$format=json&$top={top}"]
 
     if filters:
         parts.append("$filter=" + quote(" and ".join(filters), safe="(),'"))
@@ -76,7 +74,6 @@ async def _fetch_odata(
         logger.debug(
             "bcb_odata_request",
             endpoint=endpoint,
-            skip=skip,
             top=top,
         )
 
@@ -129,6 +126,56 @@ def _safra_odata_filter(safra_sicor: str) -> str:
     )
 
 
+async def _fetch_credito_por_mes(
+    endpoint: str,
+    filters: list[str],
+    select: list[str] | None,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+
+    for mes in range(1, 13):
+        month_filters = [*filters, f"MesEmissao eq '{mes:02d}'"]
+        data = await _fetch_odata(
+            endpoint=endpoint,
+            filters=month_filters,
+            select=select,
+            top=SICOR_RECORD_LIMIT,
+        )
+        month_records = cast(list[dict[str, Any]], data.get("value", []))
+        if len(month_records) == SICOR_RECORD_LIMIT:
+            raise SourceUnavailableError(
+                source="bcb",
+                url=f"{BASE_URL}/{endpoint}",
+                last_error="volume acima do limite da Olinda",
+            )
+        records.extend(month_records)
+
+    return records
+
+
+async def _fetch_credito_records(
+    endpoint: str,
+    filters: list[str],
+    select: list[str] | None,
+) -> list[dict[str, Any]]:
+    data = await _fetch_odata(
+        endpoint=endpoint,
+        filters=filters or None,
+        select=select,
+        top=SICOR_RECORD_LIMIT,
+    )
+    records = cast(list[dict[str, Any]], data.get("value", []))
+    if len(records) != SICOR_RECORD_LIMIT:
+        return records
+
+    logger.warning(
+        "bcb_volume_fatiado_por_mes",
+        endpoint=endpoint,
+        record_limit=SICOR_RECORD_LIMIT,
+    )
+    return await _fetch_credito_por_mes(endpoint, filters, select)
+
+
 async def fetch_credito_rural(
     finalidade: str = "custeio",
     produto_sicor: str | None = None,
@@ -160,50 +207,8 @@ async def fetch_credito_rural(
         server_filters=server_filters,
     )
 
-    all_records: list[dict[str, Any]] = []
-    skip = 0
-
     select = SELECT_MAP.get(finalidade.lower())
-    page_size = PAGE_SIZE
-
-    while True:
-        try:
-            data = await _fetch_odata(
-                endpoint=endpoint,
-                filters=server_filters or None,
-                select=select,
-                top=page_size,
-                skip=skip,
-            )
-        except SourceUnavailableError:
-            menores = [p for p in FALLBACK_PAGE_SIZES if p < page_size]
-            if not menores:
-                raise
-            page_size = menores[0]
-            logger.warning(
-                "bcb_page_size_reduzido",
-                endpoint=endpoint,
-                page_size=page_size,
-                hint="Olinda instavel com paginas grandes; reduzindo",
-            )
-            continue
-
-        records = data.get("value", [])
-        if not records:
-            break
-
-        all_records.extend(records)
-        logger.debug(
-            "bcb_page_fetched",
-            skip=skip,
-            records_in_page=len(records),
-            total_so_far=len(all_records),
-        )
-
-        if len(records) < page_size:
-            break
-
-        skip += page_size
+    all_records = await _fetch_credito_records(endpoint, server_filters, select)
 
     logger.info(
         "bcb_fetch_credito_raw",
