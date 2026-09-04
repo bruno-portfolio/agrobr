@@ -123,6 +123,23 @@ class TestSanityValidation:
         assert "cafe" in PRICE_RULES
         assert "boi" in PRICE_RULES
 
+    def test_bezerro_rule(self):
+        rule = PRICE_RULES["bezerro"]
+        indicador = Indicador(
+            fonte=Fonte.CEPEA,
+            produto="bezerro",
+            praca="Mato Grosso do Sul",
+            data=date(2026, 9, 3),
+            valor=Decimal("3397.58"),
+            unidade="BRL/cabeca",
+        )
+
+        assert rule.min_value == Decimal("800")
+        assert rule.max_value == Decimal("8000")
+        assert rule.max_daily_change_pct == Decimal("10")
+        assert rule.description == "Bezerro MS (BRL/cabeca)"
+        assert validate_indicador(indicador) == []
+
 
 class TestValidateSafra:
     def test_valid_soja_safra(self):

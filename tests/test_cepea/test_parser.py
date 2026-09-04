@@ -65,6 +65,10 @@ class TestCepeaParserV1:
         unidade = self.parser._detect_unidade("boi", [])
         assert unidade == "BRL/@"
 
+    def test_detect_unidade_bezerro(self):
+        unidade = self.parser._detect_unidade("bezerro", [])
+        assert unidade == "BRL/cabeca"
+
     def test_parser_metadata(self):
         assert self.parser.version == 1
         assert self.parser.source == "cepea"

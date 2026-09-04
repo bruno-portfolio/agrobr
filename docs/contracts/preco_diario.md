@@ -11,7 +11,7 @@ Preço diário spot de commodities agrícolas brasileiras.
 
 ## Produtos
 
-`soja`, `milho`, `boi`, `cafe`, `cafe_robusta`, `trigo`, `algodao`
+`soja`, `milho`, `boi`, `bezerro`, `cafe`, `cafe_robusta`, `trigo`, `algodao`
 
 ## Schema
 

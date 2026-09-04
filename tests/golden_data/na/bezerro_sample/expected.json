@@ -1,0 +1,14 @@
+{
+  "count": 10,
+  "first": {
+    "data": "2026-09-03",
+    "valor": "3397.58",
+    "unidade": "BRL/cabeca",
+    "praca": "Mato Grosso do Sul"
+  },
+  "last": {
+    "data": "2026-08-21",
+    "valor": "3393.02",
+    "unidade": "BRL/cabeca"
+  }
+}

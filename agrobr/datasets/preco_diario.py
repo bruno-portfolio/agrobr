@@ -18,6 +18,10 @@ async def _fetch_cepea(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
     from agrobr import cepea
 
     if is_deterministic():
+        snapshot = get_snapshot()
+        fim = kwargs.get("fim")
+        if snapshot is not None and (fim is None or str(fim) > snapshot):
+            kwargs["fim"] = snapshot
         raw = await cepea.indicador(produto, offline=True, return_meta=True, **kwargs)
     else:
         raw = await cepea.indicador(produto, return_meta=True, **kwargs)
@@ -75,7 +79,7 @@ PRECO_DIARIO_INFO = DatasetInfo(
             description="Cache local DuckDB",
         ),
     ],
-    products=["soja", "milho", "boi", "cafe", "cafe_robusta", "trigo", "algodao"],
+    products=["soja", "milho", "boi", "bezerro", "cafe", "cafe_robusta", "trigo", "algodao"],
     contract_version="1.0",
     update_frequency="daily",
     typical_latency="D+0",
@@ -101,7 +105,7 @@ class PrecoDiarioDataset(BaseDataset):
         logger.info("dataset_fetch", dataset="preco_diario", produto=produto)
 
         snapshot = get_snapshot()
-        if snapshot:
+        if snapshot and (fim is None or str(fim) > snapshot):
             fim = snapshot
 
         df, source_name, source_meta, attempted = await self._try_sources(

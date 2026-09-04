@@ -50,6 +50,13 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_daily_change_pct=Decimal("10"),
         description="Café Robusta/Conilon (BRL/sc60kg)",
     ),
+    "bezerro": SanityRule(
+        field="valor",
+        min_value=Decimal("800"),
+        max_value=Decimal("8000"),
+        max_daily_change_pct=Decimal("10"),
+        description="Bezerro MS (BRL/cabeca)",
+    ),
     "boi": SanityRule(
         field="valor",
         min_value=Decimal("100"),

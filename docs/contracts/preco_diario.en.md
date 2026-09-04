@@ -11,7 +11,7 @@ Daily spot prices of Brazilian agricultural commodities.
 
 ## Products
 
-`soja`, `milho`, `boi`, `cafe`, `cafe_robusta`, `trigo`, `algodao`
+`soja`, `milho`, `boi`, `bezerro`, `cafe`, `cafe_robusta`, `trigo`, `algodao`
 
 ## Schema
 

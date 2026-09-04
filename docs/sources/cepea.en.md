@@ -27,13 +27,14 @@
 - **Type**: Authorized mirror of CEPEA indicators
 - **Status**: Working
 
-## Available Products (21 products)
+## Available Products (22 products)
 
 | Product | Main Market | Unit | Frequency |
 |---------|-----------------|---------|------------|
 | Soybean | Paranagua/PR | BRL/sc 60kg | Daily |
 | Soybean Parana | Parana | BRL/sc 60kg | Daily |
 | Corn | Campinas/SP | BRL/sc 60kg | Daily |
+| Calf | Mato Grosso do Sul | BRL/cabeca | Daily |
 | Live Cattle | Sao Paulo/SP | BRL/@ | Daily |
 | Arabica Coffee | Sao Paulo/SP | BRL/sc 60kg | Daily |
 | Robusta Coffee | Espirito Santo | BRL/sc 60kg | Daily |

@@ -27,13 +27,14 @@
 - **Tipo**: Mirror autorizado dos indicadores CEPEA
 - **Status**: Funcional
 
-## Produtos Disponiveis (21 produtos)
+## Produtos Disponíveis (22 produtos)
 
 | Produto | Praca Principal | Unidade | Frequencia |
 |---------|-----------------|---------|------------|
 | Soja | Paranagua/PR | BRL/sc 60kg | Diaria |
 | Soja Parana | Parana | BRL/sc 60kg | Diaria |
 | Milho | Campinas/SP | BRL/sc 60kg | Diaria |
+| Bezerro | Mato Grosso do Sul | BRL/cabeca | Diária |
 | Boi Gordo | Sao Paulo/SP | BRL/@ | Diaria |
 | Cafe Arabica | Sao Paulo/SP | BRL/sc 60kg | Diaria |
 | Cafe Robusta | Espirito Santo | BRL/sc 60kg | Diaria |

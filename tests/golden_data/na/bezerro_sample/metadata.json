@@ -1,0 +1,14 @@
+{
+  "source": "na",
+  "format": "html",
+  "parser_module": "agrobr.noticias_agricolas.parser",
+  "parser_function": "parse_indicador",
+  "parser_kwargs": {
+    "produto": "bezerro"
+  },
+  "url": "https://www.noticiasagricolas.com.br/cotacoes/boi-gordo/indicador-bezerro-esalq-bmf-bovespa-ms",
+  "captured_at": "2026-09-04T10:16:50.454982+00:00",
+  "parser_version": 2,
+  "notes": "Real HTML from Notícias Agrícolas, bezerro CEPEA/ESALQ.",
+  "needs_real_data": false
+}

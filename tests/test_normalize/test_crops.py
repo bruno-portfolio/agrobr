@@ -101,6 +101,10 @@ class TestNormalizarCultura:
     def test_boi_variants(self, entrada, expected):
         assert normalizar_cultura(entrada) == expected
 
+    @pytest.mark.parametrize("entrada", ["bezerro", "bezerro ms", "calf"])
+    def test_bezerro_variants(self, entrada):
+        assert normalizar_cultura(entrada) == "bezerro"
+
     @pytest.mark.parametrize(
         "entrada,expected",
         [

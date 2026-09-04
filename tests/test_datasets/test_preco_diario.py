@@ -50,6 +50,9 @@ class TestPrecoDiarioSpecific:
     def test_info_includes_cafe_robusta(self):
         assert "cafe_robusta" in PRECO_DIARIO_INFO.products
 
+    def test_info_includes_bezerro(self):
+        assert "bezerro" in PRECO_DIARIO_INFO.products
+
 
 class TestPrecoDiarioFetch:
     @pytest.mark.asyncio
@@ -418,6 +421,19 @@ class TestPrecoDiarioFetchFunctions:
                 await _fetch_cepea("soja")
             _, kwargs = mock_ind.call_args
             assert kwargs.get("offline") is True
+
+    @pytest.mark.asyncio
+    async def test_fetch_cepea_limits_fim_to_snapshot(self):
+        with patch("agrobr.cepea.indicador", new_callable=AsyncMock) as indicador:
+            indicador.return_value = (_mock_df(), mock_source_meta())
+
+            async with deterministic("2025-01-15"):
+                await _fetch_cepea("soja", fim="2025-01-31")
+                await _fetch_cepea("soja", fim="2025-01-10")
+
+        assert indicador.await_args_list[0].kwargs["fim"] == "2025-01-15"
+        assert indicador.await_args_list[1].kwargs["fim"] == "2025-01-10"
+        assert all(call.kwargs["offline"] is True for call in indicador.await_args_list)
 
     @pytest.mark.asyncio
     async def test_fetch_cache_str_dates(self):

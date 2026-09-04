@@ -18,12 +18,13 @@ from agrobr.models import Indicador
 from agrobr.utils.warnings import warn_once_reset
 
 
-@pytest.mark.integration
 async def test_produtos_returns_list():
     result = await cepea.produtos()
     assert isinstance(result, list)
+    assert len(result) == 22
     assert "soja" in result
     assert "milho" in result
+    assert "bezerro" in result
     assert "cafe" in result
     assert "cafe_robusta" in result
 
@@ -52,6 +53,11 @@ async def test_pracas_valid_product_without_parser_mapping():
 async def test_pracas_cafe_robusta():
     result = await cepea.pracas("cafe_robusta")
     assert result == ["espirito_santo"]
+
+
+async def test_pracas_bezerro():
+    result = await cepea.pracas("bezerro")
+    assert result == ["mato_grosso_do_sul"]
 
 
 def _make_indicador(
