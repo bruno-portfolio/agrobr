@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.icmbio import api
 
 UCS_DIR = Path(__file__).parent.parent / "golden_data" / "icmbio" / "ucs_sample"
@@ -64,6 +65,16 @@ class TestUcs:
     async def test_invalid_grupo_raises(self):
         with pytest.raises(ValueError, match="Grupo invalido"):
             await api.ucs(grupo="XX")
+
+    @pytest.mark.asyncio
+    async def test_invalid_bioma_raises_before_fetch(self):
+        with (
+            patch.object(api.client, "fetch_ucs", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="Bioma inválido"),
+        ):
+            await api.ucs(bioma="Cerrado'")
+
+        fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_invalid_bbox_raises(self):

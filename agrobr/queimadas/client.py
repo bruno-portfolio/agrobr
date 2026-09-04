@@ -48,7 +48,14 @@ async def fetch_focos_diario(data: str) -> tuple[bytes, str]:
     ) as c:
         content = await _try_fetch(c, url)
     if content is None:
-        raise SourceUnavailableError(source="queimadas", url=url, last_error="HTTP 404")
+        raise SourceUnavailableError(
+            source="queimadas",
+            url=url,
+            last_error=(
+                "HTTP 404: o arquivo diário só existe para os últimos dias; "
+                "remova o parâmetro dia para usar o arquivo mensal"
+            ),
+        )
     logger.info("queimadas_csv_found", source="queimadas", size=len(content))
     return content, url
 

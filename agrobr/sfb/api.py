@@ -6,12 +6,13 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.validation import validate_uf
+from agrobr.utils.validation import validate_bioma, validate_uf
 
-from . import client, parser
+from . import client, models, parser
 
 if TYPE_CHECKING:
     import geopandas as gpd
@@ -25,6 +26,21 @@ _WHERE_FIELDS: dict[str, dict[str, str]] = {
 }
 
 
+def _escape_filter_value(value: str) -> str:
+    return value.replace("'", "''")
+
+
+def _validate_categoria(categoria: str | None) -> str | None:
+    if categoria is None:
+        return None
+    normalized = categoria.strip().upper()
+    if normalized not in models.CATEGORIAS_CNFP:
+        raise InvalidParameterError(
+            f"Categoria inválida: {categoria!r}. Valores válidos: {sorted(models.CATEGORIAS_CNFP)}"
+        )
+    return normalized
+
+
 def _build_where(
     layer_key: str,
     *,
@@ -36,13 +52,13 @@ def _build_where(
     clauses: list[str] = []
     if uf:
         field = fields.get("uf", "uf")
-        clauses.append(f"{field}='{uf.upper()}'")
+        clauses.append(f"{field}='{_escape_filter_value(uf.upper())}'")
     if bioma:
         field = fields.get("bioma", "bioma")
-        clauses.append(f"{field}='{bioma.upper()}'")
+        clauses.append(f"{field}='{_escape_filter_value(bioma.upper())}'")
     if categoria:
         field = fields.get("categoria", "categoria")
-        clauses.append(f"{field}='{categoria.upper()}'")
+        clauses.append(f"{field}='{_escape_filter_value(categoria.upper())}'")
 
     return " AND ".join(clauses) if clauses else "1=1"
 
@@ -156,6 +172,8 @@ async def cnfp(
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
+    bioma = validate_bioma(bioma)
+    categoria = _validate_categoria(categoria)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_tabular(
         "cnfp",
@@ -200,6 +218,8 @@ async def cnfp_geo(
     **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     uf = validate_uf(uf)
+    bioma = validate_bioma(bioma)
+    categoria = _validate_categoria(categoria)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_geo(
         "cnfp",
@@ -323,6 +343,7 @@ async def ifn_conglomerados(
     **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
+    bioma = validate_bioma(bioma)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_tabular(
         "ifn_conglomerados",
@@ -363,6 +384,7 @@ async def ifn_conglomerados_geo(
     **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     uf = validate_uf(uf)
+    bioma = validate_bioma(bioma)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_geo(
         "ifn_conglomerados",

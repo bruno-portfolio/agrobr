@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.sfb import api
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "sfb" / "cnfp_sample"
@@ -91,6 +91,18 @@ def _ifn_arcgis_bytes() -> bytes:
 
 
 class TestCnfp:
+    def test_where_escapes_filter_literals(self):
+        where = api._build_where(
+            "cnfp",
+            uf="M'T",
+            bioma="Cerrado'",
+            categoria="FLONA'",
+        )
+
+        assert "uf='M''T'" in where
+        assert "bioma='CERRADO'''" in where
+        assert "categoria='FLONA'''" in where
+
     @pytest.mark.asyncio
     async def test_cnfp_returns_dataframe(self):
         arcgis = _arcgis_json_bytes()
@@ -141,6 +153,26 @@ class TestCnfp:
     async def test_invalid_uf_raises(self):
         with pytest.raises(ValueError, match="UF invalida"):
             await api.cnfp(uf="INVALID")
+
+    @pytest.mark.asyncio
+    async def test_invalid_bioma_raises_before_fetch(self):
+        with (
+            patch.object(api.client, "fetch_layer", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="Bioma inválido"),
+        ):
+            await api.cnfp(bioma="Cerrado'")
+
+        fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_invalid_categoria_raises_before_fetch(self):
+        with (
+            patch.object(api.client, "fetch_layer", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="Categoria inválida"),
+        ):
+            await api.cnfp(categoria="x' OR 1=1 OR categoria='")
+
+        fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_cnfp_as_polars(self):

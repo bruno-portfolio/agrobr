@@ -11,6 +11,7 @@ import pandas as pd
 import pytest
 
 from agrobr.alt.anp_diesel import api
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 
 
@@ -322,6 +323,24 @@ class TestSyncWrapper:
         ad = sync.alt.anp_diesel
         assert hasattr(ad, "precos_diesel")
         assert hasattr(ad, "vendas_diesel")
+
+
+class TestDateValidation:
+    @pytest.mark.parametrize("function_name", ["precos_diesel", "vendas_diesel"])
+    @pytest.mark.asyncio
+    async def test_formato_invalido(self, function_name):
+        function = getattr(api, function_name)
+
+        with pytest.raises(InvalidParameterError, match="YYYY-MM-DD"):
+            await function(inicio="01/01/2026")
+
+    @pytest.mark.parametrize("function_name", ["precos_diesel", "vendas_diesel"])
+    @pytest.mark.asyncio
+    async def test_periodo_invertido(self, function_name):
+        function = getattr(api, function_name)
+
+        with pytest.raises(InvalidParameterError, match="inicio deve ser anterior"):
+            await function(inicio="2026-02-01", fim="2026-01-01")
 
 
 class TestPrecosDieselAsPolars:

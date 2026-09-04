@@ -21,6 +21,10 @@ logger = structlog.get_logger()
 TIMEOUT = get_timeout(read=120.0)
 
 
+def _escape_filter_value(value: str) -> str:
+    return value.replace("'", "''")
+
+
 def _build_cql_filters(
     *,
     uf: str | None = None,
@@ -29,12 +33,12 @@ def _build_cql_filters(
 ) -> str | None:
     filters: list[str] = []
     if uf is not None:
-        filters.append(f"uf LIKE '%{uf}%'")
+        filters.append(f"uf LIKE '%{_escape_filter_value(uf)}%'")
     if grupo is not None:
-        grupo_upper = grupo.strip().upper()
+        grupo_upper = _escape_filter_value(grupo.strip().upper())
         filters.append(f"grupouc='{grupo_upper}'")
     if bioma is not None:
-        filters.append(f"biomas ILIKE '%{bioma}%'")
+        filters.append(f"biomas ILIKE '%{_escape_filter_value(bioma)}%'")
     return " AND ".join(filters) if filters else None
 
 

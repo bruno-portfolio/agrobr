@@ -34,7 +34,9 @@ async def _fetch_comexstat(
     if ano is None:
         ano = utcnow().year - 1
         logger.info("comexstat_default_ano", ano=ano)
-    if not isinstance(ano, int) or isinstance(ano, bool) or not 1997 <= ano <= utcnow().year:
+    if not isinstance(ano, int) or isinstance(ano, bool):
+        raise InvalidParameterError("ano deve ser inteiro")
+    if not 1997 <= ano <= utcnow().year:
         raise InvalidParameterError(f"ano deve estar entre 1997 e {utcnow().year}")
     uf = validate_uf(uf)
     if agregacao not in {"mensal", "detalhado"}:

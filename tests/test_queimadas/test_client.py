@@ -117,3 +117,22 @@ class TestFetchFocosMensal:
             pytest.raises(SourceUnavailableError, match="Tentativas"),
         ):
             await client.fetch_focos_mensal(1990, 1)
+
+
+class TestFetchFocosDiario:
+    @pytest.mark.asyncio
+    async def test_404_informa_janela_e_arquivo_mensal(self):
+        response = make_mock_response(404, content=b"")
+
+        with (
+            patch(
+                "agrobr.queimadas.client.retry_on_status",
+                new_callable=AsyncMock,
+                return_value=response,
+            ),
+            pytest.raises(
+                SourceUnavailableError,
+                match="arquivo diário só existe para os últimos dias.*arquivo mensal",
+            ),
+        ):
+            await client.fetch_focos_diario("20250101")

@@ -123,6 +123,34 @@ class TestFetchHistoricoEstacao:
         assert url.endswith("/2025.zip")
 
     @pytest.mark.asyncio
+    async def test_zip_valido_abaixo_de_um_mb(self):
+        zip_bytes = _make_zip({"2000/INMET_SE_SP_A701_X_01-01-2000_A_31-12-2000.CSV": b"conteudo"})
+        assert client.MIN_HISTORICO_ZIP <= len(zip_bytes) < 1_000_000
+
+        with patch(
+            "agrobr.inmet.client.retry_on_status",
+            new_callable=AsyncMock,
+            return_value=_mock_response(zip_bytes),
+        ):
+            raw, _ = await client.fetch_historico_estacao("A701", 2000)
+
+        assert raw == b"conteudo"
+
+    @pytest.mark.asyncio
+    async def test_html_no_lugar_do_zip_raises(self):
+        html = b"<html><body>manutencao</body></html>"
+
+        with (
+            patch(
+                "agrobr.inmet.client.retry_on_status",
+                new_callable=AsyncMock,
+                return_value=_mock_response(html),
+            ),
+            pytest.raises(SourceUnavailableError, match="não é um ZIP válido"),
+        ):
+            await client.fetch_historico_estacao("A701", 2000)
+
+    @pytest.mark.asyncio
     async def test_estacao_inexistente_raises(self):
         zip_bytes = _make_zip({"2025/INMET_SE_SP_A701_X_01-01-2025_A_31-12-2025.CSV": b"x"})
 

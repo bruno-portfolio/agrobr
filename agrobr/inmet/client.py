@@ -182,7 +182,7 @@ HISTORICO_MIN_ANO = 2000
 
 HISTORICO_TIMEOUT = get_timeout(read=600.0)
 
-MIN_HISTORICO_ZIP = 1_000_000
+MIN_HISTORICO_ZIP = 100_000
 
 _historico_zip_cache: tuple[int, bytes] | None = None
 
@@ -216,6 +216,12 @@ async def fetch_historico_estacao(codigo: str, ano: int) -> tuple[bytes, str]:
             response.raise_for_status()
             zip_bytes = response.content
 
+        if not zipfile.is_zipfile(io.BytesIO(zip_bytes)):
+            raise SourceUnavailableError(
+                source="inmet",
+                url=url,
+                last_error="Resposta não é um ZIP válido",
+            )
         if len(zip_bytes) < MIN_HISTORICO_ZIP:
             raise SourceUnavailableError(
                 source="inmet",

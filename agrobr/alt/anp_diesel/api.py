@@ -31,6 +31,24 @@ from .models import (
 logger = structlog.get_logger()
 
 
+def _normalize_range(
+    inicio: str | date | None,
+    fim: str | date | None,
+) -> tuple[date | None, date | None]:
+    try:
+        start = date.fromisoformat(inicio) if isinstance(inicio, str) else inicio
+        end = date.fromisoformat(fim) if isinstance(fim, str) else fim
+    except ValueError as exc:
+        raise InvalidParameterError("inicio e fim devem usar o formato YYYY-MM-DD") from exc
+    if start is not None and not isinstance(start, date):
+        raise InvalidParameterError("inicio e fim devem ser datas ou strings YYYY-MM-DD")
+    if end is not None and not isinstance(end, date):
+        raise InvalidParameterError("inicio e fim devem ser datas ou strings YYYY-MM-DD")
+    if start is not None and end is not None and start > end:
+        raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
+    return start, end
+
+
 async def precos_diesel(
     uf: str | None = None,
     municipio: str | None = None,
@@ -53,11 +71,7 @@ async def precos_diesel(
             f"Produto '{produto}' invalido. Opcoes: {sorted(PRODUTOS_DIESEL)}"
         )
     validate_year_uf(uf=uf)
-
-    if isinstance(inicio, str):
-        inicio = date.fromisoformat(inicio)
-    if isinstance(fim, str):
-        fim = date.fromisoformat(fim)
+    inicio, fim = _normalize_range(inicio, fim)
 
     t0 = time.monotonic()
 
@@ -102,11 +116,7 @@ async def vendas_diesel(
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     validate_year_uf(uf=uf)
-
-    if isinstance(inicio, str):
-        inicio = date.fromisoformat(inicio)
-    if isinstance(fim, str):
-        fim = date.fromisoformat(fim)
+    inicio, fim = _normalize_range(inicio, fim)
 
     t0 = time.monotonic()
     content = await client.fetch_vendas_m3()

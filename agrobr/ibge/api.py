@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from collections.abc import Sequence
 from datetime import date
 from typing import Literal, overload
 
@@ -39,17 +40,29 @@ _PAM_COLUMNS = [
 ]
 
 
-def _validate_pam_years(ano: int | str | list[int] | None) -> None:
+def _validate_pam_years(
+    ano: int | float | str | Sequence[int | float | str] | None,
+) -> int | list[int] | None:
     if ano is None:
-        return
-    values: list[int | str] = list(ano) if isinstance(ano, list) else [ano]
+        return None
+    if isinstance(ano, Sequence) and not isinstance(ano, str):
+        values = ano
+        is_sequence = True
+    else:
+        values = [ano]
+        is_sequence = False
     current_year = date.today().year
-    try:
-        years = [int(value) for value in values if not isinstance(value, bool)]
-    except (TypeError, ValueError) as exc:
-        raise InvalidParameterError("ano deve conter anos inteiros") from exc
-    if len(years) != len(values) or any(year < 1974 or year > current_year for year in years):
+    years: list[int] = []
+    for value in values:
+        if isinstance(value, bool) or (isinstance(value, float) and not value.is_integer()):
+            raise InvalidParameterError("ano deve conter anos inteiros")
+        try:
+            years.append(int(value))
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise InvalidParameterError("ano deve conter anos inteiros") from exc
+    if any(year < 1974 or year > current_year for year in years):
         raise InvalidParameterError(f"ano deve estar entre 1974 e {current_year}")
+    return years if is_sequence else years[0]
 
 
 def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
@@ -66,7 +79,7 @@ def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
 @overload
 async def pam(
     produto: str,
-    ano: int | str | list[int] | None = None,
+    ano: int | float | str | Sequence[int | float | str] | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
@@ -79,7 +92,7 @@ async def pam(
 @overload
 async def pam(
     produto: str,
-    ano: int | str | list[int] | None = None,
+    ano: int | float | str | Sequence[int | float | str] | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
@@ -91,14 +104,14 @@ async def pam(
 
 async def pam(
     produto: str,
-    ano: int | str | list[int] | None = None,
+    ano: int | float | str | Sequence[int | float | str] | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    _validate_pam_years(ano)
+    normalized_ano = _validate_pam_years(ano)
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_pam",
@@ -111,7 +124,7 @@ async def pam(
     logger.info(
         "ibge_pam_request",
         produto=produto,
-        ano=ano,
+        ano=normalized_ano,
         uf=uf,
         nivel=nivel,
     )
@@ -135,7 +148,7 @@ async def pam(
             logger.warning(f"Variável desconhecida: {var}")
 
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
-    period = resolve_period(ano)
+    period = resolve_period(normalized_ano)
 
     df = await client.fetch_sidra(
         table_code=client.TABELAS["pam_nova"],
@@ -194,7 +207,7 @@ async def pam(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:pam",
-        {"produto": produto, "ano": ano},
+        {"produto": produto, "ano": normalized_ano},
         schema_version=meta.schema_version,
     )
     meta.cache_expires_at = calculate_expiry("ibge_pam")

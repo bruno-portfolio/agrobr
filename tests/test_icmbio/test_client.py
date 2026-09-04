@@ -6,10 +6,18 @@ from urllib.parse import parse_qs, unquote, urlparse
 import pytest
 
 from agrobr.exceptions import SourceUnavailableError
-from agrobr.icmbio.client import fetch_ucs, fetch_ucs_geo
+from agrobr.icmbio.client import _build_cql_filters, fetch_ucs, fetch_ucs_geo
 
 
 class TestFetchUcs:
+    def test_cql_escapes_filter_literals(self):
+        cql = _build_cql_filters(uf="M'T", grupo="P'I", bioma="Cerrado'")
+
+        assert cql is not None
+        assert "uf LIKE '%M''T%'" in cql
+        assert "grupouc='P''I'" in cql
+        assert "biomas ILIKE '%Cerrado''%'" in cql
+
     @pytest.mark.asyncio
     async def test_successful_fetch(self):
         with patch(

@@ -19,6 +19,16 @@ def _mock_csv():
 
 
 class TestExportacao:
+    @pytest.mark.asyncio
+    async def test_ano_de_tipo_errado_raises_specific_message(self):
+        with (
+            patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="ano deve ser inteiro"),
+        ):
+            await api.exportacao("soja", ano="2024")  # type: ignore[arg-type]
+
+        fetch.assert_not_awaited()
+
     @pytest.mark.parametrize(
         "kwargs",
         [

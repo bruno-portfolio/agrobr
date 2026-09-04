@@ -68,7 +68,7 @@ class TestPamValidation:
         assert "Disponíveis:" in str(exc.value)
         assert "soja" in str(exc.value)
 
-    @pytest.mark.parametrize("ano", [1973, 9999, "invalido"])
+    @pytest.mark.parametrize("ano", [1973, 9999, "invalido", 2023.5])
     @pytest.mark.asyncio
     async def test_pam_ano_invalido_antes_da_rede(self, ano):
         with (
@@ -245,6 +245,16 @@ class TestPamMocked:
 
             call_args = mock_fetch.call_args
             assert call_args.kwargs["period"] == "2021,2022,2023"
+
+    @pytest.mark.parametrize("ano", [2023.0, "2023"])
+    @pytest.mark.asyncio
+    async def test_pam_normalizes_year_before_query(self, ano, mock_sidra_response):
+        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
+            mock_fetch.return_value = mock_sidra_response
+
+            await ibge.pam("soja", ano=ano)
+
+        assert mock_fetch.call_args.kwargs["period"] == "2023"
 
 
 class TestLspaMocked:

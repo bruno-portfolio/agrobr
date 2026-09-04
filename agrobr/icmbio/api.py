@@ -10,7 +10,7 @@ from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.validation import validate_uf
+from agrobr.utils.validation import validate_bioma, validate_uf
 
 from . import client, parser
 from .models import GRUPOS_VALIDOS
@@ -68,6 +68,7 @@ async def ucs(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
     grupo = _validate_grupo(grupo)
+    bioma = validate_bioma(bioma)
     validate_bbox(bbox)
     logger.info("icmbio_ucs", uf=uf, grupo=grupo, bioma=bioma, bbox=bbox)
 
@@ -126,6 +127,7 @@ async def ucs_geo(
 ) -> Any:
     uf = validate_uf(uf)
     grupo = _validate_grupo(grupo)
+    bioma = validate_bioma(bioma)
     validate_bbox(bbox)
     logger.info("icmbio_ucs_geo", uf=uf, grupo=grupo, bioma=bioma, bbox=bbox)
 

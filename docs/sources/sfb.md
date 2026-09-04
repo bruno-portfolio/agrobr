@@ -39,7 +39,7 @@ from agrobr import sfb
 async def main():
     # CNFP — Cadastro Nacional de Florestas Publicas
     df = await sfb.cnfp(uf="AM")
-    df = await sfb.cnfp(bioma="Amazonia", categoria="B")
+    df = await sfb.cnfp(bioma="Amazonia", categoria="FLONA")
 
     # CNFP com geometria
     gdf = await sfb.cnfp_geo(uf="PA")
