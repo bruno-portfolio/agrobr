@@ -51,7 +51,7 @@ class TestFetchEmbargosZip:
                 new_callable=AsyncMock,
                 return_value=_mock_response(b"x" * 10),
             ),
-            pytest.raises(SourceUnavailableError, match="too small"),
+            pytest.raises(SourceUnavailableError, match="muito pequeno"),
         ):
             await client.fetch_embargos_zip()
 

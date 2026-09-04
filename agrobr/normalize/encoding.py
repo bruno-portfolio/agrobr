@@ -84,7 +84,10 @@ def detect_encoding(content: bytes) -> tuple[str, float]:
 
 
 def detect_encoding_chain(content: bytes) -> str:
-    for enc in ("utf-8", "utf-8-sig", "windows-1252", "iso-8859-1"):
+    if content.startswith(b"\xef\xbb\xbf"):
+        return "utf-8-sig"
+
+    for enc in ("utf-8", "windows-1252", "iso-8859-1"):
         try:
             content.decode(enc)
             return enc

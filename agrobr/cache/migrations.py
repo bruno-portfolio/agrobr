@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING
 
+import duckdb
 import structlog
-
-if TYPE_CHECKING:
-    import duckdb
 
 logger = structlog.get_logger()
 
@@ -49,8 +46,8 @@ def get_current_version(conn: duckdb.DuckDBPyConnection) -> int:
     try:
         result = conn.execute("SELECT MAX(version) FROM schema_version").fetchone()
         return int(result[0]) if result and result[0] else 0
-    except Exception:
-        logger.debug("schema_version_table_missing", exc_info=True)
+    except duckdb.Error as exc:
+        logger.debug("schema_version_table_missing", error=str(exc))
         return 0
 
 

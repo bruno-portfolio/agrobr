@@ -101,7 +101,7 @@ class TestDeralEmptyResponse:
 
         with (
             patch("agrobr.deral.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="too small"),
+            pytest.raises(SourceUnavailableError, match="muito pequeno"),
         ):
             await client._fetch_bytes("https://test.pr.gov.br/PC.xls")
 

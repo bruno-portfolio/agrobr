@@ -11,6 +11,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **exceptions** — `InvalidParameterError`, compatível com `AgrobrError` e `ValueError`, distingue erros de parâmetros do usuário de falhas de dados ou layout sem quebrar handlers existentes
 - **datasets** — `SourceFallbackWarning` avisa quando a fonte primária falha e uma fonte alternativa é selecionada, com categoria e resumo do erro original
 
+### Improved
+- **anp_diesel** — planilhas de preços municipais usam calamine como engine primária, com openpyxl como fallback, e os períodos necessários são baixados e processados concorrentemente com limite de três operações
+
 ### Changed
 - **packaging** — o sdist contém apenas o pacote, README, LICENSE e CHANGELOG; o extra `all` contém apenas integrações opcionais de runtime, sem `dev`/`docs`, e o extra `app` sem código correspondente foi removido
 - **ci** — o `pip-audit` não ignora mais uma vulnerabilidade já corrigida do pip, e os nomes dos artefatos de health e integração incluem `github.run_attempt` para não colidirem em re-runs
@@ -25,6 +28,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **docs** — ANTAQ marcada como fonte indisponível (desde 23/06/2026) no README PT/EN, nos índices de fontes e contratos e nas páginas da fonte, com link para o aviso oficial; nota sobre a restrição de rede do INCRA em `acervo_fundiario`; link de licença do MapBiomas atualizado para o FAQ (a página `/termos-de-uso/` saiu do ar na reformulação do site), declarando CC BY 4.0
 
 ### Fixed
+- **filtros** — buscas textuais em defensivos, RNC, Rio Verde, ZARC, ANTT Pedágio, MAPA/PSR, ANTAQ, Embrapa Solos, ANP Diesel, MapBiomas e CONAB Progresso tratam parâmetros como texto literal, não expressão regular, e toleram valores nulos
+- **encoding** — leitura de CSV aplica a cadeia UTF-8 → Windows-1252 → ISO-8859-1 → chardet em `utils/io`, RNC, defensivos, ANTAQ e ANP Diesel; a normalização de UF usa nomes completos delimitados e não confunde texto corrompido como `paran�` com Pará
+- **inmet** — consultas por UF sem `AGROBR_INMET_TOKEN` falham antes de listar ou consultar estações, e falhas de fonte cancelam imediatamente as tarefas irmãs em vez de deixar requests continuarem após o erro
+- **cache** — a ausência esperada da tabela `schema_version` no primeiro uso do DuckDB deixa de imprimir traceback no stdout, evitando `UnicodeEncodeError` em terminais Windows com encoding cp1252
 - **ibge** — falhas 5xx e páginas HTML propagadas como `ValueError` pelo `sidrapy` agora viram `SourceUnavailableError` e participam das três tentativas com backoff antes de chegar às APIs SIDRA
 - **http** — respostas HTTP 200 que não são JSON agora viram indisponibilidade com `Content-Type` e preview em BCB/SICOR, SGS, Focus, PTAX, ZARC, NASA POWER, USDA, CFTC, MapBiomas Alerta, Comtrade, CONAB/CEASA, B3, IMEA, ArcGIS e ANTT Pedágio; o IMEA também rejeita JSON que não seja lista
 - **downloads** — IBGE legado, DERAL, Lista Suja, Rio Verde, ANP Diesel, MAPA/PSR, ZARC, MapBiomas, CONAB, ANDA, B3 e IBAMA validam magic bytes ou rejeitam HTML antes do parser, classificando páginas de manutenção como `SourceUnavailableError`

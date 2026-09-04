@@ -414,6 +414,7 @@ class HTTPSettings(BaseSettings):
 
     max_concurrent_default: int = 1
     max_concurrent_ana: int = 1
+    max_concurrent_anp_diesel: int = 3
     max_concurrent_b3: int = 3
     max_concurrent_ibge: int = 3
 

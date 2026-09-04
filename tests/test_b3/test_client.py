@@ -212,7 +212,7 @@ class TestFetchAjustesZip:
                 new_callable=AsyncMock,
                 return_value=mock_response,
             ),
-            pytest.raises(SourceUnavailableError, match="too small"),
+            pytest.raises(SourceUnavailableError, match="muito pequeno"),
         ):
             await client.fetch_ajustes_zip("03/03/2026")
 

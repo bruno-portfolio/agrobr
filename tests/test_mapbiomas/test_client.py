@@ -77,7 +77,7 @@ class TestFetchBiomeState:
                 new_callable=AsyncMock,
                 return_value=mock_response,
             ),
-            pytest.raises(SourceUnavailableError, match="too small"),
+            pytest.raises(SourceUnavailableError, match="muito pequeno"),
         ):
             await _fetch_url("https://example.com/test")
 

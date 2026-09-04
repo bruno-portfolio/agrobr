@@ -203,6 +203,15 @@ class TestExtractTxtFromZip:
         assert not result.startswith("\ufeff")
         assert result.startswith("colA")
 
+    def test_extracts_windows_1252(self):
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("file.txt", "estado\nPARANÁ\n".encode("windows-1252"))
+
+        result = client._extract_txt_from_zip(buf.getvalue(), "file.txt")
+
+        assert "PARANÁ" in result
+
 
 class TestFetchAnoZip:
     @pytest.mark.asyncio

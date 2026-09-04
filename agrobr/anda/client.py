@@ -46,7 +46,8 @@ async def fetch_estatisticas_page() -> str:
             source="anda",
             url=ESTATISTICAS_URL,
             last_error=(
-                f"HTML response too small or missing links ({len(html)} chars, no '<a' tag found)"
+                f"Resposta HTML muito pequena ou sem links ({len(html)} caracteres, "
+                "tag '<a' não encontrada)"
             ),
         )
 

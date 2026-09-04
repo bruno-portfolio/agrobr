@@ -105,7 +105,7 @@ def normalizar_uf(entrada: str) -> str | None:
         return NOMES_PARA_UF[entrada_norm]
 
     for nome, uf in NOMES_PARA_UF.items():
-        if nome in entrada_norm or entrada_norm in nome:
+        if re.search(rf"(?<!\S){re.escape(nome)}(?!\S)", entrada_norm):
             return uf
 
     return None

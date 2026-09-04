@@ -8,6 +8,7 @@ import structlog
 
 from agrobr.exceptions import ParseError
 from agrobr.normalize.dates import month_to_number
+from agrobr.normalize.encoding import detect_encoding_chain
 from agrobr.normalize.numeric import parse_numeric_br
 from agrobr.utils.io import read_excel_safe
 
@@ -42,7 +43,7 @@ _ExcelEngine = Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"]
 def _detect_header_row(
     content: bytes,
     markers: list[str],
-    engine: _ExcelEngine | None = "openpyxl",
+    engine: _ExcelEngine | None = "calamine",
     max_scan: int = 30,
 ) -> int:
     df_raw = read_excel_safe(
@@ -67,14 +68,14 @@ def _read_precos_xlsx(content: bytes) -> pd.DataFrame:
     header_row = _detect_header_row(
         content,
         markers=["PRODUTO", "DATA INICIAL"],
-        engine="openpyxl",
+        engine="calamine",
     )
     df = read_excel_safe(
         content,
         source="anp_diesel",
         parser_version=PARSER_VERSION,
         label="XLSX precos",
-        engine="openpyxl",
+        engine="calamine",
         header=header_row,
         dtype=str,
     )
@@ -121,7 +122,9 @@ def _filter_precos(
     municipio: str | None,
 ) -> pd.DataFrame:
     col_produto = cols["produto"]
-    diesel_mask = df[col_produto].str.strip().str.upper().str.contains("DIESEL", na=False)
+    diesel_mask = (
+        df[col_produto].str.strip().str.upper().str.contains("DIESEL", na=False, regex=False)
+    )
     df = df[diesel_mask].copy()
 
     if df.empty:
@@ -150,7 +153,10 @@ def _filter_precos(
 
     if municipio and cols["municipio"]:
         municipio_mask = (
-            df[cols["municipio"]].str.strip().str.upper().str.contains(municipio.upper(), na=False)
+            df[cols["municipio"]]
+            .str.strip()
+            .str.upper()
+            .str.contains(municipio.upper(), na=False, regex=False)
         )
         df = df[municipio_mask]
 
@@ -246,10 +252,7 @@ def parse_vendas(
     content: bytes,
     uf: str | None = None,
 ) -> pd.DataFrame:
-    try:
-        text = content.decode("utf-8")
-    except UnicodeDecodeError:
-        text = content.decode("utf-8-sig", errors="replace")
+    text = content.decode(detect_encoding_chain(content))
 
     try:
         df = pd.read_csv(io.StringIO(text), sep=";", dtype=str)
@@ -287,7 +290,9 @@ def parse_vendas(
         )
 
     if col_produto:
-        diesel_mask = df[col_produto].str.strip().str.upper().str.contains("DIESEL", na=False)
+        diesel_mask = (
+            df[col_produto].str.strip().str.upper().str.contains("DIESEL", na=False, regex=False)
+        )
         df = df[diesel_mask].copy()
 
     if df.empty:

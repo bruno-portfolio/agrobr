@@ -178,6 +178,35 @@ class TestParsePrecos:
         df = parser.parse_precos(content, municipio="CUIABA")
         assert all("CUIABA" in m.upper() for m in df["municipio"])
 
+    def test_filtro_municipio_literal(self):
+        rows = [
+            {
+                "ESTADO - SIGLA": "MT",
+                "MUNICÍPIO": "CUIABA (CENTRO)",
+                "PRODUTO": "DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.20",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.60",
+                "NÚMERO DE POSTOS PESQUISADOS": "80",
+            },
+            {
+                "ESTADO - SIGLA": "MT",
+                "MUNICÍPIO": "CUIABA CENTRO",
+                "PRODUTO": "DIESEL S10",
+                "DATA INICIAL": "01/01/2024",
+                "DATA FINAL": "07/01/2024",
+                "PREÇO MÉDIO REVENDA": "6.20",
+                "PREÇO MÉDIO DISTRIBUIÇÃO": "5.60",
+                "NÚMERO DE POSTOS PESQUISADOS": "80",
+            },
+        ]
+        df = parser.parse_precos(
+            _make_precos_xlsx(rows=rows),
+            municipio="CUIABA (CENTRO)",
+        )
+        assert df["municipio"].tolist() == ["CUIABA (CENTRO)"]
+
     def test_margem_calculada(self):
         content = _make_precos_xlsx()
         df = parser.parse_precos(content)
@@ -296,6 +325,15 @@ class TestParseVendas:
         content = _make_vendas_csv()
         df = parser.parse_vendas(content, uf="MT")
         assert all(df["uf"] == "MT")
+
+    def test_windows_1252_encoding(self):
+        content = (
+            "ANO;MES;GRANDE REGIAO;UNIDADE DA FEDERACAO;PRODUTO;VENDAS\n"
+            "2024;JAN;REGIAO SUL;PARANÁ;ÓLEO DIESEL;500000\n"
+        ).encode("windows-1252")
+        df = parser.parse_vendas(content)
+        assert df.iloc[0]["uf"] == "PR"
+        assert df.iloc[0]["produto"] == "DIESEL"
 
     def test_ordenado_por_data(self):
         content = _make_vendas_csv()

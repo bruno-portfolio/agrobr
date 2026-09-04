@@ -159,7 +159,7 @@ class TestFtpClientDownload:
 
             from agrobr.exceptions import SourceUnavailableError
 
-            with pytest.raises(SourceUnavailableError, match="too small"):
+            with pytest.raises(SourceUnavailableError, match="muito pequeno"):
                 await ftp_client.download_legacy_zip("Tab_3")
 
     @pytest.mark.asyncio

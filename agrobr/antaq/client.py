@@ -12,6 +12,7 @@ from agrobr.constants import MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_async, should_retry_status
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.normalize.encoding import detect_encoding_chain
 
 logger = structlog.get_logger()
 
@@ -108,7 +109,8 @@ async def _download_zip(url: str) -> bytes:
 
 def _extract_txt_from_zip(zip_bytes: bytes, filename: str) -> str:
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf, zf.open(filename) as f:
-        return f.read().decode("utf-8-sig")
+        content = f.read()
+        return content.decode(detect_encoding_chain(content))
 
 
 async def fetch_ano_zip(ano: int) -> bytes:

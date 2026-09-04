@@ -58,6 +58,15 @@ class TestGetCurrentVersion:
         _seed_version(conn, 2)
         assert get_current_version(conn) == 2
 
+    def test_first_run_does_not_emit_traceback(self, capsys):
+        conn = _fresh_conn()
+
+        assert get_current_version(conn) == 0
+
+        captured = capsys.readouterr()
+        assert "Traceback" not in captured.out
+        assert "Traceback" not in captured.err
+
 
 class TestMigrate:
     def test_fresh_db(self):

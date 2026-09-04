@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from unittest.mock import patch
+
+import pandas as pd
 import pytest
 
 from agrobr.exceptions import ParseError, SourceUnavailableError
-from agrobr.utils.io import read_csv_safe, validate_download
+from agrobr.utils.io import open_excel_safe, read_csv_safe, read_excel_safe, validate_download
 
 
 class TestValidateDownload:
@@ -63,6 +66,11 @@ class TestReadCsvSafe:
         assert len(df) == 1
         assert "São Paulo" in df["col1"].iloc[0]
 
+    def test_windows_1252(self):
+        data = b"estado\nPARAN\xc1\n"
+        df = read_csv_safe(data, source="test")
+        assert df["estado"].tolist() == ["PARANÁ"]
+
     def test_kwargs_forwarded_sep(self):
         data = b"col1;col2\n1;2\n3;4"
         df = read_csv_safe(data, source="test", sep=";")
@@ -86,6 +94,32 @@ class TestReadCsvSafe:
         with pytest.raises(ParseError) as exc_info:
             read_csv_safe(b"", source="test", parser_version=3)
         assert exc_info.value.parser_version == 3
+
+
+class TestExcelSafeFallback:
+    def test_read_excel_calamine_falls_back_to_openpyxl(self):
+        expected = pd.DataFrame({"valor": [1]})
+        with patch(
+            "agrobr.utils.io.pd.read_excel",
+            side_effect=[RuntimeError("calamine"), expected],
+        ) as mocked:
+            result = read_excel_safe(b"xlsx", source="test", engine="calamine")
+
+        assert result is expected
+        assert mocked.call_args_list[0].kwargs["engine"] == "calamine"
+        assert mocked.call_args_list[1].kwargs["engine"] == "openpyxl"
+
+    def test_open_excel_calamine_falls_back_to_openpyxl(self):
+        expected = object()
+        with patch(
+            "agrobr.utils.io.pd.ExcelFile",
+            side_effect=[RuntimeError("calamine"), expected],
+        ) as mocked:
+            result = open_excel_safe(b"xlsx", source="test", engine="calamine")
+
+        assert result is expected
+        assert mocked.call_args_list[0].kwargs["engine"] == "calamine"
+        assert mocked.call_args_list[1].kwargs["engine"] == "openpyxl"
 
 
 class TestConcatCsvPages:

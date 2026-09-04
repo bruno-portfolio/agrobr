@@ -8,6 +8,7 @@ import pandas as pd
 import structlog
 
 from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.normalize.encoding import detect_encoding_chain
 
 _ExcelEngine = Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"]
 
@@ -35,7 +36,7 @@ def validate_download(
             source=source,
             url=url,
             last_error=(
-                f"Download muito pequeno (too small): {len(content)} bytes; mínimo {min_size}; "
+                f"Download muito pequeno: {len(content)} bytes (mínimo {min_size}); "
                 f"início={preview}"
             ),
         )
@@ -77,25 +78,24 @@ def open_excel_safe(
     try:
         return pd.ExcelFile(io.BytesIO(raw), engine=engine)
     except Exception as primary_err:
-        if engine == "xlrd":
-            raise ParseError(
-                source=source,
-                parser_version=parser_version,
-                reason=f"Erro ao abrir Excel (xlrd): {primary_err}",
-            ) from primary_err
-
+        fallback_engine: _ExcelEngine = "openpyxl" if engine == "calamine" else "calamine"
         logger.warning(
-            "xlsx_calamine_fallback",
+            "excel_engine_fallback",
             source=source,
+            primary_engine=engine or "auto",
+            fallback_engine=fallback_engine,
             primary_error=str(primary_err),
         )
         try:
-            return pd.ExcelFile(io.BytesIO(raw), engine="calamine")
+            return pd.ExcelFile(io.BytesIO(raw), engine=fallback_engine)
         except Exception as fallback_err:
             raise ParseError(
                 source=source,
                 parser_version=parser_version,
-                reason=f"Erro ao abrir Excel (primary: {primary_err}, calamine: {fallback_err})",
+                reason=(
+                    f"Erro ao abrir Excel (primary: {primary_err}, "
+                    f"{fallback_engine}: {fallback_err})"
+                ),
             ) from fallback_err
 
 
@@ -112,28 +112,28 @@ def read_excel_safe(
         df: pd.DataFrame = pd.read_excel(io.BytesIO(raw), **kwargs)
         return df
     except Exception as primary_err:
-        if kwargs.get("engine") == "xlrd":
-            raise ParseError(
-                source=source,
-                parser_version=parser_version,
-                reason=f"Erro ao ler {label} (xlrd): {primary_err}",
-            ) from primary_err
-
+        primary_engine = kwargs.get("engine")
+        fallback_engine: _ExcelEngine = "openpyxl" if primary_engine == "calamine" else "calamine"
         logger.warning(
-            "xlsx_calamine_fallback",
+            "excel_engine_fallback",
             source=source,
             label=label,
+            primary_engine=primary_engine or "auto",
+            fallback_engine=fallback_engine,
             primary_error=str(primary_err),
         )
-        calamine_kwargs = {**kwargs, "engine": "calamine"}
+        fallback_kwargs = {**kwargs, "engine": fallback_engine}
         try:
-            df = pd.read_excel(io.BytesIO(raw), **calamine_kwargs)
+            df = pd.read_excel(io.BytesIO(raw), **fallback_kwargs)
             return df
         except Exception as fallback_err:
             raise ParseError(
                 source=source,
                 parser_version=parser_version,
-                reason=f"Erro ao ler {label} (primary: {primary_err}, calamine: {fallback_err})",
+                reason=(
+                    f"Erro ao ler {label} (primary: {primary_err}, "
+                    f"{fallback_engine}: {fallback_err})"
+                ),
             ) from fallback_err
 
 
@@ -145,24 +145,15 @@ def read_csv_safe(
     label: str = "CSV",
     **kwargs: Any,
 ) -> pd.DataFrame:
+    encoding = detect_encoding_chain(data)
     try:
-        df: pd.DataFrame = pd.read_csv(io.BytesIO(data), encoding="utf-8", **kwargs)
+        df: pd.DataFrame = pd.read_csv(io.BytesIO(data), encoding=encoding, **kwargs)
         return df
-    except UnicodeDecodeError:
-        try:
-            df = pd.read_csv(io.BytesIO(data), encoding="latin-1", **kwargs)
-            return df
-        except Exception as e:
-            raise ParseError(
-                source=source,
-                parser_version=parser_version,
-                reason=f"Erro ao ler {label} (latin-1): {e}",
-            ) from e
     except Exception as e:
         raise ParseError(
             source=source,
             parser_version=parser_version,
-            reason=f"Erro ao ler {label}: {e}",
+            reason=f"Erro ao ler {label} ({encoding}): {e}",
         ) from e
 
 

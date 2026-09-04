@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import io
 import os
 import zipfile
@@ -249,7 +250,12 @@ async def fetch_dados_estacoes_uf(
     fim: date,
     tipo: str = "T",
 ) -> list[dict[str, Any]]:
-    import asyncio
+    if _get_token() is None:
+        raise SourceUnavailableError(
+            source="inmet",
+            url=BASE_URL,
+            last_error="Dados observacionais exigem token; defina AGROBR_INMET_TOKEN",
+        )
 
     estacoes = await fetch_estacoes(tipo)
 
@@ -294,8 +300,25 @@ async def fetch_dados_estacoes_uf(
                     )
                     return []
 
-        codigos = [e["CD_ESTACAO"] for e in estacoes_uf]
-        results = await asyncio.gather(*[_fetch_one(c) for c in codigos])
+        tasks: list[asyncio.Task[list[dict[str, Any]]]] = []
+        source_error: SourceUnavailableError | None = None
+        try:
+            async with asyncio.TaskGroup() as task_group:
+                tasks = [
+                    task_group.create_task(_fetch_one(estacao["CD_ESTACAO"]))
+                    for estacao in estacoes_uf
+                ]
+        except* SourceUnavailableError as error_group:
+            source_error = next(
+                error
+                for error in error_group.exceptions
+                if isinstance(error, SourceUnavailableError)
+            )
+
+        if source_error is not None:
+            raise source_error
+
+        results = [task.result() for task in tasks]
 
     for result in results:
         all_data.extend(result)

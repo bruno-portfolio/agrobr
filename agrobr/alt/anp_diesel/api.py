@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import time
 from datetime import date, datetime
 
@@ -158,11 +159,17 @@ async def _fetch_and_parse_municipios(
 ) -> pd.DataFrame:
     periodos_necessarios = _periodos_municipios(inicio, fim)
 
-    dfs: list[pd.DataFrame] = []
-    for periodo in periodos_necessarios:
+    async def _fetch_and_parse(periodo: str) -> pd.DataFrame:
         content = await client.fetch_precos_municipios(periodo)
-        df = parser.parse_precos(content, produto=produto, uf=uf, municipio=municipio)
-        dfs.append(df)
+        return await asyncio.to_thread(
+            parser.parse_precos,
+            content,
+            produto=produto,
+            uf=uf,
+            municipio=municipio,
+        )
+
+    dfs = await asyncio.gather(*(_fetch_and_parse(periodo) for periodo in periodos_necessarios))
 
     if not dfs:
         return pd.DataFrame(

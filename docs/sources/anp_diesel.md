@@ -9,7 +9,7 @@ mecanizada agricola.
 
 ## Instalacao
 
-Nao requer dependencias opcionais. Usa apenas httpx + pandas + openpyxl (core, fallback calamine).
+Não requer dependências opcionais. Usa httpx + pandas + calamine, com openpyxl como fallback.
 
 ## API
 
@@ -93,7 +93,7 @@ df = alt.anp_diesel.vendas_diesel()
 
 ### Precos
 1. Download XLSX bulk do portal gov.br (arquivos por periodo: 2022-2023, 2024-2025, 2026)
-2. Parse com openpyxl (fallback calamine), filtro de produtos diesel (DIESEL, DIESEL S10, OLEO DIESEL, OLEO DIESEL S10)
+2. Parse com calamine (fallback openpyxl), filtro de produtos diesel (DIESEL, DIESEL S10, OLEO DIESEL, OLEO DIESEL S10)
 3. Normalizacao: prefixo "OLEO"/"ÓLEO" removido, nomes de estado convertidos para sigla UF
 4. Calculo de margem (preco_venda - preco_compra)
 5. Agregacao semanal ou mensal conforme parametro
@@ -118,9 +118,8 @@ print(meta.records_count)    # varia por filtro
 ## Nota de desempenho
 
 Os XLSX da ANP podem ser grandes (50-100MB para precos por municipio).
-O modulo cacheia por periodo do arquivo (ex: 2022-2023), nao por parametro
-de filtro. Filtros de UF/municipio/produto sao aplicados no parse apos download.
-TTL de cache: 7 dias.
+Os períodos necessários são baixados concorrentemente e processados com
+calamine. Não há cache persistente; os filtros são aplicados após o download.
 
 ## Fonte
 

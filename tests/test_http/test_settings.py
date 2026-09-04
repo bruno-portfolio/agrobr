@@ -7,6 +7,9 @@ from agrobr.http.settings import get_timeout
 
 
 class TestGetTimeout:
+    def test_anp_diesel_allows_three_concurrent_requests(self):
+        assert HTTPSettings().max_concurrent_anp_diesel == 3
+
     def test_returns_httpx_timeout(self):
         timeout = get_timeout()
         assert isinstance(timeout, httpx.Timeout)

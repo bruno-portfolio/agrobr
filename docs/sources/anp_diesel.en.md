@@ -9,7 +9,7 @@ data in Brazil. Proxy for mechanized agricultural activity.
 
 ## Installation
 
-Does not require optional dependencies. Uses only httpx + pandas + openpyxl (core, calamine fallback).
+Does not require optional dependencies. Uses httpx + pandas + calamine, with openpyxl as fallback.
 
 ## API
 
@@ -93,7 +93,7 @@ df = alt.anp_diesel.vendas_diesel()
 
 ### Prices
 1. Bulk XLSX download from the gov.br portal (files by period: 2022-2023, 2024-2025, 2026)
-2. Parse with openpyxl (calamine fallback), filter for diesel products (DIESEL, DIESEL S10, OLEO DIESEL, OLEO DIESEL S10)
+2. Parse with calamine (openpyxl fallback), filter for diesel products (DIESEL, DIESEL S10, OLEO DIESEL, OLEO DIESEL S10)
 3. Normalization: "OLEO"/"ÓLEO" prefix removed, state names converted to state abbreviation
 4. Margin calculation (preco_venda - preco_compra)
 5. Weekly or monthly aggregation according to the parameter
@@ -118,9 +118,8 @@ print(meta.records_count)    # varies by filter
 ## Performance note
 
 ANP XLSX files can be large (50-100MB for municipality-level prices).
-The module caches by file period (e.g. 2022-2023), not by filter
-parameter. State/municipality/product filters are applied during parsing after download.
-Cache TTL: 7 days.
+Required periods are downloaded concurrently and processed with calamine.
+There is no persistent cache; filters are applied after download.
 
 ## Source
 

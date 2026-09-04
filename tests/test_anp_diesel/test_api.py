@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import io
 from datetime import date
 from unittest.mock import AsyncMock, patch
@@ -133,6 +134,38 @@ class TestPrecosDiesel:
             mock.return_value = xlsx
             df = await api.precos_diesel(nivel="municipio", inicio="2024-01-01", fim="2024-12-31")
             assert not df.empty
+
+    @pytest.mark.asyncio
+    async def test_periodos_municipais_sao_baixados_concorrentemente(self):
+        periodos = ["2022-2023", "2023-2024", "2024-2025"]
+        iniciados: list[str] = []
+        todos_iniciados = asyncio.Event()
+
+        async def fetch(periodo: str) -> bytes:
+            iniciados.append(periodo)
+            if len(iniciados) == len(periodos):
+                todos_iniciados.set()
+            await todos_iniciados.wait()
+            return periodo.encode()
+
+        def parse(content: bytes, **_kwargs) -> pd.DataFrame:
+            return pd.DataFrame(
+                {"data": [pd.Timestamp("2024-01-01")], "periodo": [content.decode()]}
+            )
+
+        with (
+            patch.object(api, "_periodos_municipios", return_value=periodos),
+            patch.object(api.client, "fetch_precos_municipios", side_effect=fetch),
+            patch.object(api.parser, "parse_precos", side_effect=parse) as parse_mock,
+        ):
+            df = await asyncio.wait_for(
+                api._fetch_and_parse_municipios(None, None, None, None, None),
+                timeout=2,
+            )
+
+        assert set(iniciados) == set(periodos)
+        assert parse_mock.call_count == len(periodos)
+        assert set(df["periodo"]) == set(periodos)
 
     @pytest.mark.asyncio
     async def test_filtro_uf(self):

@@ -84,7 +84,7 @@ class TestDownloadCsv:
 
             with patch("agrobr.zarc.client.retry_on_status", new_callable=AsyncMock) as mock_retry:
                 mock_retry.return_value = mock_response
-                with pytest.raises(SourceUnavailableError, match="too small"):
+                with pytest.raises(SourceUnavailableError, match="muito pequeno"):
                     await download_csv("https://x/test.csv")
 
 

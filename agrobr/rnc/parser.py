@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import io
-
 import pandas as pd
 import structlog
 
 from agrobr.exceptions import ParseError
+from agrobr.utils.io import read_csv_safe
 
 from .models import (
     _REQUIRED_PROT,
@@ -32,21 +31,16 @@ def _parse_csv(
     output_cols: list[str],
     label: str,
 ) -> pd.DataFrame:
-    try:
-        df = pd.read_csv(
-            io.BytesIO(data),
-            sep=",",
-            dtype=str,
-            encoding="utf-8",
-            keep_default_na=False,
-            quotechar='"',
-        )
-    except Exception as exc:
-        raise ParseError(
-            source="rnc",
-            parser_version=PARSER_VERSION,
-            reason=f"Falha ao ler CSV {label}: {exc}",
-        ) from exc
+    df = read_csv_safe(
+        data,
+        source="rnc",
+        parser_version=PARSER_VERSION,
+        label=f"CSV {label}",
+        sep=",",
+        dtype=str,
+        keep_default_na=False,
+        quotechar='"',
+    )
 
     if df.empty:
         raise ParseError(

@@ -49,6 +49,12 @@ class TestNormalizarUf:
     def test_espacos_trim(self):
         assert normalizar_uf("  SP  ") == "SP"
 
+    def test_texto_corrompido_nao_casa_substring(self):
+        assert normalizar_uf("paran�") is None
+
+    def test_nome_completo_delimitado_em_frase(self):
+        assert normalizar_uf("estado do para") == "PA"
+
     @pytest.mark.parametrize("uf", list(UFS.keys()))
     def test_todas_27_ufs_por_sigla(self, uf):
         assert normalizar_uf(uf) == uf

@@ -63,6 +63,14 @@ class TestParseRegistradasCsv:
         with pytest.raises(ParseError, match="ausentes"):
             parse_registradas_csv(bad_csv)
 
+    def test_latin1_encoding(self):
+        csv = (
+            "CULTIVAR,Nº REGISTRO,DATA DO REGISTRO,NOME COMUM\nPARANÁ 1,R1,01/01/2024,CAFÉ\n"
+        ).encode("latin-1")
+        df = parse_registradas_csv(csv)
+        assert df.iloc[0]["cultivar"] == "PARANÁ 1"
+        assert df.iloc[0]["nome_comum"] == "CAFÉ"
+
 
 class TestParseProtegidasCsv:
     def test_golden_columns(self, protegidas_bytes):

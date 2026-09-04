@@ -130,7 +130,7 @@ class TestAndaEmptyResponse:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="too small"),
+            pytest.raises(SourceUnavailableError, match="muito pequena"),
         ):
             await client.fetch_estatisticas_page()
 
@@ -190,7 +190,7 @@ class TestFetchEstatisticasPage:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="missing links"),
+            pytest.raises(SourceUnavailableError, match="sem links"),
         ):
             await client.fetch_estatisticas_page()
 
@@ -217,7 +217,7 @@ class TestDownloadFile:
 
         with (
             patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="too small"),
+            pytest.raises(SourceUnavailableError, match="muito pequeno"),
         ):
             await client.download_file("https://anda.org.br/f.pdf")
 

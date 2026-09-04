@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import date
 from unittest.mock import AsyncMock, patch
 
@@ -304,8 +305,22 @@ class TestInmetFetchDadosEstacaoChunking:
 
 class TestInmet403InEstacoeUf:
     @pytest.mark.asyncio
+    async def test_sem_token_falha_antes_de_listar_ou_buscar_estacoes(self):
+        with (
+            patch.dict("os.environ", {}, clear=True),
+            patch.object(client, "fetch_estacoes", new_callable=AsyncMock) as fetch_estacoes,
+            patch.object(client, "fetch_dados_estacao", new_callable=AsyncMock) as fetch_dados,
+            pytest.raises(SourceUnavailableError, match="AGROBR_INMET_TOKEN"),
+        ):
+            await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
+
+        fetch_estacoes.assert_not_awaited()
+        fetch_dados.assert_not_awaited()
+
+    @pytest.mark.asyncio
     async def test_sem_estacao_operante_raises_source_unavailable(self):
         with (
+            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
             patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=[]),
             pytest.raises(SourceUnavailableError, match="Nenhuma estação operante"),
         ):
@@ -316,6 +331,7 @@ class TestInmet403InEstacoeUf:
         estacoes = [{"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"}]
 
         with (
+            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
             patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=estacoes),
             patch.object(
                 client,
@@ -334,6 +350,7 @@ class TestInmet403InEstacoeUf:
         estacoes = [{"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"}]
 
         with (
+            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
             patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=estacoes),
             patch.object(
                 client,
@@ -345,3 +362,33 @@ class TestInmet403InEstacoeUf:
             result = await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
 
         assert result == []
+
+    @pytest.mark.asyncio
+    async def test_source_unavailable_cancela_estacoes_irmas(self):
+        estacoes = [
+            {"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"},
+            {"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A002"},
+        ]
+        irma_iniciou = asyncio.Event()
+        canceladas: list[str] = []
+
+        async def fetch_dados(codigo, *_args, **_kwargs):
+            if codigo == "A001":
+                await irma_iniciou.wait()
+                raise SourceUnavailableError(source="inmet", last_error="falha da fonte")
+            irma_iniciou.set()
+            try:
+                await asyncio.Event().wait()
+            except asyncio.CancelledError:
+                canceladas.append(codigo)
+                raise
+
+        with (
+            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
+            patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=estacoes),
+            patch.object(client, "fetch_dados_estacao", side_effect=fetch_dados),
+            pytest.raises(SourceUnavailableError, match="falha da fonte"),
+        ):
+            await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
+
+        assert canceladas == ["A002"]

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import io
 import re
 
 import pandas as pd
 
 from agrobr.exceptions import ParseError
+from agrobr.utils.io import read_csv_safe
 
 from .models import (
     AUTORIZACOES_COLS,
@@ -25,16 +25,10 @@ _REQUIRED_TECNICOS = {"CLASSE"}
 _COMPOSITE_IA_COL = "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)"
 _RE_COMPOSITE_IA = re.compile(r"^(.+?)\s*\(([^)]*)\)\s*\(([^)]*)\)$")
 
-_EN_DASH_UTF8 = "\u2013".encode()
-
-
-def _fix_encoding(raw: bytes) -> io.BytesIO:
-    return io.BytesIO(raw.replace(b"\x96", _EN_DASH_UTF8))
-
 
 def _strip_all_str_cols(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.select_dtypes(include="object").columns:
-        df[col] = df[col].str.strip()
+        df[col] = df[col].str.replace("\x96", "–", regex=False).str.strip()
     return df
 
 
@@ -46,13 +40,14 @@ def parse_formulados_csv(data: bytes) -> tuple[pd.DataFrame, pd.DataFrame]:
             reason="CSV formulados vazio",
         )
 
-    df = pd.read_csv(
-        _fix_encoding(data),
+    df = read_csv_safe(
+        data,
+        source="defensivos",
+        parser_version=PARSER_VERSION,
+        label="CSV formulados",
         sep=";",
         dtype=str,
         keep_default_na=False,
-        encoding="utf-8",
-        encoding_errors="replace",
     )
 
     missing = _REQUIRED_FORMULADOS - set(df.columns)
@@ -97,13 +92,14 @@ def parse_tecnicos_csv(data: bytes) -> pd.DataFrame:
             reason="CSV tecnicos vazio",
         )
 
-    df = pd.read_csv(
-        _fix_encoding(data),
+    df = read_csv_safe(
+        data,
+        source="defensivos",
+        parser_version=PARSER_VERSION,
+        label="CSV técnicos",
         sep=";",
         dtype=str,
         keep_default_na=False,
-        encoding="utf-8",
-        encoding_errors="replace",
     )
 
     missing = _REQUIRED_TECNICOS - set(df.columns)

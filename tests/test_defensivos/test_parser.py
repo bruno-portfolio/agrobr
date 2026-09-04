@@ -8,7 +8,6 @@ import pytest
 
 from agrobr.defensivos.parser import (
     PARSER_VERSION,
-    _fix_encoding,
     _split_composite_ia,
     _strip_all_str_cols,
     parse_formulados_csv,
@@ -90,6 +89,14 @@ class TestParseFormuladosCsv:
         with pytest.raises(ParseError, match="Colunas faltando"):
             parse_formulados_csv(csv)
 
+    def test_latin1_encoding(self):
+        csv = (
+            "MARCA_COMERCIAL;INGREDIENTE_ATIVO;CULTURA;NR_REGISTRO\nPRODUTO Á;2,4-D;CAFÉ;000001\n"
+        ).encode("latin-1")
+        form_df, auth_df = parse_formulados_csv(csv)
+        assert form_df.iloc[0]["marca_comercial"] == "PRODUTO Á"
+        assert auth_df.iloc[0]["cultura"] == "CAFÉ"
+
 
 class TestParseTecnicosCsv:
     def _load_golden(self) -> bytes:
@@ -133,16 +140,16 @@ class TestParseTecnicosCsv:
         with pytest.raises(ParseError, match="Colunas faltando"):
             parse_tecnicos_csv(csv)
 
+    def test_c1_en_dash_normalized(self):
+        csv = ("CLASSE;NR_REGISTRO;INGREDIENTE_ATIVO\nHerbicida;T00001;ALFA\x96BETA\n").encode()
+        df = parse_tecnicos_csv(csv)
+        assert df.iloc[0]["ingrediente_ativo"] == "ALFA–BETA"
+
 
 class TestHelpers:
     def test_parser_version(self):
         assert isinstance(PARSER_VERSION, int)
         assert PARSER_VERSION >= 1
-
-    def test_fix_encoding_x96(self):
-        raw = b"produto \x96 especial"
-        result = _fix_encoding(raw).read().decode()
-        assert "\u2013" in result
 
     def test_strip_all_str_cols(self):
         df = pd.DataFrame({"a": ["  hello  ", " world "], "b": [1, 2]})
