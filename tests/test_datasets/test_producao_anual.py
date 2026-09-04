@@ -12,6 +12,7 @@ from agrobr.datasets.producao_anual import (
     PRODUCAO_ANUAL_INFO,
     ProducaoAnualDataset,
     _fetch_conab,
+    _fetch_ibge_pam,
     producao_anual,
 )
 from agrobr.exceptions import SourceFallbackWarning, SourceUnavailableError
@@ -297,12 +298,27 @@ class TestProducaoAnualFetchFunctions:
             new_callable=AsyncMock,
             return_value=(_mock_df(), meta),
         ) as mock_fn:
-            from agrobr.datasets.producao_anual import _fetch_ibge_pam
-
             await _fetch_ibge_pam("soja", ano=2024, nivel="municipio", uf="PR")
         mock_fn.assert_called_once_with(
             "soja", ano=2024, nivel="municipio", uf="PR", return_meta=True
         )
+
+    @pytest.mark.asyncio
+    async def test_fetch_ibge_pam_normalizes_real_golden(self):
+        path = Path(__file__).parents[1] / "golden_data" / "ibge" / "pam_soja_sample"
+        raw = pd.read_csv(path / "response.csv", dtype=str)
+
+        with patch(
+            "agrobr.ibge.client.fetch_sidra",
+            new_callable=AsyncMock,
+            return_value=raw,
+        ):
+            result_df, _ = await _fetch_ibge_pam("soja", ano=2023, nivel="uf")
+
+        assert "valor_producao" in result_df.columns
+        assert result_df["valor_producao"].dtype == "Float64"
+        assert result_df["valor_producao"].isna().all()
+        validate_dataset(result_df, "producao_anual")
 
     @pytest.mark.asyncio
     async def test_fetch_conab_normalizes_real_golden(self):

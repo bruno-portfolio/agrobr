@@ -112,3 +112,22 @@ class TestParseFocosCsv:
         assert pd.api.types.is_numeric_dtype(df["lat"])
         assert pd.api.types.is_numeric_dtype(df["lon"])
         assert pd.api.types.is_numeric_dtype(df["frp"])
+
+    def test_sentinel_minus_999_becomes_na(self):
+        csv_bytes = GOLDEN_DIR.joinpath("response.csv").read_bytes()
+        df = parse_focos_csv(csv_bytes).set_index("municipio")
+
+        assert pd.isna(df.loc["BARREIROS", "risco_fogo"])
+        assert pd.isna(df.loc["ENTRE RIOS", "numero_dias_sem_chuva"])
+
+    def test_sentinel_minus_999_in_all_numeric_fields_becomes_na(self):
+        csv_bytes = (
+            b"id,lat,lon,data_hora_gmt,satelite,municipio,estado,"
+            b"numero_dias_sem_chuva,precipitacao,risco_fogo,bioma,frp\n"
+            b"1,-15,-55,2025-01-01 00:00:00,NOAA-21,CUIABA,MATO GROSSO,"
+            b"-999,-999,-999,Cerrado,-999\n"
+        )
+
+        df = parse_focos_csv(csv_bytes)
+
+        assert df[["numero_dias_sem_chuva", "precipitacao", "risco_fogo", "frp"]].isna().all().all()

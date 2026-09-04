@@ -25,7 +25,7 @@ from agrobr.contracts.datasets import (
     ANP_DIESEL_VENDAS_V1,
     ANTT_PEDAGIO_FLUXO_V1,
     ANTT_PEDAGIO_PRACAS_V1,
-    CREDITO_RURAL_V1_1,
+    CREDITO_RURAL_V2,
     EXPORTACAO_V1,
     FERTILIZANTE_V1,
     FERTILIZANTE_V2,
@@ -624,9 +624,15 @@ class TestIBGEContracts:
 
 class TestNewContracts:
     def test_credito_rural_contract(self):
-        assert CREDITO_RURAL_V1_1.name == "bcb.credito_rural"
-        assert CREDITO_RURAL_V1_1.version == "1.1"
-        assert CREDITO_RURAL_V1_1.primary_key == ["safra", "produto", "uf", "finalidade"]
+        assert CREDITO_RURAL_V2.name == "bcb.credito_rural"
+        assert CREDITO_RURAL_V2.version == "2.0"
+        assert CREDITO_RURAL_V2.primary_key == [
+            "safra",
+            "produto",
+            "uf",
+            "finalidade",
+            "programa",
+        ]
 
     def test_exportacao_contract(self):
         assert EXPORTACAO_V1.name == "comexstat.exportacao"

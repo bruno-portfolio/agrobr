@@ -147,7 +147,7 @@ def agregar_por_uf(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
 
-    group_cols = [c for c in ("safra", "uf", "produto") if c in df.columns]
+    group_cols = [c for c in ("safra", "uf", "produto", "finalidade") if c in df.columns]
     if not group_cols:
         return df
 
@@ -162,7 +162,7 @@ def agregar_por_uf(df: pd.DataFrame) -> pd.DataFrame:
     if not agg_dict:
         return df
 
-    result = df.groupby(group_cols, as_index=False).agg(agg_dict)
+    result = df.groupby(group_cols, as_index=False, dropna=False).agg(agg_dict)
 
     return result.sort_values(group_cols).reset_index(drop=True)
 
@@ -173,7 +173,7 @@ def agregar_por_programa(df: pd.DataFrame) -> pd.DataFrame:
 
     group_cols = [
         c
-        for c in ("safra", "ano_emissao", "uf", "produto", "programa", "cd_programa")
+        for c in ("safra", "uf", "produto", "finalidade", "programa", "cd_programa")
         if c in df.columns
     ]
     if not group_cols:
@@ -190,6 +190,6 @@ def agregar_por_programa(df: pd.DataFrame) -> pd.DataFrame:
     if not agg_dict:
         return df
 
-    result = df.groupby(group_cols, as_index=False).agg(agg_dict)
+    result = df.groupby(group_cols, as_index=False, dropna=False).agg(agg_dict)
 
     return result.sort_values(group_cols).reset_index(drop=True)

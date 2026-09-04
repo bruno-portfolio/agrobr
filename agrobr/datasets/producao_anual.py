@@ -38,7 +38,10 @@ async def _fetch_ibge_pam(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, Me
 
     result = await ibge.pam(produto, ano=ano, nivel=nivel, uf=uf, return_meta=True)
 
-    return _unpack_result(result)
+    df, meta = _unpack_result(result)
+    if "valor_producao" not in df.columns:
+        df["valor_producao"] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+    return df, meta
 
 
 def _aggregate_conab_brasil(df: pd.DataFrame, produto: str) -> pd.DataFrame:

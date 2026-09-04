@@ -1,11 +1,16 @@
 """Testes específicos para o dataset credito_rural (fetch com mock)."""
 
+import json
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import httpx
 import pandas as pd
 import pytest
 
+from agrobr.bcb.api import _aggregate_credito_rural
+from agrobr.bcb.parser import parse_credito_rural
+from agrobr.contracts import validate_dataset
 from agrobr.datasets.credito_rural import (
     CREDITO_RURAL_INFO,
     CreditoRuralDataset,
@@ -17,33 +22,11 @@ from agrobr.exceptions import SourceUnavailableError
 from .conftest import make_source, mock_source_meta
 
 
-def _mock_df():
-    return pd.DataFrame(
-        [
-            {
-                "safra": "2023/2024",
-                "uf": "MT",
-                "produto": "soja",
-                "finalidade": "custeio",
-                "agregacao": "uf",
-                "volume": 98500.0,
-                "valor": 285431200.0,
-                "area_financiada": 98500.0,
-                "qtd_contratos": 1240,
-                "cd_programa": None,
-                "programa": None,
-                "cd_fonte_recurso": None,
-                "fonte_recurso": None,
-                "cd_tipo_seguro": None,
-                "tipo_seguro": None,
-                "cd_modalidade": None,
-                "modalidade": None,
-                "cd_atividade": None,
-                "atividade": None,
-                "regiao": "Centro-Oeste",
-            },
-        ]
-    )
+def _golden_df() -> pd.DataFrame:
+    path = Path(__file__).parents[1] / "golden_data" / "bcb" / "custeio_sample"
+    records = json.loads(path.joinpath("response.json").read_text(encoding="utf-8"))
+    parsed = parse_credito_rural(records)
+    return _aggregate_credito_rural(parsed, "uf", "odata")
 
 
 class TestCreditoRuralInfo:
@@ -52,7 +35,7 @@ class TestCreditoRuralInfo:
         assert CREDITO_RURAL_INFO.sources[0].name == "bcb"
 
     def test_contract_version(self):
-        assert CREDITO_RURAL_INFO.contract_version == "1.1"
+        assert CREDITO_RURAL_INFO.contract_version == "2.0"
 
     def test_license_livre(self):
         assert CREDITO_RURAL_INFO.license == "livre"
@@ -62,21 +45,21 @@ class TestCreditoRuralFetch:
     @pytest.mark.asyncio
     async def test_fetch_returns_dataframe(self):
         dataset = CreditoRuralDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
+        dataset.info.sources[0].fetch_fn = make_source(_golden_df())
         df = await dataset.fetch("soja", safra="2023/24")
 
-        assert len(df) == 1
+        assert not df.empty
         assert "valor" in df.columns
-        assert df.iloc[0]["valor"] == 285431200.0
+        validate_dataset(df, "credito_rural")
 
     @pytest.mark.asyncio
     async def test_fetch_return_meta(self):
         dataset = CreditoRuralDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
+        dataset.info.sources[0].fetch_fn = make_source(_golden_df())
         df, meta = await dataset.fetch("soja", safra="2023/24", return_meta=True)
 
         assert meta.dataset == "credito_rural"
-        assert meta.contract_version == "1.1"
+        assert meta.contract_version == "2.0"
         assert "bcb" in meta.attempted_sources
         assert meta.records_count == len(df)
 
@@ -97,7 +80,7 @@ class TestCreditoRuralFetch:
     @pytest.mark.asyncio
     async def test_snapshot_generates_safra(self):
         dataset = CreditoRuralDataset()
-        mock_fn = make_source(_mock_df())
+        mock_fn = make_source(_golden_df())
         dataset.info.sources[0].fetch_fn = mock_fn
 
         async with deterministic("2025-03-15"):
@@ -109,7 +92,7 @@ class TestCreditoRuralFetch:
     @pytest.mark.asyncio
     async def test_snapshot_does_not_override_explicit_safra(self):
         dataset = CreditoRuralDataset()
-        mock_fn = make_source(_mock_df())
+        mock_fn = make_source(_golden_df())
         dataset.info.sources[0].fetch_fn = mock_fn
 
         async with deterministic("2025-03-15"):
@@ -121,7 +104,7 @@ class TestCreditoRuralFetch:
     @pytest.mark.asyncio
     async def test_forwards_all_kwargs(self):
         dataset = CreditoRuralDataset()
-        mock_fn = make_source(_mock_df())
+        mock_fn = make_source(_golden_df())
         dataset.info.sources[0].fetch_fn = mock_fn
 
         await dataset.fetch(
@@ -145,7 +128,7 @@ class TestCreditoRuralFetch:
     @pytest.mark.asyncio
     async def test_invalid_uf_raises_before_source(self):
         dataset = CreditoRuralDataset()
-        mock_fn = AsyncMock(return_value=(_mock_df(), mock_source_meta()))
+        mock_fn = AsyncMock(return_value=(_golden_df(), mock_source_meta()))
         dataset.info.sources[0].fetch_fn = mock_fn
 
         with pytest.raises(ValueError, match="UF invalida"):
@@ -157,7 +140,7 @@ class TestCreditoRuralFetch:
 class TestCreditoRuralNormalize:
     @pytest.mark.asyncio
     async def test_normalize_adds_produto(self):
-        df = _mock_df().drop(columns=["produto"])
+        df = _golden_df().drop(columns=["produto"])
         dataset = CreditoRuralDataset()
         dataset.info.sources[0].fetch_fn = make_source(df)
 
@@ -167,7 +150,7 @@ class TestCreditoRuralNormalize:
 
     @pytest.mark.asyncio
     async def test_normalize_adds_finalidade(self):
-        df = _mock_df().drop(columns=["finalidade"])
+        df = _golden_df().drop(columns=["finalidade"])
         dataset = CreditoRuralDataset()
         dataset.info.sources[0].fetch_fn = make_source(df)
 
@@ -178,7 +161,7 @@ class TestCreditoRuralNormalize:
     @pytest.mark.asyncio
     async def test_normalize_keeps_existing_produto_finalidade(self):
         dataset = CreditoRuralDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
+        dataset.info.sources[0].fetch_fn = make_source(_golden_df())
 
         result = await dataset.fetch("soja")
 
@@ -190,7 +173,7 @@ class TestCreditoRuralPublicAPI:
     @pytest.mark.asyncio
     async def test_public_function_delegates(self):
         with patch.object(CreditoRuralDataset, "fetch", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = _mock_df()
+            mock_fetch.return_value = _golden_df()
             await credito_rural("soja", safra="2023/24", uf="MT")
 
             mock_fetch.assert_called_once_with(
@@ -198,7 +181,7 @@ class TestCreditoRuralPublicAPI:
                 safra="2023/24",
                 finalidade="custeio",
                 uf="MT",
-                agregacao="municipio",
+                agregacao="uf",
                 programa=None,
                 tipo_seguro=None,
                 return_meta=False,
@@ -207,7 +190,7 @@ class TestCreditoRuralPublicAPI:
     @pytest.mark.asyncio
     async def test_public_function_return_meta(self):
         with patch.object(CreditoRuralDataset, "fetch", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = (_mock_df(), mock_source_meta())
+            mock_fetch.return_value = (_golden_df(), mock_source_meta())
             result = await credito_rural("soja", return_meta=True)
 
             assert isinstance(result, tuple)
@@ -218,7 +201,7 @@ class TestCreditoRuralPublicAPI:
 class TestCreditoRuralFetchFunctions:
     @pytest.mark.asyncio
     async def test_fetch_bcb_odata_forwards_params(self):
-        df = _mock_df()
+        df = _golden_df()
         meta = mock_source_meta()
         with patch(
             "agrobr.bcb.credito_rural", new_callable=AsyncMock, return_value=(df, meta)

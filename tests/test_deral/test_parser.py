@@ -1,6 +1,7 @@
 """Testes para o parser DERAL."""
 
 import io
+from pathlib import Path
 
 import openpyxl
 import pandas as pd
@@ -15,6 +16,8 @@ from agrobr.deral.parser import (
 )
 from agrobr.exceptions import ParseError
 from agrobr.normalize.numeric import safe_float
+
+GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "deral" / "pc_sample"
 
 
 def _make_xls_bytes(sheets: dict[str, list[list]]) -> bytes:
@@ -190,6 +193,12 @@ class TestParsePcXls:
         expected_cols = {"produto", "data", "condicao", "pct", "plantio_pct", "colheita_pct"}
         assert expected_cols.issubset(set(df.columns))
 
+    def test_real_golden_preserves_crop_seasons_and_primary_key(self):
+        df = parse_pc_xls(GOLDEN_DIR.joinpath("response.xlsx").read_bytes())
+
+        assert {"feijao_1", "feijao_2", "milho_1", "milho_2"}.issubset(set(df["produto"]))
+        assert not df.duplicated(["produto", "data", "condicao"]).any()
+
 
 class TestFilterByProduto:
     def test_filter(self):
@@ -218,6 +227,19 @@ class TestFilterByProduto:
         df = pd.DataFrame([{"produto": "soja", "condicao": "boa", "pct": 70.0}])
         result = filter_by_produto(df, "banana")
         assert result.empty
+
+    def test_generic_product_includes_first_and_second_seasons(self):
+        df = pd.DataFrame(
+            [
+                {"produto": "milho_1"},
+                {"produto": "milho_2"},
+                {"produto": "soja"},
+            ]
+        )
+
+        result = filter_by_produto(df, "milho")
+
+        assert result["produto"].tolist() == ["milho_1", "milho_2"]
 
 
 class TestParserVersion:

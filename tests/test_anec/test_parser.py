@@ -311,6 +311,11 @@ class TestGoldenRegression:
         )
         assert wk["valor_ton"].notna().sum() >= expected["weekly_shipments"]["non_null_min"]
 
+    def test_weekly_primary_key_is_unique(self, case_name):
+        report = parser.parse_anec_pdf(_load_pdf(case_name))
+
+        assert not report.weekly_shipments.duplicated(["porto", "produto", "periodo"]).any()
+
     def test_monthly_shape(self, case_name):
         pdf = _load_pdf(case_name)
         expected = _load_expected(case_name)

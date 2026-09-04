@@ -6,6 +6,7 @@ from typing import Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_uf
@@ -16,6 +17,36 @@ from .parser import PARSER_VERSION, agregar_por_programa, agregar_por_uf, parse_
 
 logger = structlog.get_logger()
 
+_CREDITO_RURAL_COLUMNS = [
+    "safra",
+    "produto",
+    "uf",
+    "finalidade",
+    "agregacao",
+    "programa",
+    "cd_programa",
+    "qtd_contratos",
+    "valor",
+    "area_financiada",
+    "fonte",
+]
+
+
+def _aggregate_credito_rural(
+    df: pd.DataFrame,
+    agregacao: Literal["uf", "programa"],
+    source_used: str,
+) -> pd.DataFrame:
+    df = agregar_por_uf(df) if agregacao == "uf" else agregar_por_programa(df)
+
+    df["agregacao"] = agregacao
+    if "programa" not in df.columns:
+        df["programa"] = pd.Series(pd.NA, index=df.index, dtype="string")
+    if "cd_programa" not in df.columns:
+        df["cd_programa"] = pd.Series(pd.NA, index=df.index, dtype="string")
+    df["fonte"] = f"bcb_{source_used}"
+    return df.reindex(columns=_CREDITO_RURAL_COLUMNS)
+
 
 @overload
 async def credito_rural(
@@ -23,7 +54,7 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: str = "municipio",
+    agregacao: Literal["uf", "programa"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     as_polars: bool = False,
@@ -38,7 +69,7 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: str = "municipio",
+    agregacao: Literal["uf", "programa"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     as_polars: bool = False,
@@ -52,13 +83,20 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: str = "municipio",
+    agregacao: Literal["uf", "programa"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     t0 = time.monotonic()
+
+    if agregacao not in {"uf", "programa"}:
+        hint = (
+            "O OData SICOR não possui município; use agregacao='uf' ou 'programa'. "
+            "Dados municipais estão disponíveis pelo extra agrobr[bigquery]."
+        )
+        raise InvalidParameterError(f"agregacao inválida: {agregacao!r}. {hint}")
 
     produto_sicor = resolve_produto_sicor(produto)
     safra_sicor = normalize_safra_sicor(safra) if safra else None
@@ -102,10 +140,7 @@ async def credito_rural(
     if tipo_seguro and "tipo_seguro" in df.columns:
         df = df[df["tipo_seguro"].str.lower() == tipo_seguro.lower()].reset_index(drop=True)
 
-    if agregacao == "uf":
-        df = agregar_por_uf(df)
-    elif agregacao == "programa":
-        df = agregar_por_programa(df)
+    df = _aggregate_credito_rural(df, agregacao, source_used)
 
     parse_ms = int((time.monotonic() - t1) * 1000)
 
@@ -127,7 +162,7 @@ async def credito_rural(
         parse_ms,
         df,
         PARSER_VERSION,
-        schema_version="1.1",
+        schema_version="2.0",
         attempted_sources=attempted_sources,
         selected_source=f"bcb_{source_used}",
     )

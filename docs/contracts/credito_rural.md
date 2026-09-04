@@ -1,13 +1,13 @@
-# credito_rural v1.1
+# credito_rural v2.0
 
-Credito rural por cultura e UF, via camada semantica. Dimensoes SICOR enriquecidas (programa, fonte de recurso, tipo de seguro, modalidade, atividade).
+Crédito rural por cultura e UF, via camada semântica. O contrato representa os dois níveis que o endpoint SICOR realmente fornece: agregação por UF (padrão) ou por programa.
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
-|------------|-------|-----------|
+| Prioridade | Fonte | Descrição |
+|---|---|---|
 | 1 | BCB/SICOR (OData) | API oficial do Banco Central |
-| 2 | BigQuery (basedosdados) | Fallback quando OData retorna 500 |
+| 2 | BigQuery (Base dos Dados) | Fallback para falhas de rede ou HTTP 5xx |
 
 ## Produtos
 
@@ -15,81 +15,61 @@ Credito rural por cultura e UF, via camada semantica. Dimensoes SICOR enriquecid
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Unidade | Estavel |
-|--------|------|----------|---------|---------|
-| `safra` | str | --- | - | Sim |
-| `produto` | str | --- | - | Sim |
-| `uf` | str | Sim | - | Sim |
-| `finalidade` | str | --- | - | Sim |
-| `agregacao` | str | Sim | - | Sim |
-| `volume` | float | Sim | - | Sim |
+| Coluna | Tipo | Nullable | Unidade | Estável |
+|---|---|---|---|---|
+| `safra` | str | Não | — | Sim |
+| `produto` | str | Não | — | Sim |
+| `uf` | str | Sim | — | Sim |
+| `finalidade` | str | Não | — | Sim |
+| `agregacao` | str | Não | — | Sim |
+| `programa` | str | Sim | — | Sim |
+| `cd_programa` | str | Sim | — | Sim |
+| `qtd_contratos` | int | Sim | contratos | Sim |
 | `valor` | float | Sim | BRL | Sim |
-| `cd_programa` | str | Sim | - | Sim |
-| `programa` | str | Sim | - | Sim |
-| `cd_fonte_recurso` | str | Sim | - | Sim |
-| `fonte_recurso` | str | Sim | - | Sim |
-| `cd_tipo_seguro` | str | Sim | - | Sim |
-| `tipo_seguro` | str | Sim | - | Sim |
-| `cd_modalidade` | str | Sim | - | Sim |
-| `modalidade` | str | Sim | - | Sim |
-| `cd_atividade` | str | Sim | - | Sim |
-| `atividade` | str | Sim | - | Sim |
-| `regiao` | str | Sim | - | Sim |
+| `area_financiada` | float | Sim | ha | Sim |
+| `fonte` | str | Não | — | Sim |
 
-**Primary key:** `[safra, produto, uf, finalidade]`
+**Chave primária:** `[safra, produto, uf, finalidade, programa]`
 
-**Constraints:** `volume >= 0`, `valor >= 0`
+**Restrições:** `qtd_contratos >= 0`, `valor >= 0`, `area_financiada >= 0`
 
-## Garantias
+Na agregação `uf`, `programa` e `cd_programa` são nulos. Na agregação `programa`, identificam a dimensão agrupada.
 
-- Nomes de coluna nunca mudam (so adicionam)
-- `safra` sempre no formato YYYY/YY
-- `uf` sempre e codigo de estado brasileiro valido quando presente
-- Valores numericos sempre >= 0
+## Histórico de versões
 
-## Historico de versoes
-
-| Versao | Mudanca |
-|--------|---------|
-| v1.0 | Schema inicial: safra, produto, uf, finalidade, agregacao, volume, valor |
-| v1.1 | +11 colunas nullable: cd_programa, programa, cd_fonte_recurso, fonte_recurso, cd_tipo_seguro, tipo_seguro, cd_modalidade, modalidade, cd_atividade, atividade, regiao |
+| Versão | Mudança |
+|---|---|
+| v1.0 | Schema inicial |
+| v1.1 | Dimensões opcionais adicionadas |
+| v2.0 | Schema alinhado aos modos reais do SICOR; remove `volume` e dimensões que não pertencem à saída agregada; padrão passa de `municipio` para `uf` |
 
 ## Exemplo
 
 ```python
 from agrobr import datasets
 
-# Async
 df = await datasets.credito_rural("soja", safra="2024/25")
-df = await datasets.credito_rural("soja", safra="2024/25", uf="MT")
-
-# Filtrar por programa
-df = await datasets.credito_rural("soja", safra="2024/25", programa="Pronamp")
-
-# Agregar por programa
-df = await datasets.credito_rural("soja", safra="2024/25", agregacao="programa")
-
-# Com metadados
-df, meta = await datasets.credito_rural("soja", safra="2024/25", return_meta=True)
-
-# Sync
-from agrobr.sync import datasets
-df = datasets.credito_rural("soja", safra="2024/25")
+df_programa = await datasets.credito_rural(
+    "soja",
+    safra="2024/25",
+    agregacao="programa",
+)
 ```
+
+O OData usado pelo agrobr não possui dimensão municipal. `agregacao="municipio"` levanta `InvalidParameterError`; dados municipais podem ser consultados diretamente com o extra `agrobr[bigquery]`.
 
 ## Schema JSON
 
-Disponivel em `agrobr/schemas/credito_rural.json`.
+Disponível em `agrobr/schemas/credito_rural.json`.
 
 ```python
 from agrobr.contracts import get_contract
+
 contract = get_contract("credito_rural")
 print(contract.to_json())
 ```
 
-## Requisitos
-
-O fallback BigQuery requer:
+## Requisitos do fallback
 
 ```bash
 pip install agrobr[bigquery]

@@ -5,13 +5,13 @@
   "parser_version": 1,
   "parser_kwargs": {},
   "needs_real_data": false,
-  "captured_at": "2026-02-13T11:00:10.209338+00:00",
+  "captured_at": "2026-09-04T12:08:34.556921+00:00",
   "query": {
     "table": "5457",
-    "variable": "214",
+    "variable": "8331,216,214,112",
     "territorial_level": "3",
     "period": "2023",
     "classification_81": "40124"
   },
-  "notes": "Real data from IBGE SIDRA — PAM nova, produção soja por UF 2023, 26 rows"
+  "notes": "Real data from IBGE SIDRA — PAM nova, quatro variáveis da soja por UF 2023, 107 rows"
 }

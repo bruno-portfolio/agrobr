@@ -6,7 +6,7 @@ O modulo BCB fornece dados do Banco Central do Brasil: crédito rural (SICOR), s
 
 ### `credito_rural`
 
-Dados de financiamento rural por produto, safra, UF e municipio, com dimensoes de programa, fonte de recurso, tipo de seguro, modalidade e atividade.
+Dados de financiamento rural por produto, safra e UF, agregados por UF ou por programa.
 
 ```python
 async def credito_rural(
@@ -14,7 +14,7 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: str = "municipio",
+    agregacao: Literal["uf", "programa"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     as_polars: bool = False,
@@ -30,7 +30,7 @@ async def credito_rural(
 | `safra` | `str \| None` | Safra formato "2024/25". Default: safra mais recente |
 | `finalidade` | `str` | `"custeio"`, `"investimento"` ou `"comercializacao"` |
 | `uf` | `str \| None` | Sigla da UF (ex: "MT", "PR"); espaços/caixa são normalizados e valores inválidos levantam `ValueError` |
-| `agregacao` | `str` | `"municipio"` (default), `"uf"` ou `"programa"` |
+| `agregacao` | `str` | `"uf"` (padrão) ou `"programa"`; o OData não possui dimensão municipal |
 | `programa` | `str \| None` | Filtrar por programa (ex: "Pronamp", "Pronaf") |
 | `tipo_seguro` | `str \| None` | Filtrar por tipo de seguro (ex: "Proagro", "Seguro privado") |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
@@ -43,27 +43,16 @@ DataFrame com colunas:
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | `safra` | str | Safra "2024/2025" |
-| `ano_emissao` | int | Ano de emissao |
-| `mes_emissao` | int | Mes de emissao |
-| `uf` | str | UF do municipio |
-| `municipio` | str | Nome do municipio |
 | `produto` | str | Produto financiado |
-| `finalidade` | str | Finalidade (custeio, investimento, comercializacao) |
-| `valor` | float | Valor financiado (R$) |
-| `area_financiada` | float | Area financiada (ha) |
+| `uf` | str | UF |
+| `finalidade` | str | Finalidade (`custeio`, `investimento` ou `comercializacao`) |
+| `agregacao` | str | Nível da saída: `uf` ou `programa` |
+| `programa` | str | Programa SICOR; nulo na agregação por UF |
+| `cd_programa` | str | Código do programa; nulo na agregação por UF |
 | `qtd_contratos` | int | Quantidade de contratos |
-| `cd_programa` | str | Codigo do programa SICOR |
-| `programa` | str | Nome do programa (ex: "Pronamp", "Pronaf") |
-| `cd_sub_programa` | str | Codigo do sub-programa |
-| `cd_fonte_recurso` | str | Codigo da fonte de recurso |
-| `fonte_recurso` | str | Nome da fonte (ex: "LCA", "FNE", "Poupanca rural controlados") |
-| `cd_tipo_seguro` | str | Codigo do tipo de seguro |
-| `tipo_seguro` | str | Nome do seguro (ex: "Proagro", "Seguro privado") |
-| `cd_modalidade` | str | Codigo da modalidade |
-| `modalidade` | str | Nome da modalidade (ex: "Individual", "Coletiva") |
-| `cd_atividade` | str | Codigo da atividade |
-| `atividade` | str | Nome da atividade (ex: "Agricola", "Pecuaria") |
-| `regiao` | str | Regiao (ex: "SUL", "CENTRO-OESTE") |
+| `valor` | float | Valor financiado (R$) |
+| `area_financiada` | float | Área financiada (ha) |
+| `fonte` | str | `bcb_odata` ou `bcb_bigquery` |
 
 **Exemplo:**
 
@@ -87,20 +76,10 @@ df = await bcb.credito_rural("soja", safra="2024/25", tipo_seguro="Proagro")
 
 # Com metadados
 df, meta = await bcb.credito_rural("soja", return_meta=True)
-print(meta.schema_version)  # "1.1"
+print(meta.schema_version)  # "2.0"
 ```
 
-## Dimensoes SICOR
-
-As dimensoes sao enriquecidas automaticamente pelo parser com dicionarios hardcoded. Codigos desconhecidos geram `"Desconhecido ({code})"` com log warning.
-
-| Dimensao | Codigos conhecidos |
-|----------|-------------------|
-| Programa | Pronaf, Pronamp, Funcafe, Moderfrota, ABC, Inovagro, etc. |
-| Fonte de recurso | Recursos obrigatorios, Poupanca rural, LCA, FNO/FNE/FCO, Funcafe, etc. |
-| Tipo de seguro | Proagro, Sem seguro, Seguro privado, Nao se aplica |
-| Modalidade | Individual, Coletiva |
-| Atividade | Agricola, Pecuaria |
+`agregacao="municipio"` levanta `InvalidParameterError`. O endpoint OData consultado não contém município; dados municipais podem ser acessados diretamente pelo extra `agrobr[bigquery]`.
 
 ### `sgs`
 
@@ -123,7 +102,7 @@ async def sgs(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `codigo` | `int \| str` | Código SGS (ex: `433`) ou alias pré-mapeado (ex: `"ipca"`) |
-| `data_inicial` | `str \| None` | Data inicial (DD/MM/YYYY) |
+| `data_inicial` | `str \| None` | Data inicial (DD/MM/YYYY); sem janela e sem `ultimos`, usa hoje menos 10 anos |
 | `data_final` | `str \| None` | Data final (DD/MM/YYYY) |
 | `ultimos` | `int \| None` | Retorna apenas os N registros mais recentes |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
@@ -250,4 +229,4 @@ Quando a API OData do BCB falha, o agrobr usa automaticamente BigQuery (Base dos
 
 - Fonte: [BCB/SICOR](https://olinda.bcb.gov.br) — licenca livre
 - Dados disponiveis a partir de 2013
-- Contract v1.1 — 11 novas colunas nullable desde v0.10.1
+- Contrato v2.0 — saída alinhada às agregações reais do SICOR

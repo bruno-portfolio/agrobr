@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
@@ -10,10 +11,13 @@ from agrobr.datasets.condicao_lavouras import (
     _fetch_deral,
     condicao_lavouras,
 )
+from agrobr.deral.parser import parse_pc_xls
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 
 from .conftest import make_source
+
+GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "deral" / "pc_sample"
 
 
 def _make_df(**overrides):
@@ -76,6 +80,21 @@ def _make_full_df():
 
 
 class TestCondicaoLavourasFetch:
+    @pytest.mark.asyncio
+    async def test_fetch_real_golden_satisfies_contract(self, monkeypatch):
+        source_df = parse_pc_xls(GOLDEN_DIR.joinpath("response.xlsx").read_bytes())
+        dataset = CondicaoLavourasDataset()
+        monkeypatch.setattr(
+            dataset.info.sources[0],
+            "fetch_fn",
+            make_source(source_df),
+        )
+
+        df = await dataset.fetch()
+
+        assert not df.duplicated(["produto", "data", "condicao"]).any()
+        assert {"feijao_1", "feijao_2", "milho_1", "milho_2"}.issubset(set(df["produto"]))
+
     @pytest.mark.asyncio
     async def test_fetch_all(self):
         dataset = CondicaoLavourasDataset()

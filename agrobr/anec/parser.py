@@ -252,17 +252,13 @@ def _detect_weekly_columns(
         i += 1
 
     cols.sort(key=lambda c: c[2])
-    if len(cols) < 2:
-        return [(p, PERIODO_LAST_WEEK, x) for p, _, x in cols]
-
-    gaps = [(cols[i + 1][2] - cols[i][2], i) for i in range(len(cols) - 1)]
-    _, max_gap_idx = max(gaps)
-    midpoint_x = (cols[max_gap_idx][2] + cols[max_gap_idx + 1][2]) / 2
-
+    occurrences: dict[str, int] = {}
     out: list[tuple[str, str, float]] = []
     for produto, _, x in cols:
-        periodo = PERIODO_LAST_WEEK if x < midpoint_x else PERIODO_CURRENT_WEEK
+        occurrence = occurrences.get(produto, 0)
+        periodo = PERIODO_LAST_WEEK if occurrence == 0 else PERIODO_CURRENT_WEEK
         out.append((produto, periodo, x))
+        occurrences[produto] = occurrence + 1
     return out
 
 

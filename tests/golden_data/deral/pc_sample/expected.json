@@ -1,5 +1,5 @@
 {
-  "count_min": 168,
+  "count_min": 165,
   "columns": [
     "produto",
     "data",
@@ -16,5 +16,11 @@
     "boa",
     "media",
     "ruim"
+  ],
+  "produtos_safra": [
+    "feijao_1",
+    "feijao_2",
+    "milho_1",
+    "milho_2"
   ]
 }

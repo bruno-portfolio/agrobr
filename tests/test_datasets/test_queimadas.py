@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import httpx
 import pandas as pd
 import pytest
@@ -7,8 +9,11 @@ from agrobr.datasets.queimadas import (
     QueimadasDataset,
 )
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.queimadas.parser import parse_focos_csv
 
 from .conftest import make_source
+
+GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "queimadas" / "focos_sample"
 
 
 def _make_df(**overrides):
@@ -33,6 +38,21 @@ def _make_df(**overrides):
 
 
 class TestQueimadasFetch:
+    @pytest.mark.asyncio
+    async def test_fetch_real_golden_satisfies_contract(self, monkeypatch):
+        source_df = parse_focos_csv(GOLDEN_DIR.joinpath("response.csv").read_bytes())
+        dataset = QueimadasDataset()
+        monkeypatch.setattr(
+            dataset.info.sources[0],
+            "fetch_fn",
+            make_source(source_df),
+        )
+
+        df = await dataset.fetch(ano=2025, mes=1)
+
+        assert (df["risco_fogo"].dropna() >= 0).all()
+        assert df["risco_fogo"].isna().any()
+
     @pytest.mark.asyncio
     async def test_fetch_returns_df(self):
         dataset = QueimadasDataset()

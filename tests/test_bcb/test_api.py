@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agrobr.bcb import api
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 
 
 def _mock_sicor_data(
@@ -76,7 +76,7 @@ class TestCreditoRural:
         ):
             df = await api.credito_rural("soja", safra="2023/24")
 
-        assert len(df) == 2
+        assert len(df) == 1
         assert "valor" in df.columns
         assert "area_financiada" in df.columns
         assert all(df["produto"] == "soja")
@@ -137,7 +137,7 @@ class TestCreditoRural:
         ) as mock_fetch:
             df = await api.credito_rural("soja", safra="2023/24", uf=" mt ")
 
-        assert len(df) == 2
+        assert len(df) == 1
         assert all(df["uf"] == "MT")
         assert mock_fetch.call_args.kwargs["cd_uf"] == "51"
 
@@ -156,7 +156,7 @@ class TestCreditoRural:
         mock_fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
-    async def test_schema_version_1_1(self):
+    async def test_schema_version_2_0(self):
         with patch.object(
             api.client,
             "fetch_credito_rural_with_fallback",
@@ -165,10 +165,24 @@ class TestCreditoRural:
         ):
             _, meta = await api.credito_rural("soja", safra="2023/24", return_meta=True)
 
-        assert meta.schema_version == "1.1"
+        assert meta.schema_version == "2.0"
+
+    @pytest.mark.asyncio
+    async def test_municipio_aggregation_rejected_before_request(self):
+        with (
+            patch.object(
+                api.client,
+                "fetch_credito_rural_with_fallback",
+                new_callable=AsyncMock,
+            ) as mock_fetch,
+            pytest.raises(InvalidParameterError, match=r"agrobr\[bigquery\]"),
+        ):
+            await api.credito_rural("soja", agregacao="municipio")
+
+        mock_fetch.assert_not_awaited()
 
 
-class TestCreditoRuralNewColumns:
+class TestCreditoRuralContractColumns:
     @pytest.mark.asyncio
     async def test_new_columns_present(self):
         with patch.object(
@@ -179,19 +193,19 @@ class TestCreditoRuralNewColumns:
         ):
             df = await api.credito_rural("soja", safra="2023/24")
 
-        for col in (
-            "cd_programa",
+        assert df.columns.tolist() == [
+            "safra",
+            "produto",
+            "uf",
+            "finalidade",
+            "agregacao",
             "programa",
-            "cd_fonte_recurso",
-            "fonte_recurso",
-            "cd_tipo_seguro",
-            "tipo_seguro",
-            "cd_modalidade",
-            "modalidade",
-            "cd_atividade",
-            "atividade",
-        ):
-            assert col in df.columns, f"coluna {col} ausente"
+            "cd_programa",
+            "qtd_contratos",
+            "valor",
+            "area_financiada",
+            "fonte",
+        ]
 
     @pytest.mark.asyncio
     async def test_enriched_values(self):
@@ -201,14 +215,12 @@ class TestCreditoRuralNewColumns:
             new_callable=AsyncMock,
             return_value=(_mock_sicor_data(), "odata"),
         ):
-            df = await api.credito_rural("soja", safra="2023/24")
+            df = await api.credito_rural("soja", safra="2023/24", agregacao="programa")
 
         row = df.iloc[0]
         assert row["programa"] == "Pronamp"
-        assert row["fonte_recurso"] == "Poupanca rural controlados"
-        assert row["tipo_seguro"] == "Nao se aplica"
-        assert row["modalidade"] == "Individual"
-        assert row["atividade"] == "Agricola"
+        assert row["cd_programa"] == "0050"
+        assert row["fonte"] == "bcb_odata"
 
 
 class TestCreditoRuralFilterPrograma:
@@ -220,9 +232,11 @@ class TestCreditoRuralFilterPrograma:
             new_callable=AsyncMock,
             return_value=(_mock_sicor_data_multi_programa(), "odata"),
         ):
-            df = await api.credito_rural("soja", safra="2023/24", programa="Pronamp")
+            df = await api.credito_rural(
+                "soja", safra="2023/24", programa="Pronamp", agregacao="programa"
+            )
 
-        assert len(df) == 2
+        assert len(df) == 1
         assert all(df["programa"].str.lower() == "pronamp")
 
     @pytest.mark.asyncio
@@ -233,9 +247,11 @@ class TestCreditoRuralFilterPrograma:
             new_callable=AsyncMock,
             return_value=(_mock_sicor_data_multi_programa(), "odata"),
         ):
-            df = await api.credito_rural("soja", safra="2023/24", programa="pronamp")
+            df = await api.credito_rural(
+                "soja", safra="2023/24", programa="pronamp", agregacao="programa"
+            )
 
-        assert len(df) == 2
+        assert len(df) == 1
 
     @pytest.mark.asyncio
     async def test_filter_programa_no_match(self):
@@ -245,7 +261,9 @@ class TestCreditoRuralFilterPrograma:
             new_callable=AsyncMock,
             return_value=(_mock_sicor_data(), "odata"),
         ):
-            df = await api.credito_rural("soja", safra="2023/24", programa="Funcafe")
+            df = await api.credito_rural(
+                "soja", safra="2023/24", programa="Funcafe", agregacao="programa"
+            )
 
         assert len(df) == 0
 
@@ -261,7 +279,7 @@ class TestCreditoRuralFilterTipoSeguro:
         ):
             df = await api.credito_rural("soja", safra="2023/24", tipo_seguro="Nao se aplica")
 
-        assert len(df) == 2
+        assert len(df) == 1
 
     @pytest.mark.asyncio
     async def test_filter_tipo_seguro_no_match(self):

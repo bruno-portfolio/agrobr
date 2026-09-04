@@ -21,7 +21,7 @@ df = await deral.condicao_lavouras("trigo")
 
 | Coluna | Tipo | Descrição |
 |---|---|---|
-| `produto` | str | Cultura monitorada |
+| `produto` | str | Cultura monitorada; feijão e milho preservam a safra em `feijao_1`, `feijao_2`, `milho_1` ou `milho_2` |
 | `data` | str | Data de referência (dd/mm/yyyy) |
 | `condicao` | str | `boa`, `media` ou `ruim`; fica vazia nos registros de plantio e colheita |
 | `pct` | float | Percentual da lavoura nessa condição |

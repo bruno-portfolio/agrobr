@@ -1,6 +1,6 @@
 {
   "count_min": 700,
-  "columns": ["nr_apolice", "ano_apolice", "uf", "municipio", "cd_ibge", "cultura", "classificacao", "area_total", "valor_premio", "valor_subvencao", "valor_limite_garantia", "evento", "produtividade_estimada", "produtividade_segurada", "nivel_cobertura", "taxa", "seguradora"],
+  "columns": ["nr_apolice", "ano_apolice", "uf", "municipio", "cd_ibge", "cultura", "classificacao", "area_total", "valor_premio", "valor_subvencao", "valor_limite_garantia", "valor_indenizacao", "evento", "produtividade_estimada", "produtividade_segurada", "nivel_cobertura", "taxa", "seguradora"],
   "checks": {
     "sorted_by_ano": true,
     "ano_apolice_is_int": true,

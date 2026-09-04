@@ -78,7 +78,7 @@ camada de datasets. A camada de datasets normaliza e valida.
 | `kg_liquido` | `float` | opcional, >= 0 |
 | `valor_fob_usd` | `float` | opcional, >= 0 |
 
-#### `bcb.credito_rural` (v1.1)
+#### `bcb.credito_rural` (v2.0)
 
 | Coluna | Tipo | Garantia |
 |---|---|---|
@@ -86,20 +86,13 @@ camada de datasets. A camada de datasets normaliza e valida.
 | `produto` | `str` | obrigatória |
 | `uf` | `str` | opcional |
 | `finalidade` | `str` | obrigatória |
-| `agregacao` | `str` | opcional |
-| `volume` | `float` | opcional, >= 0 |
-| `valor` | `float` | opcional, >= 0 |
-| `cd_programa` | `str` | opcional |
+| `agregacao` | `str` | obrigatória (`uf` ou `programa`) |
 | `programa` | `str` | opcional |
-| `cd_fonte_recurso` | `str` | opcional |
-| `fonte_recurso` | `str` | opcional |
-| `cd_tipo_seguro` | `str` | opcional |
-| `tipo_seguro` | `str` | opcional |
-| `cd_modalidade` | `str` | opcional |
-| `modalidade` | `str` | opcional |
-| `cd_atividade` | `str` | opcional |
-| `atividade` | `str` | opcional |
-| `regiao` | `str` | opcional |
+| `cd_programa` | `str` | opcional |
+| `qtd_contratos` | `int` | opcional, >= 0 |
+| `valor` | `float` | opcional, >= 0 |
+| `area_financiada` | `float` | opcional, >= 0 |
+| `fonte` | `str` | obrigatória |
 
 #### `inmet.clima_uf` (v1.0)
 

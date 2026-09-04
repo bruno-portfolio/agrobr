@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.validation import validate_uf
 
@@ -19,7 +20,7 @@ async def _fetch_bcb_odata(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
     safra = kwargs.get("safra")
     finalidade = kwargs.get("finalidade", "custeio")
     uf = kwargs.get("uf")
-    agregacao = kwargs.get("agregacao", "municipio")
+    agregacao = kwargs.get("agregacao", "uf")
     programa = kwargs.get("programa")
     tipo_seguro = kwargs.get("tipo_seguro")
 
@@ -39,7 +40,7 @@ async def _fetch_bcb_odata(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
 
 CREDITO_RURAL_INFO = DatasetInfo(
     name="credito_rural",
-    description="Crédito rural SICOR/BCB por UF ou município, com fallback BigQuery",
+    description="Crédito rural SICOR/BCB por UF ou programa, com fallback BigQuery",
     sources=[
         DatasetSource(
             name="bcb",
@@ -49,7 +50,7 @@ CREDITO_RURAL_INFO = DatasetInfo(
         ),
     ],
     products=["soja", "milho", "arroz", "feijao", "trigo", "algodao", "cafe", "cana", "sorgo"],
-    contract_version="1.1",
+    contract_version="2.0",
     update_frequency="monthly",
     typical_latency="M+1",
     source_url="https://olinda.bcb.gov.br",
@@ -69,7 +70,7 @@ class CreditoRuralDataset(BaseDataset):
         safra: str | None = None,
         finalidade: str = "custeio",
         uf: str | None = None,
-        agregacao: Literal["municipio", "uf", "programa"] = "municipio",
+        agregacao: Literal["uf", "programa"] = "uf",
         programa: str | None = None,
         tipo_seguro: str | None = None,
         return_meta: bool = False,
@@ -82,6 +83,13 @@ class CreditoRuralDataset(BaseDataset):
             safra=safra,
             finalidade=finalidade,
         )
+
+        if agregacao not in {"uf", "programa"}:
+            hint = (
+                "O OData SICOR não possui município; use agregacao='uf' ou 'programa'. "
+                "Dados municipais estão disponíveis pelo extra agrobr[bigquery]."
+            )
+            raise InvalidParameterError(f"agregacao inválida: {agregacao!r}. {hint}")
 
         snapshot = get_snapshot()
         if snapshot and safra is None:
@@ -131,7 +139,7 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: Literal["municipio", "uf", "programa"] = "municipio",
+    agregacao: Literal["uf", "programa"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     return_meta: bool = False,

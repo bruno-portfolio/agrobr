@@ -1,13 +1,16 @@
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import httpx
 import pandas as pd
 import pytest
 
+from agrobr.contracts import validate_dataset
 from agrobr.datasets.deterministic import deterministic
 from agrobr.datasets.seguro_rural import (
     SEGURO_RURAL_INFO,
     SeguroRuralDataset,
+    _fetch_psr,
     seguro_rural,
 )
 from agrobr.exceptions import SourceUnavailableError
@@ -272,6 +275,31 @@ class TestSeguroRuralPublicAPI:
 
 
 class TestSeguroRuralFetchFunctions:
+    @pytest.mark.asyncio
+    async def test_real_apolices_golden_validates_contract(self):
+        path = (
+            Path(__file__).parents[1]
+            / "golden_data"
+            / "mapa_psr"
+            / "apolices_sample"
+            / "response.csv"
+        )
+
+        with (
+            patch(
+                "agrobr.alt.mapa_psr.client.fetch_periodos",
+                new_callable=AsyncMock,
+                return_value=[path.read_bytes()],
+            ),
+            patch.object(SeguroRuralDataset.info.sources[0], "fetch_fn", _fetch_psr),
+        ):
+            df = await SeguroRuralDataset().fetch(tipo="apolices", ano=2007)
+
+        assert "valor_indenizacao" in df.columns
+        assert df["valor_indenizacao"].dtype == "Float64"
+        assert df["valor_indenizacao"].isna().all()
+        validate_dataset(df, "mapa_psr_apolices")
+
     @pytest.mark.asyncio
     async def test_fetch_psr_apolices_default(self):
         df = pd.DataFrame({"ano": [2024], "cultura": ["soja"], "valor_segurado": [100000.0]})

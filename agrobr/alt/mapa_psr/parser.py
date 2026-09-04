@@ -177,18 +177,22 @@ def _filter_apolices(
     return df
 
 
-def parse_apolices(
+def _parse_apolices(
     content: bytes,
     cultura: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     municipio: str | None = None,
+    *,
+    ensure_valor_indenizacao: bool,
 ) -> pd.DataFrame:
     from agrobr.alt.mapa_psr.models import COLUNAS_APOLICES
 
     df = _read_apolices_csv(content)
     df = _normalize_apolices_columns(df)
     df = _convert_apolices_types(df)
+    if ensure_valor_indenizacao and "valor_indenizacao" not in df.columns:
+        df["valor_indenizacao"] = pd.Series(pd.NA, index=df.index, dtype="Float64")
     df = _filter_apolices(df, cultura=cultura, uf=uf, ano=ano, municipio=municipio)
 
     final_cols = [c for c in COLUNAS_APOLICES if c in df.columns]
@@ -206,6 +210,23 @@ def parse_apolices(
     return df
 
 
+def parse_apolices(
+    content: bytes,
+    cultura: str | None = None,
+    uf: str | None = None,
+    ano: int | None = None,
+    municipio: str | None = None,
+) -> pd.DataFrame:
+    return _parse_apolices(
+        content,
+        cultura=cultura,
+        uf=uf,
+        ano=ano,
+        municipio=municipio,
+        ensure_valor_indenizacao=True,
+    )
+
+
 def parse_sinistros(
     content: bytes,
     cultura: str | None = None,
@@ -214,7 +235,14 @@ def parse_sinistros(
     municipio: str | None = None,
     evento: str | None = None,
 ) -> pd.DataFrame:
-    df = parse_apolices(content, cultura=cultura, uf=uf, ano=ano, municipio=municipio)
+    df = _parse_apolices(
+        content,
+        cultura=cultura,
+        uf=uf,
+        ano=ano,
+        municipio=municipio,
+        ensure_valor_indenizacao=False,
+    )
 
     if "valor_indenizacao" in df.columns:
         mask_indenizacao = df["valor_indenizacao"].fillna(0) > 0

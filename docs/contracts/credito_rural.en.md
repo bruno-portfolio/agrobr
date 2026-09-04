@@ -1,13 +1,13 @@
-# credito_rural v1.1
+# credito_rural v2.0
 
-Rural credit by crop and state, via the semantic layer. Enriched SICOR dimensions (program, funding source, insurance type, modality, activity).
+Rural credit by crop and state through the semantic layer. The contract represents the two levels actually provided by the SICOR endpoint: aggregation by state (the default) or by program.
 
 ## Sources
 
 | Priority | Source | Description |
-|----------|--------|-------------|
+|---|---|---|
 | 1 | BCB/SICOR (OData) | Official Banco Central API |
-| 2 | BigQuery (basedosdados) | Fallback when OData returns 500 |
+| 2 | BigQuery (Base dos Dados) | Fallback for network failures or HTTP 5xx responses |
 
 ## Products
 
@@ -16,66 +16,47 @@ Rural credit by crop and state, via the semantic layer. Enriched SICOR dimension
 ## Schema
 
 | Column | Type | Nullable | Unit | Stable |
-|--------|------|----------|------|--------|
-| `safra` | str | ❌ | - | Yes |
-| `produto` | str | ❌ | - | Yes |
-| `uf` | str | ✅ | - | Yes |
-| `finalidade` | str | ❌ | - | Yes |
-| `agregacao` | str | ✅ | - | Yes |
-| `volume` | float | ✅ | - | Yes |
-| `valor` | float | ✅ | BRL | Yes |
-| `cd_programa` | str | ✅ | - | Yes |
-| `programa` | str | ✅ | - | Yes |
-| `cd_fonte_recurso` | str | ✅ | - | Yes |
-| `fonte_recurso` | str | ✅ | - | Yes |
-| `cd_tipo_seguro` | str | ✅ | - | Yes |
-| `tipo_seguro` | str | ✅ | - | Yes |
-| `cd_modalidade` | str | ✅ | - | Yes |
-| `modalidade` | str | ✅ | - | Yes |
-| `cd_atividade` | str | ✅ | - | Yes |
-| `atividade` | str | ✅ | - | Yes |
-| `regiao` | str | ✅ | - | Yes |
+|---|---|---|---|---|
+| `safra` | str | No | — | Yes |
+| `produto` | str | No | — | Yes |
+| `uf` | str | Yes | — | Yes |
+| `finalidade` | str | No | — | Yes |
+| `agregacao` | str | No | — | Yes |
+| `programa` | str | Yes | — | Yes |
+| `cd_programa` | str | Yes | — | Yes |
+| `qtd_contratos` | int | Yes | contracts | Yes |
+| `valor` | float | Yes | BRL | Yes |
+| `area_financiada` | float | Yes | ha | Yes |
+| `fonte` | str | No | — | Yes |
 
-**Primary key:** `[safra, produto, uf, finalidade]`
+**Primary key:** `[safra, produto, uf, finalidade, programa]`
 
-**Constraints:** `volume >= 0`, `valor >= 0`
+**Constraints:** `qtd_contratos >= 0`, `valor >= 0`, `area_financiada >= 0`
 
-## Guarantees
-
-- Column names never change (additions only)
-- `safra` is always in YYYY/YY format
-- `uf` is always a valid Brazilian state code when present
-- Numeric values are always >= 0
+For `uf` aggregation, `programa` and `cd_programa` are null. For `programa` aggregation, they identify the grouped dimension.
 
 ## Version history
 
 | Version | Change |
-|---------|--------|
-| v1.0 | Initial schema: safra, produto, uf, finalidade, agregacao, volume, valor |
-| v1.1 | +11 nullable columns: cd_programa, programa, cd_fonte_recurso, fonte_recurso, cd_tipo_seguro, tipo_seguro, cd_modalidade, modalidade, cd_atividade, atividade, regiao |
+|---|---|
+| v1.0 | Initial schema |
+| v1.1 | Optional dimensions added |
+| v2.0 | Schema aligned with the actual SICOR modes; removes `volume` and dimensions not present in aggregated output; default changes from `municipio` to `uf` |
 
 ## Example
 
 ```python
 from agrobr import datasets
 
-# Async
 df = await datasets.credito_rural("soja", safra="2024/25")
-df = await datasets.credito_rural("soja", safra="2024/25", uf="MT")
-
-# Filter by program
-df = await datasets.credito_rural("soja", safra="2024/25", programa="Pronamp")
-
-# Aggregate by program
-df = await datasets.credito_rural("soja", safra="2024/25", agregacao="programa")
-
-# With metadata
-df, meta = await datasets.credito_rural("soja", safra="2024/25", return_meta=True)
-
-# Sync
-from agrobr.sync import datasets
-df = datasets.credito_rural("soja", safra="2024/25")
+df_by_program = await datasets.credito_rural(
+    "soja",
+    safra="2024/25",
+    agregacao="programa",
+)
 ```
+
+The OData endpoint used by agrobr has no municipality dimension. `agregacao="municipio"` raises `InvalidParameterError`; municipality-level data can be queried directly with the `agrobr[bigquery]` extra.
 
 ## JSON Schema
 
@@ -83,13 +64,12 @@ Available at `agrobr/schemas/credito_rural.json`.
 
 ```python
 from agrobr.contracts import get_contract
+
 contract = get_contract("credito_rural")
 print(contract.to_json())
 ```
 
-## Requirements
-
-The BigQuery fallback requires:
+## Fallback requirements
 
 ```bash
 pip install agrobr[bigquery]

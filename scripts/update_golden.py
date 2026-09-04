@@ -186,7 +186,7 @@ async def capture_ibge() -> None:
         table_code="5457",
         territorial_level="3",
         ibge_territorial_code="all",
-        variable="214",
+        variable="8331,216,214,112",
         period="2023",
         classifications={"782": "40124"},
         header="n",
@@ -231,13 +231,14 @@ async def capture_ibge() -> None:
         "captured_at": _now_iso(),
         "query": {
             "table": "5457",
-            "variable": "214",
+            "variable": "8331,216,214,112",
             "territorial_level": "3",
             "period": "2023",
             "classification_81": "40124",
         },
         "notes": (
-            f"Real data from IBGE SIDRA — PAM nova, produção soja por UF 2023, {len(df)} rows"
+            f"Real data from IBGE SIDRA — PAM nova, quatro variáveis da soja por UF 2023, "
+            f"{len(df)} rows"
         ),
     }
 

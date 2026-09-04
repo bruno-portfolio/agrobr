@@ -178,16 +178,25 @@ def _extract_multi_produto_sheet(
 
 def _detect_produto_from_row_label(label: str) -> str | None:
     s = label.strip().lower()
-    s = re.sub(r"\(.*?\)", "", s).strip()
-    s = re.sub(r"\d+[ªa]\s*safra", "", s).strip()
 
     from .models import _PRODUTO_ALIASES
 
-    if s in _PRODUTO_ALIASES:
-        return _PRODUTO_ALIASES[s]
+    without_parentheses = re.sub(r"[()]", "", s)
+    if without_parentheses in _PRODUTO_ALIASES:
+        return _PRODUTO_ALIASES[without_parentheses]
+
+    safra_match = re.search(r"([12])\s*[ªaºo�]?\s*safra", without_parentheses)
+    base = re.sub(r"[12]\s*[ªaºo�]?\s*safra", "", without_parentheses).strip()
+    if base in _PRODUTO_ALIASES:
+        canonical = _PRODUTO_ALIASES[base]
+        if safra_match and canonical in {"feijao", "milho"}:
+            return f"{canonical}_{safra_match.group(1)}"
+        if safra_match and canonical == "soja" and safra_match.group(1) == "2":
+            return None
+        return canonical
 
     for alias, canonical in _PRODUTO_ALIASES.items():
-        if alias in s:
+        if alias in without_parentheses:
             return canonical
 
     return None
@@ -292,4 +301,6 @@ def filter_by_produto(df: pd.DataFrame, produto: str) -> pd.DataFrame:
     if df.empty or not produto:
         return df
     key = normalize_produto(produto)
+    if key in {"feijao", "milho"}:
+        return df[df["produto"].isin([key, f"{key}_1", f"{key}_2"])].reset_index(drop=True)
     return df[df["produto"] == key].reset_index(drop=True)

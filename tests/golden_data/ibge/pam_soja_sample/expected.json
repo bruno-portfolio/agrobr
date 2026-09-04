@@ -1,5 +1,5 @@
 {
-  "count": 26,
+  "count": 107,
   "columns": [
     "nivel_territorial_cod",
     "nivel_territorial",
@@ -21,11 +21,11 @@
     "ano"
   ],
   "first_row": {
-    "localidade": "Toneladas",
-    "produto": "Quantidade produzida"
+    "localidade": "Hectares",
+    "produto": "Área colhida"
   },
   "last_row": {
-    "localidade": "Toneladas",
-    "produto": "Quantidade produzida"
+    "localidade": "Quilogramas por Hectare",
+    "produto": "Rendimento médio da produção"
   }
 }

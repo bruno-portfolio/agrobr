@@ -8,11 +8,11 @@ from agrobr.contracts import (
     register_contract,
 )
 
-CREDITO_RURAL_V1_1 = Contract(
+CREDITO_RURAL_V2 = Contract(
     name="bcb.credito_rural",
-    version="1.1",
-    effective_from="0.10.1",
-    primary_key=["safra", "produto", "uf", "finalidade"],
+    version="2.0",
+    effective_from="1.2.0",
+    primary_key=["safra", "produto", "uf", "finalidade", "programa"],
     columns=[
         Column(
             name="safra",
@@ -41,12 +41,24 @@ CREDITO_RURAL_V1_1 = Contract(
         Column(
             name="agregacao",
             type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="programa",
+            type=ColumnType.STRING,
             nullable=True,
             stable=True,
         ),
         Column(
-            name="volume",
-            type=ColumnType.FLOAT,
+            name="cd_programa",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="qtd_contratos",
+            type=ColumnType.INTEGER,
             nullable=True,
             stable=True,
             min_value=0,
@@ -60,69 +72,17 @@ CREDITO_RURAL_V1_1 = Contract(
             min_value=0,
         ),
         Column(
-            name="cd_programa",
-            type=ColumnType.STRING,
+            name="area_financiada",
+            type=ColumnType.FLOAT,
             nullable=True,
+            unit="ha",
             stable=True,
+            min_value=0,
         ),
         Column(
-            name="programa",
+            name="fonte",
             type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="cd_fonte_recurso",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="fonte_recurso",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="cd_tipo_seguro",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="tipo_seguro",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="cd_modalidade",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="modalidade",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="cd_atividade",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="atividade",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="regiao",
-            type=ColumnType.STRING,
-            nullable=True,
+            nullable=False,
             stable=True,
         ),
     ],
@@ -1323,7 +1283,7 @@ MOVIMENTACAO_PORTUARIA_V1 = Contract(
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V1)
 register_contract("preco_atacado", PRECO_ATACADO_V1)
-register_contract("credito_rural", CREDITO_RURAL_V1_1)
+register_contract("credito_rural", CREDITO_RURAL_V2)
 register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
 register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
 register_contract("exportacao", EXPORTACAO_V1)
@@ -2537,7 +2497,7 @@ __all__ = [
     "COMERCIO_BILATERAL_V1",
     "CONAB_PROGRESSO_V1",
     "CONDICAO_LAVOURAS_V1",
-    "CREDITO_RURAL_V1_1",
+    "CREDITO_RURAL_V2",
     "DESMATAMENTO_DETER_V1",
     "DESMATAMENTO_PRODES_V1",
     "EXPORTACAO_V1",

@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pandas as pd
 import pytest
 
+from agrobr.anec import parser
+from agrobr.contracts import validate_dataset
 from agrobr.datasets import registry
 from agrobr.datasets.exportacao_anec import EmbarquesANECDataset, embarques_anec
+from agrobr.exceptions import InvalidParameterError
 from tests.test_datasets.conftest import make_source, mock_source_meta
 
 
@@ -60,9 +66,7 @@ class TestEmbarquesANEC:
 
     @pytest.mark.asyncio
     async def test_public_fn_propagates_source_error(self):
-        from agrobr.exceptions import SourceUnavailableError
-
-        with pytest.raises(SourceUnavailableError):
+        with pytest.raises(InvalidParameterError):
             await embarques_anec(ano=2025)
 
     @pytest.mark.asyncio
@@ -83,6 +87,23 @@ class TestEmbarquesANEC:
         assert captured["porto"] == "SANTOS"
         assert captured["produto_filtro"] == "soybean"
         assert captured["tipo"] == "efetivado"
+
+    @pytest.mark.asyncio
+    async def test_real_golden_has_unique_primary_key_and_valid_contract(self):
+        golden = (
+            Path(__file__).parents[1] / "golden_data" / "anec" / "weekly_w12_2026" / "response.pdf"
+        )
+        report = parser.parse_anec_pdf(golden.read_bytes())
+
+        with patch(
+            "agrobr.anec.api._fetch_and_parse",
+            new_callable=AsyncMock,
+            return_value=(report, "golden://anec/weekly_w12_2026", MagicMock()),
+        ):
+            df = await EmbarquesANECDataset().fetch(ano=2026, semana=12)
+
+        assert not df.duplicated(["porto", "produto", "periodo"]).any()
+        validate_dataset(df, "embarques_anec")
 
 
 class TestRegistry:

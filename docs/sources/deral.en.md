@@ -21,7 +21,7 @@ df = await deral.condicao_lavouras("trigo")
 
 | Column | Type | Description |
 |---|---|---|
-| `produto` | str | Monitored crop |
+| `produto` | str | Monitored crop; beans and corn preserve the season as `feijao_1`, `feijao_2`, `milho_1`, or `milho_2` |
 | `data` | str | Reference date (dd/mm/yyyy) |
 | `condicao` | str | `boa`, `media` or `ruim`; empty for planting and harvest progress records |
 | `pct` | float | Percentage of the crop in that condition |

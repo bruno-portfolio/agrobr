@@ -1,18 +1,21 @@
 {
   "name": "bcb.credito_rural",
-  "schema_version": "1.1",
-  "effective_from": "0.10.1",
+  "schema_version": "2.0",
+  "effective_from": "1.2.0",
   "breaking_policy": "major",
   "primary_key": [
     "safra",
     "produto",
     "uf",
-    "finalidade"
+    "finalidade",
+    "programa"
   ],
   "required_columns": [
     "safra",
     "produto",
-    "finalidade"
+    "finalidade",
+    "agregacao",
+    "fonte"
   ],
   "dtypes": {
     "safra": "str",
@@ -20,39 +23,25 @@
     "uf": "str",
     "finalidade": "str",
     "agregacao": "str",
-    "volume": "float",
-    "valor": "float",
-    "cd_programa": "str",
     "programa": "str",
-    "cd_fonte_recurso": "str",
-    "fonte_recurso": "str",
-    "cd_tipo_seguro": "str",
-    "tipo_seguro": "str",
-    "cd_modalidade": "str",
-    "modalidade": "str",
-    "cd_atividade": "str",
-    "atividade": "str",
-    "regiao": "str"
+    "cd_programa": "str",
+    "qtd_contratos": "int",
+    "valor": "float",
+    "area_financiada": "float",
+    "fonte": "str"
   },
   "nullable": {
     "safra": false,
     "produto": false,
     "uf": true,
     "finalidade": false,
-    "agregacao": true,
-    "volume": true,
-    "valor": true,
-    "cd_programa": true,
+    "agregacao": false,
     "programa": true,
-    "cd_fonte_recurso": true,
-    "fonte_recurso": true,
-    "cd_tipo_seguro": true,
-    "tipo_seguro": true,
-    "cd_modalidade": true,
-    "modalidade": true,
-    "cd_atividade": true,
-    "atividade": true,
-    "regiao": true
+    "cd_programa": true,
+    "qtd_contratos": true,
+    "valor": true,
+    "area_financiada": true,
+    "fonte": false
   },
   "columns": [
     {
@@ -102,6 +91,17 @@
     {
       "name": "agregacao",
       "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "programa",
+      "type": "str",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -111,8 +111,19 @@
       "max_value": null
     },
     {
-      "name": "volume",
-      "type": "float",
+      "name": "cd_programa",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "qtd_contratos",
+      "type": "int",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -133,119 +144,20 @@
       "max_value": null
     },
     {
-      "name": "cd_programa",
-      "type": "str",
+      "name": "area_financiada",
+      "type": "float",
       "nullable": true,
-      "unit": null,
+      "unit": "ha",
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": null,
+      "min_value": 0,
       "max_value": null
     },
     {
-      "name": "programa",
+      "name": "fonte",
       "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "cd_fonte_recurso",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "fonte_recurso",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "cd_tipo_seguro",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "tipo_seguro",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "cd_modalidade",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "modalidade",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "cd_atividade",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "atividade",
-      "type": "str",
-      "nullable": true,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "regiao",
-      "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -256,8 +168,9 @@
   ],
   "constraints": {
     "no_duplicates": true,
-    "volume_min": 0,
-    "valor_min": 0
+    "qtd_contratos_min": 0,
+    "valor_min": 0,
+    "area_financiada_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",

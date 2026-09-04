@@ -64,7 +64,8 @@ def parse_focos_csv(data: bytes) -> pd.DataFrame:
 
     for col in ["numero_dias_sem_chuva", "precipitacao", "risco_fogo", "frp"]:
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+            values = pd.to_numeric(df[col], errors="coerce")
+            df[col] = values.mask(values.eq(-999)).astype("Float64")
 
     output_cols = [c for c in COLUNAS_SAIDA if c in df.columns]
     if "uf" in df.columns:
