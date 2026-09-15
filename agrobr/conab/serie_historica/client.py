@@ -45,7 +45,7 @@ _PRODUCT_REGISTRY: dict[str, tuple[str, str, str]] = {
     "amendoim_2": ("graos", "amendoim", "amendoim2aseriehist.xls"),
     "centeio": ("graos", "centeio", "centeioseriehist.xls"),
     "triticale": ("graos", "triticale", "triticaleseriehist.xls"),
-    "gergelim": ("graos", "girassol", "gergelimseriehist.xls"),
+    "gergelim": ("graos", "gergelim", "gergelimseriehist.xls"),
     "cafe": ("cafe", "total-arabica-e-conilon", "cafetotalseriehist.xls"),
     "cafe_arabica": ("cafe", "arabica", "cafearabicaseriehist.xls"),
     "cafe_conilon": ("cafe", "conilon", "cafeconilonseriehist.xls"),
