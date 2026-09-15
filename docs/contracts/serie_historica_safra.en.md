@@ -10,7 +10,7 @@ Crop historical series by product, crop year, region and state.
 
 ## Products
 
-32 crops: `soja`, `milho`, `milho_1`, `milho_2`, `milho_3`, `arroz`, `arroz_irrigado`, `arroz_sequeiro`, `feijao`, `feijao_1`, `feijao_2`, `feijao_3`, `algodao`, `trigo`, `sorgo`, `aveia`, `cevada`, `canola`, `girassol`, `mamona`, `amendoim`, `amendoim_1`, `amendoim_2`, `centeio`, `triticale`, `gergelim`, `cafe`, `cafe_arabica`, `cafe_conilon`, `cana`, `cana_area_total`, `cana_industria`
+44 crops: `soja`, `milho`, `milho_1`, `milho_2`, `milho_3`, `arroz`, `arroz_irrigado`, `arroz_sequeiro`, `feijao`, `feijao_1`, `feijao_2`, `feijao_3`, `feijao_caupi`, `feijao_caupi_1`, `feijao_caupi_2`, `feijao_caupi_3`, `feijao_cores`, `feijao_cores_1`, `feijao_cores_2`, `feijao_cores_3`, `feijao_preto`, `feijao_preto_1`, `feijao_preto_2`, `feijao_preto_3`, `algodao`, `trigo`, `sorgo`, `aveia`, `cevada`, `canola`, `girassol`, `mamona`, `amendoim`, `amendoim_1`, `amendoim_2`, `centeio`, `triticale`, `gergelim`, `cafe`, `cafe_arabica`, `cafe_conilon`, `cana`, `cana_area_total`, `cana_industria`
 
 ## Schema
 

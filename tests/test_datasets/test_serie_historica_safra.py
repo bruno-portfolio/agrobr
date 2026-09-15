@@ -117,7 +117,7 @@ class TestSerieHistoricaSafraFetch:
 
 class TestSerieHistoricaSafraInfo:
     def test_products_count(self):
-        assert len(SERIE_HISTORICA_SAFRA_INFO.products) == 32
+        assert len(SERIE_HISTORICA_SAFRA_INFO.products) == 44
 
     def test_license(self):
         assert SERIE_HISTORICA_SAFRA_INFO.license == "livre"

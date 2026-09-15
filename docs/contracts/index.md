@@ -56,7 +56,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | [posicionamento_fundos](./posicionamento_fundos.md) | Posicionamento de fundos por categoria de trader (COT) | CFTC |
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Movimentação portuária de cargas ⚠️ (fonte fora do ar) | ANTAQ |
 | [seguro_rural](./seguro_rural.md) | Seguro rural — apólices e sinistros | MAPA PSR |
-| [serie_historica_safra](./serie_historica_safra.md) | Série histórica de safras (32 culturas) | CONAB |
+| [serie_historica_safra](./serie_historica_safra.md) | Série histórica de safras (44 culturas) | CONAB |
 | [uso_do_solo](./uso_do_solo.md) | Cobertura e uso da terra (MapBiomas) | MapBiomas |
 | [zoneamento_agricola](./zoneamento_agricola.md) | Zoneamento agrícola de risco climático (ZARC) | MAPA/Embrapa |
 

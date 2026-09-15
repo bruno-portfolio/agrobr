@@ -56,7 +56,7 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 | [posicionamento_fundos](./posicionamento_fundos.md) | Fund positioning by trader category (COT) | CFTC |
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Port cargo movement ⚠️ (source offline) | ANTAQ |
 | [seguro_rural](./seguro_rural.md) | Rural insurance — policies and claims | MAPA PSR |
-| [serie_historica_safra](./serie_historica_safra.md) | Crop historical series (32 crops) | CONAB |
+| [serie_historica_safra](./serie_historica_safra.md) | Crop historical series (44 crops) | CONAB |
 | [uso_do_solo](./uso_do_solo.md) | Land cover and use (MapBiomas) | MapBiomas |
 | [zoneamento_agricola](./zoneamento_agricola.md) | Agricultural climate risk zoning (ZARC) | MAPA/Embrapa |
 
