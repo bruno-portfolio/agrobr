@@ -208,4 +208,4 @@ df = await conab.serie_historica("soja", inicio=2020, uf="MT")
 
 ## Datasets
 
-- [`serie_historica_safra`](../contracts/serie_historica_safra.md) — wraps `conab.serie_historica()` (32 crops)
+- [`serie_historica_safra`](../contracts/serie_historica_safra.md) — wraps `conab.serie_historica()` (44 crops)

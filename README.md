@@ -453,7 +453,7 @@ agrobr snapshot use 2025-Q4   # validates the snapshot and shows how to activate
 | `progresso_safra` | Weekly planting/harvest progress | CONAB |
 | `queimadas` | Satellite fire hotspots (6 biomes) | INPE |
 | `seguro_rural` | Rural insurance policies and claims | MAPA PSR |
-| `serie_historica_safra` | Crop season historical series — 32 crops since 1976 | CONAB |
+| `serie_historica_safra` | Crop season historical series — 44 crops since 1976 | CONAB |
 | `silvicultura` | Forestry production (eucalyptus, pine, charcoal) | IBGE PEVS |
 | `uso_do_solo` | Annual land use and cover by state/municipality | MapBiomas |
 | `zoneamento_agricola` | Agricultural climate risk zoning (ZARC) | MAPA/Embrapa |

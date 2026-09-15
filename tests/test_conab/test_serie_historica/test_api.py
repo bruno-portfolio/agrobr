@@ -205,6 +205,9 @@ class TestProdutosDisponiveis:
         assert "arroz" in products
         assert "cafe" in products
         assert "cana" in products
+        assert "feijao_caupi" in products
+        assert "feijao_cores" in products
+        assert "feijao_preto" in products
 
     def test_urls_contain_gov_br(self):
         result = produtos_disponiveis()

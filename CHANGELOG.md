@@ -7,6 +7,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Added
+- **conab / serie_historica** — 12 subprodutos de feijão por tipo: `feijao_caupi`, `feijao_caupi_1`/`_2`/`_3`, `feijao_cores`, `feijao_cores_1`/`_2`/`_3`, `feijao_preto`, `feijao_preto_1`/`_2`/`_3` (recortes por tipo a partir de 2015/16). O total de produtos da série histórica vai de 32 para 44
+
 ### Changed
 - **health** — alertas passam a disparar apenas no **cruzamento** dos limiares (`consecutive_failures_warning`, `consecutive_failures_critical`), não em todo run acima deles. Antes, uma fonte fora do ar por semanas repetia o mesmo alerta a cada execução
 - **acervo_fundiario** — probe de health passa a bater em um ZIP real via `HEAD`, com a mesma política TLS do client (`verify=False`, cadeia de certificados do INCRA incompleta), e sobe para `tier: best_effort`: a fonte não respondeu a partir dos runners do GitHub Actions nem dos 8 nós internacionais testados em 31/08/2026, então a indisponibilidade esperada vira `warning` em vez de derrubar o workflow

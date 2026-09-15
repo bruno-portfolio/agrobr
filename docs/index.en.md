@@ -86,7 +86,7 @@ Ask for what you want; the source is an internal detail:
 | `progresso_safra` | Weekly sowing/harvest progress | CONAB |
 | `queimadas` | Satellite fire hotspots (6 biomes) | INPE |
 | `seguro_rural` | Rural insurance policies and claims | MAPA PSR |
-| `serie_historica_safra` | Crop historical series — 32 crops since 1976 | CONAB |
+| `serie_historica_safra` | Crop historical series — 44 crops since 1976 | CONAB |
 | `silvicultura` | Silvicultural output (eucalyptus, pine, charcoal) | IBGE PEVS |
 | `uso_do_solo` | Annual land cover and use by state/municipality | MapBiomas |
 | `zoneamento_agricola` | Agricultural climate risk zoning (ZARC) | MAPA/Embrapa |

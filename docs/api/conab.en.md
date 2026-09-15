@@ -170,7 +170,7 @@ async def ufs() -> list[str]
 The CONAB module also exposes (documented in their own pages or in the contracts):
 
 - `custo_producao(cultura, uf=...)` / `custo_producao_total(cultura, uf=...)` — production costs per hectare. See the [custo_producao](../contracts/custo_producao.md) contract
-- `serie_historica(produto, ...)` — crop historical series (32 crops since 1976). See the [serie_historica_safra](../contracts/serie_historica_safra.md) contract
+- `serie_historica(produto, ...)` — crop historical series (44 crops since 1976). See the [serie_historica_safra](../contracts/serie_historica_safra.md) contract
 - `progresso_safra(...)` / `semanas_disponiveis()` — weekly planting/harvest progress. See the [CONAB Progress API](conab_progresso.md)
 - `ceasa_precos(...)` / `ceasa_produtos()` / `ceasa_categorias()` / `lista_ceasas()` — wholesale produce prices. See the [CONAB CEASA API](conab_ceasa.md)
 

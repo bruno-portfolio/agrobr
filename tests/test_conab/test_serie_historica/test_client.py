@@ -116,3 +116,23 @@ class TestConabSerieProductRegistry:
         names = [p["produto"] for p in produtos]
         assert "soja" in names
         assert "milho" in names
+
+    @pytest.mark.parametrize(
+        "produto",
+        [
+            "feijao_caupi",
+            "feijao_caupi_1",
+            "feijao_caupi_2",
+            "feijao_caupi_3",
+            "feijao_cores",
+            "feijao_cores_1",
+            "feijao_cores_2",
+            "feijao_cores_3",
+            "feijao_preto",
+            "feijao_preto_1",
+            "feijao_preto_2",
+            "feijao_preto_3",
+        ],
+    )
+    def test_list_produtos_contains_feijao_subtypes(self, produto):
+        assert produto in {p["produto"] for p in client.list_produtos()}

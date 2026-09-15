@@ -86,7 +86,7 @@ Peça o que quer, a fonte é detalhe interno:
 | `progresso_safra` | Progresso semanal semeadura/colheita | CONAB |
 | `queimadas` | Focos de calor por satélite (6 biomas) | INPE |
 | `seguro_rural` | Apólices e sinistros do seguro rural | MAPA PSR |
-| `serie_historica_safra` | Série histórica de safras — 32 culturas desde 1976 | CONAB |
+| `serie_historica_safra` | Série histórica de safras — 44 culturas desde 1976 | CONAB |
 | `silvicultura` | Produção silvicultural (eucalipto, pinus, carvão vegetal) | IBGE PEVS |
 | `uso_do_solo` | Cobertura e uso da terra anual por UF/município | MapBiomas |
 | `zoneamento_agricola` | Zoneamento agrícola de risco climático (ZARC) | MAPA/Embrapa |
