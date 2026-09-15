@@ -110,6 +110,10 @@ class TestConabSerieProductRegistry:
         with pytest.raises(SourceUnavailableError, match="nao encontrado"):
             client.get_xls_url("banana")
 
+    def test_get_xls_url_gergelim(self):
+        url = client.get_xls_url("gergelim")
+        assert url.endswith("graos/gergelim/gergelimseriehist.xls")
+
     def test_list_produtos_returns_all(self):
         produtos = client.list_produtos()
         assert len(produtos) > 0
