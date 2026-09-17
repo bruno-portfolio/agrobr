@@ -363,6 +363,76 @@ class TestParseSerieHistorica:
         for i in range(len(safras) - 1):
             assert safras[i] <= safras[i + 1]
 
+    @pytest.mark.parametrize("produto", ["cafe", "cafe_arabica", "cafe_conilon"])
+    def test_cafe_uses_area_em_producao(self, produto):
+        xls = _make_xls(
+            {
+                "Área em produção": [
+                    ["CONAB - Série Histórica - Café - Área em produção (ha)", None, None],
+                    ["Região/UF", "2022", "2023"],
+                    ["MG", 1077804.0, 1077804.0],
+                ],
+                "Área em formação": [
+                    ["CONAB - Série Histórica - Café - Área em formação (ha)", None, None],
+                    ["Região/UF", "2022", "2023"],
+                    ["MG", 319308.0, 319308.0],
+                ],
+                "Produção": [
+                    ["CONAB - Série Histórica - Café - Produção (mil sacas)", None, None],
+                    ["Região/UF", "2022", "2023"],
+                    ["MG", 25755.1, 25755.1],
+                ],
+            }
+        )
+        records = parse_serie_historica(xls, produto)
+
+        mg = [r for r in records if r.uf == "MG"]
+        assert mg
+        assert all(r.area_plantada_mil_ha == pytest.approx(1077804.0) for r in mg)
+        assert all(r.producao_mil_ton == pytest.approx(25755.1) for r in mg)
+
+    def test_duplicate_metric_sheet_keeps_last_when_no_override(self):
+        xls = _make_xls(
+            {
+                "Area A": [
+                    ["x", None, None],
+                    ["Região/UF", "2022", "2023"],
+                    ["MG", 100.0, 100.0],
+                ],
+                "Area B": [
+                    ["x", None, None],
+                    ["Região/UF", "2022", "2023"],
+                    ["MG", 200.0, 200.0],
+                ],
+            }
+        )
+        records = parse_serie_historica(xls, "soja")
+
+        mg = [r for r in records if r.uf == "MG"]
+        assert mg
+        assert all(r.area_plantada_mil_ha == pytest.approx(200.0) for r in mg)
+
+    def test_cana_area_total_uses_area_total(self):
+        xls = _make_xls(
+            {
+                "Área Total": [
+                    ["x", None, None],
+                    ["Região/UF", "2022", "2023"],
+                    ["MG", 600.0, 600.0],
+                ],
+                "Área Colhida": [
+                    ["x", None, None],
+                    ["Região/UF", "2022", "2023"],
+                    ["MG", 200.0, 200.0],
+                ],
+            }
+        )
+        records = parse_serie_historica(xls, "cana_area_total")
+
+        mg = [r for r in records if r.uf == "MG"]
+        assert mg
+        assert all(r.area_plantada_mil_ha == pytest.approx(600.0) for r in mg)
+
 
 class TestRecordsToDataframe:
     def test_converts_to_dataframe(self):

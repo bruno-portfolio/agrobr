@@ -31,6 +31,14 @@ SHEET_METRIC_MAP: dict[str, str] = {
     "produtividade": "produtividade_kg_ha",
 }
 
+# Aba a usar quando o produto tem mais de uma aba para a mesma metrica.
+_SHEET_OVERRIDES: dict[tuple[str, str], str] = {
+    ("cafe", "area_plantada_mil_ha"): "Área em produção",
+    ("cafe_arabica", "area_plantada_mil_ha"): "Área em produção",
+    ("cafe_conilon", "area_plantada_mil_ha"): "Área em produção",
+    ("cana_area_total", "area_plantada_mil_ha"): "Área Total",
+}
+
 
 def _strip_accents(text: str) -> str:
     import unicodedata
@@ -239,6 +247,7 @@ def parse_serie_historica(
         )
 
     all_records: dict[tuple[str, str, str | None], dict[str, Any]] = {}
+    metric_sheets: dict[str, str] = {}
 
     for sheet_name in sheet_names:
         metric = _detect_metric_from_sheet_name(str(sheet_name))
@@ -249,6 +258,26 @@ def parse_serie_historica(
                 reason="metrica nao detectada",
             )
             continue
+
+        preferred_sheet = _SHEET_OVERRIDES.get((produto_norm, metric))
+        if preferred_sheet is not None and str(sheet_name) != preferred_sheet:
+            logger.debug(
+                "conab_serie_historica_skip_sheet_override",
+                sheet=sheet_name,
+                metric=metric,
+                preferred_sheet=preferred_sheet,
+            )
+            continue
+
+        if metric in metric_sheets:
+            logger.warning(
+                "conab_serie_historica_duplicate_metric_sheet",
+                metric=metric,
+                kept_sheet=metric_sheets[metric],
+                overwriting_sheet=sheet_name,
+            )
+        else:
+            metric_sheets[metric] = str(sheet_name)
 
         try:
             df_raw = pd.read_excel(xls_file, sheet_name=sheet_name, header=None)
