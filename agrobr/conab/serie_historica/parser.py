@@ -96,7 +96,7 @@ def _normalize_safra_header(value: str) -> str | None:
     if match:
         year = int(match.group(1))
         if 1970 <= year <= 2050:
-            return f"{year}/{str(year + 1)[2:]}"
+            return str(year)
 
     return None
 

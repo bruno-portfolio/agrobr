@@ -126,6 +126,12 @@ class TestSafraFormatRule:
         results = rule.check(df)
         assert results[0].passed is True
 
+    def test_valid_year_only_format(self):
+        rule = SafraFormatRule()
+        df = pd.DataFrame({"safra": ["2023", "2024", "2025"]})
+        results = rule.check(df)
+        assert results[0].passed is True
+
     def test_invalid_format(self):
         rule = SafraFormatRule()
         df = pd.DataFrame({"safra": ["2024-25", "2024/2025", "24/25"]})

@@ -1948,7 +1948,7 @@ SERIE_HISTORICA_SAFRA_V1 = Contract(
     guarantees=[
         "PK unica por combinacao produto + safra + regiao + uf",
         "'produto' lowercase (ex: soja, milho_2)",
-        "'safra' formato YYYY/YY (ex: 2023/24)",
+        "'safra' segue a fonte: YYYY/YY (graos) ou YYYY (culturas anuais, ex: cafe)",
         "'regiao' quando presente: NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL",
         "'uf' quando presente: codigo UF de 2 letras uppercase",
         "Metricas (area, producao, produtividade) >= 0 quando presentes",
