@@ -352,6 +352,7 @@
 </g>
 <g data-module="agrobr.contracts">
 <circle cx="664.7" cy="584.1" r="80.0" fill="#da363355" opacity="0.1" filter="url(#softGlow)"/>
+<circle cx="664.7" cy="584.1" r="33.0" fill="none" stroke="#f0883e" stroke-width="1.8" opacity="0.6" filter="url(#churnPulse)"><animate attributeName="r" values="33.0;37.0;33.0" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/></circle>
 <circle cx="665.7" cy="585.1" r="32.0" fill="#000000" opacity="0.3"/>
 <circle cx="664.7" cy="584.1" r="32.0" fill="#da3633" filter="url(#nodeGlow)"/>
 <circle cx="664.7" cy="574.5" r="19.2" fill="#f85149" opacity="0.15"/>
