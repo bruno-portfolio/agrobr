@@ -275,7 +275,7 @@ class AreaConsistencyRule(SemanticRule):
 @dataclass
 class SafraFormatRule(SemanticRule):
     name: str = "safra_format"
-    description: str = "Safra must match format YYYY/YY"
+    description: str = "Safra must match format YYYY/YY or YYYY"
     severity: str = "error"
 
     def check(self, df: pd.DataFrame, **_kwargs: Any) -> list[ValidationResult]:
@@ -286,7 +286,7 @@ class SafraFormatRule(SemanticRule):
         if "safra" not in df.columns:
             return results
 
-        pattern = re.compile(r"^\d{4}/\d{2}$")
+        pattern = re.compile(r"^\d{4}(/\d{2})?$")
         invalid = df[~df["safra"].astype(str).str.match(pattern)]
 
         if len(invalid) > 0:

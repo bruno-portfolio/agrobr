@@ -171,10 +171,10 @@ class TestNormalizeSafraHeader:
         assert _normalize_safra_header("2023/2024") == "2023/24"
 
     def test_year_only(self):
-        assert _normalize_safra_header("2023") == "2023/24"
+        assert _normalize_safra_header("2023") == "2023"
 
     def test_year_float_coercion(self):
-        assert _normalize_safra_header("2024.0") == "2024/25"
+        assert _normalize_safra_header("2024.0") == "2024"
 
     def test_two_digit_format(self):
         assert _normalize_safra_header("23/24") == "2023/24"
@@ -306,6 +306,19 @@ class TestParseSheet:
         ufs = {r.uf for r in records}
         assert None not in ufs
         assert "BRASIL" not in ufs
+
+    def test_parse_year_only_headers(self):
+        rows = [
+            ["CONAB - Série Histórica - Café - Área (mil ha)", None, None],
+            ["Região/UF", "2023", "2024"],
+            ["MT", 100.0, 110.0],
+        ]
+        df = pd.DataFrame(rows)
+        records = parse_sheet(df, "cafe", "area_plantada_mil_ha")
+
+        assert {r.safra for r in records} == {"2023", "2024"}
+        mt_2024 = [r for r in records if r.safra == "2024"][0]
+        assert mt_2024.area_plantada_mil_ha == pytest.approx(110.0)
 
 
 class TestParseSerieHistorica:

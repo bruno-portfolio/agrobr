@@ -32,7 +32,7 @@ Crop historical series by product, crop year, region and state.
 
 - Unique PK per product + crop year + region + state combination
 - `produto` is lowercase (e.g. soja, milho_2)
-- `safra` in YYYY/YY format (e.g. 2023/24)
+- `safra` follows the source: YYYY/YY (grains, e.g. 2023/24) or YYYY (annual crops, e.g. 2024)
 - `regiao` when present: NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL
 - `uf` when present: 2-letter uppercase state code
 - Metrics (area, production, yield) >= 0 when present

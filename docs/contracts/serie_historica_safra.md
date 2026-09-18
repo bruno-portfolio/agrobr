@@ -32,7 +32,7 @@ Série histórica de safras por produto, safra, região e UF.
 
 - PK única por combinação produto + safra + região + uf
 - `produto` lowercase (ex: soja, milho_2)
-- `safra` formato YYYY/YY (ex: 2023/24)
+- `safra` segue a fonte: YYYY/YY (grãos, ex: 2023/24) ou YYYY (culturas anuais, ex: 2024)
 - `regiao` quando presente: NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL
 - `uf` quando presente: código UF de 2 letras uppercase
 - Métricas (area, produção, produtividade) >= 0 quando presentes
