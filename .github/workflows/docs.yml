@@ -34,7 +34,7 @@ jobs:
         run: pip install -e ".[docs]"
 
       - name: Build MkDocs
-        run: mkdocs build -d site_mkdocs
+        run: mkdocs build --strict -d site_mkdocs
 
       - name: Assemble site
         run: |
@@ -43,6 +43,7 @@ jobs:
           cp -r en site/en
           cp -r site_mkdocs site/docs
           cp -r calculadora site/calculadora
+          cp -r assets site/assets
           echo "agrobr.dev" > site/CNAME
 
       - name: Setup Pages

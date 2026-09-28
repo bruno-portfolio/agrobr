@@ -1,8 +1,8 @@
-name: Landing Data
+name: Explorer Data
 
 on:
   schedule:
-    - cron: '30 21 * * 1-5'
+    - cron: '0 12 15 * *'
   workflow_dispatch:
 
 permissions:
@@ -19,30 +19,24 @@ env:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
         with:
           token: ${{ secrets.LANDING_PUSH_TOKEN }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: 'pip'
-
       - name: Install agrobr
         run: pip install -e .
-
-      - name: Atualiza dados da landing
-        run: python scripts/update_landing_data.py
-
-      - name: Commit se houver mudanca
+      - name: Update Conab explorer
+        run: python -m scripts.update_conab_explorer_data --input assets/explorer/conab.json --output assets/explorer/conab.json --cache-dir reports/explorer-monthly
+      - name: Commit updated data
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "agrobr-bot"
           git config user.email "bot@agrobr.dev"
-          git add index.html en/index.html
-          git diff --staged --quiet || (git commit -m "chore(landing): atualiza indicadores do ticker [skip ci]" && git pull --rebase origin main && git push && gh workflow run docs.yml --ref main)
+          git add assets/explorer/conab.json
+          git diff --staged --quiet || (git commit -m "chore(landing): atualiza série Conab do explorer [skip ci]" && git pull --rebase origin main && git push && gh workflow run docs.yml --ref main)

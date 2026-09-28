@@ -2,6 +2,7 @@ import { STATE_PRIMARY_METHOD } from "./constants.js";
 import { createSoilLayer, createLimestone, createLimingRequest, ValidationError } from "./models.js";
 import { runDiagnostic } from "./diagnostic.js";
 import { renderChart, destroyChart } from "./charts.js";
+import { parseNum, stepNumber } from "./numeric.js";
 
 // ─── STATE ───
 const state = {
@@ -61,12 +62,7 @@ function initSteppers() {
     wrapper.appendChild(btnInc);
 
     function stepValue(direction) {
-      let current = parseFloat(input.value.replace(",", "."));
-      if (isNaN(current)) current = (direction > 0) ? min : min;
-      let next = current + step * direction;
-      next = Math.round(next * 1000) / 1000;
-      if (next < min) next = min;
-      if (next > max) next = max;
+      const next = stepNumber(parseNum(input.value), step * direction, min, max);
       input.value = next.toFixed(decimals);
       input.dispatchEvent(new Event("input", { bubbles: true }));
     }
@@ -618,12 +614,6 @@ function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
-}
-
-function parseNum(str) {
-  if (!str || str.trim() === "" || str.trim() === "—") return NaN;
-  const cleaned = str.replace(/\./g, "").replace(",", ".");
-  return parseFloat(cleaned);
 }
 
 function showError(field, msg) {

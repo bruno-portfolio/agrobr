@@ -7,6 +7,7 @@ falhar nos sanity checks.
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import re
 import sys
@@ -14,6 +15,8 @@ from pathlib import Path
 from typing import Any, cast
 
 import pandas as pd
+
+from agrobr.utils.atomic import atomic_output
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -46,9 +49,7 @@ LOCALES: dict[str, dict[str, Any]] = {
         },
         "data_fmt": "{dia:02d} {mes} {ano}",
         "stamp": "indicadores CEPEA · {data} · coletados via agrobr",
-        "proof_meta": "soja · indicador CEPEA/ESALQ · {data}",
         "spark_aria": "Últimos {n} pregões da soja",
-        "pregoes": "# {n} pregões · CEPEA → Notícias Agrícolas → cache",
         "decimal": ",",
         "milhar": ".",
         "unidades": {
@@ -58,7 +59,7 @@ LOCALES: dict[str, dict[str, Any]] = {
             "BRL/@": "/ @",
             "BRL/kg": "/ kg",
             "BRL/L": "/ L",
-            "cBRL/lb": "¢ / lb",
+            "BRL/lb": "/ lb",
         },
     },
     "en": {
@@ -87,9 +88,7 @@ LOCALES: dict[str, dict[str, Any]] = {
         },
         "data_fmt": "{mes} {dia:02d}, {ano}",
         "stamp": "CEPEA indicators · {data} · fetched via agrobr",
-        "proof_meta": "soybean · CEPEA/ESALQ indicator · {data}",
         "spark_aria": "Last {n} soybean trading days",
-        "pregoes": "# {n} trading days · CEPEA → Notícias Agrícolas → cache",
         "decimal": ".",
         "milhar": ",",
         "unidades": {
@@ -99,7 +98,7 @@ LOCALES: dict[str, dict[str, Any]] = {
             "BRL/@": "/ @ (15kg)",
             "BRL/kg": "/ kg",
             "BRL/L": "/ L",
-            "cBRL/lb": "¢ / lb",
+            "BRL/lb": "/ lb",
         },
     },
 }
@@ -112,6 +111,15 @@ def fmt_valor(valor: float, loc: dict[str, Any]) -> str:
 
 def fmt_data(data: Any, loc: dict[str, Any]) -> str:
     return str(loc["data_fmt"]).format(dia=data.day, mes=loc["meses"][data.month], ano=data.year)
+
+
+def fmt_preco(valor: float, unidade: str, loc: dict[str, Any]) -> str:
+    if unidade == "cBRL/lb":
+        valor /= 100
+        unidade = "BRL/lb"
+    if unidade not in loc["unidades"]:
+        raise ValueError(f"Unidade de preco nao suportada: {unidade}")
+    return f"R$ {fmt_valor(valor, loc)} {loc['unidades'][unidade]}"
 
 
 async def coletar() -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -128,6 +136,9 @@ async def coletar() -> tuple[list[dict[str, Any]], dict[str, Any]]:
 
         atual = float(df["valor"].iloc[-1])
         anterior = float(df["valor"].iloc[-2])
+        unidade = str(df["unidade"].iloc[-1])
+        if str(df["unidade"].iloc[-2]) != unidade:
+            raise RuntimeError(f"{key}: unidades diferentes nos dois ultimos pregoes")
         if not (0 < atual < 100_000):
             raise RuntimeError(f"{key}: valor implausivel {atual}")
 
@@ -135,6 +146,7 @@ async def coletar() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             {
                 "key": key,
                 "valor": atual,
+                "unidade": unidade,
                 "var_pct": (atual / anterior - 1) * 100,
                 "data": df["data"].iloc[-1],
             }
@@ -158,95 +170,124 @@ async def coletar() -> tuple[list[dict[str, Any]], dict[str, Any]]:
 
 
 def render_ticker(ticker: list[dict[str, Any]], loc: dict[str, Any]) -> str:
-    linhas = []
+    english = loc["decimal"] == "."
+    rows = []
     for item in ticker:
-        var = item["var_pct"]
-        seta, classe = ("▲", "up") if var >= 0 else ("▼", "down")
-        var_str = f"{abs(var):.2f}".replace(".", loc["decimal"])
-        linhas.append(
-            f'        <span class="ticker-item"><span class="tk-name">{loc["labels"][item["key"]]}</span>'
-            f'<span class="tk-price">R$ {fmt_valor(item["valor"], loc)}</span>'
-            f'<span class="{classe}">{seta} {var_str}%</span></span>'
+        variation = item["var_pct"]
+        arrow, direction = ("↑", "up") if variation >= 0 else ("↓", "down")
+        percentage = fmt_valor(abs(variation), loc)
+        rows.append(
+            f'<span class="ticker-item"><span class="tk-name">{loc["labels"][item["key"]].upper()}</span>'
+            f'<span class="tk-price">{fmt_preco(item["valor"], item["unidade"], loc)}</span>'
+            f'<span class="{direction}">{arrow} {percentage}%</span></span>'
         )
-    data_ref = fmt_data(max(item["data"] for item in ticker), loc)
-    stamp = str(loc["stamp"]).format(data=data_ref)
-    linhas.append(f'        <span class="ticker-item"><span class="tk-stamp">{stamp}</span></span>')
-    return "\n".join(linhas)
+    date = fmt_data(max(item["data"] for item in ticker), loc)
+    stamp = str(loc["stamp"]).format(data=date)
+    title = "FETCHED VIA AGROBR" if english else "COLETADO VIA AGROBR"
+    hint = (
+        "Price indicators; animation pauses on hover"
+        if english
+        else "Indicadores de preços; a animação pausa ao passar o mouse"
+    )
+    pause = "Pause quotes" if english else "Pausar cotações"
+    return (
+        f'<div class="market-strip" aria-label="{stamp}"><div class="container market-inner">\n'
+        f'<p class="market-label"><strong>{title}</strong><span>CEPEA · {date}</span></p>\n'
+        f'<div class="ticker-window" tabindex="0" aria-label="{hint}">'
+        '<div class="ticker-track" id="tickerTrack"><div class="ticker-set">\n'
+        + "\n".join(rows)
+        + "\n</div></div></div>\n"
+        f'<button class="motion-toggle" id="tickerToggle" type="button" aria-label="{pause}" aria-pressed="false">'
+        '<svg class="icon" aria-hidden="true"><use href="#i-pause"/></svg></button>\n'
+        "</div></div>"
+    )
 
 
 def render_proof(soja: dict[str, Any], loc: dict[str, Any]) -> str:
-    valores = soja["valores"]
-    vmin, vmax = min(valores), max(valores)
-    spread = (vmax - vmin) or 1.0
-    n = len(valores)
-
-    pontos = []
-    for i, v in enumerate(valores):
-        x = i * 300 / (n - 1)
-        y = 76 - (v - vmin) / spread * 64
-        pontos.append(f"{x:.1f},{y:.1f}")
-    ultimo_x, ultimo_y = pontos[-1].split(",")
-
-    rows = []
-    for data, valor in list(zip(soja["datas"], valores))[-4:]:
-        rows.append(
-            f"        <div><span>{str(data)[:10]}</span>"
-            f'<span class="v">{fmt_valor(valor, loc)}</span></div>'
-        )
-
-    unidade = loc["unidades"].get(soja["unidade"], soja["unidade"])
-    data_ref = fmt_data(soja["datas"][-1], loc)
-    meta = str(loc["proof_meta"]).format(data=data_ref)
-    aria = str(loc["spark_aria"]).format(n=n)
-
-    return (
-        f'      <div class="proof-price">R$ {fmt_valor(valores[-1], loc)} '
-        f'<span class="currency">{unidade}</span></div>\n'
-        f'      <div class="proof-meta">{meta}</div>\n'
-        f'      <svg class="sparkline" viewBox="0 0 300 84" preserveAspectRatio="none" '
-        f'aria-label="{aria}">\n'
-        f'        <polyline class="spark-path" points="{" ".join(pontos)}"/>\n'
-        f'        <circle class="spark-dot" cx="{ultimo_x}" cy="{ultimo_y}" r="3.5"/>\n'
-        f"      </svg>\n"
-        f'      <div class="proof-rows">\n' + "\n".join(rows) + "\n      </div>"
+    values = soja["valores"]
+    low, high = min(values), max(values)
+    spread = high - low or 1.0
+    points = [
+        f"{index * 300 / (len(values) - 1):.1f},{76 - (value - low) / spread * 64:.1f}"
+        for index, value in enumerate(values)
+    ]
+    last_x, last_y = points[-1].split(",")
+    area = "M" + " L".join(point.replace(",", " ") for point in points) + " V84 H0 Z"
+    rows = [
+        f"<tr><td>{fmt_data(date, loc)}</td><td>{fmt_valor(value, loc)}</td></tr>"
+        for date, value in list(zip(soja["datas"], values))[-4:]
+    ]
+    english = loc["decimal"] == "."
+    unit = loc["unidades"][soja["unidade"]]
+    date = fmt_data(soja["datas"][-1], loc)
+    iso_date = str(soja["datas"][-1])[:10]
+    aria = str(loc["spark_aria"]).format(n=len(values))
+    variation = (values[-1] / values[-2] - 1) * 100
+    direction, arrow = ("up", "↑") if variation >= 0 else ("down", "↓")
+    change = "on the latest sampled trading day" if english else "no último pregão da amostra"
+    caption = (
+        f"{len(values)} trading days in sample" if english else f"{len(values)} pregões na amostra"
     )
-
-
-def render_pregoes(soja: dict[str, Any], loc: dict[str, Any]) -> str:
-    texto = str(loc["pregoes"]).format(n=soja["total_pregoes"])
-    return f'<span class="code-line"><span class="cm">{texto}</span></span>'
+    title = "Soybean · CEPEA/ESALQ" if english else "Soja · CEPEA/ESALQ"
+    table_caption = (
+        "Last four sampled soybean prices"
+        if english
+        else "Últimos quatro preços da amostra de soja"
+    )
+    date_label, price_label = ("Date", "Price") if english else ("Data", "Preço")
+    return (
+        '<figure class="output-panel">\n'
+        f'<div class="output-heading"><figcaption class="eyebrow">{title}</figcaption>'
+        f'<time class="output-date" datetime="{iso_date}">{date}</time></div>\n'
+        f'<p class="proof-price">R$ {fmt_valor(values[-1], loc)} <span class="unit">{unit}</span></p>\n'
+        f'<p class="price-change {direction}">{arrow} {fmt_valor(abs(variation), loc)}% {change}</p>\n'
+        f'<svg class="sparkline" viewBox="0 0 300 84" preserveAspectRatio="none" role="img" aria-label="{aria}">\n'
+        '<defs><linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d7b879" stop-opacity=".2"/>'
+        '<stop offset="1" stop-color="#d7b879" stop-opacity="0"/></linearGradient></defs>\n'
+        f'<path class="spark-area" d="{area}"/><polyline class="spark-path" points="{" ".join(points)}"/>\n'
+        f'<circle cx="{last_x}" cy="{last_y}" r="2.7" fill="#ebd2a0"/></svg>\n'
+        f'<div class="chart-caption"><span>{caption}</span><span>R$ {unit}</span></div>\n'
+        f'<table class="proof-table"><caption class="sr-only">{table_caption}, R$ {unit}</caption>'
+        f'<thead class="sr-only"><tr><th scope="col">{date_label}</th><th scope="col">{price_label}</th></tr></thead>'
+        "<tbody>" + "".join(rows) + "</tbody></table>\n</figure>"
+    )
 
 
 def substituir(html: str, tag: str, conteudo: str) -> str:
-    padrao = re.compile(
-        rf"(<!-- agrobr:{tag} -->).*?(<!-- /agrobr:{tag} -->)",
-        re.DOTALL,
-    )
-    if not padrao.search(html):
-        raise RuntimeError(f"ancora agrobr:{tag} nao encontrada")
-    return padrao.sub(rf"\g<1>\n{conteudo}\n        \g<2>", html, count=1)
+    pattern = re.compile(rf"(<!-- agrobr:{tag} -->).*?(<!-- /agrobr:{tag} -->)", re.DOTALL)
+    if len(pattern.findall(html)) != 1:
+        raise RuntimeError(f"Esperada uma única âncora agrobr:{tag}")
+    return pattern.sub(lambda match: match[1] + "\n" + conteudo + "\n" + match[2], html, count=1)
 
 
-def atualizar_arquivo(
-    loc: dict[str, Any], ticker: list[dict[str, Any]], soja: dict[str, Any]
-) -> None:
-    index: Path = loc["index"]
-    html = index.read_text(encoding="utf-8")
+def render_page(
+    html: str, loc: dict[str, Any], ticker: list[dict[str, Any]], soja: dict[str, Any]
+) -> str:
     html = substituir(html, "ticker", render_ticker(ticker, loc))
-    html = substituir(html, "proof", render_proof(soja, loc))
-
-    padrao_pregoes = re.compile(
-        r"(<!-- agrobr:pregoes -->).*?(<!-- /agrobr:pregoes -->)", re.DOTALL
-    )
-    html = padrao_pregoes.sub(rf"\g<1>{render_pregoes(soja, loc)}\g<2>", html, count=1)
-    index.write_text(html, encoding="utf-8")
+    return substituir(html, "proof", render_proof(soja, loc))
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=ROOT, help="Diretório das duas landings")
+    parser.add_argument(
+        "--check", action="store_true", help="Coletar e validar sem gravar arquivos"
+    )
+    options = parser.parse_args()
+    pages = []
+    for language, loc in LOCALES.items():
+        path = options.root / ("en/index.html" if language == "en" else "index.html")
+        html = path.read_text(encoding="utf-8")
+        for anchor in ("ticker", "proof"):
+            substituir(html, anchor, "")
+        pages.append((path, html, loc))
     ticker, soja = asyncio.run(coletar())
-    for nome, loc in LOCALES.items():
-        atualizar_arquivo(loc, ticker, soja)
-        print(f"{loc['index'].relative_to(ROOT)} ({nome}) atualizado")
+    updates = [(path, render_page(html, loc, ticker, soja)) for path, html, loc in pages]
+    for path, html in updates:
+        if not options.check:
+            with atomic_output(path) as temporary:
+                temporary.write_text(html, encoding="utf-8")
+        print(f"{path.relative_to(options.root)}: {'validado' if options.check else 'atualizado'}")
     print(f"soja R$ {soja['valores'][-1]:.2f} ({str(soja['datas'][-1])[:10]})")
     return 0
 
