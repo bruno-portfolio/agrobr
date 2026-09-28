@@ -41,13 +41,13 @@ de recusar o mês inteiro. A chave é `(data, hora_gmt, lat, lon, satelite)`:
 - **chave repetida que difere só no FRP:** sai em 1 linha, com o `frp` **nulo** (`source_details["frp_divergente"]`, com os
   focos e as linhas). O foco existe; só a potência é ambígua;
 - **chave repetida que difere em outra coluna:** nenhum dos focos é o certo, e a chave sai do resultado
-  (`source_details["chaves_repetidas"]`, com as chaves). Nenhum caso na varredura de 2023–2026;
+  (`source_details["chaves_repetidas"]`, com as chaves). Nenhum caso nos 20 meses citados abaixo;
 - **FRP negativo**, fisicamente impossível: sai **nulo** (`source_details["frp_negativo_anulado"]`). O `-999` segue como
   sentinela e sai nulo sem entrar nessa contagem.
 
 Cada caso vem em `meta.validation_warnings` e como `UserWarning`, com a contagem. A contagem é a do resultado devolvido, depois
-dos filtros `uf`, `bioma` e `satelite`. Na leitura de 20 meses (jun–out de 2023 a 2025, jun–ago de 2026, fev/2024 e mar/2025),
-estes 7 eram recusados inteiros pelo dataset antes da correção, com `ContractViolationError`; as chaves repetidas diferem só no FRP:
+dos filtros `uf`, `bioma` e `satelite`. Em 20 meses (jun–out de 2023 a 2025, jun–ago de 2026, fev/2024 e mar/2025),
+estes 7 eram recusados inteiros pelo dataset até a 1.1, com `ContractViolationError`; as chaves repetidas diferem só no FRP:
 
 | Mês | Focos | FRP negativo | Cópias iguais | Chaves com FRP diferente (linhas) |
 |-----|------:|-------------:|--------------:|----------------------------------:|

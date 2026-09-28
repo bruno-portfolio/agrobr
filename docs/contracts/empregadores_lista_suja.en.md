@@ -58,6 +58,6 @@ Use `from agrobr.sync import datasets` for synchronous calls, without `await`. `
 
 `livre` — see [data licences](../licenses.md) and the [API/source details](../api/empregadores_lista_suja.md).
 
-In the 2026-09-18 reconciliation, all twelve columns and 579 published records were checked in full for CSV/TXT and PDF. Each format retains its own text, including line breaks. Both source and dataset APIs preserve `lista_suja_csv` or `lista_suja_pdf` in attempted/selected sources. Edition date, registry update and acquisition instant remain distinct; see the [source reconciliation](../sources/lista_suja.en.md).
+On 2026-09-18, the publication had 579 records in CSV/TXT and PDF. Each format retains its own text, including line breaks. Both source and dataset APIs preserve `lista_suja_csv` or `lista_suja_pdf` in attempted/selected sources. Edition date, registry update and acquisition instant remain distinct; see the [source](../sources/lista_suja.en.md).
 
 PDF `data_inclusao_texto` preserves cell line breaks; other text fields use the whitespace normalization documented for the source.

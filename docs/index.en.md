@@ -15,7 +15,7 @@
 
 Python infrastructure for Brazilian agricultural data with a **semantic layer** over 40 public sources.
 
-**v2.0.0** — 53 datasets | 88 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
+**v2.0.0** — 53 datasets | 88 versioned contracts | parameter validation before network calls | per-source golden tests
 
 - **CEPEA/ESALQ**: 22 price indicators (soybean, corn, live cattle, arabica coffee, robusta coffee, cotton, wheat, rice, sugar, ethanol, poultry, hog, milk, orange)
 - **CONAB**: Crop surveys, supply/demand balance, production costs, historical series, weekly planting/harvest progress, and wholesale produce prices (CEASA/PROHORT)
@@ -179,7 +179,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 | Metric | Value |
 |--------|-------|
-| Validation | Evidence by increment, with documented scope and limits |
+| Validation | Documented scope and limits |
 | Golden tests | per-source fixtures (real or synthetic data) |
 | HTTP resilience | Centralized retry + 429/Retry-After |
 | Benchmarks | Memory, volume, cache, async, rate limiting |

@@ -16,7 +16,7 @@ export AGROBR_INMET_TOKEN=your_token
 
 The variable is required only for observational access. A missing or rejected token raises `SourceUnavailableError`; secrets must not appear in published URLs, logs or reports. The INMET API requires the token in the URL path (`/token/<route>/<token>`): agrobr masks it in the httpx and httpcore logs, the response, the redirect history and the error, but a proxy, firewall or access log outside the process sees the full URL. The public [estacoes/T catalog](https://apitempo.inmet.gov.br/estacoes/T) does not require this token.
 
-The [official historical catalog](https://portal.inmet.gov.br/dadoshistoricos) offers years from 2000 through the current year. Verification on September 6, 2026 found 27 ZIPs, with 2026 labeled through August 31, 2026. This does not guarantee full-year coverage, daily ZIP updates or immutable past years. The [official access guidance](https://portal.inmet.gov.br/noticias/saiba-como-acessar-os-dados-meteorol%25C3%25B3gicos-dispon%25C3%25ADveis-no-site-do-inmet) describes access, UTC timestamps and raw automatic observations without meteorological quality control.
+The [official historical catalog](https://portal.inmet.gov.br/dadoshistoricos) offers years from 2000 through the current year. On September 6, 2026 there were 27 ZIPs, with 2026 labeled through August 31, 2026. This does not guarantee full-year coverage, daily ZIP updates or immutable past years. The [official access guidance](https://portal.inmet.gov.br/noticias/saiba-como-acessar-os-dados-meteorol%25C3%25B3gicos-dispon%25C3%25ADveis-no-site-do-inmet) describes access, UTC timestamps and raw automatic observations without meteorological quality control.
 
 ## Public queries
 
@@ -68,8 +68,8 @@ The monthly `clima` contract is 3.1; daily `clima_estacao` and hourly `clima_est
 
 A dataset snapshot selects the year when omitted but neither truncates results at that date nor freezes source editions. A hash identifies received bytes; it does not provide as-of retrieval. See [contracts and examples](../contracts/clima.md).
 
-## License and verification limits
+## License and limits
 
 The repository classifies INMET as `livre` in [licenses](../licenses.md). Official evidence of public, free access was not treated as an additional, specific redistribution license.
 
-Verification examined complete 2000/2001 ZIPs and one 2026 CSV, plus the catalog and a NASA response. It did not validate every modern edition, conventional BDMEP data or authenticated observations. Catalog information above is dated evidence, not permanent counts.
+Catalog information above is dated, not permanent counts.

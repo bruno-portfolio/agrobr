@@ -70,7 +70,7 @@ Desde o parser 5, os itens de cada seção fecham com o subtotal publicado sempr
   `meta.validation_warnings`) com o subtotal publicado, a soma dos itens e a diferença. O mesmo vale para os totais de
   fórmula, como `(E+F = G)`. O agrobr repassa os números publicados, sem recalcular.
 
-Nas 11 séries de café, milho, algodão, soja, arroz, feijão e trigo conferidas em 25/09/2026, 45 subtotais ou totais não
+Nas 11 séries de café, milho, algodão, soja, arroz, feijão e trigo, 45 subtotais ou totais não
 fecham na própria planilha, por exemplo Barreiras-BA-2011 (algodão, B), Patrocínio-MG-2022 (café arábica, E) e S. Mateus
 do Sul-PR-2008 (feijão, G e H).
 
@@ -102,11 +102,11 @@ Nas mesmas 11 séries, 116 abas têm o contexto reconhecido e o corpo recusado, 
 | arroz irrigado | 7 | medida em coluna sem cabeçalho: Cachoeira do Sul-RS 2009–2010; medida inválida (`#REF!` ou `.`): Camaquã-RS 2014–2016, Massaranduba-SC-2013, Meleiro-SC-2013 |
 | café conilon | 1 | medida em coluna sem cabeçalho: Ji-Paraná-RO-2014 |
 
-Milho 2ª safra, algodão e feijão 2ª/3ª safras não têm aba recusada nessas séries. Reconhecer `kg/sc 60 kg` como cabeçalho
-do rendimento recuperaria 59 abas; ainda não foi feito.
+Milho 2ª safra, algodão e feijão 2ª/3ª safras não têm aba recusada nessas séries. O cabeçalho de rendimento
+`kg/sc 60 kg`, não reconhecido, responde por 59 das recusas.
 
-A lista cobre só as 11 séries auditadas. Outras culturas têm recusas pelos mesmos motivos, que não foram contadas por
-inteiro: pelo menos C. de Camaragibe-AL 2014–2016 e S. L. do Quitunde-AL-2017 na cana (medida em coluna sem cabeçalho) e
+A lista cobre só essas 11 séries. Outras culturas têm recusas pelos mesmos motivos, por exemplo
+C. de Camaragibe-AL 2014–2016 e S. L. do Quitunde-AL-2017 na cana (medida em coluna sem cabeçalho) e
 Cruz das Almas-BA 2008 e 2010–2013 na mandioca (cabeçalho `R$t` não reconhecido).
 
 ## Schema
@@ -158,7 +158,7 @@ apontando para a célula. Data de referência e safra não são inferidas do nom
 
 ### Limitações de contexto no milho
 
-Na captura de 18/09/2026 de `milho_1a_safra_serie_historica_1997-2025.xls`,
+Em `milho_1a_safra_serie_historica_1997-2025.xls`,
 246 contextos são reconhecidos. `P. do Leste-MT-1997` e
 `Campo Mourão-PR-1997` continuam sem contexto completo. `Balsas-MA-2013`
 conserva o local regional publicado; `Unaí-MG-2005` e `Unaí-MG-2006`

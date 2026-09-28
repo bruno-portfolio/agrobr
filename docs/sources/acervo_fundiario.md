@@ -39,7 +39,7 @@
 | **SNCI** | 27/27 | 0,01-23 MB por UF | Por UF |
 | **Assentamentos** | Brasil único | 50 MB | Brasil completo, filtro UF client-side |
 
-O INCRA publica SIGEF e SNCI para as 27 UFs (sondagem de 22/09/2026). UF sem arquivo no servidor levanta `SourceUnavailableError` (HTTP 404).
+O INCRA publica SIGEF e SNCI para as 27 UFs (22/09/2026). UF sem arquivo no servidor levanta `SourceUnavailableError` (HTTP 404).
 
 ## Funções públicas
 

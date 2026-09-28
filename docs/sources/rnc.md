@@ -68,10 +68,10 @@ Consulte as assinaturas e os tipos na [API RNC/SNPC](../api/rnc.md). Os datasets
 
 A entrega cobre os campos das duas exportações consultadas. Não une registro a proteção por nomes, não calcula vigência jurídica, não reproduz uma edição passada por data e não amplia automaticamente o catálogo para outros documentos ou serviços do MAPA. Quantidades e situações variam com a publicação corrente.
 
-## Reconciliação da captura de 18/09/2026
+## Exportação de 18/09/2026
 
-Os CSVs completos capturados nesta data têm 38.325 registros RNC e 5.424 registros SNPC. Um oráculo independente, construído dos CSVs originais sem importar o parser ou contrato, confere todas as 10/12 colunas e os 43.749 registros nas APIs da fonte e dos datasets, com cache e sem cache. A contagem HTML da pesquisa precedente coincide com o CSV na mesma sessão; essa concordância não garante snapshot transacional nem cobertura histórica.
+Os CSVs da exportação de 18/09/2026 têm 38.325 registros RNC e 5.424 registros SNPC. A contagem HTML da pesquisa que precede cada CSV coincide com ele; essa concordância não garante snapshot transacional nem cobertura histórica.
 
-No RNC, os 22.946 formulários, 4.256 nomes de cultivar e 4.271 mantenedores vazios publicados permanecem texto vazio; ambas as datas estão preenchidas nesta captura. Há 924 grupos de formulários repetidos, com 15.142 ocorrências. No SNPC, o término tem 5.267 datas, 155 condições e dois vazios; as 155 condições e os dois vazios produzem data nula, preservando o texto. Há 102 certificados repetidos entre processos distintos, com 204 ocorrências. Nenhuma dessas repetições de identificadores secundários é deduplicada.
+No RNC, os 22.946 formulários, 4.256 nomes de cultivar e 4.271 mantenedores vazios publicados permanecem texto vazio; ambas as datas estão preenchidas nessa exportação. Há 924 grupos de formulários repetidos, com 15.142 ocorrências. No SNPC, o término tem 5.267 datas, 155 condições e dois vazios; as 155 condições e os dois vazios produzem data nula, preservando o texto. Há 102 certificados repetidos entre processos distintos, com 204 ocorrências. Nenhuma dessas repetições de identificadores secundários é deduplicada.
 
-A aquisição original em `fetched_at` conserva UTC com fuso explícito, inclusive no cache e no dataset. Na fonte e no dataset, `fetch_timestamp` coincide com a aquisição. As datas civis da tabela são independentes desses instantes. O parser permanece 2 e os contratos 1.0; esta reconciliação não altera o comportamento público.
+A aquisição original em `fetched_at` conserva UTC com fuso explícito, inclusive no cache e no dataset. Na fonte e no dataset, `fetch_timestamp` coincide com a aquisição. As datas civis da tabela são independentes desses instantes.

@@ -119,10 +119,10 @@ Os wrappers semânticos `datasets.cultivares_registradas` e `datasets.cultivares
 
 O acesso segue formulários públicos de pesquisa/exportação, com sessão e renovação de CSRF antes dos POSTs; não exige credencial pessoal. Tokens e cookies não integram os metadados públicos. Não há fallback para outra instituição. Os campos descrevem a publicação recebida; não se infere vigência jurídica nem cobertura de revisões anteriores. Consulte a [fonte](../sources/rnc.md) e a [classificação de licença](../licenses.md).
 
-## Reconciliação da captura de 18/09/2026
+## Exportação de 18/09/2026
 
-Os CSVs completos capturados nesta data têm 38.325 registros RNC e 5.424 registros SNPC. Um oráculo independente, construído dos CSVs originais sem importar o parser ou contrato, confere todas as 10/12 colunas e os 43.749 registros nas APIs da fonte e dos datasets, com cache e sem cache. A contagem HTML da pesquisa precedente coincide com o CSV na mesma sessão; essa concordância não garante snapshot transacional nem cobertura histórica.
+Os CSVs da exportação de 18/09/2026 têm 38.325 registros RNC e 5.424 registros SNPC. A contagem HTML da pesquisa que precede cada CSV coincide com ele; essa concordância não garante snapshot transacional nem cobertura histórica.
 
-No RNC, os 22.946 formulários, 4.256 nomes de cultivar e 4.271 mantenedores vazios publicados permanecem texto vazio; ambas as datas estão preenchidas nesta captura. Há 924 grupos de formulários repetidos, com 15.142 ocorrências. No SNPC, o término tem 5.267 datas, 155 condições e dois vazios; as 155 condições e os dois vazios produzem data nula, preservando o texto. Há 102 certificados repetidos entre processos distintos, com 204 ocorrências. Nenhuma dessas repetições de identificadores secundários é deduplicada.
+No RNC, os 22.946 formulários, 4.256 nomes de cultivar e 4.271 mantenedores vazios publicados permanecem texto vazio; ambas as datas estão preenchidas nessa exportação. Há 924 grupos de formulários repetidos, com 15.142 ocorrências. No SNPC, o término tem 5.267 datas, 155 condições e dois vazios; as 155 condições e os dois vazios produzem data nula, preservando o texto. Há 102 certificados repetidos entre processos distintos, com 204 ocorrências. Nenhuma dessas repetições de identificadores secundários é deduplicada.
 
-A aquisição original em `fetched_at` conserva UTC com fuso explícito, inclusive no cache e no dataset. Na fonte e no dataset, `fetch_timestamp` coincide com a aquisição. As datas civis da tabela são independentes desses instantes. O parser permanece 2 e os contratos 1.0; esta reconciliação não altera o comportamento público.
+A aquisição original em `fetched_at` conserva UTC com fuso explícito, inclusive no cache e no dataset. Na fonte e no dataset, `fetch_timestamp` coincide com a aquisição. As datas civis da tabela são independentes desses instantes.

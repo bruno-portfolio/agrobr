@@ -82,6 +82,6 @@ print(contract.to_json())
 Classificação `zona_cinza`: a ANEC não publica termos de uso explícitos. O uso
 comercial pode exigir autorização da associação.
 
-## Conferência dos boletins
+## Leitura dos boletins
 
-Os seis produtos devem estar presentes nos cabeçalhos dos dois períodos. Uma coluna ausente interrompe a leitura, com causa ParseError preservada em SourceUnavailableError. Totais não são portos e células vazias do último porto publicado permanecem nulas. A conferência abrange as edições 04, 08, 12, 13, 34 e 36/2026; períodos são os rótulos do boletim, sem inferir datas pela semana ISO.
+Os seis produtos devem estar presentes nos cabeçalhos dos dois períodos. Uma coluna ausente interrompe a leitura, com causa ParseError preservada em SourceUnavailableError. Totais não são portos e células vazias do último porto publicado permanecem nulas. Os períodos são os rótulos do boletim, sem inferir datas pela semana ISO.

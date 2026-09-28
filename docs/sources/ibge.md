@@ -32,8 +32,8 @@ vem vazio, porque a API de agregados publica apenas o nome da unidade; `allxp` v
 `MetaInfo.source_details["canal"]` (`sidra`, `servicodados` ou `misto`), `source_details["consultas"]` lista canal e URL
 de cada consulta, `attempted_sources` ganha `ibge_servicodados` e `selected_source` passa a ser `ibge_servicodados`
 quando o fallback foi usado (o dataset herda essa proveniencia); `source_url` aponta para a URL consultada;
-a primeira queda emite um `warnings.warn` unico por processo. Os valores dos dois canais foram conferidos
-iguais para o LSPA de julho/2026 (soja). O probe de saude do IBGE consulta a API de agregados.
+a primeira queda emite um `warnings.warn` unico por processo. No LSPA de julho/2026 (soja), os dois canais
+dao os mesmos valores. O probe de saude do IBGE consulta a API de agregados.
 
 Cada consulta também pede `/agregados/{tabela}/periodos` e registra a data de modificação dos períodos devolvidos, que
 diz de qual edição veio o número: `source_details["periodos_modificacao"]` sai como `{tabela: {período: data ISO}}` (a
@@ -113,7 +113,7 @@ O dataset agrega os componentes esperados de milho e feijão, converte hectares/
   identificada (a lista por volume está no contrato).
 - **Frequencia**: Unica (Censo 1985)
 - **Temas**: 53 temas, 1 por tabela (67 a 119), pelo título impresso
-- **Confiança**: `valor` só na casa confirmada pelas somas impressas (0 erro nos oráculos cegos); `valor_lido` e o `status` para o
+- **Confiança**: `valor` só na casa confirmada pelas somas impressas (0 erro na precisão medida); `valor_lido` e o `status` para o
   resto, com a precisão medida no [contrato](../contracts/censo_agropecuario_municipal_1985.md)
 - **Acesso**: local, sem rede
 - **URL catalogo**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768
@@ -128,19 +128,17 @@ O dataset agrega os componentes esperados de milho e feijão, converte hectares/
 - **Temas**: tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro
 - **Acesso**: Publico, sem autenticacao
 
-As fixtures de regressão cobrem os seis temas nas 27 UFs: 161 combinações com
-dados e uma rejeição esperada. Na captura de setembro de 2026, o arquivo
+Dos seis temas nas 27 UFs, 161 combinações têm dados e uma, máquinas no PA, é recusada: o arquivo
 [Pará/Tab_7Mn.zip](https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Para/Tab_7Mn.zip)
 de máquinas contém os mesmos bytes da tabela de pessoal ocupado, e nenhum dos 11
-`Tab_*Mn` do Pará traz a Tabela 7 (conferido de novo em 27/09/2026). A consulta de
+`Tab_*Mn` do Pará traz a Tabela 7. A consulta de
 máquinas com `uf='PA'` levanta `SourceUnavailableError`, e a consulta sem `uf`
 devolve as outras 26 UFs, com o aviso no `MetaInfo` e um `UserWarning`; o tema não
 é substituído por dados de pessoal ou por uma tabela de outra granularidade.
 
 Os cabeçalhos BIFF8 de máquinas em Sergipe distinguem plantio, colheita,
-caminhões e utilitários, mesmo quando as caixas de texto se sobrepõem. As
-regressões conferem células oficiais, unidades, escalas financeiras e os zeros
-da legenda; os valores estaduais não são reconstruídos pela soma dos municípios.
+caminhões e utilitários, mesmo quando as caixas de texto se sobrepõem. Os
+valores estaduais não são reconstruídos pela soma dos municípios.
 
 ### PEVS — Silvicultura
 

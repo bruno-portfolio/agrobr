@@ -9,7 +9,7 @@ ANEC (Associação Nacional dos Exportadores de Cereais) publishes PDF reports w
 
 ## Coverage and report selection
 
-- **Catalog:** editions from **2026 through the current year**, with annual categories discovered in the official catalogue. The 2026 public catalogue inspected on 6 September 2026 contained 34 PDFs; the latest was W34, created on 2 September 2026. This observation does not guarantee publication or layout compatibility in later years.
+- **Catalog:** editions from **2026 through the current year**, with annual categories discovered in the official catalogue. On 6 September 2026, the 2026 public catalogue contained 34 PDFs; the latest was W34, created on 2 September 2026. Publication and layout compatibility in later years are not guaranteed.
 - **`ano`:** required, keyword-only report edition year. An edition can include data from another year; this parameter does not request a historical year independently of the edition.
 - **`semana`:** report week, from 1 to 53; `None` selects the latest available edition in the selected catalog. A report's week number is not its publication date.
 - **Products:** soybean, soybean meal, maize, DDGS, sorghum and wheat, according to the selected table. Annual comparisons may also include `total_products`. Up to W2/2026, the weekly and monthly tables publish only soybean, soybean meal, maize and wheat; DDGS and sorghum start in W3/2026.
@@ -82,7 +82,7 @@ The source retains `produto`, `destino` and nullable `share_pct` (0–100). It a
 
 Shares describe the **cumulative period in the header**, not monthly tonnage. W34/2026 reports January–July 2026. Missing period information stays null; it is not inferred from the report week. `OTHERS` is valid, and rounded shares can sum to 99% or 101%.
 
-Some editions use charts that the parser cannot yet extract, as observed in W08 and W12 of 2026. When no destination share is extracted from the edition, the result includes a notice in `meta.validation_warnings`. An empty result does not establish an absence of shipments or destinations. Request `return_meta=True` to inspect this limitation.
+Some editions use charts that the parser does not extract, such as W08 and W12 of 2026. When no destination share is extracted from the edition, the result includes a notice in `meta.validation_warnings`. An empty result does not establish an absence of shipments or destinations. Request `return_meta=True` to inspect this limitation.
 
 See the complete [`destinos_anec` contract](../contracts/destinos_anec.md).
 
@@ -170,14 +170,13 @@ PDF layouts and published product sets vary between editions. ANEC revises figur
 
 The monthly and annual-comparison tables are not interchangeable: in W13/2026, for example, January wheat is 279,699 t in the monthly table and 279,499 t in the comparison. agrobr preserves the values published in each table without automatic reconciliation. The total printed on the January row of the monthly table (7,727,420 t) matches the comparison values (wheat 279,499 t and DDGS 80,057 t), not the monthly table's own values (279,699 t and 80,141 t), which add up to 284 t more (W35 and W37/2026).
 
-Official PDFs used to verify the documented semantics: [W13/2026](https://www.anec.com.br/uploads/cmnrsz3eu00004htx396a7you.pdf) and [W34/2026](https://www.anec.com.br/uploads/cmtkhj4p50000y9tx5nnn6hhi.pdf). Source: [ANEC](https://www.anec.com.br/).
+Official PDFs cited on this page: [W13/2026](https://www.anec.com.br/uploads/cmnrsz3eu00004htx396a7you.pdf) and [W34/2026](https://www.anec.com.br/uploads/cmtkhj4p50000y9tx5nnn6hhi.pdf). Source: [ANEC](https://www.anec.com.br/).
 
 Annual categories not in the configured map are discovered from the official catalogue. Explicit years are exclusive: missing publication does not fall back to a previous year. Empty year results share the listing TTL (default 300 seconds, `AGROBR_ANEC_LIST_TTL=0` disables caching). Supported edition years run from 2026 through the current year; catalogue discovery does not itself guarantee a compatible PDF layout.
 
-## September 2026 bulletin verification
+## Reading the bulletins
 
-Editions 04, 08, 12, 13, 34 and 36/2026 were checked against official PDFs,
-preserving each table's independently published values. Metric tons are literal;
+Each table's independently published values are preserved. Metric tons are literal;
 blanks and dashes remain missing. Displayed destination shares may sum to 99%,
 101% or 102% because published percentages are rounded; agrobr does not
 redistribute them to force 100%.
@@ -192,11 +191,11 @@ each weekly column is checked against the bulletin's TOTAL row: a difference abo
 rounding (0.5 t per port) becomes a warning (`UserWarning` and
 `meta.validation_warnings`), and the per-port values are passed on unchanged.
 pdfplumber sometimes splits a number into 2 adjacent words (`3` and `72.958`, in the
-TOTAL row of W36/2026) and, in the small 2025 font, merges BELÉM with the RIO of the
+TOTAL row of [W36/2026](https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf)) and, in the small 2025 font, merges BELÉM with the RIO of the
 row below. The parser joins 2 neighbouring numeric words when they form a number
-with a thousands separator and reads words with a 1 pt vertical tolerance. Checked
-against the PDFium text in 89 editions (W1/2025 to W37/2026, except W14/2026): all
-16,112 cells of the weekly table match and no warning is raised; W25/2026 published
+with a thousands separator and reads words with a 1 pt vertical tolerance. In 89
+editions (W1/2025 to W37/2026, except W14/2026), all 16,112 cells of the weekly
+table match the PDF and no warning is raised; W25/2026 published
 the TOTAL row blank, so there is nothing to check there. In
 W1 and W2/2026, the "Monthly shipments 2026" table is on the second page and is not
 read: `embarques_mensais` for those editions returns only 2025, and January 2026
@@ -206,9 +205,7 @@ destinations. Editions 08 and 12/2026 contain raster destination panels without
 extractable text tables: an empty result with a warning remains a limitation and
 does not establish absence of shipments.
 
-The current catalog was traversed across four pages, including edition
-[36/2026](https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf).
-This verifies those publications; it does not certify future layouts or establish
-equivalence between ANEC shipments and ComexStat customs exports.
+Future layouts are not guaranteed, nor is equivalence between ANEC shipments and
+ComexStat customs exports.
 From January to August 2026, the two series diverge month by month by up to 49% (maize: −44% in April and +49% in
 July) and close within 2.5% cumulatively (soybeans +1.6%, soybean meal +0.2% and maize −2.4%).

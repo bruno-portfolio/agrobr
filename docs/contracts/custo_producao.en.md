@@ -71,7 +71,7 @@ Since parser 5, the items of each section add up to the published subtotal whene
   `meta.validation_warnings`) with the published subtotal, the sum of the items and the difference. The same applies to
   formula totals such as `(E+F = G)`. agrobr passes the published numbers through, without recomputing.
 
-Across the 11 coffee, corn, cotton, soybean, rice, bean and wheat series checked on 2026-09-25, 45 subtotals or totals do
+Across the 11 coffee, corn, cotton, soybean, rice, bean and wheat series, 45 subtotals or totals do
 not close in the workbook itself, for example Barreiras-BA-2011 (cotton, B), Patrocínio-MG-2022 (arabica coffee, E) and
 S. Mateus do Sul-PR-2008 (beans, G and H).
 
@@ -103,10 +103,10 @@ In the same 11 series, 116 sheets have a recognized context and a rejected body,
 | irrigated rice | 7 | measure in a column without header: Cachoeira do Sul-RS 2009–2010; invalid measure (`#REF!` or `.`): Camaquã-RS 2014–2016, Massaranduba-SC-2013, Meleiro-SC-2013 |
 | conilon coffee | 1 | measure in a column without header: Ji-Paraná-RO-2014 |
 
-Corn 2nd crop, cotton and beans 2nd/3rd crops have no rejected sheet in these series. Recognizing `kg/sc 60 kg` as the
-yield header would recover 59 sheets; not done yet.
+Corn 2nd crop, cotton and beans 2nd/3rd crops have no rejected sheet in these series. The unrecognized
+`kg/sc 60 kg` yield header accounts for 59 of the rejections.
 
-The list covers only the 11 audited series. Other crops have rejections for the same reasons, not fully counted: at least
+The list covers only these 11 series. Other crops have rejections for the same reasons, for example
 C. de Camaragibe-AL 2014–2016 and S. L. do Quitunde-AL-2017 for sugarcane (measure in a column without header) and Cruz das
 Almas-BA 2008 and 2010–2013 for cassava (unrecognized `R$t` header).
 
@@ -159,7 +159,7 @@ points to the cell. Reference dates and crop seasons are never inferred from the
 
 ### Corn context limitations
 
-In the 2026-09-18 capture of `milho_1a_safra_serie_historica_1997-2025.xls`,
+In `milho_1a_safra_serie_historica_1997-2025.xls`,
 246 contexts are identified. `P. do Leste-MT-1997` and
 `Campo Mourão-PR-1997` still lack complete context. `Balsas-MA-2013`
 retains its published regional location; `Unaí-MG-2005` and `Unaí-MG-2006`

@@ -17,8 +17,7 @@ There are 2,275,606 cells, of which 579,456 (25.5%) are confirmed.
 
 ## Status of each cell and measured precision
 
-Precision was measured against blind oracles: cells transcribed by hand from the PDF image, by random draw, without seeing the
-extraction (34 tables in 11 states).
+Precision was measured against PDF cells from 34 tables in 11 states.
 
 | `status` | Meaning | `valor` | Measured precision |
 |---|---|---|---|
@@ -58,7 +57,7 @@ Against the 2008 image-only copy, today's version confirms 22.6% more cells.
   between volumes (in AC, "(1) TONELADAS (2) MIL FRUTOS"; in ES, the reverse). A mark that does not open with a unit is a note
   ("(2) INCLUSIVE PÉS NOVOS") and does not become a unit. Without a mark, it comes from the label ("ÁREA (HA)", "INFORMANTES"). A
   unit that is only in the group above comes out null.
-- Precision against the transcribed columns of tables 108 to 116 and 111 (AC, ES, GO, PE and PR): `coluna_nome` 21 right and 0
+- Precision against the PDF columns of tables 108 to 116 and 111 (AC, ES, GO, PE and PR): `coluna_nome` 21 right and 0
   with another column's variable; `coluna_nome_lido` 411 right, 26 incomplete and 0 from another column; `unidade` 111 right and 0
   wrong.
 

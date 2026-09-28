@@ -70,7 +70,7 @@ asyncio.run(main())
 - 2025/26 also publishes the estimated maturity group; `grupo_maturacao` is the declared G.M., as text ("6.7")
 - Some yields come without a decimal in the PDF ("87"); they are returned as 87.0
 - An unknown argument raises `TypeError` before any request
-- Terms of use: no terms page on the website (search of September 23, 2026)
+- Terms of use: the website had no terms page on September 23, 2026
 
 ## Source
 

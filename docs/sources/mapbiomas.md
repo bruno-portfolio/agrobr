@@ -45,7 +45,7 @@ Apos parsing, o agrobr converte para formato long: uma linha por combinacao biom
 
 `cobertura(nivel="municipio")` preserva `municipio` e `geocodigo`, proveniente da coluna publicada `geocode`. O código tem sete dígitos ASCII como texto; não é uma garantia de pertencimento ao catálogo municipal atual do IBGE. Lagoa Mirim e Lagoa dos Patos constam como entidades territoriais. Um mesmo geocódigo pode aparecer em mais de uma UF, e essas interseções permanecem separadas. O código não autoriza corrigir UF nem agregar áreas automaticamente.
 
-Em 5 UFs amazônicas de fronteira, a soma dos municípios publicada passa do estadual publicado, na mesma coleção, ano e classe, com a mesma diferença em 1985, 2000 e 2025 (Coleção 11, conferido em 26/09/2026):
+Em 5 UFs amazônicas de fronteira, a soma dos municípios publicada passa do estadual publicado, na mesma coleção, ano e classe, com a mesma diferença em 1985, 2000 e 2025 (Coleção 11):
 
 | UF | Σ municípios − estadual, todas as classes | Formação Florestal (classe 3), 2025 |
 |---|---:|---:|

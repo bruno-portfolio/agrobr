@@ -60,7 +60,7 @@ para a data do levantamento, use `deral.condicao_lavouras`.
 | Algodão | 7 estados (98% da área) | Semeadura, Colheita |
 | Trigo | 8 estados (99,9% da área) | Colheita |
 
-Conferido nos boletins de 27/09/2025, 22/02/2026, 28/08/2026 e 18/09/2026. O trigo só aparece com colheita nesses boletins. Os
+A tabela vale para os boletins de 27/09/2025, 22/02/2026, 28/08/2026 e 18/09/2026, e o trigo só aparece com colheita neles. Os
 estados e a cobertura de cada bloco saem da nota da planilha e podem mudar de safra para safra.
 
 ---

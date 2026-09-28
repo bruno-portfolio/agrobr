@@ -31,8 +31,8 @@ because the aggregates API publishes only the unit name; `allxp` becomes `all`; 
 from the table's own `/periodos` endpoint. The channel used is recorded in
 `MetaInfo.source_details["canal"]` (`sidra`, `servicodados` or `misto`), `source_details["consultas"]` lists channel
 and URL per query, `attempted_sources` gains `ibge_servicodados` and `selected_source` becomes `ibge_servicodados`
-when the fallback was used (datasets inherit that provenance); `source_url` points to the URL actually queried; the first fallback emits a single `warnings.warn` per process. Values from both channels were
-checked equal for the July 2026 LSPA (soybeans). The IBGE health probe queries the aggregates API.
+when the fallback was used (datasets inherit that provenance); `source_url` points to the URL actually queried; the first fallback emits a single `warnings.warn` per process. Both channels
+return the same values for the July 2026 LSPA (soybeans). The IBGE health probe queries the aggregates API.
 
 Each query also requests `/agregados/{tabela}/periodos` and records the modification date of the returned periods, which
 tells which edition the number came from: `source_details["periodos_modificacao"]` comes as `{table: {period: ISO date}}`
@@ -112,7 +112,7 @@ The dataset combines expected maize and bean crop components, converts hectares/
   an identified column (the per-volume list is in the contract).
 - **Frequency**: One-off (1985 Census)
 - **Themes**: 53 themes, 1 per table (67 to 119), from the printed title
-- **Confidence**: `valor` only in cells confirmed by the printed sums (0 errors against the blind oracles); `valor_lido` and the
+- **Confidence**: `valor` only in cells confirmed by the printed sums (0 errors in the measured precision); `valor_lido` and the
   `status` for the rest, with the precision measured in the [contract](../contracts/censo_agropecuario_municipal_1985.md)
 - **Access**: local, no network
 - **Catalog URL**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768
@@ -127,18 +127,17 @@ The dataset combines expected maize and bean crop components, converts hectares/
 - **Themes**: tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro
 - **Access**: Public, no authentication
 
-Regression fixtures cover all six themes across the 27 states: 161 combinations
-with data and one expected rejection. In the September 2026 capture,
+Of the six themes across the 27 states, 161 combinations have data and one, machinery in PA, is rejected: the
+machinery file
 [Pará/Tab_7Mn.zip](https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Para/Tab_7Mn.zip)
-for machinery contains the same bytes as the personnel table, and none of Pará's 11
-`Tab_*Mn` files carries Table 7 (checked again on 2026-09-27). The machinery query
+contains the same bytes as the personnel table, and none of Pará's 11
+`Tab_*Mn` files carries Table 7. The machinery query
 with `uf='PA'` raises `SourceUnavailableError`, and the query without `uf` returns
 the other 26 states, with the warning in `MetaInfo` and a `UserWarning`; the theme
 is not replaced with personnel data or a table with a different level of aggregation.
 
 Sergipe's BIFF8 machinery headers distinguish planting, harvesting, trucks and
-utility vehicles even when text boxes overlap. Regressions check official cells,
-units, financial scales and legend-defined zeros; state values are not rebuilt
+utility vehicles even when text boxes overlap. State values are not rebuilt
 by summing municipalities.
 
 ### PEVS — Silviculture

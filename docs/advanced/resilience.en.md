@@ -169,7 +169,7 @@ expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises 
   `check_xlsx_expansion` adds up the declared size of the members and checks the CRC of each one as a stream, before the
   spreadsheet reader. calamine does not honour the declared size: without the CRC, an XLSX with a forged size would get through.
 
-| Source | Limit | Largest file published (measured on 2026-09-27) |
+| Source | Limit | Largest file published (as of 2026-09-27) |
 |---|---|---|
 | Queimadas | 2 GiB | 2024 yearly CSV: 905 MB |
 | B3 | 512 MiB | 13 MB inner ZIP; 144 MB XML |
@@ -194,8 +194,7 @@ URL along, this closes requests to internal addresses.
 When a dataset's primary source fails and a later source succeeds, agrobr emits
 `SourceFallbackWarning` with the primary source, the error category and summary,
 and the selected fallback. The notice uses `warnings.warn`, so standard Python
-tools can capture or filter it, and applications such as the private MCP receive
-it on stderr.
+tools can capture or filter it, and it goes to stderr.
 
 ### CEPEA
 

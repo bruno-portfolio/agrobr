@@ -69,7 +69,7 @@ A Coleção 10 usa o mesmo esquema municipal de dez colunas, com 40 anos de 1985
 
 A soma das classes de um município é a área mapeada pelo MapBiomas, não a área territorial do IBGE. Nos 93 municípios costeiros com baía ou ilha, ela fica abaixo da área do IBGE, que inclui as águas internas (em Florianópolis, 35% abaixo). Fernando de Noronha não aparece.
 
-Em 5 UFs amazônicas de fronteira, a soma dos municípios publicada passa do estadual publicado, na mesma coleção, ano e classe, com a mesma diferença em 1985, 2000 e 2025 (Coleção 11, conferido em 26/09/2026):
+Em 5 UFs amazônicas de fronteira, a soma dos municípios publicada passa do estadual publicado, na mesma coleção, ano e classe, com a mesma diferença em 1985, 2000 e 2025 (Coleção 11):
 
 | UF | Σ municípios − estadual, todas as classes | Formação Florestal (classe 3), 2025 |
 |---|---:|---:|

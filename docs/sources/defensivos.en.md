@@ -1,10 +1,10 @@
 # Agrofit/MAPA — Agricultural pesticides
 
-The [MAPA Open Data Portal](https://dados.agricultura.gov.br/dataset/sistema-de-agrotoxicos-fitossanitarios-agrofit) publishes two federal registration CSVs: formulated and technical products. The portal states daily updates, UTF-8, and Creative Commons Attribution licensing; the license link inspected on September 6, 2026 does not specify a version. agrobr retains its `livre` classification.
+The [MAPA Open Data Portal](https://dados.agricultura.gov.br/dataset/sistema-de-agrotoxicos-fitossanitarios-agrofit) publishes two federal registration CSVs: formulated and technical products. The portal states daily updates, UTF-8, and Creative Commons Attribution licensing; the license link does not specify a version. agrobr retains its `livre` classification.
 
 ## Source coverage and agrobr output
 
-The September 18, 2026 capture read both entire exports through the agrobr client. Counts describe that capture and may change.
+The counts below are from the September 18, 2026 export and may change.
 
 | Information | Captured export | agrobr output |
 |---|---|---|
@@ -13,7 +13,7 @@ The September 18, 2026 capture read both entire exports through the agrobr clien
 | Technical products | 2,992 registrations, 8 source columns | `tecnicos()`, schema 1.1 |
 | Composition | Ingredient, group, and concentration embedded in text in both families | `composicao()`: 5,678 formulated and 2,993 technical components, schema 1.0 |
 | Situation | `SITUACAO=TRUE` in every formulated row; absent from technical export | Original text in formulated products and authorizations, with a text filter |
-| Companies / countries / roles | Composite field in both CSVs | Not yet structured; the ignored column is identified in metadata |
+| Companies / countries / roles | Composite field in both CSVs | Not structured; the ignored column is identified in metadata |
 | API fields absent from the current layout | No use-modality field in formulated products or separate scientific-name field in technical products | `modalidade_de_emprego` and `nome_cientifico` remain null, respectively |
 
 The formulated export contained 392,110,268 bytes and the technical export 712,935 bytes. The capture includes mixtures of up to six components, nested parentheses in chemical groups, biological units, and products with repeated ingredients at different positions. Composition retains those positions and the published text.
@@ -42,18 +42,16 @@ Pydantic validates external records. Duplicate headers, incorrect field counts, 
 
 The 24-hour cache uses `formulados.v3.zip` and `tecnicos.v3.zip`. Each file bundles related tables, a versioned manifest, hashes, types, and provenance from the same acquisition. Replacement is atomic; expired, corrupt, or incompatible files are not reused. Legacy files remain on disk and require a fresh acquisition for the current API. `agrobr.defensivos.cache.invalidate()` deletes both snapshots and the legacy files. `use_cache=False` skips reading and writing. Where it lives and how to clean it: [What agrobr writes to disk](../advanced/disco.md).
 
-## Limits and further extensions
+## Limits
 
 The capture only demonstrated the `TRUE` token; its meaning was not equated with registration validity. The technical CSV does not publish situation. These are registration and use-relation data, not agronomic recommendations.
 
-A hash identifies acquired content; the current portal interface does not provide a reproducible historical cutoff date. Formulated, technical, authorization, and composition datasets reject `deterministic` before cache/network access. Cancellation history, product labels, and structured company fields remain further extensions.
+A hash identifies acquired content; the current portal interface does not provide a reproducible historical cutoff date. Formulated, technical, authorization, and composition datasets reject `deterministic` before cache/network access. Cancellation history, product labels, and structured company fields are not part of these tables.
 
-## Reconciliation of the 2026-09-18 capture
+## Export of 2026-09-18
 
-The two complete CSVs in this capture contain 4,403 formulated products, 279,707 authorization occurrences and 2,992 technical products. An independent oracle checks all 12 formulated-product columns, all ten columns of every authorization and the eight direct technical-product fields. All ten technical columns, including ingredient and group extracted from composition, are checked in nine explicit complete-register cohorts.
+Two ambiguous expressions in the 2026-09-18 export, `1.9 10*10 UFC/g` and `200 1x10E10 UFC/g`, retain their text and come out with null value and unit and a diagnostic. Numeric interpretation is not guaranteed for the whole component population.
 
-The complete population has 5,678 formulated and 2,993 technical components, with cardinality checked through both APIs and metadata. Composition has independent reconciliation of 57 components in 32 complete product cohorts: nine technical and 23 formulated. Coverage includes file endpoints, leading zeros, an accented premix identifier, nested parentheses, repeated components, zero concentration, scientific notation and published units. Two real ambiguous expressions, `1.9 10*10 UFC/g` and `200 1x10E10 UFC/g`, retain text, null numeric value/unit and diagnostics. The complete component population has not received independent numeric interpretation; the validated scope is explicit in the manifest.
+The cache retains non-null values, dtypes, component position and UTC provenance; `None` and `pd.NA` are equivalent only in nullable fields. Composition and situation text retain the literal; other fields retain the documented cleanup. Authorizations are not deduplicated.
 
-Replays use complete CSV bodies with identical hashes after gzip decompression, through public source and dataset APIs. Cache retains non-null values, dtypes, component position and UTC provenance; pandas `None`/`pd.NA` sentinels are equivalent only in nullable fields. Composition and situation text retain the literal; other fields retain the documented cleanup. Authorizations are not deduplicated.
-
-The structural comparator inventories all columns, both CKAN resources and published suffixes in concentration fields. A suffix can include an ambiguous expression and does not by itself certify a measurement unit or numeric interpretation. Undecided formats, columns, resources or expressions require review. Catalogue, CSV and cache share an origin and do not independently confirm the historical population. Parser 3 and contracts 1.1/1.0 remain unchanged.
+A suffix published in the concentration fields can include an ambiguous expression and does not by itself certify a measurement unit or numeric interpretation. Catalogue, CSV and cache share an origin: none of them confirms the historical population.

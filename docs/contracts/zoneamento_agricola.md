@@ -83,10 +83,10 @@ print(meta.raw_content_hash)
 
 `agrobr/schemas/zoneamento_agricola.json`, também disponível via `get_contract("zoneamento_agricola")`.
 
-## Reconciliação e culturas legadas
+## Culturas legadas e identidade dos registros
 
 O catálogo de filtros inclui `Arroz Sequeiro`/`arroz_sequeiro` e `Trigo Sequeiro`/`trigo_sequeiro`, publicados na tábua de 2016/2017. Esses aliases conservam os valores já retornados pelo parser e não são convertidos para `arroz`/`trigo`. Nomes desconhecidos continuam sendo recusados antes da rede; a presença de cada cultura depende da tábua consultada.
 
-As 59 colunas do contrato 2.1 preservam os 55 campos publicados, além de cultura normalizada, safra derivada, posição no CSV e `cod_municipio` (o `geocodigo` em inteiro). Registros repetidos são mantidos. A posição `registro_origem` é válida somente junto a `meta.raw_content_hash`: os três corpos capturados em 18/09/2026 tinham SHA diferente dos de 07/09, mas a comparação integral como multiconjunto confirmou os mesmos registros em outra ordem. Uma alteração de SHA não demonstra mudança dos valores.
+As 59 colunas do contrato 2.1 preservam os 55 campos publicados, além de cultura normalizada, safra derivada, posição no CSV e `cod_municipio` (o `geocodigo` em inteiro). Registros repetidos são mantidos. A posição `registro_origem` é válida somente junto a `meta.raw_content_hash`: os três corpos de 18/09/2026 tinham SHA diferente dos de 07/09, com os mesmos registros em outra ordem. Uma alteração de SHA não demonstra mudança dos valores.
 
 Aquisição UTC e hash do corpo permanecem em `meta.fetched_at`, `meta.raw_content_hash` e `meta.source_details["resource"]`, inclusive no cache. A leitura até EOF comprova que o corpo recebido foi processado, sem certificar total externo de municípios ou snapshot transacional. O catálogo CKAN consultado pela API declara frequência semanal, enquanto o dicionário PDF declara diária. O dataset usa `update_frequency="weekly"`, tomando o catálogo ativo de descoberta como referência operacional; a declaração conflitante do PDF permanece registrada. Nenhuma das declarações comprova a cadência efetiva de revisão de cada safra. Produtividade e códigos NM são preservados literalmente, sem inferir unidade ausente no dicionário.

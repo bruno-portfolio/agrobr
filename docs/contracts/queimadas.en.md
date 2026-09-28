@@ -41,13 +41,13 @@ and go on, instead of rejecting the whole month. The key is `(data, hora_gmt, la
 - **repeated key that differs only in FRP:** comes out as 1 row, with `frp` **null** (`source_details["frp_divergente"]`, with
   the hotspots and rows). The hotspot exists; only its power is ambiguous;
 - **repeated key that differs in another column:** neither hotspot is the right one, and the key is dropped from the result
-  (`source_details["chaves_repetidas"]`, with the keys). No case in the 2023–2026 scan;
+  (`source_details["chaves_repetidas"]`, with the keys). No case in the 20 months listed below;
 - **negative FRP**, physically impossible: comes out **null** (`source_details["frp_negativo_anulado"]`). `-999` remains a
   sentinel and comes out null without entering that count.
 
 Each case comes in `meta.validation_warnings` and as a `UserWarning`, with the count. The count refers to the returned result,
-after the `uf`, `bioma`, and `satelite` filters. Reading 20 months (Jun–Oct 2023 to 2025, Jun–Aug 2026, Feb 2024, and Mar 2025),
-these 7 were rejected whole by the dataset before the fix, with `ContractViolationError`; the repeated keys differ only in FRP:
+after the `uf`, `bioma`, and `satelite` filters. In 20 months (Jun–Oct 2023 to 2025, Jun–Aug 2026, Feb 2024, and Mar 2025),
+these 7 were rejected whole by the dataset up to 1.1, with `ContractViolationError`; the repeated keys differ only in FRP:
 
 | Month | Hotspots | Negative FRP | Equal copies | Keys with different FRP (rows) |
 |-------|---------:|-------------:|-------------:|-------------------------------:|

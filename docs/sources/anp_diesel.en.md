@@ -7,7 +7,7 @@ National Agency for Petroleum, Natural Gas and Biofuels (Agencia Nacional do
 Petroleo, Gas Natural e Biocombustiveis). Diesel resale price and sales volume
 data in Brazil. Proxy for mechanized agricultural activity.
 
-The official sales CSV may contain accented headers; state filters recognize the published spelling. Published zeros and negative values are preserved: the September 2026 capture contains −70 m³ of maritime diesel in Sergipe, December 2025, without an explanation in the CSV. Do not automatically interpret that observation as a valid physical volume or silently replace it with zero.
+The official sales CSV may contain accented headers; state filters recognize the published spelling. Published zeros and negative values are preserved: the September 2026 CSV contains −70 m³ of maritime diesel in Sergipe, December 2025, without an explanation in the CSV. Do not automatically interpret that observation as a valid physical volume or silently replace it with zero.
 
 ## Installation
 
@@ -135,4 +135,4 @@ In municipal workbooks, a week starting in late December may appear in the follo
 
 Monthly output from this API is calculated from the selected weeks; it does not use the separate monthly workbooks also published by ANP. Missing distribution prices in municipal files leave `preco_compra` and `margem` null. Acquisition receipts identify every workbook used.
 
-A week belongs to the month of its start date, even when it ends in the next month: the week of 2026-03-29 to 2026-04-04, with 4 of its 7 days in April, counts entirely in March. Monthly values may therefore differ from ANP's monthly workbook. In the check of 2026-09-26 (Brazil, MT, and SP, S500 and S10 diesel, Jan/2025 to Aug/2026), the mean difference was between R$ 0.006 and R$ 0.018/l per series. In a month with a price shock it reaches 2%: MT S500, Mar/2026, 7.138 R$/l in agrobr × 7.00 R$/l at ANP (7.045 R$/l if weeks counted by their end month).
+A week belongs to the month of its start date, even when it ends in the next month: the week of 2026-03-29 to 2026-04-04, with 4 of its 7 days in April, counts entirely in March. Monthly values may therefore differ from ANP's monthly workbook. From Jan/2025 to Aug/2026 (Brazil, MT, and SP, S500 and S10 diesel), the mean difference is between R$ 0.006 and R$ 0.018/l per series. In a month with a price shock it reaches 2%: MT S500, Mar/2026, 7.138 R$/l in agrobr × 7.00 R$/l at ANP (7.045 R$/l if weeks counted by their end month).

@@ -37,10 +37,10 @@ A filtered empty result retains all ten columns and their types. A physically em
 
 The export is current. Its hash identifies an acquisition rather than a selectable historical revision; the dataset rejects `deterministic` contexts before I/O. See the [RNC/SNPC source](../sources/rnc.en.md) and the [separate protected-cultivar contract](cultivares_protegidas.en.md).
 
-## Reconciliation of the 2026-09-18 capture
+## Export of 2026-09-18
 
-The complete CSVs captured on this date contain 38,325 RNC records and 5,424 SNPC records. An independent oracle built from the original CSVs without importing the parser or contract checks all 10/12 columns and all 43,749 records through source and dataset APIs, with and without cache. The preceding HTML search count matches the CSV in the same session; this agreement establishes neither a transactional snapshot nor historical completeness.
+The CSVs of the 2026-09-18 export contain 38,325 RNC records and 5,424 SNPC records. The HTML search count that precedes each CSV matches it; this agreement establishes neither a transactional snapshot nor historical completeness.
 
-In RNC, the published 22,946 blank form numbers, 4,256 blank cultivar names and 4,271 blank maintainers remain empty text; both dates are populated in this capture. There are 924 repeated form-number groups with 15,142 occurrences. In SNPC, protection end has 5,267 dates, 155 conditions and two blanks; the 155 conditions and two blanks produce null dates while retaining the text. There are 102 certificate numbers repeated across distinct processes, with 204 occurrences. These secondary-identifier repetitions are not deduplicated.
+In RNC, the published 22,946 blank form numbers, 4,256 blank cultivar names and 4,271 blank maintainers remain empty text; both dates are populated in that export. There are 924 repeated form-number groups with 15,142 occurrences. In SNPC, protection end has 5,267 dates, 155 conditions and two blanks; the 155 conditions and two blanks produce null dates while retaining the text. There are 102 certificate numbers repeated across distinct processes, with 204 occurrences. These secondary-identifier repetitions are not deduplicated.
 
-The original acquisition in `fetched_at` retains timezone-aware UTC through cache and dataset calls. At both source and dataset level, `fetch_timestamp` equals acquisition time. Table dates are civil dates independent of these timestamps. Parser version remains 2 and contracts remain 1.0; this reconciliation does not change public behavior.
+The original acquisition in `fetched_at` retains timezone-aware UTC through cache and dataset calls. At both source and dataset level, `fetch_timestamp` equals acquisition time. Table dates are civil dates independent of these timestamps.

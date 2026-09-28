@@ -5,7 +5,7 @@ Almost everything lives in the cache folder: `~/.agrobr/cache` by default, or th
 `snapshot_path` of `agrobr.config.set_mode`).
 
 Deleting any file in the table below is safe: on the next query, agrobr downloads again what it needs.
-The 2.0 CLI has no cleanup command (`agrobr cache clear` is left for a later version). Delete with
+The 2.0 CLI has no cleanup command. Delete with
 your file manager or with `rm`.
 
 ## In the cache folder

@@ -39,7 +39,7 @@
 | **SNCI** | 27/27 | 0.01-23 MB per state | Per state |
 | **Settlements** | Brazil-wide single | 50 MB | Full Brazil, client-side state filter |
 
-INCRA publishes SIGEF and SNCI for all 27 states (survey of 2026-09-22). A state without a file on the server raises `SourceUnavailableError` (HTTP 404).
+INCRA publishes SIGEF and SNCI for all 27 states (2026-09-22). A state without a file on the server raises `SourceUnavailableError` (HTTP 404).
 
 ## Public functions
 

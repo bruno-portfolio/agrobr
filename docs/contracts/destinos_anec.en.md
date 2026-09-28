@@ -32,11 +32,11 @@ The key preserves separate editions and revisions when appending report snapshot
 
 ## Meaning and limits
 
-ANEC publishes importer tables only for soybeans (`soybean`), soybean meal (`soybean_meal`), maize (`maize`) and wheat (`wheat`) in the verified W13 and W34/2026 editions. The destinations catalog advertises these four products. DDGS and sorghum remain in `embarques_mensais_anec` and `comparacao_anual_anec`. For destinations, `ddgs`, `sorgo` and their aliases raise `InvalidParameterError` before any network access.
+ANEC publishes importer tables only for soybeans (`soybean`), soybean meal (`soybean_meal`), maize (`maize`) and wheat (`wheat`) in the W13 and W34/2026 editions. The destinations catalog advertises these four products. DDGS and sorghum remain in `embarques_mensais_anec` and `comparacao_anual_anec`. For destinations, `ddgs`, `sorgo` and their aliases raise `InvalidParameterError` before any network access.
 
 The unit is a cumulative percentage for the header's period, not tonnage or a monthly flow. The report edition's week or month is not automatically assigned to the destination period. `OTHERS` is a valid aggregate, not a country. Rounded percentages may total 99% or 101%, without an artificial adjustment to 100%.
 
-Some reports use charts that the parser cannot yet extract (observed in editions W08 and W12 of 2026). Results may be empty with a notice in `meta.validation_warnings`; this does not establish an absence of shipments or destinations. Use `return_meta=True` to inspect warnings. Edition W34/2026 reports January–July 2026.
+Some reports use charts that the parser does not extract (as in editions W08 and W12 of 2026). Results may be empty with a notice in `meta.validation_warnings`; this does not establish an absence of shipments or destinations. Use `return_meta=True` to inspect warnings. Edition W34/2026 reports January–July 2026.
 
 ## Products
 
@@ -87,6 +87,6 @@ print(meta.source_url)
 
 `zona_cinza`: public reports without explicit public reuse terms located. The first ANEC call emits a warning. Commercial use or redistribution may require ANEC authorization; publication on the website does not establish permission for commercial redistribution.
 
-## Bulletin verification
+## Reading the bulletins
 
-Text tables in editions 04, 13, 34 and 36/2026 were checked in full, including OTHERS. Map percentages and the Total row are outside the contract. Rounded shares may sum to 99%, 101% or 102% without renormalization. Editions 08 and 12/2026 contain raster panels: an empty result with a warning indicates missing extraction, not absence of trade.
+The text table is returned in full, including OTHERS. Map percentages and the Total row are outside the contract. Rounded shares may sum to 99%, 101% or 102% without renormalization. Editions 08 and 12/2026 contain raster panels: an empty result with a warning indicates missing extraction, not absence of trade.

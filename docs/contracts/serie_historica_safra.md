@@ -32,9 +32,9 @@ As safras que o levantamento mensal de grãos da CONAB ainda publica (a corrente
 
 Células vazias da Área Total não recebem valores de Área Colhida; produção e produtividade permanecem nulas. Abas de mudas e modalidades de colheita não integram essa série.
 
-Zero publicado na planilha sai `0.0`, inclusive o de UF sem produção naquela safra (a planilha lista as 27 UFs). A exceção é a coluna de safra com zero em todas as UFs, que é safra não levantada e não gera linha: trigo 1976 tem zero até na linha BRASIL, e canola, triticale, girassol, feijão 3ª safra e milho 2ª safra começam assim. Nas 40 planilhas de grãos e cana medidas em 23/09/2026, 7.533 zeros são de safra não levantada; os outros 43.981 zeros publicados saem `0.0`. O café não tem coluna assim.
+Zero publicado na planilha sai `0.0`, inclusive o de UF sem produção naquela safra (a planilha lista as 27 UFs). A exceção é a coluna de safra com zero em todas as UFs, que é safra não levantada e não gera linha: trigo 1976 tem zero até na linha BRASIL, e canola, triticale, girassol, feijão 3ª safra e milho 2ª safra começam assim. Nas 40 planilhas de grãos e cana de setembro/2026, 7.533 zeros são de safra não levantada; os outros 43.981 zeros publicados saem `0.0`. O café não tem coluna assim.
 
-Abas selecionadas ilegíveis, ausentes ou ambíguas geram `ParseError`; filtros sem observações retornam uma tabela vazia com schema. Abas desconhecidas geram aviso e são apontadas na reconciliação.
+Abas selecionadas ilegíveis, ausentes ou ambíguas geram `ParseError`; filtros sem observações retornam uma tabela vazia com schema. Abas desconhecidas geram aviso.
 
 ## Schema
 

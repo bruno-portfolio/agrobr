@@ -71,7 +71,7 @@ print(meta.records_count, meta.fetch_duration_ms)
 
 Culturas fora do catálogo são rejeitadas antes de acessar a rede, com sugestões quando houver nomes semelhantes. Culturas válidas ausentes na safra só são rejeitadas após a leitura da tábua, com a indicação da tábua perene ou das safras em que a cultura aparece (tábuas publicadas até 23/09/2026). Nos 11 rótulos de cultura renomeados na safra 2024/2025, a mensagem também aponta a chave equivalente da tábua consultada (tabela na [página da fonte](../sources/zarc.md)).
 
-Lista de 107 culturas representadas por aliases canônicos, uma para cada rótulo publicado nas 12 tábuas oficiais conferidas em 23/09/2026, incluindo dois nomes legados de 2016/2017 e os nove rótulos das safras 2017/2018 a 2023/2024 (`milho`, `arroz_irrigado`, `feijao_1`, `trigo_irrigado`, `mamona_semiarido_sequeiro`, `cevada_graos_irrigada`, `cevada_graos_sequeiro`, `aveia_sequeiro`, `aveia_irrigada`). Frutas e café usam `safra="perene"`. A presença varia por safra; cultura ausente na safra pedida informa em quais safras aparece. Com `return_meta=True`, `meta.source_details["parser"]["culturas_observadas"]` lista as culturas observadas na tábua inteira, antes dos filtros.
+Lista de 107 culturas representadas por aliases canônicos, uma para cada rótulo publicado nas 12 tábuas oficiais, incluindo dois nomes legados de 2016/2017 e os nove rótulos das safras 2017/2018 a 2023/2024 (`milho`, `arroz_irrigado`, `feijao_1`, `trigo_irrigado`, `mamona_semiarido_sequeiro`, `cevada_graos_irrigada`, `cevada_graos_sequeiro`, `aveia_sequeiro`, `aveia_irrigada`). Frutas e café usam `safra="perene"`. A presença varia por safra; cultura ausente na safra pedida informa em quais safras aparece. Com `return_meta=True`, `meta.source_details["parser"]["culturas_observadas"]` lista as culturas observadas na tábua inteira, antes dos filtros.
 
 ```python
 culturas = agrobr.zarc.culturas()
@@ -106,10 +106,10 @@ safras = sync.zarc.safras_disponiveis()
 - **Licenca:** CC-BY (dados publicos governo federal)
 - **Atualizacao:** semanal no catálogo CKAN; PDF declara diária, sem comprovar a cadência efetiva
 
-## Reconciliação e culturas legadas
+## Culturas legadas e identidade dos registros
 
 O catálogo de filtros inclui `Arroz Sequeiro`/`arroz_sequeiro` e `Trigo Sequeiro`/`trigo_sequeiro`, publicados na tábua de 2016/2017. Esses aliases conservam os valores já retornados pelo parser e não são convertidos para `arroz`/`trigo`. Nomes desconhecidos continuam sendo recusados antes da rede; a presença de cada cultura depende da tábua consultada.
 
-As 59 colunas do contrato 2.1 preservam os 55 campos publicados, além de cultura normalizada, safra derivada, posição no CSV e `cod_municipio` (o `geocodigo` em inteiro). Registros repetidos são mantidos. A posição `registro_origem` é válida somente junto a `meta.raw_content_hash`: os três corpos capturados em 18/09/2026 tinham SHA diferente dos de 07/09, mas a comparação integral como multiconjunto confirmou os mesmos registros em outra ordem. Uma alteração de SHA não demonstra mudança dos valores.
+As 59 colunas do contrato 2.1 preservam os 55 campos publicados, além de cultura normalizada, safra derivada, posição no CSV e `cod_municipio` (o `geocodigo` em inteiro). Registros repetidos são mantidos. A posição `registro_origem` é válida somente junto a `meta.raw_content_hash`: os três corpos de 18/09/2026 tinham SHA diferente dos de 07/09, com os mesmos registros em outra ordem. Uma alteração de SHA não demonstra mudança dos valores.
 
 Aquisição UTC e hash do corpo permanecem em `meta.fetched_at`, `meta.raw_content_hash` e `meta.source_details["resource"]`, inclusive no cache. A leitura até EOF comprova que o corpo recebido foi processado, sem certificar total externo de municípios ou snapshot transacional. O catálogo CKAN consultado pela API declara frequência semanal, enquanto o dicionário PDF declara diária. O dataset usa `update_frequency="weekly"`, tomando o catálogo ativo de descoberta como referência operacional; a declaração conflitante do PDF permanece registrada. Nenhuma das declarações comprova a cadência efetiva de revisão de cada safra. Produtividade e códigos NM são preservados literalmente, sem inferir unidade ausente no dicionário.

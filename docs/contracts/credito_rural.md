@@ -59,7 +59,7 @@ df_programa = await datasets.credito_rural(
 df_registro = await datasets.credito_rural("soja", safra="2024/25", agregacao="registro")
 ```
 
-As entidades por produto que o agrobr lê (`*RegiaoUFProduto`) não têm município. `agregacao="municipio"` levanta `InvalidParameterError`; o SICOR publica município por produto (`CusteioMunicipioProduto` e `InvestMunicipioProduto`), que o agrobr ainda não lê, e o extra `agrobr[bigquery]` traz dados municipais. A industrialização não sai por produto: está no [bcb.credito_rural_total](./bcb_credito_rural_total.md).
+As entidades por produto que o agrobr lê (`*RegiaoUFProduto`) não têm município. `agregacao="municipio"` levanta `InvalidParameterError`; o SICOR publica município por produto (`CusteioMunicipioProduto` e `InvestMunicipioProduto`), que o agrobr não lê, e o extra `agrobr[bigquery]` traz dados municipais. A industrialização não sai por produto: está no [bcb.credito_rural_total](./bcb_credito_rural_total.md).
 
 ## Schema JSON
 

@@ -8,7 +8,7 @@ Rural credit by state and purpose, without product, from SICOR's `RegiaoUF` enti
 |---|---|---|
 | BCB/SICOR (OData v2, Olinda) | `RegiaoUF` | Count and value by month, state, programme, sub-programme, funding source and activity, with the four purposes as columns |
 
-No fallback: the Base dos Dados table has not been checked against this contract's oracle.
+No fallback to the Base dos Dados table.
 
 ## Schema
 

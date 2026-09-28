@@ -8,7 +8,7 @@ Crédito rural por UF e finalidade, sem produto, da entidade `RegiaoUF` do SICOR
 |---|---|---|
 | BCB/SICOR (OData v2, Olinda) | `RegiaoUF` | Quantidade e valor por mês, UF, programa, subprograma, fonte de recursos e atividade, com as quatro finalidades em colunas |
 
-Sem fallback: a tabela da Base dos Dados não foi conferida contra o oráculo deste contrato.
+Sem fallback para a tabela da Base dos Dados.
 
 ## Schema
 

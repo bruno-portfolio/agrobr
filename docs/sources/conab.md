@@ -229,9 +229,9 @@ A coluna de previsão (rótulos como `Previsão` ou `(¹)`) não entra na série
 
 `cana_area_total` usa somente a aba Área Total, cuja composição muda ao longo da série: colhida + plantio + mudas até 2021/22 (exceto 2016/17), e igual à colhida em 19 a 23 UFs em 2016/17 e de 2023/24 a 2025/26 (detalhe no [contrato](../contracts/serie_historica_safra.md)). Células vazias não recebem valores de Área Colhida; produção e produtividade permanecem nulas. Abas de mudas e modalidades de colheita não integram essa série.
 
-Abas selecionadas ilegíveis, ausentes ou ambíguas geram `ParseError`; filtros sem observações retornam uma tabela vazia com schema. Abas desconhecidas geram aviso e são apontadas na reconciliação.
+Abas selecionadas ilegíveis, ausentes ou ambíguas geram `ParseError`; filtros sem observações retornam uma tabela vazia com schema. Abas desconhecidas geram aviso.
 
-`arroz_sequeiro`: o rótulo de unidade das abas Produtividade e Produção está errado na planilha oficial (set/2026); os valores são kg/ha e mil t, conforme a relação produção/área. A exceção fica registrada no manifesto de reconciliação.
+`arroz_sequeiro`: o rótulo de unidade das abas Produtividade e Produção está errado na planilha oficial (set/2026); os valores são kg/ha e mil t, conforme a relação produção/área.
 
 ## Cache
 

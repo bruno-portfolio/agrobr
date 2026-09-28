@@ -58,6 +58,6 @@ Para chamadas síncronas, use `from agrobr.sync import datasets` e remova `await
 
 `livre` — consulte as [licenças](../licenses.md) e os [detalhes da API/fonte](../api/empregadores_lista_suja.md).
 
-Na reconciliação de 18/09/2026, as doze colunas e os 579 registros publicados foram conferidos integralmente em CSV/TXT e PDF. Cada formato conserva seu texto, incluindo quebras de linha. Tanto a API da fonte quanto o dataset preservam `lista_suja_csv` ou `lista_suja_pdf` em fontes tentadas/selecionada. Data da edição, atualização cadastral e instante de aquisição são distintos; veja a [reconciliação da fonte](../sources/lista_suja.md).
+Em 18/09/2026, a publicação tinha 579 registros em CSV/TXT e PDF. Cada formato conserva seu texto, incluindo quebras de linha. Tanto a API da fonte quanto o dataset preservam `lista_suja_csv` ou `lista_suja_pdf` em fontes tentadas/selecionada. Data da edição, atualização cadastral e instante de aquisição são distintos; veja a [fonte](../sources/lista_suja.md).
 
 `data_inclusao_texto` via PDF preserva as quebras de linha da célula; os demais campos textuais usam a normalização de espaços descrita na fonte.

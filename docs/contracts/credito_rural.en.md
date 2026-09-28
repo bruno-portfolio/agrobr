@@ -59,7 +59,7 @@ df_by_program = await datasets.credito_rural(
 df_records = await datasets.credito_rural("soja", safra="2024/25", agregacao="registro")
 ```
 
-The by-product entities agrobr reads (`*RegiaoUFProduto`) have no municipality. `agregacao="municipio"` raises `InvalidParameterError`; SICOR publishes municipality by product (`CusteioMunicipioProduto` and `InvestMunicipioProduto`), which agrobr does not read yet, and the `agrobr[bigquery]` extra has municipality-level data. Agro-industrialisation is not published by product: it is in [bcb.credito_rural_total](./bcb_credito_rural_total.en.md).
+The by-product entities agrobr reads (`*RegiaoUFProduto`) have no municipality. `agregacao="municipio"` raises `InvalidParameterError`; SICOR publishes municipality by product (`CusteioMunicipioProduto` and `InvestMunicipioProduto`), which agrobr does not read, and the `agrobr[bigquery]` extra has municipality-level data. Agro-industrialisation is not published by product: it is in [bcb.credito_rural_total](./bcb_credito_rural_total.en.md).
 
 ## JSON Schema
 

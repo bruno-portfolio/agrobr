@@ -59,7 +59,7 @@ The contract moves to **2.0** to require explicit UTC in both date columns; the 
 
 Official captures showed different clocks in CSV and GeoJSON for the same record, with offsets of two and three hours. CQL compared cutoffs against the GeoJSON UTC instant. The tabular API therefore stopped using CSV: returned UTC timestamps can now feed `atualizado_apos` directly through `.isoformat()`. Naive dates from old CSV captures are not assigned an assumed timezone or a fixed offset.
 
-The filter supports millisecond precision. Zeros beyond the third decimal place are removed without changing the instant (`.212000` becomes `.212`); submillisecond fractions are rejected before network access, including fractions beyond Python's microsecond precision. Probing showed that GeoServer compared `.212000` differently from `.212`; agrobr therefore sends three fractional digits without rounding more precise values. This does not assert a maximum precision for the source's internal storage.
+The filter supports millisecond precision. Zeros beyond the third decimal place are removed without changing the instant (`.212000` becomes `.212`); submillisecond fractions are rejected before network access, including fractions beyond Python's microsecond precision. GeoServer compares `.212000` differently from `.212`; agrobr therefore sends three fractional digits without rounding more precise values. This does not assert a maximum precision for the source's internal storage.
 
 ## Multiple occurrences and provenance
 

@@ -45,7 +45,7 @@ After parsing, agrobr converts it to long format: one row per biome x state x cl
 
 `cobertura(nivel="municipio")` preserves `municipio` and `geocodigo`, from the published `geocode` column. The code is seven ASCII digits as text; it does not guarantee membership in the current IBGE municipal catalog. Lagoa Mirim and Lagoa dos Patos appear as territorial entities. A geocode may occur in multiple states, and these intersections remain separate. The code does not justify correcting the state or automatically aggregating areas.
 
-In 5 Amazonian border states, the published sum of municipalities exceeds the published state figure for the same collection, year and class, by the same amount in 1985, 2000 and 2025 (Collection 11, checked on 2026-09-26):
+In 5 Amazonian border states, the published sum of municipalities exceeds the published state figure for the same collection, year and class, by the same amount in 1985, 2000 and 2025 (Collection 11):
 
 | State | Σ municipalities − state, all classes | Forest Formation (class 3), 2025 |
 |---|---:|---:|

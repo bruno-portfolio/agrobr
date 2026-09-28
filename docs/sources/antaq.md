@@ -119,17 +119,14 @@ print(meta.parser_version)   # 2
 print(meta.records_count)    # ~2.4M para ano completo
 ```
 
-## Reconciliacao offline (18/09/2026)
+## Campos, joins e unidades
 
-Os 62 campos publicados nos tres TXT (29 em atracacao, 27 em carga, 6 em mercadoria) tem decisao
-nominal registrada em `tests/golden_data/reconciliacao_r13_20260918/manifest.json`: 21 viram coluna
-de saida, 3 sao chave de join (`IDAtracacao` duas vezes, `CDMercadoria`) e 38 sao ignoradas com
-motivo. Oraculo independente (`csv`/`decimal` da stdlib) conferido celula a celula contra a saida
-publica sobre o recorte real de 2024 preservado em `tests/golden_data/antaq/movimentacao_sample/`.
+Dos 62 campos publicados nos tres TXT (29 em atracacao, 27 em carga, 6 em mercadoria), 21 viram
+coluna de saida, 3 sao chave de join (`IDAtracacao` duas vezes, `CDMercadoria`) e 38 sao ignorados.
 
 **Joins e cardinalidade.** A saida parte da carga: `carga -> atracacao` por `IDAtracacao` e
-`carga -> mercadoria` por `CDMercadoria`, ambos `left`. Uma atracacao pode ter varias cargas (no
-recorte, a atracacao `1406197` tem 5), entao o numero de linhas e o numero de cargas, nao de
+`carga -> mercadoria` por `CDMercadoria`, ambos `left`. Uma atracacao pode ter varias cargas (num
+recorte de janeiro de 2024, a atracacao `1406197` tem 5), entao o numero de linhas e o numero de cargas, nao de
 atracacoes; atracacao sem carga nao aparece. Carga sem atracacao mantem a linha com `ano`/`mes`
 nulos na API da fonte e e descartada pelo dataset, que exige `ano` e `mes`. Carga com
 `CDMercadoria` fora da tabela mantem a linha com `mercadoria`/`grupo_mercadoria` nulos.
@@ -148,10 +145,8 @@ publicada) - `qt_carga` e copiado sem conversao.
 em texto pt-BR como `jan`), nao a data: uma atracacao iniciada em 22/12/2023 aparece com `ano=2024`
 e `mes=1`.
 
-**Limites.** Os TXT sao extracoes; o ZIP oficial nao esta preservado e a fonte segue fora do ar. A
-captura live continua pendente: sondagem de 18/09/2026 recebeu HTTP 200 redirecionado para o aviso
-oficial (`text/html`, 174.818 bytes, sem assinatura ZIP). O recorte cobre janeiro de 2024 em AM e
-PA; `apoio_maritimo`, carga conteinerizada e `TEU > 0` nao tem caso positivo.
+**Limites.** O recorte dos exemplos cobre janeiro de 2024 em AM e PA; `apoio_maritimo`, carga
+conteinerizada e `TEU > 0` nao tem caso positivo nele.
 
 ## Nota de desempenho
 

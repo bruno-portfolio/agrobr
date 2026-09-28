@@ -69,7 +69,7 @@ asyncio.run(main())
 - A 2025/26 publica também o G.M. estimado; `grupo_maturacao` é o G.M. declarado, como texto ("6.7")
 - Algumas produtividades vêm sem decimal no PDF ("87"); saem como 87.0
 - Argumento desconhecido levanta `TypeError` antes de qualquer requisição
-- Termos de uso: nenhuma página de termos no site (busca de 23/09/2026)
+- Termos de uso: o site não tinha página de termos em 23/09/2026
 
 ## Fonte
 

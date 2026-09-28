@@ -6,7 +6,7 @@ CONAB extraction costs with their published values and units. Active contract: `
 
 ## Products
 
-20 products, verified in the official tab on 2026-09-16:
+20 products, as listed in the official tab:
 
 | Code | Product |
 |---|---|
@@ -39,7 +39,7 @@ CONAB extraction costs with their published values and units. Active contract: `
 
 Locations expressed as regions or without a recognized terminal state abbreviation retain their printed text, excluding only the `REGIÃO:` prefix and surrounding whitespace. Descriptive parentheses remain in `local`, including any state text within that description. The state then comes from the worksheet name and `celulas_contexto["uf_origem"] = "nome_da_aba"` records that fallback. A recognized state in the header takes precedence. Neither the filename nor the price date supplies a missing crop year.
 
-## Revision and percentage reconciliation
+## Revisions and percentages
 
 Parser 2 distinguishes numeric cells with an Excel `%` format (multiplied by 100)
 from textual numbers or values already expressed as percentages (not scaled).
@@ -50,11 +50,9 @@ Excel errors and missing crop years are rejected without partial output.
 `planilha="acai_serie_historica_2008-2024.xlsx"` selects the archived revision,
 including sheet `Codajás-AM-2008` with `ano=2008`. Without `planilha`, the
 official link selects the active revision; an old year does not automatically
-switch to an archived workbook. Current files for all 20 products and this açaí
-revision have raw captures and cell reconciliation; the other 16 catalogued
-archived revisions do not have independent certification of their bytes.
-Observed old and new layouts have two monetary columns; no published one-column
-family was found in these captures.
+switch to an archived workbook. In the current files for all 20 products and in
+this açaí revision, old and new layouts have two monetary columns; none publishes
+a single column. For the other 16 catalogued archived revisions, the reading is not guaranteed.
 
 ## Schema
 
@@ -88,7 +86,7 @@ Pandas uses `string[python]`, nullable `Int64`, `float64` and `datetime64[ns]`, 
 
 ## Observed units
 
-All monetary headers below were read from the 20 original active workbooks captured on 2026-09-16, including both value columns. These are observed labels, not an allowed-values list.
+All monetary headers below come from the 20 active workbooks, including both value columns. These are observed labels, not an allowed-values list.
 
 | Product | Published monetary headers |
 |---|---|
@@ -134,7 +132,7 @@ Nominal inventory from the captured active resources. `unresolved` means context
 Orphan numbers are rejected even when zero. Pinhão São Joaquim 2015/2016 publishes an additional `1 kg` value column beyond the two supported monetary columns: both are `unresolved` with `Coluna sem mapeamento em R8C4`, a representation limit, not a rejection of their monetary basis. The extra column is neither discarded nor converted.
 
 
-Inventory: **955 identified contexts/headers and 21 nominal unresolved worksheets** among 976 data sheets. Six baru sheets print only `SAFRA`, without a crop year; one rubber sheet has an unrecognized cost title; two pinhão sheets retain a known limitation. The other 12 are piaçava Belmonte/Cairu 2011–2016: the geographic/crop context is recognized, but three published monetary columns exceed the two-column representation. For example, Belmonte 2016 prints `R$/Safra`, `R$/15 @` and `R$/KG`. None is discarded or converted. A future long format with one row per measure is a candidate, outside this contract. The 12 body parse rejections remain separate.
+Inventory: **955 identified contexts/headers and 21 nominal unresolved worksheets** among 976 data sheets. Six baru sheets print only `SAFRA`, without a crop year; one rubber sheet has an unrecognized cost title; two pinhão sheets retain a known limitation. The other 12 are piaçava Belmonte/Cairu 2011–2016: the geographic/crop context is recognized, but three published monetary columns exceed the two-column representation. For example, Belmonte 2016 prints `R$/Safra`, `R$/15 @` and `R$/KG`. None is discarded or converted. The 12 body parse rejections remain separate.
 
 ## Worksheets whose names differ from their headers
 

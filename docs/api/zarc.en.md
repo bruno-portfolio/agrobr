@@ -71,7 +71,7 @@ print(meta.records_count, meta.fetch_duration_ms)
 
 Crops outside the catalog are rejected before network access, with suggestions when similar names are available. Valid catalog crops missing from the selected season are rejected after reading the table, pointing to the perennial table or to the seasons in which the crop appears (tables published up to 2026-09-23). For the 11 crop labels renamed in the 2024/2025 season, the message also points to the equivalent key in the queried table (table on the [source page](../sources/zarc.md)).
 
-List of 107 crops represented by canonical aliases, one for each label published in the 12 official tables checked on 2026-09-23, including two legacy names from 2016/2017 and the nine labels of the 2017/2018 to 2023/2024 seasons (`milho`, `arroz_irrigado`, `feijao_1`, `trigo_irrigado`, `mamona_semiarido_sequeiro`, `cevada_graos_irrigada`, `cevada_graos_sequeiro`, `aveia_sequeiro`, `aveia_irrigada`). Fruit and coffee crops use `safra="perene"`. Availability varies by season; a crop missing from the requested season reports the seasons in which it appears. With `return_meta=True`, `meta.source_details["parser"]["culturas_observadas"]` lists crops observed in the complete table before filtering.
+List of 107 crops represented by canonical aliases, one for each label published in the 12 official tables, including two legacy names from 2016/2017 and the nine labels of the 2017/2018 to 2023/2024 seasons (`milho`, `arroz_irrigado`, `feijao_1`, `trigo_irrigado`, `mamona_semiarido_sequeiro`, `cevada_graos_irrigada`, `cevada_graos_sequeiro`, `aveia_sequeiro`, `aveia_irrigada`). Fruit and coffee crops use `safra="perene"`. Availability varies by season; a crop missing from the requested season reports the seasons in which it appears. With `return_meta=True`, `meta.source_details["parser"]["culturas_observadas"]` lists crops observed in the complete table before filtering.
 
 ```python
 culturas = agrobr.zarc.culturas()
@@ -106,10 +106,10 @@ safras = sync.zarc.safras_disponiveis()
 - **License:** CC-BY (federal government public data)
 - **Update:** weekly in the CKAN catalogue; PDF declares daily, without establishing actual cadence
 
-## Reconciliation and legacy crops
+## Legacy crops and record identity
 
 The filter catalogue includes `Arroz Sequeiro`/`arroz_sequeiro` and `Trigo Sequeiro`/`trigo_sequeiro`, published in the 2016/2017 table. These aliases retain values already returned by the parser and are not converted to `arroz`/`trigo`. Unknown names are still rejected before network access; crop availability depends on the selected table.
 
-The 59 columns in contract 2.1 retain all 55 published fields, plus normalized crop, derived season, CSV position and `cod_municipio` (the `geocodigo` as an integer). Repeated records are preserved. `registro_origem` is meaningful only together with `meta.raw_content_hash`: the three bodies captured on 2026-09-18 had different hashes from September 7, but a complete multiset comparison confirmed identical records in a different order. A changed hash does not establish that values changed.
+The 59 columns in contract 2.1 retain all 55 published fields, plus normalized crop, derived season, CSV position and `cod_municipio` (the `geocodigo` as an integer). Repeated records are preserved. `registro_origem` is meaningful only together with `meta.raw_content_hash`: the three bodies of 2026-09-18 had different hashes from those of September 7, with the same records in a different order. A changed hash does not establish that values changed.
 
 UTC acquisition time and body hash remain in `meta.fetched_at`, `meta.raw_content_hash` and `meta.source_details["resource"]`, including cache hits. Reading to EOF confirms that the received body was processed, without certifying an external municipality total or transactional snapshot. The CKAN catalogue queried by the API declares weekly updates, while the PDF dictionary declares daily updates. The dataset uses `update_frequency="weekly"`, taking the active discovery catalogue as its operational reference; the conflicting PDF declaration remains recorded. Neither statement establishes the actual revision cadence of each season. Productivity and NM codes retain the literal text, without inferring a unit missing from the dictionary.

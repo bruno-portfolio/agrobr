@@ -51,7 +51,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
   registros atualizados depois de uma data. A coluna é solicitada nas 15 camadas que a oferecem.
   O campo não existe em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO; nesses estados o filtro
   gera erro antes da rede e a coluna permanece nula nas consultas sem esse filtro. Essa cobertura
-  foi conferida no `DescribeFeatureType` das 27 camadas em 06/09/2026
+  vem do `DescribeFeatureType` das 27 camadas em 06/09/2026
 - **Estado corrente:** criação (`>=`) e atualização (`>`) são filtros do cadastro disponível
   no momento da consulta. Não recuperam revisões anteriores nem exclusões. O dataset
   `cadastro_rural` também aceita código municipal e atualização, e rejeita `deterministic`
@@ -59,7 +59,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
   (EPSG:4326) via WFS GeoJSON. Requer `pip install agrobr[geo]`. Limite padrão de 5.000 features
   no resultado; `max_features` maior que 10.000 ou `None` usa paginação. O corte avisa
   (`validation_warnings`, `UserWarning` e `source_details["sicar"]["truncado"]`). As 27 camadas declaram
-  SIRGAS 2000 (`DefaultCRS` EPSG:4674, conferido em 22/09/2026); o agrobr pede `srsName=EPSG:4326`
+  SIRGAS 2000 (`DefaultCRS` EPSG:4674); o agrobr pede `srsName=EPSG:4326`
   e recusa com `ParseError` a página com feições que declare outro CRS
 - **Precisão do filtro:** `atualizado_apos` aceita milissegundos, com zeros adicionais opcionais.
   `.212000` é enviado como `.212`; valores submilissegundo geram erro, sem arredondamento
@@ -98,25 +98,8 @@ Licenca: **CC-BY** — uso livre com citacao da fonte.
 - [SICAR Consulta Publica](https://www.car.gov.br/publico/imoveis/index)
 - [Dados Abertos SFB](https://www.gov.br/agricultura/pt-br/assuntos/servico-florestal-brasileiro)
 
-## Reconciliação tabular de 18/09/2026
+## Contagens e proveniência
 
-Seis consultas preservadas abrangem DF, MT, SP, GO e RS, com todas as linhas e
-onze colunas comparadas contra leituras independentes dos corpos GeoJSON. A
-consulta integral do DF contém 21.006 feições em três páginas, incluindo 513
-atualizações nulas. Uma consulta MT preserva um valor zero de módulos fiscais;
-SP e RS exemplificam camadas sem o campo de atualização. São 21.183 ocorrências
-nas seis consultas, com sobreposição entre os dois recortes do DF.
+Em 18/09/2026, a consulta integral do DF tinha 21.006 feições em três páginas, com 513 atualizações nulas. Numa consulta de MT, o valor zero de módulos fiscais sai preservado. Em duas páginas de 10.000 feições de GO e RS, a escolha de ocorrências por atualização e por criação deixa 9.999 imóveis em cada uma.
 
-Os XSDs das 27 UFs têm inventário de propriedades, tipos e nulabilidade, com
-geometria explicitamente fora da variante tabular. Duas páginas históricas
-integrais de GO/RS, de 10.000 feições cada, verificam a escolha de versões por
-atualização e criação: cada página gera 9.999 imóveis. Esses suplementos testam
-o parser; não representam a população histórica completa nem replays HTTP
-completos daquela população.
-
-Contagens coincidentes não garantem snapshot transacional. Hashes, tamanhos,
-URLs e horários da captura ficam nos recibos e no manifesto de reconciliação;
-com várias páginas, o `MetaInfo` traz cada uma em `source_details["resources"]` (SHA-256 e bytes) e,
-no topo, o hash do manifesto `{query, resources}` (`hash_kind` `resource_manifest_sha256`). O comparador
-`python -m scripts.reconciliar_sicar --output resultado.json` verifica os corpos
-locais preservados. Não faz nova captura de rede nem compara fontes distintas.
+Contagens coincidentes não garantem snapshot transacional. Com várias páginas, o `MetaInfo` traz cada uma em `source_details["resources"]` (SHA-256 e bytes) e, no topo, o hash do manifesto `{query, resources}` (`hash_kind` `resource_manifest_sha256`).

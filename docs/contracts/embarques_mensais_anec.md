@@ -86,6 +86,6 @@ print(meta.source_url)
 
 `zona_cinza`: boletins públicos sem termos públicos explícitos de reutilização localizados. A primeira chamada ANEC emite aviso. Uso ou redistribuição comercial pode exigir autorização da ANEC; publicação no site não comprova permissão de redistribuição comercial.
 
-## Conferência dos boletins
+## Leitura dos boletins
 
-O cabeçalho deve conter os seis produtos e Total Products; a ausência de uma coluna interrompe a leitura. Total Products e totais anuais não viram observações por produto. As seis edições conferidas (04, 08, 12, 13, 34 e 36/2026) preservam todos os meses, inclusive dezembro vazio, e a faixa de soja de abril da edição 13. Diferenças entre este quadro e o comparativo anual permanecem como publicadas.
+O cabeçalho deve conter os seis produtos e Total Products; a ausência de uma coluna interrompe a leitura. Total Products e totais anuais não viram observações por produto. Todos os meses são preservados, inclusive dezembro vazio, e também as faixas, como a da soja de abril na edição 13. Diferenças entre este quadro e o comparativo anual permanecem como publicadas.

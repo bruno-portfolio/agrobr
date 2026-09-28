@@ -56,8 +56,8 @@ year. With `agregacao="registro"`, the output is record by record, without aggre
 ## SICOR Dimensions
 
 The API returns dimension codes (`cdPrograma`, `cdTipoSeguro`, etc.). Program and insurance-type names follow the
-official BCB domain tables (`https://www.bcb.gov.br/htms/sicor/Programa.csv` and `TipoGarantiaEmpreendimento.csv`,
-checked on 2026-09-23): the published program is the part of the official description before the first " - " (the
+official BCB domain tables (`https://www.bcb.gov.br/htms/sicor/Programa.csv` and `TipoGarantiaEmpreendimento.csv`):
+the published program is the part of the official description before the first " - " (the
 whole description when there is no such separator; stray source quotes removed); the insurance type is the official
 description. Name filters are case-insensitive (`programa="pronamp"`). Unknown codes produce
 `"Desconhecido ({code})"` with a log warning; a null code keeps a null name, without a warning. The official
@@ -115,7 +115,7 @@ description of `0152` records that it was Moderinfra until 2021-06-30; the publi
 | `9` | Sem adesão a seguro |
 
 With `agregacao="registro"`, funding source, modality and activity carry the whole official description from
-`FonteRecursos.csv` (37 codes), `Modalidade.csv` (64) and `Atividade.csv` (2), checked on 2026-09-27. For funding
+`FonteRecursos.csv` (37 codes), `Modalidade.csv` (64) and `Atividade.csv` (2). For funding
 sources, the part before " - " would merge distinct codes (4 sources would become "POUPANÇA RURAL"). A code outside the
 table gets a null name, without a guess or a warning. `cd_modalidade` comes out as the source publishes it (`"01"`), and
 the name is resolved by the table's number (`"1"` = LAVOURA). The sub-programme comes out as the code only, as in 1.1.0.
@@ -164,7 +164,7 @@ The SICOR API was restructured (~2024). agrobr reads `CusteioRegiaoUFProduto`,
 `RegiaoUF` (total by state and purpose, in `credito_rural_total`). The service also publishes
 municipality by product (`CusteioMunicipioProduto`, `InvestMunicipioProduto`) and municipality
 without product (`CusteioInvestimentoComercialIndustrialSemFiltros`), which agrobr does not
-read yet.
+read.
 
 Source notes, checked for 2022 and 2023:
 
@@ -207,7 +207,7 @@ df, meta = await bcb.sgs(
 ipca = await bcb.sgs("ipca", data_inicial="01/01/2024", data_final="31/12/2024")
 ```
 
-The September 2026 probe verified 3,767 daily observations for 2010–2024 across two blocks. It also verified monthly and quarterly references before the requested daily bound, and a repeated monthly reference across disjoint daily windows. The implementation preserves published reference dates, diagnoses bounds, and reconciles only identical values across blocks. It does not infer frequency or fill dates.
+The example query returns 3,767 daily observations for 2010–2024 across two blocks. The source may also return monthly and quarterly references before the requested daily bound, and repeat a monthly reference across disjoint daily windows. The implementation preserves published reference dates, diagnoses bounds, and reconciles only identical values across blocks. It does not infer frequency or fill dates.
 
 [Contract 2.1](../contracts/bcb_sgs.en.md) retains `data`, `valor`, `codigo`, and `nome_serie`, including empty output, and adds `data_fim` when the series publishes `dataFim`. The 17 aliases remain available; other integer codes can be queried without inventing names. IPCA values can be negative. Check units and frequency in the particular series' catalogue; a historical exchange-rate code does not imply BRL throughout its history.
 
@@ -219,7 +219,7 @@ Metadata records every final response, hash, status, UTC acquisition, and refere
 
 The [official daily bulletin dataset](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios) provides quotes, parities, and currency metadata. `bcb.ptax` now selects a currency and `fechamento`, `todos`, `abertura`, or `intermediario`. USD closing remains the default. `bcb.ptax_moedas` exposes the current `Moedas` catalogue.
 
-The catalogue probe returned AUD, CAD, CHF, DKK, EUR, GBP, JPY, NOK, SEK, and USD. Those entries describe this OData service, without establishing the full historical currency universe. The [portal's general currency table](https://ptax.bcb.gov.br/ptax_internet/consultarTabelaMoedas.do?method=consultaTabelaMoedas) contains additional codes and exclusion dates; it is a separate family.
+The `Moedas` catalogue lists AUD, CAD, CHF, DKK, EUR, GBP, JPY, NOK, SEK, and USD. Those entries describe this OData service, without establishing the full historical currency universe. The [portal's general currency table](https://ptax.bcb.gov.br/ptax_internet/consultarTabelaMoedas.do?method=consultaTabelaMoedas) contains additional codes and exclusion dates; it is a separate family.
 
 ```python
 from agrobr import bcb
@@ -233,11 +233,11 @@ df, meta = await bcb.ptax(
 
 The [quote contract 2.0 and catalogue contract 1.0](../contracts/bcb_ptax.en.md) retain eight and three columns respectively. Quotes preserve four measures, currency, bulletin text, timestamp, and civil date. There is no monetary conversion or aggregation across bulletins.
 
-**Verified distinctions:** generic USD closing matched the legacy dollar endpoint in recent and June 1994 probes. The day route calls the closing bulletin `Fechamento PTAX`; the period route calls it `Fechamento`, with matching quote values and timestamps. The selector recognizes both while output retains the original label. In the sampled interval, the specialized closing endpoint returned one closing although the generic route returned two; the specialized opening/intermediate endpoint returned only the last intermediate. They are not used to replace the generic quote routes.
+**Route distinctions:** generic USD closing matched the legacy dollar endpoint in recent periods and in June 1994. The day route calls the closing bulletin `Fechamento PTAX`; the period route calls it `Fechamento`, with matching quote values and timestamps. The selector recognizes both while output retains the original label. In the same interval, the specialized closing endpoint returned one closing although the generic route returned two; the specialized opening/intermediate endpoint returned only the last intermediate. They are not used to replace the generic quote routes.
 
 Published fractional timestamps remain distinct: an intermediate and closing can share the same second while differing in microseconds. `data_hora` stays naive, with ns dtype; `data` is its civil date. UTC acquisition is recorded separately. Quotes refer to the domestic monetary unit applicable at the historical date; the SDK does not label all historical values BRL. Type A parities express selected currency/USD, type B USD/selected currency, with catalogue context retained.
 
-A weekend and unsupported ZZZ/ARS selections returned the same empty envelope in the probe. Therefore currency selection is validated against the acquired catalogue before quotes are requested. Data acquisition uses ordered pages and validates every record before bulletin filtering. No independent source count was obtained; terminal empty pages leave coverage unknown. Count/nextLink handling is defensive and validated offline, without an atomic revision guarantee.
+In known queries, a weekend and unsupported ZZZ/ARS selections returned the same empty envelope. Therefore currency selection is validated against the acquired catalogue before quotes are requested. Data acquisition uses ordered pages and validates every record before bulletin filtering. Known queries returned no independent count; terminal empty pages leave coverage unknown. Count/nextLink annotations are validated if present, without an atomic revision guarantee.
 
 The dataset and its [currency](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/9d07b9dc-c2bc-47ca-af92-10b18bcd0d69), [day](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/db9b40bf-9b8f-47c4-a82d-3a3afab52e90), and [period](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/0439af6a-d9be-4bf7-bf1a-60583e5f4c1c) resources state ODbL; see [license details](../licenses.en.md#bcb-ptax). The broader all-currencies CSV, exclusions, and revision history are outside this API. See [parameters, errors, dtypes, and provenance](../api/bcb.en.md#ptax).
 
@@ -261,9 +261,9 @@ df, meta = await bcb.focus(
 )
 ```
 
-The API retains ten columns and adds `periodicidade` and `indicador_detalhe`, with [contract 2.0](../contracts/bcb_focus.en.md). Survey date and textual forecast horizon are separate dimensions. Annual detail retains, for example, Exportações, Importações, and Saldo for Balança comercial. Bases 0/1 on the same date/reference remain separate. Annual PIB Agropecuária and monthly IPCA were probed; the function provides no generic indicator catalogue or guarantee that an indicator exists in both entities.
+The API retains ten columns and adds `periodicidade` and `indicador_detalhe`, with [contract 2.0](../contracts/bcb_focus.en.md). Survey date and textual forecast horizon are separate dimensions. Annual detail retains, for example, Exportações, Importações, and Saldo for Balança comercial. Bases 0/1 on the same date/reference remain separate. The function provides no generic indicator catalogue or guarantee that an indicator exists in both entities.
 
-In the September 2026 probe, one page of six records exactly matched two pages of three for each entity, using reference/base/detail tie-breakers. No independent count or nextLink was observed: `$count=true` was ignored, `$inlinecount` refused, and `/$count` returned 403 during that execution. Metadata distinguishes local limits and observed termination from completeness. Concurrent revisions remain possible; this is not an atomic snapshot.
+In known queries, with reference/base/detail tie-breakers, one page of six records matched two pages of three for each entity, and no independent count or nextLink came back: `$count=true` was ignored, `$inlinecount` was refused, and `/$count` returned 403. Metadata distinguishes local limits and observed termination from completeness. Concurrent revisions remain possible; this is not an atomic snapshot.
 
 The catalogue omits periods without statistics. Empty output does not validate the indicator; lowercase `ipca` was empty where `IPCA` had records. The [API](../api/bcb.en.md#focus) documents selection, pagination, dtypes, errors, and statistical warnings without filling periods or inferring units.
 

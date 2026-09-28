@@ -38,7 +38,7 @@ async def indicador(
 | `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` returns all |
 | `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD). Default: 365 days ago |
 | `fim` | `str \| date \| None` | End date. Default: today |
-| `_moeda` | `str` | Reserved for future currency conversion; currently has no effect on the result |
+| `_moeda` | `str` | Reserved; has no effect on the result |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `validate_sanity` | `bool` | Check unit, price range and temporal change when a rule exists. Default: `False` |
 | `force_refresh` | `bool` | Bypass cache and fetch fresh data |

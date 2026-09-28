@@ -82,12 +82,12 @@ row of the deliveries section (it tells up to which month the PDF goes). `raw_co
 - URL: `https://anda.org.br/recursos/`
 - Format: PDF/Excel
 - Update: monthly
-- Public catalog checked on 2026-09-18: 2016–2026
+- Public catalog: 2016–2026
 - License: `zona_cinza` — authorization requested (Feb/2026)
 
 
 ## Publication coverage and validation
 
-The public catalog checked on 2026-09-18 contains 11 PDFs covering 2016–2026, all with monthly national deliveries (`uf="BR"`). The 2026 bulletin publishes January through June; blank later months are not zero. Since none of them publishes a state breakdown, 2.0.0 removed the `uf` argument from the source and from the `fertilizante` dataset (2.0 migration guide, section 50).
+The public catalog contains 11 PDFs covering 2016–2026, all with monthly national deliveries (`uf="BR"`). The 2026 bulletin publishes January through June; blank later months are not zero. Since none of them publishes a state breakdown, 2.0.0 removed the `uf` argument from the source and from the `fertilizante` dataset (2.0 migration guide, section 50).
 
 Parser 3 requires the `Fertilizantes Entregues ao Mercado (em toneladas de produto)` section and searches for the year only within it. If that year or section identity is missing, the source raises `ParseError`; the dataset retains the reason in `SourceUnavailableError`. Production, imports, exports and exchange ratios from the same PDF cannot substitute for deliveries. Published values and contract 2.0 are unchanged.

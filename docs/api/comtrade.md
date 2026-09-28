@@ -38,8 +38,8 @@ Seleções repetidas são normalizadas; registros retornados não são deduplica
 ## Aliases de produto
 
 Cada alias soma os códigos HS da tabela. O mesmo alias tem o mesmo significado na [ComexStat](comexstat.md): onde a HS de
-um período não separa o produto, entra o menor código que o contém. Descrições conferidas nas referências oficiais H0 a H6
-da Comtrade (25/09/2026).
+um período não separa o produto, entra o menor código que o contém. Descrições pelas referências oficiais H0 a H6
+da Comtrade.
 
 | Alias | HS | Não entra |
 |---|---|---|
@@ -82,7 +82,7 @@ O agrobr consulta `countOnly=true` com os mesmos filtros do bloco inicial e comp
 
 Uma folha mínima ainda limitada pode devolver `partial`. Não há paginação por offset nem enumeração automática de todos os parceiros. Falhas HTTP, envelope inválido, dimensões incompatíveis ou conflito entre pai e filhos interrompem a aquisição. A cobertura é operacional: contagem e dados de uma coleta, sem snapshot atômico de revisões.
 
-Sem chave configurada, usa preview público. O transporte autenticado solicita até 100.000 registros e planeja até 12 períodos por bloco; seu limite efetivo não foi homologado com chave real neste incremento. Recusa 401/403 reinicia todo o plano no preview, conservando as tentativas descartadas. Cotas da conta não são garantidas pelo agrobr.
+Sem chave configurada, usa preview público. O transporte autenticado solicita até 100.000 registros e planeja até 12 períodos por bloco; o limite efetivo com chave não é garantido. Recusa 401/403 reinicia todo o plano no preview, conservando as tentativas descartadas. Cotas da conta não são garantidas pelo agrobr.
 
 ## Colunas e metadados
 
@@ -90,7 +90,7 @@ As 22 colunas anteriores permanecem, com `classificacao` e `classificacao_origin
 
 `MetaInfo` informa schema/contrato 2.1 (2.0 no espelho), canal `comtrade_guest` ou `comtrade_authenticated`, aquisição UTC e avisos. `source_details` contém query, recursos, cobertura, fallback e diagnóstico de parsing/layout. Cada recurso tem URL, SHA256 e tamanho. `raw_content_hash` identifica o manifesto canônico JSON UTF-8 de `query` e `resources`; `raw_content_size` mede esse manifesto, e `resource_bytes` soma os corpos. A chave de acesso não integra os metadados.
 
-Os recursos descrevem a resposta final de cada requisição lógica e as partições descartadas. Tentativas intermediárias de retry HTTP não têm histórico de corpos nos metadados da API; o runner de homologação registra todos os GETs, inclusive 429 recuperados.
+Os recursos descrevem a resposta final de cada requisição lógica e as partições descartadas. Tentativas intermediárias de retry HTTP não têm histórico de corpos nos metadados da API.
 
 ## Espelho comercial
 

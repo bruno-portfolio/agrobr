@@ -13,7 +13,7 @@ Dados publicados como CSV no portal [dados.agricultura.gov.br](https://dados.agr
 ## Dados disponiveis
 
 - **Tabua de Risco:** janelas de plantio (36 decendios) por municipio/cultura/solo/ciclo
-- **Culturas:** 107 culturas no catálogo de aliases, uma por rótulo publicado nas 12 tábuas oficiais (conferidas em 23/09/2026), incluindo nomes legados; disponibilidade variável por safra; frutas e café usam `safra="perene"`
+- **Culturas:** 107 culturas no catálogo de aliases, uma por rótulo publicado nas 12 tábuas oficiais, incluindo nomes legados; disponibilidade variável por safra; frutas e café usam `safra="perene"`
 - **Safras:** 2016/2017 a atual + perene (cafe, cana, banana, etc.)
 - **Solos:** 3 tipos classicos (arenoso/medio/argiloso) + 6 niveis AD (agua disponivel)
 - **Cobertura:** municípios presentes em cada publicação; total nacional completo não afirmado
@@ -70,7 +70,7 @@ Culturas fora do catálogo são rejeitadas antes de acessar a rede, com sugestõ
 
 ## Renomeações da safra 2024/2025
 
-A partir da tábua 2024/2025, o ZARC troca o nome de 11 rótulos de cultura. O conteúdo é o mesmo: nas tábuas oficiais de 2023/2024 e 2024/2025, cada par tem os mesmos registros de município, solo, ciclo e decêndios (conferido em 25/09/2026). O agrobr não converte uma chave na outra. Pedir a chave antiga numa safra nova, ou o contrário, levanta `InvalidParameterError` com a chave equivalente daquela tábua.
+A partir da tábua 2024/2025, o ZARC troca o nome de 11 rótulos de cultura. O conteúdo é o mesmo: nas tábuas oficiais de 2023/2024 e 2024/2025, cada par tem os mesmos registros de município, solo, ciclo e decêndios. O agrobr não converte uma chave na outra. Pedir a chave antiga numa safra nova, ou o contrário, levanta `InvalidParameterError` com a chave equivalente daquela tábua.
 
 | Até 2023/2024 | `cultura_codigo` | Desde 2024/2025 | Filtro na tábua nova | `cultura_codigo` |
 |---|---|---|---|---|
@@ -88,10 +88,10 @@ A partir da tábua 2024/2025, o ZARC troca o nome de 11 rótulos de cultura. O c
 
 Para juntar safras, use o `cultura_codigo` onde ele se mantém (milho, feijão, mamona do semiárido e as versões de sequeiro) e o `manejo` nas versões irrigadas, cujo código muda. Em 2024/2025, `feijao` é o feijão da 1ª safra, não o total, e `mamona` passa a incluir a mamona do semiárido: são 51.784 registros em 2023/2024 e 62.441 em 2024/2025, dos quais 10.657 do semiárido.
 
-## Reconciliação e culturas legadas
+## Culturas legadas e identidade dos registros
 
 O catálogo de filtros inclui `Arroz Sequeiro`/`arroz_sequeiro` e `Trigo Sequeiro`/`trigo_sequeiro`, publicados na tábua de 2016/2017. Esses aliases conservam os valores já retornados pelo parser e não são convertidos para `arroz`/`trigo`. Nomes desconhecidos continuam sendo recusados antes da rede; a presença de cada cultura depende da tábua consultada.
 
-As 59 colunas do contrato 2.1 preservam os 55 campos publicados, além de cultura normalizada, safra derivada, posição no CSV e `cod_municipio` (o `geocodigo` em inteiro). Registros repetidos são mantidos. A posição `registro_origem` é válida somente junto a `meta.raw_content_hash`: os três corpos capturados em 18/09/2026 tinham SHA diferente dos de 07/09, mas a comparação integral como multiconjunto confirmou os mesmos registros em outra ordem. Uma alteração de SHA não demonstra mudança dos valores.
+As 59 colunas do contrato 2.1 preservam os 55 campos publicados, além de cultura normalizada, safra derivada, posição no CSV e `cod_municipio` (o `geocodigo` em inteiro). Registros repetidos são mantidos. A posição `registro_origem` é válida somente junto a `meta.raw_content_hash`: os três corpos de 18/09/2026 tinham SHA diferente dos de 07/09, com os mesmos registros em outra ordem. Uma alteração de SHA não demonstra mudança dos valores.
 
 Aquisição UTC e hash do corpo permanecem em `meta.fetched_at`, `meta.raw_content_hash` e `meta.source_details["resource"]`, inclusive no cache. A leitura até EOF comprova que o corpo recebido foi processado, sem certificar total externo de municípios ou snapshot transacional. O catálogo CKAN consultado pela API declara frequência semanal, enquanto o dicionário PDF declara diária. O dataset usa `update_frequency="weekly"`, tomando o catálogo ativo de descoberta como referência operacional; a declaração conflitante do PDF permanece registrada. Nenhuma das declarações comprova a cadência efetiva de revisão de cada safra. Produtividade e códigos NM são preservados literalmente, sem inferir unidade ausente no dicionário.

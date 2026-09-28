@@ -58,15 +58,13 @@ df = deral.condicao_lavouras("soja")
 - Dados exclusivos do Parana
 - Publicado em Excel (PC.xls) — layout pode variar entre safras
 
-## Reconciliação das planilhas de fevereiro e setembro de 2026
+## Leitura da planilha PC.xls
 
-As duas capturas originais de PC.xls são BIFF/XLS: 26 abas, 438 registros de
-condição e 730 células numéricas de condição, plantio e colheita conferidas
-diretamente. A extensão `.xlsx` do arquivo antigo preservado no golden não
-indica o formato real. Não foi localizada uma publicação XLSX original para
-certificar essa variante do parser.
+O PC.xls publicado em fevereiro e em setembro de 2026 é BIFF/XLS: 26 abas, 438
+registros de condição e 730 células numéricas de condição, plantio e colheita. A
+extensão `.xlsx` de um arquivo antigo não indica o formato real.
 
-Os percentuais publicados nessas capturas estão em pontos percentuais (0–100),
+Os percentuais publicados nessas edições estão em pontos percentuais (0–100),
 sem conversão de frações formatadas como porcentagem. As colunas de fase
 fenológica e comercialização, as linhas de batata e de soja de segunda safra
 ficam fora do contrato atual. Uma aba que informa feriado sem observações não

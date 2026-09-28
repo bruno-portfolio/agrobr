@@ -17,8 +17,7 @@ UF); **`valor_lido` traz a leitura sempre**. Filtre por `status` para escolher o
 
 ## Status de cada casa e precisão medida
 
-A precisão foi medida contra oráculos cegos: células transcritas à mão da imagem do PDF, por sorteio, sem ver a extração (34
-tabelas de 11 UFs).
+A precisão foi medida contra células do PDF de 34 tabelas de 11 UFs.
 
 | `status` | Significado | `valor` | Precisão medida |
 |---|---|---|---|
@@ -57,7 +56,7 @@ Contra a cópia de 2008 só em imagem, a versão de hoje confirma 22,6 % casas a
 - `unidade`: só com a folha confirmada. Vem da marca (1) a (4) do cabeçalho e da nota do volume, que muda de sentido entre volumes
   (no AC, "(1) TONELADAS (2) MIL FRUTOS"; no ES, o contrário). Marca que não abre com unidade é nota ("(2) INCLUSIVE PÉS NOVOS")
   e não vira unidade. Sem marca, vem do rótulo ("ÁREA (HA)", "INFORMANTES"). A unidade que está só no grupo de cima sai nula.
-- Precisão contra as colunas transcritas das tabelas 108 a 116 e 111 (AC, ES, GO, PE e PR): `coluna_nome` 21 certos e 0 com a
+- Precisão contra as colunas do PDF das tabelas 108 a 116 e 111 (AC, ES, GO, PE e PR): `coluna_nome` 21 certos e 0 com a
   variável de outra coluna; `coluna_nome_lido` 411 certos, 26 incompletos e 0 de outra coluna; `unidade` 111 certas e 0 errada.
 
 ## Schema

@@ -81,42 +81,16 @@ Um erro na descoberta não autoriza reutilizar um endereço antigo. Fallback aut
 
 ## Escopo e licença
 
-A implementação entrega a exportação corrente. CEAC, seleção por edição histórica e armazenamento de revisões ainda não fazem parte dessa API. Hash e data documentam a coleta, mas não constituem um histórico.
+A implementação entrega a exportação corrente. CEAC, seleção por edição histórica e armazenamento de revisões não fazem parte dessa API. Hash e data documentam a coleta, mas não constituem um histórico.
 
 O dataset semântico recusa `deterministic` antes de I/O e retorna `snapshot=None`; nem o arquivo corrente nem seu hash reconstituem outra edição.
 
 A classificação existente é `livre`. O rodapé oficial informa CC BY-ND 3.0; não foi localizada uma licença separada dos arquivos. Acesso público e classificação interna não comprovam permissão irrestrita de reutilização: veja a [verificação da licença](../licenses.md#lista-suja). O aviso existente sobre CPF/CNPJ é emitido na primeira chamada.
 
-## Reconciliação de 18/09/2026
+## Edição de 06/04/2026 e formatos
 
-Os corpos integrais CSV/TXT/PDF capturados em 18/09 conservam os mesmos hashes
-da captura anterior: edição periódica de 06/04/2026, cadastro atualizado em
-04/09/2026. A data da recaptura não indica uma nova edição. São 579 registros,
-567 documentos distintos e 4.706 trabalhadores no campo publicado, com dez
-inclusões compostas. Os nulos e documentos repetidos são preservados.
+Em 18/09/2026, os arquivos CSV, TXT e PDF eram os da edição periódica de 06/04/2026, com o cadastro atualizado em 04/09/2026; a data da aquisição não indica uma nova edição. São 579 registros, 567 documentos distintos e 4.706 trabalhadores no campo publicado, com dez inclusões compostas. Os nulos e documentos repetidos são preservados.
 
-Todas as doze colunas são comparadas em fonte e dataset contra oráculos
-independentes: CSV/TXT lidos com a biblioteca padrão e PDF por caracteres e
-coordenadas das células nas 45 páginas. Os dois formatos têm expectativas
-próprias; duas quebras de linha após hífen no estabelecimento permanecem
-diferentes entre CSV e PDF, sem reparo implícito. A leitura PDF usa pdfminer,
-também dependência do pdfplumber de produção; não se afirma independência
-entre os motores de extração.
+CSV/TXT e PDF são representações da mesma publicação, e cada formato conserva seu texto: duas quebras de linha após hífen no estabelecimento permanecem diferentes entre CSV e PDF, sem reparo implícito.
 
-O inventário cobre os dez campos de origem, contexto de edição, notas e os
-links do portal, separando o cadastro principal de CEAC e de outros formatos.
-`python -m scripts.reconciliar_lista_suja --output resultado.json` compara
-corpos locais preservados; a etapa PDF requer o extra `[pdf]`. Os replays HTTP
-usam APIs públicas e filtros reais, mas seus horários de execução são novos:
-as aquisições originais continuam nos recibos. CSV/TXT/PDF são representações
-da mesma publicação, sem constituir cruzamento entre fontes independentes.
-
-Nos campos textuais derivados, espaços internos são colapsados como na
-produção. Isso afeta seis células de `estabelecimento` no CSV desta captura:
-IDs 170, 180, 356, 368, 410 e 525. Corpos originais permanecem idênticos byte a
-byte; o manifesto declara a transformação e os valores crus/normalizados.
-`data_inclusao_texto` via PDF preserva as quebras de linha da célula. A comparação
-literal dos oráculos tem 12 diferenças: dez textos de inclusão composta e os
-dois estabelecimentos citados. A comparação dos dez campos de origem após normalizar
-espaços tem duas diferenças; a comparação literal das doze colunas finais
-registra as 12 diferenças descritas acima.
+Nos campos textuais derivados, espaços internos são colapsados. Isso afeta seis células de `estabelecimento` no CSV dessa edição: IDs 170, 180, 356, 368, 410 e 525. `data_inclusao_texto` via PDF preserva as quebras de linha da célula. Entre CSV e PDF, as doze colunas finais diferem literalmente em 12 células: dez textos de inclusão composta e os dois estabelecimentos citados. Nos dez campos de origem, depois de normalizar os espaços, restam duas diferenças.

@@ -43,7 +43,7 @@ Sem fallback: a tabela da Base dos Dados agrega por município e não traz progr
 
 **Restrições:** `ano_emissao >= 2013`, `1 <= mes_emissao <= 12`, `qtd_contratos >= 0`, `valor >= 0`, `area_financiada >= 0`
 
-- **A chave é o grão das entidades.** O `$select` do agrobr é a entidade inteira, conferida no `$metadata` do OData. As 11 dimensões não se repetem em 3.462 registros reais, capturados em setembro de 2026: 12 consultas da safra 2024/25 por produto e UF, e 2 meses de 2024 sem filtro de UF (custeio da soja em outubro, com 18 UFs, e investimento em bovinos em março, com 25). `regiao` depende da UF, e `safra`, do mês; por isso ficam fora da chave.
+- **A chave é o grão das entidades.** O `$select` do agrobr é a entidade inteira, com todos os campos do `$metadata` do OData. As 11 dimensões não se repetem em 3.462 registros: 12 consultas da safra 2024/25 por produto e UF, e 2 meses de 2024 sem filtro de UF (custeio da soja em outubro, com 18 UFs, e investimento em bovinos em março, com 25). `regiao` depende da UF, e `safra`, do mês; por isso ficam fora da chave.
 - **Nomes pelas tabelas de domínio do BCB:**
   - `programa`: o trecho da descrição oficial antes do primeiro " - ", como na `agregacao="programa"`;
   - `tipo_seguro`: a descrição oficial;

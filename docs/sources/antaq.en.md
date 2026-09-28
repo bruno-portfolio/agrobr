@@ -119,17 +119,15 @@ print(meta.parser_version)   # 2
 print(meta.records_count)    # ~2.4M for a full year
 ```
 
-## Offline reconciliation (2026-09-18)
+## Fields, joins and units
 
-All 62 published fields across the three TXT members (29 in atracacao, 27 in carga, 6 in mercadoria)
-carry a named decision in `tests/golden_data/reconciliacao_r13_20260918/manifest.json`: 21 become
-output columns, 3 are join keys (`IDAtracacao` twice, `CDMercadoria`) and 38 are ignored with a
-reason. An independent oracle (stdlib `csv`/`decimal`) is compared cell by cell against the public
-output over the real 2024 excerpt preserved in `tests/golden_data/antaq/movimentacao_sample/`.
+Of the 62 published fields across the three TXT members (29 in atracacao, 27 in carga, 6 in
+mercadoria), 21 become output columns, 3 are join keys (`IDAtracacao` twice, `CDMercadoria`) and 38
+are ignored.
 
 **Joins and cardinality.** The output starts from carga: `carga -> atracacao` on `IDAtracacao` and
-`carga -> mercadoria` on `CDMercadoria`, both `left`. One atracacao may carry several cargas (in the
-excerpt, atracacao `1406197` has 5), so the row count is the number of cargas, not of atracacoes; an
+`carga -> mercadoria` on `CDMercadoria`, both `left`. One atracacao may carry several cargas (in a
+January 2024 excerpt, atracacao `1406197` has 5), so the row count is the number of cargas, not of atracacoes; an
 atracacao without carga never shows up. A carga without atracacao keeps the row with null `ano`/`mes`
 in the source API and is dropped by the dataset, which requires `ano` and `mes`. A carga whose
 `CDMercadoria` is absent from the table keeps the row with null `mercadoria`/`grupo_mercadoria`.
@@ -149,10 +147,8 @@ not a published unit) - `qt_carga` is copied unconverted. A missing
 pt-BR text such as `jan`), not the date: an atracacao started on 2023-12-22 appears with `ano=2024`
 and `mes=1`.
 
-**Limits.** The TXT files are extractions; the official ZIP is not preserved and the source is still
-offline. Live capture remains pending: a 2026-09-18 probe received HTTP 200 redirected to the
-official outage notice (`text/html`, 174,818 bytes, no ZIP signature). The excerpt covers January
-2024 in AM and PA; `apoio_maritimo`, containerised cargo and `TEU > 0` have no positive case.
+**Limits.** The excerpt behind the examples covers January 2024 in AM and PA; `apoio_maritimo`,
+containerised cargo and `TEU > 0` have no positive case in it.
 
 ## Performance note
 

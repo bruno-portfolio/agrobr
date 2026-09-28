@@ -33,8 +33,8 @@ Repeated selections are normalized; returned records are never silently deduplic
 ## Product aliases
 
 Each alias sums the HS codes in the table. The same alias means the same thing in [ComexStat](comexstat.md): where a
-period's HS does not separate the product, the smallest code that contains it is used. Descriptions checked against the
-official Comtrade references H0 to H6 (2026-09-25).
+period's HS does not separate the product, the smallest code that contains it is used. Descriptions follow the
+official Comtrade references H0 to H6.
 
 | Alias | HS | Not included |
 |---|---|---|
@@ -77,7 +77,7 @@ The client requests `countOnly=true` with the same filters as each initial parti
 
 A minimal partition may remain partial. There is no offset pagination or automatic enumeration of every partner. HTTP errors, invalid envelopes, conflicting dimensions and parent/child revisions interrupt acquisition. Coverage describes this collection and its independent count; it does not establish an atomic revision snapshot.
 
-Without a configured key, the public preview is used. Authenticated transport requests up to 100,000 records and plans up to 12 periods per block; its effective limit was not verified using a real key in this increment. An authenticated 401/403 restarts the entire plan in preview and preserves discarded attempts. Account quotas are not guaranteed by agrobr.
+Without a configured key, the public preview is used. Authenticated transport requests up to 100,000 records and plans up to 12 periods per block; the effective limit with a key is not guaranteed. An authenticated 401/403 restarts the entire plan in preview and preserves discarded attempts. Account quotas are not guaranteed by agrobr.
 
 ## Columns and metadata
 
@@ -85,7 +85,7 @@ The previous 22 columns remain, adding `classificacao`, `classificacao_original`
 
 `MetaInfo` includes schema/contract 2.1 (2.0 for the mirror), the actual guest/authenticated channel, UTC acquisition time and warnings. `source_details` contains query, resources, coverage, fallback and parser/layout diagnostics. Resources retain URLs, SHA256 and sizes. `raw_content_hash` hashes a canonical UTF-8 JSON manifest of query and resources; `raw_content_size` measures that manifest, while `resource_bytes` sums response bodies. Keys are excluded from metadata.
 
-Resources describe each logical request's final response and discarded partitions. Intermediate HTTP retry bodies are not retained in API metadata; the validation runner captures every GET, including recovered 429 responses.
+Resources describe each logical request's final response and discarded partitions. Intermediate HTTP retry bodies are not retained in API metadata.
 
 ## Trade mirror
 

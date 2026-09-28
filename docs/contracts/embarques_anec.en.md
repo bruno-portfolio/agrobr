@@ -82,6 +82,6 @@ print(contract.to_json())
 `zona_cinza` classification: ANEC does not publish explicit terms of use.
 Commercial use may require authorization from the association.
 
-## Bulletin verification
+## Reading the bulletins
 
-Headers must contain all six products in both periods. A missing column interrupts extraction, with the ParseError cause preserved by SourceUnavailableError. Totals are not ports and blank cells in the final published port remain null. Verification covers editions 04, 08, 12, 13, 34 and 36/2026; periods are bulletin labels, without deriving dates from ISO week numbers.
+Headers must contain all six products in both periods. A missing column interrupts extraction, with the ParseError cause preserved by SourceUnavailableError. Totals are not ports and blank cells in the final published port remain null. Periods are bulletin labels, without deriving dates from ISO week numbers.

@@ -5,8 +5,8 @@ Quase tudo fica na pasta de cache: `~/.agrobr/cache` por padrão, ou a pasta da 
 `snapshot_path` do `agrobr.config.set_mode`).
 
 Apagar qualquer arquivo da tabela abaixo é seguro: na próxima consulta, o agrobr baixa de novo o que
-precisar. A CLI da 2.0 não tem comando de limpeza (o `agrobr cache clear` fica para uma versão
-seguinte). Apague com o gerenciador de arquivos ou com `rm`.
+precisar. A CLI da 2.0 não tem comando de limpeza.
+Apague com o gerenciador de arquivos ou com `rm`.
 
 ## Na pasta de cache
 

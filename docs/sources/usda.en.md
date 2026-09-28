@@ -122,8 +122,8 @@ USDA's cattle herd is not IBGE's PPM (`datasets.pecuaria_municipal`): `Beginning
 ## Catalogs
 
 Names come from the gateway's official catalogs (`commodityAttributes`, `commodities`, `countries` and
-`unitsOfMeasure`), stored in the package under `agrobr/usda/catalogos/`, with the bytes captured on 2026-09-25 and the
-SHA in the golden. No extra network call is made. A code the USDA publishes later that is not in the local catalog raises
+`unitsOfMeasure`), stored in the package under `agrobr/usda/catalogos/` (2026-09-25 version).
+No extra network call is made. A code the USDA publishes later that is not in the local catalog raises
 `ParseError`, never an empty label.
 
 `python -m scripts.reconciliar_usda --output result.json` checks the catalogs and 34 cuts (9 products) live against the

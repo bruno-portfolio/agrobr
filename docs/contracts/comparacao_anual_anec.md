@@ -87,6 +87,6 @@ print(meta.source_url)
 
 `zona_cinza`: boletins públicos sem termos públicos explícitos de reutilização localizados. A primeira chamada ANEC emite aviso. Uso ou redistribuição comercial pode exigir autorização da ANEC; publicação no site não comprova permissão de redistribuição comercial.
 
-## Conferência dos boletins
+## Leitura dos boletins
 
-A conferência das edições 04, 08, 12, 13, 34 e 36/2026 inclui todos os meses e produtos efetivamente publicados: sorgo não tem quadro anual na edição 04. Total Products é uma série própria; totais anuais e barras de diferença não viram meses. Janeiro de trigo e DDGS pode divergir do quadro mensal no mesmo PDF; as duas publicações não são forçadas à igualdade.
+Saem todos os meses e produtos efetivamente publicados: sorgo não tem quadro anual na edição 04. Total Products é uma série própria; totais anuais e barras de diferença não viram meses. Janeiro de trigo e DDGS pode divergir do quadro mensal no mesmo PDF; as duas publicações não são forçadas à igualdade.

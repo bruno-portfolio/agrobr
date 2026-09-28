@@ -83,10 +83,10 @@ print(meta.raw_content_hash)
 
 `agrobr/schemas/zoneamento_agricola.json`, also available through `get_contract("zoneamento_agricola")`.
 
-## Reconciliation and legacy crops
+## Legacy crops and record identity
 
 The filter catalogue includes `Arroz Sequeiro`/`arroz_sequeiro` and `Trigo Sequeiro`/`trigo_sequeiro`, published in the 2016/2017 table. These aliases retain values already returned by the parser and are not converted to `arroz`/`trigo`. Unknown names are still rejected before network access; crop availability depends on the selected table.
 
-The 59 columns in contract 2.1 retain all 55 published fields, plus normalized crop, derived season, CSV position and `cod_municipio` (the `geocodigo` as an integer). Repeated records are preserved. `registro_origem` is meaningful only together with `meta.raw_content_hash`: the three bodies captured on 2026-09-18 had different hashes from September 7, but a complete multiset comparison confirmed identical records in a different order. A changed hash does not establish that values changed.
+The 59 columns in contract 2.1 retain all 55 published fields, plus normalized crop, derived season, CSV position and `cod_municipio` (the `geocodigo` as an integer). Repeated records are preserved. `registro_origem` is meaningful only together with `meta.raw_content_hash`: the three bodies of 2026-09-18 had different hashes from those of September 7, with the same records in a different order. A changed hash does not establish that values changed.
 
 UTC acquisition time and body hash remain in `meta.fetched_at`, `meta.raw_content_hash` and `meta.source_details["resource"]`, including cache hits. Reading to EOF confirms that the received body was processed, without certifying an external municipality total or transactional snapshot. The CKAN catalogue queried by the API declares weekly updates, while the PDF dictionary declares daily updates. The dataset uses `update_frequency="weekly"`, taking the active discovery catalogue as its operational reference; the conflicting PDF declaration remains recorded. Neither statement establishes the actual revision cadence of each season. Productivity and NM codes retain the literal text, without inferring a unit missing from the dictionary.

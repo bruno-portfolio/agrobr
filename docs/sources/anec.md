@@ -9,7 +9,7 @@ A Associação Nacional dos Exportadores de Cereais publica boletins PDF com emb
 
 ## Cobertura e seleção da edição
 
-- **Catálogo:** edições de **2026 ao ano corrente**, com descoberta de categorias anuais no catálogo oficial. O catálogo público de 2026 inspecionado em 6 de setembro de 2026 continha 34 PDFs; o mais recente era W34, criado em 2 de setembro de 2026. Essa observação não garante publicação nem compatibilidade de layout em anos seguintes.
+- **Catálogo:** edições de **2026 ao ano corrente**, com descoberta de categorias anuais no catálogo oficial. Em 6 de setembro de 2026, o catálogo público de 2026 tinha 34 PDFs; o mais recente era W34, criado em 2 de setembro de 2026. Publicação e compatibilidade de layout em anos seguintes não são garantidas.
 - **`ano`:** ano da edição, obrigatório e nomeado. Uma edição pode conter dados de outro ano; o parâmetro não consulta um ano histórico independentemente do boletim.
 - **`semana`:** semana do boletim, de 1 a 53; `None` seleciona a edição mais recente disponível no catálogo escolhido. O número da semana não é a data de publicação.
 - **Produtos:** soja, farelo de soja, milho, DDGS, sorgo e trigo, conforme a tabela selecionada. A comparação anual pode incluir `total_products`. Até a W2/2026, os quadros semanal e mensal publicam só soja, farelo, milho e trigo; DDGS e sorgo entram na W3/2026.
@@ -82,7 +82,7 @@ A fonte preserva `produto`, `destino` e `share_pct` nullable (0–100). Acrescen
 
 As participações descrevem o **período acumulado do cabeçalho**, não tonelagem mensal. W34/2026 informa janeiro–julho de 2026. Períodos não identificados ficam nulos, sem inferência pela semana da edição. `OTHERS` é válido e percentuais arredondados podem somar 99% ou 101%.
 
-Algumas edições usam gráficos que o parser ainda não extrai, como observado em W08 e W12 de 2026. Quando nenhuma participação é extraída da edição, o retorno inclui aviso em `meta.validation_warnings`. O resultado vazio não comprova ausência de embarques ou destinos. Use `return_meta=True` para inspecionar essa limitação.
+Algumas edições usam gráficos que o parser não extrai, como W08 e W12 de 2026. Quando nenhuma participação é extraída da edição, o retorno inclui aviso em `meta.validation_warnings`. O resultado vazio não comprova ausência de embarques ou destinos. Use `return_meta=True` para inspecionar essa limitação.
 
 Veja o [contrato completo `destinos_anec`](../contracts/destinos_anec.md).
 
@@ -170,14 +170,13 @@ Layouts PDF e produtos publicados variam entre edições. A ANEC revisa valores 
 
 Os quadros mensal e de comparação anual não são intercambiáveis: em W13/2026, por exemplo, trigo em janeiro aparece com 279.699 t no quadro mensal e 279.499 t no comparativo. O agrobr preserva os valores publicados em cada quadro, sem reconciliação automática. O total impresso na linha de janeiro do quadro mensal (7.727.420 t) fecha com os valores do comparativo (trigo 279.499 t e DDGS 80.057 t), não com os do próprio quadro mensal (279.699 t e 80.141 t), que somam 284 t a mais (W35 e W37/2026).
 
-PDFs oficiais usados para verificar a semântica documentada: [W13/2026](https://www.anec.com.br/uploads/cmnrsz3eu00004htx396a7you.pdf) e [W34/2026](https://www.anec.com.br/uploads/cmtkhj4p50000y9tx5nnn6hhi.pdf). Fonte: [ANEC](https://www.anec.com.br/).
+PDFs oficiais citados nesta página: [W13/2026](https://www.anec.com.br/uploads/cmnrsz3eu00004htx396a7you.pdf) e [W34/2026](https://www.anec.com.br/uploads/cmtkhj4p50000y9tx5nnn6hhi.pdf). Fonte: [ANEC](https://www.anec.com.br/).
 
 Categorias anuais ausentes do mapa configurado são descobertas no catálogo oficial. Anos explícitos são exclusivos: ausência de publicação não recua para ano anterior. Anos vazios usam o TTL da listagem (padrão 300 segundos; `AGROBR_ANEC_LIST_TTL=0` desativa). Edições suportadas vão de 2026 ao ano corrente; descobrir a categoria não garante por si só um layout PDF compatível.
 
-## Conferência dos boletins em setembro de 2026
+## Leitura dos boletins
 
-As edições 04, 08, 12, 13, 34 e 36/2026 foram conferidas contra os PDFs oficiais,
-com os valores de cada quadro mantidos separadamente. Toneladas são literais;
+Os valores de cada quadro são mantidos separadamente. Toneladas são literais;
 células vazias e traços não viram zero. Somatórios percentuais apresentados nos
 destinos podem resultar em 99%, 101% ou 102% por arredondamento da publicação;
 o agrobr não redistribui essas participações para forçar 100%.
@@ -192,11 +191,11 @@ semanal é conferida com a linha TOTAL do boletim: divergência acima do
 arredondamento (0,5 t por porto) sai em aviso (`UserWarning` e
 `meta.validation_warnings`), com os valores por porto repassados sem ajuste. O
 pdfplumber às vezes parte um número em 2 palavras coladas (`3` e `72.958`, na linha
-TOTAL da W36/2026) e, na fonte pequena de 2025, funde o BELÉM com o RIO da linha de
+TOTAL da [W36/2026](https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf)) e, na fonte pequena de 2025, funde o BELÉM com o RIO da linha de
 baixo. O parser junta 2 palavras numéricas vizinhas quando formam um número com
-separador de milhar e lê as palavras com tolerância vertical de 1 pt. Conferido pelo
-texto do PDFium em 89 edições (W1/2025 a W37/2026, menos a W14/2026): as 16.112
-células do quadro semanal batem e nenhum aviso sai; a W25/2026 publicou a linha
+separador de milhar e lê as palavras com tolerância vertical de 1 pt. Em 89
+edições (W1/2025 a W37/2026, menos a W14/2026), as 16.112 células do quadro
+semanal batem com o PDF e nenhum aviso sai; a W25/2026 publicou a linha
 TOTAL em branco, e nela não há conferência. Nas
 W1 e W2/2026, o quadro "Monthly shipments 2026" está na segunda página e não é
 lido: `embarques_mensais` dessas edições traz só 2025, e janeiro de 2026 aparece
@@ -206,9 +205,7 @@ no mapa não são destinos. Nas edições 08 e 12/2026 os quadros são imagens, 
 tabela de texto extraível: o vazio acompanhado de aviso permanece uma limitação,
 sem comprovar ausência de embarques.
 
-O catálogo atual foi percorrido em quatro páginas, incluindo a edição
-[36/2026](https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf).
-Isso verifica essas publicações; não certifica antecipadamente outros layouts
-nem equivalência entre embarques ANEC e exportações aduaneiras ComexStat.
+Outros layouts não são garantidos, nem a equivalência entre embarques ANEC e
+exportações aduaneiras ComexStat.
 De janeiro a agosto de 2026, as duas séries divergem mês a mês em até 49% (milho: −44% em abril e +49% em
 julho) e fecham no acumulado dentro de 2,5% (soja +1,6%, farelo +0,2% e milho −2,4%).

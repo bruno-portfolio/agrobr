@@ -9,6 +9,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Catálogo desta versão: **53 datasets e 88 contratos registrados**. Mudanças incompatíveis com 1.x estão em Changed; consulte o [guia de migração](docs/guides/migracao-2.md).
 
+### Destaques
+
+- **17 datasets novos (36 → 53) e 88 contratos registrados:** Agrofit (produtos formulados e técnicos, autorizações e composição), cultivares (RNC e SNPC), Lista Suja, unidades de conservação federais (ICMBio), ANEC (embarques mensais, destinos e comparação anual), BCB (cotações e moedas, Focus e séries econômicas), preços do diesel (ANP) e custos da sociobiodiversidade (CONAB).
+- **Correções de dado** em valor, rótulo, unidade e recorte nas principais fontes (CONAB, IBGE, CEPEA, SICOR, PSR, ANTT, Comex Stat, SICAR e outras), entre elas o ano civil do café e dos cereais de inverno (#109), a área total da cana (#111) e o algodão em pluma e em caroço (#112). Detalhes em Fixed.
+- **Incompatibilidades com a 1.x** (em Changed): contratos com versão major nova (BCB PTAX, Focus e SGS, clima, estimativa de safra, SICAR, Lista Suja, Comtrade e outros); argumento desconhecido vira `TypeError`; `InvalidParameterError` sai antes da rede e interrompe a cascata de fontes; `as_polars=True` sem Polars levanta `ImportError`; `agrobr.configure()` e módulos sem uso saem. **Leia o [guia de migração](docs/guides/migracao-2.md) antes de atualizar.**
+- **Proveniência no `MetaInfo`:** SHA-256 e tamanho do corpo recebido em 21 fontes, `fetch_timestamp` da aquisição real (inclusive no acerto de cache), `license` com a classificação do dado e `SourceFallbackWarning` quando o dataset devolve uma fonte alternativa.
+- **Resiliência:** o IBGE cai para a API de agregados (`servicodados`) quando o SIDRA falha; o cache degradado avisa; datas das fontes seguem a mesma regra no pandas 2 e no 3.
+- **Segurança:** teto de descompressão para membro de ZIP e XLSX, credencial da CEASA fora da URL, `semana_url` restrita ao domínio da CONAB e pisos do `pyarrow` (CVE-2023-47248) e do `soupsieve`.
+- **Reconciliação semanal:** o workflow `reconciliacao.yml` compara, toda segunda-feira, a saída com as fontes oficiais e abre issue quando diverge.
+- **Documentação:** guia de migração e página "O que o agrobr grava no disco", em PT e EN.
+
 ### Added
 
 - **BCB — `bcb.credito_rural_total`** — crédito rural por UF e finalidade, sem produto, da entidade `RegiaoUF` do SICOR, com as quatro finalidades, inclusive a industrialização (R$ 28,1 bi em 2023), que não sai por produto. Agregação por UF ou por programa, filtros de safra (julho a junho), finalidade e UF validados antes da rede, finalidade sem operação ausente (o zero de preenchimento da fonte não vira linha), sem linha Brasil e com o primeiro e o último mês da safra em `source_details["meses"]`. Contrato novo `bcb_credito_rural_total` 1.0. Conferido contra os corpos oficiais do SICOR na safra 2022/23, por UF e finalidade, e, em jan/2023, contra a soma dos municípios e a soma por produto do `credito_rural`.

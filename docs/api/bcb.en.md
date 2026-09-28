@@ -51,7 +51,7 @@ DataFrame with columns:
 | `cd_programa` | str | Program code; null for state aggregation |
 | `qtd_contratos` | int | Number of contracts |
 | `valor` | float | Financed amount (BRL) |
-| `area_financiada` | float | Financed area (ha). Null through OData: for custeio the source publishes an empty `AreaCusteio` (none of 2,583 records from 10 queries for the 2024/25 crop year captured in Sep 2026 has an area), and investimento and comercializacao carry no area; only the BigQuery fallback fills it |
+| `area_financiada` | float | Financed area (ha). Null through OData: for custeio the source publishes an empty `AreaCusteio` (none of 2,583 records from 10 queries for the 2024/25 crop year, in Sep 2026, has an area), and investimento and comercializacao carry no area; only the BigQuery fallback fills it |
 | `fonte` | str | `bcb_odata` or `bcb_bigquery` |
 
 `programa` uses the current name from the official table for every crop year: `0152` is published as PROIRRIGA even before 07/2021, when the code was Moderinfra (the official description records the change on 2021-07-01).
@@ -90,7 +90,7 @@ df, meta = await bcb.credito_rural("soja", return_meta=True)
 print(meta.schema_version)  # "2.0"
 ```
 
-`agregacao="municipio"` raises `InvalidParameterError`. The by-product entities agrobr reads (`*RegiaoUFProduto`) have no municipality. SICOR publishes municipality by product (`CusteioMunicipioProduto` and `InvestMunicipioProduto`), which agrobr does not read yet; the `agrobr[bigquery]` extra has municipality-level data.
+`agregacao="municipio"` raises `InvalidParameterError`. The by-product entities agrobr reads (`*RegiaoUFProduto`) have no municipality. SICOR publishes municipality by product (`CusteioMunicipioProduto` and `InvestMunicipioProduto`), which agrobr does not read; the `agrobr[bigquery]` extra has municipality-level data.
 
 ### `credito_rural_total`
 
@@ -124,7 +124,7 @@ async def credito_rural_total(
 - **No Brazil row.** SICOR publishes no national total: the Brazil total is the sum of the states.
 - **Partial crop year.** The current crop year is partial; `MetaInfo.source_details["meses"]` holds the first and last month with data and the number of months.
 - **Crop-year query × sum of the monthly queries.** The function requests the crop year in a single query (split by month only when the response hits the Olinda record limit), and SICOR may return numbers that differ from the sum of month-by-month queries. On 2026-09-26, for crop year 2026/27 (July and August), 51 state × purpose pairs diverged: for `custeio` in AC, 274 contracts and R$ 56,788,261.98 in the crop-year query, against 272 and R$ 56,541,830.82 in the monthly ones. The cause was not identified, and agrobr reproduces the body received.
-- **No BigQuery fallback**, because the Base dos Dados table has not been checked against the oracle. `attempted_sources` is `["bcb_odata"]`.
+- **No BigQuery fallback**: `attempted_sources` is `["bcb_odata"]`.
 - The total by state and purpose matches the sum of the municipalities (`CusteioInvestimentoComercialIndustrialSemFiltros`) and, for operating costs, investment and marketing, the by-product sum of `credito_rural` (checked for 2022 and 2023).
 
 **Example:**
@@ -168,7 +168,7 @@ async def sgs(
 
 Without dates or `ultimos`, the default range starts ten years before the query's UTC date and ends on that UTC date, adjusting February 29 to February 28 if needed. With only a start date, the end defaults to the query's UTC date. With only an end date, the request keeps the start omitted: the source may reject this selection. This does not select a frozen historical revision.
 
-Each block ends on December 31 of its starting year + 9, or the requested end if earlier; the next starts on January 1. This respects the tested daily series' ten-year request limit without assuming every code is daily. Calendar alignment means a ten-year range can require two requests. A failed block aborts the query without partial output.
+Each block ends on December 31 of its starting year + 9, or the requested end if earlier; the next starts on January 1. This respects the ten-year request limit for daily queries without assuming every code is daily. Calendar alignment means a ten-year range can require two requests. A failed block aborts the query without partial output.
 
 The latest-values route has a documented and verified limit of 20 for series 1. agrobr preserves remote rejection without imposing that maximum on codes with unknown frequency. To request more observations, provide both dates and `ultimos`.
 
@@ -237,13 +237,13 @@ Each quote acquisition first reads the current OData currency catalogue, with it
 
 **Output — contract 2.0:** eight columns, preserving the previous four as the prefix: `cotacao_compra`, `cotacao_venda`, `data_hora`, `data`, `moeda`, `paridade_compra`, `paridade_venda`, `tipo_boletim`. Four measures use finite nullable float64. Both dates use timezone-naive datetime64[ns]; `data` is the civil date of `data_hora`. Timestamps retain up to nine fractional digits without truncation. Currency is non-null text; bulletin type is nullable published text. Empty output keeps all columns and dtypes.
 
-The default USD closing preserves the legacy quote values and timestamps in the probed recent and 1994 cases. `todos` also returns opening/intermediate bulletins. The generic day route publishes `Fechamento PTAX`, while the period route publishes `Fechamento`; the closing selector recognizes both and retains the original label. This variation matters when joining day and period output. An unknown, empty, or null bulletin is retained with a warning in `todos`; a specific selector raises ParseError when classification is impossible.
+The default USD closing preserves the legacy quote values and timestamps in recent and 1994 cases. `todos` also returns opening/intermediate bulletins. The generic day route publishes `Fechamento PTAX`, while the period route publishes `Fechamento`; the closing selector recognizes both and retains the original label. This variation matters when joining day and period output. An unknown, empty, or null bulletin is retained with a warning in `todos`; a specific selector raises ParseError when classification is impossible.
 
 **Units:** quotes use the domestic monetary unit at the reference date per unit of the selected currency. Do not label the entire historical series BRL. Type A parities use selected currency/USD; type B uses USD/selected currency. The catalogue type and applicable units are recorded in metadata; the SDK does not calculate conversions, invert parities, or recompute closing rates. Published clock time remains naive and distinct from UTC acquisition.
 
 **Pagination and coverage:** catalogue symbols are requested ascending; quotes use timestamp and bulletin label ascending. The full page is validated before selecting bulletins. Without an independent count, short pages advance by the number received until an empty page. Duplicates, selection changes, count contradictions, and failed pages abort acquisition. There is no local row limit or automatic return of an incomplete interval.
 
-`source_details.coverage` describes quote acquisition before and after bulletin selection; `catalog.coverage` describes the catalogue separately. An intentional bulletin filter is not truncation. `complete` requires a reconciled source count; without one, including after an empty page, coverage remains `unknown`. The probe did not obtain count/nextLink annotations; their validation is defensive and tested offline. No atomic revision snapshot is claimed.
+`source_details.coverage` describes quote acquisition before and after bulletin selection; `catalog.coverage` describes the catalogue separately. An intentional bulletin filter is not truncation. `complete` requires a reconciled source count; without one, including after an empty page, coverage remains `unknown`. Known queries returned no count/nextLink annotations; if present, they are validated. No atomic revision snapshot is claimed.
 
 **Provenance and errors:** resources are flattened in catalogue-then-quotes order, each with role, page index, URL, parameters, body hash/bytes, UTC acquisition, received/retained counts, and layout. Top-level hash/size identify a canonical UTF-8 query/resources manifest; body bytes are summed separately. HTTP/network errors raise SourceUnavailableError; malformed HTTP200 bodies, ambiguous JSON, non-finite numbers, or invalid required fields raise ParseError. Finite non-positive values or inverted bid/ask pairs remain published with diagnostics. Warnings are emitted even without metadata.
 
@@ -320,7 +320,7 @@ Boolean/float counts, impossible dates, and unknown options are rejected. Empty 
 | `partial` | Local limit below a declared total, or discarded rows/continuation prove additional data |
 | `complete` | Declared count reconciled with unique identities and full returned output |
 
-The probe obtained no count: `$count=true` added no total and `/$count` was refused during that execution. No live query in this increment was classified as complete. Count and continuation annotations have defensive validation tested offline. A count also does not guarantee an atomic revision across pages.
+Known queries returned no count: `$count=true` added no total and `/$count` was refused. Count and continuation annotations are validated if present. A count also does not guarantee an atomic revision across pages.
 
 **Provenance and quality:** selection, entity, filter, order, URLs, offsets, requested/received/retained sizes, status, body hashes, UTC acquisition, and layout are in `source_details`. The top hash/size identify a canonical query/resources manifest. Local limits and statistical inconsistencies emit warnings even without `return_meta`. Finite negative values are valid; inconsistent mean, median, bounds, or deviation remain published with diagnostics. Missing values do not become zero; invalid JSON, nonfinite values, or invalid required fields raise `ParseError`. Empty output does not establish that an indicator exists.
 

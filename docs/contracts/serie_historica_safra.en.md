@@ -32,9 +32,9 @@ Crop years still published by CONAB's monthly grain survey (the current and the 
 
 Empty Área Total cells are not filled from Área Colhida; production and yield remain null. Seedling and harvesting method sheets are excluded.
 
-A zero published in the spreadsheet comes out as `0.0`, including a state with no production in that season (the spreadsheet lists all 27 states). The exception is a season column that is zero in every state: the season was not surveyed and yields no row. Wheat 1976 is zero even in the BRASIL row, and canola, triticale, sunflower, 3rd-season beans and 2nd-season corn start that way. Across the 40 grain and sugarcane spreadsheets measured on 2026-09-23, 7,533 zeros belong to unsurveyed seasons; the other 43,981 published zeros come out as `0.0`. Coffee has no such column.
+A zero published in the spreadsheet comes out as `0.0`, including a state with no production in that season (the spreadsheet lists all 27 states). The exception is a season column that is zero in every state: the season was not surveyed and yields no row. Wheat 1976 is zero even in the BRASIL row, and canola, triticale, sunflower, 3rd-season beans and 2nd-season corn start that way. Across the 40 grain and sugarcane spreadsheets of September 2026, 7,533 zeros belong to unsurveyed seasons; the other 43,981 published zeros come out as `0.0`. Coffee has no such column.
 
-Unreadable, missing or ambiguous selected sheets raise `ParseError`; filters with no observations return an empty table with its schema. Unknown sheets produce a warning and are flagged by reconciliation.
+Unreadable, missing or ambiguous selected sheets raise `ParseError`; filters with no observations return an empty table with its schema. Unknown sheets produce a warning.
 
 ## Schema
 

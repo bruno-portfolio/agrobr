@@ -86,6 +86,6 @@ print(meta.source_url)
 
 `zona_cinza`: public reports without explicit public reuse terms located. The first ANEC call emits a warning. Commercial use or redistribution may require ANEC authorization; publication on the website does not establish permission for commercial redistribution.
 
-## Bulletin verification
+## Reading the bulletins
 
-The header must contain six products plus Total Products; a missing column interrupts extraction. Total Products and annual totals do not become product observations. The six verified editions (04, 08, 12, 13, 34 and 36/2026) preserve every month, including empty December cells, and edition 13's April soybean interval. Differences between this table and the annual comparison remain as published.
+The header must contain six products plus Total Products; a missing column interrupts extraction. Total Products and annual totals do not become product observations. Every month is preserved, including empty December cells, and so are intervals such as edition 13's April soybean interval. Differences between this table and the annual comparison remain as published.

@@ -229,9 +229,9 @@ The forecast column (labels such as `Previsão` or `(¹)`) is excluded from the 
 
 `cana_area_total` reads only the Área Total sheet, whose composition changes over the series: harvested + planting + seedlings through 2021/22 (except 2016/17), and equal to harvested area in 19 to 23 states in 2016/17 and from 2023/24 to 2025/26 (details in the [contract](../contracts/serie_historica_safra.md)). Empty cells are not filled from Área Colhida; production and yield remain null. Seedling and harvesting method sheets are excluded.
 
-Unreadable, missing or ambiguous selected sheets raise `ParseError`; filters with no observations return an empty table with its schema. Unknown sheets produce a warning and are flagged by reconciliation.
+Unreadable, missing or ambiguous selected sheets raise `ParseError`; filters with no observations return an empty table with its schema. Unknown sheets produce a warning.
 
-`arroz_sequeiro`: the official spreadsheet has incorrect unit labels in the Produtividade and Produção sheets (September 2026); values are kg/ha and thousand tonnes, as confirmed by the production/area ratio. The exception is recorded in the reconciliation manifest.
+`arroz_sequeiro`: the official spreadsheet has incorrect unit labels in the Produtividade and Produção sheets (September 2026); values are kg/ha and thousand tonnes, as confirmed by the production/area ratio.
 
 ## Cache
 

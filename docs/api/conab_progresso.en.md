@@ -60,7 +60,7 @@ date, use `deral.condicao_lavouras`.
 | Algodão | 7 states (98% of the area) | Semeadura, Colheita |
 | Trigo | 8 states (99.9% of the area) | Colheita |
 
-Checked against the bulletins of 2025-09-27, 2026-02-22, 2026-08-28 and 2026-09-18. Wheat only appears with harvest in those
+The table holds for the bulletins of 2025-09-27, 2026-02-22, 2026-08-28 and 2026-09-18, and wheat only appears with harvest in those
 bulletins. The states and coverage of each block come from the spreadsheet note and may change from one crop year to the next.
 
 ---

@@ -51,7 +51,7 @@ DataFrame com colunas:
 | `cd_programa` | str | Código do programa; nulo na agregação por UF |
 | `qtd_contratos` | int | Quantidade de contratos |
 | `valor` | float | Valor financiado (R$) |
-| `area_financiada` | float | Área financiada (ha). Pelo OData sai nula: no custeio a fonte publica `AreaCusteio` vazio (nenhum dos 2.583 registros de 10 consultas da safra 2024/25 capturadas em set/2026 traz área) e investimento e comercialização não trazem área; só o fallback BigQuery a preenche |
+| `area_financiada` | float | Área financiada (ha). Pelo OData sai nula: no custeio a fonte publica `AreaCusteio` vazio (nenhum dos 2.583 registros de 10 consultas da safra 2024/25, em set/2026, traz área), e investimento e comercialização não trazem área; só o fallback BigQuery a preenche |
 | `fonte` | str | `bcb_odata` ou `bcb_bigquery` |
 
 `programa` usa o nome vigente da tabela oficial em todas as safras: o `0152` sai como PROIRRIGA também antes de 07/2021, quando o código era o Moderinfra (a descrição oficial registra a troca em 01/07/2021).
@@ -90,7 +90,7 @@ df, meta = await bcb.credito_rural("soja", return_meta=True)
 print(meta.schema_version)  # "2.0"
 ```
 
-`agregacao="municipio"` levanta `InvalidParameterError`. As entidades por produto que o agrobr lê (`*RegiaoUFProduto`) não têm município. O SICOR publica município por produto (`CusteioMunicipioProduto` e `InvestMunicipioProduto`), que o agrobr ainda não lê; o extra `agrobr[bigquery]` traz dados municipais.
+`agregacao="municipio"` levanta `InvalidParameterError`. As entidades por produto que o agrobr lê (`*RegiaoUFProduto`) não têm município. O SICOR publica município por produto (`CusteioMunicipioProduto` e `InvestMunicipioProduto`), que o agrobr não lê; o extra `agrobr[bigquery]` traz dados municipais.
 
 ### `credito_rural_total`
 
@@ -124,7 +124,7 @@ async def credito_rural_total(
 - **Sem linha Brasil.** O SICOR não publica total do país: o total do Brasil é a soma das UFs.
 - **Safra parcial.** A safra corrente é parcial; `MetaInfo.source_details["meses"]` traz o primeiro e o último mês com dado e a quantidade de meses.
 - **Consulta por safra × soma das mensais.** A função pede a safra numa consulta só (fatiada por mês só quando a resposta bate no limite de registros da Olinda), e o SICOR pode devolver números diferentes da soma das consultas mês a mês. Em 26/09/2026, na safra 2026/27 (julho e agosto), 51 pares UF × finalidade divergiram: no custeio do AC, 274 contratos e R$ 56.788.261,98 na consulta por safra, contra 272 e R$ 56.541.830,82 nas mensais. A causa não foi identificada, e o agrobr reproduz o corpo recebido.
-- **Sem fallback BigQuery**, porque a tabela da Base dos Dados não foi conferida contra o oráculo. `attempted_sources` é `["bcb_odata"]`.
+- **Sem fallback BigQuery**: `attempted_sources` é `["bcb_odata"]`.
 - O total por UF e finalidade fecha com a soma dos municípios (`CusteioInvestimentoComercialIndustrialSemFiltros`) e, em custeio, investimento e comercialização, com a soma por produto do `credito_rural` (conferido em 2022 e 2023).
 
 **Exemplo:**
@@ -168,7 +168,7 @@ async def sgs(
 
 Sem datas e sem `ultimos`, a janela padrão vai da data UTC da consulta menos dez anos até essa mesma data, com ajuste de 29/02 para 28/02 quando necessário. Informando apenas o início, o fim usa a data UTC da consulta. Informando apenas o fim, o início continua omitido na requisição: a fonte pode recusar essa seleção. Não há seleção de uma revisão histórica congelada.
 
-O planejamento encerra cada bloco em 31/12 do ano inicial + 9, ou no fim pedido se anterior; o próximo começa em 01/01. Isso respeita o limite de dez anos por chamada da série diária sondada, sem pressupor que todo código seja diário. Blocos fecham em anos civis e uma janela de dez anos pode usar duas chamadas. Falha em qualquer bloco interrompe a consulta, sem resultado parcial.
+O planejamento encerra cada bloco em 31/12 do ano inicial + 9, ou no fim pedido se anterior; o próximo começa em 01/01. Isso respeita o limite de dez anos por chamada das consultas diárias, sem pressupor que todo código seja diário. Blocos fecham em anos civis e uma janela de dez anos pode usar duas chamadas. Falha em qualquer bloco interrompe a consulta, sem resultado parcial.
 
 A rota de últimos valores tem limite de 20 documentado e confirmado para a série 1. O agrobr preserva a recusa remota, sem impor esse máximo a códigos de frequência desconhecida. Para solicitar mais observações, informe as duas datas e `ultimos`.
 
@@ -237,13 +237,13 @@ Cada aquisição de cotações lê primeiro o catálogo OData corrente, com pagi
 
 **Retorno — contrato 2.0:** oito colunas, mantendo as quatro anteriores como prefixo: `cotacao_compra`, `cotacao_venda`, `data_hora`, `data`, `moeda`, `paridade_compra`, `paridade_venda`, `tipo_boletim`. Quatro medidas usam float64 finito anulável. As duas datas usam datetime64[ns] sem fuso; `data` é o dia civil de `data_hora`. O horário conserva até nove dígitos fracionários, sem truncamento. Moeda é textual não nula; tipo de boletim é texto publicado anulável. Vazio mantém colunas e tipos.
 
-O fechamento USD padrão conserva valores e horários legados nos casos recentes e de 1994 sondados. `todos` acrescenta os boletins de abertura e intermediários. A rota genérica por dia publica `Fechamento PTAX`, e a rota por período publica `Fechamento`; o seletor de fechamento reconhece ambos e conserva o rótulo original. Essa variação precisa ser considerada em junções entre dia e período. Boletim novo, vazio ou null é preservado com aviso em `todos`; um filtro específico gera ParseError quando não puder classificar a linha.
+O fechamento USD padrão conserva valores e horários legados nos casos recentes e de 1994. `todos` acrescenta os boletins de abertura e intermediários. A rota genérica por dia publica `Fechamento PTAX`, e a rota por período publica `Fechamento`; o seletor de fechamento reconhece ambos e conserva o rótulo original. Essa variação precisa ser considerada em junções entre dia e período. Boletim novo, vazio ou null é preservado com aviso em `todos`; um filtro específico gera ParseError quando não puder classificar a linha.
 
 **Unidades:** cotações usam a unidade monetária doméstica da data por unidade da moeda selecionada. Não rotule todo o histórico como BRL. Paridades tipo A usam moeda/USD; tipo B usa USD/moeda. Tipo do catálogo e unidades aplicáveis constam dos metadados; o SDK não calcula conversões, inverte paridades ou recompõe fechamentos. O relógio publicado permanece sem fuso e distinto da aquisição UTC.
 
 **Paginação e cobertura:** o catálogo solicita símbolos crescentes; cotações usam horário e rótulo de boletim crescentes. A página inteira é validada antes do filtro de boletim. Sem total independente, páginas curtas avançam pelo número recebido até uma página vazia. Duplicatas, alterações de seleção, contradições de contagem e falhas de página interrompem a aquisição. Não há limite local de linhas ou retorno automático de intervalo incompleto.
 
-`source_details.coverage` descreve cotações antes/depois da seleção de boletim; `catalog.coverage` descreve o catálogo separadamente. Filtro intencional de boletim não é truncamento. `complete` exige contagem da fonte reconciliada; sem ela, inclusive após vazio, a cobertura fica `unknown`. A sondagem não obteve count/nextLink; a validação dessas anotações é defensiva e testada offline. Não há snapshot atômico de revisão.
+`source_details.coverage` descreve cotações antes/depois da seleção de boletim; `catalog.coverage` descreve o catálogo separadamente. Filtro intencional de boletim não é truncamento. `complete` exige contagem da fonte reconciliada; sem ela, inclusive após vazio, a cobertura fica `unknown`. As consultas conhecidas não trouxeram count/nextLink; se vierem, essas anotações são validadas. Não há snapshot atômico de revisão.
 
 **Proveniência e erros:** recursos são listados na ordem catálogo→cotações, com papel, índice da página, URL, parâmetros, hash/bytes do corpo, coleta UTC, quantidades recebidas/retidas e layout. Hash/tamanho superiores identificam manifesto canônico UTF-8 de query e recursos; a soma dos corpos é separada. Erros HTTP/rede geram SourceUnavailableError; HTTP200 malformado, JSON ambíguo, números não finitos e campos obrigatórios inválidos geram ParseError. Valores finitos não positivos ou compra/venda invertidas permanecem com diagnóstico. Avisos saem mesmo sem metadados.
 
@@ -320,7 +320,7 @@ Bool/float usados como quantidades, datas impossíveis e opções desconhecidas 
 | `partial` | Limite local menor que total declarado, ou descarte/continuação comprova dados adicionais |
 | `complete` | Contagem declarada reconciliada com a união de chaves e a saída integral |
 
-A sondagem não obteve contagem: `$count=true` não acrescentou total e `/$count` foi recusado naquela execução. Nenhuma consulta real dessa etapa foi classificada como completa. Anotações de total e continuação têm validação defensiva, testada offline. A contagem também não garante uma revisão atômica entre páginas.
+As consultas conhecidas não trouxeram contagem: `$count=true` não acrescentou total e `/$count` foi recusado. Anotações de total e continuação, se vierem, são validadas. A contagem também não garante uma revisão atômica entre páginas.
 
 **Proveniência e qualidade:** seleção, entidade, filtro, ordem, URLs, offsets, tamanhos pedidos/recebidos/retidos, status, hashes dos corpos, coleta UTC e layout ficam em `source_details`. O hash/tamanho superiores identificam um manifesto canônico de query e recursos. Limite local e inconsistências estatísticas geram avisos mesmo sem `return_meta`. Valores finitos negativos são válidos; relações inconsistentes entre média, mediana, extremos ou desvio são preservadas com diagnóstico. Ausências não viram zero, e JSON/valores não finitos ou campos obrigatórios inválidos geram `ParseError`. Vazio não confirma a existência do indicador.
 

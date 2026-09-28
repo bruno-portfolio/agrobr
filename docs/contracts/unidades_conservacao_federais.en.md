@@ -56,30 +56,10 @@ Use `from agrobr.sync import datasets` for synchronous calls, without `await`. `
 
 `livre` — see [data licences](../licenses.md) and the [API/source details](../sources/icmbio.md).
 
-## Reconciliation of the current layer
+## Layer content
 
-The 2026-09-18 capture contains 347 units without filters, 50 with
-`bioma="Cerrado"` and 22 with `uf="SP"`. These overlap within the same layer:
-419 checked occurrences, representing 347 distinct CNUC codes in this capture.
-They are neither independent sources nor evidence for another historical date.
-The contract has no primary key and does not remove potential future duplicates.
+On 2026-09-18, the layer had 347 units without filters, 50 with `bioma="Cerrado"` and 22 with `uf="SP"`, overlapping selections with 347 distinct CNUC codes. The contract has no primary key and does not remove potential future duplicates.
 
-All nine output columns were compared cell by cell against complete CSV bodies,
-including first and last records, through both the source and the dataset.
-`areahaalb` is preserved as `area_ha`, without summation or scale conversion;
-`criacaoano` is an attribute of a unit, not a layer edition. Compound state/biome
-labels remain intact: 43 units in the unfiltered body span multiple states. `area_ha` is the whole unit's area, not the part inside the state: the `uf=` filter returns a shared unit with its full area, and summing by state counts that unit more than once.
-No fields were blank in these CSVs; area/year remain nullable nonetheless.
+`areahaalb` is preserved as `area_ha`, without summation or scale conversion; `criacaoano` is an attribute of a unit, not a layer edition. Compound state/biome labels remain intact: 43 units in the unfiltered query span multiple states. `area_ha` is the whole unit's area, not the part inside the state: the `uf=` filter returns a shared unit with its full area, and summing by state counts that unit more than once. No fields were blank on that date; area and year remain nullable.
 
-The WFS returned 11 fields, including `FID` and `ogc_fid`, retained in oracle
-locators and omitted from public output. The XSD inventory covers all 22
-properties, with explicit decisions for the 13 outside the tabular contract,
-including geometry. The N1 checker compares this inventory and CSV structure;
-it neither changes data nor replaces actual acquisition. Agreement with
-`numberOfFeatures` requested before the CSV is recorded as `count_reconciled`,
-without claiming a transactional snapshot.
-
-Portable evidence: `tests/golden_data/reconciliacao_r11_20260918/icmbio/`.
-The replay uses complete official bodies and actual HTTP parameters. Parser 3
-and contract 1.0 remain unchanged. Geometry reconciliation is outside this
-tabular variant.
+The WFS returns 11 fields; `FID` and `ogc_fid` are omitted from public output. The layer's XSD declares 22 properties, 13 of them outside the tabular contract, including geometry. Agreement with `numberOfFeatures` requested before the CSV is recorded as `count_reconciled`, without claiming a transactional snapshot.

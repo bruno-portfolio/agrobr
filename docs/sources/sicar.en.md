@@ -51,7 +51,7 @@ with server-side filters (CQL_FILTER) and transparent pagination.
   records updated after a given date. The column is requested in the 15 layers that provide it.
   The field does not exist in PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP or TO: the filter
   raises before network access in these states, and the column remains null in queries without
-  that filter. Coverage was checked using `DescribeFeatureType` for all 27 layers on 2026-09-06
+  that filter. This coverage comes from the `DescribeFeatureType` of all 27 layers on 2026-09-06
 - **Current state:** creation (`>=`) and update (`>`) filters select records available at query
   time. They do not retrieve previous revisions or deletions. The `cadastro_rural` dataset also
   accepts municipality-code and update filters, and rejects `deterministic`
@@ -59,7 +59,7 @@ with server-side filters (CQL_FILTER) and transparent pagination.
   (EPSG:4326) via WFS GeoJSON. Requires `pip install agrobr[geo]`. The default result limit is
   5,000 features; `max_features` above 10,000 or `None` uses pagination. A cut result warns
   (`validation_warnings`, `UserWarning` and `source_details["sicar"]["truncado"]`). All 27 layers declare
-  SIRGAS 2000 (`DefaultCRS` EPSG:4674, checked on 2026-09-22); agrobr requests `srsName=EPSG:4326`
+  SIRGAS 2000 (`DefaultCRS` EPSG:4674); agrobr requests `srsName=EPSG:4326`
   and rejects with `ParseError` any page with features that declares another CRS
 - **Filter precision:** `atualizado_apos` accepts milliseconds with optional additional zeros.
   `.212000` is sent as `.212`; submillisecond values raise without rounding
@@ -99,27 +99,8 @@ License: **CC-BY** — free use with attribution to the source.
 - [SICAR Consulta Publica](https://www.car.gov.br/publico/imoveis/index)
 - [Dados Abertos SFB](https://www.gov.br/agricultura/pt-br/assuntos/servico-florestal-brasileiro)
 
-## Tabular reconciliation on 2026-09-18
+## Counts and provenance
 
-Six preserved queries cover DF, MT, SP, GO and RS, comparing every row and all
-eleven columns with independent readings of the GeoJSON bodies. The complete
-DF query contains 21,006 features across three pages, including 513 null update
-timestamps. An MT query preserves a zero fiscal-module value; SP and RS
-illustrate layers without the update field. The six queries contain 21,183
-record occurrences, with overlap between the two DF selections.
+On 2026-09-18, the complete DF query had 21,006 features across three pages, including 513 null update timestamps. In an MT query, a zero fiscal-module value is preserved. In two pages of 10,000 features from GO and RS, occurrence selection by update and by creation yields 9,999 properties in each.
 
-The 27 state XSDs inventory properties, types and nullability, explicitly
-excluding geometry from this tabular variant. Two complete historical GO/RS
-pages of 10,000 features each check version selection by update and creation:
-each page yields 9,999 properties. These supplements exercise the parser;
-they are neither complete historical populations nor complete HTTP replays
-of those populations.
-
-Matching counts do not guarantee a transactional snapshot. Capture hashes,
-sizes, URLs and timestamps are retained in the receipts and reconciliation
-manifest; with several pages, `MetaInfo` carries each one in `source_details["resources"]` (SHA-256
-and bytes) and, at the top, the hash of the `{query, resources}` manifest (`hash_kind`
-`resource_manifest_sha256`). The
-`python -m scripts.reconciliar_sicar --output result.json` comparator checks
-preserved local bodies. It neither fetches new network data nor compares
-independent sources.
+Matching counts do not guarantee a transactional snapshot. With several pages, `MetaInfo` carries each one in `source_details["resources"]` (SHA-256 and bytes) and, at the top, the hash of the `{query, resources}` manifest (`hash_kind` `resource_manifest_sha256`).

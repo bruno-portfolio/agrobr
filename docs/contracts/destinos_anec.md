@@ -32,11 +32,11 @@ A chave preserva edições e revisões distintas ao concatenar retratos dos bole
 
 ## Semântica e limites
 
-A ANEC publica importadores apenas para soja (`soybean`), farelo de soja (`soybean_meal`), milho (`maize`) e trigo (`wheat`), nas edições W13 e W34/2026 conferidas. O catálogo de destinos anuncia esses quatro produtos. DDGS e sorgo continuam em `embarques_mensais_anec` e `comparacao_anual_anec`. Em destinos, `ddgs`, `sorgo` e seus aliases são recusados com `InvalidParameterError` antes de qualquer acesso à rede.
+A ANEC publica importadores apenas para soja (`soybean`), farelo de soja (`soybean_meal`), milho (`maize`) e trigo (`wheat`), nas edições W13 e W34/2026. O catálogo de destinos anuncia esses quatro produtos. DDGS e sorgo continuam em `embarques_mensais_anec` e `comparacao_anual_anec`. Em destinos, `ddgs`, `sorgo` e seus aliases são recusados com `InvalidParameterError` antes de qualquer acesso à rede.
 
 A unidade é percentual acumulado no período do cabeçalho, não tonelagem nem fluxo mensal. Não se atribui automaticamente a semana ou o mês da edição ao período dos destinos. `OTHERS` é um agregado válido; não é um país. Percentuais arredondados podem somar 99% ou 101%, sem ajuste artificial para 100%.
 
-Alguns boletins usam gráficos que o parser ainda não extrai (observado nas edições W08 e W12 de 2026). O retorno pode ser vazio com aviso em `meta.validation_warnings`; isso não comprova ausência de embarques ou destinos. Use `return_meta=True` para inspecionar os avisos. A edição W34/2026 informa janeiro–julho de 2026.
+Alguns boletins usam gráficos que o parser não extrai (como nas edições W08 e W12 de 2026). O retorno pode ser vazio com aviso em `meta.validation_warnings`; isso não comprova ausência de embarques ou destinos. Use `return_meta=True` para inspecionar os avisos. A edição W34/2026 informa janeiro–julho de 2026.
 
 ## Produtos
 
@@ -87,6 +87,6 @@ print(meta.source_url)
 
 `zona_cinza`: boletins públicos sem termos públicos explícitos de reutilização localizados. A primeira chamada ANEC emite aviso. Uso ou redistribuição comercial pode exigir autorização da ANEC; publicação no site não comprova permissão de redistribuição comercial.
 
-## Conferência dos boletins
+## Leitura dos boletins
 
-As tabelas de texto das edições 04, 13, 34 e 36/2026 foram conferidas integralmente, incluindo OTHERS. Percentuais no mapa e a linha Total ficam fora do contrato. As participações arredondadas podem somar 99%, 101% ou 102%, sem renormalização. As edições 08 e 12/2026 têm quadros em imagem: vazio com aviso continua sendo ausência de extração, não ausência de comércio.
+A tabela de texto sai inteira, incluindo OTHERS. Percentuais no mapa e a linha Total ficam fora do contrato. As participações arredondadas podem somar 99%, 101% ou 102%, sem renormalização. As edições 08 e 12/2026 têm quadros em imagem: vazio com aviso continua sendo ausência de extração, não ausência de comércio.

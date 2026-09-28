@@ -43,7 +43,7 @@ No fallback: the Base dos Dados table aggregates by municipality and carries no 
 
 **Constraints:** `ano_emissao >= 2013`, `1 <= mes_emissao <= 12`, `qtd_contratos >= 0`, `valor >= 0`, `area_financiada >= 0`
 
-- **The key is the entities' grain.** agrobr's `$select` is the whole entity, checked against the OData `$metadata`. The 11 dimensions do not repeat across 3,462 real records, captured in September 2026: 12 queries of crop year 2024/25 by product and state, and 2 months of 2024 without a state filter (soybean operating costs in October, with 18 states, and cattle investment in March, with 25). `regiao` depends on the state and `safra` on the month, so they stay out of the key.
+- **The key is the entities' grain.** agrobr's `$select` is the whole entity, with every field in the OData `$metadata`. The 11 dimensions do not repeat across 3,462 records: 12 queries of crop year 2024/25 by product and state, and 2 months of 2024 without a state filter (soybean operating costs in October, with 18 states, and cattle investment in March, with 25). `regiao` depends on the state and `safra` on the month, so they stay out of the key.
 - **Names from BCB's domain tables:**
   - `programa`: the part of the official description before the first " - ", as in `agregacao="programa"`;
   - `tipo_seguro`: the official description;

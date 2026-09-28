@@ -56,7 +56,7 @@ registro a registro, sem agregar, com 23 colunas: as 11 e mais `ano_emissao`, `m
 
 A API retorna codigos de dimensao (`cdPrograma`, `cdTipoSeguro`, etc.). O nome do programa e o do tipo de seguro
 seguem as tabelas de dominio oficiais do BCB (`https://www.bcb.gov.br/htms/sicor/Programa.csv` e
-`TipoGarantiaEmpreendimento.csv`, conferidas em 23/09/2026): o programa publicado e o trecho da descricao oficial
+`TipoGarantiaEmpreendimento.csv`): o programa publicado e o trecho da descricao oficial
 antes do primeiro " - " (a descricao inteira quando nao ha esse separador; aspas soltas da fonte removidas); o tipo
 de seguro e a descricao oficial. O filtro por nome nao diferencia maiusculas de minusculas (`programa="pronamp"`).
 Codigos desconhecidos geram `"Desconhecido ({code})"` com log warning; codigo nulo fica com nome nulo, sem aviso.
@@ -114,7 +114,7 @@ A descricao oficial do `0152` registra que ele era o Moderinfra ate 30/06/2021; 
 | `9` | Sem adesão a seguro |
 
 No `agregacao="registro"`, a fonte de recursos, a modalidade e a atividade saem com a descricao oficial inteira de
-`FonteRecursos.csv` (37 codigos), `Modalidade.csv` (64) e `Atividade.csv` (2), conferidas em 27/09/2026. Na fonte de
+`FonteRecursos.csv` (37 codigos), `Modalidade.csv` (64) e `Atividade.csv` (2). Na fonte de
 recursos, o trecho antes do " - " juntaria codigos distintos (4 fontes virariam "POUPANÇA RURAL"). Codigo fora da
 tabela fica com nome nulo, sem palpite e sem aviso. `cd_modalidade` sai como a fonte publica (`"01"`), e o nome e
 resolvido pelo numero da tabela (`"1"` = LAVOURA). O subprograma sai so com o codigo, como na 1.1.0.
@@ -161,7 +161,7 @@ A API SICOR foi reestruturada (~2024). O agrobr lê `CusteioRegiaoUFProduto`,
 `InvestRegiaoUFProduto` e `ComercRegiaoUFProduto` (por produto, no `credito_rural`) e
 `RegiaoUF` (total por UF e finalidade, no `credito_rural_total`). O serviço também publica
 município por produto (`CusteioMunicipioProduto`, `InvestMunicipioProduto`) e município sem
-produto (`CusteioInvestimentoComercialIndustrialSemFiltros`), que o agrobr ainda não lê.
+produto (`CusteioInvestimentoComercialIndustrialSemFiltros`), que o agrobr não lê.
 
 Notas da fonte, conferidas em 2022 e 2023:
 
@@ -204,7 +204,7 @@ df, meta = await bcb.sgs(
 ipca = await bcb.sgs("ipca", data_inicial="01/01/2024", data_final="31/12/2024")
 ```
 
-A sondagem de setembro de 2026 confirmou 3.767 observações diárias em 2010–2024, distribuídas em dois blocos. Também confirmou referências mensais e trimestrais anteriores ao limite diário solicitado e repetição mensal entre janelas diárias disjuntas. A implementação preserva as referências publicadas, diagnostica os limites e só reconcilia valores iguais entre blocos. Ela não infere frequência nem preenche datas.
+A consulta do exemplo devolve 3.767 observações diárias em 2010–2024, em dois blocos. A fonte também pode devolver referências mensais e trimestrais anteriores ao limite diário solicitado e repetir uma referência mensal entre janelas diárias disjuntas. A implementação preserva as referências publicadas, diagnostica os limites e só reconcilia valores iguais entre blocos. Ela não infere frequência nem preenche datas.
 
 O [contrato 2.1](../contracts/bcb_sgs.md) mantém `data`, `valor`, `codigo` e `nome_serie`, inclusive em vazio, e acrescenta `data_fim` quando a série publica `dataFim`. Os 17 aliases continuam disponíveis; outros códigos inteiros podem ser consultados sem receber um nome inventado. O IPCA pode ser negativo. Unidade monetária e frequência devem ser verificadas no cadastro específico; um código de câmbio histórico não implica BRL em toda a série.
 
@@ -216,7 +216,7 @@ Metadados registram cada resposta, hash, status, aquisição UTC e referências 
 
 O [conjunto oficial de boletins diários](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios) oferece cotações, paridades e metadados de moedas. `bcb.ptax` passa a selecionar moeda e `fechamento`, `todos`, `abertura` ou `intermediario`. O fechamento USD permanece como padrão. `bcb.ptax_moedas` expõe o catálogo corrente `Moedas`.
 
-A sondagem do catálogo retornou AUD, CAD, CHF, DKK, EUR, GBP, JPY, NOK, SEK e USD. Essas entradas descrevem o serviço OData, sem comprovar todo o universo histórico de moedas. A [tabela geral do portal](https://ptax.bcb.gov.br/ptax_internet/consultarTabelaMoedas.do?method=consultaTabelaMoedas) contém outros códigos e datas de exclusão; é uma família distinta.
+O catálogo `Moedas` traz AUD, CAD, CHF, DKK, EUR, GBP, JPY, NOK, SEK e USD. Essas entradas descrevem o serviço OData, sem comprovar todo o universo histórico de moedas. A [tabela geral do portal](https://ptax.bcb.gov.br/ptax_internet/consultarTabelaMoedas.do?method=consultaTabelaMoedas) contém outros códigos e datas de exclusão; é uma família distinta.
 
 ```python
 from agrobr import bcb
@@ -230,11 +230,11 @@ df, meta = await bcb.ptax(
 
 Os [contratos de cotações 2.0 e catálogo 1.0](../contracts/bcb_ptax.md) conservam oito e três colunas, respectivamente. As cotações preservam quatro medidas, moeda, texto do boletim, horário e data civil. Não há conversão monetária nem agregação entre boletins.
 
-**Distinções comprovadas:** o fechamento USD genérico coincidiu com a rota dólar nos recortes recentes e de junho de 1994. A rota por dia denomina o fechamento `Fechamento PTAX`; a de período usa `Fechamento`, com os mesmos valores e horários. O seletor reconhece ambos e a saída conserva o texto original. No intervalo sondado, a rota específica de fechamento trouxe um fechamento onde a genérica trouxe dois; a rota específica de abertura/intermediário trouxe apenas o último intermediário. Elas não substituem as rotas genéricas na implementação.
+**Distinções entre rotas:** o fechamento USD genérico coincidiu com a rota dólar nos recortes recentes e de junho de 1994. A rota por dia denomina o fechamento `Fechamento PTAX`; a de período usa `Fechamento`, com os mesmos valores e horários. O seletor reconhece ambos e a saída conserva o texto original. Num mesmo intervalo, a rota específica de fechamento trouxe um fechamento onde a genérica trouxe dois; a rota específica de abertura/intermediário trouxe apenas o último intermediário. Elas não substituem as rotas genéricas na implementação.
 
 Horários fracionários permanecem distintos: intermediário e fechamento podem compartilhar o mesmo segundo e diferir nos microssegundos. `data_hora` continua sem fuso, com dtype ns; `data` é seu dia civil. A aquisição UTC é registrada separadamente. Cotações se referem à unidade monetária doméstica da data histórica; o SDK não rotula todos os valores como BRL. Paridades tipo A expressam moeda/USD; tipo B expressa USD/moeda, com contexto do catálogo preservado.
 
-Fim de semana e seleções não suportadas ZZZ/ARS produziram o mesmo envelope vazio na sondagem. Por isso, a seleção da moeda é validada no catálogo adquirido antes de consultar as cotações. A coleta usa páginas ordenadas e valida todos os registros antes do filtro de boletim. Não foi obtida contagem independente; a página vazia terminal deixa cobertura desconhecida. Count/nextLink têm tratamento defensivo validado offline, sem garantia de revisão atômica.
+Nas consultas conhecidas, fim de semana e seleções não suportadas ZZZ/ARS devolveram o mesmo envelope vazio. Por isso, a seleção da moeda é validada no catálogo adquirido antes de consultar as cotações. A coleta usa páginas ordenadas e valida todos os registros antes do filtro de boletim. As consultas conhecidas não trouxeram contagem independente; a página vazia terminal deixa cobertura desconhecida. Count/nextLink, se vierem, são validados, sem garantia de revisão atômica.
 
 O conjunto e os recursos [moedas](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/9d07b9dc-c2bc-47ca-af92-10b18bcd0d69), [dia](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/db9b40bf-9b8f-47c4-a82d-3a3afab52e90) e [período](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/0439af6a-d9be-4bf7-bf1a-60583e5f4c1c) declaram ODbL; veja [licenças](../licenses.md#bcb-ptax). CSV de todas as moedas, exclusões e histórico de revisões ficam fora desta API. Consulte [parâmetros, erros, tipos e proveniência](../api/bcb.md#ptax).
 
@@ -258,13 +258,13 @@ df, meta = await bcb.focus(
 )
 ```
 
-A API mantém dez colunas e acrescenta `periodicidade` e `indicador_detalhe`, com [contrato 2.0](../contracts/bcb_focus.md). A data da pesquisa e o horizonte textual da previsão são distintos. O detalhe anual preserva, por exemplo, Exportações, Importações e Saldo de Balança comercial. Bases 0/1 com mesma data e referência permanecem separadas. PIB Agropecuária anual e IPCA mensal foram sondados; a função não oferece um catálogo genérico de indicadores nem garante que todo indicador exista nas duas entidades.
+A API mantém dez colunas e acrescenta `periodicidade` e `indicador_detalhe`, com [contrato 2.0](../contracts/bcb_focus.md). A data da pesquisa e o horizonte textual da previsão são distintos. O detalhe anual preserva, por exemplo, Exportações, Importações e Saldo de Balança comercial. Bases 0/1 com mesma data e referência permanecem separadas. A função não oferece um catálogo genérico de indicadores nem garante que todo indicador exista nas duas entidades.
 
-Na sondagem de setembro de 2026, uma página de seis registros coincidiu integralmente com duas páginas de três em ambas as entidades, usando desempate por referência/base/detalhe. Não houve contagem independente ou nextLink observado: `$count=true` foi ignorado, `$inlinecount` recusado e `/$count` retornou 403 nessa execução. Metadados distinguem limite local e encerramento observado de completude. A união pode sofrer revisões concorrentes; não é um snapshot atômico.
+Nas consultas conhecidas, com desempate por referência/base/detalhe, uma página de seis registros coincidiu com duas páginas de três nas duas entidades, e não veio contagem independente nem nextLink: `$count=true` foi ignorado, `$inlinecount` foi recusado e `/$count` retornou 403. Metadados distinguem limite local e encerramento observado de completude. A união pode sofrer revisões concorrentes; não é um snapshot atômico.
 
 O catálogo omite períodos sem estatísticas. Uma resposta vazia não valida o indicador; a consulta minúscula `ipca` foi vazia no recorte em que `IPCA` tinha dados. A [API](../api/bcb.md#focus) documenta regras de seleção, paginação, tipos, erros e avisos estatísticos, sem preencher períodos ou inferir unidades.
 
-O catálogo e os recursos [mensal](https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado/resource/c26059cc-2b28-41c5-a258-88a7c2b664d0) e [anual](https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado/resource/57d46ecb-4d27-45e9-8145-c173e0b94ff5) declaram ODbL; veja [licenças](../licenses.md#bcb-focus). Outras entidades, como trimestral, Selic e Top5, permanecem fora deste seletor. Microdados institucionais não integram esta entrega.
+O catálogo e os recursos [mensal](https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado/resource/c26059cc-2b28-41c5-a258-88a7c2b664d0) e [anual](https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado/resource/57d46ecb-4d27-45e9-8145-c173e0b94ff5) declaram ODbL; veja [licenças](../licenses.md#bcb-focus). Outras entidades, como trimestral, Selic e Top5, permanecem fora deste seletor. Microdados institucionais também ficam fora.
 
 ---
 

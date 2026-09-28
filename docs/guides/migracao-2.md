@@ -137,7 +137,7 @@ df, meta = await datasets.cadastro_rural(
 
 `criado_apos` inclui o limite (`>=`); `atualizado_apos` usa limite estrito (`>`). Município por nome e por código são exclusivos. O filtro de atualização é rejeitado nas doze UFs sem esse campo no WFS. Nas demais camadas, a projeção agora solicita a data de atualização que a implementação anterior omitia.
 
-A coleta tabular usa GeoJSON com atributos, sem geometria e sem dependência de GeoPandas. A migração evita o horário sem fuso do CSV, que não coincidiu com o instante usado pelo CQL nas sondagens. `atualizado_apos` aceita `Z`/offset e normaliza para UTC; entradas sem fuso são interpretadas como UTC. Um timestamp retornado pode ser reutilizado com `.isoformat()`. O filtro aceita precisão de milissegundos: zeros adicionais são normalizados (`.212000` vira `.212`), enquanto valores submilissegundo são rejeitados sem arredondamento. Não use `tz_localize("UTC")` em dados CSV antigos sem conhecer seu fuso; recupere os instantes no novo transporte quando necessário.
+A coleta tabular usa GeoJSON com atributos, sem geometria e sem dependência de GeoPandas. A migração evita o horário sem fuso do CSV, que não coincide com o instante usado pelo CQL. `atualizado_apos` aceita `Z`/offset e normaliza para UTC; entradas sem fuso são interpretadas como UTC. Um timestamp retornado pode ser reutilizado com `.isoformat()`. O filtro aceita precisão de milissegundos: zeros adicionais são normalizados (`.212000` vira `.212`), enquanto valores submilissegundo são rejeitados sem arredondamento. Não use `tz_localize("UTC")` em dados CSV antigos sem conhecer seu fuso; recupere os instantes no novo transporte quando necessário.
 
 Use `get_contract("cadastro_rural")` ou `SICAR_IMOVEIS_V2`, de `agrobr.contracts.sicar`. `SICAR_IMOVEIS_V1`, de `agrobr.contracts.datasets`, permanece como contrato histórico, não como alias para UTC.
 
@@ -844,8 +844,8 @@ para `"ipa_agricola"`. O código numérico `7460` não muda.
 - `max_registros` (padrão 50.000; 5.000 perfis e 3.000 polígonos nas funções `_geo`) limita o prefixo lido em ordem de `fid`. `uf` e `ordem` filtram localmente esse prefixo, e o corte que deixa a seleção parcial emite `UserWarning`; `max_registros=None` varre a camada inteira. `tamanho_pagina` define o tamanho da página.
 - **Custo:** cada página espera 2 s (o ritmo da fonte no agrobr), e `uf` e `ordem` não reduzem as páginas, porque filtram depois
   da leitura. `perfis()` lê em páginas de 250 (a camada inteira são ~138 páginas, mais de 4 min), e `perfis_geo()` em páginas de
-  100 até 5.000 linhas (50 páginas, mais de 1,5 min). O MCP privado mediu 310 s em `perfis(uf="GO")` e 113 s em
-  `perfis_geo(uf="DF")` (27/09/2026, na máquina dele). Suba `tamanho_pagina` (até 1.000; 100 nas `_geo`) ou reduza `max_registros`.
+  100 até 5.000 linhas (50 páginas, mais de 1,5 min). Exemplos: 310 s em `perfis(uf="GO")` e 113 s em
+  `perfis_geo(uf="DF")`. Suba `tamanho_pagina` (até 1.000; 100 nas `_geo`) ou reduza `max_registros`.
 - `bbox` e as funções `_geo` usam EPSG:4326. Veja a [página da fonte](../sources/embrapa_solos.md).
 
 ## 33. Crédito rural (SICOR): `produto` e `finalidade` como pedidos, safra validada
@@ -874,7 +874,7 @@ silêncio como outra safra, voltavam vazios ou estouravam `ValueError` no client
 - `data_atualizacao` deixa de ser `datetime64`: é o texto `dd/mm/aaaa` publicado, nulo em parte das TIs. A 1.x convertia com `pd.to_datetime(errors="coerce")` sem `dayfirst` e trocava dia e mês quando o dia era até 12. Converta na aplicação com `pd.to_datetime(df["data_atualizacao"], format="%d/%m/%Y")`.
 - `uf` é o texto publicado: TIs em mais de um estado vêm como "AM, RR", e o filtro `uf` casa qualquer uma delas.
 - `max_registros` (padrão 10.000; 1.000 nas `_geo`) e `tamanho_pagina` são parâmetros novos. `uf` e `fase` filtram localmente o prefixo lido, e o corte que deixa a seleção parcial emite `UserWarning`. Saída geo e `bbox` em EPSG:4326. Veja a [página da fonte](../sources/funai.md).
-- **Custo:** cada página espera 2 s (o ritmo da fonte no agrobr), e `uf` e `fase` não reduzem as páginas. `terras_indigenas()` lê em páginas de 250, e `terras_indigenas_geo()` em páginas de 10 TIs, até 1.000 (até 100 páginas). O MCP privado mediu 141 s em `terras_indigenas_geo(uf="AC")` (27/09/2026, na máquina dele). Suba `tamanho_pagina` (até 1.000; 100 nas `_geo`).
+- **Custo:** cada página espera 2 s (o ritmo da fonte no agrobr), e `uf` e `fase` não reduzem as páginas. `terras_indigenas()` lê em páginas de 250, e `terras_indigenas_geo()` em páginas de 10 TIs, até 1.000 (até 100 páginas). Exemplo: 141 s em `terras_indigenas_geo(uf="AC")`. Suba `tamanho_pagina` (até 1.000; 100 nas `_geo`).
 
 ## 35. ZARC: nove culturas das safras 2017/2018 a 2023/2024
 
@@ -1112,11 +1112,11 @@ Quem filtrava por `attribute_br` recebe agora o atributo certo. Quem usava os ID
 
 A limpeza tira código sem efeito e não muda dado. Mudam erros de entrada inválida, e saem nomes públicos sem uso na produção:
 
-- **Parte B:** `utils.validate_bbox`, usado por SFB, Acervo Fundiário, ANA, IBAMA, ICMBio e MapBiomas Alerta, levanta
+- `utils.validate_bbox`, usado por SFB, Acervo Fundiário, ANA, IBAMA, ICMBio e MapBiomas Alerta, levanta
   `InvalidParameterError` em vez de `ValueError`. Como é subclasse de `ValueError`, quem captura `ValueError` continua
   pegando, e quem captura `AgrobrError` passa a pegar. No IBAMA, área publicada com ponto levanta `ParseError`, em vez de
   "12.5" virar 125.
-- **Parte C:** saem nomes públicos sem uso na produção: `utils.concat_csv_pages` (sem substituto);
+- Saem nomes públicos sem uso na produção: `utils.concat_csv_pages` (sem substituto);
   `alt.sicar.parser.parse_imoveis_csv` (use `alt.sicar.imoveis`); `anec.models.normalize_produto` (use `resolve_produto`,
   que recusa produto desconhecido); o `bcb.parser.parse_credito_rural` deixa de resolver `fonte_recurso`, `modalidade`
   e `atividade`, que a chamada padrão da 1.1.0 publicava e as agregações `uf` e `programa` da 2.0 não publicam (os
@@ -1131,7 +1131,7 @@ A limpeza tira código sem efeito e não muda dado. Mudam erros de entrada invá
   `rnc.parser.parse_registradas_csv`/`parse_protegidas_csv` (use `parse_*_bundle(...).frame`);
   `alt.mapa_psr.client.download_csv` e `fetch_periodo` (use `open_periodo`). Na chamada direta a
   `bcb.bigquery_client.fetch_credito_rural_bigquery`, safra inválida levanta `ValueError` em vez de sumir do filtro.
-- **Parte A:** saem nomes públicos sem uso na produção: `ibge.ftp_client.extract_xls_from_zip` (sem substituto); em
+- Também saem nomes públicos sem uso na produção: `ibge.ftp_client.extract_xls_from_zip` (sem substituto); em
   `desmatamento.parser`, o parser v1 CSV/GeoJSON (`parse_prodes_csv`, `parse_deter_csv`, `parse_deter_geojson` e
   `parse_prodes_geojson`; use `desmatamento.prodes`, `deter`, `prodes_geo` e `deter_geo`), e as 12 constantes de colunas
   do v1 em `desmatamento.models` (`PRODES_COLUNAS_WFS*`, `DETER_COLUNAS_WFS*`, `COLUNAS_SAIDA_PRODES*`,
@@ -1508,7 +1508,7 @@ esse caso passa a capturar também `ParseError`.
 
 ## 81. Censo municipal 1985: casa a casa, com o `status` de cada uma (contrato 2.0)
 
-Na 1.1.0, o `ibge.censo_agro_municipal_1985` lia 53 CSVs extraídos por OCR de 22 UFs. A revisão de 18/09/2026 achou temas
+Na 1.1.0, o `ibge.censo_agro_municipal_1985` lia 53 CSVs extraídos por OCR de 22 UFs. Esses CSVs tinham temas
 trocados, moeda errada, colunas perdidas e níveis confundidos, e a 2.0.0 refez a extração inteira a partir dos 28 PDFs
 do IBGE.
 
@@ -1584,13 +1584,13 @@ Na 1.1.0, `desmatamento.prodes`, `deter`, `prodes_geo` e `deter_geo` faziam 1 re
 - `tamanho_pagina`: 500 feições por página (100 em `prodes_geo` e `deter_geo`), até 2.000 (500 nas `_geo`);
 - `max_registros`: 50.000 (10.000 nas `_geo`); `max_registros=None` lê a seleção inteira;
 - cada requisição espera 2 s (o ritmo do TerraBrasilis no agrobr). Sem filtro, a chamada padrão faz até 100 páginas, mais de
-  3 min só de espera. O MCP privado mediu 497 s em `prodes(bioma="Amazônia")`, 187 s em `prodes_geo` do Cerrado, MT, 2023, e
-  mais de 600 s em `deter_geo` da Amazônia, no PA (27/09/2026, na máquina dele). Com `tamanho_pagina=2000`, o PRODES da
+  3 min só de espera. Exemplos: 497 s em `prodes(bioma="Amazônia")`, 187 s em `prodes_geo` do Cerrado, MT, 2023, e
+  mais de 600 s em `deter_geo` da Amazônia, no PA. Com `tamanho_pagina=2000`, o PRODES da
   Amazônia caiu para 142 s.
 
 **O corte.** Quando a seleção passa de `max_registros`, o agrobr lê o prefixo em ordem crescente de `fid` (PRODES) ou de
 `gid` (DETER), e não por data, e emite `UserWarning` ("retornadas N de M ocorrências por limite local"). Os 50.000 da chamada
-padrão são uma parte da camada: o MCP contou 802.281 feições no PRODES da Amazônia e 460.092 no DETER.
+padrão são uma parte da camada: em 27/09/2026, eram 802.281 feições no PRODES da Amazônia e 460.092 no DETER.
 
 **A receita.** `ano` (PRODES), `uf`, `data_inicio`, `data_fim` e `classe` (DETER) vão no filtro CQL do servidor e reduzem as
 páginas: filtre antes de subir o limite. Suba `tamanho_pagina` até o máximo e use `max_registros=None` só com filtro. Veja a

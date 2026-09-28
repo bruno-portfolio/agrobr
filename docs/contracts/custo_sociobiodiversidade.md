@@ -6,7 +6,7 @@ Custos extrativistas da CONAB com valores e unidades publicados. Contrato ativo:
 
 ## Produtos
 
-20 produtos, verificados na aba oficial em 16/09/2026:
+20 produtos, conforme a aba oficial:
 
 | Código | Produto |
 |---|---|
@@ -39,7 +39,7 @@ Custos extrativistas da CONAB com valores e unidades publicados. Contrato ativo:
 
 Locais em forma de região ou sem UF terminal reconhecida conservam o texto publicado, retirando apenas o prefixo `REGIÃO:` e espaços nas bordas. Parênteses descritivos permanecem em `local`, inclusive eventual texto de UF dentro da descrição. A UF então vem do nome da aba, registrada em `celulas_contexto["uf_origem"] = "nome_da_aba"`. UF reconhecida no cabeçalho tem precedência. Nome do arquivo e data de preços nunca suprem ano de safra ausente.
 
-## Reconciliação de revisões e percentuais
+## Revisões e percentuais
 
 O parser 2 preserva a distinção entre percentual numérico com formato Excel `%`
 (multiplicado por 100) e número textual ou já percentual (sem essa escala).
@@ -50,11 +50,9 @@ erro Excel e safra ausente continuam sendo recusados, sem saída parcial.
 `planilha="acai_serie_historica_2008-2024.xlsx"` alcança a revisão arquivada,
 inclusive a aba `Codajás-AM-2008` com `ano=2008`. Sem `planilha`, a revisão
 ativa é escolhida pelo link oficial; pedir um ano antigo não troca automaticamente
-para o arquivo arquivado. Os arquivos atuais dos 20 produtos e essa revisão de
-açaí têm captura e reconciliação de células; as outras 16 revisões arquivadas
-catalogadas não têm certificação independente dos seus bytes. Os layouts antigos
-e novos observados têm duas colunas monetárias; nenhuma família publicada com
-uma única coluna foi encontrada nessas capturas.
+para o arquivo arquivado. Nos arquivos atuais dos 20 produtos e nessa revisão de
+açaí, os layouts antigos e novos têm duas colunas monetárias; nenhum publica uma
+única coluna. Nas outras 16 revisões arquivadas do catálogo, a leitura não é garantida.
 
 ## Schema
 
@@ -88,7 +86,7 @@ Pandas usa `string[python]`, `Int64` nulável, `float64` e `datetime64[ns]`, na 
 
 ## Bases observadas
 
-Cabeçalhos monetários lidos dos 20 workbooks ativos originais capturados em 16/09/2026, incluindo as duas colunas de valor. São rótulos observados, não um enum de bases permitidas.
+Cabeçalhos monetários dos 20 workbooks ativos, incluindo as duas colunas de valor. São rótulos observados, não um enum de bases permitidas.
 
 | Produto | Cabeçalhos monetários publicados |
 |---|---|
@@ -134,7 +132,7 @@ Inventário nominal dos recursos ativos capturados. `unresolved` indica falha na
 Números órfãos são recusados mesmo quando zero. Pinhão São Joaquim 2015/2016 publica uma coluna adicional `1 kg`, além das duas colunas monetárias representadas: ambas entram em `unresolved` com `Coluna sem mapeamento em R8C4`, um limite de representação, não recusa da base monetária. A coluna extra não é descartada nem convertida.
 
 
-Inventário: **955 contextos/cabeçalhos identificados e 21 abas pendentes nominais**, em 976 abas de dados. Seis abas de baru publicam apenas `SAFRA`, sem ano; uma de borracha tem título de custo não reconhecido; duas de pinhão mantêm uma limitação conhecida. As outras 12 são piaçava Belmonte/Cairu 2011–2016: contexto geográfico/safra reconhecido, mas três colunas monetárias publicadas excedem a representação de duas colunas. Por exemplo, Belmonte 2016 publica `R$/Safra`, `R$/15 @` e `R$/KG`. Nenhuma é descartada ou convertida. Formato longo com uma linha por medida fica como candidato futuro, fora deste contrato. As 12 recusas de parse do corpo continuam separadas.
+Inventário: **955 contextos/cabeçalhos identificados e 21 abas pendentes nominais**, em 976 abas de dados. Seis abas de baru publicam apenas `SAFRA`, sem ano; uma de borracha tem título de custo não reconhecido; duas de pinhão mantêm uma limitação conhecida. As outras 12 são piaçava Belmonte/Cairu 2011–2016: contexto geográfico/safra reconhecido, mas três colunas monetárias publicadas excedem a representação de duas colunas. Por exemplo, Belmonte 2016 publica `R$/Safra`, `R$/15 @` e `R$/KG`. Nenhuma é descartada ou convertida. As 12 recusas de parse do corpo continuam separadas.
 
 ## Abas cujo nome diverge do cabeçalho
 

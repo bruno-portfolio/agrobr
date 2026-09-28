@@ -95,7 +95,7 @@ asyncio.run(main())
 
 ## Detecção × publicação
 
-O alerta é publicado meses depois de detectado. Medido em 26/09/2026 sobre os 27.368 alertas detectados de setembro de 2024 a
+O alerta é publicado meses depois de detectado. Em 26/09/2026, nos 27.368 alertas detectados de setembro de 2024 a
 fevereiro de 2025: a publicação saiu em mediana 152 dias depois da detecção; 90% em até 205 dias, 95% em até 223 e **99% em até
 293 dias** (o máximo foi 607). Por isso, um período recente pela detecção vem quase vazio: agosto de 2026 tinha 0 alerta pela
 detecção e 2.118 pela publicação.

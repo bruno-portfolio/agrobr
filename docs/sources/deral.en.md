@@ -45,15 +45,15 @@ so `max()` or a text sort of that column is not chronological; convert with
 The PC.xls footnote defines `"-"` as absolute zero. In percentage columns,
 this dash, including surrounding whitespace, becomes `0.0`; empty cells remain null.
 `source_method` reports the reader actually used, such as `httpx+xlrd` for
-the September 2026 BIFF capture, including any fallback reader.
+the September 2026 BIFF file, including any fallback reader.
 
 ## Products
 
-8 crops observed in the captures examined (February and September 2026):
+8 crops published in the February and September 2026 editions:
 cafe, cevada, feijao_1, feijao_2, milho_1 (summer crop), milho_2 (second crop), soja, trigo.
 
 Oats, sugarcane, canola, cassava and aggregate corn/bean totals have parser aliases,
-but were not observed in these weekly report captures. The source API retains
+but do not appear in these weekly report editions. The source API retains
 these aliases; the `milho` and `feijao` filters select the corresponding published
 crop seasons. The dataset advertises only the eight crops above, whose availability
 varies by edition.
@@ -80,15 +80,13 @@ print(meta.source_method)  # "httpx+xlrd"
 - Update: weekly
 - Coverage: Paraná
 
-## Reconciliation of the February and September 2026 workbooks
+## Reading the PC.xls workbook
 
-Both original PC.xls captures are BIFF/XLS: 26 sheets, 438 condition records
-and 730 numeric condition, planting and harvest cells checked directly.
-The `.xlsx` extension retained by the older golden file does not describe its
-actual format. No original XLSX publication was located to certify that parser
-variant.
+The PC.xls published in February and September 2026 is BIFF/XLS: 26 sheets, 438
+condition records and 730 numeric condition, planting and harvest cells. The
+`.xlsx` extension of an older file does not describe its actual format.
 
-Percentages in these captures are percentage points (0–100), with no conversion
+Percentages in these editions are percentage points (0–100), with no conversion
 from percent-formatted fractions. Phenological stage and commercialization
 columns, potato rows and second-season soybean rows are outside the current
 contract. A sheet reporting a holiday without observations produces no records

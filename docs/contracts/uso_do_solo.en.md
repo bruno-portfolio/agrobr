@@ -69,7 +69,7 @@ Interpret `classe_id` together with its collection: municipal class 13 means **O
 
 The sum of a municipality's classes is the area mapped by MapBiomas, not IBGE's territorial area. In the 93 coastal municipalities with a bay or island, it falls below IBGE's area, which includes inland waters (35% below in Florianópolis). Fernando de Noronha does not appear.
 
-In 5 Amazonian border states, the published sum of municipalities exceeds the published state figure for the same collection, year and class, by the same amount in 1985, 2000 and 2025 (Collection 11, checked on 2026-09-26):
+In 5 Amazonian border states, the published sum of municipalities exceeds the published state figure for the same collection, year and class, by the same amount in 1985, 2000 and 2025 (Collection 11):
 
 | State | Σ municipalities − state, all classes | Forest Formation (class 3), 2025 |
 |---|---:|---:|

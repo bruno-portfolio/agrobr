@@ -87,6 +87,6 @@ print(meta.source_url)
 
 `zona_cinza`: public reports without explicit public reuse terms located. The first ANEC call emits a warning. Commercial use or redistribution may require ANEC authorization; publication on the website does not establish permission for commercial redistribution.
 
-## Bulletin verification
+## Reading the bulletins
 
-Verification of editions 04, 08, 12, 13, 34 and 36/2026 includes every month and product actually published: edition 04 has no annual sorghum panel. Total Products is a separate series; annual totals and difference bars do not become months. January wheat and DDGS may differ from the monthly table in the same PDF; the published tables are not forced to agree.
+Every month and product actually published is returned: edition 04 has no annual sorghum panel. Total Products is a separate series; annual totals and difference bars do not become months. January wheat and DDGS may differ from the monthly table in the same PDF; the published tables are not forced to agree.

@@ -122,7 +122,7 @@ O rebanho bovino do USDA não é o da PPM do IBGE (`datasets.pecuaria_municipal`
 ## Catálogos
 
 Os nomes vêm dos catálogos oficiais do gateway (`commodityAttributes`, `commodities`, `countries` e `unitsOfMeasure`),
-guardados no pacote em `agrobr/usda/catalogos/`, com os bytes capturados em 25/09/2026 e o SHA no golden. Nenhuma
+guardados no pacote em `agrobr/usda/catalogos/` (versão de 25/09/2026). Nenhuma
 chamada extra vai à rede. Código que o USDA publicar depois e que não esteja no catálogo local levanta `ParseError`,
 nunca rótulo vazio.
 

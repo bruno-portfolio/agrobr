@@ -59,7 +59,7 @@ O contrato passa a **2.0** por tornar UTC explícito nas duas datas; as onze col
 
 As capturas oficiais mostraram horários diferentes entre CSV e GeoJSON no mesmo registro, com deslocamentos de duas e três horas. O CQL comparou os limites pelo instante UTC do GeoJSON. Por isso a API tabular deixou o CSV: os timestamps UTC retornados agora podem alimentar `atualizado_apos` diretamente via `.isoformat()`. Datas naive de capturas CSV antigas não recebem um fuso presumido nem deslocamento fixo.
 
-O filtro suporta precisão de milissegundos. Zeros além da terceira casa são removidos sem alterar o instante (`.212000` vira `.212`); frações submilissegundo são rejeitadas antes da rede, inclusive quando excedem a precisão de microssegundos do Python. A sondagem mostrou que o GeoServer comparava `.212000` de maneira diferente de `.212`; por isso o agrobr envia a fração em três casas, sem arredondar valores mais precisos. Isso não afirma uma precisão máxima do armazenamento interno da fonte.
+O filtro suporta precisão de milissegundos. Zeros além da terceira casa são removidos sem alterar o instante (`.212000` vira `.212`); frações submilissegundo são rejeitadas antes da rede, inclusive quando excedem a precisão de microssegundos do Python. O GeoServer compara `.212000` de maneira diferente de `.212`; por isso o agrobr envia a fração em três casas, sem arredondar valores mais precisos. Isso não afirma uma precisão máxima do armazenamento interno da fonte.
 
 ## Ocorrências do mesmo imóvel e proveniência
 

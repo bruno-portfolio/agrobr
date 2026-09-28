@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 40 fontes públicas.
 
-**v2.0.0** — 53 datasets | 88 contratos versionados | evidências de validação delimitadas por incremento | validação de parâmetros antes da rede | golden tests por fonte
+**v2.0.0** — 53 datasets | 88 contratos versionados | validação de parâmetros antes da rede | golden tests por fonte
 
 - **CEPEA/ESALQ**: 22 indicadores de preços (soja, milho, boi, café arábica, café robusta, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção, série histórica, progresso semanal de plantio/colheita e preços atacado hortifruti (CEASA/PROHORT)
@@ -179,7 +179,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 | Métrica | Valor |
 |---------|-------|
-| Validação | Evidências por incremento, com escopo e limites documentados |
+| Validação | Escopo e limites documentados |
 | Golden tests | fixtures por fonte (dados reais ou sintéticos) |
 | Resiliência HTTP | Retry centralizado + 429/Retry-After |
 | Benchmarks | Memory, volume, cache, async, rate limiting |

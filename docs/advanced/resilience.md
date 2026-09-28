@@ -173,7 +173,7 @@ e cada XLSX expande, contra um teto por fonte (`constants.MAX_EXPANDED_BYTES`), 
   soma o tamanho declarado dos membros e confere o CRC de cada um em stream, antes do leitor de planilha. O calamine não
   respeita o tamanho declarado: sem o CRC, um XLSX com o tamanho forjado passaria.
 
-| Fonte | Teto | Maior arquivo publicado (medido em 27/09/2026) |
+| Fonte | Teto | Maior arquivo publicado (em 27/09/2026) |
 |---|---|---|
 | Queimadas | 2 GiB | CSV anual de 2024: 905 MB |
 | B3 | 512 MiB | ZIP interno de 13 MB; XML de 144 MB |
@@ -198,8 +198,7 @@ fecha o pedido a endereço interno.
 Quando a fonte primária de um dataset falha e uma fonte seguinte responde, o
 agrobr emite `SourceFallbackWarning` com a fonte primária, a categoria e o resumo
 do erro, além do fallback selecionado. O aviso usa `warnings.warn`, portanto pode
-ser capturado ou filtrado pelas ferramentas padrão do Python e segue para stderr
-em aplicações como o MCP privado.
+ser capturado ou filtrado pelas ferramentas padrão do Python e segue para stderr.
 
 ### CEPEA
 

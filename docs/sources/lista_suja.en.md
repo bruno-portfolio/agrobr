@@ -87,36 +87,10 @@ The semantic dataset rejects `deterministic` before I/O and returns `snapshot=No
 
 The existing classification is `livre`. The official footer states CC BY-ND 3.0; no separate file license was located. Public access and the internal classification do not establish unrestricted reuse permission: see the [license verification](../licenses.en.md#lista-suja). The existing CPF/CNPJ notice is emitted on the first call.
 
-## Reconciliation on 2026-09-18
+## The 2026-04-06 edition and formats
 
-The complete CSV/TXT/PDF bodies captured on September 18 retain the same hashes
-as the earlier capture: periodic edition dated 2026-04-06, registry updated on
-2026-09-04. Recapture does not imply a new edition. The publication contains
-579 records, 567 distinct documents and 4,706 workers in the published field,
-including ten compound inclusion dates. Nulls and repeated documents remain.
+On 2026-09-18, the CSV, TXT and PDF files were those of the periodic edition dated 2026-04-06, with the registry updated on 2026-09-04; the acquisition date does not imply a new edition. The publication contains 579 records, 567 distinct documents and 4,706 workers in the published field, including ten compound inclusion dates. Nulls and repeated documents remain.
 
-All twelve columns are compared through both source and dataset APIs against
-independent oracles: CSV/TXT read with the standard library, and PDF read by
-characters and cell coordinates across its 45 pages. Each format has its own
-expectations; two establishment names retain line breaks after a hyphen in
-PDF and differ from CSV, without implicit repair. PDF reading uses pdfminer,
-which is also a dependency of production pdfplumber; independence between
-extraction engines is not claimed.
+CSV/TXT and PDF represent the same publication, and each format retains its own text: two establishment names retain line breaks after a hyphen in PDF and differ from CSV, without implicit repair.
 
-The inventory covers the ten source fields, edition context, notes and portal
-links, separating the main registry from CEAC and alternative formats.
-`python -m scripts.reconciliar_lista_suja --output result.json` compares
-preserved local bodies; its PDF step requires the `[pdf]` extra. HTTP replays
-exercise public APIs and real filters, but execute at new times: original
-acquisition timestamps remain in the receipts. CSV/TXT/PDF represent the
-same publication and do not constitute independent-source reconciliation.
-
-Derived text fields collapse internal whitespace as production does.
-This affects six CSV `estabelecimento` cells in the capture: IDs 170, 180, 356,
-368, 410 and 525. Original bodies remain byte-for-byte identical; the manifest
-declares the transformation and the raw/normalized values.
-PDF `data_inclusao_texto` preserves cell line breaks. Exact oracle comparison
-has 12 differences: ten compound inclusion texts and the two establishment
-names above. Comparing the ten source fields after whitespace normalization
-yields two differences; comparing all twelve final columns literally yields
-the 12 differences described above.
+Derived text fields collapse internal whitespace. This affects six CSV `estabelecimento` cells in that edition: IDs 170, 180, 356, 368, 410 and 525. PDF `data_inclusao_texto` preserves cell line breaks. Between CSV and PDF, the twelve final columns differ literally in 12 cells: ten compound inclusion texts and the two establishment names above. In the ten source fields, after whitespace normalization, two differences remain.

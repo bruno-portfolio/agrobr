@@ -95,7 +95,7 @@ asyncio.run(main())
 
 ## Detection × publication
 
-An alert is published months after it is detected. Measured on 09/26/2026 over the 27,368 alerts detected from September 2024
+An alert is published months after it is detected. As of 09/26/2026, across the 27,368 alerts detected from September 2024
 to February 2025: publication came a median of 152 days after detection; 90% within 205 days, 95% within 223 and **99% within
 293 days** (the maximum was 607). That is why a recent period by detection comes back almost empty: August 2026 had 0 alerts by
 detection and 2,118 by publication.

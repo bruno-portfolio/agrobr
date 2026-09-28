@@ -75,11 +75,11 @@ df = anda.entregas(2024)
 
 - Fonte: [ANDA](https://anda.org.br) — licenca `zona_cinza`
 - Dados extraidos de PDF via `pdfplumber`
-- Catálogo público conferido em 18/09/2026: PDFs de 2016 a 2026
+- Catálogo público: PDFs de 2016 a 2026
 
 
 ## Cobertura e validação da publicação
 
-O catálogo público conferido em 18/09/2026 contém 11 PDFs, de 2016 a 2026, todos com entregas nacionais mensais (`uf="BR"`). O boletim 2026 publica janeiro a junho; meses posteriores vazios não são zero. No ano corrente (data de Brasília), `entregas` e o dataset `fertilizante` avisam que o boletim é parcial, em `validation_warnings` e em `UserWarning`, e registram `ano_em_curso` e `meses_cobertos` (os meses publicados) em `source_details`. Como nenhum deles publica recorte estadual, a 2.0.0 tirou o parâmetro `uf` da fonte e do dataset `fertilizante` (guia de migração 2.0, seção 50).
+O catálogo público contém 11 PDFs, de 2016 a 2026, todos com entregas nacionais mensais (`uf="BR"`). O boletim 2026 publica janeiro a junho; meses posteriores vazios não são zero. No ano corrente (data de Brasília), `entregas` e o dataset `fertilizante` avisam que o boletim é parcial, em `validation_warnings` e em `UserWarning`, e registram `ano_em_curso` e `meses_cobertos` (os meses publicados) em `source_details`. Como nenhum deles publica recorte estadual, a 2.0.0 tirou o parâmetro `uf` da fonte e do dataset `fertilizante` (guia de migração 2.0, seção 50).
 
 O parser 3 exige a seção `Fertilizantes Entregues ao Mercado (em toneladas de produto)` e procura o ano somente nela. Se o ano ou essa identificação estiver ausente, a fonte levanta `ParseError`; o dataset preserva o motivo em `SourceUnavailableError`. Produção, importação, exportação e relações de troca do mesmo PDF não podem substituir entregas. Valores publicados e o contrato 2.0 permanecem iguais.
