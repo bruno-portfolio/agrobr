@@ -1,0 +1,151 @@
+{
+  "name": "unidades_conservacao_federais",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [],
+  "required_columns": [
+    "codigo",
+    "nome",
+    "categoria",
+    "grupo",
+    "uf",
+    "bioma",
+    "area_ha",
+    "ano_criacao",
+    "ato_criacao"
+  ],
+  "dtypes": {
+    "codigo": "str",
+    "nome": "str",
+    "categoria": "str",
+    "grupo": "str",
+    "uf": "str",
+    "bioma": "str",
+    "area_ha": "float",
+    "ano_criacao": "int",
+    "ato_criacao": "str"
+  },
+  "nullable": {
+    "codigo": false,
+    "nome": false,
+    "categoria": false,
+    "grupo": false,
+    "uf": false,
+    "bioma": false,
+    "area_ha": true,
+    "ano_criacao": true,
+    "ato_criacao": false
+  },
+  "columns": [
+    {
+      "name": "codigo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Código CNUC publicado",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "categoria",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "grupo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Pode conter várias UFs",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "bioma",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Pode conter vários biomas",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": "ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ano_criacao",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ato_criacao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {},
+  "guarantees": [
+    "Cadastro corrente da camada ICMBio:limiteucsfederais_a, não todas as esferas do CNUC",
+    "Código CNUC textual e atributos publicados preservados; sem deduplicação por código",
+    "Área publicada em hectares, sem recálculo geométrico",
+    "Ano e ato de criação não representam edição ou histórico dos perímetros",
+    "Contagem do serviço conciliada com o retorno; não há snapshot transacional",
+    "Seleção acima do limite de aquisição é recusada, sem resultado parcial",
+    "Geometria permanece na API de fonte icmbio.ucs_geo, com dependência geo separada"
+  ]
+}

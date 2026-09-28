@@ -7,10 +7,10 @@
 | Provider | FUNAI (Fundacao Nacional dos Povos Indigenas) |
 | Data | Indigenous Lands as polygons |
 | Access | OGC WFS (GeoServer) |
-| Format | CSV (tabular) / GeoJSON (geo) |
+| Format | WFS 2.0 GeoJSON (`application/json`) in both modes |
 | Authentication | None |
-| License | CC BY-ND 3.0 |
-| Features | ~740 Indigenous lands |
+| License | FUNAI term: reproduction with source citation ([details](../licenses.en.md#funai)) |
+| Features | 665 Indigenous lands (2026-09-23) |
 
 ## Access via WFS
 
@@ -19,7 +19,7 @@
 | Endpoint | `geoserver.funai.gov.br/geoserver/Funai/ows` |
 | WFS Version | 2.0.0 |
 | Layer | `Funai:tis_poligonais` |
-| CRS | EPSG:4674 |
+| CRS | EPSG:4674 in the layer; agrobr requests `srsName=EPSG:4326` and returns EPSG:4326 (GeoServer reprojection) |
 
 ## Usage Example
 
@@ -54,11 +54,41 @@ asyncio.run(main())
 | nome | str | Indigenous land name |
 | etnia | str | Predominant ethnicity |
 | municipio | str | Seat municipality |
-| uf | str | State (abbreviation) |
-| area_ha | float | Area in hectares |
+| uf | str | State of the land as published; 18 lands list more than one (e.g. "AM, RR") |
+| area_ha | float | Area declared by FUNAI in hectares (`superficie_perimetro_ha`), not the polygon's |
 | fase | str | Process phase |
 | modalidade | str | Indigenous land type |
-| data_atualizacao | datetime | Update date |
+| data_atualizacao | str | Update date: published dd/mm/yyyy text, null in 146 of the 665 lands |
+| feature_id | str | WFS feature identifier (text; may vary between requests) |
+| gid | int | Record identifier in the layer |
+| reestudo_ti | str | Re-study status as published (empty, "Reestudo" or "Principal") |
+| cr | str | FUNAI Regional Coordination |
+| faixa_fronteira | str | "Sim"/"Não", as published |
+| undadm_codigo | int | Administrative unit code |
+| undadm_nome | str | Administrative unit name |
+| undadm_sigla | str | Administrative unit acronym |
+| dominio_uniao | str | "t"/"f", as published |
+| epsg | int | EPSG of the source geometry (4674 for every land) |
+
+State, date and administrative flags keep the published text (`funai.terras_indigenas` 2.0 contract).
+
+`area_ha` is the area declared by FUNAI (`superficie_perimetro_ha`), passed through without recalculation, and it may
+differ from the published polygon: for the Mashco do Rio Chandless land (AC), 421 ha declared against 543,430 ha in the
+polygon (2026-09-26). In `terras_indigenas_geo`, a land whose declared area differs by more than 5% from the polygon
+area (IBGE Albers projection) comes with a warning in `validation_warnings` and `UserWarning`, and the list with both
+areas goes to `source_details["area_divergente"]`. `terras_indigenas`, without geometry, does not compare. In AC, 3 of
+the 34 lands exceed 5%.
+To get a date, convert in your application: `pd.to_datetime(df["data_atualizacao"], format="%d/%m/%Y")`.
+
+## Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `uf` | `None` | State abbreviation; matches any state in the published field (lands in more than one state come as "AM, RR") |
+| `fase` | `None` | One of the phases below, exact match |
+| `bbox` | `None` | (lon_min, lat_min, lon_max, lat_max) in EPSG:4326 |
+| `max_registros` | 10,000 (1,000 in `_geo`) | Cap on lands read in code order; `uf` and `fase` filter that prefix locally, and a cut that leaves the selection partial raises a `UserWarning` |
+| `tamanho_pagina` | 250 (10 in `_geo`) | Maximum 1,000 (100 in `_geo`) |
 
 ## Phases
 
@@ -68,4 +98,4 @@ Regularizada, Homologada, Declarada, Delimitada, Em Estudo, Encaminhada RI.
 
 - Only polygonal Indigenous lands (points and lines excluded)
 - Data reflects the current state of the FUNAI GeoServer
-- CC BY-ND 3.0: free use with attribution, no derivatives
+- License: reproduction with source citation under FUNAI's term for geoprocessing and maps; the gov.br portal footer states CC BY-ND 3.0 for site content

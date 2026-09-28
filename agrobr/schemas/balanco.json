@@ -1,7 +1,7 @@
 {
   "name": "conab.balanco",
-  "schema_version": "1.0",
-  "effective_from": "0.3.0",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "safra",
@@ -9,7 +9,14 @@
   ],
   "required_columns": [
     "produto",
-    "safra"
+    "safra",
+    "estoque_inicial",
+    "producao",
+    "importacao",
+    "suprimento",
+    "consumo",
+    "exportacao",
+    "estoque_final"
   ],
   "dtypes": {
     "produto": "str",
@@ -20,7 +27,11 @@
     "suprimento": "float",
     "consumo": "float",
     "exportacao": "float",
-    "estoque_final": "float"
+    "estoque_final": "float",
+    "demanda_total": "float",
+    "levantamento": "str",
+    "unidade": "str",
+    "fonte": "str"
   },
   "nullable": {
     "produto": false,
@@ -31,7 +42,11 @@
     "suprimento": true,
     "consumo": true,
     "exportacao": true,
-    "estoque_final": true
+    "estoque_final": true,
+    "demanda_total": true,
+    "levantamento": true,
+    "unidade": false,
+    "fonte": false
   },
   "columns": [
     {
@@ -132,6 +147,50 @@
       "description": "",
       "min_value": 0,
       "max_value": null
+    },
+    {
+      "name": "demanda_total",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil_ton",
+      "stable": false,
+      "deprecated": false,
+      "description": "Demanda publicada; nula no balanço wide e no layout long antigo",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "levantamento",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Rótulo textual da revisão da linha; nulo quando não publicado",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Unidade das métricas: mil_ton",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "fonte",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Fonte selecionada pelo dataset: conab",
+      "min_value": null,
+      "max_value": null
     }
   ],
   "constraints": {
@@ -142,12 +201,15 @@
     "suprimento_min": 0,
     "consumo_min": 0,
     "exportacao_min": 0,
-    "estoque_final_min": 0
+    "estoque_final_min": 0,
+    "demanda_total_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",
     "All numeric values represent thousands of tons",
     "suprimento = estoque_inicial + producao + importacao",
-    "estoque_final = suprimento - consumo - exportacao"
+    "estoque_final = suprimento - consumo - exportacao",
+    "Numeric output columns use float64, including demanda_total",
+    "Unpublished demand and revision remain null"
   ]
 }

@@ -1,4 +1,0 @@
-{
-    "count": 5,
-    "columns": ["empregador", "cpf_cnpj", "estabelecimento", "uf", "municipio", "cnae", "data_inclusao", "trabalhadores_resgatados"]
-}

@@ -1,4 +1,4 @@
-# preco_atacado v1.0
+# preco_atacado v1.1
 
 Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
 
@@ -10,7 +10,8 @@ Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
 
 ## Produtos
 
-48+ produtos dinâmicos do PROHORT (validação delegada à source).
+48+ produtos dinâmicos do PROHORT. A fonte confere o produto e a CEASA contra o que o próprio corpo publica e
+recusa um nome fora dele com `InvalidParameterError`, com os válidos na mensagem.
 
 ## Schema
 
@@ -18,7 +19,7 @@ Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
 |--------|------|----------|---------|---------|
 | `data` | date | ❌ | - | Sim |
 | `produto` | str | ❌ | - | Sim |
-| `categoria` | str | ❌ | - | Sim |
+| `categoria` | str | ✅ | - | Sim |
 | `unidade` | str | ❌ | - | Sim |
 | `ceasa` | str | ❌ | - | Sim |
 | `ceasa_uf` | str | ❌ | - | Sim |
@@ -35,6 +36,7 @@ Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
 - `ceasa_uf` código UF de 2 letras uppercase
 - Valores monetários em BRL
 - `preco` sempre > 0 (nulls filtrados)
+- `categoria` FRUTAS, HORTALICAS ou OVOS; nula só para produto fora da tabela do agrobr, com aviso (1.1)
 
 ## Exemplo
 

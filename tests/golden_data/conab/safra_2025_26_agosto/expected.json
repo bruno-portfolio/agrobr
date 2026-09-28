@@ -1,0 +1,66 @@
+{
+  "soja": {
+    "count": 30,
+    "ufs_found": [
+      "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
+      "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN",
+      "RO", "RR", "RS", "SC", "SE", "SP", "TO"
+    ],
+    "safra": "2025/26",
+    "first_uf": {
+      "uf": "RR",
+      "area_plantada": "150",
+      "produtividade": "3420",
+      "producao": "513"
+    }
+  },
+  "milho": {
+    "count": 30,
+    "ufs_found": [
+      "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
+      "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN",
+      "RO", "RR", "RS", "SC", "SE", "SP", "TO"
+    ],
+    "first_uf": {
+      "uf": "RR",
+      "area_plantada": "20",
+      "produtividade": "6000",
+      "producao": "120"
+    }
+  },
+  "suprimento": {
+    "count": 41,
+    "produtos": ["ALGODÃO", "ARROZ EM CASCA", "FEIJÃO", "MILHO", "TRIGO", "SOJA"]
+  },
+  "brasil_total": {
+    "count": 78
+  },
+  "oracle": {
+    "method": "Leitura independente openpyxl(data_only=True), sem importar parser agrobr; ver README.md",
+    "soja": {
+      "sheet": "Soja",
+      "uf_rows": [9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 32, 33, 34, 35, 37, 38, 39],
+      "additional_numeric_rows": [40, 41, 42],
+      "reference_cells": {"A9": "RR", "C9": 150, "F9": 3420, "I9": 513, "A27": "MT", "C27": 13006.2, "F27": 3969, "I27": 51621.6}
+    },
+    "milho": {
+      "sheet": "Milho Total",
+      "same_territory_rows_as_soja": true,
+      "reference_cells": {"A9": "RR", "C9": 20, "F9": 6000, "I9": 120, "A42": "BRASIL", "C42": 22598, "I42": 142955}
+    },
+    "suprimento": {
+      "sheet": "Suprimento",
+      "product_start_rows": [6, 14, 22, 30, 38],
+      "distinct_seasons_per_product": 7,
+      "latest_revision_rows": [13, 21, 29, 37, 45],
+      "reference_cells": {"C37": "ago/26", "E37": 142955, "I37": 46500, "C45": "ago/26", "E45": 5813.1}
+    },
+    "brasil_total": {
+      "sheet": "Brasil - Total por Produto",
+      "data_row_ranges": [[8, 38], [42, 49]],
+      "excluded_header_footer_rows": [39, 50, 51, 52],
+      "season_columns": ["B", "C"],
+      "reference_cells": {"A36": "SOJA", "I36": 180463.5, "A46": "TRIGO", "I46": 5813.1}
+    }
+  }
+}

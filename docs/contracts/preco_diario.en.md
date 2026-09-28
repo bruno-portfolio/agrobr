@@ -1,4 +1,4 @@
-# preco_diario v1.0
+# preco_diario v1.1
 
 Daily spot prices of Brazilian agricultural commodities.
 
@@ -6,8 +6,8 @@ Daily spot prices of Brazilian agricultural commodities.
 
 | Priority | Source | Description |
 |----------|--------|-------------|
-| 1 | CEPEA/ESALQ | Via Notícias Agrícolas |
-| 2 | Local cache | DuckDB |
+| 1 | CEPEA/ESALQ | Direct collection, with Notícias Agrícolas fallback |
+| 2 | Local cache | DuckDB; returns the same columns and dtypes as the CEPEA fetch |
 
 ## Products
 
@@ -20,11 +20,13 @@ Daily spot prices of Brazilian agricultural commodities.
 | `data` | date | ❌ | - | Indicator date |
 | `produto` | str | ❌ | - | Product name |
 | `praca` | str | ✅ | - | Reference market |
-| `valor` | float64 | ❌ | BRL | Price in reais |
-| `unidade` | str | ❌ | - | E.g. "BRL/sc60kg" |
+| `valor` | float64 | ❌ | As specified by `unidade` | Price in the unit specified in the same row |
+| `unidade` | str | ❌ | - | E.g. "BRL/sc60kg", "BRL/ton", "cBRL/lb" (Brazilian real cents per pound) |
 | `fonte` | str | ❌ | - | Data origin |
 | `metodologia` | str | ✅ | - | Indicator methodology, when available |
-| `anomalies` | str | ✅ | - | Detected anomalies or markers, when present |
+| `anomalies` | str | ✅ | - | Anomaly list serialized as JSON text; null when empty |
+| `valor_usd` | float64 | ✅ | USD | Dollar price published by CEPEA in the same row (optional, since 1.1); null on the Notícias Agrícolas fallback and in history cached before migration 10 |
+| `peso_medio_kg` | float64 | ✅ | kg | Average calf weight (MS) from CEPEA's auxiliary table (optional, since 1.1); null for other products |
 
 **Precision note:** `valor` uses `float64` (not `Decimal`) for
 compatibility with pandas/polars and pipeline performance. IEEE 754
@@ -32,11 +34,35 @@ precision is sufficient for agricultural prices (max ~R$ 999,999.99).
 For accounting use that requires exact precision, convert with
 `df["valor"].apply(Decimal)` after the fetch.
 
+The optional 1.1 columns are filled only by CEPEA collection: `valor_usd` follows the
+`Valor US$` column of the indicator table and `peso_medio_kg` comes from the `Peso Médio`
+table on the calf page. Notícias Agrícolas fallback rows and records cached before
+migration 10 stay null until the next collection.
+
 ## Guarantees
 
 - `data` is always a business day
 - `valor` is always positive
 - Sorted by `data` descending
+
+## Observation selection
+
+The key remains `data` and `produto`. For the same observation and location,
+CEPEA takes precedence over Notícias Agrícolas, including when both are
+already cached. New collection from the same provider replaces its earlier
+revision. Both providers' observations remain in DuckDB.
+
+Use `praca=` to select a location. Without that filter, the dataset prioritizes
+the product's existing reference location: Paranaguá/PR for soybean,
+Campinas/SP for corn, São Paulo/SP for cattle, coffee, and cotton, Mato Grosso
+do Sul for calves, Espírito Santo for robusta coffee, and Paraná for wheat.
+If that reference is absent, ties use the location slug in alphabetical
+order; this does not turn a regional series into a national average.
+Use `cepea.indicador()` to retrieve every location.
+
+`data_sources` includes only providers of selected rows. `valor` remains
+`float64`, including direct DuckDB fallback. With sanity enabled, use
+`json.loads(df.loc[index, "anomalies"])` to read non-null markers.
 
 ## Example
 
@@ -60,7 +86,7 @@ from agrobr import datasets
 async with datasets.deterministic("2025-12-31"):
     df = await datasets.preco_diario("soja")
     # Filters data <= 2025-12-31
-    # Uses local cache only
+    # Uses local cache only; without the product in the cache, raises SourceUnavailableError
 ```
 
 ## JSON Schema
@@ -83,7 +109,7 @@ df, meta = await datasets.preco_diario("soja", return_meta=True)
 
 print(meta.source)            # "datasets.preco_diario/cepea"
 print(meta.dataset)           # "preco_diario"
-print(meta.contract_version)  # "1.0"
+print(meta.contract_version)  # "1.1"
 print(meta.records_count)     # 365
 print(meta.from_cache)        # False
 print(meta.snapshot)          # None (or "2025-12-31" if deterministic)

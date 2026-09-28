@@ -9,8 +9,8 @@
     in February/2026. Awaiting reply. Verify directly with ANDA before
     commercial use.
 
-Associação Nacional para Difusão de Adubos. Fertilizer delivery data by
-state and month.
+Associação Nacional para Difusão de Adubos. Monthly fertilizer deliveries
+to the Brazilian market (national total, `uf="BR"`).
 
 ## Installation
 
@@ -25,13 +25,10 @@ pip install agrobr[pdf]
 ```python
 from agrobr import anda
 
-# Fertilizer deliveries by state/month
+# Monthly fertilizer deliveries
 df = await anda.entregas(ano=2024)
 
-# Filter by state
-df = await anda.entregas(ano=2024, uf="MT")
-
-# Monthly aggregation (sums all states)
+# Monthly aggregation (without the uf column)
 df = await anda.entregas(ano=2024, agregacao="mensal")
 ```
 
@@ -41,7 +38,7 @@ df = await anda.entregas(ano=2024, agregacao="mensal")
 |---|---|---|
 | `ano` | int | Year |
 | `mes` | int | Month (1-12) |
-| `uf` | str | State |
+| `uf` | str | Always `BR` (national total) |
 | `produto_fertilizante` | str | Always `total`; the source does not publish deliveries broken down by formulation |
 | `volume_ton` | float | Delivered volume (tonnes) |
 
@@ -52,10 +49,10 @@ The available delivery bulletins contain only aggregated fertilizer totals.
 Therefore, `produto="total"` is the only accepted value; formulations such as
 `ureia`, `map`, or `kcl` raise `InvalidParameterError` before download.
 
-The agrobr parser automatically detects the orientation of the tables
-(states in rows vs columns), and also supports the "Principais
-Indicadores" layout (aggregated national data with months/values in cells
-concatenated with `\n`). Drastic format changes may require a parser update.
+The agrobr parser reads the "Principais Indicadores" layout (aggregated
+national data, with months and values sometimes in cells concatenated with
+`\n`). No published PDF has a state table, and the parser does not try to
+read one. Drastic format changes may require a parser update.
 
 There is no year fallback. If no PDF link matches the requested year, the client
 raises `InvalidParameterError` and reports the years available on the site.
@@ -71,12 +68,26 @@ looks distorted, its weight in the SCI is automatically reduced.
 df, meta = await anda.entregas(ano=2024, return_meta=True)
 print(meta.source)  # "anda"
 print(meta.source_method)  # "httpx+pdfplumber"
+print(meta.source_url)  # PDF used, e.g. .../Principais_Indicadores_2026.pdf
+print(meta.source_details["pdf"])
+# {"url", "rotulo_catalogo" (e.g. "Dados 2026"), "edicao_impressa" (e.g. "Janeiro a Junho"; "Total do Ano"
+#  for a closed year), "sha256", "bytes", "pagina_de_recursos"}
 ```
+
+`source_url` is the concrete PDF picked from the catalog; the printed edition is the label of the cumulative
+row of the deliveries section (it tells up to which month the PDF goes). `raw_content_hash` is the PDF SHA-256.
 
 ## Source
 
 - URL: `https://anda.org.br/recursos/`
 - Format: PDF/Excel
 - Update: monthly
-- History: 2010+
+- Public catalog checked on 2026-09-18: 2016–2026
 - License: `zona_cinza` — authorization requested (Feb/2026)
+
+
+## Publication coverage and validation
+
+The public catalog checked on 2026-09-18 contains 11 PDFs covering 2016–2026, all with monthly national deliveries (`uf="BR"`). The 2026 bulletin publishes January through June; blank later months are not zero. Since none of them publishes a state breakdown, 2.0.0 removed the `uf` argument from the source and from the `fertilizante` dataset (2.0 migration guide, section 50).
+
+Parser 3 requires the `Fertilizantes Entregues ao Mercado (em toneladas de produto)` section and searches for the year only within it. If that year or section identity is missing, the source raises `ParseError`; the dataset retains the reason in `SourceUnavailableError`. Production, imports, exports and exchange ratios from the same PDF cannot substitute for deliveries. Published values and contract 2.0 are unchanged.

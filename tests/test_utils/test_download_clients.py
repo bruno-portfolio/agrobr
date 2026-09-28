@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
+import httpx
 import pytest
 
+from agrobr import constants
 from agrobr.alt.anp_diesel import client as anp_client
 from agrobr.alt.mapa_psr import client as mapa_psr_client
 from agrobr.anda import client as anda_client
 from agrobr.b3 import client as b3_client
 from agrobr.deral import client as deral_client
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.ibama import client as ibama_client
 from agrobr.ibge import ftp_client
 from agrobr.lista_suja import client as lista_suja_client
@@ -59,16 +61,26 @@ class TestDownloadClientsRejectHtml:
 
     @pytest.mark.asyncio
     async def test_lista_suja(self):
+        page_url = constants.URLS[constants.Fonte.LISTA_SUJA]["page"]
+        csv_url = f"{page_url}/cadastro.csv"
+        page = (
+            f"<h2>{constants.LISTA_SUJA_PUBLICATION_TITLE}</h2>"
+            f'<p><a href="{csv_url}">CSV</a><a href="{page_url}/cadastro.pdf">PDF</a></p>'
+        )
         with (
             patch.object(
                 lista_suja_client,
                 "retry_on_status",
                 new_callable=AsyncMock,
-                return_value=_response(),
-            ),
-            pytest.raises(SourceUnavailableError, match="Assinatura inválida"),
+                side_effect=[
+                    make_mock_response(200, content=page.encode(), url=page_url),
+                    make_mock_response(200, content=_HTML, url=csv_url),
+                ],
+            ) as request,
+            pytest.raises(ParseError, match="Corpo CSV incompatível"),
         ):
             await lista_suja_client.fetch_empregadores()
+        assert request.await_count == 2
 
     @pytest.mark.asyncio
     async def test_rio_verde(self):
@@ -95,7 +107,7 @@ class TestDownloadClientsRejectHtml:
             ),
             pytest.raises(SourceUnavailableError, match="Assinatura inválida"),
         ):
-            await anp_client.download_xlsx("https://example.test/file.xlsx")
+            await anp_client.fetch_precos_resource("https://example.test/file.xlsx")
 
     @pytest.mark.asyncio
     async def test_anp_diesel_csv(self):
@@ -112,16 +124,18 @@ class TestDownloadClientsRejectHtml:
 
     @pytest.mark.asyncio
     async def test_mapa_psr(self):
+        original = httpx.AsyncClient
+        transport = httpx.MockTransport(lambda _request: httpx.Response(200, content=_HTML))
         with (
             patch.object(
-                mapa_psr_client,
-                "retry_on_status",
-                new_callable=AsyncMock,
-                return_value=_response(),
+                mapa_psr_client.httpx,
+                "AsyncClient",
+                side_effect=lambda **kwargs: original(transport=transport, **kwargs),
             ),
             pytest.raises(SourceUnavailableError, match="Assinatura inválida"),
         ):
-            await mapa_psr_client.download_csv("https://example.test/file.csv")
+            async with mapa_psr_client.open_periodo("2025"):
+                raise AssertionError("corpo HTML entregue")
 
     @pytest.mark.asyncio
     async def test_zarc(self):
@@ -147,7 +161,7 @@ class TestDownloadClientsRejectHtml:
             ),
             pytest.raises(SourceUnavailableError, match="Assinatura inválida"),
         ):
-            await mapbiomas_client._fetch_url("https://example.test/file.xlsx")
+            await mapbiomas_client._fetch_bundle("https://example.test/file.xlsx")
 
     @pytest.mark.asyncio
     async def test_anda(self):
@@ -186,4 +200,4 @@ class TestDownloadClientsRejectHtml:
             ),
             pytest.raises(SourceUnavailableError, match="Assinatura inválida"),
         ):
-            await ibama_client.fetch_embargos_zip()
+            await ibama_client.fetch_embargos_csv()

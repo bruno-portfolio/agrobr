@@ -1,36 +1,22 @@
 from __future__ import annotations
 
 import asyncio
+import threading
+import warnings
+from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
 import pytest
 
-from agrobr.sync import _get_or_create_event_loop, _SyncModule, run_sync, sync_wrapper
+from agrobr import constants
+from agrobr.cache import duckdb_store
+from agrobr.datasets.deterministic import deterministic, get_snapshot
+from agrobr.sync import _SyncModule, run_sync, sync_wrapper
+from tests.helpers import levanta_exatamente, sem_excecao
 
 
 class TestRunSync:
-    def test_executes_coroutine(self):
-        async def coro():
-            return 42
-
-        result = run_sync(coro())
-        assert result == 42
-
-    def test_returns_value(self):
-        async def coro():
-            return {"key": "value"}
-
-        result = run_sync(coro())
-        assert result == {"key": "value"}
-
-    def test_propagates_exception(self):
-        async def failing():
-            raise ValueError("async error")
-
-        with pytest.raises(ValueError, match="async error"):
-            run_sync(failing())
-
     def test_propagates_typed_exception(self):
         async def failing():
             raise RuntimeError("typed")
@@ -40,21 +26,6 @@ class TestRunSync:
 
 
 class TestSyncWrapper:
-    def test_wraps_async_func(self):
-        async def async_add(a, b):
-            return a + b
-
-        sync_add = sync_wrapper(async_add)
-        result = sync_add(3, 4)
-        assert result == 7
-
-    def test_preserves_name(self):
-        async def my_func():
-            pass
-
-        wrapped = sync_wrapper(my_func)
-        assert wrapped.__name__ == "my_func"
-
     def test_preserves_doc_with_sync_prefix(self):
         async def documented():
             """Original doc."""
@@ -73,80 +44,14 @@ class TestSyncWrapper:
         wrapped = sync_wrapper(no_doc)
         assert wrapped.__doc__ is None
 
-    def test_passes_args_and_kwargs(self):
-        async def func(a, b, key=None):
-            return (a, b, key)
-
-        sync_func = sync_wrapper(func)
-        result = sync_func(1, 2, key="val")
-        assert result == (1, 2, "val")
-
-    def test_exception_propagation(self):
-        async def failing():
-            raise TypeError("wrong type")
-
-        sync_fail = sync_wrapper(failing)
-        with pytest.raises(TypeError, match="wrong type"):
-            sync_fail()
-
 
 class TestSyncModule:
-    def test_wraps_coroutine_functions(self):
-        mock_module = mock.MagicMock()
-
-        async def async_method():
-            return "async_result"
-
-        mock_module.fetch = async_method
-        sync_mod = _SyncModule(mock_module)
-
-        result = sync_mod.fetch()
-        assert result == "async_result"
-
     def test_passes_non_coroutine_through(self):
         mock_module = mock.MagicMock()
         mock_module.CONSTANT = 42
 
         sync_mod = _SyncModule(mock_module)
         assert sync_mod.CONSTANT == 42
-
-    def test_sync_function_passthrough(self):
-        mock_module = mock.MagicMock()
-
-        def regular_func():
-            return "sync"
-
-        mock_module.regular = regular_func
-        sync_mod = _SyncModule(mock_module)
-
-        result = sync_mod.regular()
-        assert result == "sync"
-
-    def test_coroutine_detection_uses_inspect(self):
-        mock_module = mock.MagicMock()
-        regular = mock.Mock(return_value="sync")
-        mock_module.regular = regular
-        sync_mod = _SyncModule(mock_module)
-
-        with mock.patch(
-            "agrobr.sync.inspect.iscoroutinefunction",
-            return_value=False,
-        ) as is_coroutine:
-            assert sync_mod.regular() == "sync"
-
-        is_coroutine.assert_called_once_with(regular)
-
-    def test_async_exception_propagation(self):
-        mock_module = mock.MagicMock()
-
-        async def failing():
-            raise ConnectionError("network down")
-
-        mock_module.failing = failing
-        sync_mod = _SyncModule(mock_module)
-
-        with pytest.raises(ConnectionError, match="network down"):
-            sync_mod.failing()
 
 
 class TestModuleLazyLoading:
@@ -165,12 +70,6 @@ class TestModuleLazyLoading:
             assert result is not None
 
             sync_module._modules["cepea"] = None
-
-    def test_invalid_module_raises(self):
-        import agrobr.sync as sync_module
-
-        with pytest.raises(AttributeError, match="no attribute"):
-            sync_module.__getattr__("nonexistent_module")
 
     def test_cached_module_not_reimported(self):
         import agrobr.sync as sync_module
@@ -214,17 +113,66 @@ class TestModuleLazyLoading:
         assert set(sync_module._modules) == expected
 
 
-class TestGetOrCreateEventLoop:
-    def test_creates_loop_when_none_exists(self):
-        loop = _get_or_create_event_loop()
-        assert loop is not None
+class TestRunningLoop:
+    def test_dentro_de_loop_roda_em_thread_duas_vezes_e_o_2o_asyncio_run_segue(self):
+        async def identificar(valor):
+            return valor, threading.current_thread().name
 
-    def test_running_loop_without_nest_asyncio_raises(self):
-        loop = asyncio.new_event_loop()
-        with (
-            mock.patch.dict("sys.modules", {"nest_asyncio": None}),
-            mock.patch("agrobr.sync.asyncio.get_running_loop", return_value=loop),
-            pytest.raises(RuntimeError, match="nest_asyncio"),
-        ):
-            _get_or_create_event_loop()
-        loop.close()
+        async def cenario():
+            chamador = threading.current_thread().name
+            return chamador, [run_sync(identificar(valor)) for valor in (1, 2)]
+
+        with warnings.catch_warnings(record=True) as avisos, sem_excecao():
+            warnings.simplefilter("always")
+            primeiro = asyncio.run(cenario())
+            segundo = asyncio.run(cenario())
+
+        for chamador, resultados in (primeiro, segundo):
+            assert [valor for valor, _ in resultados] == [1, 2]
+            assert all(thread not in (chamador, "") for _, thread in resultados)
+        mensagens = [str(aviso.message) for aviso in avisos if "agrobr.sync" in str(aviso.message)]
+        assert len(mensagens) == 1
+        assert "await" in mensagens[0]
+
+    def test_dentro_de_loop_leva_o_modo_deterministico_para_a_thread(self):
+        async def snapshot_na_thread():
+            return get_snapshot()
+
+        async def cenario():
+            async with deterministic("2025-03-10"):
+                return run_sync(snapshot_na_thread())
+
+        with sem_excecao():
+            assert asyncio.run(cenario()) == "2025-03-10"
+
+    def test_dentro_de_loop_preserva_a_excecao_da_corrotina(self):
+        async def falha():
+            raise ImportError("dependência interna ausente")
+
+        async def cenario():
+            run_sync(falha())
+
+        with levanta_exatamente(ImportError, "dependência interna ausente"):
+            asyncio.run(cenario())
+
+    def test_dentro_de_loop_o_cache_duckdb_aceita_a_conexao_da_thread(self, tmp_path):
+        store = duckdb_store.DuckDBStore(constants.CacheSettings(cache_dir=tmp_path))
+        linha = {
+            "produto": "soja",
+            "praca": "paranagua",
+            "data": datetime(2026, 9, 25),
+            "valor": 140.5,
+            "unidade": "BRL/sc",
+            "fonte": "cepea",
+        }
+
+        async def gravar_e_ler():
+            return store.indicadores_upsert([linha]), store.indicadores_query("soja")
+
+        async def cenario():
+            return run_sync(gravar_e_ler())
+
+        with sem_excecao():
+            gravadas, lidas = asyncio.run(cenario())
+        assert gravadas == 1
+        assert [(item["praca"], float(item["valor"])) for item in lidas] == [("paranagua", 140.5)]

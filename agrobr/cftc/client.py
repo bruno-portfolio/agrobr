@@ -6,7 +6,7 @@ import httpx
 import structlog
 
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -30,7 +30,9 @@ async def fetch_cot(
     start: str | date | None = None,
     end: str | date | None = None,
     combined: bool = False,
-) -> tuple[list[dict[str, str]], str]:
+) -> tuple[list[dict[str, str]], str, bytes]:
+    if start and end and _soql_date(start) > _soql_date(end):
+        raise InvalidParameterError(f"start ({start}) posterior a end ({end})")
     resource = "disaggregated_combined" if combined else "disaggregated_futures"
     url = URLS[Fonte.CFTC][resource]
 
@@ -62,7 +64,7 @@ async def fetch_cot(
             lambda: client.get(url, params=params),
             source="cftc",
         )
-        response.raise_for_status()
+        responses.raise_for_status(response, source="cftc")
         data = responses.parse_json_response(response, source="cftc", url=url)
 
     if not data or not isinstance(data, list):
@@ -76,4 +78,4 @@ async def fetch_cot(
         logger.warning("cftc_cot_truncated", rows=len(data), limit=MAX_ROWS)
 
     logger.info("cftc_cot_ok", records=len(data))
-    return data, url
+    return data, str(response.url), response.content

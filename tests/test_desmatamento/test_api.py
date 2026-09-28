@@ -1,448 +1,172 @@
 from __future__ import annotations
 
-from pathlib import Path
-from unittest.mock import AsyncMock, patch
+import hashlib
+import json
+from datetime import datetime
+from unittest.mock import AsyncMock, Mock
 
-import pandas as pd
 import pytest
 
-from agrobr.desmatamento import api
+from agrobr import constants, deterministic
+from agrobr.desmatamento import api, client
 from agrobr.exceptions import InvalidParameterError
-
-PRODES_DIR = Path(__file__).parent.parent / "golden_data" / "desmatamento" / "prodes_sample"
-PRODES_GEO_DIR = Path(__file__).parent.parent / "golden_data" / "desmatamento" / "prodes_geo_sample"
-DETER_DIR = Path(__file__).parent.parent / "golden_data" / "desmatamento" / "deter_sample"
-DETER_GEO_DIR = Path(__file__).parent.parent / "golden_data" / "desmatamento" / "deter_geo_sample"
+from tests.helpers import desmatamento_features, install_desmatamento_wfs
 
 
-def _prodes_csv_bytes() -> bytes:
-    return PRODES_DIR.joinpath("response.csv").read_bytes()
+async def test_api_local_limit_warns_and_records_partial_coverage(monkeypatch):
+    calls = install_desmatamento_wfs(monkeypatch, desmatamento_features())
+    with pytest.warns(UserWarning, match="2 de 6"):
+        frame, meta = await api.prodes(
+            bioma="Amazônia", max_registros=2, tamanho_pagina=1, return_meta=True
+        )
+    assert len(frame) == 2 and len(calls) == 4
+    assert meta.source_details["coverage"]["truncated"]
+    assert not meta.source_details["coverage"]["count_reconciled"]
+    assert meta.source_details["coverage"]["status"] == "partial"
+    assert any("Limite local: retornadas 2 de 6" in aviso for aviso in meta.validation_warnings)
 
 
-def _deter_csv_bytes() -> bytes:
-    return DETER_DIR.joinpath("response.csv").read_bytes()
+@pytest.mark.parametrize("method", ["prodes", "deter", "prodes_geo", "deter_geo"])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"bioma": "Atlantida"},
+        {"bioma": None},
+        {"uf": "ZZ"},
+        {"uf": False},
+        {"max_registros": 0},
+        {"max_registros": True},
+        {"max_registros": 1.0},
+        {"tamanho_pagina": 0},
+        {"tamanho_pagina": True},
+        {"return_meta": 1},
+    ],
+)
+async def test_api_invalid_query_before_optional_and_network(monkeypatch, method, kwargs):
+    fetch = AsyncMock()
+    optional = Mock(side_effect=AssertionError("optional should not be inspected"))
+    monkeypatch.setattr(client, "fetch_acquisition", fetch)
+    monkeypatch.setattr(api.geo, "check_geopandas", optional)
+    with pytest.raises(InvalidParameterError):
+        await getattr(api, method)(**kwargs)
+    fetch.assert_not_awaited()
+    optional.assert_not_called()
 
 
-def _prodes_geojson_bytes() -> bytes:
-    return PRODES_GEO_DIR.joinpath("response.geojson").read_bytes()
+@pytest.mark.parametrize("method", ["prodes", "deter", "prodes_geo", "deter_geo"])
+async def test_api_unknown_keyword_before_network(monkeypatch, method):
+    fetch = AsyncMock()
+    monkeypatch.setattr(client, "fetch_acquisition", fetch)
+    with pytest.raises(TypeError, match="desconhecidos"):
+        await getattr(api, method)(snapshot="2020-01-01")
+    fetch.assert_not_awaited()
 
 
-def _deter_geojson_bytes() -> bytes:
-    return DETER_GEO_DIR.joinpath("response.geojson").read_bytes()
+@pytest.mark.parametrize("method", ["prodes", "deter", "prodes_geo", "deter_geo"])
+async def test_api_deterministic_rejected_before_optional_and_network(monkeypatch, method):
+    fetch = AsyncMock()
+    optional = Mock(side_effect=AssertionError("optional should not be inspected"))
+    monkeypatch.setattr(client, "fetch_acquisition", fetch)
+    monkeypatch.setattr(api.geo, "check_geopandas", optional)
+    async with deterministic("2020-01-01"):
+        with pytest.raises(InvalidParameterError, match="deterministic"):
+            await getattr(api, method)()
+    fetch.assert_not_awaited()
+    optional.assert_not_called()
 
 
-class TestProdes:
-    @pytest.mark.parametrize(
-        ("fn_name", "fetch_name"),
-        [
-            ("prodes", "fetch_prodes"),
-            ("deter", "fetch_deter"),
-            ("prodes_geo", "fetch_prodes_geo"),
-            ("deter_geo", "fetch_deter_geo"),
-        ],
+async def test_api_geo_empty_has_geometry_and_crs(monkeypatch):
+    gpd = pytest.importorskip("geopandas")
+    install_desmatamento_wfs(monkeypatch, [])
+    frame, meta = await api.prodes_geo(return_meta=True)
+    assert isinstance(frame, gpd.GeoDataFrame)
+    assert frame.empty and len(frame.columns) == 21
+    assert frame.crs.to_epsg() == 4326
+    assert not meta.source_details["geometry"]["declared_crs_verified"]
+    assert meta.source_details["geometry"]["crs_basis"] == "requested_crs_for_empty_frame"
+
+
+@pytest.mark.parametrize(
+    "product,sample", [("prodes", "prodes_amazonia"), ("deter", "deter_cerrado")]
+)
+async def test_api_polars_preserves_nullable_text_and_float(monkeypatch, product, sample):
+    pl = pytest.importorskip("polars")
+    features = desmatamento_features(sample)
+    install_desmatamento_wfs(monkeypatch, features)
+    frame, meta = await getattr(api, product)(
+        bioma="Cerrado" if sample.endswith("cerrado") else "Amazônia",
+        as_polars=True,
+        return_meta=True,
     )
-    @pytest.mark.asyncio
-    async def test_invalid_bioma_raises_before_request(self, fn_name, fetch_name):
-        with (
-            patch.object(api.client, fetch_name, new_callable=AsyncMock) as fetch,
-            pytest.raises(InvalidParameterError, match="Bioma inválido"),
-        ):
-            await getattr(api, fn_name)(bioma="Atlantida")
-
-        fetch.assert_not_awaited()
-
-    @pytest.mark.asyncio
-    async def test_result_at_limit_emits_filter_warning(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_prodes",
-                new_callable=AsyncMock,
-                return_value=(b"csv", "https://example.com/prodes.csv"),
-            ),
-            patch.object(
-                api.parser,
-                "parse_prodes_csv",
-                return_value=pd.DataFrame(index=range(api.client.MAX_FEATURES_PER_REQUEST)),
-            ),
-            pytest.warns(UserWarning, match="filtre por ano e/ou UF"),
-        ):
-            await api.prodes()
-
-    @pytest.mark.asyncio
-    async def test_returns_dataframe(self):
-        csv_bytes = _prodes_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.csv"),
-        ):
-            df = await api.prodes(bioma="Cerrado", ano=2022)
-
-        assert len(df) >= 5
-        assert "ano" in df.columns
-        assert "area_km2" in df.columns
-        assert "uf" in df.columns
-        assert "bioma" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        csv_bytes = _prodes_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.csv"),
-        ):
-            df, meta = await api.prodes(bioma="Cerrado", ano=2022, return_meta=True)
-
-        assert meta.source == "desmatamento"
-        assert meta.records_count == len(df)
-        assert meta.parser_version == 1
-        assert meta.fetch_timestamp is not None
-        assert "terrabrasilis_prodes" in meta.attempted_sources
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        csv_bytes = _prodes_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.csv"),
-        ):
-            df = await api.prodes(bioma="Cerrado", uf="MT")
-
-        assert len(df) >= 1
-        assert (df["uf"] == "MT").all()
-
-    @pytest.mark.asyncio
-    async def test_filter_uf_case_insensitive(self):
-        csv_bytes = _prodes_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.csv"),
-        ):
-            df = await api.prodes(bioma="Cerrado", uf="mt")
-
-        assert len(df) >= 1
-        assert (df["uf"] == "MT").all()
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF invalida"):
-            await api.prodes(bioma="Cerrado", uf="XX")
-
-    @pytest.mark.asyncio
-    async def test_bioma_normalization(self):
-        csv_bytes = _prodes_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.csv"),
-        ) as mock_fetch:
-            await api.prodes(bioma="cerrado")
-
-        assert mock_fetch.call_args[0][0] == "Cerrado"
+    assert isinstance(frame, pl.DataFrame) and len(frame) == 6
+    assert frame.schema["feature_id"] == pl.Utf8
+    assert frame.schema["area_km2"] == pl.Float64
+    if product == "prodes":
+        assert frame.schema["ano"] == pl.Int64
+    assert meta.records_count == len(frame)
 
 
-class TestDeter:
-    @pytest.mark.asyncio
-    async def test_returns_dataframe(self):
-        csv_bytes = _deter_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/deter.csv"),
-        ):
-            df = await api.deter(bioma="Amazônia")
-
-        assert len(df) >= 5
-        assert "data" in df.columns
-        assert "area_km2" in df.columns
-        assert "uf" in df.columns
-        assert "classe" in df.columns
-        assert "bioma" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        csv_bytes = _deter_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/deter.csv"),
-        ):
-            df, meta = await api.deter(bioma="Amazônia", return_meta=True)
-
-        assert meta.source == "desmatamento"
-        assert meta.records_count == len(df)
-        assert meta.parser_version == 1
-        assert meta.fetch_timestamp is not None
-        assert "terrabrasilis_deter" in meta.attempted_sources
-
-    @pytest.mark.asyncio
-    async def test_filter_classe(self):
-        csv_bytes = _deter_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/deter.csv"),
-        ):
-            df = await api.deter(bioma="Amazônia", classe="DESMATAMENTO_CR")
-
-        assert len(df) >= 1
-        assert (df["classe"] == "DESMATAMENTO_CR").all()
-
-    @pytest.mark.asyncio
-    async def test_filter_classe_degradacao(self):
-        csv_bytes = _deter_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/deter.csv"),
-        ):
-            df = await api.deter(bioma="Amazônia", classe="DEGRADACAO")
-
-        assert len(df) >= 1
-        assert (df["classe"] == "DEGRADACAO").all()
-
-    @pytest.mark.asyncio
-    async def test_bioma_normalization(self):
-        csv_bytes = _deter_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/deter.csv"),
-        ) as mock_fetch:
-            await api.deter(bioma="amazonia")
-
-        assert mock_fetch.call_args[0][0] == "Amazônia"
-
-    @pytest.mark.asyncio
-    async def test_empty_filter(self):
-        csv_bytes = _deter_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://terrabrasilis.dpi.inpe.br/geoserver/deter.csv"),
-        ):
-            df = await api.deter(bioma="Amazônia", classe="CLASSE_INEXISTENTE")
-
-        assert len(df) == 0
-
-
-gpd = pytest.importorskip("geopandas")
-
-
-class TestProdesGeo:
-    @pytest.mark.asyncio
-    async def test_bioma_normalization(self):
-        geojson_bytes = _prodes_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.geojson",
-            ),
-        ) as mock_fetch:
-            await api.prodes_geo(bioma="cerrado")
-
-        assert mock_fetch.call_args[0][0] == "Cerrado"
-
-    @pytest.mark.asyncio
-    async def test_returns_geodataframe(self):
-        geojson_bytes = _prodes_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.geojson",
-            ),
-        ):
-            gdf = await api.prodes_geo(bioma="Cerrado")
-
-        assert isinstance(gdf, gpd.GeoDataFrame)
-        assert len(gdf) >= 5
-        assert "ano" in gdf.columns
-        assert "area_km2" in gdf.columns
-        assert "geometry" in gdf.columns
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        geojson_bytes = _prodes_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.geojson",
-            ),
-        ):
-            gdf, meta = await api.prodes_geo(bioma="Cerrado", return_meta=True)
-
-        assert meta.source == "desmatamento"
-        assert meta.source_method == "httpx+wfs+geojson"
-        assert meta.records_count == len(gdf)
-        assert "terrabrasilis_prodes_geo" in meta.attempted_sources
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        geojson_bytes = _prodes_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.geojson",
-            ),
-        ):
-            gdf = await api.prodes_geo(bioma="Cerrado", uf="MA")
-
-        assert len(gdf) >= 1
-        assert (gdf["uf"] == "MA").all()
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF invalida"):
-            await api.prodes_geo(bioma="Cerrado", uf="XX")
-
-    @pytest.mark.asyncio
-    async def test_geometry_preserved_after_filter(self):
-        geojson_bytes = _prodes_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_prodes_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/prodes.geojson",
-            ),
-        ):
-            gdf = await api.prodes_geo(bioma="Cerrado", uf="PA")
-
-        assert "geometry" in gdf.columns
-        assert gdf.geometry.is_valid.all()
-
-
-class TestDeterGeo:
-    @pytest.mark.asyncio
-    async def test_bioma_normalization(self):
-        geojson_bytes = _deter_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/deter.geojson",
-            ),
-        ) as mock_fetch:
-            await api.deter_geo(bioma="amazonia")
-
-        assert mock_fetch.call_args[0][0] == "Amazônia"
-
-    @pytest.mark.asyncio
-    async def test_returns_geodataframe(self):
-        geojson_bytes = _deter_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/deter.geojson",
-            ),
-        ):
-            gdf = await api.deter_geo(bioma="Amazônia")
-
-        assert isinstance(gdf, gpd.GeoDataFrame)
-        assert len(gdf) >= 5
-        assert "data" in gdf.columns
-        assert "area_km2" in gdf.columns
-        assert "geometry" in gdf.columns
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        geojson_bytes = _deter_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/deter.geojson",
-            ),
-        ):
-            gdf, meta = await api.deter_geo(bioma="Amazônia", return_meta=True)
-
-        assert meta.source == "desmatamento"
-        assert meta.source_method == "httpx+wfs+geojson"
-        assert meta.records_count == len(gdf)
-        assert "terrabrasilis_deter_geo" in meta.attempted_sources
-
-    @pytest.mark.asyncio
-    async def test_filter_classe(self):
-        geojson_bytes = _deter_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/deter.geojson",
-            ),
-        ):
-            gdf = await api.deter_geo(bioma="Amazônia", classe="DESMATAMENTO_CR")
-
-        assert len(gdf) >= 1
-        assert (gdf["classe"] == "DESMATAMENTO_CR").all()
-
-    @pytest.mark.asyncio
-    async def test_filter_classe_empty(self):
-        geojson_bytes = _deter_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/deter.geojson",
-            ),
-        ):
-            gdf = await api.deter_geo(bioma="Amazônia", classe="CLASSE_INEXISTENTE")
-
-        assert len(gdf) == 0
-        assert isinstance(gdf, gpd.GeoDataFrame)
-
-    @pytest.mark.asyncio
-    async def test_geometry_preserved_after_filter(self):
-        geojson_bytes = _deter_geojson_bytes()
-        with patch.object(
-            api.client,
-            "fetch_deter_geo",
-            new_callable=AsyncMock,
-            return_value=(
-                geojson_bytes,
-                "https://terrabrasilis.dpi.inpe.br/geoserver/deter.geojson",
-            ),
-        ):
-            gdf = await api.deter_geo(bioma="Amazônia", classe="DESMATAMENTO_CR")
-
-        assert "geometry" in gdf.columns
-        assert gdf.geometry.is_valid.all()
+@pytest.mark.parametrize(
+    "product,biome,sample",
+    [
+        ("prodes", "Amazônia", "prodes_amazonia"),
+        ("prodes", "Cerrado", "prodes_cerrado"),
+        ("prodes", "Caatinga", "prodes_caatinga"),
+        ("prodes", "Mata Atlântica", "prodes_mata_atlantica"),
+        ("prodes", "Pampa", "prodes_pampa"),
+        ("prodes", "Pantanal", "prodes_pantanal"),
+        ("deter", "Amazônia", "deter_amazonia"),
+        ("deter", "Cerrado", "deter_cerrado"),
+    ],
+)
+async def test_api_all_layouts_json_and_complete_provenance(monkeypatch, product, biome, sample):
+    features = desmatamento_features(sample)
+    calls = install_desmatamento_wfs(monkeypatch, features)
+    frame, meta = await getattr(api, product)(
+        bioma=biome, tamanho_pagina=2, max_registros=None, return_meta=True
+    )
+    expected_columns = (
+        constants.DESMATAMENTO_PRODES_COLUMNS
+        if product == "prodes"
+        else constants.DESMATAMENTO_DETER_COLUMNS
+    )
+    assert frame.columns.tolist() == list(expected_columns)
+    assert frame["feature_id"].tolist() == [feature["id"] for feature in features]
+    assert len(frame) == 6
+    assert len(calls) == 5
+    assert meta.schema_version == meta.contract_version == "2.0"
+    assert meta.parser_version == 2 and not meta.from_cache and meta.snapshot is None
+    if product == "prodes":
+        assert str(frame["ano"].dtype) == "Int64"
+    assert meta.selected_source == f"terrabrasilis_{product}"
+    assert meta.attempted_sources == [meta.selected_source]
+    assert meta.fetch_timestamp.utcoffset().total_seconds() == 0
+    assert meta.fetch_timestamp == meta.fetched_at
+    details = meta.source_details
+    assert details["coverage"]["expected_rows"] == len(frame)
+    assert details["coverage"]["overlap_rows"] == 2
+    assert details["coverage"]["count_reconciled"]
+    assert not details["coverage"]["transactional"]
+    assert not details["coverage"]["semantic_progress_proven"]
+    assert not details["revision_snapshot"]
+    assert details["raw_content_hash_kind"] == "resource_manifest_sha256"
+    manifest = json.dumps(
+        {name: details[name] for name in ("query", "resources", "pages")},
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode()
+    assert hashlib.sha256(manifest).hexdigest() == meta.raw_content_hash
+    assert len(manifest) == meta.raw_content_size
+    assert details["resource_bytes"] == sum(len(body) for _, body in calls)
+    for resource, (request, body) in zip(details["resources"], calls, strict=True):
+        assert resource["url"] == str(request.url)
+        assert resource["size_bytes"] == len(body)
+        assert resource["sha256"] == hashlib.sha256(body).hexdigest()
+        assert resource["headers"]["etag"] == "synthetic"
+        assert resource["status"] == 200 and resource["complete_body"]
+    assert json.loads(meta.to_json())["source_details"] == details
+    assert meta.fetched_at == max(
+        datetime.fromisoformat(resource["fetched_at"]) for resource in details["resources"]
+    )

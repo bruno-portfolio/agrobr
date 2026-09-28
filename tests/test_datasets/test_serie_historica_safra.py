@@ -1,16 +1,15 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
-import httpx
 import pandas as pd
-import pytest
 
+from agrobr import datasets
 from agrobr.datasets.serie_historica_safra import (
-    SERIE_HISTORICA_SAFRA_INFO,
     SerieHistoricaSafraDataset,
 )
-from agrobr.exceptions import SourceUnavailableError
+from tests import helpers
+from tests.helpers import collect_failures, isolated_dataset_case
 
-from .conftest import make_source, mock_source_meta
+from .conftest import make_source
 
 
 def _mock_df():
@@ -28,129 +27,62 @@ def _mock_df():
 
 
 class TestSerieHistoricaSafraFetch:
-    @pytest.mark.asyncio
-    async def test_fetch_returns_dataframe(self):
-        dataset = SerieHistoricaSafraDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
+    async def test_serie_historica_safra_fetch_casos_1(self):
+        with collect_failures() as check:
+            case = "test_params_passthrough"
+            with check(case), isolated_dataset_case(case):
+                dataset = SerieHistoricaSafraDataset()
+                mock_fn = make_source(_mock_df())
+                dataset.info.sources[0].fetch_fn = mock_fn
 
-        df = await dataset.fetch("soja")
+                await dataset.fetch("soja", inicio=2020, fim=2024, uf="MT")
 
-        assert len(df) == 2
-        assert "area_plantada_mil_ha" in df.columns
-        assert "producao_mil_ton" in df.columns
-        assert "produtividade_kg_ha" in df.columns
+                _, kwargs = mock_fn.call_args
+                assert kwargs["inicio"] == 2020
+                assert kwargs["fim"] == 2024
+                assert kwargs["uf"] == "MT"
+            case = "test_normalize_noop"
+            with check(case), isolated_dataset_case(case):
+                df = _mock_df()
+                dataset = SerieHistoricaSafraDataset()
+                dataset.info.sources[0].fetch_fn = make_source(df.copy())
 
-    @pytest.mark.asyncio
-    async def test_fetch_return_meta(self):
-        dataset = SerieHistoricaSafraDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
+                result = await dataset.fetch("soja")
 
-        df, meta = await dataset.fetch("soja", return_meta=True)
+                pd.testing.assert_frame_equal(result, df)
+            case = "test_contract_validation_called"
+            with check(case), isolated_dataset_case(case):
+                dataset = SerieHistoricaSafraDataset()
+                dataset.info.sources[0].fetch_fn = make_source(_mock_df())
 
-        assert meta.dataset == "serie_historica_safra"
-        assert meta.contract_version == "1.0"
-        assert meta.attempted_sources == ["conab_serie_historica"]
-        assert meta.selected_source == "conab_serie_historica"
-        assert meta.records_count == len(df)
+                with patch.object(dataset, "_validate_contract") as mock_validate:
+                    await dataset.fetch("soja")
+                    mock_validate.assert_called_once()
+            case = "test_deterministic_snapshot"
+            with check(case), isolated_dataset_case(case):
+                dataset = SerieHistoricaSafraDataset()
+                mock_fn = make_source(_mock_df())
+                dataset.info.sources[0].fetch_fn = mock_fn
 
-    @pytest.mark.asyncio
-    async def test_fetch_invalid_produto(self):
-        dataset = SerieHistoricaSafraDataset()
-        with pytest.raises(ValueError, match="não suportado"):
-            await dataset.fetch("banana")
+                with patch(
+                    "agrobr.datasets.serie_historica_safra.get_snapshot",
+                    return_value="2024-01-01",
+                ):
+                    await dataset.fetch("soja")
 
-    @pytest.mark.asyncio
-    async def test_params_passthrough(self):
-        dataset = SerieHistoricaSafraDataset()
-        mock_fn = make_source(_mock_df())
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        await dataset.fetch("soja", inicio=2020, fim=2024, uf="MT")
-
-        _, kwargs = mock_fn.call_args
-        assert kwargs["inicio"] == 2020
-        assert kwargs["fim"] == 2024
-        assert kwargs["uf"] == "MT"
-
-    @pytest.mark.asyncio
-    async def test_normalize_noop(self):
-        df = _mock_df()
-        dataset = SerieHistoricaSafraDataset()
-        dataset.info.sources[0].fetch_fn = make_source(df.copy())
-
-        result = await dataset.fetch("soja")
-
-        pd.testing.assert_frame_equal(result, df)
-
-    @pytest.mark.asyncio
-    async def test_contract_validation_called(self):
-        dataset = SerieHistoricaSafraDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
-
-        with patch.object(dataset, "_validate_contract") as mock_validate:
-            await dataset.fetch("soja")
-            mock_validate.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_source_failure(self):
-        dataset = SerieHistoricaSafraDataset()
-        dataset.info.sources[0].fetch_fn = AsyncMock(side_effect=httpx.ConnectError("test"))
-
-        with pytest.raises(SourceUnavailableError):
-            await dataset.fetch("soja")
-
-    @pytest.mark.asyncio
-    async def test_deterministic_snapshot(self):
-        dataset = SerieHistoricaSafraDataset()
-        mock_fn = make_source(_mock_df())
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        with patch(
-            "agrobr.datasets.serie_historica_safra.get_snapshot",
-            return_value="2024-01-01",
-        ):
-            await dataset.fetch("soja")
-
-        _, kwargs = mock_fn.call_args
-        assert kwargs["inicio"] == 2019
+                _, kwargs = mock_fn.call_args
+                assert kwargs["inicio"] == 2019
 
 
-class TestSerieHistoricaSafraInfo:
-    def test_products_count(self):
-        assert len(SERIE_HISTORICA_SAFRA_INFO.products) == 32
-
-    def test_license(self):
-        assert SERIE_HISTORICA_SAFRA_INFO.license == "livre"
-
-
-class TestSerieHistoricaSafraFetchFunctions:
-    @pytest.mark.asyncio
-    async def test_fetch_conab_serie_forwards_params(self):
-        df = _mock_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.conab.serie_historica",
-            new_callable=AsyncMock,
-            return_value=(df, meta),
-        ) as mock_fn:
-            from agrobr.datasets.serie_historica_safra import _fetch_conab_serie
-
-            await _fetch_conab_serie("soja", inicio=2020, fim=2024, uf="MT")
-        mock_fn.assert_called_once_with("soja", inicio=2020, fim=2024, uf="MT", return_meta=True)
-
-    @pytest.mark.asyncio
-    async def test_fetch_conab_serie_defaults(self):
-        df = _mock_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.conab.serie_historica",
-            new_callable=AsyncMock,
-            return_value=(df, meta),
-        ) as mock_fn:
-            from agrobr.datasets.serie_historica_safra import _fetch_conab_serie
-
-            await _fetch_conab_serie("milho")
-        _, kwargs = mock_fn.call_args
-        assert kwargs["inicio"] is None
-        assert kwargs["fim"] is None
-        assert kwargs["uf"] is None
+async def test_dataset_confere_o_oraculo_da_serie_historica_por_uf(monkeypatch):
+    casos = helpers.load_serie_historica_manifest()["cases"]
+    caso = next(item for item in casos if item["product"] == "soja")
+    pedidos = helpers.install_serie_historica_http(monkeypatch, caso)
+    try:
+        frame = await datasets.serie_historica_safra("soja", uf="MT")
+    except Exception as erro:
+        raise AssertionError(f"a cola dataset → fonte quebrou: {erro!r}") from erro
+    assert len(pedidos) == 1
+    assert not frame.empty
+    assert frame["uf"].eq("MT").all()
+    helpers.assert_serie_historica_case(frame, caso)

@@ -20,14 +20,32 @@
 | `demanda_irrigacao` | ~265K polygons | Polygon | Yes |
 | `disponibilidade_hidrica` | ~42K polylines | Polyline | No |
 
+## Data vintage and reference
+
+`pivos_irrigacao` and `pivos_irrigacao_geo` use the **2014** mapping produced by
+ANA in partnership with Embrapa Milho e Sorgo, as stated in the
+[official Pivos_Mapeados metadata](https://portal1.snirh.gov.br/arcgis/rest/services/DADOSABERTOS/Pivos_Mapeados/MapServer?f=pjson).
+
+For the demand and availability layers, `versao` preserves the official
+`DSVERSAO` field. The observed value `BHO 2013 versao 1.3 de 22/07/2014`
+identifies the hydrographic base version; it does not, by itself, establish the
+year of the demand estimates. Retrieval dates in `MetaInfo`, such as
+`fetched_at`, record when data was fetched, not when the survey took place.
+These layers do not represent real-time hydrological measurements.
+
 ## Access via ArcGIS REST
 
 | Parameter | Value |
 |-----------|-------|
 | Base URL | `https://portal1.snirh.gov.br/server/rest/services/dados_abertos` |
 | Service | `MapServer/0` |
-| Pagination | Automatic (1K features/page) |
-| Throttle | 2s delay after 5 pages |
+| Pagination | Keyset: `orderByFields=OBJECTID` and `OBJECTID > last` (up to 1K features/page) |
+| Throttle | 2s pause after the sixth page and each subsequent page |
+| Read timeout | 180s |
+
+Tabular functions request JSON with `returnGeometry=false`; `_geo` variants
+request GeoJSON and retain geometry in EPSG:4326. The spatial `bbox` filter
+applies to both formats.
 
 ## Usage Example
 
@@ -97,11 +115,11 @@ asyncio.run(main())
 | OBJECTID | int | Record ID |
 | ID | int | ID |
 | codigo_bacia | str | Basin code |
-| versao | str | Version |
-| vazao_max_mensal | float | Maximum monthly flow |
-| vazao_mes_seco | float | Dry-month flow |
-| vazao_mes_irrigacao | float | Irrigation-month flow |
-| vazao_media_anual | float | Mean annual flow |
+| versao | str | Original DSVERSAO identifier of the hydrographic base |
+| vazao_max_mensal | float | Maximum monthly withdrawal flow (m3/s) |
+| vazao_mes_seco | float | Dry-month withdrawal flow (m3/s) |
+| vazao_mes_irrigacao | float | Irrigation-month withdrawal flow (m3/s) |
+| vazao_media_anual | float | Mean annual withdrawal flow (m3/s) |
 
 ### disponibilidade_hidrica
 
@@ -113,15 +131,31 @@ asyncio.run(main())
 | disponibilidade_m3_s | float | Availability in m3/second |
 | nome_rio | str | River name |
 | dominio | str | Domain |
-| versao | str | Version |
+| versao | str | Original DSVERSAO identifier of the hydrographic base |
 
 ## Specifics
 
 - **bbox required**: `hidrografia` and `demanda_irrigacao` require bbox (large datasets)
-- **Automatic pagination**: 1K features per page with connection reuse
+- **Keyset pagination**: each page asks for up to 1K features ordered by `OBJECTID` and the next one continues from the last `OBJECTID` received, until the official count is reached. The Hidrografia server returns one feature fewer than requested on each page; with offset pagination the boundary feature was lost (1,046 of 1,047 in the test extract). If pagination stops before the official count, or a page does not advance the `OBJECTID`, the query raises `SourceUnavailableError` stating how many features are missing, instead of returning a partial result. An unreadable page (truncated JSON, proxy HTML) or a page without `OBJECTID` raises `ParseError`
 - **max_features**: optional parameter to limit the total number of features returned
+- **Required fields**: the tabular parser checks the fields configured in `required_cols` for every feature on every page; a missing field raises `ParseError`
+
+| Layer | Required field in the official response | Normalized column |
+|-------|-----------------------------------------|-------------------|
+| `hidrografia` | `COCURSODAG` | `codigo_curso` |
+| `pivos_irrigacao` | `NM_ESTADO` | `estado` |
+| `demanda_irrigacao` | `COBACIA` | `codigo_bacia` |
+| `disponibilidade_hidrica` | `DISPQ95` | `disponibilidade_m3_s` |
+
+An official count of zero returns a valid empty result with the published columns;
+in the `_geo` variants the empty result is also in EPSG:4326. A field containing a null
+value differs from a missing field; null values and zeros are preserved.
 
 ## Limitations
 
 - Hidrografia and irrigation demand require bbox (without a filter they would return hundreds of thousands of features)
-- 2s throttle after 5 pages to avoid overloading the server
+- Only pivots support a UF filter; all layers accept bbox and max_features
+- There is no year or date-range filter; each query uses the configured layer edition
+- Queries count records before downloading pages; even a small max_features can require waiting for the count
+- Pages accumulate in memory before building the result; there is no streaming or persistent ANA cache
+- A 2s pause follows the sixth page and each subsequent page to avoid overloading the server

@@ -1,0 +1,110 @@
+{
+  "index": 2,
+  "role": "daily_2026",
+  "resource_id": "27d33a3c-651f-4d3c-8af2-117bb1d6fb14",
+  "catalog_size": 181926964,
+  "attempt": 1,
+  "url": "https://dados.antt.gov.br/dataset/5bf70ec3-b24e-4f73-99a0-78b200f5e915/resource/27d33a3c-651f-4d3c-8af2-117bb1d6fb14/download/volume-trafego-praca-pedagio-2026_diario.csv",
+  "started_at": "2026-09-08T05:00:39.966754+00:00",
+  "status": 200,
+  "response_complete": true,
+  "error": null,
+  "close_error": null,
+  "closed": true,
+  "request_headers": [
+    [
+      "host",
+      "dados.antt.gov.br"
+    ],
+    [
+      "accept",
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    ],
+    [
+      "accept-language",
+      "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+    ],
+    [
+      "connection",
+      "keep-alive"
+    ],
+    [
+      "upgrade-insecure-requests",
+      "1"
+    ],
+    [
+      "sec-fetch-dest",
+      "document"
+    ],
+    [
+      "sec-fetch-mode",
+      "navigate"
+    ],
+    [
+      "sec-fetch-site",
+      "none"
+    ],
+    [
+      "sec-fetch-user",
+      "?1"
+    ],
+    [
+      "user-agent",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15"
+    ],
+    [
+      "accept-encoding",
+      "identity"
+    ]
+  ],
+  "headers": [
+    [
+      "date",
+      "Tue, 08 Sep 2026 05:00:26 GMT"
+    ],
+    [
+      "pragma",
+      "no-cache"
+    ],
+    [
+      "cache-control",
+      "no-cache"
+    ],
+    [
+      "accept-ranges",
+      "bytes"
+    ],
+    [
+      "last-modified",
+      "Tue, 28 Jul 2026 10:55:37 GMT"
+    ],
+    [
+      "content-range",
+      "bytes 0-181926963/181926964"
+    ],
+    [
+      "etag",
+      "\"1785236137.52-181926964\""
+    ],
+    [
+      "keep-alive",
+      "timeout=5, max=99"
+    ],
+    [
+      "connection",
+      "Keep-Alive"
+    ],
+    [
+      "content-type",
+      "text/csv"
+    ],
+    [
+      "transfer-encoding",
+      "chunked"
+    ]
+  ],
+  "body": "request_002.body",
+  "size_bytes": 181926964,
+  "sha256": "bc4bf423611afa6d6443c7661138502cbe93145ec3dc11d8faa8091accde49c1",
+  "finished_at": "2026-09-08T05:01:11.306966+00:00"
+}

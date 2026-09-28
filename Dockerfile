@@ -6,6 +6,7 @@ ARG EXTRAS="browser,pdf"
 WORKDIR /build
 COPY pyproject.toml README.md LICENSE ./
 COPY agrobr/ agrobr/
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 RUN pip wheel --no-cache-dir --wheel-dir /wheels ".[${EXTRAS}]"
 
 # ---- Runtime ----
@@ -19,6 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN groupadd --gid 1000 agrobr && \
     useradd --uid 1000 --gid agrobr --create-home agrobr
 COPY --from=builder /wheels /tmp/wheels
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir --no-compile /tmp/wheels/*.whl && \
     rm -rf /tmp/wheels
 RUN playwright install --with-deps chromium && \

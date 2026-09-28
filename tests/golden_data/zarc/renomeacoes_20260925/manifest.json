@@ -1,0 +1,231 @@
+{
+ "fonte": "zarc",
+ "oraculo": "stdlib csv sobre os corpos oficiais integrais da R25, com recibo: entre os rótulos de Nome_cultura que somem em 2024/2025 e os pares (Nome_cultura, Cod_Cultura) que surgem nela, pareia os grupos (Nome_cultura, Cod_Cultura, Nome_Outros_Manejos) cujos registros em (geocodigo, Cod_Solo, Cod_Ciclo, dec1..dec36) são idênticos nos dois sentidos; sem parser nem API do agrobr",
+ "corpos": {
+  "2023/2024": {
+   "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/64664b7c-5002-409a-9856-3170781e92f8/download/dados-abertos-tabua-de-risco-safra-2023-2024.csv",
+   "sha256": "4c9f39ba28ca30a30302c1e579535dd1d89b8540f7a33d139d020e73c3c067b7",
+   "bytes": 183619532,
+   "fetched_at": "2026-09-25T20:02:59.826117+00:00",
+   "last_modified": "2026-09-25T07:11:04.483927"
+  },
+  "2024/2025": {
+   "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/95588752-a068-415b-ab2f-55043eb7f9ac/download/dados-abertos-tabua-de-risco-safra-2024-2025.csv",
+   "sha256": "2923da3b1c84094badfcf843e98bb4d66705eed110d19357419ef45da3e78b20",
+   "bytes": 201893730,
+   "fetched_at": "2026-09-25T20:04:02.480248+00:00",
+   "last_modified": "2026-09-25T07:11:13.546627"
+  }
+ },
+ "rotulos_so_ate_2023_2024": [
+  "Arroz Irrigado",
+  "Arroz Sequeiro",
+  "Aveia Irrigada",
+  "Aveia Sequeiro",
+  "Canola",
+  "Cevada Grãos Irrigada",
+  "Cevada Grãos Sequeiro",
+  "Feijão 1ª Safra",
+  "Mamona Semi-árido Sequeiro",
+  "Milho",
+  "Trigo Irrigado",
+  "Trigo Sequeiro"
+ ],
+ "rotulos_so_desde_2024_2025": [
+  "Arroz",
+  "Aveia",
+  "Cevada Grãos",
+  "Feijão",
+  "Mamona",
+  "Milho 1ª Safra",
+  "Trigo"
+ ],
+ "pares": [
+  {
+   "rotulo_ate_2023_2024": "Arroz Irrigado",
+   "codigo_ate_2023_2024": "12010900000051",
+   "linhas_ate_2023_2024": 9939,
+   "rotulo_desde_2024_2025": "Arroz",
+   "codigo_desde_2024_2025": "12010900000011",
+   "manejo_desde_2024_2025": "Irrigado",
+   "linhas_desde_2024_2025": 9939,
+   "linhas_identicas": 9939
+  },
+  {
+   "rotulo_ate_2023_2024": "Arroz Sequeiro",
+   "codigo_ate_2023_2024": "12010900000011",
+   "linhas_ate_2023_2024": 25608,
+   "rotulo_desde_2024_2025": "Arroz",
+   "codigo_desde_2024_2025": "12010900000011",
+   "manejo_desde_2024_2025": "Sequeiro",
+   "linhas_desde_2024_2025": 25608,
+   "linhas_identicas": 25608
+  },
+  {
+   "rotulo_ate_2023_2024": "Aveia Irrigada",
+   "codigo_ate_2023_2024": "12011000000051",
+   "linhas_ate_2023_2024": 25602,
+   "rotulo_desde_2024_2025": "Aveia",
+   "codigo_desde_2024_2025": "12011000000031",
+   "manejo_desde_2024_2025": "Irrigado",
+   "linhas_desde_2024_2025": 25602,
+   "linhas_identicas": 25602
+  },
+  {
+   "rotulo_ate_2023_2024": "Aveia Sequeiro",
+   "codigo_ate_2023_2024": "12011000000031",
+   "linhas_ate_2023_2024": 35207,
+   "rotulo_desde_2024_2025": "Aveia",
+   "codigo_desde_2024_2025": "12011000000031",
+   "manejo_desde_2024_2025": "Sequeiro",
+   "linhas_desde_2024_2025": 35207,
+   "linhas_identicas": 35207
+  },
+  {
+   "rotulo_ate_2023_2024": "Cevada Grãos Irrigada",
+   "codigo_ate_2023_2024": "12012320000051",
+   "linhas_ate_2023_2024": 28266,
+   "rotulo_desde_2024_2025": "Cevada Grãos",
+   "codigo_desde_2024_2025": "12012320000031",
+   "manejo_desde_2024_2025": "Irrigado",
+   "linhas_desde_2024_2025": 28266,
+   "linhas_identicas": 28266
+  },
+  {
+   "rotulo_ate_2023_2024": "Cevada Grãos Sequeiro",
+   "codigo_ate_2023_2024": "12012320000031",
+   "linhas_ate_2023_2024": 35666,
+   "rotulo_desde_2024_2025": "Cevada Grãos",
+   "codigo_desde_2024_2025": "12012320000031",
+   "manejo_desde_2024_2025": "Sequeiro",
+   "linhas_desde_2024_2025": 35666,
+   "linhas_identicas": 35666
+  },
+  {
+   "rotulo_ate_2023_2024": "Feijão 1ª Safra",
+   "codigo_ate_2023_2024": "12013560000011",
+   "linhas_ate_2023_2024": 36234,
+   "rotulo_desde_2024_2025": "Feijão",
+   "codigo_desde_2024_2025": "12013560000011",
+   "manejo_desde_2024_2025": "Sequeiro",
+   "linhas_desde_2024_2025": 36234,
+   "linhas_identicas": 36234
+  },
+  {
+   "rotulo_ate_2023_2024": "Mamona Semi-árido Sequeiro",
+   "codigo_ate_2023_2024": "12014720000011",
+   "linhas_ate_2023_2024": 10657,
+   "rotulo_desde_2024_2025": "Mamona",
+   "codigo_desde_2024_2025": "12014720000011",
+   "manejo_desde_2024_2025": "Sequeiro",
+   "linhas_desde_2024_2025": 10657,
+   "linhas_identicas": 10657
+  },
+  {
+   "rotulo_ate_2023_2024": "Milho",
+   "codigo_ate_2023_2024": "12015080000011",
+   "linhas_ate_2023_2024": 43205,
+   "rotulo_desde_2024_2025": "Milho 1ª Safra",
+   "codigo_desde_2024_2025": "12015080000011",
+   "manejo_desde_2024_2025": "Sequeiro",
+   "linhas_desde_2024_2025": 43205,
+   "linhas_identicas": 43205
+  },
+  {
+   "rotulo_ate_2023_2024": "Trigo Irrigado",
+   "codigo_ate_2023_2024": "12017100000051",
+   "linhas_ate_2023_2024": 33234,
+   "rotulo_desde_2024_2025": "Trigo",
+   "codigo_desde_2024_2025": "12017100000031",
+   "manejo_desde_2024_2025": "Irrigado",
+   "linhas_desde_2024_2025": 33234,
+   "linhas_identicas": 33234
+  },
+  {
+   "rotulo_ate_2023_2024": "Trigo Sequeiro",
+   "codigo_ate_2023_2024": "12017100000031",
+   "linhas_ate_2023_2024": 38734,
+   "rotulo_desde_2024_2025": "Trigo",
+   "codigo_desde_2024_2025": "12017100000031",
+   "manejo_desde_2024_2025": "Sequeiro",
+   "linhas_desde_2024_2025": 38734,
+   "linhas_identicas": 38734
+  }
+ ],
+ "grupos_desde_2024_2025": {
+  "Arroz": [
+   {
+    "codigo": "12010900000011",
+    "manejo": "Irrigado",
+    "linhas": 9939
+   },
+   {
+    "codigo": "12010900000011",
+    "manejo": "Sequeiro",
+    "linhas": 25608
+   }
+  ],
+  "Aveia": [
+   {
+    "codigo": "12011000000031",
+    "manejo": "Irrigado",
+    "linhas": 25602
+   },
+   {
+    "codigo": "12011000000031",
+    "manejo": "Sequeiro",
+    "linhas": 35207
+   }
+  ],
+  "Cevada Grãos": [
+   {
+    "codigo": "12012320000031",
+    "manejo": "Irrigado",
+    "linhas": 28266
+   },
+   {
+    "codigo": "12012320000031",
+    "manejo": "Sequeiro",
+    "linhas": 35666
+   }
+  ],
+  "Feijão": [
+   {
+    "codigo": "12013560000011",
+    "manejo": "Sequeiro",
+    "linhas": 36234
+   }
+  ],
+  "Mamona": [
+   {
+    "codigo": "12014720000011",
+    "manejo": "Sequeiro",
+    "linhas": 10657
+   },
+   {
+    "codigo": "12014720000041",
+    "manejo": "Sequeiro",
+    "linhas": 51784
+   }
+  ],
+  "Milho 1ª Safra": [
+   {
+    "codigo": "12015080000011",
+    "manejo": "Sequeiro",
+    "linhas": 43205
+   }
+  ],
+  "Trigo": [
+   {
+    "codigo": "12017100000031",
+    "manejo": "Irrigado",
+    "linhas": 33234
+   },
+   {
+    "codigo": "12017100000031",
+    "manejo": "Sequeiro",
+    "linhas": 38734
+   }
+  ]
+ }
+}

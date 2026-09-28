@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import html
 import json
 from datetime import datetime
 from enum import StrEnum
@@ -253,12 +254,12 @@ async def _send_email(
     details: dict[str, Any],
     source: str | None,
 ) -> None:
-    detail_text = json.dumps(details, indent=2, default=str)
+    detail_text = html.escape(json.dumps(details, indent=2, default=str))
 
     html_content = f"""
-    <h2>{title}</h2>
-    <p><strong>Level:</strong> {level.value.upper()}</p>
-    {"<p><strong>Source:</strong> " + source + "</p>" if source else ""}
+    <h2>{html.escape(title)}</h2>
+    <p><strong>Level:</strong> {html.escape(level.value.upper())}</p>
+    {"<p><strong>Source:</strong> " + html.escape(source) + "</p>" if source else ""}
     <h3>Details</h3>
     <pre>{detail_text}</pre>
     """

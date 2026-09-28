@@ -1,0 +1,18 @@
+{
+  "fonte": "IBGE, API de agregados v3, metadado de períodos",
+  "origem": "a data de modificação de cada período (PAM 2024 revista em 17/09/2026)",
+  "arquivos": {
+    "5457.json": {
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos",
+      "sha256": "293a41ac923ee2a59831cbc3b7289750b42cf0855ca80167b665f664f1be51e8",
+      "bytes": 3173,
+      "capturado_em": "2026-09-26T23:39:45+00:00",
+      "cabecalhos_http": {
+        "date": "Sat, 26 Sep 2026 23:39:46 GMT",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": null
+      },
+      "conteudo": "tabela 5457 (PAM): 1974 a 2025; 2023, 2024 e 2025 com modificacao 17/09/2026; 1975 com 01/01/0001"
+    }
+  }
+}

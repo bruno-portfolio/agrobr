@@ -34,7 +34,7 @@ async def cotacoes(
 
 **Returns:**
 
-DataFrame with columns: `cadeia`, `localidade`, `valor`, `variacao`, `safra`, `unidade`, `unidade_descricao`, `data_publicacao`
+DataFrame with columns: `cadeia`, `indicador_id`, `indicador`, `localidade`, `valor`, `variacao`, `safra`, `unidade`, `unidade_descricao`, `data_publicacao`. `indicador_id` is IMEA's indicator code, and `indicador` is its name in the chain's catalog.
 
 **Example:**
 

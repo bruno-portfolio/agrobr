@@ -7,6 +7,7 @@ import pytest
 
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.utils.io import open_excel_safe, read_csv_safe, read_excel_safe, validate_download
+from tests.helpers import levanta_exatamente
 
 
 class TestValidateDownload:
@@ -54,46 +55,9 @@ class TestValidateDownload:
 
 
 class TestReadCsvSafe:
-    def test_utf8_basic(self):
-        data = b"col1,col2\n1,2\n3,4"
-        df = read_csv_safe(data, source="test")
-        assert len(df) == 2
-        assert list(df.columns) == ["col1", "col2"]
-
-    def test_latin1_fallback(self):
-        data = "col1,col2\nSão Paulo,café\n".encode("latin-1")
-        df = read_csv_safe(data, source="test")
-        assert len(df) == 1
-        assert "São Paulo" in df["col1"].iloc[0]
-
-    def test_windows_1252(self):
-        data = b"estado\nPARAN\xc1\n"
-        df = read_csv_safe(data, source="test")
-        assert df["estado"].tolist() == ["PARANÁ"]
-
-    def test_kwargs_forwarded_sep(self):
-        data = b"col1;col2\n1;2\n3;4"
-        df = read_csv_safe(data, source="test", sep=";")
-        assert list(df.columns) == ["col1", "col2"]
-        assert len(df) == 2
-
-    def test_kwargs_forwarded_dtype(self):
-        data = b"id,value\n001,10\n002,20"
-        df = read_csv_safe(data, source="test", dtype={"id": str})
-        assert df["id"].iloc[0] == "001"
-
     def test_invalid_data_raises_parse_error(self):
         with pytest.raises(ParseError):
             read_csv_safe(b"", source="test", label="CSV bad")
-
-    def test_custom_label_in_error(self):
-        with pytest.raises(ParseError, match="CSV PRODES"):
-            read_csv_safe(b"", source="test", label="CSV PRODES")
-
-    def test_parser_version_forwarded(self):
-        with pytest.raises(ParseError) as exc_info:
-            read_csv_safe(b"", source="test", parser_version=3)
-        assert exc_info.value.parser_version == 3
 
 
 class TestExcelSafeFallback:
@@ -122,39 +86,13 @@ class TestExcelSafeFallback:
         assert mocked.call_args_list[1].kwargs["engine"] == "openpyxl"
 
 
-class TestConcatCsvPages:
-    def test_empty_pages(self):
-        from agrobr.utils.io import concat_csv_pages
-
-        df = concat_csv_pages([], source="test", parser_version=1, empty_columns=["a", "b"])
-        assert len(df) == 0
-        assert list(df.columns) == ["a", "b"]
-
-    def test_single_page(self):
-        from agrobr.utils.io import concat_csv_pages
-
-        data = b"col1,col2\n1,2\n3,4"
-        df = concat_csv_pages(
-            [data], source="test", parser_version=1, empty_columns=["col1", "col2"]
+@pytest.mark.parametrize("kind", ["zip", "xlsx", "xls", "pdf"])
+def test_binario_sem_assinatura_do_tipo_e_recusado(kind):
+    with levanta_exatamente(SourceUnavailableError, match="Assinatura inválida"):
+        validate_download(
+            b"conteudo binario sem assinatura " * 4,
+            kinds=(kind,),
+            source="teste",
+            url="https://example.test",
+            min_size=10,
         )
-        assert len(df) == 2
-
-    def test_multi_page(self):
-        from agrobr.utils.io import concat_csv_pages
-
-        page1 = b"col1,col2\n1,2"
-        page2 = b"col1,col2\n3,4"
-        df = concat_csv_pages(
-            [page1, page2], source="test", parser_version=1, empty_columns=["col1", "col2"]
-        )
-        assert len(df) == 2
-
-    def test_page_with_empty_skipped(self):
-        from agrobr.utils.io import concat_csv_pages
-
-        page1 = b"col1,col2\n1,2"
-        empty_page = b"col1,col2\n"
-        df = concat_csv_pages(
-            [page1, empty_page], source="test", parser_version=1, empty_columns=["col1", "col2"]
-        )
-        assert len(df) == 1

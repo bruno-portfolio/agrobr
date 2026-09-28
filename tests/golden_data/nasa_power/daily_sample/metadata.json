@@ -6,7 +6,14 @@
   "parser_kwargs": {"lat": -12.6, "lon": -56.1, "uf": "MT"},
   "url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-12.6&longitude=-56.1&start=20250101&end=20250105&parameters=T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,RH2M,ALLSKY_SFC_SW_DWN,WS2M&community=AG&format=JSON",
   "captured_at": "2026-02-11T12:00:00Z",
-  "parser_version": 1,
-  "notes": "Real data from NASA POWER API - Sorriso/MT region, 5 days Jan 2025",
+  "parser_version": 2,
+  "fixture_kind": "synthetic_enrichment_of_legacy_sample",
+  "notes": "Legacy Sorriso/MT daily values for 5 days Jan 2025 preserved unchanged. Fixture synthetically enriched on 2026-09-08 with required parameter units/longname and LST from the preserved official 2024 capture below; this enriched JSON is not an unmodified HTTP response. Original capture date and API version describe the legacy sample, not the enrichment.",
+  "metadata_evidence": {
+    "path": "body_00.json",
+    "sha256": "2b78b3596269a700fe90f11ce023a19ebf281ad3f9d7b63dd93dfe6e4a2f8742",
+    "fields": ["parameters", "header.time_standard"],
+    "observations_changed": false
+  },
   "needs_real_data": false
 }

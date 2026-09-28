@@ -1,7 +1,5 @@
 *
 !agrobr/
-agrobr/health/
-agrobr/alerts/
 agrobr/benchmark/
 agrobr/.claude/
 **/__pycache__/

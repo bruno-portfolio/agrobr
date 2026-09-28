@@ -3,20 +3,14 @@
 import agrobr
 from agrobr.exceptions import (
     AgrobrError,
+    CacheMigrationError,
     ContractViolationError,
     InvalidParameterError,
     NetworkError,
-    ParseError,
+    ResourceLimitError,
     SourceFallbackWarning,
     SourceUnavailableError,
 )
-
-
-class TestAgrobrError:
-    def test_base_exception(self):
-        err = AgrobrError("test error")
-        assert str(err) == "test error"
-        assert isinstance(err, Exception)
 
 
 class TestInvalidParameterError:
@@ -37,18 +31,6 @@ class TestSourceFallbackWarning:
 
 
 class TestSourceUnavailableError:
-    def test_with_url_and_last_error(self):
-        err = SourceUnavailableError(
-            source="cepea",
-            url="https://example.com",
-            last_error="timeout",
-        )
-        assert err.source == "cepea"
-        assert err.url == "https://example.com"
-        assert err.last_error == "timeout"
-        assert "cepea" in str(err)
-        assert "timeout" in str(err)
-
     def test_with_errors_list(self):
         errors = [
             ("cepea", "network", "timeout"),
@@ -77,15 +59,6 @@ class TestNetworkError:
 
 
 class TestContractViolationError:
-    def test_basic(self):
-        err = ContractViolationError(
-            dataset="preco_diario",
-            violation="missing column 'valor'",
-        )
-        assert err.dataset == "preco_diario"
-        assert err.violation == "missing column 'valor'"
-        assert "preco_diario" in str(err)
-
     def test_with_expected_got(self):
         err = ContractViolationError(
             dataset="preco_diario",
@@ -99,15 +72,24 @@ class TestContractViolationError:
         assert "got=object" in str(err)
 
 
-class TestParseError:
-    def test_creation(self):
-        err = ParseError(
-            source="cepea",
-            parser_version=1,
-            reason="Table not found",
-        )
-        assert err.source == "cepea"
-        assert err.parser_version == 1
-        assert err.reason == "Table not found"
-        assert "cepea" in str(err)
-        assert "v1" in str(err)
+def test_resource_limit_error_guarda_campos_e_mensagem():
+    erro = ResourceLimitError("acervo", "download acima de 100 MB", url="https://x")
+    assert tuple(getattr(erro, campo, None) for campo in ("source", "reason", "url")) == (
+        "acervo",
+        "download acima de 100 MB",
+        "https://x",
+    )
+    assert str(erro) == "acervo: limite local excedido: download acima de 100 MB"
+
+
+def test_contract_violation_sem_expected_nao_cita_expected():
+    assert str(ContractViolationError("d", "v")) == "Contract violation in d: v"
+
+
+def test_cache_migration_error_guarda_versao_e_motivo():
+    erro = CacheMigrationError(9, "arquivo divergente")
+    assert (getattr(erro, "version", None), getattr(erro, "reason", None)) == (
+        9,
+        "arquivo divergente",
+    )
+    assert str(erro).startswith("Falha na migração 9 do cache: arquivo divergente.")

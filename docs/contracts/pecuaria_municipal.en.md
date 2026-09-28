@@ -1,4 +1,4 @@
-# pecuaria_municipal v1.0
+# pecuaria_municipal v1.1
 
 Herd inventory and animal-origin output by state or municipality.
 
@@ -12,7 +12,11 @@ Herd inventory and animal-origin output by state or municipality.
 
 ### Herds
 
-`bovino`, `bubalino`, `equino`, `suino_total`, `suino_matrizes`, `caprino`, `ovino`, `galinaceos_total`, `galinhas_poedeiras`, `codornas`
+`bovino`, `bubalino`, `equino`, `suino_total`, `suino_matrizes`, `caprino`, `ovino`, `galinaceos_total`, `galinhas`, `codornas`
+
+PPM's `bovino` is not USDA's cattle herd (`usda.psd`, code `0011000`): the PPM is the herd surveyed by IBGE per municipality for the reference year, and USDA's `Beginning Stocks` is its estimate for the start of the year. The 2024 PPM shows 238.2 million head, and the 2025 `Beginning Stocks`, 186.9 million (21.5% lower). The 2 series are not the same measure.
+
+`galinhas` is the IBGE category "Galináceos - galinhas", which includes laying and breeder hens. `galinhas_poedeiras` is still accepted as a deprecated alias (`FutureWarning`) and returns `especie="galinhas"`.
 
 ### Animal-origin output
 
@@ -25,6 +29,7 @@ Herd inventory and animal-origin output by state or municipality.
 | `ano` | int | ❌ | Reference year |
 | `localidade` | str | ✅ | State or municipality |
 | `localidade_cod` | int | ✅ | IBGE code |
+| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `especie` | str | ❌ | Species/product name |
 | `valor` | float64 | ✅ | Value (unit varies by species) |
 | `unidade` | str | ❌ | Unit of measure |

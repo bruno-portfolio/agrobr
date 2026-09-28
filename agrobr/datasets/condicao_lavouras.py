@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -12,12 +12,11 @@ from agrobr.models import MetaInfo
 
 logger = structlog.get_logger()
 
-_PRODUCTS = sorted(deral_models.DERAL_PRODUTOS)
+_PRODUCTS = sorted(deral_models.DERAL_PRODUTOS_PUBLICADOS)
 
 
 async def _fetch_deral(
     produto: str,
-    **kwargs: Any,  # noqa: ARG001
 ) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import deral
 
@@ -78,28 +77,10 @@ class CondicaoLavourasDataset(BaseDataset):
             **kwargs,
         )
 
-        df = self._normalize(df)
         self._validate_contract(df)
 
         if return_meta:
             return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-        return df
-
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
-        if df.empty:
-            return df
-
-        mask = df["condicao"] == ""
-        if not mask.any():
-            return df
-
-        plantio_mask = mask & df["plantio_pct"].notna()
-        colheita_mask = mask & df["colheita_pct"].notna()
-
-        df = df.copy()
-        df.loc[plantio_mask, "condicao"] = "plantio"
-        df.loc[colheita_mask, "condicao"] = "colheita"
-
         return df
 
 
@@ -108,6 +89,24 @@ _condicao_lavouras = CondicaoLavourasDataset()
 from agrobr.datasets.registry import register  # noqa: E402
 
 register(_condicao_lavouras)
+
+
+@overload
+async def condicao_lavouras(
+    produto: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    **kwargs: Any,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def condicao_lavouras(
+    produto: str | None = None,
+    *,
+    return_meta: Literal[True],
+    **kwargs: Any,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def condicao_lavouras(

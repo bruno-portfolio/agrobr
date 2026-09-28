@@ -1,0 +1,350 @@
+{
+  "method": "Independent stdlib csv positional fields, decimal-comma text to float, statistics/math reducers; no agrobr parser/API calls",
+  "boundary_a001_daily": [
+    {
+      "data": "2000-12-30",
+      "estacao": "A001",
+      "uf": "DF",
+      "hours_present": 24,
+      "valid_rain_hours": 24,
+      "precipitacao_mm": 6.6000000000000005,
+      "temp_media": 22.145833333333332,
+      "temp_max": 28.4,
+      "temp_min": 19.2,
+      "umidade_media": 77.08333333333333,
+      "radiacao_total_kj_m2": 18153.0
+    },
+    {
+      "data": "2000-12-31",
+      "estacao": "A001",
+      "uf": "DF",
+      "hours_present": 24,
+      "valid_rain_hours": 24,
+      "precipitacao_mm": 25.400000000000002,
+      "temp_media": 21.404166666666665,
+      "temp_max": 27.4,
+      "temp_min": 18.0,
+      "umidade_media": 81.16666666666667,
+      "radiacao_total_kj_m2": 24306.0
+    },
+    {
+      "data": "2001-01-01",
+      "estacao": "A001",
+      "uf": "DF",
+      "hours_present": 24,
+      "valid_rain_hours": 24,
+      "precipitacao_mm": 34.0,
+      "temp_media": 20.733333333333334,
+      "temp_max": 24.6,
+      "temp_min": 18.7,
+      "umidade_media": 89.08333333333333,
+      "radiacao_total_kj_m2": 14950.0
+    },
+    {
+      "data": "2001-01-02",
+      "estacao": "A001",
+      "uf": "DF",
+      "hours_present": 24,
+      "valid_rain_hours": 24,
+      "precipitacao_mm": 28.4,
+      "temp_media": 20.6125,
+      "temp_max": 24.7,
+      "temp_min": 18.5,
+      "umidade_media": 87.41666666666667,
+      "radiacao_total_kj_m2": 15764.0
+    }
+  ],
+  "df_2001_monthly": [
+    {
+      "mes": "2001-01-01",
+      "uf": "DF",
+      "precip_acum_mm": 96.2,
+      "temp_media": 22.36209977148587,
+      "temp_max_media": 26.96206896551724,
+      "temp_min_media": 18.451724137931034,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 96.2
+      }
+    },
+    {
+      "mes": "2001-02-01",
+      "uf": "DF",
+      "precip_acum_mm": 98.2,
+      "temp_media": 22.41594387755102,
+      "temp_max_media": 28.54642857142857,
+      "temp_min_media": 17.8,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 98.2
+      }
+    },
+    {
+      "mes": "2001-03-01",
+      "uf": "DF",
+      "precip_acum_mm": 201.20000000000002,
+      "temp_media": 21.098252688172042,
+      "temp_max_media": 26.503225806451614,
+      "temp_min_media": 17.47741935483871,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 201.20000000000002
+      }
+    },
+    {
+      "mes": "2001-04-01",
+      "uf": "DF",
+      "precip_acum_mm": 141.2,
+      "temp_media": 21.744384057971015,
+      "temp_max_media": 27.183333333333334,
+      "temp_min_media": 17.33,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 141.2
+      }
+    },
+    {
+      "mes": "2001-05-01",
+      "uf": "DF",
+      "precip_acum_mm": 35.6,
+      "temp_media": 20.782930107526884,
+      "temp_max_media": 26.52258064516129,
+      "temp_min_media": 16.06451612903226,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 35.6
+      }
+    },
+    {
+      "mes": "2001-06-01",
+      "uf": "DF",
+      "precip_acum_mm": 0.0,
+      "temp_media": 19.50017270531401,
+      "temp_max_media": 25.493333333333332,
+      "temp_min_media": 14.206666666666667,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 0.0
+      }
+    },
+    {
+      "mes": "2001-07-01",
+      "uf": "DF",
+      "precip_acum_mm": 13.6,
+      "temp_media": 19.948363721365123,
+      "temp_max_media": 26.177419354838708,
+      "temp_min_media": 14.274193548387096,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 13.6
+      }
+    },
+    {
+      "mes": "2001-08-01",
+      "uf": "DF",
+      "precip_acum_mm": 39.6,
+      "temp_media": 19.692285786931095,
+      "temp_max_media": 25.203333333333333,
+      "temp_min_media": 15.03,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 39.6
+      }
+    },
+    {
+      "mes": "2001-09-01",
+      "uf": "DF",
+      "precip_acum_mm": 49.0,
+      "temp_media": 22.048537784679088,
+      "temp_max_media": 27.77857142857143,
+      "temp_min_media": 17.439285714285713,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 49.0
+      }
+    },
+    {
+      "mes": "2001-10-01",
+      "uf": "DF",
+      "precip_acum_mm": 135.2,
+      "temp_media": 21.205797101449274,
+      "temp_max_media": 26.40967741935484,
+      "temp_min_media": 17.219354838709677,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 135.2
+      }
+    },
+    {
+      "mes": "2001-11-01",
+      "uf": "DF",
+      "precip_acum_mm": 163.8,
+      "temp_media": 20.992614468864467,
+      "temp_max_media": 25.73076923076923,
+      "temp_min_media": 18.057692307692307,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 163.8
+      }
+    },
+    {
+      "mes": "2001-12-01",
+      "uf": "DF",
+      "precip_acum_mm": 109.4,
+      "temp_media": 22.022268985758075,
+      "temp_max_media": 26.274193548387096,
+      "temp_min_media": 19.093548387096774,
+      "num_estacoes": 1,
+      "station_rain_totals": {
+        "A001": 109.4
+      }
+    }
+  ],
+  "go_2001_monthly": [
+    {
+      "mes": "2001-05-01",
+      "uf": "GO",
+      "precip_acum_mm": 0.2,
+      "temp_media": 21.696825396825396,
+      "temp_max_media": 30.15,
+      "temp_min_media": 18.05,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 0.0,
+        "A003": 0.4
+      }
+    },
+    {
+      "mes": "2001-06-01",
+      "uf": "GO",
+      "precip_acum_mm": 1.0,
+      "temp_media": 19.47800782671435,
+      "temp_max_media": 27.565,
+      "temp_min_media": 12.876666666666667,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 0.0,
+        "A003": 2.0
+      }
+    },
+    {
+      "mes": "2001-07-01",
+      "uf": "GO",
+      "precip_acum_mm": 0.0,
+      "temp_media": 20.16901660839161,
+      "temp_max_media": 28.965384615384615,
+      "temp_min_media": 12.59423076923077,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 0.0,
+        "A003": 0.0
+      }
+    },
+    {
+      "mes": "2001-08-01",
+      "uf": "GO",
+      "precip_acum_mm": 19.1,
+      "temp_media": 21.58686090225564,
+      "temp_max_media": 29.835087719298247,
+      "temp_min_media": 13.68421052631579,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 16.8,
+        "A003": 21.400000000000002
+      }
+    },
+    {
+      "mes": "2001-09-01",
+      "uf": "GO",
+      "precip_acum_mm": 125.69999999999999,
+      "temp_media": 23.750593544137022,
+      "temp_max_media": 31.16181818181818,
+      "temp_min_media": 17.247272727272726,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 132.6,
+        "A003": 118.8
+      }
+    },
+    {
+      "mes": "2001-10-01",
+      "uf": "GO",
+      "precip_acum_mm": 129.6,
+      "temp_media": 23.043327505827506,
+      "temp_max_media": 29.088461538461537,
+      "temp_min_media": 18.365384615384617,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 150.6,
+        "A003": 108.6
+      }
+    },
+    {
+      "mes": "2001-11-01",
+      "uf": "GO",
+      "precip_acum_mm": 185.89999999999998,
+      "temp_media": 23.440595115753812,
+      "temp_max_media": 29.37,
+      "temp_min_media": 19.742,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 276.4,
+        "A003": 95.4
+      }
+    },
+    {
+      "mes": "2001-12-01",
+      "uf": "GO",
+      "precip_acum_mm": 220.60000000000002,
+      "temp_media": 23.526604136161062,
+      "temp_max_media": 29.30677966101695,
+      "temp_min_media": 20.02542372881356,
+      "num_estacoes": 2,
+      "station_rain_totals": {
+        "A002": 170.4,
+        "A003": 270.8
+      }
+    }
+  ],
+  "modern_first_two_days": [
+    {
+      "data": "2026-01-01",
+      "estacao": "A001",
+      "uf": "DF",
+      "hours_present": 24,
+      "valid_rain_hours": 24,
+      "precipitacao_mm": 17.8,
+      "temp_media": 22.129166666666666,
+      "temp_max": 29.4,
+      "temp_min": 17.1,
+      "umidade_media": 78.08333333333333,
+      "radiacao_total_kj_m2": 20808.4
+    },
+    {
+      "data": "2026-01-02",
+      "estacao": "A001",
+      "uf": "DF",
+      "hours_present": 24,
+      "valid_rain_hours": 24,
+      "precipitacao_mm": 2.0,
+      "temp_media": 22.95,
+      "temp_max": 28.0,
+      "temp_min": 19.5,
+      "umidade_media": 79.20833333333333,
+      "radiacao_total_kj_m2": 15194.8
+    }
+  ],
+  "all_na_day_example": {
+    "data": "2000-05-20",
+    "estacao": "A001",
+    "uf": "DF",
+    "hours_present": 24,
+    "valid_rain_hours": 0,
+    "precipitacao_mm": null,
+    "temp_media": null,
+    "temp_max": null,
+    "temp_min": null,
+    "umidade_media": null,
+    "radiacao_total_kj_m2": null
+  }
+}

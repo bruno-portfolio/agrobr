@@ -1,0 +1,29 @@
+{
+  "source": "acervo_fundiario",
+  "format": "shapefile_zip",
+  "parser_module": "agrobr.acervo_fundiario.parser",
+  "parser_function": "parse_sigef",
+  "url": "https://certificacao.incra.gov.br/csv_shp/zip/Sigef%20Brasil_AP.zip",
+  "captured_at": "2026-09-23T02:54:37.430198+00:00",
+  "last_modified": "Tue, 22 Sep 2026 16:39:50 GMT",
+  "etag": "\"5fa49ffcb04add1:0\"",
+  "sha256": "ec36c4ccff58c488fd60d8ff7db1f4649ba7d2c3b262d4c8c4375c825fd41895",
+  "bytes": 6713,
+  "original_sha256": "c4a6e6b3a0b14e912c3987fb93b8613dd87b68b827840f280c8fdfa15c04dc82",
+  "original_bytes": 2293085,
+  "license": "nc",
+  "license_reference": "docs/licenses.md — Acervo Fundiario/INCRA",
+  "needs_real_data": false,
+  "reduction": "Records at source_positions of the official shapefile, in original order. DBF header, field descriptors and record bytes, SHP record contents and PRJ retained byte for byte. Only the DBF record count, SHP record numbers (renumbered 1..n), SHP/SHX file lengths, header bounding boxes (and Z range) and the SHX index were recomputed; ZIP repackaged. No values generated or normalized.",
+  "privacy": "Parcelas de projetos de assentamento, glebas e retiros (nomes institucionais ou de lugar); sem CPF/CNPJ nem nome de pessoa.",
+  "oracle": "tests/test_acervo_fundiario/oficial.py: DBF descriptors/records and SHP geometry read with struct, Latin-1 decoded; no agrobr parser, GDAL or pyogrio involved.",
+  "source_positions": [
+    3,
+    7,
+    35,
+    271,
+    355,
+    497,
+    858
+  ]
+}

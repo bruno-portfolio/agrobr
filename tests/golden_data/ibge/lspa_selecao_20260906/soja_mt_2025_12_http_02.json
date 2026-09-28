@@ -1,0 +1,62 @@
+[
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "1006",
+    "MN": "Hectares",
+    "V": "12788611",
+    "D1C": "51",
+    "D1N": "Mato Grosso",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39443",
+    "D3N": "1.17 Soja",
+    "D4C": "109",
+    "D4N": "Área plantada"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "1006",
+    "MN": "Hectares",
+    "V": "12788611",
+    "D1C": "51",
+    "D1N": "Mato Grosso",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39443",
+    "D3N": "1.17 Soja",
+    "D4C": "216",
+    "D4N": "Área colhida"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "1017",
+    "MN": "Toneladas",
+    "V": "50175032",
+    "D1C": "51",
+    "D1N": "Mato Grosso",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39443",
+    "D3N": "1.17 Soja",
+    "D4C": "35",
+    "D4N": "Produção"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "33",
+    "MN": "Quilogramas por Hectare",
+    "V": "3923",
+    "D1C": "51",
+    "D1N": "Mato Grosso",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39443",
+    "D3N": "1.17 Soja",
+    "D4C": "36",
+    "D4N": "Rendimento médio"
+  }
+]

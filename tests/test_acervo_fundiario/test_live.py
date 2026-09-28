@@ -4,12 +4,8 @@ import pytest
 
 from agrobr import acervo_fundiario
 from agrobr.acervo_fundiario import client
-from agrobr.acervo_fundiario.models import (
-    BASE_URL,
-    FILENAME_PATTERNS,
-    SIGEF_UFS_DISPONIVEIS,
-    SNCI_UFS_DISPONIVEIS,
-)
+from agrobr.acervo_fundiario.models import BASE_URL, FILENAME_PATTERNS
+from agrobr.normalize.regions import UFS_VALIDAS
 
 pytestmark = [pytest.mark.integration, pytest.mark.integration_br]
 
@@ -38,24 +34,16 @@ async def test_live_assentamentos_brasil():
 
 @pytest.mark.asyncio
 async def test_live_uf_availability_unchanged():
-    import ssl
     from urllib.parse import quote
 
     import httpx
 
-    ssl_ctx = ssl.create_default_context()
-    ssl_ctx.check_hostname = False
-    ssl_ctx.verify_mode = ssl.CERT_NONE
-
-    async with httpx.AsyncClient(verify=ssl_ctx, timeout=30.0) as c:
-        for uf in sorted(SIGEF_UFS_DISPONIVEIS):
-            url = BASE_URL + quote(FILENAME_PATTERNS["sigef"].format(uf=uf))
-            r = await c.head(url)
-            assert r.status_code == 200, f"SIGEF {uf} regrediu: {r.status_code}"
-        for uf in sorted(SNCI_UFS_DISPONIVEIS):
-            url = BASE_URL + quote(FILENAME_PATTERNS["snci"].format(uf=uf))
-            r = await c.head(url)
-            assert r.status_code == 200, f"SNCI {uf} regrediu: {r.status_code}"
+    async with httpx.AsyncClient(timeout=30.0) as c:
+        for tema in ("sigef", "snci"):
+            for uf in sorted(UFS_VALIDAS):
+                url = BASE_URL + quote(FILENAME_PATTERNS[tema].format(uf=uf))
+                r = await c.head(url)
+                assert r.status_code == 200, f"{tema.upper()} {uf} regrediu: {r.status_code}"
 
 
 @pytest.mark.asyncio

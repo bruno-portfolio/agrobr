@@ -1,0 +1,42 @@
+{
+ "source": "BCB/SICOR: tabelas de domínio (fonte de recursos, modalidade e atividade) e $metadata do OData v2",
+ "transformation": "nenhuma: bytes das respostas HTTP 200 como recebidos",
+ "resources": [
+  {
+   "file": "dominio_FonteRecursos.csv",
+   "url": "https://www.bcb.gov.br/htms/sicor/FonteRecursos.csv",
+   "status": 200,
+   "content_type": "application/octet-stream",
+   "fetched_at_utc": "2026-09-27T13:27:09.030672+00:00",
+   "bytes": 3413,
+   "sha256": "9632fef76e1f7d1f4e477c92cd4df49daa26d8819e335441cddd23a0f993e929"
+  },
+  {
+   "file": "dominio_Modalidade.csv",
+   "url": "https://www.bcb.gov.br/htms/sicor/Modalidade.csv",
+   "status": 200,
+   "content_type": "application/octet-stream",
+   "fetched_at_utc": "2026-09-27T13:27:09.365280+00:00",
+   "bytes": 11896,
+   "sha256": "e170f971e119f82da0d01f1c2931df77fa69161fe8199cfb7161dfe703c5a62e"
+  },
+  {
+   "file": "dominio_Atividade.csv",
+   "url": "https://www.bcb.gov.br/htms/sicor/Atividade.csv",
+   "status": 200,
+   "content_type": "application/octet-stream",
+   "fetched_at_utc": "2026-09-27T13:27:10.058919+00:00",
+   "bytes": 51,
+   "sha256": "8e263e5da1c160eb2f714efd939a4d4d1edb4a2349dcc17524c2b6850e5ef20c"
+  },
+  {
+   "file": "odata_metadata.xml",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/$metadata",
+   "status": 200,
+   "content_type": "application/xml",
+   "fetched_at_utc": "2026-09-27T13:27:10.233441+00:00",
+   "bytes": 18760,
+   "sha256": "c6c349410f6d1180799a610007f97c1ffe84691caa3da756e24ef176bf8d9293"
+  }
+ ]
+}

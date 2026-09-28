@@ -97,17 +97,24 @@ completa.
 
 **MetaInfo** inclui:
 
-- `attempted_sources` — lista de fontes tentadas em ordem
-- `selected_source` — fonte que forneceu os dados
-- `fetch_timestamp` — hora da coleta
+- `attempted_sources` — identificadores tentados em ordem, conforme a convenção abaixo
+- `selected_source` — identificador selecionado, conforme a convenção abaixo
+- `fetch_timestamp` — instante UTC da aquisição do corpo que o topo descreve (igual ao `fetched_at`; nulo nos registros do cache DuckDB do CEPEA)
+- `fetched_at` — instante da aquisição original da fonte, preservado inclusive ao ler cache
 - `schema_version` — versão do contrato
 
-Quando uma fonte executa uma cascata interna, o dataset incorpora essa sequência
-em `attempted_sources`, preserva a `selected_source` real e propaga
-`from_cache=True`. Fontes simples continuam identificadas pelo nome do adaptador
-do dataset.
+`fetched_at`, `timestamp`, `cache_expires_at` e `fetch_timestamp` são normalizados para UTC com fuso na construção e em atribuições posteriores. Valores sem fuso são interpretados como UTC; offsets são convertidos preservando o instante. Campos opcionais continuam aceitando `None`. O construtor e as atribuições recebem `datetime`; strings cruas geram `AttributeError`. `from_dict()` aceita ISO com e sem fuso; `to_dict()` emite `+00:00` nos valores preenchidos. Para comparar horários, use `datetime.now(UTC)`.
+
+A identidade publicada segue duas convenções:
+
+- **Rota da fonte:** `comercio_internacional`, `desmatamento`, `empregadores_lista_suja`, `unidades_conservacao_federais`, `uso_do_solo`, `cultivares_registradas` e `cultivares_protegidas` preservam a rota e as tentativas informadas pela fonte, mesmo com uma única tentativa. As duas funções de cultivares compartilham essa regra em `_rnc.py`. Na ausência dessa proveniência, o nome do adaptador serve como identificação.
+- **Adaptador do dataset:** nos demais datasets, `selected_source` usa `DatasetSource.name` e `attempted_sources` lista os adaptadores tentados. Por exemplo, `cadastro_rural` publica `selected_source="sicar"` e `["sicar"]` em uma tentativa simples, enquanto a API da fonte publica `sicar_wfs`.
+
+A regra da base adota a proveniência interna quando a fonte informa mais de uma tentativa ou `selected_source="cache"`: preserva a rota selecionada e combina os adaptadores anteriores com as tentativas internas, sem duplicatas e na ordem original. Sem identificador interno selecionado, conserva o nome do adaptador. `from_cache` é propagado independentemente; `from_cache=True` sozinho não muda a convenção dos nomes.
 
 Datasets são registrados automaticamente via registry com auto-descoberta.
+
+A base também propaga `raw_content_hash`, `raw_content_size`, `cache_key`, `cache_expires_at`, `fetch_duration_ms` e `parse_duration_ms` da fonte selecionada. Esses campos descrevem o recurso, cache e trabalho da fonte; não representam hash do DataFrame normalizado, cache próprio do dataset ou duração total do wrapper. Sem metadados da fonte, conservam None/0. A presença de chave ou TTL não determina `from_cache`, e `source_details` permanece uma cópia independente.
 
 ### Hierarquia de Exceções
 
@@ -118,8 +125,8 @@ consistente.
 |---------|--------|
 | `AgrobrError` | Base de todas as exceções |
 | `InvalidParameterError` | Parâmetro do usuário inválido; também é `ValueError` e interrompe a cascata |
-| `SourceUnavailableError` | Todas as fontes falharam após retries |
-| `NetworkError` | Timeout, HTTP error, DNS |
+| `SourceUnavailableError` | A fonte não entregou o dado: timeout, falha de conexão ou status HTTP de erro (depois dos retries, nos status que se repetem), com a fonte, a URL e o status, e a exceção do httpx em `__cause__`. No dataset, todas as fontes falharam: `attempted_sources` e `errors` dizem quais e por quê |
+| `NetworkError` | Reservado: segue exportado, mas não é levantado na 2.0; o status HTTP de erro sai como `SourceUnavailableError` |
 | `ParseError` | Layout mudou, HTML/JSON inesperado |
 | `ContractViolationError` | DataFrame não bate com contrato (colunas, tipos) |
 | `ValidationError` | Pydantic ou validação estatística falhou |
@@ -164,7 +171,7 @@ Cada fonte usa formato diferente de safra:
 |-------|---------|---------|
 | CONAB | ano-safra | `"2024/25"` |
 | IBGE | ano-calendário | `2024` |
-| USDA | marketing year | `"2024/25"` |
+| USDA | marketing year (ano inicial) | `2024` (safra 2024/25) |
 
 O ano-safra brasileiro começa em **julho** (mês 7). A safra "2024/25"
 vai de 1 de julho de 2024 a 30 de junho de 2025.
@@ -214,11 +221,10 @@ Funções: `municipio_para_ibge()`, `ibge_para_municipio()`,
 ### Encoding (`normalize/encoding.py`)
 
 Fontes governamentais BR misturam encodings sem declarar corretamente.
-Fallback chain de 5 encodings + detecção automática com chardet
-(threshold > 0.7):
+Fallback chain de 3 encodings. O ISO-8859-1 decodifica qualquer byte, então a chain termina nele:
 
 ```
-UTF-8 → Windows-1252 → ISO-8859-1 → UTF-16 → ASCII → chardet → replace
+UTF-8 → Windows-1252 → ISO-8859-1
 ```
 
 Funções: `decode_content()`, `detect_encoding()`
@@ -231,7 +237,7 @@ Algumas fontes exigem configuração via variáveis de ambiente:
 
 | Variável | Fonte | Obrigatória? | Consequência sem ela |
 |----------|-------|:------------:|----------------------|
-| `AGROBR_USDA_API_KEY` | USDA PSD | Sim | `SourceUnavailableError(401)` |
+| `AGROBR_USDA_API_KEY` | USDA PSD | Sim | `SourceUnavailableError` antes da rede |
 | `AGROBR_INMET_TOKEN` | INMET | Sim | HTTP 204 — retorna vazio sem erro |
 
 Rate limits e timeouts também são configuráveis via env vars com prefixo
@@ -244,45 +250,45 @@ Rate limits e timeouts também são configuráveis via env vars com prefixo
 Os arquivos em `tests/golden_data/` contêm dados de referência estáticos
 para validar parsers em qualquer linguagem:
 
-1. Alimente seu parser com o golden input (HTML, JSON, CSV, XLSX)
-2. Compare o output com o `expected.json`
+1. Alimente seu parser com o golden input (HTML, JSON, CSV, XLSX, PDF)
+2. Compare o output com o `expected.json`, com as observações do caso no manifesto (ANDA) ou com o oráculo do caso
+   (Rio Verde: as linhas de `oraculo_20260923.json`; IMEA: o próprio JSON oficial, como em `tests/test_imea/oficial.py`;
+   Desmatamento: as propriedades de cada feição do JSON oficial, como em `tests/test_desmatamento/test_json_parser.py`)
 3. Se bater, seu parser está correto
 
-### Conjuntos de teste disponíveis (amostra: 26 fontes, 35 casos)
+### Conjuntos de teste disponíveis (amostra: 26 fontes, 33 casos)
 
 | Fonte | Caso de teste | Arquivos |
 |-------|--------------|----------|
 | ABIOVE | `exportacao_sample` | response.xlsx, expected.json |
-| ANDA | `entregas_sample` | response.json, expected.json |
+| ANDA | `reconciliacao_r7_20260918` | anda/anda_Principais_Indicadores_2024.pdf, anda_manifest.json (`anda_2024`) |
 | B3 | `posicoes_sample` | response.csv, expected.json |
 | BCB | `custeio_sample` | response.json, expected.json |
 | CEPEA | `soja_sample` | response.html, expected.json |
 | Comtrade | `comercio_sample` | response.json, expected.json |
 | Comtrade | `mirror_sample` | response_reporter.json, response_partner.json, expected.json |
 | ComexStat | `exportacao_soja_sample` | response.csv, expected.json |
-| CONAB | `safra_sample` | response.xlsx, expected.json |
+| CONAB | `safra_2025_26_agosto` | response.xlsx, expected.json |
 | CONAB CEASA | `precos_sample` | ceasas_response.json, precos_response.json, expected.json |
 | CONAB Progresso | `progresso_sample` | progresso_sample.xlsx, expected.json |
 | DERAL | `pc_sample` | response.xlsx, expected.json |
-| Desmatamento | `deter_sample` | response.csv, expected.json |
-| Desmatamento | `prodes_sample` | response.csv, expected.json |
+| Desmatamento | `selecao_20260907` | 8 corpos JSON oficiais (PRODES em 6 biomas, DETER Amazônia e Cerrado), manifest.json |
+| Desmatamento | `geo_20260923` | hits (XML) e página GeoJSON de 3 seleções (PRODES Pantanal, DETER Amazônia e Cerrado), manifest.json |
 | IBGE | `abate_bovino_sample` | response.csv, expected.json |
 | IBGE | `censo_agro_efetivo_sample` | response.csv, expected.json |
 | IBGE | `pam_soja_sample` | response.csv, expected.json |
-| IBGE | `ppm_bovino_sample` | response.csv, expected.json |
-| IBGE | `silvicultura_sample` | response.csv, expected.json |
-| IBGE | `extracao_vegetal_sample` | response.csv, expected.json |
+| IBGE | `reconciliacao_r15_20260918` (PPM, PEVS) | agregados/*.json, manifest.json |
 | IBGE | `leite_trimestral_sample` | response.csv, expected.json |
 | IBGE | `pib_agro_sample` | response.csv, expected.json |
-| IMEA | `cotacoes_soja_sample` | response.json, expected.json |
+| IMEA | `oficial_20260923` | cadeias.json, cotacoes_{id}.json e indicadores_{id}.json (8 cadeias), manifest.json |
 | INMET | `observacoes_sample` | response.json, expected.json |
 | MapBiomas | `biome_state_sample` | biome_state_sample.xlsx, expected.json |
 | Notícias Agrícolas | `soja_sample` | response.html, expected.json |
 | NASA POWER | `daily_sample` | response.json, expected.json |
 | Queimadas | `focos_sample` | response.csv, expected.json |
-| USDA | `psd_soja_sample` | response.json, expected.json |
+| USDA | `psd_gateway_20260926` | 34 corpos de duas capturas independentes, capturas do gateway (404, 403, `[]`, série antiga), oráculos de 72 e 48 valores, manifest.json |
 | RNC | `registradas_sample` | registradas_sample.csv (25 rows), expected.json |
-| Rio Verde | `ensaio_soja_pages` | ensaio_soja_pages.json (5 pages), expected.json |
+| Rio Verde | `oraculo_20260923` | ensaio_soja_2023_2024.pdf, ensaio_soja_2024_2025.pdf, ensaio_soja_2025_2026.pdf, oraculo_20260923.json |
 | BCB SGS | `sgs_sample` | sgs_sample.json (10 rows), expected.json |
 | BCB PTAX | `ptax_sample` | ptax_sample.json (5 rows), expected.json |
 | BCB Focus | `focus_sample` | focus_sample.json (5 rows), expected.json |

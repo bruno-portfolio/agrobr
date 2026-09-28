@@ -1,0 +1,94 @@
+{
+  "source": "CMR/FUNAI WFS2 INCRA-attributed layer",
+  "source_layer": "CMR-PUBLICO:lim_quilombolas_a",
+  "retrieved_date_UTC": "2026-09-08",
+  "accepted_occurrences": 444,
+  "page_occurrences_with_overlap": 445,
+  "overlap_occurrences": 1,
+  "output_columns": 22,
+  "primary_key": [],
+  "revision_snapshot": false,
+  "source_edition": "not published by this WFS acquisition",
+  "resources": [
+    {
+      "file": "count_before.json",
+      "source_file": "request_000.body",
+      "role": "count_before",
+      "parameters": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "CMR-PUBLICO:lim_quilombolas_a",
+        "outputFormat": "application/json",
+        "propertyName": "co_sr,nu_processo,no_comunidade,no_municipio,sg_uf,dt_publica,dt_public1,nu_familia,dt_titulo,nu_area_ha,no_responsavel,no_esfera,dt_cadastro,cd_quilomb,cd_sipra,ds_descricao,st_titulad,dt_decreto,tp_levanta,nr_escalao,ds_fase",
+        "count": "1",
+        "startIndex": "0",
+        "sortBy": "cd_quilomb A,nu_processo A,no_comunidade A"
+      },
+      "sha256": "64c419fe664dd1937625b41495c8163ccd1f74d1fd90e7757c64232ea416843a",
+      "bytes": 1364,
+      "requested_at": "2026-09-08T02:58:19.974719+00:00",
+      "received_at": "2026-09-08T02:58:20.204331+00:00"
+    },
+    {
+      "file": "page_001.json",
+      "source_file": "request_001.body",
+      "role": "page",
+      "parameters": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "CMR-PUBLICO:lim_quilombolas_a",
+        "outputFormat": "application/json",
+        "propertyName": "co_sr,nu_processo,no_comunidade,no_municipio,sg_uf,dt_publica,dt_public1,nu_familia,dt_titulo,nu_area_ha,no_responsavel,no_esfera,dt_cadastro,cd_quilomb,cd_sipra,ds_descricao,st_titulad,dt_decreto,tp_levanta,nr_escalao,ds_fase",
+        "count": "250",
+        "startIndex": "0",
+        "sortBy": "cd_quilomb A,nu_processo A,no_comunidade A"
+      },
+      "sha256": "17733d6da524a5be4ea208ef94ba2d668b7b8c2d88cba507475fbedac503a1c6",
+      "bytes": 161801,
+      "requested_at": "2026-09-08T02:58:22.242576+00:00",
+      "received_at": "2026-09-08T02:58:22.302541+00:00"
+    },
+    {
+      "file": "page_002.json",
+      "source_file": "request_002.body",
+      "role": "page",
+      "parameters": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "CMR-PUBLICO:lim_quilombolas_a",
+        "outputFormat": "application/json",
+        "propertyName": "co_sr,nu_processo,no_comunidade,no_municipio,sg_uf,dt_publica,dt_public1,nu_familia,dt_titulo,nu_area_ha,no_responsavel,no_esfera,dt_cadastro,cd_quilomb,cd_sipra,ds_descricao,st_titulad,dt_decreto,tp_levanta,nr_escalao,ds_fase",
+        "count": "195",
+        "startIndex": "249",
+        "sortBy": "cd_quilomb A,nu_processo A,no_comunidade A"
+      },
+      "sha256": "d4ca4a83042e4ca498cad7384144cfcbff8675d01f8bec29cff7330619b0046b",
+      "bytes": 125620,
+      "requested_at": "2026-09-08T02:58:24.361160+00:00",
+      "received_at": "2026-09-08T02:58:24.420885+00:00"
+    },
+    {
+      "file": "count_after.json",
+      "source_file": "request_003.body",
+      "role": "count_after",
+      "parameters": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "CMR-PUBLICO:lim_quilombolas_a",
+        "outputFormat": "application/json",
+        "propertyName": "co_sr,nu_processo,no_comunidade,no_municipio,sg_uf,dt_publica,dt_public1,nu_familia,dt_titulo,nu_area_ha,no_responsavel,no_esfera,dt_cadastro,cd_quilomb,cd_sipra,ds_descricao,st_titulad,dt_decreto,tp_levanta,nr_escalao,ds_fase",
+        "count": "1",
+        "startIndex": "0",
+        "sortBy": "cd_quilomb A,nu_processo A,no_comunidade A"
+      },
+      "sha256": "1eb0179166268453896279aa5ca3484e8cf3f031c031dc7255d9faf4ef93645f",
+      "bytes": 1364,
+      "requested_at": "2026-09-08T02:58:26.481865+00:00",
+      "received_at": "2026-09-08T02:58:26.522825+00:00"
+    }
+  ]
+}

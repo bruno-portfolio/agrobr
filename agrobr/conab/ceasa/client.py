@@ -29,7 +29,6 @@ def _build_url(cda_path: str, query_id: str) -> str:
     params = {
         "path": cda_path,
         "dataAccessId": query_id,
-        **PENTAHO_AUTH,
     }
     return f"{PENTAHO_BASE}?{urlencode(params)}"
 
@@ -44,6 +43,7 @@ async def _fetch_query(cda_path: str, query_id: str) -> tuple[dict[str, Any], st
     async with httpx.AsyncClient(
         timeout=TIMEOUT,
         headers=headers,
+        auth=PENTAHO_AUTH,
         follow_redirects=True,
     ) as http:
         resp = await retry_on_status(
@@ -58,7 +58,7 @@ async def _fetch_query(cda_path: str, query_id: str) -> tuple[dict[str, Any], st
             last_error=f"HTTP {resp.status_code}",
         )
 
-    resp.raise_for_status()
+    responses.raise_for_status(resp, source="conab_ceasa")
     data = responses.parse_json_response(resp, source="conab_ceasa", url=url)
     return data, PENTAHO_BASE
 

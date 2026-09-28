@@ -1,26 +1,96 @@
 from __future__ import annotations
 
 import time
+import warnings as python_warnings
 from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import contracts
+from agrobr.contracts import comtrade as source_contracts
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils import result, warnings
 from agrobr.utils.time import utcnow
 
-from . import client, parser
-from .models import (
-    COMTRADE_PAISES_INV,
-    HS_PRODUTOS_AGRO,
-    resolve_hs,
-    resolve_pais,
-)
+from . import acquisition, client, metadata, models, parser, query
 
 logger = structlog.get_logger()
 
 
+def prepare_query(
+    produto: str,
+    *,
+    reporter: str = "BR",
+    partner: str | None = None,
+    fluxo: str = "X",
+    periodo: str | int | None = None,
+    freq: str = "A",
+    api_key: str | None = None,
+    require_complete: bool = False,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> acquisition.TradeQuery:
+    if kwargs:
+        raise InvalidParameterError(f"Parâmetros Comtrade desconhecidos: {sorted(kwargs)}")
+    query.validate_access_options(api_key, require_complete)
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
+    reporter_code = models.resolve_pais(reporter)
+    partner_code = _resolve_partner(partner)
+    selection = query.build_query(
+        reporter=reporter_code,
+        partner=partner_code,
+        hs_codes=models.resolve_hs(produto),
+        flow=fluxo,
+        period=periodo if periodo is not None else str(utcnow().year - 1),
+        freq=freq,
+    )
+    models.validate_hs_periods(produto, selection.periods, selection.reporter)
+    return selection
+
+
+def _resolve_partner(partner: str | None) -> int | None:
+    if partner is None:
+        return 0
+    if isinstance(partner, str) and partner.strip().lower() in {"all", "todos"}:
+        return None
+    return models.resolve_pais(partner)
+
+
+def _warn_license() -> None:
+    warnings.warn_once(
+        "comtrade_license",
+        "UN Comtrade: licença classificada como zona_cinza. Uso e redistribuição têm condições "
+        "e exceções; consulte https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/ "
+        "e docs/licenses.md.",
+    )
+
+
+async def _acquire(
+    selection: acquisition.TradeQuery,
+    *,
+    api_key: str | None,
+    require_complete: bool,
+) -> tuple[pd.DataFrame, MetaInfo]:
+    _warn_license()
+    logger.info("comtrade_comercio", query=selection.model_dump(mode="json"))
+    started = time.monotonic()
+    acquired = await client.fetch_trade_acquisition(
+        selection, api_key=api_key, require_complete=require_complete
+    )
+    for message in acquired.warnings:
+        python_warnings.warn(message, UserWarning, stacklevel=3)
+    fetch_ms = int((time.monotonic() - started) * 1000)
+    started = time.monotonic()
+    frame = parser.parse_trade_data(acquired.records)
+    contracts.validate_dataset(frame, source_contracts.COMERCIO_BILATERAL_V2)
+    parse_ms = int((time.monotonic() - started) * 1000)
+    return frame, metadata.trade_meta(acquired, frame, fetch_ms=fetch_ms, parse_ms=parse_ms)
+
+
 @overload
 async def comercio(
     produto: str,
@@ -31,6 +101,7 @@ async def comercio(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -46,6 +117,7 @@ async def comercio(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -60,58 +132,26 @@ async def comercio(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    require_complete: bool = False,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    hs_codes = resolve_hs(produto)
-    reporter_code = resolve_pais(reporter)
-    partner_code = resolve_pais(partner) if partner else 0
-
-    if periodo is None:
-        periodo = str(utcnow().year - 1)
-        logger.info("comtrade_default_periodo", periodo=periodo)
-    period_str = str(periodo)
-
-    logger.info(
-        "comtrade_comercio",
-        produto=produto,
-        hs_codes=hs_codes,
+    selection = prepare_query(
+        produto,
         reporter=reporter,
         partner=partner,
         fluxo=fluxo,
-        periodo=period_str,
-        freq=freq,
-    )
-
-    t0 = time.monotonic()
-
-    records, source_url = await client.fetch_trade_data(
-        reporter=reporter_code,
-        partner=partner_code,
-        hs_codes=hs_codes,
-        flow=fluxo,
-        period=period_str,
+        periodo=periodo,
         freq=freq,
         api_key=api_key,
+        require_complete=require_complete,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        **kwargs,
     )
-
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_trade_data(records)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    meta = build_source_meta(
-        "comtrade",
-        source_url,
-        "httpx",
-        fetch_ms,
-        parse_ms,
-        df,
-        parser.PARSER_VERSION,
-    )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    frame, meta = await _acquire(selection, api_key=api_key, require_complete=require_complete)
+    return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
@@ -123,6 +163,7 @@ async def trade_mirror(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -137,6 +178,7 @@ async def trade_mirror(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -150,69 +192,63 @@ async def trade_mirror(
     periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    require_complete: bool = False,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    reporter_code = resolve_pais(reporter)
-    partner_code = resolve_pais(partner)
-    reporter_iso = COMTRADE_PAISES_INV.get(reporter_code, reporter.upper())
-    partner_iso = COMTRADE_PAISES_INV.get(partner_code, partner.upper())
-
-    logger.info(
-        "comtrade_trade_mirror",
-        produto=produto,
-        reporter=reporter_iso,
-        partner=partner_iso,
-        periodo=periodo,
-        freq=freq,
-    )
-
-    t0 = time.monotonic()
-
-    df_export = await comercio(
+    if kwargs:
+        raise InvalidParameterError(f"Parâmetros trade_mirror desconhecidos: {sorted(kwargs)}")
+    selection = prepare_query(
         produto,
         reporter=reporter,
         partner=partner,
-        fluxo="X",
         periodo=periodo,
         freq=freq,
         api_key=api_key,
+        require_complete=require_complete,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        **kwargs,
     )
-
-    df_import = await comercio(
-        produto,
-        reporter=partner,
-        partner=reporter,
-        fluxo="M",
-        periodo=periodo,
-        freq=freq,
-        api_key=api_key,
+    if not selection.partner or selection.partner == selection.reporter:
+        raise InvalidParameterError("Espelho requer dois países positivos, explícitos e distintos")
+    inverse = query.build_query(
+        reporter=selection.partner,
+        partner=selection.reporter,
+        hs_codes=selection.hs_codes,
+        flow="M",
+        period=",".join(selection.periods),
+        freq=selection.freq,
     )
-
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_mirror(df_export, df_import, reporter_iso, partner_iso)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    meta = build_source_meta(
-        "comtrade_mirror",
-        client.BASE_URL_AUTH,
-        "httpx",
-        fetch_ms,
-        parse_ms,
-        df,
-        parser.PARSER_VERSION,
-        attempted_sources=["comtrade_export", "comtrade_import"],
-        selected_source="comtrade_mirror",
+    started = time.monotonic()
+    exports, export_meta = await _acquire(
+        selection, api_key=api_key, require_complete=require_complete
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    imports, import_meta = await _acquire(
+        inverse, api_key=api_key, require_complete=require_complete
+    )
+    fetch_ms = int((time.monotonic() - started) * 1000)
+    started = time.monotonic()
+    frame = parser.parse_mirror(
+        exports,
+        imports,
+        None,
+        None,
+        reporter_code=selection.reporter,
+        partner_code=selection.partner,
+    )
+    contracts.validate_dataset(frame, source_contracts.TRADE_MIRROR_V2)
+    parse_ms = int((time.monotonic() - started) * 1000)
+    meta = metadata.mirror_meta(
+        export_meta, import_meta, frame, fetch_ms=fetch_ms, parse_ms=parse_ms
+    )
+    return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 def paises() -> list[str]:
-    return sorted(set(COMTRADE_PAISES_INV.values()))
+    return sorted(set(models.COMTRADE_PAISES_INV.values()))
 
 
 def produtos() -> dict[str, list[str]]:
-    return dict(HS_PRODUTOS_AGRO)
+    return {name: list(codes) for name, codes in models.HS_PRODUTOS_AGRO.items()}

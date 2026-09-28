@@ -1,0 +1,59 @@
+{
+ "coletado_em": "2026-09-27",
+ "tabelas": {
+  "311": {
+   "url": "https://apisidra.ibge.gov.br/values/t/311/n1/all/h/n/p/all/v/183/c222/all/c220/0",
+   "sha256": "1f7274c257ab9ea0998d0c907bc5e4f207bd4b02a88654cc2682c9aee50e63b7",
+   "bytes": 3282,
+   "crlf": true
+  },
+  "316": {
+   "url": "https://apisidra.ibge.gov.br/values/t/316/n1/all/h/n/p/all/v/184/c222/all/c220/0",
+   "sha256": "e5d8c29fe585ffe097e4056dbc9b0dd44db6a609693a7d87f28a103a0d61c431",
+   "bytes": 3665,
+   "crlf": true
+  },
+  "323": {
+   "url": "https://apisidra.ibge.gov.br/values/t/323/n1/all/h/n/p/all/v/105/c224/all/c220/0",
+   "sha256": "975dc3dcde4c1c5a5c79db6a0425ac4c22436a495b6df5c3535812430cdcf0c7",
+   "bytes": 3556,
+   "crlf": true
+  },
+  "492": {
+   "url": "https://apisidra.ibge.gov.br/values/t/492/n1/all/h/n/p/all/v/151/c226/all/c220/0",
+   "sha256": "046d7fe8a6d09ad38052d2e48ab484eb8c1178967a6311be6723f695d2b696a5",
+   "bytes": 25738,
+   "crlf": true
+  },
+  "497": {
+   "url": "https://apisidra.ibge.gov.br/values/t/497/n1/all/h/n/p/all/v/214/c226/all/c220/0",
+   "sha256": "7de56d34232aaa8850fd565fefd0f437d22a6b4becd55837ba1e90a4f751db37",
+   "bytes": 25400,
+   "crlf": true
+  },
+  "503": {
+   "url": "https://apisidra.ibge.gov.br/values/t/503/n1/all/h/n/p/all/v/216/c226/all/c220/0",
+   "sha256": "ef21721aa6118b55cf0cead9148dcb4a4c2b2a1e48f0937642b58e0989df25b1",
+   "bytes": 25713,
+   "crlf": true
+  },
+  "504": {
+   "url": "https://apisidra.ibge.gov.br/values/t/504/n1/all/h/n/p/all/v/151/c227/all/c220/0",
+   "sha256": "772083540fe87d42a7a0c216f86863a1a474ab154b49f90e1bd7be1b333d3219",
+   "bytes": 25673,
+   "crlf": true
+  },
+  "509": {
+   "url": "https://apisidra.ibge.gov.br/values/t/509/n1/all/h/n/p/all/v/214/c227/all/c220/0",
+   "sha256": "2b421fdded6da93e6c4357ffa45c565a8acce02c4b0a992d6592feba0c5a9a77",
+   "bytes": 25275,
+   "crlf": true
+  },
+  "510": {
+   "url": "https://apisidra.ibge.gov.br/values/t/510/n1/all/h/n/p/all/v/216/c227/all/c220/0",
+   "sha256": "18c5cdf6e221f839c12ef10f30154315c8265f075b985e346e6aa1aa0ba38817",
+   "bytes": 25517,
+   "crlf": true
+  }
+ }
+}

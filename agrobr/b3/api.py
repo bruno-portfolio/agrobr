@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import re
 import time
+import warnings
 from datetime import date, datetime, timedelta
-from typing import Any, Literal, overload
+from typing import Literal, overload
 
 import httpx
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
+from agrobr.utils import time as time_utils
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
@@ -19,11 +23,23 @@ from .models import (
     B3_CONTRATOS_AGRO,
     COLUNAS_OI_SAIDA,
     COLUNAS_SAIDA,
-    TICKERS_AGRO,
-    TICKERS_AGRO_OI,
+    parse_vencimento,
 )
 
 logger = structlog.get_logger()
+
+_RE_VENCIMENTO_MES = re.compile(r"[FGHJKMNQUVXZ]\d{2}")
+_RE_VENCIMENTO_OPCAO = re.compile(r"[FGHJKMNQUVXZ][A-Z]{2}[A-Z0-9]")
+
+
+def _codigo_de_vencimento(vencimento: str) -> str:
+    codigo = vencimento.strip().upper()
+    if _RE_VENCIMENTO_MES.fullmatch(codigo) or _RE_VENCIMENTO_OPCAO.fullmatch(codigo):
+        return codigo
+    raise InvalidParameterError(
+        f"vencimento {vencimento!r} inválido: use o código do mês do contrato (ex.: 'V26') "
+        "ou o código publicado da opção (ex.: 'VVJK')"
+    )
 
 
 @overload
@@ -52,7 +68,6 @@ async def ajustes(
     contrato: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     warn_once(
         "b3_ajustes",
@@ -73,17 +88,18 @@ async def ajustes(
 
     t0 = time.monotonic()
     zip_bytes, source_url = await client.fetch_ajustes_zip(data_str)
+    adquirido = time_utils.utcnow()
     fetch_ms = int((time.monotonic() - t0) * 1000)
     t1 = time.monotonic()
     df = parser.parse_ajustes_zip(zip_bytes)
+    identidade = df.attrs.pop("identidade")
+    pregao = pd.Timestamp(datetime.strptime(data_str, "%d/%m/%Y"))
+    df = df[df["data"] == pregao].reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if contrato is not None:
         ticker = B3_CONTRATOS_AGRO.get(contrato, contrato.upper())
-        if ticker in TICKERS_AGRO:
-            df = df[df["ticker"] == ticker].reset_index(drop=True)
-        else:
-            df = df[df["ticker"] == contrato.upper()].reset_index(drop=True)
+        df = df[df["ticker"] == ticker].reset_index(drop=True)
 
     meta = build_source_meta(
         "b3",
@@ -93,7 +109,11 @@ async def ajustes(
         parse_ms,
         df,
         parser.PARSER_VERSION_ZIP,
+        raw_content_hash=hashlib.sha256(zip_bytes).hexdigest(),
+        raw_content_size=len(zip_bytes),
+        source_details=identidade,
     )
+    meta.fetched_at = meta.fetch_timestamp = adquirido
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
@@ -129,7 +149,6 @@ async def historico(
     vencimento: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     logger.info("b3_historico", contrato=contrato, inicio=str(inicio), fim=str(fim))
 
@@ -144,10 +163,9 @@ async def historico(
         if (inicio_dt + timedelta(days=i)).weekday() < 5
     ]
 
-    async def _fetch_day(d: date) -> pd.DataFrame | None:
+    async def _fetch_day(d: date) -> tuple[pd.DataFrame, MetaInfo] | Exception:
         try:
-            df_dia = await ajustes(data=d, contrato=contrato)
-            return df_dia if not df_dia.empty else None
+            return await ajustes(data=d, contrato=contrato, return_meta=True)
         except (httpx.HTTPError, SourceUnavailableError, ParseError) as exc:
             logger.warning(
                 "b3_historico_skip",
@@ -155,10 +173,31 @@ async def historico(
                 contrato=contrato,
                 error=str(exc)[:200],
             )
-            return None
+            return exc
 
     results = await asyncio.gather(*[_fetch_day(d) for d in weekdays])
-    frames = [df for df in results if df is not None]
+    frames = [result[0] for result in results if isinstance(result, tuple) and not result[0].empty]
+    recebidos = [
+        (day, value[1])
+        for day, value in zip(weekdays, results, strict=True)
+        if isinstance(value, tuple)
+    ]
+    failures = [result for result in results if isinstance(result, Exception)]
+    if results and len(failures) == len(results):
+        raise SourceUnavailableError(source="b3", last_error=str(failures[-1])) from failures[-1]
+
+    failed_days = [
+        {"data": day.isoformat(), "error_type": type(value).__name__, "error": str(value)}
+        for day, value in zip(weekdays, results, strict=True)
+        if isinstance(value, Exception)
+    ]
+    messages = []
+    if failed_days:
+        message = "Histórico B3 incompleto; falha nas datas: " + ", ".join(
+            item["data"] for item in failed_days
+        )
+        messages.append(message)
+        warnings.warn(message, UserWarning, stacklevel=2)
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
@@ -177,7 +216,40 @@ async def historico(
         df,
         parser.PARSER_VERSION_ZIP,
     )
+    _registrar_corpos(meta, recebidos)
+    meta.validation_warnings.extend(messages)
+    meta.source_details["coverage"] = {
+        "status": "partial" if failed_days else "all_requests_succeeded",
+        "requested_dates": [day.isoformat() for day in weekdays],
+        "failed_dates": failed_days,
+        "empty_dates": [
+            day.isoformat()
+            for day, value in zip(weekdays, results, strict=True)
+            if isinstance(value, tuple) and value[0].empty
+        ],
+    }
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+
+
+def _registrar_corpos(meta: MetaInfo, recebidos: list[tuple[date, MetaInfo]]) -> None:
+    if len(recebidos) == 1:
+        unico = recebidos[0][1]
+        meta.source_url = unico.source_url
+        meta.raw_content_hash = unico.raw_content_hash
+        meta.raw_content_size = unico.raw_content_size
+    if recebidos:
+        meta.fetched_at = meta.fetch_timestamp = max(dia.fetched_at for _, dia in recebidos)
+    meta.source_details["corpos"] = [
+        {
+            "data": day.isoformat(),
+            "url": dia.source_url,
+            "sha256": dia.raw_content_hash,
+            "bytes": dia.raw_content_size,
+            "fetch_timestamp": dia.fetch_timestamp.isoformat() if dia.fetch_timestamp else None,
+            **dia.source_details,
+        }
+        for day, dia in recebidos
+    ]
 
 
 def contratos() -> list[str]:
@@ -213,13 +285,12 @@ async def posicoes_abertas(
     tipo: Literal["futuro", "opcao"] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     """Posições em aberto de futuros/opções agro de uma data.
 
-    O arquivo DerivativesOpenPosition só existe no endpoint para o dia
-    corrente, publicado após o fechamento do pregão — datas passadas
-    retornam 404 (verificado live em jun/2026: D-1, D-2 e D-5 úteis = 404).
+    A B3 mantém alguns dias recentes, sem garantir um histórico completo.
+    HTTP 400/404 na solicitação do token indica arquivo não publicado.
+    No download, apenas HTTP 404 retorna vazio; HTTP 400 é erro de fonte.
     """
     warn_once(
         "b3_posicoes",
@@ -237,15 +308,16 @@ async def posicoes_abertas(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_posicoes_abertas(csv_bytes)
+    df = (
+        parser.parse_posicoes_abertas(csv_bytes)
+        if csv_bytes
+        else pd.DataFrame(columns=COLUNAS_OI_SAIDA)
+    )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if contrato is not None:
         ticker = B3_CONTRATOS_AGRO.get(contrato, contrato.upper())
-        if ticker in TICKERS_AGRO_OI:
-            df = df[df["ticker"] == ticker].reset_index(drop=True)
-        else:
-            df = df[df["ticker"] == contrato.upper()].reset_index(drop=True)
+        df = df[df["ticker"] == ticker].reset_index(drop=True)
 
     if tipo is not None:
         df = df[df["tipo"] == tipo].reset_index(drop=True)
@@ -258,6 +330,9 @@ async def posicoes_abertas(
         parse_ms,
         df,
         parser.PARSER_VERSION_OI,
+        raw_content_hash=hashlib.sha256(csv_bytes).hexdigest() if csv_bytes else None,
+        raw_content_size=len(csv_bytes),
+        source_details={"ticket_url": client.ticket_url(data_str)},
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -297,19 +372,24 @@ async def oi_historico(
     tipo: Literal["futuro", "opcao"] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     """Itera `posicoes_abertas` pelos dias úteis do período.
 
-    A fonte só publica o arquivo do dia corrente (datas passadas = 404),
-    então períodos retroativos retornam vazio — a série histórica só se
-    acumula executando a coleta diariamente. Para posicionamento semanal
-    histórico em Chicago/NY, use `cftc.cot()` (2006+).
+    A fonte mantém alguns dias recentes, sem garantir todo o período.
+    Dias sem arquivo (HTTP 400/404 no token ou 404 no download) são ignorados;
+    falhas de requisição ou parsing
+    são propagadas. Para posicionamento semanal histórico em Chicago/NY,
+    use `cftc.cot()` (2006+).
+
+    `vencimento` aceita o código do mês do contrato (ex.: "V26"), que casa o
+    futuro e as opções daquele mês, ou o código publicado de uma opção
+    (ex.: "VVJK").
     """
     logger.info("b3_oi_historico", contrato=contrato, inicio=str(inicio), fim=str(fim))
 
-    inicio_dt = datetime.strptime(inicio, "%Y-%m-%d").date() if isinstance(inicio, str) else inicio
-    fim_dt = datetime.strptime(fim, "%Y-%m-%d").date() if isinstance(fim, str) else fim
+    inicio_dt = client.validate_oi_date(inicio.isoformat() if isinstance(inicio, date) else inicio)
+    fim_dt = client.validate_oi_date(fim.isoformat() if isinstance(fim, date) else fim)
+    codigo_vencimento = _codigo_de_vencimento(vencimento) if vencimento is not None else None
 
     t0 = time.monotonic()
 
@@ -319,29 +399,28 @@ async def oi_historico(
         if (inicio_dt + timedelta(days=i)).weekday() < 5
     ]
 
-    async def _fetch_day(d: date) -> pd.DataFrame | None:
-        try:
-            df_dia = await posicoes_abertas(data=d, contrato=contrato, tipo=tipo)
-            return df_dia if not df_dia.empty else None
-        except (httpx.HTTPError, SourceUnavailableError, ParseError) as exc:
-            logger.warning(
-                "b3_oi_historico_skip",
-                data=str(d),
-                contrato=contrato,
-                error=str(exc)[:200],
-            )
-            return None
-
-    results = await asyncio.gather(*[_fetch_day(d) for d in weekdays])
-    frames = [df for df in results if df is not None]
+    results = [
+        await posicoes_abertas(data=d, contrato=contrato, tipo=tipo, return_meta=True)
+        for d in weekdays
+    ]
+    frames = [df_dia for df_dia, _ in results if not df_dia.empty]
+    recebidos = [
+        (day, meta_dia)
+        for day, (_, meta_dia) in zip(weekdays, results, strict=True)
+        if meta_dia.raw_content_hash is not None
+    ]
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=COLUNAS_OI_SAIDA)
 
-    if vencimento is not None:
-        vct_upper = vencimento.strip().upper()
-        df = df[df["vencimento_codigo"] == vct_upper].reset_index(drop=True)
+    if codigo_vencimento is not None and len(codigo_vencimento) == 3:
+        ano, mes = parse_vencimento(codigo_vencimento)
+        df = df[(df["vencimento_ano"] == ano) & (df["vencimento_mes"] == mes)].reset_index(
+            drop=True
+        )
+    elif codigo_vencimento is not None:
+        df = df[df["vencimento_codigo"] == codigo_vencimento].reset_index(drop=True)
 
     meta = build_source_meta(
         "b3",
@@ -352,4 +431,11 @@ async def oi_historico(
         df,
         parser.PARSER_VERSION_OI,
     )
+    _registrar_corpos(meta, recebidos)
+    returned_dates = set(pd.to_datetime(df["data"]).dt.date)
+    missing_dates = [day.isoformat() for day in weekdays if day not in returned_dates]
+    if missing_dates:
+        meta.validation_warnings.append(
+            "Sem posições retornadas para o filtro nos dias úteis: " + ", ".join(missing_dates)
+        )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

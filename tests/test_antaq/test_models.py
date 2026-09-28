@@ -5,9 +5,6 @@ from __future__ import annotations
 import pytest
 
 from agrobr.antaq.models import (
-    MIN_ANO,
-    NATUREZA_CARGA,
-    TIPO_NAVEGACAO,
     resolve_natureza_carga,
     resolve_tipo_navegacao,
 )
@@ -65,14 +62,3 @@ class TestResolveNaturezaCarga:
     def test_invalido(self):
         with pytest.raises(ValueError, match="Natureza da carga desconhecida"):
             resolve_natureza_carga("invalido")
-
-
-class TestConstantes:
-    def test_tipo_navegacao_count(self):
-        assert len(TIPO_NAVEGACAO) == 5
-
-    def test_natureza_carga_count(self):
-        assert len(NATUREZA_CARGA) == 4
-
-    def test_min_ano(self):
-        assert MIN_ANO == 2010

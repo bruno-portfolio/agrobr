@@ -127,7 +127,7 @@ def join_movimentacao(
         df["ano"] = pd.to_numeric(df["ano"], errors="coerce").astype("Int64")
     if "mes" in df.columns:
         mes_numerico = pd.to_numeric(df["mes"], errors="coerce")
-        mes_por_nome = df["mes"].astype(str).map(month_to_number)
+        mes_por_nome = df["mes"].map(month_to_number, na_action="ignore")
         df["mes"] = mes_numerico.fillna(mes_por_nome).astype("Int64")
 
     final_cols = [

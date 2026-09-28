@@ -1,0 +1,133 @@
+{
+ "fonte": "rodada 14 de conferência",
+ "oraculo": "xlrd, células A1 cruas (tipo numérico, valor 0.0); sem o parser do agrobr",
+ "arquivos": [
+  {
+   "file": "amendoim_2.xls",
+   "produto": "amendoim_2",
+   "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/amendoim/amendoim2aseriehist.xls",
+   "fetched_at": "2026-09-23T23:27:07.066490+00:00",
+   "status": 200,
+   "bytes": 93184,
+   "sha256": "5e40e89b7970354cd302e14f6fa4ec1a1f3e8785abd7fda615820e13de6077c8",
+   "origem": "OFF_sparse_amendoim_2.xls (cópia byte a byte)",
+   "consulta": {
+    "produto": "amendoim_2",
+    "inicio": 2011,
+    "fim": 2011,
+    "uf": "BA"
+   },
+   "celulas": [
+    {
+     "aba": "Área",
+     "celula": "AK24",
+     "uf": "BA",
+     "safra": "2011/12",
+     "valor": 3.8,
+     "unidade": "Em mil hectares"
+    },
+    {
+     "aba": "Produtividade",
+     "celula": "AK24",
+     "uf": "BA",
+     "safra": "2011/12",
+     "valor": 0.0,
+     "unidade": "Em kg/ha"
+    },
+    {
+     "aba": "Produção",
+     "celula": "AK24",
+     "uf": "BA",
+     "safra": "2011/12",
+     "valor": 0.0,
+     "unidade": "Em mil toneladas"
+    }
+   ]
+  },
+  {
+   "file": "feijao_3.xls",
+   "produto": "feijao_3",
+   "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijao3aseriehist.xls",
+   "fetched_at": "2026-09-23T23:27:06.557403+00:00",
+   "status": 200,
+   "bytes": 88064,
+   "sha256": "a8322a20bb758a9e00d1e59e1c309227949dcc8444f2b2fb042b4c7ccff88121",
+   "origem": "OFF_sparse_feijao_3.xls (cópia byte a byte)",
+   "consulta": {
+    "produto": "feijao_3",
+    "inicio": 2000,
+    "fim": 2000,
+    "uf": "RS"
+   },
+   "celulas": [
+    {
+     "aba": "Área",
+     "celula": "Z38",
+     "uf": "RS",
+     "safra": "2000/01",
+     "valor": 0.0,
+     "unidade": "Em mil hectares"
+    },
+    {
+     "aba": "Produtividade",
+     "celula": "Z38",
+     "uf": "RS",
+     "safra": "2000/01",
+     "valor": 550.0,
+     "unidade": "Em kg/ha"
+    },
+    {
+     "aba": "Produção",
+     "celula": "Z38",
+     "uf": "RS",
+     "safra": "2000/01",
+     "valor": 0.0,
+     "unidade": "Em mil toneladas"
+    }
+   ]
+  },
+  {
+   "file": "mamona.xls",
+   "produto": "mamona",
+   "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/mamona/mamonaseriehist.xls",
+   "fetched_at": "2026-09-23T23:27:06.160461+00:00",
+   "status": 200,
+   "bytes": 85504,
+   "sha256": "7218b4cc309cfa9678a25bfa06b71609ee105f829b0f20deafcabeb3de47c3db",
+   "origem": "OFF_sparse_mamona.xls (cópia byte a byte)",
+   "consulta": {
+    "produto": "mamona",
+    "inicio": 2007,
+    "fim": 2007,
+    "uf": "RN"
+   },
+   "celulas": [
+    {
+     "aba": "Área",
+     "celula": "AG19",
+     "uf": "RN",
+     "safra": "2007/08",
+     "valor": 0.1,
+     "unidade": "Em mil hectares"
+    },
+    {
+     "aba": "Produtividade",
+     "celula": "AG19",
+     "uf": "RN",
+     "safra": "2007/08",
+     "valor": 635.0,
+     "unidade": "Em kg/ha"
+    },
+    {
+     "aba": "Produção",
+     "celula": "AG19",
+     "uf": "RN",
+     "safra": "2007/08",
+     "valor": 0.0,
+     "unidade": "Em mil toneladas"
+    }
+   ]
+  }
+ ],
+ "coluna_inteira_zero": "tests/golden_data/conab/serie_historica_20260917/trigo.xls: safra 1976 zero em todas as UFs e no BRASIL (o país colheu trigo em 1976) = safra não levantada"
+}

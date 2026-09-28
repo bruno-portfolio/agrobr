@@ -8,9 +8,10 @@ from typing import Any
 import structlog
 from bs4 import BeautifulSoup
 
-from agrobr.constants import Fonte
+from agrobr.constants import CEPEA_PARSER_VERSION, CEPEA_TABELAS_POR_PRACA, CEPEA_TITULOS, Fonte
 from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
+from agrobr.normalize import dates
 
 from .base import BaseParser
 from .fingerprint import extract_fingerprint
@@ -19,6 +20,7 @@ logger = structlog.get_logger()
 
 PRACAS: dict[str, str] = {
     "soja": "Paranaguá/PR",
+    "soja_parana": "Paraná",
     "milho": "Campinas/SP",
     "cafe": "São Paulo/SP",
     "cafe_arabica": "São Paulo/SP",
@@ -31,15 +33,41 @@ PRACAS: dict[str, str] = {
     "algodao": "São Paulo/SP",
     "arroz": "Rio Grande do Sul",
     "acucar": "São Paulo/SP",
+    "acucar_refinado": "São Paulo/SP",
     "frango_congelado": "São Paulo/SP",
     "frango_resfriado": "São Paulo/SP",
-    "suino": "São Paulo/SP",
     "etanol_hidratado": "São Paulo/SP",
     "etanol_anidro": "São Paulo/SP",
-    "leite": "São Paulo/SP",
     "laranja_industria": "São Paulo/SP",
     "laranja_in_natura": "São Paulo/SP",
 }
+
+
+def _chave_da_variacao(cabecalho: str) -> str:
+    if "mês" in cabecalho or "mes" in cabecalho:
+        return "variacao_mes"
+    if "semana" in cabecalho:
+        return "variacao_semana"
+    return "variacao"
+
+
+def _papel_da_coluna(cabecalho: str) -> str | None:
+    """O que a coluna traz, pelo cabeçalho; ``valor`` é só o preço em reais.
+
+    "Preço médio" (leite) e "A prazo" (laranja) não dizem a moeda, que o título ou a nota da tabela
+    dão em reais.
+    """
+    if cabecalho == "estado":
+        return "praca"
+    if "var" in cabecalho or "%" in cabecalho:
+        return "variacao"
+    if any(chave in cabecalho for chave in ("data", "dia", "date")):
+        return "data"
+    if "us$" in cabecalho or "usd" in cabecalho:
+        return "usd"
+    if any(chave in cabecalho for chave in ("valor", "preço", "preco", "r$", "price", "a prazo")):
+        return "valor"
+    return None
 
 
 def _is_robusta(text: str) -> bool:
@@ -48,7 +76,7 @@ def _is_robusta(text: str) -> bool:
 
 
 class CepeaParserV1(BaseParser):
-    version = 1
+    version = CEPEA_PARSER_VERSION
     source = "cepea"
     valid_from = date(2024, 1, 1)
     valid_until = None
@@ -112,8 +140,8 @@ class CepeaParserV1(BaseParser):
                 html_snippet=html[:500],
             )
 
-        data_table = self._find_data_table(soup, produto)
-        if not data_table:
+        tabelas = self._data_tables(soup, produto)
+        if not tabelas:
             raise ParseError(
                 source=self.source,
                 parser_version=self.version,
@@ -121,25 +149,31 @@ class CepeaParserV1(BaseParser):
                 html_snippet=html[:500],
             )
 
-        headers = self._extract_headers(data_table)
-        rows = data_table.find_all("tr")[1:]
-
-        for row in rows:
-            cells = row.find_all(["td", "th"])
-            if len(cells) < 2:
-                continue
-
-            try:
-                indicador = self._parse_row(cells, headers, produto)
-                if indicador:
-                    indicadores.append(indicador)
-            except (ValueError, InvalidOperation) as e:
-                logger.debug(
-                    "row_parse_failed",
-                    error=str(e),
-                    cells=[c.get_text(strip=True) for c in cells],
+        for data_table, praca_da_tabela in tabelas:
+            headers = self._extract_headers(data_table)
+            if "valor" not in map(_papel_da_coluna, headers):
+                raise ParseError(
+                    source=self.source,
+                    parser_version=self.version,
+                    reason="layout do CEPEA mudou: coluna de valor em R$ não encontrada",
+                    html_snippet=html[:500],
                 )
-                continue
+            for row in data_table.find_all("tr")[1:]:
+                cells = row.find_all(["td", "th"])
+                if len(cells) < 2:
+                    continue
+
+                try:
+                    indicador = self._parse_row(cells, headers, produto, praca_da_tabela)
+                    if indicador:
+                        indicadores.append(indicador)
+                except (ValueError, InvalidOperation) as e:
+                    logger.debug(
+                        "row_parse_failed",
+                        error=str(e),
+                        cells=[c.get_text(strip=True) for c in cells],
+                    )
+                    continue
 
         if not indicadores:
             raise ParseError(
@@ -148,6 +182,12 @@ class CepeaParserV1(BaseParser):
                 reason="No valid indicators extracted",
                 html_snippet=html[:500],
             )
+
+        pesos = self._extract_peso_medio(soup)
+        for indicador in indicadores:
+            peso = pesos.get(indicador.data)
+            if peso is not None:
+                indicador.meta["peso_medio_kg"] = peso
 
         logger.info(
             "parse_success",
@@ -162,9 +202,37 @@ class CepeaParserV1(BaseParser):
         fp = extract_fingerprint(html, Fonte.CEPEA, "internal")
         return fp.model_dump()
 
+    def _data_tables(self, soup: BeautifulSoup, produto: str) -> list[tuple[Any, str | None]]:
+        """Uma tabela por praça quando a página publica cada praça em tabela própria (trigo:
+        PR e RS); nos demais produtos, a tabela do indicador, com a praça da linha."""
+        por_praca = CEPEA_TABELAS_POR_PRACA.get(produto)
+        if not por_praca:
+            tabela = self._find_data_table(soup, produto)
+            return [(tabela, None)] if tabela else []
+        titulos = [
+            (" ".join(titulo.get_text(" ", strip=True).split()), titulo)
+            for titulo in soup.find_all("div", class_="imagenet-table-titulo")
+        ]
+        return [
+            (titulo.find_next("table"), praca)
+            for praca, padrao in por_praca.items()
+            for texto, titulo in titulos
+            if re.search(padrao, texto, re.I) and titulo.find_next("table") is not None
+        ]
+
     def _find_data_table(self, soup: BeautifulSoup, produto: str | None = None) -> Any | None:
-        if produto and _is_robusta(produto):
-            return self._find_table_by_titulo(soup, want_robusta=True)
+        titles = soup.find_all("div", class_="imagenet-table-titulo")
+        pattern = CEPEA_TITULOS.get(produto or "")
+        if pattern and titles:
+            for title in titles:
+                text = " ".join(title.get_text(" ", strip=True).split())
+                if re.search(pattern, text, re.I):
+                    return title.find_next("table")
+            return None
+
+        tables = soup.find_all("table")
+        if len(tables) != 1 or (produto and _is_robusta(produto)):
+            return None
 
         table = soup.find("table", id=re.compile(r"indicador|preco|cotacao|dados", re.I))
         if table:
@@ -174,7 +242,6 @@ class CepeaParserV1(BaseParser):
         if table:
             return table
 
-        tables = soup.find_all("table")
         for table in tables:
             headers = table.find_all("th")
             header_text = " ".join(th.get_text(strip=True).lower() for th in headers)
@@ -186,14 +253,6 @@ class CepeaParserV1(BaseParser):
             if len(largest_table.find_all("tr")) >= 3:
                 return largest_table
 
-        return None
-
-    def _find_table_by_titulo(self, soup: BeautifulSoup, want_robusta: bool) -> Any | None:
-        for titulo in soup.find_all("div", class_="imagenet-table-titulo"):
-            if _is_robusta(titulo.get_text()) == want_robusta:
-                table = titulo.find_next("table")
-                if table is not None:
-                    return table
         return None
 
     def _extract_headers(self, table: Any) -> list[str]:
@@ -208,54 +267,87 @@ class CepeaParserV1(BaseParser):
 
         return headers
 
-    def _parse_row(self, cells: list[Any], headers: list[str], produto: str) -> Indicador | None:
+    def _parse_row(
+        self, cells: list[Any], headers: list[str], produto: str, praca_da_tabela: str | None = None
+    ) -> Indicador | None:
         cell_texts = [c.get_text(strip=True) for c in cells]
 
         data_value = None
         valor_value = None
-        variacao_value = None
+        variacoes: dict[str, str] = {}
+        valor_usd = None
+        praca = praca_da_tabela or PRACAS.get(produto.lower())
 
-        for _i, (header, cell_text) in enumerate(zip(headers, cell_texts)):
+        for header, cell_text in zip(headers, cell_texts):
             header_lower = header.lower()
+            papel = _papel_da_coluna(header_lower)
 
-            if "var" in header_lower or "%" in header_lower:
-                variacao_value = cell_text
-            elif any(kw in header_lower for kw in ["data", "dia", "date"]):
+            if papel == "praca":
+                praca = cell_text
+            elif papel == "variacao":
+                variacoes[_chave_da_variacao(header_lower)] = cell_text
+            elif papel == "data":
                 data_value = self._parse_date(cell_text)
-            elif (
-                any(kw in header_lower for kw in ["valor", "preço", "preco", "r$", "price"])
-                and "us$" not in header_lower
-                and "usd" not in header_lower
-            ):
+            elif papel == "usd":
+                valor_usd = self._parse_decimal(cell_text)
+            elif papel == "valor":
                 valor_value = self._parse_decimal(cell_text)
 
         if not data_value and cell_texts:
-            data_value = self._parse_date(cell_texts[0])
-
-        if not valor_value and len(cell_texts) > 1:
-            for text in cell_texts[1:]:
-                parsed = self._parse_decimal(text)
-                if parsed and parsed > 0:
-                    valor_value = parsed
-                    break
+            data_value = (
+                self._parse_month(cell_texts[0])
+                if produto == "leite"
+                else self._parse_date(cell_texts[0])
+            )
 
         if not data_value or not valor_value:
             return None
 
         unidade = self._detect_unidade(produto, headers)
+        meta: dict[str, Any] = {chave: texto for chave, texto in variacoes.items() if texto}
+        if valor_usd:
+            meta["valor_usd"] = float(valor_usd)
 
         return Indicador(
             fonte=Fonte.CEPEA,
             produto=produto,
-            praca=PRACAS.get(produto.lower()),
+            praca=praca,
             data=data_value,
             valor=valor_value,
             unidade=unidade,
             metodologia="indicador_esalq",
             revisao=0,
-            meta={"variacao": variacao_value} if variacao_value else {},
+            meta=meta,
             parser_version=self.version,
         )
+
+    def _extract_peso_medio(self, soup: BeautifulSoup) -> dict[date, float]:
+        pesos: dict[date, float] = {}
+        for title in soup.find_all("div", class_="imagenet-table-titulo"):
+            if not re.search(r"peso\s+m[ée]dio", title.get_text(" ", strip=True), re.I):
+                continue
+            table = title.find_next("table")
+            if table is None:
+                continue
+            for row in table.find_all("tr")[1:]:
+                cells = [cell.get_text(strip=True) for cell in row.find_all(["td", "th"])]
+                if len(cells) < 2:
+                    continue
+                dia = self._parse_date(cells[0])
+                peso = self._parse_decimal(cells[1])
+                if dia and peso:
+                    pesos[dia] = float(peso)
+        return pesos
+
+    def _parse_month(self, text: str) -> date | None:
+        match = re.fullmatch(r"([a-zç]+)/(\d{2}|\d{4})", text.strip(), re.I)
+        if not match:
+            return None
+        month = dates.month_to_number(match.group(1))
+        if month is None:
+            return None
+        year = int(match.group(2))
+        return date(year + 2000 if year < 100 else year, month, 1)
 
     def _parse_date(self, text: str) -> date | None:
         text = text.strip()
@@ -302,6 +394,9 @@ class CepeaParserV1(BaseParser):
         produto_lower = produto.lower()
 
         unidades_produto = {
+            "acucar_refinado": "BRL/kg",
+            "leite": "BRL/L",
+            "laranja": "BRL/cx40.8kg",
             "soja": "BRL/sc60kg",
             "milho": "BRL/sc60kg",
             "cafe": "BRL/sc60kg",

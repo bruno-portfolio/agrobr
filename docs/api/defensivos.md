@@ -1,155 +1,91 @@
 # API Defensivos
 
-O modulo defensivos fornece dados de agrotoxicos registrados no Brasil via Agrofit/MAPA.
+O módulo `defensivos` consulta os CSVs correntes do Agrofit/MAPA. As quatro funções são assíncronas, aceitam somente argumentos nomeados e retornam pandas; `as_polars=True` solicita Polars e `return_meta=True` acrescenta `MetaInfo`.
 
-## Funcoes
+## Produtos formulados
 
-### `formulados`
+`formulados()` retorna uma linha por `nr_registro`. Aceita `ingrediente_ativo`, `classe_toxicologica`, `classe_ambiental`, `titular`, `organicos`, `marca`, `formulacao`, `classe`, `nr_registro` e `situacao`.
 
-Produtos formulados (comerciais) registrados.
+As dez colunas anteriores continuam presentes: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `formulacao`, `classe_toxicologica`, `classe_ambiental`, `organicos` e `modo_de_acao`. O schema **1.1** acrescenta `situacao` e `composicao_texto`, ambas anuláveis.
 
-```python
-async def formulados(
-    *,
-    ingrediente_ativo: str | None = None,
-    classe_toxicologica: str | None = None,
-    classe_ambiental: str | None = None,
-    titular: str | None = None,
-    organicos: str | None = None,
-    marca: str | None = None,
-    formulacao: str | None = None,
-    classe: str | None = None,
-    as_polars: bool = False,
-    return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
-```
-
-**Parametros:**
-
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `ingrediente_ativo` | `str \| None` | Filtro por ingrediente ativo (contains, case-insensitive) |
-| `classe_toxicologica` | `str \| None` | Filtro por classe toxicologica |
-| `classe_ambiental` | `str \| None` | Filtro por classe ambiental |
-| `titular` | `str \| None` | Filtro por empresa titular |
-| `organicos` | `str \| None` | Filtro exato: `"SIM"` ou `"NAO"` |
-| `marca` | `str \| None` | Filtro por marca comercial |
-| `formulacao` | `str \| None` | Filtro por tipo de formulacao |
-| `classe` | `str \| None` | Filtro por classe (herbicida, inseticida, fungicida, etc.) |
-| `as_polars` | `bool` | Retorna polars DataFrame |
-| `return_meta` | `bool` | Retorna tupla (DataFrame, MetaInfo) |
-
-**Retorno:** DataFrame com colunas: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `formulacao`, `classe_toxicologica`, `classe_ambiental`, `organicos`, `modo_de_acao`
-
-**Exemplo:**
+`composicao_texto` conserva a célula original, inclusive espaços e caracteres. `ingrediente_ativo` mantém a representação anterior dos formulados. Se atributos do mesmo registro divergirem entre linhas, a coleta gera `ParseError`.
 
 ```python
 from agrobr import defensivos
 
-# Todos os formulados com glifosato
-df = await defensivos.formulados(ingrediente_ativo="glifosato")
-
-# Apenas herbicidas organicos
-df = await defensivos.formulados(classe="herbicida", organicos="SIM")
+produtos, meta = await defensivos.formulados(
+    ingrediente_ativo="glifosato", situacao="TRUE", return_meta=True,
+)
 ```
 
----
+## Autorizações de uso
 
-### `autorizacoes`
+`autorizacoes()` aceita `nr_registro`, `cultura`, `ingrediente_ativo`, `classe` e `situacao`. Preserva todas as linhas publicadas, inclusive repetições resultantes da seleção das colunas; não há chave única declarada para essa relação.
 
-Autorizacoes de uso por cultura e praga.
+As colunas são `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `cultura`, `praga`, `praga_nome_comum`, `modalidade_de_emprego` e a adição anulável `situacao`. O schema é **1.1**.
 
 ```python
-async def autorizacoes(
-    *,
-    nr_registro: str | None = None,
-    cultura: str | None = None,
-    ingrediente_ativo: str | None = None,
-    classe: str | None = None,
-    as_polars: bool = False,
-    return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+usos = await defensivos.autorizacoes(cultura="soja")
 ```
 
-**Parametros:**
+## Produtos técnicos
 
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `nr_registro` | `str \| None` | Filtro exato por numero de registro |
-| `cultura` | `str \| None` | Filtro por cultura (contains, case-insensitive) |
-| `ingrediente_ativo` | `str \| None` | Filtro por ingrediente ativo |
-| `classe` | `str \| None` | Filtro por classe |
-| `as_polars` | `bool` | Retorna polars DataFrame |
-| `return_meta` | `bool` | Retorna tupla (DataFrame, MetaInfo) |
+`tecnicos()` aceita `ingrediente_ativo`, `titular`, `classe`, `marca` e `nr_registro`. Retorna `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `grupo_quimico`, `nome_cientifico`, `classe_toxicologica`, `classe_ambiental` e a adição anulável `composicao_texto` no schema **1.1**.
 
-**Retorno:** DataFrame com colunas: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `cultura`, `praga`, `praga_nome_comum`, `modalidade_de_emprego`
+O parser reconhece grupos com parênteses internos. Quando há vários componentes, os nomes e grupos mantêm a ordem, separados por ` + `; a composição detalhada fica na função abaixo. Campos ausentes na exportação permanecem nulos. A exportação técnica sondada não publica situação, e essa função não aceita `situacao`.
 
-**Exemplo:**
+## Composição
 
 ```python
-from agrobr import defensivos
-
-# Todos os produtos autorizados para soja
-df = await defensivos.autorizacoes(cultura="soja")
-
-# Autorizacoes de um produto especifico
-df = await defensivos.autorizacoes(nr_registro="000190")
+componentes, meta = await defensivos.composicao(
+    tipo="tecnicos", nr_registro="00301", return_meta=True,
+)
 ```
 
----
+`composicao()` aceita `tipo="formulados"` (padrão) ou `tipo="tecnicos"`, `nr_registro` e `ingrediente_ativo`. O schema **1.0** tem uma linha por posição do componente no produto, com chave `[tipo, nr_registro, ordem_componente]`.
 
-### `tecnicos`
+| Coluna | Tipo / significado |
+|---|---|
+| `tipo` | Texto: `formulados` ou `tecnicos` |
+| `nr_registro` | Identificador textual, com zeros iniciais preservados |
+| `ordem_componente` | `Int64`, posição a partir de 1 |
+| `ingrediente_ativo` | Nome interpretado; anulável |
+| `grupo_quimico` | Grupo interpretado; anulável |
+| `componente_texto` | Trecho original do componente |
+| `concentracao_texto` | Concentração publicada, antes da interpretação; anulável |
+| `concentracao_valor` | `Float64` anulável, sem conversão dimensional |
+| `concentracao_unidade` | Unidade publicada, quando separável; anulável |
 
-Produtos tecnicos (ingredientes ativos antes da formulacao).
+Ingredientes repetidos em posições diferentes continuam como linhas distintas. A composição não é multiplicada pelas autorizações de uso. Notação científica explícita pode ser interpretada; por exemplo, `.001 x 10^9 UFC/mL` produz valor `1000000.0` e unidade `UFC/mL`. Expressões ambíguas conservam o texto e valores nulos, com diagnóstico em `meta.source_details`. `Kg` permanece `Kg`: não se presume `g/kg`. Ausência não recebe zero.
 
-```python
-async def tecnicos(
-    *,
-    ingrediente_ativo: str | None = None,
-    titular: str | None = None,
-    classe: str | None = None,
-    marca: str | None = None,
-    as_polars: bool = False,
-    return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
-```
+## Filtros, cache e proveniência
 
-**Parametros:**
+Todos os filtros aceitam `str | None`. Texto vazio, números, booleanos, `tipo` inválido e parâmetros desconhecidos geram `InvalidParameterError` antes de acessar cache ou rede. Registro e `organicos` usam comparação exata; os demais filtros textuais buscam trechos literais sem distinguir maiúsculas. `situacao` usa igualdade textual sem espaços externos ou diferença de caixa.
 
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `ingrediente_ativo` | `str \| None` | Filtro por ingrediente ativo |
-| `titular` | `str \| None` | Filtro por empresa titular |
-| `classe` | `str \| None` | Filtro por classe |
-| `marca` | `str \| None` | Filtro por marca comercial |
-| `as_polars` | `bool` | Retorna polars DataFrame |
-| `return_meta` | `bool` | Retorna tupla (DataFrame, MetaInfo) |
+A situação original é preservada como texto. A captura de 06/09/2026 apresentou apenas `TRUE` nos formulados. Esse token não é convertido em uma classificação de vigência ou em recomendação de aplicação.
 
-**Retorno:** DataFrame com colunas: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `grupo_quimico`, `nome_cientifico`, `classe_toxicologica`, `classe_ambiental`
+Todas as funções aceitam `use_cache=True`. A primeira consulta baixa o CSV completo da família, mesmo com filtro; formulados tinham cerca de 391 MB na captura. O cache dura 24 horas desde a coleta e armazena tabelas, composição, tipos, hashes e metadados no mesmo ZIP. Arquivos legados são preservados, mas a API atual exige o formato novo. `use_cache=False` ignora leitura e gravação, sem substituir uma edição já armazenada.
 
-**Exemplo:**
+`MetaInfo` informa fonte tentada/selecionada, versões, hash bruto e `from_cache`. `fetched_at` e `fetch_timestamp` identificam a coleta original em UTC, inclusive quando a consulta vem do cache. `source_details` inclui recurso, tamanho, hash, assinatura de layout, contagens, colunas ignoradas, filtros e diagnósticos. O hash identifica o conteúdo recebido; não reconstitui uma exportação histórica.
 
-```python
-from agrobr import defensivos
+Os contratos estão disponíveis via `get_contract("agrofit_formulados")`, `agrofit_autorizacoes`, `agrofit_tecnicos` e `agrofit_composicao`. Os [quatro datasets Agrofit](defensivos_datasets.md) reutilizam esses contratos e preservam filtros, cache e proveniência. As funções da fonte acima mantêm suas interfaces.
 
-# Todos os tecnicos
-df = await defensivos.tecnicos()
-
-# Filtrar por classe
-df = await defensivos.tecnicos(classe="inseticida")
-```
-
-## Versao Sincrona
+## Versão síncrona
 
 ```python
 from agrobr.sync import defensivos
 
-df = defensivos.formulados(ingrediente_ativo="glifosato")
+componentes = defensivos.composicao(tipo="tecnicos", nr_registro="00301")
 ```
 
-## Notas
+Veja [a fonte e seus limites](../sources/defensivos.md).
 
-- Fonte: [Agrofit/MAPA](https://dados.agricultura.gov.br) — licenca `livre` (CC-BY 4.0)
-- CSV grande (~100MB formulados) — primeiro download pode demorar
-- Cache local 24h para evitar re-downloads
-- ~8K produtos formulados, ~267K autorizacoes, ~2.8K tecnicos
+## Reconciliação da captura de 18/09/2026
+
+Os dois CSVs integrais desta captura contêm 4.403 produtos formulados, 279.707 ocorrências de autorização e 2.992 produtos técnicos. Um oráculo independente confere as 12 colunas dos formulados, as dez colunas de todas as autorizações e os oito campos diretos dos técnicos. As dez colunas técnicas completas, incluindo ingrediente e grupo extraídos da composição, são conferidas em nove coortes explícitas de registro.
+
+A composição tem reconciliação independente de 57 componentes em 32 coortes completas de produto: nove técnicas e 23 formuladas. Inclui pontas dos arquivos, zeros iniciais, identificador acentuado de pré-mistura, parênteses internos, componentes repetidos, concentração zero, notação científica e unidades publicadas. Duas expressões ambíguas reais, `1.9 10*10 UFC/g` e `200 1x10E10 UFC/g`, mantêm texto, valor/unidade nulos e diagnóstico. Não há interpretação numérica independente de toda a população de componentes; o escopo validado está explicitado no manifesto.
+
+Os replays usam os corpos CSV completos, com hash idêntico após descompactação gzip, pela API pública da fonte e dos datasets. Cache preserva valores não nulos, tipos, posição dos componentes e proveniência UTC; os marcadores pandas `None`/`pd.NA` são equivalentes apenas em campos anuláveis. Colunas textuais de composição e situação preservam o literal; outros campos mantêm a limpeza já documentada. Autorizações não são deduplicadas.
+
+O comparador estrutural inventaria todas as colunas, os dois recursos CKAN e os sufixos publicados nos campos de concentração. Um sufixo pode conter expressão ambígua e não certifica, por si, uma unidade ou interpretação numérica. Formato, coluna, recurso ou expressão sem decisão exige revisão. Catálogo, CSV e cache têm a mesma origem; não oferecem confirmação independente da população histórica. Parser 3 e contratos 1.1/1.0 permanecem inalterados.

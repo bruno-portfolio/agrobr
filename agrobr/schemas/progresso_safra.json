@@ -1,7 +1,7 @@
 {
   "name": "conab.progresso_safra",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "cultura",
@@ -15,7 +15,11 @@
     "safra",
     "operacao",
     "estado",
-    "semana_atual"
+    "semana_atual",
+    "pct_ano_anterior",
+    "pct_semana_anterior",
+    "pct_semana_atual",
+    "pct_media_5_anos"
   ],
   "dtypes": {
     "cultura": "str",
@@ -26,7 +30,10 @@
     "pct_ano_anterior": "float",
     "pct_semana_anterior": "float",
     "pct_semana_atual": "float",
-    "pct_media_5_anos": "float"
+    "pct_media_5_anos": "float",
+    "revisado": "bool",
+    "n_estados": "int",
+    "cobertura_area_pct": "float"
   },
   "nullable": {
     "cultura": false,
@@ -37,7 +44,10 @@
     "pct_ano_anterior": true,
     "pct_semana_anterior": true,
     "pct_semana_atual": true,
-    "pct_media_5_anos": true
+    "pct_media_5_anos": true,
+    "revisado": true,
+    "n_estados": true,
+    "cobertura_area_pct": true
   },
   "columns": [
     {
@@ -80,7 +90,7 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "Codigo UF (ex: MT, GO, PR)",
+      "description": "UF de 2 letras; MEDIA_ESTADOS para a média da CONAB dos estados monitorados; BR só quando a planilha publica Brasil",
       "min_value": null,
       "max_value": null
     },
@@ -138,6 +148,39 @@
       "description": "",
       "min_value": 0.0,
       "max_value": 1.0
+    },
+    {
+      "name": "revisado",
+      "type": "bool",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Marca de revisão * em algum percentual; nulo sem percentual numérico",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "n_estados",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Estados da média da CONAB, lido da nota publicada; nulo nas UFs",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cobertura_area_pct",
+      "type": "float",
+      "nullable": true,
+      "unit": "fracao",
+      "stable": false,
+      "deprecated": false,
+      "description": "Fração da área cultivada coberta pelos estados monitorados, lida da nota publicada (0.98 = 98%); nulo nas UFs",
+      "min_value": 0.0,
+      "max_value": 1.0
     }
   ],
   "constraints": {
@@ -149,12 +192,16 @@
     "pct_semana_atual_min": 0.0,
     "pct_semana_atual_max": 1.0,
     "pct_media_5_anos_min": 0.0,
-    "pct_media_5_anos_max": 1.0
+    "pct_media_5_anos_max": 1.0,
+    "cobertura_area_pct_min": 0.0,
+    "cobertura_area_pct_max": 1.0
   },
   "guarantees": [
     "PK unica por combinacao cultura + safra + operacao + estado + semana",
     "Valores percentuais entre 0.0 e 1.0 (fracao, nao %)",
     "Dados semanais publicados pela CONAB",
-    "'estado' e codigo UF de 2 letras (ex: MT, GO, PR)"
+    "'estado' é a UF de 2 letras; MEDIA_ESTADOS é a média da própria CONAB dos estados monitorados (n_estados, cobertura_area_pct), não o Brasil; BR só quando a CONAB publica Brasil",
+    "n_estados e cobertura_area_pct saem da nota publicada, sem recálculo",
+    "Percentuais com sufixo * preservam o valor e a indicação de revisão pela CONAB"
   ]
 }

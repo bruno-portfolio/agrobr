@@ -1,6 +1,6 @@
 from agrobr.constants import URLS, Fonte
 
-ZIP_URL: str = URLS[Fonte.IBAMA]["sifisc_embargo_zip"]
+CSV_URL: str = URLS[Fonte.IBAMA]["termo_embargo_csv"]
 
 MIN_CSV_BYTES = 10_000_000
 
@@ -23,6 +23,8 @@ CSV_COLUMN_MAP: dict[str, str] = {
 }
 
 GEOM_COLUMN_CSV = "GEOM_AREA_EMBARGADA"
+
+EDICAO_COLUMN_CSV = "ULTIMA_ATUALIZACAO_RELATORIO"
 
 COLUNAS_SAIDA: list[str] = list(CSV_COLUMN_MAP.values())
 

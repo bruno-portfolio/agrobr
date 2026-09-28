@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "method": "openpyxl read_only independent roundtrip against original XML cell lexemes/strings; no agrobr parsing",
+  "compared_cells": 7810,
+  "data_rows": 142,
+  "sha256": "f66e6540647c2f6694cefa991cd114fe74668f8273113224ecb68217b09f7933"
+}

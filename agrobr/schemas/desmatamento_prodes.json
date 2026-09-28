@@ -1,7 +1,7 @@
 {
   "name": "desmatamento.prodes",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "ano",
@@ -14,6 +14,8 @@
     "uf",
     "classe",
     "area_km2",
+    "satelite",
+    "sensor",
     "bioma"
   ],
   "dtypes": {
@@ -29,7 +31,7 @@
     "ano": false,
     "uf": false,
     "classe": false,
-    "area_km2": false,
+    "area_km2": true,
     "satelite": true,
     "sensor": true,
     "bioma": false
@@ -43,8 +45,8 @@
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": 2000,
-      "max_value": null
+      "min_value": 1,
+      "max_value": 9999
     },
     {
       "name": "uf",
@@ -71,7 +73,7 @@
     {
       "name": "area_km2",
       "type": "float",
-      "nullable": false,
+      "nullable": true,
       "unit": "km2",
       "stable": true,
       "deprecated": false,
@@ -115,14 +117,59 @@
   ],
   "constraints": {
     "no_duplicates": true,
-    "ano_min": 2000,
-    "area_km2_min": 0
+    "ano_min": 1,
+    "ano_max": 9999,
+    "area_km2_min": 0,
+    "string_dtype": "string[python] with pd.NA",
+    "integer_dtype": "Int64",
+    "float_dtype": "float64",
+    "date_dtype": "datetime64[ns]",
+    "date_semantics": "civil_midnight_without_timezone",
+    "uf_domain": [
+      "AC",
+      "AL",
+      "AM",
+      "AP",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MG",
+      "MS",
+      "MT",
+      "PA",
+      "PB",
+      "PE",
+      "PI",
+      "PR",
+      "RJ",
+      "RN",
+      "RO",
+      "RR",
+      "RS",
+      "SC",
+      "SE",
+      "SP",
+      "TO"
+    ],
+    "biome_domain": [
+      "Amazônia",
+      "Caatinga",
+      "Cerrado",
+      "Mata Atlântica",
+      "Pampa",
+      "Pantanal"
+    ],
+    "feature_identity": "aggregate_group_key_only",
+    "aggregate_classe": "nonblank"
   },
   "guarantees": [
-    "Column names never change (additions only)",
-    "'ano' is always >= 2000",
-    "'area_km2' is always >= 0",
-    "'uf' is always a valid Brazilian state code",
-    "'bioma' is always a valid Brazilian biome name"
+    "Chave primária descreve grupos agregados, não identidade das feições",
+    "A soma contém somente áreas da seleção quantitativamente reconciliada",
+    "Qualquer área ausente no grupo produz total ausente, não soma parcial",
+    "Ano, UF ou classe incompatível impede agregação em vez de descartar ocorrências",
+    "Soma de áreas de feições não é uma taxa oficial PRODES"
   ]
 }

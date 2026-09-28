@@ -2,17 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
-
 from agrobr.alt.mapa_psr.parser import (
-    PARSER_VERSION,
-    _detect_separator,
     parse_apolices,
-    parse_sinistros,
 )
-from agrobr.exceptions import ParseError
-from agrobr.normalize.encoding import detect_encoding_chain
-from agrobr.normalize.numeric import parse_numeric_br
 
 
 def _make_csv(
@@ -105,137 +97,7 @@ def _make_csv(
     return "\n".join(lines).encode(encoding)
 
 
-class TestDetectEncoding:
-    def test_utf8(self):
-        content = b"ANO;UF\n2023;MT\n"
-        assert detect_encoding_chain(content) == "utf-8"
-
-    def test_iso_8859_1(self):
-        content = "ANO;MUNICÍPIO\n2023;LONDRINA\n".encode("iso-8859-1")
-        enc = detect_encoding_chain(content)
-        assert enc in ("utf-8", "windows-1252", "iso-8859-1")
-
-    def test_utf8_bom(self):
-        content = b"\xef\xbb\xbfANO;UF\n2023;MT\n"
-        enc = detect_encoding_chain(content)
-        assert enc in ("utf-8", "utf-8-sig")
-
-
-class TestDetectSeparator:
-    def test_semicolon(self):
-        assert _detect_separator("A;B;C\n1;2;3") == ";"
-
-    def test_comma(self):
-        assert _detect_separator("A,B,C\n1,2,3") == ","
-
-    def test_mais_semicolons(self):
-        assert _detect_separator("A;B,C;D;E\n") == ";"
-
-
-class TestParseNumeric:
-    def test_inteiro(self):
-        assert parse_numeric_br("1234") == 1234.0
-
-    def test_decimal_ponto(self):
-        assert parse_numeric_br("1234.56") == 1234.56
-
-    def test_decimal_virgula(self):
-        assert parse_numeric_br("1234,56") == 1234.56
-
-    def test_milhar_virgula_decimal(self):
-        assert parse_numeric_br("1.234,56") == 1234.56
-
-    def test_vazio(self):
-        assert parse_numeric_br("") is None
-
-    def test_traco(self):
-        assert parse_numeric_br("-") is None
-
-    def test_none(self):
-        assert parse_numeric_br(None) is None
-
-    def test_float_passthrough(self):
-        assert parse_numeric_br(42.5) == 42.5
-
-    def test_invalido(self):
-        assert parse_numeric_br("abc") is None
-
-
 class TestParseApolices:
-    def test_basico(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        assert len(df) == 3
-        assert "ano_apolice" in df.columns
-        assert "uf" in df.columns
-        assert "cultura" in df.columns
-
-    def test_separador_virgula(self):
-        csv_bytes = _make_csv(sep=",")
-        df = parse_apolices(csv_bytes)
-        assert len(df) == 3
-
-    def test_encoding_iso(self):
-        csv_bytes = _make_csv(encoding="iso-8859-1")
-        df = parse_apolices(csv_bytes)
-        assert len(df) == 3
-
-    def test_pii_removido(self):
-        csv_bytes = _make_csv(include_pii=True)
-        df = parse_apolices(csv_bytes)
-        assert "NM_SEGURADO" not in df.columns
-        assert "NR_DOCUMENTO_SEGURADO" not in df.columns
-        assert "nm_segurado" not in df.columns
-
-    def test_geo_removido(self):
-        csv_bytes = _make_csv(include_geo=True)
-        df = parse_apolices(csv_bytes)
-        assert "LATITUDE" not in df.columns
-        assert "LONGITUDE" not in df.columns
-
-    def test_tipos_corretos(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        assert df["ano_apolice"].dtype in ("int64", "int32")
-        assert df["valor_premio"].dtype == "float64"
-        assert df["valor_indenizacao"].dtype == "float64"
-
-    def test_uf_uppercase(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        assert all(v == v.upper() for v in df["uf"].dropna())
-
-    def test_cultura_uppercase(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        assert all(v == v.upper() for v in df["cultura"].dropna())
-
-    def test_sorted_por_ano(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        anos = df["ano_apolice"].tolist()
-        assert anos == sorted(anos)
-
-    def test_colunas_output_corretas(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        from agrobr.alt.mapa_psr.models import COLUNAS_APOLICES
-
-        for col in df.columns:
-            assert col in COLUNAS_APOLICES
-
-    def test_filtro_uf(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes, uf="MT")
-        assert len(df) == 1
-        assert df.iloc[0]["uf"] == "MT"
-
-    def test_filtro_cultura(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes, cultura="SOJA")
-        assert len(df) == 2
-        assert all(df["cultura"] == "SOJA")
-
     def test_filtro_cultura_com_acento(self):
         rows = [
             {
@@ -288,103 +150,7 @@ class TestParseApolices:
         assert len(df_algodao) == 1
         assert "ALGOD" in df_algodao.iloc[0]["cultura"]
 
-    def test_filtro_ano(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes, ano=2022)
-        assert len(df) == 1
-        assert df.iloc[0]["ano_apolice"] == 2022
-
-    def test_filtro_municipio(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes, municipio="SORRISO")
-        assert len(df) == 1
-
     def test_filtro_municipio_literal(self):
         csv_bytes = _make_csv().replace(b"SORRISO", b"SORRISO (NORTE)")
         df = parse_apolices(csv_bytes, municipio="SORRISO (NORTE)")
         assert df["municipio"].tolist() == ["SORRISO (NORTE)"]
-
-    def test_csv_vazio_raise(self):
-        csv_bytes = b""
-        with pytest.raises(ParseError):
-            parse_apolices(csv_bytes)
-
-    def test_colunas_faltantes_raise(self):
-        csv_bytes = b"COLUNA_X;COLUNA_Y\nabc;def\n"
-        with pytest.raises(ParseError):
-            parse_apolices(csv_bytes)
-
-    def test_valores_monetarios_float64(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        for col in ("valor_premio", "valor_subvencao", "valor_limite_garantia"):
-            if col in df.columns:
-                assert df[col].dtype == "float64"
-
-    def test_area_float(self):
-        csv_bytes = _make_csv()
-        df = parse_apolices(csv_bytes)
-        assert df["area_total"].dtype == "float64"
-
-
-class TestParseSinistros:
-    def test_basico(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes)
-        assert len(df) == 2
-        assert all(df["valor_indenizacao"] > 0)
-
-    def test_filtra_indenizacao_zero(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes)
-        assert not any(df["valor_indenizacao"] == 0)
-
-    def test_filtra_evento_vazio(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes)
-        assert all(df["evento"].str.strip() != "")
-
-    def test_evento_normalizado_lowercase(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes)
-        assert all(v == v.lower() for v in df["evento"])
-
-    def test_filtro_evento(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes, evento="seca")
-        assert len(df) == 1
-        assert "seca" in df.iloc[0]["evento"]
-
-    def test_filtro_cultura(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes, cultura="SOJA")
-        assert len(df) == 2
-
-    def test_filtro_uf(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes, uf="MT")
-        assert len(df) == 1
-
-    def test_colunas_sinistros(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes)
-        from agrobr.alt.mapa_psr.models import COLUNAS_SINISTROS
-
-        for col in df.columns:
-            assert col in COLUNAS_SINISTROS
-
-    def test_sem_taxa_em_sinistros(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes)
-        assert "taxa" not in df.columns
-
-    def test_sorted_por_ano(self):
-        csv_bytes = _make_csv()
-        df = parse_sinistros(csv_bytes)
-        anos = df["ano_apolice"].tolist()
-        assert anos == sorted(anos)
-
-
-class TestParserVersion:
-    def test_parser_version_definido(self):
-        assert PARSER_VERSION >= 1

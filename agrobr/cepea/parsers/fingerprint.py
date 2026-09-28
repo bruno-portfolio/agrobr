@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
-from pathlib import Path
 
 import structlog
 from bs4 import BeautifulSoup
@@ -93,18 +91,3 @@ def extract_fingerprint(
         table_headers=table_headers,
         element_counts=element_counts,
     )
-
-
-def save_baseline_fingerprint(fingerprint: Fingerprint, path: str) -> None:
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(fingerprint.model_dump(mode="json"), f, indent=2, default=str)
-
-
-def load_baseline_fingerprint(path: str) -> Fingerprint | None:
-    if not Path(path).exists():
-        return None
-
-    with open(path, encoding="utf-8") as f:
-        data = json.load(f)
-        return Fingerprint.model_validate(data)

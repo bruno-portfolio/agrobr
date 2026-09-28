@@ -7,6 +7,7 @@ import pandas as pd
 import structlog
 
 from agrobr.exceptions import ParseError
+from agrobr.normalize import dates
 from agrobr.normalize.regions import UFS_VALIDAS, ibge_para_uf
 from agrobr.utils.geo import check_geopandas, check_pyogrio
 
@@ -60,8 +61,6 @@ def _validate_required(df: pd.DataFrame, required: frozenset[str], label: str) -
 
 
 def _safe_ibge_to_uf(codigo: Any) -> str | None:
-    if pd.isna(codigo):
-        return None
     try:
         return ibge_para_uf(int(codigo))
     except (ValueError, TypeError):
@@ -69,16 +68,12 @@ def _safe_ibge_to_uf(codigo: Any) -> str | None:
 
 
 def _resolve_uf_from_ibge(df: pd.DataFrame) -> pd.DataFrame:
-    if "uf_id" not in df.columns:
-        return df
     df = df.copy()
     df["uf"] = df["uf_id"].apply(_safe_ibge_to_uf)
     return df.drop(columns=["uf_id"])
 
 
 def _normalize_uf_column(df: pd.DataFrame) -> pd.DataFrame:
-    if "uf" not in df.columns:
-        return df
     df = df.copy()
     df["uf"] = df["uf"].astype("string").str.strip().str.upper()
     return df
@@ -88,7 +83,7 @@ def _coerce_dates(df: pd.DataFrame, date_cols: tuple[str, ...]) -> pd.DataFrame:
     df = df.copy()
     for col in date_cols:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors="coerce", dayfirst=True)
+            dates.converter_coluna(df, col, fonte="acervo_fundiario", dayfirst=True)
     return df
 
 
@@ -101,8 +96,6 @@ def _coerce_numeric(df: pd.DataFrame, numeric_cols: tuple[str, ...]) -> pd.DataF
 
 
 def _log_dirty_uf(df: pd.DataFrame, label: str) -> None:
-    if "uf" not in df.columns or df.empty:
-        return
     invalid_mask = ~df["uf"].isin(UFS_VALIDAS) & df["uf"].notna()
     n_invalid = int(invalid_mask.sum())
     if n_invalid > 0:
@@ -122,7 +115,7 @@ def _select_output(df: pd.DataFrame, output_cols: list[str]) -> pd.DataFrame:
 
 
 def _make_geometries_valid(gdf: Any) -> Any:
-    invalid_mask = ~gdf.geometry.is_valid
+    invalid_mask = gdf.geometry.notna() & ~gdf.geometry.is_valid
     n_invalid = int(invalid_mask.sum())
     if n_invalid > 0:
         from shapely.validation import make_valid

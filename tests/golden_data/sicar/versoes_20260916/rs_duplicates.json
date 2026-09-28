@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "numberMatched": 82550,
+  "numberReturned": 2,
+  "features": [
+    {
+      "type": "Feature",
+      "id": "sicar_imoveis_rs.16343473",
+      "geometry": null,
+      "properties": {
+        "cod_imovel": "RS-4306734-9D840534104D45F4B8D6EFDDBCFECAAA",
+        "status_imovel": "AT",
+        "dat_criacao": "2026-09-16T18:14:26.514Z",
+        "area": 7.9959,
+        "condicao": "Aguardando análise",
+        "uf": "RS",
+        "municipio": "Doutor Maurício Cardoso",
+        "cod_municipio_ibge": 4306734,
+        "m_fiscal": 0.3998,
+        "tipo_imovel": "IRU"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sicar_imoveis_rs.16343592",
+      "geometry": null,
+      "properties": {
+        "cod_imovel": "RS-4306734-9D840534104D45F4B8D6EFDDBCFECAAA",
+        "status_imovel": "AT",
+        "dat_criacao": "2026-09-16T18:32:25.534Z",
+        "area": 7.9959,
+        "condicao": "Aguardando análise",
+        "uf": "RS",
+        "municipio": "Doutor Maurício Cardoso",
+        "cod_municipio_ibge": 4306734,
+        "m_fiscal": 0.3998,
+        "tipo_imovel": "IRU"
+      }
+    }
+  ]
+}

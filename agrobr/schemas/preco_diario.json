@@ -1,7 +1,7 @@
 {
   "name": "cepea.indicador",
-  "schema_version": "1.0",
-  "effective_from": "0.3.0",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "data",
@@ -10,6 +10,7 @@
   "required_columns": [
     "data",
     "produto",
+    "praca",
     "valor",
     "unidade",
     "fonte"
@@ -22,7 +23,9 @@
     "unidade": "str",
     "fonte": "str",
     "metodologia": "str",
-    "anomalies": "str"
+    "anomalies": "str",
+    "valor_usd": "float",
+    "peso_medio_kg": "float"
   },
   "nullable": {
     "data": false,
@@ -32,7 +35,9 @@
     "unidade": false,
     "fonte": false,
     "metodologia": true,
-    "anomalies": true
+    "anomalies": true,
+    "valor_usd": true,
+    "peso_medio_kg": true
   },
   "columns": [
     {
@@ -122,11 +127,35 @@
       "description": "",
       "min_value": null,
       "max_value": null
+    },
+    {
+      "name": "valor_usd",
+      "type": "float",
+      "nullable": true,
+      "unit": "USD",
+      "stable": false,
+      "deprecated": false,
+      "description": "Preço em dólar publicado na mesma linha pelo CEPEA; nulo quando a fonte não divulga.",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "peso_medio_kg",
+      "type": "float",
+      "nullable": true,
+      "unit": "kg",
+      "stable": false,
+      "deprecated": false,
+      "description": "Bezerro MS: peso médio da tabela auxiliar do CEPEA; nulo para os demais produtos.",
+      "min_value": 0,
+      "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "valor_min": 0
+    "valor_min": 0,
+    "valor_usd_min": 0,
+    "peso_medio_kg_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",

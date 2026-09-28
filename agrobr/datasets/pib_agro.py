@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -59,14 +59,13 @@ class PibAgroDataset(BaseDataset):
         trimestre: str | list[str] | None = None,
         precos: str = "corrente",
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="pib_agro", produto=produto, precos=precos)
 
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, trimestre=trimestre, precos=precos, **kwargs
+            produto, trimestre=trimestre, precos=precos
         )
 
         df = self._normalize(df, produto, precos)
@@ -94,13 +93,35 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_pib_agro)
 
 
+@overload
+async def pib_agro(
+    produto: str = "agropecuaria",
+    trimestre: str | list[str] | None = None,
+    precos: str = "corrente",
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def pib_agro(
+    produto: str = "agropecuaria",
+    trimestre: str | list[str] | None = None,
+    precos: str = "corrente",
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def pib_agro(
     produto: str = "agropecuaria",
     trimestre: str | list[str] | None = None,
     precos: str = "corrente",
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _pib_agro.fetch(
-        produto, trimestre=trimestre, precos=precos, return_meta=return_meta, **kwargs
+    return await _pib_agro.fetch(  # type: ignore[call-arg]
+        produto, trimestre=trimestre, precos=precos, return_meta=return_meta, as_polars=as_polars
     )

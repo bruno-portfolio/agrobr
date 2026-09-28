@@ -1,6 +1,0 @@
-{
-    "dataset": "empregadores",
-    "format": "xlsx",
-    "parser": "parse_empregadores",
-    "source": "lista_suja"
-}

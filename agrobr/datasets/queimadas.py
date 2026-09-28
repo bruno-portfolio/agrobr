@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -43,7 +43,7 @@ QUEIMADAS_INFO = DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="daily",
     typical_latency="D+1",
     source_url="https://terrabrasilis.dpi.inpe.br/queimadas/portal/",
@@ -69,7 +69,6 @@ class QueimadasDataset(BaseDataset):
         uf: str | None = None,
         satelite: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         bioma = validate_bioma(bioma)
         snapshot = get_snapshot()
@@ -89,17 +88,12 @@ class QueimadasDataset(BaseDataset):
             uf=uf,
             bioma=bioma,
             satelite=satelite,
-            **kwargs,
         )
 
-        df = self._normalize(df)
         self._validate_contract(df)
 
         if return_meta:
             return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-        return df
-
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
@@ -108,6 +102,34 @@ _queimadas = QueimadasDataset()
 from agrobr.datasets.registry import register  # noqa: E402
 
 register(_queimadas)
+
+
+@overload
+async def queimadas(
+    *,
+    ano: int,
+    mes: int,
+    dia: int | None = None,
+    uf: str | None = None,
+    bioma: str | None = None,
+    satelite: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def queimadas(
+    *,
+    ano: int,
+    mes: int,
+    dia: int | None = None,
+    uf: str | None = None,
+    bioma: str | None = None,
+    satelite: str | None = None,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def queimadas(
@@ -119,9 +141,9 @@ async def queimadas(
     bioma: str | None = None,
     satelite: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _queimadas.fetch(
+    return await _queimadas.fetch(  # type: ignore[call-arg]
         ano=ano,
         mes=mes,
         dia=dia,
@@ -129,5 +151,5 @@ async def queimadas(
         bioma=bioma,
         satelite=satelite,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

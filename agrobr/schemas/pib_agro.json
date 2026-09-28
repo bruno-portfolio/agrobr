@@ -10,6 +10,7 @@
   ],
   "required_columns": [
     "trimestre",
+    "valor",
     "unidade",
     "setor",
     "precos",

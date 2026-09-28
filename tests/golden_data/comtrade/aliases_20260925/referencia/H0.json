@@ -1,0 +1,896 @@
+{
+ "more": false,
+ "minimumInputLength": 2,
+ "classCode": "H0",
+ "className": "HS1992",
+ "results": [
+  {
+   "id": "0201",
+   "text": "0201 - Meat of bovine animals, fresh or chilled.",
+   "parent": "02",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "020110",
+   "text": "020110 - Carcasses and half-carcasses",
+   "parent": "0201",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020120",
+   "text": "020120 - Other cuts with bone in",
+   "parent": "0201",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020130",
+   "text": "020130 - Boneless",
+   "parent": "0201",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "0202",
+   "text": "0202 - Meat of bovine animals, frozen.",
+   "parent": "02",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "020210",
+   "text": "020210 - Carcasses and half-carcasses",
+   "parent": "0202",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020220",
+   "text": "020220 - Other cuts with bone in",
+   "parent": "0202",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020230",
+   "text": "020230 - Boneless",
+   "parent": "0202",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "0203",
+   "text": "0203 - Meat of swine, fresh, chilled or frozen.",
+   "parent": "02",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "020311",
+   "text": "020311 - Fresh or chilled :-- Carcasses and half-carcasses",
+   "parent": "0203",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020312",
+   "text": "020312 - Fresh or chilled :-- Hams, shoulders and cuts thereof, with bone in",
+   "parent": "0203",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020319",
+   "text": "020319 - Fresh or chilled :-- Other",
+   "parent": "0203",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020321",
+   "text": "020321 - Frozen :-- Carcasses and half-carcasses",
+   "parent": "0203",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020322",
+   "text": "020322 - Frozen :-- Hams, shoulders and cuts thereof, with bone in",
+   "parent": "0203",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020329",
+   "text": "020329 - Frozen :-- Other",
+   "parent": "0203",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "0207",
+   "text": "0207 - Meat and edible offal, of the poultry of heading No. 01.05, fresh, chilled or frozen.",
+   "parent": "02",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "020710",
+   "text": "020710 - Poultry, domestic, whole, fresh or chilled",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020721",
+   "text": "020721 - Fowls, domestic, whole, frozen",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020722",
+   "text": "020722 - Turkeys, domestic, whole, frozen",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020723",
+   "text": "020723 - Ducks, geese and guinea fowls, domestic, whole, froze",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020731",
+   "text": "020731 - Fatty livers (geese,ducks) domestic fresh or chilled",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020739",
+   "text": "020739 - Poultry cuts & offal, except livers, fresh or chilled",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020741",
+   "text": "020741 - Fowl cuts & offal, domestic, except livers, frozen",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020742",
+   "text": "020742 - Turkey cuts & offal, except livers, frozen",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020743",
+   "text": "020743 - Duck, goose, guinea fowl cuts, offal not liver, froze",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "020750",
+   "text": "020750 - Poultry livers, domestic, frozen",
+   "parent": "0207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "0901",
+   "text": "0901 - Coffee, whether or not roasted or decaffeinated; coffee husks and skins; coffee substitutes containing coffee in any proportion.",
+   "parent": "09",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "090111",
+   "text": "090111 - Coffee, not roasted :-- Not decaffeinated",
+   "parent": "0901",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "090112",
+   "text": "090112 - Coffee, not roasted :-- Decaffeinated",
+   "parent": "0901",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "090121",
+   "text": "090121 - Coffee roasted :-- Not decaffeinated",
+   "parent": "0901",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "090122",
+   "text": "090122 - Coffee roasted :-- Decaffeinated",
+   "parent": "0901",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "090130",
+   "text": "090130 - Coffee husks and skins",
+   "parent": "0901",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "090140",
+   "text": "090140 - Coffee substitutes containing coffee",
+   "parent": "0901",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "1001",
+   "text": "1001 - Wheat and meslin.",
+   "parent": "10",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "100110",
+   "text": "100110 - Durum wheat",
+   "parent": "1001",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "100190",
+   "text": "100190 - Other",
+   "parent": "1001",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "1005",
+   "text": "1005 - Maize (corn).",
+   "parent": "10",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "100510",
+   "text": "100510 - Seed",
+   "parent": "1005",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "100590",
+   "text": "100590 - Other",
+   "parent": "1005",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "1006",
+   "text": "1006 - Rice.",
+   "parent": "10",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "100610",
+   "text": "100610 - Rice in the husk (paddy or rough)",
+   "parent": "1006",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "100620",
+   "text": "100620 - Husked (brown) rice",
+   "parent": "1006",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "100630",
+   "text": "100630 - Semi-milled or wholly milled rice, whether or not polished or glazed",
+   "parent": "1006",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "100640",
+   "text": "100640 - Broken rice",
+   "parent": "1006",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "1201",
+   "text": "1201 - Soya beans, whether or not broken.",
+   "parent": "12",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "120100",
+   "text": "120100 - Soya beans, whether or not broken.",
+   "parent": "1201",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "1507",
+   "text": "1507 - Soya-bean oil and its fractions, whether or not refined, but not chemically modified.",
+   "parent": "15",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "150710",
+   "text": "150710 - Crude oil, whether or not degummed",
+   "parent": "1507",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "150790",
+   "text": "150790 - Other",
+   "parent": "1507",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "1701",
+   "text": "1701 - Cane or beet sugar and chemically pure sucrose, in solid form.",
+   "parent": "17",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "170111",
+   "text": "170111 - Raw sugar not containing added flavouring or colouring matter :-- Cane sugar",
+   "parent": "1701",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "170112",
+   "text": "170112 - Raw sugar not containing added flavouring or colouring matter :-- Beet sugar",
+   "parent": "1701",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "170191",
+   "text": "170191 - Other :-- Containing added flavouring or colouring matter",
+   "parent": "1701",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "170199",
+   "text": "170199 - Other",
+   "parent": "1701",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "2009",
+   "text": "2009 - Fruit juices (including grape must) and vegetable juices, unfermented and not containing added spirit, whether or not containing added sugar or other sweetening matter.",
+   "parent": "20",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "200911",
+   "text": "200911 - Orange juice :-- Frozen",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200919",
+   "text": "200919 - Orange juice :-- Other",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200920",
+   "text": "200920 - Grapefruit juice",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200930",
+   "text": "200930 - Juice of any other single citrus fruit",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200940",
+   "text": "200940 - Pineapple juice",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200950",
+   "text": "200950 - Tomato juice",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200960",
+   "text": "200960 - Grape juice (including grape must)",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200970",
+   "text": "200970 - Apple juice",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200980",
+   "text": "200980 - Juice of any other single fruit or vegetable",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "200990",
+   "text": "200990 - Mixtures of juices",
+   "parent": "2009",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "2207",
+   "text": "2207 - Undenatured ethyl alcohol of an alcoholic strength by volume of 80 % vol or higher; ethyl alcohol and other spirits, denatured, of any strength.",
+   "parent": "22",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "220710",
+   "text": "220710 - Undenatured ethyl alcohol of an alcoholic strength by volume of 80 % vol or higher",
+   "parent": "2207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "l"
+  },
+  {
+   "id": "220720",
+   "text": "220720 - Ethyl alcohol and other spirits, denatured, of any strength",
+   "parent": "2207",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "l"
+  },
+  {
+   "id": "2304",
+   "text": "2304 - Oil-cake and other solid residues, whether or not ground or in the form of pellets, resulting from the extraction of soyabean oil.",
+   "parent": "23",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "230400",
+   "text": "230400 - Oil-cake and other solid residues, whether or not ground or in the form of pellets, resulting from the extraction of soyabean oil.",
+   "parent": "2304",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "2401",
+   "text": "2401 - Unmanufactured tobacco; tobacco refuse.",
+   "parent": "24",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "240110",
+   "text": "240110 - Tobacco, not stemmed/stripped",
+   "parent": "2401",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "240120",
+   "text": "240120 - Tobacco, partly or wholly stemmed/stripped",
+   "parent": "2401",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "240130",
+   "text": "240130 - Tobacco refuse",
+   "parent": "2401",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "2402",
+   "text": "2402 - Cigars, cheroots, cigarillos and cigarettes, of tobacco or of tobacco substitutes.",
+   "parent": "24",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "240210",
+   "text": "240210 - Cigars, cheroots and cigarillos, containing tobacco",
+   "parent": "2402",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "240220",
+   "text": "240220 - Cigarettes containing tobacco",
+   "parent": "2402",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "240290",
+   "text": "240290 - Other",
+   "parent": "2402",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "2403",
+   "text": "2403 - Other manufactured tobacco and manufactured tobacco substitutes; 'homogenised' or 'reconstituted' tobacco; tobacco extracts and essences.",
+   "parent": "24",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "240310",
+   "text": "240310 - Smoking tobacco, whether or not containing tobacco substitutes in any proportion",
+   "parent": "2403",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "240391",
+   "text": "240391 - Other :-- 'Homogenised' or 'reconstituted' tobacco",
+   "parent": "2403",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "240399",
+   "text": "240399 - Other",
+   "parent": "2403",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "4701",
+   "text": "4701 - Mechanical wood pulp.",
+   "parent": "47",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "470100",
+   "text": "470100 - Mechanical wood pulp.",
+   "parent": "4701",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "4702",
+   "text": "4702 - Chemical wood pulp, dissolving grades.",
+   "parent": "47",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "470200",
+   "text": "470200 - Chemical wood pulp, dissolving grades.",
+   "parent": "4702",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "4703",
+   "text": "4703 - Chemical wood pulp, soda or sulphate, other than dissolving grades.",
+   "parent": "47",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "470311",
+   "text": "470311 - Unbleached :-- Coniferous",
+   "parent": "4703",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470319",
+   "text": "470319 - Unbleached :-- Non-coniferous",
+   "parent": "4703",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470321",
+   "text": "470321 - Semi-bleached or bleached :-- Coniferous",
+   "parent": "4703",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470329",
+   "text": "470329 - Semi-bleached or bleached :-- Non-coniferous",
+   "parent": "4703",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "4704",
+   "text": "4704 - Chemical wood pulp, sulphite, other than dissolving grades.",
+   "parent": "47",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "470411",
+   "text": "470411 - Unbleached :-- Coniferous",
+   "parent": "4704",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470419",
+   "text": "470419 - Unbleached :-- Non-coniferous",
+   "parent": "4704",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470421",
+   "text": "470421 - Semi-bleached or bleached :-- Coniferous",
+   "parent": "4704",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470429",
+   "text": "470429 - Semi-bleached or bleached :-- Non-coniferous",
+   "parent": "4704",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "4705",
+   "text": "4705 - Semi-chemical wood pulp.",
+   "parent": "47",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "470500",
+   "text": "470500 - Semi-chemical wood pulp.",
+   "parent": "4705",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "4706",
+   "text": "4706 - Pulps of fibres derived from recovered (waste and scrap) paper or paperboard or of other fibrous cellulosic material.",
+   "parent": "47",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "470610",
+   "text": "470610 - Cotton linters pulp",
+   "parent": "4706",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470691",
+   "text": "470691 - Other :-- Mechanical",
+   "parent": "4706",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470692",
+   "text": "470692 - Other :-- Chemical",
+   "parent": "4706",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "470693",
+   "text": "470693 - Other :-- Semi-chemical",
+   "parent": "4706",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "5201",
+   "text": "5201 - Cotton, not carded or combed.",
+   "parent": "52",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "520100",
+   "text": "520100 - Cotton, not carded or combed.",
+   "parent": "5201",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "5202",
+   "text": "5202 - Cotton waste (including yarn waste and garnetted stock).",
+   "parent": "52",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "520210",
+   "text": "520210 - Yarn waste (including thread waste)",
+   "parent": "5202",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "520291",
+   "text": "520291 - Other :-- Garnetted stock",
+   "parent": "5202",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "520299",
+   "text": "520299 - Other",
+   "parent": "5202",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  },
+  {
+   "id": "5203",
+   "text": "5203 - Cotton, carded or combed.",
+   "parent": "52",
+   "isLeaf": "0",
+   "aggrlevel": 4,
+   "standardUnitAbbr": "n/a"
+  },
+  {
+   "id": "520300",
+   "text": "520300 - Cotton, carded or combed.",
+   "parent": "5203",
+   "isLeaf": "1",
+   "aggrlevel": 6,
+   "standardUnitAbbr": "kg"
+  }
+ ]
+}

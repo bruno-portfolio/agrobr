@@ -1,459 +1,226 @@
-"""Testes para agrobr.alt.sicar.client."""
-
 from __future__ import annotations
 
-import re
+import json
 import ssl
-import warnings
-from unittest.mock import AsyncMock, patch
+from collections.abc import Callable, Coroutine
+from typing import Any
+from unittest.mock import AsyncMock
+from urllib.parse import parse_qs, urlsplit
 
+import httpx
 import pytest
 
-from agrobr.alt.sicar import client
-from agrobr.alt.sicar.client import (
-    _build_wfs_url,
-    fetch_hits,
-    fetch_imoveis,
-    fetch_imoveis_geo,
-    stream_imoveis_geo,
-)
-from agrobr.alt.sicar.models import MAX_FEATURES_GEO, PAGE_SIZE, WFS_BASE, WFS_VERSION
+from agrobr.alt.sicar import client, models
+from agrobr.alt.sicar.models import PAGE_SIZE, WFS_BASE
 from agrobr.exceptions import ParseError
-from agrobr.utils.warnings import warn_once_reset
+from tests.helpers import collect_failures
+
+VAZIO = b'{"type":"FeatureCollection","features":[]}'
+CQL_MUNICIPIO = "municipio ILIKE '%Cabrobó%'"
 
 
-class TestBuildWfsUrl:
-    def test_basic_url(self):
-        url = _build_wfs_url("DF")
-        assert "service=WFS" in url
-        assert f"version={WFS_VERSION}" in url
-        assert "request=GetFeature" in url
-        assert "typeNames=sicar:sicar_imoveis_df" in url
-        assert "outputFormat=csv" in url
-        assert f"count={PAGE_SIZE}" in url
-        assert "startIndex=0" in url
-
-    def test_with_cql_filter(self):
-        url = _build_wfs_url("MT", cql_filter="status_imovel='AT'")
-        assert "CQL_FILTER=" in url
-        assert "status_imovel" in url
-
-    def test_with_pagination(self):
-        url = _build_wfs_url("SP", count=5000, start_index=10000)
-        assert "count=5000" in url
-        assert "startIndex=10000" in url
-
-    def test_result_type_hits(self):
-        url = _build_wfs_url("BA", result_type="hits")
-        assert "resultType=hits" in url
-
-    def test_property_names_included(self):
-        url = _build_wfs_url("GO")
-        assert "propertyName=" in url
-        assert "cod_imovel" in url
-        assert "status_imovel" in url
-        assert "area" in url
-
-    def test_no_geometry_in_url(self):
-        url = _build_wfs_url("PR")
-        assert "geo_area" not in url
-        assert "the_geom" not in url
-
-    def test_base_url(self):
-        url = _build_wfs_url("RS")
-        assert url.startswith(WFS_BASE)
-
-    def test_cql_filter_encoded(self):
-        url = _build_wfs_url("SC", cql_filter="municipio ILIKE '%JOINVILLE%'")
-        assert "%27" in url or "ILIKE" in url
+def pagina(start: int, count: int) -> bytes:
+    features = [
+        {
+            "type": "Feature",
+            "id": f"sicar_imoveis_df.{index}",
+            "properties": {
+                "cod_imovel": f"DF-{index}",
+                "status_imovel": "AT",
+                "dat_criacao": "2020-01-01T00:00:00Z",
+                "area": 1,
+                "uf": "DF",
+                "municipio": "Brasilia",
+                "cod_municipio_ibge": 5300108,
+                "tipo_imovel": "IRU",
+            },
+        }
+        for index in range(start, start + count)
+    ]
+    return json.dumps(
+        {"type": "FeatureCollection", "numberReturned": count, "features": features}
+    ).encode()
 
 
-class TestFetchHits:
-    @pytest.mark.asyncio
-    async def test_parses_number_matched(self):
-        xml_response = (
-            b'<?xml version="1.0"?><wfs:FeatureCollection numberMatched="42" numberReturned="0"/>'
-        )
-        with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=xml_response):
-            result = await fetch_hits("DF")
-        assert result == 42
-
-    @pytest.mark.asyncio
-    async def test_parses_number_matched_no_quotes(self):
-        xml_response = b"<wfs:FeatureCollection numberMatched=100 numberReturned=0/>"
-        with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=xml_response):
-            result = await fetch_hits("MT")
-        assert result == 100
-
-    @pytest.mark.asyncio
-    async def test_raises_on_missing_number_matched(self):
-        xml_response = b"<wfs:FeatureCollection/>"
-        with (
-            patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=xml_response),
-            pytest.raises(ParseError, match="numberMatched"),
-        ):
-            await fetch_hits("SP")
-
-    @pytest.mark.asyncio
-    async def test_with_cql_filter(self):
-        xml_response = b'<wfs:FeatureCollection numberMatched="15"/>'
-        mock_fetch = AsyncMock(return_value=xml_response)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            result = await fetch_hits("BA", "status_imovel='AT'")
-        assert result == 15
-        call_url = mock_fetch.call_args[0][0]
-        assert "resultType=hits" in call_url
+def consulta(url: str) -> dict[str, str]:
+    assert url.startswith(WFS_BASE + "?")
+    return {name: values[0] for name, values in parse_qs(urlsplit(url).query).items()}
 
 
-class TestFetchImoveis:
-    @pytest.mark.asyncio
-    async def test_empty_results(self):
-        xml_hits = b'<wfs:FeatureCollection numberMatched="0"/>'
-        with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=xml_hits):
-            pages, url = await fetch_imoveis("DF")
-        assert pages == []
-        assert "sicar" in url
+def servidor_geo(
+    total: int, pedidos: list[dict[str, str]]
+) -> Callable[..., Coroutine[Any, Any, bytes]]:
+    async def fetch_wfs(url: str, **_kwargs: Any) -> bytes:
+        query = consulta(url)
+        pedidos.append(query)
+        if query.get("resultType") == "hits":
+            return f'<wfs:FeatureCollection numberMatched="{total}"/>'.encode()
+        return VAZIO
 
-    @pytest.mark.asyncio
-    async def test_single_page(self):
-        xml_hits = b'<wfs:FeatureCollection numberMatched="5"/>'
-        csv_data = b"cod_imovel,status_imovel\nFOO,AT\n"
-
-        call_count = 0
-
-        async def mock_fetch(url, **_kwargs):
-            nonlocal call_count
-            call_count += 1
-            if "resultType=hits" in url:
-                return xml_hits
-            return csv_data
-
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            pages, url = await fetch_imoveis("DF")
-
-        assert len(pages) == 1
-        assert pages[0] == csv_data
-
-    @pytest.mark.asyncio
-    async def test_multi_page(self):
-        xml_hits = b'<wfs:FeatureCollection numberMatched="15000"/>'
-        csv_page1 = b"cod_imovel,status_imovel\nFOO1,AT\n"
-        csv_page2 = b"cod_imovel,status_imovel\nFOO2,PE\n"
-
-        page_idx = 0
-
-        async def mock_fetch(url, **_kwargs):
-            nonlocal page_idx
-            if "resultType=hits" in url:
-                return xml_hits
-            page_idx += 1
-            return csv_page1 if page_idx == 1 else csv_page2
-
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            pages, url = await fetch_imoveis("MT")
-
-        assert len(pages) == 2
-
-    @pytest.mark.asyncio
-    async def test_throttle_sleep_after_page_5(self):
-        xml_hits = b'<wfs:FeatureCollection numberMatched="70000"/>'
-        csv_data = b"cod_imovel,status_imovel\nFOO,AT\n"
-        sleeps: list[float] = []
-
-        async def mock_fetch(url, **_kwargs):
-            if "resultType=hits" in url:
-                return xml_hits
-            return csv_data
-
-        async def mock_sleep(delay):
-            sleeps.append(delay)
-
-        with (
-            patch.object(client, "fetch_wfs", side_effect=mock_fetch),
-            patch.object(client.asyncio, "sleep", side_effect=mock_sleep),
-        ):
-            pages, url = await fetch_imoveis("BA")
-
-        assert len(pages) == 7
-        assert sleeps == [client.THROTTLE_DELAY, client.THROTTLE_DELAY]
-
-    @pytest.mark.asyncio
-    async def test_with_cql_filter_passed_through(self):
-        xml_hits = b'<wfs:FeatureCollection numberMatched="3"/>'
-        csv_data = b"cod_imovel,status_imovel\nFOO,AT\n"
-        fetched_urls: list[str] = []
-
-        async def mock_fetch(url, **_kwargs):
-            fetched_urls.append(url)
-            if "resultType=hits" in url:
-                return xml_hits
-            return csv_data
-
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            await fetch_imoveis("GO", "status_imovel='AT'")
-
-        for u in fetched_urls:
-            assert "status_imovel" in u
+    return fetch_wfs
 
 
-class TestFetchImoveisGeo:
-    @pytest.mark.asyncio
-    async def test_successful_fetch(self):
-        geojson = b'{"type":"FeatureCollection","features":[]}'
-        with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=geojson):
-            pages, url = await fetch_imoveis_geo("DF")
-        assert pages == [geojson]
-        assert "sicar" in url
-
-    @pytest.mark.asyncio
-    async def test_url_output_format_json(self):
-        geojson = b'{"type":"FeatureCollection","features":[]}'
-        mock_fetch = AsyncMock(return_value=geojson)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            await fetch_imoveis_geo("DF")
-        call_url = mock_fetch.call_args[0][0]
-        assert "outputFormat=application/json" in call_url
-
-    @pytest.mark.asyncio
-    async def test_url_contains_geom_column(self):
-        geojson = b'{"type":"FeatureCollection","features":[]}'
-        mock_fetch = AsyncMock(return_value=geojson)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            await fetch_imoveis_geo("DF")
-        call_url = mock_fetch.call_args[0][0]
-        assert "geo_area_imovel" in call_url
-
-    @pytest.mark.asyncio
-    async def test_url_max_features(self):
-        geojson = b'{"type":"FeatureCollection","features":[]}'
-        mock_fetch = AsyncMock(return_value=geojson)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            await fetch_imoveis_geo("MT")
-        call_url = mock_fetch.call_args[0][0]
-        assert f"count={MAX_FEATURES_GEO}" in call_url
-
-    @pytest.mark.asyncio
-    async def test_url_with_cql_filter(self):
-        geojson = b'{"type":"FeatureCollection","features":[]}'
-        mock_fetch = AsyncMock(return_value=geojson)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            await fetch_imoveis_geo("BA", cql_filter="status_imovel='AT'")
-        call_url = mock_fetch.call_args[0][0]
-        assert "CQL_FILTER=" in call_url
-        assert "status_imovel" in call_url
-
-    @pytest.mark.asyncio
-    async def test_no_pagination(self):
-        geojson = b'{"type":"FeatureCollection","features":[]}'
-        mock_fetch = AsyncMock(return_value=geojson)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            await fetch_imoveis_geo("SP")
-        assert mock_fetch.call_count == 1
+def test_propriedades_pedidas_seguem_o_schema_de_cada_uf():
+    sem_atualizacao = {"PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"}
+    with collect_failures() as check:
+        for uf in sorted(models.UFS_VALIDAS):
+            for geo in (False, True):
+                with check((uf, geo)):
+                    query = consulta(
+                        client._build_wfs_url(uf, property_names=models.property_names(uf, geo=geo))
+                    )
+                    pedidas = query.get("propertyName", "").split(",")
+                    assert query.get("typeNames") == f"sicar:sicar_imoveis_{uf.lower()}"
+                    assert ("data_atualizacao" in pedidas) == (uf not in sem_atualizacao)
+                    assert ("geo_area_imovel" in pedidas) == geo
+                    assert set(pedidas) - {"data_atualizacao", "geo_area_imovel"} == {
+                        "cod_imovel",
+                        "status_imovel",
+                        "dat_criacao",
+                        "area",
+                        "condicao",
+                        "uf",
+                        "municipio",
+                        "cod_municipio_ibge",
+                        "m_fiscal",
+                        "tipo_imovel",
+                    }
+                    assert len(pedidas) == len(set(pedidas))
 
 
-def _geo_paginated_mock(numbers_matched: int, geojson: bytes):
-    """Side_effect de fetch_wfs: responde hits e registra o count de cada pagina pedida."""
-    xml_hits = f'<wfs:FeatureCollection numberMatched="{numbers_matched}"/>'.encode()
-    counts: list[int] = []
+async def test_sondagem_le_number_matched_e_pede_hits(monkeypatch: pytest.MonkeyPatch):
+    casos = [
+        (b'<?xml version="1.0"?><wfs:FeatureCollection numberMatched="21006"/>', 21006),
+        (b"<wfs:FeatureCollection numberMatched=100 numberReturned=0/>", 100),
+    ]
+    with collect_failures() as check:
+        for resposta, esperado in casos:
+            with check(esperado):
+                fetch = AsyncMock(return_value=resposta)
+                monkeypatch.setattr(client, "fetch_wfs", fetch)
+                assert await client.fetch_hits("DF", CQL_MUNICIPIO) == esperado
+                query = consulta(fetch.await_args.args[0])
+                assert query.get("resultType") == "hits"
+                assert query.get("CQL_FILTER") == CQL_MUNICIPIO
+        with check("sem numberMatched"), pytest.raises(ParseError, match="numberMatched"):
+            monkeypatch.setattr(
+                client, "fetch_wfs", AsyncMock(return_value=b"<wfs:FeatureCollection/>")
+            )
+            await client.fetch_hits("SP")
 
-    async def mock_fetch(url, **_kwargs):
+
+async def test_varredura_tabular_pagina_ordena_e_pausa_depois_da_quinta(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    pedidos: list[dict[str, str]] = []
+    pausas: list[float] = []
+
+    async def fetch_wfs(url: str, **_kwargs: Any) -> bytes:
+        query = consulta(url)
+        pedidos.append(query)
+        if query.get("resultType") == "hits":
+            return b'<wfs:FeatureCollection numberMatched="7"/>'
+        inicio = int(query.get("startIndex", "0"))
+        return pagina(inicio, 1 if inicio < 7 else 0)
+
+    async def sleep(delay: float) -> None:
+        pausas.append(delay)
+
+    monkeypatch.setattr(client, "PAGE_SIZE", 1)
+    monkeypatch.setattr(client, "fetch_wfs", fetch_wfs)
+    monkeypatch.setattr(client.asyncio, "sleep", sleep)
+    detalhes: dict[str, Any] = {}
+
+    pages, url = await client.fetch_imoveis("DF", "status_imovel='AT'", source_details=detalhes)
+
+    assert len(pages) == 7
+    assert [query.get("startIndex") for query in pedidos[1:]] == [str(i) for i in range(7)]
+    assert {query.get("count") for query in pedidos[1:]} == {"1"}
+    assert {query.get("sortBy") for query in pedidos} == {"cod_imovel"}
+    assert {query.get("CQL_FILTER") for query in pedidos} == {"status_imovel='AT'"}
+    assert pausas == [client.THROTTLE_DELAY, client.THROTTLE_DELAY]
+    assert detalhes == {"anunciados": 7, "features_unicas": 7}
+    assert (consulta(url).get("startIndex"), consulta(url).get("count")) == (None, None)
+    monkeypatch.setattr(
+        client, "fetch_wfs", AsyncMock(return_value=b'<wfs:FeatureCollection numberMatched="0"/>')
+    )
+    vazio, url_vazio = await client.fetch_imoveis("DF")
+    assert vazio == [] and consulta(url_vazio).get("typeNames") == "sicar:sicar_imoveis_df"
+
+
+async def test_geo_pagina_pelo_limite_e_pede_geometria(monkeypatch: pytest.MonkeyPatch):
+    casos: list[tuple[int | None, int, list[int], list[int], int]] = [
+        (5_000, 50_000, [5_000], [1], 0),
+        (PAGE_SIZE, 50_000, [PAGE_SIZE], [1], 0),
+        (PAGE_SIZE + 1, 20_000, [PAGE_SIZE, 1], [2], 1),
+        (15_000, 50_000, [PAGE_SIZE, 5_000], [2], 1),
+        (50_000, 10_500, [PAGE_SIZE, 500], [2], 1),
+        (None, 12_345, [PAGE_SIZE, 2_345], [1, 1], 1),
+        (None, 0, [], [0], 1),
+    ]
+    with collect_failures() as check:
+        for limite, total, contagens, lotes, sondagens in casos:
+            with check((limite, total)):
+                pedidos: list[dict[str, str]] = []
+                monkeypatch.setattr(client, "fetch_wfs", servidor_geo(total, pedidos))
+                batches = [
+                    batch async for batch in client.stream_imoveis_geo("MT", max_features=limite)
+                ]
+                paginas = [query for query in pedidos if query.get("resultType") != "hits"]
+                assert len(pedidos) - len(paginas) == sondagens
+                assert [query.get("count") for query in paginas] == [str(c) for c in contagens]
+                assert [query.get("startIndex") for query in paginas] == [
+                    str(index * PAGE_SIZE) for index in range(len(contagens))
+                ]
+                assert all("geo_area_imovel" in query.get("propertyName", "") for query in paginas)
+                assert all(query.get("outputFormat") == "application/json" for query in paginas)
+                assert all(query.get("srsName") == "EPSG:4326" for query in paginas)
+                assert all("srsName" not in query for query in pedidos if query not in paginas)
+                assert [len(pages) for pages, _url in batches] == lotes
+                assert all(url.startswith(WFS_BASE) for _pages, url in batches)
+                acumulado, url = await client.fetch_imoveis_geo("MT", max_features=limite)
+                assert len(acumulado) == len(contagens)
+                assert url.startswith(WFS_BASE)
+
+
+async def test_geo_sem_limite_pausa_depois_da_quinta_pagina(monkeypatch: pytest.MonkeyPatch):
+    paginas = client.THROTTLE_AFTER_PAGE + 2
+    pausas: list[float] = []
+
+    async def fetch_wfs(url: str, **_kwargs: Any) -> bytes:
         if "resultType=hits" in url:
-            return xml_hits
-        m = re.search(r"count=(\d+)", url)
-        assert m is not None
-        counts.append(int(m.group(1)))
-        return geojson
+            return f'<wfs:FeatureCollection numberMatched="{paginas * PAGE_SIZE}"/>'.encode()
+        return VAZIO
 
-    return mock_fetch, counts
+    async def sleep(delay: float) -> None:
+        pausas.append(delay)
 
+    monkeypatch.setattr(client, "fetch_wfs", fetch_wfs)
+    monkeypatch.setattr(client.asyncio, "sleep", sleep)
+    lotes = [len(pages) async for pages, _url in client.stream_imoveis_geo("MT", max_features=None)]
 
-class TestFetchImoveisGeoPaginated:
-    GEOJSON = b'{"type":"FeatureCollection","features":[]}'
-
-    @pytest.mark.asyncio
-    async def test_max_features_none_paginates_using_hits_total(self):
-        mock_fetch, counts = _geo_paginated_mock(12_345, self.GEOJSON)
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            pages, url = await fetch_imoveis_geo("MT", max_features=None)
-
-        assert len(pages) == 2
-        assert "sicar" in url
-
-    @pytest.mark.asyncio
-    async def test_max_features_greater_than_page_size_paginates(self):
-        mock_fetch, counts = _geo_paginated_mock(50_000, self.GEOJSON)
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            pages, _url = await fetch_imoveis_geo("MT", max_features=15_000)
-
-        assert len(pages) == 2
-        assert sum(counts) == 15_000
-
-    @pytest.mark.asyncio
-    async def test_max_features_equal_page_size_fetches_single_page(self):
-        mock_fetch = AsyncMock(return_value=self.GEOJSON)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            pages, _url = await fetch_imoveis_geo("MT", max_features=PAGE_SIZE)
-
-        assert len(pages) == 1
-        assert mock_fetch.call_count == 1
-        call_url = mock_fetch.call_args[0][0]
-        assert f"count={PAGE_SIZE}" in call_url
-        assert "resultType=hits" not in call_url
-
-    @pytest.mark.asyncio
-    async def test_max_features_page_size_plus_one_paginates(self):
-        mock_fetch, counts = _geo_paginated_mock(20_000, self.GEOJSON)
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            pages, _url = await fetch_imoveis_geo("MT", max_features=PAGE_SIZE + 1)
-
-        assert len(pages) == 2
-        assert counts == [PAGE_SIZE, 1]
-
-    @pytest.mark.asyncio
-    async def test_total_zero_returns_no_pages(self):
-        xml_hits = b'<wfs:FeatureCollection numberMatched="0"/>'
-        with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=xml_hits):
-            pages, url = await fetch_imoveis_geo("DF", max_features=None)
-
-        assert pages == []
-        assert "sicar" in url
-
-    @pytest.mark.asyncio
-    async def test_last_chunk_uses_min_total_and_max_features(self):
-        mock_fetch, counts = _geo_paginated_mock(10_500, self.GEOJSON)
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            pages, _url = await fetch_imoveis_geo("MT", max_features=50_000)
-
-        assert len(pages) == 2
-        assert counts == [PAGE_SIZE, 500]
+    assert lotes == [1] * paginas
+    assert pausas == [client.THROTTLE_DELAY, client.THROTTLE_DELAY]
 
 
-class TestStreamImoveisGeo:
-    GEOJSON = b'{"type":"FeatureCollection","features":[]}'
+async def test_sessoes_do_sicar_usam_tls_e_timeout_proprios(monkeypatch: pytest.MonkeyPatch):
+    sessions: list[Any] = []
 
-    @pytest.mark.asyncio
-    async def test_single_page_yields_once_and_stops(self):
-        mock_fetch = AsyncMock(return_value=self.GEOJSON)
-        with patch.object(client, "fetch_wfs", mock_fetch):
-            batches = [b async for b in stream_imoveis_geo("MT", max_features=PAGE_SIZE)]
+    async def fetch_wfs(url: str, **kwargs: Any) -> bytes:
+        sessions.append(kwargs["client"])
+        if "resultType=hits" in url:
+            return b'<wfs:FeatureCollection numberMatched="2"/>'
+        return pagina(0, 2)
 
-        assert len(batches) == 1
-        pages, url = batches[0]
-        assert pages == [self.GEOJSON]
-        assert "sicar" in url
-        mock_fetch.assert_called_once()
+    monkeypatch.setattr(client, "fetch_wfs", fetch_wfs)
+    await client.fetch_imoveis("DF")
+    await client.fetch_imoveis_geo("DF", max_features=10)
 
-    @pytest.mark.asyncio
-    async def test_total_zero_yields_single_empty_batch(self):
-        xml_hits = b'<wfs:FeatureCollection numberMatched="0"/>'
-        with patch.object(client, "fetch_wfs", new_callable=AsyncMock, return_value=xml_hits):
-            batches = [b async for b in stream_imoveis_geo("DF", max_features=None)]
-
-        assert len(batches) == 1
-        pages, url = batches[0]
-        assert pages == []
-        assert "sicar" in url
-
-    @pytest.mark.asyncio
-    async def test_bounded_max_features_yields_single_batch(self):
-        mock_fetch, counts = _geo_paginated_mock(50_000, self.GEOJSON)
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            batches = [b async for b in stream_imoveis_geo("MT", max_features=15_000)]
-
-        assert len(batches) == 1
-        pages, _url = batches[0]
-        assert len(pages) == 2
-        assert sum(counts) == 15_000
-
-    @pytest.mark.asyncio
-    async def test_unbounded_yields_one_page_per_batch(self):
-        n_pages = 4
-        mock_fetch, _counts = _geo_paginated_mock(n_pages * PAGE_SIZE, self.GEOJSON)
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            batches = [b async for b in stream_imoveis_geo("MT", max_features=None)]
-
-        sizes = [len(pages) for pages, _url in batches]
-        assert sizes == [1, 1, 1, 1]
-
-    @pytest.mark.asyncio
-    async def test_unbounded_throttles_after_page_threshold(self):
-        n_pages = client.THROTTLE_AFTER_PAGE + 2
-        mock_fetch, _counts = _geo_paginated_mock(n_pages * PAGE_SIZE, self.GEOJSON)
-        sleeps: list[float] = []
-
-        async def mock_sleep(delay):
-            sleeps.append(delay)
-
-        with (
-            patch.object(client, "fetch_wfs", side_effect=mock_fetch),
-            patch.object(client.asyncio, "sleep", side_effect=mock_sleep),
-        ):
-            async for _ in stream_imoveis_geo("MT", max_features=None):
-                pass
-
-        assert sleeps == [client.THROTTLE_DELAY, client.THROTTLE_DELAY]
-
-    @pytest.mark.asyncio
-    async def test_fetch_imoveis_geo_aggregates_all_pages(self):
-        n_pages = 4
-        mock_fetch, _counts = _geo_paginated_mock(n_pages * PAGE_SIZE, self.GEOJSON)
-        with patch.object(client, "fetch_wfs", side_effect=mock_fetch):
-            pages, url = await fetch_imoveis_geo("MT", max_features=None)
-
-        assert len(pages) == n_pages
-        assert "sicar" in url
-
-
-class TestTimeout:
-    def test_read_timeout_is_180s(self):
-        from agrobr.alt.sicar.client import TIMEOUT
-
-        assert TIMEOUT.read == 180.0
-
-
-class TestSSLContext:
-    """SSL: geoserver.car.gov.br envia o root Sectigo R46 dentro da cadeia.
-
-    Truststores sem esse root (certifi pre-2024, macOS Python 3.13 via uv)
-    rejeitam com `CERTIFICATE_VERIFY_FAILED: self-signed certificate in
-    certificate chain`. Por isso o client usa verify=False com warning
-    estruturado one-shot por sessao.
-    """
-
-    def test_ssl_ctx_has_verify_disabled(self):
-        assert client._ssl_ctx.verify_mode == ssl.CERT_NONE
-        assert client._ssl_ctx.check_hostname is False
-
-    def test_ssl_ctx_keeps_seclevel_1(self):
-        assert "AES256-GCM-SHA384" in {c["name"] for c in client._ssl_ctx.get_ciphers()}
-
-    def test_make_session_uses_ssl_ctx(self):
-        warn_once_reset("sicar_ssl_verify_off")
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            session = client.make_session()
-        try:
-            assert session._transport._pool._ssl_context is client._ssl_ctx  # type: ignore[attr-defined]
-        finally:
-            warn_once_reset("sicar_ssl_verify_off")
-
-    def test_warn_once_emitted_on_first_call(self):
-        warn_once_reset("sicar_ssl_verify_off")
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            client.make_session()
-        ssl_warns = [w for w in caught if "verify=False" in str(w.message)]
-        assert len(ssl_warns) == 1
-        assert "Sectigo" in str(ssl_warns[0].message) or "verify=False" in str(ssl_warns[0].message)
-        warn_once_reset("sicar_ssl_verify_off")
-
-    def test_warn_once_not_duplicated_in_subsequent_calls(self):
-        warn_once_reset("sicar_ssl_verify_off")
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            client.make_session()
-            client.make_session()
-            client.make_session()
-        ssl_warns = [w for w in caught if "verify=False" in str(w.message)]
-        assert len(ssl_warns) == 1
-        warn_once_reset("sicar_ssl_verify_off")
+    assert len(sessions) == 3
+    for session in sessions:
+        assert isinstance(session, httpx.AsyncClient)
+        assert session._transport._pool._ssl_context is client._ssl_ctx  # type: ignore[attr-defined]
+        assert session.timeout.read == 180.0
+    assert client._ssl_ctx.verify_mode == ssl.CERT_REQUIRED
+    assert client._ssl_ctx.check_hostname is True
+    assert "AES256-GCM-SHA384" in {cipher["name"] for cipher in client._ssl_ctx.get_ciphers()}

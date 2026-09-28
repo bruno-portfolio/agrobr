@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal
 from typing import Any
 
@@ -19,6 +19,7 @@ class SanityRule:
     max_value: Decimal | None
     max_daily_change_pct: Decimal | None = None
     description: str = ""
+    expected_unit: str | None = None
 
 
 PRICE_RULES: dict[str, SanityRule] = {
@@ -28,6 +29,7 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_value=Decimal("300"),
         max_daily_change_pct=Decimal("15"),
         description="Soja (BRL/sc60kg)",
+        expected_unit="BRL/sc60kg",
     ),
     "milho": SanityRule(
         field="valor",
@@ -35,6 +37,7 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_value=Decimal("150"),
         max_daily_change_pct=Decimal("15"),
         description="Milho (BRL/sc60kg)",
+        expected_unit="BRL/sc60kg",
     ),
     "cafe": SanityRule(
         field="valor",
@@ -42,6 +45,7 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_value=Decimal("3000"),
         max_daily_change_pct=Decimal("10"),
         description="Café Arábica (BRL/sc60kg)",
+        expected_unit="BRL/sc60kg",
     ),
     "cafe_robusta": SanityRule(
         field="valor",
@@ -49,6 +53,7 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_value=Decimal("3000"),
         max_daily_change_pct=Decimal("10"),
         description="Café Robusta/Conilon (BRL/sc60kg)",
+        expected_unit="BRL/sc60kg",
     ),
     "bezerro": SanityRule(
         field="valor",
@@ -56,6 +61,7 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_value=Decimal("8000"),
         max_daily_change_pct=Decimal("10"),
         description="Bezerro MS (BRL/cabeca)",
+        expected_unit="BRL/cabeca",
     ),
     "boi": SanityRule(
         field="valor",
@@ -63,6 +69,7 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_value=Decimal("500"),
         max_daily_change_pct=Decimal("10"),
         description="Boi Gordo (BRL/@)",
+        expected_unit="BRL/@",
     ),
     "boi_gordo": SanityRule(
         field="valor",
@@ -70,22 +77,104 @@ PRICE_RULES: dict[str, SanityRule] = {
         max_value=Decimal("500"),
         max_daily_change_pct=Decimal("10"),
         description="Boi Gordo (BRL/@)",
+        expected_unit="BRL/@",
     ),
     "trigo": SanityRule(
         field="valor",
-        min_value=Decimal("20"),
-        max_value=Decimal("150"),
+        min_value=Decimal("20") * Decimal("1000") / Decimal("60"),
+        max_value=Decimal("150") * Decimal("1000") / Decimal("60"),
         max_daily_change_pct=Decimal("15"),
-        description="Trigo (BRL/sc60kg)",
+        description="Trigo (BRL/ton)",
+        expected_unit="BRL/ton",
     ),
     "algodao": SanityRule(
         field="valor",
-        min_value=Decimal("50"),
-        max_value=Decimal("250"),
+        min_value=Decimal("50") * Decimal("100") * Decimal("0.45359237") / Decimal("15"),
+        max_value=Decimal("250") * Decimal("100") * Decimal("0.45359237") / Decimal("15"),
         max_daily_change_pct=Decimal("10"),
-        description="Algodão (BRL/@)",
+        description="Algodão (cBRL/lb)",
+        expected_unit="cBRL/lb",
+    ),
+    "arroz": SanityRule(
+        field="valor",
+        min_value=Decimal("8"),
+        max_value=Decimal("300"),
+        description="Arroz em casca RS, 58% de grãos inteiros (BRL/sc50kg)",
+        expected_unit="BRL/sc50kg",
+    ),
+    "acucar": SanityRule(
+        field="valor",
+        min_value=Decimal("8"),
+        max_value=Decimal("400"),
+        description="Açúcar cristal branco SP (BRL/sc50kg)",
+        expected_unit="BRL/sc50kg",
+    ),
+    "acucar_refinado": SanityRule(
+        field="valor",
+        min_value=Decimal("0.2"),
+        max_value=Decimal("8"),
+        description="Açúcar refinado amorfo SP (BRL/kg)",
+        expected_unit="BRL/kg",
+    ),
+    "frango_congelado": SanityRule(
+        field="valor",
+        min_value=Decimal("0.6"),
+        max_value=Decimal("20"),
+        description="Frango congelado SP (BRL/kg)",
+        expected_unit="BRL/kg",
+    ),
+    "frango_resfriado": SanityRule(
+        field="valor",
+        min_value=Decimal("0.6"),
+        max_value=Decimal("20"),
+        description="Frango resfriado SP (BRL/kg)",
+        expected_unit="BRL/kg",
+    ),
+    "suino": SanityRule(
+        field="valor",
+        min_value=Decimal("0.8"),
+        max_value=Decimal("30"),
+        description="Suíno vivo, praças MG/PR/RS/SC/SP (BRL/kg)",
+        expected_unit="BRL/kg",
+    ),
+    "etanol_hidratado": SanityRule(
+        field="valor",
+        min_value=Decimal("0.1"),
+        max_value=Decimal("8"),
+        description="Etanol hidratado combustível SP, semanal (BRL/L)",
+        expected_unit="BRL/L",
+    ),
+    "etanol_anidro": SanityRule(
+        field="valor",
+        min_value=Decimal("0.1"),
+        max_value=Decimal("10"),
+        description="Etanol anidro SP, semanal (BRL/L)",
+        expected_unit="BRL/L",
+    ),
+    "leite": SanityRule(
+        field="valor",
+        min_value=Decimal("0.1"),
+        max_value=Decimal("8"),
+        description="Leite ao produtor, preço líquido mensal (BRL/L)",
+        expected_unit="BRL/L",
+    ),
+    "laranja_industria": SanityRule(
+        field="valor",
+        min_value=Decimal("4"),
+        max_value=Decimal("300"),
+        description="Laranja indústria SP, a prazo, posta na fábrica (BRL/cx40.8kg)",
+        expected_unit="BRL/cx40.8kg",
+    ),
+    "laranja_in_natura": SanityRule(
+        field="valor",
+        min_value=Decimal("4"),
+        max_value=Decimal("300"),
+        description="Laranja pera in natura SP, a prazo, na árvore (BRL/cx40.8kg)",
+        expected_unit="BRL/cx40.8kg",
     ),
 }
+PRICE_RULES["soja_parana"] = replace(PRICE_RULES["soja"], description="Soja Paraná (BRL/sc60kg)")
+PRICE_RULES["cafe_arabica"] = replace(PRICE_RULES["cafe"])
 
 
 @dataclass
@@ -108,6 +197,24 @@ def validate_indicador(
     if not rule:
         logger.debug("sanity_no_rules", produto=indicador.produto)
         return anomalies
+
+    if rule.expected_unit is not None and indicador.unidade != rule.expected_unit:
+        logger.warning(
+            "sanity_anomalies_detected",
+            produto=indicador.produto,
+            count=1,
+            types=["unit_mismatch"],
+        )
+        return [
+            AnomalyReport(
+                field="unidade",
+                value=indicador.unidade,
+                expected_range=rule.expected_unit,
+                anomaly_type="unit_mismatch",
+                severity="critical",
+                details={"produto": indicador.produto, "rule": rule.description},
+            )
+        ]
 
     if rule.min_value and indicador.valor < rule.min_value:
         anomalies.append(
@@ -183,12 +290,11 @@ async def validate_batch(
 
     sorted_indicadores = sorted(indicadores, key=lambda x: x.data)
 
-    for i, ind in enumerate(sorted_indicadores):
-        valor_anterior = None
-        if i > 0 and sorted_indicadores[i - 1].produto == ind.produto:
-            valor_anterior = sorted_indicadores[i - 1].valor
-
-        anomalies = validate_indicador(ind, valor_anterior)
+    previous_values: dict[tuple[str, str | None, str], Decimal] = {}
+    for ind in sorted_indicadores:
+        series = (ind.produto, ind.praca, ind.unidade)
+        anomalies = validate_indicador(ind, previous_values.get(series))
+        previous_values[series] = ind.valor
 
         if anomalies:
             ind.anomalies = [f"{a.anomaly_type}: {a.field}" for a in anomalies]

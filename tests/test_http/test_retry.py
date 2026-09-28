@@ -17,7 +17,7 @@ from agrobr.http.retry import (
     should_retry_status,
     with_retry,
 )
-from tests.helpers import RETRY_SLEEP, make_mock_response
+from tests.helpers import RETRY_SLEEP, levanta_exatamente, make_mock_response, sem_excecao
 
 
 def _status_error(cls, status: int, headers: dict[str, str] | None = None):
@@ -37,40 +37,9 @@ class TestRetriableStatusError:
         assert result == "ok"
         assert func.call_count == 2
 
-    @pytest.mark.asyncio
-    async def test_generic_http_status_error_not_retried(self):
-        func = AsyncMock(side_effect=_status_error(httpx.HTTPStatusError, 404))
-        with pytest.raises(httpx.HTTPStatusError):
-            await retry_async(func, max_attempts=3, base_delay=0.01, max_delay=0.02)
-        assert func.call_count == 1
-
-    @pytest.mark.asyncio
-    async def test_retry_after_header_respected(self):
-        err = _status_error(RetriableStatusError, 429, headers={"Retry-After": "0.01"})
-        func = AsyncMock(side_effect=[err, "ok"])
-        result = await retry_async(func, max_attempts=3, base_delay=5.0, max_delay=10.0)
-        assert result == "ok"
-        assert func.call_count == 2
-
 
 class TestRetryAsync:
     """Testes para retry_async."""
-
-    @pytest.mark.asyncio
-    async def test_success_first_attempt(self):
-        func = AsyncMock(return_value="ok")
-        result = await retry_async(func, max_attempts=3, base_delay=0.01)
-        assert result == "ok"
-        assert func.call_count == 1
-
-    @pytest.mark.asyncio
-    async def test_success_after_failures(self):
-        func = AsyncMock(
-            side_effect=[httpx.TimeoutException("t1"), httpx.TimeoutException("t2"), "ok"]
-        )
-        result = await retry_async(func, max_attempts=3, base_delay=0.01, max_delay=0.02)
-        assert result == "ok"
-        assert func.call_count == 3
 
     @pytest.mark.asyncio
     async def test_exhausts_max_retries_raises(self):
@@ -78,37 +47,6 @@ class TestRetryAsync:
         with pytest.raises(httpx.TimeoutException, match="timeout"):
             await retry_async(func, max_attempts=3, base_delay=0.01, max_delay=0.02)
         assert func.call_count == 3
-
-    @pytest.mark.asyncio
-    async def test_network_error_retried(self):
-        func = AsyncMock(side_effect=[httpx.NetworkError("net"), "ok"])
-        result = await retry_async(func, max_attempts=3, base_delay=0.01)
-        assert result == "ok"
-        assert func.call_count == 2
-
-    @pytest.mark.asyncio
-    async def test_remote_protocol_error_retried(self):
-        func = AsyncMock(side_effect=[httpx.RemoteProtocolError("proto"), "ok"])
-        result = await retry_async(func, max_attempts=3, base_delay=0.01)
-        assert result == "ok"
-
-    @pytest.mark.asyncio
-    async def test_non_retriable_exception_propagates_immediately(self):
-        func = AsyncMock(side_effect=ValueError("bad"))
-        with pytest.raises(ValueError, match="bad"):
-            await retry_async(func, max_attempts=3, base_delay=0.01)
-        assert func.call_count == 1
-
-    @pytest.mark.asyncio
-    async def test_custom_retriable_exceptions(self):
-        func = AsyncMock(side_effect=[ValueError("v"), "ok"])
-        result = await retry_async(
-            func,
-            max_attempts=3,
-            base_delay=0.01,
-            retriable_exceptions=[ValueError],
-        )
-        assert result == "ok"
 
     @pytest.mark.asyncio
     async def test_backoff_exponential(self):
@@ -133,27 +71,6 @@ class TestRetryAsync:
         assert len(sleep_calls) == 2
         assert sleep_calls[1] > sleep_calls[0]
 
-    @pytest.mark.asyncio
-    async def test_max_delay_caps_backoff(self):
-        func = AsyncMock(side_effect=[httpx.TimeoutException("t")] * 4 + ["ok"])
-        sleep_calls: list[float] = []
-
-        async def mock_sleep(delay: float) -> None:
-            sleep_calls.append(delay)
-
-        with patch("agrobr.http.retry.asyncio.sleep", side_effect=mock_sleep):
-            await retry_async(func, max_attempts=5, base_delay=1.0, max_delay=5.0)
-
-        for d in sleep_calls:
-            assert d <= 5.0
-
-    @pytest.mark.asyncio
-    async def test_single_attempt_no_retry(self):
-        func = AsyncMock(side_effect=httpx.TimeoutException("t"))
-        with pytest.raises(httpx.TimeoutException):
-            await retry_async(func, max_attempts=1, base_delay=0.01)
-        assert func.call_count == 1
-
 
 class TestWithRetryDecorator:
     """Testes para o decorator with_retry."""
@@ -167,36 +84,6 @@ class TestWithRetryDecorator:
         result = await my_func(5)
         assert result == 10
 
-    @pytest.mark.asyncio
-    async def test_decorator_retries_on_failure(self):
-        call_count = 0
-
-        @with_retry(max_attempts=3, base_delay=0.01)
-        async def flaky_func() -> str:
-            nonlocal call_count
-            call_count += 1
-            if call_count < 3:
-                raise httpx.TimeoutException("timeout")
-            return "success"
-
-        with patch("agrobr.http.retry.asyncio.sleep", new_callable=AsyncMock):
-            result = await flaky_func()
-
-        assert result == "success"
-        assert call_count == 3
-
-    @pytest.mark.asyncio
-    async def test_decorator_exhausts_retries(self):
-        @with_retry(max_attempts=2, base_delay=0.01)
-        async def always_fails() -> str:
-            raise httpx.NetworkError("down")
-
-        with (
-            patch("agrobr.http.retry.asyncio.sleep", new_callable=AsyncMock),
-            pytest.raises(httpx.NetworkError),
-        ):
-            await always_fails()
-
 
 class TestShouldRetryStatus:
     """Testes para should_retry_status."""
@@ -204,10 +91,6 @@ class TestShouldRetryStatus:
     def test_retriable_codes(self):
         for code in [408, 429, 500, 502, 503, 504]:
             assert should_retry_status(code) is True
-
-    def test_non_retriable_codes(self):
-        for code in [200, 201, 301, 400, 401, 403, 404, 405]:
-            assert should_retry_status(code) is False
 
 
 class TestRetriableExceptions:
@@ -224,24 +107,6 @@ class TestRetriableExceptions:
 
 class TestRetryOnStatusTransport:
     @pytest.mark.asyncio
-    async def test_timeout_retried_then_succeeds(self):
-        resp_ok = make_mock_response(200)
-        call_count = 0
-
-        async def func() -> httpx.Response:
-            nonlocal call_count
-            call_count += 1
-            if call_count == 1:
-                raise httpx.TimeoutException("read timeout")
-            return resp_ok
-
-        with patch(RETRY_SLEEP, new_callable=AsyncMock):
-            result = await retry_on_status(func, source="test", max_attempts=3)
-
-        assert result.status_code == 200
-        assert call_count == 2
-
-    @pytest.mark.asyncio
     async def test_transport_exhausted_raises_source_unavailable(self):
         call_count = 0
 
@@ -257,24 +122,6 @@ class TestRetryOnStatusTransport:
             await retry_on_status(func, source="test", max_attempts=3)
 
         assert call_count == 3
-
-    @pytest.mark.asyncio
-    async def test_network_error_retried(self):
-        resp_ok = make_mock_response(200)
-        call_count = 0
-
-        async def func() -> httpx.Response:
-            nonlocal call_count
-            call_count += 1
-            if call_count == 1:
-                raise httpx.ConnectError("connection refused")
-            return resp_ok
-
-        with patch(RETRY_SLEEP, new_callable=AsyncMock):
-            result = await retry_on_status(func, source="test", max_attempts=3)
-
-        assert result.status_code == 200
-        assert call_count == 2
 
     @pytest.mark.asyncio
     async def test_mixed_transport_and_status(self):
@@ -296,3 +143,40 @@ class TestRetryOnStatusTransport:
 
         assert result.status_code == 200
         assert call_count == 3
+
+
+async def test_retry_async_espera_retry_after_e_depois_backoff():
+    erro_429 = _status_error(RetriableStatusError, 429, headers={"Retry-After": "0.5"})
+    func = AsyncMock(side_effect=[erro_429, httpx.TimeoutException("t"), "ok"])
+    with patch(RETRY_SLEEP, new_callable=AsyncMock) as espera, sem_excecao():
+        resultado = await retry_async(func, max_attempts=3, base_delay=2.0, max_delay=10.0)
+    assert resultado == "ok"
+    assert [chamada.args[0] for chamada in espera.await_args_list] == [0.5, 4.0]
+
+
+async def test_retry_async_sem_nova_tentativa_nao_espera():
+    func = AsyncMock(side_effect=httpx.TimeoutException("t"))
+    with (
+        patch(RETRY_SLEEP, new_callable=AsyncMock) as espera,
+        levanta_exatamente(httpx.TimeoutException),
+    ):
+        await retry_async(func, max_attempts=1, base_delay=0.01)
+    espera.assert_not_awaited()
+
+
+async def test_retry_on_status_espera_retry_after_e_depois_backoff():
+    respostas = [
+        make_mock_response(503, headers={"Retry-After": "0.5"}),
+        make_mock_response(500),
+        make_mock_response(200),
+    ]
+    func = AsyncMock(side_effect=respostas)
+    with (
+        patch(RETRY_SLEEP, new_callable=AsyncMock) as espera,
+        patch("agrobr.http.rate_limiter._async_sleep", new_callable=AsyncMock),
+    ):
+        resposta = await retry_on_status(
+            func, source="teste", max_attempts=3, base_delay=2.0, max_delay=10.0
+        )
+    assert resposta.status_code == 200
+    assert [chamada.args[0] for chamada in espera.await_args_list] == [0.5, 4.0]

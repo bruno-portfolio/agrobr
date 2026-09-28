@@ -1,0 +1,203 @@
+{
+  "source": "inmet",
+  "capture_date": "2026-09-06",
+  "requests": [
+    {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2000.zip",
+      "method": "GET",
+      "status": 200,
+      "captured_at": "2026-09-07T00:17:43.080704+00:00",
+      "bytes": 526731,
+      "sha256": "c6c600e3a742a539e401f1522aef40fdc2bb0c772818dda5c706052bcc2039af",
+      "body_file": "2000.zip",
+      "headers": {
+        "last-modified": "Wed, 02 Sep 2020 12:14:18 GMT",
+        "etag": "\"8098b-5ae539328da80\"",
+        "content-length": "526731",
+        "content-type": "application/zip"
+      },
+      "members": [
+        {
+          "member": "2000/INMET_CO_DF_A001_BRASILIA_07-05-2000_A_31-12-2000.CSV",
+          "sha256": "e969950ca986f2f059e3fa453d27c83663c23c44b233fcc23e1753baea21aa5e",
+          "bytes": 536569,
+          "uf": "DF",
+          "estacao": "A001"
+        },
+        {
+          "member": "2000/INMET_NE_BA_A401_SALVADOR_13-05-2000_A_31-12-2000.CSV",
+          "sha256": "57cc4adf9854d476454f062baea58e383fccbb7fa3d0e250a413434cd7db9732",
+          "bytes": 616371,
+          "uf": "BA",
+          "estacao": "A401"
+        },
+        {
+          "member": "2000/INMET_N_AM_A101_MANAUS_09-05-2000_A_31-12-2000.CSV",
+          "sha256": "c093862e7dcba25e18c3ac38f9db4b67172032476db5c32d14abe63ac880d750",
+          "bytes": 552568,
+          "uf": "AM",
+          "estacao": "A101"
+        },
+        {
+          "member": "2000/INMET_SE_RJ_A601_ECOLOGIA AGRICOLA_07-05-2000_A_31-12-2000.CSV",
+          "sha256": "7d1b7228a238ca0e8cb321078523382b29946068fa63010c7aa648b1a6ebaa5d",
+          "bytes": 558682,
+          "uf": "RJ",
+          "estacao": "A601"
+        },
+        {
+          "member": "2000/INMET_S_RS_A801_PORTO ALEGRE_22-09-2000_A_31-12-2000.CSV",
+          "sha256": "49bb682e82fc950a867e6cae08f2c09bdf870ac9397387922fb5030c46dc0c40",
+          "bytes": 229896,
+          "uf": "RS",
+          "estacao": "A801"
+        }
+      ]
+    },
+    {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2001.zip",
+      "method": "GET",
+      "status": 200,
+      "captured_at": "2026-09-07T00:18:15.313876+00:00",
+      "bytes": 1616089,
+      "sha256": "a2c63c4a4826ba9d8683729c0c3544ec5125e9e2a00d4597f97107a11c4121ab",
+      "body_file": "2001.zip",
+      "headers": {
+        "last-modified": "Wed, 02 Sep 2020 12:14:18 GMT",
+        "etag": "\"18a8d9-5ae539328da80\"",
+        "content-length": "1616089",
+        "content-type": "application/zip"
+      },
+      "members": [
+        {
+          "member": "2001/INMET_CO_DF_A001_BRASILIA_01-01-2001_A_31-12-2001.CSV",
+          "sha256": "ec1035998b1ffed89f58fa1e4f6c1dc53c434538412a6814200d5999e76a9885",
+          "bytes": 820002,
+          "uf": "DF",
+          "estacao": "A001"
+        },
+        {
+          "member": "2001/INMET_CO_GO_A002_GOIANIA_29-05-2001_A_31-12-2001.CSV",
+          "sha256": "5b6b491e0b8a6e73284609ba0ac3e7fee2b4f891d18d36ed23b6426368fe6bc5",
+          "bytes": 493810,
+          "uf": "GO",
+          "estacao": "A002"
+        },
+        {
+          "member": "2001/INMET_CO_GO_A003_MORRINHOS_25-05-2001_A_31-12-2001.CSV",
+          "sha256": "459db2892c94e836cdec04a84c7b23a27e624f24475a07a2f4f0ebc17f228f02",
+          "bytes": 501367,
+          "uf": "GO",
+          "estacao": "A003"
+        },
+        {
+          "member": "2001/INMET_CO_MS_A702_CAMPO GRANDE_10-09-2001_A_31-12-2001.CSV",
+          "sha256": "076ce0c3cc680a977595478a54c83ce160b239d47c074c8f1e32dece186910cc",
+          "bytes": 250940,
+          "uf": "MS",
+          "estacao": "A702"
+        },
+        {
+          "member": "2001/INMET_CO_MS_A703_PONTA PORA_07-09-2001_A_31-12-2001.CSV",
+          "sha256": "e1b67faefc8c12e94950b421c76a5ee8c52ebce3c61c9936ffa21b8308560aea",
+          "bytes": 257868,
+          "uf": "MS",
+          "estacao": "A703"
+        },
+        {
+          "member": "2001/INMET_CO_MS_A704_TRES LAGOAS_03-09-2001_A_31-12-2001.CSV",
+          "sha256": "437185fd3a2d595a1fd2bac7650c856db74e7e0fc4e87da3cb7371355922e3a0",
+          "bytes": 264777,
+          "uf": "MS",
+          "estacao": "A704"
+        },
+        {
+          "member": "2001/INMET_NE_BA_A401_SALVADOR_01-01-2001_A_31-12-2001.CSV",
+          "sha256": "2581d911c974fef7c5f5f6e013865ca7050f9842caf654e07be83de472208c51",
+          "bytes": 835186,
+          "uf": "BA",
+          "estacao": "A401"
+        },
+        {
+          "member": "2001/INMET_NE_BA_A402_BARREIRAS_20-12-2001_A_31-12-2001.CSV",
+          "sha256": "5d907825e0cfb411b4d99d4c42283133d8931c85d6443de187d1fb14acb686c6",
+          "bytes": 31086,
+          "uf": "BA",
+          "estacao": "A402"
+        },
+        {
+          "member": "2001/INMET_N_AM_A101_MANAUS_01-01-2001_A_31-12-2001.CSV",
+          "sha256": "d7f5c7fdd779238d69bef3cc60ec45227ad11abbfab5a52616558a8b1cb611e4",
+          "bytes": 878459,
+          "uf": "AM",
+          "estacao": "A101"
+        },
+        {
+          "member": "2001/INMET_SE_RJ_A601_ECOLOGIA AGRICOLA_01-01-2001_A_31-12-2001.CSV",
+          "sha256": "9797f2e3c6896566d77d870c2113f0d194f1e8c904f5af284826d4f765983967",
+          "bytes": 874776,
+          "uf": "RJ",
+          "estacao": "A601"
+        },
+        {
+          "member": "2001/INMET_SE_SP_A705_BAURU_30-08-2001_A_31-12-2001.CSV",
+          "sha256": "b12b8c41695f9742a476cf5a48b3f9ae6be4e13b35355f85cf2c1861f442218f",
+          "bytes": 274041,
+          "uf": "SP",
+          "estacao": "A705"
+        },
+        {
+          "member": "2001/INMET_S_RS_A801_PORTO ALEGRE_01-01-2001_A_31-12-2001.CSV",
+          "sha256": "f6ef6b8e6b0e33b6dbbbd8d462fc6dd21043197e17b803e20c8f994f6fca3965",
+          "bytes": 853972,
+          "uf": "RS",
+          "estacao": "A801"
+        },
+        {
+          "member": "2001/INMET_S_RS_A802_RIO GRANDE_16-11-2001_A_31-12-2001.CSV",
+          "sha256": "49acd28dc59e3936df53b3903cff51602102a0699e351b55a8823296686fa1be",
+          "bytes": 108165,
+          "uf": "RS",
+          "estacao": "A802"
+        },
+        {
+          "member": "2001/INMET_S_RS_A803_SANTA MARIA_26-11-2001_A_31-12-2001.CSV",
+          "sha256": "87d329cce88577b04dfbfc73f08130d09ffce8a2988210947efeba253b18b499",
+          "bytes": 81279,
+          "uf": "RS",
+          "estacao": "A803"
+        },
+        {
+          "member": "2001/INMET_S_RS_A804_SANTANA DO LIVRAMENTO_22-11-2001_A_31-12-2001.CSV",
+          "sha256": "e2a397feea694a16ad2e3320b7d281969fe0b3fa7ae032b7aa625521c095e4eb",
+          "bytes": 92248,
+          "uf": "RS",
+          "estacao": "A804"
+        },
+        {
+          "member": "2001/INMET_S_RS_A805_SANTO AUGUSTO_05-12-2001_A_31-12-2001.CSV",
+          "sha256": "4b6528c0ce3bfb943f714883b58586a0bd4ca4bc2b815aa6df1c347920e624a3",
+          "bytes": 60838,
+          "uf": "RS",
+          "estacao": "A805"
+        }
+      ]
+    }
+  ],
+  "extracted_members": [
+    {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2026.zip",
+      "method": "HTTP ranges of original ZIP; one original CSV extracted",
+      "body_file": "2026_A001.csv",
+      "member": "INMET_CO_DF_A001_BRASILIA_01-01-2026_A_31-08-2026.CSV",
+      "bytes": 541834,
+      "crc32": 1445330270,
+      "sha256": "4b58ca2031e5405b4e972a7a5efa977c26f7813e0354875fa0139e7a1ab8c59a"
+    }
+  ],
+  "oracles": {
+    "body_file": "independent_oracles.json",
+    "sha256": "751c2c47ae305f9a6cb54d7b61f885fcb3bf7a00c470fdc3b7d000e013bc63ca",
+    "method": "independent stdlib reducers, no agrobr parser/API"
+  }
+}

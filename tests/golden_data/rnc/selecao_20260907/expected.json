@@ -1,0 +1,2576 @@
+{
+  "registradas": {
+    "source_header": [
+      "CULTIVAR",
+      "NOME COMUM",
+      "NOME CIENTÍFICO",
+      "GRUPO DA ESPÉCIE",
+      "SITUAÇÃO",
+      "Nº FORMULÁRIO",
+      "Nº REGISTRO",
+      "DATA DO REGISTRO",
+      "DATA DE VALIDADE DO REGISTRO",
+      "MANTENEDOR (REQUERENTE) (NOME)"
+    ],
+    "columns": [
+      "cultivar",
+      "nome_comum",
+      "nome_cientifico",
+      "grupo",
+      "situacao",
+      "nr_formulario",
+      "nr_registro",
+      "data_registro",
+      "data_validade",
+      "mantenedor"
+    ],
+    "records": [
+      {
+        "source_record": 1,
+        "raw_cells": [
+          "Bonella",
+          "Abacate",
+          "Persea americana Mill.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "201900091",
+          "42039",
+          "27/08/2019",
+          "27/08/2034",
+          "José Alcides Bonella"
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:FRUTÍFERAS",
+          "domain:SITUAÇÃO:REGISTRADA",
+          "first_record",
+          "shortest_identifier:Nº FORMULÁRIO"
+        ],
+        "expected": {
+          "cultivar": "Bonella",
+          "nome_comum": "Abacate",
+          "nome_cientifico": "Persea americana Mill.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "201900091",
+          "nr_registro": "42039",
+          "data_registro": "2019-08-27",
+          "data_validade": "2034-08-27",
+          "mantenedor": "José Alcides Bonella"
+        }
+      },
+      {
+        "source_record": 2,
+        "raw_cells": [
+          "Breda",
+          "Abacate",
+          "Persea americana Mill.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "",
+          "3489",
+          "16/12/1999",
+          "16/12/2029",
+          "INSTITUTO AGRONÔMICO - IAC"
+        ],
+        "selection_reasons": [
+          "empty:Nº FORMULÁRIO"
+        ],
+        "expected": {
+          "cultivar": "Breda",
+          "nome_comum": "Abacate",
+          "nome_cientifico": "Persea americana Mill.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "3489",
+          "data_registro": "1999-12-16",
+          "data_validade": "2029-12-16",
+          "mantenedor": "INSTITUTO AGRONÔMICO - IAC"
+        }
+      },
+      {
+        "source_record": 19,
+        "raw_cells": [
+          "",
+          "Abacate-do-mato",
+          "Tontelea passiflora (Vell.) Lombardi.",
+          "FLORESTAIS",
+          "REGISTRADA",
+          "202200128",
+          "51773",
+          "02/08/2022",
+          "02/08/2037",
+          ""
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:FLORESTAIS",
+          "empty:CULTIVAR",
+          "empty:MANTENEDOR (REQUERENTE) (NOME)"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Abacate-do-mato",
+          "nome_cientifico": "Tontelea passiflora (Vell.) Lombardi.",
+          "grupo": "FLORESTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202200128",
+          "nr_registro": "51773",
+          "data_registro": "2022-08-02",
+          "data_validade": "2037-08-02",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 29,
+        "raw_cells": [
+          "BRS RBO",
+          "Abacaxi",
+          "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "",
+          "34943",
+          "29/02/2016",
+          "28/02/2031",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        ],
+        "selection_reasons": [
+          "leap_date:DATA DO REGISTRO"
+        ],
+        "expected": {
+          "cultivar": "BRS RBO",
+          "nome_comum": "Abacaxi",
+          "nome_cientifico": "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "34943",
+          "data_registro": "2016-02-29",
+          "data_validade": "2031-02-28",
+          "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        }
+      },
+      {
+        "source_record": 33,
+        "raw_cells": [
+          "BRS Vitória",
+          "Abacaxi",
+          "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "",
+          "21461",
+          "16/04/2007",
+          "16/04/2037",
+          "INSTITUTO CAPIXABA DE PESQUISA, ASSISTÊNCIA TÉCNICA E EXTENSÃO RURAL - INCAPER_"
+        ],
+        "selection_reasons": [
+          "comma:MANTENEDOR (REQUERENTE) (NOME)"
+        ],
+        "expected": {
+          "cultivar": "BRS Vitória",
+          "nome_comum": "Abacaxi",
+          "nome_cientifico": "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "21461",
+          "data_registro": "2007-04-16",
+          "data_validade": "2037-04-16",
+          "mantenedor": "INSTITUTO CAPIXABA DE PESQUISA, ASSISTÊNCIA TÉCNICA E EXTENSÃO RURAL - INCAPER_"
+        }
+      },
+      {
+        "source_record": 43,
+        "raw_cells": [
+          "Turiaçu Amazonas ",
+          "Abacaxi",
+          "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "202400055",
+          "57085",
+          "28/08/2024",
+          "28/08/2039",
+          "Daniel Leandro da Silva"
+        ],
+        "selection_reasons": [
+          "outer_whitespace:CULTIVAR"
+        ],
+        "expected": {
+          "cultivar": "Turiaçu Amazonas",
+          "nome_comum": "Abacaxi",
+          "nome_cientifico": "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202400055",
+          "nr_registro": "57085",
+          "data_registro": "2024-08-28",
+          "data_validade": "2039-08-28",
+          "mantenedor": "Daniel Leandro da Silva"
+        }
+      },
+      {
+        "source_record": 46,
+        "raw_cells": [
+          "",
+          "Abacaxi-roxo/Moisés-no-berço/Abacaxi-Tricolor-Rosa",
+          "Tradescantia spathacea Sw.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "",
+          "35589",
+          "30/05/2016",
+          "30/05/2031",
+          ""
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:ORNAMENTAIS"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Abacaxi-roxo/Moisés-no-berço/Abacaxi-Tricolor-Rosa",
+          "nome_cientifico": "Tradescantia spathacea Sw.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "35589",
+          "data_registro": "2016-05-30",
+          "data_validade": "2031-05-30",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 49,
+        "raw_cells": [
+          "",
+          "Abeto-alemão, norway spruce, abeto-da-noruega",
+          "Picea abies (L.) H. Karst.",
+          "FLORESTAIS",
+          "REGISTRADA",
+          "",
+          "39925",
+          "05/11/2018",
+          "05/11/2033",
+          ""
+        ],
+        "selection_reasons": [
+          "comma:NOME COMUM"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Abeto-alemão, norway spruce, abeto-da-noruega",
+          "nome_cientifico": "Picea abies (L.) H. Karst.",
+          "grupo": "FLORESTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "39925",
+          "data_registro": "2018-11-05",
+          "data_validade": "2033-11-05",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 75,
+        "raw_cells": [
+          "BRS Portuguesa",
+          "Abóbora",
+          "Cucurbita ficifolia Bouché",
+          "OLERÍCOLAS",
+          "REGISTRADA",
+          "",
+          "27836",
+          "21/02/2011",
+          "21/02/2041",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:OLERÍCOLAS"
+        ],
+        "expected": {
+          "cultivar": "BRS Portuguesa",
+          "nome_comum": "Abóbora",
+          "nome_cientifico": "Cucurbita ficifolia Bouché",
+          "grupo": "OLERÍCOLAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "27836",
+          "data_registro": "2011-02-21",
+          "data_validade": "2041-02-21",
+          "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        }
+      },
+      {
+        "source_record": 635,
+        "raw_cells": [
+          "",
+          "Abricó",
+          "Clusia spiritu-sanctensis G.Mariz & B.Weinberg",
+          "Outros",
+          "REGISTRADA",
+          "202200003",
+          "50609",
+          "10/01/2022",
+          "10/01/2037",
+          ""
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:Outros"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Abricó",
+          "nome_cientifico": "Clusia spiritu-sanctensis G.Mariz & B.Weinberg",
+          "grupo": "Outros",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202200003",
+          "nr_registro": "50609",
+          "data_registro": "2022-01-10",
+          "data_validade": "2037-01-10",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 663,
+        "raw_cells": [
+          "",
+          "Acálifa-variegata ",
+          "Acalypha variegata Rusby",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "202500235",
+          "60427",
+          "01/09/2025",
+          "01/09/2040",
+          ""
+        ],
+        "selection_reasons": [
+          "outer_whitespace:NOME COMUM"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Acálifa-variegata",
+          "nome_cientifico": "Acalypha variegata Rusby",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202500235",
+          "nr_registro": "60427",
+          "data_registro": "2025-09-01",
+          "data_validade": "2040-09-01",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 841,
+        "raw_cells": [
+          "99.2813-01",
+          "Ajania",
+          "Ajania pacifica (Nakai) K. Bremer & Humphries = Chrysanthemum pacificum Nakai ",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "",
+          "14313",
+          "07/02/2003",
+          "07/02/2033",
+          "Nicolaas Josef Schoenmaker e Outros"
+        ],
+        "selection_reasons": [
+          "outer_whitespace:NOME CIENTÍFICO"
+        ],
+        "expected": {
+          "cultivar": "99.2813-01",
+          "nome_comum": "Ajania",
+          "nome_cientifico": "Ajania pacifica (Nakai) K. Bremer & Humphries = Chrysanthemum pacificum Nakai",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "14313",
+          "data_registro": "2003-02-07",
+          "data_validade": "2033-02-07",
+          "mantenedor": "Nicolaas Josef Schoenmaker e Outros"
+        }
+      },
+      {
+        "source_record": 883,
+        "raw_cells": [
+          "",
+          "Alevante, levante",
+          "Mentha viridis (L.) L.",
+          "MEDICINAIS E AROMATICAS",
+          "REGISTRADA",
+          "202400153",
+          "57802",
+          "22/08/2024",
+          "22/08/2039",
+          ""
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:MEDICINAIS E AROMATICAS"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Alevante, levante",
+          "nome_cientifico": "Mentha viridis (L.) L.",
+          "grupo": "MEDICINAIS E AROMATICAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202400153",
+          "nr_registro": "57802",
+          "data_registro": "2024-08-22",
+          "data_validade": "2039-08-22",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 1483,
+        "raw_cells": [
+          "BS AL0202",
+          "Alface",
+          "Lactuca sativa var. capitata L.",
+          "OLERÍCOLAS",
+          "REGISTRADA",
+          "202500026",
+          "59156",
+          "28/02/2025",
+          "29/02/2040",
+          "BLUE SEEDS DO BRASIL PESQUISA, DESENVOLVIMENTO E COMÉRCIO LTDA"
+        ],
+        "selection_reasons": [
+          "leap_date:DATA DE VALIDADE DO REGISTRO"
+        ],
+        "expected": {
+          "cultivar": "BS AL0202",
+          "nome_comum": "Alface",
+          "nome_cientifico": "Lactuca sativa var. capitata L.",
+          "grupo": "OLERÍCOLAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202500026",
+          "nr_registro": "59156",
+          "data_registro": "2025-02-28",
+          "data_validade": "2040-02-29",
+          "mantenedor": "BLUE SEEDS DO BRASIL PESQUISA, DESENVOLVIMENTO E COMÉRCIO LTDA"
+        }
+      },
+      {
+        "source_record": 1552,
+        "raw_cells": [
+          "Alfafa",
+          "Alfafa",
+          "Medicago sativa L.",
+          "FORRAGEIRAS",
+          "REGISTRADA",
+          "",
+          "5230",
+          "19/06/2000",
+          "19/06/2030",
+          "AGRISTAR DO BRASIL LTDA"
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:FORRAGEIRAS"
+        ],
+        "expected": {
+          "cultivar": "Alfafa",
+          "nome_comum": "Alfafa",
+          "nome_cientifico": "Medicago sativa L.",
+          "grupo": "FORRAGEIRAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "5230",
+          "data_registro": "2000-06-19",
+          "data_validade": "2030-06-19",
+          "mantenedor": "AGRISTAR DO BRASIL LTDA"
+        }
+      },
+      {
+        "source_record": 1617,
+        "raw_cells": [
+          "1648 B2RF",
+          "Algodão",
+          "Gossypium hirsutum L.",
+          "GRANDES CULTURAS",
+          "REGISTRADA",
+          "",
+          "34850",
+          "23/11/2015",
+          "23/11/2030",
+          "FUNDAÇÃO DE APOIO À PESQUISA AGROPECUÁRIA DE MATO GROSSO - FUNDAÇÃO MT"
+        ],
+        "selection_reasons": [
+          "domain:GRUPO DA ESPÉCIE:GRANDES CULTURAS"
+        ],
+        "expected": {
+          "cultivar": "1648 B2RF",
+          "nome_comum": "Algodão",
+          "nome_cientifico": "Gossypium hirsutum L.",
+          "grupo": "GRANDES CULTURAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "34850",
+          "data_registro": "2015-11-23",
+          "data_validade": "2030-11-23",
+          "mantenedor": "FUNDAÇÃO DE APOIO À PESQUISA AGROPECUÁRIA DE MATO GROSSO - FUNDAÇÃO MT"
+        }
+      },
+      {
+        "source_record": 1696,
+        "raw_cells": [
+          "BRS 96",
+          "Algodão",
+          "Gossypium hirsutum L.",
+          "GRANDES CULTURAS",
+          "REGISTRADA",
+          "",
+          "12",
+          "30/09/1998",
+          "30/09/2028",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        ],
+        "selection_reasons": [
+          "minimum_date:DATA DO REGISTRO"
+        ],
+        "expected": {
+          "cultivar": "BRS 96",
+          "nome_comum": "Algodão",
+          "nome_cientifico": "Gossypium hirsutum L.",
+          "grupo": "GRANDES CULTURAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "12",
+          "data_registro": "1998-09-30",
+          "data_validade": "2028-09-30",
+          "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        }
+      },
+      {
+        "source_record": 1897,
+        "raw_cells": [
+          "CNPA ITA 90",
+          "Algodão",
+          "Gossypium hirsutum L. var. latifolium Hutch",
+          "GRANDES CULTURAS",
+          "REGISTRADA",
+          "",
+          "8",
+          "30/09/1998",
+          "30/09/2028",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        ],
+        "selection_reasons": [
+          "shortest_identifier:Nº REGISTRO"
+        ],
+        "expected": {
+          "cultivar": "CNPA ITA 90",
+          "nome_comum": "Algodão",
+          "nome_cientifico": "Gossypium hirsutum L. var. latifolium Hutch",
+          "grupo": "GRANDES CULTURAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "8",
+          "data_registro": "1998-09-30",
+          "data_validade": "2028-09-30",
+          "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        }
+      },
+      {
+        "source_record": 1931,
+        "raw_cells": [
+          "Alho porro",
+          "Alho-poró; Alho-porro",
+          "Allium porrum L.",
+          "OLERÍCOLAS",
+          "REGISTRADA",
+          "",
+          "3330",
+          "13/12/1999",
+          "13/12/2029",
+          "East-West Seed (Brasil) Ltda"
+        ],
+        "selection_reasons": [
+          "semicolon:NOME COMUM"
+        ],
+        "expected": {
+          "cultivar": "Alho porro",
+          "nome_comum": "Alho-poró; Alho-porro",
+          "nome_cientifico": "Allium porrum L.",
+          "grupo": "OLERÍCOLAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "3330",
+          "data_registro": "1999-12-13",
+          "data_validade": "2029-12-13",
+          "mantenedor": "East-West Seed (Brasil) Ltda"
+        }
+      },
+      {
+        "source_record": 2847,
+        "raw_cells": [
+          "de Caen MrFokker",
+          "Anêmona",
+          "Anemone coronaria L.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "202400067",
+          "57272",
+          "26/06/2024",
+          "26/06/2039",
+          "Sahira Comercio de Sementes, Flores e Plantas Naturais LTDA "
+        ],
+        "selection_reasons": [
+          "outer_whitespace:MANTENEDOR (REQUERENTE) (NOME)"
+        ],
+        "expected": {
+          "cultivar": "de Caen MrFokker",
+          "nome_comum": "Anêmona",
+          "nome_cientifico": "Anemone coronaria L.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202400067",
+          "nr_registro": "57272",
+          "data_registro": "2024-06-26",
+          "data_validade": "2039-06-26",
+          "mantenedor": "Sahira Comercio de Sementes, Flores e Plantas Naturais LTDA"
+        }
+      },
+      {
+        "source_record": 3279,
+        "raw_cells": [
+          "",
+          "Antúrio",
+          "Anthurium marcusianum Theófilo, L. Kollmann & Sakur.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "202600194",
+          "62912",
+          "29/06/2026",
+          "29/06/2041",
+          ""
+        ],
+        "selection_reasons": [
+          "comma:NOME CIENTÍFICO"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Antúrio",
+          "nome_cientifico": "Anthurium marcusianum Theófilo, L. Kollmann & Sakur.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202600194",
+          "nr_registro": "62912",
+          "data_registro": "2026-06-29",
+          "data_validade": "2041-06-29",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 3953,
+        "raw_cells": [
+          "Koch, cv. São Carlos",
+          "Aveia, aveia-amarela, aveia-branca",
+          "Avena sativa L.",
+          "GRANDES CULTURAS",
+          "REGISTRADA",
+          "",
+          "5883",
+          "12/07/2000",
+          "12/07/2030",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        ],
+        "selection_reasons": [
+          "comma:CULTIVAR"
+        ],
+        "expected": {
+          "cultivar": "Koch, cv. São Carlos",
+          "nome_comum": "Aveia, aveia-amarela, aveia-branca",
+          "nome_cientifico": "Avena sativa L.",
+          "grupo": "GRANDES CULTURAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "5883",
+          "data_registro": "2000-07-12",
+          "data_validade": "2030-07-12",
+          "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        }
+      },
+      {
+        "source_record": 8020,
+        "raw_cells": [
+          "Edobeni",
+          "Cenoura",
+          "Daucus carota L.",
+          "OLERÍCOLAS",
+          "REGISTRADA",
+          "202100135",
+          "48424",
+          "12/08/2021",
+          "12/08/2036",
+          "NAKAGAMI & CKC DO BRASIL DISTRIBUIDORA, IMPORTADORA E EXPORTADORA DE SEMENTES E MATERIAIS AGRICOLAS LTDA."
+        ],
+        "selection_reasons": [
+          "longest_composite:MANTENEDOR (REQUERENTE) (NOME)"
+        ],
+        "expected": {
+          "cultivar": "Edobeni",
+          "nome_comum": "Cenoura",
+          "nome_cientifico": "Daucus carota L.",
+          "grupo": "OLERÍCOLAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202100135",
+          "nr_registro": "48424",
+          "data_registro": "2021-08-12",
+          "data_validade": "2036-08-12",
+          "mantenedor": "NAKAGAMI & CKC DO BRASIL DISTRIBUIDORA, IMPORTADORA E EXPORTADORA DE SEMENTES E MATERIAIS AGRICOLAS LTDA."
+        }
+      },
+      {
+        "source_record": 9859,
+        "raw_cells": [
+          " ARTISTIC DARK PINK",
+          "Crisântemo/Crisântemo-da-China",
+          "Chrysanthemum ×morifolium Ramat. = Dendranthema ×morifolium (Ramat.) Tzvelev; Dendranthema ×grandiflorum (Ramat.) Kitam.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "202400267",
+          "58607",
+          "03/12/2024",
+          "03/12/2039",
+          "Nicolaas Josef Schoenmaker e Outros"
+        ],
+        "selection_reasons": [
+          "semicolon:NOME CIENTÍFICO"
+        ],
+        "expected": {
+          "cultivar": "ARTISTIC DARK PINK",
+          "nome_comum": "Crisântemo/Crisântemo-da-China",
+          "nome_cientifico": "Chrysanthemum ×morifolium Ramat. = Dendranthema ×morifolium (Ramat.) Tzvelev; Dendranthema ×grandiflorum (Ramat.) Kitam.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202400267",
+          "nr_registro": "58607",
+          "data_registro": "2024-12-03",
+          "data_validade": "2039-12-03",
+          "mantenedor": "Nicolaas Josef Schoenmaker e Outros"
+        }
+      },
+      {
+        "source_record": 12487,
+        "raw_cells": [
+          "FV 02",
+          "Feijão",
+          "Phaseolus vulgaris L.",
+          "GRANDES CULTURAS",
+          "REGISTRADA",
+          "",
+          "26148",
+          "09/09/2011",
+          "09/09/2026",
+          "AGRISTAR DO BRASIL LTDA"
+        ],
+        "selection_reasons": [
+          "minimum_date:DATA DE VALIDADE DO REGISTRO"
+        ],
+        "expected": {
+          "cultivar": "FV 02",
+          "nome_comum": "Feijão",
+          "nome_cientifico": "Phaseolus vulgaris L.",
+          "grupo": "GRANDES CULTURAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "26148",
+          "data_registro": "2011-09-09",
+          "data_validade": "2026-09-09",
+          "mantenedor": "AGRISTAR DO BRASIL LTDA"
+        }
+      },
+      {
+        "source_record": 14908,
+        "raw_cells": [
+          "Sunny Cities \"Cordoba\"",
+          "Hibisco/Mimo-chinês",
+          "Hibiscus rosa-sinensis L.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "",
+          "10024",
+          "18/04/2001",
+          "18/04/2031",
+          "REINALDO THEODORUS MARIA VERNOOY"
+        ],
+        "selection_reasons": [
+          "quote:CULTIVAR"
+        ],
+        "expected": {
+          "cultivar": "Sunny Cities \"Cordoba\"",
+          "nome_comum": "Hibisco/Mimo-chinês",
+          "nome_cientifico": "Hibiscus rosa-sinensis L.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "10024",
+          "data_registro": "2001-04-18",
+          "data_validade": "2031-04-18",
+          "mantenedor": "REINALDO THEODORUS MARIA VERNOOY"
+        }
+      },
+      {
+        "source_record": 24899,
+        "raw_cells": [
+          "",
+          "Mogno-africano-do-leste, Mogno-branco",
+          "Khaya anthotheca (Welw.) C. DC.",
+          "FLORESTAIS",
+          "REGISTRADA",
+          "",
+          "28715",
+          "06/09/2011",
+          "06/09/2041",
+          ""
+        ],
+        "selection_reasons": [
+          "maximum_date:DATA DE VALIDADE DO REGISTRO"
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Mogno-africano-do-leste, Mogno-branco",
+          "nome_cientifico": "Khaya anthotheca (Welw.) C. DC.",
+          "grupo": "FLORESTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "28715",
+          "data_registro": "2011-09-06",
+          "data_validade": "2041-09-06",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record": 36471,
+        "raw_cells": [
+          "Martyno",
+          "Tomate/Tomate-rasteiro",
+          "Solanum lycopersicum L. = Lycopersicon esculentum Mill.",
+          "OLERÍCOLAS",
+          "REGISTRADA",
+          "202600275",
+          "63222",
+          "04/09/2026",
+          "04/09/2041",
+          "AGRISTAR DO BRASIL LTDA"
+        ],
+        "selection_reasons": [
+          "maximum_date:DATA DO REGISTRO"
+        ],
+        "expected": {
+          "cultivar": "Martyno",
+          "nome_comum": "Tomate/Tomate-rasteiro",
+          "nome_cientifico": "Solanum lycopersicum L. = Lycopersicon esculentum Mill.",
+          "grupo": "OLERÍCOLAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202600275",
+          "nr_registro": "63222",
+          "data_registro": "2026-09-04",
+          "data_validade": "2041-09-04",
+          "mantenedor": "AGRISTAR DO BRASIL LTDA"
+        }
+      },
+      {
+        "source_record": 38335,
+        "raw_cells": [
+          "Zinnita Yellow",
+          "Zinia, capitão, moça-e-velha",
+          "Zinnia elegans Jacq.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "",
+          "17187",
+          "11/12/2003",
+          "11/12/2033",
+          "SEMENTES VAN LEEUWEN LTDA"
+        ],
+        "selection_reasons": [
+          "last_record"
+        ],
+        "expected": {
+          "cultivar": "Zinnita Yellow",
+          "nome_comum": "Zinia, capitão, moça-e-velha",
+          "nome_cientifico": "Zinnia elegans Jacq.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "17187",
+          "data_registro": "2003-12-11",
+          "data_validade": "2033-12-11",
+          "mantenedor": "SEMENTES VAN LEEUWEN LTDA"
+        }
+      }
+    ],
+    "rows": [
+      {
+        "cultivar": "Bonella",
+        "nome_comum": "Abacate",
+        "nome_cientifico": "Persea americana Mill.",
+        "grupo": "FRUTÍFERAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "201900091",
+        "nr_registro": "42039",
+        "data_registro": "2019-08-27",
+        "data_validade": "2034-08-27",
+        "mantenedor": "José Alcides Bonella"
+      },
+      {
+        "cultivar": "Breda",
+        "nome_comum": "Abacate",
+        "nome_cientifico": "Persea americana Mill.",
+        "grupo": "FRUTÍFERAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "3489",
+        "data_registro": "1999-12-16",
+        "data_validade": "2029-12-16",
+        "mantenedor": "INSTITUTO AGRONÔMICO - IAC"
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Abacate-do-mato",
+        "nome_cientifico": "Tontelea passiflora (Vell.) Lombardi.",
+        "grupo": "FLORESTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202200128",
+        "nr_registro": "51773",
+        "data_registro": "2022-08-02",
+        "data_validade": "2037-08-02",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "BRS RBO",
+        "nome_comum": "Abacaxi",
+        "nome_cientifico": "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+        "grupo": "FRUTÍFERAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "34943",
+        "data_registro": "2016-02-29",
+        "data_validade": "2031-02-28",
+        "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+      },
+      {
+        "cultivar": "BRS Vitória",
+        "nome_comum": "Abacaxi",
+        "nome_cientifico": "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+        "grupo": "FRUTÍFERAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "21461",
+        "data_registro": "2007-04-16",
+        "data_validade": "2037-04-16",
+        "mantenedor": "INSTITUTO CAPIXABA DE PESQUISA, ASSISTÊNCIA TÉCNICA E EXTENSÃO RURAL - INCAPER_"
+      },
+      {
+        "cultivar": "Turiaçu Amazonas",
+        "nome_comum": "Abacaxi",
+        "nome_cientifico": "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+        "grupo": "FRUTÍFERAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202400055",
+        "nr_registro": "57085",
+        "data_registro": "2024-08-28",
+        "data_validade": "2039-08-28",
+        "mantenedor": "Daniel Leandro da Silva"
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Abacaxi-roxo/Moisés-no-berço/Abacaxi-Tricolor-Rosa",
+        "nome_cientifico": "Tradescantia spathacea Sw.",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "35589",
+        "data_registro": "2016-05-30",
+        "data_validade": "2031-05-30",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Abeto-alemão, norway spruce, abeto-da-noruega",
+        "nome_cientifico": "Picea abies (L.) H. Karst.",
+        "grupo": "FLORESTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "39925",
+        "data_registro": "2018-11-05",
+        "data_validade": "2033-11-05",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "BRS Portuguesa",
+        "nome_comum": "Abóbora",
+        "nome_cientifico": "Cucurbita ficifolia Bouché",
+        "grupo": "OLERÍCOLAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "27836",
+        "data_registro": "2011-02-21",
+        "data_validade": "2041-02-21",
+        "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Abricó",
+        "nome_cientifico": "Clusia spiritu-sanctensis G.Mariz & B.Weinberg",
+        "grupo": "Outros",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202200003",
+        "nr_registro": "50609",
+        "data_registro": "2022-01-10",
+        "data_validade": "2037-01-10",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Acálifa-variegata",
+        "nome_cientifico": "Acalypha variegata Rusby",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202500235",
+        "nr_registro": "60427",
+        "data_registro": "2025-09-01",
+        "data_validade": "2040-09-01",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "99.2813-01",
+        "nome_comum": "Ajania",
+        "nome_cientifico": "Ajania pacifica (Nakai) K. Bremer & Humphries = Chrysanthemum pacificum Nakai",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "14313",
+        "data_registro": "2003-02-07",
+        "data_validade": "2033-02-07",
+        "mantenedor": "Nicolaas Josef Schoenmaker e Outros"
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Alevante, levante",
+        "nome_cientifico": "Mentha viridis (L.) L.",
+        "grupo": "MEDICINAIS E AROMATICAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202400153",
+        "nr_registro": "57802",
+        "data_registro": "2024-08-22",
+        "data_validade": "2039-08-22",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "BS AL0202",
+        "nome_comum": "Alface",
+        "nome_cientifico": "Lactuca sativa var. capitata L.",
+        "grupo": "OLERÍCOLAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202500026",
+        "nr_registro": "59156",
+        "data_registro": "2025-02-28",
+        "data_validade": "2040-02-29",
+        "mantenedor": "BLUE SEEDS DO BRASIL PESQUISA, DESENVOLVIMENTO E COMÉRCIO LTDA"
+      },
+      {
+        "cultivar": "Alfafa",
+        "nome_comum": "Alfafa",
+        "nome_cientifico": "Medicago sativa L.",
+        "grupo": "FORRAGEIRAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "5230",
+        "data_registro": "2000-06-19",
+        "data_validade": "2030-06-19",
+        "mantenedor": "AGRISTAR DO BRASIL LTDA"
+      },
+      {
+        "cultivar": "1648 B2RF",
+        "nome_comum": "Algodão",
+        "nome_cientifico": "Gossypium hirsutum L.",
+        "grupo": "GRANDES CULTURAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "34850",
+        "data_registro": "2015-11-23",
+        "data_validade": "2030-11-23",
+        "mantenedor": "FUNDAÇÃO DE APOIO À PESQUISA AGROPECUÁRIA DE MATO GROSSO - FUNDAÇÃO MT"
+      },
+      {
+        "cultivar": "BRS 96",
+        "nome_comum": "Algodão",
+        "nome_cientifico": "Gossypium hirsutum L.",
+        "grupo": "GRANDES CULTURAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "12",
+        "data_registro": "1998-09-30",
+        "data_validade": "2028-09-30",
+        "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+      },
+      {
+        "cultivar": "CNPA ITA 90",
+        "nome_comum": "Algodão",
+        "nome_cientifico": "Gossypium hirsutum L. var. latifolium Hutch",
+        "grupo": "GRANDES CULTURAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "8",
+        "data_registro": "1998-09-30",
+        "data_validade": "2028-09-30",
+        "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+      },
+      {
+        "cultivar": "Alho porro",
+        "nome_comum": "Alho-poró; Alho-porro",
+        "nome_cientifico": "Allium porrum L.",
+        "grupo": "OLERÍCOLAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "3330",
+        "data_registro": "1999-12-13",
+        "data_validade": "2029-12-13",
+        "mantenedor": "East-West Seed (Brasil) Ltda"
+      },
+      {
+        "cultivar": "de Caen MrFokker",
+        "nome_comum": "Anêmona",
+        "nome_cientifico": "Anemone coronaria L.",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202400067",
+        "nr_registro": "57272",
+        "data_registro": "2024-06-26",
+        "data_validade": "2039-06-26",
+        "mantenedor": "Sahira Comercio de Sementes, Flores e Plantas Naturais LTDA"
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Antúrio",
+        "nome_cientifico": "Anthurium marcusianum Theófilo, L. Kollmann & Sakur.",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202600194",
+        "nr_registro": "62912",
+        "data_registro": "2026-06-29",
+        "data_validade": "2041-06-29",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "Koch, cv. São Carlos",
+        "nome_comum": "Aveia, aveia-amarela, aveia-branca",
+        "nome_cientifico": "Avena sativa L.",
+        "grupo": "GRANDES CULTURAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "5883",
+        "data_registro": "2000-07-12",
+        "data_validade": "2030-07-12",
+        "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+      },
+      {
+        "cultivar": "Edobeni",
+        "nome_comum": "Cenoura",
+        "nome_cientifico": "Daucus carota L.",
+        "grupo": "OLERÍCOLAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202100135",
+        "nr_registro": "48424",
+        "data_registro": "2021-08-12",
+        "data_validade": "2036-08-12",
+        "mantenedor": "NAKAGAMI & CKC DO BRASIL DISTRIBUIDORA, IMPORTADORA E EXPORTADORA DE SEMENTES E MATERIAIS AGRICOLAS LTDA."
+      },
+      {
+        "cultivar": "ARTISTIC DARK PINK",
+        "nome_comum": "Crisântemo/Crisântemo-da-China",
+        "nome_cientifico": "Chrysanthemum ×morifolium Ramat. = Dendranthema ×morifolium (Ramat.) Tzvelev; Dendranthema ×grandiflorum (Ramat.) Kitam.",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202400267",
+        "nr_registro": "58607",
+        "data_registro": "2024-12-03",
+        "data_validade": "2039-12-03",
+        "mantenedor": "Nicolaas Josef Schoenmaker e Outros"
+      },
+      {
+        "cultivar": "FV 02",
+        "nome_comum": "Feijão",
+        "nome_cientifico": "Phaseolus vulgaris L.",
+        "grupo": "GRANDES CULTURAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "26148",
+        "data_registro": "2011-09-09",
+        "data_validade": "2026-09-09",
+        "mantenedor": "AGRISTAR DO BRASIL LTDA"
+      },
+      {
+        "cultivar": "Sunny Cities \"Cordoba\"",
+        "nome_comum": "Hibisco/Mimo-chinês",
+        "nome_cientifico": "Hibiscus rosa-sinensis L.",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "10024",
+        "data_registro": "2001-04-18",
+        "data_validade": "2031-04-18",
+        "mantenedor": "REINALDO THEODORUS MARIA VERNOOY"
+      },
+      {
+        "cultivar": "",
+        "nome_comum": "Mogno-africano-do-leste, Mogno-branco",
+        "nome_cientifico": "Khaya anthotheca (Welw.) C. DC.",
+        "grupo": "FLORESTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "28715",
+        "data_registro": "2011-09-06",
+        "data_validade": "2041-09-06",
+        "mantenedor": ""
+      },
+      {
+        "cultivar": "Martyno",
+        "nome_comum": "Tomate/Tomate-rasteiro",
+        "nome_cientifico": "Solanum lycopersicum L. = Lycopersicon esculentum Mill.",
+        "grupo": "OLERÍCOLAS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "202600275",
+        "nr_registro": "63222",
+        "data_registro": "2026-09-04",
+        "data_validade": "2041-09-04",
+        "mantenedor": "AGRISTAR DO BRASIL LTDA"
+      },
+      {
+        "cultivar": "Zinnita Yellow",
+        "nome_comum": "Zinia, capitão, moça-e-velha",
+        "nome_cientifico": "Zinnia elegans Jacq.",
+        "grupo": "ORNAMENTAIS",
+        "situacao": "REGISTRADA",
+        "nr_formulario": "",
+        "nr_registro": "17187",
+        "data_registro": "2003-12-11",
+        "data_validade": "2033-12-11",
+        "mantenedor": "SEMENTES VAN LEEUWEN LTDA"
+      }
+    ],
+    "source_rows": 38335,
+    "subset_rows": 29,
+    "source_csv_sha256": "0d531781ae8a1b3caa4a2198b4029244cb055b70ac64738a793c46947eb7a689",
+    "normalization": "Text uses str.strip and retains empty strings. Date values use ISO date strings, None only for empty dates or the exact published end condition; end text preserves its trimmed source literal."
+  },
+  "protegidas": {
+    "source_header": [
+      "CULTIVAR",
+      "NOME CIENTÍFICO",
+      "NOME COMUM",
+      "Nº PROCESSO",
+      "SITUAÇÃO",
+      "Nº CERTIFICADO",
+      "INÍCIO DA PROTEÇÃO",
+      "TÉRMINO DA PROTEÇÃO",
+      "TITULAR (NOME)",
+      "REPRESENANTE LEGAL (NOME) ",
+      "MELHORISTAS"
+    ],
+    "columns": [
+      "cultivar",
+      "nome_cientifico",
+      "nome_comum",
+      "nr_processo",
+      "situacao",
+      "nr_certificado",
+      "inicio_protecao",
+      "termino_protecao",
+      "titular",
+      "representante_legal",
+      "melhoristas",
+      "termino_protecao_texto"
+    ],
+    "records": [
+      {
+        "source_record": 1,
+        "raw_cells": [
+          "Adalgiza",
+          "Persea americana Mill. (frutífera)",
+          "Abacate",
+          "21806.000202/2014",
+          "PROTEÇÃO DEFINITIVA",
+          "20170031",
+          "08/08/2016",
+          "08/08/2034",
+          "HELIO HILTON REZENDE",
+          "Gabriel de Oliveira Rezende",
+          ""
+        ],
+        "selection_reasons": [
+          "domain:SITUAÇÃO:PROTEÇÃO DEFINITIVA",
+          "empty:MELHORISTAS",
+          "first_record",
+          "shortest_identifier:Nº PROCESSO"
+        ],
+        "expected": {
+          "cultivar": "Adalgiza",
+          "nome_cientifico": "Persea americana Mill. (frutífera)",
+          "nome_comum": "Abacate",
+          "nr_processo": "21806.000202/2014",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20170031",
+          "inicio_protecao": "2016-08-08",
+          "termino_protecao": "2034-08-08",
+          "titular": "HELIO HILTON REZENDE",
+          "representante_legal": "Gabriel de Oliveira Rezende",
+          "melhoristas": "",
+          "termino_protecao_texto": "08/08/2034"
+        }
+      },
+      {
+        "source_record": 2,
+        "raw_cells": [
+          "Bonella",
+          "Persea americana Mill. (frutífera)",
+          "Abacate",
+          "21806.000122/2019",
+          "PROTEÇÃO CANCELADA",
+          "20200133",
+          "30/12/2019",
+          "25/11/2025",
+          "José Alcides Bonella",
+          "José Alcides Bonella ",
+          ""
+        ],
+        "selection_reasons": [
+          "domain:SITUAÇÃO:PROTEÇÃO CANCELADA",
+          "outer_whitespace:REPRESENANTE LEGAL (NOME) "
+        ],
+        "expected": {
+          "cultivar": "Bonella",
+          "nome_cientifico": "Persea americana Mill. (frutífera)",
+          "nome_comum": "Abacate",
+          "nr_processo": "21806.000122/2019",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "20200133",
+          "inicio_protecao": "2019-12-30",
+          "termino_protecao": "2025-11-25",
+          "titular": "José Alcides Bonella",
+          "representante_legal": "José Alcides Bonella",
+          "melhoristas": "",
+          "termino_protecao_texto": "25/11/2025"
+        }
+      },
+      {
+        "source_record": 4,
+        "raw_cells": [
+          "BRS Imperial",
+          "Ananas comosus (L.) Merr.",
+          "ABACAXI",
+          "21806.001390/2003",
+          "PROTEÇÃO EXPIRADA POR PRAZO",
+          "566",
+          "11/03/2004",
+          "11/03/2019",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "ISABEL CRISTINA VINHAL FREITAS",
+          "José Renato Santos Cabral; ARISTOTELES PIRES DE MATOS_"
+        ],
+        "selection_reasons": [
+          "domain:SITUAÇÃO:PROTEÇÃO EXPIRADA POR PRAZO",
+          "semicolon:MELHORISTAS",
+          "semicolon:TITULAR (NOME)"
+        ],
+        "expected": {
+          "cultivar": "BRS Imperial",
+          "nome_cientifico": "Ananas comosus (L.) Merr.",
+          "nome_comum": "ABACAXI",
+          "nr_processo": "21806.001390/2003",
+          "situacao": "PROTEÇÃO EXPIRADA POR PRAZO",
+          "nr_certificado": "566",
+          "inicio_protecao": "2004-03-11",
+          "termino_protecao": "2019-03-11",
+          "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+          "melhoristas": "José Renato Santos Cabral; ARISTOTELES PIRES DE MATOS_",
+          "termino_protecao_texto": "11/03/2019"
+        }
+      },
+      {
+        "source_record": 5,
+        "raw_cells": [
+          "Dole 14",
+          "Ananas comosus (L.) Merr.",
+          "ABACAXI",
+          "21806.000094/2009",
+          "PROTEÇÃO CANCELADA",
+          "20120152",
+          "31/01/2012",
+          "06/02/2023",
+          "RENAISSANCE CAPITAL CORPORATION; RENAISSANCE CAPITAL CORPORATION",
+          "DI BLASI, PARENTE & ADVOGADOS ASSOCIADOS",
+          "JORGE GONZALES_; ROBERTO YOUNG_"
+        ],
+        "selection_reasons": [
+          "comma:REPRESENANTE LEGAL (NOME) "
+        ],
+        "expected": {
+          "cultivar": "Dole 14",
+          "nome_cientifico": "Ananas comosus (L.) Merr.",
+          "nome_comum": "ABACAXI",
+          "nr_processo": "21806.000094/2009",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "20120152",
+          "inicio_protecao": "2012-01-31",
+          "termino_protecao": "2023-02-06",
+          "titular": "RENAISSANCE CAPITAL CORPORATION; RENAISSANCE CAPITAL CORPORATION",
+          "representante_legal": "DI BLASI, PARENTE & ADVOGADOS ASSOCIADOS",
+          "melhoristas": "JORGE GONZALES_; ROBERTO YOUNG_",
+          "termino_protecao_texto": "06/02/2023"
+        }
+      },
+      {
+        "source_record": 18,
+        "raw_cells": [
+          "AF 3918",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000272/2011",
+          "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "20120161",
+          "02/02/2012",
+          "20/09/2022",
+          "SAKATA SEED SUDAMERICA LTDA",
+          "ROMULO FUJITO KOBORI",
+          "ANIELLO ANTONIO CUTOLO FILHO"
+        ],
+        "selection_reasons": [
+          "domain:SITUAÇÃO:PROTEÇÃO EXTINTA POR RENÚNCIA"
+        ],
+        "expected": {
+          "cultivar": "AF 3918",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000272/2011",
+          "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "nr_certificado": "20120161",
+          "inicio_protecao": "2012-02-02",
+          "termino_protecao": "2022-09-20",
+          "titular": "SAKATA SEED SUDAMERICA LTDA",
+          "representante_legal": "ROMULO FUJITO KOBORI",
+          "melhoristas": "ANIELLO ANTONIO CUTOLO FILHO",
+          "termino_protecao_texto": "20/09/2022"
+        }
+      },
+      {
+        "source_record": 30,
+        "raw_cells": [
+          "AF9708",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000132/2019",
+          "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "20190277",
+          "23/10/2019",
+          "até a emissão do certificado definitivo",
+          "SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA",
+          "ROMULO FUJITO KOBORI",
+          "Felipe Mikio Arashida; KÁTIA REGIANE BRUNELLI BRAGA; ANIELLO ANTONIO CUTOLO FILHO"
+        ],
+        "selection_reasons": [
+          "complete_certificate_pair:20190277",
+          "official_non_date_condition"
+        ],
+        "expected": {
+          "cultivar": "AF9708",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000132/2019",
+          "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "nr_certificado": "20190277",
+          "inicio_protecao": "2019-10-23",
+          "termino_protecao": null,
+          "titular": "SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA",
+          "representante_legal": "ROMULO FUJITO KOBORI",
+          "melhoristas": "Felipe Mikio Arashida; KÁTIA REGIANE BRUNELLI BRAGA; ANIELLO ANTONIO CUTOLO FILHO",
+          "termino_protecao_texto": "até a emissão do certificado definitivo"
+        }
+      },
+      {
+        "source_record": 56,
+        "raw_cells": [
+          "Duplex",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000206/2012",
+          "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "20140137",
+          "14/03/2014",
+          "16/06/2015",
+          "RIJK ZWAAN ZAADTEELT EN ZAADHANDEL B. V.",
+          "CULTIVAR PROTECTION LTDA.",
+          "Kees Reinink "
+        ],
+        "selection_reasons": [
+          "outer_whitespace:MELHORISTAS"
+        ],
+        "expected": {
+          "cultivar": "Duplex",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000206/2012",
+          "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "nr_certificado": "20140137",
+          "inicio_protecao": "2014-03-14",
+          "termino_protecao": "2015-06-16",
+          "titular": "RIJK ZWAAN ZAADTEELT EN ZAADHANDEL B. V.",
+          "representante_legal": "CULTIVAR PROTECTION LTDA.",
+          "melhoristas": "Kees Reinink",
+          "termino_protecao_texto": "16/06/2015"
+        }
+      },
+      {
+        "source_record": 69,
+        "raw_cells": [
+          "Glendana ",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000313/2014",
+          "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "20160173",
+          "11/03/2016",
+          "01/03/2019",
+          "ENZA ZADEN BEHEER B. V.; ENZA ZADEN BEHEER B. V.",
+          "CULTIVAR PROTECTION LTDA.",
+          "STEVEN MITCHELL; DANIEL TRIMBOLI"
+        ],
+        "selection_reasons": [
+          "outer_whitespace:CULTIVAR"
+        ],
+        "expected": {
+          "cultivar": "Glendana",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000313/2014",
+          "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "nr_certificado": "20160173",
+          "inicio_protecao": "2016-03-11",
+          "termino_protecao": "2019-03-01",
+          "titular": "ENZA ZADEN BEHEER B. V.; ENZA ZADEN BEHEER B. V.",
+          "representante_legal": "CULTIVAR PROTECTION LTDA.",
+          "melhoristas": "STEVEN MITCHELL; DANIEL TRIMBOLI",
+          "termino_protecao_texto": "01/03/2019"
+        }
+      },
+      {
+        "source_record": 74,
+        "raw_cells": [
+          "Hadar",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000145/2017",
+          "PROTEÇÃO CANCELADA",
+          "20180120",
+          "23/10/2017",
+          "",
+          "TSV SEMENTES DE VEGETAIS LTDA.",
+          "DIRCEU SCHMAEDECKE_",
+          "Osvânder David de Melo"
+        ],
+        "selection_reasons": [
+          "empty:TÉRMINO DA PROTEÇÃO",
+          "empty_protection_end"
+        ],
+        "expected": {
+          "cultivar": "Hadar",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000145/2017",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "20180120",
+          "inicio_protecao": "2017-10-23",
+          "termino_protecao": null,
+          "titular": "TSV SEMENTES DE VEGETAIS LTDA.",
+          "representante_legal": "DIRCEU SCHMAEDECKE_",
+          "melhoristas": "Osvânder David de Melo",
+          "termino_protecao_texto": ""
+        }
+      },
+      {
+        "source_record": 123,
+        "raw_cells": [
+          "TE 70",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000021/2013",
+          "PROTEÇÃO CANCELADA",
+          "20140087",
+          "31/10/2013",
+          "",
+          "TSV SEMENTES DE VEGETAIS LTDA.",
+          "DIRCEU SCHMAEDECKE_",
+          "Gabriel Macarenhas Maciel"
+        ],
+        "selection_reasons": [
+          "empty_protection_end"
+        ],
+        "expected": {
+          "cultivar": "TE 70",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000021/2013",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "20140087",
+          "inicio_protecao": "2013-10-31",
+          "termino_protecao": null,
+          "titular": "TSV SEMENTES DE VEGETAIS LTDA.",
+          "representante_legal": "DIRCEU SCHMAEDECKE_",
+          "melhoristas": "Gabriel Macarenhas Maciel",
+          "termino_protecao_texto": ""
+        }
+      },
+      {
+        "source_record": 147,
+        "raw_cells": [
+          "2221B3XF",
+          "Gossypium hirsutum L.",
+          "ALGODÃO",
+          "21806.000210/2025",
+          "PROTEÇÃO PROVISÓRIA",
+          "20260093",
+          "21/05/2026",
+          "até a emissão do certificado definitivo",
+          "TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.",
+          "JULIANA GONçALVES JAMUS",
+          "Pedro Henrique Araújo Diniz Santos; Tiago Adalberto  de Oliveira Franco Rossetto; EDUARDO MASAKAZU KAWAKAMI_; PAULO HUGO AGUIAR"
+        ],
+        "selection_reasons": [
+          "complete_certificate_pair:20260093",
+          "domain:SITUAÇÃO:PROTEÇÃO PROVISÓRIA"
+        ],
+        "expected": {
+          "cultivar": "2221B3XF",
+          "nome_cientifico": "Gossypium hirsutum L.",
+          "nome_comum": "ALGODÃO",
+          "nr_processo": "21806.000210/2025",
+          "situacao": "PROTEÇÃO PROVISÓRIA",
+          "nr_certificado": "20260093",
+          "inicio_protecao": "2026-05-21",
+          "termino_protecao": null,
+          "titular": "TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.",
+          "representante_legal": "JULIANA GONçALVES JAMUS",
+          "melhoristas": "Pedro Henrique Araújo Diniz Santos; Tiago Adalberto  de Oliveira Franco Rossetto; EDUARDO MASAKAZU KAWAKAMI_; PAULO HUGO AGUIAR",
+          "termino_protecao_texto": "até a emissão do certificado definitivo"
+        }
+      },
+      {
+        "source_record": 214,
+        "raw_cells": [
+          "CD 401",
+          "Gossypium hirsutum L.",
+          "ALGODÃO",
+          "21806.000012/1998",
+          "PROTEÇÃO EXPIRADA POR PRAZO",
+          "9",
+          "04/05/1998",
+          "04/05/2013",
+          "INSTITUTO MATO-GROSSENSE DO ALGODÃO - IMAMT; INSTITUTO MATO-GROSSENSE DO ALGODÃO - IMAMT",
+          "ALVARO LORENÇO ORTOLAN SALLES",
+          "JEAN LOUIS BELOT_; DELANO MARCUS COUTINHO GONDIN_"
+        ],
+        "selection_reasons": [
+          "shortest_identifier:Nº CERTIFICADO"
+        ],
+        "expected": {
+          "cultivar": "CD 401",
+          "nome_cientifico": "Gossypium hirsutum L.",
+          "nome_comum": "ALGODÃO",
+          "nr_processo": "21806.000012/1998",
+          "situacao": "PROTEÇÃO EXPIRADA POR PRAZO",
+          "nr_certificado": "9",
+          "inicio_protecao": "1998-05-04",
+          "termino_protecao": "2013-05-04",
+          "titular": "INSTITUTO MATO-GROSSENSE DO ALGODÃO - IMAMT; INSTITUTO MATO-GROSSENSE DO ALGODÃO - IMAMT",
+          "representante_legal": "ALVARO LORENÇO ORTOLAN SALLES",
+          "melhoristas": "JEAN LOUIS BELOT_; DELANO MARCUS COUTINHO GONDIN_",
+          "termino_protecao_texto": "04/05/2013"
+        }
+      },
+      {
+        "source_record": 231,
+        "raw_cells": [
+          "Delta Opal",
+          "Gossypium hirsutum L.",
+          "ALGODÃO",
+          "21806.000024/1999",
+          "PROTEÇÃO NULA",
+          "178",
+          "29/02/2000",
+          "08/10/2013",
+          "DELTA & PINE LAND TECHNOLOGY HOLDING COMPANY, LLC.",
+          "MARIA ARMINDA ORTIZ CIPRANDI GRAZZIOTIN",
+          "RICHARD LESKE"
+        ],
+        "selection_reasons": [
+          "comma:TITULAR (NOME)",
+          "domain:SITUAÇÃO:PROTEÇÃO NULA",
+          "leap_date:INÍCIO DA PROTEÇÃO"
+        ],
+        "expected": {
+          "cultivar": "Delta Opal",
+          "nome_cientifico": "Gossypium hirsutum L.",
+          "nome_comum": "ALGODÃO",
+          "nr_processo": "21806.000024/1999",
+          "situacao": "PROTEÇÃO NULA",
+          "nr_certificado": "178",
+          "inicio_protecao": "2000-02-29",
+          "termino_protecao": "2013-10-08",
+          "titular": "DELTA & PINE LAND TECHNOLOGY HOLDING COMPANY, LLC.",
+          "representante_legal": "MARIA ARMINDA ORTIZ CIPRANDI GRAZZIOTIN",
+          "melhoristas": "RICHARD LESKE",
+          "termino_protecao_texto": "08/10/2013"
+        }
+      },
+      {
+        "source_record": 604,
+        "raw_cells": [
+          "BRS Primavera",
+          "Oryza sativa L.",
+          "ARROZ",
+          "21806.000097/1998",
+          "PROTEÇÃO CANCELADA",
+          "66",
+          "03/02/1999",
+          "27/09/2000",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "ISABEL CRISTINA VINHAL FREITAS",
+          "EVALDO PACHECO SANT'ANA_; Flávio Breseghello; Orlando Peixoto de Morais; ERICH COLLICCHIO_; José Almeida Pereira; JOB CARNEIRO WANDERLEY_; REINALDO BAZONI_; DIOGENES MANOEL PEDROSA DE AZEVEDO; Francisco Pereira Moura Neto; Emílio da Maia de Castro"
+        ],
+        "selection_reasons": [
+          "minimum_date:TÉRMINO DA PROTEÇÃO"
+        ],
+        "expected": {
+          "cultivar": "BRS Primavera",
+          "nome_cientifico": "Oryza sativa L.",
+          "nome_comum": "ARROZ",
+          "nr_processo": "21806.000097/1998",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "66",
+          "inicio_protecao": "1999-02-03",
+          "termino_protecao": "2000-09-27",
+          "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+          "melhoristas": "EVALDO PACHECO SANT'ANA_; Flávio Breseghello; Orlando Peixoto de Morais; ERICH COLLICCHIO_; José Almeida Pereira; JOB CARNEIRO WANDERLEY_; REINALDO BAZONI_; DIOGENES MANOEL PEDROSA DE AZEVEDO; Francisco Pereira Moura Neto; Emílio da Maia de Castro",
+          "termino_protecao_texto": "27/09/2000"
+        }
+      },
+      {
+        "source_record": 1738,
+        "raw_cells": [
+          "AA1127",
+          "Eucalyptus L'Hér ",
+          "EUCALIPTO",
+          "21806.000041/2022",
+          "PROTEÇÃO DEFINITIVA",
+          "20250101",
+          "20/12/2024",
+          "20/12/2042",
+          "ANGLO AMERICAN NÍQUEL BRASIL LTDA.; ANGLO AMERICAN NÍQUEL BRASIL LTDA.; ANGLO AMERICAN NÍQUEL BRASIL LTDA.",
+          "André Montagner Machado",
+          "Ademir Forlin; Antônio Elias Fardin; André Montagner Machado"
+        ],
+        "selection_reasons": [
+          "outer_whitespace:NOME CIENTÍFICO"
+        ],
+        "expected": {
+          "cultivar": "AA1127",
+          "nome_cientifico": "Eucalyptus L'Hér",
+          "nome_comum": "EUCALIPTO",
+          "nr_processo": "21806.000041/2022",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20250101",
+          "inicio_protecao": "2024-12-20",
+          "termino_protecao": "2042-12-20",
+          "titular": "ANGLO AMERICAN NÍQUEL BRASIL LTDA.; ANGLO AMERICAN NÍQUEL BRASIL LTDA.; ANGLO AMERICAN NÍQUEL BRASIL LTDA.",
+          "representante_legal": "André Montagner Machado",
+          "melhoristas": "Ademir Forlin; Antônio Elias Fardin; André Montagner Machado",
+          "termino_protecao_texto": "20/12/2042"
+        }
+      },
+      {
+        "source_record": 1863,
+        "raw_cells": [
+          "MS16 ACARAJÉ",
+          "Eucalyptus L'Hér ",
+          "EUCALIPTO",
+          "21806.000085/2019",
+          "PROTEÇÃO DEFINITIVA",
+          "20200084",
+          "23/10/2019",
+          "23/10/2037",
+          "METALSIDER LTDA ; METALSIDER LTDA ; METALSIDER LTDA ; METALSIDER LTDA ",
+          "Márcio Salles Melo Lima",
+          "Evaldo Alves; José Maria da Silva; Márcio Salles Melo Lima; Reinaldo Frederico de Siqueira Montalvão"
+        ],
+        "selection_reasons": [
+          "outer_whitespace:TITULAR (NOME)"
+        ],
+        "expected": {
+          "cultivar": "MS16 ACARAJÉ",
+          "nome_cientifico": "Eucalyptus L'Hér",
+          "nome_comum": "EUCALIPTO",
+          "nr_processo": "21806.000085/2019",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20200084",
+          "inicio_protecao": "2019-10-23",
+          "termino_protecao": "2037-10-23",
+          "titular": "METALSIDER LTDA ; METALSIDER LTDA ; METALSIDER LTDA ; METALSIDER LTDA",
+          "representante_legal": "Márcio Salles Melo Lima",
+          "melhoristas": "Evaldo Alves; José Maria da Silva; Márcio Salles Melo Lima; Reinaldo Frederico de Siqueira Montalvão",
+          "termino_protecao_texto": "23/10/2037"
+        }
+      },
+      {
+        "source_record": 2053,
+        "raw_cells": [
+          "BRS Abiru",
+          "Vigna unguiculata L.",
+          "FEIJÃO-CAUPI ",
+          "21806.000025/2018",
+          "PROTEÇÃO DEFINITIVA",
+          "20180251",
+          "10/05/2018",
+          "10/05/2033",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "ISABEL CRISTINA VINHAL FREITAS",
+          "Carlos Antonio Fernandes Santos"
+        ],
+        "selection_reasons": [
+          "outer_whitespace:NOME COMUM"
+        ],
+        "expected": {
+          "cultivar": "BRS Abiru",
+          "nome_cientifico": "Vigna unguiculata L.",
+          "nome_comum": "FEIJÃO-CAUPI",
+          "nr_processo": "21806.000025/2018",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20180251",
+          "inicio_protecao": "2018-05-10",
+          "termino_protecao": "2033-05-10",
+          "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+          "melhoristas": "Carlos Antonio Fernandes Santos",
+          "termino_protecao_texto": "10/05/2033"
+        }
+      },
+      {
+        "source_record": 2069,
+        "raw_cells": [
+          "BRS Tumucumaque",
+          "Vigna unguiculata L.",
+          "FEIJÃO-CAUPI ",
+          "21806.000167/2010",
+          "PROTEÇÃO DEFINITIVA",
+          "20150155",
+          "12/02/2015",
+          "12/02/2030",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN",
+          "ISABEL CRISTINA VINHAL FREITAS",
+          "Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho; Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho; Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho"
+        ],
+        "selection_reasons": [
+          "longest_composite:MELHORISTAS"
+        ],
+        "expected": {
+          "cultivar": "BRS Tumucumaque",
+          "nome_cientifico": "Vigna unguiculata L.",
+          "nome_comum": "FEIJÃO-CAUPI",
+          "nr_processo": "21806.000167/2010",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20150155",
+          "inicio_protecao": "2015-02-12",
+          "termino_protecao": "2030-02-12",
+          "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN",
+          "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+          "melhoristas": "Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho; Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho; Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho",
+          "termino_protecao_texto": "12/02/2030"
+        }
+      },
+      {
+        "source_record": 2529,
+        "raw_cells": [
+          "FCM12045",
+          "Vaccinium L.",
+          "Mirtilo",
+          "21806.000157/2021",
+          "PROTEÇÃO DEFINITIVA",
+          "20250164",
+          "25/03/2025",
+          "25/03/2040",
+          "FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.",
+          "David do Nascimento Advogados Associados",
+          "ADAM L, WAGNER; DAVID M. BRAZELTON; Peter Stefan Boches; Antonio Abad Álamo Bermudo"
+        ],
+        "selection_reasons": [
+          "comma:MELHORISTAS"
+        ],
+        "expected": {
+          "cultivar": "FCM12045",
+          "nome_cientifico": "Vaccinium L.",
+          "nome_comum": "Mirtilo",
+          "nr_processo": "21806.000157/2021",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20250164",
+          "inicio_protecao": "2025-03-25",
+          "termino_protecao": "2040-03-25",
+          "titular": "FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.",
+          "representante_legal": "David do Nascimento Advogados Associados",
+          "melhoristas": "ADAM L, WAGNER; DAVID M. BRAZELTON; Peter Stefan Boches; Antonio Abad Álamo Bermudo",
+          "termino_protecao_texto": "25/03/2040"
+        }
+      },
+      {
+        "source_record": 2634,
+        "raw_cells": [
+          "PHA858376",
+          "Phalaenopsis Blume",
+          "Orquídea Phalaenopsis",
+          "21806.000207/2023",
+          "PROTEÇÃO PROVISÓRIA",
+          "20260167",
+          "02/09/2026",
+          "até a emissão do certificado definitivo",
+          "ANTHURA B.V.",
+          "CULTIVAR PROTECTION LTDA.",
+          "Martinus Nicolaas Gerardus van Swieten"
+        ],
+        "selection_reasons": [
+          "maximum_date:INÍCIO DA PROTEÇÃO"
+        ],
+        "expected": {
+          "cultivar": "PHA858376",
+          "nome_cientifico": "Phalaenopsis Blume",
+          "nome_comum": "Orquídea Phalaenopsis",
+          "nr_processo": "21806.000207/2023",
+          "situacao": "PROTEÇÃO PROVISÓRIA",
+          "nr_certificado": "20260167",
+          "inicio_protecao": "2026-09-02",
+          "termino_protecao": null,
+          "titular": "ANTHURA B.V.",
+          "representante_legal": "CULTIVAR PROTECTION LTDA.",
+          "melhoristas": "Martinus Nicolaas Gerardus van Swieten",
+          "termino_protecao_texto": "até a emissão do certificado definitivo"
+        }
+      },
+      {
+        "source_record": 2735,
+        "raw_cells": [
+          "DAMORPURP",
+          "Petunia Juss.",
+          "Petúnia",
+          "21806.000244/2021",
+          "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "20230072",
+          "15/03/2023",
+          "17/03/2025",
+          "Danzinger \"Dan\" Flower Farm",
+          "Rafael Baeta Pópoli",
+          "Charles Valin"
+        ],
+        "selection_reasons": [
+          "quote:TITULAR (NOME)"
+        ],
+        "expected": {
+          "cultivar": "DAMORPURP",
+          "nome_cientifico": "Petunia Juss.",
+          "nome_comum": "Petúnia",
+          "nr_processo": "21806.000244/2021",
+          "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "nr_certificado": "20230072",
+          "inicio_protecao": "2023-03-15",
+          "termino_protecao": "2025-03-17",
+          "titular": "Danzinger \"Dan\" Flower Farm",
+          "representante_legal": "Rafael Baeta Pópoli",
+          "melhoristas": "Charles Valin",
+          "termino_protecao_texto": "17/03/2025"
+        }
+      },
+      {
+        "source_record": 3743,
+        "raw_cells": [
+          "BRSGO 7654RR",
+          "Glycine max (L.)  Merr.",
+          "SOJA",
+          "21806.000226/2018",
+          "PROTEÇÃO DEFINITIVA",
+          "20190269",
+          "28/05/2019",
+          "28/05/2034",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER",
+          "ISABEL CRISTINA VINHAL FREITAS",
+          "Antonio Eduardo Pipolo; Andre Ferreira Pereira; Carlos Alberto Arrabal Arias; Carlos Lasaro Pereira de Melo; José Ubirajara Vieira Moreira; Marcelo Fernandes de Oliveira; Mércio Luiz Strieder; Mônica Juliani Zavaglia Pereira; Odilon Lemos de Mello Filho; Paulo Fernando Bertagnolli; Ricardo Vilela Abdelnoor; Roberto Kazuhiko Zito; Rodrigo Luis Brogin; Sebastião Pedro da Silva Neto; Cláudia Barbosa Pimenta; ISADORA SANCHEZ; Antônio José Alves Moreira; Marcos Rogério Nunes; MARCOS GEOVANI LOURENçONI DESSIMONE; ODILON PEIXOTO DE MORAIS JUNIOR; LUIS CARLOS DA SILVA NEIVA_; ANTÔNIO CARLOS DE BARROS_; ROMEU SOARES FILHO; JOSé ALOíSIO RESENDE; JESUS ROCHA; Antonio Eduardo Pipolo; Andre Ferreira Pereira; Carlos Alberto Arrabal Arias; Carlos Lasaro Pereira de Melo; José Ubirajara Vieira Moreira; Marcelo Fernandes de Oliveira; Mércio Luiz Strieder; Mônica Juliani Zavaglia Pereira; Odilon Lemos de Mello Filho; Paulo Fernando Bertagnolli; Ricardo Vilela Abdelnoor; Roberto Kazuhiko Zito; Rodrigo Luis Brogin; Sebastião Pedro da Silva Neto; Cláudia Barbosa Pimenta; ISADORA SANCHEZ; Antônio José Alves Moreira; Marcos Rogério Nunes; MARCOS GEOVANI LOURENçONI DESSIMONE; ODILON PEIXOTO DE MORAIS JUNIOR; LUIS CARLOS DA SILVA NEIVA_; ANTÔNIO CARLOS DE BARROS_; ROMEU SOARES FILHO; JOSé ALOíSIO RESENDE; JESUS ROCHA"
+        ],
+        "selection_reasons": [
+          "longest_composite:TITULAR (NOME)"
+        ],
+        "expected": {
+          "cultivar": "BRSGO 7654RR",
+          "nome_cientifico": "Glycine max (L.)  Merr.",
+          "nome_comum": "SOJA",
+          "nr_processo": "21806.000226/2018",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20190269",
+          "inicio_protecao": "2019-05-28",
+          "termino_protecao": "2034-05-28",
+          "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER",
+          "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+          "melhoristas": "Antonio Eduardo Pipolo; Andre Ferreira Pereira; Carlos Alberto Arrabal Arias; Carlos Lasaro Pereira de Melo; José Ubirajara Vieira Moreira; Marcelo Fernandes de Oliveira; Mércio Luiz Strieder; Mônica Juliani Zavaglia Pereira; Odilon Lemos de Mello Filho; Paulo Fernando Bertagnolli; Ricardo Vilela Abdelnoor; Roberto Kazuhiko Zito; Rodrigo Luis Brogin; Sebastião Pedro da Silva Neto; Cláudia Barbosa Pimenta; ISADORA SANCHEZ; Antônio José Alves Moreira; Marcos Rogério Nunes; MARCOS GEOVANI LOURENçONI DESSIMONE; ODILON PEIXOTO DE MORAIS JUNIOR; LUIS CARLOS DA SILVA NEIVA_; ANTÔNIO CARLOS DE BARROS_; ROMEU SOARES FILHO; JOSé ALOíSIO RESENDE; JESUS ROCHA; Antonio Eduardo Pipolo; Andre Ferreira Pereira; Carlos Alberto Arrabal Arias; Carlos Lasaro Pereira de Melo; José Ubirajara Vieira Moreira; Marcelo Fernandes de Oliveira; Mércio Luiz Strieder; Mônica Juliani Zavaglia Pereira; Odilon Lemos de Mello Filho; Paulo Fernando Bertagnolli; Ricardo Vilela Abdelnoor; Roberto Kazuhiko Zito; Rodrigo Luis Brogin; Sebastião Pedro da Silva Neto; Cláudia Barbosa Pimenta; ISADORA SANCHEZ; Antônio José Alves Moreira; Marcos Rogério Nunes; MARCOS GEOVANI LOURENçONI DESSIMONE; ODILON PEIXOTO DE MORAIS JUNIOR; LUIS CARLOS DA SILVA NEIVA_; ANTÔNIO CARLOS DE BARROS_; ROMEU SOARES FILHO; JOSé ALOíSIO RESENDE; JESUS ROCHA",
+          "termino_protecao_texto": "28/05/2034"
+        }
+      },
+      {
+        "source_record": 3990,
+        "raw_cells": [
+          "CZ15B99I2X",
+          "Glycine max (L.)  Merr.",
+          "SOJA",
+          "21806.000336/2023",
+          "PROTEÇÃO DEFINITIVA",
+          "20260093",
+          "04/03/2026",
+          "04/03/2041",
+          "BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.",
+          "DENIS UBEDA DE LIMA",
+          "Adriano Marino; Daniel Anacleto da Costa Lage; Ana Paula Fontana Valentini; Danilo de Castro Oliveira; Gabriela Carolina Guimarães Andrade; Gustavo Capato Herrera; Jean Newton Marques; Luiz Daniel Tartari; Mariana Cunha Stutz; Milene da Rosa Sias"
+        ],
+        "selection_reasons": [
+          "complete_certificate_pair:20260093"
+        ],
+        "expected": {
+          "cultivar": "CZ15B99I2X",
+          "nome_cientifico": "Glycine max (L.)  Merr.",
+          "nome_comum": "SOJA",
+          "nr_processo": "21806.000336/2023",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20260093",
+          "inicio_protecao": "2026-03-04",
+          "termino_protecao": "2041-03-04",
+          "titular": "BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.",
+          "representante_legal": "DENIS UBEDA DE LIMA",
+          "melhoristas": "Adriano Marino; Daniel Anacleto da Costa Lage; Ana Paula Fontana Valentini; Danilo de Castro Oliveira; Gabriela Carolina Guimarães Andrade; Gustavo Capato Herrera; Jean Newton Marques; Luiz Daniel Tartari; Mariana Cunha Stutz; Milene da Rosa Sias",
+          "termino_protecao_texto": "04/03/2041"
+        }
+      },
+      {
+        "source_record": 4017,
+        "raw_cells": [
+          "DM  Nobre",
+          "Glycine max (L.)  Merr.",
+          "SOJA",
+          "21806.000007/1997",
+          "PROTEÇÃO EXPIRADA POR PRAZO",
+          "6",
+          "25/02/1998",
+          "25/02/2013",
+          "Pioneer Overseas Corporation",
+          "ENIO JOSÉ DURANTE",
+          "VERNI KITZMANN WEHRMANN_"
+        ],
+        "selection_reasons": [
+          "minimum_date:INÍCIO DA PROTEÇÃO"
+        ],
+        "expected": {
+          "cultivar": "DM  Nobre",
+          "nome_cientifico": "Glycine max (L.)  Merr.",
+          "nome_comum": "SOJA",
+          "nr_processo": "21806.000007/1997",
+          "situacao": "PROTEÇÃO EXPIRADA POR PRAZO",
+          "nr_certificado": "6",
+          "inicio_protecao": "1998-02-25",
+          "termino_protecao": "2013-02-25",
+          "titular": "Pioneer Overseas Corporation",
+          "representante_legal": "ENIO JOSÉ DURANTE",
+          "melhoristas": "VERNI KITZMANN WEHRMANN_",
+          "termino_protecao_texto": "25/02/2013"
+        }
+      },
+      {
+        "source_record": 4690,
+        "raw_cells": [
+          "SYN 1665 IPRO",
+          "Glycine max (L.)  Merr.",
+          "SOJA",
+          "21806.000150/2017",
+          "PROTEÇÃO DEFINITIVA",
+          "20190277",
+          "19/06/2019",
+          "19/06/2034",
+          "SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG",
+          "SYNGENTA PROTEÇÃO DE CULTIVOS LTDA.",
+          "José Flávio Silva; ANDREOMAR JOSÉ KUREK; Irineu Hartwig; Ivandro Bertan; Flávia Carneiro; Anderson Meda"
+        ],
+        "selection_reasons": [
+          "complete_certificate_pair:20190277"
+        ],
+        "expected": {
+          "cultivar": "SYN 1665 IPRO",
+          "nome_cientifico": "Glycine max (L.)  Merr.",
+          "nome_comum": "SOJA",
+          "nr_processo": "21806.000150/2017",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20190277",
+          "inicio_protecao": "2019-06-19",
+          "termino_protecao": "2034-06-19",
+          "titular": "SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG",
+          "representante_legal": "SYNGENTA PROTEÇÃO DE CULTIVOS LTDA.",
+          "melhoristas": "José Flávio Silva; ANDREOMAR JOSÉ KUREK; Irineu Hartwig; Ivandro Bertan; Flávia Carneiro; Anderson Meda",
+          "termino_protecao_texto": "19/06/2034"
+        }
+      },
+      {
+        "source_record": 4937,
+        "raw_cells": [
+          "BRS P Ollitrault",
+          "Citrus L. (Tangerinas)",
+          "TANGERINA",
+          "21806.000315/2022",
+          "PROTEÇÃO DEFINITIVA",
+          "20260089",
+          "04/03/2026",
+          "04/03/2044",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "ISABEL CRISTINA VINHAL FREITAS",
+          "Walter dos Santos Soares Filho"
+        ],
+        "selection_reasons": [
+          "maximum_date:TÉRMINO DA PROTEÇÃO"
+        ],
+        "expected": {
+          "cultivar": "BRS P Ollitrault",
+          "nome_cientifico": "Citrus L. (Tangerinas)",
+          "nome_comum": "TANGERINA",
+          "nr_processo": "21806.000315/2022",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20260089",
+          "inicio_protecao": "2026-03-04",
+          "termino_protecao": "2044-03-04",
+          "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+          "melhoristas": "Walter dos Santos Soares Filho",
+          "termino_protecao_texto": "04/03/2044"
+        }
+      },
+      {
+        "source_record": 5424,
+        "raw_cells": [
+          "TVZAMBL1",
+          "Zamioculcas zamiifolia (Lodd. et al.) Engl",
+          "ZAMIOCULCAS",
+          "21806.000268/2020",
+          "PROTEÇÃO DEFINITIVA",
+          "20210110",
+          "10/02/2021",
+          "10/02/2036",
+          "Nicolaas Josef Schoenmaker e Outros",
+          "ANDRÉ GOMES",
+          "Everton Gomes da Costa"
+        ],
+        "selection_reasons": [
+          "last_record"
+        ],
+        "expected": {
+          "cultivar": "TVZAMBL1",
+          "nome_cientifico": "Zamioculcas zamiifolia (Lodd. et al.) Engl",
+          "nome_comum": "ZAMIOCULCAS",
+          "nr_processo": "21806.000268/2020",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20210110",
+          "inicio_protecao": "2021-02-10",
+          "termino_protecao": "2036-02-10",
+          "titular": "Nicolaas Josef Schoenmaker e Outros",
+          "representante_legal": "ANDRÉ GOMES",
+          "melhoristas": "Everton Gomes da Costa",
+          "termino_protecao_texto": "10/02/2036"
+        }
+      }
+    ],
+    "rows": [
+      {
+        "cultivar": "Adalgiza",
+        "nome_cientifico": "Persea americana Mill. (frutífera)",
+        "nome_comum": "Abacate",
+        "nr_processo": "21806.000202/2014",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20170031",
+        "inicio_protecao": "2016-08-08",
+        "termino_protecao": "2034-08-08",
+        "titular": "HELIO HILTON REZENDE",
+        "representante_legal": "Gabriel de Oliveira Rezende",
+        "melhoristas": "",
+        "termino_protecao_texto": "08/08/2034"
+      },
+      {
+        "cultivar": "Bonella",
+        "nome_cientifico": "Persea americana Mill. (frutífera)",
+        "nome_comum": "Abacate",
+        "nr_processo": "21806.000122/2019",
+        "situacao": "PROTEÇÃO CANCELADA",
+        "nr_certificado": "20200133",
+        "inicio_protecao": "2019-12-30",
+        "termino_protecao": "2025-11-25",
+        "titular": "José Alcides Bonella",
+        "representante_legal": "José Alcides Bonella",
+        "melhoristas": "",
+        "termino_protecao_texto": "25/11/2025"
+      },
+      {
+        "cultivar": "BRS Imperial",
+        "nome_cientifico": "Ananas comosus (L.) Merr.",
+        "nome_comum": "ABACAXI",
+        "nr_processo": "21806.001390/2003",
+        "situacao": "PROTEÇÃO EXPIRADA POR PRAZO",
+        "nr_certificado": "566",
+        "inicio_protecao": "2004-03-11",
+        "termino_protecao": "2019-03-11",
+        "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+        "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+        "melhoristas": "José Renato Santos Cabral; ARISTOTELES PIRES DE MATOS_",
+        "termino_protecao_texto": "11/03/2019"
+      },
+      {
+        "cultivar": "Dole 14",
+        "nome_cientifico": "Ananas comosus (L.) Merr.",
+        "nome_comum": "ABACAXI",
+        "nr_processo": "21806.000094/2009",
+        "situacao": "PROTEÇÃO CANCELADA",
+        "nr_certificado": "20120152",
+        "inicio_protecao": "2012-01-31",
+        "termino_protecao": "2023-02-06",
+        "titular": "RENAISSANCE CAPITAL CORPORATION; RENAISSANCE CAPITAL CORPORATION",
+        "representante_legal": "DI BLASI, PARENTE & ADVOGADOS ASSOCIADOS",
+        "melhoristas": "JORGE GONZALES_; ROBERTO YOUNG_",
+        "termino_protecao_texto": "06/02/2023"
+      },
+      {
+        "cultivar": "AF 3918",
+        "nome_cientifico": "Lactuca sativa L.",
+        "nome_comum": "ALFACE",
+        "nr_processo": "21806.000272/2011",
+        "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+        "nr_certificado": "20120161",
+        "inicio_protecao": "2012-02-02",
+        "termino_protecao": "2022-09-20",
+        "titular": "SAKATA SEED SUDAMERICA LTDA",
+        "representante_legal": "ROMULO FUJITO KOBORI",
+        "melhoristas": "ANIELLO ANTONIO CUTOLO FILHO",
+        "termino_protecao_texto": "20/09/2022"
+      },
+      {
+        "cultivar": "AF9708",
+        "nome_cientifico": "Lactuca sativa L.",
+        "nome_comum": "ALFACE",
+        "nr_processo": "21806.000132/2019",
+        "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+        "nr_certificado": "20190277",
+        "inicio_protecao": "2019-10-23",
+        "termino_protecao": null,
+        "titular": "SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA",
+        "representante_legal": "ROMULO FUJITO KOBORI",
+        "melhoristas": "Felipe Mikio Arashida; KÁTIA REGIANE BRUNELLI BRAGA; ANIELLO ANTONIO CUTOLO FILHO",
+        "termino_protecao_texto": "até a emissão do certificado definitivo"
+      },
+      {
+        "cultivar": "Duplex",
+        "nome_cientifico": "Lactuca sativa L.",
+        "nome_comum": "ALFACE",
+        "nr_processo": "21806.000206/2012",
+        "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+        "nr_certificado": "20140137",
+        "inicio_protecao": "2014-03-14",
+        "termino_protecao": "2015-06-16",
+        "titular": "RIJK ZWAAN ZAADTEELT EN ZAADHANDEL B. V.",
+        "representante_legal": "CULTIVAR PROTECTION LTDA.",
+        "melhoristas": "Kees Reinink",
+        "termino_protecao_texto": "16/06/2015"
+      },
+      {
+        "cultivar": "Glendana",
+        "nome_cientifico": "Lactuca sativa L.",
+        "nome_comum": "ALFACE",
+        "nr_processo": "21806.000313/2014",
+        "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+        "nr_certificado": "20160173",
+        "inicio_protecao": "2016-03-11",
+        "termino_protecao": "2019-03-01",
+        "titular": "ENZA ZADEN BEHEER B. V.; ENZA ZADEN BEHEER B. V.",
+        "representante_legal": "CULTIVAR PROTECTION LTDA.",
+        "melhoristas": "STEVEN MITCHELL; DANIEL TRIMBOLI",
+        "termino_protecao_texto": "01/03/2019"
+      },
+      {
+        "cultivar": "Hadar",
+        "nome_cientifico": "Lactuca sativa L.",
+        "nome_comum": "ALFACE",
+        "nr_processo": "21806.000145/2017",
+        "situacao": "PROTEÇÃO CANCELADA",
+        "nr_certificado": "20180120",
+        "inicio_protecao": "2017-10-23",
+        "termino_protecao": null,
+        "titular": "TSV SEMENTES DE VEGETAIS LTDA.",
+        "representante_legal": "DIRCEU SCHMAEDECKE_",
+        "melhoristas": "Osvânder David de Melo",
+        "termino_protecao_texto": ""
+      },
+      {
+        "cultivar": "TE 70",
+        "nome_cientifico": "Lactuca sativa L.",
+        "nome_comum": "ALFACE",
+        "nr_processo": "21806.000021/2013",
+        "situacao": "PROTEÇÃO CANCELADA",
+        "nr_certificado": "20140087",
+        "inicio_protecao": "2013-10-31",
+        "termino_protecao": null,
+        "titular": "TSV SEMENTES DE VEGETAIS LTDA.",
+        "representante_legal": "DIRCEU SCHMAEDECKE_",
+        "melhoristas": "Gabriel Macarenhas Maciel",
+        "termino_protecao_texto": ""
+      },
+      {
+        "cultivar": "2221B3XF",
+        "nome_cientifico": "Gossypium hirsutum L.",
+        "nome_comum": "ALGODÃO",
+        "nr_processo": "21806.000210/2025",
+        "situacao": "PROTEÇÃO PROVISÓRIA",
+        "nr_certificado": "20260093",
+        "inicio_protecao": "2026-05-21",
+        "termino_protecao": null,
+        "titular": "TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.; TMG TROPICAL MELHORAMENTO E GENETICA S.A.",
+        "representante_legal": "JULIANA GONçALVES JAMUS",
+        "melhoristas": "Pedro Henrique Araújo Diniz Santos; Tiago Adalberto  de Oliveira Franco Rossetto; EDUARDO MASAKAZU KAWAKAMI_; PAULO HUGO AGUIAR",
+        "termino_protecao_texto": "até a emissão do certificado definitivo"
+      },
+      {
+        "cultivar": "CD 401",
+        "nome_cientifico": "Gossypium hirsutum L.",
+        "nome_comum": "ALGODÃO",
+        "nr_processo": "21806.000012/1998",
+        "situacao": "PROTEÇÃO EXPIRADA POR PRAZO",
+        "nr_certificado": "9",
+        "inicio_protecao": "1998-05-04",
+        "termino_protecao": "2013-05-04",
+        "titular": "INSTITUTO MATO-GROSSENSE DO ALGODÃO - IMAMT; INSTITUTO MATO-GROSSENSE DO ALGODÃO - IMAMT",
+        "representante_legal": "ALVARO LORENÇO ORTOLAN SALLES",
+        "melhoristas": "JEAN LOUIS BELOT_; DELANO MARCUS COUTINHO GONDIN_",
+        "termino_protecao_texto": "04/05/2013"
+      },
+      {
+        "cultivar": "Delta Opal",
+        "nome_cientifico": "Gossypium hirsutum L.",
+        "nome_comum": "ALGODÃO",
+        "nr_processo": "21806.000024/1999",
+        "situacao": "PROTEÇÃO NULA",
+        "nr_certificado": "178",
+        "inicio_protecao": "2000-02-29",
+        "termino_protecao": "2013-10-08",
+        "titular": "DELTA & PINE LAND TECHNOLOGY HOLDING COMPANY, LLC.",
+        "representante_legal": "MARIA ARMINDA ORTIZ CIPRANDI GRAZZIOTIN",
+        "melhoristas": "RICHARD LESKE",
+        "termino_protecao_texto": "08/10/2013"
+      },
+      {
+        "cultivar": "BRS Primavera",
+        "nome_cientifico": "Oryza sativa L.",
+        "nome_comum": "ARROZ",
+        "nr_processo": "21806.000097/1998",
+        "situacao": "PROTEÇÃO CANCELADA",
+        "nr_certificado": "66",
+        "inicio_protecao": "1999-02-03",
+        "termino_protecao": "2000-09-27",
+        "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+        "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+        "melhoristas": "EVALDO PACHECO SANT'ANA_; Flávio Breseghello; Orlando Peixoto de Morais; ERICH COLLICCHIO_; José Almeida Pereira; JOB CARNEIRO WANDERLEY_; REINALDO BAZONI_; DIOGENES MANOEL PEDROSA DE AZEVEDO; Francisco Pereira Moura Neto; Emílio da Maia de Castro",
+        "termino_protecao_texto": "27/09/2000"
+      },
+      {
+        "cultivar": "AA1127",
+        "nome_cientifico": "Eucalyptus L'Hér",
+        "nome_comum": "EUCALIPTO",
+        "nr_processo": "21806.000041/2022",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20250101",
+        "inicio_protecao": "2024-12-20",
+        "termino_protecao": "2042-12-20",
+        "titular": "ANGLO AMERICAN NÍQUEL BRASIL LTDA.; ANGLO AMERICAN NÍQUEL BRASIL LTDA.; ANGLO AMERICAN NÍQUEL BRASIL LTDA.",
+        "representante_legal": "André Montagner Machado",
+        "melhoristas": "Ademir Forlin; Antônio Elias Fardin; André Montagner Machado",
+        "termino_protecao_texto": "20/12/2042"
+      },
+      {
+        "cultivar": "MS16 ACARAJÉ",
+        "nome_cientifico": "Eucalyptus L'Hér",
+        "nome_comum": "EUCALIPTO",
+        "nr_processo": "21806.000085/2019",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20200084",
+        "inicio_protecao": "2019-10-23",
+        "termino_protecao": "2037-10-23",
+        "titular": "METALSIDER LTDA ; METALSIDER LTDA ; METALSIDER LTDA ; METALSIDER LTDA",
+        "representante_legal": "Márcio Salles Melo Lima",
+        "melhoristas": "Evaldo Alves; José Maria da Silva; Márcio Salles Melo Lima; Reinaldo Frederico de Siqueira Montalvão",
+        "termino_protecao_texto": "23/10/2037"
+      },
+      {
+        "cultivar": "BRS Abiru",
+        "nome_cientifico": "Vigna unguiculata L.",
+        "nome_comum": "FEIJÃO-CAUPI",
+        "nr_processo": "21806.000025/2018",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20180251",
+        "inicio_protecao": "2018-05-10",
+        "termino_protecao": "2033-05-10",
+        "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+        "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+        "melhoristas": "Carlos Antonio Fernandes Santos",
+        "termino_protecao_texto": "10/05/2033"
+      },
+      {
+        "cultivar": "BRS Tumucumaque",
+        "nome_cientifico": "Vigna unguiculata L.",
+        "nome_comum": "FEIJÃO-CAUPI",
+        "nr_processo": "21806.000167/2010",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20150155",
+        "inicio_protecao": "2015-02-12",
+        "termino_protecao": "2030-02-12",
+        "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; INSTITUTO AGRONOMICO DE PERNAMBUCO - IPA; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN; EMPRESA DE PESQUISA AGROPECUÁRIA DO RIO GRANDE DO NORTE S.A - EMPARN",
+        "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+        "melhoristas": "Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho; Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho; Francisco Rodrigues Freire Filho; Emanuel da Silva Cavalcante; Maurisrael de Moura Rocha; Valdenir Queiroz Ribeiro; Kaesel Jackson Damasceno e Silva; Hélio Wilson Lemos de Carvalho; Manoel da Silva Cravo; Altevir de Matos Lopes; Aloisio Alcantara Vilarinho; João Antônio Arruda Raposo; Antônio Félix da Costa; João Batista Fernandes; João Maria Pinheiro de Lima; Edvaldo Sagrilo; Ilza Maria Sittolin; Flávio de França Souza; José Roberto Vieira Júnior; José Ricardo Pupo Gonçalves; Marília Regini Nutti; José Luiz Viana de Carvalho",
+        "termino_protecao_texto": "12/02/2030"
+      },
+      {
+        "cultivar": "FCM12045",
+        "nome_cientifico": "Vaccinium L.",
+        "nome_comum": "Mirtilo",
+        "nr_processo": "21806.000157/2021",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20250164",
+        "inicio_protecao": "2025-03-25",
+        "termino_protecao": "2040-03-25",
+        "titular": "FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.",
+        "representante_legal": "David do Nascimento Advogados Associados",
+        "melhoristas": "ADAM L, WAGNER; DAVID M. BRAZELTON; Peter Stefan Boches; Antonio Abad Álamo Bermudo",
+        "termino_protecao_texto": "25/03/2040"
+      },
+      {
+        "cultivar": "PHA858376",
+        "nome_cientifico": "Phalaenopsis Blume",
+        "nome_comum": "Orquídea Phalaenopsis",
+        "nr_processo": "21806.000207/2023",
+        "situacao": "PROTEÇÃO PROVISÓRIA",
+        "nr_certificado": "20260167",
+        "inicio_protecao": "2026-09-02",
+        "termino_protecao": null,
+        "titular": "ANTHURA B.V.",
+        "representante_legal": "CULTIVAR PROTECTION LTDA.",
+        "melhoristas": "Martinus Nicolaas Gerardus van Swieten",
+        "termino_protecao_texto": "até a emissão do certificado definitivo"
+      },
+      {
+        "cultivar": "DAMORPURP",
+        "nome_cientifico": "Petunia Juss.",
+        "nome_comum": "Petúnia",
+        "nr_processo": "21806.000244/2021",
+        "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+        "nr_certificado": "20230072",
+        "inicio_protecao": "2023-03-15",
+        "termino_protecao": "2025-03-17",
+        "titular": "Danzinger \"Dan\" Flower Farm",
+        "representante_legal": "Rafael Baeta Pópoli",
+        "melhoristas": "Charles Valin",
+        "termino_protecao_texto": "17/03/2025"
+      },
+      {
+        "cultivar": "BRSGO 7654RR",
+        "nome_cientifico": "Glycine max (L.)  Merr.",
+        "nome_comum": "SOJA",
+        "nr_processo": "21806.000226/2018",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20190269",
+        "inicio_protecao": "2019-05-28",
+        "termino_protecao": "2034-05-28",
+        "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER; AGÊNCIA GOIANA DE ASSISTÊNCIA TÉCNICA, EXTENSÃO RURAL E PESQUISA AGROPECUÁRIA - EMATER",
+        "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+        "melhoristas": "Antonio Eduardo Pipolo; Andre Ferreira Pereira; Carlos Alberto Arrabal Arias; Carlos Lasaro Pereira de Melo; José Ubirajara Vieira Moreira; Marcelo Fernandes de Oliveira; Mércio Luiz Strieder; Mônica Juliani Zavaglia Pereira; Odilon Lemos de Mello Filho; Paulo Fernando Bertagnolli; Ricardo Vilela Abdelnoor; Roberto Kazuhiko Zito; Rodrigo Luis Brogin; Sebastião Pedro da Silva Neto; Cláudia Barbosa Pimenta; ISADORA SANCHEZ; Antônio José Alves Moreira; Marcos Rogério Nunes; MARCOS GEOVANI LOURENçONI DESSIMONE; ODILON PEIXOTO DE MORAIS JUNIOR; LUIS CARLOS DA SILVA NEIVA_; ANTÔNIO CARLOS DE BARROS_; ROMEU SOARES FILHO; JOSé ALOíSIO RESENDE; JESUS ROCHA; Antonio Eduardo Pipolo; Andre Ferreira Pereira; Carlos Alberto Arrabal Arias; Carlos Lasaro Pereira de Melo; José Ubirajara Vieira Moreira; Marcelo Fernandes de Oliveira; Mércio Luiz Strieder; Mônica Juliani Zavaglia Pereira; Odilon Lemos de Mello Filho; Paulo Fernando Bertagnolli; Ricardo Vilela Abdelnoor; Roberto Kazuhiko Zito; Rodrigo Luis Brogin; Sebastião Pedro da Silva Neto; Cláudia Barbosa Pimenta; ISADORA SANCHEZ; Antônio José Alves Moreira; Marcos Rogério Nunes; MARCOS GEOVANI LOURENçONI DESSIMONE; ODILON PEIXOTO DE MORAIS JUNIOR; LUIS CARLOS DA SILVA NEIVA_; ANTÔNIO CARLOS DE BARROS_; ROMEU SOARES FILHO; JOSé ALOíSIO RESENDE; JESUS ROCHA",
+        "termino_protecao_texto": "28/05/2034"
+      },
+      {
+        "cultivar": "CZ15B99I2X",
+        "nome_cientifico": "Glycine max (L.)  Merr.",
+        "nome_comum": "SOJA",
+        "nr_processo": "21806.000336/2023",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20260093",
+        "inicio_protecao": "2026-03-04",
+        "termino_protecao": "2041-03-04",
+        "titular": "BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.; BASF S.A.",
+        "representante_legal": "DENIS UBEDA DE LIMA",
+        "melhoristas": "Adriano Marino; Daniel Anacleto da Costa Lage; Ana Paula Fontana Valentini; Danilo de Castro Oliveira; Gabriela Carolina Guimarães Andrade; Gustavo Capato Herrera; Jean Newton Marques; Luiz Daniel Tartari; Mariana Cunha Stutz; Milene da Rosa Sias",
+        "termino_protecao_texto": "04/03/2041"
+      },
+      {
+        "cultivar": "DM  Nobre",
+        "nome_cientifico": "Glycine max (L.)  Merr.",
+        "nome_comum": "SOJA",
+        "nr_processo": "21806.000007/1997",
+        "situacao": "PROTEÇÃO EXPIRADA POR PRAZO",
+        "nr_certificado": "6",
+        "inicio_protecao": "1998-02-25",
+        "termino_protecao": "2013-02-25",
+        "titular": "Pioneer Overseas Corporation",
+        "representante_legal": "ENIO JOSÉ DURANTE",
+        "melhoristas": "VERNI KITZMANN WEHRMANN_",
+        "termino_protecao_texto": "25/02/2013"
+      },
+      {
+        "cultivar": "SYN 1665 IPRO",
+        "nome_cientifico": "Glycine max (L.)  Merr.",
+        "nome_comum": "SOJA",
+        "nr_processo": "21806.000150/2017",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20190277",
+        "inicio_protecao": "2019-06-19",
+        "termino_protecao": "2034-06-19",
+        "titular": "SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG; SYNGENTA CROP PROTECTION AG",
+        "representante_legal": "SYNGENTA PROTEÇÃO DE CULTIVOS LTDA.",
+        "melhoristas": "José Flávio Silva; ANDREOMAR JOSÉ KUREK; Irineu Hartwig; Ivandro Bertan; Flávia Carneiro; Anderson Meda",
+        "termino_protecao_texto": "19/06/2034"
+      },
+      {
+        "cultivar": "BRS P Ollitrault",
+        "nome_cientifico": "Citrus L. (Tangerinas)",
+        "nome_comum": "TANGERINA",
+        "nr_processo": "21806.000315/2022",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20260089",
+        "inicio_protecao": "2026-03-04",
+        "termino_protecao": "2044-03-04",
+        "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+        "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+        "melhoristas": "Walter dos Santos Soares Filho",
+        "termino_protecao_texto": "04/03/2044"
+      },
+      {
+        "cultivar": "TVZAMBL1",
+        "nome_cientifico": "Zamioculcas zamiifolia (Lodd. et al.) Engl",
+        "nome_comum": "ZAMIOCULCAS",
+        "nr_processo": "21806.000268/2020",
+        "situacao": "PROTEÇÃO DEFINITIVA",
+        "nr_certificado": "20210110",
+        "inicio_protecao": "2021-02-10",
+        "termino_protecao": "2036-02-10",
+        "titular": "Nicolaas Josef Schoenmaker e Outros",
+        "representante_legal": "ANDRÉ GOMES",
+        "melhoristas": "Everton Gomes da Costa",
+        "termino_protecao_texto": "10/02/2036"
+      }
+    ],
+    "source_rows": 5424,
+    "subset_rows": 27,
+    "source_csv_sha256": "ce6ac0b01b0659224546d77022b2abd21543e268852a9d69b714bb46616002a2",
+    "normalization": "Text uses str.strip and retains empty strings. Date values use ISO date strings, None only for empty dates or the exact published end condition; end text preserves its trimmed source literal."
+  }
+}

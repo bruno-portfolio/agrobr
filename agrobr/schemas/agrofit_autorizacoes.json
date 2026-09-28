@@ -1,0 +1,162 @@
+{
+  "name": "defensivos.autorizacoes",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [],
+  "required_columns": [
+    "nr_registro",
+    "marca_comercial",
+    "ingrediente_ativo",
+    "titular",
+    "classe",
+    "cultura",
+    "praga",
+    "praga_nome_comum",
+    "modalidade_de_emprego"
+  ],
+  "dtypes": {
+    "nr_registro": "str",
+    "marca_comercial": "str",
+    "ingrediente_ativo": "str",
+    "titular": "str",
+    "classe": "str",
+    "cultura": "str",
+    "praga": "str",
+    "praga_nome_comum": "str",
+    "modalidade_de_emprego": "str",
+    "situacao": "str"
+  },
+  "nullable": {
+    "nr_registro": false,
+    "marca_comercial": true,
+    "ingrediente_ativo": true,
+    "titular": true,
+    "classe": true,
+    "cultura": true,
+    "praga": true,
+    "praga_nome_comum": true,
+    "modalidade_de_emprego": true,
+    "situacao": true
+  },
+  "columns": [
+    {
+      "name": "nr_registro",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "marca_comercial",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ingrediente_ativo",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "titular",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cultura",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "praga",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "praga_nome_comum",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "modalidade_de_emprego",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "situacao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "nr_registro_pattern": "[A-Za-z0-9][\\w./-]*"
+  },
+  "guarantees": [
+    "Cada linha publicada é preservada, inclusive multiplicidade após projeção de colunas",
+    "Não se declara chave oficial única para a relação de autorizações",
+    "A exportação descreve relações cadastrais, sem recomendar uma aplicação agronômica"
+  ]
+}

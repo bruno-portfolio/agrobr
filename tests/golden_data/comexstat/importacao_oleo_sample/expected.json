@@ -1,0 +1,11 @@
+{
+  "count": 2,
+  "columns": [
+    "ano",
+    "mes",
+    "ncm",
+    "uf",
+    "kg_liquido",
+    "valor_fob_usd"
+  ]
+}

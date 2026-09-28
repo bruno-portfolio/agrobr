@@ -8,11 +8,14 @@ from io import BytesIO
 from typing import Any, cast
 
 import pandas as pd
+import pydantic
 import structlog
 
 from agrobr import constants
+from agrobr.conab import structure
 from agrobr.exceptions import ParseError
 from agrobr.models import Safra
+from agrobr.normalize import dates, regions
 from agrobr.normalize.dates import anos_para_safra
 from agrobr.normalize.numeric import safe_float
 from agrobr.utils.io import read_excel_safe
@@ -81,20 +84,8 @@ def _build_suprimento(
     }
 
 
-_SUPRIMENTO_HEADER_KEYWORDS: dict[int, str] = {
-    3: "ESTOQUE",
-    4: "PRODU",
-    5: "IMPORTA",
-    6: "SUPRIMENTO",
-    7: "CONSUMO",
-    8: "EXPORTA",
-    9: "DEMANDA",
-    10: "ESTOQUE",
-}
-
-
 class ConabParserV1:
-    version: int = 1
+    version: int = constants.CONAB_SAFRA_PARSER_VERSION
     source: str = "conab"
     valid_from: date = date(2020, 1, 1)
     valid_until: date | None = None
@@ -105,6 +96,7 @@ class ConabParserV1:
         produto: str,
         safra_ref: str | None = None,
         levantamento: int | None = None,
+        data_publicacao: date | None = None,
     ) -> list[Safra]:
         sheet_name = constants.CONAB_PRODUTOS.get(produto.lower())
         if not sheet_name:
@@ -114,6 +106,7 @@ class ConabParserV1:
                 reason=f"Produto não suportado: {produto}",
             )
 
+        sheet_name = self._aba_da_safra(xlsx, sheet_name, safra_ref)
         df = read_excel_safe(
             xlsx,
             source="conab",
@@ -133,6 +126,15 @@ class ConabParserV1:
 
         safras = []
         data_row = header_row + 3
+        if not any(
+            _cell_str(df.iloc[index], 0).upper() in constants.CONAB_UFS
+            for index in range(data_row, len(df))
+        ):
+            raise ParseError(
+                source="conab",
+                parser_version=self.version,
+                reason=f"Nenhuma linha de UF na aba {sheet_name}",
+            )
 
         safra_cols = self._extract_safra_columns(df, header_row)
 
@@ -172,17 +174,17 @@ class ConabParserV1:
                         unidade_area="mil_ha",
                         unidade_producao="mil_ton",
                         levantamento=levantamento or 1,
-                        data_publicacao=date.today(),
+                        data_publicacao=data_publicacao,
+                        meta={"rotulo": uf.upper()},
                         parser_version=self.version,
                     )
                     safras.append(safra)
-                except Exception as e:
-                    logger.warning(
-                        "conab_parse_row_error",
-                        uf=uf,
-                        safra=safra_str,
-                        error=str(e),
-                    )
+                except pydantic.ValidationError as e:
+                    raise ParseError(
+                        source="conab",
+                        parser_version=self.version,
+                        reason=f"Linha inválida em {sheet_name}!A{idx + 1}, {uf}, {safra_str}: {e}",
+                    ) from e
 
         logger.info(
             "conab_parse_safra_success",
@@ -192,19 +194,27 @@ class ConabParserV1:
 
         return safras
 
+    def _aba_da_safra(self, xlsx: BytesIO, esperada: str, safra_ref: str | None) -> str:
+        """De out/2019 a jan/2022, a aba de inverno leva o ano no nome ("Trigo 2021"), e a edição
+        pode trazer a do ano anterior, às vezes com o cabeçalho quebrado: vale a mais recente."""
+        rotulos: tuple[str, ...] = (esperada,)
+        if safra_ref:
+            ano = dates.safra_para_anos(safra_ref)[1]
+            rotulos += tuple(f"{esperada} {ano + delta}" for delta in (1, 0, -1))
+        abas = structure.find_sheets(xlsx, rotulos, parser_version=self.version)
+        if not abas:
+            raise ParseError(
+                source="conab",
+                parser_version=self.version,
+                reason=f"Aba obrigatória ausente: {esperada}",
+            )
+        return abas[0]
+
     _SUPRIMENTO_SEPARATE_SHEETS: dict[str, str] = {
         "soja": "Suprimento - Soja",
     }
 
-    _SUPRIMENTO_ITEM_MAP: dict[str, str] = {
-        "estoque inicial": "estoque_inicial",
-        "produ": "producao",
-        "importa": "importacao",
-        "exporta": "exportacao",
-        "estoque final": "estoque_final",
-        "sementes": "sementes_outros",
-        "processamento": "processamento",
-    }
+    _SUPRIMENTO_ITEM_MAP = constants.CONAB_SOJA_COMPONENTES
 
     def parse_suprimento(
         self,
@@ -213,29 +223,25 @@ class ConabParserV1:
     ) -> list[dict[str, Any]]:
         if produto and produto.lower() in self._SUPRIMENTO_SEPARATE_SHEETS:
             sheet_name = self._SUPRIMENTO_SEPARATE_SHEETS[produto.lower()]
-            try:
-                result = self._parse_suprimento_wide(xlsx, sheet_name, produto)
-                if result:
-                    logger.info(
-                        "conab_parse_suprimento_success",
-                        produto=produto,
-                        records=len(result),
-                    )
-                    return result
-            except Exception as e:
-                logger.warning(
-                    "conab_suprimento_wide_fallback",
-                    produto=produto,
-                    sheet=sheet_name,
-                    error=str(e),
-                )
-
-        return self._parse_suprimento_long(xlsx, produto)
+            selected = structure.find_sheet(xlsx, sheet_name, parser_version=self.version)
+            if selected is not None:
+                return self._parse_suprimento_wide(xlsx, selected, produto)
+        sheet_name = structure.resolve_sheet(xlsx, "Suprimento", parser_version=self.version)
+        suprimentos = self._parse_suprimento_long(xlsx, produto, sheet_name=sheet_name)
+        if produto:
+            return suprimentos
+        for separado, nome in self._SUPRIMENTO_SEPARATE_SHEETS.items():
+            selected = structure.find_sheet(xlsx, nome, parser_version=self.version)
+            if selected is not None:
+                suprimentos += self._parse_suprimento_wide(xlsx, selected, separado)
+        return suprimentos
 
     def _parse_suprimento_long(
         self,
         xlsx: BytesIO,
         produto: str | None = None,
+        *,
+        sheet_name: str = "Suprimento",
     ) -> list[dict[str, Any]]:
         if hasattr(xlsx, "seek"):
             xlsx.seek(0)
@@ -244,7 +250,7 @@ class ConabParserV1:
             source="conab",
             parser_version=self.version,
             label="aba Suprimento",
-            sheet_name="Suprimento",
+            sheet_name=sheet_name,
             header=None,
         )
 
@@ -261,10 +267,11 @@ class ConabParserV1:
                 reason="Não encontrou header na aba Suprimento",
             )
 
-        self._validate_suprimento_header(df.iloc[cast(int, header_row)])
+        columns = structure.supply_columns(df.iloc[cast(int, header_row)], self.version)
 
-        suprimentos = []
+        suprimentos: dict[tuple[str, str], dict[str, Any]] = {}
         current_produto = None
+        current_safra = None
 
         for idx in range(cast(int, header_row) + 1, len(df)):
             row = df.iloc[idx]
@@ -272,33 +279,51 @@ class ConabParserV1:
             produto_cell = str(row.iloc[0]).strip() if pd.notna(row.iloc[0]) else None
             if produto_cell and produto_cell not in ["NaN", "nan", ""]:
                 current_produto = produto_cell.replace("\n", " ").strip()
+                current_safra = None
 
             if current_produto is None:
                 continue
 
-            if produto and produto.lower() not in current_produto.lower():
+            if (
+                produto
+                and regions.remover_acentos(produto).casefold()
+                not in regions.remover_acentos(current_produto).casefold()
+            ):
                 continue
 
-            safra = str(row.iloc[1]).strip() if pd.notna(row.iloc[1]) else None
-            if not safra or "/" not in safra:
+            safra_cell = _cell_str(row, 1)
+            if safra_cell:
+                current_safra = _parse_safra_cell(safra_cell.rstrip(" *"))
+            levantamento = _cell_str(row, 2) or None
+            if not current_safra or (not safra_cell and not levantamento):
                 continue
 
             suprimento = {
                 "produto": current_produto,
-                "safra": safra,
-                "levantamento": str(row.iloc[2]).strip() if pd.notna(row.iloc[2]) else None,
-                "estoque_inicial": self._parse_decimal(row.iloc[3]),
-                "producao": self._parse_decimal(row.iloc[4]),
-                "importacao": self._parse_decimal(row.iloc[5]),
-                "suprimento_total": self._parse_decimal(row.iloc[6]),
-                "consumo": self._parse_decimal(row.iloc[7]),
-                "exportacao": self._parse_decimal(row.iloc[8]),
-                "demanda_total": self._parse_decimal(row.iloc[9]),
-                "estoque_final": self._parse_decimal(row.iloc[10]),
+                "safra": current_safra,
+                "levantamento": levantamento,
+                **{
+                    field: self._parse_decimal(row.iloc[column])
+                    for field, column in columns.items()
+                },
+                "demanda_total": (
+                    self._parse_decimal(row.iloc[columns["demanda_total"]])
+                    if "demanda_total" in columns
+                    else None
+                ),
                 "unidade": "mil_ton",
             }
 
-            suprimentos.append(suprimento)
+            key = (current_produto, current_safra)
+            if key in suprimentos and (
+                not levantamento or levantamento == suprimentos[key]["levantamento"]
+            ):
+                raise ParseError(
+                    source="conab",
+                    parser_version=self.version,
+                    reason=f"Revisão ambígua em Suprimento!A{idx + 1}: {key}",
+                )
+            suprimentos[key] = suprimento
 
         logger.info(
             "conab_parse_suprimento_success",
@@ -306,7 +331,7 @@ class ConabParserV1:
             records=len(suprimentos),
         )
 
-        return suprimentos
+        return list(suprimentos.values())
 
     def _parse_suprimento_wide(
         self,
@@ -316,6 +341,7 @@ class ConabParserV1:
     ) -> list[dict[str, Any]]:
         if hasattr(xlsx, "seek"):
             xlsx.seek(0)
+        sheet_name = structure.resolve_sheet(xlsx, sheet_name, parser_version=self.version)
         df = read_excel_safe(
             xlsx,
             source="conab",
@@ -339,12 +365,18 @@ class ConabParserV1:
                 reason=f"Não encontrou header na aba {sheet_name}",
             )
 
-        safras: list[str] = []
+        safras: dict[str, int] = {}
         row_safras = df.iloc[safra_row]
         for col_idx in range(1, len(row_safras)):
             cell = _cell_str(row_safras, col_idx)
-            if "/" in cell and len(cell) <= 8:
-                safras.append(cell)
+            if re.fullmatch(r"\d{4}/\d{2}", cell):
+                if cell in safras:
+                    raise ParseError(
+                        source="conab",
+                        parser_version=self.version,
+                        reason=f"Safra duplicada em {sheet_name}: {cell}",
+                    )
+                safras[cell] = col_idx
 
         if not safras:
             raise ParseError(
@@ -362,8 +394,6 @@ class ConabParserV1:
             if not label:
                 continue
 
-            label_lower = label.lower()
-
             if _SECTION_RE.match(label):
                 if label.startswith("1."):
                     in_section_1 = True
@@ -374,20 +404,32 @@ class ConabParserV1:
             if not in_section_1:
                 continue
 
-            field_name = None
-            for key, field in self._SUPRIMENTO_ITEM_MAP.items():
-                if key in label_lower:
-                    field_name = field
-                    break
-
+            component = structure.normalize_label(re.sub(r"^\d+\.\d+\.?\s*", "", label))
+            field_name = self._SUPRIMENTO_ITEM_MAP.get(component)
             if field_name is None:
-                continue
+                raise ParseError(
+                    source="conab",
+                    parser_version=self.version,
+                    reason=f"Item desconhecido em {sheet_name}!A{idx + 1}: {label}",
+                )
 
-            for i, safra_str in enumerate(safras):
-                col_idx = i + 1
-                if col_idx < len(row):
-                    items[safra_str][field_name] = self._parse_decimal(row.iloc[col_idx])
+            for safra_str, col_idx in safras.items():
+                if field_name in items[safra_str]:
+                    raise ParseError(
+                        source="conab",
+                        parser_version=self.version,
+                        reason=f"Item duplicado em {sheet_name}: {field_name}",
+                    )
+                items[safra_str][field_name] = self._parse_decimal(row.iloc[col_idx])
 
+        required = set(self._SUPRIMENTO_ITEM_MAP.values())
+        for values in items.values():
+            if required - values.keys():
+                raise ParseError(
+                    source="conab",
+                    parser_version=self.version,
+                    reason=f"Itens ausentes em {sheet_name}: {sorted(required - values.keys())}",
+                )
         return [_build_suprimento(produto, safra_str, items[safra_str]) for safra_str in safras]
 
     def parse_brasil_total(
@@ -412,6 +454,8 @@ class ConabParserV1:
 
         safra_cols = self._extract_safra_columns(df, header_row)
         data_row = header_row + 3
+        secao: str | None = None
+        titulo: str | None = None
 
         for idx in range(data_row, len(df)):
             row = df.iloc[idx]
@@ -420,12 +464,26 @@ class ConabParserV1:
             if not produto or produto in ["NaN", "nan", "", "TOTAL"]:
                 continue
 
+            if re.match(r"^(?:Legenda|Fonte|Nota)\s*:", produto, re.IGNORECASE):
+                break
+            if any("PRODUTIVIDADE" in _cell_str(row, col).upper() for col in range(1, len(row))):
+                secao = produto
+                continue
+
+            maiusculo = produto == produto.upper()
+            grupo = secao if maiusculo else titulo
+            if maiusculo:
+                titulo = produto
+            if produto == "SUBTOTAL":
+                secao = None
+
             for safra_str, cols in safra_cols.items():
                 if safra_ref and safra_str != safra_ref:
                     continue
 
                 total = {
                     "produto": produto,
+                    "grupo": grupo,
                     "safra": safra_str,
                     "area_plantada": self._parse_decimal(row.iloc[cols["area"]]),
                     "produtividade": self._parse_decimal(row.iloc[cols["produtividade"]]),
@@ -454,71 +512,70 @@ class ConabParserV1:
         df: pd.DataFrame,
         header_row: int,
     ) -> dict[str, dict[str, int]]:
-        safra_row = df.iloc[header_row + 1]
-        header_cols = df.iloc[header_row]
-        cols = {}
-
-        area_start = None
-        prod_start = None
-        producao_start = None
-
-        for col_idx in range(1, len(header_cols)):
-            cell = _cell_str(header_cols, col_idx).upper()
-            if "ÁREA" in cell or "AREA" in cell:
-                area_start = col_idx
-            elif "PRODUTIVIDADE" in cell:
-                prod_start = col_idx
-            elif "PRODUÇÃO" in cell or "PRODUCAO" in cell:
-                producao_start = col_idx
-
-        safras_encontradas: list[str] = []
-        for col_idx in range(1, len(safra_row)):
-            cell = _cell_str(safra_row, col_idx)
-            safra_full = _parse_safra_cell(cell)
-            if safra_full is not None and safra_full not in safras_encontradas:
-                safras_encontradas.append(safra_full)
-
-        if area_start and prod_start and producao_start and safras_encontradas:
-            for i, safra in enumerate(safras_encontradas):
-                cols[safra] = {
-                    "area": area_start + i,
-                    "produtividade": prod_start + i,
-                    "producao": producao_start + i,
-                }
-        elif safras_encontradas:
-            for i, safra in enumerate(safras_encontradas):
-                base_col = 1 + (i * 3)
-                cols[safra] = {
-                    "area": base_col,
-                    "produtividade": base_col + 3 * len(safras_encontradas),
-                    "producao": base_col + 6 * len(safras_encontradas),
-                }
-
-        if not cols:
-            logger.warning(
-                "conab_safra_columns_not_detected",
-                header_row=header_row,
-            )
+        if header_row + 1 >= len(df):
             raise ParseError(
                 source="conab",
                 parser_version=self.version,
                 reason="Não foi possível detectar colunas de safra no header da planilha",
             )
-
-        return cols
-
-    def _validate_suprimento_header(self, header: pd.Series) -> None:
-        for col_idx, keyword in _SUPRIMENTO_HEADER_KEYWORDS.items():
-            cell = _cell_str(header, col_idx).upper()
-            if keyword not in cell:
+        cols: dict[str, dict[str, int]] = {}
+        current_field = None
+        fields = set()
+        for col_idx in range(1, len(df.columns)):
+            header = structure.normalize_label(_cell_str(df.iloc[header_row], col_idx))
+            field = next(
+                (
+                    name
+                    for prefix, (name, _) in constants.CONAB_SAFRA_METRICS.items()
+                    if header.startswith(prefix)
+                ),
+                None,
+            )
+            if field is not None:
+                if field in fields:
+                    raise ParseError(
+                        source="conab",
+                        parser_version=self.version,
+                        reason=f"Métrica de safra ambígua: {field}",
+                    )
+                unit = constants.CONAB_SAFRA_METRICS[field][1]
+                if "(" in header and unit not in header:
+                    raise ParseError(
+                        source="conab",
+                        parser_version=self.version,
+                        reason=f"Unidade inesperada para {field}: {header}",
+                    )
+                fields.add(field)
+                current_field = field
+            cell = _cell_str(df.iloc[header_row + 1], col_idx)
+            period = _parse_safra_cell(cell)
+            annual = re.fullmatch(r"(?:Safra\s+)?(\d{4})(?:\.0)?", cell)
+            if annual:
+                period = anos_para_safra(int(annual.group(1)) - 1)
+            if period is None:
+                continue
+            if current_field is None:
                 raise ParseError(
                     source="conab",
                     parser_version=self.version,
-                    reason=(
-                        f"Layout da aba Suprimento mudou: coluna {col_idx} "
-                        f"esperava '{keyword}', encontrou '{cell[:30]}'"
-                    ),
+                    reason=f"Safra sem métrica: coluna {col_idx}, {cell}",
                 )
+            target = cols.setdefault(period, {})
+            if current_field in target:
+                raise ParseError(
+                    source="conab",
+                    parser_version=self.version,
+                    reason=f"Safra ambígua: {period}, {current_field}",
+                )
+            target[current_field] = col_idx
+        required = {"area", "produtividade", "producao"}
+        if not cols or any(set(mapping) != required for mapping in cols.values()):
+            raise ParseError(
+                source="conab",
+                parser_version=self.version,
+                reason="Não foi possível detectar colunas de safra completas no header da planilha",
+            )
+        return cols
 
     def _parse_decimal(self, value: Any) -> Decimal | None:
         if pd.isna(value):

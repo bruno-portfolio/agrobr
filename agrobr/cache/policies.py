@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime, time, timedelta
+from datetime import UTC, datetime, time, timedelta
 from enum import Enum
 from typing import NamedTuple
 
 from ..constants import Fonte
+from ..exceptions import InvalidParameterError
 from ..utils.time import utcnow
 
 
@@ -33,139 +34,18 @@ POLICIES: dict[str, CachePolicy] = {
         description="CEPEA indicador diário (expira às 18h)",
         smart_expiry=True,
     ),
-    "cepea_semanal": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.DAYS_7.value,
-        description="CEPEA indicador semanal (atualiza sexta)",
-        smart_expiry=False,
-    ),
-    "conab_safras": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.DAYS_30.value,
-        description="CONAB safras (atualiza mensalmente)",
-        smart_expiry=False,
-    ),
-    "conab_balanco": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.DAYS_30.value,
-        description="CONAB balanço (atualiza mensalmente)",
-        smart_expiry=False,
-    ),
-    "ibge_pam": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE PAM (atualiza anualmente)",
-        smart_expiry=False,
-    ),
-    "ibge_lspa": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.DAYS_30.value,
-        description="IBGE LSPA (atualiza mensalmente)",
-        smart_expiry=False,
-    ),
-    "ibge_ppm": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE PPM (atualiza anualmente)",
-        smart_expiry=False,
-    ),
-    "ibge_abate": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE Abate Trimestral (atualiza trimestralmente)",
-        smart_expiry=False,
-    ),
-    "ibge_censo_agro": CachePolicy(
-        ttl_seconds=TTL.DAYS_30.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE Censo Agropecuário (atualiza a cada 10 anos)",
-        smart_expiry=False,
-    ),
-    "ibge_silvicultura": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE PEVS Silvicultura (atualiza anualmente)",
-        smart_expiry=False,
-    ),
-    "ibge_extracao_vegetal": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE PEVS Extração Vegetal (atualiza anualmente)",
-        smart_expiry=False,
-    ),
-    "ibge_leite_trimestral": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE Pesquisa Trimestral do Leite (atualiza trimestralmente)",
-        smart_expiry=False,
-    ),
-    "ibge_pib": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE Contas Nacionais Trimestrais (atualiza trimestralmente)",
-        smart_expiry=False,
-    ),
-    "ibge_censo_agro_legado": CachePolicy(
-        ttl_seconds=TTL.DAYS_90.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="IBGE Censo Agropecuário 1995/96 legado FTP (dados estáticos)",
-        smart_expiry=False,
-    ),
-    "noticias_agricolas": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.HOURS_24.value * 2,
-        description="Notícias Agrícolas (expira às 18h, mirror CEPEA)",
-        smart_expiry=True,
-    ),
-    "conab_custo": CachePolicy(
-        ttl_seconds=TTL.DAYS_30.value,
-        stale_max_seconds=TTL.DAYS_90.value,
-        description="CONAB custos de produção (atualiza anualmente por safra)",
-        smart_expiry=False,
-    ),
-    "inmet": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.DAYS_7.value,
-        description="INMET dados meteorológicos (atualiza diariamente)",
-        smart_expiry=False,
-    ),
-    "bcb": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.DAYS_30.value,
-        description="BCB/SICOR crédito rural (atualiza mensalmente)",
-        smart_expiry=False,
-    ),
-    "comexstat": CachePolicy(
-        ttl_seconds=TTL.HOURS_24.value,
-        stale_max_seconds=TTL.DAYS_7.value,
-        description="ComexStat exportação (atualiza semanalmente/mensalmente)",
-        smart_expiry=False,
-    ),
-    "anda": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_30.value,
-        description="ANDA entregas fertilizantes (atualiza mensalmente, PDF)",
-        smart_expiry=False,
-    ),
-    "nasa_power": CachePolicy(
-        ttl_seconds=TTL.DAYS_7.value,
-        stale_max_seconds=TTL.DAYS_30.value,
-        description="NASA POWER dados climáticos (grid diário, atualiza com ~2 dias de atraso)",
-        smart_expiry=False,
-    ),
 }
 
 SOURCE_POLICY_MAP: dict[Fonte, str] = {
-    Fonte.ANDA: "anda",
-    Fonte.BCB: "bcb",
     Fonte.CEPEA: "cepea_diario",
-    Fonte.COMEXSTAT: "comexstat",
-    Fonte.CONAB: "conab_safras",
-    Fonte.IBGE: "ibge_lspa",
-    Fonte.INMET: "inmet",
-    Fonte.NASA_POWER: "nasa_power",
-    Fonte.NOTICIAS_AGRICOLAS: "noticias_agricolas",
 }
+
+
+def _sem_cache(source: str) -> InvalidParameterError:
+    com_cache = [fonte.value for fonte in SOURCE_POLICY_MAP]
+    return InvalidParameterError(
+        f"A fonte {source!r} não tem cache no agrobr. Fontes com cache: {com_cache}"
+    )
 
 
 def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
@@ -175,33 +55,39 @@ def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
         try:
             source = Fonte(source)
         except ValueError:
-            return POLICIES["cepea_diario"]
+            raise _sem_cache(source) from None
 
     if endpoint:
         key = f"{source.value}_{endpoint}"
         if key in POLICIES:
             return POLICIES[key]
 
-    default_key = SOURCE_POLICY_MAP.get(source, "cepea_diario")
-    return POLICIES[default_key]
+    if source not in SOURCE_POLICY_MAP:
+        raise _sem_cache(source.value)
+    return POLICIES[SOURCE_POLICY_MAP[source]]
 
 
-def _get_smart_expiry_time() -> datetime:
-    now = utcnow()
-    today_expiry = datetime.combine(now.date(), time(CEPEA_UPDATE_HOUR_UTC, CEPEA_UPDATE_MINUTE))
+def _get_smart_expiry_time(desde: datetime | None = None) -> datetime:
+    instante = desde or utcnow()
+    if instante.tzinfo is not None:
+        instante = instante.astimezone(UTC).replace(tzinfo=None)
+    virada = datetime.combine(instante.date(), time(CEPEA_UPDATE_HOUR_UTC, CEPEA_UPDATE_MINUTE))
+    if instante >= virada:
+        virada += timedelta(days=1)
+    while virada.weekday() >= 5:
+        virada += timedelta(days=1)
+    return virada
 
-    if now < today_expiry:
-        return today_expiry
-    return today_expiry + timedelta(days=1)
 
-
-def calculate_expiry(source: Fonte | str, endpoint: str | None = None) -> datetime:
+def calculate_expiry(
+    source: Fonte | str, endpoint: str | None = None, desde: datetime | None = None
+) -> datetime:
     policy = get_policy(source, endpoint)
 
     if policy.smart_expiry:
-        return _get_smart_expiry_time()
+        return _get_smart_expiry_time(desde)
 
-    return utcnow() + timedelta(seconds=policy.ttl_seconds)
+    return (desde or utcnow()) + timedelta(seconds=policy.ttl_seconds)
 
 
 def format_ttl(seconds: int) -> str:

@@ -7,8 +7,8 @@ Dados abertos do SISSER/MAPA — Sistema de Subvencao Economica ao Premio do
 Seguro Rural. Apolices e sinistros (indenizacoes) do seguro rural brasileiro
 com subvencao federal, publicados pelo Ministerio da Agricultura.
 
-Proxy de revisao de producao: sinistros elevados em soja Q1 antecedem
-cortes na estimativa CONAB Q2.
+As indenizações são associadas ao ano de contratação da apólice. Esta saída
+não informa o trimestre do evento ou do pagamento.
 
 ## Instalacao
 
@@ -32,8 +32,11 @@ df = await mapa_psr.sinistros(ano_inicio=2020, ano_fim=2024)
 # Filtrar por evento preponderante
 df = await mapa_psr.sinistros(evento="seca")
 
-# Filtrar por municipio
+# Filtrar pelo rótulo do município (ver "Município e código IBGE")
 df = await mapa_psr.sinistros(municipio="SORRISO")
+
+# Filtrar pelo código IBGE do município
+df = await mapa_psr.apolices(cd_ibge="4305108")
 
 # Todas as apolices (incluindo sem sinistro)
 df = await mapa_psr.apolices()
@@ -56,10 +59,15 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `ano` | int \| None | None | Filtro de ano unico (ex: 2023) |
 | `ano_inicio` | int \| None | None | Ano inicial do range (inclusive) |
 | `ano_fim` | int \| None | None | Ano final do range (inclusive) |
-| `municipio` | str \| None | None | Filtro por municipio (busca parcial) |
+| `municipio` | str \| None | None | Filtro pelo rótulo publicado do município (busca parcial); ver "Município e código IBGE" |
 | `evento` | str \| None | None | Filtro por evento preponderante (ex: "seca") |
+| `cd_ibge` | str \| None | None | Filtro pelo código IBGE do município, 7 dígitos em texto (ex.: "4305108"); outro formato levanta `InvalidParameterError` antes do download |
 | `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
+
+A `cultura` é filtrada por trecho do nome publicado no CSV (`NM_CULTURA_GLOBAL`). Não há catálogo estático: a lista vem
+no próprio CSV (311 MB no período mais recente), então uma cultura fora do publicado só aparece como resultado vazio,
+depois da descarga.
 
 ## Colunas — `sinistros`
 
@@ -69,7 +77,7 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `ano_apolice` | int | Nao | Ano da apolice |
 | `uf` | str | Nao | Sigla UF da propriedade |
 | `municipio` | str | Sim | Nome do municipio |
-| `cd_ibge` | str | Sim | Codigo IBGE do municipio |
+| `cd_ibge` | str | Sim | Código IBGE do município; nulo quando o MAPA publica "-" no lugar do geocódigo (1.516 apólices entre 2006 e 2025), e `municipio` segue com o nome publicado |
 | `cultura` | str | Nao | Cultura segurada (uppercase) |
 | `classificacao` | str | Sim | Classificacao do produto (AGRICOLA, PECUARIO, etc.) |
 | `evento` | str | Nao | Evento preponderante (lowercase) |
@@ -78,9 +86,9 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `valor_premio` | float | Sim | Premio liquido (R$) |
 | `valor_subvencao` | float | Sim | Subvencao federal (R$) |
 | `valor_limite_garantia` | float | Sim | Limite de garantia (R$) |
-| `produtividade_estimada` | float | Sim | Produtividade estimada |
-| `produtividade_segurada` | float | Sim | Produtividade segurada |
-| `nivel_cobertura` | float | Sim | Nivel de cobertura (%) |
+| `produtividade_estimada` | float | Sim | Produtividade estimada; o MAPA não publica a unidade |
+| `produtividade_segurada` | float | Sim | Produtividade segurada; o MAPA não publica a unidade |
+| `nivel_cobertura` | float | Sim | Nível de cobertura em fração (0,65 = 65%): produtividade segurada ÷ estimada, como o MAPA publica |
 | `seguradora` | str | Sim | Razao social da seguradora |
 
 ## Parametros — `apolices`
@@ -92,7 +100,8 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `ano` | int \| None | None | Filtro de ano unico |
 | `ano_inicio` | int \| None | None | Ano inicial do range |
 | `ano_fim` | int \| None | None | Ano final do range |
-| `municipio` | str \| None | None | Filtro por municipio |
+| `municipio` | str \| None | None | Filtro pelo rótulo publicado do município (busca parcial) |
+| `cd_ibge` | str \| None | None | Filtro pelo código IBGE do município (7 dígitos em texto) |
 | `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
 
@@ -102,17 +111,31 @@ Mesmas colunas de `sinistros`, mais:
 
 | Coluna | Tipo | Nullable | Descricao |
 |---|---|---|---|
-| `taxa` | float | Sim | Taxa do premio (%) |
+| `taxa` | float | Sim | Taxa do prêmio em fração (0,1369 = 13,69%): prêmio líquido ÷ limite de garantia, como o MAPA publica |
 
 ## Pipeline de dados
 
-1. Resolve periodos necessarios (2006-2015, 2016-2024, 2025) com base nos filtros de ano
-2. Download CSV bulk do portal dados.agricultura.gov.br (3 arquivos, encoding variavel)
-3. Detecta encoding (UTF-8 → UTF-8-sig → Windows-1252 → ISO-8859-1 → chardet) e separador (`;` ou `,`)
-4. Remove colunas PII (NM_SEGURADO, NR_DOCUMENTO_SEGURADO) e geolocalizacao
-5. Normaliza nomes de colunas (snake_case padronizado)
-6. Converte tipos (float64 para monetarios, int para ano)
-7. Para sinistros: filtra VALOR_INDENIZACAO > 0 e EVENTO_PREPONDERANTE nao vazio
+1. Resolve os períodos pelos filtros de ano: 2006-2015, 2016-2024 e 2025 saem do dicionário fixo; o ano depois de 2025 (e, sem `ano_fim`, até o ano corrente) é procurado no catálogo do pacote no CKAN do MAPA. Ano sem arquivo no catálogo sai com aviso (`UserWarning` e `meta.validation_warnings`), e, sem nenhum arquivo, `meta.source_url` aponta o catálogo consultado. Com o catálogo fora do ar, os anos fixos seguem com aviso; sem nenhum ano fixo no pedido, a falha sobe como `SourceUnavailableError`
+2. Baixa um período por vez para arquivo temporário, recebendo o CSV por partes
+3. Confere o encoding no arquivo inteiro (UTF-8 com suporte a BOM → Windows-1252 → ISO-8859-1), o separador (`;` ou `,`), as aspas, a unicidade dos cabeçalhos, a largura dos registros e os anos das apólices
+4. Lê blocos de 10 mil linhas e remove colunas PII (NM_SEGURADO, NR_DOCUMENTO_SEGURADO) e geolocalização
+5. Normaliza cabeçalhos/textos e aplica filtros de ano, UF, cultura, município e código IBGE em cada bloco
+6. Converte os números selecionados (float64 para monetários, int para ano)
+7. Para sinistros, filtra VALOR_INDENIZACAO > 0 e EVENTO_PREPONDERANTE não vazio; reúne o resultado e encerra o temporário de cada período
+
+Cabeçalhos com acentos, como `VALOR_INDENIZAÇÃO`, são normalizados antes do
+mapeamento. Se a coluna de indenização não puder ser identificada, `sinistros`
+levanta `ParseError`; apólices sem valor de indenização não viram sinistros.
+
+## Município e código IBGE
+
+`municipio=` procura o texto no rótulo que o MAPA publica em `NM_MUNICIPIO_PROPRIEDADE`, e parte
+das apólices sai rotulada com o nome do distrito. Em Caxias do Sul (código 4305108), em 2024, 274
+das 693 apólices do código trazem "Caxias do Sul"; as outras 419 saem como Fazenda Souza (241),
+Criúva (78), Vila Oliva (48), Vila Seca (32) e Santa Lúcia do Piaí (20). Para o município inteiro,
+use `cd_ibge=`, que compara o código publicado em `CD_GEOCMU`. O filtro por código não pega as
+apólices publicadas com "-" no lugar do geocódigo (1.516 entre 2006 e 2025, com `cd_ibge` nulo):
+essas só têm o rótulo. Sem a coluna `CD_GEOCMU` no arquivo, `cd_ibge=` levanta `ParseError`.
 
 ## MetaInfo
 
@@ -120,15 +143,25 @@ Mesmas colunas de `sinistros`, mais:
 df, meta = await mapa_psr.sinistros(return_meta=True)
 print(meta.source)           # "mapa_psr"
 print(meta.source_method)    # "httpx"
-print(meta.parser_version)   # 1
+print(meta.parser_version)   # 4
 print(meta.records_count)    # varia por filtro
 ```
 
 ## Nota de desempenho
 
-Os CSVs do SISSER podem ser grandes (o arquivo 2006-2015 tem ~500k linhas).
-O modulo baixa apenas os periodos necessarios com base nos filtros de ano.
-Timeout de leitura: 180 segundos.
+Os CSVs do SISSER podem ser grandes. O módulo baixa apenas os períodos
+necessários e filtra cada bloco antes de converter todas as colunas numéricas.
+Filtros seletivos reduzem a memória usada pelo processamento; a fonte ainda
+exige o download integral de cada período selecionado.
+
+O arquivo temporário ocupa espaço em disco e é encerrado em sucesso, erro ou
+cancelamento. A API retorna um DataFrame completo: consultas sem filtros ainda
+precisam de memória proporcional ao resultado. A validação integral do CSV e a
+leitura por partes podem aumentar o tempo de processamento. Timeout de leitura
+HTTP: 180 segundos.
+
+O resultado é ordenado por `ano_apolice`. A ordem entre apólices do mesmo ano
+não é garantida; use uma ordenação explícita por suas colunas de interesse.
 
 ## Datasets
 
@@ -141,3 +174,15 @@ Timeout de leitura: 180 segundos.
 - Atualizacao: anual
 - Historico: 2006+
 - Licenca: `livre` (CC-BY, dados publicos governo federal)
+
+## Integridade e período das apólices
+
+O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 4; o contrato de apólices está em 1.1 e o de sinistros permanece em 1.0.
+
+**Chave e registro publicado em dobro (contrato `mapa_psr_apolices` 1.1).** A chave das apólices é `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` e `seguradora`: o número da apólice só é único dentro da seguradora (em 2007, 2008, 2009, 2011 e 2012 o MAPA publica o mesmo número em duas seguradoras, com área e prêmio diferentes). Um registro publicado duas vezes e igual em todas as colunas que o agrobr entrega (em 2009, a apólice 1977000249501 da Mapfre, com a proposta reenviada) sai uma vez só, com aviso (`warn_once`) e a contagem em `source_details["duplicatas_colapsadas"]`. Repetição da chave com qualquer valor diferente levanta `ContractViolationError` (no dataset, `SourceUnavailableError`).
+
+`ano_apolice` é o ano de contratação da apólice, conforme o dicionário SISSER; não identifica a data do evento ou do pagamento. `sinistros` seleciona indenização positiva com evento não vazio. Zero publicado continua zero em `apolices`; valores ausentes continuam nulos. Não se arredondam valores monetários a centavos. Números de apólice e códigos geográficos conservam seus zeros iniciais. Fora o registro publicado em dobro e idêntico, descrito acima, nenhuma linha é deduplicada.
+
+Na captura de 18/09/2026, o catálogo disponibilizava três CSVs, até 2025. O arquivo 2025 tinha indenizações ausentes, o que não demonstra ausência de sinistros. O EOF comprova a leitura completa do arquivo publicado, sem garantir cobertura completa do programa ou atualização dos pagamentos.
+
+Campos textuais preservam literais como `NULL`, `NA`, `None` e `N/A`, sujeitos apenas às normalizações de espaços e caixa já documentadas; eles não são convertidos em ausência pelo leitor CSV. Campo textual vazio continua vazio, exceto `cd_ibge`, que sai nulo. Campos numéricos mantêm a conversão vigente: valores ausentes ou não interpretáveis ficam nulos, sem transformar tokens textuais em zero.

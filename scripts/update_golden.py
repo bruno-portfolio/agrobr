@@ -18,11 +18,16 @@ import asyncio
 import hashlib
 import json
 from datetime import UTC, datetime
-from io import StringIO
+from io import BytesIO, StringIO
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+from agrobr.comexstat import _tls as comexstat_tls
+from agrobr.comexstat import parser as comexstat_parser
+from agrobr.comexstat import query as comexstat_query
+from agrobr.ibge import client as ibge_client
 
 GOLDEN_DIR = Path(__file__).parent.parent / "tests" / "golden_data"
 
@@ -178,11 +183,9 @@ async def capture_bcb() -> None:
 
 
 async def capture_ibge() -> None:
-    import sidrapy
-
     print("Capturing IBGE/pam_soja_sample...")
 
-    df_raw = sidrapy.get_table(
+    df_raw = await ibge_client.fetch_sidra(
         table_code="5457",
         territorial_level="3",
         ibge_territorial_code="all",
@@ -191,9 +194,6 @@ async def capture_ibge() -> None:
         classifications={"782": "40124"},
         header="n",
     )
-
-    if len(df_raw) > 1:
-        df_raw = df_raw.iloc[1:].reset_index(drop=True)
 
     if df_raw.empty:
         print("  ERROR: Empty response from SIDRA")
@@ -206,9 +206,7 @@ async def capture_ibge() -> None:
 
     df_raw.to_csv(case_dir / "response.csv", index=False, encoding="utf-8")
 
-    from agrobr.ibge.client import parse_sidra_response
-
-    df = parse_sidra_response(df_raw.copy())
+    df = ibge_client.parse_sidra_response(df_raw.copy())
 
     expected = _build_expected_from_df(
         df,
@@ -234,7 +232,7 @@ async def capture_ibge() -> None:
             "variable": "8331,216,214,112",
             "territorial_level": "3",
             "period": "2023",
-            "classification_81": "40124",
+            "classification_782": "40124",
         },
         "notes": (
             f"Real data from IBGE SIDRA — PAM nova, quatro variáveis da soja por UF 2023, "
@@ -272,7 +270,7 @@ async def capture_comexstat() -> None:
     async with httpx.AsyncClient(
         timeout=timeout,
         follow_redirects=True,
-        verify=False,
+        verify=comexstat_tls.build_context(),
         headers=headers,
     ) as client:
         response = await client.get(url)
@@ -308,9 +306,8 @@ async def capture_comexstat() -> None:
     csv_text = df_sample.to_csv(index=False, sep=sep)
     (case_dir / "response.csv").write_text(csv_text, encoding="utf-8")
 
-    from agrobr.comexstat.parser import parse_exportacao
-
-    df = parse_exportacao(csv_text)
+    query = comexstat_query.build_query(fluxo="exportacao", produto="soja", ano=ano)
+    df = comexstat_parser.parse_resource(BytesIO(csv_text.encode("utf-8")), query).frame
 
     expected = _build_expected_from_df(
         df,
@@ -322,9 +319,9 @@ async def capture_comexstat() -> None:
     metadata = {
         "source": "comexstat",
         "format": "csv",
-        "parser": "agrobr.comexstat.parser::parse_exportacao()",
-        "parser_version": 1,
-        "parser_kwargs": {},
+        "parser": "agrobr.comexstat.parser::parse_resource()",
+        "parser_version": comexstat_parser.PARSER_VERSION,
+        "parser_kwargs": {"fluxo": "exportacao", "produto": "soja", "ano": ano},
         "needs_real_data": False,
         "captured_at": _now_iso(),
         "api_url": url,

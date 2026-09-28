@@ -7,13 +7,13 @@ from decimal import Decimal, InvalidOperation
 import structlog
 from bs4 import BeautifulSoup, Tag
 
-from agrobr.constants import Fonte
+from agrobr.constants import NOTICIAS_AGRICOLAS_PARSER_VERSION, Fonte
 from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 2
+PARSER_VERSION = NOTICIAS_AGRICOLAS_PARSER_VERSION
 
 UNIDADES = {
     "soja": "BRL/sc60kg",
@@ -29,7 +29,7 @@ UNIDADES = {
     "trigo": "BRL/ton",
     "arroz": "BRL/sc50kg",
     "acucar": "BRL/sc50kg",
-    "acucar_refinado": "BRL/sc50kg",
+    "acucar_refinado": "BRL/kg",
     "etanol_hidratado": "BRL/L",
     "etanol_anidro": "BRL/L",
     "frango_congelado": "BRL/kg",

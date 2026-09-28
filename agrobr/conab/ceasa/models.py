@@ -9,10 +9,10 @@ PENTAHO_BASE = URLS[Fonte.CONAB]["ceasa_prohort"]
 
 # Credenciais públicas do Pentaho CONAB CEASA/PROHORT.
 # Configuráveis via env vars para ambientes que requerem credenciais próprias.
-PENTAHO_AUTH = {
-    "userid": os.environ.get("AGROBR_CONAB_CEASA_USER", "pentaho"),
-    "password": os.environ.get("AGROBR_CONAB_CEASA_PASS", "password"),
-}
+PENTAHO_AUTH = (
+    os.environ.get("AGROBR_CONAB_CEASA_USER", "pentaho"),
+    os.environ.get("AGROBR_CONAB_CEASA_PASS", "password"),
+)
 
 CDA_PROHORT = "/home/PROHORT/precoDia.cda"
 
@@ -24,6 +24,7 @@ FRUTAS: list[str] = [
     "ABACAXI",
     "BANANA NANICA",
     "BANANA PRATA",
+    "COCO VERDE",
     "GOIABA",
     "LARANJA PERA",
     "LIMAO TAHITI",
@@ -56,7 +57,6 @@ HORTALICAS: list[str] = [
     "CEBOLA",
     "CENOURA",
     "CHUCHU",
-    "COCO VERDE",
     "COUVE",
     "COUVE-FLOR",
     "INHAME",
@@ -64,7 +64,6 @@ HORTALICAS: list[str] = [
     "MANDIOCA",
     "MANDIOQUINHA",
     "MILHO VERDE",
-    "OVOS",
     "PEPINO",
     "PIMENTAO VERDE",
     "QUIABO",
@@ -73,9 +72,12 @@ HORTALICAS: list[str] = [
     "VAGEM",
 ]
 
+OVOS: list[str] = ["OVOS"]
+
 CATEGORIAS: dict[str, list[str]] = {
     "FRUTAS": FRUTAS,
     "HORTALICAS": HORTALICAS,
+    "OVOS": OVOS,
 }
 
 PRODUTO_PARA_CATEGORIA: dict[str, str] = {}

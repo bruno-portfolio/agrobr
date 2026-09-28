@@ -1,0 +1,481 @@
+{
+ "source": "funai",
+ "format": "wfs2_geojson",
+ "license": "termo da FUNAI para geoprocessamento e mapas: reprodução com citação da fonte",
+ "needs_real_data": false,
+ "content": "Respostas oficiais do WFS 2.0 da FUNAI gravadas byte a byte: sondas de contagem (count=1) antes e depois e as páginas GeoJSON de cada recorte, com os parâmetros exatos que o agrobr envia (propertyName na ordem do DescribeFeatureType, count/startIndex com sobreposição de 1, sortBy terrai_codigo,gid, BBOX e srsName em EPSG:4326). O esquema (DescribeFeatureType) também é guardado.",
+ "cases": {
+  "tis_prefixo": "terras_indigenas, max_registros=60, tamanho_pagina=25: prefixo de 60 de 665 TIs em 3 páginas (serve também os filtros locais uf e fase; inclui a TI 2001 'AM,PA')",
+  "tis_geo_prefixo": "terras_indigenas_geo, max_registros=1: TI 101 com geometria",
+  "tis_bbox_dentro": "terras_indigenas_geo, bbox (-66.852, -2.627, -66.812, -2.587) dentro da TI 101",
+  "tis_bbox_canto": "terras_indigenas_geo, bbox (-66.9038, -2.6766, -66.8998, -2.6726) no canto do envelope da TI 101: 1 candidato do servidor, 0 com interseção",
+  "tis_oceano": "terras_indigenas, bbox (-30.0, -20.0, -29.9, -19.9) no Atlântico: contagem zero",
+  "tis_camada": "terras_indigenas() com os padrões (max_registros=10000, páginas de 250): a camada inteira, 665 TIs em 3 páginas; serve a lista canônica de fase contra o servidor e as UFs com vários separadores"
+ },
+ "base": "https://geoserver.funai.gov.br/geoserver/Funai/ows",
+ "captured_at": "2026-09-23T08:09:59.728104+00:00",
+ "schema": [
+  {
+   "file": "schema/describe_tis_poligonais.xsd",
+   "sha256": "d29881d3d6f06010dcc0fe432c4bd9d2dc2cdb0b8ecd9127d53e2e24e294d192",
+   "bytes": 2844,
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=Funai%3Atis_poligonais",
+   "fetched_at": "2026-09-23T08:03:10+00:00",
+   "fetched_at_basis": "mtime do arquivo salvo na sondagem"
+  }
+ ],
+ "requests": [
+  {
+   "case": "tis_prefixo",
+   "role": "count_before",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_prefixo/contagem_antes.json",
+   "sha256": "c05a0ed01b6b5f65c41c30fa6fbaa0a7559a3f0fd702604fd4016c9144bbbce4",
+   "bytes": 1361,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:57.398439+00:00"
+  },
+  {
+   "case": "tis_prefixo",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "25",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_prefixo/pagina_0.json",
+   "sha256": "e4c2528ed033ff6acbb913970f259e3f3a86e273cd27c8d153929132eb09b569",
+   "bytes": 17162,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=25&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:57.730804+00:00"
+  },
+  {
+   "case": "tis_prefixo",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "26",
+    "startIndex": "24",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_prefixo/pagina_1.json",
+   "sha256": "12e247885b7b9dd155f6ff10de976e97b0f02e9602cdde577e02ad345abdc6b4",
+   "bytes": 18595,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=26&startIndex=24&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:57.940517+00:00"
+  },
+  {
+   "case": "tis_prefixo",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "11",
+    "startIndex": "49",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_prefixo/pagina_2.json",
+   "sha256": "883b7266d2abb8ea8bdf5e3b9214cf7367380fee57d4157e0a03afdd45ece14b",
+   "bytes": 8439,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=11&startIndex=49&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:57.965142+00:00"
+  },
+  {
+   "case": "tis_prefixo",
+   "role": "count_after",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_prefixo/contagem_depois.json",
+   "sha256": "b72df5998861d84c99d76f992fbf34bb3b8adb3f4134030ac6b0a9c9fc36ac40",
+   "bytes": 1362,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:58.146079+00:00"
+  },
+  {
+   "case": "tis_geo_prefixo",
+   "role": "count_before",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_geo_prefixo/contagem_antes.json",
+   "sha256": "b72df5998861d84c99d76f992fbf34bb3b8adb3f4134030ac6b0a9c9fc36ac40",
+   "bytes": 1362,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:58.170103+00:00"
+  },
+  {
+   "case": "tis_geo_prefixo",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg,the_geom",
+    "count": "1",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A",
+    "srsName": "EPSG:4326"
+   },
+   "file": "tis_geo_prefixo/pagina_0.json",
+   "sha256": "08995b1aa16dacf694e7a2e17ddc2d912cbf63c68cccc971110718035f562307",
+   "bytes": 5250,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg%2Cthe_geom&count=1&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A&srsName=EPSG%3A4326",
+   "fetched_at": "2026-09-23T08:09:58.466294+00:00"
+  },
+  {
+   "case": "tis_geo_prefixo",
+   "role": "count_after",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_geo_prefixo/contagem_depois.json",
+   "sha256": "b72df5998861d84c99d76f992fbf34bb3b8adb3f4134030ac6b0a9c9fc36ac40",
+   "bytes": 1362,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:58.492185+00:00"
+  },
+  {
+   "case": "tis_bbox_dentro",
+   "role": "count_before",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-66.852,-2.627,-66.812,-2.587,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_bbox_dentro/contagem_antes.json",
+   "sha256": "6c1313757488019fc1a6f261fa90c27ec21b855e3e2412da5db0f134b7dc8362",
+   "bytes": 1413,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&BBOX=-66.852%2C-2.627%2C-66.812%2C-2.587%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:58.675113+00:00"
+  },
+  {
+   "case": "tis_bbox_dentro",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg,the_geom",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-66.852,-2.627,-66.812,-2.587,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A",
+    "srsName": "EPSG:4326"
+   },
+   "file": "tis_bbox_dentro/pagina_0.json",
+   "sha256": "e6fd4698e6095c66b342378d5b9049e086292f29d162f4182a37152f7b395a2c",
+   "bytes": 5301,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg%2Cthe_geom&count=1&startIndex=0&BBOX=-66.852%2C-2.627%2C-66.812%2C-2.587%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A&srsName=EPSG%3A4326",
+   "fetched_at": "2026-09-23T08:09:58.980326+00:00"
+  },
+  {
+   "case": "tis_bbox_dentro",
+   "role": "count_after",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-66.852,-2.627,-66.812,-2.587,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_bbox_dentro/contagem_depois.json",
+   "sha256": "6c1313757488019fc1a6f261fa90c27ec21b855e3e2412da5db0f134b7dc8362",
+   "bytes": 1413,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&BBOX=-66.852%2C-2.627%2C-66.812%2C-2.587%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:59.012433+00:00"
+  },
+  {
+   "case": "tis_bbox_canto",
+   "role": "count_before",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-66.9038,-2.6766,-66.8998,-2.6726,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_bbox_canto/contagem_antes.json",
+   "sha256": "be93552978c47993f8f21cc28e76926f1dd9cbc9fcd1b5e93d43eed9716312a6",
+   "bytes": 1417,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&BBOX=-66.9038%2C-2.6766%2C-66.8998%2C-2.6726%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:59.180993+00:00"
+  },
+  {
+   "case": "tis_bbox_canto",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg,the_geom",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-66.9038,-2.6766,-66.8998,-2.6726,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A",
+    "srsName": "EPSG:4326"
+   },
+   "file": "tis_bbox_canto/pagina_0.json",
+   "sha256": "2ced93cf6a0b35ca429e942f37caf2647a29a6be3afe16a61cf99be938267ecd",
+   "bytes": 5305,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg%2Cthe_geom&count=1&startIndex=0&BBOX=-66.9038%2C-2.6766%2C-66.8998%2C-2.6726%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A&srsName=EPSG%3A4326",
+   "fetched_at": "2026-09-23T08:09:59.491380+00:00"
+  },
+  {
+   "case": "tis_bbox_canto",
+   "role": "count_after",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-66.9038,-2.6766,-66.8998,-2.6726,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_bbox_canto/contagem_depois.json",
+   "sha256": "be93552978c47993f8f21cc28e76926f1dd9cbc9fcd1b5e93d43eed9716312a6",
+   "bytes": 1417,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&BBOX=-66.9038%2C-2.6766%2C-66.8998%2C-2.6726%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:59.522416+00:00"
+  },
+  {
+   "case": "tis_oceano",
+   "role": "count_before",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-30.0,-20.0,-29.9,-19.9,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_oceano/contagem_antes.json",
+   "sha256": "c5255aa5d42497fe295a81e874ecd79f8f1c3d1ab9745af01a1301809332b5ca",
+   "bytes": 147,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&BBOX=-30.0%2C-20.0%2C-29.9%2C-19.9%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:59.699648+00:00"
+  },
+  {
+   "case": "tis_oceano",
+   "role": "count_after",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "BBOX": "-30.0,-20.0,-29.9,-19.9,EPSG:4326",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_oceano/contagem_depois.json",
+   "sha256": "c5255aa5d42497fe295a81e874ecd79f8f1c3d1ab9745af01a1301809332b5ca",
+   "bytes": 147,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&BBOX=-30.0%2C-20.0%2C-29.9%2C-19.9%2CEPSG%3A4326&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:09:59.727941+00:00"
+  },
+  {
+   "case": "tis_camada",
+   "role": "count_before",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_camada/contagem_antes.json",
+   "sha256": "b72df5998861d84c99d76f992fbf34bb3b8adb3f4134030ac6b0a9c9fc36ac40",
+   "bytes": 1362,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:52:17.001673+00:00"
+  },
+  {
+   "case": "tis_camada",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "250",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_camada/pagina_0.json",
+   "sha256": "783f3e2f000d0b2abad79f8502c6231c4965103391563922fc77d5732896f58a",
+   "bytes": 165005,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=250&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:52:17.042662+00:00"
+  },
+  {
+   "case": "tis_camada",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "251",
+    "startIndex": "249",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_camada/pagina_1.json",
+   "sha256": "9be167b379b1f801017a3f1f88c0f1c5c1b1bfef0ef719ba9166aa149be9bfb2",
+   "bytes": 167218,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=251&startIndex=249&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:52:17.351110+00:00"
+  },
+  {
+   "case": "tis_camada",
+   "role": "page",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "166",
+    "startIndex": "499",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_camada/pagina_2.json",
+   "sha256": "fe7cc0b60ffbeceaa3349541a0300f41ae06354bf3dbf6931b262773a343fa77",
+   "bytes": 110793,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=166&startIndex=499&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:52:17.715542+00:00"
+  },
+  {
+   "case": "tis_camada",
+   "role": "count_after",
+   "params": {
+    "service": "WFS",
+    "version": "2.0.0",
+    "request": "GetFeature",
+    "typeNames": "Funai:tis_poligonais",
+    "outputFormat": "application/json",
+    "propertyName": "gid,terrai_codigo,terrai_nome,etnia_nome,municipio_nome,uf_sigla,superficie_perimetro_ha,fase_ti,modalidade_ti,reestudo_ti,cr,faixa_fronteira,undadm_codigo,undadm_nome,undadm_sigla,dominio_uniao,data_atualizacao,epsg",
+    "count": "1",
+    "startIndex": "0",
+    "sortBy": "terrai_codigo A,gid A"
+   },
+   "file": "tis_camada/contagem_depois.json",
+   "sha256": "b72df5998861d84c99d76f992fbf34bb3b8adb3f4134030ac6b0a9c9fc36ac40",
+   "bytes": 1362,
+   "content_type": "application/json;charset=UTF-8",
+   "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=0&sortBy=terrai_codigo+A%2Cgid+A",
+   "fetched_at": "2026-09-23T08:52:18.093393+00:00"
+  }
+ ]
+}

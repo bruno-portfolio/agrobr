@@ -1,0 +1,131 @@
+{
+  "oracle": "Independent physical row ranges and Excel cells via openpyxl, without production parser",
+  "sha256": "ae5932cbef54b2b141b8b45adc1e66c6ff091104725989438f6583ff4fa5e050",
+  "total_records": 66,
+  "cultures": [
+    "Algodão",
+    "Arroz",
+    "Feijão 1ª",
+    "Milho 1ª",
+    "Milho 2ª",
+    "Soja",
+    "Trigo"
+  ],
+  "week": "2025-09-27",
+  "columns": [
+    "cultura",
+    "safra",
+    "operacao",
+    "estado",
+    "semana_atual",
+    "pct_ano_anterior",
+    "pct_semana_anterior",
+    "pct_semana_atual",
+    "pct_media_5_anos",
+    "revisado",
+    "n_estados",
+    "cobertura_area_pct"
+  ],
+  "blocks": [
+    {
+      "first_row": 12,
+      "last_row": 19,
+      "culture": "Algodão"
+    },
+    {
+      "first_row": 27,
+      "last_row": 33,
+      "culture": "Arroz"
+    },
+    {
+      "first_row": 41,
+      "last_row": 49,
+      "culture": "Feijão 1ª"
+    },
+    {
+      "first_row": 57,
+      "last_row": 66,
+      "culture": "Milho 1ª"
+    },
+    {
+      "first_row": 74,
+      "last_row": 83,
+      "culture": "Milho 2ª"
+    },
+    {
+      "first_row": 91,
+      "last_row": 103,
+      "culture": "Soja"
+    },
+    {
+      "first_row": 111,
+      "last_row": 119,
+      "culture": "Trigo"
+    }
+  ],
+  "samples": [
+    {
+      "row": 12,
+      "culture": "Algodão",
+      "state": "MA",
+      "operation": "Colheita",
+      "value_cell": "E12",
+      "value": 1
+    },
+    {
+      "row": 66,
+      "culture": "Milho 1ª",
+      "state": "MEDIA_ESTADOS",
+      "operation": "Semeadura",
+      "value_cell": "E66",
+      "value": 0.267
+    },
+    {
+      "row": 119,
+      "culture": "Trigo",
+      "state": "MEDIA_ESTADOS",
+      "operation": "Colheita",
+      "value_cell": "E119",
+      "value": 0.26194954128440373
+    }
+  ],
+  "culturas": [
+    "Algodão",
+    "Arroz",
+    "Feijão 1ª",
+    "Milho 1ª",
+    "Milho 2ª",
+    "Soja",
+    "Trigo"
+  ],
+  "operacoes": [
+    "Colheita",
+    "Semeadura"
+  ],
+  "estados": [
+    "BA",
+    "GO",
+    "MA",
+    "MEDIA_ESTADOS",
+    "MG",
+    "MS",
+    "MT",
+    "PI",
+    "PR",
+    "RS",
+    "SC",
+    "SP",
+    "TO"
+  ],
+  "revision_cell": {
+    "cell": "D113",
+    "raw": "10%*",
+    "value": 0.1,
+    "revisado": true
+  },
+  "unchanged_cell": {
+    "cell": "E12",
+    "value": 1.0,
+    "revisado": false
+  }
+}

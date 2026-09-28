@@ -16,6 +16,8 @@ IMEA_CADEIAS: dict[str, int] = {
     "pork": 7,
     "leite": 8,
     "dairy": 8,
+    "conjuntura": 5,
+    "custo_producao": 10,
 }
 
 _CADEIA_NAMES: dict[int, str] = {
@@ -26,6 +28,7 @@ _CADEIA_NAMES: dict[int, str] = {
     5: "conjuntura",
     7: "suinocultura",
     8: "leite",
+    10: "custo_producao",
 }
 
 IMEA_COLUMNS_MAP: dict[str, str] = {

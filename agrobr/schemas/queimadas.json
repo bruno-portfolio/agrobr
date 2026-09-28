@@ -1,6 +1,6 @@
 {
   "name": "queimadas.focos",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "effective_from": "0.10.0",
   "breaking_policy": "major",
   "primary_key": [
@@ -12,9 +12,19 @@
   ],
   "required_columns": [
     "data",
+    "hora_gmt",
     "lat",
     "lon",
-    "satelite"
+    "satelite",
+    "municipio",
+    "municipio_id",
+    "estado",
+    "uf",
+    "bioma",
+    "numero_dias_sem_chuva",
+    "precipitacao",
+    "risco_fogo",
+    "frp"
   ],
   "dtypes": {
     "data": "date",
@@ -30,7 +40,8 @@
     "numero_dias_sem_chuva": "float",
     "precipitacao": "float",
     "risco_fogo": "float",
-    "frp": "float"
+    "frp": "float",
+    "cod_municipio": "int"
   },
   "nullable": {
     "data": false,
@@ -46,7 +57,8 @@
     "numero_dias_sem_chuva": true,
     "precipitacao": true,
     "risco_fogo": true,
-    "frp": true
+    "frp": true,
+    "cod_municipio": true
   },
   "columns": [
     {
@@ -201,6 +213,17 @@
       "deprecated": false,
       "description": "",
       "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+      "min_value": null,
       "max_value": null
     }
   ],

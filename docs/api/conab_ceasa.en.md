@@ -27,7 +27,7 @@ df = await agrobr.conab.ceasa_precos(produto="tomate")
 |--------|------|-------------|
 | `data` | datetime | Price date (per CEASA, extracted from the header) |
 | `produto` | str | Product name (e.g. TOMATE, ABACAXI) |
-| `categoria` | str | FRUTAS or HORTALICAS |
+| `categoria` | str | FRUTAS, HORTALICAS or OVOS; null (with a warning) for a product outside agrobr's table |
 | `unidade` | str | KG, UN or DZ |
 | `ceasa` | str | CEASA name (e.g. CEAGESP - SAO PAULO) |
 | `ceasa_uf` | str | CEASA state (e.g. SP) |
@@ -71,7 +71,7 @@ List of dicts with `nome` and `uf` for each CEASA, sorted by name.
 
 ## `conab.ceasa_categorias()`
 
-Product categories (FRUTAS, HORTALICAS).
+Product categories (FRUTAS, HORTALICAS, OVOS). FRUTAS and HORTALICAS follow the groups of PROHORT's official "Hortaliças e Frutas" panel (Conab's Portal de Informações); eggs (OVOS) are outside both official groups. Brócolo, cará, couve, jiló, mandioquinha, quiabo and vagem do not appear in the panel and stay in HORTALICAS as agrobr's own classification.
 
 ```python
 import agrobr
@@ -128,7 +128,7 @@ print(df[["ceasa", "ceasa_uf", "preco"]].sort_values("preco"))
 - **Provider:** CONAB — Companhia Nacional de Abastecimento
 - **System:** PROHORT (Programa Brasileiro de Modernizacao do Mercado Hortigranjeiro)
 - **Frequency:** Daily (wholesale prices)
-- **Coverage:** 48 products (20 fruits, 28 vegetables), 43 CEASAs, 20 states
+- **Coverage:** 48 products (21 fruits, 26 vegetables and eggs), 43 CEASAs, 20 states
 - **Format:** JSON (Pentaho CDA REST API)
 - **License:** zona_cinza (embedded public credentials, API not officially documented)
 - **Portal:** [Portal de Informacoes CONAB](https://portaldeinformacoes.conab.gov.br/mercado-atacadista-hortigranjeiro.html)

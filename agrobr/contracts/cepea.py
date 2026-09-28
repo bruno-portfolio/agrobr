@@ -10,8 +10,8 @@ from agrobr.contracts import (
 
 CEPEA_INDICADOR_V1 = Contract(
     name="cepea.indicador",
-    version="1.0",
-    effective_from="0.3.0",
+    version="1.1",
+    effective_from="2.0.0",
     primary_key=["data", "produto"],
     columns=[
         Column(
@@ -63,6 +63,24 @@ CEPEA_INDICADOR_V1 = Contract(
             type=ColumnType.STRING,
             nullable=True,
             stable=False,
+        ),
+        Column(
+            name="valor_usd",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="USD",
+            stable=False,
+            min_value=0,
+            description="Preço em dólar publicado na mesma linha pelo CEPEA; nulo quando a fonte não divulga.",
+        ),
+        Column(
+            name="peso_medio_kg",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="kg",
+            stable=False,
+            min_value=0,
+            description="Bezerro MS: peso médio da tabela auxiliar do CEPEA; nulo para os demais produtos.",
         ),
     ],
     guarantees=[

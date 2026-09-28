@@ -1,0 +1,34 @@
+{
+  "source": "INCRA administrative publication",
+  "edition": "2026-09-03",
+  "file_name_date": "2026-06-08",
+  "pdf_creation_date": "2026-09-17T14:11:28-03:00",
+  "files": [
+    {
+      "file": "publication.pdf",
+      "status": 200,
+      "bytes": 927667,
+      "sha256": "2ebd25f28bc01a4ec9f173e262e427e6b0a645a9c36248e4496d65374a82a23d",
+      "requested_at": "2026-09-22T19:33:42.876Z",
+      "received_at": "2026-09-22T19:33:43.370Z",
+      "url": "https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas/andamento_dos_processos_quilombolas-08_06_2026.pdf/@@display-file/file"
+    },
+    {
+      "file": "publisher.html",
+      "status": 200,
+      "bytes": 411177,
+      "sha256": "42875f0478e15430a7a7a2b332d03e95334b81c6ccfeae9f0fad42487f9a5886",
+      "requested_at": "2026-09-22T19:33:35.236Z",
+      "received_at": "2026-09-22T19:33:36.042Z",
+      "url": "https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas"
+    },
+    {
+      "file": "oracle.json",
+      "sha256": "bb26a844ca782413e07a635a35aee58bc7b3e1f6417d3fc9f77c324f18ce3528",
+      "bytes": 338122
+    }
+  ],
+  "oracle_basis": "tagged PDF logical structure (Table/TR/TD/MCID) read with PDFium; column by text object center against drawn vertical grid lines; no pdfminer/pdfplumber or SDK code",
+  "oracle_manual_review": "rendered cells of records 11, 44-46, 51, 57, 69, 73 and 637 read visually",
+  "semantic_primary_key": []
+}

@@ -5,11 +5,15 @@ por dataset. Cada dataset tem `schema_version` proprio (independente de `lib_ver
 
 ## Regras
 
+A versão da biblioteca também segue SemVer e sobe major quando o comportamento
+muda de forma ampla, mesmo quando nem todo contrato de dataset muda.
+
 | Tipo de mudanca | Bump | Exemplo |
 |---|---|---|
 | Campo removido ou renomeado | **Major** | Renomear `preco` > `price` |
 | Tipo de dado alterado (narrowing) | **Major** | `price: float64` > `price: str` |
 | Coluna obrigatoria vira opcional | **Major** | `uf: required` > `uf: nullable` |
+| Chave primária altera a identidade da observação | **Major** | `estimativa_safra` 3.0 distingue fonte e mês LSPA |
 | Nova coluna opcional adicionada | Minor | Adiciona `latitude` |
 | Constraint adicionada | Minor | Adiciona `price_min: 0` |
 | Nova fonte de fallback | Patch | Adiciona ABIOVE como backup |
@@ -34,6 +38,8 @@ pode quebrar codigo downstream que depende do schema atual.
 
 ### `estimativa_safra`
 
+Contrato 3.0: chave `[fonte, safra, produto, uf, levantamento, ano_lspa, mes_lspa]`. A mudança evita colisões entre meses LSPA e exige atualizar chaves persistidas, embora as dez colunas anteriores sejam mantidas. `CONAB_SAFRA_V2` permanece como contrato 2.0 da fonte.
+
 | Coluna | Tipo | Garantia | Desde |
 |---|---|---|---|
 | `produto` | `str` | obrigatória | v0.4.0 |
@@ -45,6 +51,8 @@ pode quebrar codigo downstream que depende do schema atual.
 | `producao` | `float` | opcional, >= 0 | v0.4.0 |
 | `levantamento` | `int` | opcional, 1-12; nulo quando a fonte é o LSPA | v1.2.0 |
 | `data_publicacao` | `date` | opcional; nula quando a fonte é o LSPA | v1.2.0 |
+| `ano_lspa` | `Int64` | nullable; ano observado LSPA, nulo para CONAB | contrato 3.0 |
+| `mes_lspa` | `Int64` | nullable, 1–12; mês observado LSPA, nulo para CONAB | contrato 3.0 |
 | `fonte` | `str` | obrigatória | v0.6.0 |
 
 ### `producao_anual` (IBGE PAM)

@@ -1,51 +1,62 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
-
 import pytest
 
-
-@pytest.mark.asyncio
-async def test_fetch_perfis_calls_paginated():
-    with patch("agrobr.embrapa_solos.client.fetch_wfs_paginated", new_callable=AsyncMock) as mock:
-        mock.return_value = ([b"page1"], "https://example.com")
-
-        from agrobr.embrapa_solos.client import fetch_perfis
-
-        pages, url = await fetch_perfis()
-        assert len(pages) == 1
-        assert "embrapa_solos" in str(mock.call_args)
+from agrobr.embrapa_solos import client, query
+from agrobr.exceptions import ParseError
+from tests.helpers import (
+    embrapa_solos_features,
+    install_embrapa_solos_wfs,
+)
 
 
-@pytest.mark.asyncio
-async def test_fetch_perfis_no_cql():
-    with patch("agrobr.embrapa_solos.client.fetch_wfs_paginated", new_callable=AsyncMock) as mock:
-        mock.return_value = ([b"page1"], "https://example.com")
+@pytest.mark.parametrize(
+    "defect",
+    ["overlap_changed", "descending", "empty", "overlap_only", "excess", "count", "missing_count"],
+)
+async def test_second_page_integrity_aborts(defect, monkeypatch):
+    features = embrapa_solos_features()
 
-        from agrobr.embrapa_solos.client import fetch_perfis
+    def transform(request, envelope):
+        if request.url.params.get("startIndex") != "1":
+            return
+        if defect == "overlap_changed":
+            envelope["features"][0]["properties"]["titulo"] = "changed"
+        elif defect == "descending":
+            envelope["features"][1]["properties"]["fid"] = 1
+        elif defect == "count":
+            envelope.update(numberMatched=100, totalFeatures=100)
+        elif defect == "missing_count":
+            del envelope["numberMatched"]
+        else:
+            envelope["features"] = {
+                "empty": [],
+                "overlap_only": [features[1]],
+                "excess": features[1:],
+            }[defect]
+            envelope["numberReturned"] = len(envelope["features"])
 
-        await fetch_perfis()
-        call_kwargs = mock.call_args
-        assert "cql" not in call_kwargs.kwargs or call_kwargs.kwargs.get("cql") is None
+    install_embrapa_solos_wfs(monkeypatch, features, transform)
+    with pytest.raises(ParseError):
+        await client.fetch_acquisition(
+            query.build_query(
+                product="perfis",
+                include_geometry=False,
+                max_registros=None,
+                tamanho_pagina=2,
+                uf="SP",
+            )
+        )
 
 
-@pytest.mark.asyncio
-async def test_fetch_perfis_geo_no_cql():
-    with patch(
-        "agrobr.embrapa_solos.client.fetch_wfs", new_callable=AsyncMock, return_value=b"x" * 100
-    ):
-        from agrobr.embrapa_solos.client import fetch_perfis_geo
-
-        _, url = await fetch_perfis_geo()
-        assert "CQL_FILTER" not in url
-
-
-@pytest.mark.asyncio
-async def test_fetch_mapa_solos_calls_paginated():
-    with patch("agrobr.embrapa_solos.client.fetch_wfs_paginated", new_callable=AsyncMock) as mock:
-        mock.return_value = ([b"page1"], "https://example.com")
-
-        from agrobr.embrapa_solos.client import fetch_mapa_solos
-
-        pages, url = await fetch_mapa_solos()
-        assert mock.called
+@pytest.mark.parametrize("geo", [False, True])
+async def test_bbox_null_geometry_fails_even_if_uf_excludes(geo, monkeypatch):
+    features = embrapa_solos_features(include_geometry=True)[:1]
+    features[0]["geometry"] = None
+    install_embrapa_solos_wfs(monkeypatch, features)
+    with pytest.raises(ParseError, match="nula"):
+        await client.fetch_acquisition(
+            query.build_query(
+                product="perfis", include_geometry=geo, max_registros=1, uf="SP", bbox=(0, 0, 1, 1)
+            )
+        )

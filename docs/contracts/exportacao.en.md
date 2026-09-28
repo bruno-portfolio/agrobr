@@ -1,4 +1,4 @@
-# exportacao v1.0
+# exportacao v1.1
 
 Brazilian agricultural exports by product, state and month.
 
@@ -23,20 +23,36 @@ Brazilian agricultural exports by product, state and month.
 | `uf` | str | ✅ | - | Yes |
 | `kg_liquido` | float | ✅ | kg | Yes |
 | `valor_fob_usd` | float | ✅ | USD | Yes |
+| `volume_ton` | float | ✅ | t (`kg_liquido` / 1000) | No |
 
 **Primary key:** `[ano, mes, produto, uf]`
+
+The dataset returns only these columns, in this order, from both sources. ABIOVE's `receita_usd_mil`, which is `valor_fob_usd` in thousands, stays in the [source](../api/abiove.md).
 
 **Constraints:** `ano >= 1997`, `mes` between 1 and 12, `kg_liquido >= 0`, `valor_fob_usd >= 0`
 
 ## Product semantics
 
-- `oleo_soja` covers the complete NCM heading `1507`, including crude,
-  refined, and other soybean oils. The adapter consolidates the different NCM
-  codes by `ano`, `mes`, and `uf` before validating the primary key.
-- `oleo_soja_bruto` remains available in the standalone ComexStat API as the
-  specific code `15071000`, but it is not part of this dataset's vocabulary.
-- The ABIOVE fallback uses the generic `oleo` category, equivalent to the
-  scope of `oleo_soja`, and returns the dataset's canonical product name.
+Each product sums every NCM code that makes it up, with the codes in force in each year
+("included / not included" table in the [ComexStat API](../api/comexstat.md)):
+
+- `soja`: soybeans, whether or not broken, except seed (`12019000`; `12010090` until 2013).
+- `milho`: the whole of heading `1005`.
+- `cafe`: not roasted and roasted, decaffeinated or not (`09011`, `09012`); husks and
+  substitutes (`09019000`) and soluble coffee (`2101`) are excluded.
+- `algodao`: `5201` (not carded or combed) and `5203` (carded or combed); waste (`5202`),
+  yarn and fabrics are excluded.
+- `acucar`: the whole of heading `1701` (raw cane and beet sugar and refined sugar).
+- `farelo_soja`: the whole of heading `2304` (flours and pellets and cake and other residues).
+- `oleo_soja`: the whole of heading `1507` (crude, refined and other).
+
+The adapter consolidates each product's codes by `ano`, `mes`, and `uf` before validating
+the primary key; the `ncm` column is not part of the dataset output (per-NCM detail is in
+`agrobr.comexstat`). `oleo_soja_bruto` remains available in the standalone ComexStat API
+as the specific code `15071000`, but it is not part of this dataset's vocabulary. The
+ABIOVE fallback uses the generic `farelo` and `oleo` categories, with the same scope as
+`farelo_soja` and `oleo_soja` (2025 meal: ABIOVE 23.30 Mt × heading `2304` 23.27 Mt),
+and returns the dataset's canonical product name.
 
 ## Guarantees
 
@@ -56,6 +72,8 @@ Brazilian agricultural exports by product, state and month.
   is null for these national totals.
 - ABIOVE does not provide `cafe`, `algodao`, or `acucar`. For these products, a
   ComexStat failure ends the cascade without downloading the fallback file.
+- The license changes on fallback: ComexStat is `livre`, and ABIOVE is `zona_cinza`. `meta.license` gives
+  the one of the delivered data, and `datasets.info("exportacao")["licenses"]` lists both.
 
 ## Example
 

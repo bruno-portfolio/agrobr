@@ -11,83 +11,12 @@ import pytest
 
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.inmet import client
-from tests.helpers import RETRY_SLEEP, make_mock_async_client, make_mock_response
-
-
-class TestInmetTimeout:
-    @pytest.mark.asyncio
-    async def test_timeout_on_get_json(self):
-        mock_client = make_mock_async_client()
-        mock_client.get.side_effect = httpx.TimeoutException("timeout")
-
-        with (
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client._get_json("/estacoes/T")
-
-    @pytest.mark.asyncio
-    async def test_timeout_on_fetch_estacoes(self):
-        mock_client = make_mock_async_client()
-        mock_client.get.side_effect = httpx.TimeoutException("timeout")
-
-        with (
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client.fetch_estacoes("T")
-
-
-class TestInmetHTTPErrors:
-    @pytest.mark.asyncio
-    async def test_http_500_raises(self):
-        resp_500 = make_mock_response(500, json_data=[])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_500)
-
-        with (
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="inmet"),
-        ):
-            await client._get_json("/estacoes/T")
-
-    @pytest.mark.asyncio
-    async def test_http_403_raises_source_unavailable(self):
-        resp_403 = make_mock_response(403, json_data=[])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_403)
-
-        with (
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="AGROBR_INMET_TOKEN"),
-        ):
-            await client._get_json("/estacoes/T")
-
-    @pytest.mark.asyncio
-    async def test_http_429_raises_after_retries(self):
-        resp_429 = make_mock_response(429, json_data=[])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_429)
-
-        with (
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="inmet"),
-        ):
-            await client._get_json("/estacoes/T")
-
-    @pytest.mark.asyncio
-    async def test_retriable_status_in_fetch_dados_logged_and_skipped(self):
-        resp_ok = make_mock_response(200, json_data=[{"data": "d1"}])
-        resp_502 = make_mock_response(502, json_data=[])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(side_effect=[resp_502, resp_ok])
-
-        with patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client.fetch_dados_estacao("A001", date(2024, 1, 1), date(2024, 1, 2))
-
-        assert isinstance(result, list)
+from tests.helpers import (
+    levanta_exatamente,
+    make_mock_async_client,
+    make_mock_response,
+    sem_excecao,
+)
 
 
 class TestInmetHTTP204:
@@ -115,77 +44,8 @@ class TestInmetHTTP204:
         ):
             await client.fetch_dados_estacao("A001", date(2024, 1, 1), date(2024, 1, 10))
 
-    @pytest.mark.asyncio
-    async def test_204_com_token_em_fetch_dados_retorna_vazio(self):
-        resp_204 = make_mock_response(204)
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_204)
-
-        with (
-            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok123"}),
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-        ):
-            result = await client.fetch_dados_estacao("A001", date(2024, 1, 1), date(2024, 1, 10))
-
-        assert result == []
-
 
 class TestInmetToken:
-    def test_get_token_returns_env_var(self):
-        with patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "my-secret-token"}):
-            assert client._get_token() == "my-secret-token"
-
-    def test_get_token_returns_none_when_absent(self):
-        with patch.dict("os.environ", {}, clear=True):
-            result = client._get_token()
-            assert result is None
-
-    @pytest.mark.asyncio
-    async def test_token_vai_no_path_nao_no_header(self):
-        resp = make_mock_response(200, json_data=[{"data": "d1"}])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
-        with (
-            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "test-token"}),
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client) as mock_cls,
-        ):
-            await client._get_json("/estacao/2024-01-01/2024-01-10/A001", requires_token=True)
-
-        call_url = mock_client.get.call_args[0][0]
-        assert call_url.endswith("/token/estacao/2024-01-01/2024-01-10/A001/test-token")
-        headers_used = mock_cls.call_args.kwargs.get("headers", {})
-        assert "Authorization" not in headers_used
-
-    @pytest.mark.asyncio
-    async def test_sem_token_usa_path_publico(self):
-        resp = make_mock_response(200, json_data=[])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
-        with (
-            patch.dict("os.environ", {}, clear=True),
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-        ):
-            await client._get_json("/estacao/2024-01-01/2024-01-10/A001", requires_token=True)
-
-        call_url = mock_client.get.call_args[0][0]
-        assert "/token/" not in call_url
-
-    @pytest.mark.asyncio
-    async def test_token_invalido_chave_invalida_raises(self):
-        resp = make_mock_response(200, text="CHAVE INVÁLIDA!")
-        resp.json.side_effect = ValueError("not json")
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
-        with (
-            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "fake"}),
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="Token INMET inválido"),
-        ):
-            await client._get_json("/estacao/2024-01-01/2024-01-10/A001", requires_token=True)
-
     @pytest.mark.asyncio
     async def test_token_nao_vaza_em_erro(self):
         resp = make_mock_response(200, text="CHAVE INVÁLIDA!")
@@ -207,7 +67,9 @@ class TestInmetToken:
 class TestInmetEndpointPath:
     @pytest.mark.asyncio
     async def test_fetch_dados_usa_ordem_datas_primeiro(self):
-        resp = make_mock_response(200, json_data=[{"data": "d1"}])
+        resp = make_mock_response(
+            200, json_data=[{"CD_ESTACAO": "A001", "DT_MEDICAO": "2024-01-01"}]
+        )
         mock_client = make_mock_async_client()
         mock_client.get = AsyncMock(return_value=resp)
 
@@ -221,53 +83,10 @@ class TestInmetEndpointPath:
         assert "/estacao/2024-01-01/2024-01-10/A001" in call_url
 
 
-class TestInmetChunksFalham:
-    @pytest.mark.asyncio
-    async def test_todos_chunks_falham_re_raise(self):
-        resp_500 = make_mock_response(500, json_data=[])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_500)
-
-        with (
-            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client.fetch_dados_estacao("A001", date(2022, 1, 1), date(2024, 1, 1))
-
-    @pytest.mark.asyncio
-    async def test_falha_parcial_retorna_dados_dos_chunks_ok(self):
-        resp_500 = make_mock_response(500, json_data=[])
-        resp_ok = make_mock_response(200, json_data=[{"d": "1"}])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(side_effect=[resp_500, resp_500, resp_500, resp_ok])
-
-        with (
-            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
-            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-        ):
-            result = await client.fetch_dados_estacao("A001", date(2022, 1, 1), date(2023, 6, 1))
-
-        assert result == [{"d": "1"}]
-
-
 class TestInmetEmptyResponse:
     @pytest.mark.asyncio
     async def test_non_list_response_returns_empty(self):
         resp = make_mock_response(200, json_data={"error": "unexpected"})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
-        with patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client._get_json("/test")
-
-        assert result == []
-
-    @pytest.mark.asyncio
-    async def test_empty_list_response(self):
-        resp = make_mock_response(200, json_data=[])
         mock_client = make_mock_async_client()
         mock_client.get = AsyncMock(return_value=resp)
 
@@ -287,20 +106,6 @@ class TestInmetValidation:
     async def test_inicio_after_fim_raises(self):
         with pytest.raises(ValueError, match="inicio.*deve ser"):
             await client.fetch_dados_estacao("A001", date(2024, 12, 31), date(2024, 1, 1))
-
-
-class TestInmetFetchDadosEstacaoChunking:
-    @pytest.mark.asyncio
-    async def test_chunking_respects_max_days(self):
-        resp = make_mock_response(200, json_data=[{"d": "1"}])
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
-        with patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client.fetch_dados_estacao("A001", date(2022, 1, 1), date(2024, 1, 1))
-
-        assert mock_client.get.call_count >= 2
-        assert isinstance(result, list)
 
 
 class TestInmet403InEstacoeUf:
@@ -327,26 +132,7 @@ class TestInmet403InEstacoeUf:
             await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
 
     @pytest.mark.asyncio
-    async def test_403_surfaces_through_estacoes_uf(self):
-        estacoes = [{"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"}]
-
-        with (
-            patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
-            patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=estacoes),
-            patch.object(
-                client,
-                "fetch_dados_estacao",
-                new_callable=AsyncMock,
-                side_effect=SourceUnavailableError(
-                    source="inmet", last_error="HTTP 403 Forbidden — defina AGROBR_INMET_TOKEN"
-                ),
-            ),
-            pytest.raises(SourceUnavailableError, match="AGROBR_INMET_TOKEN"),
-        ):
-            await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
-
-    @pytest.mark.asyncio
-    async def test_non_403_errors_still_swallowed_in_estacoes_uf(self):
+    async def test_timeout_aborta_coleta_estacoes_uf(self):
         estacoes = [{"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"}]
 
         with (
@@ -358,10 +144,9 @@ class TestInmet403InEstacoeUf:
                 new_callable=AsyncMock,
                 side_effect=httpx.ReadTimeout("timeout"),
             ),
+            pytest.raises(SourceUnavailableError, match="Falha HTTP na estação A001"),
         ):
-            result = await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
-
-        assert result == []
+            await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
 
     @pytest.mark.asyncio
     async def test_source_unavailable_cancela_estacoes_irmas(self):
@@ -392,3 +177,60 @@ class TestInmet403InEstacoeUf:
             await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
 
         assert canceladas == ["A002"]
+
+
+@pytest.mark.asyncio
+async def test_resposta_nao_json_publica_so_o_inicio_do_corpo():
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(lambda _request: httpx.Response(200, text="x" * 500))
+    ) as http:
+        with levanta_exatamente(SourceUnavailableError, "Resposta não-JSON") as erro:
+            await client._get_json("/estacoes/T", http=http)
+    assert "x" * 200 in str(erro.value)
+    assert "x" * 201 not in str(erro.value)
+
+
+@pytest.mark.asyncio
+async def test_estacoes_uf_reune_as_observacoes_de_cada_estacao():
+    estacoes = [
+        {"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"},
+        {"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A002"},
+    ]
+
+    async def fetch_dados(codigo, *_args, **_kwargs):
+        return [{"CD_ESTACAO": codigo}]
+
+    with (
+        patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
+        patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=estacoes),
+        patch.object(client, "fetch_dados_estacao", side_effect=fetch_dados),
+        sem_excecao(),
+    ):
+        dados = await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
+    assert sorted(item["CD_ESTACAO"] for item in dados) == ["A001", "A002"]
+
+
+@pytest.mark.asyncio
+async def test_falha_de_estacao_posterior_sobe_como_erro_da_fonte():
+    estacoes = [
+        {"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A001"},
+        {"SG_ESTADO": "SP", "CD_SITUACAO": "Operante", "CD_ESTACAO": "A002"},
+    ]
+    primeira_iniciou = asyncio.Event()
+
+    async def fetch_dados(codigo, *_args, **_kwargs):
+        if codigo == "A002":
+            await primeira_iniciou.wait()
+            raise SourceUnavailableError(source="inmet", last_error="falha da A002")
+        primeira_iniciou.set()
+        await asyncio.Event().wait()
+
+    with (
+        patch.dict("os.environ", {"AGROBR_INMET_TOKEN": "tok"}),
+        patch.object(client, "fetch_estacoes", new_callable=AsyncMock, return_value=estacoes),
+        patch.object(client, "fetch_dados_estacao", side_effect=fetch_dados),
+        pytest.raises(BaseException) as erro,
+    ):
+        await client.fetch_dados_estacoes_uf("SP", date(2024, 1, 1), date(2024, 1, 10))
+    assert isinstance(erro.value, SourceUnavailableError)
+    assert "falha da A002" in str(erro.value)

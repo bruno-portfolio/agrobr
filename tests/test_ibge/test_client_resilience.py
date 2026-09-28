@@ -1,141 +1,109 @@
-"""Testes de resiliência HTTP para agrobr.ibge.client (via sidrapy)."""
-
 from __future__ import annotations
 
 import asyncio
+import time
+from functools import partial
 from unittest.mock import patch
 
-import pandas as pd
+import httpx
 import pytest
 
 from agrobr import constants
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.ibge import client
-from tests.helpers import RETRY_SLEEP, make_sleep_tracker
+from agrobr.sync import run_sync
 
 
-class TestIbgeSidraTimeout:
-    @pytest.mark.asyncio
-    async def test_sidrapy_timeout_propagates(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.side_effect = Exception("Connection timed out")
-            with pytest.raises(Exception, match="Connection timed out"):
-                await client.fetch_sidra(table_code="5457")
-
-    @pytest.mark.asyncio
-    async def test_sidrapy_timeout_retried(self):
-        import requests
-
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.side_effect = [
-                requests.exceptions.ConnectionError("timeout"),
-                pd.DataFrame({"V": ["100"]}),
-            ]
-            result = await client.fetch_sidra(table_code="5457")
-            assert len(result) > 0
+@pytest.fixture
+def sidra_http():
+    with patch.object(client.httpx, "AsyncClient") as factory:
+        http = factory.return_value.__aenter__.return_value
+        http.get.return_value = httpx.Response(
+            200,
+            json=[{"V": "100"}],
+            request=httpx.Request("GET", "https://example.test"),
+        )
+        yield http
 
 
-class TestIbgeSidraHTTPErrors:
-    @pytest.mark.asyncio
-    async def test_sidrapy_value_error_retries_as_source_unavailable(self):
-        max_retries = constants.HTTPSettings().max_retries
-        sleep_calls, track_sleep = make_sleep_tracker()
-
-        with (
-            patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra,
-            patch(RETRY_SLEEP, side_effect=track_sleep),
-            pytest.raises(SourceUnavailableError, match="Service Unavailable") as exc_info,
-        ):
-            mock_sidra.side_effect = ValueError("<html>Service Unavailable")
-            await client.fetch_sidra(table_code="5457")
-
-        assert mock_sidra.call_count == max_retries
-        assert len(sleep_calls) == max_retries - 1
-        assert exc_info.value.url.endswith("/values/t/5457")
-
-    @pytest.mark.asyncio
-    async def test_sidrapy_value_error_then_success(self):
-        sleep_calls, track_sleep = make_sleep_tracker()
-
-        with (
-            patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra,
-            patch(RETRY_SLEEP, side_effect=track_sleep),
-        ):
-            mock_sidra.side_effect = [
-                ValueError("<html>Service Unavailable"),
-                pd.DataFrame({"V": ["100"]}),
-            ]
-            result = await client.fetch_sidra(table_code="5457")
-
-        assert result["V"].tolist() == ["100"]
-        assert mock_sidra.call_count == 2
-        assert len(sleep_calls) == 1
-
-    @pytest.mark.asyncio
-    async def test_http_500_propagates(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.side_effect = Exception("Internal Server Error")
-            with pytest.raises(Exception, match="Internal Server Error"):
-                await client.fetch_sidra(table_code="5457")
-
-    @pytest.mark.asyncio
-    async def test_http_403_propagates(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.side_effect = Exception("403 Forbidden")
-            with pytest.raises(Exception, match="403"):
-                await client.fetch_sidra(table_code="5457")
+@pytest.mark.parametrize("status, attempts", [(500, 3), (429, 3), (403, 1), (404, 1)])
+async def test_http_failure(sidra_http, status, attempts):
+    sidra_http.get.return_value = httpx.Response(
+        status,
+        request=httpx.Request("GET", "https://example.test"),
+    )
+    with pytest.raises(SourceUnavailableError, match=str(status)):
+        await client.fetch_sidra("5457")
+    sidra_calls = [
+        call for call in sidra_http.get.await_args_list if "apisidra" in str(call.args[0])
+    ]
+    assert len(sidra_calls) == attempts
 
 
-class TestIbgeSidraEmptyResponse:
-    @pytest.mark.asyncio
-    async def test_empty_dataframe(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.return_value = pd.DataFrame()
-            result = await client.fetch_sidra(table_code="5457", header="y")
-            assert len(result) == 0
-
-    @pytest.mark.asyncio
-    async def test_header_n_preserves_all_rows(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.return_value = pd.DataFrame({"V": ["100", "200"]})
-            result = await client.fetch_sidra(table_code="5457", header="n")
-            assert len(result) == 2
-            assert result["V"].iloc[0] == "100"
-            assert result["V"].iloc[1] == "200"
-
-    @pytest.mark.asyncio
-    async def test_header_y_preserves_all_rows(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.return_value = pd.DataFrame({"V": ["Valor", "100", "200"]})
-            result = await client.fetch_sidra(table_code="5457", header="y")
-            assert len(result) == 3
+@pytest.mark.parametrize("data", [{"error": "indisponível"}, ["invalid row"]])
+async def test_invalid_json_shape_rejected(sidra_http, data):
+    sidra_http.get.return_value = httpx.Response(
+        200,
+        json=data,
+        request=httpx.Request("GET", "https://example.test"),
+    )
+    with pytest.raises(SourceUnavailableError, match="lista de registros"):
+        await client.fetch_sidra("5457")
 
 
-class TestSidraAsyncNonBlocking:
-    @pytest.mark.asyncio
-    async def test_sidrapy_runs_in_thread(self):
-        with (
-            patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra,
-            patch("agrobr.ibge.client.asyncio.to_thread", wraps=asyncio.to_thread) as mock_thread,
-        ):
-            mock_sidra.return_value = pd.DataFrame({"V": ["header", "100"]})
-            await client.fetch_sidra(table_code="1234")
-            mock_thread.assert_called_once()
+async def test_dimensions_and_list_parameters(sidra_http):
+    await client.fetch_sidra(
+        "5457",
+        territorial_level="6",
+        ibge_territorial_code="in n3 11",
+        variable=["214", "215"],
+        period=["2022", "2023"],
+        classifications={"782": ["40122", "40124"]},
+    )
+    url = sidra_http.get.call_args.args[0]
+    assert url.endswith("/t/5457/n6/in%20n3%2011/h/n/p/2022,2023/v/214,215/c782/40122,40124")
 
 
-class TestIbgeSidraVariableHandling:
-    @pytest.mark.asyncio
-    async def test_variable_as_list(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.return_value = pd.DataFrame({"V": ["header", "100"]})
-            await client.fetch_sidra(table_code="5457", variable=["214", "215"])
-            kwargs = mock_sidra.call_args[1]
-            assert kwargs["variable"] == "214,215"
+@pytest.mark.benchmark
+def test_sync_timeout_does_not_wait_for_background_thread(sidra_http, monkeypatch):
+    async def stalled_request(*_args, **_kwargs):
+        await asyncio.Event().wait()
 
-    @pytest.mark.asyncio
-    async def test_period_as_list(self):
-        with patch("agrobr.ibge.client.sidrapy.get_table") as mock_sidra:
-            mock_sidra.return_value = pd.DataFrame({"V": ["header", "100"]})
-            await client.fetch_sidra(table_code="5457", period=["2022", "2023"])
-            kwargs = mock_sidra.call_args[1]
-            assert kwargs["period"] == "2022,2023"
+    monkeypatch.setattr(client, "SIDRA_FETCH_TIMEOUT", 0.02)
+    monkeypatch.setattr(client, "retry_async", partial(client.retry_async, max_attempts=1))
+    client.RateLimiter.reset()
+    sidra_http.get.side_effect = stalled_request
+    started = time.monotonic()
+    with pytest.raises(SourceUnavailableError, match="TimeoutError"):
+        run_sync(client.fetch_sidra("5457"))
+    assert time.monotonic() - started < 1
+
+
+@pytest.mark.parametrize("error", [httpx.ReadTimeout("timeout"), httpx.ConnectError("connection")])
+async def test_network_failure_retried(sidra_http, error):
+    sidra_http.get.side_effect = [error, sidra_http.get.return_value]
+    df = await client.fetch_sidra("5457")
+    assert df["V"].tolist() == ["100"]
+    assert sidra_http.get.await_count == 2
+
+
+async def test_network_failure_exhausted_keeps_network_cause(sidra_http):
+    sidra_http.get.side_effect = httpx.ConnectError("connection")
+    with pytest.raises(SourceUnavailableError, match="ConnectError: connection") as error:
+        await client.fetch_sidra("5457")
+    assert isinstance(error.value.__cause__, httpx.ConnectError)
+    assert all("apisidra" in str(call.args[0]) for call in sidra_http.get.await_args_list)
+
+
+async def test_non_json_response_retried(sidra_http):
+    sidra_http.get.return_value = httpx.Response(
+        200,
+        text="Service Unavailable",
+        request=httpx.Request("GET", "https://example.test"),
+    )
+    with pytest.raises(SourceUnavailableError, match="Service Unavailable"):
+        await client.fetch_sidra("5457")
+    sidra_calls = [
+        call for call in sidra_http.get.await_args_list if "apisidra" in str(call.args[0])
+    ]
+    assert len(sidra_calls) == constants.HTTPSettings().max_retries

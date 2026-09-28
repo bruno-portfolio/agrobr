@@ -1,0 +1,1189 @@
+{
+ "descricao": "Transcrição com openpyxl (data_only) da aba LEGEND_CODE dos workbooks estaduais oficiais do MapBiomas; valores copiados sem edição, com a célula de origem; classes_nos_dados = códigos presentes em COVERAGE e TRANSITION do mesmo workbook",
+ "colecoes": [
+  {
+   "colecao": 10,
+   "origem": {
+    "url": "https://data.mapbiomas.org/api/access/datafile/457?format=original",
+    "arquivo_capturado_em_18_09": "mapbiomas_col10_biome_state.xlsx",
+    "sha256": "3a4a4193aa75a6bc0bff788385cbff9d1e9cde3f52e9d723a5220df3ccc70dca",
+    "bytes": 24290425
+   },
+   "aba": "LEGEND_CODE",
+   "linhas": [
+    {
+     "pt": {
+      "celula": "B4",
+      "valor": "1. Floresta"
+     },
+     "en": {
+      "celula": "C4",
+      "valor": "1. Forest"
+     },
+     "codigo": {
+      "celula": "D4",
+      "valor": 1
+     }
+    },
+    {
+     "pt": {
+      "celula": "B5",
+      "valor": "1.1 Formação Florestal"
+     },
+     "en": {
+      "celula": "C5",
+      "valor": "1.1. Forest Formation"
+     },
+     "codigo": {
+      "celula": "D5",
+      "valor": 3
+     }
+    },
+    {
+     "pt": {
+      "celula": "B6",
+      "valor": "1.2. Formação Savânica"
+     },
+     "en": {
+      "celula": "C6",
+      "valor": "1.2. Savanna Formation"
+     },
+     "codigo": {
+      "celula": "D6",
+      "valor": 4
+     }
+    },
+    {
+     "pt": {
+      "celula": "B7",
+      "valor": "1.3. Mangue"
+     },
+     "en": {
+      "celula": "C7",
+      "valor": "1.3. Mangrove"
+     },
+     "codigo": {
+      "celula": "D7",
+      "valor": 5
+     }
+    },
+    {
+     "pt": {
+      "celula": "B8",
+      "valor": "1.4. Floresta Alagável"
+     },
+     "en": {
+      "celula": "C8",
+      "valor": "1.4 Floodable Forest"
+     },
+     "codigo": {
+      "celula": "D8",
+      "valor": 6
+     }
+    },
+    {
+     "pt": {
+      "celula": "B9",
+      "valor": "1.5. Restinga Arbórea"
+     },
+     "en": {
+      "celula": "C9",
+      "valor": "1.5. Wooded Sandbank Vegetation"
+     },
+     "codigo": {
+      "celula": "D9",
+      "valor": 49
+     }
+    },
+    {
+     "pt": {
+      "celula": "B10",
+      "valor": "2. Vegetação Herbácea e Arbustiva"
+     },
+     "en": {
+      "celula": "C10",
+      "valor": "2. Herbaceous and Shrubby Vegetation"
+     },
+     "codigo": {
+      "celula": "D10",
+      "valor": 10
+     }
+    },
+    {
+     "pt": {
+      "celula": "B11",
+      "valor": "2.1. Campo Alagado e Área Pantanosa"
+     },
+     "en": {
+      "celula": "C11",
+      "valor": "2.1. Wetland"
+     },
+     "codigo": {
+      "celula": "D11",
+      "valor": 11
+     }
+    },
+    {
+     "pt": {
+      "celula": "B12",
+      "valor": "2.2. Formação Campestre"
+     },
+     "en": {
+      "celula": "C12",
+      "valor": "2.2. Grassland"
+     },
+     "codigo": {
+      "celula": "D12",
+      "valor": 12
+     }
+    },
+    {
+     "pt": {
+      "celula": "B13",
+      "valor": "2.3. Apicum"
+     },
+     "en": {
+      "celula": "C13",
+      "valor": "2.3. Hypersaline Tidal Flat"
+     },
+     "codigo": {
+      "celula": "D13",
+      "valor": 32
+     }
+    },
+    {
+     "pt": {
+      "celula": "B14",
+      "valor": "2.4. Afloramento Rochoso"
+     },
+     "en": {
+      "celula": "C14",
+      "valor": "2.4. Rocky Outcrop"
+     },
+     "codigo": {
+      "celula": "D14",
+      "valor": 29
+     }
+    },
+    {
+     "pt": {
+      "celula": "B15",
+      "valor": "2.5. Restinga Herbácea"
+     },
+     "en": {
+      "celula": "C15",
+      "valor": "2.5. Herbaceous Sandbank Vegetation"
+     },
+     "codigo": {
+      "celula": "D15",
+      "valor": 50
+     }
+    },
+    {
+     "pt": {
+      "celula": "B16",
+      "valor": "3. Agropecuária"
+     },
+     "en": {
+      "celula": "C16",
+      "valor": "3. Farming"
+     },
+     "codigo": {
+      "celula": "D16",
+      "valor": 14
+     }
+    },
+    {
+     "pt": {
+      "celula": "B17",
+      "valor": "3.1. Pastagem"
+     },
+     "en": {
+      "celula": "C17",
+      "valor": "3.1. Pasture"
+     },
+     "codigo": {
+      "celula": "D17",
+      "valor": 15
+     }
+    },
+    {
+     "pt": {
+      "celula": "B18",
+      "valor": "3.2. Agricultura"
+     },
+     "en": {
+      "celula": "C18",
+      "valor": "3.2. Agriculture"
+     },
+     "codigo": {
+      "celula": "D18",
+      "valor": 18
+     }
+    },
+    {
+     "pt": {
+      "celula": "B19",
+      "valor": "   3.2.1. Lavoura Temporária"
+     },
+     "en": {
+      "celula": "C19",
+      "valor": "   3.2.1. Temporary Crop"
+     },
+     "codigo": {
+      "celula": "D19",
+      "valor": 19
+     }
+    },
+    {
+     "pt": {
+      "celula": "B20",
+      "valor": "      3.2.1.1. Soja"
+     },
+     "en": {
+      "celula": "C20",
+      "valor": "     3.2.1.1. Soybean"
+     },
+     "codigo": {
+      "celula": "D20",
+      "valor": 39
+     }
+    },
+    {
+     "pt": {
+      "celula": "B21",
+      "valor": "      3.2.1.2. Cana"
+     },
+     "en": {
+      "celula": "C21",
+      "valor": "     3.2.1.2. Sugar cane"
+     },
+     "codigo": {
+      "celula": "D21",
+      "valor": 20
+     }
+    },
+    {
+     "pt": {
+      "celula": "B22",
+      "valor": "      3.2.1.3. Arroz"
+     },
+     "en": {
+      "celula": "C22",
+      "valor": "     3.2.1.3. Rice"
+     },
+     "codigo": {
+      "celula": "D22",
+      "valor": 40
+     }
+    },
+    {
+     "pt": {
+      "celula": "B23",
+      "valor": "      3.2.1.4. Algodão (beta)"
+     },
+     "en": {
+      "celula": "C23",
+      "valor": "     3.2.1.4. Cotton (beta)"
+     },
+     "codigo": {
+      "celula": "D23",
+      "valor": 62
+     }
+    },
+    {
+     "pt": {
+      "celula": "B24",
+      "valor": "      3.2.1.5. Outras Lavouras Temporárias"
+     },
+     "en": {
+      "celula": "C24",
+      "valor": "     3.2.1.5. Other Temporary Crops"
+     },
+     "codigo": {
+      "celula": "D24",
+      "valor": 41
+     }
+    },
+    {
+     "pt": {
+      "celula": "B25",
+      "valor": "   3.2.2. Lavoura Perene"
+     },
+     "en": {
+      "celula": "C25",
+      "valor": "   3.2.2. Perennial Crop"
+     },
+     "codigo": {
+      "celula": "D25",
+      "valor": 36
+     }
+    },
+    {
+     "pt": {
+      "celula": "B26",
+      "valor": "      3.2.2.1. Café"
+     },
+     "en": {
+      "celula": "C26",
+      "valor": "     3.2.2.1. Coffee"
+     },
+     "codigo": {
+      "celula": "D26",
+      "valor": 46
+     }
+    },
+    {
+     "pt": {
+      "celula": "B27",
+      "valor": "      3.2.2.2. Citrus"
+     },
+     "en": {
+      "celula": "C27",
+      "valor": "     3.2.2.2. Citrus"
+     },
+     "codigo": {
+      "celula": "D27",
+      "valor": 47
+     }
+    },
+    {
+     "pt": {
+      "celula": "B28",
+      "valor": "      3.2.2.3. Dendê"
+     },
+     "en": {
+      "celula": "C28",
+      "valor": "     3.2.2.3. Palm Oil"
+     },
+     "codigo": {
+      "celula": "D28",
+      "valor": 35
+     }
+    },
+    {
+     "pt": {
+      "celula": "B29",
+      "valor": "      3.2.2.4. Outras Lavouras Perenes"
+     },
+     "en": {
+      "celula": "C29",
+      "valor": "     3.2.2.4. Other Perennial Crops"
+     },
+     "codigo": {
+      "celula": "D29",
+      "valor": 48
+     }
+    },
+    {
+     "pt": {
+      "celula": "B30",
+      "valor": "3.3. Silvicultura"
+     },
+     "en": {
+      "celula": "C30",
+      "valor": "3.3. Forest Plantation"
+     },
+     "codigo": {
+      "celula": "D30",
+      "valor": 9
+     }
+    },
+    {
+     "pt": {
+      "celula": "B31",
+      "valor": "3.4. Mosaico de Usos"
+     },
+     "en": {
+      "celula": "C31",
+      "valor": "3.4. Mosaic of Uses"
+     },
+     "codigo": {
+      "celula": "D31",
+      "valor": 21
+     }
+    },
+    {
+     "pt": {
+      "celula": "B32",
+      "valor": "4. Área não Vegetada"
+     },
+     "en": {
+      "celula": "C32",
+      "valor": "4. Non vegetated area"
+     },
+     "codigo": {
+      "celula": "D32",
+      "valor": 22
+     }
+    },
+    {
+     "pt": {
+      "celula": "B33",
+      "valor": "4.1. Praia, Duna e Areal"
+     },
+     "en": {
+      "celula": "C33",
+      "valor": "4.1. Beach, Dune and Sand Spot"
+     },
+     "codigo": {
+      "celula": "D33",
+      "valor": 23
+     }
+    },
+    {
+     "pt": {
+      "celula": "B34",
+      "valor": "4.2. Área Urbanizada"
+     },
+     "en": {
+      "celula": "C34",
+      "valor": "4.2. Urban Area"
+     },
+     "codigo": {
+      "celula": "D34",
+      "valor": 24
+     }
+    },
+    {
+     "pt": {
+      "celula": "B35",
+      "valor": "4.3. Mineração"
+     },
+     "en": {
+      "celula": "C35",
+      "valor": "4.3. Mining"
+     },
+     "codigo": {
+      "celula": "D35",
+      "valor": 30
+     }
+    },
+    {
+     "pt": {
+      "celula": "B36",
+      "valor": "4.4. Outras Áreas não Vegetadas"
+     },
+     "en": {
+      "celula": "C36",
+      "valor": "4.4. Other non Vegetated Areas"
+     },
+     "codigo": {
+      "celula": "D36",
+      "valor": 25
+     }
+    },
+    {
+     "pt": {
+      "celula": "B37",
+      "valor": "5. Corpo D'água"
+     },
+     "en": {
+      "celula": "C37",
+      "valor": "5. Water"
+     },
+     "codigo": {
+      "celula": "D37",
+      "valor": 26
+     }
+    },
+    {
+     "pt": {
+      "celula": "B38",
+      "valor": "5.1 Rio, Lago e Oceano"
+     },
+     "en": {
+      "celula": "C38",
+      "valor": "5.1. River, Lake and Ocean"
+     },
+     "codigo": {
+      "celula": "D38",
+      "valor": 33
+     }
+    },
+    {
+     "pt": {
+      "celula": "B39",
+      "valor": "5.2 Aquicultura"
+     },
+     "en": {
+      "celula": "C39",
+      "valor": "5.2. Aquaculture"
+     },
+     "codigo": {
+      "celula": "D39",
+      "valor": 31
+     }
+    },
+    {
+     "pt": {
+      "celula": "B40",
+      "valor": "6. Não observado"
+     },
+     "en": {
+      "celula": "C40",
+      "valor": "6. Not Observed"
+     },
+     "codigo": {
+      "celula": "D40",
+      "valor": 27
+     }
+    }
+   ],
+   "classes_nos_dados": [
+    0,
+    3,
+    4,
+    5,
+    6,
+    9,
+    11,
+    12,
+    15,
+    20,
+    21,
+    23,
+    24,
+    25,
+    29,
+    30,
+    31,
+    32,
+    33,
+    35,
+    39,
+    40,
+    41,
+    46,
+    47,
+    48,
+    49,
+    50,
+    62,
+    75
+   ]
+  },
+  {
+   "colecao": 11,
+   "origem": {
+    "url": "https://brasil.mapbiomas.org/wp-content/uploads/sites/3/2026/08/MAPBIOMAS_BRAZIL-COL.11-BIOME_STATE.xlsx",
+    "arquivo_capturado_em_18_09": "mapbiomas_col11_biome_state.xlsx",
+    "sha256": "8a7e4b2faa636ca4d1c950db9c1f5987bd532621c70e9f492338dd79835c2af5",
+    "bytes": 17947768
+   },
+   "aba": "LEGEND_CODE",
+   "linhas": [
+    {
+     "pt": {
+      "celula": "A4",
+      "valor": "1. Floresta"
+     },
+     "en": {
+      "celula": "B4",
+      "valor": "1. Forest"
+     },
+     "codigo": {
+      "celula": "C4",
+      "valor": 1.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A5",
+      "valor": "    1.1 Formação Florestal"
+     },
+     "en": {
+      "celula": "B5",
+      "valor": "1.1. Forest Formation"
+     },
+     "codigo": {
+      "celula": "C5",
+      "valor": 3.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A6",
+      "valor": "    1.2. Floresta Alagável"
+     },
+     "en": {
+      "celula": "B6",
+      "valor": "1.2 Floodable Forest"
+     },
+     "codigo": {
+      "celula": "C6",
+      "valor": 6.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A7",
+      "valor": "    1.3. Formação Savânica"
+     },
+     "en": {
+      "celula": "B7",
+      "valor": "1.3. Savanna Formation"
+     },
+     "codigo": {
+      "celula": "C7",
+      "valor": 4.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A8",
+      "valor": "    1.4. Savana Alagada (beta)"
+     },
+     "en": {
+      "celula": "B8",
+      "valor": "1.4. Flooded Savanna (beta)"
+     },
+     "codigo": {
+      "celula": "C8",
+      "valor": 7.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A9",
+      "valor": "    1.5. Mangue"
+     },
+     "en": {
+      "celula": "B9",
+      "valor": "1.5. Mangrove"
+     },
+     "codigo": {
+      "celula": "C9",
+      "valor": 5.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A10",
+      "valor": "    1.6. Restinga Arbórea"
+     },
+     "en": {
+      "celula": "B10",
+      "valor": "1.6. Wooded Sandbank Vegetation"
+     },
+     "codigo": {
+      "celula": "C10",
+      "valor": 49.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A11",
+      "valor": "2. Vegetação Herbácea e Arbustiva"
+     },
+     "en": {
+      "celula": "B11",
+      "valor": "2. Herbaceous or Shrubby Vegetation"
+     },
+     "codigo": {
+      "celula": "C11",
+      "valor": 10.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A12",
+      "valor": "    2.1. Formação Campestre"
+     },
+     "en": {
+      "celula": "B12",
+      "valor": "2.1. Grassland Formation"
+     },
+     "codigo": {
+      "celula": "C12",
+      "valor": 12.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A13",
+      "valor": "    2.2. Formação Herbáceo Arbustiva"
+     },
+     "en": {
+      "celula": "B13",
+      "valor": "2.2. Herbaceous and Shrub Formation"
+     },
+     "codigo": {
+      "celula": "C13",
+      "valor": 77.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A14",
+      "valor": "    2.3. Campo Alagado e Área Pantanosa"
+     },
+     "en": {
+      "celula": "B14",
+      "valor": "2.3 Wetland"
+     },
+     "codigo": {
+      "celula": "C14",
+      "valor": 11.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A15",
+      "valor": "    2.4. Marisma (beta)"
+     },
+     "en": {
+      "celula": "B15",
+      "valor": "2.4. Salt Marsh (beta)"
+     },
+     "codigo": {
+      "celula": "C15",
+      "valor": 84.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A16",
+      "valor": "    2.5. Restinga Herbácea ou Arbustiva"
+     },
+     "en": {
+      "celula": "B16",
+      "valor": "2.5. Herbaceous Sandbank Vegetation"
+     },
+     "codigo": {
+      "celula": "C16",
+      "valor": 50.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A17",
+      "valor": "    2.6. Apicum"
+     },
+     "en": {
+      "celula": "B17",
+      "valor": "2.6. Hypersaline Tidal Flat"
+     },
+     "codigo": {
+      "celula": "C17",
+      "valor": 32.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A18",
+      "valor": "    2.7. Afloramento Rochoso"
+     },
+     "en": {
+      "celula": "B18",
+      "valor": "2.7. Rocky Outcrop"
+     },
+     "codigo": {
+      "celula": "C18",
+      "valor": 29.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A19",
+      "valor": "3. Agropecuária"
+     },
+     "en": {
+      "celula": "B19",
+      "valor": "3. Farming"
+     },
+     "codigo": {
+      "celula": "C19",
+      "valor": 14.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A20",
+      "valor": "    3.1. Pastagem"
+     },
+     "en": {
+      "celula": "B20",
+      "valor": "3.1. Pasture"
+     },
+     "codigo": {
+      "celula": "C20",
+      "valor": 15.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A21",
+      "valor": "    3.2. Agricultura"
+     },
+     "en": {
+      "celula": "B21",
+      "valor": "3.2. Agriculture"
+     },
+     "codigo": {
+      "celula": "C21",
+      "valor": 18.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A22",
+      "valor": "         3.2.1. Lavoura Temporária"
+     },
+     "en": {
+      "celula": "B22",
+      "valor": "3.2.1. Temporary Crop"
+     },
+     "codigo": {
+      "celula": "C22",
+      "valor": 19.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A23",
+      "valor": "                 3.2.1.1. Soja"
+     },
+     "en": {
+      "celula": "B23",
+      "valor": "3.2.1.1. Soybean"
+     },
+     "codigo": {
+      "celula": "C23",
+      "valor": 39.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A24",
+      "valor": "                 3.2.1.2. Cana"
+     },
+     "en": {
+      "celula": "B24",
+      "valor": "3.2.1.2. Sugar cane"
+     },
+     "codigo": {
+      "celula": "C24",
+      "valor": 20.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A25",
+      "valor": "                 3.2.1.3. Arroz"
+     },
+     "en": {
+      "celula": "B25",
+      "valor": "3.2.1.3. Rice"
+     },
+     "codigo": {
+      "celula": "C25",
+      "valor": 40.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A26",
+      "valor": "                 3.2.1.4. Algodão (beta)"
+     },
+     "en": {
+      "celula": "B26",
+      "valor": "3.2.1.4. Cotton (beta)"
+     },
+     "codigo": {
+      "celula": "C26",
+      "valor": 62.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A27",
+      "valor": "                 3.2.1.5. Outras Lavouras Temporárias"
+     },
+     "en": {
+      "celula": "B27",
+      "valor": "3.2.1.5. Other Temporary Crops"
+     },
+     "codigo": {
+      "celula": "C27",
+      "valor": 41.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A28",
+      "valor": "         3.2.2. Lavoura Perene"
+     },
+     "en": {
+      "celula": "B28",
+      "valor": "3.2.2. Perennial Crop"
+     },
+     "codigo": {
+      "celula": "C28",
+      "valor": 36.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A29",
+      "valor": "                 3.2.2.1. Café"
+     },
+     "en": {
+      "celula": "B29",
+      "valor": "3.2.2.1. Coffee"
+     },
+     "codigo": {
+      "celula": "C29",
+      "valor": 46.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A30",
+      "valor": "                 3.2.2.2. Citrus"
+     },
+     "en": {
+      "celula": "B30",
+      "valor": "3.2.2.2. Citrus"
+     },
+     "codigo": {
+      "celula": "C30",
+      "valor": 47.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A31",
+      "valor": "                 3.2.2.3. Dendê"
+     },
+     "en": {
+      "celula": "B31",
+      "valor": "3.2.2.3. Palm Oil"
+     },
+     "codigo": {
+      "celula": "C31",
+      "valor": 35.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A32",
+      "valor": "                 3.2.1.4. Outras Lavouras Perenes"
+     },
+     "en": {
+      "celula": "B32",
+      "valor": "3.2.1.4. Other Perennial Crops"
+     },
+     "codigo": {
+      "celula": "C32",
+      "valor": 48.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A33",
+      "valor": "    3.3. Silvicultura"
+     },
+     "en": {
+      "celula": "B33",
+      "valor": "3.3. Forest Plantation"
+     },
+     "codigo": {
+      "celula": "C33",
+      "valor": 9.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A34",
+      "valor": "    3.4. Mosaico de Usos"
+     },
+     "en": {
+      "celula": "B34",
+      "valor": "3.4. Mosaic of Uses"
+     },
+     "codigo": {
+      "celula": "C34",
+      "valor": 21.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A35",
+      "valor": "4. Área não vegetada"
+     },
+     "en": {
+      "celula": "B35",
+      "valor": "4. Non vegetated area"
+     },
+     "codigo": {
+      "celula": "C35",
+      "valor": 22.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A36",
+      "valor": "    4.1. Praia, Duna e Areal"
+     },
+     "en": {
+      "celula": "B36",
+      "valor": "4.1. Beach, Dune and Sand Spot"
+     },
+     "codigo": {
+      "celula": "C36",
+      "valor": 23.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A37",
+      "valor": "    4.2. Área Urbanizada"
+     },
+     "en": {
+      "celula": "B37",
+      "valor": "4.2. Urban Area"
+     },
+     "codigo": {
+      "celula": "C37",
+      "valor": 24.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A38",
+      "valor": "    4.3. Mineração"
+     },
+     "en": {
+      "celula": "B38",
+      "valor": "4.3. Mining"
+     },
+     "codigo": {
+      "celula": "C38",
+      "valor": 30.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A39",
+      "valor": "    4.4. Usina Fotovoltaica"
+     },
+     "en": {
+      "celula": "B39",
+      "valor": "4.4 Photovoltaic Power Plant"
+     },
+     "codigo": {
+      "celula": "C39",
+      "valor": 75.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A40",
+      "valor": "    4.5. Parque eólico (beta)"
+     },
+     "en": {
+      "celula": "B40",
+      "valor": "4.5. Wind farm (beta)"
+     },
+     "codigo": {
+      "celula": "C40",
+      "valor": 91.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A41",
+      "valor": "    4.6. Outras Áreas não Vegetadas"
+     },
+     "en": {
+      "celula": "B41",
+      "valor": "4.6. Other non Vegetated Areas"
+     },
+     "codigo": {
+      "celula": "C41",
+      "valor": 25.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A42",
+      "valor": "5. Corpo D'água"
+     },
+     "en": {
+      "celula": "B42",
+      "valor": "5. Water"
+     },
+     "codigo": {
+      "celula": "C42",
+      "valor": 26.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A43",
+      "valor": "    5.1 Rio, Lago e Oceano"
+     },
+     "en": {
+      "celula": "B43",
+      "valor": "5.1. River, Lake and Ocean"
+     },
+     "codigo": {
+      "celula": "C43",
+      "valor": 33.0
+     }
+    },
+    {
+     "pt": {
+      "celula": "A44",
+      "valor": "    5.2 Aquicultura"
+     },
+     "en": {
+      "celula": "B44",
+      "valor": "5.2. Aquaculture"
+     },
+     "codigo": {
+      "celula": "C44",
+      "valor": 31.0
+     }
+    }
+   ],
+   "classes_nos_dados": [
+    0,
+    3,
+    4,
+    5,
+    6,
+    7,
+    9,
+    11,
+    12,
+    13,
+    15,
+    20,
+    21,
+    23,
+    24,
+    25,
+    29,
+    30,
+    31,
+    32,
+    33,
+    35,
+    39,
+    40,
+    41,
+    46,
+    47,
+    48,
+    49,
+    50,
+    62,
+    75,
+    84,
+    91
+   ]
+  }
+ ]
+}

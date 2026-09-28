@@ -1,0 +1,13 @@
+{
+  "capture_session": "astra_20260905 / bloco10g_20260905",
+  "source": "IBGE",
+  "method": "Official public responses preserved without altering data; LSPA JSON contains request parameters and captured client rows.",
+  "files": [
+    {
+      "file": "lspa_client_capture.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n3/51/p/202301,202302,202303,202304,202305,202306,202307,202308,202309,202310,202311,202312/c48/39441",
+      "sha256": "bcdc8e9afc76c6095a09afa7bb817fe2cda01145ee938ba7d76609036ec18a7a",
+      "bytes": 16793
+    }
+  ]
+}

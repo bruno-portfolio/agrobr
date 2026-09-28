@@ -1,0 +1,9 @@
+{
+  "source_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=application/json&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=1000",
+  "captured_at": "2026-09-05",
+  "sha256": "8d511ffc156e8b263875aefa174c949f37f94136a588db983c800be83e94f544",
+  "bytes": 137706,
+  "provenance": "icmbio_attributes.json",
+  "transformation": "none; original response bytes",
+  "scope": "Attributes responses omit geometry; geographic tests cover attributes only."
+}

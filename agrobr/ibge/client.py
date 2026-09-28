@@ -1,20 +1,34 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+import hashlib
+import math
+import re
+from urllib.parse import quote
 
 import httpx
 import pandas as pd
-import sidrapy
 import structlog
 
 from agrobr import constants
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
+from agrobr.http.retry import (
+    RETRIABLE_EXCEPTIONS,
+    RetriableStatusError,
+    retry_async,
+    should_retry_status,
+)
+from agrobr.http.settings import get_timeout
+from agrobr.http.user_agents import UserAgentRotator
+from agrobr.ibge import agregados
+from agrobr.utils.warnings import warn_once
 
 logger = structlog.get_logger()
 
 SIDRA_FETCH_TIMEOUT = 120.0
+SIDRA_URL_MAX = 2500
 
 TABELAS = {
     "pam_temporarias": "1612",
@@ -38,8 +52,8 @@ VARIAVEIS = {
     "rendimento_1612": "112",
     "valor_1612": "215",
     "area_lspa": "109",
-    "producao_lspa": "216",
-    "rendimento_lspa": "112",
+    "producao_lspa": "35",
+    "rendimento_lspa": "36",
 }
 
 PRODUTOS_PAM = {
@@ -72,7 +86,7 @@ REBANHOS_PPM = {
     "caprino": "2681",
     "ovino": "2677",
     "galinaceos_total": "32796",
-    "galinhas_poedeiras": "32793",
+    "galinhas": "32793",
     "codornas": "2680",
 }
 
@@ -94,7 +108,7 @@ UNIDADES_PPM: dict[str, str] = {
     "caprino": "cabeças",
     "ovino": "cabeças",
     "galinaceos_total": "cabeças",
-    "galinhas_poedeiras": "cabeças",
+    "galinhas": "cabeças",
     "codornas": "cabeças",
     "leite": "mil litros",
     "ovos_galinha": "mil dúzias",
@@ -141,11 +155,11 @@ VARIAVEIS_CENSO_AGRO: dict[str, dict[str, dict[str, str]]] = {
         "2017": {"estabelecimentos": "9587", "area": "184"},
     },
     "lavoura_temporaria": {
-        "1995": {"producao": "214", "estabelecimentos": "151", "area_colhida": "216"},
+        "1995": {"producao": "214", "informantes": "151", "area_colhida": "216"},
         "2017": {"estabelecimentos": "10084", "producao": "10085", "area_colhida": "10089"},
     },
     "lavoura_permanente": {
-        "1995": {"producao": "214", "estabelecimentos": "151", "area_colhida": "216"},
+        "1995": {"producao": "214", "informantes": "151", "area_colhida": "216"},
         "2017": {"estabelecimentos": "9504", "producao": "9506", "area_colhida": "10078"},
     },
     "preparo_solo": {
@@ -161,23 +175,23 @@ VARIAVEIS_CENSO_AGRO: dict[str, dict[str, dict[str, str]]] = {
     },
     "adubacao": {
         "2006": {"estabelecimentos": "183"},
-        "2017": {"estabelecimentos": "183", "area": "184"},
+        "2017": {"estabelecimentos": "183"},
     },
     "calagem": {
         "2006": {"estabelecimentos": "183"},
-        "2017": {"estabelecimentos": "183", "area": "184"},
+        "2017": {"estabelecimentos": "183"},
     },
     "agrotoxicos": {
         "2006": {"estabelecimentos": "183"},
-        "2017": {"estabelecimentos": "183", "area": "184"},
+        "2017": {"estabelecimentos": "183"},
     },
     "praticas_agricolas": {
         "2006": {"estabelecimentos": "183"},
         "2017": {"estabelecimentos": "183", "area": "184"},
     },
     "irrigacao": {
-        "2006": {"estabelecimentos": "183"},
-        "2017": {"estabelecimentos": "183", "area": "184"},
+        "2006": {"estabelecimentos": "2372", "area": "2373"},
+        "2017": {"estabelecimentos": "2372", "area": "2373"},
     },
     "despesa_adubos": {
         "2017": {"estabelecimentos": "2", "valor_mil_reais": "1996"},
@@ -586,19 +600,62 @@ PRODUTOS_LSPA = {
     "feijao_1": "39436",
     "feijao_2": "39437",
     "feijao_3": "39438",
-    "trigo": "39447",
-    "algodao": "39433",
-    "cafe": "109194",
-    "amendoim_1": "109180",
-    "amendoim_2": "109181",
-    "aveia": "109179",
-    "batata_1": "39434",
-    "batata_2": "39435",
-    "cevada": "109182",
-    "mamona": "109183",
-    "sorgo": "109184",
-    "triticale": "109185",
+    "trigo": "39445",
+    "algodao": "39429",
+    "cafe_arabica": "39454",
+    "cafe_canephora": "39455",
+    "amendoim_1": "39430",
+    "amendoim_2": "39431",
+    "aveia": "39433",
+    "batata_1": "39450",
+    "batata_2": "39451",
+    "batata_3": "39452",
+    "cevada": "39435",
+    "mamona": "39440",
+    "sorgo": "39444",
+    "triticale": "39446",
 }
+
+_LIMITE_SIDRA = re.compile(r"Quantidade de valores solicitados: (\d+) excedeu o limite: (\d+)")
+
+
+class LimiteSidraExcedido(InvalidParameterError):
+    def __init__(self, solicitados: int, limite: int, url: str) -> None:
+        self.solicitados = solicitados
+        self.limite = limite
+        self.url = url
+        super().__init__(
+            f"SIDRA: {solicitados} valores pedidos passam do limite de {limite} por consulta ({url})"
+        )
+
+
+class UrlSidraRejeitada(InvalidParameterError):
+    def __init__(self, url: str) -> None:
+        self.url = url
+        super().__init__(f"SIDRA rejeitou a URL de {len(url)} caracteres (Request Rejected)")
+
+
+LSPA_CAFE_TOTAL_COD = "40527"
+LSPA_CAFE_ESPECIES_ANO_INICIAL = 2012
+
+
+def _sidra_url(
+    table_code: str,
+    territorial_level: str,
+    ibge_territorial_code: str,
+    variable: str | list[str] | None,
+    period: str | list[str] | None,
+    classifications: dict[str, str | list[str]] | None,
+    header: str,
+) -> str:
+    parts = ["t", table_code, f"n{territorial_level}", ibge_territorial_code, "h", header]
+    for key, value in [("p", period), ("v", variable)]:
+        if value:
+            parts.extend([key, ",".join(value) if isinstance(value, list) else value])
+    for key, value in (classifications or {}).items():
+        parts.extend([f"c{key}", ",".join(value) if isinstance(value, list) else value])
+    base = constants.URLS[constants.Fonte.IBGE]["api"]
+    return f"{base}/values/" + "/".join(quote(part, safe=",-") for part in parts)
 
 
 async def fetch_sidra(
@@ -610,6 +667,10 @@ async def fetch_sidra(
     classifications: dict[str, str | list[str]] | None = None,
     header: str = "n",
 ) -> pd.DataFrame:
+    """SIDRA primeiro; se a SIDRA responder recusando (403 Cloudflare, HTML, 5xx,
+    corpo inválido), consulta a mesma tabela na API de agregados do IBGE e devolve o
+    mesmo formato de colunas. Falhas de rede/timeout não acionam o fallback. O canal
+    usado fica em ``df.attrs["canal"]`` e a URL em ``df.attrs["url"]``."""
     logger.info(
         "ibge_fetch_start",
         table=table_code,
@@ -617,61 +678,294 @@ async def fetch_sidra(
         period=period,
     )
 
-    async with RateLimiter.acquire(constants.Fonte.IBGE):
-        kwargs: dict[str, Any] = {
-            "table_code": table_code,
-            "territorial_level": territorial_level,
-            "ibge_territorial_code": ibge_territorial_code,
-            "header": header,
-        }
+    sidra_url = _sidra_url(
+        table_code,
+        territorial_level,
+        ibge_territorial_code,
+        variable,
+        period,
+        classifications,
+        header,
+    )
+    try:
+        df = await _fetch_sidra_em_fatias(
+            table_code,
+            territorial_level,
+            ibge_territorial_code,
+            variable,
+            period,
+            classifications,
+            header,
+        )
+        canal, url_used = "sidra", sidra_url
+    except SourceUnavailableError as sidra_error:
+        if isinstance(
+            sidra_error.__cause__, (httpx.TimeoutException, httpx.NetworkError, TimeoutError)
+        ):
+            raise
+        warn_once(
+            "ibge_sidra_fallback",
+            f"SIDRA indisponível ({sidra_error.last_error}); "
+            "consultando a API de agregados do IBGE (servicodados.ibge.gov.br)",
+        )
+        try:
+            df, url_used = await agregados.fetch_agregados(
+                table_code,
+                territorial_level,
+                ibge_territorial_code,
+                variable,
+                period,
+                classifications,
+                timeout=SIDRA_FETCH_TIMEOUT,
+            )
+        except (SourceUnavailableError, ParseError) as agregados_error:
+            detail = getattr(agregados_error, "last_error", None) or str(agregados_error)
+            raise SourceUnavailableError(
+                source="ibge",
+                url=sidra_url,
+                last_error=f"SIDRA: {sidra_error.last_error}; API de agregados: {detail}",
+            ) from sidra_error
+        canal = "servicodados"
+    identidade: dict[str, object] = {
+        chave: df.attrs[chave] for chave in ("sha256", "bytes") if chave in df.attrs
+    }
+    if df.empty:
+        periodo = ",".join(period) if isinstance(period, list) else period or "mais recente"
+        warn_once(
+            f"ibge_sem_dado:{table_code}:{periodo}",
+            f"IBGE sem dado na tabela {table_code} para o período {periodo} (ainda não "
+            "publicado ou sem observação no recorte); o resultado vem vazio",
+        )
+        df = agregados.to_sidra_frame([], variable=variable, classifications=classifications)
+    else:
+        identidade.update(await _periodos_modificacao(table_code, df))
+    df.attrs.update(identidade, canal=canal, url=url_used)
+    return df
 
-        if variable:
-            if isinstance(variable, list):
-                kwargs["variable"] = ",".join(variable)
-            else:
-                kwargs["variable"] = variable
 
-        if period:
-            if isinstance(period, list):
-                kwargs["period"] = ",".join(period)
-            else:
-                kwargs["period"] = period
+def _itens(valor: str | list[str] | None) -> list[str]:
+    if isinstance(valor, list):
+        return valor
+    if not valor or valor.strip().lower() in ("all", "allxp", "total"):
+        return []
+    return [item for item in valor.split(",") if item]
 
-        if classifications:
-            kwargs["classifications"] = classifications
 
-        import requests
+def _grupos(itens: list[str], tamanho: int) -> list[list[str]]:
+    return [itens[inicio : inicio + tamanho] for inicio in range(0, len(itens), tamanho)]
 
-        from agrobr.http.retry import retry_async
 
-        sidra_url = f"{constants.URLS[constants.Fonte.IBGE]['api']}/values/t/{table_code}"
+def _pelo_limite(itens: list[str], excedido: LimiteSidraExcedido) -> int:
+    return max(1, math.floor(len(itens) * excedido.limite / excedido.solicitados))
+
+
+def _pela_url(url: str, codigo: str, localidades: list[str]) -> int:
+    """Quantas localidades cabem numa URL de até ``SIDRA_URL_MAX`` caracteres.
+
+    O WAF da SIDRA responde "Request Rejected" a URLs longas (5.332 caracteres rejeitados e 3.276
+    aceitos, medidos em 27/09/2026); o teto deixa margem.
+    """
+    base = len(url) - len(quote(codigo, safe=",-"))
+    return max(1, (SIDRA_URL_MAX - base) // (max(map(len, localidades)) + 1))
+
+
+async def _localidades(table_code: str, territorial_level: str, codigo: str) -> list[str]:
+    """As localidades do pedido: a lista explícita, ou as da tabela no nível, filtradas pelo pai.
+
+    O código IBGE do município começa pelo da UF, e o da UF pelo da região; `in N3 41` fica com os
+    que começam por 41.
+    """
+    aninhado = re.match(r"^in\s+N\d+\s+(\S+)$", codigo.strip(), re.IGNORECASE)
+    if not aninhado and codigo.strip().lower() != "all":
+        return _itens(codigo)
+    todas = await agregados.fetch_localidades(table_code, territorial_level)
+    if not aninhado:
+        return todas
+    pais = tuple(aninhado.group(1).split(","))
+    return [localidade for localidade in todas if localidade.startswith(pais)]
+
+
+async def _fatias(
+    table_code: str,
+    territorial_level: str,
+    codigo: str,
+    variable: str | list[str] | None,
+    classifications: dict[str, str | list[str]] | None,
+    excedido: LimiteSidraExcedido | UrlSidraRejeitada,
+) -> list[tuple[str, str | list[str] | None, dict[str, str | list[str]] | None]]:
+    """Divide o pedido grande demais.
+
+    Acima do limite de valores, por variável, por categoria listada ou por localidade; com a URL
+    rejeitada, só por localidade. A parte por localidade cabe também no teto da URL.
+    """
+    if isinstance(excedido, LimiteSidraExcedido):
+        variaveis = _itens(variable)
+        if len(variaveis) > 1:
+            return [
+                (codigo, grupo, classifications)
+                for grupo in _grupos(variaveis, _pelo_limite(variaveis, excedido))
+            ]
+        for chave, valor in (classifications or {}).items():
+            categorias = _itens(valor)
+            if len(categorias) > 1:
+                return [
+                    (codigo, variable, {**(classifications or {}), chave: grupo})
+                    for grupo in _grupos(categorias, _pelo_limite(categorias, excedido))
+                ]
+    localidades = await _localidades(table_code, territorial_level, codigo)
+    if len(localidades) > 1:
+        tamanho = _pela_url(excedido.url, codigo, localidades)
+        if isinstance(excedido, LimiteSidraExcedido):
+            tamanho = min(tamanho, _pelo_limite(localidades, excedido))
+        return [
+            (",".join(grupo), variable, classifications) for grupo in _grupos(localidades, tamanho)
+        ]
+    raise InvalidParameterError(
+        f"{excedido}; o pedido não tem variável, categoria listada nem localidade para dividir: "
+        "restrinja o período, as categorias ou a localidade"
+    ) from excedido
+
+
+async def _fetch_sidra_em_fatias(
+    table_code: str,
+    territorial_level: str,
+    codigo: str,
+    variable: str | list[str] | None,
+    period: str | list[str] | None,
+    classifications: dict[str, str | list[str]] | None,
+    header: str,
+) -> pd.DataFrame:
+    """Consulta a SIDRA e, se o pedido passa do limite de valores, divide e junta as partes.
+
+    Com mais de uma parte, cada corpo vai em ``df.attrs["fatias"]`` (URL, SHA-256 e bytes), e o topo
+    fica sem hash, pela convenção de proveniência de vários corpos.
+    """
+    url = _sidra_url(
+        table_code, territorial_level, codigo, variable, period, classifications, header
+    )
+    try:
+        return await _fetch_sidra_values(url, table_code)
+    except (LimiteSidraExcedido, UrlSidraRejeitada) as excedido:
+        logger.info("ibge_sidra_fatiado", table=table_code, motivo=str(excedido))
+        partes = await _fatias(
+            table_code, territorial_level, codigo, variable, classifications, excedido
+        )
+    frames = [
+        await _fetch_sidra_em_fatias(
+            table_code,
+            territorial_level,
+            parte_codigo,
+            parte_variavel,
+            period,
+            parte_classes,
+            header,
+        )
+        for parte_codigo, parte_variavel, parte_classes in partes
+    ]
+    fatias = [
+        fatia
+        for frame in frames
+        for fatia in frame.attrs.get("fatias")
+        or [
+            {
+                chave: frame.attrs[chave]
+                for chave in ("url", "sha256", "bytes")
+                if chave in frame.attrs
+            }
+        ]
+    ]
+    df = pd.concat(frames, ignore_index=True).drop_duplicates(ignore_index=True)
+    df.attrs = {"fatias": fatias}
+    return df
+
+
+async def _periodos_modificacao(table_code: str, df: pd.DataFrame) -> dict[str, object]:
+    """A data de modificação dos períodos devolvidos (`D2C`), pela API de agregados.
+
+    A falha no pedido de metadado não derruba a consulta: o motivo vai em
+    `periodos_modificacao_erro`.
+    """
+    periodos = sorted(set(df["D2C"].dropna().astype(str))) if "D2C" in df else []
+    try:
+        modificacao = await agregados.fetch_periodos_modificacao(table_code)
+    except (httpx.HTTPError, TimeoutError, SourceUnavailableError, ParseError) as erro:
+        return {"tabela": table_code, "periodos_modificacao_erro": f"{type(erro).__name__}: {erro}"}
+    return {
+        "tabela": table_code,
+        "periodos_modificacao": {periodo: modificacao.get(periodo) for periodo in periodos},
+    }
+
+
+async def _fetch_sidra_values(sidra_url: str, table_code: str) -> pd.DataFrame:
+    async with httpx.AsyncClient(
+        timeout=get_timeout(read=SIDRA_FETCH_TIMEOUT),
+        headers=UserAgentRotator.get_bot_headers(),
+        follow_redirects=True,
+    ) as http:
 
         async def _do_fetch() -> pd.DataFrame:
-            try:
-                df = await asyncio.wait_for(
-                    asyncio.to_thread(sidrapy.get_table, **kwargs),
-                    timeout=SIDRA_FETCH_TIMEOUT,
+            async with RateLimiter.acquire(constants.Fonte.IBGE):
+                async with asyncio.timeout(SIDRA_FETCH_TIMEOUT):
+                    response = await http.get(sidra_url)
+            if should_retry_status(response.status_code):
+                raise RetriableStatusError(
+                    f"HTTP {response.status_code}",
+                    request=response.request,
+                    response=response,
                 )
-            except ValueError as exc:
+            if response.status_code == 400:
+                motivo = response.text.strip()
+                excedido = _LIMITE_SIDRA.search(motivo)
+                if excedido:
+                    raise LimiteSidraExcedido(int(excedido[1]), int(excedido[2]), sidra_url)
+                raise InvalidParameterError(f"SIDRA recusou o pedido (HTTP 400): {motivo[:300]}")
+            response.raise_for_status()
+            if len(sidra_url) > SIDRA_URL_MAX and "Request Rejected" in response.text[:2000]:
+                raise UrlSidraRejeitada(sidra_url)
+            data = responses.parse_json_response(response, source="ibge", url=sidra_url)
+            if not isinstance(data, list) or any(not isinstance(row, dict) for row in data):
                 raise SourceUnavailableError(
                     source="ibge",
                     url=sidra_url,
-                    last_error=str(exc)[:300],
-                ) from exc
-            return pd.DataFrame(df)
+                    last_error="Resposta SIDRA não é uma lista de registros",
+                )
+            frame = pd.DataFrame(data)
+            frame.attrs.update(
+                url=sidra_url,
+                sha256=hashlib.sha256(response.content).hexdigest(),
+                bytes=len(response.content),
+            )
+            return frame
 
-        df = await retry_async(
-            _do_fetch,
-            retriable_exceptions=(
-                httpx.TimeoutException,
-                httpx.NetworkError,
-                httpx.RemoteProtocolError,
-                requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout,
-                TimeoutError,
-                SourceUnavailableError,
-            ),
-        )
+        try:
+            df = await retry_async(
+                _do_fetch,
+                retriable_exceptions=(*RETRIABLE_EXCEPTIONS, TimeoutError, SourceUnavailableError),
+            )
+        except (httpx.HTTPError, TimeoutError) as exc:
+            if (
+                isinstance(exc, httpx.HTTPStatusError)
+                and exc.response.status_code == 403
+                and (
+                    exc.response.headers.get("cf-mitigated") == "challenge"
+                    or "Just a moment" in exc.response.text[:2000]
+                )
+            ):
+                raise SourceUnavailableError(
+                    source="ibge",
+                    url=sidra_url,
+                    last_error=(
+                        "HTTP 403: Cloudflare challenge (cf-mitigated) para o IP atual; "
+                        "reduza a taxa de requisições e tente mais tarde"
+                    ),
+                ) from exc
+            if isinstance(exc, httpx.HTTPStatusError):
+                responses.raise_for_status(exc.response, source="ibge")
+            raise SourceUnavailableError(
+                source="ibge",
+                url=sidra_url,
+                last_error=f"{type(exc).__name__}: {exc}",
+            ) from exc
 
         logger.info(
             "ibge_fetch_success",
@@ -709,7 +1003,9 @@ def parse_sidra_response(
     df = df.rename(columns=rename_map)
 
     if "valor" in df.columns:
-        df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
+        df["valor"] = pd.to_numeric(df["valor"].replace("-", "0"), errors="coerce").astype(
+            "float64"
+        )
 
     return df
 
@@ -750,4 +1046,9 @@ def get_uf_codes() -> dict[str, str]:
 
 
 def uf_to_ibge_code(uf: str) -> str:
-    return _UF_CODES.get(uf.upper(), uf)
+    texto = uf.strip().upper()
+    if texto in _UF_CODES.values():
+        return texto
+    if texto not in _UF_CODES:
+        raise InvalidParameterError(f"UF invalida: {uf!r}")
+    return _UF_CODES[texto]

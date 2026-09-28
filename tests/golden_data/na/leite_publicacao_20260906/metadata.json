@@ -1,0 +1,17 @@
+{
+  "source": "na",
+  "format": "html",
+  "parser_module": "agrobr.noticias_agricolas.parser",
+  "parser_function": "parse_indicador",
+  "parser_kwargs": {
+    "produto": "leite"
+  },
+  "url": "https://www.noticiasagricolas.com.br/cotacoes/leite/leite-precos-ao-produtor-cepea-rs-litro",
+  "captured_at": "2026-09-06T12:32:40.467668+00:00",
+  "parser_version": 3,
+  "sha256": "5497620cbdbd23dc58fb6cdaf879b243d7cd3622bf515fdd297807aa4aef6fd1",
+  "bytes": 149305,
+  "needs_real_data": false,
+  "notes": "Página real integral. O parser NA autônomo expõe Fechamento (publicação); a nota Referência identifica outro mês. Preservado esse comportamento; leite excluído da composição CEPEA. Nenhuma defasagem fixa é inferida.",
+  "oracle": "Leitura independente de div.cotacao, fechamento, notas Referência e células com BeautifulSoup + Decimal; não importa parser agrobr. Dez publicações e cem preços."
+}

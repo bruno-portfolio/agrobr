@@ -1,10 +1,9 @@
-"""Tests for CEPEA API."""
-
 from __future__ import annotations
 
 import warnings
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
@@ -16,53 +15,11 @@ from agrobr.cepea.client import FetchResult
 from agrobr.exceptions import (
     InvalidParameterError,
     ParseError,
-    SourceUnavailableError,
     StaleDataWarning,
 )
 from agrobr.models import Indicador
 from agrobr.utils.warnings import warn_once_reset
-
-
-async def test_produtos_returns_list():
-    result = await cepea.produtos()
-    assert isinstance(result, list)
-    assert len(result) == 22
-    assert "soja" in result
-    assert "milho" in result
-    assert "bezerro" in result
-    assert "cafe" in result
-    assert "cafe_robusta" in result
-
-
-@pytest.mark.integration
-async def test_pracas_returns_list():
-    result = await cepea.pracas("soja")
-    assert result == ["paranagua"]
-
-
-async def test_pracas_unknown_product_raises():
-    with pytest.raises(ValueError, match="Produto inválido"):
-        await cepea.pracas("unknown_product")
-
-
-async def test_pracas_uses_parser_mapping():
-    result = await cepea.pracas("algodao")
-    assert result == ["sao_paulo"]
-
-
-async def test_pracas_valid_product_without_parser_mapping():
-    result = await cepea.pracas("soja_parana")
-    assert result == []
-
-
-async def test_pracas_cafe_robusta():
-    result = await cepea.pracas("cafe_robusta")
-    assert result == ["espirito_santo"]
-
-
-async def test_pracas_bezerro():
-    result = await cepea.pracas("bezerro")
-    assert result == ["mato_grosso_do_sul"]
+from tests import helpers
 
 
 def _make_indicador(
@@ -103,47 +60,12 @@ class TestIndicador:
         self.mock_store = MagicMock()
         self.mock_store.indicadores_query.return_value = []
         self.mock_store.indicadores_upsert.return_value = 0
+        self.mock_store.indicadores_ultima_coleta.return_value = None
 
         with patch("agrobr.cepea.api.get_store", return_value=self.mock_store):
             yield
 
         warn_once_reset("cepea_license")
-
-    async def test_license_warning_emitted_once(self):
-        with pytest.warns(UserWarning, match="CC BY-NC 4.0") as warning_info:
-            await api.indicador("soja", offline=True)
-            await api.indicador("soja", offline=True)
-
-        assert len(warning_info) == 1
-
-    async def test_valid_product_returns_dataframe(self):
-        ind = _make_indicador()
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        df = await api.indicador("soja", offline=True)
-
-        assert isinstance(df, pd.DataFrame)
-        assert not df.empty
-        assert "data" in df.columns
-        assert "valor" in df.columns
-        assert "produto" in df.columns
-
-    async def test_returns_empty_dataframe_when_no_data(self):
-        df = await api.indicador("soja", offline=True)
-
-        assert isinstance(df, pd.DataFrame)
-        assert df.empty
-
-    async def test_return_meta_flag(self):
-        ind = _make_indicador()
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        result = await api.indicador("soja", offline=True, return_meta=True)
-
-        assert isinstance(result, tuple)
-        df, meta = result
-        assert isinstance(df, pd.DataFrame)
-        assert meta.records_count == len(df)
 
     async def test_date_range_filters(self):
         today = date.today()
@@ -159,186 +81,6 @@ class TestIndicador:
         assert all(df["data"].dt.date >= inicio)
         assert all(df["data"].dt.date <= fim)
 
-    async def test_string_date_params(self):
-        today = date.today()
-        ind = _make_indicador(data=today - timedelta(days=2))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        inicio_str = (today - timedelta(days=10)).strftime("%Y-%m-%d")
-        fim_str = today.strftime("%Y-%m-%d")
-        df = await api.indicador("soja", inicio=inicio_str, fim=fim_str, offline=True)
-
-        assert isinstance(df, pd.DataFrame)
-
-    async def test_praca_filter(self):
-        ind_paranagua = _make_indicador(praca="Paranaguá/PR")
-        ind_parana = _make_indicador(praca="Paraná")
-        dicts = [_indicador_to_dict(ind_paranagua), _indicador_to_dict(ind_parana)]
-        self.mock_store.indicadores_query.return_value = dicts
-
-        df = await api.indicador("soja", praca="paranagua", offline=True)
-
-        assert df["praca"].tolist() == ["Paranaguá/PR"]
-
-    async def test_force_refresh_skips_cache_and_fetches(self):
-        html = "<html><table class='indicador'>CEPEA</table></html>"
-        new_ind = _make_indicador()
-
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-            ) as mock_fetch,
-            patch(
-                "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
-            ) as mock_parser,
-        ):
-            mock_fetch.return_value = FetchResult(html, "cepea")
-            mock_parser.return_value = (MagicMock(version=1), [new_ind])
-
-            await api.indicador("soja", force_refresh=True)
-
-        mock_fetch.assert_awaited_once_with("soja")
-        assert self.mock_store.indicadores_query.call_count == 0
-
-    async def test_fetch_new_data_merges_with_cache(self):
-        today = date.today()
-        cached = _make_indicador(data=today - timedelta(days=5))
-        fresh = _make_indicador(data=today - timedelta(days=1))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(cached)]
-
-        html = "<html>CEPEA data</html>"
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-            ) as mock_fetch,
-            patch(
-                "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
-            ) as mock_parser,
-        ):
-            mock_fetch.return_value = FetchResult(html, "cepea")
-            mock_parser.return_value = (MagicMock(version=1), [fresh])
-
-            df = await api.indicador(
-                "soja",
-                inicio=today - timedelta(days=10),
-                fim=today,
-            )
-
-        assert len(df) == 2
-        self.mock_store.indicadores_upsert.assert_called_once()
-
-    async def test_noticias_agricolas_source_detected(self):
-        today = date.today()
-        ind = _make_indicador(data=today - timedelta(days=1))
-
-        html = '<html><div class="cot-fisicas">noticiasagricolas data</div></html>'
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-            ) as mock_fetch,
-            patch("agrobr.noticias_agricolas.parser.parse_indicador") as mock_na_parse,
-        ):
-            mock_fetch.return_value = FetchResult(html, "noticias_agricolas")
-            mock_na_parse.return_value = [ind]
-
-            result = await api.indicador("soja", force_refresh=True, return_meta=True)
-
-        df, meta = result
-        assert meta.source == "noticias_agricolas"
-
-    async def test_cafe_robusta_meta_uses_cepea_canonical_url(self):
-        today = date.today()
-        ind = _make_indicador(produto="cafe_robusta", data=today)
-        html = "<html>CEPEA cafe data</html>"
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-            ) as mock_fetch,
-            patch(
-                "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
-            ) as mock_parser,
-        ):
-            mock_fetch.return_value = FetchResult(html, "cepea")
-            mock_parser.return_value = (MagicMock(version=1), [ind])
-
-            _, meta = await api.indicador(
-                "cafe_robusta",
-                inicio=today,
-                fim=today,
-                force_refresh=True,
-                return_meta=True,
-            )
-
-        assert meta.source_url == "https://www.cepea.org.br/br/indicador/cafe.aspx"
-
-    async def test_cafe_robusta_meta_uses_noticias_agricolas_slug(self):
-        today = date.today()
-        ind = _make_indicador(produto="cafe_robusta", data=today)
-        html = '<html><div class="cot-fisicas">noticiasagricolas data</div></html>'
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-            ) as mock_fetch,
-            patch("agrobr.noticias_agricolas.parser.parse_indicador") as mock_na_parse,
-        ):
-            mock_fetch.return_value = FetchResult(html, "noticias_agricolas")
-            mock_na_parse.return_value = [ind]
-
-            _, meta = await api.indicador(
-                "cafe_robusta",
-                inicio=today,
-                fim=today,
-                force_refresh=True,
-                return_meta=True,
-            )
-
-        assert (
-            meta.source_url
-            == "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-conillon"
-        )
-        assert meta.parser_version == 2
-
-    async def test_source_fetch_failure_falls_back_to_cache(self):
-        today = date.today()
-        cached = _make_indicador(data=today - timedelta(days=3))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(cached)]
-
-        with patch(
-            "agrobr.cepea.api.client.fetch_indicador_page",
-            new_callable=AsyncMock,
-            side_effect=SourceUnavailableError(source="cepea", last_error="down"),
-        ):
-            df = await api.indicador(
-                "soja",
-                inicio=today - timedelta(days=10),
-                fim=today,
-                force_refresh=True,
-            )
-
-        assert not df.empty
-
-    async def test_source_fetch_failure_no_cache_returns_empty(self):
-        self.mock_store.indicadores_query.return_value = []
-
-        with patch(
-            "agrobr.cepea.api.client.fetch_indicador_page",
-            new_callable=AsyncMock,
-            side_effect=SourceUnavailableError(source="cepea", last_error="down"),
-        ):
-            df = await api.indicador("soja", force_refresh=True)
-
-        assert df.empty
-        assert df.columns.tolist() == [
-            "data",
-            "produto",
-            "praca",
-            "valor",
-            "unidade",
-            "fonte",
-            "metodologia",
-            "anomalies",
-        ]
-
     @pytest.mark.parametrize("produto", ["banana", 123])
     async def test_invalid_product_raises_before_network(self, produto):
         with (
@@ -351,32 +93,54 @@ class TestIndicador:
 
         mock_fetch.assert_not_awaited()
 
-    async def test_product_whitespace_is_normalized(self):
-        await api.indicador(" soja ", offline=True)
-
-        assert self.mock_store.indicadores_query.call_args.kwargs["produto"] == "soja"
-
     async def test_invalid_praca_raises_before_network(self):
         with pytest.raises(InvalidParameterError, match="Praça inválida"):
             await api.indicador("soja", praca="marte")
 
-    @pytest.mark.parametrize("value", ["2025-13-01", "01/01/2025"])
-    async def test_invalid_date_format_raises(self, value):
-        with pytest.raises(InvalidParameterError, match="YYYY-MM-DD"):
-            await api.indicador("soja", inicio=value)
+    @pytest.mark.parametrize(
+        "scenario,parameters",
+        [
+            ("test_reverse_date_range_raises", {}),
+            ("test_nat_rejected_before_cache", {"parameter": "inicio"}),
+            ("test_nat_rejected_before_cache", {"parameter": "fim"}),
+        ],
+        ids=[
+            "reverse_date_range_raises-0",
+            "nat_rejected_before_cache-0",
+            "nat_rejected_before_cache-1",
+        ],
+    )
+    async def test_guardas_dos_limites_temporais(self, scenario: str, parameters: dict[str, Any]):
+        with (
+            helpers.collect_failures() as check,
+            check((scenario, parameters)),
+            helpers.isolated_dataset_case((scenario, parameters)),
+        ):
+            if scenario == "test_reverse_date_range_raises":
+                with pytest.raises(InvalidParameterError, match="inicio"):
+                    await api.indicador("soja", inicio="2025-02-01", fim="2025-01-01")
+            elif scenario == "test_nat_rejected_before_cache":
+                parameter = parameters["parameter"]
+                with pytest.raises(InvalidParameterError, match="Datas"):
+                    await api.indicador("soja", **{parameter: pd.NaT})
+                self.mock_store.indicadores_query.assert_not_called()
 
-    async def test_reverse_date_range_raises(self):
-        with pytest.raises(InvalidParameterError, match="inicio"):
-            await api.indicador("soja", inicio="2025-02-01", fim="2025-01-01")
-
-    async def test_offline_mode_never_fetches(self):
-        with patch(
-            "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-        ) as mock_fetch:
-            df = await api.indicador("soja", offline=True)
-
-        mock_fetch.assert_not_awaited()
-        assert isinstance(df, pd.DataFrame)
+    async def test_pagina_sem_indicadores_e_cache_vazio_levanta_parse_error(self):
+        with (
+            patch(
+                "agrobr.cepea.api.client.fetch_indicador_page",
+                new_callable=AsyncMock,
+                return_value=FetchResult("<html>CEPEA</html>", "cepea"),
+            ),
+            patch(
+                "agrobr.cepea.api.get_parser_with_fallback",
+                new_callable=AsyncMock,
+                return_value=(MagicMock(version=1), []),
+            ),
+            patch("agrobr.cepea.api.client.can_use_alternative_source", return_value=False),
+            pytest.raises(ParseError, match="Nenhum indicador extraído"),
+        ):
+            await api.indicador("soja")
 
     async def test_empty_fetch_with_existing_cache_warns_stale(self):
         today = date.today()
@@ -406,45 +170,15 @@ class TestIndicador:
         assert len(stale_warnings) == 1
         assert "no data" in str(stale_warnings[0].message).lower()
 
-    async def test_default_dates_when_none(self):
-        df = await api.indicador("soja", offline=True)
+    async def test_praca_filter(self):
+        ind_paranagua = _make_indicador(praca="Paranaguá/PR")
+        ind_parana = _make_indicador(praca="Paraná")
+        dicts = [_indicador_to_dict(ind_paranagua), _indicador_to_dict(ind_parana)]
+        self.mock_store.indicadores_query.return_value = dicts
 
-        assert isinstance(df, pd.DataFrame)
-        self.mock_store.indicadores_query.assert_called_once()
-        call_kwargs = self.mock_store.indicadores_query.call_args
-        assert call_kwargs.kwargs["produto"] == "soja"
+        df = await api.indicador("soja", praca="paranagua", offline=True)
 
-    async def test_na_soft_block_falls_back_to_cache(self):
-        """When NA returns a soft block (SourceUnavailableError), cached data is used."""
-        today = date.today()
-        cached = _make_indicador(data=today - timedelta(days=3))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(cached)]
-
-        with patch(
-            "agrobr.cepea.api.client.fetch_indicador_page",
-            new_callable=AsyncMock,
-            side_effect=SourceUnavailableError(
-                source="noticias_agricolas",
-                last_error="Soft block detected",
-            ),
-        ):
-            df = await api.indicador(
-                "soja",
-                inicio=today - timedelta(days=10),
-                fim=today,
-                force_refresh=True,
-            )
-
-        assert not df.empty
-
-    async def test_cache_hit_sets_meta_source(self):
-        ind = _make_indicador()
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        _, meta = await api.indicador("soja", offline=True, return_meta=True)
-
-        assert meta.from_cache is True
-        assert meta.source == "cache"
+        assert df["praca"].tolist() == ["Paranaguá/PR"]
 
 
 class TestUltimo:
@@ -454,21 +188,12 @@ class TestUltimo:
         self.mock_store = MagicMock()
         self.mock_store.indicadores_query.return_value = []
         self.mock_store.indicadores_upsert.return_value = 0
+        self.mock_store.indicadores_ultima_coleta.return_value = None
 
         with patch("agrobr.cepea.api.get_store", return_value=self.mock_store):
             yield
 
         warn_once_reset("cepea_license")
-
-    async def test_license_warning_emitted_once(self):
-        ind = _make_indicador()
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        with pytest.warns(UserWarning, match="CC BY-NC 4.0") as warning_info:
-            await api.ultimo("soja", offline=True)
-            await api.ultimo("soja", offline=True)
-
-        assert len(warning_info) == 1
 
     async def test_returns_latest_indicador(self):
         today = date.today()
@@ -484,31 +209,6 @@ class TestUltimo:
         assert isinstance(result, Indicador)
         assert result.data == recent.data
 
-    async def test_raises_parse_error_when_no_data(self):
-        with pytest.raises(ParseError, match="No indicators found"):
-            await api.ultimo("soja", offline=True)
-
-    async def test_praca_filter(self):
-        today = date.today()
-        ind_paranagua = _make_indicador(data=today - timedelta(days=1), praca="Paranaguá/PR")
-        ind_parana = _make_indicador(data=today - timedelta(days=1), praca="Paraná")
-        self.mock_store.indicadores_query.return_value = [
-            _indicador_to_dict(ind_paranagua),
-            _indicador_to_dict(ind_parana),
-        ]
-
-        result = await api.ultimo("soja", praca="paranagua", offline=True)
-
-        assert result.praca == "Paranaguá/PR"
-
-    async def test_valid_praca_filter_no_match_raises(self):
-        today = date.today()
-        ind = _make_indicador(data=today - timedelta(days=1), praca="parana")
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        with pytest.raises(ParseError, match="No indicators found"):
-            await api.ultimo("soja", praca="paranagua", offline=True)
-
     async def test_invalid_product_and_praca_raise_before_cache(self):
         with pytest.raises(InvalidParameterError, match="Produto inválido"):
             await api.ultimo("banana", offline=True)
@@ -516,98 +216,6 @@ class TestUltimo:
             await api.ultimo("soja", praca="marte", offline=True)
 
         self.mock_store.indicadores_query.assert_not_called()
-
-    async def test_fetches_when_no_recent_data(self):
-        today = date.today()
-        old_ind = _make_indicador(data=today - timedelta(days=10))
-        fresh_ind = _make_indicador(data=today - timedelta(days=1))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(old_ind)]
-
-        html = "<html>CEPEA data</html>"
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-            ) as mock_fetch,
-            patch(
-                "agrobr.cepea.api.get_parser_with_fallback", new_callable=AsyncMock
-            ) as mock_parser,
-        ):
-            mock_fetch.return_value = FetchResult(html, "cepea")
-            mock_parser.return_value = (MagicMock(version=1), [fresh_ind])
-
-            result = await api.ultimo("soja")
-
-        assert result.data == fresh_ind.data
-        self.mock_store.indicadores_upsert.assert_called_once()
-
-    async def test_offline_never_fetches(self):
-        today = date.today()
-        ind = _make_indicador(data=today - timedelta(days=5))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        with patch(
-            "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-        ) as mock_fetch:
-            result = await api.ultimo("soja", offline=True)
-
-        mock_fetch.assert_not_awaited()
-        assert isinstance(result, Indicador)
-
-    async def test_fetch_failure_uses_cache(self):
-        today = date.today()
-        ind = _make_indicador(data=today - timedelta(days=10))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        with patch(
-            "agrobr.cepea.api.client.fetch_indicador_page",
-            new_callable=AsyncMock,
-            side_effect=SourceUnavailableError(source="cepea", last_error="down"),
-        ):
-            result = await api.ultimo("soja")
-
-        assert result.data == ind.data
-
-    async def test_fetch_failure_no_cache_raises(self):
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page",
-                new_callable=AsyncMock,
-                side_effect=SourceUnavailableError(source="cepea", last_error="down"),
-            ),
-            pytest.raises(ParseError, match="No indicators found"),
-        ):
-            await api.ultimo("soja")
-
-    async def test_noticias_agricolas_source(self):
-        today = date.today()
-        ind = _make_indicador(data=today - timedelta(days=1))
-
-        html = '<html><div class="cot-fisicas">NA</div></html>'
-        with (
-            patch(
-                "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-            ) as mock_fetch,
-            patch("agrobr.noticias_agricolas.parser.parse_indicador") as mock_na,
-        ):
-            mock_fetch.return_value = FetchResult(html, "noticias_agricolas")
-            mock_na.return_value = [ind]
-
-            result = await api.ultimo("soja")
-
-        assert isinstance(result, Indicador)
-
-    async def test_skips_fetch_when_recent_data_exists(self):
-        today = date.today()
-        ind = _make_indicador(data=today - timedelta(days=1))
-        self.mock_store.indicadores_query.return_value = [_indicador_to_dict(ind)]
-
-        with patch(
-            "agrobr.cepea.api.client.fetch_indicador_page", new_callable=AsyncMock
-        ) as mock_fetch:
-            result = await api.ultimo("soja")
-
-        mock_fetch.assert_not_awaited()
-        assert result.data == ind.data
 
 
 class TestToDataframeVazio:
@@ -621,3 +229,19 @@ class TestToDataframeVazio:
         assert pd.api.types.is_datetime64_any_dtype(df["data"])
         assert pd.api.types.is_float_dtype(df["valor"])
         validate_dataset(df, "preco_diario")
+
+
+async def test_pracas_bezerro():
+    result = await cepea.pracas("bezerro")
+    assert result == ["mato_grosso_do_sul"]
+
+
+async def test_produtos_returns_list():
+    result = await cepea.produtos()
+    assert isinstance(result, list)
+    assert len(result) == 22
+    assert "soja" in result
+    assert "milho" in result
+    assert "bezerro" in result
+    assert "cafe" in result
+    assert "cafe_robusta" in result

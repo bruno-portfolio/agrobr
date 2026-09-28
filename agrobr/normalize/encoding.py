@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import codecs
 from collections.abc import Sequence
 
 import chardet
@@ -7,13 +8,7 @@ import structlog
 
 logger = structlog.get_logger()
 
-ENCODING_CHAIN: Sequence[str] = (
-    "utf-8",
-    "windows-1252",
-    "iso-8859-1",
-    "utf-16",
-    "ascii",
-)
+ENCODING_CHAIN: Sequence[str] = ("utf-8", "windows-1252", "iso-8859-1")
 
 
 def decode_content(
@@ -38,44 +33,29 @@ def decode_content(
                 declared=declared_encoding,
             )
 
-    for encoding in ENCODING_CHAIN:
+    *tentativas, ultima = ENCODING_CHAIN
+    for encoding in tentativas:
         try:
             decoded = content.decode(encoding)
-            if encoding != "utf-8":
-                logger.info(
-                    "encoding_fallback",
-                    source=source,
-                    declared=declared_encoding,
-                    actual=encoding,
-                    method="chain",
-                )
-            return decoded, encoding
         except UnicodeDecodeError:
             continue
-
-    detected = chardet.detect(content)
-    if detected["encoding"] and detected["confidence"] > 0.7:
-        try:
-            decoded = content.decode(detected["encoding"])
+        if encoding != "utf-8":
             logger.info(
                 "encoding_fallback",
                 source=source,
                 declared=declared_encoding,
-                actual=detected["encoding"],
-                confidence=detected["confidence"],
-                method="chardet",
+                actual=encoding,
+                method="chain",
             )
-            return decoded, detected["encoding"]
-        except (UnicodeDecodeError, LookupError):
-            pass
-
-    logger.warning(
-        "encoding_forced",
+        return decoded, encoding
+    logger.info(
+        "encoding_fallback",
         source=source,
         declared=declared_encoding,
-        chardet_result=detected,
+        actual=ultima,
+        method="chain",
     )
-    return content.decode("utf-8", errors="replace"), "utf-8-replaced"
+    return content.decode(ultima), ultima
 
 
 def detect_encoding(content: bytes) -> tuple[str, float]:
@@ -87,11 +67,20 @@ def detect_encoding_chain(content: bytes) -> str:
     if content.startswith(b"\xef\xbb\xbf"):
         return "utf-8-sig"
 
-    for enc in ("utf-8", "windows-1252", "iso-8859-1"):
-        try:
-            content.decode(enc)
+    for enc in ("utf-8", "windows-1252"):
+        if _decodifica(content, enc):
             return enc
-        except (UnicodeDecodeError, LookupError):
-            continue
-    detected = chardet.detect(content[:8192])
-    return detected.get("encoding") or "utf-8"
+    return "iso-8859-1"
+
+
+def _decodifica(content: bytes, encoding: str) -> bool:
+    """Confere a codificação por blocos de 1 MiB, sem montar o texto do corpo inteiro."""
+    decoder = codecs.getincrementaldecoder(encoding)()
+    view = memoryview(content)
+    try:
+        for inicio in range(0, len(view), 1 << 20):
+            decoder.decode(view[inicio : inicio + (1 << 20)])
+        decoder.decode(b"", final=True)
+    except UnicodeDecodeError:
+        return False
+    return True

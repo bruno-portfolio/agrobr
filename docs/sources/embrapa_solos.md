@@ -13,10 +13,10 @@ da EMBRAPA GeoInfo.
 | Provedor | EMBRAPA (Empresa Brasileira de Pesquisa Agropecuaria) |
 | Dados | Perfis de solo (pontos) + mapa pedologico (poligonos) |
 | Acesso | WFS OGC (GeoServer) |
-| Formato | CSV (tabular) / GeoJSON (geo) |
+| Formato | GeoJSON do WFS 2.0 (`application/json`) nos dois modos |
 | Autenticacao | Nenhuma |
 | Licenca | CC BY-NC 3.0 BR |
-| Features | ~34K perfis + ~2.8K poligonos |
+| Features | 34.464 registros de horizontes/camadas (~9 mil pontos) + 2.852 poligonos |
 
 ## Acesso via WFS
 
@@ -26,7 +26,7 @@ da EMBRAPA GeoInfo.
 | WFS Version | 2.0.0 |
 | Layer perfis | `geonode:perfis_pronasolos_2020` |
 | Layer mapa | `geonode:brasil_solos_5m_20201104` |
-| CRS | EPSG:4674 |
+| CRS | EPSG:4326 (declarado pelo WFS e pelo metadado ISO) |
 | Paginacao | Sim (count/startIndex) |
 
 ## Exemplo de Uso
@@ -64,25 +64,40 @@ asyncio.run(main())
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| fid | int | Identificador do perfil |
+| fid | int | Identificador do registro (horizonte ou camada) |
 | uf | str | UF (sigla) |
 | municipio | str | Municipio |
 | latitude | float | Latitude |
 | longitude | float | Longitude |
 | horizonte | str | Simbolo do horizonte |
 | profundidade | str | Profundidade |
-| areia_total | float | Teor de areia total (g/kg) |
-| silte | float | Teor de silte (g/kg) |
-| argila | float | Teor de argila (g/kg) |
-| ph_h2o | float | pH em agua |
-| carbono_organico | float | Carbono organico (g/kg) |
-| ctc | float | Capacidade de troca cationica |
-| saturacao_bases | float | Saturacao por bases (V%) |
-| aluminio | float | Aluminio trocavel |
-| fosforo | float | Fosforo assimilavel |
+| areia_total | str | Areia total (g/kg) |
+| silte | str | Silte (g/kg) |
+| argila | str | Argila (g/kg) |
+| ph_h2o | str | pH em agua |
+| carbono_organico | str | Carbono organico (unidade nao declarada pela fonte) |
+| ctc | str | Capacidade de troca cationica (T) |
+| saturacao_bases | str | Saturacao por bases (V, %) |
+| aluminio | str | Aluminio trocavel |
+| fosforo | str | Fosforo assimilavel |
 | classe_textural | str | Classe textural |
 | nivel_levantamento | str | Nivel do levantamento |
 | uso_atual | str | Uso atual do solo |
+
+A tabela mostra as colunas principais. O resultado tem 85 colunas, na ordem do contrato
+`embrapa_solos.perfis` 2.0: os 83 atributos publicados (com os nomes acima ou o nome original da camada),
+`uf_original` e `feature_id`. Cada linha e um horizonte ou camada; `codigo_pon` identifica o ponto de
+amostragem.
+
+Os valores laboratoriais sao o texto publicado pela Embrapa (o WFS declara `xsd:string`), sem conversao:
+numeros com ponto decimal, as vezes com ruido de float32 (`4.400000095367432`), e o texto `NULL` para
+ausencia. Em `fosforo` tambem aparecem valores censurados (`<1`, `<0.5`), virgula decimal (`0,19`) e marcas
+como `x`. Converta explicitamente, por exemplo `pd.to_numeric(df["argila"].replace("NULL", pd.NA))`; em
+`fosforo`, trate antes os censurados e a virgula.
+
+O WFS nao declara unidades. Na camada inteira, areia + silte + argila somam 1.000 (g/kg) em 99,2 % dos
+horizontes com as tres medidas; `saturacao_bases` = 100 x S / T e `ctc` = S + H + Al (colunas `valor_s`,
+`hidrogenio` e `aluminio`) em mais de 98 % dos horizontes.
 
 ## Colunas — Mapa Pedologico
 
@@ -103,13 +118,18 @@ asyncio.run(main())
 | gdegrupo2 | str | Grande grupo 2 |
 | legenda_sinotica | str | Legenda sinotica |
 | classe_dom | str | Classe dominante |
+| ordem3 | str | Ordem pedologica 3 |
+| subordem3 | str | Subordem 3 |
+| gdegrupo3 | str | Grande grupo 3 |
+| feature_id | str | Identificador da feicao no WFS (texto, nao e chave) |
 
 ## Particularidades
 
 - **Funcoes `_geo()` requerem [geo]**: `pip install agrobr[geo]` (geopandas)
-- **Paginacao**: 34K+ perfis exigem paginacao automatica via WFS
-- **CRS**: EPSG:4674 (SIRGAS 2000)
+- **Paginacao**: count/startIndex ordenado por `fid`, com 1 registro de sobreposicao entre paginas. `max_registros` (padrao 50.000; 5.000 perfis e 3.000 poligonos nas funcoes `_geo`) corta o prefixo remoto; os filtros `uf` e `ordem` sao aplicados localmente sobre esse prefixo e, quando o corte deixa a selecao parcial, sai um `UserWarning` (`max_registros=None` varre a camada inteira)
+- **CRS**: EPSG:4326, o CRS padrao das duas camadas no WFS; o `bbox` tambem e EPSG:4326
 - **Licenca NC**: uso comercial requer autorizacao da EMBRAPA
+- **Texto com dupla codificação**: a Embrapa publica parte dos textos dos perfis com dupla codificação (UTF-8 lido como Latin-1: "AptidÃ£o", "SÃ£o Carlos"), no JSON e no CSV do WFS. O agrobr repara só o texto que volta inteiro por Latin-1 → UTF-8 e tem a assinatura ("Ã" ou "Â" seguido de um caractere entre U+0080 e U+00BF). Texto legítimo com "Ã" fica como está. A contagem por coluna sai em `MetaInfo.validation_warnings`. Ficam sem reparo, contados à parte no mesmo aviso ("com a assinatura e sem reparo"), 3 casos que a fonte publica assim: texto cortado a cerca de 254 caracteres no meio de uma sequência UTF-8, texto com "�" publicado e texto com "€" (33 células no DF, conferido em 26/09/2026)
 
 ## Limitacoes
 

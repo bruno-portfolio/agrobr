@@ -6,17 +6,17 @@ Desmatamento consolidado (PRODES) e alertas em tempo real (DETER) por bioma.
 
 | `tipo=` | Contrato | Fonte |
 |---------|----------|-------|
-| `"prodes"` (default) | `DESMATAMENTO_PRODES_V1` | INPE TerraBrasilis |
-| `"deter"` | `DESMATAMENTO_DETER_V1` | INPE TerraBrasilis |
+| `"prodes"` (default) | `DESMATAMENTO_PRODES_V2` | INPE TerraBrasilis |
+| `"deter"` | `DESMATAMENTO_DETER_V2` | INPE TerraBrasilis |
 
 ## Schema: PRODES
 
 | Coluna | Tipo | Nullable | Unidade | Restrições |
 |--------|------|----------|---------|------------|
-| `ano` | INTEGER | Não | — | ≥ 2000 |
+| `ano` | INTEGER | Não | — | 1 a 9999, inteiro |
 | `uf` | STRING | Não | — | UF válida |
 | `classe` | STRING | Não | — | — |
-| `area_km2` | FLOAT | Não | km² | ≥ 0 |
+| `area_km2` | FLOAT | Sim | km² | ≥ 0 |
 | `satelite` | STRING | Sim | — | — |
 | `sensor` | STRING | Sim | — | — |
 | `bioma` | STRING | Não | — | Bioma válido |
@@ -31,30 +31,49 @@ Desmatamento consolidado (PRODES) e alertas em tempo real (DETER) por bioma.
 | `classe` | STRING | Não | — | — |
 | `uf` | STRING | Não | — | UF válida |
 | `municipio` | STRING | Sim | — | — |
-| `municipio_id` | INTEGER | Sim | — | — |
-| `area_km2` | FLOAT | Não | km² | ≥ 0 |
+| `municipio_id` | STRING | Sim | — | — |
+| `cod_municipio` | INTEGER | Sim | — | código IBGE de 7 dígitos, do `municipio_id` |
+| `area_km2` | FLOAT | Sim | km² | ≥ 0 |
 | `satelite` | STRING | Sim | — | — |
 | `sensor` | STRING | Sim | — | — |
 | `bioma` | STRING | Não | — | Amazônia ou Cerrado |
 
-**PK:** `(data, classe, uf, municipio, bioma)`
+**PK:** `(data, classe, uf, municipio, municipio_id, bioma)`
 
 ## Restrições
 
 - DETER só disponível para **Amazônia** e **Cerrado** (fail-fast com `ValueError`)
 - Bioma é normalizado automaticamente (`"cerrado"` → `"Cerrado"`)
+- No PRODES, a Amazônia é o recorte do bioma, não a Amazônia Legal da taxa de destaque do INPE ([fonte](../sources/desmatamento.md))
+
+## Agregação
+
+Cada linha é um grupo da chave primária, não uma feição. `area_km2` é a **soma das áreas publicadas
+das feições** do grupo (`area_km` no PRODES, `areamunkm` no DETER) — não é a taxa oficial de
+desmatamento. Qualquer área ausente no grupo torna o total ausente, sem soma parcial. `satelite` e
+`sensor` trazem o valor publicado quando ele é único no grupo e ficam nulos quando o grupo mistura
+valores; `meta.source_details["aggregation"]["heterogeneous"]` conta esses casos. A agregação exige
+seleção reconciliada: se o limite local cortar a seleção, o dataset levanta `ContractViolationError`
+em vez de publicar um agregado parcial. A contagem do WFS é conferida antes da descarga: quando passa
+do `max_registros` (padrão 50.000), a recusa vem na hora, com a contagem na mensagem, sem baixar
+nenhuma feição. Para uma seleção maior, use `max_registros=None`: o Cerrado inteiro de 2023 tem
+68.620 feições, e a descarga leva minutos. Para as feições individuais, use
+`agrobr.desmatamento.prodes` / `deter` (contratos `desmatamento.prodes_feicoes` e
+`desmatamento.deter_feicoes`).
 
 ## Exemplo
 
 ```python
 from agrobr import datasets
 
-# PRODES — desmatamento anual consolidado
-df = await datasets.desmatamento("Cerrado", tipo="prodes", ano=2023)
+# PRODES — desmatamento anual consolidado (103 feições no DF em 2023)
+df = await datasets.desmatamento("Cerrado", tipo="prodes", ano=2023, uf="DF")
 
-# DETER — alertas de desmatamento
-df = await datasets.desmatamento("Amazônia", tipo="deter", data_inicio="2024-01-01")
+# DETER — alertas de desmatamento no Acre, 1º trimestre de 2024
+df = await datasets.desmatamento(
+    "Amazônia", tipo="deter", uf="AC", data_inicio="2024-01-01", data_fim="2024-03-31"
+)
 
-# Com metadados
-df, meta = await datasets.desmatamento("Cerrado", return_meta=True)
+# Com metadados (todos os anos do Cerrado no DF: 3.643 feições)
+df, meta = await datasets.desmatamento("Cerrado", uf="DF", return_meta=True)
 ```

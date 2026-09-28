@@ -1,6 +1,6 @@
 {
   "name": "anec.embarques",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "effective_from": "1.0.6",
   "breaking_policy": "major",
   "primary_key": [
@@ -11,19 +11,28 @@
   "required_columns": [
     "porto",
     "produto",
-    "periodo"
+    "periodo",
+    "valor_ton"
   ],
   "dtypes": {
     "porto": "str",
     "produto": "str",
     "periodo": "str",
-    "valor_ton": "float"
+    "valor_ton": "float",
+    "ano": "int",
+    "semana": "int",
+    "data_inicio": "date",
+    "data_fim": "date"
   },
   "nullable": {
     "porto": false,
     "produto": false,
     "periodo": false,
-    "valor_ton": true
+    "valor_ton": true,
+    "ano": false,
+    "semana": false,
+    "data_inicio": true,
+    "data_fim": true
   },
   "columns": [
     {
@@ -69,15 +78,63 @@
       "description": "",
       "min_value": 0,
       "max_value": null
+    },
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Ano da edição impresso no boletim (Week NN/AAAA)",
+      "min_value": 2026,
+      "max_value": null
+    },
+    {
+      "name": "semana",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Semana da edição impressa no boletim (Week NN/AAAA)",
+      "min_value": 1,
+      "max_value": 53
+    },
+    {
+      "name": "data_inicio",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Primeiro dia do período, lido do rótulo do boletim",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_fim",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Último dia do período, lido do rótulo do boletim",
+      "min_value": null,
+      "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "valor_ton_min": 0
+    "valor_ton_min": 0,
+    "ano_min": 2026,
+    "semana_min": 1,
+    "semana_max": 53
   },
   "guarantees": [
     "Column names never change (additions only)",
     "'valor_ton' is always >= 0 when present",
-    "One row per porto x produto x periodo"
+    "One row per porto x produto x periodo",
+    "Datas lidas dos rótulos do boletim, nunca da semana ISO; nulas quando os dois rótulos não formam semanas consecutivas de 7 dias"
   ]
 }

@@ -3,363 +3,227 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import httpx
-import pytest
 
 from agrobr.bcb import client
 from agrobr.exceptions import SourceUnavailableError
 from tests.helpers import (
     RETRY_SLEEP,
+    collect_failures,
+    levanta_exatamente,
     make_mock_async_client,
     make_mock_response,
     make_sleep_tracker,
+    sem_excecao,
+)
+
+SAFRA_2023 = (
+    "((AnoEmissao eq '2023' and MesEmissao ge '07') or "
+    "(AnoEmissao eq '2024' and MesEmissao lt '07'))"
 )
 
 
-class TestPertenceASafra:
-    def test_jul_a_dez_do_ano_inicio(self):
-        assert client._pertence_a_safra({"AnoEmissao": "2023", "MesEmissao": "07"}, 2023)
-        assert client._pertence_a_safra({"AnoEmissao": "2023", "MesEmissao": "12"}, 2023)
-
-    def test_jan_a_jun_do_ano_fim(self):
-        assert client._pertence_a_safra({"AnoEmissao": "2024", "MesEmissao": "01"}, 2023)
-        assert client._pertence_a_safra({"AnoEmissao": "2024", "MesEmissao": "06"}, 2023)
-
-    def test_fora_da_safra(self):
-        assert not client._pertence_a_safra({"AnoEmissao": "2023", "MesEmissao": "06"}, 2023)
-        assert not client._pertence_a_safra({"AnoEmissao": "2024", "MesEmissao": "07"}, 2023)
-
-    def test_record_sem_ano_descartado(self):
-        assert not client._pertence_a_safra({"MesEmissao": "07"}, 2023)
-        assert not client._pertence_a_safra({"AnoEmissao": "x", "MesEmissao": "07"}, 2023)
+def test_safra_vai_de_julho_a_junho():
+    dentro = [("2023", "07"), ("2023", "12"), ("2024", "01"), ("2024", "06")]
+    fora = [("2023", "06"), ("2024", "07")]
+    assert [
+        client._pertence_a_safra({"AnoEmissao": a, "MesEmissao": m}, 2023) for a, m in dentro
+    ] == [True] * 4
+    assert [
+        client._pertence_a_safra({"AnoEmissao": a, "MesEmissao": m}, 2023) for a, m in fora
+    ] == [False] * 2
+    assert not client._pertence_a_safra({"MesEmissao": "07"}, 2023)
+    assert not client._pertence_a_safra({"AnoEmissao": "x", "MesEmissao": "07"}, 2023)
 
 
-class TestBcbTimeout:
-    @pytest.mark.asyncio
-    async def test_timeout_retried_raises_source_unavailable(self):
+async def test_olinda_repete_falhas_transitorias_e_recusa_as_definitivas():
+    for falha in [httpx.TimeoutException("read timeout"), make_mock_response(500, json_data={})]:
         mock_client = make_mock_async_client()
-        mock_client.get.side_effect = httpx.TimeoutException("read timeout")
-
-        with (
-            patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client._fetch_odata("CusteioRegiaoUFProduto")
-
-        assert mock_client.get.call_count == client.BCB_MAX_RETRIES
-
-
-class TestBcbRequest:
-    @pytest.mark.asyncio
-    async def test_odata_url_omits_skip(self):
-        response = make_mock_response(200, json_data={"value": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=response)
-
-        with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client):
-            await client._fetch_odata("CusteioRegiaoUFProduto", top=1)
-
-        url = mock_client.get.await_args.args[0]
-        assert "$top=1" in url
-        assert "$skip" not in url
-
-
-class TestBcbHTTPErrors:
-    @pytest.mark.asyncio
-    async def test_http_500_retries(self):
-        resp_500 = make_mock_response(500, json_data={"value": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_500)
-
-        with (
-            patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client._fetch_odata("CusteioRegiaoUFProduto")
-
-        assert mock_client.get.call_count == client.BCB_MAX_RETRIES
-
-    @pytest.mark.asyncio
-    async def test_http_429_retries(self):
-        resp_429 = make_mock_response(429, json_data={"value": []})
-        resp_ok = make_mock_response(200, json_data={"value": [{"id": 1}]})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(side_effect=[resp_429, resp_ok])
-
-        with (
-            patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-        ):
-            result = await client._fetch_odata("CusteioRegiaoUFProduto")
-
-        assert result["value"] == [{"id": 1}]
-
-    @pytest.mark.asyncio
-    async def test_http_403_raises_via_raise_for_status(self):
-        resp_403 = make_mock_response(403, json_data={"value": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_403)
-
-        with (
-            patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(httpx.HTTPStatusError),
-        ):
-            await client._fetch_odata("CusteioRegiaoUFProduto")
-
-
-class TestBcbEmptyResponse:
-    @pytest.mark.asyncio
-    async def test_empty_value_list(self):
-        resp = make_mock_response(200, json_data={"value": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
-        with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client.fetch_credito_rural(finalidade="custeio")
-
-        assert result == []
-
-    @pytest.mark.asyncio
-    async def test_missing_value_key(self):
-        resp = make_mock_response(200, json_data={"odata.metadata": "..."})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
-        with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client.fetch_credito_rural(finalidade="custeio")
-
-        assert result == []
-
-
-class TestBcbRetry:
-    @pytest.mark.asyncio
-    async def test_backoff_exponential(self):
-        resp_500 = make_mock_response(500, json_data={"value": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_500)
-
+        if isinstance(falha, Exception):
+            mock_client.get.side_effect = falha
+        else:
+            mock_client.get = AsyncMock(return_value=falha)
         sleep_calls, track_sleep = make_sleep_tracker()
-
         with (
             patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
             patch(RETRY_SLEEP, side_effect=track_sleep),
-            pytest.raises(SourceUnavailableError),
+            levanta_exatamente(SourceUnavailableError),
         ):
             await client._fetch_odata("CusteioRegiaoUFProduto")
-
+        assert mock_client.get.call_count == client.BCB_MAX_RETRIES
         assert len(sleep_calls) == client.BCB_MAX_RETRIES - 1
-        for i in range(1, len(sleep_calls)):
-            assert sleep_calls[i] > sleep_calls[i - 1]
-
-
-class TestBcbFetchCreditoRural:
-    @pytest.mark.asyncio
-    async def test_invalid_finalidade_raises(self):
-        with pytest.raises(ValueError, match="Finalidade inválida"):
-            await client.fetch_credito_rural(finalidade="invalida")
-
-    @pytest.mark.asyncio
-    async def test_client_side_filtering_safra(self):
-        records = [
-            {"AnoEmissao": "2023", "MesEmissao": "09", "nomeProduto": "SOJA", "cdEstado": "51"},
-            {"AnoEmissao": "2024", "MesEmissao": "02", "nomeProduto": "SOJA", "cdEstado": "51"},
-            {"AnoEmissao": "2023", "MesEmissao": "03", "nomeProduto": "SOJA", "cdEstado": "51"},
-            {"AnoEmissao": "2024", "MesEmissao": "08", "nomeProduto": "SOJA", "cdEstado": "51"},
+        assert all(depois > antes for antes, depois in zip(sleep_calls, sleep_calls[1:]))
+    mock_client = make_mock_async_client()
+    mock_client.get = AsyncMock(
+        side_effect=[
+            make_mock_response(429, json_data={"value": []}),
+            make_mock_response(200, json_data={"value": [{"id": 1}]}),
         ]
-        resp = make_mock_response(200, json_data={"value": records})
+    )
+    with (
+        patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
+        patch(RETRY_SLEEP, new_callable=AsyncMock),
+    ):
+        assert (await client._fetch_odata("CusteioRegiaoUFProduto", top=1))["value"] == [{"id": 1}]
+    url = mock_client.get.await_args.args[0]
+    assert "$top=1" in url and "$skip" not in url
+    mock_client = make_mock_async_client()
+    mock_client.get = AsyncMock(return_value=make_mock_response(403, json_data={"value": []}))
+    with (
+        patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
+        levanta_exatamente(SourceUnavailableError, "HTTP 403"),
+    ):
+        await client._fetch_odata("CusteioRegiaoUFProduto")
+
+
+async def test_resposta_sem_registros_devolve_lista_vazia():
+    for corpo in [{"value": []}, {"odata.metadata": "..."}]:
         mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+        mock_client.get = AsyncMock(return_value=make_mock_response(200, json_data=corpo))
+        with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client), sem_excecao():
+            assert await client.fetch_credito_rural(finalidade="custeio") == []
 
-        with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client.fetch_credito_rural(finalidade="custeio", safra_sicor="2023/2024")
 
-        assert len(result) == 2
-        assert {(r["AnoEmissao"], r["MesEmissao"]) for r in result} == {
-            ("2023", "09"),
-            ("2024", "02"),
-        }
+async def test_recusas_antes_da_rede():
+    with (
+        patch.object(client, "_fetch_odata", new_callable=AsyncMock) as mock_fetch,
+        collect_failures() as check,
+    ):
+        for argumentos, motivo in [
+            ({"finalidade": "invalida"}, "Finalidade inválida: 'invalida'"),
+            ({"cd_uf": "99"}, "Codigo de UF invalido: '99'"),
+            ({"safra_sicor": "abc"}, "safra inválida: 'abc'"),
+        ]:
+            with check(argumentos), levanta_exatamente(ValueError, match=re.escape(motivo)):
+                await client.fetch_credito_rural(**argumentos)
+    mock_fetch.assert_not_awaited()
 
-    @pytest.mark.asyncio
-    async def test_filter_uf_uses_nome_uf_with_real_golden(self):
-        path = Path(__file__).parents[1] / "golden_data" / "bcb" / "custeio_sample"
-        records = json.loads((path / "response.json").read_text(encoding="utf-8"))
 
-        with patch.object(
-            client,
-            "_fetch_odata",
-            new_callable=AsyncMock,
-            return_value={"value": records},
-        ) as mock_fetch:
-            result = await client.fetch_credito_rural(
-                finalidade="custeio",
-                produto_sicor="SOJA",
-                cd_uf="51",
-            )
-
-        assert len(result) == 3
-        assert {record["nomeUF"] for record in result} == {"MT"}
-        filters = mock_fetch.call_args.kwargs["filters"]
-        assert "contains(nomeProduto,'SOJA')" in filters
-        assert "nomeUF eq 'MT'" in filters
-        assert all("cdEstado" not in item for item in filters)
-
-    @pytest.mark.asyncio
-    async def test_server_filter_includes_safra(self):
-        with patch.object(
-            client,
-            "_fetch_odata",
-            new_callable=AsyncMock,
-            return_value={"value": []},
-        ) as mock_fetch:
-            await client.fetch_credito_rural(safra_sicor="2023/2024")
-
-        filters = mock_fetch.call_args.kwargs["filters"]
-        assert filters == [
-            "((AnoEmissao eq '2023' and MesEmissao ge '07') or "
-            "(AnoEmissao eq '2024' and MesEmissao lt '07'))"
-        ]
-
-    @pytest.mark.asyncio
-    async def test_record_limit_triggers_monthly_slicing(self):
-        safra_filter = (
-            "((AnoEmissao eq '2023' and MesEmissao ge '07') or "
-            "(AnoEmissao eq '2024' and MesEmissao lt '07'))"
+async def test_filtros_do_servidor_e_do_cliente():
+    golden = Path(__file__).parents[1] / "golden_data" / "bcb" / "custeio_sample"
+    records = json.loads((golden / "response.json").read_text(encoding="utf-8"))
+    with (
+        patch.object(
+            client, "_fetch_odata", new_callable=AsyncMock, return_value={"value": records}
+        ) as mock_fetch,
+        sem_excecao(),
+    ):
+        result = await client.fetch_credito_rural(
+            finalidade="custeio", produto_sicor='"SOJA"', cd_uf="51"
         )
-        monthly_records = [
-            {
-                "AnoEmissao": "2024" if mes < 7 else "2023",
-                "MesEmissao": f"{mes:02d}",
-            }
-            for mes in range(1, 13)
-        ]
-        responses = [
-            {"value": [{"truncated": 1}, {"truncated": 2}]},
-            *({"value": [record]} for record in monthly_records),
-        ]
-
+    assert len(result) == 3 and {record["nomeUF"] for record in result} == {"MT"}
+    assert mock_fetch.call_args.kwargs["filters"] == [
+        "nomeProduto eq '\"SOJA\"'",
+        "nomeUF eq 'MT'",
+    ]
+    fora_da_safra = [
+        {"AnoEmissao": "2023", "MesEmissao": "09"},
+        {"AnoEmissao": "2024", "MesEmissao": "02"},
+        {"AnoEmissao": "2023", "MesEmissao": "03"},
+        {"AnoEmissao": "2024", "MesEmissao": "08"},
+    ]
+    for safra in ["2023/2024", "2023/24", "2024"]:
         with (
-            patch.object(client, "SICOR_RECORD_LIMIT", 2),
             patch.object(
                 client,
                 "_fetch_odata",
                 new_callable=AsyncMock,
-                side_effect=responses,
+                return_value={"value": fora_da_safra},
             ) as mock_fetch,
+            sem_excecao(),
         ):
-            result = await client.fetch_credito_rural(safra_sicor="2023/2024")
+            result = await client.fetch_credito_rural(safra_sicor=safra)
+        assert (safra, result) == (safra, fora_da_safra[:2])
+        assert mock_fetch.call_args.kwargs["filters"] == [SAFRA_2023]
 
-        assert result == monthly_records
-        assert mock_fetch.await_count == 13
-        assert mock_fetch.await_args_list[0].kwargs["filters"] == [safra_filter]
-        for mes, call in enumerate(mock_fetch.await_args_list[1:], start=1):
-            assert call.kwargs["filters"] == [
-                safra_filter,
-                f"MesEmissao eq '{mes:02d}'",
-            ]
-            assert call.kwargs["top"] == 2
 
-    @pytest.mark.asyncio
-    async def test_month_at_record_limit_raises_source_unavailable(self):
-        full_response = {"value": [{"id": 1}, {"id": 2}]}
+async def test_limite_da_olinda_fatia_por_mes_e_recusa_mes_cheio():
+    mensais = [
+        {"AnoEmissao": "2024" if mes < 7 else "2023", "MesEmissao": f"{mes:02d}"}
+        for mes in range(1, 13)
+    ]
+    respostas = [
+        {"value": [{"truncated": 1}, {"truncated": 2}]},
+        *({"value": [registro]} for registro in mensais),
+    ]
+    with (
+        patch.object(client, "SICOR_RECORD_LIMIT", 2),
+        patch.object(
+            client, "_fetch_odata", new_callable=AsyncMock, side_effect=respostas
+        ) as fetch,
+        sem_excecao(),
+    ):
+        assert await client.fetch_credito_rural(safra_sicor="2023/2024") == mensais
+    assert fetch.await_count == 13
+    assert fetch.await_args_list[0].kwargs["filters"] == [SAFRA_2023]
+    for mes, chamada in enumerate(fetch.await_args_list[1:], start=1):
+        assert chamada.kwargs["filters"] == [SAFRA_2023, f"MesEmissao eq '{mes:02d}'"]
+        assert chamada.kwargs["top"] == 2
+    cheio = {"value": [{"id": 1}, {"id": 2}]}
+    with (
+        patch.object(client, "SICOR_RECORD_LIMIT", 2),
+        patch.object(client, "_fetch_odata", new_callable=AsyncMock, side_effect=[cheio, cheio]),
+        levanta_exatamente(SourceUnavailableError, match="volume acima do limite da Olinda"),
+    ):
+        await client.fetch_credito_rural()
 
-        with (
-            patch.object(client, "SICOR_RECORD_LIMIT", 2),
-            patch.object(
-                client,
-                "_fetch_odata",
-                new_callable=AsyncMock,
-                side_effect=[full_response, full_response],
+
+async def test_falha_do_odata_cai_no_bigquery_e_a_dupla_falha_explica_as_duas():
+    falhas = [
+        SourceUnavailableError(source="bcb", url="test", last_error="timeout"),
+        httpx.HTTPStatusError(
+            "403", request=httpx.Request("GET", "https://x"), response=httpx.Response(403)
+        ),
+    ]
+    with collect_failures() as check:
+        for indice, falha in enumerate(falhas):
+            with (
+                check(type(falha).__name__),
+                patch("agrobr.bcb.client.fetch_credito_rural", AsyncMock(side_effect=falha)),
+                patch(
+                    "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
+                    AsyncMock(return_value=[{"id": indice}]),
+                ) as bigquery,
+                sem_excecao(),
+            ):
+                assert await client.fetch_credito_rural_with_fallback(
+                    finalidade="investimento", produto_sicor='"SOJA"'
+                ) == ([{"id": indice}], "bigquery")
+                assert bigquery.await_args.kwargs == {
+                    "finalidade": "investimento",
+                    "produto_sicor": '"SOJA"',
+                    "safra_sicor": None,
+                    "cd_uf": None,
+                }
+    with (
+        patch(
+            "agrobr.bcb.client.fetch_credito_rural",
+            AsyncMock(side_effect=SourceUnavailableError(source="bcb", last_error="HTTP 500")),
+        ),
+        patch(
+            "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
+            AsyncMock(
+                side_effect=SourceUnavailableError(source="bcb_bigquery", last_error="Auth failed")
             ),
-            pytest.raises(SourceUnavailableError, match="volume acima do limite da Olinda"),
-        ):
-            await client.fetch_credito_rural()
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_code_raises_before_request(self):
-        with (
-            patch.object(client, "_fetch_odata", new_callable=AsyncMock) as mock_fetch,
-            pytest.raises(ValueError, match="Codigo de UF invalido"),
-        ):
-            await client.fetch_credito_rural(cd_uf="99")
-
-        mock_fetch.assert_not_awaited()
-
-
-class TestBcbFallback:
-    @pytest.mark.asyncio
-    async def test_odata_fails_tries_bigquery(self):
-        with (
-            patch("agrobr.bcb.client.fetch_credito_rural", new_callable=AsyncMock) as mock_odata,
-            patch(
-                "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
-                new_callable=AsyncMock,
-            ) as mock_bq,
-        ):
-            mock_odata.side_effect = SourceUnavailableError(
-                source="bcb", url="test", last_error="timeout"
-            )
-            mock_bq.return_value = [{"id": 1}]
-            records, source = await client.fetch_credito_rural_with_fallback()
-
-            assert source == "bigquery"
-            assert records == [{"id": 1}]
-
-    @pytest.mark.asyncio
-    async def test_http_403_triggers_bigquery_fallback(self):
-        resp_403 = make_mock_response(403, json_data={"value": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_403)
-
-        with (
-            patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client),
-            patch(
-                "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
-                new_callable=AsyncMock,
-            ) as mock_bq,
-        ):
-            mock_bq.return_value = [{"id": 2}]
-            records, source = await client.fetch_credito_rural_with_fallback()
-
-        assert source == "bigquery"
-        assert records == [{"id": 2}]
-
-    @pytest.mark.asyncio
-    async def test_network_error_triggers_bigquery_fallback(self):
-        with (
-            patch("agrobr.bcb.client.fetch_credito_rural", new_callable=AsyncMock) as mock_odata,
-            patch(
-                "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
-                new_callable=AsyncMock,
-            ) as mock_bq,
-        ):
-            mock_odata.side_effect = SourceUnavailableError(
-                source="bcb", last_error="ConnectError: connection refused after 6 retries"
-            )
-            mock_bq.return_value = [{"id": 3}]
-            records, source = await client.fetch_credito_rural_with_fallback()
-
-            assert source == "bigquery"
-            assert records == [{"id": 3}]
-
-    @pytest.mark.asyncio
-    async def test_timeout_triggers_bigquery_fallback(self):
-        with (
-            patch("agrobr.bcb.client.fetch_credito_rural", new_callable=AsyncMock) as mock_odata,
-            patch(
-                "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
-                new_callable=AsyncMock,
-            ) as mock_bq,
-        ):
-            mock_odata.side_effect = SourceUnavailableError(
-                source="bcb", last_error="TimeoutException: read timeout after 6 retries"
-            )
-            mock_bq.return_value = [{"id": 4}]
-            records, source = await client.fetch_credito_rural_with_fallback()
-
-            assert source == "bigquery"
-            assert records == [{"id": 4}]
+        ),
+        levanta_exatamente(
+            SourceUnavailableError,
+            match=re.escape("Ambas as fontes falharam. OData: HTTP 500; BigQuery: Auth failed"),
+        ),
+    ):
+        await client.fetch_credito_rural_with_fallback(finalidade="custeio")
+    with (
+        patch(
+            "agrobr.bcb.client.fetch_credito_rural", AsyncMock(return_value=[{"id": 9}])
+        ) as odata,
+        sem_excecao(),
+    ):
+        assert await client.fetch_credito_rural_with_fallback(safra_sicor="2023/2024") == (
+            [{"id": 9}],
+            "odata",
+        )
+    assert odata.await_args.kwargs["safra_sicor"] == "2023/2024"

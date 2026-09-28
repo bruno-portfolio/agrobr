@@ -16,6 +16,10 @@
 
 CONAB publishes the "Progresso de Safra" weekly with information on the planting and harvest percentages of Brazil's main annual crops. The data is collected by the company's regional offices and consolidated nationally.
 
+State percentages are compiled by CONAB from the state surveys, and the column date is the week of CONAB's publication. For
+Paraná, the value repeats DERAL's survey of the previous Monday (in the 2026-09-18 bulletin, DERAL's 2026-09-14 survey, in 5 of
+5 crops); `deral.condicao_lavouras` carries the survey date.
+
 agrobr accesses the XLSX files published on the Progresso de Safra page of the gov.br/conab portal. Each week has an XLSX file with seeding and harvest data by crop and state.
 
 ## Monitored Crops
@@ -35,9 +39,11 @@ agrobr accesses the XLSX files published on the Progresso de Safra page of the g
 The weekly XLSX contains a "Progresso de safra" sheet with repeated blocks per crop:
 
 1. **Crop header**: "Soja - Safra 2025/26"
-2. **Coverage note**: "(Esses N estados correspondem a X% da area)"
+2. **Coverage note**: "(Esses N estados correspondem a X% da área cultivada)", read into `n_estados` and `cobertura_area_pct`
 3. **Seeding**: table with State, previous year, previous week, current week, 5-year average
-4. **Harvest**: same structure (when applicable)
+4. **Harvest**: same structure (when applicable); the percentage of blocks marked with `*` is computed over the cumulative sown area
+5. **"N estados" row** at the end of each block: CONAB's own average of the monitored states, returned as `estado =
+   "MEDIA_ESTADOS"`, not as Brazil
 
 Values are fractions (0.0-1.0), not percentages.
 

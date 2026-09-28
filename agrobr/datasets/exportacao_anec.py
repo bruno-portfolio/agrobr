@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -42,7 +42,7 @@ EMBARQUES_ANEC_INFO = DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="weekly",
     typical_latency="W+1",
     source_url="https://www.anec.com.br",
@@ -69,7 +69,6 @@ class EmbarquesANECDataset(BaseDataset):
         tipo: str | None = None,
         use_cache: bool = True,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         snapshot = get_snapshot()
 
@@ -88,7 +87,6 @@ class EmbarquesANECDataset(BaseDataset):
             produto_filtro=produto,
             tipo=tipo,
             use_cache=use_cache,
-            **kwargs,
         )
 
         df = self._normalize(df)
@@ -109,6 +107,34 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_embarques_anec)
 
 
+@overload
+async def embarques_anec(
+    *,
+    ano: int,
+    semana: int | None = None,
+    porto: str | None = None,
+    produto: str | None = None,
+    tipo: str | None = None,
+    use_cache: bool = True,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def embarques_anec(
+    *,
+    ano: int,
+    semana: int | None = None,
+    porto: str | None = None,
+    produto: str | None = None,
+    tipo: str | None = None,
+    use_cache: bool = True,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def embarques_anec(
     *,
     ano: int,
@@ -118,9 +144,9 @@ async def embarques_anec(
     tipo: str | None = None,
     use_cache: bool = True,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _embarques_anec.fetch(
+    return await _embarques_anec.fetch(  # type: ignore[call-arg]
         ano=ano,
         semana=semana,
         porto=porto,
@@ -128,5 +154,5 @@ async def embarques_anec(
         tipo=tipo,
         use_cache=use_cache,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

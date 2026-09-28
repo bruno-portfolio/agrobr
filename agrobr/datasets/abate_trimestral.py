@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -60,7 +60,6 @@ class AbateTrimestralDataset(BaseDataset):
         trimestre: str | list[str] | None = None,
         uf: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info(
             "dataset_fetch", dataset="abate_trimestral", produto=produto, trimestre=trimestre
@@ -69,7 +68,7 @@ class AbateTrimestralDataset(BaseDataset):
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, trimestre=trimestre, uf=uf, **kwargs
+            produto, trimestre=trimestre, uf=uf
         )
 
         self._validate_contract(df)
@@ -87,13 +86,35 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_abate_trimestral)
 
 
+@overload
+async def abate_trimestral(
+    produto: str,
+    trimestre: str | list[str] | None = None,
+    uf: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def abate_trimestral(
+    produto: str,
+    trimestre: str | list[str] | None = None,
+    uf: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def abate_trimestral(
     produto: str,
     trimestre: str | list[str] | None = None,
     uf: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _abate_trimestral.fetch(
-        produto, trimestre=trimestre, uf=uf, return_meta=return_meta, **kwargs
+    return await _abate_trimestral.fetch(  # type: ignore[call-arg]
+        produto, trimestre=trimestre, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

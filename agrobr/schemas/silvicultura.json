@@ -1,6 +1,6 @@
 {
   "name": "ibge.silvicultura",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "effective_from": "0.15.0",
   "breaking_policy": "major",
   "primary_key": [
@@ -10,7 +10,10 @@
   ],
   "required_columns": [
     "ano",
+    "localidade",
+    "localidade_cod",
     "produto",
+    "valor",
     "unidade",
     "fonte"
   ],
@@ -21,7 +24,8 @@
     "produto": "str",
     "valor": "float",
     "unidade": "str",
-    "fonte": "str"
+    "fonte": "str",
+    "cod_municipio": "int"
   },
   "nullable": {
     "ano": false,
@@ -30,7 +34,8 @@
     "produto": false,
     "valor": true,
     "unidade": false,
-    "fonte": false
+    "fonte": false,
+    "cod_municipio": true
   },
   "columns": [
     {
@@ -107,6 +112,17 @@
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
       "min_value": null,
       "max_value": null
     }

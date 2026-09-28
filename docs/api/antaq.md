@@ -35,7 +35,7 @@ async def movimentacao(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `ano` | `int` | Ano dos dados (2010-2025) |
+| `ano` | `int` | Ano dos dados, de 2010 ao último ano publicado |
 | `tipo_navegacao` | `str \| None` | longo_curso, cabotagem, interior, apoio_maritimo, apoio_portuario |
 | `natureza_carga` | `str \| None` | granel_solido, granel_liquido, carga_geral, conteiner |
 | `mercadoria` | `str \| None` | Filtro por mercadoria (substring case-insensitive) |

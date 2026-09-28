@@ -1,7 +1,7 @@
 {
   "name": "ibge.pam",
-  "schema_version": "1.0",
-  "effective_from": "0.3.0",
+  "schema_version": "2.2",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "ano",
@@ -10,30 +10,48 @@
   ],
   "required_columns": [
     "ano",
+    "localidade",
     "produto",
+    "area_plantada",
+    "area_colhida",
+    "producao",
+    "rendimento",
+    "valor_producao",
     "fonte"
   ],
   "dtypes": {
     "ano": "int",
     "localidade": "str",
+    "localidade_cod": "int",
     "produto": "str",
     "area_plantada": "float",
     "area_colhida": "float",
     "producao": "float",
     "rendimento": "float",
     "valor_producao": "float",
-    "fonte": "str"
+    "fonte": "str",
+    "unidade_producao": "str",
+    "unidade_rendimento": "str",
+    "unidade_valor_producao": "str",
+    "condicao_produto": "str",
+    "cod_municipio": "int"
   },
   "nullable": {
     "ano": false,
     "localidade": true,
+    "localidade_cod": false,
     "produto": false,
     "area_plantada": true,
     "area_colhida": true,
     "producao": true,
     "rendimento": true,
     "valor_producao": true,
-    "fonte": false
+    "fonte": false,
+    "unidade_producao": true,
+    "unidade_rendimento": true,
+    "unidade_valor_producao": true,
+    "condicao_produto": true,
+    "cod_municipio": true
   },
   "columns": [
     {
@@ -55,6 +73,17 @@
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "localidade_cod",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE da localidade (D1C do SIDRA); só nas linhas do IBGE.",
       "min_value": null,
       "max_value": null
     },
@@ -95,7 +124,7 @@
       "name": "producao",
       "type": "float",
       "nullable": true,
-      "unit": "ton",
+      "unit": "unidade_producao",
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -106,7 +135,7 @@
       "name": "rendimento",
       "type": "float",
       "nullable": true,
-      "unit": "kg/ha",
+      "unit": "unidade_rendimento",
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -117,7 +146,7 @@
       "name": "valor_producao",
       "type": "float",
       "nullable": true,
-      "unit": "mil_reais",
+      "unit": "unidade_valor_producao",
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -132,6 +161,61 @@
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade_producao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade_rendimento",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade_valor_producao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "condicao_produto",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
       "min_value": null,
       "max_value": null
     }
@@ -149,6 +233,8 @@
     "Column names never change (additions only)",
     "'ano' is always a valid year (>= 1974)",
     "Numeric values are always >= 0",
+    "As unidades variam por período e são identificadas nas colunas unidade_*",
+    "Café até 2001 é em coco; desde 2002 é beneficiado, sem conversão implícita",
     "'fonte' identifies 'ibge_pam' or the 'conab' fallback"
   ]
 }

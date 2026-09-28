@@ -1,0 +1,562 @@
+{
+ "source": "ana",
+ "format": "arcgis_rest_json_geojson",
+ "license": "dados públicos (ANA/SNIRH)",
+ "needs_real_data": false,
+ "content": "Respostas oficiais do ArcGIS REST da ANA gravadas byte a byte: count, returnIdsOnly e as páginas de cada recorte, no protocolo por chave (orderByFields=OBJECTID) e, no recorte paginado da Hidrografia, também no protocolo antigo por offset (páginas iguais guardadas uma vez). manifest.json liga cada pedido (camada + parâmetros) ao arquivo, com SHA-256, bytes, URL e horário.",
+ "cases": {
+  "hidrografia_paginas": "Hidrografia, bbox (-48.8, -16.8, -46.8, -14.8): 1.047 trechos; a página de 1.000 devolve 999",
+  "hidrografia_df": "Hidrografia, bbox DF (-48.1, -16.1, -47.9, -15.9): 12 trechos, JSON e GeoJSON",
+  "demanda_df": "Demanda de irrigação, bbox DF: 8 bacias, JSON e GeoJSON",
+  "pivos_piaui": "Pivôs mapeados, NM_ESTADO='PIAUÍ': 27 pivôs, JSON e GeoJSON",
+  "disponibilidade_brasilia": "Disponibilidade hídrica, bbox (-47.5, -16.0, -47.0, -15.5): 12 trechos, JSON e GeoJSON",
+  "hidrografia_oceano": "Hidrografia, bbox (-30.0, -20.0, -29.9, -19.9) no Atlântico: contagem oficial zero, sem páginas"
+ },
+ "oracle": "tests/test_ana/oficial.py lê as respostas com json da biblioteca padrão e monta as linhas pelo esquema da doc; a completude vem do returnIdsOnly oficial.",
+ "base": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos",
+ "captured_at": "2026-09-23T05:24:44.652892+00:00",
+ "requests": [
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "hidrografia_paginas/count.json",
+   "sha256": "f9ee625178535ed96893fc50367df00dcbb9f80b1d73d4f138e08110d8dd1ac8",
+   "bytes": 14,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-09-23T05:24:02.757979+00:00"
+  },
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "hidrografia_paginas/ids.json",
+   "sha256": "489f3b40027ddacdaf795259c1fe23f0e8223c1d3bdd42471212a6db25597adc",
+   "bytes": 6971,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-09-23T05:24:03.222989+00:00"
+  },
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "1000"
+   },
+   "file": "hidrografia_paginas/chave_0.json",
+   "sha256": "2601998fe7c36143a88403a6f2dea5206fb47aee9d30c0dbd0197a0635259280",
+   "bytes": 132256,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=OBJECTID&resultRecordCount=1000",
+   "fetched_at": "2026-09-23T05:24:03.680440+00:00"
+  },
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "(1=1) AND OBJECTID > 273084",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "48"
+   },
+   "file": "hidrografia_paginas/chave_1.json",
+   "sha256": "8c32faa7748f443ce71340eeee86aaf6a23a83a186f5487d8d1b0a3f20e3cc84",
+   "bytes": 6269,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=%281%3D1%29+AND+OBJECTID+%3E+273084&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=OBJECTID&resultRecordCount=48",
+   "fetched_at": "2026-09-23T05:24:03.819293+00:00"
+  },
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "resultRecordCount": "1000",
+    "resultOffset": "0"
+   },
+   "file": "hidrografia_paginas/chave_0.json",
+   "sha256": "2601998fe7c36143a88403a6f2dea5206fb47aee9d30c0dbd0197a0635259280",
+   "bytes": 132256,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&resultRecordCount=1000&resultOffset=0",
+   "fetched_at": "2026-09-23T05:24:04.389101+00:00"
+  },
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "resultRecordCount": "47",
+    "resultOffset": "1000"
+   },
+   "file": "hidrografia_paginas/offset_1.json",
+   "sha256": "b3066e2fbc325be0ca83c31b8d1e1706315cc7d81e124847fbcb9638c9a6926f",
+   "bytes": 6180,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&resultRecordCount=47&resultOffset=1000",
+   "fetched_at": "2026-09-23T05:24:04.533363+00:00"
+  },
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "(1=1) AND OBJECTID > 273084",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "21"
+   },
+   "file": "hidrografia_paginas/chave_max1020_1.json",
+   "sha256": "21a5c184d4f2786f17d7120ee5541c42076fdf3720c744153c1fcc9ebed3bb8c",
+   "bytes": 3128,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=%281%3D1%29+AND+OBJECTID+%3E+273084&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=OBJECTID&resultRecordCount=21",
+   "fetched_at": "2026-09-23T05:24:05.105515+00:00"
+  },
+  {
+   "case": "hidrografia_paginas",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.8,-16.8,-46.8,-14.8",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "resultRecordCount": "20",
+    "resultOffset": "1000"
+   },
+   "file": "hidrografia_paginas/offset_max1020_1.json",
+   "sha256": "24576657f20def06a91ed3aafb2ff0c3984e69be941c95e64379da11c806365e",
+   "bytes": 3010,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=json&geometry=-48.8%2C-16.8%2C-46.8%2C-14.8&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&resultRecordCount=20&resultOffset=1000",
+   "fetched_at": "2026-09-23T05:24:05.699507+00:00"
+  },
+  {
+   "case": "hidrografia_df",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "hidrografia_df/count.json",
+   "sha256": "8a5c7f0a249309a0a490436246d7e4c75abc97488ad2da0c6e85a517ac13cdd2",
+   "bytes": 12,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-09-23T05:24:05.858584+00:00"
+  },
+  {
+   "case": "hidrografia_df",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "f": "json",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "hidrografia_df/ids.json",
+   "sha256": "2b47900382fd5b106c3edcb18d05594bc0c5caec139fa8e5514c488584984d86",
+   "bytes": 123,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&f=json&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-09-23T05:24:05.980204+00:00"
+  },
+  {
+   "case": "hidrografia_df",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "12"
+   },
+   "file": "hidrografia_df/chave_0.json",
+   "sha256": "873df90091b945c6e2aca25f1e31835ff0c9d018258fe77a65b872aa8ae888c6",
+   "bytes": 2216,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=json&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=OBJECTID&resultRecordCount=12",
+   "fetched_at": "2026-09-23T05:24:06.111781+00:00"
+  },
+  {
+   "case": "hidrografia_df",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
+    "outSR": "4326",
+    "f": "geojson",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "12"
+   },
+   "file": "hidrografia_df/chave_0.geojson",
+   "sha256": "679d83e1435a272c1200ed507d40824c3643aa3a5ea6ebd500a7065ba2328870",
+   "bytes": 12684,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CCOCURSODAG%2CCOBACIA%2CNORIOCOMP%2CDEDOMINIAL&outSR=4326&f=geojson&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&orderByFields=OBJECTID&resultRecordCount=12",
+   "fetched_at": "2026-09-23T05:24:06.254680+00:00"
+  },
+  {
+   "case": "demanda_df",
+   "layer": "demanda_irrigacao",
+   "path": "Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "demanda_df/count.json",
+   "sha256": "286ef99473842386e093b70e2cb43524734dcd35c826f5b736d6444f65ad4686",
+   "bytes": 11,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-09-23T05:24:18.780879+00:00"
+  },
+  {
+   "case": "demanda_df",
+   "layer": "demanda_irrigacao",
+   "path": "Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "f": "json",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "demanda_df/ids.json",
+   "sha256": "5e3bffd3059ff0bf52c76ffd4e3db1281cfd467823a04ea216c620dca4e544ac",
+   "bytes": 102,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0/query?where=1%3D1&f=json&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-09-23T05:24:19.129798+00:00"
+  },
+  {
+   "case": "demanda_df",
+   "layer": "demanda_irrigacao",
+   "path": "Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,ID,COBACIA,DSVERSAO,VZMAXMEN,VZMESSEC,VZMESIRR,VZMEDANO",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "8"
+   },
+   "file": "demanda_df/chave_0.json",
+   "sha256": "d43fdb2be35225d3cba3dc89177a5bb43b07f356e2e8c03eeabdcd3bf4b47f02",
+   "bytes": 2402,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CID%2CCOBACIA%2CDSVERSAO%2CVZMAXMEN%2CVZMESSEC%2CVZMESIRR%2CVZMEDANO&outSR=4326&f=json&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=OBJECTID&resultRecordCount=8",
+   "fetched_at": "2026-09-23T05:24:19.359145+00:00"
+  },
+  {
+   "case": "demanda_df",
+   "layer": "demanda_irrigacao",
+   "path": "Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,ID,COBACIA,DSVERSAO,VZMAXMEN,VZMESSEC,VZMESIRR,VZMEDANO",
+    "outSR": "4326",
+    "f": "geojson",
+    "geometry": "-48.1,-16.1,-47.9,-15.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "8"
+   },
+   "file": "demanda_df/chave_0.geojson",
+   "sha256": "8572af4e8ae3ab085f65aa732608284e55fe8ecbfce54c12ad0d23b8f8b92d10",
+   "bytes": 142263,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CID%2CCOBACIA%2CDSVERSAO%2CVZMAXMEN%2CVZMESSEC%2CVZMESIRR%2CVZMEDANO&outSR=4326&f=geojson&geometry=-48.1%2C-16.1%2C-47.9%2C-15.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&orderByFields=OBJECTID&resultRecordCount=8",
+   "fetched_at": "2026-09-23T05:24:19.596423+00:00"
+  },
+  {
+   "case": "pivos_piaui",
+   "layer": "pivos_irrigacao",
+   "path": "Pivos_Mapeados/MapServer/0",
+   "params": {
+    "where": "NM_ESTADO='PIAUÍ'",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "returnCountOnly": "true"
+   },
+   "file": "pivos_piaui/count.json",
+   "sha256": "6d32d846fc9a261b01735b1b3445adc5b6fbc78815ebb5062ff644a7ab95293e",
+   "bytes": 12,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Pivos_Mapeados/MapServer/0/query?where=NM_ESTADO%3D%27PIAU%C3%8D%27&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "fetched_at": "2026-09-23T05:24:31.106485+00:00"
+  },
+  {
+   "case": "pivos_piaui",
+   "layer": "pivos_irrigacao",
+   "path": "Pivos_Mapeados/MapServer/0",
+   "params": {
+    "where": "NM_ESTADO='PIAUÍ'",
+    "f": "json",
+    "returnIdsOnly": "true"
+   },
+   "file": "pivos_piaui/ids.json",
+   "sha256": "3d882d9fdf88116ded40d9f435880935a159e5edd03aa582e1a35e8dd7409f10",
+   "bytes": 154,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Pivos_Mapeados/MapServer/0/query?where=NM_ESTADO%3D%27PIAU%C3%8D%27&f=json&returnIdsOnly=true",
+   "fetched_at": "2026-09-23T05:24:31.254974+00:00"
+  },
+  {
+   "case": "pivos_piaui",
+   "layer": "pivos_irrigacao",
+   "path": "Pivos_Mapeados/MapServer/0",
+   "params": {
+    "where": "NM_ESTADO='PIAUÍ'",
+    "outFields": "OBJECTID,CD_GEOCMU,NM_MUNICIP,NM_ESTADO,REGIAO_HID,HECTARES",
+    "outSR": "4326",
+    "f": "json",
+    "returnGeometry": "false",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "27"
+   },
+   "file": "pivos_piaui/chave_0.json",
+   "sha256": "f4fda66115960b2f673422f637160c5bc6d04b93e724596fa6537fb408712697",
+   "bytes": 5358,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Pivos_Mapeados/MapServer/0/query?where=NM_ESTADO%3D%27PIAU%C3%8D%27&outFields=OBJECTID%2CCD_GEOCMU%2CNM_MUNICIP%2CNM_ESTADO%2CREGIAO_HID%2CHECTARES&outSR=4326&f=json&returnGeometry=false&orderByFields=OBJECTID&resultRecordCount=27",
+   "fetched_at": "2026-09-23T05:24:31.413781+00:00"
+  },
+  {
+   "case": "pivos_piaui",
+   "layer": "pivos_irrigacao",
+   "path": "Pivos_Mapeados/MapServer/0",
+   "params": {
+    "where": "NM_ESTADO='PIAUÍ'",
+    "outFields": "OBJECTID,CD_GEOCMU,NM_MUNICIP,NM_ESTADO,REGIAO_HID,HECTARES",
+    "outSR": "4326",
+    "f": "geojson",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "27"
+   },
+   "file": "pivos_piaui/chave_0.geojson",
+   "sha256": "92040be9f43d0e90a168bfbe2c505ae4124d0cc58aa918ba0084b2ab4b1abeec",
+   "bytes": 45409,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Pivos_Mapeados/MapServer/0/query?where=NM_ESTADO%3D%27PIAU%C3%8D%27&outFields=OBJECTID%2CCD_GEOCMU%2CNM_MUNICIP%2CNM_ESTADO%2CREGIAO_HID%2CHECTARES&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=27",
+   "fetched_at": "2026-09-23T05:24:31.668247+00:00"
+  },
+  {
+   "case": "disponibilidade_brasilia",
+   "layer": "disponibilidade_hidrica",
+   "path": "Disponibilidade_Hidrica_Superficial/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.5,-16.0,-47.0,-15.5",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "hidrografia_df/count.json",
+   "sha256": "8a5c7f0a249309a0a490436246d7e4c75abc97488ad2da0c6e85a517ac13cdd2",
+   "bytes": 12,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Disponibilidade_Hidrica_Superficial/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-47.5%2C-16.0%2C-47.0%2C-15.5&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-09-23T05:24:43.961448+00:00"
+  },
+  {
+   "case": "disponibilidade_brasilia",
+   "layer": "disponibilidade_hidrica",
+   "path": "Disponibilidade_Hidrica_Superficial/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "f": "json",
+    "geometry": "-47.5,-16.0,-47.0,-15.5",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "disponibilidade_brasilia/ids.json",
+   "sha256": "75f37ab6c6131a47a6bd80f8f40ea900c5561a977e2defeaea3dfe54031c93f8",
+   "bytes": 118,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Disponibilidade_Hidrica_Superficial/MapServer/0/query?where=1%3D1&f=json&geometry=-47.5%2C-16.0%2C-47.0%2C-15.5&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-09-23T05:24:44.345217+00:00"
+  },
+  {
+   "case": "disponibilidade_brasilia",
+   "layer": "disponibilidade_hidrica",
+   "path": "Disponibilidade_Hidrica_Superficial/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,ID,NUAREAMONT,DISPQ95,NMRIO,DEDOMINIAL,DSVERSAO",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.5,-16.0,-47.0,-15.5",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "12"
+   },
+   "file": "disponibilidade_brasilia/chave_0.json",
+   "sha256": "e9ace18ed33193a8bd5289d7ebe7d0535616c30cf7feffca31dc47cddcec1ad0",
+   "bytes": 2954,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Disponibilidade_Hidrica_Superficial/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CID%2CNUAREAMONT%2CDISPQ95%2CNMRIO%2CDEDOMINIAL%2CDSVERSAO&outSR=4326&f=json&geometry=-47.5%2C-16.0%2C-47.0%2C-15.5&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=OBJECTID&resultRecordCount=12",
+   "fetched_at": "2026-09-23T05:24:44.535306+00:00"
+  },
+  {
+   "case": "disponibilidade_brasilia",
+   "layer": "disponibilidade_hidrica",
+   "path": "Disponibilidade_Hidrica_Superficial/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "OBJECTID,ID,NUAREAMONT,DISPQ95,NMRIO,DEDOMINIAL,DSVERSAO",
+    "outSR": "4326",
+    "f": "geojson",
+    "geometry": "-47.5,-16.0,-47.0,-15.5",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "orderByFields": "OBJECTID",
+    "resultRecordCount": "12"
+   },
+   "file": "disponibilidade_brasilia/chave_0.geojson",
+   "sha256": "8bb7b4f0124a93e12d2fd657ccf74085f40afccf191ae7e2d3293de3dcfd1b6b",
+   "bytes": 11966,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Disponibilidade_Hidrica_Superficial/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CID%2CNUAREAMONT%2CDISPQ95%2CNMRIO%2CDEDOMINIAL%2CDSVERSAO&outSR=4326&f=geojson&geometry=-47.5%2C-16.0%2C-47.0%2C-15.5&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&orderByFields=OBJECTID&resultRecordCount=12",
+   "fetched_at": "2026-09-23T05:24:44.652536+00:00"
+  },
+  {
+   "case": "hidrografia_oceano",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-30.0,-20.0,-29.9,-19.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "hidrografia_oceano/count.json",
+   "sha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+   "bytes": 11,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-30.0%2C-20.0%2C-29.9%2C-19.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-09-23T06:03:04.344149+00:00"
+  },
+  {
+   "case": "hidrografia_oceano",
+   "layer": "hidrografia",
+   "path": "Hidrografia/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "f": "json",
+    "geometry": "-30.0,-20.0,-29.9,-19.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "hidrografia_oceano/ids.json",
+   "sha256": "667410564a013e24d2b824ed7ea5c2613b8f5a6ea02633399a491988c5e3a512",
+   "bytes": 49,
+   "url": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos/Hidrografia/MapServer/0/query?where=1%3D1&f=json&geometry=-30.0%2C-20.0%2C-29.9%2C-19.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-09-23T06:03:04.697235+00:00"
+  }
+ ]
+}

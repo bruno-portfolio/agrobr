@@ -1,211 +1,144 @@
-"""Testes para a API pública ComexStat."""
+from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 
+from agrobr import comexstat
 from agrobr.comexstat import api
+from agrobr.datasets.deterministic import deterministic
 from agrobr.exceptions import InvalidParameterError
+from tests.helpers import comexstat_csv, install_comexstat_http
 
 
-def _mock_csv():
-    """CSV de exportação/importação de exemplo (mesmo layout)."""
-    return (
-        "CO_ANO;CO_MES;CO_NCM;CO_UNID;CO_PAIS;SG_UF_NCM;CO_VIA;CO_URF;QT_ESTAT;KG_LIQUIDO;VL_FOB\n"
-        "2024;1;12019000;10;160;MT;4;817800;1000;50000000;20000000\n"
-        "2024;2;12019000;10;160;MT;4;817800;800;40000000;16000000\n"
-        "2024;3;12019000;10;276;MT;4;817800;500;30000000;12000000\n"
+@pytest.mark.parametrize("fluxo", ["exportacao", "importacao"])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"ano": "2024"},
+        {"ano": True},
+        {"ano": 1996},
+        {"ano": 9999},
+        {"uf": "XX"},
+        {"uf": 3},
+        {"agregacao": "diaria"},
+        {"agregacao": []},
+        {"pais": True},
+        {"pais": "１６０"},
+        {"pais": "Brasil"},
+        {"pais": -1},
+        {"pais": 1000},
+        {"via": "001"},
+        {"urf": "1e6"},
+        {"via": 4.0},
+        {"as_polars": 1},
+        {"return_meta": "sim"},
+        {"max_linhas": 0},
+        {"max_linhas": True},
+        {"max_memoria_bytes": 0},
+        {"max_memoria_bytes": None},
+    ],
+)
+async def test_invalid_parameters_before_io(monkeypatch, fluxo, kwargs):
+    calls = install_comexstat_http(monkeypatch, b"unreached")
+    with (
+        patch.object(api.client, "_temporary_file") as spool,
+        pytest.raises(InvalidParameterError),
+    ):
+        await getattr(comexstat, fluxo)("soja", **kwargs)
+    assert calls == []
+    spool.assert_not_called()
+
+
+@pytest.mark.parametrize("fluxo", ["exportacao", "importacao"])
+async def test_monthly_and_detail_preserve_flow_measures(monkeypatch, fluxo):
+    install_comexstat_http(monkeypatch, comexstat_csv(fluxo=fluxo))
+    function = getattr(comexstat, fluxo)
+    monthly = await function("soja", ano=2024)
+    detail = await function("soja", ano=2024, agregacao="detalhado")
+    assert len(monthly) == len(detail) == 3
+    assert "qtd_estatistica" not in monthly and "volume_ton" not in detail
+    assert monthly["volume_ton"].tolist() == [50000.0, 40000.0, 30000.0]
+    assert detail["cod_urf"].tolist() == ["0817800", "0817800", "0917502"]
+    assert detail["cod_via"].tolist() == ["04", "04", "07"]
+    assert "cod_porto" not in detail
+    assert str(detail["kg_liquido"].dtype) == "Int64"
+    assert str(detail["valor_fob_usd"].dtype) == "float64"
+    if fluxo == "importacao":
+        assert monthly["valor_frete_usd"].tolist() == [10.0, 11.0, 12.0]
+        assert detail["valor_seguro_usd"].tolist() == [0.0, 1.0, 2.0]
+        assert len(monthly.columns) == 9 and len(detail.columns) == 13
+    else:
+        assert len(monthly.columns) == 7 and len(detail.columns) == 11
+
+
+@pytest.mark.parametrize("fluxo", ["exportacao", "importacao"])
+async def test_codes_canonicalized_only_in_request(monkeypatch, fluxo):
+    install_comexstat_http(monkeypatch, comexstat_csv(fluxo=fluxo))
+    frame, meta = await getattr(comexstat, fluxo)(
+        " SOJA ",
+        ano=2024,
+        uf=" pr ",
+        pais=586,
+        via="7",
+        urf=917502,
+        agregacao="detalhado",
+        return_meta=True,
     )
+    assert len(frame) == 1
+    assert frame.iloc[0]["cod_urf"] == "0917502"
+    assert frame.iloc[0]["cod_unidade"] == "21"
+    assert frame.iloc[0]["qtd_estatistica"] == 500
+    assert frame.iloc[0]["kg_liquido"] == 30000000
+    query = meta.source_details["query"]
+    assert query["filtros"] == {"uf": "PR", "pais": "586", "via": "07", "urf": "0917502"}
+    assert query["pedido"]["urf"] == 917502 and query["pedido"]["uf"] == " pr "
 
 
-class TestExportacao:
-    @pytest.mark.asyncio
-    async def test_ano_de_tipo_errado_raises_specific_message(self):
-        with (
-            patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock) as fetch,
-            pytest.raises(InvalidParameterError, match="ano deve ser inteiro"),
-        ):
-            await api.exportacao("soja", ano="2024")  # type: ignore[arg-type]
-
-        fetch.assert_not_awaited()
-
-    @pytest.mark.parametrize(
-        "kwargs",
-        [
-            {"ano": 9999},
-            {"ano": 2024, "uf": "XX"},
-            {"ano": 2024, "agregacao": "diaria"},
-        ],
+@pytest.mark.parametrize("uf", ["ND", "EX"])
+async def test_special_uf_and_code_zero_preserved(monkeypatch, uf):
+    row = ["2024", "01", "12019000", "10", "000", uf, "00", "0000000", "0", "0", "0"]
+    install_comexstat_http(monkeypatch, comexstat_csv(rows=[row]))
+    frame = await comexstat.exportacao(
+        "soja", ano=2024, uf=uf.lower(), pais=0, via=0, urf=0, agregacao="detalhado"
     )
-    @pytest.mark.asyncio
-    async def test_invalid_parameters_raise_before_download(self, kwargs):
-        with (
-            patch.object(api.client, "fetch_exportacao_csv", new_callable=AsyncMock) as fetch,
-            pytest.raises(InvalidParameterError),
-        ):
-            await api.exportacao("soja", **kwargs)
-
-        fetch.assert_not_awaited()
-
-    @pytest.mark.asyncio
-    async def test_default_ano_is_previous_year(self):
-        from agrobr.utils.time import utcnow
-
-        with patch.object(
-            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ) as mock_fetch:
-            await api.exportacao("soja")
-
-        expected_ano = utcnow().year - 1
-        assert mock_fetch.call_args[0][0] == expected_ano
-
-    @pytest.mark.asyncio
-    async def test_returns_dataframe(self):
-        with patch.object(
-            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df = await api.exportacao("soja", ano=2024)
-
-        assert len(df) > 0
-        assert "kg_liquido" in df.columns
-        assert "valor_fob_usd" in df.columns
-        assert "volume_ton" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        with patch.object(
-            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df, meta = await api.exportacao("soja", ano=2024, return_meta=True)
-
-        assert meta.source == "comexstat"
-        assert meta.attempted_sources == ["comexstat"]
-        assert meta.selected_source == "comexstat"
-        assert meta.fetch_timestamp is not None
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_mensal_aggregation(self):
-        with patch.object(
-            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df = await api.exportacao("soja", ano=2024, agregacao="mensal")
-
-        # 3 meses distintos
-        assert len(df) == 3
-
-    @pytest.mark.asyncio
-    async def test_detalhado(self):
-        with patch.object(
-            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df = await api.exportacao("soja", ano=2024, agregacao="detalhado")
-
-        assert len(df) == 3
-        assert "volume_ton" not in df.columns
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        csv = (
-            "CO_ANO;CO_MES;CO_NCM;CO_UNID;CO_PAIS;SG_UF_NCM;CO_VIA;CO_URF;QT_ESTAT;KG_LIQUIDO;VL_FOB\n"
-            "2024;1;12019000;10;160;MT;4;817800;1000;50000000;20000000\n"
-            "2024;1;12019000;10;160;PR;4;817800;800;40000000;16000000\n"
-        )
-        with patch.object(
-            api.client, "fetch_exportacao_csv", new_callable=AsyncMock, return_value=csv
-        ):
-            df = await api.exportacao("soja", ano=2024, uf="PR")
-
-        assert len(df) == 1
-        assert df.iloc[0]["uf"] == "PR"
-
-    @pytest.mark.asyncio
-    async def test_soybean_oil_generic_and_crude_scopes(self):
-        csv = (
-            "CO_ANO;CO_MES;CO_NCM;SG_UF_NCM;KG_LIQUIDO;VL_FOB\n"
-            "2024;1;15071000;MT;1000;500\n"
-            "2024;1;15079011;MT;2000;1000\n"
-            "2024;1;23040010;MT;3000;1500\n"
-        )
-        with patch.object(
-            api.client,
-            "fetch_exportacao_csv",
-            new_callable=AsyncMock,
-            return_value=csv,
-        ):
-            generic = await api.exportacao("oleo_soja", ano=2024)
-            crude = await api.exportacao("oleo_soja_bruto", ano=2024)
-
-        assert generic["ncm"].tolist() == ["15071000", "15079011"]
-        assert crude["ncm"].tolist() == ["15071000"]
+    assert frame["uf"].tolist() == [uf]
+    assert frame["cod_pais"].tolist() == ["000"]
+    assert frame["cod_via"].tolist() == ["00"]
+    assert frame["cod_urf"].tolist() == ["0000000"]
+    assert frame["valor_fob_usd"].tolist() == [0.0]
 
 
-class TestImportacao:
-    @pytest.mark.asyncio
-    async def test_default_ano_is_previous_year(self):
-        from agrobr.utils.time import utcnow
+@pytest.mark.parametrize(
+    "function,args",
+    [("exportacao", ("soja",)), ("importacao", ("soja",)), ("dicionario", ("paises",))],
+)
+async def test_deterministic_rejected_before_io(monkeypatch, function, args):
+    calls = install_comexstat_http(monkeypatch, b"unreached")
+    async with deterministic("2024-06-15"):
+        with pytest.raises(InvalidParameterError, match="deterministic"):
+            await getattr(comexstat, function)(*args)
+    assert calls == []
 
-        with patch.object(
-            api.client, "fetch_importacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ) as mock_fetch:
-            await api.importacao("soja")
 
-        expected_ano = utcnow().year - 1
-        assert mock_fetch.call_args[0][0] == expected_ano
+async def test_missing_polars_rejected_before_io(monkeypatch):
+    calls = install_comexstat_http(monkeypatch, b"unreached")
+    original = api.importlib.import_module
 
-    @pytest.mark.asyncio
-    async def test_returns_dataframe(self):
-        with patch.object(
-            api.client, "fetch_importacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df = await api.importacao("soja", ano=2024)
+    def missing(name, *args, **kwargs):
+        if name == "polars":
+            raise ImportError("absent")
+        return original(name, *args, **kwargs)
 
-        assert len(df) > 0
-        assert "kg_liquido" in df.columns
-        assert "valor_fob_usd" in df.columns
-        assert "volume_ton" in df.columns
+    monkeypatch.setattr(api.importlib, "import_module", missing)
+    with pytest.raises(ImportError, match="agrobr"):
+        await comexstat.exportacao("soja", ano=2024, as_polars=True)
+    assert calls == []
 
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        with patch.object(
-            api.client, "fetch_importacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df, meta = await api.importacao("soja", ano=2024, return_meta=True)
 
-        assert meta.source == "comexstat"
-        assert "IMP_2024" in meta.source_url
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_mensal_aggregation(self):
-        with patch.object(
-            api.client, "fetch_importacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df = await api.importacao("soja", ano=2024, agregacao="mensal")
-
-        assert len(df) == 3
-
-    @pytest.mark.asyncio
-    async def test_detalhado(self):
-        with patch.object(
-            api.client, "fetch_importacao_csv", new_callable=AsyncMock, return_value=_mock_csv()
-        ):
-            df = await api.importacao("soja", ano=2024, agregacao="detalhado")
-
-        assert len(df) == 3
-        assert "volume_ton" not in df.columns
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        csv = (
-            "CO_ANO;CO_MES;CO_NCM;CO_UNID;CO_PAIS;SG_UF_NCM;CO_VIA;CO_URF;QT_ESTAT;KG_LIQUIDO;VL_FOB\n"
-            "2024;1;12019000;10;160;SP;4;817800;1000;50000000;20000000\n"
-            "2024;1;12019000;10;160;RJ;4;817800;800;40000000;16000000\n"
-        )
-        with patch.object(
-            api.client, "fetch_importacao_csv", new_callable=AsyncMock, return_value=csv
-        ):
-            df = await api.importacao("soja", ano=2024, uf="SP")
-
-        assert len(df) == 1
-        assert df.iloc[0]["uf"] == "SP"
+@pytest.mark.parametrize("table", [None, 1, "portos", ""])
+async def test_dictionary_invalid_table_before_io(monkeypatch, table):
+    calls = install_comexstat_http(monkeypatch, b"unreached")
+    with pytest.raises(InvalidParameterError):
+        await comexstat.dicionario(table)
+    assert calls == []

@@ -1,20 +1,18 @@
 from __future__ import annotations
 
-import time
 import warnings
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import InvalidParameterError
+from agrobr import constants
+from agrobr.contracts import desmatamento as contracts
+from agrobr.exceptions import ContractViolationError, InvalidParameterError, ParseError
 from agrobr.models import MetaInfo
-from agrobr.normalize.regions import normalizar_bioma
-from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.validation import validate_uf
+from agrobr.utils import geo, result
 
-from . import client, parser
-from .models import DETER_WORKSPACES, PRODES_WORKSPACES
+from . import acquisition, client, metadata, query
 
 if TYPE_CHECKING:
     import geopandas as gpd
@@ -22,25 +20,81 @@ if TYPE_CHECKING:
 logger = structlog.get_logger()
 
 
-def _validate_bioma(bioma: object, valid: dict[str, str]) -> str:
-    if not isinstance(bioma, str):
-        raise InvalidParameterError("bioma deve ser uma string")
-    normalized = normalizar_bioma(bioma)
-    if normalized not in valid:
-        raise InvalidParameterError(f"Bioma inválido: {bioma!r}. Opções: {sorted(valid)}")
-    return normalized
+def _geoframe(acquired: acquisition.DesmatamentoAcquisition, gpd: Any) -> pd.DataFrame:
+    geometries = acquired.geometries
+    if geometries is None or len(geometries) != len(acquired.frame):
+        raise ParseError(
+            source="desmatamento", parser_version=2, reason="Geometrias divergem das ocorrências"
+        )
+    if not geometries:
+        geometry = gpd.GeoSeries([], crs="EPSG:4326")
+    else:
+        features = (
+            {"type": "Feature", "properties": {}, "geometry": geometry} for geometry in geometries
+        )
+        geometry = gpd.GeoDataFrame.from_features(features, crs="EPSG:4326").geometry
+    return cast(pd.DataFrame, gpd.GeoDataFrame(acquired.frame, geometry=geometry, crs="EPSG:4326"))
 
 
-def _warn_if_truncated(df: pd.DataFrame, *, dataset: str, hint: str) -> None:
-    if len(df) < client.MAX_FEATURES_PER_REQUEST:
-        return
-    message = f"{dataset} atingiu o teto de {client.MAX_FEATURES_PER_REQUEST:,} registros; {hint}"
-    warnings.warn(message, UserWarning, stacklevel=3)
-    logger.warning(
-        f"desmatamento_{dataset}_truncated",
-        records=len(df),
-        limit=client.MAX_FEATURES_PER_REQUEST,
-        hint=hint,
+async def _fetch(
+    *,
+    product: Literal["PRODES", "DETER"],
+    include_geometry: bool,
+    as_polars: bool,
+    return_meta: bool,
+    unknown: dict[str, Any],
+    **selection: Any,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    from agrobr.datasets.deterministic import get_snapshot
+
+    if unknown:
+        raise TypeError(f"Argumentos desconhecidos em desmatamento: {sorted(unknown)}")
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
+    if get_snapshot() is not None:
+        raise InvalidParameterError(
+            "desmatamento não suporta deterministic: ano/data não selecionam "
+            "uma edição imutável do WFS."
+        )
+    validated = query.build_query(product=product, include_geometry=include_geometry, **selection)
+    gpd = geo.check_geopandas() if include_geometry else None
+    logger.info(
+        "desmatamento_fetch",
+        product=product,
+        bioma=validated.biome,
+        include_geometry=include_geometry,
+        max_registros=validated.max_records,
+        tamanho_pagina=validated.page_size,
+    )
+    acquired = await client.fetch_acquisition(validated)
+    contract = contracts.PRODES_FEICOES_V2 if product == "PRODES" else contracts.DETER_FEICOES_V2
+    valid, errors = contract.validate(acquired.frame)
+    if not valid:
+        raise ContractViolationError(dataset=contract.name, violation="; ".join(errors))
+    frame = _geoframe(acquired, gpd) if include_geometry else acquired.frame
+    meta = metadata.build_meta(acquired, frame)
+    if product == "PRODES" and validated.year is not None and acquired.frame.empty:
+        aviso = (
+            f"PRODES sem feição no WFS para {validated.biome}/{validated.year} (ano ainda não "
+            "publicado ou sem desmatamento no recorte); o resultado vem vazio"
+        )
+        meta.validation_warnings.append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=3)
+    if acquired.coverage.truncated:
+        warnings.warn(
+            f"{product}: retornadas {len(frame)} de {acquired.coverage.expected_rows} "
+            "ocorrências por limite local; restrinja filtros ou use max_registros=None.",
+            UserWarning,
+            stacklevel=3,
+        )
+    return result.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            column.name for column in contract.columns if column.type.value == "str"
+        ),
     )
 
 
@@ -50,6 +104,8 @@ async def prodes(
     bioma: str = "Cerrado",
     ano: int | None = None,
     uf: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -61,6 +117,8 @@ async def prodes(
     bioma: str = "Cerrado",
     ano: int | None = None,
     uf: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -71,40 +129,24 @@ async def prodes(
     bioma: str = "Cerrado",
     ano: int | None = None,
     uf: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    bioma = _validate_bioma(bioma, PRODES_WORKSPACES)
-    uf = validate_uf(uf)
-    logger.info("desmatamento_prodes", bioma=bioma, ano=ano, uf=uf)
-
-    t0 = time.monotonic()
-    csv_bytes, source_url = await client.fetch_prodes(bioma, ano=ano, uf=uf)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_prodes_csv(csv_bytes, bioma)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    _warn_if_truncated(df, dataset="prodes", hint="filtre por ano e/ou UF")
-
-    if uf is not None:
-        uf_upper = uf.strip().upper()
-        df = df[df["uf"] == uf_upper].reset_index(drop=True)
-
-    meta = build_source_meta(
-        "desmatamento",
-        source_url,
-        "httpx+wfs+csv",
-        fetch_ms,
-        parse_ms,
-        df,
-        parser.PARSER_VERSION,
-        attempted_sources=["terrabrasilis_prodes"],
-        selected_source="terrabrasilis_prodes",
+    return await _fetch(
+        product="PRODES",
+        include_geometry=False,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        unknown=kwargs,
+        bioma=bioma,
+        uf=uf,
+        ano=ano,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
@@ -113,6 +155,8 @@ async def prodes_geo(
     bioma: str = "Cerrado",
     ano: int | None = None,
     uf: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -123,6 +167,8 @@ async def prodes_geo(
     bioma: str = "Cerrado",
     ano: int | None = None,
     uf: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
@@ -132,40 +178,23 @@ async def prodes_geo(
     bioma: str = "Cerrado",
     ano: int | None = None,
     uf: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> Any:
-    bioma = _validate_bioma(bioma, PRODES_WORKSPACES)
-    uf = validate_uf(uf)
-    logger.info("desmatamento_prodes_geo", bioma=bioma, ano=ano, uf=uf)
-
-    t0 = time.monotonic()
-    geojson_bytes, source_url = await client.fetch_prodes_geo(bioma, ano=ano, uf=uf)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    gdf = parser.parse_prodes_geojson(geojson_bytes, bioma)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    if uf is not None:
-        uf_upper = uf.strip().upper()
-        gdf = gdf[gdf["uf"] == uf_upper].reset_index(drop=True)
-
-    if return_meta:
-        meta = build_source_meta(
-            "desmatamento",
-            source_url,
-            "httpx+wfs+geojson",
-            fetch_ms,
-            parse_ms,
-            gdf,
-            parser.PARSER_VERSION,
-            attempted_sources=["terrabrasilis_prodes_geo"],
-            selected_source="terrabrasilis_prodes_geo",
-        )
-        return gdf, meta
-
-    return gdf
+    return await _fetch(
+        product="PRODES",
+        include_geometry=True,
+        as_polars=False,
+        return_meta=return_meta,
+        unknown=kwargs,
+        bioma=bioma,
+        uf=uf,
+        ano=ano,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
+    )
 
 
 @overload
@@ -176,6 +205,8 @@ async def deter(
     data_inicio: str | None = None,
     data_fim: str | None = None,
     classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -189,6 +220,8 @@ async def deter(
     data_inicio: str | None = None,
     data_fim: str | None = None,
     classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -201,48 +234,26 @@ async def deter(
     data_inicio: str | None = None,
     data_fim: str | None = None,
     classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    bioma = _validate_bioma(bioma, DETER_WORKSPACES)
-    uf = validate_uf(uf)
-    logger.info(
-        "desmatamento_deter",
+    return await _fetch(
+        product="DETER",
+        include_geometry=False,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        unknown=kwargs,
         bioma=bioma,
         uf=uf,
         data_inicio=data_inicio,
         data_fim=data_fim,
         classe=classe,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
     )
-
-    t0 = time.monotonic()
-    csv_bytes, source_url = await client.fetch_deter(
-        bioma, uf=uf, data_inicio=data_inicio, data_fim=data_fim
-    )
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_deter_csv(csv_bytes, bioma)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    _warn_if_truncated(df, dataset="deter", hint="filtre por UF e/ou período")
-
-    if classe is not None:
-        df = df[df["classe"] == classe].reset_index(drop=True)
-
-    meta = build_source_meta(
-        "desmatamento",
-        source_url,
-        "httpx+wfs+csv",
-        fetch_ms,
-        parse_ms,
-        df,
-        parser.PARSER_VERSION,
-        attempted_sources=["terrabrasilis_deter"],
-        selected_source="terrabrasilis_deter",
-    )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
@@ -253,6 +264,8 @@ async def deter_geo(
     data_inicio: str | None = None,
     data_fim: str | None = None,
     classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -265,6 +278,8 @@ async def deter_geo(
     data_inicio: str | None = None,
     data_fim: str | None = None,
     classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
@@ -276,45 +291,22 @@ async def deter_geo(
     data_inicio: str | None = None,
     data_fim: str | None = None,
     classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> Any:
-    bioma = _validate_bioma(bioma, DETER_WORKSPACES)
-    uf = validate_uf(uf)
-    logger.info(
-        "desmatamento_deter_geo",
+    return await _fetch(
+        product="DETER",
+        include_geometry=True,
+        as_polars=False,
+        return_meta=return_meta,
+        unknown=kwargs,
         bioma=bioma,
         uf=uf,
         data_inicio=data_inicio,
         data_fim=data_fim,
         classe=classe,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
     )
-
-    t0 = time.monotonic()
-    geojson_bytes, source_url = await client.fetch_deter_geo(
-        bioma, uf=uf, data_inicio=data_inicio, data_fim=data_fim
-    )
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    gdf = parser.parse_deter_geojson(geojson_bytes, bioma)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    if classe is not None:
-        gdf = gdf[gdf["classe"] == classe].reset_index(drop=True)
-
-    if return_meta:
-        meta = build_source_meta(
-            "desmatamento",
-            source_url,
-            "httpx+wfs+geojson",
-            fetch_ms,
-            parse_ms,
-            gdf,
-            parser.PARSER_VERSION,
-            attempted_sources=["terrabrasilis_deter_geo"],
-            selected_source="terrabrasilis_deter_geo",
-        )
-        return gdf, meta
-
-    return gdf

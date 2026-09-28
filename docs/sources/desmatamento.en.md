@@ -123,7 +123,8 @@ gdf = await agrobr.desmatamento.deter_geo(
 ## Limitations
 
 - DETER only available for Amazonia and Cerrado
-- WFS limits 50,000 features per request — filter by state and/or year (warning `desmatamento_*_truncated` when the cap is reached)
+- For the Amazon, agrobr's PRODES is the biome cut (`yearly_deforestation_biome`), not the Legal Amazon, where INPE publishes its headline rate. In 2024, INPE's technical note gives about 6,288 km² for the Legal Amazon, and agrobr's sum of the biome's states gives 6,068.9 km²
+- agrobr paginates the WFS: `tamanho_pagina` features per page (500; 100 in the `_geo` functions; up to 2,000 and 500), with 2 s between requests, up to `max_registros` (50,000; 10,000 in the `_geo` functions). Beyond the limit, the prefix comes out in `fid` (PRODES) or `gid` (DETER) order, with a `UserWarning`. Filter by `ano`, `uf` or dates, which go to the server, or use `max_registros=None` ([migration guide, §84](../guides/migracao-2.en.md#84-desmatamento-pagination-cut-and-cost-of-the-default-call))
 - The Source API (`agrobr.desmatamento.*`) returns individual polygons (fine granularity); the `datasets.desmatamento` dataset delivers the annual aggregate by uf/class/biome according to the contract
 - After the BiomasBR migration (03/2026), the PRODES layers for Amazonia, Pantanal, Caatinga and Mata Atlantica are temporarily broken in the INPE GeoServer (ServiceException for any client); Cerrado and Pampa operational
 - DETER is an alert system, not a consolidation one — there may be overlap
@@ -142,3 +143,7 @@ gdf = await agrobr.desmatamento.deter_geo(
 - [TerraBrasilis](https://terrabrasilis.dpi.inpe.br)
 - [PRODES](https://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes)
 - [DETER](https://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter)
+
+## PRODES year range
+
+`prodes()` and `prodes_geo()` accept `ano` only as an integer or `None`. The range is queried from the biome layer and cached for 24 hours per process; years outside it raise `InvalidParameterError`. Polygon coverage should not be confused with the starting year of historical deforestation-rate series.

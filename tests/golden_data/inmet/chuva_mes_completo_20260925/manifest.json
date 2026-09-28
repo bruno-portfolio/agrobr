@@ -1,0 +1,1097 @@
+{
+ "fonte": "inmet",
+ "oraculo": "stdlib: campos posicionais do CSV horário (3: chuva; 8, 10 e 11: temperaturas), vírgula decimal, -9999 e vazio como ausência; dia com chuva válida = ao menos uma hora válida; estação completa = chuva válida em todos os dias do mês; chuva da UF = média simples dos totais das completas; cobertura = dias do mês com chuva ou temperatura válida em alguma estação. Sem parser nem API do agrobr.",
+ "corpo": {
+  "arquivo": "../selecao_20260906/2001.zip",
+  "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2001.zip",
+  "sha256": "a2c63c4a4826ba9d8683729c0c3544ec5125e9e2a00d4597f97107a11c4121ab",
+  "bytes": 1616089,
+  "captured_at": "2026-09-07T00:18:15.313876+00:00",
+  "headers": {
+   "last-modified": "Wed, 02 Sep 2020 12:14:18 GMT",
+   "etag": "\"18a8d9-5ae539328da80\"",
+   "content-length": "1616089",
+   "content-type": "application/zip"
+  },
+  "membros": {
+   "A001": {
+    "membro": "2001/INMET_CO_DF_A001_BRASILIA_01-01-2001_A_31-12-2001.CSV",
+    "sha256": "ec1035998b1ffed89f58fa1e4f6c1dc53c434538412a6814200d5999e76a9885"
+   },
+   "A002": {
+    "membro": "2001/INMET_CO_GO_A002_GOIANIA_29-05-2001_A_31-12-2001.CSV",
+    "sha256": "5b6b491e0b8a6e73284609ba0ac3e7fee2b4f891d18d36ed23b6426368fe6bc5"
+   },
+   "A003": {
+    "membro": "2001/INMET_CO_GO_A003_MORRINHOS_25-05-2001_A_31-12-2001.CSV",
+    "sha256": "459db2892c94e836cdec04a84c7b23a27e624f24475a07a2f4f0ebc17f228f02"
+   },
+   "A702": {
+    "membro": "2001/INMET_CO_MS_A702_CAMPO GRANDE_10-09-2001_A_31-12-2001.CSV",
+    "sha256": "076ce0c3cc680a977595478a54c83ce160b239d47c074c8f1e32dece186910cc"
+   },
+   "A703": {
+    "membro": "2001/INMET_CO_MS_A703_PONTA PORA_07-09-2001_A_31-12-2001.CSV",
+    "sha256": "e1b67faefc8c12e94950b421c76a5ee8c52ebce3c61c9936ffa21b8308560aea"
+   },
+   "A704": {
+    "membro": "2001/INMET_CO_MS_A704_TRES LAGOAS_03-09-2001_A_31-12-2001.CSV",
+    "sha256": "437185fd3a2d595a1fd2bac7650c856db74e7e0fc4e87da3cb7371355922e3a0"
+   },
+   "A801": {
+    "membro": "2001/INMET_S_RS_A801_PORTO ALEGRE_01-01-2001_A_31-12-2001.CSV",
+    "sha256": "f6ef6b8e6b0e33b6dbbbd8d462fc6dd21043197e17b803e20c8f994f6fca3965"
+   },
+   "A802": {
+    "membro": "2001/INMET_S_RS_A802_RIO GRANDE_16-11-2001_A_31-12-2001.CSV",
+    "sha256": "49acd28dc59e3936df53b3903cff51602102a0699e351b55a8823296686fa1be"
+   },
+   "A803": {
+    "membro": "2001/INMET_S_RS_A803_SANTA MARIA_26-11-2001_A_31-12-2001.CSV",
+    "sha256": "87d329cce88577b04dfbfc73f08130d09ffce8a2988210947efeba253b18b499"
+   },
+   "A804": {
+    "membro": "2001/INMET_S_RS_A804_SANTANA DO LIVRAMENTO_22-11-2001_A_31-12-2001.CSV",
+    "sha256": "e2a397feea694a16ad2e3320b7d281969fe0b3fa7ae032b7aa625521c095e4eb"
+   },
+   "A805": {
+    "membro": "2001/INMET_S_RS_A805_SANTO AUGUSTO_05-12-2001_A_31-12-2001.CSV",
+    "sha256": "4b6528c0ce3bfb943f714883b58586a0bd4ca4bc2b815aa6df1c347920e624a3"
+   }
+  }
+ },
+ "meses": {
+  "DF 2001-01": {
+   "uf": "DF",
+   "mes": "2001-01",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 29,
+     "primeiro_dia_com_chuva": "2001-01-01",
+     "ultimo_dia_com_chuva": "2001-01-31",
+     "total_mm": 96.2
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A001"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 96.2,
+   "cobertura": {
+    "dias": 29,
+    "data_inicio": "2001-01-01",
+    "data_fim": "2001-01-31"
+   }
+  },
+  "DF 2001-02": {
+   "uf": "DF",
+   "mes": "2001-02",
+   "dias_no_mes": 28,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 28,
+     "primeiro_dia_com_chuva": "2001-02-01",
+     "ultimo_dia_com_chuva": "2001-02-28",
+     "total_mm": 98.2
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 98.2,
+   "precip_regra_1_1_0": 98.2,
+   "cobertura": {
+    "dias": 28,
+    "data_inicio": "2001-02-01",
+    "data_fim": "2001-02-28"
+   }
+  },
+  "DF 2001-03": {
+   "uf": "DF",
+   "mes": "2001-03",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-03-01",
+     "ultimo_dia_com_chuva": "2001-03-31",
+     "total_mm": 201.2
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 201.2,
+   "precip_regra_1_1_0": 201.2,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-03-01",
+    "data_fim": "2001-03-31"
+   }
+  },
+  "DF 2001-04": {
+   "uf": "DF",
+   "mes": "2001-04",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-04-01",
+     "ultimo_dia_com_chuva": "2001-04-30",
+     "total_mm": 141.2
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 141.2,
+   "precip_regra_1_1_0": 141.2,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-04-01",
+    "data_fim": "2001-04-30"
+   }
+  },
+  "DF 2001-05": {
+   "uf": "DF",
+   "mes": "2001-05",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-05-01",
+     "ultimo_dia_com_chuva": "2001-05-31",
+     "total_mm": 35.6
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 35.6,
+   "precip_regra_1_1_0": 35.6,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-05-01",
+    "data_fim": "2001-05-31"
+   }
+  },
+  "DF 2001-06": {
+   "uf": "DF",
+   "mes": "2001-06",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-06-01",
+     "ultimo_dia_com_chuva": "2001-06-30",
+     "total_mm": 0.0
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 0.0,
+   "precip_regra_1_1_0": 0.0,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-06-01",
+    "data_fim": "2001-06-30"
+   }
+  },
+  "DF 2001-07": {
+   "uf": "DF",
+   "mes": "2001-07",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-07-01",
+     "ultimo_dia_com_chuva": "2001-07-31",
+     "total_mm": 13.6
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 13.6,
+   "precip_regra_1_1_0": 13.6,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-07-01",
+    "data_fim": "2001-07-31"
+   }
+  },
+  "DF 2001-08": {
+   "uf": "DF",
+   "mes": "2001-08",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-08-01",
+     "ultimo_dia_com_chuva": "2001-08-31",
+     "total_mm": 39.6
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A001"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 39.6,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-08-01",
+    "data_fim": "2001-08-31"
+   }
+  },
+  "DF 2001-09": {
+   "uf": "DF",
+   "mes": "2001-09",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 28,
+     "primeiro_dia_com_chuva": "2001-09-03",
+     "ultimo_dia_com_chuva": "2001-09-30",
+     "total_mm": 49.0
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A001"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 49.0,
+   "cobertura": {
+    "dias": 28,
+    "data_inicio": "2001-09-03",
+    "data_fim": "2001-09-30"
+   }
+  },
+  "DF 2001-10": {
+   "uf": "DF",
+   "mes": "2001-10",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-10-01",
+     "ultimo_dia_com_chuva": "2001-10-31",
+     "total_mm": 135.2
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 135.2,
+   "precip_regra_1_1_0": 135.2,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-10-01",
+    "data_fim": "2001-10-31"
+   }
+  },
+  "DF 2001-11": {
+   "uf": "DF",
+   "mes": "2001-11",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 26,
+     "primeiro_dia_com_chuva": "2001-11-01",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 163.8
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A001"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 163.8,
+   "cobertura": {
+    "dias": 26,
+    "data_inicio": "2001-11-01",
+    "data_fim": "2001-11-30"
+   }
+  },
+  "DF 2001-12": {
+   "uf": "DF",
+   "mes": "2001-12",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A001": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 109.4
+    }
+   },
+   "completas": [
+    "A001"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 109.4,
+   "precip_regra_1_1_0": 109.4,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-12-01",
+    "data_fim": "2001-12-31"
+   }
+  },
+  "GO 2001-05": {
+   "uf": "GO",
+   "mes": "2001-05",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 3,
+     "primeiro_dia_com_chuva": "2001-05-29",
+     "ultimo_dia_com_chuva": "2001-05-31",
+     "total_mm": 0.0
+    },
+    "A003": {
+     "dias_com_chuva_valida": 4,
+     "primeiro_dia_com_chuva": "2001-05-25",
+     "ultimo_dia_com_chuva": "2001-05-31",
+     "total_mm": 0.4
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A002",
+    "A003"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 0.2,
+   "cobertura": {
+    "dias": 4,
+    "data_inicio": "2001-05-25",
+    "data_fim": "2001-05-31"
+   }
+  },
+  "GO 2001-06": {
+   "uf": "GO",
+   "mes": "2001-06",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-06-01",
+     "ultimo_dia_com_chuva": "2001-06-30",
+     "total_mm": 0.0
+    },
+    "A003": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-06-01",
+     "ultimo_dia_com_chuva": "2001-06-30",
+     "total_mm": 2.0
+    }
+   },
+   "completas": [
+    "A002",
+    "A003"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 1.0,
+   "precip_regra_1_1_0": 1.0,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-06-01",
+    "data_fim": "2001-06-30"
+   }
+  },
+  "GO 2001-07": {
+   "uf": "GO",
+   "mes": "2001-07",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-07-01",
+     "ultimo_dia_com_chuva": "2001-07-30",
+     "total_mm": 0.0
+    },
+    "A003": {
+     "dias_com_chuva_valida": 22,
+     "primeiro_dia_com_chuva": "2001-07-01",
+     "ultimo_dia_com_chuva": "2001-07-31",
+     "total_mm": 0.0
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A002",
+    "A003"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 0.0,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-07-01",
+    "data_fim": "2001-07-31"
+   }
+  },
+  "GO 2001-08": {
+   "uf": "GO",
+   "mes": "2001-08",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 26,
+     "primeiro_dia_com_chuva": "2001-08-06",
+     "ultimo_dia_com_chuva": "2001-08-31",
+     "total_mm": 16.8
+    },
+    "A003": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-08-01",
+     "ultimo_dia_com_chuva": "2001-08-31",
+     "total_mm": 21.4
+    }
+   },
+   "completas": [
+    "A003"
+   ],
+   "parciais": [
+    "A002"
+   ],
+   "precip_acum_mm": 21.4,
+   "precip_regra_1_1_0": 19.1,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-08-01",
+    "data_fim": "2001-08-31"
+   }
+  },
+  "GO 2001-09": {
+   "uf": "GO",
+   "mes": "2001-09",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 25,
+     "primeiro_dia_com_chuva": "2001-09-01",
+     "ultimo_dia_com_chuva": "2001-09-30",
+     "total_mm": 132.6
+    },
+    "A003": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-09-01",
+     "ultimo_dia_com_chuva": "2001-09-30",
+     "total_mm": 118.8
+    }
+   },
+   "completas": [
+    "A003"
+   ],
+   "parciais": [
+    "A002"
+   ],
+   "precip_acum_mm": 118.8,
+   "precip_regra_1_1_0": 125.7,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-09-01",
+    "data_fim": "2001-09-30"
+   }
+  },
+  "GO 2001-10": {
+   "uf": "GO",
+   "mes": "2001-10",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 21,
+     "primeiro_dia_com_chuva": "2001-10-01",
+     "ultimo_dia_com_chuva": "2001-10-21",
+     "total_mm": 150.6
+    },
+    "A003": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-10-01",
+     "ultimo_dia_com_chuva": "2001-10-31",
+     "total_mm": 108.6
+    }
+   },
+   "completas": [
+    "A003"
+   ],
+   "parciais": [
+    "A002"
+   ],
+   "precip_acum_mm": 108.6,
+   "precip_regra_1_1_0": 129.6,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-10-01",
+    "data_fim": "2001-10-31"
+   }
+  },
+  "GO 2001-11": {
+   "uf": "GO",
+   "mes": "2001-11",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-11-01",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 276.4
+    },
+    "A003": {
+     "dias_com_chuva_valida": 20,
+     "primeiro_dia_com_chuva": "2001-11-01",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 95.4
+    }
+   },
+   "completas": [
+    "A002"
+   ],
+   "parciais": [
+    "A003"
+   ],
+   "precip_acum_mm": 276.4,
+   "precip_regra_1_1_0": 185.9,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-11-01",
+    "data_fim": "2001-11-30"
+   }
+  },
+  "GO 2001-12": {
+   "uf": "GO",
+   "mes": "2001-12",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A002": {
+     "dias_com_chuva_valida": 28,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-28",
+     "total_mm": 170.4
+    },
+    "A003": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 270.8
+    }
+   },
+   "completas": [
+    "A003"
+   ],
+   "parciais": [
+    "A002"
+   ],
+   "precip_acum_mm": 270.8,
+   "precip_regra_1_1_0": 220.6,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-12-01",
+    "data_fim": "2001-12-31"
+   }
+  },
+  "MS 2001-09": {
+   "uf": "MS",
+   "mes": "2001-09",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A702": {
+     "dias_com_chuva_valida": 20,
+     "primeiro_dia_com_chuva": "2001-09-11",
+     "ultimo_dia_com_chuva": "2001-09-30",
+     "total_mm": 169.0
+    },
+    "A703": {
+     "dias_com_chuva_valida": 24,
+     "primeiro_dia_com_chuva": "2001-09-07",
+     "ultimo_dia_com_chuva": "2001-09-30",
+     "total_mm": 202.6
+    },
+    "A704": {
+     "dias_com_chuva_valida": 28,
+     "primeiro_dia_com_chuva": "2001-09-03",
+     "ultimo_dia_com_chuva": "2001-09-30",
+     "total_mm": 80.4
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A702",
+    "A703",
+    "A704"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 150.666667,
+   "cobertura": {
+    "dias": 28,
+    "data_inicio": "2001-09-03",
+    "data_fim": "2001-09-30"
+   }
+  },
+  "MS 2001-10": {
+   "uf": "MS",
+   "mes": "2001-10",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A702": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-10-01",
+     "ultimo_dia_com_chuva": "2001-10-31",
+     "total_mm": 100.0
+    },
+    "A703": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-10-01",
+     "ultimo_dia_com_chuva": "2001-10-31",
+     "total_mm": 84.6
+    },
+    "A704": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-10-01",
+     "ultimo_dia_com_chuva": "2001-10-31",
+     "total_mm": 115.6
+    }
+   },
+   "completas": [
+    "A702",
+    "A703",
+    "A704"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 100.066667,
+   "precip_regra_1_1_0": 100.066667,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-10-01",
+    "data_fim": "2001-10-31"
+   }
+  },
+  "MS 2001-11": {
+   "uf": "MS",
+   "mes": "2001-11",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A702": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-11-01",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 278.4
+    },
+    "A703": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-11-01",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 212.2
+    },
+    "A704": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-11-01",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 264.0
+    }
+   },
+   "completas": [
+    "A702",
+    "A703",
+    "A704"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 251.533333,
+   "precip_regra_1_1_0": 251.533333,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-11-01",
+    "data_fim": "2001-11-30"
+   }
+  },
+  "MS 2001-12": {
+   "uf": "MS",
+   "mes": "2001-12",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A702": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 224.6
+    },
+    "A703": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 246.0
+    },
+    "A704": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 180.2
+    }
+   },
+   "completas": [
+    "A702",
+    "A703",
+    "A704"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 216.933333,
+   "precip_regra_1_1_0": 216.933333,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-12-01",
+    "data_fim": "2001-12-31"
+   }
+  },
+  "RS 2001-01": {
+   "uf": "RS",
+   "mes": "2001-01",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 26,
+     "primeiro_dia_com_chuva": "2001-01-01",
+     "ultimo_dia_com_chuva": "2001-01-31",
+     "total_mm": 162.8
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A801"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 162.8,
+   "cobertura": {
+    "dias": 26,
+    "data_inicio": "2001-01-01",
+    "data_fim": "2001-01-31"
+   }
+  },
+  "RS 2001-02": {
+   "uf": "RS",
+   "mes": "2001-02",
+   "dias_no_mes": 28,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 28,
+     "primeiro_dia_com_chuva": "2001-02-01",
+     "ultimo_dia_com_chuva": "2001-02-28",
+     "total_mm": 95.0
+    }
+   },
+   "completas": [
+    "A801"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 95.0,
+   "precip_regra_1_1_0": 95.0,
+   "cobertura": {
+    "dias": 28,
+    "data_inicio": "2001-02-01",
+    "data_fim": "2001-02-28"
+   }
+  },
+  "RS 2001-03": {
+   "uf": "RS",
+   "mes": "2001-03",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-03-01",
+     "ultimo_dia_com_chuva": "2001-03-31",
+     "total_mm": 123.2
+    }
+   },
+   "completas": [
+    "A801"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 123.2,
+   "precip_regra_1_1_0": 123.2,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-03-01",
+    "data_fim": "2001-03-31"
+   }
+  },
+  "RS 2001-04": {
+   "uf": "RS",
+   "mes": "2001-04",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-04-01",
+     "ultimo_dia_com_chuva": "2001-04-30",
+     "total_mm": 275.6
+    }
+   },
+   "completas": [
+    "A801"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 275.6,
+   "precip_regra_1_1_0": 275.6,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-04-01",
+    "data_fim": "2001-04-30"
+   }
+  },
+  "RS 2001-05": {
+   "uf": "RS",
+   "mes": "2001-05",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 19,
+     "primeiro_dia_com_chuva": "2001-05-01",
+     "ultimo_dia_com_chuva": "2001-05-23",
+     "total_mm": 36.2
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A801"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 36.2,
+   "cobertura": {
+    "dias": 19,
+    "data_inicio": "2001-05-01",
+    "data_fim": "2001-05-23"
+   }
+  },
+  "RS 2001-06": {
+   "uf": "RS",
+   "mes": "2001-06",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 25,
+     "primeiro_dia_com_chuva": "2001-06-04",
+     "ultimo_dia_com_chuva": "2001-06-30",
+     "total_mm": 105.8
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A801"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 105.8,
+   "cobertura": {
+    "dias": 25,
+    "data_inicio": "2001-06-04",
+    "data_fim": "2001-06-30"
+   }
+  },
+  "RS 2001-07": {
+   "uf": "RS",
+   "mes": "2001-07",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 28,
+     "primeiro_dia_com_chuva": "2001-07-01",
+     "ultimo_dia_com_chuva": "2001-07-31",
+     "total_mm": 167.6
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A801"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 167.6,
+   "cobertura": {
+    "dias": 28,
+    "data_inicio": "2001-07-01",
+    "data_fim": "2001-07-31"
+   }
+  },
+  "RS 2001-08": {
+   "uf": "RS",
+   "mes": "2001-08",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-08-01",
+     "ultimo_dia_com_chuva": "2001-08-31",
+     "total_mm": 23.2
+    }
+   },
+   "completas": [
+    "A801"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 23.2,
+   "precip_regra_1_1_0": 23.2,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-08-01",
+    "data_fim": "2001-08-31"
+   }
+  },
+  "RS 2001-09": {
+   "uf": "RS",
+   "mes": "2001-09",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 28,
+     "primeiro_dia_com_chuva": "2001-09-01",
+     "ultimo_dia_com_chuva": "2001-09-30",
+     "total_mm": 111.6
+    }
+   },
+   "completas": [],
+   "parciais": [
+    "A801"
+   ],
+   "precip_acum_mm": null,
+   "precip_regra_1_1_0": 111.6,
+   "cobertura": {
+    "dias": 28,
+    "data_inicio": "2001-09-01",
+    "data_fim": "2001-09-30"
+   }
+  },
+  "RS 2001-10": {
+   "uf": "RS",
+   "mes": "2001-10",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-10-01",
+     "ultimo_dia_com_chuva": "2001-10-31",
+     "total_mm": 49.0
+    }
+   },
+   "completas": [
+    "A801"
+   ],
+   "parciais": [],
+   "precip_acum_mm": 49.0,
+   "precip_regra_1_1_0": 49.0,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-10-01",
+    "data_fim": "2001-10-31"
+   }
+  },
+  "RS 2001-11": {
+   "uf": "RS",
+   "mes": "2001-11",
+   "dias_no_mes": 30,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 30,
+     "primeiro_dia_com_chuva": "2001-11-01",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 95.2
+    },
+    "A802": {
+     "dias_com_chuva_valida": 12,
+     "primeiro_dia_com_chuva": "2001-11-17",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 48.4
+    },
+    "A803": {
+     "dias_com_chuva_valida": 5,
+     "primeiro_dia_com_chuva": "2001-11-26",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 11.0
+    },
+    "A804": {
+     "dias_com_chuva_valida": 6,
+     "primeiro_dia_com_chuva": "2001-11-22",
+     "ultimo_dia_com_chuva": "2001-11-30",
+     "total_mm": 20.2
+    }
+   },
+   "completas": [
+    "A801"
+   ],
+   "parciais": [
+    "A802",
+    "A803",
+    "A804"
+   ],
+   "precip_acum_mm": 95.2,
+   "precip_regra_1_1_0": 43.7,
+   "cobertura": {
+    "dias": 30,
+    "data_inicio": "2001-11-01",
+    "data_fim": "2001-11-30"
+   }
+  },
+  "RS 2001-12": {
+   "uf": "RS",
+   "mes": "2001-12",
+   "dias_no_mes": 31,
+   "estacoes": {
+    "A801": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 83.2
+    },
+    "A802": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 95.8
+    },
+    "A803": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 0.0
+    },
+    "A804": {
+     "dias_com_chuva_valida": 31,
+     "primeiro_dia_com_chuva": "2001-12-01",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 65.8
+    },
+    "A805": {
+     "dias_com_chuva_valida": 27,
+     "primeiro_dia_com_chuva": "2001-12-05",
+     "ultimo_dia_com_chuva": "2001-12-31",
+     "total_mm": 25.0
+    }
+   },
+   "completas": [
+    "A801",
+    "A802",
+    "A803",
+    "A804"
+   ],
+   "parciais": [
+    "A805"
+   ],
+   "precip_acum_mm": 61.2,
+   "precip_regra_1_1_0": 53.96,
+   "cobertura": {
+    "dias": 31,
+    "data_inicio": "2001-12-01",
+    "data_fim": "2001-12-31"
+   }
+  }
+ }
+}

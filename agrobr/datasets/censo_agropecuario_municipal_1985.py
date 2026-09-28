@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -30,23 +30,26 @@ async def _fetch_ibge_censo_municipal_1985(
 
 CENSO_AGROPECUARIO_MUNICIPAL_1985_INFO = DatasetInfo(
     name="censo_agropecuario_municipal_1985",
-    description="Censo Agropecuário 1985 — dados municipais extraídos via OCR de PDFs do IBGE (22 UFs, 53 temas)",
+    description=(
+        "Censo Agropecuário 1985 municipal — 53 tabelas (67 a 119) dos 28 volumes do IBGE, 1 linha "
+        "por casa do PDF com o status de cada uma; valor só quando confirmado pelas somas impressas"
+    ),
     sources=[
         DatasetSource(
             name="ibge_censo_agro_municipal_1985",
             priority=1,
             fetch_fn=_fetch_ibge_censo_municipal_1985,
-            description="Censo 1985 municipal via CSVs locais (OCR de PDFs IBGE)",
+            description="Censo 1985 municipal — pacote do agrobr extraído dos PDFs do IBGE",
         ),
     ],
     products=TEMAS_DISPONIVEIS,
-    contract_version="1.0",
+    contract_version="2.0",
     update_frequency="never",
     typical_latency="N/A",
     source_url="https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768",
     source_institution="IBGE",
     min_date="1985-01-01",
-    unit="estabelecimentos / hectares / cabeças / toneladas / unidades",
+    unit="por coluna (unidade e unidade_lida)",
     license="livre",
 )
 
@@ -60,7 +63,6 @@ class CensoAgropecuarioMunicipal1985Dataset(BaseDataset):
         uf: str | None = None,
         nivel: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info(
             "dataset_fetch",
@@ -72,14 +74,14 @@ class CensoAgropecuarioMunicipal1985Dataset(BaseDataset):
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, uf=uf, nivel=nivel, **kwargs
+            produto, uf=uf, nivel=nivel
         )
 
         self._validate_contract(df)
 
         if return_meta:
             return df, self._build_meta(
-                df, source_name, source_meta, attempted, snapshot, from_cache=True
+                df, source_name, source_meta, attempted, snapshot, from_cache=False
             )
 
         return df
@@ -92,13 +94,35 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_censo_agropecuario_municipal_1985)
 
 
+@overload
+async def censo_agropecuario_municipal_1985(
+    tema: str,
+    uf: str | None = None,
+    nivel: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def censo_agropecuario_municipal_1985(
+    tema: str,
+    uf: str | None = None,
+    nivel: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def censo_agropecuario_municipal_1985(
     tema: str,
     uf: str | None = None,
     nivel: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _censo_agropecuario_municipal_1985.fetch(
-        tema, uf=uf, nivel=nivel, return_meta=return_meta, **kwargs
+    return await _censo_agropecuario_municipal_1985.fetch(  # type: ignore[call-arg]
+        tema, uf=uf, nivel=nivel, return_meta=return_meta, as_polars=as_polars
     )

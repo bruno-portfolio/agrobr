@@ -6,6 +6,12 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, TypedDict
 
+_NOMES_ANTERIORES: dict[int, tuple[str, ...]] = {
+    1400605: ("São Luiz",),
+    2400208: ("Açu",),
+    2401206: ("Arês",),
+}
+
 
 class MunicipioInfo(TypedDict):
     codigo_ibge: int
@@ -36,6 +42,10 @@ def _build_lookup() -> dict[str, list[MunicipioInfo]]:
             "uf": str(uf),
         }
         lookup.setdefault(key, []).append(entry)
+    codigos = _build_codigo_lookup()
+    for codigo, nomes in _NOMES_ANTERIORES.items():
+        for nome in nomes:
+            lookup.setdefault(_remover_acentos(nome.lower()), []).append(codigos[codigo])
     return lookup
 
 
@@ -76,17 +86,16 @@ def ibge_para_municipio(codigo: int) -> MunicipioInfo | None:
 def buscar_municipios(termo: str, uf: str | None = None, limite: int = 10) -> list[MunicipioInfo]:
     termo_norm = _remover_acentos(termo.lower().strip())
     uf_upper = uf.upper().strip() if uf else None
-    results: list[MunicipioInfo] = []
+    results: dict[int, MunicipioInfo] = {}
 
     for key, entries in _build_lookup().items():
         if termo_norm in key:
             for entry in entries:
                 if uf_upper and entry["uf"] != uf_upper:
                     continue
-                results.append(entry)
+                results.setdefault(entry["codigo_ibge"], entry)
 
-    results.sort(key=lambda m: m["nome"])
-    return results[:limite]
+    return sorted(results.values(), key=lambda m: m["nome"])[:limite]
 
 
 def total_municipios() -> int:

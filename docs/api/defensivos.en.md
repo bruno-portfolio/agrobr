@@ -1,155 +1,91 @@
 # Defensivos API
 
-The defensivos module provides data on pesticides registered in Brazil via Agrofit/MAPA.
+The `defensivos` module reads current Agrofit/MAPA CSV exports. All four functions are asynchronous and keyword-only. They return pandas; `as_polars=True` requests Polars, and `return_meta=True` adds `MetaInfo`.
 
-## Functions
+## Formulated products
 
-### `formulados`
+`formulados()` returns one row per `nr_registro`. Filters: `ingrediente_ativo`, `classe_toxicologica`, `classe_ambiental`, `titular`, `organicos`, `marca`, `formulacao`, `classe`, `nr_registro`, and `situacao`.
 
-Registered formulated (commercial) products.
+The ten existing columns remain: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `formulacao`, `classe_toxicologica`, `classe_ambiental`, `organicos`, and `modo_de_acao`. Schema **1.1** adds nullable `situacao` and `composicao_texto`.
 
-```python
-async def formulados(
-    *,
-    ingrediente_ativo: str | None = None,
-    classe_toxicologica: str | None = None,
-    classe_ambiental: str | None = None,
-    titular: str | None = None,
-    organicos: str | None = None,
-    marca: str | None = None,
-    formulacao: str | None = None,
-    classe: str | None = None,
-    as_polars: bool = False,
-    return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
-```
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ingrediente_ativo` | `str \| None` | Filter by active ingredient (contains, case-insensitive) |
-| `classe_toxicologica` | `str \| None` | Filter by toxicological class |
-| `classe_ambiental` | `str \| None` | Filter by environmental class |
-| `titular` | `str \| None` | Filter by holder company |
-| `organicos` | `str \| None` | Exact filter: `"SIM"` or `"NAO"` |
-| `marca` | `str \| None` | Filter by commercial brand |
-| `formulacao` | `str \| None` | Filter by formulation type |
-| `classe` | `str \| None` | Filter by class (herbicide, insecticide, fungicide, etc.) |
-| `as_polars` | `bool` | Return a polars DataFrame |
-| `return_meta` | `bool` | Return a (DataFrame, MetaInfo) tuple |
-
-**Returns:** DataFrame with columns: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `formulacao`, `classe_toxicologica`, `classe_ambiental`, `organicos`, `modo_de_acao`
-
-**Example:**
+`composicao_texto` preserves the original cell, including whitespace and characters. `ingrediente_ativo` retains the previous formulated-product representation. Conflicting product attributes across rows of the same registration raise `ParseError`.
 
 ```python
 from agrobr import defensivos
 
-# All formulated products with glyphosate
-df = await defensivos.formulados(ingrediente_ativo="glifosato")
-
-# Organic herbicides only
-df = await defensivos.formulados(classe="herbicida", organicos="SIM")
+products, meta = await defensivos.formulados(
+    ingrediente_ativo="glifosato", situacao="TRUE", return_meta=True,
+)
 ```
 
----
+## Use authorizations
 
-### `autorizacoes`
+`autorizacoes()` accepts `nr_registro`, `cultura`, `ingrediente_ativo`, `classe`, and `situacao`. It retains every published row, including duplicates created by projecting columns; no unique key is declared for this relation.
 
-Use authorizations by crop and pest.
+Columns are `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `cultura`, `praga`, `praga_nome_comum`, `modalidade_de_emprego`, and the nullable addition `situacao`. Schema version is **1.1**.
 
 ```python
-async def autorizacoes(
-    *,
-    nr_registro: str | None = None,
-    cultura: str | None = None,
-    ingrediente_ativo: str | None = None,
-    classe: str | None = None,
-    as_polars: bool = False,
-    return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+uses = await defensivos.autorizacoes(cultura="soja")
 ```
 
-**Parameters:**
+## Technical products
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `nr_registro` | `str \| None` | Exact filter by registration number |
-| `cultura` | `str \| None` | Filter by crop (contains, case-insensitive) |
-| `ingrediente_ativo` | `str \| None` | Filter by active ingredient |
-| `classe` | `str \| None` | Filter by class |
-| `as_polars` | `bool` | Return a polars DataFrame |
-| `return_meta` | `bool` | Return a (DataFrame, MetaInfo) tuple |
+`tecnicos()` accepts `ingrediente_ativo`, `titular`, `classe`, `marca`, and `nr_registro`. It returns `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `grupo_quimico`, `nome_cientifico`, `classe_toxicologica`, `classe_ambiental`, and nullable `composicao_texto`, added in schema **1.1**.
 
-**Returns:** DataFrame with columns: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `cultura`, `praga`, `praga_nome_comum`, `modalidade_de_emprego`
+The parser handles groups with nested parentheses. Multiple component names and groups retain their order, joined by ` + `; the function below provides component details. Fields absent from the export remain null. The technical export inspected does not publish situation, and this function does not accept `situacao`.
 
-**Example:**
+## Composition
 
 ```python
-from agrobr import defensivos
-
-# All products authorized for soybean
-df = await defensivos.autorizacoes(cultura="soja")
-
-# Authorizations for a specific product
-df = await defensivos.autorizacoes(nr_registro="000190")
+components, meta = await defensivos.composicao(
+    tipo="tecnicos", nr_registro="00301", return_meta=True,
+)
 ```
 
----
+`composicao()` accepts `tipo="formulados"` (default) or `tipo="tecnicos"`, `nr_registro`, and `ingrediente_ativo`. Schema **1.0** has one row per component position in a product, keyed by `[tipo, nr_registro, ordem_componente]`.
 
-### `tecnicos`
+| Column | Type / meaning |
+|---|---|
+| `tipo` | Text: `formulados` or `tecnicos` |
+| `nr_registro` | Text identifier, retaining leading zeros |
+| `ordem_componente` | `Int64`, position starting at 1 |
+| `ingrediente_ativo` | Parsed ingredient name; nullable |
+| `grupo_quimico` | Parsed chemical group; nullable |
+| `componente_texto` | Original component text |
+| `concentracao_texto` | Published concentration before parsing; nullable |
+| `concentracao_valor` | Nullable `Float64`, without dimensional conversion |
+| `concentracao_unidade` | Published unit when separable; nullable |
 
-Technical products (active ingredients before formulation).
+Repeated ingredients at different positions retain separate rows. Composition is not multiplied by use authorizations. Explicit scientific notation can be parsed: `.001 x 10^9 UFC/mL` yields `1000000.0` and `UFC/mL`. Ambiguous expressions retain their text and null values, with diagnostics in `meta.source_details`. `Kg` remains `Kg`; `g/kg` is not inferred. Missing values do not become zero.
 
-```python
-async def tecnicos(
-    *,
-    ingrediente_ativo: str | None = None,
-    titular: str | None = None,
-    classe: str | None = None,
-    marca: str | None = None,
-    as_polars: bool = False,
-    return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
-```
+## Filters, cache, and provenance
 
-**Parameters:**
+Filters accept `str | None`. Empty text, numbers, booleans, invalid `tipo`, and unknown arguments raise `InvalidParameterError` before cache or network access. Registration and `organicos` use exact equality; other text filters search literal substrings, ignoring case. `situacao` uses textual equality, ignoring surrounding whitespace and case.
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ingrediente_ativo` | `str \| None` | Filter by active ingredient |
-| `titular` | `str \| None` | Filter by holder company |
-| `classe` | `str \| None` | Filter by class |
-| `marca` | `str \| None` | Filter by commercial brand |
-| `as_polars` | `bool` | Return a polars DataFrame |
-| `return_meta` | `bool` | Return a (DataFrame, MetaInfo) tuple |
+Situation remains the original text. The September 6, 2026 capture contained only `TRUE` for formulated products. This token is not converted into a registration-validity classification or an application recommendation.
 
-**Returns:** DataFrame with columns: `nr_registro`, `marca_comercial`, `ingrediente_ativo`, `titular`, `classe`, `grupo_quimico`, `nome_cientifico`, `classe_toxicologica`, `classe_ambiental`
+All functions accept `use_cache=True`. The first query downloads the entire family export, even with filters; the formulated CSV was about 391 MB in the capture. The cache lasts 24 hours from acquisition and bundles related tables, composition, types, hashes, and metadata in one ZIP. Legacy files are preserved, but the current API requires the new format. `use_cache=False` skips both reading and writing, leaving any stored edition intact.
 
-**Example:**
+`MetaInfo` includes attempted/selected source, versions, raw hash, and `from_cache`. `fetched_at` and `fetch_timestamp` are the original UTC acquisition time, including when the query is served from cache. `source_details` includes resource, size, hash, layout fingerprint, counts, ignored columns, filters, and diagnostics. A content hash identifies received bytes; it cannot reconstruct a historical export.
 
-```python
-from agrobr import defensivos
+Contracts are available through `get_contract("agrofit_formulados")`, `agrofit_autorizacoes`, `agrofit_tecnicos`, and `agrofit_composicao`. The [four Agrofit datasets](defensivos_datasets.en.md) reuse these contracts and preserve filters, cache, and provenance. The source functions above retain their interfaces.
 
-# All technical products
-df = await defensivos.tecnicos()
-
-# Filter by class
-df = await defensivos.tecnicos(classe="inseticida")
-```
-
-## Synchronous Version
+## Synchronous version
 
 ```python
 from agrobr.sync import defensivos
 
-df = defensivos.formulados(ingrediente_ativo="glifosato")
+components = defensivos.composicao(tipo="tecnicos", nr_registro="00301")
 ```
 
-## Notes
+See [source coverage and limits](../sources/defensivos.md).
 
-- Source: [Agrofit/MAPA](https://dados.agricultura.gov.br) — license `livre` (CC-BY 4.0)
-- Large CSV (~100MB formulados) — the first download may take a while
-- 24h local cache to avoid re-downloads
-- ~8K formulated products, ~267K authorizations, ~2.8K technical products
+## Reconciliation of the 2026-09-18 capture
+
+The two complete CSVs in this capture contain 4,403 formulated products, 279,707 authorization occurrences and 2,992 technical products. An independent oracle checks all 12 formulated-product columns, all ten columns of every authorization and the eight direct technical-product fields. All ten technical columns, including ingredient and group extracted from composition, are checked in nine explicit complete-register cohorts.
+
+Composition has independent reconciliation of 57 components in 32 complete product cohorts: nine technical and 23 formulated. Coverage includes file endpoints, leading zeros, an accented premix identifier, nested parentheses, repeated components, zero concentration, scientific notation and published units. Two real ambiguous expressions, `1.9 10*10 UFC/g` and `200 1x10E10 UFC/g`, retain text, null numeric value/unit and diagnostics. The complete component population has not received independent numeric interpretation; the validated scope is explicit in the manifest.
+
+Replays use complete CSV bodies with identical hashes after gzip decompression, through public source and dataset APIs. Cache retains non-null values, dtypes, component position and UTC provenance; pandas `None`/`pd.NA` sentinels are equivalent only in nullable fields. Composition and situation text retain the literal; other fields retain the documented cleanup. Authorizations are not deduplicated.
+
+The structural comparator inventories all columns, both CKAN resources and published suffixes in concentration fields. A suffix can include an ambiguous expression and does not by itself certify a measurement unit or numeric interpretation. Undecided formats, columns, resources or expressions require review. Catalogue, CSV and cache share an origin and do not independently confirm the historical population. Parser 3 and contracts 1.1/1.0 remain unchanged.

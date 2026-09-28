@@ -9,6 +9,9 @@ Requires a free USDA key:
 1. Register at [api.data.gov/signup](https://api.data.gov/signup/)
 2. Configure: `export AGROBR_USDA_API_KEY=your_key`
 
+The key goes only in the `X-Api-Key` header of the `https://api.fas.usda.gov/api/psd` gateway. Without a key, or with a
+rejected key (HTTP 403 `API_KEY_INVALID`), `SourceUnavailableError` is raised.
+
 ## Functions
 
 ### `psd`
@@ -33,10 +36,10 @@ async def psd(
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `commodity` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` or a USDA code |
-| `country` | `str` | Country: `"BR"`, `"US"`, `"world"` (aggregate), `"all"` (every country). Default: `"BR"` |
-| `market_year` | `int \| None` | Market year. `None` uses the current calendar year |
-| `attributes` | `list[str] \| None` | Filter attributes (e.g. `["Production", "Exports"]`) |
+| `commodity` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` or a `commodityCode` from the official PSD catalog |
+| `country` | `str` | Country: `"BR"`, `"US"`, `"world"` (aggregate), `"all"` (every country) or a `countryCode` from the PSD catalog (not ISO: `"CH"` is China, `"E4"` the EU). Default: `"BR"` |
+| `market_year` | `int \| None` | Market year. `None` uses the current calendar year and, when the PSD has published nothing for it yet (January until the May WASDE), the previous year; the year used goes to `source_details["market_year"]` |
+| `attributes` | `list[str] \| None` | Filter attributes by official name (e.g. `["Production", "Exports"]`) or by agrobr label (`"producao"`, `"consumo_domestico"`...) |
 | `pivot` | `bool` | If True, pivots attributes into columns |
 | `api_key` | `str \| None` | API key (or uses `AGROBR_USDA_API_KEY`) |
 | `as_polars` | `bool` | If True, returns a polars.DataFrame |
@@ -44,7 +47,9 @@ async def psd(
 
 **Returns:**
 
-DataFrame with columns: `commodity_code`, `commodity`, `country_code`, `country`, `market_year`, `attribute`, `attribute_br`, `value`, `unit`
+DataFrame with columns: `commodity_code`, `commodity`, `country_code`, `country`, `market_year`, `attribute`, `attribute_br`, `value`, `unit`, `attribute_id`, `unit_id`, `last_update_year`, `last_update_month`. Labels come from the official catalogs; `last_update_*` is the series' last update, not the queried edition. Details in [USDA PSD](../sources/usda.md).
+
+**Errors:** a commodity, country or attribute outside the catalogs raises `InvalidParameterError` before the network; a body outside the gateway layout or a code the local catalog does not know raises `ParseError`.
 
 **Example:**
 

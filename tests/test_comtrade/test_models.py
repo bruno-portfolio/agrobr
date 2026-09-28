@@ -1,125 +1,85 @@
+from __future__ import annotations
+
 import pytest
 
-from agrobr.comtrade.models import (
-    COLUNAS_MIRROR,
-    COLUNAS_SAIDA,
-    COMTRADE_PAISES,
-    COMTRADE_PAISES_INV,
-    HS_PRODUTOS_AGRO,
-    resolve_hs,
-    resolve_pais,
-)
+from agrobr.comtrade import models, query
 from agrobr.exceptions import InvalidParameterError
 
 
-class TestResolvePais:
-    def test_brasil_variants(self):
-        assert resolve_pais("BR") == 76
-        assert resolve_pais("BRA") == 76
-        assert resolve_pais("brasil") == 76
-        assert resolve_pais("Brazil") == 76
-
-    def test_china_variants(self):
-        assert resolve_pais("CN") == 156
-        assert resolve_pais("CHN") == 156
-        assert resolve_pais("china") == 156
-
-    def test_usa_variants(self):
-        assert resolve_pais("US") == 842
-        assert resolve_pais("USA") == 842
-        assert resolve_pais("eua") == 842
-
-    def test_argentina(self):
-        assert resolve_pais("AR") == 32
-        assert resolve_pais("argentina") == 32
-
-    def test_world(self):
-        assert resolve_pais("world") == 0
-        assert resolve_pais("mundo") == 0
-
-    def test_numeric_code(self):
-        assert resolve_pais("76") == 76
-        assert resolve_pais("156") == 156
-
-    def test_case_insensitive(self):
-        assert resolve_pais("BRASIL") == 76
-        assert resolve_pais("China") == 156
-
-    def test_unknown_raises(self):
-        with pytest.raises(InvalidParameterError, match="desconhecido"):
-            resolve_pais("pais_inventado")
-
-    def test_strip_whitespace(self):
-        assert resolve_pais("  BR  ") == 76
+@pytest.mark.parametrize(
+    "name,expected",
+    [
+        ("BR", 76),
+        ("BRA", 76),
+        ("brazil", 76),
+        (" cn ", 156),
+        ("842", 842),
+        ("world", 0),
+        ("mundo", 0),
+    ],
+)
+def test_country_aliases(name, expected):
+    assert models.resolve_pais(name) == expected
 
 
-class TestResolvePaisInv:
-    def test_br_to_bra(self):
-        assert COMTRADE_PAISES_INV[76] == "BRA"
-
-    def test_cn_to_chn(self):
-        assert COMTRADE_PAISES_INV[156] == "CHN"
-
-    def test_world(self):
-        assert COMTRADE_PAISES_INV[0] == "WLD"
-
-
-class TestResolveHs:
-    def test_soja(self):
-        assert resolve_hs("soja") == ["1201"]
-
-    def test_complexo_soja(self):
-        assert resolve_hs("complexo_soja") == ["1201", "1507", "2304"]
-
-    def test_carne_bovina(self):
-        assert resolve_hs("carne_bovina") == ["0201", "0202"]
-
-    def test_direct_code(self):
-        assert resolve_hs("1201") == ["1201"]
-
-    def test_unknown_raises(self):
-        with pytest.raises(InvalidParameterError, match="desconhecido"):
-            resolve_hs("produto_inventado")
-
-    def test_case_insensitive(self):
-        assert resolve_hs("SOJA") == ["1201"]
-        assert resolve_hs("Milho") == ["1005"]
-
-    def test_celulose(self):
-        assert resolve_hs("celulose") == ["4703"]
-
-    def test_suco_laranja(self):
-        assert resolve_hs("suco_laranja") == ["2009"]
+def build(**changes):
+    return query.build_query(
+        **{
+            "reporter": 76,
+            "partner": 156,
+            "hs_codes": ["1201"],
+            "flow": "X",
+            "period": "2023",
+            "freq": "A",
+            **changes,
+        }
+    )
 
 
-class TestConstants:
-    def test_paises_has_main_partners(self):
-        assert "br" in COMTRADE_PAISES
-        assert "cn" in COMTRADE_PAISES
-        assert "us" in COMTRADE_PAISES
-        assert "ar" in COMTRADE_PAISES
-        assert "eu" in COMTRADE_PAISES
+@pytest.mark.parametrize(
+    "period,freq,expected",
+    [
+        (2023, "A", ["2023"]),
+        ("2022-2023", "A", ["2022", "2023"]),
+        ("2023,2022,2023", "A", ["2022", "2023"]),
+        ("202312-202402", "M", ["202312", "202401", "202402"]),
+        ("202401,202403", "M", ["202401", "202403"]),
+        ("2023", "M", [f"2023{i:02d}" for i in range(1, 13)]),
+        (
+            "2022-2023",
+            "M",
+            [f"{year}{month:02d}" for year in (2022, 2023) for month in range(1, 13)],
+        ),
+    ],
+)
+def test_query_expands_calendar_before_partitioning(period, freq, expected):
+    result = build(period=period, freq=freq)
+    assert result.periods == expected
+    assert "api_key" not in result.model_dump()
 
-    def test_hs_has_main_products(self):
-        assert "soja" in HS_PRODUTOS_AGRO
-        assert "milho" in HS_PRODUTOS_AGRO
-        assert "cafe" in HS_PRODUTOS_AGRO
-        assert "carne_bovina" in HS_PRODUTOS_AGRO
 
-    def test_colunas_saida_defined(self):
-        assert len(COLUNAS_SAIDA) > 10
-        assert "periodo" in COLUNAS_SAIDA
-        assert "reporter_iso" in COLUNAS_SAIDA
-        assert "partner_iso" in COLUNAS_SAIDA
-        assert "hs_code" in COLUNAS_SAIDA
-        assert "valor_fob_usd" in COLUNAS_SAIDA
-        assert "volume_ton" in COLUNAS_SAIDA
-
-    def test_colunas_mirror_defined(self):
-        assert len(COLUNAS_MIRROR) > 10
-        assert "periodo" in COLUNAS_MIRROR
-        assert "reporter_iso" in COLUNAS_MIRROR
-        assert "partner_iso" in COLUNAS_MIRROR
-        assert "diff_peso_kg" in COLUNAS_MIRROR
-        assert "ratio_valor" in COLUNAS_MIRROR
-        assert "ratio_peso" in COLUNAS_MIRROR
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"period": True},
+        {"period": 2023.0},
+        {"period": ""},
+        {"period": []},
+        {"period": "2023-2022"},
+        {"period": "202301-202212", "freq": "M"},
+        {"period": "202300", "freq": "M"},
+        {"period": "202313", "freq": "M"},
+        {"period": "2023,202301", "freq": "M"},
+        {"period": "202301-2023", "freq": "M"},
+        {"period": "202301", "freq": "A"},
+        {"freq": "Q"},
+        {"flow": "RX"},
+        {"reporter": 0},
+        {"reporter": True},
+        {"partner": -1},
+        {"hs_codes": ["123"]},
+    ],
+)
+def test_query_rejects_ambiguous_or_invalid_selection(changes):
+    with pytest.raises(InvalidParameterError):
+        build(**changes)

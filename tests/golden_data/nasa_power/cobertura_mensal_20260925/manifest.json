@@ -1,0 +1,267 @@
+{
+ "fonte": "nasa_power",
+ "origem": "rodada 25 de conferência: corpos com recibo e derivação independente",
+ "oraculo": "por mês e parâmetro, dias válidos, primeiro e último dia e agregado (soma na chuva, média nos demais), derivados do corpo oficial pela R25 sem o parser do agrobr; a cobertura do mês é a união dos dias válidos dos parâmetros",
+ "corpos": {
+  "partial": {
+   "arquivo": "partial.json",
+   "recibo": {
+    "url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-15.79&longitude=-47.88&start=20250115&end=20250205&parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&format=JSON&time-standard=LST",
+    "final_url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-15.79&longitude=-47.88&start=20250115&end=20250205&parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&format=JSON&time-standard=LST",
+    "redirects": [],
+    "fetched_at": "2026-09-25T19:52:28.169350+00:00",
+    "status": 200,
+    "bytes": 3556,
+    "sha256": "8d606cbc51c94ce659547dc07ff73748d56b805d432b3705ba39d48849cc66a5",
+    "stored_sha256": "8d606cbc51c94ce659547dc07ff73748d56b805d432b3705ba39d48849cc66a5",
+    "transformation": null,
+    "headers": {
+     "Content-Type": "application/json",
+     "Date": "Fri, 25 Sep 2026 19:52:29 GMT"
+    }
+   },
+   "meses": {
+    "202501": {
+     "parametros": {
+      "T2M": {
+       "dias_validos": 17,
+       "primeiro": "20250115",
+       "ultimo": "20250131",
+       "agregado": 23.67
+      },
+      "T2M_MAX": {
+       "dias_validos": 17,
+       "primeiro": "20250115",
+       "ultimo": "20250131",
+       "agregado": 28.674117647058825
+      },
+      "T2M_MIN": {
+       "dias_validos": 17,
+       "primeiro": "20250115",
+       "ultimo": "20250131",
+       "agregado": 19.344117647058823
+      },
+      "PRECTOTCORR": {
+       "dias_validos": 17,
+       "primeiro": "20250115",
+       "ultimo": "20250131",
+       "agregado": 61.21
+      },
+      "RH2M": {
+       "dias_validos": 17,
+       "primeiro": "20250115",
+       "ultimo": "20250131",
+       "agregado": 77.80705882352942
+      },
+      "ALLSKY_SFC_SW_DWN": {
+       "dias_validos": 17,
+       "primeiro": "20250115",
+       "ultimo": "20250131",
+       "agregado": 21.73941176470588
+      },
+      "WS2M": {
+       "dias_validos": 17,
+       "primeiro": "20250115",
+       "ultimo": "20250131",
+       "agregado": 1.734705882352941
+      }
+     },
+     "dias": 17,
+     "data_inicio": "2025-01-15",
+     "data_fim": "2025-01-31",
+     "precip_acum_mm": 61.21
+    },
+    "202502": {
+     "parametros": {
+      "T2M": {
+       "dias_validos": 5,
+       "primeiro": "20250201",
+       "ultimo": "20250205",
+       "agregado": 22.816
+      },
+      "T2M_MAX": {
+       "dias_validos": 5,
+       "primeiro": "20250201",
+       "ultimo": "20250205",
+       "agregado": 28.156
+      },
+      "T2M_MIN": {
+       "dias_validos": 5,
+       "primeiro": "20250201",
+       "ultimo": "20250205",
+       "agregado": 18.674
+      },
+      "PRECTOTCORR": {
+       "dias_validos": 5,
+       "primeiro": "20250201",
+       "ultimo": "20250205",
+       "agregado": 17.81
+      },
+      "RH2M": {
+       "dias_validos": 5,
+       "primeiro": "20250201",
+       "ultimo": "20250205",
+       "agregado": 78.212
+      },
+      "ALLSKY_SFC_SW_DWN": {
+       "dias_validos": 5,
+       "primeiro": "20250201",
+       "ultimo": "20250205",
+       "agregado": 21.414
+      },
+      "WS2M": {
+       "dias_validos": 5,
+       "primeiro": "20250201",
+       "ultimo": "20250205",
+       "agregado": 2.06
+      }
+     },
+     "dias": 5,
+     "data_inicio": "2025-02-01",
+     "data_fim": "2025-02-05",
+     "precip_acum_mm": 17.81
+    }
+   }
+  },
+  "complete": {
+   "arquivo": "complete.json",
+   "recibo": {
+    "url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-15.79&longitude=-47.88&start=20250201&end=20250228&parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&format=JSON&time-standard=LST",
+    "final_url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-15.79&longitude=-47.88&start=20250201&end=20250228&parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&format=JSON&time-standard=LST",
+    "redirects": [],
+    "fetched_at": "2026-09-25T19:52:30.276548+00:00",
+    "status": 200,
+    "bytes": 4250,
+    "sha256": "344471b18d0302cbfd489a0f20d0932cb79545bf24c9393af8b0b4d12534efb9",
+    "stored_sha256": "344471b18d0302cbfd489a0f20d0932cb79545bf24c9393af8b0b4d12534efb9",
+    "transformation": null,
+    "headers": {
+     "Content-Type": "application/json",
+     "Date": "Fri, 25 Sep 2026 19:52:31 GMT"
+    }
+   },
+   "meses": {
+    "202502": {
+     "parametros": {
+      "T2M": {
+       "dias_validos": 28,
+       "primeiro": "20250201",
+       "ultimo": "20250228",
+       "agregado": 24.437857142857144
+      },
+      "T2M_MAX": {
+       "dias_validos": 28,
+       "primeiro": "20250201",
+       "ultimo": "20250228",
+       "agregado": 31.2225
+      },
+      "T2M_MIN": {
+       "dias_validos": 28,
+       "primeiro": "20250201",
+       "ultimo": "20250228",
+       "agregado": 18.629285714285714
+      },
+      "PRECTOTCORR": {
+       "dias_validos": 28,
+       "primeiro": "20250201",
+       "ultimo": "20250228",
+       "agregado": 52.33
+      },
+      "RH2M": {
+       "dias_validos": 28,
+       "primeiro": "20250201",
+       "ultimo": "20250228",
+       "agregado": 66.1225
+      },
+      "ALLSKY_SFC_SW_DWN": {
+       "dias_validos": 28,
+       "primeiro": "20250201",
+       "ultimo": "20250228",
+       "agregado": 23.911785714285713
+      },
+      "WS2M": {
+       "dias_validos": 28,
+       "primeiro": "20250201",
+       "ultimo": "20250228",
+       "agregado": 2.0157142857142856
+      }
+     },
+     "dias": 28,
+     "data_inicio": "2025-02-01",
+     "data_fim": "2025-02-28",
+     "precip_acum_mm": 52.33
+    }
+   }
+  },
+  "current": {
+   "arquivo": "current.json",
+   "recibo": {
+    "url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-15.79&longitude=-47.88&start=20260901&end=20260910&parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&format=JSON&time-standard=LST",
+    "final_url": "https://power.larc.nasa.gov/api/temporal/daily/point?latitude=-15.79&longitude=-47.88&start=20260901&end=20260910&parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&format=JSON&time-standard=LST",
+    "redirects": [],
+    "fetched_at": "2026-09-25T19:52:32.606952+00:00",
+    "status": 200,
+    "bytes": 2160,
+    "sha256": "a0773c1a0fb03d3755483c5b83d3d9b7e3975ebd29478709dbe7febb5f3b75e5",
+    "stored_sha256": "a0773c1a0fb03d3755483c5b83d3d9b7e3975ebd29478709dbe7febb5f3b75e5",
+    "transformation": null,
+    "headers": {
+     "Content-Type": "application/json",
+     "Date": "Fri, 25 Sep 2026 19:52:33 GMT"
+    }
+   },
+   "meses": {
+    "202609": {
+     "parametros": {
+      "T2M": {
+       "dias_validos": 10,
+       "primeiro": "20260901",
+       "ultimo": "20260910",
+       "agregado": 26.305
+      },
+      "T2M_MAX": {
+       "dias_validos": 10,
+       "primeiro": "20260901",
+       "ultimo": "20260910",
+       "agregado": 33.45
+      },
+      "T2M_MIN": {
+       "dias_validos": 10,
+       "primeiro": "20260901",
+       "ultimo": "20260910",
+       "agregado": 20.338
+      },
+      "PRECTOTCORR": {
+       "dias_validos": 10,
+       "primeiro": "20260901",
+       "ultimo": "20260910",
+       "agregado": 34.26
+      },
+      "RH2M": {
+       "dias_validos": 10,
+       "primeiro": "20260901",
+       "ultimo": "20260910",
+       "agregado": 52.561
+      },
+      "ALLSKY_SFC_SW_DWN": {
+       "dias_validos": 9,
+       "primeiro": "20260901",
+       "ultimo": "20260910",
+       "agregado": 17.182222222222222
+      },
+      "WS2M": {
+       "dias_validos": 10,
+       "primeiro": "20260901",
+       "ultimo": "20260910",
+       "agregado": 1.781
+      }
+     },
+     "dias": 10,
+     "data_inicio": "2026-09-01",
+     "data_fim": "2026-09-10",
+     "precip_acum_mm": 34.26
+    }
+   }
+  }
+ }
+}

@@ -1,37 +1,18 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import contracts
+from agrobr.datasets import _comercio_exterior
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
-from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.time import utcnow
 
 logger = structlog.get_logger()
-
-
-def _agregar_oleo_soja(df: pd.DataFrame) -> pd.DataFrame:
-    if df.empty:
-        return df.drop(columns="ncm", errors="ignore")
-
-    group_cols = [column for column in ("ano", "mes", "uf") if column in df.columns]
-    value_cols = [column for column in ("kg_liquido", "valor_fob_usd") if column in df.columns]
-    if not group_cols or not value_cols:
-        return df.drop(columns="ncm", errors="ignore")
-
-    result = (
-        df.groupby(group_cols, as_index=False, dropna=False)[value_cols]
-        .sum(min_count=1)
-        .sort_values(group_cols)
-        .reset_index(drop=True)
-    )
-    if "volume_ton" in df.columns and "kg_liquido" in result.columns:
-        result["volume_ton"] = result["kg_liquido"] / 1000.0
-    return result
 
 
 def _produto_para_abiove(produto: str) -> str:
@@ -51,6 +32,7 @@ def _produto_para_abiove(produto: str) -> str:
 
 async def _fetch_comexstat(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import comexstat
+    from agrobr.comexstat import models
 
     ano = kwargs.get("ano")
     uf = kwargs.get("uf")
@@ -58,16 +40,15 @@ async def _fetch_comexstat(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
     result = await comexstat.exportacao(produto, ano=ano, uf=uf, return_meta=True)
 
     df, meta = _unpack_result(result)
-    if produto == "oleo_soja":
-        df = _agregar_oleo_soja(df)
-    return df, meta
+    return _comercio_exterior.adapt_comexstat(
+        df, meta, combine_ncms=not models.resolve_ncm(produto).codigo_unico
+    )
 
 
 async def _fetch_abiove(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import abiove
 
     ano: int | None = kwargs.get("ano")
-    mes: int | None = kwargs.get("mes")
     uf: str | None = kwargs.get("uf")
 
     if uf is not None:
@@ -85,7 +66,6 @@ async def _fetch_abiove(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, Meta
 
     result = await abiove.exportacao(
         ano=ano,
-        mes=mes,
         produto=produto_abiove,
         return_meta=True,
     )
@@ -119,7 +99,7 @@ EXPORTACAO_INFO = DatasetInfo(
         ),
     ],
     products=["soja", "milho", "cafe", "algodao", "acucar", "farelo_soja", "oleo_soja"],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="monthly",
     typical_latency="M+1",
     source_url="https://comexstat.mdic.gov.br",
@@ -139,31 +119,31 @@ class ExportacaoDataset(BaseDataset):
         ano: int | None = None,
         uf: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="exportacao", produto=produto, ano=ano)
 
-        snapshot = get_snapshot()
-        if snapshot and ano is None:
-            ano = int(snapshot[:4])
+        _comercio_exterior.validate_options(return_meta)
 
-        df, source_name, source_meta, attempted = await self._try_sources(
-            produto, ano=ano, uf=uf, **kwargs
-        )
+        df, source_name, source_meta, attempted = await self._try_sources(produto, ano=ano, uf=uf)
 
+        if source_name == "comexstat":
+            df = _comercio_exterior.restore_empty_comexstat(df, source_meta)
         df = self._normalize(df, produto)
         self._validate_contract(df)
 
         if return_meta:
-            return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
+            return df, _comercio_exterior.dataset_meta(
+                self._build_meta(df, source_name, source_meta, attempted, None)
+            )
 
         return df
 
     def _normalize(self, df: pd.DataFrame, produto: str) -> pd.DataFrame:
         if "produto" not in df.columns:
-            df["produto"] = produto
+            df["produto"] = pd.Series(produto, index=df.index, dtype="string[python]")
 
-        return df
+        colunas = [column.name for column in contracts.get_contract("exportacao").columns]
+        return df[[coluna for coluna in colunas if coluna in df.columns]]
 
 
 _exportacao = ExportacaoDataset()
@@ -173,11 +153,35 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_exportacao)
 
 
+@overload
+async def exportacao(
+    produto: str,
+    ano: int | None = None,
+    uf: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def exportacao(
+    produto: str,
+    ano: int | None = None,
+    uf: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def exportacao(
     produto: str,
     ano: int | None = None,
     uf: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _exportacao.fetch(produto, ano=ano, uf=uf, return_meta=return_meta, **kwargs)
+    return await _exportacao.fetch(  # type: ignore[call-arg]
+        produto, ano=ano, uf=uf, return_meta=return_meta, as_polars=as_polars
+    )

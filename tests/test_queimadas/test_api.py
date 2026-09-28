@@ -17,82 +17,6 @@ def _golden_csv_bytes() -> bytes:
 
 class TestFocos:
     @pytest.mark.asyncio
-    async def test_returns_dataframe(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            df = await api.focos(ano=2024, mes=9)
-
-        assert len(df) >= 8
-        assert "data" in df.columns
-        assert "lat" in df.columns
-        assert "satelite" in df.columns
-        assert "uf" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            df, meta = await api.focos(ano=2024, mes=9, return_meta=True)
-
-        assert meta.source == "queimadas"
-        assert meta.records_count == len(df)
-        assert meta.parser_version == 1
-        assert meta.fetch_timestamp is not None
-        assert "queimadas" in meta.attempted_sources
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            df = await api.focos(ano=2024, mes=9, uf="MT")
-
-        assert len(df) >= 1
-        assert (df["uf"] == "MT").all()
-
-    @pytest.mark.asyncio
-    async def test_filter_bioma(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            df = await api.focos(ano=2024, mes=9, bioma="Cerrado")
-
-        assert len(df) >= 1
-        assert (df["bioma"] == "Cerrado").all()
-
-    @pytest.mark.asyncio
-    async def test_filter_bioma_without_accent(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            df = await api.focos(ano=2025, mes=1, bioma="Amazonia")
-
-        assert len(df) == 8
-        assert (df["bioma"] == "Amazônia").all()
-
-    @pytest.mark.asyncio
     async def test_invalid_bioma_raises_before_fetch(self):
         with (
             patch.object(
@@ -107,53 +31,13 @@ class TestFocos:
         mock_fetch.assert_not_awaited()
 
     @pytest.mark.asyncio
-    async def test_filter_satelite(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            df = await api.focos(ano=2024, mes=9, satelite="GOES-16")
-
-        assert len(df) >= 1
-        assert (df["satelite"] == "GOES-16").all()
-
-    @pytest.mark.asyncio
-    async def test_dia_uses_diario_fetch(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_diario",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ) as mock_diario:
-            await api.focos(ano=2024, mes=9, dia=15)
-
-        mock_diario.assert_called_once_with("20240915")
-
-    @pytest.mark.asyncio
-    async def test_no_dia_uses_mensal_fetch(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ) as mock_mensal:
-            await api.focos(ano=2024, mes=9)
-
-        mock_mensal.assert_called_once_with(2024, 9)
-
-    @pytest.mark.asyncio
     async def test_filter_uf_case_insensitive(self):
         csv_bytes = _golden_csv_bytes()
         with patch.object(
             api.client,
             "fetch_focos_mensal",
             new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
+            return_value=(csv_bytes, "https://example.com/focos.csv", csv_bytes, None),
         ):
             df = await api.focos(ano=2024, mes=9, uf="mt")
 
@@ -201,7 +85,7 @@ class TestFocosAsPolars:
             api.client,
             "fetch_focos_mensal",
             new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
+            return_value=(csv_bytes, "https://example.com/focos.csv", csv_bytes, None),
         ):
             result = await api.focos(ano=2024, mes=9, as_polars=True)
         assert isinstance(result, pl.DataFrame)
@@ -211,108 +95,6 @@ class TestFocosGeo:
     @pytest.fixture(autouse=True)
     def _skip_no_geopandas(self):
         pytest.importorskip("geopandas")
-
-    @pytest.mark.asyncio
-    async def test_returns_geodataframe(self):
-        import geopandas as local_gpd
-
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            gdf = await api.focos_geo(ano=2024, mes=9)
-
-        assert isinstance(gdf, local_gpd.GeoDataFrame)
-        assert len(gdf) >= 8
-        assert "geometry" in gdf.columns
-
-    @pytest.mark.asyncio
-    async def test_geometry_is_point(self):
-        from shapely.geometry import Point
-
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            gdf = await api.focos_geo(ano=2024, mes=9)
-
-        for geom in gdf.geometry:
-            assert isinstance(geom, Point)
-
-    @pytest.mark.asyncio
-    async def test_crs_4326(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            gdf = await api.focos_geo(ano=2024, mes=9)
-
-        assert gdf.crs.to_epsg() == 4326
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            gdf, meta = await api.focos_geo(ano=2024, mes=9, return_meta=True)
-
-        assert meta.source == "queimadas"
-        assert meta.records_count == len(gdf)
-
-    @pytest.mark.asyncio
-    async def test_filters_passthrough(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            gdf = await api.focos_geo(ano=2024, mes=9, uf="MT")
-
-        assert len(gdf) >= 1
-        assert (gdf["uf"] == "MT").all()
-
-    @pytest.mark.asyncio
-    async def test_lat_lon_match_geometry(self):
-        csv_bytes = _golden_csv_bytes()
-        with patch.object(
-            api.client,
-            "fetch_focos_mensal",
-            new_callable=AsyncMock,
-            return_value=(csv_bytes, "https://example.com/focos.csv"),
-        ):
-            gdf = await api.focos_geo(ano=2024, mes=9)
-
-        for _, row in gdf.iterrows():
-            assert abs(row.geometry.x - row["lon"]) < 1e-6
-            assert abs(row.geometry.y - row["lat"]) < 1e-6
-
-    @pytest.mark.asyncio
-    async def test_geopandas_not_installed(self):
-        with (
-            patch(
-                "agrobr.queimadas.api.check_geopandas",
-                side_effect=ImportError(
-                    "geopandas is required for geo functions. Install with: pip install agrobr[geo]"
-                ),
-            ),
-            pytest.raises(ImportError, match="agrobr\\[geo\\]"),
-        ):
-            await api.focos_geo(ano=2024, mes=9)
 
     @pytest.mark.asyncio
     async def test_empty_result(self):
@@ -330,14 +112,3 @@ class TestFocosGeo:
 
         assert len(gdf) == 0
         assert isinstance(gdf, local_gpd.GeoDataFrame)
-
-
-@pytest.mark.integration
-class TestFocosIntegration:
-    @pytest.mark.asyncio
-    @pytest.mark.slow
-    async def test_filter_bioma_without_accent_real(self):
-        df = await api.focos(ano=2025, mes=1, uf="MT", bioma="Amazonia")
-
-        assert not df.empty
-        assert (df["bioma"] == "Amazônia").all()

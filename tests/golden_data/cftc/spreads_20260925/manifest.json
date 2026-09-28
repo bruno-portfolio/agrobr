@@ -1,0 +1,42 @@
+{
+ "descricao": "CFTC Disaggregated (Socrata): corpos inteiros da Rodada 25 de conferência, 3 semanas por consulta. Futuros (72hh-3qpy): soja 09/2026, soja 06/2006 e arroz 09/2026; combinado (kh3c-gbw2): soja 09/2026. Oráculo: swap__positions_spread_all e other_rept_positions_spread, e a identidade do open interest.",
+ "origem": "rodada_25",
+ "corpos": {
+  "soja_recent": {
+   "arquivo": "soja_recent.json",
+   "bytes": 20631,
+   "sha256": "8535e11bc9d1b1c0ead4a88173780e40ee174facb5a2d1b9d34701882d929846",
+   "requested_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24where=cftc_contract_market_code%3D%27005602%27%20AND%20report_date_as_yyyy_mm_dd%20between%20%272026-09-01T00%3A00%3A00.000%27%20and%20%272026-09-18T23%3A59%3A59.999%27&%24order=report_date_as_yyyy_mm_dd&%24limit=100",
+   "status": 200,
+   "fetched_at": "2026-09-25T19:52:34.742558+00:00",
+   "combined": false
+  },
+  "soja_initial": {
+   "arquivo": "soja_initial.json",
+   "bytes": 19722,
+   "sha256": "e067df5ab86150085ee71d4aaf54660f14739725e5b584d5fb7444cfdf237016",
+   "requested_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24where=cftc_contract_market_code%3D%27005602%27%20AND%20report_date_as_yyyy_mm_dd%20between%20%272006-06-01T00%3A00%3A00.000%27%20and%20%272006-06-30T23%3A59%3A59.999%27&%24order=report_date_as_yyyy_mm_dd&%24limit=100",
+   "status": 200,
+   "fetched_at": "2026-09-25T19:52:46.795815+00:00",
+   "combined": false
+  },
+  "arroz_recent": {
+   "arquivo": "arroz_recent.json",
+   "bytes": 19466,
+   "sha256": "a02069400169ce1130e33ebc1ea34cc443ec1f13df56de3fb47637b6414050a7",
+   "requested_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24where=cftc_contract_market_code%3D%27039601%27%20AND%20report_date_as_yyyy_mm_dd%20between%20%272026-09-01T00%3A00%3A00.000%27%20and%20%272026-09-18T23%3A59%3A59.999%27&%24order=report_date_as_yyyy_mm_dd&%24limit=100",
+   "status": 200,
+   "fetched_at": "2026-09-25T19:52:43.905238+00:00",
+   "combined": false
+  },
+  "soja_combined": {
+   "arquivo": "soja_combined.json",
+   "bytes": 20772,
+   "sha256": "7ec1063f3f89d6f3bbf171955f5a5a8cee77e0d7bb7ce542430333c1a10fc5e4",
+   "requested_url": "https://publicreporting.cftc.gov/resource/kh3c-gbw2.json?%24where=cftc_contract_market_code%3D%27005602%27%20AND%20report_date_as_yyyy_mm_dd%20between%20%272026-09-01T00%3A00%3A00.000%27%20and%20%272026-09-18T23%3A59%3A59.999%27&%24order=report_date_as_yyyy_mm_dd&%24limit=100",
+   "status": 200,
+   "fetched_at": "2026-09-25T19:52:42.170307+00:00",
+   "combined": true
+  }
+ }
+}

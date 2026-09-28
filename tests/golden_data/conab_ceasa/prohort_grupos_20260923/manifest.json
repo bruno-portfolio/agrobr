@@ -1,0 +1,112 @@
+{
+ "descricao": "Classificação oficial dos hortigranjeiros do PROHORT (Conab): grupos e produtos do painel 'Hortaliças e Frutas' do Portal de Informações da Conab (Pentaho /home/PROHORT/hortalicasFrutas, consultas CDA 'grupo' e 'produto') e o catálogo de 48 produtos do preço diário (precoDia, MDXproduto). Bytes copiados sem transformação; credenciais públicas do frontend (docs/licenses.md).",
+ "arquivos": [
+  {
+   "file": "grupo.json",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FhortalicasFrutas.cda&dataAccessId=grupo&userid=pentaho&password=password",
+   "fetched_at": "2026-09-24T01:12:01.253022+00:00",
+   "status": 200,
+   "bytes": 364,
+   "sha256": "eccc34cea038d3165b0734c12a038b7f7ccfc5cf786d40ebfa21de5ff77ece08",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:12:06 GMT",
+    "content-type": "application/json",
+    "content-length": "205"
+   }
+  },
+  {
+   "file": "produto_frutas.json",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FhortalicasFrutas.cda&dataAccessId=produto&paramgrupo=%5B06-+Produto+Comercializado.Agrupamento%5D.%5BHORTIGRANJEIROS%5D.%5BFRUTAS%5D&paramceasa=%5B01-+Ceasa.Ceasa%5D.%5BCEAGESP+-+SAO+PAULO%5D&userid=pentaho&password=password",
+   "fetched_at": "2026-09-24T01:22:13.866224+00:00",
+   "status": 200,
+   "bytes": 1363,
+   "sha256": "9a90cb83455decbe6d7f61766d2b4aeef26ff9d979a4979e1fdc675a9a882bfa",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:22:18 GMT",
+    "content-type": "application/json"
+   }
+  },
+  {
+   "file": "produto_hortalicas.json",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FhortalicasFrutas.cda&dataAccessId=produto&paramgrupo=%5B06-+Produto+Comercializado.Agrupamento%5D.%5BHORTIGRANJEIROS%5D.%5BHORTALICAS%5D&paramceasa=%5B01-+Ceasa.Ceasa%5D.%5BCEAGESP+-+SAO+PAULO%5D&userid=pentaho&password=password",
+   "fetched_at": "2026-09-24T01:22:13.910810+00:00",
+   "status": 200,
+   "bytes": 1429,
+   "sha256": "4159e236cd29ce873d6921174ec6262d33208d51f395de7f9b0c0beb2beffdf5",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:22:18 GMT",
+    "content-type": "application/json",
+    "content-length": "355"
+   }
+  },
+  {
+   "file": "produtos_preco_diario.json",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FprecoDia.cda&dataAccessId=MDXproduto&userid=pentaho&password=password",
+   "fetched_at": "2026-09-24T01:11:15.206581+00:00",
+   "status": 200,
+   "bytes": 1934,
+   "sha256": "7b37c1f254dfb5c77e8088e9ad582144ff002ba7a3f8381acdf6381349b5bb68",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:11:20 GMT",
+    "content-type": "application/json",
+    "content-length": "578"
+   }
+  }
+ ],
+ "produto_por_ceasa_identico": {
+  "FRUTAS": {
+   "ceasas": [
+    "[01- Ceasa.Ceasa].[CEAGESP - SAO PAULO]",
+    "[01- Ceasa.Ceasa].[CEASA/CE - FORTALEZA]",
+    "[01- Ceasa.Ceasa].[CEASA/DF - BRASILIA]",
+    "[01- Ceasa.Ceasa].[CEASA/ES - VITORIA]",
+    "[01- Ceasa.Ceasa].[CEASA/GO - GOIANIA]",
+    "[01- Ceasa.Ceasa].[CEASA/PE - RECIFE]",
+    "[01- Ceasa.Ceasa].[CEASA/PR - CURITIBA]",
+    "[01- Ceasa.Ceasa].[CEASA/RJ - RIO DE JANEIRO]",
+    "[01- Ceasa.Ceasa].[CEASA/SP - CAMPINAS]",
+    "[01- Ceasa.Ceasa].[CEASAMINAS - BELO HORIZONTE]"
+   ],
+   "sha256": "9a90cb83455decbe6d7f61766d2b4aeef26ff9d979a4979e1fdc675a9a882bfa"
+  },
+  "HORTALICAS": {
+   "ceasas": [
+    "[01- Ceasa.Ceasa].[CEAGESP - SAO PAULO]",
+    "[01- Ceasa.Ceasa].[CEASA/CE - FORTALEZA]",
+    "[01- Ceasa.Ceasa].[CEASA/DF - BRASILIA]",
+    "[01- Ceasa.Ceasa].[CEASA/ES - VITORIA]",
+    "[01- Ceasa.Ceasa].[CEASA/GO - GOIANIA]",
+    "[01- Ceasa.Ceasa].[CEASA/PE - RECIFE]",
+    "[01- Ceasa.Ceasa].[CEASA/PR - CURITIBA]",
+    "[01- Ceasa.Ceasa].[CEASA/RJ - RIO DE JANEIRO]",
+    "[01- Ceasa.Ceasa].[CEASA/SP - CAMPINAS]",
+    "[01- Ceasa.Ceasa].[CEASAMINAS - BELO HORIZONTE]"
+   ],
+   "sha256": "4159e236cd29ce873d6921174ec6262d33208d51f395de7f9b0c0beb2beffdf5"
+  }
+ },
+ "pagina": {
+  "documento": "Resumo Executivo Semanal PROHORT nº 2 (13/01/2025), página 2",
+  "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/hortigranjeiros-prohort/resumo-executivo-semanal/resumo-executivo-2025/resumo-executivo-prohort-2.pdf",
+  "fetched_at": "2026-09-23T21:40:03.556950+00:00",
+  "bytes": 622566,
+  "sha256": "5cfb1c3145fe5c66c5d907d3004cbc2f2dd82c4c96109c947c02afc43ee219da",
+  "captura": "ceasa_coco_category_official.pdf (conferência, rodada 12)",
+  "trecho": "Frutas / Variação de Preços do Morango / Variação de Preços da Coco Verde"
+ },
+ "regra_de_correspondencia": "produto do preço diário Q corresponde ao produto comercializado P do painel quando Q == P ou Q começa com P seguido de espaço (BANANA NANICA -> BANANA, PIMENTAO VERDE -> PIMENTAO).",
+ "decisao": {
+  "fonte": "Decisões de revisão (23/09 22:17)",
+  "OVOS": "categoria própria OVOS (fora de FRUTAS e HORTALICAS no painel oficial)",
+  "sem_grupo_oficial": [
+   "BROCOLO",
+   "CARA",
+   "COUVE",
+   "JILO",
+   "MANDIOQUINHA",
+   "QUIABO",
+   "VAGEM"
+  ],
+  "sem_grupo_oficial_destino": "HORTALICAS, declarada nas docs como classificação do agrobr"
+ }
+}

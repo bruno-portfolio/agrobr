@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import re
-from typing import Any
+import warnings
+from datetime import date, datetime
+from typing import Any, cast
 
 import pandas as pd
 import structlog
@@ -9,62 +11,57 @@ import structlog
 from agrobr.exceptions import ParseError
 from agrobr.normalize.numeric import safe_float
 from agrobr.utils.io import open_excel_safe
+from agrobr.utils.result import ATRIBUTO_AVISOS
 
-from .models import DERAL_PRODUTOS, normalize_condicao, normalize_produto
+from .models import normalize_produto
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
-
-
-def _detect_produto_from_sheet(sheet_name: str) -> str | None:
-    name = sheet_name.strip().lower()
-    for alias, canonical in sorted(
-        _build_sheet_map().items(),
-        key=lambda x: -len(x[0]),
-    ):
-        if alias in name:
-            return canonical
-    return None
-
-
-def _build_sheet_map() -> dict[str, str]:
-    m: dict[str, str] = {}
-    for key, label in DERAL_PRODUTOS.items():
-        m[label.lower()] = key
-        m[key] = key
-    m["safrinha"] = "milho_2"
-    m["milho verão"] = "milho_1"
-    m["milho verao"] = "milho_1"
-    return m
+PARSER_VERSION = 2
 
 
 def parse_pc_xls(data: bytes) -> pd.DataFrame:
+    result, _ = parse_pc_xls_with_engine(data)
+    return result
+
+
+def parse_pc_xls_with_engine(data: bytes) -> tuple[pd.DataFrame, str]:
     try:
         xls = open_excel_safe(data, source="deral", parser_version=PARSER_VERSION)
-    except Exception as exc:
+    except ParseError as exc:
         raise ParseError(
             source="deral",
             parser_version=PARSER_VERSION,
             reason=f"Falha ao abrir PC.xls: {exc}",
         ) from exc
 
+    with xls:
+        return _parse_pc_workbook(xls), str(cast(Any, xls).engine)
+
+
+def _parse_pc_workbook(xls: pd.ExcelFile) -> pd.DataFrame:
     all_records: list[dict[str, Any]] = []
+    avisos: list[str] = []
 
     for sheet_name in xls.sheet_names:
         try:
             df = pd.read_excel(xls, sheet_name=sheet_name, header=None)
         except Exception as exc:
             logger.warning("deral_sheet_error", sheet=sheet_name, error=str(exc))
-            continue
+            raise ParseError(
+                source="deral",
+                parser_version=PARSER_VERSION,
+                reason=f"Falha ao ler a aba {sheet_name}: {exc}",
+            ) from exc
 
-        produto = _detect_produto_from_sheet(str(sheet_name))
-        if produto is not None:
-            records = _extract_condicao_from_sheet(df, produto)
-            all_records.extend(records)
-        elif _is_multi_produto_sheet(df):
+        if _is_multi_produto_sheet(df):
             records = _extract_multi_produto_sheet(df, str(sheet_name))
             all_records.extend(records)
+            aviso = _aviso_de_aba_divergente(
+                str(sheet_name), _find_data_referencia(df, str(sheet_name))
+            )
+            if aviso:
+                avisos.append(aviso)
         else:
             logger.debug("deral_skip_sheet", sheet=sheet_name)
 
@@ -77,9 +74,15 @@ def parse_pc_xls(data: bytes) -> pd.DataFrame:
 
     result = pd.DataFrame(all_records)
 
-    sort_cols = [c for c in ["produto", "data", "condicao"] if c in result.columns]
-    if sort_cols:
-        result = result.sort_values(sort_cols).reset_index(drop=True)
+    result = result.sort_values(
+        ["produto", "data", "condicao"],
+        key=lambda coluna: (
+            pd.to_datetime(coluna, format="%d/%m/%Y") if coluna.name == "data" else coluna
+        ),
+    ).reset_index(drop=True)
+    for aviso in avisos:
+        result.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=2)
 
     logger.info("deral_parse_ok", records=len(result))
     return result
@@ -91,6 +94,8 @@ def _is_multi_produto_sheet(df: pd.DataFrame) -> bool:
 
     for row_idx in range(min(8, len(df))):
         row_text = " ".join(str(v).lower() for v in df.iloc[row_idx] if pd.notna(v))
+        if "safras" in row_text and "condi" in row_text:
+            return True
         if "condi" in row_text and ("boa" in row_text or "ruim" in row_text):
             return True
         if "plantada" in row_text and "colhida" in row_text:
@@ -110,10 +115,7 @@ def _extract_multi_produto_sheet(
 
     for row_idx in range(min(10, len(df))):
         for col_idx in range(len(df.columns)):
-            cell = df.iloc[row_idx, col_idx]
-            if pd.isna(cell):
-                continue
-            cell_str = str(cell).strip().lower()
+            cell_str = str(df.iloc[row_idx, col_idx]).strip().lower()
             if cell_str == "ruim":
                 col_ruim = col_idx
                 header_row = row_idx
@@ -126,12 +128,22 @@ def _extract_multi_produto_sheet(
             elif cell_str == "colhida":
                 col_colhida = col_idx
 
-    if header_row < 0 or col_boa < 0:
-        return []
+    columns = {
+        "ruim": col_ruim,
+        "média": col_media,
+        "boa": col_boa,
+        "plantada": col_plantada,
+        "colhida": col_colhida,
+    }
+    missing = [label for label, column in columns.items() if column < 0]
+    if missing:
+        raise ParseError(
+            source="deral",
+            parser_version=PARSER_VERSION,
+            reason=f"Cabeçalhos obrigatórios ausentes na aba {sheet_name}: {', '.join(missing)}",
+        )
 
-    data_ref = _find_data_referencia(df)
-    if not data_ref:
-        data_ref = sheet_name
+    data_ref = _find_data_referencia(df, sheet_name)
 
     for row_idx in range(header_row + 1, len(df)):
         cell0 = df.iloc[row_idx, 0]
@@ -153,7 +165,7 @@ def _extract_multi_produto_sheet(
         ]:
             if col_idx < 0 or col_idx >= len(df.columns):
                 continue
-            pct = safe_float(df.iloc[row_idx, col_idx], strip="%")
+            pct = _published_percentage(df.iloc[row_idx, col_idx])
             records.append(
                 {
                     "produto": normalize_produto(produto),
@@ -161,12 +173,12 @@ def _extract_multi_produto_sheet(
                     "condicao": condicao,
                     "pct": pct,
                     "plantio_pct": (
-                        safe_float(df.iloc[row_idx, col_plantada], strip="%")
+                        _published_percentage(df.iloc[row_idx, col_plantada])
                         if col_plantada >= 0
                         else None
                     ),
                     "colheita_pct": (
-                        safe_float(df.iloc[row_idx, col_colhida], strip="%")
+                        _published_percentage(df.iloc[row_idx, col_colhida])
                         if col_colhida >= 0
                         else None
                     ),
@@ -202,99 +214,50 @@ def _detect_produto_from_row_label(label: str) -> str | None:
     return None
 
 
-def _extract_condicao_from_sheet(
-    df: pd.DataFrame,
-    produto: str,
-) -> list[dict[str, Any]]:
-    records: list[dict[str, Any]] = []
-    data_ref = _find_data_referencia(df)
-
-    for row_idx in range(len(df)):
-        row = df.iloc[row_idx]
-        row_values = [str(v).strip().lower() for v in row if pd.notna(v)]
-
-        for col_idx in range(len(row)):
-            cell = row.iloc[col_idx]
+def _find_data_referencia(df: pd.DataFrame, sheet_name: str) -> str:
+    for row in df.itertuples(index=False, name=None):
+        for cell in row:
             if pd.isna(cell):
                 continue
-            cell_str = str(cell).strip().lower()
-
-            if cell_str in ("boa", "bom", "média", "media", "ruim", "má", "ma"):
-                pct = _find_pct_near(row, col_idx)
-                records.append(
-                    {
-                        "produto": normalize_produto(produto),
-                        "data": data_ref,
-                        "condicao": normalize_condicao(cell_str),
-                        "pct": pct,
-                        "plantio_pct": None,
-                        "colheita_pct": None,
-                    }
-                )
-
-        row_text = " ".join(row_values)
-        if "plantio" in row_text or "semeadura" in row_text:
-            pct = _find_pct_in_row(row)
-            if pct is not None:
-                records.append(
-                    {
-                        "produto": normalize_produto(produto),
-                        "data": data_ref,
-                        "condicao": "",
-                        "pct": None,
-                        "plantio_pct": pct,
-                        "colheita_pct": None,
-                    }
-                )
-
-        if "colheita" in row_text:
-            pct = _find_pct_in_row(row)
-            if pct is not None:
-                records.append(
-                    {
-                        "produto": normalize_produto(produto),
-                        "data": data_ref,
-                        "condicao": "",
-                        "pct": None,
-                        "plantio_pct": None,
-                        "colheita_pct": pct,
-                    }
-                )
-
-    return records
-
-
-def _find_data_referencia(df: pd.DataFrame) -> str:
-    for row_idx in range(min(10, len(df))):
-        for col_idx in range(min(10, len(df.columns))):
-            cell = df.iloc[row_idx, col_idx]
-            if pd.isna(cell):
+            if isinstance(cell, (datetime, date)):
+                return cell.strftime("%d/%m/%Y")
+            if not isinstance(cell, str):
                 continue
-            cell_str = str(cell).strip()
-            match = re.search(r"\d{2}/\d{2}/\d{2,4}", cell_str)
-            if match:
-                return match.group(0)
-    return ""
+            match = re.search(r"(?<!\d)(\d{2})([/-])(\d{2})\2(\d{4}|\d{2})(?!\d)", cell)
+            if not match:
+                continue
+            year = int(match.group(4))
+            if len(match.group(4)) == 2:
+                year += 2000
+            try:
+                reference = date(year, int(match.group(3)), int(match.group(1)))
+            except ValueError:
+                continue
+            return reference.strftime("%d/%m/%Y")
+    raise ParseError(
+        source="deral",
+        parser_version=PARSER_VERSION,
+        reason=f"Data de referência não encontrada na aba {sheet_name}",
+    )
 
 
-def _find_pct_near(row: pd.Series, col_idx: int) -> float | None:
-    for offset in [1, -1, 2, -2]:
-        idx = col_idx + offset
-        if 0 <= idx < len(row):
-            val = safe_float(row.iloc[idx], strip="%")
-            if val is not None and 0 <= val <= 100:
-                return val
-    return None
+def _aviso_de_aba_divergente(sheet_name: str, data_ref: str) -> str | None:
+    match = re.fullmatch(r"(\d{2})-(\d{2})-(\d{4}|\d{2})", sheet_name.strip())
+    if match is None:
+        return None
+    dia, mes, ano = match.groups()
+    if data_ref in (f"{dia}/{mes}/{ano}", f"{dia}/{mes}/20{ano}"):
+        return None
+    return (
+        f"deral: a aba {sheet_name!r} publica a data {data_ref} na planilha; "
+        "o quadro usa a data da planilha, e não o nome da aba."
+    )
 
 
-def _find_pct_in_row(row: pd.Series) -> float | None:
-    for val in row:
-        if pd.isna(val):
-            continue
-        num = safe_float(val, strip="%")
-        if num is not None and 0 <= num <= 100:
-            return num
-    return None
+def _published_percentage(value: Any) -> float | None:
+    if isinstance(value, str) and value.strip() == "-":
+        return 0.0
+    return safe_float(value, strip="%")
 
 
 def filter_by_produto(df: pd.DataFrame, produto: str) -> pd.DataFrame:

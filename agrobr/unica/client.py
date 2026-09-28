@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.constants import MIN_PDF_SIZE, URLS, Fonte
 from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -33,8 +34,8 @@ _pdf_cache: tuple[str, bytes] | None = None
 
 
 async def fetch_quinzenal_pdf() -> tuple[bytes, str]:
-    """A URL do PDF carrega o md5 do arquivo — o cache de 1 entrada por URL é
-    auto-invalidante: edição quinzenal nova gera URL nova e força o download."""
+    """Cache de 1 entrada por URL do PDF: edição publicada em outra URL força o
+    download (o nome do arquivo na URL não é o md5 do conteúdo)."""
     global _pdf_cache
     page_url = URLS[Fonte.UNICA]["quinzenal_page"]
 
@@ -44,7 +45,7 @@ async def fetch_quinzenal_pdf() -> tuple[bytes, str]:
         timeout=TIMEOUT, headers=UserAgentRotator.get_headers("unica"), follow_redirects=True
     ) as client:
         response = await retry_on_status(lambda: client.get(page_url), source="unica")
-        response.raise_for_status()
+        responses.raise_for_status(response, source="unica")
         html = response.content.decode(detect_encoding_chain(response.content), errors="replace")
 
         match = PDF_URL_RE.search(html)
@@ -65,7 +66,7 @@ async def fetch_quinzenal_pdf() -> tuple[bytes, str]:
         logger.info("unica_quinzenal_pdf_request", url=pdf_url)
 
         pdf_response = await retry_on_status(lambda: client.get(pdf_url), source="unica")
-        pdf_response.raise_for_status()
+        responses.raise_for_status(pdf_response, source="unica")
         content = pdf_response.content
 
     if len(content) < MIN_PDF_SIZE or not content.startswith(b"%PDF"):
@@ -111,7 +112,7 @@ async def fetch_historico_xlsx(
         timeout=TIMEOUT, headers=UserAgentRotator.get_headers("unica"), follow_redirects=True
     ) as client:
         response = await retry_on_status(lambda: client.get(url, params=params), source="unica")
-        response.raise_for_status()
+        responses.raise_for_status(response, source="unica")
         content = response.content
 
     if not content.startswith(XLSX_MAGIC):

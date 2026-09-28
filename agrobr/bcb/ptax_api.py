@@ -1,19 +1,27 @@
 from __future__ import annotations
 
 import time
+import warnings
 from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import contracts
+from agrobr.contracts import bcb_ptax
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils import result
+from agrobr.utils import time as time_utils
 
-from . import ptax_client
+from . import ptax_client, ptax_metadata, ptax_parser, ptax_query
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
+
+def _validate_flags(as_polars: bool, return_meta: bool) -> None:
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
 
 
 @overload
@@ -22,6 +30,9 @@ async def ptax(
     data: str | None = None,
     data_inicial: str | None = None,
     data_final: str | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -33,6 +44,9 @@ async def ptax(
     data: str | None = None,
     data_inicial: str | None = None,
     data_final: str | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
     as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -43,46 +57,81 @@ async def ptax(
     data: str | None = None,
     data_inicial: str | None = None,
     data_final: str | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    t0 = time.monotonic()
-
-    records, url = await ptax_client.fetch_ptax(
+    _validate_flags(as_polars, return_meta)
+    query = ptax_query.build_query(
         data=data,
         data_inicial=data_inicial,
         data_final=data_final,
+        moeda=moeda,
+        boletim=boletim,
+        top=top,
+        reference_date=time_utils.utcnow().date(),
+    )
+    logger.info("bcb_ptax_selection", query=query.model_dump(mode="json"))
+    started = time.monotonic()
+    acquired = await ptax_client.fetch_ptax_acquisition(query)
+    fetch_ms = int((time.monotonic() - started) * 1000)
+    for warning in acquired.warnings:
+        warnings.warn(warning, UserWarning, stacklevel=2)
+    started = time.monotonic()
+    catalog_frame = ptax_parser.build_currencies_frame(acquired.catalog.records)
+    contracts.validate_dataset(catalog_frame, bcb_ptax.BCB_PTAX_MOEDAS_V1)
+    frame = ptax_parser.build_quotes_frame(acquired.records)
+    contracts.validate_dataset(frame, bcb_ptax.BCB_PTAX_V2)
+    parse_ms = int((time.monotonic() - started) * 1000)
+    meta = ptax_metadata.build_quote_meta(
+        acquired, frame, catalog_frame, fetch_ms=fetch_ms, parse_ms=parse_ms
+    )
+    return result.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=("tipo_boletim",),
     )
 
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-    t1 = time.monotonic()
 
-    df = pd.DataFrame(records)
+@overload
+async def ptax_moedas(
+    *,
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
 
-    if not df.empty:
-        df = df.rename(
-            columns={
-                "cotacaoCompra": "cotacao_compra",
-                "cotacaoVenda": "cotacao_venda",
-                "dataHoraCotacao": "data_hora",
-            }
-        )
-        df["data_hora"] = pd.to_datetime(df["data_hora"])
-        df["data"] = df["data_hora"].dt.date
 
-    parse_ms = int((time.monotonic() - t1) * 1000)
+@overload
+async def ptax_moedas(
+    *,
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
-    logger.info("bcb_ptax_parsed", records=len(df))
 
-    meta = build_source_meta(
-        "bcb_ptax",
-        url,
-        "httpx",
-        fetch_ms,
-        parse_ms,
-        df,
-        PARSER_VERSION,
-        attempted_sources=["bcb_ptax"],
-        selected_source="bcb_ptax",
-    )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+async def ptax_moedas(
+    *,
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    _validate_flags(as_polars, return_meta)
+    query = ptax_query.build_catalog_query(top=top)
+    logger.info("bcb_ptax_catalog_selection", query=query.model_dump(mode="json"))
+    started = time.monotonic()
+    acquired = await ptax_client.fetch_currencies_acquisition(query)
+    fetch_ms = int((time.monotonic() - started) * 1000)
+    for warning in acquired.warnings:
+        warnings.warn(warning, UserWarning, stacklevel=2)
+    started = time.monotonic()
+    frame = ptax_parser.build_currencies_frame(acquired.records)
+    contracts.validate_dataset(frame, bcb_ptax.BCB_PTAX_MOEDAS_V1)
+    parse_ms = int((time.monotonic() - started) * 1000)
+    meta = ptax_metadata.build_catalog_meta(acquired, frame, fetch_ms=fetch_ms, parse_ms=parse_ms)
+    return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)

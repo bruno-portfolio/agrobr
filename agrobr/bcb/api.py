@@ -1,19 +1,39 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import time
-from typing import Literal, overload
+import warnings
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import contracts
+from agrobr.contracts import bcb_sicor
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.normalize import dates
+from agrobr.utils import time as time_utils
+from agrobr.utils.result import ATRIBUTO_AVISOS, build_source_meta, finalize_result
 from agrobr.utils.validation import validate_uf
 
 from . import client
-from .models import UF_CODES, normalize_safra_sicor, resolve_produto_sicor
-from .parser import PARSER_VERSION, agregar_por_programa, agregar_por_uf, parse_credito_rural
+from .models import (
+    SICOR_TOTAL_FINALIDADES,
+    UF_CODES,
+    normalize_produto_sicor,
+    normalize_safra_sicor,
+    resolve_produto_sicor,
+)
+from .parser import (
+    PARSER_VERSION,
+    agregar_por_programa,
+    agregar_por_uf,
+    nomear_dimensoes_do_registro,
+    parse_credito_rural,
+    parse_credito_rural_total,
+)
 
 logger = structlog.get_logger()
 
@@ -30,6 +50,50 @@ _CREDITO_RURAL_COLUMNS = [
     "area_financiada",
     "fonte",
 ]
+_SEM_BIGQUERY = (
+    "a tabela da Base dos Dados agrega por município e não traz programa, subprograma, fonte de "
+    "recursos, tipo de seguro, modalidade nem atividade; o fallback só vale para agregacao='uf' "
+    "sem programa e sem tipo_seguro"
+)
+_REGISTRO = bcb_sicor.BCB_CREDITO_RURAL_REGISTRO_V1
+_TEXTO_DO_REGISTRO = tuple(
+    coluna.name for coluna in _REGISTRO.columns if coluna.type == contracts.ColumnType.STRING
+)
+
+
+def _marcar_safra_em_curso(registros: pd.DataFrame, df: pd.DataFrame) -> dict[str, Any]:
+    """A safra de julho a junho que contém hoje ainda recebe contratos: o total dela muda.
+
+    Os meses cobertos saem dos registros antes da agregação; o aviso vai para `df.attrs`, de
+    onde o `build_source_meta` o leva ao `MetaInfo`, como no mês parcial das queimadas.
+    """
+    hoje = time_utils.hoje()
+    inicio = hoje.year if hoje.month >= dates.INICIO_SAFRA_MES else hoje.year - 1
+    safra = dates.anos_para_safra(inicio)
+    if "safra" not in df.columns or not df["safra"].eq(safra).any():
+        return {}
+    da_safra = (
+        registros[registros["safra"] == safra]
+        if "safra" in registros.columns
+        else registros.iloc[:0]
+    )
+    meses = sorted(
+        {
+            f"{int(ano):04d}-{int(mes):02d}"
+            for ano, mes in zip(
+                da_safra.get("ano_emissao", []), da_safra.get("mes_emissao", []), strict=True
+            )
+            if pd.notna(ano) and pd.notna(mes)
+        }
+    )
+    cobertura = f"de {meses[0]} a {meses[-1]}" if meses else "sem mês de emissão"
+    aviso = (
+        f"credito_rural: a safra {safra} está em curso (julho a junho); o resultado cobre "
+        f"{cobertura} e muda até o fim da safra."
+    )
+    df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+    warnings.warn(aviso, UserWarning, stacklevel=3)
+    return {"safra_em_curso": safra, "meses_cobertos": meses}
 
 
 def _aggregate_credito_rural(
@@ -48,13 +112,25 @@ def _aggregate_credito_rural(
     return df.reindex(columns=_CREDITO_RURAL_COLUMNS)
 
 
+def _registros_credito_rural(df: pd.DataFrame, source_used: str) -> pd.DataFrame:
+    df = nomear_dimensoes_do_registro(df).assign(agregacao="registro", fonte=f"bcb_{source_used}")
+    df = (
+        df.reindex(columns=_REGISTRO.list_columns())
+        .astype(_REGISTRO.empty_frame().dtypes.to_dict())
+        .sort_values(_REGISTRO.primary_key, kind="stable")
+        .reset_index(drop=True)
+    )
+    contracts.validate_dataset(df, _REGISTRO)
+    return df
+
+
 @overload
 async def credito_rural(
     produto: str,
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: Literal["uf", "programa"] = "uf",
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     as_polars: bool = False,
@@ -69,7 +145,7 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: Literal["uf", "programa"] = "uf",
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     as_polars: bool = False,
@@ -83,23 +159,40 @@ async def credito_rural(
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: Literal["uf", "programa"] = "uf",
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    """Crédito rural por produto e finalidade do SICOR.
+
+    Custeio usa produtos agrícolas; investimento usa itens de investimento,
+    como BOVINOS, CAFÉ, CANA-DE-AÇUCAR, BANANA e tratores. Soja e milho podem
+    não ter registros nessa finalidade. Filtros válidos sem registros retornam
+    um DataFrame vazio com o esquema de crédito rural.
+    """
     t0 = time.monotonic()
 
-    if agregacao not in {"uf", "programa"}:
+    if agregacao not in {"uf", "programa", "registro"}:
         hint = (
-            "O OData SICOR não possui município; use agregacao='uf' ou 'programa'. "
-            "Dados municipais estão disponíveis pelo extra agrobr[bigquery]."
+            "Use agregacao='uf', 'programa' ou 'registro'. O SICOR publica município por produto "
+            "(CusteioMunicipioProduto e InvestMunicipioProduto), que o agrobr ainda não lê; "
+            "o extra agrobr[bigquery] traz dados municipais."
         )
         raise InvalidParameterError(f"agregacao inválida: {agregacao!r}. {hint}")
+    if str(finalidade).lower() == "industrializacao":
+        raise InvalidParameterError(
+            "O SICOR não publica a industrialização por produto; use "
+            "bcb.credito_rural_total(finalidade='industrializacao'), com o total por UF"
+        )
+    if str(finalidade).lower() not in client.ENDPOINT_MAP:
+        raise InvalidParameterError(
+            f"Finalidade inválida: {finalidade!r}. Opções: {list(client.ENDPOINT_MAP)}"
+        )
 
     produto_sicor = resolve_produto_sicor(produto)
-    safra_sicor = normalize_safra_sicor(safra) if safra else None
+    safra_sicor = normalize_safra_sicor(safra) if safra is not None else None
     uf = validate_uf(uf)
     cd_uf = UF_CODES[uf] if uf else None
 
@@ -115,12 +208,14 @@ async def credito_rural(
         tipo_seguro=tipo_seguro,
     )
 
-    dados, source_used = await client.fetch_credito_rural_with_fallback(
-        finalidade=finalidade,
-        produto_sicor=produto_sicor,
-        safra_sicor=safra_sicor,
-        cd_uf=cd_uf,
-    )
+    with client.registrar_aquisicao() as aquisicao:
+        dados, source_used = await client.fetch_credito_rural_with_fallback(
+            finalidade=finalidade,
+            produto_sicor=produto_sicor,
+            safra_sicor=safra_sicor,
+            cd_uf=cd_uf,
+            sem_fallback=_SEM_BIGQUERY if agregacao != "uf" or programa or tipo_seguro else None,
+        )
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
@@ -130,6 +225,7 @@ async def credito_rural(
 
     t1 = time.monotonic()
     df = parse_credito_rural(dados, finalidade=finalidade)
+    df["produto"] = normalize_produto_sicor(produto)
 
     if uf and "uf" in df.columns:
         df = df[df["uf"] == uf].reset_index(drop=True)
@@ -140,7 +236,12 @@ async def credito_rural(
     if tipo_seguro and "tipo_seguro" in df.columns:
         df = df[df["tipo_seguro"].str.lower() == tipo_seguro.lower()].reset_index(drop=True)
 
-    df = _aggregate_credito_rural(df, agregacao, source_used)
+    registros = df
+    if agregacao == "registro":
+        df = _registros_credito_rural(df, source_used)
+    else:
+        df = _aggregate_credito_rural(df, agregacao, source_used)
+    parcial = _marcar_safra_em_curso(registros, df)
 
     parse_ms = int((time.monotonic() - t1) * 1000)
 
@@ -154,16 +255,161 @@ async def credito_rural(
         source_used=source_used,
     )
 
+    odata = source_used == "odata" and bool(aquisicao.paginas)
     meta = build_source_meta(
         "bcb_credito",
-        f"{client.BASE_URL}/{client.ENDPOINT_MAP.get(finalidade.lower(), 'CusteioMunicipio')}",
+        aquisicao.consulta
+        if odata and aquisicao.consulta
+        else f"{client.BASE_URL}/{client.ENDPOINT_MAP.get(finalidade.lower(), 'CusteioMunicipio')}",
         source_method,
         fetch_ms,
         parse_ms,
         df,
         PARSER_VERSION,
-        schema_version="2.0",
+        schema_version=_REGISTRO.version if agregacao == "registro" else "2.0",
         attempted_sources=attempted_sources,
         selected_source=f"bcb_{source_used}",
+        **(_proveniencia(aquisicao) if odata else {}),
     )
+    if odata:
+        _carimbar_aquisicao(meta, aquisicao)
+    meta.source_details.update(parcial)
+    if agregacao == "registro":
+        meta.contract_version = _REGISTRO.version
+        meta.source_details["contract"] = _REGISTRO.name
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=_TEXTO_DO_REGISTRO if agregacao == "registro" else (),
+    )
+
+
+def _proveniencia(aquisicao: client.AquisicaoOData) -> dict[str, Any]:
+    """Proveniência das páginas OData: o topo é o manifesto canônico `{query, resources}`, como no Focus."""
+    recursos = [
+        {**pagina, "fetched_at": pagina["fetched_at"].isoformat()} for pagina in aquisicao.paginas
+    ]
+    manifesto = json.dumps(
+        {"query": aquisicao.consulta, "resources": recursos},
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return {
+        "raw_content_hash": hashlib.sha256(manifesto).hexdigest(),
+        "raw_content_size": len(manifesto),
+        "source_details": {
+            "query": aquisicao.consulta,
+            "resources": recursos,
+            "hash_kind": "resource_manifest_sha256",
+            "manifest_encoding": "canonical_json_utf8",
+            "manifest_fields": ["query", "resources"],
+            "resource_bytes": sum(pagina["bytes"] for pagina in aquisicao.paginas),
+        },
+    }
+
+
+def _carimbar_aquisicao(meta: MetaInfo, aquisicao: client.AquisicaoOData) -> None:
+    meta.fetched_at = max(pagina["fetched_at"] for pagina in aquisicao.paginas)
+    meta.fetch_timestamp = meta.fetched_at
+
+
+@overload
+async def credito_rural_total(
+    safra: str | None = None,
+    finalidade: str | None = None,
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def credito_rural_total(
+    safra: str | None = None,
+    finalidade: str | None = None,
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def credito_rural_total(
+    safra: str | None = None,
+    finalidade: str | None = None,
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa"] = "uf",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    """Crédito rural por UF e finalidade, sem produto: a entidade RegiaoUF do SICOR, com as
+    quatro finalidades, inclusive a industrialização. O SICOR não publica linha Brasil; o
+    total do país é a soma das UFs."""
+    if agregacao not in {"uf", "programa"}:
+        raise InvalidParameterError(
+            f"agregacao inválida: {agregacao!r}. Use agregacao='uf' ou 'programa'"
+        )
+    if finalidade is not None and str(finalidade).lower() not in SICOR_TOTAL_FINALIDADES:
+        raise InvalidParameterError(
+            f"Finalidade inválida: {finalidade!r}. Opções: {list(SICOR_TOTAL_FINALIDADES)}"
+        )
+    finalidades = (
+        tuple(SICOR_TOTAL_FINALIDADES) if finalidade is None else (str(finalidade).lower(),)
+    )
+    safra_sicor = normalize_safra_sicor(safra) if safra is not None else None
+    uf = validate_uf(uf)
+    logger.info(
+        "bcb_credito_rural_total_request",
+        safra=safra_sicor,
+        finalidade=finalidade,
+        uf=uf,
+        agregacao=agregacao,
+    )
+
+    t0 = time.monotonic()
+    with client.registrar_aquisicao() as aquisicao:
+        dados = await client.fetch_credito_rural_total(safra_sicor, UF_CODES[uf] if uf else None)
+    fetch_ms = int((time.monotonic() - t0) * 1000)
+
+    t1 = time.monotonic()
+    df = parse_credito_rural_total(dados, finalidades, agregacao)
+    contracts.validate_dataset(df, bcb_sicor.BCB_CREDITO_RURAL_TOTAL_V1)
+    parse_ms = int((time.monotonic() - t1) * 1000)
+
+    meses = sorted({(int(r["AnoEmissao"]), int(r["MesEmissao"])) for r in dados})
+    proveniencia = _proveniencia(aquisicao) if aquisicao.paginas else {"source_details": {}}
+    meta = build_source_meta(
+        "bcb_credito",
+        aquisicao.consulta
+        if aquisicao.paginas and aquisicao.consulta
+        else f"{client.BASE_URL}/{client.TOTAL_ENDPOINT}",
+        "httpx",
+        fetch_ms,
+        parse_ms,
+        df,
+        PARSER_VERSION,
+        schema_version=bcb_sicor.BCB_CREDITO_RURAL_TOTAL_V1.version,
+        attempted_sources=["bcb_odata"],
+        selected_source="bcb_odata",
+        raw_content_hash=proveniencia.get("raw_content_hash"),
+        raw_content_size=proveniencia.get("raw_content_size", 0),
+        source_details={
+            **proveniencia["source_details"],
+            "meses": {
+                "primeiro": f"{meses[0][0]}-{meses[0][1]:02d}",
+                "ultimo": f"{meses[-1][0]}-{meses[-1][1]:02d}",
+                "quantidade": len(meses),
+            }
+            if meses
+            else None,
+        },
+    )
+    if aquisicao.paginas:
+        _carimbar_aquisicao(meta, aquisicao)
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

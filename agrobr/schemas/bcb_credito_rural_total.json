@@ -1,0 +1,159 @@
+{
+  "name": "bcb.credito_rural_total",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "safra",
+    "uf",
+    "finalidade",
+    "programa"
+  ],
+  "required_columns": [
+    "safra",
+    "uf",
+    "finalidade",
+    "agregacao",
+    "programa",
+    "cd_programa",
+    "qtd_contratos",
+    "valor",
+    "fonte"
+  ],
+  "dtypes": {
+    "safra": "str",
+    "uf": "str",
+    "finalidade": "str",
+    "agregacao": "str",
+    "programa": "str",
+    "cd_programa": "str",
+    "qtd_contratos": "int",
+    "valor": "float",
+    "fonte": "str"
+  },
+  "nullable": {
+    "safra": false,
+    "uf": false,
+    "finalidade": false,
+    "agregacao": false,
+    "programa": true,
+    "cd_programa": true,
+    "qtd_contratos": false,
+    "valor": false,
+    "fonte": false
+  },
+  "columns": [
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Safra de julho a junho do mês de emissão, no formato AAAA/AA (2023/24) da camada; o SICOR não publica safra",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "finalidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "agregacao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "programa",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cd_programa",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "qtd_contratos",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor",
+      "type": "float",
+      "nullable": false,
+      "unit": "BRL",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "fonte",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "qtd_contratos_min": 0,
+    "valor_min": 0
+  },
+  "guarantees": [
+    "Nove colunas estáveis, inclusive em resultado vazio",
+    "Uma linha por safra, UF e finalidade (e programa, com agregacao='programa')",
+    "As quatro finalidades da entidade RegiaoUF, inclusive a industrialização",
+    "Finalidade sem operação fica ausente; o zero de preenchimento da fonte não vira linha",
+    "Sem linha Brasil: o total do país é a soma das UFs",
+    "valor em BRL somado ao centavo; qtd_contratos inteiro"
+  ]
+}

@@ -36,9 +36,20 @@ df = await abiove.exportacao(ano=2024, agregacao="mensal")
 |---|---|---|
 | `ano` | int | Ano de referência |
 | `mes` | int | Mês (1-12) |
-| `produto` | str | Produto (grao, farelo, oleo, milho, total) |
+| `produto` | str | Produto (grao, farelo, oleo, milho); total na agregação mensal |
 | `volume_ton` | float | Volume exportado (toneladas) |
 | `receita_usd_mil` | float | Receita FOB (mil USD) |
+
+São lidas as tabelas mensais de cada produto, com o ano selecionado no cabeçalho.
+Peso publicado em mil toneladas é convertido para toneladas; preço médio por
+tonelada não é receita FOB. Quadros comparativos entre Brasil e complexo soja
+não entram como produtos. O fallback `datasets.exportacao` converte volume para
+kg e receita para USD, conforme o contrato do dataset.
+
+Cada edição mensal (`exp_AAAAMM.xlsx`) traz o ano da edição e o anterior, e a ABIOVE revê meses já
+publicados. O agrobr entrega o número mais recente: lê a edição mais nova que publica o ano pedido e
+registra qual em `MetaInfo.source_details["edicao"]`. `edicao="AAAA-MM"` lê uma edição específica (a
+original de um mês, por exemplo). Veja a [API](../api/abiove.md).
 
 ## Produtos
 
@@ -53,12 +64,15 @@ df = await abiove.exportacao(ano=2024, agregacao="mensal")
 df, meta = await abiove.exportacao(ano=2024, return_meta=True)
 print(meta.source)  # "abiove"
 print(meta.source_method)  # "httpx+openpyxl"
+print(meta.source_details["edicao"])  # {"arquivo": "exp_202608.xlsx", "mes": "2026-08"}
 ```
 
 ## Nota de Risco
 
 ABIOVE publica dados em planilhas Excel. O layout pode variar entre anos.
-O parser do agrobr detecta automaticamente a posição do header.
+O parser do agrobr lê o layout publicado (seções por produto em linhas, com os
+meses na coluna de rótulos) e recusa com `ParseError` o que não reconhece, sem
+adivinhar produto nem coluna.
 
 ## Fonte
 

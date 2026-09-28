@@ -35,11 +35,11 @@
 
 | Dataset | Available states | Typical size | Granularity |
 |---|---|---|---|
-| **SIGEF** | 15/27 (AC, AL, AM, BA, ES, GO, MA, MG, MS, MT, PA, PR, SC, SP, TO) | 8-687 MB per state | Per state |
-| **SNCI** | 10/27 (BA, GO, MG, MS, MT, PA, PI, SC, SP, TO) | 0.6-22 MB per state | Per state |
-| **Settlements** | Brazil-wide single | 48 MB | Full Brazil, client-side state filter |
+| **SIGEF** | 27/27 | 2-766 MB per state | Per state |
+| **SNCI** | 27/27 | 0.01-23 MB per state | Per state |
+| **Settlements** | Brazil-wide single | 50 MB | Full Brazil, client-side state filter |
 
-States not listed raise `SourceUnavailableError` with the list of available ones. The absence reflects upstream INCRA data, not an agrobr bug.
+INCRA publishes SIGEF and SNCI for all 27 states (survey of 2026-09-22). A state without a file on the server raises `SourceUnavailableError` (HTTP 404).
 
 ## Public functions
 
@@ -54,7 +54,7 @@ async def main():
     df_pl = await acervo_fundiario.sigef("SP", as_polars=True)
     gdf = await acervo_fundiario.sigef_geo("GO", bbox=(-50, -16, -49, -15))
 
-    # SNCI — certified parcels pre-2013
+    # SNCI — certifications from the system that preceded SIGEF (no date cutoff; records up to 2016 exist)
     df = await acervo_fundiario.snci("GO")
     gdf = await acervo_fundiario.snci_geo("MT")
 
@@ -68,15 +68,20 @@ asyncio.run(main())
 
 ## Filesystem cache
 
-Downloaded files are stored in `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` with a `meta.json` alongside containing `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`.
+Downloaded files are stored in `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` with a `{UF}.json` alongside containing `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. Where it lives and how to clean it: [What agrobr writes to disk](../advanced/disco.md).
 
-Revalidation uses the server's `Last-Modified` header: the 2nd call performs a HEAD (~50ms) and reuses the cache if the file has not changed.
+With `return_meta=True`, the `MetaInfo` states where the file came from. When the HEAD confirms the cache: `from_cache=True`, `fetched_at` = the ZIP's original collection (the `fetched_at` in `{UF}.json`) and `source_details` with `revalidado_em`, `etag` and `last_modified`. On a new download: `from_cache=False`, `fetched_at` = the download and `source_details` with only `etag` and `last_modified`.
+
+Revalidation performs a HEAD request and requires at least one matching,
+nonempty validator (`ETag` or `Last-Modified`). Changed validators or file sizes
+invalidate the cache; missing validators require a new download. Locks are
+local to the event loop, and each write cleans up only its own temporary file.
 
 **Potential cache size:**
 
-- SIGEF full Brazil (15 states) ≈ 2.4 GB (largest: MG=687 MB, SP=322 MB, PR=287 MB)
-- SNCI full Brazil (10 states) ≈ 84 MB
-- Settlements Brazil = 48 MB
+- SIGEF full Brazil (27 states) ≈ 3.1 GB (largest: MG=766 MB, SP=356 MB, PR=312 MB)
+- SNCI full Brazil (27 states) ≈ 105 MB
+- Settlements Brazil = 50 MB
 
 On demand. A casual case of 1-3 states usually stays below 1 GB.
 
@@ -109,7 +114,7 @@ export AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1
 | registro_data | datetime | Registration date (nullable) |
 | cod_municipio | int | Municipality IBGE code |
 | uf | str | State abbreviation (mapped from IBGE `uf_id`) |
-| geometry | Polygon | Geometry (only in `_geo`) |
+| geometry | Polygon Z | Geometry with vertex altitude (only in `_geo`) |
 
 ### SNCI
 
@@ -144,7 +149,7 @@ export AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1
 | area_calc_ha | float | Calculated area in hectares |
 | sr | str | Regional superintendency (nullable) |
 | descricao_fase | str | Phase description (nullable) |
-| geometry | Polygon | Only in `_geo` |
+| geometry | Polygon | Only in `_geo`; null when the source publishes the record without geometry (1 of 8,216 on 2026-09-22) |
 
 ## Filters
 
@@ -160,12 +165,11 @@ gdf = await acervo_fundiario.sigef_geo("MG", bbox=(-44, -18, -43, -17))
 
 The settlements dataset is Brazil-wide single — the `uf` filter is client-side, normalizing the `uf` column (`.str.upper().str.strip()`) and comparing.
 
-Upstream INCRA data has known invalid states (`MB`=501 rows, `SM`=200 rows, `12`, `'ma'`). The parser does not silently drop these rows — a `acervo_fundiario_dirty_uf_data` warning log reports the counts. The `uf="MG"` filter returns only rows with valid `MG`; the invalid ones remain in the DataFrame when `uf=None`.
+If the source brings a state outside the 27 abbreviations, the parser does not drop the row: the `acervo_fundiario_dirty_uf_data` log reports the counts. The `uf="MG"` filter returns only rows with `MG`; the others remain in the DataFrame when `uf=None`. In the 2026-09-22 capture, all 8,216 rows had a valid state.
 
 ## Limitations
 
-- **12 states lack SIGEF** (AP, CE, DF, PB, PE, PI, RJ, RN, RO, RR, RS, SE) — no upstream record
-- **17 states lack SNCI** — only Center-West/Southeast/South/part of the North are covered
-- **Invalid SSL cert** on the server — agrobr uses relaxed TLS (`check_hostname=False`, `verify_mode=CERT_NONE`). The server is a public gov.br one.
+- **Verified TLS** — downloads and health checks validate certificates and hostnames.
+  Certificate errors terminate the connection without disabling verification.
 - **No private/public distinction** — the shapefile has no type field (that was a distinction of the legacy WFS)
 - **Cache size may accumulate into GB** — see the "Filesystem cache" section

@@ -1,0 +1,59 @@
+{
+  "files": {
+    "perfis_reference.json": {
+      "status": 200,
+      "source_body": "request_002.body",
+      "size_bytes": 17490,
+      "received_at": "2026-09-07T16:21:41.573122-03:00",
+      "requested_url": "https://geoinfo.dados.embrapa.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode%3Aperfis_pronasolos_2020&outputFormat=application%2Fjson&propertyName=fid%2Csigla%2Ctitulo%2Cano%2Creferencia%2Cautor%2Cnivel_leva%2Ccodigo_pon%2Csigla_bd%2Ctipo_ponto%2Cresponsave%2Cdata_colet%2Cmaterial_o%2Cuso_atual%2Cobservacoe%2Csituacao_c%2Cgcs_latitu%2Cgcs_longit%2Cmunicipio%2Cuf%2Csimbolo_ho%2Cprofundida%2Cprofundi_1%2Cdescricao_%2Ccalhau%2Ccascalho%2Cterra_fina%2Careia_gros%2Careia_fina%2Careia_tota%2Csilte%2Cargila%2Cargila_dis%2Cgrau_flocu%2Crelacao_si%2Cdensidade_%2Cdensidad_1%2Cporosidade%2Cretencao_u%2Cretencao_1%2Cagua_dispo%2Cph_h2o%2Cph_kcl%2Ccomplexo_s%2Ccomplexo_1%2Ccomplexo_2%2Ccomplexo_3%2Cvalor_s%2Caluminio_t%2Chidrogenio%2Cvalor_t%2Cvalor_v%2Csaturacao_%2Cfosforo_as%2Ccarbono_or%2Cnitrogenio%2Ccarbono_ni%2Cataque_sul%2Cataque_s_1%2Cataque_s_2%2Cataque_s_3%2Cataque_s_4%2Cataque_s_5%2Cki%2Ckr%2Cal2o3_fe2o%2Ccdb_fe%2Cequivalent%2Csaturaca_1%2Ccondutivid%2Cagua_pasta%2Csais_sol_e%2Csais_sol_1%2Csais_sol_2%2Csais_sol_3%2Csais_sol_4%2Csais_sol_5%2Csais_sol_6%2Cclasse_tex%2Cgrau_consi%2Cgrau_con_1%2Cpegajosida%2Cplasticida&count=6&CQL_FILTER=fid%3E%3D1+AND+fid%3C%3D6&sortBy=fid+A&startIndex=0",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 19:21:43 GMT",
+        "content-type": "application/json;charset=UTF-8"
+      },
+      "transformation": "none; original decoded HTTP body bytes",
+      "sha256": "3abb03cd98bf7ff20479114e2421c193e8048aabce217e296b3e4c0843b6a78a"
+    },
+    "mapa_geo.json": {
+      "status": 200,
+      "source_body": "request_015.body",
+      "size_bytes": 3077,
+      "received_at": "2026-09-07T16:22:10.865055-03:00",
+      "requested_url": "https://geoinfo.dados.embrapa.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode%3Abrasil_solos_5m_20201104&outputFormat=application%2Fjson&propertyName=ogc_fid%2Csimbolos%2Ccomp1%2Ccomp2%2Ccomp3%2Cleg_desc%2Carea_km2%2Cordem1%2Csubordem1%2Cgdegrupo1%2Cordem2%2Csubordem2%2Cgdegrupo2%2Cordem3%2Csubordem3%2Cgdegrupo3%2Cleg_sinot%2Cclasse_dom%2Cgeometry&count=1&CQL_FILTER=ogc_fid%3D6&sortBy=ogc_fid+A&startIndex=0&srsName=EPSG%3A4326",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 19:22:12 GMT",
+        "content-type": "application/json;charset=UTF-8"
+      },
+      "transformation": "none; original decoded HTTP body bytes",
+      "sha256": "3b5d41859618ac3e99ae991ad0df6bee51a68ebaca7dd726fd1bdebe53dbc06a"
+    },
+    "mapa_reference.json": {
+      "status": 200,
+      "source_body": "request_010.body",
+      "size_bytes": 3483,
+      "received_at": "2026-09-07T16:21:59.654647-03:00",
+      "requested_url": "https://geoinfo.dados.embrapa.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode%3Abrasil_solos_5m_20201104&outputFormat=application%2Fjson&propertyName=ogc_fid%2Csimbolos%2Ccomp1%2Ccomp2%2Ccomp3%2Cleg_desc%2Carea_km2%2Cordem1%2Csubordem1%2Cgdegrupo1%2Cordem2%2Csubordem2%2Cgdegrupo2%2Cordem3%2Csubordem3%2Cgdegrupo3%2Cleg_sinot%2Cclasse_dom&count=6&CQL_FILTER=ogc_fid%3E%3D1+AND+ogc_fid%3C%3D6&sortBy=ogc_fid+A&startIndex=0",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 19:22:01 GMT",
+        "content-type": "application/json;charset=UTF-8"
+      },
+      "transformation": "none; original decoded HTTP body bytes",
+      "sha256": "1573a9111bd2ce1a966dfc224107df2632662960cc81da34e806b951c8154693"
+    },
+    "perfis_geo.json": {
+      "status": 200,
+      "source_body": "request_007.body",
+      "size_bytes": 4129,
+      "received_at": "2026-09-07T16:21:52.918053-03:00",
+      "requested_url": "https://geoinfo.dados.embrapa.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode%3Aperfis_pronasolos_2020&outputFormat=application%2Fjson&propertyName=fid%2Csigla%2Ctitulo%2Cano%2Creferencia%2Cautor%2Cnivel_leva%2Ccodigo_pon%2Csigla_bd%2Ctipo_ponto%2Cresponsave%2Cdata_colet%2Cmaterial_o%2Cuso_atual%2Cobservacoe%2Csituacao_c%2Cgcs_latitu%2Cgcs_longit%2Cmunicipio%2Cuf%2Csimbolo_ho%2Cprofundida%2Cprofundi_1%2Cdescricao_%2Ccalhau%2Ccascalho%2Cterra_fina%2Careia_gros%2Careia_fina%2Careia_tota%2Csilte%2Cargila%2Cargila_dis%2Cgrau_flocu%2Crelacao_si%2Cdensidade_%2Cdensidad_1%2Cporosidade%2Cretencao_u%2Cretencao_1%2Cagua_dispo%2Cph_h2o%2Cph_kcl%2Ccomplexo_s%2Ccomplexo_1%2Ccomplexo_2%2Ccomplexo_3%2Cvalor_s%2Caluminio_t%2Chidrogenio%2Cvalor_t%2Cvalor_v%2Csaturacao_%2Cfosforo_as%2Ccarbono_or%2Cnitrogenio%2Ccarbono_ni%2Cataque_sul%2Cataque_s_1%2Cataque_s_2%2Cataque_s_3%2Cataque_s_4%2Cataque_s_5%2Cki%2Ckr%2Cal2o3_fe2o%2Ccdb_fe%2Cequivalent%2Csaturaca_1%2Ccondutivid%2Cagua_pasta%2Csais_sol_e%2Csais_sol_1%2Csais_sol_2%2Csais_sol_3%2Csais_sol_4%2Csais_sol_5%2Csais_sol_6%2Cclasse_tex%2Cgrau_consi%2Cgrau_con_1%2Cpegajosida%2Cplasticida%2Cgeom&count=1&CQL_FILTER=fid%3D1&sortBy=fid+A&startIndex=0&srsName=EPSG%3A4326",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 19:21:54 GMT",
+        "content-type": "application/json;charset=UTF-8"
+      },
+      "transformation": "none; original decoded HTTP body bytes",
+      "sha256": "e08d619ea63d64495e5152fa8332ec3f4c6e6cffbae9832ec022281f44ce727a"
+    }
+  },
+  "captured": "2026-09-07",
+  "source": "embrapa_solos",
+  "scope": "Six complete attribute rows per family; one geo feature per family; full projection, no population or uniqueness claim"
+}

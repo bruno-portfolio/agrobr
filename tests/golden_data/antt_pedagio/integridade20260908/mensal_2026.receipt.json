@@ -1,0 +1,110 @@
+{
+  "index": 1,
+  "role": "monthly_2026",
+  "resource_id": "b475d3ac-e804-4ca3-94f7-106bbd40d2b5",
+  "catalog_size": 9412519,
+  "attempt": 1,
+  "url": "https://dados.antt.gov.br/dataset/5bf70ec3-b24e-4f73-99a0-78b200f5e915/resource/b475d3ac-e804-4ca3-94f7-106bbd40d2b5/download/volume-trafego-praca-pedagio-2026_mensal_consolidado.csv",
+  "started_at": "2026-09-08T05:00:35.605998+00:00",
+  "status": 200,
+  "response_complete": true,
+  "error": null,
+  "close_error": null,
+  "closed": true,
+  "request_headers": [
+    [
+      "host",
+      "dados.antt.gov.br"
+    ],
+    [
+      "accept",
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    ],
+    [
+      "accept-language",
+      "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+    ],
+    [
+      "connection",
+      "keep-alive"
+    ],
+    [
+      "upgrade-insecure-requests",
+      "1"
+    ],
+    [
+      "sec-fetch-dest",
+      "document"
+    ],
+    [
+      "sec-fetch-mode",
+      "navigate"
+    ],
+    [
+      "sec-fetch-site",
+      "none"
+    ],
+    [
+      "sec-fetch-user",
+      "?1"
+    ],
+    [
+      "user-agent",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15"
+    ],
+    [
+      "accept-encoding",
+      "identity"
+    ]
+  ],
+  "headers": [
+    [
+      "date",
+      "Tue, 08 Sep 2026 05:00:22 GMT"
+    ],
+    [
+      "pragma",
+      "no-cache"
+    ],
+    [
+      "cache-control",
+      "no-cache"
+    ],
+    [
+      "accept-ranges",
+      "bytes"
+    ],
+    [
+      "last-modified",
+      "Fri, 28 Aug 2026 11:35:17 GMT"
+    ],
+    [
+      "content-range",
+      "bytes 0-9412518/9412519"
+    ],
+    [
+      "etag",
+      "\"1787916917.42-9412519\""
+    ],
+    [
+      "keep-alive",
+      "timeout=5, max=100"
+    ],
+    [
+      "connection",
+      "Keep-Alive"
+    ],
+    [
+      "content-type",
+      "text/csv"
+    ],
+    [
+      "transfer-encoding",
+      "chunked"
+    ]
+  ],
+  "body": "request_001.body",
+  "size_bytes": 9412519,
+  "sha256": "3e8003303750c6955f5e56ea7ef70e6f693028904f53d91762ffa248eb3ae299",
+  "finished_at": "2026-09-08T05:00:37.962253+00:00"
+}

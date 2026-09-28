@@ -1,0 +1,111 @@
+{
+  "name": "bcb.sgs",
+  "schema_version": "2.1",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "codigo",
+    "data"
+  ],
+  "required_columns": [
+    "data",
+    "valor",
+    "codigo",
+    "nome_serie"
+  ],
+  "dtypes": {
+    "data": "date",
+    "valor": "float",
+    "codigo": "int",
+    "nome_serie": "str",
+    "data_fim": "date"
+  },
+  "nullable": {
+    "data": false,
+    "valor": true,
+    "codigo": false,
+    "nome_serie": true,
+    "data_fim": true
+  },
+  "columns": [
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "valor",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "codigo",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 9223372036854775807
+    },
+    {
+      "name": "nome_serie",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_fim",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "codigo_min": 1,
+    "codigo_max": 9223372036854775807,
+    "date_dtype": "datetime64[ns]",
+    "date_semantics": "civil_reference_date_without_timezone",
+    "integer_dtype": "int64",
+    "float_dtype": "float64",
+    "sorted_by": [
+      "codigo",
+      "data"
+    ],
+    "frequency": "not_inferred_from_observation_dates"
+  },
+  "guarantees": [
+    "Quatro colunas estáveis, inclusive em consultas sem valores declarados pela fonte",
+    "data_fim opcional, presente quando a fonte publica dataFim (fim do período, ex.: TR)",
+    "Valores finitos, incluindo negativos legítimos; ausências explícitas permanecem nulas",
+    "Uma observação por código e referência, ordenada antes de aplicar ultimos",
+    "Referências repetidas entre blocos só são reconciliadas quando o valor coincide, com origem preservada",
+    "Duplicata no mesmo corpo ou conflito entre blocos interrompe a aquisição",
+    "Datas publicadas de referência não são cortadas por uma regra diária inferida",
+    "Metadados distinguem blocos obtidos de completude da série, que não tem contagem global comprovada"
+  ]
+}

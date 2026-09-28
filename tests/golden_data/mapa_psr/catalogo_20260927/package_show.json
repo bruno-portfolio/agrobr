@@ -1,0 +1,59 @@
+{
+ "success": true,
+ "result": {
+  "id": "baefdc68-9bad-4204-83e8-f2888b79ab48",
+  "name": "sisser3",
+  "metadata_modified": "2025-09-03T13:37:30.702970",
+  "resources": [
+   {
+    "id": "2c5c55d0-1473-4749-b08f-cfaf887a9fa3",
+    "name": "Dicionário de Dados - SISSER",
+    "format": "PDF",
+    "url": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48/resource/2c5c55d0-1473-4749-b08f-cfaf887a9fa3/download/dicionariodedados-sisser.pdf",
+    "last_modified": "2022-06-22T20:43:10.308295"
+   },
+   {
+    "id": "97f29a77-4e7e-44bf-99b3-a2d75911b6bf",
+    "name": "PSR - 2006 a 2015",
+    "format": "CSV",
+    "url": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48/resource/97f29a77-4e7e-44bf-99b3-a2d75911b6bf/download/dados_abertos_psr_2006a2015csv.csv",
+    "last_modified": "2025-09-03T13:31:48.329706"
+   },
+   {
+    "id": "dc01ccf6-d328-41a6-842d-7eff9b08f6d6",
+    "name": "PSR - 2006 a 2015",
+    "format": "XLSX",
+    "url": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48/resource/dc01ccf6-d328-41a6-842d-7eff9b08f6d6/download/dados_abertos_psr_2006a2015.xlsx",
+    "last_modified": "2025-09-03T13:33:16.821705"
+   },
+   {
+    "id": "54e04a6b-15b3-4bda-a330-b8e805deabe4",
+    "name": "PSR - 2016 a 2024",
+    "format": "CSV",
+    "url": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48/resource/54e04a6b-15b3-4bda-a330-b8e805deabe4/download/dados_abertos_psr_2016a2024csv.csv",
+    "last_modified": "2025-09-03T13:34:28.371721"
+   },
+   {
+    "id": "e6f95018-6c19-426a-9a62-fc9e5bfc721b",
+    "name": "PSR - 2016 a 2024",
+    "format": "XLSX",
+    "url": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48/resource/e6f95018-6c19-426a-9a62-fc9e5bfc721b/download/dados_abertos_psr_2016a2024.xlsx",
+    "last_modified": "2025-09-03T13:35:34.012542"
+   },
+   {
+    "id": "ac7e4351-974f-4958-9294-627c5cbf289a",
+    "name": "PSR - 2025",
+    "format": "CSV",
+    "url": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48/resource/ac7e4351-974f-4958-9294-627c5cbf289a/download/dados_abertos_psr_2025csv.csv",
+    "last_modified": "2025-09-03T13:37:06.082732"
+   },
+   {
+    "id": "b904117d-b758-406d-92ef-4c7762017c61",
+    "name": "PSR - 2025",
+    "format": "XLSX",
+    "url": "https://dados.agricultura.gov.br/dataset/baefdc68-9bad-4204-83e8-f2888b79ab48/resource/b904117d-b758-406d-92ef-4c7762017c61/download/dados_abertos_psr_2025.xlsx",
+    "last_modified": "2025-09-03T13:37:30.688017"
+   }
+  ]
+ }
+}

@@ -1,4 +1,4 @@
-# censo_agropecuario_historico v1.0
+# censo_agropecuario_historico v1.1
 
 Serie historica do Censo Agropecuario (1920-2006) por tema e UF via SIDRA.
 
@@ -33,6 +33,7 @@ Serie historica do Censo Agropecuario (1920-2006) por tema e UF via SIDRA.
 | `ano` | int | ❌ | Ano censitario (1920-2006) |
 | `localidade` | str | ✅ | UF ou regiao |
 | `localidade_cod` | int | ✅ | Codigo IBGE |
+| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `tema` | str | ❌ | Tema da serie historica |
 | `categoria` | str | ❌ | Categoria dentro do tema (ou "total") |
 | `variavel` | str | ❌ | Nome da variavel |
@@ -85,7 +86,7 @@ Long format: cada linha tem um par variavel/valor.
 - Valores numericos sempre >= 0
 - Fonte sempre "ibge_censo_agro_historico"
 - Nivel territorial maximo e UF (sem dados municipais)
-- Cache com TTL de 30 dias (dados estaticos)
+- Sem cache: cada chamada consulta o IBGE
 
 ## Exemplo
 
@@ -127,4 +128,12 @@ print(contract.to_json())
 | `censo_agropecuario_legado` | 6 temas legados (FTP) | 1995 |
 | **`censo_agropecuario_historico`** | **9 temas serie historica (SIDRA)** | **1920-2006** |
 
-Sao contratos separados, sem conflito. Cada um com seu dataset wrapper e registry entry.
+São contratos separados, cada um com seu dataset wrapper e registry entry. O ano de 1995 aparece em dois deles com números
+diferentes: o `censo_agropecuario` lê as tabelas do Censo 1995-96 no SIDRA (316, 323, 497 e 509), e o
+`censo_agropecuario_historico`, as da série histórica (264, 281, 1730 e 1731).
+
+- Na cana da PB, são 8,7 Mt no `censo_agropecuario` e 3,5 Mt no `censo_agropecuario_historico`.
+- O arquivo original do Censo no FTP do IBGE (1998) confirma a série histórica na cana da PB e nas áreas totais de MT e MA.
+  Na soja do PR, as três fontes divergem.
+- A nota da tabela 1731 do IBGE diz que "pequenas correções foram feitas após a publicação".
+- Para a série longa, use o `censo_agropecuario_historico`.

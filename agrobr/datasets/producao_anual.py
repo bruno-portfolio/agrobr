@@ -1,17 +1,21 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from datetime import date
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import constants
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
 from agrobr.normalize.dates import anos_para_safra, safra_para_anos
 from agrobr.normalize.regions import uf_para_nome
+from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
 
 logger = structlog.get_logger()
@@ -29,6 +33,10 @@ _PRODUCAO_ANUAL_COLS = [
 ]
 
 
+def _hoje() -> date:
+    return hoje()
+
+
 async def _fetch_ibge_pam(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import ibge
 
@@ -39,8 +47,10 @@ async def _fetch_ibge_pam(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, Me
     result = await ibge.pam(produto, ano=ano, nivel=nivel, uf=uf, return_meta=True)
 
     df, meta = _unpack_result(result)
-    if "valor_producao" not in df.columns:
-        df["valor_producao"] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+    for column in ("area_plantada", "valor_producao"):
+        if column not in df.columns:
+            df[column] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+            logger.info("ibge_pam_coluna_historica_ausente", coluna=column, ano=ano)
     return df, meta
 
 
@@ -106,6 +116,12 @@ def _normalize_conab(df: pd.DataFrame, produto: str, nivel: str) -> pd.DataFrame
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
 
+    if produto not in constants.CONAB_PRODUTOS:
+        raise SourceUnavailableError(
+            source="conab",
+            last_error=f"CONAB Safras nao oferece o produto {produto!r}",
+        )
+
     ano = kwargs.get("ano")
     nivel = kwargs.get("nivel", "uf")
     uf = kwargs.get("uf")
@@ -116,7 +132,8 @@ async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
             last_error="CONAB Safras nao oferece granularidade municipal",
         )
 
-    safra = anos_para_safra(int(ano) - 1) if ano is not None else None
+    ano = int(ano) if ano is not None else _hoje().year - 1
+    safra = anos_para_safra(ano - 1)
     conab_uf = uf if nivel == "uf" else None
     result = await conab.safras(produto, safra=safra, uf=conab_uf, return_meta=True)
 
@@ -127,6 +144,10 @@ async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
             source="conab",
             last_error=f"CONAB sem dados de {produto}" + (f" na safra {safra}" if safra else ""),
         )
+    df["unidade_producao"] = "ton"
+    df["unidade_rendimento"] = "kg/ha"
+    df["unidade_valor_producao"] = pd.Series(pd.NA, index=df.index, dtype=object)
+    df["condicao_produto"] = pd.Series(pd.NA, index=df.index, dtype=object)
     return df, meta
 
 
@@ -147,14 +168,26 @@ PRODUCAO_ANUAL_INFO = DatasetInfo(
             description="CONAB Safras",
         ),
     ],
-    products=["soja", "milho", "arroz", "feijao", "trigo", "algodao", "cafe", "cacau"],
-    contract_version="1.0",
+    products=[
+        "soja",
+        "milho",
+        "arroz",
+        "feijao",
+        "trigo",
+        "algodao",
+        "cafe",
+        "cacau",
+        "cana",
+        "mandioca",
+        "laranja",
+    ],
+    contract_version="2.2",
     update_frequency="yearly",
     typical_latency="Y+1",
     source_url=SIDRA_BASE,
     source_institution="IBGE",
     min_date="1974-01-01",
-    unit="ha / ton / kg/ha",
+    unit="ha / unidade por produto e período",
     license="livre",
 )
 
@@ -165,11 +198,10 @@ class ProducaoAnualDataset(BaseDataset):
     async def fetch(  # type: ignore[override]
         self,
         produto: str,
-        ano: int | None = None,
+        ano: int | list[int] | None = None,
         nivel: Literal["brasil", "uf", "municipio"] = "uf",
         uf: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="producao_anual", produto=produto, ano=ano)
 
@@ -185,10 +217,15 @@ class ProducaoAnualDataset(BaseDataset):
             ano = int(snapshot[:4]) - 1
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, ano=ano, nivel=nivel, uf=uf, **kwargs
+            produto, ano=ano, nivel=nivel, uf=uf
         )
 
         df = self._normalize(df, produto)
+        df = df.assign(
+            cod_municipio=regions.cod_municipio(df["localidade_cod"])
+            if "localidade_cod" in df
+            else pd.Series(pd.NA, index=df.index, dtype="Int64")
+        )
         self._validate_contract(df)
 
         if return_meta:
@@ -213,14 +250,38 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_producao_anual)
 
 
+@overload
 async def producao_anual(
     produto: str,
-    ano: int | None = None,
+    ano: int | list[int] | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    uf: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def producao_anual(
+    produto: str,
+    ano: int | list[int] | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    uf: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def producao_anual(
+    produto: str,
+    ano: int | list[int] | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     uf: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _producao_anual.fetch(
-        produto, ano=ano, nivel=nivel, uf=uf, return_meta=return_meta, **kwargs
+    return await _producao_anual.fetch(  # type: ignore[call-arg]
+        produto, ano=ano, nivel=nivel, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

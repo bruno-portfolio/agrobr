@@ -3,10 +3,13 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^(tests/golden_data/|tests/.*/fixtures/|agrobr/usda/catalogos/|assets/)
       - id: end-of-file-fixer
+        exclude: ^(tests/golden_data/|tests/.*/fixtures/|agrobr/usda/catalogos/|assets/)
       - id: check-yaml
       - id: check-added-large-files
         args: ['--maxkb=1100']
+        exclude: ^(tests/golden_data/|agrobr/data/censo_1985/|assets/mapbiomas/)
       - id: check-merge-conflict
       - id: debug-statements
 
@@ -18,14 +21,17 @@ repos:
       - id: ruff-format
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+    rev: v2.3.1
     hooks:
       - id: mypy
+        files: ^agrobr/
         additional_dependencies:
           - pydantic>=2.5.0
           - pydantic-settings>=2.1.0
           - httpx>=0.25.0
           - pandas-stubs>=2.0.0
-          - types-beautifulsoup4>=4.12.0
+          - beautifulsoup4>=4.12.0
           - types-requests>=2.32.0
+          - pdfminer.six
+          - duckdb
         args: [--ignore-missing-imports]

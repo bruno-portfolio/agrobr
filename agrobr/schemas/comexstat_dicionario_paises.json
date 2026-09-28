@@ -1,0 +1,114 @@
+{
+  "name": "comexstat.dicionario.paises",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [],
+  "required_columns": [
+    "cod_pais",
+    "cod_pais_iso_numerico",
+    "cod_pais_iso_alfa3",
+    "pais",
+    "pais_ingles",
+    "pais_espanhol"
+  ],
+  "dtypes": {
+    "cod_pais": "str",
+    "cod_pais_iso_numerico": "str",
+    "cod_pais_iso_alfa3": "str",
+    "pais": "str",
+    "pais_ingles": "str",
+    "pais_espanhol": "str"
+  },
+  "nullable": {
+    "cod_pais": false,
+    "cod_pais_iso_numerico": false,
+    "cod_pais_iso_alfa3": false,
+    "pais": false,
+    "pais_ingles": false,
+    "pais_espanhol": false
+  },
+  "columns": [
+    {
+      "name": "cod_pais",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_pais_iso_numerico",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_pais_iso_alfa3",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "pais",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "pais_ingles",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "pais_espanhol",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "exact_column_order": true,
+    "integer_dtype": "Int64",
+    "float_dtype": "float64",
+    "string_dtype": "string[python]",
+    "codes": "Literal ASCII codes; leading zeros and special codes are preserved",
+    "urf": "Unidade da Receita Federal; no physical port is inferred",
+    "missing_measures": "Missing contributions propagate to the corresponding aggregate"
+  },
+  "guarantees": [
+    "All published dictionary fields and row order are preserved",
+    "Names, whitespace, special codes and multiplicity remain literal",
+    "MDIC codes are not deduplicated by ISO code or description",
+    "The acquired dictionary does not establish historical validity or a snapshot"
+  ]
+}

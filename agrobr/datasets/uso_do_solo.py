@@ -1,55 +1,58 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
-from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
+from agrobr.datasets import base, registry
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 logger = structlog.get_logger()
 
 
 async def _fetch_mapbiomas(
-    produto: str,  # noqa: ARG001
+    _produto: str,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import mapbiomas
 
-    tipo: str = kwargs.get("tipo", "cobertura")
     bioma = kwargs.get("bioma")
     estado = kwargs.get("estado")
-
-    if tipo == "cobertura":
-        result = await mapbiomas.cobertura(
+    colecao = kwargs.get("colecao")
+    if kwargs.get("tipo", "cobertura") == "cobertura":
+        fetched = await mapbiomas.cobertura(
             bioma=bioma,
             estado=estado,
+            colecao=colecao,
+            return_meta=True,
             ano=kwargs.get("ano"),
             classe_id=kwargs.get("classe_id"),
             nivel=kwargs.get("nivel", "estado"),
             municipio=kwargs.get("municipio"),
-            return_meta=True,
+            geocodigo=kwargs.get("geocodigo"),
         )
     else:
-        result = await mapbiomas.transicao(
+        fetched = await mapbiomas.transicao(
             bioma=bioma,
             estado=estado,
+            colecao=colecao,
+            return_meta=True,
             periodo=kwargs.get("periodo"),
             classe_de_id=kwargs.get("classe_de_id"),
             classe_para_id=kwargs.get("classe_para_id"),
-            return_meta=True,
         )
-    return _unpack_result(result)
+    return base._unpack_result(fetched)
 
 
-USO_DO_SOLO_INFO = DatasetInfo(
+USO_DO_SOLO_INFO = base.DatasetInfo(
     name="uso_do_solo",
     description="Cobertura e uso da terra (MapBiomas) — cobertura anual e transições entre classes",
     sources=[
-        DatasetSource(
+        base.DatasetSource(
             name="mapbiomas",
             priority=1,
             fetch_fn=_fetch_mapbiomas,
@@ -57,9 +60,9 @@ USO_DO_SOLO_INFO = DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="1.0",
+    contract_version="2.0",
     update_frequency="yearly",
-    typical_latency="ano+6 meses",
+    typical_latency="conforme publicação de cada coleção",
     source_url="https://brasil.mapbiomas.org",
     source_institution="MapBiomas",
     unit="ha",
@@ -67,11 +70,58 @@ USO_DO_SOLO_INFO = DatasetInfo(
 )
 
 
-class UsodoSoloDataset(BaseDataset):
+def _validar_consulta(
+    tipo: str,
+    nivel: str,
+    *,
+    cobertura: dict[str, Any],
+    transicao: dict[str, Any],
+    as_polars: bool,
+    return_meta: bool,
+) -> None:
+    if not isinstance(tipo, str) or tipo not in ("cobertura", "transicao"):
+        raise InvalidParameterError("tipo deve ser 'cobertura' ou 'transicao'")
+    if not isinstance(nivel, str) or nivel not in ("estado", "municipio"):
+        raise InvalidParameterError("nivel deve ser 'estado' ou 'municipio'")
+    for name, value in (("as_polars", as_polars), ("return_meta", return_meta)):
+        if not isinstance(value, bool):
+            raise InvalidParameterError(f"{name} deve ser booleano")
+    incompatible = transicao if tipo == "cobertura" else cobertura
+    provided = [name for name, value in incompatible.items() if value is not None]
+    if tipo == "transicao" and nivel != "estado":
+        provided.append("nivel")
+    if provided:
+        raise InvalidParameterError(
+            f"Parâmetros incompatíveis com tipo='{tipo}': {', '.join(provided)}"
+        )
+    if get_snapshot() is not None:
+        raise InvalidParameterError(
+            "uso_do_solo não suporta deterministic: colecao seleciona a edição da fonte, "
+            "mas não um snapshot histórico arbitrário."
+        )
+
+
+class UsodoSoloDataset(base.BaseDataset):
     info = USO_DO_SOLO_INFO
 
+    def _contract_name(self, **kwargs: Any) -> str:
+        if kwargs.get("nivel", "estado") == "municipio":
+            return "mapbiomas_cobertura_municipal"
+        return f"mapbiomas_{kwargs.get('tipo', 'cobertura')}"
+
     def _validate_produto(self, produto: str) -> None:
-        pass
+        if not isinstance(produto, str) or produto != "":
+            raise InvalidParameterError(
+                "uso_do_solo não aceita produto; use os filtros de cobertura"
+            )
+
+    def _resolve_provenance(
+        self, source_name: str, source_meta: MetaInfo | None, attempted: list[str]
+    ) -> tuple[str, list[str]]:
+        if source_meta and source_meta.attempted_sources:
+            resolved = list(dict.fromkeys([*attempted[:-1], *source_meta.attempted_sources]))
+            return source_meta.selected_source or source_name, resolved
+        return super()._resolve_provenance(source_name, source_meta, attempted)
 
     async def fetch(  # type: ignore[override]
         self,
@@ -83,62 +133,105 @@ class UsodoSoloDataset(BaseDataset):
         classe_id: int | None = None,
         nivel: str = "estado",
         municipio: str | None = None,
+        geocodigo: str | None = None,
         periodo: str | None = None,
         classe_de_id: int | None = None,
         classe_para_id: int | None = None,
+        colecao: int | None = None,
+        as_polars: bool = False,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        if tipo not in ("cobertura", "transicao"):
-            raise InvalidParameterError(
-                f"tipo deve ser 'cobertura' ou 'transicao', recebeu '{tipo}'"
-            )
-
-        snapshot = get_snapshot()
-
-        logger.info(
-            "dataset_fetch",
-            dataset="uso_do_solo",
-            tipo=tipo,
-            bioma=bioma,
+        coverage = {
+            "ano": ano,
+            "classe_id": classe_id,
+            "municipio": municipio,
+            "geocodigo": geocodigo,
+        }
+        transition = {
+            "periodo": periodo,
+            "classe_de_id": classe_de_id,
+            "classe_para_id": classe_para_id,
+        }
+        _validar_consulta(
+            tipo,
+            nivel,
+            cobertura=coverage,
+            transicao=transition,
+            as_polars=as_polars,
+            return_meta=return_meta,
         )
-
-        df, source_name, source_meta, attempted = await self._try_sources(
+        logger.info("dataset_fetch", dataset=self.info.name, tipo=tipo, bioma=bioma)
+        frame, source_name, source_meta, attempted = await self._try_sources(
             "",
             tipo=tipo,
             bioma=bioma,
             estado=estado,
-            ano=ano,
-            classe_id=classe_id,
             nivel=nivel,
-            municipio=municipio,
-            periodo=periodo,
-            classe_de_id=classe_de_id,
-            classe_para_id=classe_para_id,
-            **kwargs,
+            colecao=colecao,
+            **coverage,
+            **transition,
         )
-
-        df = self._normalize(df)
-
-        from agrobr.contracts import has_contract, validate_dataset
-
-        contract_key = f"mapbiomas_{tipo}"
-        if nivel == "estado" and has_contract(contract_key):
-            validate_dataset(df, contract_key)
-
-        if return_meta:
-            return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-        return df
+        self._validate_contract(frame, tipo=tipo, nivel=nivel)
+        meta = (
+            self._build_meta(
+                frame,
+                source_name,
+                source_meta,
+                attempted,
+                None,
+                contract_name=self._contract_name(tipo=tipo, nivel=nivel),
+            )
+            if return_meta
+            else None
+        )
+        return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
     def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
 _uso_do_solo = UsodoSoloDataset()
+registry.register(_uso_do_solo)
 
-from agrobr.datasets.registry import register  # noqa: E402
 
-register(_uso_do_solo)
+@overload
+async def uso_do_solo(
+    *,
+    tipo: Literal["cobertura", "transicao"] = "cobertura",
+    bioma: str | None = None,
+    estado: str | None = None,
+    ano: int | None = None,
+    classe_id: int | None = None,
+    nivel: str = "estado",
+    municipio: str | None = None,
+    geocodigo: str | None = None,
+    periodo: str | None = None,
+    classe_de_id: int | None = None,
+    classe_para_id: int | None = None,
+    colecao: int | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def uso_do_solo(
+    *,
+    tipo: Literal["cobertura", "transicao"] = "cobertura",
+    bioma: str | None = None,
+    estado: str | None = None,
+    ano: int | None = None,
+    classe_id: int | None = None,
+    nivel: str = "estado",
+    municipio: str | None = None,
+    geocodigo: str | None = None,
+    periodo: str | None = None,
+    classe_de_id: int | None = None,
+    classe_para_id: int | None = None,
+    colecao: int | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def uso_do_solo(
@@ -150,11 +243,13 @@ async def uso_do_solo(
     classe_id: int | None = None,
     nivel: str = "estado",
     municipio: str | None = None,
+    geocodigo: str | None = None,
     periodo: str | None = None,
     classe_de_id: int | None = None,
     classe_para_id: int | None = None,
+    colecao: int | None = None,
+    as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     return await _uso_do_solo.fetch(
         tipo=tipo,
@@ -164,9 +259,11 @@ async def uso_do_solo(
         classe_id=classe_id,
         nivel=nivel,
         municipio=municipio,
+        geocodigo=geocodigo,
         periodo=periodo,
         classe_de_id=classe_de_id,
         classe_para_id=classe_para_id,
+        colecao=colecao,
+        as_polars=as_polars,
         return_meta=return_meta,
-        **kwargs,
     )

@@ -1,4 +1,4 @@
-# censo_agropecuario_historico v1.0
+# censo_agropecuario_historico v1.1
 
 Agricultural Census historical series (1920-2006) by theme and state via SIDRA.
 
@@ -33,6 +33,7 @@ Agricultural Census historical series (1920-2006) by theme and state via SIDRA.
 | `ano` | int | ❌ | Census year (1920-2006) |
 | `localidade` | str | ✅ | State or region |
 | `localidade_cod` | int | ✅ | IBGE code |
+| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `tema` | str | ❌ | Historical-series theme |
 | `categoria` | str | ❌ | Category within the theme (or "total") |
 | `variavel` | str | ❌ | Variable name |
@@ -85,7 +86,7 @@ Long format: each row holds one variable/value pair.
 - Numeric values are always >= 0
 - `fonte` is always "ibge_censo_agro_historico"
 - Maximum territorial level is state (no municipal data)
-- Cache with 30-day TTL (static data)
+- No cache: every call queries IBGE
 
 ## Example
 
@@ -127,4 +128,12 @@ print(contract.to_json())
 | `censo_agropecuario_legado` | 6 legacy themes (FTP) | 1995 |
 | **`censo_agropecuario_historico`** | **9 historical-series themes (SIDRA)** | **1920-2006** |
 
-These are separate contracts, no conflict. Each has its own dataset wrapper and registry entry.
+These are separate contracts, each with its own dataset wrapper and registry entry. The year 1995 appears in two of them
+with different numbers: `censo_agropecuario` reads the 1995-96 Census tables on SIDRA (316, 323, 497 and 509), and
+`censo_agropecuario_historico` reads the historical-series tables (264, 281, 1730 and 1731).
+
+- For sugarcane in PB, it is 8.7 Mt in `censo_agropecuario` and 3.5 Mt in `censo_agropecuario_historico`.
+- The original Census file on IBGE's FTP (1998) confirms the historical series for sugarcane in PB and for the total areas
+  of MT and MA. For soybean in PR, the three sources diverge.
+- The note on IBGE table 1731 says that "small corrections were made after publication".
+- For the long series, use `censo_agropecuario_historico`.

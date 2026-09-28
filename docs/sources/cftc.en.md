@@ -40,8 +40,8 @@ df = await datasets.posicionamento_fundos("soja")
 | `managed_money_long/short/spread` | int64 | Fund positions |
 | `managed_money_net` | int64 | Long − short (calculated) |
 | `producer_long/short` | int64 | Commercial hedgers |
-| `swap_long/short` | int64 | Swap dealers |
-| `other_long/short` | int64 | Other reportables |
+| `swap_long/short/spread` | int64 | Swap dealers |
+| `other_long/short/spread` | int64 | Other reportables |
 | `nonreportable_long/short` | int64 | Non-reportable positions |
 | `change_managed_money_long/short` | Int64 | Weekly change (nullable) |
 | `change_open_interest` | Int64 | Weekly change in OI (nullable) |

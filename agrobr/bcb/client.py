@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import hashlib
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass, field
 from typing import Any, cast
 from urllib.parse import quote
 
@@ -13,6 +18,7 @@ from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.dates import INICIO_SAFRA_MES
+from agrobr.utils.time import utcnow_aware
 
 from . import models
 
@@ -30,6 +36,7 @@ ENDPOINT_MAP: dict[str, str] = {
     "investimento": "InvestRegiaoUFProduto",
     "comercializacao": "ComercRegiaoUFProduto",
 }
+TOTAL_ENDPOINT = "RegiaoUF"
 
 _SELECT_COMUM = [
     "nomeProduto",
@@ -52,13 +59,33 @@ SELECT_MAP: dict[str, list[str]] = {
 }
 
 
-async def _fetch_odata(
+@dataclass
+class AquisicaoOData:
+    consulta: str | None = None
+    paginas: list[dict[str, Any]] = field(default_factory=list)
+
+
+_AQUISICAO: ContextVar[AquisicaoOData | None] = ContextVar("bcb_sicor_aquisicao", default=None)
+
+
+@contextmanager
+def registrar_aquisicao() -> Iterator[AquisicaoOData]:
+    """Recolhe a consulta e cada página OData (URL, SHA-256, bytes e hora) pedidas no bloco."""
+    aquisicao = AquisicaoOData()
+    token = _AQUISICAO.set(aquisicao)
+    try:
+        yield aquisicao
+    finally:
+        _AQUISICAO.reset(token)
+
+
+def odata_url(
     endpoint: str,
     filters: list[str] | None = None,
     select: list[str] | None = None,
-    top: int = SICOR_RECORD_LIMIT,
-) -> dict[str, Any]:
-    parts = [f"$format=json&$top={top}"]
+    top: int | None = SICOR_RECORD_LIMIT,
+) -> str:
+    parts = ["$format=json"] + ([f"$top={top}"] if top is not None else [])
 
     if filters:
         parts.append("$filter=" + quote(" and ".join(filters), safe="(),'"))
@@ -66,7 +93,21 @@ async def _fetch_odata(
     if select:
         parts.append("$select=" + ",".join(select))
 
-    url = f"{BASE_URL}/{endpoint}?" + "&".join(parts)
+    return f"{BASE_URL}/{endpoint}?" + "&".join(parts)
+
+
+def _registrar_consulta(endpoint: str, filters: list[str], select: list[str] | None) -> None:
+    if (aquisicao := _AQUISICAO.get()) is not None:
+        aquisicao.consulta = odata_url(endpoint, filters or None, select, top=None)
+
+
+async def _fetch_odata(
+    endpoint: str,
+    filters: list[str] | None = None,
+    select: list[str] | None = None,
+    top: int = SICOR_RECORD_LIMIT,
+) -> dict[str, Any]:
+    url = odata_url(endpoint, filters, select, top)
 
     async with httpx.AsyncClient(
         timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
@@ -83,7 +124,16 @@ async def _fetch_odata(
             max_attempts=BCB_MAX_RETRIES,
         )
 
-        response.raise_for_status()
+        responses.raise_for_status(response, source="bcb")
+        if (aquisicao := _AQUISICAO.get()) is not None:
+            aquisicao.paginas.append(
+                {
+                    "url": url,
+                    "sha256": hashlib.sha256(response.content).hexdigest(),
+                    "bytes": len(response.content),
+                    "fetched_at": utcnow_aware(),
+                }
+            )
         return responses.parse_json_response(response, source="bcb", url=url)  # type: ignore[no-any-return]
 
 
@@ -113,12 +163,7 @@ def _resolve_uf_sigla(cd_uf: str | None) -> str | None:
     raise ValueError(f"Codigo de UF invalido: {cd_uf!r}")
 
 
-def _safra_odata_filter(safra_sicor: str) -> str:
-    try:
-        ano_inicio = int(safra_sicor.split("/")[0])
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"Safra SICOR invalida: {safra_sicor!r}") from exc
-
+def _safra_odata_filter(ano_inicio: int) -> str:
     mes_inicio = f"{INICIO_SAFRA_MES:02d}"
     return (
         f"((AnoEmissao eq '{ano_inicio}' and MesEmissao ge '{mes_inicio}') or "
@@ -189,14 +234,17 @@ async def fetch_credito_rural(
         )
 
     uf_sigla = _resolve_uf_sigla(cd_uf)
+    ano_inicio = (
+        int(models.normalize_safra_sicor(safra_sicor).split("/")[0]) if safra_sicor else None
+    )
     server_filters: list[str] = []
     if produto_sicor:
         safe = produto_sicor.replace("'", "''")
-        server_filters.append(f"contains(nomeProduto,'{safe}')")
+        server_filters.append(f"nomeProduto eq '{safe}'")
     if uf_sigla:
         server_filters.append(f"nomeUF eq '{uf_sigla}'")
-    if safra_sicor:
-        server_filters.append(_safra_odata_filter(safra_sicor))
+    if ano_inicio is not None:
+        server_filters.append(_safra_odata_filter(ano_inicio))
 
     logger.info(
         "bcb_fetch_credito",
@@ -208,6 +256,7 @@ async def fetch_credito_rural(
     )
 
     select = SELECT_MAP.get(finalidade.lower())
+    _registrar_consulta(endpoint, server_filters, select)
     all_records = await _fetch_credito_records(endpoint, server_filters, select)
 
     logger.info(
@@ -221,8 +270,7 @@ async def fetch_credito_rural(
 
     filtered = all_records
 
-    if safra_sicor:
-        ano_inicio = int(safra_sicor.split("/")[0])
+    if ano_inicio is not None:
         filtered = [r for r in filtered if _pertence_a_safra(r, ano_inicio)]
 
     if uf_sigla:
@@ -238,12 +286,38 @@ async def fetch_credito_rural(
     return filtered
 
 
+async def fetch_credito_rural_total(
+    safra_sicor: str | None = None,
+    cd_uf: str | None = None,
+) -> list[dict[str, Any]]:
+    uf_sigla = _resolve_uf_sigla(cd_uf)
+    ano_inicio = (
+        int(models.normalize_safra_sicor(safra_sicor).split("/")[0]) if safra_sicor else None
+    )
+    server_filters = [f"nomeUF eq '{uf_sigla}'"] if uf_sigla else []
+    if ano_inicio is not None:
+        server_filters.append(_safra_odata_filter(ano_inicio))
+    _registrar_consulta(TOTAL_ENDPOINT, server_filters, list(models.SICOR_TOTAL_CAMPOS))
+    records = await _fetch_credito_records(
+        TOTAL_ENDPOINT, server_filters, list(models.SICOR_TOTAL_CAMPOS)
+    )
+    return [
+        record
+        for record in records
+        if (ano_inicio is None or _pertence_a_safra(record, ano_inicio))
+        and (uf_sigla is None or str(record.get("nomeUF", "")).strip().upper() == uf_sigla)
+    ]
+
+
 async def fetch_credito_rural_with_fallback(
     finalidade: str = "custeio",
     produto_sicor: str | None = None,
     safra_sicor: str | None = None,
     cd_uf: str | None = None,
+    sem_fallback: str | None = None,
 ) -> tuple[list[dict[str, Any]], str]:
+    """Consulta o OData e, se ele falhar, a Base dos Dados; com `sem_fallback`, o erro do OData
+    sobe com esse motivo, sem tentar o BigQuery."""
     odata_error_msg = ""
     try:
         records = await fetch_credito_rural(
@@ -256,6 +330,12 @@ async def fetch_credito_rural_with_fallback(
 
     except (SourceUnavailableError, httpx.HTTPStatusError) as odata_err:
         odata_error_msg = getattr(odata_err, "last_error", str(odata_err))
+        if sem_fallback:
+            raise SourceUnavailableError(
+                source="bcb",
+                url=f"{BASE_URL}/{ENDPOINT_MAP.get(finalidade.lower(), '')}",
+                last_error=f"OData: {odata_error_msg}; sem fallback BigQuery: {sem_fallback}",
+            ) from odata_err
         logger.warning(
             "bcb_odata_fallback",
             error=str(odata_err),

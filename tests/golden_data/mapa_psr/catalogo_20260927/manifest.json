@@ -1,0 +1,13 @@
+{
+ "descricao": "Pacote do PSR (SISSER) no CKAN do MAPA, package_show, capturado ao vivo",
+ "url": "https://dados.agricultura.gov.br/api/3/action/package_show?id=baefdc68-9bad-4204-83e8-f2888b79ab48",
+ "status": 200,
+ "content_type": "application/json;charset=utf-8",
+ "bytes": 7886,
+ "sha256": "68898a29f0adec8b0d722d73614b25b5285cb7cd33fb3b12de395b464d6297c6",
+ "capturado_em": "2026-09-27T09:46:22+00:00",
+ "reducao": "package_show.json guarda só success, result.id, result.name, result.metadata_modified e, de cada recurso, id, name, format, url e last_modified, como publicados; o resto (maintainer, creator_user_id, organização, tags, notas) fica fora",
+ "arquivo": "package_show.json",
+ "arquivo_sha256": "c078061563890df3e330173ac6375b2bbaaa6b419a40054c41c88006e223daca",
+ "arquivo_bytes": 2588
+}

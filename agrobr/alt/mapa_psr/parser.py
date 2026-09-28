@@ -1,18 +1,60 @@
 from __future__ import annotations
 
+import codecs
+import csv
 import io
+import json
+import re
+from collections.abc import Generator, Iterator
+from contextlib import closing
+from typing import IO, Any
+from urllib.parse import urlsplit
 
 import pandas as pd
+import pydantic
 import structlog
 
 from agrobr.exceptions import ParseError
-from agrobr.normalize.encoding import detect_encoding_chain
+from agrobr.normalize import regions
 from agrobr.normalize.numeric import parse_numeric_br
 from agrobr.normalize.regions import remover_acentos
 
+from . import models
+
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
+PARSER_VERSION = 4
+
+
+_CSV_DO_CATALOGO = re.compile(r"dados_abertos_psr_(\d{4})(?:a(\d{4}))?csv\.csv", re.I)
+
+
+def parse_catalogo(corpo: bytes) -> dict[str, str]:
+    """Os CSV do pacote do PSR no CKAN do MAPA, por período (``"2025"`` ou ``"2016-2024"``).
+
+    Só entra recurso servido pelo próprio portal (https em ``dados.agricultura.gov.br``).
+    """
+    try:
+        pacote: Any = json.loads(corpo)
+        recursos = pacote["result"]["resources"] if pacote["success"] is True else None
+    except (ValueError, KeyError, TypeError):
+        recursos = None
+    if not isinstance(recursos, list):
+        raise ParseError(
+            source="mapa_psr",
+            parser_version=PARSER_VERSION,
+            reason="Catálogo do PSR sem a lista de recursos do pacote",
+        )
+    catalogo: dict[str, str] = {}
+    for recurso in recursos:
+        url = recurso.get("url") if isinstance(recurso, dict) else None
+        if not isinstance(url, str):
+            continue
+        partes = urlsplit(url)
+        achado = _CSV_DO_CATALOGO.fullmatch(partes.path.rsplit("/", 1)[-1])
+        if achado and partes.scheme == "https" and partes.hostname == "dados.agricultura.gov.br":
+            catalogo[achado[1] if achado[2] is None else f"{achado[1]}-{achado[2]}"] = url
+    return catalogo
 
 
 def _detect_separator(text: str) -> str:
@@ -23,45 +65,107 @@ def _detect_separator(text: str) -> str:
 
 
 def _normalize_column_name(col: str) -> str:
-    return col.strip()
+    return remover_acentos(col.strip())
 
 
-def _read_apolices_csv(content: bytes) -> pd.DataFrame:
-    encoding = detect_encoding_chain(content)
+def _detect_file_encoding(stream: IO[bytes]) -> str:
+    stream.seek(0)
+    bom = stream.read(3) == codecs.BOM_UTF8
+    for encoding in ("utf-8-sig",) if bom else ("utf-8", "windows-1252", "iso-8859-1"):
+        stream.seek(0)
+        decoder = codecs.getincrementaldecoder(encoding)(errors="strict")
+        try:
+            while block := stream.read(65536):
+                decoder.decode(block)
+            decoder.decode(b"", final=True)
+        except UnicodeDecodeError:
+            continue
+        stream.seek(0)
+        return encoding
+    raise UnicodeError("Nenhum encoding válido para o CSV")
+
+
+def _iter_apolices_csv(stream: IO[bytes], chunk_size: int) -> Generator[pd.DataFrame, None, None]:
     try:
-        text = content.decode(encoding)
-    except (UnicodeDecodeError, LookupError) as e:
-        raise ParseError(
-            source="mapa_psr",
-            parser_version=PARSER_VERSION,
-            reason=f"Erro de encoding ({encoding}): {e}",
-        ) from e
-
-    sep = _detect_separator(text)
-
-    try:
-        df = pd.read_csv(
-            io.StringIO(text),
+        encoding = _detect_file_encoding(stream)
+        sep = _detect_separator(stream.readline().decode(encoding))
+        stream.seek(0)
+        _validate_csv_records(stream, encoding, sep)
+        found_rows = False
+        with pd.read_csv(
+            stream,
+            encoding=encoding,
             sep=sep,
             dtype=str,
-            on_bad_lines="skip",
-            low_memory=False,
-        )
-    except Exception as e:
+            keep_default_na=False,
+            on_bad_lines="error",
+            engine="python",
+            chunksize=chunk_size,
+        ) as reader:
+            for df in reader:
+                if not df.empty:
+                    found_rows = True
+                    yield df
+        if not found_rows:
+            raise ParseError(source="mapa_psr", parser_version=PARSER_VERSION, reason="CSV vazio")
+    except (ValueError, LookupError, csv.Error) as e:
         raise ParseError(
             source="mapa_psr",
             parser_version=PARSER_VERSION,
             reason=f"Erro ao ler CSV: {e}",
         ) from e
 
-    if df.empty:
+
+def _csv_header(reader: Iterator[list[str]]) -> list[str]:
+    header = next(reader, None)
+    if not header:
+        raise ParseError(source="mapa_psr", parser_version=PARSER_VERSION, reason="CSV vazio")
+    normalized = [_normalize_column_name(name).upper() for name in header]
+    if len(normalized) != len(set(normalized)):
+        raise ParseError(
+            source="mapa_psr", parser_version=PARSER_VERSION, reason="Cabeçalho CSV duplicado"
+        )
+    missing = {"ANO_APOLICE", "SG_UF_PROPRIEDADE", "NM_CULTURA_GLOBAL"} - set(normalized)
+    if missing:
         raise ParseError(
             source="mapa_psr",
             parser_version=PARSER_VERSION,
-            reason="CSV vazio",
+            reason=f"Colunas criticas faltando: {sorted(missing)}",
         )
+    return normalized
 
-    return df
+
+def _validate_csv_records(stream: IO[bytes], encoding: str, sep: str) -> None:
+    text = io.TextIOWrapper(stream, encoding=encoding, newline="")
+    try:
+        reader = csv.reader(text, delimiter=sep, strict=True)
+        header = _csv_header(reader)
+        year_index = header.index("ANO_APOLICE")
+        valid_years: set[str] = set()
+        for position, row in enumerate(reader, 1):
+            if not row:
+                continue
+            location = f"Registro {position}, linha física {reader.line_num}"
+            if len(row) != len(header):
+                raise ParseError(
+                    source="mapa_psr",
+                    parser_version=PARSER_VERSION,
+                    reason=f"{location}: largura {len(row)}, esperada {len(header)}",
+                )
+            year = row[year_index]
+            if year not in valid_years:
+                try:
+                    models.AnoApolice.model_validate({"ano_apolice": year})
+                except pydantic.ValidationError as error:
+                    raise ParseError(
+                        source="mapa_psr",
+                        parser_version=PARSER_VERSION,
+                        reason=f"{location}: ANO_APOLICE inválido",
+                    ) from error
+                valid_years.add(year)
+    finally:
+        text.detach()
+        stream.seek(0)
 
 
 def _drop_ignored_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -91,28 +195,8 @@ def _build_rename_map(df: pd.DataFrame) -> dict[str, str]:
 
 
 def _normalize_apolices_columns(df: pd.DataFrame) -> pd.DataFrame:
-    from agrobr.alt.mapa_psr.models import COLUNAS_CSV
-
     df = _drop_ignored_columns(df)
-    df = df.rename(columns=_build_rename_map(df))
-
-    present_cols = [c for c in COLUNAS_CSV.values() if c in df.columns]
-    if not present_cols:
-        raise ParseError(
-            source="mapa_psr",
-            parser_version=PARSER_VERSION,
-            reason=f"Nenhuma coluna esperada encontrada. Colunas: {list(df.columns)}",
-        )
-
-    missing_critical = {"ano_apolice", "uf", "cultura"} - set(df.columns)
-    if missing_critical:
-        raise ParseError(
-            source="mapa_psr",
-            parser_version=PARSER_VERSION,
-            reason=f"Colunas criticas faltando: {missing_critical}",
-        )
-
-    return df
+    return df.rename(columns=_build_rename_map(df))
 
 
 def _normalize_apolices_strings(df: pd.DataFrame) -> pd.DataFrame:
@@ -120,9 +204,17 @@ def _normalize_apolices_strings(df: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             df[col] = df[col].str.strip().str.upper()
 
-    for col in ("cd_ibge", "nr_apolice"):
-        if col in df.columns:
-            df[col] = df[col].fillna("").str.strip()
+    if "nr_apolice" in df.columns:
+        df["nr_apolice"] = df["nr_apolice"].fillna("").str.strip()
+
+    if "cd_ibge" in df.columns:
+        codigo = df["cd_ibge"].str.strip()
+        df["cd_ibge"] = codigo.where(codigo.ne("-") & codigo.ne(""))
+    df["cod_municipio"] = (
+        regions.cod_municipio(df["cd_ibge"])
+        if "cd_ibge" in df.columns
+        else pd.Series(pd.NA, index=df.index, dtype="Int64")
+    )
 
     if "evento" in df.columns:
         df["evento"] = df["evento"].fillna("").str.strip().str.lower()
@@ -133,19 +225,14 @@ def _normalize_apolices_strings(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _convert_apolices_types(df: pd.DataFrame) -> pd.DataFrame:
+def _convert_apolices_numbers(df: pd.DataFrame) -> pd.DataFrame:
     from agrobr.alt.mapa_psr.models import COLUNAS_FLOAT
-
-    if "ano_apolice" in df.columns:
-        df["ano_apolice"] = pd.to_numeric(df["ano_apolice"], errors="coerce")
-        df = df.dropna(subset=["ano_apolice"]).copy()
-        df["ano_apolice"] = df["ano_apolice"].astype(int)
 
     for col in COLUNAS_FLOAT:
         if col in df.columns:
-            df[col] = df[col].apply(parse_numeric_br)
+            df[col] = df[col].apply(parse_numeric_br).astype("float64")
 
-    return _normalize_apolices_strings(df)
+    return df
 
 
 def _filter_apolices(
@@ -154,16 +241,21 @@ def _filter_apolices(
     uf: str | None,
     ano: int | None,
     municipio: str | None,
+    cd_ibge: str | None,
 ) -> pd.DataFrame:
     if uf:
         df = df[df["uf"] == uf.upper()]
 
     if cultura:
         cultura_norm = remover_acentos(cultura.upper())
-        mask = df["cultura"].apply(
-            lambda x, cn=cultura_norm: (
-                cn in remover_acentos(str(x).upper()) if pd.notna(x) else False
+        mask = (
+            df["cultura"]
+            .apply(
+                lambda x, cn=cultura_norm: (
+                    cn in remover_acentos(str(x).upper()) if pd.notna(x) else False
+                )
             )
+            .astype(bool)
         )
         df = df[mask]
 
@@ -174,40 +266,59 @@ def _filter_apolices(
         mask = df["municipio"].str.contains(municipio.upper(), na=False, regex=False)
         df = df[mask]
 
+    if cd_ibge is not None:
+        if "cd_ibge" not in df.columns:
+            raise ParseError(
+                source="mapa_psr",
+                parser_version=PARSER_VERSION,
+                reason="Coluna CD_GEOCMU ausente: o filtro cd_ibge não pode ser aplicado",
+            )
+        df = df[df["cd_ibge"] == cd_ibge]
+
     return df
 
 
-def _parse_apolices(
-    content: bytes,
+def iter_apolices(
+    stream: IO[bytes],
     cultura: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     municipio: str | None = None,
     *,
-    ensure_valor_indenizacao: bool,
-) -> pd.DataFrame:
-    from agrobr.alt.mapa_psr.models import COLUNAS_APOLICES
+    cd_ibge: str | None = None,
+    sinistros: bool = False,
+    evento: str | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    chunk_size: int = 10000,
+) -> Generator[pd.DataFrame, None, None]:
+    from agrobr.alt.mapa_psr.models import COLUNAS_APOLICES, COLUNAS_SINISTROS
 
-    df = _read_apolices_csv(content)
-    df = _normalize_apolices_columns(df)
-    df = _convert_apolices_types(df)
-    if ensure_valor_indenizacao and "valor_indenizacao" not in df.columns:
-        df["valor_indenizacao"] = pd.Series(pd.NA, index=df.index, dtype="Float64")
-    df = _filter_apolices(df, cultura=cultura, uf=uf, ano=ano, municipio=municipio)
+    with closing(_iter_apolices_csv(stream, chunk_size)) as chunks:
+        for df in chunks:
+            df = _normalize_apolices_columns(df)
+            df["ano_apolice"] = pd.to_numeric(df["ano_apolice"], errors="raise")
+            df["ano_apolice"] = df["ano_apolice"].astype(int)
+            df = _normalize_apolices_strings(df)
+            df = _filter_apolices(
+                df, cultura=cultura, uf=uf, ano=ano, municipio=municipio, cd_ibge=cd_ibge
+            )
+            if ano_inicio is not None:
+                df = df[df["ano_apolice"] >= ano_inicio]
+            if ano_fim is not None:
+                df = df[df["ano_apolice"] <= ano_fim]
+            df = _convert_apolices_numbers(df.copy())
+            if sinistros:
+                df = _filter_sinistros(df, evento)
+            elif "valor_indenizacao" not in df.columns:
+                df["valor_indenizacao"] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+            columns = COLUNAS_SINISTROS if sinistros else COLUNAS_APOLICES
+            yield df[[c for c in columns if c in df.columns]]
 
-    final_cols = [c for c in COLUNAS_APOLICES if c in df.columns]
-    df = df[final_cols]
 
-    df = df.sort_values("ano_apolice").reset_index(drop=True)
-
-    logger.debug(
-        "mapa_psr_parse_apolices_ok",
-        records=len(df),
-        culturas=df["cultura"].nunique() if "cultura" in df.columns else 0,
-        ufs=df["uf"].nunique() if "uf" in df.columns else 0,
-    )
-
-    return df
+def _collect_frames(frames: Iterator[pd.DataFrame]) -> pd.DataFrame:
+    result = pd.concat(list(frames), ignore_index=True)
+    return result.sort_values("ano_apolice").reset_index(drop=True)
 
 
 def parse_apolices(
@@ -217,13 +328,8 @@ def parse_apolices(
     ano: int | None = None,
     municipio: str | None = None,
 ) -> pd.DataFrame:
-    return _parse_apolices(
-        content,
-        cultura=cultura,
-        uf=uf,
-        ano=ano,
-        municipio=municipio,
-        ensure_valor_indenizacao=True,
+    return _collect_frames(
+        iter_apolices(io.BytesIO(content), cultura=cultura, uf=uf, ano=ano, municipio=municipio)
     )
 
 
@@ -235,18 +341,27 @@ def parse_sinistros(
     municipio: str | None = None,
     evento: str | None = None,
 ) -> pd.DataFrame:
-    df = _parse_apolices(
-        content,
-        cultura=cultura,
-        uf=uf,
-        ano=ano,
-        municipio=municipio,
-        ensure_valor_indenizacao=False,
+    return _collect_frames(
+        iter_apolices(
+            io.BytesIO(content),
+            cultura=cultura,
+            uf=uf,
+            ano=ano,
+            municipio=municipio,
+            sinistros=True,
+            evento=evento,
+        )
     )
 
-    if "valor_indenizacao" in df.columns:
-        mask_indenizacao = df["valor_indenizacao"].fillna(0) > 0
-        df = df[mask_indenizacao]
+
+def _filter_sinistros(df: pd.DataFrame, evento: str | None) -> pd.DataFrame:
+    if "valor_indenizacao" not in df.columns:
+        raise ParseError(
+            source="mapa_psr",
+            parser_version=PARSER_VERSION,
+            reason="Coluna valor_indenizacao obrigatória para identificar sinistros",
+        )
+    df = df[df["valor_indenizacao"].fillna(0) > 0]
 
     if "evento" in df.columns:
         mask_evento = df["evento"].fillna("").str.strip().ne("")
@@ -255,18 +370,5 @@ def parse_sinistros(
     if evento and "evento" in df.columns:
         mask = df["evento"].str.contains(evento.lower(), na=False, regex=False)
         df = df[mask]
-
-    from agrobr.alt.mapa_psr.models import COLUNAS_SINISTROS
-
-    final_cols = [c for c in COLUNAS_SINISTROS if c in df.columns]
-    df = df[final_cols]
-
-    df = df.sort_values("ano_apolice").reset_index(drop=True)
-
-    logger.debug(
-        "mapa_psr_parse_sinistros_ok",
-        records=len(df),
-        eventos=df["evento"].nunique() if "evento" in df.columns else 0,
-    )
 
     return df

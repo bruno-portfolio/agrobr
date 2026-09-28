@@ -1,0 +1,15 @@
+{
+  "source_url": "https://brasil.mapbiomas.org/wp-content/uploads/sites/3/2026/08/MAPBIOMAS_BRAZIL-COL.11-BIOME_STATE.xlsx",
+  "captured_at": "2026-09-06",
+  "source_sha256": "8a7e4b2faa636ca4d1c950db9c1f5987bd532621c70e9f492338dd79835c2af5",
+  "selection": "First coverage row for each selected class; first three transition rows; original headers and values retained",
+  "coverage_classes": [
+    0.0,
+    3.0,
+    75.0,
+    7.0,
+    13.0,
+    91.0,
+    84.0
+  ]
+}

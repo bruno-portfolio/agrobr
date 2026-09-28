@@ -18,12 +18,19 @@ O sistema PROHORT (Programa Brasileiro de Modernizacao do Mercado Hortigranjeiro
 
 O agrobr acessa os dados via Pentaho BA Server (backend do portal), usando a API CDA doQuery para obter a matriz de precos (48 produtos x 43 CEASAs) em formato JSON.
 
+A credencial vai no cabeçalho `Authorization: Basic`, nunca na URL: a URL registrada (log do httpx, erro, `MetaInfo`)
+não a leva. O padrão é a credencial pública do portal; uma credencial própria vem de `AGROBR_CONAB_CEASA_USER` e
+`AGROBR_CONAB_CEASA_PASS` e segue o mesmo caminho.
+
 ## Produtos Monitorados
 
 | Categoria | Quantidade | Exemplos |
 |-----------|------------|----------|
-| Frutas | 20 | Abacaxi, Banana Nanica, Laranja Pera, Manga, Melancia, Tomate, Uva |
-| Hortalicas | 28 | Alface, Batata, Cebola, Cenoura, Mandioca, Milho Verde, Ovos, Repolho |
+| Frutas | 21 | Abacaxi, Banana Nanica, Coco Verde, Laranja Pera, Manga, Melancia, Uva |
+| Hortalicas | 26 | Alface, Batata, Cebola, Cenoura, Mandioca, Milho Verde, Repolho, Tomate |
+| Ovos | 1 | Ovos |
+
+Frutas e hortaliças seguem os grupos do painel oficial "Hortaliças e Frutas" do PROHORT (Portal de Informações da Conab); ovos ficam fora dos dois grupos oficiais. Brócolo, cará, couve, jiló, mandioquinha, quiabo e vagem não aparecem no painel e ficam em Hortaliças por classificação do agrobr. Produto novo no PROHORT, fora dessa tabela, sai com `categoria` nula e um aviso.
 
 **Unidades:** KG (maioria), UN (abacaxi, coco verde, couve-flor), DZ (alface, ovos)
 
@@ -44,6 +51,8 @@ A API retorna uma matriz pivot (48 linhas x 44 colunas):
 O parser unpivota a matriz para formato long-form com 7 colunas.
 
 ## Limitacoes
+
+- A CEASA de cada coluna de precos vem do cabecalho da propria coluna (`colName`), conferido contra o catalogo `MDXceasa`; um cabecalho fora do catalogo ou duplicado levanta `ParseError` em vez de atribuir o preco a outra praca.
 
 - Apenas precos mais recentes (snapshot diario, sem serie temporal nesta versao)
 - Datas variam por CEASA (algumas inativas desde 2023)

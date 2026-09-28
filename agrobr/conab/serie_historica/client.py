@@ -11,6 +11,8 @@ from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 
+from . import models
+
 logger = structlog.get_logger()
 
 BASE_URL = URLS[Fonte.CONAB]["base"]
@@ -32,7 +34,21 @@ _PRODUCT_REGISTRY: dict[str, tuple[str, str, str]] = {
     "feijao_1": ("graos", "feijao", "feijao1aseriehist.xls"),
     "feijao_2": ("graos", "feijao", "feijao2aseriehist.xls"),
     "feijao_3": ("graos", "feijao", "feijao3aseriehist.xls"),
+    "feijao_caupi": ("graos", "feijao", "feijaocaupitotalseriehist.xls"),
+    "feijao_caupi_1": ("graos", "feijao", "feijaocaupi1aseriehist.xls"),
+    "feijao_caupi_2": ("graos", "feijao", "feijaocaupi2aseriehist.xls"),
+    "feijao_caupi_3": ("graos", "feijao", "feijaocaupi3aseriehist.xls"),
+    "feijao_cores": ("graos", "feijao", "feijaocorestotalseriehist.xls"),
+    "feijao_cores_1": ("graos", "feijao", "feijaocores1aseriehist.xls"),
+    "feijao_cores_2": ("graos", "feijao", "feijaocores2aseriehist.xls"),
+    "feijao_cores_3": ("graos", "feijao", "feijaocores3aseriehist.xls"),
+    "feijao_preto": ("graos", "feijao", "feijaopretototalseriehist.xls"),
+    "feijao_preto_1": ("graos", "feijao", "feijaopreto1aseriehist.xls"),
+    "feijao_preto_2": ("graos", "feijao", "feijaopreto2aseriehist.xls"),
+    "feijao_preto_3": ("graos", "feijao", "feijaopreto3aseriehist.xls"),
     "algodao": ("graos", "algodao", "algodaoseriehist.xls"),
+    "algodao_pluma": ("graos", "algodao", "algodaoseriehist.xls"),
+    "algodao_caroco": ("graos", "algodao", "algodaoseriehist.xls"),
     "trigo": ("graos", "trigo", "trigoseriehist.xls"),
     "sorgo": ("graos", "sorgo", "sorgoseriehist.xls"),
     "aveia": ("graos", "aveia", "aveiaseriehist.xls"),
@@ -45,13 +61,12 @@ _PRODUCT_REGISTRY: dict[str, tuple[str, str, str]] = {
     "amendoim_2": ("graos", "amendoim", "amendoim2aseriehist.xls"),
     "centeio": ("graos", "centeio", "centeioseriehist.xls"),
     "triticale": ("graos", "triticale", "triticaleseriehist.xls"),
-    "gergelim": ("graos", "girassol", "gergelimseriehist.xls"),
+    "gergelim": ("graos", "gergelim", "gergelimseriehist.xls"),
     "cafe": ("cafe", "total-arabica-e-conilon", "cafetotalseriehist.xls"),
     "cafe_arabica": ("cafe", "arabica", "cafearabicaseriehist.xls"),
     "cafe_conilon": ("cafe", "conilon", "cafeconilonseriehist.xls"),
     "cana": ("cana-de-acucar", "agricola", "canaseriehist-agricola.xls"),
     "cana_area_total": ("cana-de-acucar", "area-total", "canaseriehist-area-total.xls"),
-    "cana_industria": ("cana-de-acucar", "industria", "canaseriehist-industria.xls"),
 }
 
 TIMEOUT = get_timeout()
@@ -66,7 +81,13 @@ ACCEPT_EXCEL = (
 def get_xls_url(produto: str) -> str:
     if not isinstance(produto, str):
         raise InvalidParameterError("produto deve ser uma string")
-    produto_lower = produto.lower().strip()
+    produto_lower = models.normalize_produto(produto)
+
+    if produto_lower == "cana_industria":
+        raise InvalidParameterError(
+            "cana_industria não é suportado: as métricas industriais de açúcar e etanol "
+            "exigem um parser próprio. Use 'cana' para a série agrícola."
+        )
 
     if produto_lower not in _PRODUCT_REGISTRY:
         available = sorted(_PRODUCT_REGISTRY.keys())
@@ -118,7 +139,7 @@ async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
                 size_bytes=len(content),
             )
 
-            categoria, _, _ = _PRODUCT_REGISTRY.get(produto.lower().strip(), ("unknown", "", ""))
+            categoria, _, _ = _PRODUCT_REGISTRY[models.normalize_produto(produto)]
             metadata: dict[str, Any] = {
                 "url": str(response.url),
                 "produto": produto,

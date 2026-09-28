@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 import time
+import warnings
+from hashlib import sha256
 from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
-from agrobr.anec import client, parser
+from agrobr.anec import client, models, parser
 from agrobr.anec.models import (
     TIPO_EFETIVADO,
     TIPO_PROGRAMADO,
     ANECArticle,
-    resolve_produto,
 )
 from agrobr.anec.parser import PERIODO_CURRENT_WEEK, PERIODO_LAST_WEEK
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
@@ -22,18 +23,7 @@ from agrobr.utils.warnings import warn_once
 logger = structlog.get_logger()
 
 
-def _warn_license() -> None:
-    warn_once(
-        "anec_license",
-        (
-            "ANEC publica os dados sem termos de uso explícitos (zona_cinza). "
-            "Uso comercial pode requerer autorização da associação."
-        ),
-        category=UserWarning,
-    )
-
-
-_PARSE_CACHE: dict[str, tuple[parser.ParsedReport, str, ANECArticle]] = {}
+_PARSE_CACHE: dict[tuple[str, str, str, str], tuple[parser.ParsedReport, str, ANECArticle]] = {}
 
 
 def _parse_cache_clear() -> None:
@@ -45,9 +35,9 @@ async def _fetch_and_parse(
     ano: int,
     semana: int | None,
     use_cache: bool,
-) -> tuple[parser.ParsedReport, str, ANECArticle]:
+) -> tuple[parser.ParsedReport, client.Aquisicao, ANECArticle]:
     if semana is None:
-        pdf_bytes, url, article = await client.fetch_latest_pdf(year=ano, use_cache=use_cache)
+        aquisicao, article = await client._acquire_latest(ano, use_cache=use_cache)
     else:
         articles = await client.list_articles(ano)
         match = next(
@@ -59,26 +49,49 @@ async def _fetch_and_parse(
                 source="anec",
                 last_error=f"Semana {semana}/{ano} não disponível na ANEC",
             )
-        pdf_bytes, url = await client.fetch_pdf_bytes(match, use_cache=use_cache)
+        aquisicao = await client._acquire_pdf(match, use_cache=use_cache)
         article = match
 
+    cache_key = (
+        article.cuid,
+        str(article.media_updated_at),
+        aquisicao.url,
+        sha256(aquisicao.content).hexdigest(),
+    )
     if use_cache:
-        cache_key = article.cuid
         cached = _PARSE_CACHE.get(cache_key)
         if cached is not None and cached[0].fingerprint:
-            return cached
+            return cached[0], aquisicao, article
 
-    report = parser.parse_anec_pdf(pdf_bytes)
+    report = parser.parse_anec_pdf(aquisicao.content)
     if use_cache:
-        _PARSE_CACHE[article.cuid] = (report, url, article)
-    return report, url, article
+        _PARSE_CACHE[cache_key] = (report, aquisicao.url, article)
+    return report, aquisicao, article
 
 
 def _apply_produto_filter(df: pd.DataFrame, produto: str | None) -> pd.DataFrame:
     if produto is None:
         return df
-    produto_canon = resolve_produto(produto)
-    return df[df["produto"] == produto_canon]
+    return df[df["produto"] == produto]
+
+
+def _with_edition(df: pd.DataFrame, article: ANECArticle) -> pd.DataFrame:
+    week, year = article.week_year
+    result = df.reset_index(drop=True).copy()
+    result["ano_relatorio"] = pd.Series(year, index=result.index, dtype="Int64")
+    result["semana_relatorio"] = pd.Series(week, index=result.index, dtype="Int64")
+    result["edicao_id"] = pd.Series(article.cuid, index=result.index, dtype="object")
+    result["publicado_em"] = pd.Series(
+        pd.to_datetime(article.created_at, utc=True),
+        index=result.index,
+        dtype="datetime64[ns, UTC]",
+    )
+    result["revisado_em"] = pd.Series(
+        pd.to_datetime(article.media_updated_at, utc=True),
+        index=result.index,
+        dtype="datetime64[ns, UTC]",
+    )
+    return result
 
 
 def _tipo_to_periodo(tipo: str) -> str:
@@ -97,36 +110,36 @@ def _filter_weekly(
     *,
     porto: str | None,
     produto: str | None,
-    tipo: str | None,
+    periodo: str | None,
 ) -> pd.DataFrame:
     if porto is not None:
         canon_porto = parser.resolve_port(porto) or porto.strip().upper()
         df = df[df["porto"] == canon_porto]
     if produto is not None:
-        df = df[df["produto"] == resolve_produto(produto)]
-    if tipo is not None:
-        df = df[df["periodo"] == _tipo_to_periodo(tipo)]
+        df = df[df["produto"] == produto]
+    if periodo is not None:
+        df = df[df["periodo"] == periodo]
     return df.reset_index(drop=True)
 
 
 def _build_meta(
     *,
-    source_url: str,
+    aquisicao: client.Aquisicao,
     fetch_ms: int,
     parse_ms: int,
     df: pd.DataFrame,
     fingerprint: str,
+    schema_version: str = "1.0",
 ) -> MetaInfo:
     """Constrói MetaInfo para qualquer função pública do anec.
 
-    `fingerprint` aqui é o hash MD5 da estrutura do PDF (headers + dimensões),
-    não o SHA do binário. É armazenado em `raw_content_hash` por compatibilidade
-    com o campo existente do MetaInfo. O SHA do PDF binário fica no meta.json
-    do cache de disco (`pdf_sha256`), separado.
+    `raw_content_hash` e `raw_content_size` descrevem o PDF (SHA-256 e bytes).
+    `fingerprint`, o hash MD5 da estrutura do PDF (headers + dimensões), vai em
+    `source_details["layout_fingerprint"]`.
     """
-    return build_source_meta(
+    meta = build_source_meta(
         "anec",
-        source_url,
+        aquisicao.url,
         "httpx+pdfplumber",
         fetch_ms,
         parse_ms,
@@ -134,9 +147,60 @@ def _build_meta(
         parser.PARSER_VERSION,
         attempted_sources=["anec"],
         selected_source="anec",
-        schema_version="1.0",
-        raw_content_hash=fingerprint,
+        schema_version=schema_version,
+        raw_content_hash=sha256(aquisicao.content).hexdigest(),
+        raw_content_size=len(aquisicao.content),
+        source_details={**aquisicao.source_details, "layout_fingerprint": fingerprint},
     )
+    meta.from_cache = aquisicao.from_cache
+    meta.fetched_at = aquisicao.fetched_at
+    meta.fetch_timestamp = aquisicao.fetched_at
+    return meta
+
+
+async def _additional_table(
+    table: Literal["monthly_shipments", "yoy_comparison", "destinations"],
+    *,
+    ano: int,
+    semana: int | None,
+    produto: str | None,
+    use_cache: bool,
+    as_polars: bool,
+    return_meta: bool,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    canonical = models.validate_filters(
+        ano,
+        semana,
+        produto,
+        allow_total=table == "yoy_comparison",
+        produtos_publicados=models.DESTINOS_PRODUTOS_PUBLICADOS
+        if table == "destinations"
+        else None,
+    )
+    client._warn_license()
+    logger.info("anec_additional_table", table=table, ano=ano, semana=semana, produto=canonical)
+    t0 = time.monotonic()
+    report, aquisicao, article = await _fetch_and_parse(ano=ano, semana=semana, use_cache=use_cache)
+    fetch_ms = int((time.monotonic() - t0) * 1000)
+    t1 = time.monotonic()
+    raw: pd.DataFrame = getattr(report, table)
+    df = _with_edition(_apply_produto_filter(raw, canonical), article)
+    meta = _build_meta(
+        aquisicao=aquisicao,
+        fetch_ms=fetch_ms,
+        parse_ms=int((time.monotonic() - t1) * 1000),
+        df=df,
+        fingerprint=report.fingerprint,
+        schema_version="1.2" if table == "yoy_comparison" else "1.1",
+    )
+    if table == "destinations" and raw.empty:
+        message = (
+            "Nenhuma participação por destino foi extraída desta edição. "
+            "O layout pode conter apenas gráficos; o resultado vazio não confirma ausência de embarques."
+        )
+        meta.validation_warnings.append(message)
+        warnings.warn(message, UserWarning, stacklevel=3)
+    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
@@ -177,26 +241,48 @@ async def embarques(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    _warn_license()
+    if kwargs:
+        raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
+    produto_canonico = models.validate_filters(ano, semana, produto)
+    periodo = None if tipo is None else _tipo_to_periodo(tipo)
+    client._warn_license()
     logger.info("anec_embarques", ano=ano, semana=semana, porto=porto, produto=produto)
 
     t0 = time.monotonic()
-    report, url, _article = await _fetch_and_parse(ano=ano, semana=semana, use_cache=use_cache)
+    report, aquisicao, _article = await _fetch_and_parse(
+        ano=ano, semana=semana, use_cache=use_cache
+    )
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = _filter_weekly(report.weekly_shipments, porto=porto, produto=produto, tipo=tipo)
+    df = _filter_weekly(
+        report.weekly_shipments, porto=porto, produto=produto_canonico, periodo=periodo
+    )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = _build_meta(
-        source_url=url,
+        aquisicao=aquisicao,
         fetch_ms=fetch_ms,
         parse_ms=parse_ms,
         df=df,
         fingerprint=report.fingerprint,
+        schema_version="1.1",
     )
+    colunas = set(zip(df["produto"], df["periodo"], strict=True))
+    for produto, periodo, aviso in report.avisos_da_linha_total:
+        if (produto, periodo) in colunas:
+            meta.validation_warnings.append(aviso)
+            warn_once(f"anec_linha_total:{aviso}", aviso)
+    if not df.empty and df["data_inicio"].isna().any():
+        message = (
+            f"Os rótulos das duas semanas do boletim {df['semana'].iloc[0]}/{df['ano'].iloc[0]} "
+            "não formam semanas consecutivas de 7 dias a até 7 dias da semana da edição; "
+            "data_inicio e data_fim ficam nulas."
+        )
+        meta.validation_warnings.append(message)
+        warnings.warn(message, UserWarning, stacklevel=2)
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
@@ -232,27 +318,19 @@ async def embarques_mensais(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    _warn_license()
-    logger.info("anec_embarques_mensais", ano=ano, produto=produto)
-
-    t0 = time.monotonic()
-    report, url, _article = await _fetch_and_parse(ano=ano, semana=semana, use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = _apply_produto_filter(report.monthly_shipments, produto).reset_index(drop=True)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    meta = _build_meta(
-        source_url=url,
-        fetch_ms=fetch_ms,
-        parse_ms=parse_ms,
-        df=df,
-        fingerprint=report.fingerprint,
+    if kwargs:
+        raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
+    return await _additional_table(
+        "monthly_shipments",
+        ano=ano,
+        semana=semana,
+        produto=produto,
+        use_cache=use_cache,
+        as_polars=as_polars,
+        return_meta=return_meta,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
@@ -287,27 +365,19 @@ async def comparacao_anual(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    _warn_license()
-    logger.info("anec_comparacao_anual", ano=ano, produto=produto)
-
-    t0 = time.monotonic()
-    report, url, _article = await _fetch_and_parse(ano=ano, semana=semana, use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = _apply_produto_filter(report.yoy_comparison, produto).reset_index(drop=True)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    meta = _build_meta(
-        source_url=url,
-        fetch_ms=fetch_ms,
-        parse_ms=parse_ms,
-        df=df,
-        fingerprint=report.fingerprint,
+    if kwargs:
+        raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
+    return await _additional_table(
+        "yoy_comparison",
+        ano=ano,
+        semana=semana,
+        produto=produto,
+        use_cache=use_cache,
+        as_polars=as_polars,
+        return_meta=return_meta,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
@@ -342,31 +412,23 @@ async def destinos(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    _warn_license()
-    logger.info("anec_destinos", ano=ano, produto=produto)
-
-    t0 = time.monotonic()
-    report, url, _article = await _fetch_and_parse(ano=ano, semana=semana, use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = _apply_produto_filter(report.destinations, produto).reset_index(drop=True)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    meta = _build_meta(
-        source_url=url,
-        fetch_ms=fetch_ms,
-        parse_ms=parse_ms,
-        df=df,
-        fingerprint=report.fingerprint,
+    if kwargs:
+        raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
+    return await _additional_table(
+        "destinations",
+        ano=ano,
+        semana=semana,
+        produto=produto,
+        use_cache=use_cache,
+        as_polars=as_polars,
+        return_meta=return_meta,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 async def articles_disponiveis(year: int) -> list[dict[str, Any]]:
-    _warn_license()
+    client._warn_license()
     articles = await client.list_articles(year)
     return [
         {

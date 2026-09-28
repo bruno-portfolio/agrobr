@@ -1,0 +1,9 @@
+{
+  "source_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=biomas%20ILIKE%20%27%25Cerrado%25%27",
+  "captured_at": "2026-09-05",
+  "sha256": "d076631aec759fbe0e2a51a44f883103e4c161edc3876626798a06f70d1c5b4f",
+  "bytes": 8470,
+  "provenance": "icmbio_cerrado.csv",
+  "transformation": "none; original response bytes",
+  "scope": "Complete original tabular response or PDF; no rows removed."
+}

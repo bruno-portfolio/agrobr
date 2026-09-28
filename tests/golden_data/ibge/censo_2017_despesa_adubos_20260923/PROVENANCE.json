@@ -1,0 +1,15 @@
+{
+  "capture_session": "23/09/2026",
+  "source": "IBGE SIDRA, tabela 6899 (Censo Agropecuário 2017, despesas dos estabelecimentos)",
+  "method": "Resposta oficial preservada byte a byte, sem reserializar; mesma URL que agrobr.ibge.censo_agro('despesa_adubos', ano=2017) pede.",
+  "files": [
+    {
+      "file": "sidra_6899_uf.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6899/n3/all/h/n/p/all/v/2,1996/c829/46302/c210/45953/c218/46502/c12517/113601",
+      "fetched_at": "2026-09-23T03:40:47.957357+00:00",
+      "sha256": "5a732dff34e55d14894555d25147bb1d8c921c0c7ace5de25408a69cd17b58a0",
+      "bytes": 26569
+    }
+  ],
+  "metadata": "tests/golden_data/ibge/censo_2017_oficial_20260922/metadados_6899.json (categorias 46302, 45953, 46502 e 113601; variáveis 2 e 1996)"
+}

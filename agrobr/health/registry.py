@@ -27,8 +27,10 @@ class SourceHealthConfig:
     tier: Literal["critical", "standard", "best_effort"] = "standard"
     requires_api_key: bool = False
     api_key_env_var: str | None = None
+    api_key_header: str | None = None
     soft_block_codes: tuple[int, ...] = ()
     body_error_markers: tuple[str, ...] = ()
+    json_error_field: str | None = None
 
 
 def _ckan_package_url(api_url: str, slug: str) -> str:
@@ -53,7 +55,6 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             "url": f"{URLS[Fonte.ACERVO_FUNDIARIO]['download']}Sigef%20Brasil_AC.zip",
             "method": "HEAD",
             "tier": "best_effort",
-            "verify": False,
         },
         Fonte.ANA: {
             "url": geo.build_arcgis_query_url(
@@ -79,7 +80,8 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
         },
         Fonte.IBGE: {
             "url": (
-                f"{URLS[Fonte.IBGE]['api']}/values/t/5457/n1/all/v/allxp/p/last%201/c782/40124"
+                f"{URLS[Fonte.IBGE]['agregados']}/5457/periodos/-1/variaveis/all"
+                "?localidades=N1[all]&classificacao=782[40124]"
             ),
         },
         Fonte.BCB: {
@@ -135,8 +137,10 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             "url": URLS[Fonte.IMEA]["cotacoes"],
         },
         Fonte.USDA: {
+            "url": f"{URLS[Fonte.USDA]['base']}/commodities",
             "requires_api_key": True,
             "api_key_env_var": "AGROBR_USDA_API_KEY",
+            "api_key_header": "X-Api-Key",
         },
         Fonte.INMET: {
             "requires_api_key": True,
@@ -148,7 +152,7 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
                 "?reporterCode=76&period=2023&cmdCode=1201&partnerCode=0&maxRecords=1"
             ),
             "requires_api_key": False,
-            "body_error_markers": ('"error"',),
+            "json_error_field": "error",
         },
         Fonte.SFB: {
             "url": geo.build_arcgis_query_url(
@@ -193,10 +197,21 @@ HEALTH_REGISTRY: dict[Fonte, SourceHealthConfig] = _build_registry()
 SOURCE_DATASET_MAP: dict[str, list[str]] = {
     "abiove": ["exportacao"],
     "anda": ["fertilizante"],
-    "anec": ["embarques_anec"],
+    "anec": [
+        "comparacao_anual_anec",
+        "destinos_anec",
+        "embarques_anec",
+        "embarques_mensais_anec",
+    ],
     "antaq": ["movimentacao_portuaria"],
     "b3": ["futuros_agricolas"],
-    "bcb": ["credito_rural"],
+    "bcb": [
+        "cotacoes_cambio",
+        "credito_rural",
+        "expectativas_mercado",
+        "moedas_cambio",
+        "series_economicas",
+    ],
     "cepea": ["preco_diario"],
     "cftc": ["posicionamento_fundos"],
     "comexstat": ["exportacao", "importacao"],
@@ -204,11 +219,18 @@ SOURCE_DATASET_MAP: dict[str, list[str]] = {
     "conab": [
         "balanco",
         "custo_producao",
+        "custo_sociobiodiversidade",
         "estimativa_safra",
         "preco_atacado",
         "producao_anual",
         "progresso_safra",
         "serie_historica_safra",
+    ],
+    "defensivos": [
+        "autorizacoes_defensivos",
+        "composicao_defensivos",
+        "defensivos_formulados",
+        "defensivos_tecnicos",
     ],
     "deral": ["condicao_lavouras"],
     "desmatamento": ["desmatamento"],
@@ -226,11 +248,15 @@ SOURCE_DATASET_MAP: dict[str, list[str]] = {
         "producao_anual",
         "silvicultura",
     ],
+    "icmbio": ["unidades_conservacao_federais"],
+    "anp_diesel": ["precos_diesel"],
     "inmet": ["clima"],
+    "lista_suja": ["empregadores_lista_suja"],
     "mapa_psr": ["seguro_rural"],
     "mapbiomas": ["uso_do_solo"],
     "nasa_power": ["clima"],
     "queimadas": ["queimadas"],
+    "rnc": ["cultivares_protegidas", "cultivares_registradas"],
     "sicar": ["cadastro_rural"],
     "usda": ["oferta_demanda_global"],
     "zarc": ["zoneamento_agricola"],

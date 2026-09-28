@@ -8,7 +8,10 @@
     "pct_ano_anterior",
     "pct_semana_anterior",
     "pct_semana_atual",
-    "pct_media_5_anos"
+    "pct_media_5_anos",
+    "revisado",
+    "n_estados",
+    "cobertura_area_pct"
   ],
   "culturas": [
     "Milho 2ª",
@@ -19,8 +22,8 @@
     "Semeadura"
   ],
   "estados": [
-    "BR",
     "GO",
+    "MEDIA_ESTADOS",
     "MT",
     "PR"
   ],

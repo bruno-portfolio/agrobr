@@ -1,0 +1,67 @@
+{
+ "fonte": "UNICA — unicadata.com.br",
+ "respostas": [
+  {
+   "arquivo": "listagem_idMn63.html",
+   "url": "https://unicadata.com.br/listagem.php?idMn=63",
+   "status": 200,
+   "capturado_em": "2026-09-24T02:30:17.406860+00:00",
+   "bytes": 13977,
+   "sha256": "4f355c676c97ee6f2be2c75774911b64b42ef922981a2d508501f88c03cb5672",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 02:30:22 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "content-length": "3235",
+    "server": "nginx"
+   }
+  },
+  {
+   "arquivo": "relatorio_20260701.pdf",
+   "url": "https://unicadata.com.br/arquivos/pdfs/2026/08/c849215ab49b6cc499a9811e3b469342.pdf",
+   "status": 200,
+   "capturado_em": "2026-09-24T02:30:34.070433+00:00",
+   "bytes": 1302819,
+   "sha256": "c49d0fea34ac4c0e9d26a7706e69ff464ba93d65c5f2ba588ba3210ca3251d06",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 02:30:38 GMT",
+    "content-type": "application/pdf",
+    "content-length": "1302819",
+    "last-modified": "Thu, 06 Aug 2026 15:09:16 GMT",
+    "etag": "\"13e123-6586245806fee\"",
+    "server": "nginx"
+   }
+  },
+  {
+   "arquivo": "historico_cana_1980_2021.xlsx",
+   "url": "https://unicadata.com.br/xlsHPM.php?idioma=1&tipoHistorico=2&idTabela=2494&produto=cana&safra=&safraIni=1980%2F1981&safraFim=2020%2F2021&estado=RS%2CSC%2CPR%2CSP%2CRJ%2CMG%2CES%2CMS%2CMT%2CGO%2CDF%2CBA%2CSE%2CAL%2CPE%2CPB%2CRN%2CCE%2CPI%2CMA%2CTO%2CPA%2CAP%2CRO%2CAM%2CAC%2CRR",
+   "status": 200,
+   "capturado_em": "2026-09-24T02:31:56.696050+00:00",
+   "bytes": 111724,
+   "sha256": "cb4125963b04055f3d694b7d4acc6d7bad83df78670708eb4e055a785ed88463",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 02:32:01 GMT",
+    "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "server": "nginx"
+   }
+  }
+ ],
+ "goldens_anteriores": [
+  {
+   "arquivo": "../hist_acucar.xlsx",
+   "url": "https://unicadata.com.br/xlsHPM.php?idioma=1&tipoHistorico=2&idTabela=2494&produto=acucar&safra=&safraIni=2018%2F2019&safraFim=2020%2F2021&estado=RS%2CSC%2CPR%2CSP%2CRJ%2CMG%2CES%2CMS%2CMT%2CGO%2CDF%2CBA%2CSE%2CAL%2CPE%2CPB%2CRN%2CCE%2CPI%2CMA%2CTO%2CPA%2CAP%2CRO%2CAM%2CAC%2CRR",
+   "sha256": "c6a0573fabb66b893ca7d59556c2130a47e4f78c65b5d8b1884c0d335e20d788",
+   "conferido": "igual byte a byte à resposta de 23/09 no recorte 2018/2019–2020/2021"
+  },
+  {
+   "arquivo": "../hist_etanol_total.xlsx",
+   "url": "https://unicadata.com.br/xlsHPM.php?idioma=1&tipoHistorico=2&idTabela=2494&produto=etanol_total&safra=&safraIni=2018%2F2019&safraFim=2020%2F2021&estado=RS%2CSC%2CPR%2CSP%2CRJ%2CMG%2CES%2CMS%2CMT%2CGO%2CDF%2CBA%2CSE%2CAL%2CPE%2CPB%2CRN%2CCE%2CPI%2CMA%2CTO%2CPA%2CAP%2CRO%2CAM%2CAC%2CRR",
+   "sha256": "322e899b12e6864ef94d6f3b97402f771ec70d0eba4b0c06f6b8278b78a13edb",
+   "conferido": "igual byte a byte à resposta de 23/09 no recorte 2018/2019–2020/2021"
+  },
+  {
+   "arquivo": "../relatorio_quinzenal.pdf",
+   "sha256": "df535d3f337e6d54f4be6012b6044e89d1b61f16439885612661aa29ca08849b",
+   "conferido": "edição de 01/05/2026 (layout QUINZENAL), fora da listagem desde então: real e não verificável na fonte; valor_safra_anterior das 30 linhas comuns igual à edição de 01/07/2026, e valor revisado pela UNICA em 26 delas"
+  }
+ ]
+}

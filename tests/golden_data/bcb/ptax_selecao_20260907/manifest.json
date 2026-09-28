@@ -1,0 +1,560 @@
+{
+  "source": "BCB PTAX",
+  "scope": "24 original responses from increment12 plus unchanged EUR day capture from increment10; terminal/pagination mocks explicitly simulated where no exact query was captured.",
+  "artifacts": [
+    {
+      "case": "baseline_sdk_day",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@d)?@d='09-04-2026'&$format=json",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@d)?@d='09-04-2026'&$format=json",
+      "params": {
+        "@d": "'09-04-2026'",
+        "$format": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:35.989395-03:00",
+      "file": "baseline_sdk_day_001.json",
+      "sha256": "c11aa7d15f12047f5a4b0fbc69fe6f7b131b5b2ea2d4bf3f239e8c94b60b1423",
+      "size_bytes": 219,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:35 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "baseline_sdk_period",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@di,dataFinalCotacao=@df)?@di='09-03-2026'&@df='09-06-2026'&$format=json",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@di,dataFinalCotacao=@df)?@di='09-03-2026'&@df='09-06-2026'&$format=json",
+      "params": {
+        "@di": "'09-03-2026'",
+        "@df": "'09-06-2026'",
+        "$format": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:37.102456-03:00",
+      "file": "baseline_sdk_period_002.json",
+      "sha256": "4306f223497fc5e95569d5f426df9e6e6afe7d07735f66a58ad20c197babac03",
+      "size_bytes": 319,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:36 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "usd_day",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='USD'&%40d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='USD'&%40d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'USD'",
+        "@d": "'09-04-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:38.207809-03:00",
+      "file": "usd_day_003.json",
+      "sha256": "fe6c9d7356432e4310ca99840cb6a077a5842aaaea2518e0c151eb1eb8b95a19",
+      "size_bytes": 998,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:37 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "usd_period",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='USD'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='USD'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'USD'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:39.31263-03:00",
+      "file": "usd_period_004.json",
+      "sha256": "9fbeaaa7836172bb006d23371114d085bc35c003be5deca343407ca8fb0c97d9",
+      "size_bytes": 1867,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:39 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "jpy_day",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='JPY'&%40d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='JPY'&%40d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'JPY'",
+        "@d": "'09-04-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:40.430206-03:00",
+      "file": "jpy_day_005.json",
+      "sha256": "947a77fbd91a55fab0c6c9e696fdbe2ed5ab379af5f0c917ab5ea8502b9285b1",
+      "size_bytes": 1018,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:40 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "jpy_period",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='JPY'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='JPY'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'JPY'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:41.546299-03:00",
+      "file": "jpy_period_006.json",
+      "sha256": "aaac20558dcd2c2346e03e6cb2c9f95640079cdafbda515cf31b8523a3872c61",
+      "size_bytes": 1907,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:41 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_period",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'EUR'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:42.675972-03:00",
+      "file": "eur_period_007.json",
+      "sha256": "1cf2998d38401b1fcd1b560e37b522e11d68d1d8802c16b281328c136b086a7e",
+      "size_bytes": 1867,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:42 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "currencies",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc",
+      "params": {
+        "$format": "json",
+        "$orderby": "simbolo asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:38:43.782175-03:00",
+      "file": "currencies_008.json",
+      "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027",
+      "size_bytes": 784,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:38:43 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "jpy_day03",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='JPY'&%40d='09-03-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='JPY'&%40d='09-03-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'JPY'",
+        "@d": "'09-03-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:43.963595-03:00",
+      "file": "jpy_day03_009.json",
+      "sha256": "0e592c6b0807c3189af846e85898c4bf10ec474dbf48ecc5f31bacbf075742f3",
+      "size_bytes": 1018,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:43 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_day03",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='EUR'&%40d='09-03-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='EUR'&%40d='09-03-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'EUR'",
+        "@d": "'09-03-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:45.066339-03:00",
+      "file": "eur_day03_010.json",
+      "sha256": "3942eea4b045f3085e19566adad8bf0bb2c5b72b8be2091c38ef661e957500ee",
+      "size_bytes": 998,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:44 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_page1",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc&$top=3&$skip=0",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc&$top=3&$skip=0",
+      "params": {
+        "@m": "'EUR'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc",
+        "$top": "3",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:46.180511-03:00",
+      "file": "eur_page1_011.json",
+      "sha256": "bba2a27b3c60328d4c611b8cd865d4132eeff4a97da530e85c9e4dda7c5283bb",
+      "size_bytes": 649,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:45 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_page2",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc&$top=3&$skip=3",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc&$top=3&$skip=3",
+      "params": {
+        "@m": "'EUR'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc",
+        "$top": "3",
+        "$skip": "3"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:47.298133-03:00",
+      "file": "eur_page2_012.json",
+      "sha256": "2454f7a0a7a04d36a66a89195cbd73743083a6567c9846652222d427e1224fa1",
+      "size_bytes": 645,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:47 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_closing",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodoFechamento(codigoMoeda=@m,dataInicialCotacao=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodoFechamento(codigoMoeda=@m,dataInicialCotacao=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'EUR'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:48.404962-03:00",
+      "file": "eur_closing_013.json",
+      "sha256": "d6ed80b4f8c74366f7a100798497ebd33bf481177fc09edd536d228a8d0b5bd5",
+      "size_bytes": 260,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:48 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_opening",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaAberturaOuIntermediario(codigoMoeda=@m,dataCotacao=@d)?%40m='EUR'&%40d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaAberturaOuIntermediario(codigoMoeda=@m,dataCotacao=@d)?%40m='EUR'&%40d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc",
+      "params": {
+        "@m": "'EUR'",
+        "@d": "'09-04-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:49.519512-03:00",
+      "file": "eur_opening_014.json",
+      "sha256": "b9ee188feb9004772083060e0f61369a84eb451e3b34c6c2c405ea798d46aed4",
+      "size_bytes": 270,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:49 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_count",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc&$top=1&$count=true",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc&$top=1&$count=true",
+      "params": {
+        "@m": "'EUR'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc",
+        "$top": "1",
+        "$count": "true"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:50.63269-03:00",
+      "file": "eur_count_015.json",
+      "sha256": "220557b92b14c825d539a3390e3e4ac88c563b5447d0834a48d59d37c3eb6939",
+      "size_bytes": 297,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:50 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_weekend",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='EUR'&%40d='09-06-2026'&$format=json",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='EUR'&%40d='09-06-2026'&$format=json",
+      "params": {
+        "@m": "'EUR'",
+        "@d": "'09-06-2026'",
+        "$format": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:51.740586-03:00",
+      "file": "eur_weekend_016.json",
+      "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908",
+      "size_bytes": 124,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:51 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "invalid_symbol",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='ZZZ'&%40d='09-04-2026'&$format=json",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='ZZZ'&%40d='09-04-2026'&$format=json",
+      "params": {
+        "@m": "'ZZZ'",
+        "@d": "'09-04-2026'",
+        "$format": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:52.841363-03:00",
+      "file": "invalid_symbol_017.json",
+      "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908",
+      "size_bytes": 124,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:52 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "ars_day",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='ARS'&%40d='09-04-2026'&$format=json",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='ARS'&%40d='09-04-2026'&$format=json",
+      "params": {
+        "@m": "'ARS'",
+        "@d": "'09-04-2026'",
+        "$format": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:41:53.950785-03:00",
+      "file": "ars_day_018.json",
+      "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908",
+      "size_bytes": 124,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:41:53 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "baseline_sdk_historical",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@d)?@d='06-29-1994'&$format=json",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@d)?@d='06-29-1994'&$format=json",
+      "params": {
+        "@d": "'06-29-1994'",
+        "$format": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:51:31.188324-03:00",
+      "file": "baseline_sdk_historical_019.json",
+      "sha256": "1acd8b7e6b64bc8d3b797d6c3f7285ef4c315549dc5467025cf6d5b874b811bd",
+      "size_bytes": 220,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:51:30 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "usd_historical",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='USD'&%40d='06-29-1994'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='USD'&%40d='06-29-1994'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc",
+      "params": {
+        "@m": "'USD'",
+        "@d": "'06-29-1994'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc,tipoBoletim asc"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:51:32.295524-03:00",
+      "file": "usd_historical_020.json",
+      "sha256": "0f8986b2da6b614e49b403c2ab87d2e7024120e9b1a50503bf3b99ee8679df64",
+      "size_bytes": 472,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:51:32 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_composite_order",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=6",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@i,dataFinalCotacao=@f)?%40m='EUR'&%40i='09-03-2026'&%40f='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=6",
+      "params": {
+        "@m": "'EUR'",
+        "@i": "'09-03-2026'",
+        "@f": "'09-06-2026'",
+        "$format": "json",
+        "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+        "$top": "6"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:51:33.415154-03:00",
+      "file": "eur_composite_order_021.json",
+      "sha256": "a98d9347d783cef5643c74d7e184707c724574f4ef0056f7de1377eb505f23ff",
+      "size_bytes": 1167,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:51:33 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "currencies_page1",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=3&$skip=0",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=3&$skip=0",
+      "params": {
+        "$format": "json",
+        "$orderby": "simbolo asc",
+        "$top": "3",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:51:34.511578-03:00",
+      "file": "currencies_page1_022.json",
+      "sha256": "9e89448807113ce126e2b9adabd19fd0864f4cb5fe21137234d9ad14439aa6fc",
+      "size_bytes": 320,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:51:34 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "currencies_page2",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=3&$skip=3",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=3&$skip=3",
+      "params": {
+        "$format": "json",
+        "$orderby": "simbolo asc",
+        "$top": "3",
+        "$skip": "3"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:51:35.603946-03:00",
+      "file": "currencies_page2_023.json",
+      "sha256": "8e109b1115cf44eac92dd5f01fbff1da208e9274ad10113bb579d9082e5650da",
+      "size_bytes": 309,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:51:35 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "currencies_terminal",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=3&$skip=10",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=3&$skip=10",
+      "params": {
+        "$format": "json",
+        "$orderby": "simbolo asc",
+        "$top": "3",
+        "$skip": "10"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:51:36.729497-03:00",
+      "file": "currencies_terminal_024.json",
+      "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755",
+      "size_bytes": 114,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:51:36 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "new_probe_get": true
+    },
+    {
+      "case": "eur_day",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?%40m='EUR'&%40d='09-04-2026'&$format=json",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+        "@m": "'EUR'",
+        "@d": "'09-04-2026'",
+        "$format": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T00:51:28.392017-03:00",
+      "file": "ptax_eur_day_01.bin",
+      "sha256": "890d22c86dc81c3d1039735888d4468d4b966ddf341abde09d7e8849c89c4fab",
+      "size_bytes": 998,
+      "headers": {
+        "date": "Mon, 07 Sep 2026 03:51:28 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal"
+      },
+      "new_probe_get": false
+    }
+  ],
+  "oracles_sha256": "4a1b14f59c06ca0fbd1cbca64e273f592b897a082262a6c37fd75e9ee9689f82"
+}

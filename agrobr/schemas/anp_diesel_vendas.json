@@ -9,7 +9,11 @@
     "produto"
   ],
   "required_columns": [
-    "data"
+    "data",
+    "uf",
+    "regiao",
+    "produto",
+    "volume_m3"
   ],
   "dtypes": {
     "data": "date",

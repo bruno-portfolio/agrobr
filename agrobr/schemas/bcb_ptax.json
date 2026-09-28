@@ -1,0 +1,160 @@
+{
+  "name": "bcb.ptax",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "moeda",
+    "data_hora",
+    "tipo_boletim"
+  ],
+  "required_columns": [
+    "cotacao_compra",
+    "cotacao_venda",
+    "data_hora",
+    "data",
+    "moeda",
+    "paridade_compra",
+    "paridade_venda",
+    "tipo_boletim"
+  ],
+  "dtypes": {
+    "cotacao_compra": "float",
+    "cotacao_venda": "float",
+    "data_hora": "datetime",
+    "data": "date",
+    "moeda": "str",
+    "paridade_compra": "float",
+    "paridade_venda": "float",
+    "tipo_boletim": "str"
+  },
+  "nullable": {
+    "cotacao_compra": true,
+    "cotacao_venda": true,
+    "data_hora": false,
+    "data": false,
+    "moeda": false,
+    "paridade_compra": true,
+    "paridade_venda": true,
+    "tipo_boletim": true
+  },
+  "columns": [
+    {
+      "name": "cotacao_compra",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cotacao_venda",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_hora",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "moeda",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "paridade_compra",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "paridade_venda",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "tipo_boletim",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "currency_pattern": "[A-Z]{3}",
+    "currency_catalog": "current_OData_Moedas; not_a_historical_currency_inventory",
+    "date_dtype": "datetime64[ns]",
+    "timestamp_semantics": "published_naive_timestamp; timezone_not_in_payload",
+    "civil_date": "data_hora.normalize()",
+    "timestamp_order": "ascending",
+    "timestamp_precision": "up_to_nanoseconds_without_truncation",
+    "float_dtype": "float64",
+    "quote_unit": "domestic_currency_at_reference_date_per_unit_of_selected_currency",
+    "parity_unit": {
+      "A": "selected_currency/USD",
+      "B": "USD/selected_currency"
+    },
+    "bulletin_text": "published_label_preserved; day_and_period_routes_may_differ",
+    "blank_bulletin": "published_unknown_label; distinct_from_null",
+    "key_scope": "selected_route_acquisition",
+    "statistical_consistency": "finite_source_values_preserved_with_diagnostics"
+  },
+  "guarantees": [
+    "Oito colunas estáveis, inclusive em resultado vazio",
+    "Moeda selecionada consta do catálogo OData obtido na aquisição",
+    "Boletins conservam o texto publicado e a precisão do horário sem atribuir fuso",
+    "Data civil e instante UTC de aquisição são dimensões distintas",
+    "Valores publicados não são convertidos, imputados ou recalculados",
+    "Todas as páginas são validadas antes da seleção de boletim, sem retorno após falha parcial",
+    "Contagem da fonte, filtro de boletim e ausência de total independente são explícitos"
+  ]
+}

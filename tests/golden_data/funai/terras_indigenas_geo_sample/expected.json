@@ -1,6 +1,0 @@
-{
-    "count_min": 10,
-    "columns": ["codigo", "nome", "etnia", "municipio", "uf", "area_ha", "fase", "modalidade", "data_atualizacao", "geometry"],
-    "crs_epsg": 4326,
-    "non_null_columns": ["codigo", "nome", "etnia", "municipio", "uf", "area_ha", "fase", "modalidade", "geometry"]
-}

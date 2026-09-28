@@ -13,8 +13,14 @@
   "required_columns": [
     "safra",
     "produto",
+    "uf",
     "finalidade",
     "agregacao",
+    "programa",
+    "cd_programa",
+    "qtd_contratos",
+    "valor",
+    "area_financiada",
     "fonte"
   ],
   "dtypes": {
@@ -51,7 +57,7 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Safra de julho a junho do mês de emissão, no formato AAAA/AA (2023/24) da camada; o SICOR não publica safra",
       "min_value": null,
       "max_value": null
     },

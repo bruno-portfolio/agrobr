@@ -15,7 +15,7 @@ em Lucas do Rio Verde, MT.
 | **Licenca** | `zona_cinza` — Sem termos publicos |
 | **Formato** | PDF text-based |
 | **Atualizacao** | Anual (por safra) |
-| **Cobertura** | ~97 cultivares x 4 epocas de semeio (safra 2025/26) |
+| **Cobertura** | Safras 2023/24 (76 linhas), 2024/25 (94) e 2025/26 (107); até 4 épocas de semeio |
 
 ## Dados Disponiveis
 
@@ -40,6 +40,10 @@ async def main():
     # Safra especifica
     df = await rio_verde.ensaio_soja("2024/2025")
 
+    # Filtros parciais, sem diferenciar caixa
+    df = await rio_verde.ensaio_soja("2025/2026", cultivar="neo")
+    df = await rio_verde.ensaio_soja("2025/2026", empresa="agroeste")
+
     # Listar safras disponiveis
     safras = await rio_verde.safras_disponiveis()
 
@@ -58,7 +62,14 @@ asyncio.run(main())
 - PDF text-based (nao requer OCR)
 - Parser extrai tabelas de produtividade por epoca de semeio
 - Produtividade em sacas/hectare (sc/ha)
-- Safras disponiveis dependem dos PDFs publicados pela fundacao
+- Safras disponiveis dependem dos PDFs publicados pela fundacao: 2023/2024, 2024/2025 e 2025/2026. A fundação também publica a
+  safra 2022/23 num layout que o agrobr não lê (3 épocas de semeio e sem produtividade média); `ensaio_soja("2022/2023")`
+  levanta `InvalidParameterError` dizendo isso, antes da rede. O agrobr não calcula média que a fonte não publica.
+- A lista de safras é fixa em cada versão do agrobr: a safra nova que a fundação publicar pede uma versão nova, e até lá `ensaio_soja` a recusa com `InvalidParameterError`
+- A 2025/26 publica também o G.M. estimado; `grupo_maturacao` é o G.M. declarado, como texto ("6.7")
+- Algumas produtividades vêm sem decimal no PDF ("87"); saem como 87.0
+- Argumento desconhecido levanta `TypeError` antes de qualquer requisição
+- Termos de uso: nenhuma página de termos no site (busca de 23/09/2026)
 
 ## Fonte
 
@@ -66,3 +77,5 @@ asyncio.run(main())
 - Formato: PDF
 - Atualizacao: anual (por safra)
 - Licenca: `zona_cinza` — Sem termos publicos (verificar com a fundacao)
+
+O parser extrai células da tabela-resumo, preservando empresa e cultivar compostas. As safras 2024/25 e 2025/26 têm layouts diferentes, respectivamente sem e com G.M. estimado; `grupo_maturacao` preserva o G.M. declarado. Épocas sem medição ficam nulas. O número de linhas representa observações, não cultivares únicas: uma cultivar pode aparecer mais de uma vez no relatório.

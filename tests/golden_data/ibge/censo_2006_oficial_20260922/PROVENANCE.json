@@ -1,0 +1,49 @@
+{
+  "capture_session": "22/09/2026",
+  "source": "IBGE (API de agregados v3)",
+  "method": "Respostas oficiais preservadas byte a byte, sem reserializar.",
+  "files": [
+    {
+      "file": "metadados_791.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/791/metadados",
+      "fetched_at": "2026-09-22T22:02:53.873320+00:00",
+      "sha256": "ade38e39554f81719338610a3e520dcc92a0b37d00e80e2231f81f1938b80873",
+      "bytes": 3381
+    },
+    {
+      "file": "metadados_837.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/837/metadados",
+      "fetched_at": "2026-09-22T22:02:56.767796+00:00",
+      "sha256": "63ac7d477074176e7af8c93384c69a9dd40bd6bdf302824d6aec8e8ca614b7a2",
+      "bytes": 4706
+    },
+    {
+      "file": "metadados_855.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/855/metadados",
+      "fetched_at": "2026-09-22T22:02:57.478074+00:00",
+      "sha256": "8c1e7a61fd24f4e0572fe54c8f75d03b02a997ed0f463087267b182560bee7b3",
+      "bytes": 4202
+    },
+    {
+      "file": "metadados_1245.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1245/metadados",
+      "fetched_at": "2026-09-22T22:02:55.357521+00:00",
+      "sha256": "b5b65613df704d320b6f3866424b2145fcc36146c5535b7cbddf81170d3dfca6",
+      "bytes": 4747
+    },
+    {
+      "file": "metadados_1249.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1249/metadados",
+      "fetched_at": "2026-09-22T22:02:54.639709+00:00",
+      "sha256": "f9bb45a4f92676cb60992fa3ef4791370b80aa76113a37d8d9c2660cafa412d9",
+      "bytes": 5135
+    },
+    {
+      "file": "metadados_1459.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1459/metadados",
+      "fetched_at": "2026-09-22T22:02:56.070299+00:00",
+      "sha256": "37102037606baa0b47d4b54173fa3c6f6ca03a91e629d7b13927e9e4f8cb38b1",
+      "bytes": 3705
+    }
+  ]
+}

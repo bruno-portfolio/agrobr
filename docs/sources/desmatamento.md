@@ -123,7 +123,8 @@ gdf = await agrobr.desmatamento.deter_geo(
 ## Limitacoes
 
 - DETER so disponivel para Amazonia e Cerrado
-- WFS limita 50.000 features por requisicao — filtrar por estado e/ou ano (warning `desmatamento_*_truncated` quando o teto e atingido)
+- Na Amazônia, o PRODES do agrobr é o recorte do bioma (`yearly_deforestation_biome`), não o da Amazônia Legal, onde o INPE publica a taxa de destaque. Em 2024, a nota técnica do INPE dá cerca de 6.288 km² para a Amazônia Legal, e a soma das UFs do bioma no agrobr dá 6.068,9 km²
+- O agrobr pagina o WFS: `tamanho_pagina` feições por página (500; 100 nas `_geo`; até 2.000 e 500), com 2 s entre as requisições, até `max_registros` (50.000; 10.000 nas `_geo`). Além do limite, sai o prefixo em ordem de `fid` (PRODES) ou `gid` (DETER), com `UserWarning`. Filtre por `ano`, `uf` ou datas, que vão ao servidor, ou use `max_registros=None` ([guia de migração, §84](../guides/migracao-2.md#84-desmatamento-paginacao-corte-e-custo-da-chamada-padrao))
 - Source API (`agrobr.desmatamento.*`) retorna poligonos individuais (granularidade fina); o dataset `datasets.desmatamento` entrega o agregado anual por uf/classe/bioma conforme o contrato
 - Pos-migracao BiomasBR (03/2026), os layers PRODES de Amazonia, Pantanal, Caatinga e Mata Atlantica estao temporariamente quebrados no GeoServer do INPE (ServiceException para qualquer cliente); Cerrado e Pampa operacionais
 - DETER e sistema de alerta, nao de consolidacao — pode haver sobreposicao
@@ -142,3 +143,7 @@ gdf = await agrobr.desmatamento.deter_geo(
 - [TerraBrasilis](https://terrabrasilis.dpi.inpe.br)
 - [PRODES](https://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes)
 - [DETER](https://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter)
+
+## Intervalo PRODES
+
+`prodes()` e `prodes_geo()` aceitam `ano` somente como inteiro ou `None`. O intervalo é consultado na camada do bioma, com cache de 24 horas por processo; anos fora dele levantam `InvalidParameterError`. A cobertura dos polígonos não deve ser confundida com o início das séries históricas de taxas de desmatamento.

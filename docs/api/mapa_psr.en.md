@@ -17,6 +17,7 @@ async def sinistros(
     ano_fim: int | None = None,
     municipio: str | None = None,
     evento: str | None = None,
+    cd_ibge: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -31,8 +32,9 @@ async def sinistros(
 | `ano` | `int \| None` | Single-year filter (e.g. 2023) |
 | `ano_inicio` | `int \| None` | Start year of the range (inclusive) |
 | `ano_fim` | `int \| None` | End year of the range (inclusive) |
-| `municipio` | `str \| None` | Municipality filter (partial match) |
+| `municipio` | `str \| None` | Filter by the published municipality label (partial match) |
 | `evento` | `str \| None` | Filter by predominant event (e.g. "seca") |
+| `cd_ibge` | `str \| None` | Filter by the municipality's IBGE code, 7 digits as text (e.g. "4305108") |
 | `as_polars` | `bool` | If True, returns a polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
 
@@ -73,6 +75,7 @@ async def apolices(
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
     municipio: str | None = None,
+    cd_ibge: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -87,7 +90,8 @@ async def apolices(
 | `ano` | `int \| None` | Single-year filter (e.g. 2023) |
 | `ano_inicio` | `int \| None` | Start year of the range (inclusive) |
 | `ano_fim` | `int \| None` | End year of the range (inclusive) |
-| `municipio` | `str \| None` | Municipality filter (partial match) |
+| `municipio` | `str \| None` | Filter by the published municipality label (partial match) |
+| `cd_ibge` | `str \| None` | Filter by the municipality's IBGE code (7 digits as text) |
 | `as_polars` | `bool` | If True, returns a polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
 
@@ -128,5 +132,17 @@ df = alt.mapa_psr.apolices(ano=2023)
 - Data: bulk CSV (3 files: 2006-2015, 2016-2024, 2025)
 - PII removed automatically (NM_SEGURADO, NR_DOCUMENTO_SEGURADO)
 - Geolocation removed (LATITUDE, LONGITUDE, degrees/min/sec)
-- CSVs can be large (~500k rows in the 2006-2015 period)
+- Temporary-file downloads and reading in chunks of 10,000 rows, with filters before numeric conversion
+- Each selected period is still downloaded in full; temporary disk space is required, and result memory grows with the selected rows
 - Read timeout: 180 seconds
+- `municipio` compares the published label, which for some policies is the district name; for the whole municipality, use `cd_ibge` (see [MAPA PSR](../sources/mapa_psr.md#municipality-and-ibge-code))
+
+## Policy integrity and periods
+
+The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.1 and the claims contract remains at 1.0.
+
+`ano_apolice` is the year the policy was contracted, according to the SISSER dictionary; it is not the event or payment date. `sinistros` selects positive indemnities with a non-empty event. Published zeros remain zero in `apolices`; missing values remain null. Monetary values are not rounded to cents. Policy numbers and geographic codes retain leading zeros. Only the record published twice and identical in every column is returned once (see [MAPA PSR](../sources/mapa_psr.md)); no other row is deduplicated.
+
+In the 2026-09-18 capture, the catalogue offered three CSVs, through 2025. The 2025 file had missing indemnity amounts, which does not establish that no claims occurred. EOF confirms that the published file was fully read; it does not guarantee complete programme coverage or up-to-date payments.
+
+Text fields preserve literals such as `NULL`, `NA`, `None` and `N/A`, subject only to the existing whitespace and case normalization; the CSV reader does not convert them into missing values. Empty text remains empty, except `cd_ibge`, which becomes null. Numeric fields retain the existing conversion: missing or uninterpretable values remain null, without turning text tokens into zero.

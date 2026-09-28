@@ -18,10 +18,7 @@
     "safra",
     "finalidade",
     "programa",
-    "fonte_recurso",
-    "tipo_seguro",
-    "modalidade",
-    "atividade"
+    "tipo_seguro"
   ],
   "non_null_columns": [
     "produto",
@@ -39,29 +36,20 @@
     "cd_modalidade",
     "finalidade",
     "programa",
-    "fonte_recurso",
-    "tipo_seguro",
-    "modalidade",
-    "atividade"
+    "tipo_seguro"
   ],
   "first_row": {
-    "safra": "2013/2014",
+    "safra": "2013/14",
     "uf": "RS",
     "produto": "soja",
     "finalidade": "custeio",
-    "programa": "Pronamp",
-    "fonte_recurso": "Poupanca rural livre",
-    "tipo_seguro": "Nao se aplica",
-    "modalidade": "Individual",
-    "atividade": "Agricola"
+    "programa": "PRONAMP",
+    "tipo_seguro": "Sem adesão a seguro"
   },
   "last_row": {
     "uf": "MG",
     "produto": "soja",
-    "programa": "Sem programa especifico",
-    "fonte_recurso": "LCA",
-    "tipo_seguro": "Nao se aplica",
-    "modalidade": "Individual",
-    "atividade": "Agricola"
+    "programa": "FINANCIAMENTO SEM VÍNCULO A PROGRAMA ESPECÍFICO",
+    "tipo_seguro": "Sem adesão a seguro"
   }
 }

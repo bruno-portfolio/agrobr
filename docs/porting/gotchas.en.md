@@ -30,11 +30,11 @@ in the `Content-Type` header.
 | Notícias Agrícolas | ISO-8859-1 | Variable |
 | ComexStat | UTF-8 (CSV) | Correct |
 
-agrobr uses a fallback chain of 5 encodings + automatic detection
-with `chardet` (threshold > 0.7). If everything fails, it forces UTF-8 with replacement.
+agrobr uses a fallback chain of 3 encodings. ISO-8859-1 decodes any byte, so the chain ends there, with no
+step after it (no `chardet`, no replacement).
 
 ```
-ENCODING_CHAIN = ("utf-8", "windows-1252", "iso-8859-1", "utf-16", "ascii")
+ENCODING_CHAIN = ("utf-8", "windows-1252", "iso-8859-1")
 ```
 
 !!! warning "Without handling, names break"
@@ -402,14 +402,16 @@ wheat, cotton, coffee (arabica, conilon), sugar, ethanol, meats
 
 !!! danger "API key required"
     Requires a free key from [api.data.gov/signup](https://api.data.gov/signup).
-    Without a key, it returns HTTP 401.
+    Without a key, the gateway returns HTTP 403 `API_KEY_MISSING`; agrobr raises `SourceUnavailableError` before the network.
 
-**REST API:** `https://apps.fas.usda.gov/OpenData/api`
+**REST API:** `https://api.fas.usda.gov/api/psd` (the old `apps.fas.usda.gov/OpenData/api` returns 500)
 
-- Header: `API_KEY: {key}`
+- Header: `X-Api-Key: {key}` (never `?api_key=` in the URL)
 - agrobr env var: `AGROBR_USDA_API_KEY`
-- Uses USDA commodity codes (e.g. `"2222000"` for soybean)
-- Returns JSON
+- Uses USDA commodity codes (e.g. `"2222000"` for soybean, `"0813100"` for soybean meal)
+- Returns camelCase JSON with IDs only; names come from the `commodityAttributes`, `commodities`, `countries` and
+  `unitsOfMeasure` catalogs, stored in the package
+- A code outside the catalog returns HTTP 200 with `[]`, without an error: agrobr validates before the network
 - Timeout: 60s
 - Rate limit: 1s
 

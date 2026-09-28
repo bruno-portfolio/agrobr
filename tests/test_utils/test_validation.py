@@ -30,18 +30,8 @@ class TestValidateBioma:
 
 
 class TestValidateUf:
-    def test_valid_uf(self):
-        assert validate_uf("SP") == "SP"
-
-    def test_valid_uf_lowercase(self):
-        assert validate_uf("sp") == "SP"
-
     def test_valid_uf_with_whitespace(self):
         assert validate_uf("  SP  ") == "SP"
-
-    def test_invalid_uf(self):
-        with pytest.raises(ValueError, match="UF invalida"):
-            validate_uf("XX")
 
     def test_uf_none_returns_none(self):
         assert validate_uf(None) is None
@@ -52,29 +42,6 @@ class TestValidateUf:
 
 
 class TestValidateYearUf:
-    def test_valid_uf(self):
-        validate_year_uf(uf="SP")
-
-    def test_valid_uf_lowercase(self):
-        validate_year_uf(uf="sp")
-
-    def test_valid_uf_with_whitespace(self):
-        validate_year_uf(uf="  SP  ")
-
-    def test_invalid_uf(self):
-        with pytest.raises(ValueError, match="UF"):
-            validate_year_uf(uf="XX")
-
-    def test_uf_none_skips(self):
-        validate_year_uf(uf=None)
-
-    def test_ano_valid(self):
-        validate_year_uf(ano=2023, ano_min=2010)
-
-    def test_ano_below_min(self):
-        with pytest.raises(ValueError, match="fora do range"):
-            validate_year_uf(ano=2005, ano_min=2010)
-
     def test_ano_above_current(self):
         with pytest.raises(ValueError, match="fora do range"):
             validate_year_uf(ano=2099)

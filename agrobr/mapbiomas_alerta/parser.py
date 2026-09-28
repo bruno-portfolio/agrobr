@@ -6,6 +6,7 @@ import pandas as pd
 import structlog
 
 from agrobr.exceptions import ParseError
+from agrobr.normalize import dates
 from agrobr.utils.geo import check_geopandas
 
 from .models import COLUNAS_SAIDA, COLUNAS_SAIDA_GEO, RENAME_MAP
@@ -57,8 +58,8 @@ def _normalize_records(
         )
 
     df = df.rename(columns=RENAME_MAP)
-    df["data_deteccao"] = pd.to_datetime(df["data_deteccao"], errors="coerce")
-    df["data_publicacao"] = pd.to_datetime(df["data_publicacao"], errors="coerce")
+    dates.converter_coluna(df, "data_deteccao", fonte="mapbiomas_alerta")
+    dates.converter_coluna(df, "data_publicacao", fonte="mapbiomas_alerta")
     df["area_ha"] = pd.to_numeric(df["area_ha"], errors="coerce")
     df["lat"] = pd.to_numeric(df["lat"], errors="coerce")
     df["lon"] = pd.to_numeric(df["lon"], errors="coerce")
@@ -98,6 +99,7 @@ def parse_alertas_geo(records: list[dict[str, object]]) -> Any:
         geoms.append(geom)
 
     gdf = gpd.GeoDataFrame(df, geometry=geoms, crs="EPSG:4326")
+    gdf.attrs.update(df.attrs)
     null_geom = gdf.geometry.isna().sum()
     if null_geom:
         logger.warning("mapbiomas_alerta_null_geometry", null_count=int(null_geom), total=len(gdf))

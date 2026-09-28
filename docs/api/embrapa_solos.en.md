@@ -13,6 +13,8 @@ async def perfis(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = 50000,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -24,10 +26,12 @@ async def perfis(
 |-----------|------|-----------|
 | `uf` | `str \| None` | Filter by state (abbreviation, e.g. "MT") |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
+| `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 50,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
+| `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |
 | `as_polars` | `bool` | Return a polars DataFrame |
 | `return_meta` | `bool` | Return a (DataFrame, MetaInfo) tuple |
 
-**Returns:** DataFrame with columns: `fid`, `uf`, `municipio`, `latitude`, `longitude`, `horizonte`, `profundidade`, `areia_total`, `silte`, `argila`, `ph_h2o`, `carbono_organico`, `ctc`, `saturacao_bases`, `aluminio`, `fosforo`, `classe_textural`, `nivel_levantamento`, `uso_atual`
+**Returns:** DataFrame with 85 columns (`embrapa_solos.perfis` 2.0 contract), one row per horizon or layer. It starts with `fid`, `uf`, `municipio`, `latitude`, `longitude`, `horizonte`, `profundidade`, `areia_total`, `silte`, `argila`, `ph_h2o`, `carbono_organico`, `ctc`, `saturacao_bases`, `aluminio`, `fosforo`, `classe_textural`, `nivel_levantamento`, `uso_atual`, followed by the other published attributes, `uf_original` and `feature_id`. Laboratory values are the published text (including `NULL`); see the [source page](../sources/embrapa_solos.en.md#columns-profiles)
 
 **Example:**
 
@@ -52,6 +56,8 @@ async def perfis_geo(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = 5000,
+    tamanho_pagina: int | None = None,
     return_meta: bool = False,
 ) -> gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]
 ```
@@ -62,6 +68,8 @@ async def perfis_geo(
 |-----------|------|-----------|
 | `uf` | `str \| None` | Filter by state (abbreviation) |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
+| `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 5,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
+| `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |
 | `return_meta` | `bool` | Return a (GeoDataFrame, MetaInfo) tuple |
 
 **Returns:** GeoDataFrame (Point, EPSG:4326) with the same columns as `perfis()` + `geometry`
@@ -86,6 +94,8 @@ async def mapa_solos(
     *,
     ordem: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = 50000,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -95,12 +105,14 @@ async def mapa_solos(
 
 | Parameter | Type | Description |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filter by soil order (contains, case-insensitive). E.g. "LATOSSOLO" |
+| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read. E.g. "LATOSSOLO" |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
+| `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 50,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
+| `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |
 | `as_polars` | `bool` | Return a polars DataFrame |
 | `return_meta` | `bool` | Return a (DataFrame, MetaInfo) tuple |
 
-**Returns:** DataFrame with columns: `fid`, `simbolos`, `comp1`, `comp2`, `comp3`, `legenda`, `area_km2`, `ordem1`, `subordem1`, `gdegrupo1`, `ordem2`, `subordem2`, `gdegrupo2`, `legenda_sinotica`, `classe_dom`
+**Returns:** DataFrame with columns: `fid`, `simbolos`, `comp1`, `comp2`, `comp3`, `legenda`, `area_km2`, `ordem1`, `subordem1`, `gdegrupo1`, `ordem2`, `subordem2`, `gdegrupo2`, `legenda_sinotica`, `classe_dom`, `ordem3`, `subordem3`, `gdegrupo3`, `feature_id`
 
 **Example:**
 
@@ -125,6 +137,8 @@ async def mapa_solos_geo(
     *,
     ordem: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = 3000,
+    tamanho_pagina: int | None = None,
     return_meta: bool = False,
 ) -> gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]
 ```
@@ -133,8 +147,10 @@ async def mapa_solos_geo(
 
 | Parameter | Type | Description |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filter by soil order (contains, case-insensitive) |
+| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
+| `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 3,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
+| `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |
 | `return_meta` | `bool` | Return a (GeoDataFrame, MetaInfo) tuple |
 
 **Returns:** GeoDataFrame (MultiPolygon, EPSG:4326) with the same columns as `mapa_solos()` + `geometry`
@@ -161,6 +177,6 @@ df = embrapa_solos.mapa_solos()
 
 - Source: [EMBRAPA GeoInfo](https://geoinfo.dados.embrapa.br) — license `nc` (CC BY-NC 3.0 BR)
 - The `_geo()` functions require `pip install agrobr[geo]` (geopandas)
-- ~34K soil profiles (PronaSolos 2020), ~2.8K pedological polygons
+- 34,464 horizon/layer records (~9K points, PronaSolos 2020) and 2,852 pedological polygons
 - Automatic WFS pagination
-- BBOX query CRS: EPSG:4674 (SIRGAS 2000); returned GeoDataFrame in EPSG:4326
+- `bbox` and GeoDataFrame in EPSG:4326, the default CRS of both layers in the WFS

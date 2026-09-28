@@ -57,3 +57,23 @@ df = deral.condicao_lavouras("soja")
 - Fonte: [DERAL/SEAB-PR](https://www.agricultura.pr.gov.br) — licenca livre
 - Dados exclusivos do Parana
 - Publicado em Excel (PC.xls) — layout pode variar entre safras
+
+## Reconciliação das planilhas de fevereiro e setembro de 2026
+
+As duas capturas originais de PC.xls são BIFF/XLS: 26 abas, 438 registros de
+condição e 730 células numéricas de condição, plantio e colheita conferidas
+diretamente. A extensão `.xlsx` do arquivo antigo preservado no golden não
+indica o formato real. Não foi localizada uma publicação XLSX original para
+certificar essa variante do parser.
+
+Os percentuais publicados nessas capturas estão em pontos percentuais (0–100),
+sem conversão de frações formatadas como porcentagem. As colunas de fase
+fenológica e comercialização, as linhas de batata e de soja de segunda safra
+ficam fora do contrato atual. Uma aba que informa feriado sem observações não
+produz registros ou zeros. O nome `18-12-2017` contém referência publicada de
+08/01/2018; a data vem da célula, conforme a publicação.
+
+O parser 2 exige os cabeçalhos Ruim, Média, Boa, Plantada e Colhida nas tabelas
+com várias culturas. Se faltar um deles, a fonte levanta `ParseError` e o dataset
+propaga `SourceUnavailableError` com o motivo, evitando sucesso parcial com
+apenas as abas históricas. O contrato permanece na versão 1.0.

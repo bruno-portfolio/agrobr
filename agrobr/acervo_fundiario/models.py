@@ -14,15 +14,6 @@ FILENAME_PATTERNS: dict[str, str] = {
 }
 
 
-SIGEF_UFS_DISPONIVEIS: frozenset[str] = frozenset(
-    {"AC", "AL", "AM", "BA", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PR", "SC", "SP", "TO"}
-)
-
-SNCI_UFS_DISPONIVEIS: frozenset[str] = frozenset(
-    {"BA", "GO", "MG", "MS", "MT", "PA", "PI", "SC", "SP", "TO"}
-)
-
-
 SIGEF_RENAME_MAP: dict[str, str] = {
     "parcela_co": "codigo_parcela",
     "rt": "rt",

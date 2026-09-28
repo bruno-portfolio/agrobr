@@ -31,7 +31,7 @@ async def focos(
 | `dia` | `int \| None` | Dia especifico (1-31). Se None, busca mes completo |
 | `uf` | `str \| None` | Filtrar por UF (ex: "MT", "SP"). Case insensitive |
 | `bioma` | `str \| None` | Filtrar por bioma (ex: "Amazonia", "Cerrado"). Aceita com ou sem acentos; valor desconhecido levanta `ValueError` |
-| `satelite` | `str \| None` | Filtrar por satelite (ex: "AQUA_M-T", "NOAA-20") |
+| `satelite` | `str \| None` | Filtrar por satelite (ex: "AQUA_M-T", "NOAA-20"); sem filtro, vêm os focos de todos os satélites |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
@@ -50,7 +50,7 @@ DataFrame com colunas:
 - `numero_dias_sem_chuva`: Dias sem precipitacao (float)
 - `precipitacao`: Precipitacao em mm (float)
 - `risco_fogo`: Indice de risco de fogo 0-1 (float)
-- `frp`: Fire Radiative Power em MW (float)
+- `frp`: Fire Radiative Power em MW (float); o negativo publicado pela fonte sai nulo, com aviso
 - `uf`: Sigla da UF (str, 2 caracteres)
 
 **Exemplo:**

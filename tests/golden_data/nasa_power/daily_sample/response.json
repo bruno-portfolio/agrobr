@@ -15,10 +15,20 @@
       "WS2M": {"20250101": 0.09, "20250102": 0.16, "20250103": 0.12, "20250104": 0.01, "20250105": 0.02}
     }
   },
+  "parameters": {
+    "T2M": {"units": "C", "longname": "Temperature at 2 Meters"},
+    "T2M_MAX": {"units": "C", "longname": "Temperature at 2 Meters Maximum"},
+    "T2M_MIN": {"units": "C", "longname": "Temperature at 2 Meters Minimum"},
+    "PRECTOTCORR": {"units": "mm/day", "longname": "Precipitation Corrected"},
+    "RH2M": {"units": "%", "longname": "Relative Humidity at 2 Meters"},
+    "ALLSKY_SFC_SW_DWN": {"units": "MJ/m^2/day", "longname": "All Sky Surface Shortwave Downward Irradiance"},
+    "WS2M": {"units": "m/s", "longname": "Wind Speed at 2 Meters"}
+  },
   "header": {
     "title": "NASA/POWER Source Native Resolution Daily Data",
     "api": {"version": "v2.8.10", "name": "POWER Daily API"},
     "fill_value": -999.0,
+    "time_standard": "LST",
     "start": "20250101",
     "end": "20250105"
   }

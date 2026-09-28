@@ -56,6 +56,8 @@ ESTADOS_PARA_UF: dict[str, str] = {
     "Tocantins": "TO",
 }
 
+ESTADO_MEDIA = "MEDIA_ESTADOS"
+
 COLUNAS_SAIDA = [
     "cultura",
     "safra",
@@ -66,10 +68,32 @@ COLUNAS_SAIDA = [
     "pct_semana_anterior",
     "pct_semana_atual",
     "pct_media_5_anos",
+    "revisado",
+    "n_estados",
+    "cobertura_area_pct",
 ]
 
-_RE_CULTURA = re.compile(r"^(.+?)\s*-\s*Safra\s+(\d{4}/\d{2})$")
+_RE_CULTURA = re.compile(r"^(.+?)\s*-\s*Safra\s+(\d{4}(?:/\d{2})?)$")
 _RE_OPERACAO = re.compile(r"^(Semeadura|Colheita)\s*\*?\s*$")
+_RE_COBERTURA = re.compile(
+    r"^\(Esses\s+(\d+)\s+estados\s+correspondem\s+a\s+(\d+(?:[.,]\d+)?)\s*%\s+da\s+área\s+cultivada\)$",
+    re.IGNORECASE,
+)
+_RE_AGREGADO = re.compile(r"^(\d+)\s+estados$", re.IGNORECASE)
+
+
+def parse_cobertura(text: str) -> tuple[int, float] | None:
+    m = _RE_COBERTURA.match(text.strip())
+    if m:
+        return int(m.group(1)), float(m.group(2).replace(",", ".")) / 100.0
+    return None
+
+
+def parse_agregado(text: str) -> int | None:
+    m = _RE_AGREGADO.match(text.strip())
+    if m:
+        return int(m.group(1))
+    return None
 
 
 def normalizar_cultura(cultura: str) -> str:

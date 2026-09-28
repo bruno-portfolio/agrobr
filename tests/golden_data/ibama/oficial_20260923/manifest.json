@@ -1,0 +1,734 @@
+{
+ "fonte": "IBAMA — Fiscalização: termo de embargo (dados abertos, CKAN fiscalizacao-termo-de-embargo)",
+ "url": "https://stibamadadosabertosprd.blob.core.windows.net/dados-abertos/dados/TERMOS_DE_EMBARGO/TERMO_EMBARGO/termo_de_embargo.csv",
+ "catalogo": "https://dadosabertos.ibama.gov.br/api/3/action/package_show?id=fiscalizacao-termo-de-embargo",
+ "capturado_em": "2026-09-23T19:48:13.981125+00:00",
+ "origem": {
+  "bytes": 208152991,
+  "sha256": "3f95e2e9faa82f597c95c349b4551a26c8d541a89966325e87c116436700bb32",
+  "last_modified": "Wed, 23 Sep 2026 03:56:34 GMT",
+  "etag": "0x8DF1926A8E4D26B",
+  "registros": 116332,
+  "ultima_atualizacao_relatorio": [
+   "2026-09-23 00:54:47"
+  ]
+ },
+ "recorte": {
+  "arquivo": "termo_de_embargo_recorte.csv",
+  "bytes": 60208,
+  "sha256": "efd06ce85f1324e953bd3dd23a3a03b0615a9a2b589e89b9934efaac7c233df7",
+  "registros": 62,
+  "transformacao": "BOM, cabeçalho e linhas copiados byte a byte do arquivo de origem, na ordem da origem, separados por LF como na origem; nos campos NUM_PESSOA_EMBARGO, NOME_EMBARGADO, CPF_CNPJ_EMBARGADO o conteúdo entre aspas foi trocado por \"\" (dado pessoal que o agrobr não lê); linhas escolhidas só entre registros sem nome nem CPF/CNPJ do embargado em outro campo",
+  "mascaradas": [
+   "NUM_PESSOA_EMBARGO",
+   "NOME_EMBARGADO",
+   "CPF_CNPJ_EMBARGADO"
+  ],
+  "bbox_doc": [
+   -56.0,
+   -16.0,
+   -54.0,
+   -14.0
+  ]
+ },
+ "linhas": [
+  {
+   "linha_na_origem": 2,
+   "seq_tad": "1875850",
+   "num_tad": "2QJILJXL",
+   "uf": "CE",
+   "classes": [
+    "data_2925",
+    "geo_multipoligono"
+   ],
+   "sha256_linha_original": "114b1c1aac2cfb4cd6b8922f94f696525f100f6ccb28dae06957c0de83b8ebbe",
+   "sha256_linha_mascarada": "f96ca76bca93acf92cc3b08a3ac5f7f8c5f5e51acaf581e3d8e252628c7b6ef2"
+  },
+  {
+   "linha_na_origem": 3,
+   "seq_tad": "674856",
+   "num_tad": "569404",
+   "uf": "TO",
+   "classes": [
+    "data_2090",
+    "uf_TO"
+   ],
+   "sha256_linha_original": "0229149e94267f642fbc8ccf39bfb6c86dae2a8f32abaf805d838e4667117a1c",
+   "sha256_linha_mascarada": "4800864a0d7d2861f4e1a2a7cdac9252403b9dd1322a3244c52330fdc3c896f1"
+  },
+  {
+   "linha_na_origem": 4,
+   "seq_tad": "1454499",
+   "num_tad": "29728",
+   "uf": "MT",
+   "classes": [
+    "data_2080"
+   ],
+   "sha256_linha_original": "93ce5dcfe3eae762c8f2019ca375d73f0e808e09728b6bcf0f75b2090c7119ce",
+   "sha256_linha_mascarada": "e8e7cd720373404541df2cdeb23a4733b988347865ee2281bbb912463309aa6f"
+  },
+  {
+   "linha_na_origem": 5,
+   "seq_tad": "1534325",
+   "num_tad": "662734",
+   "uf": "RO",
+   "classes": [
+    "data_2063"
+   ],
+   "sha256_linha_original": "7a7643995d5caca80560f04bc9d9601361d385d1ab31f0c66bdcddd55d0a4441",
+   "sha256_linha_mascarada": "5099c2d9873ca3d6a5a61709db428d113e741c7222bc4fc524eb08aadaab498a"
+  },
+  {
+   "linha_na_origem": 96,
+   "seq_tad": "",
+   "num_tad": "7727TQTC",
+   "uf": "PB",
+   "classes": [
+    "data_recente_092026"
+   ],
+   "sha256_linha_original": "928ff745176f11b0870c339581fc7744b0d51c3c60674fc49c3cf24608c4ac43",
+   "sha256_linha_mascarada": "15086e4e75be99c3da92a369871d47215d1b15365066e2f1f1df2ac30e8e2a77"
+  },
+  {
+   "linha_na_origem": 374,
+   "seq_tad": "",
+   "num_tad": "XPV3SYMI",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "1d3af11e9b9a092af0ab473096672321b5f80c2091dc85b7afd275b531051779",
+   "sha256_linha_mascarada": "3cc61c9f797d5d7f607b870a39cd8ba73bf3a18f6d979469dd879180d0c1f262"
+  },
+  {
+   "linha_na_origem": 12033,
+   "seq_tad": "1879054",
+   "num_tad": "66922",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_poligono"
+   ],
+   "sha256_linha_original": "0e29b2699eb578b30f7557460b747def5dddcdac29aea4c5ea0d91f458519c54",
+   "sha256_linha_mascarada": "44acbcf88c43b9e0c120acdea66e265ac17176f212ab64fb4b2e87525a4a5b6f"
+  },
+  {
+   "linha_na_origem": 13201,
+   "seq_tad": "1839019",
+   "num_tad": "4I0P5V71",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "07f945a8d8b0dab4b843b30a067a1b62e60d9048b09a438c887bcf63e4516eea",
+   "sha256_linha_mascarada": "d275f2426f76e08bddca76755a58683c67a4ab731cb3908f6039c27f57a08bf6"
+  },
+  {
+   "linha_na_origem": 21061,
+   "seq_tad": "1788414",
+   "num_tad": "3UYWBU18",
+   "uf": "MG",
+   "classes": [
+    "coord_fora_brasil"
+   ],
+   "sha256_linha_original": "ccc87d24b121bb474efd71dfb74231180a9b959c01b2c9765559a773bf0e1c07",
+   "sha256_linha_mascarada": "4bed48ca77a9a1baa375cbe6ac250bc12bf5d13b52fa8bf681c804603b65c24e"
+  },
+  {
+   "linha_na_origem": 22636,
+   "seq_tad": "1790114",
+   "num_tad": "401QOJ0M",
+   "uf": "AM",
+   "classes": [
+    "status_lavrado"
+   ],
+   "sha256_linha_original": "2ff8f058d9ea039382aab924475c835dc9cbbd3ba63d40a9e9c6e45dc8a42e51",
+   "sha256_linha_mascarada": "2ff8f058d9ea039382aab924475c835dc9cbbd3ba63d40a9e9c6e45dc8a42e51"
+  },
+  {
+   "linha_na_origem": 24137,
+   "seq_tad": "1781907",
+   "num_tad": "TJGYZIQ2",
+   "uf": "RN",
+   "classes": [
+    "geo_topologia_invalida",
+    "uf_RN"
+   ],
+   "sha256_linha_original": "c430814a7b81629968102ab82f987e4aa0ec1cb1313f35c1ed969974ebd4f142",
+   "sha256_linha_mascarada": "e84e99f12312ef8a0c6acac1fb6a5eeb7e9cc59f6d8896583a5933a5d5941218"
+  },
+  {
+   "linha_na_origem": 25918,
+   "seq_tad": "1882493",
+   "num_tad": "MONT4450",
+   "uf": "RO",
+   "classes": [
+    "status_cancelado",
+    "geo_poligono",
+    "geo_sem_ponto",
+    "num_tad_repetido"
+   ],
+   "sha256_linha_original": "f31dffdfffce4a78be60ac14cbed993ff2a750cb12a836047fdddd7e73f652e4",
+   "sha256_linha_mascarada": "f31dffdfffce4a78be60ac14cbed993ff2a750cb12a836047fdddd7e73f652e4"
+  },
+  {
+   "linha_na_origem": 25919,
+   "seq_tad": "1882417",
+   "num_tad": "MONT4450",
+   "uf": "RO",
+   "classes": [
+    "num_tad_repetido"
+   ],
+   "sha256_linha_original": "a6eccdce06db271edbf2125787a64064d635c6ee22d18b95f8485fbe3d54296c",
+   "sha256_linha_mascarada": "f195e777a7bb4ac9e7cd7ded479f51873881064faf01e2a5c62a53c6fae4c603"
+  },
+  {
+   "linha_na_origem": 26428,
+   "seq_tad": "1791771",
+   "num_tad": "CAMW21FK",
+   "uf": "MG",
+   "classes": [
+    "uf_MG"
+   ],
+   "sha256_linha_original": "c8ce183ba60dbe91835b4e1ddb8c0274da3261dc9435dbb3b128fc264a2d35a7",
+   "sha256_linha_mascarada": "00cab332f60c593168d7705787256fb905f50284ac3dc5491c95ce9428b187a8"
+  },
+  {
+   "linha_na_origem": 31276,
+   "seq_tad": "",
+   "num_tad": "IWP2MDYZ",
+   "uf": "BA",
+   "classes": [
+    "aie_sem_seq_cancelado",
+    "area_vazia"
+   ],
+   "sha256_linha_original": "74f33cfcd6415878b17ea06e07cb3b92bfd8fd6a540e8cf2d6d7291b88613434",
+   "sha256_linha_mascarada": "4af7b348e857e7ba6eeb67e4f8a38f4e9c231c9a05291af9f32e577671477ff2"
+  },
+  {
+   "linha_na_origem": 31343,
+   "seq_tad": "",
+   "num_tad": "UAVZVDCG",
+   "uf": "AM",
+   "classes": [
+    "aie_sem_seq_nao_cancelado",
+    "coord_vazia"
+   ],
+   "sha256_linha_original": "b22e018fb60c07246df9f7fcec91859d04e08099149599f01af08922256c0eff",
+   "sha256_linha_mascarada": "b22e018fb60c07246df9f7fcec91859d04e08099149599f01af08922256c0eff"
+  },
+  {
+   "linha_na_origem": 31855,
+   "seq_tad": "1701771",
+   "num_tad": "819276",
+   "uf": "RO",
+   "classes": [
+    "geo_poligono_com_buraco",
+    "uf_RO"
+   ],
+   "sha256_linha_original": "48519a49507f6a71e7a1ec5e42f53d0bd3ad31c94394d0c208532e7945f6e48b",
+   "sha256_linha_mascarada": "dddc9047bc15a02943a16099cd938e0f472e287037f885c6f810889ec28ff21e"
+  },
+  {
+   "linha_na_origem": 32883,
+   "seq_tad": "1634986",
+   "num_tad": "752590",
+   "uf": "PA",
+   "classes": [
+    "area_zero",
+    "uf_PA"
+   ],
+   "sha256_linha_original": "66fbbdb30198280096eb3ea6e5812f9ae4e0992cbda481f35ae65ac4268a0f54",
+   "sha256_linha_mascarada": "66fbbdb30198280096eb3ea6e5812f9ae4e0992cbda481f35ae65ac4268a0f54"
+  },
+  {
+   "linha_na_origem": 36194,
+   "seq_tad": "1620341",
+   "num_tad": "738000",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "c6fe6f429434492651a754661467d2894e54f80ee5edcc2e1075dbc60a6dd193",
+   "sha256_linha_mascarada": "2889aa72bf081ee2d33fa0fcdb7e558b8bd1402cb004ede884f41997aa571491"
+  },
+  {
+   "linha_na_origem": 36195,
+   "seq_tad": "1620339",
+   "num_tad": "737998",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "db3ab2e2a461bcd9f91c9f38772815d9824687143c102902d58e25a5ccec6f2c",
+   "sha256_linha_mascarada": "1ce700949ee1ff31d12c2a8030b4438476f4c9dd933711f14c24204ba6d91407"
+  },
+  {
+   "linha_na_origem": 36366,
+   "seq_tad": "1620337",
+   "num_tad": "737996",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "60e0d5a6288663b206cddbd045fb23d9da1b3bf8d32cc4e4723e3ecd37badd8f",
+   "sha256_linha_mascarada": "4e1231657132fb0df2fa02c54c8c5829efd40cfbb2f31f07b158d38584fe7b55"
+  },
+  {
+   "linha_na_origem": 37613,
+   "seq_tad": "1641720",
+   "num_tad": "759324",
+   "uf": "AL",
+   "classes": [
+    "uf_AL"
+   ],
+   "sha256_linha_original": "e09e6aa4f7cc6a5a1c1a47f681c81bf32e6052c6929841fbff9d42277b9bf642",
+   "sha256_linha_mascarada": "e09e6aa4f7cc6a5a1c1a47f681c81bf32e6052c6929841fbff9d42277b9bf642"
+  },
+  {
+   "linha_na_origem": 40045,
+   "seq_tad": "1769899",
+   "num_tad": "754789",
+   "uf": "AP",
+   "classes": [
+    "uf_AP"
+   ],
+   "sha256_linha_original": "f9f49afc33b9c56609bb4909ba7234ec1488b50fd0db73899a37af11de2e54d3",
+   "sha256_linha_mascarada": "525fd4f72e251fd09868d076a2fcd126351bbfaf8626cc10a250ca72516ea7e5"
+  },
+  {
+   "linha_na_origem": 46161,
+   "seq_tad": "1507756",
+   "num_tad": "636413",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "d7241cc8d5258e272a700a448df81ddcde0bd05d80717dffc5a7ca3c9629a0ff",
+   "sha256_linha_mascarada": "e21a99aa5398167938000000d902b9dee502fd47630c8a8af7a6c62e272c8803"
+  },
+  {
+   "linha_na_origem": 50190,
+   "seq_tad": "1543288",
+   "num_tad": "671697",
+   "uf": "PR",
+   "classes": [
+    "geo_wkt_ilegivel",
+    "uf_PR"
+   ],
+   "sha256_linha_original": "10d68be98eae65d7e3068eccdfc081b35aa9adb6432801027306ba2c122f2817",
+   "sha256_linha_mascarada": "a8eaffdc7529cbe6b99eea18654be4d907dfa572fa6c8c10f4670bd19eb84b2a"
+  },
+  {
+   "linha_na_origem": 51269,
+   "seq_tad": "1523621",
+   "num_tad": "652126",
+   "uf": "AM",
+   "classes": [
+    "cancelado_s_lavrado"
+   ],
+   "sha256_linha_original": "b41735b4efe698db20fe087e8c40af56b54a67eb9f34021d4a221463a6e808d7",
+   "sha256_linha_mascarada": "b41735b4efe698db20fe087e8c40af56b54a67eb9f34021d4a221463a6e808d7"
+  },
+  {
+   "linha_na_origem": 51653,
+   "seq_tad": "1519875",
+   "num_tad": "648517",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "188e76a3658de1234fa397b20e7545c81d67bdc4b324eb7a3e19846856c7892a",
+   "sha256_linha_mascarada": "b806678d471e7809347691207fd1a5b2f725d3ac086a5bb2398ccb6de3dd3df4"
+  },
+  {
+   "linha_na_origem": 52157,
+   "seq_tad": "1494255",
+   "num_tad": "622916",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "e477356e55c1413f3ee5a0ccf7b058382cdbb5ff6fbcc2bce4e51e69850e714b",
+   "sha256_linha_mascarada": "306929231510ed059b70ba9598185de201ee81f97fdb2ee1a1c3a7f5b2608d90"
+  },
+  {
+   "linha_na_origem": 53624,
+   "seq_tad": "1483585",
+   "num_tad": "612262",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_ponto"
+   ],
+   "sha256_linha_original": "f6d8799cd7c7e1a29a974f6d10d8484838435ab518055ea712fdbace8cb2fbc2",
+   "sha256_linha_mascarada": "8697a4c0e6172b51e298f6c4cb70421078556ee3ef81c2cd3608278207321b94"
+  },
+  {
+   "linha_na_origem": 54394,
+   "seq_tad": "1563421",
+   "num_tad": "691047",
+   "uf": "RJ",
+   "classes": [
+    "uf_RJ"
+   ],
+   "sha256_linha_original": "d2a686b4b04d2adbd4929d57ca1c192afd1d4cbc009cf2272d7bcb4f5db971d0",
+   "sha256_linha_mascarada": "d2a686b4b04d2adbd4929d57ca1c192afd1d4cbc009cf2272d7bcb4f5db971d0"
+  },
+  {
+   "linha_na_origem": 58038,
+   "seq_tad": "1864903",
+   "num_tad": "662019",
+   "uf": "RR",
+   "classes": [
+    "status_excluido",
+    "coord_norte"
+   ],
+   "sha256_linha_original": "7d1c5f42bba17a113731ff5095f769225d7c3c32584e74e638f9670b1606572a",
+   "sha256_linha_mascarada": "7d1c5f42bba17a113731ff5095f769225d7c3c32584e74e638f9670b1606572a"
+  },
+  {
+   "linha_na_origem": 58744,
+   "seq_tad": "802213",
+   "num_tad": "455591",
+   "uf": "SC",
+   "classes": [
+    "uf_SC"
+   ],
+   "sha256_linha_original": "39fe09c6cafacc6ad8bfac433b1c0606f4b1f7ba92390277dd9aea78a9f45aae",
+   "sha256_linha_mascarada": "39fe09c6cafacc6ad8bfac433b1c0606f4b1f7ba92390277dd9aea78a9f45aae"
+  },
+  {
+   "linha_na_origem": 60666,
+   "seq_tad": "826546",
+   "num_tad": "567217",
+   "uf": "DF",
+   "classes": [
+    "uf_DF"
+   ],
+   "sha256_linha_original": "83e0299cbfc62d73bcda22a24fc6d4a43da4e742024d99327b52bef146eda99b",
+   "sha256_linha_mascarada": "1ed77cc341f889912d87b806d9dd00460f0377e5a8abac15fd16ac27802229ea"
+  },
+  {
+   "linha_na_origem": 63725,
+   "seq_tad": "144342",
+   "num_tad": "240433",
+   "uf": "PE",
+   "classes": [
+    "uf_PE"
+   ],
+   "sha256_linha_original": "fbcbca23f9e46301cf5d0cfb869201a8872bc5fd56d41a4e7b5e021d84fb360f",
+   "sha256_linha_mascarada": "1d939d6a4102c3d29b4b5e595679d2619a5f8bbe4e9b19583a758fd09efcd1e3"
+  },
+  {
+   "linha_na_origem": 74233,
+   "seq_tad": "817977",
+   "num_tad": "220334",
+   "uf": "PB",
+   "classes": [
+    "uf_PB"
+   ],
+   "sha256_linha_original": "97025a0f98974cbfe43c5c7ff7c19726553ef25b4af3cfa214281b927c47e535",
+   "sha256_linha_mascarada": "22eaf5cffc89be03176782ca6c5d44236c67ee74bf19dbf9ae3fb8478e095ca9"
+  },
+  {
+   "linha_na_origem": 75963,
+   "seq_tad": "797042",
+   "num_tad": "566879",
+   "uf": "SE",
+   "classes": [
+    "uf_SE"
+   ],
+   "sha256_linha_original": "62032512eaced096db2cfb083eb7f1c8852bf0fb9d52151642b8343fa8b5c7f6",
+   "sha256_linha_mascarada": "056fb9d5f75a9b320405613902f0cd6b3d9a16bee264685201d6875c3073c066"
+  },
+  {
+   "linha_na_origem": 78099,
+   "seq_tad": "581414",
+   "num_tad": "412492",
+   "uf": "SP",
+   "classes": [
+    "uf_SP"
+   ],
+   "sha256_linha_original": "a13029f21bbfef270829a0d0e21f9f0d7154831f6d7ad3d3695ece8669bc4292",
+   "sha256_linha_mascarada": "12d378d6e0292ea7c3a4aec28e1f6fa51e3e83e2f9ab3d15c5d1478511cf60f1"
+  },
+  {
+   "linha_na_origem": 81149,
+   "seq_tad": "773024",
+   "num_tad": "578031",
+   "uf": "BA",
+   "classes": [
+    "uf_BA"
+   ],
+   "sha256_linha_original": "08ade23dd4e03aa8308f364711a019c8ceada385dc9840edf358cb1c5adf34b3",
+   "sha256_linha_mascarada": "a4aba921ae6af6658600af90c5bd24bd65247b7da6707ae2045f46b47d997e66"
+  },
+  {
+   "linha_na_origem": 82311,
+   "seq_tad": "239992",
+   "num_tad": "467474",
+   "uf": "ES",
+   "classes": [
+    "uf_ES"
+   ],
+   "sha256_linha_original": "3e8862e14b2567a3a27e071316fc7f1b418488f0c514aaa255bd7e999a92f0a7",
+   "sha256_linha_mascarada": "2311833132637e5f65854305d08f047f9a302559fc900fc7ec0c86d70b4f639c"
+  },
+  {
+   "linha_na_origem": 86651,
+   "seq_tad": "133744",
+   "num_tad": "299570",
+   "uf": "MA",
+   "classes": [
+    "uf_MA"
+   ],
+   "sha256_linha_original": "6e30acaf146ea332193348e333db56e68a20e5fb7a6234c412bdf346c67434b7",
+   "sha256_linha_mascarada": "c193f6755ffdfa387aabc2cfd62216d24fc95417ae9f9f6d55e0db6cef269fee"
+  },
+  {
+   "linha_na_origem": 88772,
+   "seq_tad": "662907",
+   "num_tad": "572815",
+   "uf": "ES",
+   "classes": [
+    "desembargo_administrativo"
+   ],
+   "sha256_linha_original": "7984b10ec63d3bb8bdd6c8790af70b53fa1caa8d5378dbf9de934500249c8c33",
+   "sha256_linha_mascarada": "12fd8b8f403ee8f66157bf52b811ad52fb4487de6e2d2cfce016b75a1cb598cb"
+  },
+  {
+   "linha_na_origem": 90445,
+   "seq_tad": "43027",
+   "num_tad": "439112",
+   "uf": "GO",
+   "classes": [
+    "uf_GO"
+   ],
+   "sha256_linha_original": "dbd140a594d2ecc20e0b3cd9ec3a98c6eb14f19cd329a06c51fbfd2983effb94",
+   "sha256_linha_mascarada": "d844ff13cdc1aec2b096af88c9803f982019a9d59275cca4ea958c4c37b22ab9"
+  },
+  {
+   "linha_na_origem": 91617,
+   "seq_tad": "589214",
+   "num_tad": "509302",
+   "uf": "MT",
+   "classes": [
+    "coord_so_lat"
+   ],
+   "sha256_linha_original": "f39b635fab3ed42450c7aaebe2a04c1f36e8416ee9bbe4ca28ec8b57857c8ada",
+   "sha256_linha_mascarada": "0b547bf23f5f1dba270c2e51216dd28799289da4853d48964ceeda7b519102b9"
+  },
+  {
+   "linha_na_origem": 92522,
+   "seq_tad": "602369",
+   "num_tad": "519927",
+   "uf": "RR",
+   "classes": [
+    "uf_RR"
+   ],
+   "sha256_linha_original": "bd5f0d95d5efc853034b092e640dbdc71c6b9a591c6b535892d31045615fff5a",
+   "sha256_linha_mascarada": "b231daeb2a4fbe62a7662ef91bfad00e7ff47dc808798f3c3c4e01ff4f471d21"
+  },
+  {
+   "linha_na_origem": 96762,
+   "seq_tad": "487673",
+   "num_tad": "444153",
+   "uf": "MS",
+   "classes": [
+    "uf_MS"
+   ],
+   "sha256_linha_original": "ea268d29a5495e81dc5278fc1739708735c5d61e29c361b991a1f476570809e2",
+   "sha256_linha_mascarada": "0ac7bcd92fcd18010365b0dd531bad8e5515abaf9853be7817ee0a4e1654436a"
+  },
+  {
+   "linha_na_origem": 101572,
+   "seq_tad": "135275",
+   "num_tad": "461354",
+   "uf": "PI",
+   "classes": [
+    "area_grande"
+   ],
+   "sha256_linha_original": "606319c4e1e5ee084a5db20296ec990ce3c1c9d4656bc4f5b5690625a492c9fc",
+   "sha256_linha_mascarada": "9fcc44eda028c776744908f6b137681c0ed2a01f5881f0446248a1e25dfb3445"
+  },
+  {
+   "linha_na_origem": 102104,
+   "seq_tad": "47572",
+   "num_tad": "322557",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_ambos"
+   ],
+   "sha256_linha_original": "325db28aecd920737d790b28821bede898fe90bcee5b01792cca9d80f375605c",
+   "sha256_linha_mascarada": "78e80033b3eb6b26ba3c5d920763cd6ce186255e06eb8e3f2280fe87bbf56c67"
+  },
+  {
+   "linha_na_origem": 102589,
+   "seq_tad": "260549",
+   "num_tad": "331301",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_poligono"
+   ],
+   "sha256_linha_original": "ed0dd879628ee720580c8062827e4287f1b6afc66beae0f0268d203369d4e037",
+   "sha256_linha_mascarada": "ca3b6b3daf18370878e782be1128333c549e768a7454cc52c38b99280e55dec2"
+  },
+  {
+   "linha_na_origem": 105723,
+   "seq_tad": "5097",
+   "num_tad": "324291",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_poligono"
+   ],
+   "sha256_linha_original": "403d97c9ad40774b64c74626063e8f15cd605afce84502680de4e9363dbdba13",
+   "sha256_linha_mascarada": "d7480ddc4fda7d3dcbd6cdab1c279541829808f846a34bf8e8bdba0dc0303f66"
+  },
+  {
+   "linha_na_origem": 105758,
+   "seq_tad": "535353",
+   "num_tad": "419615",
+   "uf": "AM",
+   "classes": [
+    "coord_inteira",
+    "uf_AM"
+   ],
+   "sha256_linha_original": "18f1d62391a9fa3207361a838335479322db3a358e881f76189de23d0a007251",
+   "sha256_linha_mascarada": "aeb733931e29316d21a94fa8e4933e65b5fe317fe48b3da45167c134cad7057c"
+  },
+  {
+   "linha_na_origem": 106566,
+   "seq_tad": "164438",
+   "num_tad": "376314",
+   "uf": "AC",
+   "classes": [
+    "uf_AC"
+   ],
+   "sha256_linha_original": "c81e780b18c5ad1f3a76628f4dc9cc1015a9fed1ce0bf4c0c38cd83a130589b2",
+   "sha256_linha_mascarada": "6b66760117bdd1b92caba364676f9c5c767b46fee0f20f252880f5fea57fc0de"
+  },
+  {
+   "linha_na_origem": 106642,
+   "seq_tad": "200330",
+   "num_tad": "421112",
+   "uf": "MT",
+   "classes": [
+    "desembargo_judicial",
+    "uf_MT"
+   ],
+   "sha256_linha_original": "e113c3bbf34f559707a04b86020eeecdb857b2fc85e3653d89bbf4605f36fd6d",
+   "sha256_linha_mascarada": "0feb6393c791edfc81183f3e2be8253ae2475127c635e00fd775fd8235e369bf"
+  },
+  {
+   "linha_na_origem": 108008,
+   "seq_tad": "1849341",
+   "num_tad": "0241642",
+   "uf": "CE",
+   "classes": [
+    "area_fracao",
+    "uf_CE"
+   ],
+   "sha256_linha_original": "a5742eb60d9f4514c4a03f73ec88aa891e51c0180bc139dae1b48bd96a3382c6",
+   "sha256_linha_mascarada": "a68839bb582c2c961dd3a3653c148735c6c2917dda9016d1a0c92c0cc09a8a32"
+  },
+  {
+   "linha_na_origem": 108223,
+   "seq_tad": "90052",
+   "num_tad": "141552",
+   "uf": "RS",
+   "classes": [
+    "uf_RS"
+   ],
+   "sha256_linha_original": "5f429edc60d68c2a465188be94dd94e0c0d0f18d28c0ae12647a0a5809220e3b",
+   "sha256_linha_mascarada": "dab3d041401a3c1ffb2b0c5f828b95a9bb157be0e36a9dff93a64cec1fad5dbe"
+  },
+  {
+   "linha_na_origem": 109360,
+   "seq_tad": "24337",
+   "num_tad": "349646",
+   "uf": "PI",
+   "classes": [
+    "uf_PI"
+   ],
+   "sha256_linha_original": "7e0b124c7992fcc102e4eb3e43d7e579d0bae9679340f8c051b4de9c471acb5e",
+   "sha256_linha_mascarada": "c562296f8e09229cfd9f6597e8671b9c8d8d1529d3a7e673707e51da8eb44a4e"
+  },
+  {
+   "linha_na_origem": 110282,
+   "seq_tad": "5740",
+   "num_tad": "28970",
+   "uf": "SE",
+   "classes": [
+    "coord_tres_casas"
+   ],
+   "sha256_linha_original": "c664ca7dd151ce4cb51bdba48578ca4d9567eef3a4cc901ad1479d8138bf6dcb",
+   "sha256_linha_mascarada": "077534ecda05e0c381a977d7a4e19b80fa788899692f0039e9a76429e5adee35"
+  },
+  {
+   "linha_na_origem": 110584,
+   "seq_tad": "84760",
+   "num_tad": "324690",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_ambos"
+   ],
+   "sha256_linha_original": "128c308f6dae52a9a4aacadd506f693d03a07e60c0b2ca9145ec413d9693623a",
+   "sha256_linha_mascarada": "181d3ccfb29978207124ce3b2f8ed2aecbad9da03fd902962955fd83d66da0b8"
+  },
+  {
+   "linha_na_origem": 113017,
+   "seq_tad": "1350962",
+   "num_tad": "165365",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_so_poligono"
+   ],
+   "sha256_linha_original": "125ba41dcb575d5ee672c515b839acf4b666ab382cd967a7873ad2c93d4bcbba",
+   "sha256_linha_mascarada": "550cde517f44e08e4a8d1e48381de19ff03b86fcc548e07b7643a5c8c9c7918d"
+  },
+  {
+   "linha_na_origem": 113333,
+   "seq_tad": "1845109",
+   "num_tad": "066144",
+   "uf": "MT",
+   "classes": [
+    "bbox_doc_sem_geo"
+   ],
+   "sha256_linha_original": "a612eb822917db41997d016a27e77f4c210dc9bdeaa27f9166475601be4422e5",
+   "sha256_linha_mascarada": "bc2aeb4ec105aa01172fcf9c61d4f6ad7de7adf366a033b57aee1ec460e1c16a"
+  },
+  {
+   "linha_na_origem": 114119,
+   "seq_tad": "242605",
+   "num_tad": "26937",
+   "uf": "RS",
+   "classes": [
+    "municipio_codigo_com_espaco"
+   ],
+   "sha256_linha_original": "490f2bac124c84766dc574fe01f3dc6cc9b2801869718db2f8d771b16300156f",
+   "sha256_linha_mascarada": "8654cbd4b73c4c0f89cecb2e6dde1c906ce8bb55d8a98b30c236a3b69f51987d"
+  },
+  {
+   "linha_na_origem": 114183,
+   "seq_tad": "78245",
+   "num_tad": "17241",
+   "uf": "MT",
+   "classes": [
+    "status_substituido"
+   ],
+   "sha256_linha_original": "465ef1b65a456fdae26e7407fd55d3661ed4158b769cf0928a5e7232166b60d8",
+   "sha256_linha_mascarada": "465ef1b65a456fdae26e7407fd55d3661ed4158b769cf0928a5e7232166b60d8"
+  },
+  {
+   "linha_na_origem": 116333,
+   "seq_tad": "1598392",
+   "num_tad": "156045",
+   "uf": "SE",
+   "classes": [
+    "data_min_1667",
+    "coord_zero"
+   ],
+   "sha256_linha_original": "8cd57c172463269a91f9a07ee432394575dc328ac5a4ca883b1d0d56c29c54c5",
+   "sha256_linha_mascarada": "3c449ef1e9a7b17aa504f2c0f871a2d47ef9eb764f71d026b8f3d96ec1dded9d"
+  }
+ ]
+}

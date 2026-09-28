@@ -4,11 +4,14 @@ from typing import Any
 
 __all__ = [
     "AgrobrError",
+    "CacheMigrationError",
     "ContractViolationError",
     "FingerprintMismatchError",
     "InvalidParameterError",
     "NetworkError",
     "ParseError",
+    "ResourceLimitError",
+    "SnapshotError",
     "SourceFallbackWarning",
     "SourceUnavailableError",
     "StaleDataWarning",
@@ -24,6 +27,35 @@ class InvalidParameterError(AgrobrError, ValueError):
     pass
 
 
+class ResourceLimitError(AgrobrError):
+    def __init__(self, source: str, reason: str, *, url: str = "") -> None:
+        self.source = source
+        self.reason = reason
+        self.url = url
+        super().__init__(f"{source}: limite local excedido: {reason}")
+
+
+class CacheMigrationError(AgrobrError):
+    def __init__(self, version: int, reason: str) -> None:
+        self.version = version
+        self.reason = reason
+        super().__init__(
+            f"Falha na migração {version} do cache: {reason}. "
+            "Acesso interrompido para preservar o histórico."
+        )
+
+
+class SnapshotError(AgrobrError):
+    def __init__(
+        self, errors: dict[str, list[str]], *, message: str = "Nenhum arquivo gerado no snapshot."
+    ) -> None:
+        self.errors = errors
+        details = "; ".join(
+            f"{source}: {', '.join(messages)}" for source, messages in errors.items()
+        )
+        super().__init__(f"{message} {details}")
+
+
 class SourceUnavailableError(AgrobrError):
     def __init__(
         self,
@@ -31,11 +63,14 @@ class SourceUnavailableError(AgrobrError):
         url: str | None = None,
         last_error: str | None = None,
         errors: list[tuple[str, str, str]] | None = None,
+        *,
+        attempted_sources: list[str] | None = None,
     ) -> None:
         self.source = source
         self.url = url or ""
         self.last_error = last_error or ""
         self.errors = errors or []
+        self.attempted_sources = list(attempted_sources or [source])
         if errors:
             super().__init__(f"All sources failed for {source}: {errors}")
         else:
@@ -75,11 +110,14 @@ class ParseError(AgrobrError):
         parser_version: int,
         reason: str,
         html_snippet: str = "",
+        *,
+        attempted_sources: list[str] | None = None,
     ) -> None:
         self.source = source
         self.parser_version = parser_version
         self.reason = reason
         self.html_snippet = html_snippet[:500]
+        self.attempted_sources = list(attempted_sources or [source])
         super().__init__(f"Parse failed ({source} v{parser_version}): {reason}")
 
 

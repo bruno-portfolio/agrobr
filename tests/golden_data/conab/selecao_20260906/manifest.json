@@ -1,0 +1,228 @@
+{
+  "captured_on": "2026-09-06",
+  "source": "CONAB official public bulletin catalog and spreadsheets",
+  "catalog_urls": [
+    "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos",
+    "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos?b_start:int=30",
+    "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos?b_start:int=60"
+  ],
+  "files": [
+    {
+      "file": "catalogo.html",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos",
+      "sha256": "79a624b3de246004764b238d9bb2d87ae86fe7f6386143f416aba109987d996d"
+    },
+    {
+      "file": "catalogo_pagina_30.html",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos?b_start:int=30",
+      "sha256": "f5f3a291eb8b4fcbfb39ce8ff24e2acd85033a7a922bf0f725ec752436269920"
+    },
+    {
+      "file": "catalogo_pagina_60.html",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos?b_start:int=60",
+      "sha256": "2ac1cc9d6bd1bc8b0243ffd146f06fabcb9d36c2024c7fd3e26c29134ce1dc78"
+    },
+    {
+      "file": "2025_26_levantamento_04.xlsx",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/4o-levantamento-safra-2025-26/site_previsao_de_safra-por_produto-jan-2026",
+      "sha256": "5e6f80da86f2675a3b6fbdef48081f1ccfd748d9ff6c8b3a6ed849395e7f841e"
+    },
+    {
+      "file": "2021_22_levantamento_07.xls",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/7o-levantamento-safra-2021-22/previsao-de-safra-por-produto-abr-2022-site.xls",
+      "sha256": "4572462233616000da749c8bcb8523f5a2855cb87a072d4a6a2967921b08cc6f"
+    }
+  ],
+  "oracles": [
+    {
+      "file": "2025_26_levantamento_04.xlsx",
+      "sha256": "5e6f80da86f2675a3b6fbdef48081f1ccfd748d9ff6c8b3a6ed849395e7f841e",
+      "safra": "2025/26",
+      "levantamento": 4,
+      "sheet": "Soja",
+      "uf_cell": "A27",
+      "uf_raw": "MT",
+      "row_excel_one_based": 27,
+      "reader": "openpyxl data_only=True; separate data_only=False formula inspection",
+      "pandas_crosscheck": "read_excel(header=None), row index 26, columns 2/5/8",
+      "raw_cells": {
+        "A5": "REGIÃO/UF",
+        "B5": "ÁREA (Em mil ha)",
+        "C5": null,
+        "D5": null,
+        "E5": "PRODUTIVIDADE (Em kg/ha)",
+        "F5": null,
+        "G5": null,
+        "H5": "PRODUÇÃO (Em mil t)",
+        "I5": null,
+        "J5": null,
+        "A6": null,
+        "B6": "Safra 24/25",
+        "C6": "Safra 25/26",
+        "D6": "VAR. %",
+        "E6": "Safra 24/25",
+        "F6": "Safra 25/26",
+        "G6": "VAR. %",
+        "H6": "Safra 24/25",
+        "I6": "Safra 25/26",
+        "J6": "VAR. %",
+        "A7": null,
+        "B7": "(a)",
+        "C7": "(b)",
+        "D7": "(b/a)",
+        "E7": "(c)",
+        "F7": "(d)",
+        "G7": "(d/c)",
+        "H7": "(e)",
+        "I7": "(f)",
+        "J7": "(f/e)",
+        "A27": "MT",
+        "B27": 12738.7,
+        "C27": 13006.2,
+        "D27": 2.1,
+        "E27": 4028,
+        "F27": 3740,
+        "G27": -7.1,
+        "H27": 51311.5,
+        "I27": 48643.2,
+        "J27": -5.2
+      },
+      "formula_cells": {},
+      "merged_ranges_intersecting_headers": [
+        "B5:D5",
+        "E5:G5",
+        "H5:J5",
+        "A5:A7"
+      ],
+      "selected_values": {
+        "area_plantada": {
+          "cell": "C27",
+          "value_raw": 13006.2,
+          "unit": "mil ha",
+          "unit_header_cell": "B5",
+          "unit_header_raw": "ÁREA (Em mil ha)",
+          "season_header_cell": "C6",
+          "season_header_raw": "Safra 25/26"
+        },
+        "produtividade": {
+          "cell": "F27",
+          "value_raw": 3740,
+          "unit": "kg/ha",
+          "unit_header_cell": "E5",
+          "unit_header_raw": "PRODUTIVIDADE (Em kg/ha)",
+          "season_header_cell": "F6",
+          "season_header_raw": "Safra 25/26"
+        },
+        "producao": {
+          "cell": "I27",
+          "value_raw": 48643.2,
+          "unit": "mil t",
+          "unit_header_cell": "H5",
+          "unit_header_raw": "PRODUÇÃO (Em mil t)",
+          "season_header_cell": "I6",
+          "season_header_raw": "Safra 25/26"
+        }
+      },
+      "publication_date": "2026-01-15",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/4o-levantamento-safra-2025-26/site_previsao_de_safra-por_produto-jan-2026"
+    },
+    {
+      "file": "2021_22_levantamento_07.xls",
+      "sha256": "4572462233616000da749c8bcb8523f5a2855cb87a072d4a6a2967921b08cc6f",
+      "safra": "2021/22",
+      "levantamento": 7,
+      "sheet": "Soja",
+      "uf_cell": "A27",
+      "uf_raw": "MT",
+      "row_excel_one_based": 27,
+      "reader": "xlrd raw cell values; formula expressions not exposed by this reader",
+      "pandas_crosscheck": "read_excel(header=None), row index 26, columns 2/5/8",
+      "raw_cells": {
+        "A5": "REGIÃO/UF",
+        "B5": "ÁREA (Em mil ha)",
+        "C5": "",
+        "D5": "",
+        "E5": "PRODUTIVIDADE (Em kg/ha)",
+        "F5": "",
+        "G5": "",
+        "H5": "PRODUÇÃO (Em mil t)",
+        "I5": "",
+        "J5": "",
+        "A6": "",
+        "B6": "Safra 20/21",
+        "C6": "Safra 21/22",
+        "D6": "VAR. %",
+        "E6": "Safra 20/21",
+        "F6": "Safra 21/22",
+        "G6": "VAR. %",
+        "H6": "Safra 20/21",
+        "I6": "Safra 21/22",
+        "J6": "VAR. %",
+        "A7": "",
+        "B7": "(a)",
+        "C7": "(b)",
+        "D7": "(b/a)",
+        "E7": "(c)",
+        "F7": "(d)",
+        "G7": "(d/c)",
+        "H7": "(e)",
+        "I7": "(f)",
+        "J7": "(f/e)",
+        "A27": "MT",
+        "B27": 10479.7,
+        "C27": 10909.4,
+        "D27": 4.1,
+        "E27": 3485.0,
+        "F27": 3592.0,
+        "G27": 3.1,
+        "H27": 36521.8,
+        "I27": 39186.6,
+        "J27": 7.3
+      },
+      "formula_cells": {},
+      "merged_ranges_intersecting_headers": [
+        "N5:T5",
+        "A5:A7",
+        "B5:D5",
+        "E5:G5",
+        "H5:J5"
+      ],
+      "selected_values": {
+        "area_plantada": {
+          "cell": "C27",
+          "value_raw": 10909.4,
+          "unit": "mil ha",
+          "unit_header_cell": "B5",
+          "unit_header_raw": "ÁREA (Em mil ha)",
+          "season_header_cell": "C6",
+          "season_header_raw": "Safra 21/22"
+        },
+        "produtividade": {
+          "cell": "F27",
+          "value_raw": 3592.0,
+          "unit": "kg/ha",
+          "unit_header_cell": "E5",
+          "unit_header_raw": "PRODUTIVIDADE (Em kg/ha)",
+          "season_header_cell": "F6",
+          "season_header_raw": "Safra 21/22"
+        },
+        "producao": {
+          "cell": "I27",
+          "value_raw": 39186.6,
+          "unit": "mil t",
+          "unit_header_cell": "H5",
+          "unit_header_raw": "PRODUÇÃO (Em mil t)",
+          "season_header_cell": "I6",
+          "season_header_raw": "Safra 21/22"
+        }
+      },
+      "publication_date": "2022-04-07",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/7o-levantamento-safra-2021-22/previsao-de-safra-por-produto-abr-2022-site.xls"
+    }
+  ],
+  "oracle_method": "Independent direct reading of official workbook cells with openpyxl/xlrd and pandas.read_excel, without agrobr imports. Soja!A27 identifies MT; headers B5/E5/H5 and C6/F6/I6 identify units and season; C27/F27/I27 provide the expected values. Formula expressions are preserved when exposed by the reader.",
+  "caveats": [
+    "Source headers state area in thousand hectares and production in thousand tonnes; no unit conversion was applied. Area header alone does not establish harvested area, so area_colhida is not independently validated.",
+    "Validates captured binary snapshots identified by SHA-256, not whether the institution ever revised those URLs. XLS formula expressions were not independently reconstructed."
+  ]
+}

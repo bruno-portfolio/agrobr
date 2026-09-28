@@ -4,7 +4,7 @@ import asyncio
 import json
 import math
 import re
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, NotRequired, TypedDict
 from urllib.parse import quote, urlencode
 
 import httpx
@@ -12,7 +12,7 @@ import pandas as pd
 import structlog
 
 from agrobr.constants import MIN_WFS_SIZE
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.user_agents import UserAgentRotator
@@ -27,17 +27,11 @@ class LayerConfig(TypedDict):
     rename_map: dict[str, str]
     colunas_saida: list[str]
     required_cols: set[str]
+    oid_field: NotRequired[str]
 
 
 def _arcgis_error_message(data: object) -> str | None:
-    if not isinstance(data, dict) or "error" not in data:
-        return None
-    error = data["error"]
-    if not isinstance(error, dict):
-        return f"ArcGIS error unknown: {error}"
-    code = error.get("code", "unknown")
-    message = error.get("message", "unknown error")
-    return f"ArcGIS error {code}: {message}"
+    return responses.arcgis_error_message(data)
 
 
 def check_geopandas() -> Any:
@@ -68,14 +62,14 @@ def validate_bbox(
     if bbox is None:
         return None
     if len(bbox) != 4:
-        raise ValueError(
+        raise InvalidParameterError(
             f"BBOX deve ter 4 valores (minlon, minlat, maxlon, maxlat), recebeu {len(bbox)}"
         )
     minlon, minlat, maxlon, maxlat = bbox
     if minlon >= maxlon:
-        raise ValueError(f"BBOX minlon ({minlon}) deve ser menor que maxlon ({maxlon})")
+        raise InvalidParameterError(f"BBOX minlon ({minlon}) deve ser menor que maxlon ({maxlon})")
     if minlat >= maxlat:
-        raise ValueError(f"BBOX minlat ({minlat}) deve ser menor que maxlat ({maxlat})")
+        raise InvalidParameterError(f"BBOX minlat ({minlat}) deve ser menor que maxlat ({maxlat})")
     return bbox
 
 
@@ -93,6 +87,7 @@ def build_wfs_url(
     bbox_crs: str = "EPSG:4674",
     start_index: int | None = None,
     result_type: str | None = None,
+    srs_name: str | None = None,
 ) -> str:
     props = ",".join(property_names)
     is_v2 = version.startswith("2.")
@@ -116,6 +111,8 @@ def build_wfs_url(
     if bbox is not None:
         minlon, minlat, maxlon, maxlat = bbox
         url += f"&BBOX={minlon},{minlat},{maxlon},{maxlat},{bbox_crs}"
+    if srs_name is not None:
+        url += f"&srsName={srs_name}"
     return url
 
 
@@ -138,39 +135,10 @@ async def fetch_wfs(
         if response.status_code == 404:
             raise SourceUnavailableError(source=source, url=url, last_error="HTTP 404")
 
-        response.raise_for_status()
+        responses.raise_for_status(response, source=source)
 
         content = response.content
-        if content[:50].lstrip().lower().startswith((b"<!doctype", b"<html")):
-            raise SourceUnavailableError(
-                source=source,
-                url=url,
-                last_error="WFS returned HTML instead of feature data (possible maintenance or URL redirect)",
-            )
-        head = content[:500]
-        if b"<ServiceException" in head or b"<ows:Exception" in head:
-            text = content.decode("utf-8", errors="replace")
-            m = re.search(
-                r"<(?:ows:)?(?:ServiceException|ExceptionText)[^>]*>(.*?)</", text, re.DOTALL
-            )
-            msg = m.group(1).strip() if m else text[:300].strip()
-            raise SourceUnavailableError(
-                source=source,
-                url=url,
-                last_error=f"WFS server exception: {msg}",
-            )
-        if head.lstrip().startswith(b'{"error"'):
-            try:
-                data = json.loads(content)
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                message = content.decode("utf-8", errors="replace")[:300].strip()
-            else:
-                message = _arcgis_error_message(data) or str(data)[:300]
-            raise SourceUnavailableError(
-                source=source,
-                url=url,
-                last_error=message,
-            )
+        responses.raise_for_service_error(response, source=source, url=url)
         if len(content) < MIN_WFS_SIZE:
             raise SourceUnavailableError(
                 source=source,
@@ -188,6 +156,22 @@ async def fetch_wfs(
         timeout=timeout, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
     ) as auto_client:
         return await _do_fetch(auto_client)
+
+
+_EPSG_NAME = re.compile(r"EPSG:{1,2}(\d+)$")
+
+
+def _declared_crs(geojson: dict[str, Any]) -> str | None:
+    declared = geojson.get("crs")
+    try:
+        return None if declared is None else str(declared["properties"]["name"])
+    except (KeyError, TypeError):
+        return repr(declared)
+
+
+def _epsg_code(name: str) -> str | None:
+    found = _EPSG_NAME.search(name)
+    return found[1] if found else None
 
 
 def parse_geojson_base(
@@ -213,7 +197,16 @@ def parse_geojson_base(
             reason=f"Erro ao ler GeoJSON {source}: {e}",
         ) from e
 
-    features = geojson.get("features", [])
+    error_message = _arcgis_error_message(geojson)
+    if error_message:
+        raise SourceUnavailableError(source=source, last_error=error_message)
+    if not isinstance(geojson, dict) or not isinstance(geojson.get("features"), list):
+        raise ParseError(
+            source=source,
+            parser_version=parser_version,
+            reason="GeoJSON inválido: esperado um objeto com lista de features",
+        )
+    features = geojson["features"]
     if not features:
         if on_empty == "raise":
             raise ParseError(
@@ -241,6 +234,13 @@ def parse_geojson_base(
                 total=len(features),
             )
 
+    declared = _declared_crs(geojson)
+    if declared is not None and _epsg_code(declared) != _epsg_code(crs):
+        raise ParseError(
+            source=source,
+            parser_version=parser_version,
+            reason=f"CRS declarado {declared} diverge do {crs} solicitado",
+        )
     gdf = gpd.GeoDataFrame.from_features(features, crs=crs)
 
     missing = required_cols - set(gdf.columns)
@@ -266,6 +266,8 @@ def build_arcgis_query_url(
     result_record_count: int | None = None,
     result_offset: int | None = None,
     return_count_only: bool = False,
+    return_geometry: bool | None = None,
+    order_by_fields: str | None = None,
 ) -> str:
     params: dict[str, str | int] = {
         "where": where,
@@ -281,6 +283,10 @@ def build_arcgis_query_url(
         params["spatialRel"] = "esriSpatialRelIntersects"
     if return_count_only:
         params["returnCountOnly"] = "true"
+    if return_geometry is not None:
+        params["returnGeometry"] = str(return_geometry).lower()
+    if order_by_fields is not None:
+        params["orderByFields"] = order_by_fields
     if result_record_count is not None:
         params["resultRecordCount"] = result_record_count
     if result_offset is not None:
@@ -308,7 +314,7 @@ async def fetch_arcgis_count(
         timeout=timeout, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
     ) as http:
         response = await retry_on_status(lambda: http.get(url), source=source)
-        response.raise_for_status()
+        responses.raise_for_status(response, source=source)
         data = responses.parse_json_response(response, source=source, url=url)
     error_message = _arcgis_error_message(data)
     if error_message is not None:
@@ -339,90 +345,89 @@ def parse_wfs_hits(content: bytes, *, source: str) -> int:
     )
 
 
-async def fetch_wfs_paginated(
-    base: str,
-    namespace: str,
-    layer: str,
-    version: str,
-    property_names: list[str],
-    page_size: int,
+def _page_features(content: bytes, *, source: str) -> list[dict[str, Any]]:
+    try:
+        features: list[dict[str, Any]] = json.loads(content).get("features") or []
+    except (json.JSONDecodeError, UnicodeDecodeError, AttributeError) as e:
+        raise ParseError(
+            source=source, parser_version=1, reason=f"Pagina ArcGIS ilegivel: {e}"
+        ) from e
+    return features
+
+
+def _page_oids(content: bytes, oid_field: str, *, source: str) -> list[int]:
+    features = _page_features(content, source=source)
+    try:
+        return [
+            int((feature.get("attributes") or feature.get("properties") or {})[oid_field])
+            for feature in features
+        ]
+    except (KeyError, TypeError, ValueError, AttributeError) as e:
+        raise ParseError(
+            source=source, parser_version=1, reason=f"Pagina ArcGIS sem {oid_field} valido: {e!r}"
+        ) from e
+
+
+def _require_complete(collected: int, total: int, *, source: str, url: str) -> None:
+    if collected != total:
+        raise SourceUnavailableError(
+            source=source,
+            url=url,
+            last_error=f"Paginacao ArcGIS incompleta: {collected} de {total} feicoes",
+        )
+
+
+async def _fetch_keyset_pages(
+    http: httpx.AsyncClient,
+    service_url: str,
     *,
+    oid_field: str,
+    where: str,
+    bbox: tuple[float, float, float, float] | None,
+    fields: str,
+    f: str,
+    total: int,
+    page_size: int,
     source: str,
     timeout: httpx.Timeout,
-    cql: str | None = None,
-    bbox: tuple[float, float, float, float] | None = None,
-    throttle_after_page: int = 5,
-    throttle_delay: float = 2.0,
+    return_geometry: bool | None,
+    throttle_after_page: int,
+    throttle_delay: float,
 ) -> tuple[list[bytes], str]:
-    hits_url = build_wfs_url(
-        base,
-        namespace,
-        layer,
-        version,
-        [],
-        max_features=1,
-        cql_filter=cql,
-        bbox=bbox,
-        result_type="hits",
-    )
-    hits_content = await fetch_wfs(hits_url, source=source, timeout=timeout)
-    total = parse_wfs_hits(hits_content, source=source)
-    logger.info("wfs_paginated_hits", source=source, layer=layer, total=total)
-
-    if total == 0:
-        url = build_wfs_url(
-            base,
-            namespace,
-            layer,
-            version,
-            property_names,
-            max_features=page_size,
-            cql_filter=cql,
-            bbox=bbox,
-        )
-        return [], url
-
-    n_pages = math.ceil(total / page_size)
     pages: list[bytes] = []
     first_url = ""
-
-    async with httpx.AsyncClient(
-        timeout=timeout,
-        headers=UserAgentRotator.get_bot_headers(),
-        follow_redirects=True,
-    ) as http:
-        for i in range(n_pages):
-            url = build_wfs_url(
-                base,
-                namespace,
-                layer,
-                version,
-                property_names,
-                max_features=page_size,
-                cql_filter=cql,
-                start_index=i * page_size,
-                bbox=bbox,
-            )
-            if i == 0:
-                first_url = url
-            content = await fetch_wfs(
-                url,
+    collected = 0
+    last_oid: int | None = None
+    while collected < total:
+        url = build_arcgis_query_url(
+            service_url,
+            where=where if last_oid is None else f"({where}) AND {oid_field} > {last_oid}",
+            bbox=bbox,
+            out_fields=fields,
+            out_sr=4326,
+            f=f,
+            result_record_count=min(page_size, total - collected),
+            return_geometry=return_geometry,
+            order_by_fields=oid_field,
+        )
+        first_url = first_url or url
+        content = await fetch_wfs(url, source=source, timeout=timeout, client=http)
+        oids = _page_oids(content, oid_field, source=source)
+        if not oids:
+            break
+        if last_oid is not None and max(oids) <= last_oid:
+            raise SourceUnavailableError(
                 source=source,
-                timeout=timeout,
-                client=http,
+                url=url,
+                last_error=f"Paginacao ArcGIS nao avancou alem de {oid_field}={last_oid}",
             )
-            pages.append(content)
-            logger.debug(
-                "wfs_paginated_page",
-                source=source,
-                layer=layer,
-                page=i + 1,
-                total_pages=n_pages,
-                size=len(content),
-            )
-            if i >= throttle_after_page:
-                await asyncio.sleep(throttle_delay)
-
+        pages.append(content)
+        collected += len(oids)
+        last_oid = max(oids)
+        logger.debug(f"{source}_page", page=len(pages), collected=collected, total=total)
+        if len(pages) > throttle_after_page:
+            await asyncio.sleep(throttle_delay)
+    _require_complete(collected, total, source=source, url=first_url)
     return pages, first_url
 
 
@@ -438,6 +443,7 @@ async def fetch_arcgis_layer(
     f: str = "geojson",
     throttle_after_page: int = 5,
     throttle_delay: float = 2.0,
+    return_geometry: bool | None = None,
 ) -> tuple[list[bytes], str]:
     service_url = f"{base_url}/{layer_config['service_path']}"
     max_record_count = layer_config["max_record_count"]
@@ -461,12 +467,31 @@ async def fetch_arcgis_layer(
     n_pages = math.ceil(total / max_record_count)
     pages: list[bytes] = []
     first_url = ""
+    collected = 0
 
     async with httpx.AsyncClient(
         timeout=timeout,
         headers=UserAgentRotator.get_bot_headers(),
         follow_redirects=True,
     ) as http:
+        oid_field = layer_config.get("oid_field")
+        if oid_field is not None:
+            return await _fetch_keyset_pages(
+                http,
+                service_url,
+                oid_field=oid_field,
+                where=where,
+                bbox=bbox,
+                fields=fields,
+                f=f,
+                total=total,
+                page_size=max_record_count,
+                source=source,
+                timeout=timeout,
+                return_geometry=return_geometry,
+                throttle_after_page=throttle_after_page,
+                throttle_delay=throttle_delay,
+            )
         for i in range(n_pages):
             offset = i * max_record_count
             url = build_arcgis_query_url(
@@ -478,15 +503,18 @@ async def fetch_arcgis_layer(
                 f=f,
                 result_record_count=min(max_record_count, total - offset),
                 result_offset=offset,
+                return_geometry=return_geometry,
             )
             if i == 0:
                 first_url = url
             content = await fetch_wfs(url, source=source, timeout=timeout, client=http)
+            collected += len(_page_features(content, source=source))
             pages.append(content)
             logger.debug(f"{source}_page", page=i + 1, total_pages=n_pages, size=len(content))
             if i >= throttle_after_page:
                 await asyncio.sleep(throttle_delay)
 
+    _require_complete(collected, total, source=source, url=first_url)
     return pages, first_url
 
 
@@ -497,6 +525,7 @@ def parse_arcgis_tabular(
     layer_config: LayerConfig,
     parser_version: int,
     numeric_cols: frozenset[str] | None = None,
+    validate_required: bool = False,
 ) -> pd.DataFrame:
     colunas = layer_config["colunas_saida"]
     rename_map = layer_config["rename_map"]
@@ -516,6 +545,14 @@ def parse_arcgis_tabular(
             ) from e
         for feat in data.get("features", []):
             row = feat.get("properties") or feat.get("attributes", {})
+            if validate_required:
+                missing = layer_config["required_cols"] - row.keys()
+                if missing:
+                    raise ParseError(
+                        source=source,
+                        parser_version=parser_version,
+                        reason=f"Colunas obrigatorias ausentes na pagina {i}: {sorted(missing)}",
+                    )
             if row:
                 all_rows.append(row)
 
@@ -550,11 +587,10 @@ def parse_arcgis_geojson(
     colunas_geo = layer_config["colunas_saida"] + ["geometry"]
     rename_map = layer_config["rename_map"]
     required = layer_config["required_cols"]
-    max_record_count = layer_config["max_record_count"]
 
     if not pages:
         empty = gpd.GeoDataFrame(columns=colunas_geo)
-        empty = empty.set_geometry("geometry")
+        empty = empty.set_geometry("geometry", crs="EPSG:4326")
         return empty
 
     gdfs = []
@@ -565,7 +601,7 @@ def parse_arcgis_geojson(
             source=source,
             parser_version=parser_version,
             required_cols=required,
-            max_features=max_record_count,
+            max_features=None,
             output_cols_empty=colunas_geo,
             truncation_event=f"{source}_truncated",
             warn_null_geom=True,
@@ -575,7 +611,7 @@ def parse_arcgis_geojson(
 
     if not gdfs:
         empty = gpd.GeoDataFrame(columns=colunas_geo)
-        empty = empty.set_geometry("geometry")
+        empty = empty.set_geometry("geometry", crs="EPSG:4326")
         return empty
 
     gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True), crs="EPSG:4326")

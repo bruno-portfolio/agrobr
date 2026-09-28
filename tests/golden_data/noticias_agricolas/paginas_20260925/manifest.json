@@ -1,0 +1,5276 @@
+{
+ "format_version": 1,
+ "oracle": "html.parser da biblioteca padrão sobre os bytes crus, sem importar o agrobr; cada div.cotacao com o seu 'Fechamento' e a tabela cot-fisicas; números por Decimal (ponto de milhar fora, vírgula decimal); variação '-' ou vazia = ausente; linha sem valor = ausente",
+ "coordinate_system": "posicao = índice do div.cotacao na página e índice da linha no tbody",
+ "files": [
+  {
+   "produto": "soja_parana",
+   "file": "na_soja_parana.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/soja/indicador-cepea-esalq-soja-parana",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/soja/indicador-cepea-esalq-soja-parana",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:06.941493+00:00",
+   "received_at": "2026-09-25T23:25:07.038295+00:00",
+   "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:08 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "last-modified": "Fri, 25 Sep 2026 23:20:50 GMT",
+    "cf-ray": "a40dc950eec5d7eb-GRU",
+    "age": "257"
+   },
+   "bytes": 132526,
+   "sha256": "2f079fda79bce8a270708687dedda6ae6a9a4fb7c213532f74112c66e9a53375"
+  },
+  {
+   "produto": "arroz",
+   "file": "na_arroz.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/arroz/arroz-em-casca-esalq-bbm",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/arroz/arroz-em-casca-esalq-bbm",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:09.038567+00:00",
+   "received_at": "2026-09-25T23:25:09.074368+00:00",
+   "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:10 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "last-modified": "Fri, 25 Sep 2026 23:23:29 GMT",
+    "cf-ray": "a40dc95dbcccd7eb-GRU",
+    "age": "100"
+   },
+   "bytes": 132419,
+   "sha256": "8324c53661e41a619ffb28e3571d48dfd064746073eda963c6e1012951ae24ee"
+  },
+  {
+   "produto": "acucar",
+   "file": "na_acucar.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/acucar-cristal-cepea",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/acucar-cristal-cepea",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:11.074897+00:00",
+   "received_at": "2026-09-25T23:25:11.364058+00:00",
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:12 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc96a6b38d7eb-GRU"
+   },
+   "bytes": 132591,
+   "sha256": "213de2dcfd2288550ecc7e1c727589e55a1b913d629312d13c364a9cfb8173bb"
+  },
+  {
+   "produto": "acucar_refinado",
+   "file": "na_acucar_refinado.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/acucar-refinado-amorfo",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/acucar-refinado-amorfo",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:13.364465+00:00",
+   "received_at": "2026-09-25T23:25:13.683511+00:00",
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:15 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc978bd7cd7eb-GRU"
+   },
+   "bytes": 132523,
+   "sha256": "16a66139f31f29e2e2e2b48816abf16d8a3d35eb6be2d8e74353b988809f981a"
+  },
+  {
+   "produto": "etanol_hidratado",
+   "file": "na_etanol_hidratado.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/indicador-semanal-etanol-hidratado-cepea-esalq",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/indicador-semanal-etanol-hidratado-cepea-esalq",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:15.684172+00:00",
+   "received_at": "2026-09-25T23:25:16.587997+00:00",
+   "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:18 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc9873946d7eb-GRU"
+   },
+   "bytes": 132691,
+   "sha256": "c41a762943f5696da9a71310a2b37328564a49c02789c80a4a6036963612bd1c"
+  },
+  {
+   "produto": "etanol_anidro",
+   "file": "na_etanol_anidro.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/indicador-semanal-etanol-anidro-cepea-esalq",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/sucroenergetico/indicador-semanal-etanol-anidro-cepea-esalq",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:18.588653+00:00",
+   "received_at": "2026-09-25T23:25:18.964647+00:00",
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:20 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc9996f0cd7eb-GRU"
+   },
+   "bytes": 132657,
+   "sha256": "37711dee54ece41464b9a8715b5c1e8c42dc2a69164b3ba5c0914354cf7ce89a"
+  },
+  {
+   "produto": "frango_congelado",
+   "file": "na_frango_congelado.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/frango/precos-do-frango-congelado-cepea-esalq",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/frango/precos-do-frango-congelado-cepea-esalq",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:20.965184+00:00",
+   "received_at": "2026-09-25T23:25:21.283719+00:00",
+   "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:22 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc9a83a74d7eb-GRU"
+   },
+   "bytes": 132310,
+   "sha256": "18b12a3893f0cb7636dcb30acef65e0e99b69a17df22cda6d218387124da9f4f"
+  },
+  {
+   "produto": "frango_resfriado",
+   "file": "na_frango_resfriado.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/frango/precos-do-frango-resfriado-cepea-esalq",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/frango/precos-do-frango-resfriado-cepea-esalq",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:23.284366+00:00",
+   "received_at": "2026-09-25T23:25:23.619240+00:00",
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:25 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc9b6bdbbd7eb-GRU"
+   },
+   "bytes": 132310,
+   "sha256": "fa8b10dc2cbc5f498b9fccfe95bb1bba6a00bf6d2a89c2b57d151262bee8b2dd"
+  },
+  {
+   "produto": "suino",
+   "file": "na_suino.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/suinos/indicador-do-suino-vivo-cepea-esalq",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/suinos/indicador-do-suino-vivo-cepea-esalq",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:25.619617+00:00",
+   "received_at": "2026-09-25T23:25:25.953158+00:00",
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:27 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc9c55981d7eb-GRU"
+   },
+   "bytes": 143432,
+   "sha256": "8a33185da34f363a7a67b84313451d317867849cfcc5f696137473d4460c4200"
+  },
+  {
+   "produto": "leite",
+   "file": "na_leite.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/leite/leite-precos-ao-produtor-cepea-rs-litro",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/leite/leite-precos-ao-produtor-cepea-rs-litro",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:27.953848+00:00",
+   "received_at": "2026-09-25T23:25:27.988417+00:00",
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:29 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "last-modified": "Fri, 25 Sep 2026 23:20:51 GMT",
+    "cf-ray": "a40dc9d3eb47d7eb-GRU",
+    "age": "277"
+   },
+   "bytes": 151828,
+   "sha256": "52521f26455f211f261285e09b553e19e5a83536ea1725121ca84f5667ce1c10"
+  },
+  {
+   "produto": "laranja_industria",
+   "file": "na_laranja_industria.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/laranja/laranja-industria",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/laranja/laranja-industria",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:29.989054+00:00",
+   "received_at": "2026-09-25T23:25:30.294937+00:00",
+   "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:31 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc9e0aeb8d7eb-GRU"
+   },
+   "bytes": 132260,
+   "sha256": "c2f3678c8ff18e9ad710d5728bc44a7f6fd59b552f6d2979757969ce9ad54851"
+  },
+  {
+   "produto": "laranja_in_natura",
+   "file": "na_laranja_in_natura.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/laranja/laranja-pera-in-natura",
+   "final_url": "https://www.noticiasagricolas.com.br/cotacoes/laranja/laranja-pera-in-natura",
+   "status": 200,
+   "redirects": [],
+   "requested_at": "2026-09-25T23:25:32.295260+00:00",
+   "received_at": "2026-09-25T23:25:32.604022+00:00",
+   "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+   "headers": {
+    "date": "Fri, 25 Sep 2026 23:25:34 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-ray": "a40dc9ef0fe5d7eb-GRU"
+   },
+   "bytes": 132282,
+   "sha256": "eff4e62e14d429a13fc4857f8ea224a80384ab44ef984dd93e7d7b5074b04e0b"
+  },
+  {
+   "produto": "soja",
+   "file": "../../reconciliacao_r6_20260918/na_soja.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/soja/soja-indicador-cepea-esalq-porto-paranagua",
+   "sha256": "c1095f3eb723960501c91fcd2a49fe1f1703bdb5dd6e9b8e4c91bd9c6283df03",
+   "bytes": 131542,
+   "captured_at": "2026-09-18T10:54:23.944090+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  },
+  {
+   "produto": "milho",
+   "file": "../../reconciliacao_r6_20260918/na_milho.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/milho/indicador-cepea-esalq-milho",
+   "sha256": "b8153108c48b703e6bb39becdc5ff3d161d4d539ac840498b3f1cf7aa418208e",
+   "bytes": 131397,
+   "captured_at": "2026-09-18T10:54:27.049259+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  },
+  {
+   "produto": "bezerro",
+   "file": "../../reconciliacao_r6_20260918/na_bezerro.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/boi-gordo/indicador-bezerro-esalq-bmf-bovespa-ms",
+   "sha256": "e68800a2216d617f7bd9a3dd76dd230e783667721b53dbb883babd9e536403f7",
+   "bytes": 131661,
+   "captured_at": "2026-09-18T10:54:33.492643+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  },
+  {
+   "produto": "boi",
+   "file": "../../reconciliacao_r6_20260918/na_boi.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/boi-gordo/boi-gordo-indicador-esalq-bmf",
+   "sha256": "d3be6f258bd6b8f739e348a15b1e8946c82370b39e905f995b147a65c61715bd",
+   "bytes": 131598,
+   "captured_at": "2026-09-18T10:54:30.128808+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  },
+  {
+   "produto": "cafe",
+   "file": "../../reconciliacao_r6_20260918/na_cafe.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-arabica",
+   "sha256": "e8b375acd73ae4f93bb5534984c12d621e9a595feed8a1802109a14e15f731da",
+   "bytes": 131516,
+   "captured_at": "2026-09-18T10:54:36.646024+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  },
+  {
+   "produto": "cafe_robusta",
+   "file": "../../reconciliacao_r6_20260918/na_cafe_robusta.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-conillon",
+   "sha256": "715df5c47f1ac4ad990aae0fe5b15063f6d954b4f33cc53ec5cd712fb21f8335",
+   "bytes": 131499,
+   "captured_at": "2026-09-18T10:54:39.739612+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  },
+  {
+   "produto": "algodao",
+   "file": "../../reconciliacao_r6_20260918/na_algodao.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/algodao/algodao-indicador-cepea-esalq-a-prazo",
+   "sha256": "a9ce79f9e57ea64542471eed16cffb162be98e2a297b1dc5fc8e16f2ebc39d8a",
+   "bytes": 131675,
+   "captured_at": "2026-09-18T10:54:46.022274+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  },
+  {
+   "produto": "trigo",
+   "file": "../../reconciliacao_r6_20260918/na_trigo.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/trigo/preco-medio-do-trigo-cepea-esalq",
+   "sha256": "81c157a56438cfd21ec2cd6801ea7e3ff8ca834147a8dbf1ff8724c8f8ba8327",
+   "bytes": 134837,
+   "captured_at": "2026-09-18T10:54:42.954103+00:00",
+   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+  }
+ ],
+ "cases": [
+  {
+   "produto": "soja",
+   "file": "../../reconciliacao_r6_20260918/na_soja.html",
+   "sha256": "c1095f3eb723960501c91fcd2a49fe1f1703bdb5dd6e9b8e4c91bd9c6283df03",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc60kg",
+    "fonte": "Indicador ESALQ/B3 Paranaguá, saca de 60 kg (CEPEA)"
+   },
+   "praca": {
+    "esperada": "Paranaguá/PR",
+    "fonte": "título 'Indicador da Soja ESALQ/B3 - Paranaguá'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor R$",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "Paranaguá/PR",
+     "valor": "162.02",
+     "variacao": "0.09",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "Paranaguá/PR",
+     "valor": "161.88",
+     "variacao": "0.80",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "Paranaguá/PR",
+     "valor": "160.59",
+     "variacao": "0.09",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "Paranaguá/PR",
+     "valor": "160.44",
+     "variacao": "-0.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "Paranaguá/PR",
+     "valor": "160.55",
+     "variacao": "-0.73",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "Paranaguá/PR",
+     "valor": "161.73",
+     "variacao": "1.01",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "Paranaguá/PR",
+     "valor": "160.12",
+     "variacao": "-0.21",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "Paranaguá/PR",
+     "valor": "160.46",
+     "variacao": "-0.25",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "Paranaguá/PR",
+     "valor": "160.87",
+     "variacao": "0.46",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "Paranaguá/PR",
+     "valor": "160.14",
+     "variacao": "-0.53",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "soja_parana",
+   "file": "na_soja_parana.html",
+   "sha256": "2f079fda79bce8a270708687dedda6ae6a9a4fb7c213532f74112c66e9a53375",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc60kg",
+    "fonte": "cabeçalho 'Valor R$/ Saca de 60 kg'"
+   },
+   "praca": {
+    "esperada": "Paraná",
+    "fonte": "título 'Indicador da Soja Cepea/Esalq - Paraná'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor R$/ Saca de 60 kg",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "Paraná",
+     "valor": "154.38",
+     "variacao": "-0.47",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "Paraná",
+     "valor": "155.11",
+     "variacao": "0.03",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "Paraná",
+     "valor": "155.07",
+     "variacao": "-0.28",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "Paraná",
+     "valor": "155.50",
+     "variacao": "0.15",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "Paraná",
+     "valor": "155.26",
+     "variacao": "0.05",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "Paraná",
+     "valor": "155.18",
+     "variacao": "0.15",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "Paraná",
+     "valor": "154.95",
+     "variacao": "-0.24",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "Paraná",
+     "valor": "155.33",
+     "variacao": "1.13",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "Paraná",
+     "valor": "153.59",
+     "variacao": "0.45",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "Paraná",
+     "valor": "152.90",
+     "variacao": "0.05",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "milho",
+   "file": "../../reconciliacao_r6_20260918/na_milho.html",
+   "sha256": "b8153108c48b703e6bb39becdc5ff3d161d4d539ac840498b3f1cf7aa418208e",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc60kg",
+    "fonte": "cabeçalho 'Valor (R$/sc 60 kg)'"
+   },
+   "praca": {
+    "esperada": "Campinas/SP",
+    "fonte": "Indicador ESALQ/B3 do milho, Campinas (CEPEA)"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor (R$/sc 60 kg)",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "Campinas/SP",
+     "valor": "69.25",
+     "variacao": "0.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "Campinas/SP",
+     "valor": "69.20",
+     "variacao": "-0.27",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "Campinas/SP",
+     "valor": "69.39",
+     "variacao": "-0.17",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "Campinas/SP",
+     "valor": "69.51",
+     "variacao": "-0.37",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "Campinas/SP",
+     "valor": "69.77",
+     "variacao": "-0.60",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "Campinas/SP",
+     "valor": "70.19",
+     "variacao": "-0.47",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "Campinas/SP",
+     "valor": "70.52",
+     "variacao": "-0.54",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "Campinas/SP",
+     "valor": "70.90",
+     "variacao": "-0.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "Campinas/SP",
+     "valor": "70.93",
+     "variacao": "-0.18",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "Campinas/SP",
+     "valor": "71.06",
+     "variacao": "0.17",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "bezerro",
+   "file": "../../reconciliacao_r6_20260918/na_bezerro.html",
+   "sha256": "e68800a2216d617f7bd9a3dd76dd230e783667721b53dbb883babd9e536403f7",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/cabeca",
+    "fonte": "Indicador do bezerro, R$ por cabeça (CEPEA)"
+   },
+   "praca": {
+    "esperada": "Mato Grosso do Sul",
+    "fonte": "título 'Bezerro Esalq/BM&F Bovespa - MS'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor R$",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3406.24",
+     "variacao": "0.25",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3397.89",
+     "variacao": "0.18",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3391.91",
+     "variacao": "-0.06",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3393.83",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3393.91",
+     "variacao": "0.06",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3391.98",
+     "variacao": "-0.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3393.35",
+     "variacao": "-0.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3395.82",
+     "variacao": "-0.06",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3397.99",
+     "variacao": "0.01",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "Mato Grosso do Sul",
+     "valor": "3397.58",
+     "variacao": "0.07",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "boi",
+   "file": "../../reconciliacao_r6_20260918/na_boi.html",
+   "sha256": "d3be6f258bd6b8f739e348a15b1e8946c82370b39e905f995b147a65c61715bd",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/@",
+    "fonte": "Indicador do boi gordo, R$ por arroba (CEPEA)"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "Indicador do boi gordo ESALQ/B3, estado de SP (CEPEA)"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "à vista R$",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "352.55",
+     "variacao": "0.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "352.30",
+     "variacao": "0.37",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "351.00",
+     "variacao": "0.43",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.33",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "São Paulo/SP",
+     "valor": "348.35",
+     "variacao": "0.19",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "São Paulo/SP",
+     "valor": "347.70",
+     "variacao": "0.03",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "São Paulo/SP",
+     "valor": "347.60",
+     "variacao": "0.06",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "cafe",
+   "file": "../../reconciliacao_r6_20260918/na_cafe.html",
+   "sha256": "e8b375acd73ae4f93bb5534984c12d621e9a595feed8a1802109a14e15f731da",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc60kg",
+    "fonte": "Indicador do café arábica, saca de 60 kg (CEPEA)"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "Indicador do café arábica, cidade de São Paulo (CEPEA)"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor R$",
+     "Variação(%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "1541.97",
+     "variacao": "-1.56",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "1566.48",
+     "variacao": "-1.38",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "1588.43",
+     "variacao": "-0.40",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "1594.86",
+     "variacao": "-0.13",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "São Paulo/SP",
+     "valor": "1596.87",
+     "variacao": "-1.36",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "São Paulo/SP",
+     "valor": "1618.91",
+     "variacao": "-1.72",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "São Paulo/SP",
+     "valor": "1647.29",
+     "variacao": "0.72",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "São Paulo/SP",
+     "valor": "1635.57",
+     "variacao": "-1.47",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "São Paulo/SP",
+     "valor": "1659.93",
+     "variacao": "-0.74",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "São Paulo/SP",
+     "valor": "1672.25",
+     "variacao": "-1.44",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "cafe_robusta",
+   "file": "../../reconciliacao_r6_20260918/na_cafe_robusta.html",
+   "sha256": "715df5c47f1ac4ad990aae0fe5b15063f6d954b4f33cc53ec5cd712fb21f8335",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc60kg",
+    "fonte": "Indicador do café robusta, saca de 60 kg (CEPEA)"
+   },
+   "praca": {
+    "esperada": "Espírito Santo",
+    "fonte": "Indicador do café robusta, Espírito Santo (CEPEA)"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor R$",
+     "Variação(%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "Espírito Santo",
+     "valor": "965.02",
+     "variacao": "-1.26",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "Espírito Santo",
+     "valor": "977.32",
+     "variacao": "-0.86",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "Espírito Santo",
+     "valor": "985.78",
+     "variacao": "-0.66",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "Espírito Santo",
+     "valor": "992.35",
+     "variacao": "-0.06",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "Espírito Santo",
+     "valor": "992.96",
+     "variacao": "0.69",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "Espírito Santo",
+     "valor": "986.16",
+     "variacao": "-1.08",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "Espírito Santo",
+     "valor": "996.90",
+     "variacao": "1.64",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "Espírito Santo",
+     "valor": "980.78",
+     "variacao": "0.42",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "Espírito Santo",
+     "valor": "976.71",
+     "variacao": "-0.34",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "Espírito Santo",
+     "valor": "980.05",
+     "variacao": "-1.18",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "algodao",
+   "file": "../../reconciliacao_r6_20260918/na_algodao.html",
+   "sha256": "a9ce79f9e57ea64542471eed16cffb162be98e2a297b1dc5fc8e16f2ebc39d8a",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "cBRL/lb",
+    "fonte": "cabeçalho 'Valor (8 dias) Cent/R$/lb'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "Indicador do algodão, São Paulo (CEPEA)"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor (8 dias) Cent/R$/lb",
+     "Variação Diária (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "432.57",
+     "variacao": "0.35",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "431.07",
+     "variacao": "-0.28",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "432.27",
+     "variacao": "-1.20",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "437.50",
+     "variacao": "-0.02",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "São Paulo/SP",
+     "valor": "437.57",
+     "variacao": "0.74",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "São Paulo/SP",
+     "valor": "434.35",
+     "variacao": "0.40",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "São Paulo/SP",
+     "valor": "432.61",
+     "variacao": "-1.56",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "São Paulo/SP",
+     "valor": "439.45",
+     "variacao": "-0.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "São Paulo/SP",
+     "valor": "439.98",
+     "variacao": "0.44",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "São Paulo/SP",
+     "valor": "438.05",
+     "variacao": "-0.64",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "trigo",
+   "file": "../../reconciliacao_r6_20260918/na_trigo.html",
+   "sha256": "81c157a56438cfd21ec2cd6801ea7e3ff8ca834147a8dbf1ff8724c8f8ba8327",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/ton",
+    "fonte": "cabeçalho 'R$/t'"
+   },
+   "praca": {
+    "esperada": null,
+    "fonte": "coluna 'Região' de cada linha"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Região",
+     "R$/t",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "Paraná",
+     "valor": "1509.74",
+     "variacao": "-0.15",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 1
+     },
+     "data": "2026-09-17",
+     "praca": "Rio Grande do Sul",
+     "valor": "1385.09",
+     "variacao": "0.37",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "Paraná",
+     "valor": "1512.00",
+     "variacao": "0.16",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 1
+     },
+     "data": "2026-09-16",
+     "praca": "Rio Grande do Sul",
+     "valor": "1380.03",
+     "variacao": "1.37",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "Paraná",
+     "valor": "1509.58",
+     "variacao": "0.35",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 1
+     },
+     "data": "2026-09-15",
+     "praca": "Rio Grande do Sul",
+     "valor": "1361.32",
+     "variacao": "0.30",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "Paraná",
+     "valor": "1504.29",
+     "variacao": "0.98",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 1
+     },
+     "data": "2026-09-14",
+     "praca": "Rio Grande do Sul",
+     "valor": "1357.21",
+     "variacao": "-0.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "Paraná",
+     "valor": "1489.65",
+     "variacao": "1.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 1
+     },
+     "data": "2026-09-11",
+     "praca": "Rio Grande do Sul",
+     "valor": "1358.79",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "Paraná",
+     "valor": "1473.16",
+     "variacao": "0.76",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 1
+     },
+     "data": "2026-09-10",
+     "praca": "Rio Grande do Sul",
+     "valor": "1358.79",
+     "variacao": "-0.19",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "Paraná",
+     "valor": "1462.05",
+     "variacao": "0.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 1
+     },
+     "data": "2026-09-09",
+     "praca": "Rio Grande do Sul",
+     "valor": "1361.39",
+     "variacao": "0.47",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "Paraná",
+     "valor": "1461.42",
+     "variacao": "0.27",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 1
+     },
+     "data": "2026-09-08",
+     "praca": "Rio Grande do Sul",
+     "valor": "1355.06",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "Paraná",
+     "valor": "1457.55",
+     "variacao": "0.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 1
+     },
+     "data": "2026-09-04",
+     "praca": "Rio Grande do Sul",
+     "valor": "1355.06",
+     "variacao": "-0.32",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "Paraná",
+     "valor": "1456.52",
+     "variacao": "0.20",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 1
+     },
+     "data": "2026-09-03",
+     "praca": "Rio Grande do Sul",
+     "valor": "1359.38",
+     "variacao": "0.26",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "arroz",
+   "file": "na_arroz.html",
+   "sha256": "8324c53661e41a619ffb28e3571d48dfd064746073eda963c6e1012951ae24ee",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc50kg",
+    "fonte": "cabeçalho 'Valor R$/ Saca de 50 kg'"
+   },
+   "praca": {
+    "esperada": "Rio Grande do Sul",
+    "fonte": "título 'Indicador Arroz em Casca - Esalq/Senar-RS'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor R$/ Saca de 50 kg",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "Rio Grande do Sul",
+     "valor": "82.48",
+     "variacao": "0.84",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "Rio Grande do Sul",
+     "valor": "81.79",
+     "variacao": "0.17",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "Rio Grande do Sul",
+     "valor": "81.65",
+     "variacao": "-0.31",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "Rio Grande do Sul",
+     "valor": "81.90",
+     "variacao": "-0.16",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "Rio Grande do Sul",
+     "valor": "82.03",
+     "variacao": "0.13",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "Rio Grande do Sul",
+     "valor": "81.92",
+     "variacao": "0.31",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "Rio Grande do Sul",
+     "valor": "81.67",
+     "variacao": "0.34",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "Rio Grande do Sul",
+     "valor": "81.39",
+     "variacao": "1.29",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "Rio Grande do Sul",
+     "valor": "80.35",
+     "variacao": "0.71",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "Rio Grande do Sul",
+     "valor": "79.78",
+     "variacao": "-0.01",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "acucar",
+   "file": "na_acucar.html",
+   "sha256": "213de2dcfd2288550ecc7e1c727589e55a1b913d629312d13c364a9cfb8173bb",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc50kg",
+    "fonte": "cabeçalho 'R$/Saca de 50 Kg'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "título 'Indicador do Açúcar Cristal Cepea/Esalq - SP'"
+   },
+   "cabecalhos": [
+    [
+     "Vencimento",
+     "R$/Saca de 50 Kg",
+     "Variação Diária %"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "120.62",
+     "variacao": "-0.42",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "São Paulo/SP",
+     "valor": "121.13",
+     "variacao": "0.87",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "São Paulo/SP",
+     "valor": "120.08",
+     "variacao": "-0.59",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "São Paulo/SP",
+     "valor": "120.79",
+     "variacao": "0.55",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "São Paulo/SP",
+     "valor": "120.13",
+     "variacao": "0.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "120.05",
+     "variacao": "0.39",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "119.58",
+     "variacao": "0.25",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "119.28",
+     "variacao": "0.96",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "118.15",
+     "variacao": "-1.06",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "119.41",
+     "variacao": "0.19",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "acucar_refinado",
+   "file": "na_acucar_refinado.html",
+   "sha256": "16a66139f31f29e2e2e2b48816abf16d8a3d35eb6be2d8e74353b988809f981a",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/kg",
+    "fonte": "cabeçalho 'Valor R$/KG'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "título '... Açúcar Refinado Amorfo Cepea/Esalq - SP'"
+   },
+   "cabecalhos": [
+    [
+     "Vencimento",
+     "Valor R$/KG",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "3.0124",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "São Paulo/SP",
+     "valor": "3.0124",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "São Paulo/SP",
+     "valor": "3.0124",
+     "variacao": "1.53",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "São Paulo/SP",
+     "valor": "2.9669",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "São Paulo/SP",
+     "valor": "2.9669",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "2.9669",
+     "variacao": "0.02",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "2.9664",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "2.9664",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "2.9664",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "2.9664",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "etanol_hidratado",
+   "file": "na_etanol_hidratado.html",
+   "sha256": "c41a762943f5696da9a71310a2b37328564a49c02789c80a4a6036963612bd1c",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/L",
+    "fonte": "cabeçalho 'R$/Litro'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "CEPEA: 'INDICADOR SEMANAL DO ETANOL HIDRATADO ... - SÃO PAULO'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "R$/Litro",
+     "Variação/Semana (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "2.5820",
+     "variacao": "-2.24",
+     "semanal": true,
+     "periodo": "21 - 25/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "2.6412",
+     "variacao": "7.27",
+     "semanal": true,
+     "periodo": "14 - 18/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "São Paulo/SP",
+     "valor": "2.4622",
+     "variacao": "2.63",
+     "semanal": true,
+     "periodo": "07 - 11/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "São Paulo/SP",
+     "valor": "2.3991",
+     "variacao": "3.79",
+     "semanal": true,
+     "periodo": "31 - 04/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-08-28",
+     "praca": "São Paulo/SP",
+     "valor": "2.3116",
+     "variacao": "2.44",
+     "semanal": true,
+     "periodo": "24 - 28/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-08-21",
+     "praca": "São Paulo/SP",
+     "valor": "2.2566",
+     "variacao": "2.86",
+     "semanal": true,
+     "periodo": "17 - 21/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-08-14",
+     "praca": "São Paulo/SP",
+     "valor": "2.1939",
+     "variacao": "7.24",
+     "semanal": true,
+     "periodo": "10 - 14/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-08-07",
+     "praca": "São Paulo/SP",
+     "valor": "2.0457",
+     "variacao": "0.01",
+     "semanal": true,
+     "periodo": "03 - 07/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-07-31",
+     "praca": "São Paulo/SP",
+     "valor": "2.0454",
+     "variacao": "-1.49",
+     "semanal": true,
+     "periodo": "27 - 31/07/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-07-24",
+     "praca": "São Paulo/SP",
+     "valor": "2.0764",
+     "variacao": "-2.68",
+     "semanal": true,
+     "periodo": "20 - 24/07/2026"
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "etanol_anidro",
+   "file": "na_etanol_anidro.html",
+   "sha256": "37711dee54ece41464b9a8715b5c1e8c42dc2a69164b3ba5c0914354cf7ce89a",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/L",
+    "fonte": "cabeçalho 'R$/Litro'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "CEPEA: 'INDICADOR SEMANAL DO ETANOL ANIDRO ... - SÃO PAULO'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "R$/Litro",
+     "Variação/Semana (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "3.0516",
+     "variacao": "4.77",
+     "semanal": true,
+     "periodo": "21 - 25/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "2.9128",
+     "variacao": "2.29",
+     "semanal": true,
+     "periodo": "14 - 18/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "São Paulo/SP",
+     "valor": "2.8475",
+     "variacao": "2.32",
+     "semanal": true,
+     "periodo": "07 - 11/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "São Paulo/SP",
+     "valor": "2.7829",
+     "variacao": "6.85",
+     "semanal": true,
+     "periodo": "31 - 04/09/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-08-28",
+     "praca": "São Paulo/SP",
+     "valor": "2.6046",
+     "variacao": "1.96",
+     "semanal": true,
+     "periodo": "24 - 28/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-08-21",
+     "praca": "São Paulo/SP",
+     "valor": "2.5546",
+     "variacao": "5.05",
+     "semanal": true,
+     "periodo": "17 - 21/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-08-14",
+     "praca": "São Paulo/SP",
+     "valor": "2.4319",
+     "variacao": "5.32",
+     "semanal": true,
+     "periodo": "10 - 14/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-08-07",
+     "praca": "São Paulo/SP",
+     "valor": "2.3091",
+     "variacao": "-0.22",
+     "semanal": true,
+     "periodo": "03 - 07/08/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-07-31",
+     "praca": "São Paulo/SP",
+     "valor": "2.3141",
+     "variacao": "-2.71",
+     "semanal": true,
+     "periodo": "27 - 31/07/2026"
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-07-24",
+     "praca": "São Paulo/SP",
+     "valor": "2.3786",
+     "variacao": "-2.60",
+     "semanal": true,
+     "periodo": "20 - 24/07/2026"
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "frango_congelado",
+   "file": "na_frango_congelado.html",
+   "sha256": "18b12a3893f0cb7636dcb30acef65e0e99b69a17df22cda6d218387124da9f4f",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/kg",
+    "fonte": "cabeçalho 'R$/Kg'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "CEPEA: 'PREÇOS DO FRANGO CONGELADO ... - ESTADO SP'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "R$/Kg",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "8.31",
+     "variacao": "-0.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "São Paulo/SP",
+     "valor": "8.32",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "São Paulo/SP",
+     "valor": "8.32",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "São Paulo/SP",
+     "valor": "8.32",
+     "variacao": "0.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "São Paulo/SP",
+     "valor": "8.31",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "8.31",
+     "variacao": "-0.24",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "8.33",
+     "variacao": "-0.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "8.34",
+     "variacao": "5.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "7.94",
+     "variacao": "0.89",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "7.87",
+     "variacao": "1.42",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "frango_resfriado",
+   "file": "na_frango_resfriado.html",
+   "sha256": "fa8b10dc2cbc5f498b9fccfe95bb1bba6a00bf6d2a89c2b57d151262bee8b2dd",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/kg",
+    "fonte": "cabeçalho 'R$/Kg'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "CEPEA: 'PREÇOS DO FRANGO RESFRIADO ... - ESTADO SP'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "R$/Kg",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "8.28",
+     "variacao": "-0.24",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "São Paulo/SP",
+     "valor": "8.30",
+     "variacao": "-0.60",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "São Paulo/SP",
+     "valor": "8.35",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "São Paulo/SP",
+     "valor": "8.35",
+     "variacao": "0.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "São Paulo/SP",
+     "valor": "8.34",
+     "variacao": "0.36",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "8.31",
+     "variacao": "-0.24",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "8.33",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "8.33",
+     "variacao": "5.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "7.93",
+     "variacao": "0.76",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "7.87",
+     "variacao": "1.42",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "suino",
+   "file": "na_suino.html",
+   "sha256": "8a33185da34f363a7a67b84313451d317867849cfcc5f696137473d4460c4200",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/kg",
+    "fonte": "cabeçalho 'R$/Kg'"
+   },
+   "praca": {
+    "esperada": null,
+    "fonte": "coluna 'Estado' de cada linha"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Estado",
+     "R$/Kg",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "MG - posto",
+     "valor": "5.56",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 1
+     },
+     "data": "2026-09-25",
+     "praca": "PR - a retirar",
+     "valor": "5.01",
+     "variacao": "3.73",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 2
+     },
+     "data": "2026-09-25",
+     "praca": "RS - a retirar",
+     "valor": "5.01",
+     "variacao": "2.66",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 3
+     },
+     "data": "2026-09-25",
+     "praca": "SC - a retirar",
+     "valor": "4.99",
+     "variacao": "2.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 4
+     },
+     "data": "2026-09-25",
+     "praca": "SP - posto",
+     "valor": "5.53",
+     "variacao": "3.17",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "MG - posto",
+     "valor": "5.56",
+     "variacao": "0.72",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 1
+     },
+     "data": "2026-09-24",
+     "praca": "PR - a retirar",
+     "valor": "4.83",
+     "variacao": "2.33",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 2
+     },
+     "data": "2026-09-24",
+     "praca": "RS - a retirar",
+     "valor": "4.88",
+     "variacao": "0.83",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 3
+     },
+     "data": "2026-09-24",
+     "praca": "SC - a retirar",
+     "valor": "4.89",
+     "variacao": "0.82",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 4
+     },
+     "data": "2026-09-24",
+     "praca": "SP - posto",
+     "valor": "5.36",
+     "variacao": "0.75",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "MG - posto",
+     "valor": "5.52",
+     "variacao": "1.10",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 1
+     },
+     "data": "2026-09-23",
+     "praca": "PR - a retirar",
+     "valor": "4.72",
+     "variacao": "1.94",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 2
+     },
+     "data": "2026-09-23",
+     "praca": "RS - a retirar",
+     "valor": "4.84",
+     "variacao": "1.89",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 3
+     },
+     "data": "2026-09-23",
+     "praca": "SC - a retirar",
+     "valor": "4.85",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 4
+     },
+     "data": "2026-09-23",
+     "praca": "SP - posto",
+     "valor": "5.32",
+     "variacao": "2.31",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "MG - posto",
+     "valor": "5.46",
+     "variacao": "2.63",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 1
+     },
+     "data": "2026-09-22",
+     "praca": "PR - a retirar",
+     "valor": "4.63",
+     "variacao": "0.22",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 2
+     },
+     "data": "2026-09-22",
+     "praca": "RS - a retirar",
+     "valor": "4.75",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 3
+     },
+     "data": "2026-09-22",
+     "praca": "SC - a retirar",
+     "valor": "4.85",
+     "variacao": "0.83",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 4
+     },
+     "data": "2026-09-22",
+     "praca": "SP - posto",
+     "valor": "5.20",
+     "variacao": "1.36",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "MG - posto",
+     "valor": "5.32",
+     "variacao": "1.14",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 1
+     },
+     "data": "2026-09-21",
+     "praca": "PR - a retirar",
+     "valor": "4.62",
+     "variacao": "0.65",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 2
+     },
+     "data": "2026-09-21",
+     "praca": "RS - a retirar",
+     "valor": "4.75",
+     "variacao": "1.28",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 3
+     },
+     "data": "2026-09-21",
+     "praca": "SC - a retirar",
+     "valor": "4.81",
+     "variacao": "2.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 4
+     },
+     "data": "2026-09-21",
+     "praca": "SP - posto",
+     "valor": "5.13",
+     "variacao": "1.79",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "MG - posto",
+     "valor": "5.26",
+     "variacao": "2.53",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 1
+     },
+     "data": "2026-09-18",
+     "praca": "PR - a retirar",
+     "valor": "4.59",
+     "variacao": "0.22",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 2
+     },
+     "data": "2026-09-18",
+     "praca": "RS - a retirar",
+     "valor": "4.69",
+     "variacao": "0.86",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 3
+     },
+     "data": "2026-09-18",
+     "praca": "SC - a retirar",
+     "valor": "4.71",
+     "variacao": "0.43",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 4
+     },
+     "data": "2026-09-18",
+     "praca": "SP - posto",
+     "valor": "5.04",
+     "variacao": "0.40",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "MG - posto",
+     "valor": "5.13",
+     "variacao": "1.18",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 1
+     },
+     "data": "2026-09-17",
+     "praca": "PR - a retirar",
+     "valor": "4.58",
+     "variacao": "1.33",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 2
+     },
+     "data": "2026-09-17",
+     "praca": "RS - a retirar",
+     "valor": "4.65",
+     "variacao": "-0.43",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 3
+     },
+     "data": "2026-09-17",
+     "praca": "SC - a retirar",
+     "valor": "4.69",
+     "variacao": "1.74",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 4
+     },
+     "data": "2026-09-17",
+     "praca": "SP - posto",
+     "valor": "5.02",
+     "variacao": "0.20",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "MG - posto",
+     "valor": "5.07",
+     "variacao": "-0.20",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 1
+     },
+     "data": "2026-09-16",
+     "praca": "PR - a retirar",
+     "valor": "4.52",
+     "variacao": "0.67",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 2
+     },
+     "data": "2026-09-16",
+     "praca": "RS - a retirar",
+     "valor": "4.67",
+     "variacao": "0.43",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 3
+     },
+     "data": "2026-09-16",
+     "praca": "SC - a retirar",
+     "valor": "4.61",
+     "variacao": "0.66",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 4
+     },
+     "data": "2026-09-16",
+     "praca": "SP - posto",
+     "valor": "5.01",
+     "variacao": "-0.20",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "MG - posto",
+     "valor": "5.08",
+     "variacao": "-0.39",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 1
+     },
+     "data": "2026-09-15",
+     "praca": "PR - a retirar",
+     "valor": "4.49",
+     "variacao": "0.45",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 2
+     },
+     "data": "2026-09-15",
+     "praca": "RS - a retirar",
+     "valor": "4.65",
+     "variacao": "1.75",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 3
+     },
+     "data": "2026-09-15",
+     "praca": "SC - a retirar",
+     "valor": "4.58",
+     "variacao": "1.10",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 4
+     },
+     "data": "2026-09-15",
+     "praca": "SP - posto",
+     "valor": "5.02",
+     "variacao": "2.03",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "MG - posto",
+     "valor": "5.10",
+     "variacao": "0.39",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 1
+     },
+     "data": "2026-09-14",
+     "praca": "PR - a retirar",
+     "valor": "4.47",
+     "variacao": "0.90",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 2
+     },
+     "data": "2026-09-14",
+     "praca": "RS - a retirar",
+     "valor": "4.57",
+     "variacao": "0.66",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 3
+     },
+     "data": "2026-09-14",
+     "praca": "SC - a retirar",
+     "valor": "4.53",
+     "variacao": "1.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 4
+     },
+     "data": "2026-09-14",
+     "praca": "SP - posto",
+     "valor": "4.92",
+     "variacao": "0.82",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "leite",
+   "file": "na_leite.html",
+   "sha256": "52521f26455f211f261285e09b553e19e5a83536ea1725121ca84f5667ce1c10",
+   "fallback_cepea": false,
+   "unidade": {
+    "esperada": "BRL/L",
+    "fonte": "cabeçalho 'Preço (R$/Litro)'"
+   },
+   "praca": {
+    "esperada": null,
+    "fonte": "coluna 'Estados' de cada linha"
+   },
+   "cabecalhos": [
+    [
+     "Estados",
+     "Preço (R$/Litro)",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-01",
+     "praca": "RS",
+     "valor": "2.6560",
+     "variacao": "4.71",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 1
+     },
+     "data": "2026-09-01",
+     "praca": "SC",
+     "valor": "2.7887",
+     "variacao": "3.01",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 2
+     },
+     "data": "2026-09-01",
+     "praca": "PR",
+     "valor": "2.8989",
+     "variacao": "4.62",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 3
+     },
+     "data": "2026-09-01",
+     "praca": "SP",
+     "valor": "2.9695",
+     "variacao": "4.74",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 4
+     },
+     "data": "2026-09-01",
+     "praca": "MG",
+     "valor": "3.0231",
+     "variacao": "4.51",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 5
+     },
+     "data": "2026-09-01",
+     "praca": "GO",
+     "valor": "2.9410",
+     "variacao": "6.09",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 6
+     },
+     "data": "2026-09-01",
+     "praca": "BA",
+     "valor": "2.6730",
+     "variacao": "3.53",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 7
+     },
+     "data": "2026-09-01",
+     "praca": "Brasil",
+     "valor": "2.8761",
+     "variacao": "4.72",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 8
+     },
+     "data": "2026-09-01",
+     "praca": "RJ",
+     "valor": "2.7240",
+     "variacao": "-2.86",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 9
+     },
+     "data": "2026-09-01",
+     "praca": "ES",
+     "valor": "2.7319",
+     "variacao": "3.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-08-03",
+     "praca": "RS",
+     "valor": "2.5365",
+     "variacao": "1.93",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 1
+     },
+     "data": "2026-08-03",
+     "praca": "SC",
+     "valor": "2.7071",
+     "variacao": "2.97",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 2
+     },
+     "data": "2026-08-03",
+     "praca": "PR",
+     "valor": "2.7710",
+     "variacao": "3.57",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 3
+     },
+     "data": "2026-08-03",
+     "praca": "SP",
+     "valor": "2.8350",
+     "variacao": "5.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 4
+     },
+     "data": "2026-08-03",
+     "praca": "MG",
+     "valor": "2.8927",
+     "variacao": "4.33",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 5
+     },
+     "data": "2026-08-03",
+     "praca": "GO",
+     "valor": "2.7723",
+     "variacao": "5.33",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 6
+     },
+     "data": "2026-08-03",
+     "praca": "BA",
+     "valor": "2.5818",
+     "variacao": "5.06",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 7
+     },
+     "data": "2026-08-03",
+     "praca": "Brasil",
+     "valor": "2.7464",
+     "variacao": "3.18",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 8
+     },
+     "data": "2026-08-03",
+     "praca": "RJ",
+     "valor": "2.8043",
+     "variacao": "1.71",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 9
+     },
+     "data": "2026-08-03",
+     "praca": "ES",
+     "valor": "2.6513",
+     "variacao": "3.94",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-07-01",
+     "praca": "RS",
+     "valor": "2.4884",
+     "variacao": "-1.13",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 1
+     },
+     "data": "2026-07-01",
+     "praca": "SC",
+     "valor": "2.6289",
+     "variacao": "-2.15",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 2
+     },
+     "data": "2026-07-01",
+     "praca": "PR",
+     "valor": "2.6756",
+     "variacao": "-3.04",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 3
+     },
+     "data": "2026-07-01",
+     "praca": "SP",
+     "valor": "2.6999",
+     "variacao": "2.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 4
+     },
+     "data": "2026-07-01",
+     "praca": "MG",
+     "valor": "2.7726",
+     "variacao": "0.70",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 5
+     },
+     "data": "2026-07-01",
+     "praca": "GO",
+     "valor": "2.6319",
+     "variacao": "1.64",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 6
+     },
+     "data": "2026-07-01",
+     "praca": "BA",
+     "valor": "2.4575",
+     "variacao": "4.41",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 7
+     },
+     "data": "2026-07-01",
+     "praca": "Brasil",
+     "valor": "2.6617",
+     "variacao": "0.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 8
+     },
+     "data": "2026-07-01",
+     "praca": "RJ",
+     "valor": "2.7571",
+     "variacao": "7.23",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 9
+     },
+     "data": "2026-07-01",
+     "praca": "ES",
+     "valor": "2.5509",
+     "variacao": "11.23",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-06-01",
+     "praca": "RS",
+     "valor": "2.5169",
+     "variacao": "9.14",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 1
+     },
+     "data": "2026-06-01",
+     "praca": "SC",
+     "valor": "2.6868",
+     "variacao": "13.88",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 2
+     },
+     "data": "2026-06-01",
+     "praca": "PR",
+     "valor": "2.7596",
+     "variacao": "11.64",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 3
+     },
+     "data": "2026-06-01",
+     "praca": "SP",
+     "valor": "2.6470",
+     "variacao": "9.16",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 4
+     },
+     "data": "2026-06-01",
+     "praca": "MG",
+     "valor": "2.7534",
+     "variacao": "12.02",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 5
+     },
+     "data": "2026-06-01",
+     "praca": "GO",
+     "valor": "2.5894",
+     "variacao": "10.70",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 6
+     },
+     "data": "2026-06-01",
+     "praca": "BA",
+     "valor": "2.3536",
+     "variacao": "7.68",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 7
+     },
+     "data": "2026-06-01",
+     "praca": "Brasil",
+     "valor": "2.6584",
+     "variacao": "11.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 8
+     },
+     "data": "2026-06-01",
+     "praca": "RJ",
+     "valor": "2.5712",
+     "variacao": "12.83",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 9
+     },
+     "data": "2026-06-01",
+     "praca": "ES",
+     "valor": "2.2934",
+     "variacao": "11.57",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-05-04",
+     "praca": "RS",
+     "valor": "2.3061",
+     "variacao": "10.01",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 1
+     },
+     "data": "2026-05-04",
+     "praca": "SC",
+     "valor": "2.3593",
+     "variacao": "13.83",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 2
+     },
+     "data": "2026-05-04",
+     "praca": "PR",
+     "valor": "2.4719",
+     "variacao": "14.12",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 3
+     },
+     "data": "2026-05-04",
+     "praca": "SP",
+     "valor": "2.4249",
+     "variacao": "10.41",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 4
+     },
+     "data": "2026-05-04",
+     "praca": "MG",
+     "valor": "2.4580",
+     "variacao": "11.58",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 5
+     },
+     "data": "2026-05-04",
+     "praca": "GO",
+     "valor": "2.3391",
+     "variacao": "11.19",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 6
+     },
+     "data": "2026-05-04",
+     "praca": "BA",
+     "valor": "2.1858",
+     "variacao": "4.25",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 7
+     },
+     "data": "2026-05-04",
+     "praca": "Brasil",
+     "valor": "2.3924",
+     "variacao": "11.46",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 8
+     },
+     "data": "2026-05-04",
+     "praca": "RJ",
+     "valor": "2.2789",
+     "variacao": "6.64",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 9
+     },
+     "data": "2026-05-04",
+     "praca": "ES",
+     "valor": "2.0555",
+     "variacao": "3.47",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-04-01",
+     "praca": "RS",
+     "valor": "2.0962",
+     "variacao": "4.57",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 1
+     },
+     "data": "2026-04-01",
+     "praca": "SC",
+     "valor": "2.0727",
+     "variacao": "5.86",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 2
+     },
+     "data": "2026-04-01",
+     "praca": "PR",
+     "valor": "2.1660",
+     "variacao": "6.41",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 3
+     },
+     "data": "2026-04-01",
+     "praca": "SP",
+     "valor": "2.1963",
+     "variacao": "4.31",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 4
+     },
+     "data": "2026-04-01",
+     "praca": "MG",
+     "valor": "2.2030",
+     "variacao": "6.77",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 5
+     },
+     "data": "2026-04-01",
+     "praca": "GO",
+     "valor": "2.1037",
+     "variacao": "9.61",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 6
+     },
+     "data": "2026-04-01",
+     "praca": "BA",
+     "valor": "2.0967",
+     "variacao": "1.46",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 7
+     },
+     "data": "2026-04-01",
+     "praca": "Brasil",
+     "valor": "2.1464",
+     "variacao": "6.17",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 8
+     },
+     "data": "2026-04-01",
+     "praca": "RJ",
+     "valor": "2.1370",
+     "variacao": "3.65",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 9
+     },
+     "data": "2026-04-01",
+     "praca": "ES",
+     "valor": "1.9865",
+     "variacao": "3.13",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-03-02",
+     "praca": "RS",
+     "valor": "2.0046",
+     "variacao": "-0.26",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 1
+     },
+     "data": "2026-03-02",
+     "praca": "SC",
+     "valor": "1.9580",
+     "variacao": "2.56",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 2
+     },
+     "data": "2026-03-02",
+     "praca": "PR",
+     "valor": "2.0355",
+     "variacao": "1.66",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 3
+     },
+     "data": "2026-03-02",
+     "praca": "SP",
+     "valor": "2.1056",
+     "variacao": "-0.59",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 4
+     },
+     "data": "2026-03-02",
+     "praca": "MG",
+     "valor": "2.0633",
+     "variacao": "1.79",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 5
+     },
+     "data": "2026-03-02",
+     "praca": "GO",
+     "valor": "1.9193",
+     "variacao": "2.30",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 6
+     },
+     "data": "2026-03-02",
+     "praca": "BA",
+     "valor": "2.0665",
+     "variacao": "0.52",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 7
+     },
+     "data": "2026-03-02",
+     "praca": "Brasil",
+     "valor": "2.0216",
+     "variacao": "1.25",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 8
+     },
+     "data": "2026-03-02",
+     "praca": "RJ",
+     "valor": "2.0617",
+     "variacao": "0.19",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 9
+     },
+     "data": "2026-03-02",
+     "praca": "ES",
+     "valor": "1.9263",
+     "variacao": "-1.54",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-02-02",
+     "praca": "RS",
+     "valor": "2.0098",
+     "variacao": "-2.69",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 1
+     },
+     "data": "2026-02-02",
+     "praca": "SC",
+     "valor": "1.9092",
+     "variacao": "-5.20",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 2
+     },
+     "data": "2026-02-02",
+     "praca": "PR",
+     "valor": "2.0022",
+     "variacao": "-2.88",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 3
+     },
+     "data": "2026-02-02",
+     "praca": "SP",
+     "valor": "2.1180",
+     "variacao": "-5.19",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 4
+     },
+     "data": "2026-02-02",
+     "praca": "MG",
+     "valor": "2.0270",
+     "variacao": "-7.34",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 5
+     },
+     "data": "2026-02-02",
+     "praca": "GO",
+     "valor": "1.8761",
+     "variacao": "-6.99",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 6
+     },
+     "data": "2026-02-02",
+     "praca": "BA",
+     "valor": "2.0559",
+     "variacao": "-6.60",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 7
+     },
+     "data": "2026-02-02",
+     "praca": "Brasil",
+     "valor": "1.9966",
+     "variacao": "-5.47",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 8
+     },
+     "data": "2026-02-02",
+     "praca": "RJ",
+     "valor": "2.0578",
+     "variacao": "-9.81",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 9
+     },
+     "data": "2026-02-02",
+     "praca": "ES",
+     "valor": "1.9564",
+     "variacao": "-3.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-01-05",
+     "praca": "RS",
+     "valor": "2.0653",
+     "variacao": "-6.84",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 1
+     },
+     "data": "2026-01-05",
+     "praca": "SC",
+     "valor": "2.0140",
+     "variacao": "-8.62",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 2
+     },
+     "data": "2026-01-05",
+     "praca": "PR",
+     "valor": "2.0616",
+     "variacao": "-10.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 3
+     },
+     "data": "2026-01-05",
+     "praca": "SP",
+     "valor": "2.2340",
+     "variacao": "-7.49",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 4
+     },
+     "data": "2026-01-05",
+     "praca": "MG",
+     "valor": "2.1875",
+     "variacao": "-8.41",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 5
+     },
+     "data": "2026-01-05",
+     "praca": "GO",
+     "valor": "2.0171",
+     "variacao": "-8.74",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 6
+     },
+     "data": "2026-01-05",
+     "praca": "BA",
+     "valor": "2.2011",
+     "variacao": "-7.20",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 7
+     },
+     "data": "2026-01-05",
+     "praca": "Brasil",
+     "valor": "2.1122",
+     "variacao": "-8.15",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 8
+     },
+     "data": "2026-01-05",
+     "praca": "RJ",
+     "valor": "2.2817",
+     "variacao": null,
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 9
+     },
+     "data": "2026-01-05",
+     "praca": "ES",
+     "valor": "2.0170",
+     "variacao": null,
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2025-12-02",
+     "praca": "RS",
+     "valor": "2.2170",
+     "variacao": "-6.01",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 1
+     },
+     "data": "2025-12-02",
+     "praca": "SC",
+     "valor": "2.2040",
+     "variacao": "-5.63",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 2
+     },
+     "data": "2025-12-02",
+     "praca": "PR",
+     "valor": "2.2924",
+     "variacao": "-6.72",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 3
+     },
+     "data": "2025-12-02",
+     "praca": "SP",
+     "valor": "2.4150",
+     "variacao": "-5.71",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 4
+     },
+     "data": "2025-12-02",
+     "praca": "MG",
+     "valor": "2.3884",
+     "variacao": "-5.51",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 5
+     },
+     "data": "2025-12-02",
+     "praca": "GO",
+     "valor": "2.2103",
+     "variacao": "-5.65",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 6
+     },
+     "data": "2025-12-02",
+     "praca": "BA",
+     "valor": "2.3720",
+     "variacao": "-3.98",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 7
+     },
+     "data": "2025-12-02",
+     "praca": "Brasil",
+     "valor": "2.2996",
+     "variacao": "-5.79",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 8
+     },
+     "data": "2025-12-02",
+     "praca": "RJ",
+     "valor": "2.4512",
+     "variacao": null,
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 9
+     },
+     "data": "2025-12-02",
+     "praca": "ES",
+     "valor": "2.2424",
+     "variacao": null,
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Julho/26",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Junho/26",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Maio/26",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Abril/26",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Março/26",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Fevereiro/26",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Janeiro/26",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Dezembro/25",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Novembro/25",
+      "",
+      ""
+     ]
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 10
+     },
+     "celulas": [
+      "Referência: Outubro/25",
+      "",
+      ""
+     ]
+    }
+   ]
+  },
+  {
+   "produto": "laranja_industria",
+   "file": "na_laranja_industria.html",
+   "sha256": "c2f3678c8ff18e9ad710d5728bc44a7f6fd59b552f6d2979757969ce9ad54851",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/cx40.8kg",
+    "fonte": "cabeçalho 'R$ a prazo/Caixa 40,8 Kg'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "CEPEA citros: 'Preços regionais - SP'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "R$ a prazo/Caixa 40,8 Kg",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "29.33",
+     "variacao": "0.41",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "São Paulo/SP",
+     "valor": "29.21",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "São Paulo/SP",
+     "valor": "29.21",
+     "variacao": "-0.71",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "São Paulo/SP",
+     "valor": "29.42",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "São Paulo/SP",
+     "valor": "29.42",
+     "variacao": "-4.54",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "30.82",
+     "variacao": "-0.32",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "30.92",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "30.92",
+     "variacao": "2.01",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "30.31",
+     "variacao": "-0.62",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "30.50",
+     "variacao": "-2.09",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "laranja_in_natura",
+   "file": "na_laranja_in_natura.html",
+   "sha256": "eff4e62e14d429a13fc4857f8ea224a80384ab44ef984dd93e7d7b5074b04e0b",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/cx40.8kg",
+    "fonte": "cabeçalho 'R$/ Caixa 40,8 kg'"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "CEPEA citros: 'Preços regionais - SP'"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "R$/ Caixa 40,8 kg",
+     "Variação Dia (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-25",
+     "praca": "São Paulo/SP",
+     "valor": "30.87",
+     "variacao": "-0.36",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-24",
+     "praca": "São Paulo/SP",
+     "valor": "30.98",
+     "variacao": "2.18",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-23",
+     "praca": "São Paulo/SP",
+     "valor": "30.32",
+     "variacao": "-1.81",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-22",
+     "praca": "São Paulo/SP",
+     "valor": "30.88",
+     "variacao": "-2.95",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-21",
+     "praca": "São Paulo/SP",
+     "valor": "31.82",
+     "variacao": "-0.66",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-18",
+     "praca": "São Paulo/SP",
+     "valor": "32.03",
+     "variacao": "0.31",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "31.93",
+     "variacao": "-0.19",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "31.99",
+     "variacao": "2.34",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "31.26",
+     "variacao": "0.64",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "31.06",
+     "variacao": "-2.14",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "boi_gordo",
+   "file": "../../reconciliacao_r6_20260918/na_boi.html",
+   "sha256": "d3be6f258bd6b8f739e348a15b1e8946c82370b39e905f995b147a65c61715bd",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/@",
+    "fonte": "Indicador do boi gordo, R$ por arroba (CEPEA)"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "Indicador do boi gordo ESALQ/B3, estado de SP (CEPEA)"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "à vista R$",
+     "Variação (%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "352.55",
+     "variacao": "0.07",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "352.30",
+     "variacao": "0.37",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "351.00",
+     "variacao": "0.43",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.00",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "São Paulo/SP",
+     "valor": "349.50",
+     "variacao": "0.33",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "São Paulo/SP",
+     "valor": "348.35",
+     "variacao": "0.19",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "São Paulo/SP",
+     "valor": "347.70",
+     "variacao": "0.03",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "São Paulo/SP",
+     "valor": "347.60",
+     "variacao": "0.06",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  },
+  {
+   "produto": "cafe_arabica",
+   "file": "../../reconciliacao_r6_20260918/na_cafe.html",
+   "sha256": "e8b375acd73ae4f93bb5534984c12d621e9a595feed8a1802109a14e15f731da",
+   "fallback_cepea": true,
+   "unidade": {
+    "esperada": "BRL/sc60kg",
+    "fonte": "Indicador do café arábica, saca de 60 kg (CEPEA)"
+   },
+   "praca": {
+    "esperada": "São Paulo/SP",
+    "fonte": "Indicador do café arábica, cidade de São Paulo (CEPEA)"
+   },
+   "cabecalhos": [
+    [
+     "Data",
+     "Valor R$",
+     "Variação(%)"
+    ]
+   ],
+   "linhas": [
+    {
+     "posicao": {
+      "bloco": 0,
+      "linha": 0
+     },
+     "data": "2026-09-17",
+     "praca": "São Paulo/SP",
+     "valor": "1541.97",
+     "variacao": "-1.56",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 1,
+      "linha": 0
+     },
+     "data": "2026-09-16",
+     "praca": "São Paulo/SP",
+     "valor": "1566.48",
+     "variacao": "-1.38",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 2,
+      "linha": 0
+     },
+     "data": "2026-09-15",
+     "praca": "São Paulo/SP",
+     "valor": "1588.43",
+     "variacao": "-0.40",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 3,
+      "linha": 0
+     },
+     "data": "2026-09-14",
+     "praca": "São Paulo/SP",
+     "valor": "1594.86",
+     "variacao": "-0.13",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 4,
+      "linha": 0
+     },
+     "data": "2026-09-11",
+     "praca": "São Paulo/SP",
+     "valor": "1596.87",
+     "variacao": "-1.36",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 5,
+      "linha": 0
+     },
+     "data": "2026-09-10",
+     "praca": "São Paulo/SP",
+     "valor": "1618.91",
+     "variacao": "-1.72",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 6,
+      "linha": 0
+     },
+     "data": "2026-09-09",
+     "praca": "São Paulo/SP",
+     "valor": "1647.29",
+     "variacao": "0.72",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 7,
+      "linha": 0
+     },
+     "data": "2026-09-08",
+     "praca": "São Paulo/SP",
+     "valor": "1635.57",
+     "variacao": "-1.47",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 8,
+      "linha": 0
+     },
+     "data": "2026-09-04",
+     "praca": "São Paulo/SP",
+     "valor": "1659.93",
+     "variacao": "-0.74",
+     "semanal": false,
+     "periodo": null
+    },
+    {
+     "posicao": {
+      "bloco": 9,
+      "linha": 0
+     },
+     "data": "2026-09-03",
+     "praca": "São Paulo/SP",
+     "valor": "1672.25",
+     "variacao": "-1.44",
+     "semanal": false,
+     "periodo": null
+    }
+   ],
+   "ausentes": []
+  }
+ ]
+}

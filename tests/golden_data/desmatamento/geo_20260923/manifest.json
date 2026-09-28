@@ -1,0 +1,313 @@
+{
+ "description": "Corpos WFS 2.0 GeoJSON originais do TerraBrasilis (srsName=EPSG:4326), nas URLs exatas de agrobr.desmatamento.client para prodes_geo/deter_geo; hits + página única por seleção completa; nenhum byte reescrito",
+ "captured_for": "regra geo × tabular",
+ "files": [
+  {
+   "file": "prodes_pantanal_ms_2002_hits.xml",
+   "sha256": "fd6708a12a1c3352774f16309628ef6f62427a64146f43fec78b7a2937ffea78",
+   "bytes": 1376,
+   "requested_url": "https://terrabrasilis.dpi.inpe.br/geoserver/prodes-pantanal-nb/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=prodes-pantanal-nb%3Ayearly_deforestation&outputFormat=application%2Fjson&propertyName=fid%2Cstate%2Cpath_row%2Cmain_class%2Cclass_name%2Cdef_cloud%2Cjulian_day%2Cimage_date%2Cyear%2Carea_km%2Cscene_id%2Cpublish_year%2Csource%2Csatellite%2Csensor%2Cuuid&count=0&resultType=hits&CQL_FILTER=year%3D2002+AND+strToUpperCase%28strTrim%28state%29%29+IN+%28%27MS%27%2C%27MATO+GROSSO+DO+SUL%27%29&sortBy=fid+A%2Cuuid+A%2Cstate+A%2Cpath_row+A%2Cmain_class+A%2Cclass_name+A%2Cdef_cloud+A%2Cjulian_day+A%2Cimage_date+A%2Cyear+A%2Carea_km+A%2Cscene_id+A%2Cpublish_year+A%2Csource+A%2Csatellite+A%2Csensor+A",
+   "captured_at": "2026-09-23T19:59:52.523014+00:00",
+   "status": 200,
+   "content_type": "text/xml"
+  },
+  {
+   "file": "prodes_pantanal_ms_2002_page0.json",
+   "sha256": "0a03a3954c5fbebae0e290a50f80e6d73dae01b6f7130ca37219297c241c3e4e",
+   "bytes": 10020,
+   "requested_url": "https://terrabrasilis.dpi.inpe.br/geoserver/prodes-pantanal-nb/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=prodes-pantanal-nb%3Ayearly_deforestation&outputFormat=application%2Fjson&propertyName=fid%2Cstate%2Cpath_row%2Cmain_class%2Cclass_name%2Cdef_cloud%2Cjulian_day%2Cimage_date%2Cyear%2Carea_km%2Cscene_id%2Cpublish_year%2Csource%2Csatellite%2Csensor%2Cuuid%2Cgeom&count=6&startIndex=0&CQL_FILTER=year%3D2002+AND+strToUpperCase%28strTrim%28state%29%29+IN+%28%27MS%27%2C%27MATO+GROSSO+DO+SUL%27%29&sortBy=fid+A%2Cuuid+A%2Cstate+A%2Cpath_row+A%2Cmain_class+A%2Cclass_name+A%2Cdef_cloud+A%2Cjulian_day+A%2Cimage_date+A%2Cyear+A%2Carea_km+A%2Cscene_id+A%2Cpublish_year+A%2Csource+A%2Csatellite+A%2Csensor+A&srsName=EPSG%3A4326",
+   "captured_at": "2026-09-23T19:59:53.765552+00:00",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8"
+  },
+  {
+   "file": "deter_amazonia_ap_202601_hits.xml",
+   "sha256": "efae2f5586474109063d116d38cdbad59b7df1420c52e60da28e06c1c6767f27",
+   "bytes": 1314,
+   "requested_url": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-amz/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=deter-amz%3Adeter_amz&outputFormat=application%2Fjson&propertyName=gid%2Cclassname%2Cquadrant%2Cpath_row%2Cview_date%2Csensor%2Csatellite%2Careauckm%2Cuc%2Careamunkm%2Cmunicipality%2Cuf%2Cpublish_month%2Cmun_geocod&count=0&resultType=hits&CQL_FILTER=strToUpperCase%28strTrim%28uf%29%29%3D%27AP%27+AND+view_date%3E%3D%272026-01-01%27+AND+view_date%3C%3D%272026-01-31%27&sortBy=gid+A%2Cview_date+A%2Cclassname+A%2Cmunicipality+A%2Cquadrant+A%2Cpath_row+A%2Csensor+A%2Csatellite+A%2Careauckm+A%2Cuc+A%2Careamunkm+A%2Cuf+A%2Cpublish_month+A%2Cmun_geocod+A",
+   "captured_at": "2026-09-23T19:59:55.354479+00:00",
+   "status": 200,
+   "content_type": "text/xml"
+  },
+  {
+   "file": "deter_amazonia_ap_202601_page0.json",
+   "sha256": "cd7b6688baf75084b6c4d42a72f3e7f90ec0b22d7ade5ce9ee172723395446f0",
+   "bytes": 8021,
+   "requested_url": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-amz/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=deter-amz%3Adeter_amz&outputFormat=application%2Fjson&propertyName=gid%2Cclassname%2Cquadrant%2Cpath_row%2Cview_date%2Csensor%2Csatellite%2Careauckm%2Cuc%2Careamunkm%2Cmunicipality%2Cuf%2Cpublish_month%2Cmun_geocod%2Cgeom&count=4&startIndex=0&CQL_FILTER=strToUpperCase%28strTrim%28uf%29%29%3D%27AP%27+AND+view_date%3E%3D%272026-01-01%27+AND+view_date%3C%3D%272026-01-31%27&sortBy=gid+A%2Cview_date+A%2Cclassname+A%2Cmunicipality+A%2Cquadrant+A%2Cpath_row+A%2Csensor+A%2Csatellite+A%2Careauckm+A%2Cuc+A%2Careamunkm+A%2Cuf+A%2Cpublish_month+A%2Cmun_geocod+A&srsName=EPSG%3A4326",
+   "captured_at": "2026-09-23T19:59:58.814121+00:00",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8"
+  },
+  {
+   "file": "deter_cerrado_sp_202601_202603_hits.xml",
+   "sha256": "37f9ba4906b33b3d7342a50a3d2ec9ffc615a82f0607b4b35a3ef1d7b67b78b7",
+   "bytes": 1369,
+   "requested_url": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-cerrado-nb/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=deter-cerrado-nb%3Adeter_cerrado&outputFormat=application%2Fjson&propertyName=gid%2Cclassname%2Cquadrant%2Cpath_row%2Cview_date%2Csensor%2Csatellite%2Careauckm%2Cuc%2Careamunkm%2Cmunicipality%2Cuf%2Cpublish_month%2Ccreated_date%2Careatotalkm&count=0&resultType=hits&CQL_FILTER=strToUpperCase%28strTrim%28uf%29%29%3D%27SP%27+AND+view_date%3E%3D%272026-01-01%27+AND+view_date%3C%3D%272026-03-31%27&sortBy=gid+A%2Cview_date+A%2Cclassname+A%2Cmunicipality+A%2Cquadrant+A%2Cpath_row+A%2Csensor+A%2Csatellite+A%2Careauckm+A%2Cuc+A%2Careamunkm+A%2Cuf+A%2Cpublish_month+A%2Ccreated_date+A%2Careatotalkm+A",
+   "captured_at": "2026-09-23T20:00:00.257824+00:00",
+   "status": 200,
+   "content_type": "text/xml"
+  },
+  {
+   "file": "deter_cerrado_sp_202601_202603_page0.json",
+   "sha256": "7762971dda02ca3da5659c8034d6015176140f4480b34811bbe406ce7993b87e",
+   "bytes": 18318,
+   "requested_url": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-cerrado-nb/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=deter-cerrado-nb%3Adeter_cerrado&outputFormat=application%2Fjson&propertyName=gid%2Cclassname%2Cquadrant%2Cpath_row%2Cview_date%2Csensor%2Csatellite%2Careauckm%2Cuc%2Careamunkm%2Cmunicipality%2Cuf%2Cpublish_month%2Ccreated_date%2Careatotalkm%2Cst_multi&count=14&startIndex=0&CQL_FILTER=strToUpperCase%28strTrim%28uf%29%29%3D%27SP%27+AND+view_date%3E%3D%272026-01-01%27+AND+view_date%3C%3D%272026-03-31%27&sortBy=gid+A%2Cview_date+A%2Cclassname+A%2Cmunicipality+A%2Cquadrant+A%2Cpath_row+A%2Csensor+A%2Csatellite+A%2Careauckm+A%2Cuc+A%2Careamunkm+A%2Cuf+A%2Cpublish_month+A%2Ccreated_date+A%2Careatotalkm+A&srsName=EPSG%3A4326",
+   "captured_at": "2026-09-23T20:00:01.659814+00:00",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8"
+  }
+ ],
+ "cases": [
+  {
+   "id": "prodes_pantanal_ms_2002",
+   "api": "prodes_geo",
+   "selection": {
+    "bioma": "Pantanal",
+    "ano": 2002,
+    "uf": "MS"
+   },
+   "requests": [
+    {
+     "match": {
+      "path": "https://terrabrasilis.dpi.inpe.br/geoserver/prodes-pantanal-nb/ows",
+      "params": {
+       "CQL_FILTER": "year=2002 AND strToUpperCase(strTrim(state)) IN ('MS','MATO GROSSO DO SUL')",
+       "count": "0",
+       "outputFormat": "application/json",
+       "propertyName": "fid,state,path_row,main_class,class_name,def_cloud,julian_day,image_date,year,area_km,scene_id,publish_year,source,satellite,sensor,uuid",
+       "request": "GetFeature",
+       "resultType": "hits",
+       "service": "WFS",
+       "sortBy": "fid A,uuid A,state A,path_row A,main_class A,class_name A,def_cloud A,julian_day A,image_date A,year A,area_km A,scene_id A,publish_year A,source A,satellite A,sensor A",
+       "typeNames": "prodes-pantanal-nb:yearly_deforestation",
+       "version": "2.0.0"
+      },
+      "skip": 0
+     },
+     "file": "prodes_pantanal_ms_2002_hits.xml",
+     "content_type": "text/xml",
+     "status": 200
+    },
+    {
+     "match": {
+      "path": "https://terrabrasilis.dpi.inpe.br/geoserver/prodes-pantanal-nb/ows",
+      "params": {
+       "CQL_FILTER": "year=2002 AND strToUpperCase(strTrim(state)) IN ('MS','MATO GROSSO DO SUL')",
+       "count": "6",
+       "outputFormat": "application/json",
+       "propertyName": "fid,state,path_row,main_class,class_name,def_cloud,julian_day,image_date,year,area_km,scene_id,publish_year,source,satellite,sensor,uuid,geom",
+       "request": "GetFeature",
+       "service": "WFS",
+       "sortBy": "fid A,uuid A,state A,path_row A,main_class A,class_name A,def_cloud A,julian_day A,image_date A,year A,area_km A,scene_id A,publish_year A,source A,satellite A,sensor A",
+       "srsName": "EPSG:4326",
+       "startIndex": "0",
+       "typeNames": "prodes-pantanal-nb:yearly_deforestation",
+       "version": "2.0.0"
+      },
+      "skip": 0
+     },
+     "file": "prodes_pantanal_ms_2002_page0.json",
+     "content_type": "application/json;charset=UTF-8",
+     "status": 200
+    }
+   ],
+   "oracle": {
+    "numberMatched": 6,
+    "crs": "urn:ogc:def:crs:EPSG::4326",
+    "geometry_column": "geom",
+    "geometry_types": [
+     "MultiPolygon"
+    ],
+    "feature_ids": [
+     "yearly_deforestation.4e997155-8c5d-4647-8f05-f35447c1b9ee",
+     "yearly_deforestation.67964a79-9b15-4152-8429-c7d023018a14",
+     "yearly_deforestation.815177cc-0ad7-4a87-a555-847a4d2648ac",
+     "yearly_deforestation.2700d80b-085d-4439-b7c1-0746a3ca32ad",
+     "yearly_deforestation.4a66cf06-07b1-47b4-b984-54a4e56aaa30",
+     "yearly_deforestation.b34fa21f-2553-4bba-8cc9-aa3eeed44f53"
+    ],
+    "vertices": 279,
+    "lon_range": [
+     -55.1312,
+     -55.12
+    ],
+    "lat_range": [
+     -18.8298,
+     -18.8181
+    ],
+    "lonlat_order": true,
+    "method": "json da stdlib sobre o corpo original; sem importar o parser do agrobr"
+   }
+  },
+  {
+   "id": "deter_amazonia_ap_202601",
+   "api": "deter_geo",
+   "selection": {
+    "bioma": "Amazônia",
+    "uf": "AP",
+    "data_inicio": "2026-01-01",
+    "data_fim": "2026-01-31"
+   },
+   "requests": [
+    {
+     "match": {
+      "path": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-amz/ows",
+      "params": {
+       "CQL_FILTER": "strToUpperCase(strTrim(uf))='AP' AND view_date>='2026-01-01' AND view_date<='2026-01-31'",
+       "count": "0",
+       "outputFormat": "application/json",
+       "propertyName": "gid,classname,quadrant,path_row,view_date,sensor,satellite,areauckm,uc,areamunkm,municipality,uf,publish_month,mun_geocod",
+       "request": "GetFeature",
+       "resultType": "hits",
+       "service": "WFS",
+       "sortBy": "gid A,view_date A,classname A,municipality A,quadrant A,path_row A,sensor A,satellite A,areauckm A,uc A,areamunkm A,uf A,publish_month A,mun_geocod A",
+       "typeNames": "deter-amz:deter_amz",
+       "version": "2.0.0"
+      },
+      "skip": 0
+     },
+     "file": "deter_amazonia_ap_202601_hits.xml",
+     "content_type": "text/xml",
+     "status": 200
+    },
+    {
+     "match": {
+      "path": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-amz/ows",
+      "params": {
+       "CQL_FILTER": "strToUpperCase(strTrim(uf))='AP' AND view_date>='2026-01-01' AND view_date<='2026-01-31'",
+       "count": "4",
+       "outputFormat": "application/json",
+       "propertyName": "gid,classname,quadrant,path_row,view_date,sensor,satellite,areauckm,uc,areamunkm,municipality,uf,publish_month,mun_geocod,geom",
+       "request": "GetFeature",
+       "service": "WFS",
+       "sortBy": "gid A,view_date A,classname A,municipality A,quadrant A,path_row A,sensor A,satellite A,areauckm A,uc A,areamunkm A,uf A,publish_month A,mun_geocod A",
+       "srsName": "EPSG:4326",
+       "startIndex": "0",
+       "typeNames": "deter-amz:deter_amz",
+       "version": "2.0.0"
+      },
+      "skip": 0
+     },
+     "file": "deter_amazonia_ap_202601_page0.json",
+     "content_type": "application/json;charset=UTF-8",
+     "status": 200
+    }
+   ],
+   "oracle": {
+    "numberMatched": 4,
+    "crs": "urn:ogc:def:crs:EPSG::4326",
+    "geometry_column": "geom",
+    "geometry_types": [
+     "MultiPolygon"
+    ],
+    "feature_ids": [
+     "deter_amz.37481_curr",
+     "deter_amz.37482_curr",
+     "deter_amz.37491_curr",
+     "deter_amz.37499_curr"
+    ],
+    "vertices": 259,
+    "lon_range": [
+     -51.7318,
+     -51.7186
+    ],
+    "lat_range": [
+     -1.0054,
+     -0.9764
+    ],
+    "lonlat_order": true,
+    "method": "json da stdlib sobre o corpo original; sem importar o parser do agrobr"
+   }
+  },
+  {
+   "id": "deter_cerrado_sp_202601_202603",
+   "api": "deter_geo",
+   "selection": {
+    "bioma": "Cerrado",
+    "uf": "SP",
+    "data_inicio": "2026-01-01",
+    "data_fim": "2026-03-31"
+   },
+   "requests": [
+    {
+     "match": {
+      "path": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-cerrado-nb/ows",
+      "params": {
+       "CQL_FILTER": "strToUpperCase(strTrim(uf))='SP' AND view_date>='2026-01-01' AND view_date<='2026-03-31'",
+       "count": "0",
+       "outputFormat": "application/json",
+       "propertyName": "gid,classname,quadrant,path_row,view_date,sensor,satellite,areauckm,uc,areamunkm,municipality,uf,publish_month,created_date,areatotalkm",
+       "request": "GetFeature",
+       "resultType": "hits",
+       "service": "WFS",
+       "sortBy": "gid A,view_date A,classname A,municipality A,quadrant A,path_row A,sensor A,satellite A,areauckm A,uc A,areamunkm A,uf A,publish_month A,created_date A,areatotalkm A",
+       "typeNames": "deter-cerrado-nb:deter_cerrado",
+       "version": "2.0.0"
+      },
+      "skip": 0
+     },
+     "file": "deter_cerrado_sp_202601_202603_hits.xml",
+     "content_type": "text/xml",
+     "status": 200
+    },
+    {
+     "match": {
+      "path": "https://terrabrasilis.dpi.inpe.br/geoserver/deter-cerrado-nb/ows",
+      "params": {
+       "CQL_FILTER": "strToUpperCase(strTrim(uf))='SP' AND view_date>='2026-01-01' AND view_date<='2026-03-31'",
+       "count": "14",
+       "outputFormat": "application/json",
+       "propertyName": "gid,classname,quadrant,path_row,view_date,sensor,satellite,areauckm,uc,areamunkm,municipality,uf,publish_month,created_date,areatotalkm,st_multi",
+       "request": "GetFeature",
+       "service": "WFS",
+       "sortBy": "gid A,view_date A,classname A,municipality A,quadrant A,path_row A,sensor A,satellite A,areauckm A,uc A,areamunkm A,uf A,publish_month A,created_date A,areatotalkm A",
+       "srsName": "EPSG:4326",
+       "startIndex": "0",
+       "typeNames": "deter-cerrado-nb:deter_cerrado",
+       "version": "2.0.0"
+      },
+      "skip": 0
+     },
+     "file": "deter_cerrado_sp_202601_202603_page0.json",
+     "content_type": "application/json;charset=UTF-8",
+     "status": 200
+    }
+   ],
+   "oracle": {
+    "numberMatched": 14,
+    "crs": "urn:ogc:def:crs:EPSG::4326",
+    "geometry_column": "st_multi",
+    "geometry_types": [
+     "MultiPolygon"
+    ],
+    "feature_ids": [
+     "deter_cerrado.36140_curr",
+     "deter_cerrado.37305_curr",
+     "deter_cerrado.37784_curr",
+     "deter_cerrado.38991_curr",
+     "deter_cerrado.38993_curr",
+     "deter_cerrado.38996_curr",
+     "deter_cerrado.39399_curr",
+     "deter_cerrado.42253_curr",
+     "deter_cerrado.42254_curr",
+     "deter_cerrado.42255_curr",
+     "deter_cerrado.42528_curr",
+     "deter_cerrado.42529_curr",
+     "deter_cerrado.42532_curr",
+     "deter_cerrado.42872_curr"
+    ],
+    "vertices": 485,
+    "lon_range": [
+     -50.3879,
+     -47.6203
+    ],
+    "lat_range": [
+     -24.2203,
+     -22.09
+    ],
+    "lonlat_order": true,
+    "method": "json da stdlib sobre o corpo original; sem importar o parser do agrobr"
+   }
+  }
+ ]
+}

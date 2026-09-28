@@ -9,6 +9,9 @@ Requer chave gratuita do USDA:
 1. Registre em [api.data.gov/signup](https://api.data.gov/signup/)
 2. Configure: `export AGROBR_USDA_API_KEY=sua_chave`
 
+A chave vai só no cabeçalho `X-Api-Key` do gateway `https://api.fas.usda.gov/api/psd`. Sem chave, ou com chave
+recusada (HTTP 403 `API_KEY_INVALID`), sai `SourceUnavailableError`.
+
 ## Funcoes
 
 ### `psd`
@@ -33,10 +36,10 @@ async def psd(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `commodity` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` ou codigo USDA |
-| `country` | `str` | Pais: `"BR"`, `"US"`, `"world"` (agregado), `"all"` (todos). Default: `"BR"` |
-| `market_year` | `int \| None` | Ano de comercialização. `None` usa o ano-calendário corrente |
-| `attributes` | `list[str] \| None` | Filtrar atributos (ex: `["Production", "Exports"]`) |
+| `commodity` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` ou `commodityCode` do catálogo oficial do PSD |
+| `country` | `str` | Pais: `"BR"`, `"US"`, `"world"` (agregado), `"all"` (todos) ou `countryCode` do catálogo do PSD (não é ISO: `"CH"` é a China, `"E4"` a UE). Default: `"BR"` |
+| `market_year` | `int \| None` | Ano de comercialização. `None` usa o ano-calendário corrente e, se o PSD ainda não publicou nada dele (de janeiro até o WASDE de maio), o ano anterior; o ano usado vai em `source_details["market_year"]` |
+| `attributes` | `list[str] \| None` | Filtrar atributos pelo nome oficial (ex: `["Production", "Exports"]`) ou pelo rótulo do agrobr (`"producao"`, `"consumo_domestico"`...) |
 | `pivot` | `bool` | Se True, pivota atributos como colunas |
 | `api_key` | `str \| None` | Chave API (ou usa `AGROBR_USDA_API_KEY`) |
 | `as_polars` | `bool` | Se True, retorna polars.DataFrame |
@@ -44,7 +47,9 @@ async def psd(
 
 **Retorno:**
 
-DataFrame com colunas: `commodity_code`, `commodity`, `country_code`, `country`, `market_year`, `attribute`, `attribute_br`, `value`, `unit`
+DataFrame com colunas: `commodity_code`, `commodity`, `country_code`, `country`, `market_year`, `attribute`, `attribute_br`, `value`, `unit`, `attribute_id`, `unit_id`, `last_update_year`, `last_update_month`. Rótulos pelos catálogos oficiais; `last_update_*` é a última atualização da série, não a edição consultada. Detalhes em [USDA PSD](../sources/usda.md).
+
+**Erros:** commodity, país ou atributo fora dos catálogos levanta `InvalidParameterError` antes da rede; corpo fora do layout do gateway ou código que o catálogo local não conhece levanta `ParseError`.
 
 **Exemplo:**
 

@@ -27,7 +27,7 @@ async def embarques(
 
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `ano` | `int` | Ano dos artigos; o mapa atual cobre 2026 |
+| `ano` | `int` | Ano da edição, de 2026 ao ano corrente; publicação depende do catálogo |
 | `semana` | `int \| None` | Semana do relatório; `None` seleciona o artigo mais recente do ano |
 | `porto` | `str \| None` | Filtro de porto, sem distinção de caixa ou acento |
 | `produto` | `str \| None` | Alias de produto aceito pela [fonte ANEC](../sources/anec.md#aliases-de-produto-aceitos) |
@@ -35,6 +35,9 @@ async def embarques(
 | `use_cache` | `bool` | Usa o cache de PDF quando `True` |
 | `as_polars` | `bool` | Retorna `polars.DataFrame` quando `True` |
 | `return_meta` | `bool` | Retorna `(DataFrame, MetaInfo)` quando `True` |
+
+`ano`, `semana` fora de 1–53, `produto` e `tipo` inválidos levantam `InvalidParameterError` antes de consultar o
+catálogo ou baixar o PDF.
 
 Colunas: `porto`, `produto`, `periodo`, `valor_ton`. `valor_ton` usa dtype
 `Float64` e recebe `pd.NA` quando o PDF não informa o volume.
@@ -56,7 +59,7 @@ async def embarques_mensais(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-Colunas: `ano`, `mes`, `produto`, `valor_ton`, `eh_estimativa`.
+Colunas: `ano`, `mes`, `produto`, `valor_ton`, `eh_estimativa`, `valor_min_ton`, `valor_max_ton`.
 
 ### `comparacao_anual`
 
@@ -73,7 +76,9 @@ async def comparacao_anual(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-Colunas: `mes`, `produto`, `valor_2025`, `valor_2026`.
+Colunas: `mes`, `produto`, `valor_2025`, `valor_2026`, `valor_base_ton`, `valor_comparacao_ton`, `ano_base`, `ano_comparacao`, `eh_estimativa`.
+
+Schema de fonte **1.2**. Prefira `valor_base_ton` e `valor_comparacao_ton` com seus anos explícitos. As colunas legadas `valor_2025`/`valor_2026` contêm somente valores daqueles anos literais; ano ausente fica nulo. Anos em rodapés editoriais não substituem cabeçalhos da tabela. Cabeçalhos ausentes ou incompatíveis continuam gerando `ParseError`.
 
 ### `destinos`
 
@@ -90,7 +95,7 @@ async def destinos(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-Colunas: `produto`, `destino`, `share_pct`.
+Colunas: `produto`, `destino`, `share_pct`, `ano`, `mes_inicio`, `mes_fim`.
 
 As três funções usam `ano`, `semana`, `produto`, `use_cache`, `as_polars` e
 `return_meta` com o mesmo comportamento documentado em `embarques()`.
@@ -112,7 +117,8 @@ Retorna dicionários com `id`, `title`, `slug`, `pdf_url`, `created_at`,
 async def list_articles(year: int) -> list[ANECArticle]
 ```
 
-Retorna os artigos do ano como modelos `ANECArticle`.
+Retorna os boletins semanais do ano como modelos `ANECArticle`. Artigo cujo título não segue `ANEC - NN.AAAA`
+é ignorado com `UserWarning` que cita o título.
 
 ### `fetch_latest_pdf`
 
@@ -175,3 +181,20 @@ from agrobr.sync import anec
 
 df = anec.embarques(ano=2026, produto="soja")
 ```
+
+## Proveniência da edição e catálogo
+
+As três tabelas agregadas também incluem `ano_relatorio`, `semana_relatorio`, `edicao_id`, `publicado_em` e `revisado_em`. Schemas de fonte mensal/destinos permanecem 1.1; comparação anual é 1.2. Os contratos dos datasets continuam em 1.0.
+
+Categorias anuais ausentes do mapa configurado são descobertas no catálogo oficial. Ano explícito sem publicação gera `SourceUnavailableError`, sem retornar edição anterior. `fetch_latest_pdf(year=None)` pode procurar anos anteriores suportados. Resultados vazios do catálogo são cacheados por ano durante `AGROBR_ANEC_LIST_TTL` segundos (padrão 300); zero desativa esse cache. Falhas de parsing ou rede não são cacheadas como ano sem publicação.
+
+## Integridade da leitura do PDF
+
+Cabeçalhos semanais e mensais incompletos geram `ParseError`, em vez de devolver
+apenas as colunas reconhecidas. Vale o cabeçalho com os seis produtos ou com os
+quatro das edições até a W2/2026; coluna sem nome de produto gera `ParseError`. A
+soma dos portos de cada coluna semanal é conferida com a linha TOTAL publicada, e
+a divergência sai em aviso, sem mudar os valores. Em destinos, a leitura termina no total da tabela
+e exclui os números desenhados no mapa. Quadros rasterizados ainda podem retornar
+vazio com aviso. Os valores e percentuais de cada quadro são preservados, inclusive
+quando os totais publicados em outros quadros divergem.

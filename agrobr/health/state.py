@@ -3,16 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 import structlog
 
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.cache.duckdb_store import get_store
 from agrobr.constants import AlertSettings, Fonte
-
-if TYPE_CHECKING:
-    pass
 
 logger = structlog.get_logger()
 
@@ -34,8 +30,7 @@ def record_check(
 ) -> None:
     """INSERT a health-check row (pure log, no mutable state)."""
     store = get_store()
-    with store._lock:
-        conn = store._get_conn()
+    with store._conexao() as conn:
         if conn is None:
             return
         conn.execute(
@@ -48,8 +43,7 @@ def record_check(
 def get_consecutive_failures(source: Fonte) -> int:
     """Count failures since the last OK for *source* (via query, not mutable state)."""
     store = get_store()
-    with store._lock:
-        conn = store._get_conn()
+    with store._conexao() as conn:
         if conn is None:
             return 0
         result = conn.execute(
@@ -93,8 +87,7 @@ def get_alertable_failures(source: Fonte, settings: AlertSettings | None = None)
     """
     settings = settings or AlertSettings()
     store = get_store()
-    with store._lock:
-        conn = store._get_conn()
+    with store._conexao() as conn:
         if conn is None:
             return 0
         rows = conn.execute(
@@ -116,8 +109,7 @@ def get_alertable_failures(source: Fonte, settings: AlertSettings | None = None)
 def get_last_success(source: Fonte) -> datetime | None:
     """Return the timestamp of the most recent OK check for *source*."""
     store = get_store()
-    with store._lock:
-        conn = store._get_conn()
+    with store._conexao() as conn:
         if conn is None:
             return None
         result = conn.execute(

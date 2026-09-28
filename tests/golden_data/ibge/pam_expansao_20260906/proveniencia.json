@@ -1,0 +1,57 @@
+{
+  "captured_at": "2026-09-06T21:40:50.032359+00:00",
+  "agrobr_path": "/workspace/agrobr/__init__.py",
+  "methodology_url": "https://sidra.ibge.gov.br/pesquisa/pam/tabelas",
+  "cases": [
+    {
+      "name": "brasil_2024",
+      "rows": 12,
+      "level": "1",
+      "territory": "all",
+      "period": "2024",
+      "products": "40106,40119,40151",
+      "sha256": "96251180afa6a2ac5f7d79398734ef9004b3e638214e1fd710b1c188104704b4",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n1/all/h/n/p/2024/v/8331,216,214,112/c782/40106,40119,40151"
+    },
+    {
+      "name": "uf_2024",
+      "rows": 324,
+      "level": "3",
+      "territory": "all",
+      "period": "2024",
+      "products": "40106,40119,40151",
+      "sha256": "d2412cef685eec02cd5ee48c967a1822ec92b22d788d4b18eb196fc00d51e252",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n3/all/h/n/p/2024/v/8331,216,214,112/c782/40106,40119,40151"
+    },
+    {
+      "name": "municipios_ro_2024",
+      "rows": 624,
+      "level": "6",
+      "territory": "in N3 11",
+      "period": "2024",
+      "products": "40106,40119,40151",
+      "sha256": "36c846558524ab3af53f7b6f6c82954082557ba54b25ec1638512470e25e4bd0",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n6/in%20N3%2011/h/n/p/2024/v/8331,216,214,112/c782/40106,40119,40151"
+    },
+    {
+      "name": "laranja_2000_2001",
+      "rows": 8,
+      "level": "1",
+      "territory": "all",
+      "period": "2000,2001",
+      "products": "40151",
+      "sha256": "1dc4e8da3aa5e85bf2a34298065b4ce7bb416243ebca69f6bee50a7677a024b1",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n1/all/h/n/p/2000,2001/v/8331,216,214,112/c782/40151"
+    },
+    {
+      "name": "brasil_1974",
+      "rows": 12,
+      "level": "1",
+      "territory": "all",
+      "period": "1974",
+      "products": "40106,40119,40151",
+      "sha256": "d791df619e6f2bb57b135183cc0f7ccdbd83f10df85005c6b8b721607a5fd57f",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n1/all/h/n/p/1974/v/8331,216,214,112/c782/40106,40119,40151"
+    }
+  ]
+}

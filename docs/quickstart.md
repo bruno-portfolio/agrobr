@@ -267,7 +267,7 @@ Veja [docs/sources/comexstat.md](sources/comexstat.md) para tabela completa de N
 
 ## NASA POWER - Dados Climaticos
 
-Dados climaticos globais da NASA (substituto do INMET, cuja API esta fora do ar).
+Dados climaticos globais da NASA (alternativa ao INMET, sem token).
 Cobertura global, grid 0.5 grau, desde 1981, sem autenticacao.
 
 ```python
@@ -293,9 +293,11 @@ async def main():
 asyncio.run(main())
 ```
 
-## INMET - Meteorologia (API fora do ar)
+## INMET - Meteorologia
 
-> **Nota:** A API INMET esta retornando 404. Usar `nasa_power` como alternativa.
+> **Nota:** o catálogo de estações e os ZIPs históricos anuais (`historico`, `historico_periodo`, `historico_uf`) são
+> públicos, sem token; a rota observacional (`estacao`, `clima_uf`) exige `AGROBR_INMET_TOKEN`. Veja
+> [a fonte](sources/inmet.md).
 
 Dados climaticos de 600+ estacoes automaticas do INMET.
 
@@ -334,7 +336,7 @@ asyncio.run(main())
 
 ## ANDA - Fertilizantes
 
-Entregas de fertilizantes por UF e mes. Requer `pip install agrobr[pdf]`.
+Entregas mensais de fertilizantes (total nacional). Requer `pip install agrobr[pdf]`.
 
 ```python
 from agrobr import anda
@@ -343,25 +345,31 @@ async def main():
     # Entregas nacionais
     df = await anda.entregas(ano=2024)
 
-    # Filtrar por UF
-    df = await anda.entregas(ano=2024, uf="MT")
-
 asyncio.run(main())
 ```
 
 ## CONAB - Custo de Producao
 
-Custos detalhados por hectare, cultura e UF.
+Custos detalhados por hectare, cultura e UF. O exemplo seleciona automaticamente
+a última planilha em ordem alfabética no catálogo e uma aba identificada de MT com o ano
+de referência mais recente. Planilhas publicadas em anos diferentes podem cobrir
+períodos sobrepostos; o ano de referência de preços não é a safra.
 
 ```python
+import asyncio
+
 from agrobr import conab
 
 async def main():
-    # Custo de producao de soja em MT
-    df = await conab.custo_producao("soja", uf="MT")
-
-    # Totais (COE, COT, CT)
-    totais = await conab.custo_producao_total("soja", uf="MT")
+    catalogo = await conab.catalogo_custos("soja")
+    planilha = catalogo["planilha"].max()
+    contextos = await conab.catalogo_custos("soja", planilha=planilha)
+    mt = contextos[contextos["uf"].eq("MT") & contextos["status"].eq("identified")]
+    aba = mt.sort_values("ano_referencia")["aba"].iloc[-1]
+    df = await conab.custo_producao("soja", uf="MT", planilha=planilha, aba=aba)
+    totais = await conab.custo_producao_total("soja", uf="MT", planilha=planilha, aba=aba)
+    print(df)
+    print(totais)
 
 asyncio.run(main())
 ```
@@ -409,12 +417,18 @@ agrobr ibge lspa milho --ano 2024 --mes 6
 
 # Health check
 agrobr health          # todas as fontes
-agrobr health --deep   # checagem profunda (fingerprint + parse)
+agrobr health --deep   # CEPEA: fingerprint contra a baseline do pacote + parse
 
 # Cache (status via doctor; limpar = remover o arquivo)
 agrobr doctor
 rm ~/.agrobr/cache/agrobr.duckdb
 ```
+
+`--formato json` sai com as datas em ISO 8601 (`"2026-09-22T00:00:00.000"`). Com `--ultimo`, a linha tem as mesmas
+colunas e os mesmos tipos da tabela sem ele.
+
+`--formato` aceita `table`, `csv` e `json` (outro valor sai com código 2), e a saída sai em UTF-8, também redirecionada
+no Windows.
 
 ## Configuração
 
@@ -436,20 +450,18 @@ export AGROBR_ALERT_DISCORD_WEBHOOK=https://discord.com/api/webhooks/...
 
 ### Via Código
 
+Defina as variáveis antes de importar o pacote. `offline=True` consulta os dados já existentes no cache configurado.
+
 ```python
-from agrobr.constants import CacheSettings, HTTPSettings
+import os
 
-# Configurar cache
-cache = CacheSettings(
-    cache_dir='./meu_cache',
-    offline_mode=True  # Usa apenas cache local
-)
+os.environ["AGROBR_CACHE_CACHE_DIR"] = "./meu_cache"
+os.environ["AGROBR_HTTP_TIMEOUT_READ"] = "60"
+os.environ["AGROBR_HTTP_MAX_RETRIES"] = "5"
 
-# Configurar HTTP
-http = HTTPSettings(
-    timeout_read=60,
-    max_retries=5
-)
+from agrobr import cepea
+
+df = await cepea.indicador("soja", offline=True)
 ```
 
 ## Tratamento de Erros

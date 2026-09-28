@@ -1,7 +1,6 @@
-"""Testes da API IBGE."""
-
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
@@ -10,322 +9,127 @@ import pytest
 from agrobr import ibge
 from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge import client
+from agrobr.utils import time as time_utils
+from tests import helpers
 
-
-class TestProdutosLists:
-    """Testes das funcoes de listagem."""
-
-    @pytest.mark.asyncio
-    async def test_produtos_pam(self):
-        """Testa listagem de produtos PAM."""
-        produtos = await ibge.produtos_pam()
-
-        assert isinstance(produtos, list)
-        assert len(produtos) > 0
-        assert "soja" in produtos
-        assert "milho" in produtos
-
-    @pytest.mark.asyncio
-    async def test_produtos_lspa(self):
-        """Testa listagem de produtos LSPA."""
-        produtos = await ibge.produtos_lspa()
-
-        assert isinstance(produtos, list)
-        assert len(produtos) > 0
-        assert "soja" in produtos
-        assert "milho_1" in produtos
-        assert "milho_2" in produtos
-
-    @pytest.mark.asyncio
-    async def test_ufs(self):
-        """Testa listagem de UFs."""
-        ufs = await ibge.ufs()
-
-        assert isinstance(ufs, list)
-        assert len(ufs) == 27
-        assert "MT" in ufs
-        assert "SP" in ufs
-        assert "PR" in ufs
+SIDRA_SEM_OBSERVACOES = pd.DataFrame(
+    columns=["NC", "NN", "MC", "MN", "V", "D1C", "D1N", "D2C", "D2N", "D3C", "D3N"]
+)
+ABATE_MT_202303 = pd.DataFrame(
+    [
+        {
+            "NC": "3",
+            "NN": "Unidade da Federação",
+            "MC": "24",
+            "MN": "Cabeças",
+            "V": "100",
+            "D1C": "51",
+            "D1N": "Mato Grosso",
+            "D2C": "284",
+            "D2N": "Animais abatidos",
+            "D3C": "202303",
+            "D3N": "3º trimestre 2023",
+        },
+        {
+            "NC": "3",
+            "NN": "Unidade da Federação",
+            "MC": "1007",
+            "MN": "Quilogramas",
+            "V": "25000",
+            "D1C": "51",
+            "D1N": "Mato Grosso",
+            "D2C": "285",
+            "D2N": "Peso total das carcaças",
+            "D3C": "202303",
+            "D3N": "3º trimestre 2023",
+        },
+    ]
+)
+UFS_IBGE = [
+    "RO",
+    "AC",
+    "AM",
+    "RR",
+    "PA",
+    "AP",
+    "TO",
+    "MA",
+    "PI",
+    "CE",
+    "RN",
+    "PB",
+    "PE",
+    "AL",
+    "SE",
+    "BA",
+    "MG",
+    "ES",
+    "RJ",
+    "SP",
+    "PR",
+    "SC",
+    "RS",
+    "MS",
+    "MT",
+    "GO",
+    "DF",
+]
 
 
 class TestPamValidation:
     """Testes de validacao da funcao PAM."""
 
-    @pytest.mark.asyncio
-    async def test_pam_produto_invalido(self):
-        """Testa que produto invalido levanta erro."""
-        with pytest.raises(ValueError) as exc:
-            await ibge.pam("produto_inexistente")
-
-        assert "Produto não suportado" in str(exc.value)
-
-    @pytest.mark.asyncio
-    async def test_pam_lista_produtos_no_erro(self):
-        """Testa que erro lista produtos disponiveis."""
-        with pytest.raises(ValueError) as exc:
-            await ibge.pam("xyz")
-
-        assert "Disponíveis:" in str(exc.value)
-        assert "soja" in str(exc.value)
-
-    @pytest.mark.parametrize("ano", [1973, 9999, "invalido", 2023.5])
-    @pytest.mark.asyncio
-    async def test_pam_ano_invalido_antes_da_rede(self, ano):
-        with (
-            patch.object(client, "fetch_sidra", new_callable=AsyncMock) as fetch,
-            pytest.raises(InvalidParameterError, match="ano"),
-        ):
-            await ibge.pam("soja", ano=ano)
-
-        fetch.assert_not_awaited()
-
-
-class TestLspaValidation:
-    """Testes de validacao da funcao LSPA."""
-
-    @pytest.mark.asyncio
-    async def test_lspa_produto_invalido(self):
-        """Testa que produto invalido levanta erro."""
-        with pytest.raises(ValueError) as exc:
-            await ibge.lspa("produto_inexistente")
-
-        assert "Produto não suportado" in str(exc.value)
-
-    @pytest.mark.asyncio
-    async def test_lspa_aceita_milho_generico(self):
-        """Testa que 'milho' expande para milho_1 + milho_2."""
-        mock_df = pd.DataFrame({"V": ["100"], "D1N": ["202406"]})
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_df
-
-            await ibge.lspa("milho", ano=2024, mes=6)
-
-            assert mock_fetch.call_count == 2
-            codes_called = [
-                call.kwargs["classifications"]["48"] for call in mock_fetch.call_args_list
-            ]
-            assert client.PRODUTOS_LSPA["milho_1"] in codes_called
-            assert client.PRODUTOS_LSPA["milho_2"] in codes_called
-
-    @pytest.mark.asyncio
-    async def test_lspa_aceita_feijao_generico(self):
-        """Testa que 'feijao' expande para feijao_1 + feijao_2 + feijao_3."""
-        mock_df = pd.DataFrame({"V": ["100"], "D1N": ["202406"]})
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_df
-
-            await ibge.lspa("feijao", ano=2024, mes=6)
-
-            assert mock_fetch.call_count == 3
-
-    @pytest.mark.asyncio
-    async def test_lspa_especifico_continua_funcionando(self):
-        """Testa que milho_1 específico ainda funciona."""
-        mock_df = pd.DataFrame({"V": ["100"], "D1N": ["202406"]})
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_df
-
-            await ibge.lspa("milho_1", ano=2024, mes=6)
-
-            assert mock_fetch.call_count == 1
-
-    @pytest.mark.asyncio
-    async def test_lspa_erro_lista_aliases(self):
-        """Testa que erro inclui aliases na lista de disponíveis."""
-        with pytest.raises(ValueError) as exc:
-            await ibge.lspa("xyz")
-
-        msg = str(exc.value)
-        assert "milho" in msg
-        assert "feijao" in msg
-
-
-class TestPamMocked:
-    """Testes da funcao PAM com mock."""
-
-    @pytest.fixture
-    def mock_sidra_response(self):
-        """Resposta mockada do SIDRA (formato real tabela 5457)."""
-        return pd.DataFrame(
-            {
-                "NC": ["3", "3"],
-                "NN": ["Unidade da Federação", "Unidade da Federação"],
-                "MC": ["1006", "1006"],
-                "MN": ["Hectares", "Hectares"],
-                "V": ["15000000", "12000000"],
-                "D1C": ["51", "41"],
-                "D1N": ["Mato Grosso", "Paraná"],
-                "D2C": ["2023", "2023"],
-                "D2N": ["2023", "2023"],
-                "D3C": ["214", "214"],
-                "D3N": [
-                    "Área plantada ou destinada à colheita",
-                    "Área plantada ou destinada à colheita",
-                ],
-                "D4C": ["40124", "40124"],
-                "D4N": ["Soja (em grão)", "Soja (em grão)"],
-            }
-        )
-
-    @pytest.mark.asyncio
-    async def test_pam_returns_dataframe(self, mock_sidra_response):
-        """Testa que PAM retorna DataFrame."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-
-            df = await ibge.pam("soja", ano=2023)
-
-            assert isinstance(df, pd.DataFrame)
-            mock_fetch.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_pam_empty_result_has_contract_columns(self):
-        with patch.object(
-            client,
-            "fetch_sidra",
-            new_callable=AsyncMock,
-            return_value=pd.DataFrame(),
-        ):
-            df = await ibge.pam("soja", ano=2023)
-
-        assert list(df.columns) == [
-            "ano",
-            "localidade",
-            "produto",
-            "area_plantada",
-            "area_colhida",
-            "producao",
-            "rendimento",
-            "valor_producao",
-            "fonte",
+    async def test_validacao_pam(self):
+        cases = [
+            (
+                "test_pam_produto_invalido",
+                ibge.pam,
+                ("produto_inexistente",),
+                {},
+                ValueError,
+                "Produto não suportado",
+            ),
+            (
+                "test_pam_ano_invalido_antes_da_rede",
+                ibge.pam,
+                ("soja",),
+                {"ano": 1973},
+                InvalidParameterError,
+                "ano",
+            ),
+            (
+                "test_pam_ano_invalido_antes_da_rede",
+                ibge.pam,
+                ("soja",),
+                {"ano": 9999},
+                InvalidParameterError,
+                "ano",
+            ),
+            (
+                "test_pam_ano_invalido_antes_da_rede",
+                ibge.pam,
+                ("soja",),
+                {"ano": "invalido"},
+                InvalidParameterError,
+                "ano",
+            ),
+            (
+                "test_pam_ano_invalido_antes_da_rede",
+                ibge.pam,
+                ("soja",),
+                {"ano": 2023.5},
+                InvalidParameterError,
+                "ano",
+            ),
         ]
-
-    @pytest.mark.asyncio
-    async def test_pam_adds_produto_column(self, mock_sidra_response):
-        """Testa que adiciona coluna produto."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-
-            df = await ibge.pam("soja", ano=2023)
-
-            assert "produto" in df.columns
-            assert df["produto"].iloc[0] == "soja"
-
-    @pytest.mark.asyncio
-    async def test_pam_adds_fonte_column(self, mock_sidra_response):
-        """Testa que adiciona coluna fonte."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-
-            df = await ibge.pam("soja", ano=2023)
-
-            assert "fonte" in df.columns
-            assert df["fonte"].iloc[0] == "ibge_pam"
-
-    @pytest.mark.asyncio
-    async def test_pam_calls_sidra_with_correct_params(self, mock_sidra_response):
-        """Testa parametros passados ao SIDRA."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-
-            await ibge.pam("soja", ano=2023, uf="MT", nivel="uf")
-
-            call_args = mock_fetch.call_args
-            assert call_args.kwargs["table_code"] == client.TABELAS["pam_nova"]
-            assert call_args.kwargs["territorial_level"] == "3"  # UF
-            assert call_args.kwargs["period"] == "2023"
-
-    @pytest.mark.asyncio
-    async def test_pam_list_of_years(self, mock_sidra_response):
-        """Testa lista de anos."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-
-            await ibge.pam("soja", ano=[2021, 2022, 2023])
-
-            call_args = mock_fetch.call_args
-            assert call_args.kwargs["period"] == "2021,2022,2023"
-
-    @pytest.mark.parametrize("ano", [2023.0, "2023"])
-    @pytest.mark.asyncio
-    async def test_pam_normalizes_year_before_query(self, ano, mock_sidra_response):
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-
-            await ibge.pam("soja", ano=ano)
-
-        assert mock_fetch.call_args.kwargs["period"] == "2023"
-
-
-class TestLspaMocked:
-    """Testes da funcao LSPA com mock."""
-
-    @pytest.fixture
-    def mock_lspa_response(self):
-        """Resposta mockada do LSPA."""
-        return pd.DataFrame(
-            {
-                "NC": ["1", "1"],
-                "NN": ["Brasil", "Brasil"],
-                "MC": ["1", "1"],
-                "MN": ["Brasil", "Brasil"],
-                "V": ["150000", "45000"],
-                "D1C": ["202406", "202406"],
-                "D1N": ["junho 2024", "junho 2024"],
-                "D2C": ["109", "216"],
-                "D2N": ["Área", "Produção"],
-                "D3C": ["39443", "39443"],
-                "D3N": ["Soja", "Soja"],
-            }
-        )
-
-    @pytest.mark.asyncio
-    async def test_lspa_returns_dataframe(self, mock_lspa_response):
-        """Testa que LSPA retorna DataFrame."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_lspa_response
-
-            df = await ibge.lspa("soja", ano=2024, mes=6)
-
-            assert isinstance(df, pd.DataFrame)
-
-    @pytest.mark.asyncio
-    async def test_lspa_adds_metadata(self, mock_lspa_response):
-        """Testa que adiciona metadata."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_lspa_response
-
-            df = await ibge.lspa("soja", ano=2024, mes=6)
-
-            assert "produto" in df.columns
-            assert "fonte" in df.columns
-            assert df["fonte"].iloc[0] == "ibge_lspa"
-
-    @pytest.mark.asyncio
-    async def test_lspa_period_format(self, mock_lspa_response):
-        """Testa formato do periodo."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_lspa_response
-
-            await ibge.lspa("soja", ano=2024, mes=6)
-
-            call_args = mock_fetch.call_args
-            assert call_args.kwargs["period"] == "202406"
-
-    @pytest.mark.asyncio
-    async def test_lspa_all_months(self, mock_lspa_response):
-        """Testa busca de todos os meses."""
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_lspa_response
-
-            await ibge.lspa("soja", ano=2024, mes=None)
-
-            call_args = mock_fetch.call_args
-            period = call_args.kwargs["period"]
-
-            # Deve ter 12 meses
-            assert "202401" in period
-            assert "202412" in period
+        with helpers.collect_failures() as check:
+            for case, function, args, kwargs, exception, message in cases:
+                with check(case), helpers.isolated_dataset_case((case, kwargs)) as monkeypatch:
+                    fetch = AsyncMock()
+                    monkeypatch.setattr(client, "fetch_sidra", fetch)
+                    with pytest.raises(exception, match=message):
+                        await function(*args, **kwargs)
+                    fetch.assert_not_awaited()
 
 
 class TestPolarsSupport:
@@ -347,34 +151,6 @@ class TestPolarsSupport:
         )
 
     @pytest.mark.asyncio
-    async def test_pam_polars_conversion(self, mock_response):
-        """Testa conversao para Polars na PAM."""
-        pytest.importorskip("polars")
-
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_response
-
-            df = await ibge.pam("soja", ano=2023, as_polars=True)
-
-            import polars as pl
-
-            assert isinstance(df, pl.DataFrame)
-
-    @pytest.mark.asyncio
-    async def test_lspa_polars_conversion(self, mock_response):
-        """Testa conversao para Polars no LSPA."""
-        pytest.importorskip("polars")
-
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_response
-
-            df = await ibge.lspa("soja", ano=2024, mes=6, as_polars=True)
-
-            import polars as pl
-
-            assert isinstance(df, pl.DataFrame)
-
-    @pytest.mark.asyncio
     async def test_pam_polars_missing_raises(self, mock_response, monkeypatch):
         import builtins
 
@@ -394,95 +170,291 @@ class TestPolarsSupport:
                 await ibge.pam("soja", ano=2023, as_polars=True)
 
 
-class TestPamMunicipal:
-    @pytest.fixture
-    def mock_sidra_response(self):
-        return pd.DataFrame(
-            {
-                "NC": ["6", "6"],
-                "NN": ["Município", "Município"],
-                "MC": ["1006", "1006"],
-                "MN": ["Hectares", "Hectares"],
-                "V": ["15000000", "12000000"],
-                "D1C": ["1500107", "1500206"],
-                "D1N": ["Belém", "Ananindeua"],
-                "D2C": ["2023", "2023"],
-                "D2N": ["2023", "2023"],
-                "D3C": ["214", "214"],
-                "D3N": ["Quantidade produzida", "Quantidade produzida"],
-                "D4C": ["40139", "40139"],
-                "D4N": ["Café (em grão)", "Café (em grão)"],
-            }
-        )
-
-    @pytest.mark.asyncio
-    async def test_pam_municipio_with_uf(self, mock_sidra_response):
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-            await ibge.pam("cafe", ano=2023, nivel="municipio", uf="PA")
-            call_args = mock_fetch.call_args
-            assert call_args.kwargs["territorial_level"] == "6"
-            assert call_args.kwargs["ibge_territorial_code"] == "in N3 15"
-
-    @pytest.mark.asyncio
-    async def test_pam_municipio_without_uf(self, mock_sidra_response):
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-            await ibge.pam("soja", ano=2023, nivel="municipio")
-            call_args = mock_fetch.call_args
-            assert call_args.kwargs["territorial_level"] == "6"
-            assert call_args.kwargs["ibge_territorial_code"] == "all"
-
-    @pytest.mark.asyncio
-    async def test_pam_municipio_uf_mt(self, mock_sidra_response):
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-            await ibge.pam("soja", ano=2023, nivel="municipio", uf="MT")
-            call_args = mock_fetch.call_args
-            assert call_args.kwargs["ibge_territorial_code"] == "in N3 51"
-
-    @pytest.mark.asyncio
-    async def test_pam_uf_level_unchanged(self, mock_sidra_response):
-        with patch.object(client, "fetch_sidra", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = mock_sidra_response
-            await ibge.pam("soja", ano=2023, nivel="uf", uf="MT")
-            call_args = mock_fetch.call_args
-            assert call_args.kwargs["territorial_level"] == "3"
-            assert call_args.kwargs["ibge_territorial_code"] == "51"
+class TestLspaValidation:
+    async def test_validacao_lspa(self):
+        cases = [("test_lspa_produto_invalido", {"produto": "xyz"}, "Produto não suportado")]
+        cases += [
+            ("test_lspa_mes_invalido_nao_consulta_outra_referencia", {"mes": mes}, "mes")
+            for mes in [0, 13, -1, "0", "13", "", "abc", "7.9", 7.9, True, False]
+        ]
+        with helpers.collect_failures() as check:
+            for case, kwargs, message in cases:
+                selection = {"produto": "cafe", "ano": 2026, **kwargs}
+                with check((case, kwargs)), helpers.isolated_dataset_case(case) as monkeypatch:
+                    fetch = AsyncMock()
+                    monkeypatch.setattr(client, "fetch_sidra", fetch)
+                    with pytest.raises(InvalidParameterError, match=message):
+                        await ibge.lspa(**selection)
+                    fetch.assert_not_awaited()
 
 
-@pytest.mark.integration
-class TestPamIntegration:
-    """Testes de integracao PAM (requer internet)."""
-
-    @pytest.mark.asyncio
-    @pytest.mark.slow
-    async def test_pam_soja_real(self):
-        """Teste real da PAM de soja."""
-        df = await ibge.pam("soja", ano=2022, nivel="brasil")
-
-        assert isinstance(df, pd.DataFrame)
-        assert not df.empty
-        assert "produto" in df.columns
-
-    @pytest.mark.asyncio
-    @pytest.mark.slow
-    async def test_pam_milho_real(self):
-        """Teste real da PAM de milho."""
-        df = await ibge.pam("milho", ano=2022, nivel="brasil")
-
-        assert isinstance(df, pd.DataFrame)
-        assert not df.empty
+CONSULTA_EM_15_07_2026 = datetime(2026, 7, 15, 15, 0, tzinfo=UTC)
 
 
-@pytest.mark.integration
-class TestLspaIntegration:
-    """Testes de integracao LSPA (requer internet)."""
+async def test_consulta_sidra_por_selecao():
+    cases = [
+        ("ppm_sem_ano", ibge.ppm, ("bovino",), {}, {"table_code": "3939", "period": "last"}),
+        (
+            "abate_sem_trimestre",
+            ibge.abate,
+            ("bovino",),
+            {},
+            {"table_code": "1092", "period": "last"},
+        ),
+        (
+            "abate_uf",
+            ibge.abate,
+            ("bovino",),
+            {"trimestre": "202303", "uf": "MT"},
+            {"ibge_territorial_code": "51"},
+        ),
+        (
+            "abate_suino_sem_classificacao_bovina",
+            ibge.abate,
+            ("suino",),
+            {"trimestre": "202303"},
+            {"table_code": "1093", "classifications": {"12716": "115236", "12529": "118225"}},
+        ),
+        (
+            "leite_uf",
+            ibge.leite_trimestral,
+            (),
+            {"trimestre": "202503", "uf": "MG"},
+            {"table_code": "1086", "ibge_territorial_code": "31"},
+        ),
+        (
+            "pib_precos_reais",
+            ibge.pib_agro,
+            (),
+            {"precos": "real_1995"},
+            {"table_code": "6612", "variable": "9318"},
+        ),
+        (
+            "ppm_producao_origem_animal",
+            ibge.ppm,
+            ("leite",),
+            {"ano": 2023},
+            {"table_code": "74", "variable": "106", "classifications": {"80": "2682"}},
+        ),
+        (
+            "silvicultura_area",
+            ibge.silvicultura,
+            ("eucalipto",),
+            {"ano": 2023, "variavel": "area"},
+            {"table_code": "5930", "variable": "6549", "classifications": {"734": "39326"}},
+        ),
+        (
+            "pam_variavel_explicita",
+            ibge.pam,
+            ("soja",),
+            {"ano": 2023, "variaveis": ["producao"]},
+            {"variable": "214"},
+        ),
+        (
+            "historico_lista_de_anos",
+            ibge.censo_agro_historico,
+            ("pessoal_tratores",),
+            {"ano": [1980, 1985]},
+            {"period": "1980,1985"},
+        ),
+        ("lspa_sem_ano_usa_ano_corrente", ibge.lspa, ("soja",), {"mes": 7}, {"period": "202607"}),
+    ]
+    with helpers.collect_failures() as check:
+        for case, function, args, kwargs, expected in cases:
+            response = ABATE_MT_202303 if function is ibge.abate else SIDRA_SEM_OBSERVACOES
+            with check(case), helpers.isolated_dataset_case(case) as monkeypatch:
+                fetch = AsyncMock(return_value=response.copy())
+                monkeypatch.setattr(client, "fetch_sidra", fetch)
+                monkeypatch.setattr(time_utils, "utcnow_aware", lambda: CONSULTA_EM_15_07_2026)
+                await function(*args, **kwargs)
+                sent = fetch.await_args.kwargs
+                assert {key: sent[key] for key in expected} == expected
 
-    @pytest.mark.asyncio
-    @pytest.mark.slow
-    async def test_lspa_soja_real(self):
-        """Teste real do LSPA de soja."""
-        df = await ibge.lspa("soja", ano=2024, mes=6)
 
-        assert isinstance(df, pd.DataFrame)
+async def test_resultado_vazio_preserva_colunas():
+    censo = ["ano", "localidade", "localidade_cod", "tema", "categoria", "variavel"]
+    cases = [
+        (
+            "pam",
+            ibge.pam,
+            ("soja",),
+            {"ano": 2023},
+            [
+                "ano",
+                "localidade",
+                "localidade_cod",
+                "produto",
+                "area_plantada",
+                "area_colhida",
+                "producao",
+                "rendimento",
+                "valor_producao",
+                "fonte",
+                "unidade_producao",
+                "unidade_rendimento",
+                "unidade_valor_producao",
+                "condicao_produto",
+            ],
+        ),
+        (
+            "lspa",
+            ibge.lspa,
+            ("soja",),
+            {"ano": 2026, "mes": 7},
+            [
+                "ano",
+                "mes",
+                "localidade",
+                "localidade_cod",
+                "produto",
+                "variavel",
+                "variavel_cod",
+                "valor",
+                "unidade",
+                "fonte",
+            ],
+        ),
+        (
+            "censo_multitabela_1995",
+            ibge.censo_agro,
+            ("uso_terra",),
+            {"ano": 1995},
+            [*censo, "valor", "unidade", "fonte"],
+        ),
+    ]
+    with helpers.collect_failures() as check:
+        for case, function, args, kwargs, columns in cases:
+            with check(case), helpers.isolated_dataset_case(case) as monkeypatch:
+                monkeypatch.setattr(client, "fetch_sidra", AsyncMock(return_value=pd.DataFrame()))
+                frame = await function(*args, **kwargs)
+                assert list(frame.columns) == columns
+                assert frame.empty
+
+
+async def test_catalogos_publicos():
+    cases = [
+        ("ufs", ibge.ufs, UFS_IBGE),
+        ("especies_abate", ibge.especies_abate, ["bovino", "suino", "frango"]),
+        (
+            "especies_ppm",
+            ibge.especies_ppm,
+            [
+                "bovino",
+                "bubalino",
+                "caprino",
+                "casulos",
+                "codornas",
+                "equino",
+                "galinaceos_total",
+                "galinhas",
+                "la",
+                "leite",
+                "mel",
+                "ovino",
+                "ovos_codorna",
+                "ovos_galinha",
+                "suino_matrizes",
+                "suino_total",
+            ],
+        ),
+        (
+            "temas_censo_agro",
+            ibge.temas_censo_agro,
+            [
+                "efetivo_rebanho",
+                "uso_terra",
+                "lavoura_temporaria",
+                "lavoura_permanente",
+                "preparo_solo",
+                "adubacao",
+                "calagem",
+                "agrotoxicos",
+                "praticas_agricolas",
+                "irrigacao",
+                "despesa_adubos",
+            ],
+        ),
+        (
+            "temas_censo_agro_historico",
+            ibge.temas_censo_agro_historico,
+            [
+                "estabelecimentos_area",
+                "uso_terra",
+                "pessoal_tratores",
+                "condicao_produtor",
+                "efetivo_animais",
+                "producao_animal",
+                "producao_vegetal",
+                "lavoura_permanente",
+                "lavoura_temporaria",
+            ],
+        ),
+        (
+            "temas_censo_agro_legado",
+            ibge.temas_censo_agro_legado,
+            [
+                "tecnologia",
+                "pessoal_ocupado",
+                "maquinas",
+                "producao_animal",
+                "valor_producao",
+                "financeiro",
+            ],
+        ),
+        (
+            "especies_silvicultura_area",
+            ibge.especies_silvicultura_area,
+            ["eucalipto", "pinus", "outras"],
+        ),
+        (
+            "produtos_extracao_vegetal",
+            ibge.produtos_extracao_vegetal,
+            [
+                "acai",
+                "castanha_caju",
+                "castanha_para",
+                "erva_mate",
+                "mangaba",
+                "palmito",
+                "pequi_fruto",
+                "pinhao",
+                "umbu",
+                "hevea_coagulado",
+                "hevea_liquido",
+                "carnauba_cera",
+                "carnauba_po",
+                "piacava",
+                "carvao",
+                "lenha",
+                "madeira_tora",
+                "babacu",
+                "copaiba",
+                "cumaru",
+                "pequi_amendoa",
+            ],
+        ),
+    ]
+    with helpers.collect_failures() as check:
+        for case, function, expected in cases:
+            with check(case):
+                assert await function() == expected
+        with check("produtos_silvicultura"):
+            produtos = await ibge.produtos_silvicultura()
+            assert len(produtos) == 14
+            assert {
+                "carvao",
+                "lenha",
+                "madeira_tora",
+                "madeira_celulose",
+                "acacia_negra",
+                "eucalipto_folha",
+                "resina",
+            } <= set(produtos)
+        with check("produtos_pam"):
+            assert {"soja", "milho", "arroz", "feijao", "trigo", "cafe"} <= set(
+                await ibge.produtos_pam()
+            )
+        with check("produtos_lspa"):
+            produtos = await ibge.produtos_lspa()
+            assert produtos[:6] == ["soja", "milho_1", "milho_2", "arroz", "feijao_1", "feijao_2"]
+            assert {"milho", "feijao"} <= set(produtos)

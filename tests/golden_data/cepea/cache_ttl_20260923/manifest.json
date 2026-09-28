@@ -1,0 +1,21 @@
+{
+ "fonte": "rodada 14 de conferência",
+ "arquivos": {
+  "soja_20260923.html": {
+   "origem": "cópia byte a byte da captura de conferência",
+   "url": "https://www.cepea.org.br/br/indicador/soja.aspx",
+   "fetched_at": "2026-09-23T23:05:25.093499+00:00",
+   "status": 200,
+   "last_modified": "Wed, 23 Sep 2026 23:04:25 GMT",
+   "bytes": 60161,
+   "sha256": "67b29b6decc241da6f3cfb14cb5e58ab2607434bef1f46ed90a0de0e0e1af109"
+  },
+  "cache_soja_20260922.json": {
+   "origem": "ttl_seed_original.duckdb (cópia do cache real da rodada 7)",
+   "origem_sha256": "a599966e1eb4d527d887583186d6272f254d08417cd5a3f30aa3482a15148834",
+   "consulta": "SELECT produto, praca, data, valor, unidade, fonte, metodologia, variacao_percentual, collected_at, parser_version, valor_usd, peso_medio_kg FROM indicadores WHERE produto = 'soja' ORDER BY data",
+   "linhas": 15,
+   "sha256": "b7e236fb8e42b8345507beca5fa3726d2127d909a04ad4a2b95464c3182068ab"
+  }
+ }
+}

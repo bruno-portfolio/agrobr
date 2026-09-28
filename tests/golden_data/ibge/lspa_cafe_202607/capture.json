@@ -1,0 +1,132 @@
+{
+  "39454": {
+    "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202607/c48/39454",
+    "rows": [
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "1006",
+        "MN": "Hectares",
+        "V": "1578432",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39454",
+        "D3N": "9 Café arábica",
+        "D4C": "109",
+        "D4N": "Área plantada"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "1006",
+        "MN": "Hectares",
+        "V": "1573935",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39454",
+        "D3N": "9 Café arábica",
+        "D4C": "216",
+        "D4N": "Área colhida"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "1017",
+        "MN": "Toneladas",
+        "V": "2663529",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39454",
+        "D3N": "9 Café arábica",
+        "D4C": "35",
+        "D4N": "Produção"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "33",
+        "MN": "Quilogramas por Hectare",
+        "V": "1692",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39454",
+        "D3N": "9 Café arábica",
+        "D4C": "36",
+        "D4N": "Rendimento médio"
+      }
+    ]
+  },
+  "39455": {
+    "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202607/c48/39455",
+    "rows": [
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "1006",
+        "MN": "Hectares",
+        "V": "427117",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39455",
+        "D3N": "10 Café canephora",
+        "D4C": "109",
+        "D4N": "Área plantada"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "1006",
+        "MN": "Hectares",
+        "V": "425803",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39455",
+        "D3N": "10 Café canephora",
+        "D4C": "216",
+        "D4N": "Área colhida"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "1017",
+        "MN": "Toneladas",
+        "V": "1295499",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39455",
+        "D3N": "10 Café canephora",
+        "D4C": "35",
+        "D4N": "Produção"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "33",
+        "MN": "Quilogramas por Hectare",
+        "V": "3042",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "202607",
+        "D2N": "julho 2026",
+        "D3C": "39455",
+        "D3N": "10 Café canephora",
+        "D4C": "36",
+        "D4N": "Rendimento médio"
+      }
+    ]
+  }
+}

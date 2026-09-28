@@ -1,35 +1,20 @@
 from __future__ import annotations
 
 import io
-import re
 from typing import Any
 
 import pandas as pd
 import structlog
+from pydantic import ValidationError
 
 from agrobr.exceptions import ParseError
-from agrobr.normalize.numeric import safe_float
+from agrobr.normalize.regions import remover_acentos
 
-from .models import COLUNAS_SAIDA
+from . import models
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
-
-_SUMMARY_RE = re.compile(
-    r"^(.+?)\s+"
-    r"(\S+)\s+"
-    r"(?:\d+\.?\d*)\s+"
-    r"(?:\d+\.?\d*)\s+"
-    r"(\d+)\s+"
-    r"([\d,.-]+|[-])\s+"
-    r"([\d,.-]+|[-])\s+"
-    r"([\d,.-]+|[-])\s+"
-    r"([\d,.-]+|[-])\s+"
-    r"([\d,.-]+)"
-)
-
-_SKIP_PREFIXES = ("Empresa", "G.M.", "Estimado", "(dias)")
+PARSER_VERSION = 2
 
 
 def _check_pdfplumber() -> Any:
@@ -39,70 +24,56 @@ def _check_pdfplumber() -> Any:
         return pdfplumber
     except ImportError:
         raise ImportError(
-            "pdfplumber is required for rio_verde. Install it with: pip install agrobr[pdf]"
+            "pdfplumber é necessário para rio_verde. Instale com: pip install agrobr[pdf]"
         ) from None
 
 
-def _parse_summary_line(line: str, safra: str) -> dict[str, Any] | None:
-    m = _SUMMARY_RE.match(line.strip())
-    if not m:
+def _summary_width(table: list[list[str | None]]) -> int | None:
+    header = remover_acentos(" ".join(cell or "" for cell in table[0])).lower()
+    if not all(
+        label in header for label in ("empresa", "cultivar", "g.m.", "ciclo", "produtividade")
+    ):
         return None
-
-    empresa_cultivar = m.group(1).strip()
-    parts = empresa_cultivar.rsplit(None, 1)
-    if len(parts) < 2:
-        return None
-
-    empresa = parts[0].strip()
-    cultivar = parts[1].strip()
-
-    return {
-        "safra": safra,
-        "empresa": empresa,
-        "cultivar": cultivar,
-        "grupo_maturacao": m.group(2),
-        "ciclo_dias": safe_float(m.group(3)),
-        "produtividade_1_epoca_sc_ha": safe_float(m.group(4)),
-        "produtividade_2_epoca_sc_ha": safe_float(m.group(5)),
-        "produtividade_3_epoca_sc_ha": safe_float(m.group(6)),
-        "produtividade_4_epoca_sc_ha": safe_float(m.group(7)),
-        "produtividade_media_sc_ha": safe_float(m.group(8)),
-    }
+    return 10 if "estimado" in header else 9
 
 
-def _extract_records(pages: list[str], safra: str) -> list[dict[str, Any]]:
-    records: list[dict[str, Any]] = []
-    in_summary = False
-    done = False
-
-    for text in pages:
-        if done:
-            break
-        for line in text.split("\n"):
-            lower = line.lower()
-            if not in_summary:
-                if (
-                    "competi" in lower
-                    and "soja" in lower
-                    and not lower.lstrip().startswith("resultado")
-                ):
-                    in_summary = True
-                    continue
-            else:
-                if lower.lstrip().startswith("resultado"):
-                    in_summary = False
-                    done = True
-                    break
-                if line.strip():
-                    if line.strip().startswith(_SKIP_PREFIXES):
-                        continue
-                    record = _parse_summary_line(line, safra)
-                    if record is not None:
-                        records.append(record)
-
-    if not records:
-        logger.warning("rio_verde_empty_extraction", safra=safra, pages=len(pages))
-
+def _parse_summary_table(table: list[list[str | None]], safra: str) -> list[dict[str, Any]]:
+    width = _summary_width(table)
+    if width is None:
+        return []
+    records = []
+    for row in table[3:]:
+        cells = [" ".join(cell.split()) for cell in row if cell and cell.strip()]
+        if not cells:
+            continue
+        try:
+            if len(cells) != width:
+                raise ValueError(f"esperadas {width} células, recebidas {len(cells)}")
+            yields = [
+                None if value == "-" else float(value.replace(",", ".")) for value in cells[-5:]
+            ]
+            average = yields[4]
+            if average is None:
+                raise ValueError("produtividade média ausente")
+            record = models.EnsaioSoja(
+                safra=safra,
+                empresa=cells[0],
+                cultivar=cells[1],
+                grupo_maturacao=cells[2],
+                ciclo_dias=int(cells[-6]),
+                produtividade_1_epoca_sc_ha=yields[0],
+                produtividade_2_epoca_sc_ha=yields[1],
+                produtividade_3_epoca_sc_ha=yields[2],
+                produtividade_4_epoca_sc_ha=yields[3],
+                produtividade_media_sc_ha=average,
+            )
+        except (ValueError, ValidationError) as exc:
+            raise ParseError(
+                source="rio_verde",
+                parser_version=PARSER_VERSION,
+                reason=f"Linha inválida na tabela de cultivares ({safra}): {cells}: {exc}",
+            ) from exc
+        records.append(record.model_dump())
     return records
 
 
@@ -111,17 +82,15 @@ def _records_to_df(records: list[dict[str, Any]], safra: str) -> pd.DataFrame:
         raise ParseError(
             source="rio_verde",
             parser_version=PARSER_VERSION,
-            reason=f"Nenhum registro extraído (safra {safra})",
+            reason=f"Nenhum registro extraído da tabela de cultivares (safra {safra})",
         )
-
-    df = pd.DataFrame(records, columns=COLUNAS_SAIDA)
+    df = pd.DataFrame(records, columns=models.COLUNAS_SAIDA)
     logger.info("rio_verde_parse_ok", safra=safra, records=len(df))
     return df
 
 
 def parse_ensaio_soja(data: bytes, safra: str) -> pd.DataFrame:
     pdfplumber = _check_pdfplumber()
-
     try:
         pdf = pdfplumber.open(io.BytesIO(data))
     except Exception as exc:
@@ -130,10 +99,16 @@ def parse_ensaio_soja(data: bytes, safra: str) -> pd.DataFrame:
             parser_version=PARSER_VERSION,
             reason=f"Falha ao abrir PDF: {exc}",
         ) from exc
-
+    records: list[dict[str, Any]] = []
     try:
-        pages = [page.extract_text() or "" for page in pdf.pages]
+        for page in pdf.pages:
+            text = remover_acentos(page.extract_text() or "").lower()
+            if records and "resultados" in text:
+                break
+            if not all(label in text for label in ("empresa", "cultivar", "ciclo", "media")):
+                continue
+            for table in page.extract_tables():
+                records.extend(_parse_summary_table(table, safra))
     finally:
         pdf.close()
-
-    return _records_to_df(_extract_records(pages, safra), safra)
+    return _records_to_df(records, safra)

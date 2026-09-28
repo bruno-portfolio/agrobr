@@ -1,7 +1,7 @@
 {
   "name": "ibge.censo_agro",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "1.2",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "ano",
@@ -12,9 +12,12 @@
   ],
   "required_columns": [
     "ano",
+    "localidade",
+    "localidade_cod",
     "tema",
     "categoria",
     "variavel",
+    "valor",
     "unidade",
     "fonte"
   ],
@@ -27,7 +30,8 @@
     "variavel": "str",
     "valor": "float",
     "unidade": "str",
-    "fonte": "str"
+    "fonte": "str",
+    "cod_municipio": "int"
   },
   "nullable": {
     "ano": false,
@@ -38,7 +42,8 @@
     "variavel": false,
     "valor": true,
     "unidade": false,
-    "fonte": false
+    "fonte": false,
+    "cod_municipio": true
   },
   "columns": [
     {
@@ -139,6 +144,17 @@
       "description": "",
       "min_value": null,
       "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+      "min_value": null,
+      "max_value": null
     }
   ],
   "constraints": {
@@ -150,6 +166,8 @@
     "Column names never change (additions only)",
     "'ano' is always a valid census year (>= 1995)",
     "Numeric values are always >= 0",
-    "'fonte' is always 'ibge_censo_agro'"
+    "'fonte' is always 'ibge_censo_agro'",
+    "'categoria' 'Total' is the source's own total row; it is not added to the other categories",
+    "Establishment counts ('estabelecimentos') do not add up across categories"
   ]
 }

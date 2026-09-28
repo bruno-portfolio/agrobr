@@ -1,0 +1,48 @@
+{
+  "files": {
+    "fase_regularizada.json": {
+      "sha256": "b9771a397ed92a05ee9e89f0c1f8f188a12cabdcc2eeb070f6754f7262e24beb",
+      "size_bytes": 3398
+    },
+    "geo.json": {
+      "sha256": "d36018bfbe83501c581120a1b211edf2627ec5a4d3f7ed0fe03205837d3ec9a9",
+      "size_bytes": 4653
+    },
+    "geo_default.json": {
+      "sha256": "0853d9fe54c5418dc542ca3b3a963c52dddde06a2a5f0454621b4619f2af7f35",
+      "size_bytes": 4653
+    },
+    "hits_after.xml": {
+      "sha256": "773fe90d504eb1f62b059fec9eefaf181de4a42d7fa4c18cd5cd5936062e7253",
+      "size_bytes": 1155
+    },
+    "hits_before.xml": {
+      "sha256": "773fe90d504eb1f62b059fec9eefaf181de4a42d7fa4c18cd5cd5936062e7253",
+      "size_bytes": 1155
+    },
+    "page1.json": {
+      "sha256": "a3c7cd3c9fc089387671e5985d5211302afcfb17913d9d6dd946e351f131916d",
+      "size_bytes": 2686
+    },
+    "page2.json": {
+      "sha256": "3faf982e668299940ef4692525e4d0a1746f5118eaa5f7ea23d84fe077bbc1ff",
+      "size_bytes": 4101
+    },
+    "receipt.json": {
+      "sha256": "d3e8a7ca99e22e05bfe8c677c83b6b2a823b1c2fb92416a8e7b1e03da4550e4a",
+      "size_bytes": 20021
+    },
+    "reference.json": {
+      "sha256": "ea32729e3ebdd495c7fd3e7e7c77fb91d1fb7cf209646b32200cf868a842fdac",
+      "size_bytes": 4742
+    },
+    "terminal.json": {
+      "sha256": "2d82b07889dc6991f4c7c2d4874ba229991cc3a2848c37045fac86deee3732ae",
+      "size_bytes": 792
+    },
+    "uf_mt.json": {
+      "sha256": "9938992a6754db7901ae2f783e707adf8da01b09d4fc8d8498b3b1682c3bb2a2",
+      "size_bytes": 1528
+    }
+  }
+}

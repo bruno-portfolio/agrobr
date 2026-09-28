@@ -72,6 +72,8 @@ UF_ESTADO: dict[str, str] = {
 
 COLUNAS_SAIDA_GEO = COLUNAS_SAIDA + ["geometry"]
 
+CHAVE = ["data", "hora_gmt", "lat", "lon", "satelite"]
+
 
 def estado_para_uf(estado: str) -> str:
     return UF_ESTADO.get(estado.strip().upper(), estado.strip())

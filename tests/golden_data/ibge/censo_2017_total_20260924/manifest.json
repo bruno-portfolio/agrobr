@@ -1,0 +1,23 @@
+{
+ "descricao": "Respostas oficiais da API de agregados v3 do IBGE (servicodados), outra ferramenta que não a API de valores do SIDRA usada pelo agrobr, para a tabela 6857 (irrigação, Censo Agropecuário 2017) nos municípios do DF: as 12 categorias do método de irrigação (Total e 11 métodos) e só o Total de Brasília. Corpos byte a byte da rodada 19 de conferência.",
+ "arquivos": [
+  {
+   "file": "api_v3_6857_df_municipio.json",
+   "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6857/periodos/2017/variaveis/2372%7C2373?localidades=N6%5BN3%5B53%5D%5D&classificacao=12604%5Ball%5D",
+   "fetched_at": "2026-09-24T03:41:50.756075+00:00",
+   "status": 200,
+   "bytes": 14046,
+   "sha256": "3ac2a0a439d1f617552d854b95ded2d7ee9ae3c8910560f3e703e9514ac15659",
+   "evidencia": "amostra da conferência (fora do repositório)"
+  },
+  {
+   "file": "api_v3_6857_brasilia_total.json",
+   "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6857/periodos/2017/variaveis/2372%7C2373?localidades=N6%5B5300108%5D&classificacao=12604%5B118477%5D",
+   "fetched_at": "2026-09-24T04:06:09.469688+00:00",
+   "status": 200,
+   "bytes": 1329,
+   "sha256": "adbe10442d70b18e3fc8bdd11dcda2ad2c4108bee958c7af306c4b07054b7c38",
+   "evidencia": "repetição da conferência (fora do repositório)"
+  }
+ ]
+}

@@ -1,0 +1,121 @@
+{
+  "capture_session": "astra_20260905 / bloco10g_20260905",
+  "source": "IBGE",
+  "method": "Official public responses preserved without altering data; LSPA JSON contains request parameters and captured client rows.",
+  "files": [
+    {
+      "file": "Brasil_Tab_10.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Brasil/Tab_10.zip",
+      "sha256": "cd39f31bce27e08d56a42aa7e62df0a43186a00b85ef21fb5d9ab73a09c30b58",
+      "bytes": 12127
+    },
+    {
+      "file": "Brasil_Tab_11.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Brasil/Tab_11.zip",
+      "sha256": "5869bd8fa0f97b7e1dc8a3935d702eb3b8a8ccd3925503b9e8e762c460d19b1a",
+      "bytes": 20897
+    },
+    {
+      "file": "Brasil_Tab_12.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Brasil/Tab_12.zip",
+      "sha256": "00344111bb610d9c22b163b71547c8c7132b31544f274cf36cc638287a2a61d4",
+      "bytes": 13784
+    },
+    {
+      "file": "Brasil_Tab_2.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Brasil/Tab_2.zip",
+      "sha256": "265aac2d7e9941fe9168bcaba3bbe4d6e30224c06ee49bd7b3dc2ac66f28ad5a",
+      "bytes": 11665
+    },
+    {
+      "file": "Brasil_Tab_5.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Brasil/Tab_5.zip",
+      "sha256": "ef2d1dac0e621ab2060ec9d9ee5890d7924f33e5b14318fe6366711586ee390d",
+      "bytes": 8524
+    },
+    {
+      "file": "Brasil_Tab_6.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Brasil/Tab_6.zip",
+      "sha256": "183ce06b56f314a1dc1865a0c203ac8cb447adc50db099409de6ce64dc6da121",
+      "bytes": 11392
+    },
+    {
+      "file": "Brasil_Tab_7.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Brasil/Tab_7.zip",
+      "sha256": "4ce0d4634cdc6210d909fdb79a49a206de1a836025f12f35e4b1f39c431c55d9",
+      "bytes": 5009
+    },
+    {
+      "file": "Distrito_Federal_Tab_11Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Distrito_Federal/Tab_11Mn.zip",
+      "sha256": "cef28ce4104d2cfa430f5ce7fcc9d422d863d1ebb24ad2ac8970cf872ba3ff66",
+      "bytes": 2394
+    },
+    {
+      "file": "Goias_Tab_10Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Goias/Tab_10Mn.zip",
+      "sha256": "cc0768a82c3971c6c0d97b72a936fe50ac1845013202ed9768c50fbfb34673a8",
+      "bytes": 15109
+    },
+    {
+      "file": "Goias_Tab_11Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Goias/Tab_11Mn.zip",
+      "sha256": "0ec7797380a1dfac184008936f05dbe9f1ecc7ebcf0ddaca4dfbde29f53055ab",
+      "bytes": 13475
+    },
+    {
+      "file": "Goias_Tab_3Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Goias/Tab_3Mn.zip",
+      "sha256": "e37fbfeebac86bb7b5aab9796d021a28c18429329e85659c1812356a70d6fe28",
+      "bytes": 7759
+    },
+    {
+      "file": "Goias_Tab_6Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Goias/Tab_6Mn.zip",
+      "sha256": "2581f6800483f2abbc4563e72a1c0a9b462683222b85f20c05fa89872242488a",
+      "bytes": 7445
+    },
+    {
+      "file": "Goias_Tab_7Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Goias/Tab_7Mn.zip",
+      "sha256": "5d165ec4ae4313663e67472078e72cc41ab1abd4fe8a2d6aec9d353d42487f0f",
+      "bytes": 6485
+    },
+    {
+      "file": "Goias_Tab_9Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Goias/Tab_9Mn.zip",
+      "sha256": "3cc4222b8478b6a3a4867979f6f8a4349e20b1c25083b7f53072fa9a7d3c2f93",
+      "bytes": 5509
+    },
+    {
+      "file": "Sao_Paulo_Tab_11Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Sao_Paulo/Tab_11Mn.zip",
+      "sha256": "26eb27c3bfb601b17834f996489d36ae4f9e7662057ee57e6e180c58586257d8",
+      "bytes": 32419
+    },
+    {
+      "file": "Acre_tab_3mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Acre/tab_3mn.zip",
+      "sha256": "fac7adddaf8a76bd0686a4cd103d49f0e19722db5bb5759359d4cbbfcd9097e7",
+      "bytes": 3481
+    },
+    {
+      "file": "Maranhao_Tab_3Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Maranhao/Tab_3Mn.zip",
+      "sha256": "d0101f9ce01534fe344295f8231f20602cad46f4301f7a651897714495cfe847",
+      "bytes": 9435
+    },
+    {
+      "file": "Mato_Grosso_Tab_3Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Mato_Grosso/Tab_3Mn.zip",
+      "sha256": "23f5e3cc7edc73f798a9e3cad3878dd0ff37d5b3a357953d53ec4ba8bf2979f0",
+      "bytes": 8894
+    },
+    {
+      "file": "Sergipe_Tab_3Mn.zip",
+      "url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Sergipe/Tab_3Mn.zip",
+      "sha256": "1e2c8e6110ce00bc08bda3d7bcf2ce4977ec14929404edcfd068083fe2225a99",
+      "bytes": 8334
+    }
+  ]
+}

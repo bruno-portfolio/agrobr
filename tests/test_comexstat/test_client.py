@@ -1,143 +1,199 @@
-"""Testes de resiliência HTTP para agrobr.comexstat.client."""
-
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+import asyncio
+import hashlib
+from collections.abc import AsyncIterator
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
 
+from agrobr import constants
 from agrobr.comexstat import client
-from agrobr.exceptions import SourceUnavailableError
-from tests.helpers import (
-    RETRY_SLEEP,
-    make_mock_async_client,
-    make_mock_response,
-    make_sleep_tracker,
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
+from agrobr.http import rate_limiter
+
+
+@pytest.fixture
+def transport(monkeypatch):
+    constructor = httpx.AsyncClient
+    calls = []
+    monkeypatch.delenv("SSL_CERT_FILE", raising=False)
+    monkeypatch.delenv("SSL_CERT_DIR", raising=False)
+    monkeypatch.setattr(client.retry.asyncio, "sleep", AsyncMock())
+    monkeypatch.setattr(rate_limiter, "_async_sleep", AsyncMock())
+
+    def install(handler):
+        def observe(request):
+            calls.append(request)
+            return handler(request)
+
+        def factory(**kwargs):
+            return constructor(transport=httpx.MockTransport(observe), **kwargs)
+
+        monkeypatch.setattr(client.httpx, "AsyncClient", factory)
+        return calls
+
+    return install
+
+
+def response(body=b"CODE;TEXT\n01;literal\n", status=200, headers=None):
+    return httpx.Response(status, headers=headers, stream=httpx.ByteStream(body))
+
+
+@pytest.mark.asyncio
+async def test_seekable_complete_and_details_after_close(transport):
+    body = b'CODE;TEXT\n01;"a\nb"\n'
+    calls = transport(lambda _: response(body, headers={"content-length": str(len(body))}))
+    async with client.open_csv(fluxo="exportacao", ano=2026) as resource:
+        assert resource.file.tell() == 0
+        assert resource.file.read() == body
+        assert resource.sha256 == hashlib.sha256(body).hexdigest()
+        assert resource.size_bytes == len(body)
+        assert resource.complete and resource.receipts[0].closed
+        assert resource.fetched_at.utcoffset().total_seconds() == 0
+    assert resource.file.closed
+    details = resource.details()
+    assert details["spool_closed"] and details["client_closed"]
+    assert details["receipts"][0]["saved_sha256"] == resource.sha256
+    details["receipts"][0]["headers"].append(["fake", "value"])
+    assert ["fake", "value"] not in resource.details()["receipts"][0]["headers"]
+    assert len(calls) == 1 and calls[0].headers["accept-encoding"] == "identity"
+    assert str(calls[0].url).endswith("/EXP_2026.csv")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", [403, 404, 500])
+async def test_http_failure_does_not_yield(transport, status):
+    calls = transport(lambda _: response(b"error", status))
+    with pytest.raises(SourceUnavailableError) as error:
+        async with client.open_csv(fluxo="exportacao", ano=2026):
+            pytest.fail("failure yielded a resource")
+    detail = error.value.comexstat_acquisition
+    assert len(calls) == (3 if status == 500 else 1)
+    assert detail["receipts"][-1]["status"] == status
+    assert detail["client_closed"] and detail["spool_closed"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "location",
+    [
+        "https://evil.example/x.csv",
+        "http://balanca.mdic.gov.br/x.csv",
+        "https://user@balanca.mdic.gov.br/x.csv",
+    ],
 )
+async def test_redirect_rejected_before_foreign_send(transport, location):
+    calls = transport(lambda _: response(b"", 302, {"location": location}))
+    with pytest.raises(ValueError) as error:
+        async with client.open_dictionary("vias"):
+            pytest.fail("unsafe redirect yielded")
+    assert len(calls) == 1
+    assert error.value.comexstat_acquisition["receipts"][0]["closed"]
 
 
-class TestComexstatTimeout:
-    @pytest.mark.asyncio
-    async def test_timeout_retried_raises_source_unavailable(self):
-        mock_client = make_mock_async_client()
-        mock_client.get.side_effect = httpx.TimeoutException("read timeout")
+@pytest.mark.asyncio
+async def test_same_host_redirect_and_physical_limit(transport, monkeypatch):
+    index = 0
 
-        with (
-            patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client.download_csv("https://test.gov.br/EXP_2024.csv")
+    def handler(_):
+        nonlocal index
+        index += 1
+        return response(b"", 302, {"location": f"/redirect_{index}.csv"})
 
-        assert mock_client.get.call_count == 3
-
-
-class TestComexstatHTTPErrors:
-    @pytest.mark.asyncio
-    async def test_http_500_retries_then_fails(self):
-        resp_500 = make_mock_response(
-            500, text="col1;col2\nval1;val2", url="https://test.gov.br/EXP_2024.csv"
-        )
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_500)
-
-        with (
-            patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client.download_csv("https://test.gov.br/EXP_2024.csv")
-
-        assert mock_client.get.call_count > 1
-
-    @pytest.mark.asyncio
-    async def test_http_403_raises_via_raise_for_status(self):
-        resp_403 = make_mock_response(
-            403, text="col1;col2\nval1;val2", url="https://test.gov.br/EXP_2024.csv"
-        )
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_403)
-
-        with (
-            patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(httpx.HTTPStatusError),
-        ):
-            await client.download_csv("https://test.gov.br/EXP_2024.csv")
-
-    @pytest.mark.asyncio
-    async def test_http_429_retries_then_succeeds(self):
-        ok_text = (
-            "CO_ANO;CO_MES;CO_NCM;CO_PAIS;SG_UF;KG_LIQUIDO;VL_FOB\n"
-            + "2024;01;12019010;160;SP;1000;5000\n" * 5
-        )
-        resp_429 = make_mock_response(
-            429, text="col1;col2\nval1;val2", url="https://test.gov.br/EXP_2024.csv"
-        )
-        resp_ok = make_mock_response(200, text=ok_text, url="https://test.gov.br/EXP_2024.csv")
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(side_effect=[resp_429, resp_429, resp_ok])
-
-        with (
-            patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-        ):
-            result = await client.download_csv("https://test.gov.br/EXP_2024.csv")
-
-        assert result == ok_text
+    calls = transport(handler)
+    monkeypatch.setattr(constants, "COMEXSTAT_MAX_PHYSICAL_REQUESTS", 3)
+    with pytest.raises(ResourceLimitError, match="envios físicos") as error:
+        async with client.open_dictionary("vias"):
+            pytest.fail("unbounded redirect")
+    assert len(calls) == 3 and len(error.value.comexstat_acquisition["receipts"]) == 3
 
 
-class TestComexstatEmptyResponse:
-    @pytest.mark.asyncio
-    async def test_empty_body_raises_source_unavailable(self):
-        resp = make_mock_response(200, text="", url="https://test.gov.br/EXP_2024.csv")
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "fluxo,ano", [("bad", 2026), ("exportacao", True), ("importacao", 1996), ("exportacao", "2026")]
+)
+async def test_guards_before_tls_tempfile_http(monkeypatch, fluxo, ano):
+    def forbidden():
+        pytest.fail("TLS created before guard")
 
-        with (
-            patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="too small"),
-        ):
-            await client.download_csv("https://test.gov.br/EXP_2024.csv")
-
-
-class TestComexstatRetryBackoff:
-    @pytest.mark.asyncio
-    async def test_backoff_exponential(self):
-        resp_500 = make_mock_response(
-            500, text="col1;col2\nval1;val2", url="https://test.gov.br/EXP_2024.csv"
-        )
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_500)
-
-        sleep_calls, track_sleep = make_sleep_tracker()
-
-        with (
-            patch("agrobr.comexstat.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, side_effect=track_sleep),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client.download_csv("https://test.gov.br/EXP_2024.csv")
-
-        assert len(sleep_calls) >= 2
-        for i in range(1, len(sleep_calls)):
-            assert sleep_calls[i] > sleep_calls[i - 1]
+    monkeypatch.setattr(client._tls, "build_context", forbidden)
+    with pytest.raises(ValueError):
+        async with client.open_csv(fluxo=fluxo, ano=ano):
+            pytest.fail("invalid query yielded")
 
 
-class TestComexstatFetchHelpers:
-    @pytest.mark.asyncio
-    async def test_fetch_exportacao_builds_correct_url(self):
-        with patch("agrobr.comexstat.client.download_csv", new_callable=AsyncMock) as mock:
-            mock.return_value = "data"
-            await client.fetch_exportacao_csv(2024)
-            mock.assert_called_once()
-            url_arg = mock.call_args[0][0]
-            assert "EXP_2024.csv" in url_arg
+class FailingStream(httpx.AsyncByteStream):
+    def __init__(self, *, close_failure=False, cancel=False):
+        self.close_failure = close_failure
+        self.cancel = cancel
 
-    @pytest.mark.asyncio
-    async def test_fetch_importacao_builds_correct_url(self):
-        with patch("agrobr.comexstat.client.download_csv", new_callable=AsyncMock) as mock:
-            mock.return_value = "data"
-            await client.fetch_importacao_csv(2024)
-            url_arg = mock.call_args[0][0]
-            assert "IMP_2024.csv" in url_arg
+    async def __aiter__(self) -> AsyncIterator[bytes]:
+        yield b"x" * constants.COMEXSTAT_CHUNK_BYTES
+        if self.cancel:
+            raise asyncio.CancelledError("cancel-primary")
+        raise httpx.ReadError("read-primary")
+
+    async def aclose(self):
+        if self.close_failure:
+            raise httpx.CloseError("close-secondary")
+
+
+@pytest.mark.asyncio
+async def test_partial_read_retries_and_preserves_digests(transport):
+    calls = transport(lambda _: httpx.Response(200, stream=FailingStream()))
+    with pytest.raises(SourceUnavailableError) as error:
+        async with client.open_dictionary("vias"):
+            pytest.fail("partial yielded")
+    detail = error.value.comexstat_acquisition
+    assert len(calls) == 3
+    assert detail["transfer_bytes"] == 3 * constants.COMEXSTAT_CHUNK_BYTES
+    assert all(
+        not item["complete_body"] and item["size_bytes"] == constants.COMEXSTAT_CHUNK_BYTES
+        for item in detail["receipts"]
+    )
+
+
+@pytest.mark.asyncio
+async def test_read_and_close_failure_preserve_primary_without_retry(transport):
+    calls = transport(lambda _: httpx.Response(200, stream=FailingStream(close_failure=True)))
+    with pytest.raises(SourceUnavailableError) as error:
+        async with client.open_dictionary("vias"):
+            pytest.fail("failure yielded")
+    assert len(calls) == 1 and isinstance(error.value.__cause__, httpx.ReadError)
+    receipt = error.value.comexstat_acquisition["receipts"][0]
+    assert receipt["error_message"] == "read-primary"
+    assert receipt["close_error_message"] == "close-secondary"
+    assert not receipt["closed"] and receipt["size_bytes"] == constants.COMEXSTAT_CHUNK_BYTES
+
+
+@pytest.mark.asyncio
+async def test_parser_error_is_preserved_and_receipts_survive(transport):
+    transport(lambda _: response())
+    primary = ValueError("parser-sentinel")
+    with pytest.raises(ValueError) as error:
+        async with client.open_dictionary("vias"):
+            raise primary
+    assert error.value is primary
+    assert primary.comexstat_acquisition["complete"]
+    assert primary.comexstat_acquisition["spool_closed"]
+
+
+@pytest.mark.asyncio
+async def test_response_close_error_after_body_is_not_retried(transport):
+    class CloseOnly(httpx.AsyncByteStream):
+        async def __aiter__(self) -> AsyncIterator[bytes]:
+            yield b"A;B\n1;2\n"
+
+        async def aclose(self):
+            raise httpx.CloseError("response-close")
+
+    calls = transport(lambda _: httpx.Response(200, stream=CloseOnly()))
+    with pytest.raises(SourceUnavailableError) as error:
+        async with client.open_dictionary("vias"):
+            pytest.fail("response close failure yielded")
+    assert len(calls) == 1
+    receipt = error.value.comexstat_acquisition["receipts"][0]
+    assert receipt["received_bytes"] == receipt["size_bytes"] == 8
+    assert receipt["close_error_message"] == "response-close" and not receipt["closed"]

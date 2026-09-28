@@ -5,6 +5,7 @@ import structlog
 
 from agrobr import constants
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.retry import RetriableStatusError, retry_async, should_retry_status
 from agrobr.http.settings import get_timeout
@@ -46,9 +47,10 @@ def _get_produto_url(produto: str) -> str:
 async def fetch_indicador_page(produto: str) -> str:
     warn_once(
         "noticias_agricolas",
-        "Notícias Agrícolas: fallback temporário do CEPEA, pendente "
-        "deprecação. Dados originários do CEPEA (CC BY-NC 4.0). "
-        "Redistribuição sujeita a restrições.",
+        "Notícias Agrícolas (classificação restrito): fallback temporário do CEPEA, pendente "
+        "deprecação. O site não publica termos de uso: todos os direitos reservados "
+        "(Lei 9.610/98), sem permissão de republicação. Os dados vêm do CEPEA (CC BY-NC 4.0). "
+        "Veja docs/licenses.md.",
     )
 
     url = _get_produto_url(produto)
@@ -74,7 +76,7 @@ async def fetch_indicador_page(produto: str) -> str:
                     response=response,
                 )
 
-            response.raise_for_status()
+            responses.raise_for_status(response, source="noticias_agricolas")
             return response
 
     try:

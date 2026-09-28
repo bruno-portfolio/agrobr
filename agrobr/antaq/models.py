@@ -78,10 +78,9 @@ RENAME_FINAL: dict[str, str] = {
     "TEU": "teu",
 }
 
-PARSER_VERSION = 1
+PARSER_VERSION = 2
 
 MIN_ANO = 2010
-MAX_ANO_DEFAULT = 2025
 
 
 def resolve_tipo_navegacao(valor: str | None) -> str | None:

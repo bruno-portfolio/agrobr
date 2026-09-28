@@ -58,6 +58,9 @@ jobs:
 
               check_results = [r for r, _, _, _ in results]
               print(format_results(check_results))
+              for r in check_results:
+                  if r.status.value == 'not_verified':
+                      print(f'::warning title=Não verificado::{r.source.value}: {r.message}')
 
               report = {
                   'checks': [
@@ -116,7 +119,7 @@ jobs:
 
           asyncio.run(main())
           "
-          echo "overall_status=$(python -c "import json; r=json.load(open('health_report.json')); fs=[c for c in r['checks'] if c['status']=='failed']; print('error' if len(fs)==len(r['checks']) else ('degraded' if fs else 'healthy'))")" >> $GITHUB_OUTPUT
+          echo "overall_status=$(python -c "import json; r=json.load(open('health_report.json')); fs=[c for c in r['checks'] if c['status']=='failed']; print('error' if len(fs)==len(r['checks']) else ('degraded' if fs else 'healthy'))")" >> "$GITHUB_OUTPUT"
 
       - name: Save health DB cache
         if: always()

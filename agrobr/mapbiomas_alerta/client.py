@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import os
+from dataclasses import dataclass, field
 from typing import Any
 
 import httpx
 import structlog
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -18,7 +19,9 @@ from .models import (
     ALERTS_QUERY,
     GRAPHQL_URL,
     LAST_PUBLICATION_QUERY,
+    PAGE_SIZE,
 )
+from .parser import PARSER_VERSION
 
 logger = structlog.get_logger()
 
@@ -26,6 +29,14 @@ TIMEOUT = get_timeout(read=60.0)
 
 _THROTTLE_AFTER_PAGE = 5
 _THROTTLE_DELAY = 3.0
+
+
+@dataclass
+class Coleta:
+    registros: list[dict[str, Any]] = field(default_factory=list)
+    total_anunciado: int = 0
+    corpos: list[bytes] = field(default_factory=list)
+    avisos: list[str] = field(default_factory=list)
 
 
 def _get_token(token: str | None = None) -> str:
@@ -47,6 +58,7 @@ async def _graphql_request(
     *,
     token: str | None = None,
     client: httpx.AsyncClient | None = None,
+    corpos: list[bytes] | None = None,
 ) -> dict[str, Any]:
     headers = {**UserAgentRotator.get_bot_headers()}
     if token:
@@ -58,7 +70,9 @@ async def _graphql_request(
             lambda: http.post(GRAPHQL_URL, json=payload, headers=headers),
             source="mapbiomas_alerta",
         )
-        response.raise_for_status()
+        responses.raise_for_status(response, source="mapbiomas_alerta")
+        if corpos is not None:
+            corpos.append(response.content)
         data = responses.parse_json_response(
             response,
             source="mapbiomas_alerta",
@@ -81,6 +95,24 @@ async def _graphql_request(
         return await _do(http)
 
 
+def _falha(motivo: str) -> ParseError:
+    return ParseError(source="mapbiomas_alerta", parser_version=PARSER_VERSION, reason=motivo)
+
+
+def _pagina(data: dict[str, Any]) -> tuple[list[dict[str, Any]], int, int]:
+    alerts = data.get("alerts")
+    metadata = alerts.get("metadata") if isinstance(alerts, dict) else None
+    collection = alerts.get("collection") if isinstance(alerts, dict) else None
+    total = metadata.get("totalCount") if isinstance(metadata, dict) else None
+    paginas = metadata.get("totalPages") if isinstance(metadata, dict) else None
+    if not isinstance(collection, list) or type(total) is not int or type(paginas) is not int:
+        raise _falha(
+            "Resposta sem alerts.collection ou sem metadata.totalCount/totalPages inteiros; "
+            "o layout da API mudou"
+        )
+    return collection, total, paginas
+
+
 async def fetch_alertas(
     *,
     token: str,
@@ -88,14 +120,33 @@ async def fetch_alertas(
     end_date: str | None = None,
     sources: list[str] | None = None,
     bounding_box: list[float] | None = None,
-    limit: int = 100,
-    max_pages: int = 50,
-) -> tuple[list[dict[str, Any]], str]:
-    records: list[dict[str, Any]] = []
+    max_registros: int | None = None,
+    date_type: str = "DetectedAt",
+) -> tuple[Coleta, str]:
+    """Pagina a coleção em ordem de código e a reconcilia com o ``totalCount`` anunciado.
+
+    Returns:
+        A coleta (registros, total anunciado, corpo de cada página e avisos) e a URL.
+
+    Raises:
+        ParseError: código repetido entre páginas ou menos alertas que o anunciado.
+    """
+    tamanho = PAGE_SIZE if max_registros is None else min(PAGE_SIZE, max_registros)
+    coleta = Coleta()
+    codigos: set[Any] = set()
+    anunciado: int | None = None
 
     async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as http:
-        for page_num in range(1, max_pages + 1):
-            variables: dict[str, Any] = {"limit": limit, "page": page_num}
+        page_num = 0
+        while True:
+            page_num += 1
+            variables: dict[str, Any] = {
+                "limit": tamanho,
+                "page": page_num,
+                "sortField": "ALERT_CODE",
+                "sortDirection": "ASC",
+                "dateType": date_type,
+            }
             if start_date:
                 variables["startDate"] = start_date
             if end_date:
@@ -113,25 +164,59 @@ async def fetch_alertas(
                 variables,
                 token=token,
                 client=http,
+                corpos=coleta.corpos,
             )
-            alerts_data = data.get("alerts", {})
-            collection = alerts_data.get("collection", [])
-            if not collection:
-                break
-            records.extend(collection)
-
-            metadata = alerts_data.get("metadata", {})
-            total_pages = metadata.get("totalPages", 1)
+            collection, total, total_pages = _pagina(data)
+            if anunciado is not None and total != anunciado:
+                coleta.avisos.append(
+                    f"totalCount mudou de {anunciado} para {total} durante a paginação; a "
+                    "plataforma pode ter publicado alertas durante a consulta"
+                )
+                logger.warning(
+                    "mapbiomas_alerta_count_changed", previous_total=anunciado, observed_total=total
+                )
+            anunciado = total
+            for registro in collection:
+                codigo = registro.get("alertCode")
+                if codigo in codigos:
+                    raise _falha(
+                        f"Alerta {codigo} repetido na paginação; a plataforma pode ter sido "
+                        "atualizada durante a consulta, repita a consulta"
+                    )
+                codigos.add(codigo)
+            coleta.registros.extend(collection)
             logger.debug(
                 "mapbiomas_alerta_page",
                 page=page_num,
                 total_pages=total_pages,
                 records=len(collection),
             )
-            if page_num >= total_pages:
+            if (
+                not collection
+                or page_num >= total_pages
+                or (max_registros is not None and len(coleta.registros) >= max_registros)
+            ):
                 break
 
-    return records, GRAPHQL_URL
+    coleta.total_anunciado = anunciado or 0
+    esperado = (
+        coleta.total_anunciado
+        if max_registros is None
+        else min(coleta.total_anunciado, max_registros)
+    )
+    if len(coleta.registros) < esperado:
+        raise _falha(
+            f"Coleção incompleta: {len(coleta.registros)} de {esperado} alertas anunciados "
+            f"(totalCount {coleta.total_anunciado}); repita a consulta"
+        )
+    if max_registros is not None:
+        del coleta.registros[max_registros:]
+        if coleta.total_anunciado > max_registros:
+            coleta.avisos.append(
+                f"max_registros={max_registros}: {max_registros} de {coleta.total_anunciado} "
+                "alertas, os de menor código; restrinja o período ou use max_registros=None"
+            )
+    return coleta, GRAPHQL_URL
 
 
 async def fetch_alert_date_range() -> tuple[dict[str, Any], str]:

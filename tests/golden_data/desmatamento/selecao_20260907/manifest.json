@@ -1,0 +1,93 @@
+{
+  "description": "Unmodified official JSON response bodies, copied after capture; no network during fixture creation",
+  "captures": [
+    {
+      "file": "prodes_amazonia.json",
+      "biome": "Amazônia",
+      "product": "PRODES",
+      "capture_qualification": "Original seed acquisition passed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 3144,
+      "sha256": "4a230c87097d8f12edf12a42bd508b9a4e54464c34e6b70cd430c4c08f1b0af0",
+      "source": "request_001.body",
+      "features": 6
+    },
+    {
+      "file": "prodes_cerrado.json",
+      "biome": "Cerrado",
+      "product": "PRODES",
+      "capture_qualification": "Original seed acquisition passed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 3277,
+      "sha256": "227e5748d48fcb00f94835fd156a20a93ec42640110f598ac4d081cdc1d591de",
+      "source": "request_002.body",
+      "features": 6
+    },
+    {
+      "file": "deter_amazonia.json",
+      "biome": "Amazônia",
+      "product": "DETER",
+      "capture_qualification": "Original seed acquisition passed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 2630,
+      "sha256": "33743b2d0570c7a2111cfc2a81fd4035a5e4189c7ab4c79db959d8628767d8e1",
+      "source": "request_003.body",
+      "features": 6
+    },
+    {
+      "file": "deter_cerrado.json",
+      "biome": "Cerrado",
+      "product": "DETER",
+      "capture_qualification": "Original seed acquisition passed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 2930,
+      "sha256": "2e09d139a78b4bf9488d657cd4ceabb2717ae973282c7041a315143cac58fa11",
+      "source": "request_004.body",
+      "features": 6
+    },
+    {
+      "file": "prodes_caatinga.json",
+      "biome": "Caatinga",
+      "product": "PRODES",
+      "capture_qualification": "Original seed acquisition passed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 3176,
+      "sha256": "ee1ae99ea7fc8d7b2c2bc3a9e18b82bd300ee5612459128f46dcab71641a4384",
+      "source": "request_001.body",
+      "features": 6
+    },
+    {
+      "file": "prodes_mata_atlantica.json",
+      "biome": "Mata Atlântica",
+      "product": "PRODES",
+      "capture_qualification": "Original seed acquisition passed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 3247,
+      "sha256": "f9b4a4db61447f5c045cffe0417df75ab4d93278d25ff859720fcc99d6b1fd0b",
+      "source": "request_002.body",
+      "features": 6
+    },
+    {
+      "file": "prodes_pantanal.json",
+      "biome": "Pantanal",
+      "product": "PRODES",
+      "capture_qualification": "Original seed acquisition passed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 3145,
+      "sha256": "55cd7a67df6ecb9f0d931e96d638c3c571d51da688c69ad0f653d8613c6daec6",
+      "source": "request_003.body",
+      "features": 6
+    },
+    {
+      "file": "prodes_pampa.json",
+      "biome": "Pampa",
+      "product": "PRODES",
+      "capture_qualification": "Original capture failed geometry projection guard; raw body retained and independently analyzed",
+      "selection": "fid/gid IS NOT NULL; count6; candidate ascending; biased seed, not complete population",
+      "size_bytes": 80245,
+      "sha256": "54ad8d72a0e2f790c93e71107049420aa65f17b20fe8404d3b27b431bb9e3d59",
+      "source": "request_004.body",
+      "features": 6
+    }
+  ]
+}

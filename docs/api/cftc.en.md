@@ -35,8 +35,8 @@ async def cot(
 
 DataFrame with columns: `data`, `commodity`, `contrato`, `codigo_cftc`, `open_interest`,
 `managed_money_long`, `managed_money_short`, `managed_money_spread`, `managed_money_net`,
-`producer_long`, `producer_short`, `swap_long`, `swap_short`, `other_long`, `other_short`,
-`nonreportable_long`, `nonreportable_short`, `change_managed_money_long`,
+`producer_long`, `producer_short`, `swap_long`, `swap_short`, `swap_spread`, `other_long`, `other_short`,
+`other_spread`, `nonreportable_long`, `nonreportable_short`, `change_managed_money_long`,
 `change_managed_money_short`, `change_open_interest`.
 
 Positions in number of contracts (int64). The `change_*` columns are nullable (Int64) —
@@ -86,7 +86,7 @@ df = await datasets.posicionamento_fundos("milho")
 df = await datasets.posicionamento_fundos("soja", start="2026-01-01")
 ```
 
-Contract `cftc.cot` v1.0 — primary key `data` + `codigo_cftc`, 20 validated columns.
+Contract `cftc.cot` v1.1 — primary key `data` + `codigo_cftc`, 22 validated columns (the 2 spread columns, new in 1.1, are optional).
 
 ## Synchronous Version
 

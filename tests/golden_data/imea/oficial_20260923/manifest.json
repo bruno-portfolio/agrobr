@@ -1,0 +1,2084 @@
+{
+ "fonte": "IMEA — API pública (api1.imea.com.br)",
+ "arquivos": [
+  {
+   "arquivo": "cadeias.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias",
+   "capturado_em": "2026-09-23T21:45:49.963497+00:00",
+   "bytes": 3613,
+   "sha256": "f845760f0a63db04dcbbf0deffb44f21116a277accf0ed36244ac328473e8588",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_1.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/1/indicadores",
+   "capturado_em": "2026-09-23T21:46:50.544972+00:00",
+   "bytes": 31511,
+   "sha256": "f6b2677a0a10c53ec802ac1b7c9f6b374bb6784fde780784dc7608588e53fea3",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_2.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/2/indicadores",
+   "capturado_em": "2026-09-23T21:46:50.689832+00:00",
+   "bytes": 3221,
+   "sha256": "1a97845e64623fd2163a57da37648c287b8db6343302f8971df2b8f28395a946",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_3.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/3/indicadores",
+   "capturado_em": "2026-09-23T21:46:50.986942+00:00",
+   "bytes": 57350,
+   "sha256": "32ca567a8767d8b0e693f36cda035a33c5adc057aada6b29e7b7b64fd7b2f720",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_4.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/4/indicadores",
+   "capturado_em": "2026-09-23T21:46:18.632365+00:00",
+   "bytes": 57275,
+   "sha256": "a6afc8c40b633c4973e1d0c9525db1ff83f31e3ece49b270bd3eb8d479a32bf0",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_5.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/5/indicadores",
+   "capturado_em": "2026-09-23T21:46:51.130767+00:00",
+   "bytes": 312,
+   "sha256": "9a87d93c80d79f43fb2cd923353d208ae8e94c94f1bd2646ed5e837b0faca02e",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_7.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/7/indicadores",
+   "capturado_em": "2026-09-23T21:46:51.275983+00:00",
+   "bytes": 586,
+   "sha256": "e983c26a66d09f826abd74f9edb2d301de12c05c07cd02aa494b6b0de4ab8696",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_8.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/8/indicadores",
+   "capturado_em": "2026-09-23T21:46:51.420879+00:00",
+   "bytes": 838,
+   "sha256": "ad8d0054bb67bcdfe0124a8131e55c1475648eed17b4e316345768a7de072d8b",
+   "transformacao": null
+  },
+  {
+   "arquivo": "indicadores_10.json",
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/10/indicadores",
+   "capturado_em": "2026-09-23T21:46:51.567026+00:00",
+   "bytes": 5442,
+   "sha256": "763a0a399212d7e1aff2f8d6872297e5215c9cd845047b7bcbfb21da275e9696",
+   "transformacao": null
+  }
+ ],
+ "recortes": {
+  "cotacoes_1.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/1/cotacoes",
+   "capturado_em": "2026-09-23T21:45:46.904348+00:00",
+   "origem_bytes": 338974,
+   "origem_sha256": "a412dd085caa3cb5654b8e373e8fae360c50711587d68510a9401335021f7a23",
+   "origem_registros": 1413,
+   "bytes": 20565,
+   "sha256": "455e039270f874d14836fe488a46a8eb6b69c06902f4fad68ec3b0d64737acec",
+   "registros": 85,
+   "posicoes_na_origem": [
+    0,
+    2,
+    4,
+    7,
+    9,
+    11,
+    12,
+    15,
+    18,
+    23,
+    24,
+    29,
+    30,
+    33,
+    36,
+    39,
+    40,
+    44,
+    45,
+    50,
+    53,
+    56,
+    57,
+    58,
+    62,
+    66,
+    68,
+    72,
+    74,
+    77,
+    81,
+    84,
+    85,
+    88,
+    91,
+    95,
+    99,
+    102,
+    104,
+    107,
+    109,
+    114,
+    117,
+    118,
+    121,
+    126,
+    129,
+    131,
+    133,
+    138,
+    140,
+    144,
+    147,
+    149,
+    151,
+    154,
+    157,
+    160,
+    163,
+    167,
+    170,
+    174,
+    176,
+    179,
+    182,
+    184,
+    189,
+    190,
+    195,
+    200,
+    206,
+    211,
+    215,
+    218,
+    222,
+    229,
+    232,
+    234,
+    237,
+    238,
+    239,
+    244,
+    245,
+    246,
+    1366
+   ],
+   "classes": {
+    "0": [
+     "safra_preenchida"
+    ],
+    "2": [
+     "indicador_783_mais_recente"
+    ],
+    "4": [
+     "indicador_784_mais_recente"
+    ],
+    "7": [
+     "indicador_785_mais_recente"
+    ],
+    "9": [
+     "variacao_nula"
+    ],
+    "11": [
+     "indicador_786_mais_recente"
+    ],
+    "12": [
+     "indicador_787_mais_recente"
+    ],
+    "15": [
+     "indicador_788_mais_recente"
+    ],
+    "18": [
+     "indicador_789_mais_recente"
+    ],
+    "23": [
+     "indicador_790_mais_recente"
+    ],
+    "24": [
+     "indicador_791_mais_recente"
+    ],
+    "29": [
+     "indicador_792_mais_recente"
+    ],
+    "30": [
+     "indicador_793_mais_recente"
+    ],
+    "33": [
+     "indicador_794_mais_recente"
+    ],
+    "36": [
+     "indicador_795_mais_recente"
+    ],
+    "39": [
+     "indicador_796_mais_recente"
+    ],
+    "40": [
+     "valor_nulo",
+     "data_nula"
+    ],
+    "44": [
+     "indicador_797_mais_recente"
+    ],
+    "45": [
+     "indicador_798_mais_recente"
+    ],
+    "50": [
+     "indicador_799_mais_recente"
+    ],
+    "53": [
+     "indicador_800_mais_recente"
+    ],
+    "56": [
+     "indicador_801_mais_recente"
+    ],
+    "57": [
+     "indicador_802_mais_recente"
+    ],
+    "58": [
+     "indicador_803_mais_recente"
+    ],
+    "62": [
+     "indicador_804_mais_recente"
+    ],
+    "66": [
+     "indicador_805_mais_recente"
+    ],
+    "68": [
+     "indicador_806_mais_recente"
+    ],
+    "72": [
+     "indicador_807_mais_recente"
+    ],
+    "74": [
+     "indicador_808_mais_recente"
+    ],
+    "77": [
+     "indicador_809_mais_recente"
+    ],
+    "81": [
+     "indicador_810_mais_recente"
+    ],
+    "84": [
+     "indicador_811_mais_recente"
+    ],
+    "85": [
+     "indicador_812_mais_recente"
+    ],
+    "88": [
+     "indicador_813_mais_recente"
+    ],
+    "91": [
+     "indicador_814_mais_recente"
+    ],
+    "95": [
+     "indicador_815_mais_recente"
+    ],
+    "99": [
+     "indicador_816_mais_recente"
+    ],
+    "102": [
+     "indicador_817_mais_recente"
+    ],
+    "104": [
+     "indicador_818_mais_recente"
+    ],
+    "107": [
+     "indicador_819_mais_recente"
+    ],
+    "109": [
+     "indicador_820_mais_recente"
+    ],
+    "114": [
+     "indicador_821_mais_recente"
+    ],
+    "117": [
+     "indicador_822_mais_recente"
+    ],
+    "118": [
+     "indicador_823_mais_recente"
+    ],
+    "121": [
+     "indicador_824_mais_recente"
+    ],
+    "126": [
+     "indicador_825_mais_recente"
+    ],
+    "129": [
+     "indicador_826_mais_recente"
+    ],
+    "131": [
+     "indicador_827_mais_recente"
+    ],
+    "133": [
+     "indicador_828_mais_recente"
+    ],
+    "138": [
+     "indicador_829_mais_recente"
+    ],
+    "140": [
+     "indicador_830_mais_recente"
+    ],
+    "144": [
+     "indicador_831_mais_recente"
+    ],
+    "147": [
+     "indicador_832_mais_recente"
+    ],
+    "149": [
+     "indicador_833_mais_recente"
+    ],
+    "151": [
+     "indicador_834_mais_recente"
+    ],
+    "154": [
+     "indicador_835_mais_recente"
+    ],
+    "157": [
+     "indicador_836_mais_recente"
+    ],
+    "160": [
+     "indicador_837_mais_recente"
+    ],
+    "163": [
+     "indicador_838_mais_recente"
+    ],
+    "167": [
+     "indicador_839_mais_recente"
+    ],
+    "170": [
+     "indicador_840_mais_recente"
+    ],
+    "174": [
+     "indicador_841_mais_recente"
+    ],
+    "176": [
+     "indicador_842_mais_recente"
+    ],
+    "179": [
+     "indicador_843_mais_recente"
+    ],
+    "182": [
+     "indicador_844_mais_recente"
+    ],
+    "184": [
+     "indicador_845_mais_recente"
+    ],
+    "189": [
+     "indicador_846_mais_recente"
+    ],
+    "190": [
+     "indicador_847_mais_recente"
+    ],
+    "195": [
+     "indicador_702638438449152000_mais_recente"
+    ],
+    "200": [
+     "indicador_702741552581836800_mais_recente"
+    ],
+    "206": [
+     "indicador_702743499787468800_mais_recente"
+    ],
+    "211": [
+     "indicador_702749579498225664_mais_recente"
+    ],
+    "215": [
+     "indicador_703126874901708800_mais_recente"
+    ],
+    "218": [
+     "indicador_703133830240534528_mais_recente"
+    ],
+    "222": [
+     "indicador_703400820041580544_mais_recente"
+    ],
+    "229": [
+     "indicador_703422953136324608_mais_recente"
+    ],
+    "232": [
+     "indicador_703492383711166464_mais_recente"
+    ],
+    "234": [
+     "indicador_705576963633053696_mais_recente"
+    ],
+    "237": [
+     "indicador_705584882680332288_mais_recente",
+     "safra_nula"
+    ],
+    "238": [
+     "indicador_705585193780248576_mais_recente"
+    ],
+    "239": [
+     "indicador_708192508893462528_mais_recente"
+    ],
+    "244": [
+     "indicador_708192508935405569_mais_recente"
+    ],
+    "245": [
+     "indicador_708192508935405570_mais_recente"
+    ],
+    "246": [
+     "indicador_708192508943794176_mais_recente"
+    ],
+    "1366": [
+     "indicador_708192508847325184_mais_recente"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  },
+  "cotacoes_2.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/2/cotacoes",
+   "capturado_em": "2026-09-23T21:45:47.075879+00:00",
+   "origem_bytes": 185897,
+   "origem_sha256": "6ea1b53fd8c2ec51bcca4a136cf0aa1a32265f7c49430b0bc3459dea8f0e66a3",
+   "origem_registros": 740,
+   "bytes": 6759,
+   "sha256": "c9f167b3e999494c5d135638f40fd85055575c2d1440ae318e30adfe35173e46",
+   "registros": 27,
+   "posicoes_na_origem": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    63,
+    320,
+    736
+   ],
+   "classes": {
+    "0": [
+     "indicador_708192508809576449_mais_recente",
+     "safra_nula"
+    ],
+    "1": [
+     "indicador_708192508809576454_mais_recente"
+    ],
+    "2": [
+     "indicador_708192508809576455_mais_recente"
+    ],
+    "3": [
+     "indicador_708192508809576456_mais_recente"
+    ],
+    "4": [
+     "indicador_708192508809576457_mais_recente"
+    ],
+    "5": [
+     "indicador_708192508809576467_mais_recente"
+    ],
+    "6": [
+     "indicador_708192508809576468_mais_recente"
+    ],
+    "7": [
+     "indicador_708192508809576469_mais_recente"
+    ],
+    "8": [
+     "indicador_708192508813770752_mais_recente"
+    ],
+    "9": [
+     "indicador_708192508813770753_mais_recente"
+    ],
+    "10": [
+     "indicador_708192508813770754_mais_recente"
+    ],
+    "11": [
+     "indicador_708192508813770755_mais_recente"
+    ],
+    "12": [
+     "indicador_708192508813770756_mais_recente"
+    ],
+    "13": [
+     "indicador_708192508813770757_mais_recente"
+    ],
+    "14": [
+     "indicador_708192508813770758_mais_recente"
+    ],
+    "15": [
+     "indicador_708192508817965066_mais_recente"
+    ],
+    "16": [
+     "indicador_708192508817965068_mais_recente"
+    ],
+    "17": [
+     "indicador_708192508817965069_mais_recente"
+    ],
+    "18": [
+     "indicador_708192508817965070_mais_recente"
+    ],
+    "19": [
+     "indicador_724800443246313472_mais_recente"
+    ],
+    "20": [
+     "indicador_724801648060137472_mais_recente"
+    ],
+    "21": [
+     "indicador_724802950588661760_mais_recente"
+    ],
+    "22": [
+     "indicador_796154541765599232_mais_recente"
+    ],
+    "23": [
+     "indicador_1000295618081398784_mais_recente"
+    ],
+    "63": [
+     "variacao_nula"
+    ],
+    "320": [
+     "valor_nulo"
+    ],
+    "736": [
+     "indicador_2_mais_recente"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  },
+  "cotacoes_3.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/3/cotacoes",
+   "capturado_em": "2026-09-23T21:45:48.006163+00:00",
+   "origem_bytes": 1424388,
+   "origem_sha256": "0b82046d3572a0ef8bb0dc87942cf6599a8a28f1149995fa9f773536fc92727f",
+   "origem_registros": 5970,
+   "bytes": 39448,
+   "sha256": "23abe4383f37618c1261685d56cc50e3129782c2de1fb848d238901864fd7e65",
+   "registros": 162,
+   "posicoes_na_origem": [
+    0,
+    4,
+    6,
+    7,
+    10,
+    12,
+    15,
+    20,
+    22,
+    25,
+    27,
+    31,
+    35,
+    36,
+    39,
+    42,
+    47,
+    50,
+    52,
+    55,
+    60,
+    63,
+    66,
+    68,
+    72,
+    73,
+    77,
+    79,
+    82,
+    86,
+    90,
+    92,
+    94,
+    97,
+    100,
+    104,
+    106,
+    111,
+    113,
+    117,
+    120,
+    121,
+    125,
+    127,
+    131,
+    133,
+    138,
+    139,
+    142,
+    147,
+    150,
+    151,
+    156,
+    157,
+    160,
+    165,
+    167,
+    169,
+    173,
+    176,
+    179,
+    183,
+    184,
+    193,
+    198,
+    205,
+    209,
+    218,
+    220,
+    222,
+    223,
+    225,
+    227,
+    230,
+    233,
+    236,
+    239,
+    242,
+    245,
+    248,
+    251,
+    254,
+    257,
+    260,
+    263,
+    266,
+    269,
+    272,
+    275,
+    278,
+    281,
+    284,
+    287,
+    290,
+    293,
+    296,
+    299,
+    302,
+    305,
+    308,
+    311,
+    314,
+    317,
+    320,
+    323,
+    326,
+    329,
+    332,
+    335,
+    338,
+    341,
+    344,
+    347,
+    350,
+    353,
+    356,
+    359,
+    362,
+    365,
+    368,
+    371,
+    374,
+    377,
+    380,
+    383,
+    386,
+    389,
+    392,
+    395,
+    398,
+    401,
+    404,
+    407,
+    410,
+    1245,
+    1246,
+    1247,
+    1248,
+    1624,
+    1625,
+    1626,
+    1627,
+    1628,
+    2006,
+    2007,
+    2008,
+    2009,
+    2385,
+    2386,
+    2387,
+    2388,
+    4457,
+    4458,
+    4459,
+    4460,
+    4836,
+    5587,
+    5588,
+    5589,
+    5590,
+    5591,
+    5592
+   ],
+   "classes": {
+    "0": [
+     "indicador_523_mais_recente",
+     "safra_preenchida"
+    ],
+    "4": [
+     "indicador_524_mais_recente"
+    ],
+    "6": [
+     "indicador_526_mais_recente"
+    ],
+    "7": [
+     "variacao_nula"
+    ],
+    "10": [
+     "indicador_527_mais_recente"
+    ],
+    "12": [
+     "indicador_528_mais_recente"
+    ],
+    "15": [
+     "indicador_529_mais_recente"
+    ],
+    "20": [
+     "indicador_530_mais_recente"
+    ],
+    "22": [
+     "indicador_531_mais_recente"
+    ],
+    "25": [
+     "indicador_532_mais_recente"
+    ],
+    "27": [
+     "indicador_533_mais_recente"
+    ],
+    "31": [
+     "indicador_534_mais_recente"
+    ],
+    "35": [
+     "indicador_535_mais_recente",
+     "valor_nulo"
+    ],
+    "36": [
+     "indicador_536_mais_recente"
+    ],
+    "39": [
+     "indicador_537_mais_recente"
+    ],
+    "42": [
+     "indicador_538_mais_recente"
+    ],
+    "47": [
+     "indicador_539_mais_recente"
+    ],
+    "50": [
+     "indicador_540_mais_recente"
+    ],
+    "52": [
+     "indicador_541_mais_recente"
+    ],
+    "55": [
+     "indicador_542_mais_recente"
+    ],
+    "60": [
+     "indicador_543_mais_recente"
+    ],
+    "63": [
+     "indicador_544_mais_recente"
+    ],
+    "66": [
+     "indicador_545_mais_recente"
+    ],
+    "68": [
+     "indicador_546_mais_recente"
+    ],
+    "72": [
+     "indicador_547_mais_recente"
+    ],
+    "73": [
+     "indicador_548_mais_recente"
+    ],
+    "77": [
+     "indicador_549_mais_recente"
+    ],
+    "79": [
+     "indicador_550_mais_recente"
+    ],
+    "82": [
+     "indicador_551_mais_recente"
+    ],
+    "86": [
+     "indicador_552_mais_recente"
+    ],
+    "90": [
+     "indicador_553_mais_recente"
+    ],
+    "92": [
+     "indicador_555_mais_recente"
+    ],
+    "94": [
+     "indicador_558_mais_recente"
+    ],
+    "97": [
+     "indicador_559_mais_recente"
+    ],
+    "100": [
+     "indicador_560_mais_recente"
+    ],
+    "104": [
+     "indicador_561_mais_recente"
+    ],
+    "106": [
+     "indicador_562_mais_recente"
+    ],
+    "111": [
+     "indicador_563_mais_recente"
+    ],
+    "113": [
+     "indicador_564_mais_recente"
+    ],
+    "117": [
+     "indicador_565_mais_recente"
+    ],
+    "120": [
+     "indicador_566_mais_recente"
+    ],
+    "121": [
+     "indicador_567_mais_recente"
+    ],
+    "125": [
+     "indicador_568_mais_recente"
+    ],
+    "127": [
+     "indicador_569_mais_recente"
+    ],
+    "131": [
+     "indicador_570_mais_recente"
+    ],
+    "133": [
+     "indicador_571_mais_recente"
+    ],
+    "138": [
+     "indicador_572_mais_recente"
+    ],
+    "139": [
+     "indicador_573_mais_recente"
+    ],
+    "142": [
+     "indicador_574_mais_recente"
+    ],
+    "147": [
+     "indicador_575_mais_recente"
+    ],
+    "150": [
+     "indicador_576_mais_recente"
+    ],
+    "151": [
+     "indicador_577_mais_recente"
+    ],
+    "156": [
+     "indicador_578_mais_recente"
+    ],
+    "157": [
+     "indicador_579_mais_recente"
+    ],
+    "160": [
+     "indicador_580_mais_recente"
+    ],
+    "165": [
+     "indicador_581_mais_recente"
+    ],
+    "167": [
+     "indicador_582_mais_recente"
+    ],
+    "169": [
+     "indicador_583_mais_recente"
+    ],
+    "173": [
+     "indicador_584_mais_recente"
+    ],
+    "176": [
+     "indicador_585_mais_recente"
+    ],
+    "179": [
+     "indicador_586_mais_recente"
+    ],
+    "183": [
+     "indicador_587_mais_recente"
+    ],
+    "184": [
+     "indicador_698758563422273536_mais_recente"
+    ],
+    "193": [
+     "indicador_700940565361721344_mais_recente"
+    ],
+    "198": [
+     "indicador_701185771642290176_mais_recente"
+    ],
+    "205": [
+     "indicador_701194393889800192_mais_recente"
+    ],
+    "209": [
+     "indicador_701199398680133632_mais_recente"
+    ],
+    "218": [
+     "indicador_701211800784076800_mais_recente"
+    ],
+    "220": [
+     "indicador_708192508838936581_mais_recente",
+     "safra_nula"
+    ],
+    "222": [
+     "indicador_708192508847325187_mais_recente"
+    ],
+    "223": [
+     "indicador_708192508939599875_mais_recente"
+    ],
+    "225": [
+     "indicador_1133615317237309440_mais_recente"
+    ],
+    "227": [
+     "indicador_1516955774961582144_mais_recente",
+     "data_nula"
+    ],
+    "230": [
+     "indicador_1516955774961582145_mais_recente"
+    ],
+    "233": [
+     "indicador_1516955774961582146_mais_recente"
+    ],
+    "236": [
+     "indicador_1516955774961582147_mais_recente"
+    ],
+    "239": [
+     "indicador_1516955774961582148_mais_recente"
+    ],
+    "242": [
+     "indicador_1516955774961582149_mais_recente"
+    ],
+    "245": [
+     "indicador_1516955774961582150_mais_recente"
+    ],
+    "248": [
+     "indicador_1516955774961582151_mais_recente"
+    ],
+    "251": [
+     "indicador_1516955774961582152_mais_recente"
+    ],
+    "254": [
+     "indicador_1516955774961582153_mais_recente"
+    ],
+    "257": [
+     "indicador_1516955774961582154_mais_recente"
+    ],
+    "260": [
+     "indicador_1516955774961582155_mais_recente"
+    ],
+    "263": [
+     "indicador_1516955774961582156_mais_recente"
+    ],
+    "266": [
+     "indicador_1516955774961582157_mais_recente"
+    ],
+    "269": [
+     "indicador_1516955774961582158_mais_recente"
+    ],
+    "272": [
+     "indicador_1516955774961582159_mais_recente"
+    ],
+    "275": [
+     "indicador_1516955774961582160_mais_recente"
+    ],
+    "278": [
+     "indicador_1516955774961582161_mais_recente"
+    ],
+    "281": [
+     "indicador_1516955774961582162_mais_recente"
+    ],
+    "284": [
+     "indicador_1516955774961582163_mais_recente"
+    ],
+    "287": [
+     "indicador_1516955774961582164_mais_recente"
+    ],
+    "290": [
+     "indicador_1516955774961582165_mais_recente"
+    ],
+    "293": [
+     "indicador_1516955774961582166_mais_recente"
+    ],
+    "296": [
+     "indicador_1516955774961582167_mais_recente"
+    ],
+    "299": [
+     "indicador_1516955774961582168_mais_recente"
+    ],
+    "302": [
+     "indicador_1516955774961582169_mais_recente"
+    ],
+    "305": [
+     "indicador_1516955774961582170_mais_recente"
+    ],
+    "308": [
+     "indicador_1516955774961582171_mais_recente"
+    ],
+    "311": [
+     "indicador_1516955774961582172_mais_recente"
+    ],
+    "314": [
+     "indicador_1516955774961582173_mais_recente"
+    ],
+    "317": [
+     "indicador_1516955774961582174_mais_recente"
+    ],
+    "320": [
+     "indicador_1516955774961582175_mais_recente"
+    ],
+    "323": [
+     "indicador_1516955774961582176_mais_recente"
+    ],
+    "326": [
+     "indicador_1516955774961582177_mais_recente"
+    ],
+    "329": [
+     "indicador_1516955774961582178_mais_recente"
+    ],
+    "332": [
+     "indicador_1516955774961582179_mais_recente"
+    ],
+    "335": [
+     "indicador_1516955774961582180_mais_recente"
+    ],
+    "338": [
+     "indicador_1516955774961582181_mais_recente"
+    ],
+    "341": [
+     "indicador_1516955774961582182_mais_recente"
+    ],
+    "344": [
+     "indicador_1516955774961582183_mais_recente"
+    ],
+    "347": [
+     "indicador_1516955774961582184_mais_recente"
+    ],
+    "350": [
+     "indicador_1516955774961582185_mais_recente"
+    ],
+    "353": [
+     "indicador_1516955774961582186_mais_recente"
+    ],
+    "356": [
+     "indicador_1516955774961582187_mais_recente"
+    ],
+    "359": [
+     "indicador_1516955774961582188_mais_recente"
+    ],
+    "362": [
+     "indicador_1516955774961582189_mais_recente"
+    ],
+    "365": [
+     "indicador_1516955774961582190_mais_recente"
+    ],
+    "368": [
+     "indicador_1516955774961582191_mais_recente"
+    ],
+    "371": [
+     "indicador_1516955774961582192_mais_recente"
+    ],
+    "374": [
+     "indicador_1516955774961582193_mais_recente"
+    ],
+    "377": [
+     "indicador_1516955774961582194_mais_recente"
+    ],
+    "380": [
+     "indicador_1516955774961582195_mais_recente"
+    ],
+    "383": [
+     "indicador_1516955774961582196_mais_recente"
+    ],
+    "386": [
+     "indicador_1516955774961582197_mais_recente"
+    ],
+    "389": [
+     "indicador_1516955774961582198_mais_recente"
+    ],
+    "392": [
+     "indicador_1516955774961582199_mais_recente"
+    ],
+    "395": [
+     "indicador_1516955774961582200_mais_recente"
+    ],
+    "398": [
+     "indicador_1516955774961582201_mais_recente"
+    ],
+    "401": [
+     "indicador_1516955774961582202_mais_recente"
+    ],
+    "404": [
+     "indicador_1516955774961582203_mais_recente"
+    ],
+    "407": [
+     "indicador_1516955774961582204_mais_recente"
+    ],
+    "410": [
+     "indicador_1516955774961582205_mais_recente"
+    ],
+    "1245": [
+     "indicador_708192508843130882_mais_recente",
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1246": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1247": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1248": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1624": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1625": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1626": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1627": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "1628": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2006": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2007": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2008": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2009": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2385": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2386": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2387": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "2388": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "4457": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "4458": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "4459": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "4460": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "4836": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "5587": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "5588": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "5589": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "5590": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "5591": [
+     "cadeia_id_4_no_corpo_da_3"
+    ],
+    "5592": [
+     "cadeia_id_4_no_corpo_da_3"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  },
+  "cotacoes_4.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/4/cotacoes",
+   "capturado_em": "2026-09-23T21:45:48.724111+00:00",
+   "origem_bytes": 1098473,
+   "origem_sha256": "5c32d72f8d17bb5064771bb4c0ca550b61f4705eab03cd8949a3f5dc5026e439",
+   "origem_registros": 4568,
+   "bytes": 34628,
+   "sha256": "f7ed1a368a9b33844117dfe1fb6a1b35dd07e2a95ab37c9cd8a0f20770c80257",
+   "registros": 144,
+   "posicoes_na_origem": [
+    0,
+    1,
+    8,
+    9,
+    13,
+    16,
+    18,
+    21,
+    24,
+    26,
+    30,
+    32,
+    38,
+    40,
+    44,
+    47,
+    48,
+    53,
+    56,
+    59,
+    62,
+    65,
+    68,
+    71,
+    74,
+    77,
+    79,
+    84,
+    87,
+    89,
+    92,
+    95,
+    99,
+    101,
+    103,
+    107,
+    109,
+    114,
+    117,
+    120,
+    122,
+    124,
+    129,
+    131,
+    133,
+    138,
+    141,
+    142,
+    145,
+    148,
+    152,
+    156,
+    157,
+    160,
+    165,
+    168,
+    170,
+    174,
+    177,
+    180,
+    184,
+    188,
+    190,
+    195,
+    196,
+    197,
+    199,
+    209,
+    210,
+    211,
+    213,
+    216,
+    219,
+    223,
+    224,
+    228,
+    232,
+    235,
+    236,
+    239,
+    242,
+    245,
+    248,
+    251,
+    254,
+    257,
+    260,
+    263,
+    266,
+    269,
+    272,
+    275,
+    278,
+    281,
+    284,
+    287,
+    290,
+    293,
+    296,
+    299,
+    302,
+    305,
+    308,
+    311,
+    314,
+    317,
+    320,
+    323,
+    326,
+    329,
+    332,
+    335,
+    338,
+    341,
+    344,
+    347,
+    350,
+    353,
+    356,
+    359,
+    362,
+    365,
+    368,
+    371,
+    374,
+    377,
+    380,
+    383,
+    386,
+    389,
+    392,
+    395,
+    398,
+    401,
+    404,
+    407,
+    410,
+    413,
+    416,
+    419,
+    422,
+    1060,
+    4329,
+    4330
+   ],
+   "classes": {
+    "0": [
+     "indicador_3_mais_recente",
+     "safra_nula"
+    ],
+    "1": [
+     "indicador_4_mais_recente"
+    ],
+    "8": [
+     "safra_preenchida"
+    ],
+    "9": [
+     "indicador_718_mais_recente"
+    ],
+    "13": [
+     "indicador_719_mais_recente"
+    ],
+    "16": [
+     "indicador_721_mais_recente"
+    ],
+    "18": [
+     "indicador_722_mais_recente"
+    ],
+    "21": [
+     "indicador_723_mais_recente"
+    ],
+    "24": [
+     "indicador_726_mais_recente"
+    ],
+    "26": [
+     "indicador_727_mais_recente"
+    ],
+    "30": [
+     "indicador_728_mais_recente"
+    ],
+    "32": [
+     "indicador_730_mais_recente",
+     "valor_nulo",
+     "variacao_nula"
+    ],
+    "38": [
+     "indicador_731_mais_recente"
+    ],
+    "40": [
+     "indicador_732_mais_recente"
+    ],
+    "44": [
+     "indicador_733_mais_recente"
+    ],
+    "47": [
+     "indicador_734_mais_recente"
+    ],
+    "48": [
+     "indicador_735_mais_recente"
+    ],
+    "53": [
+     "indicador_736_mais_recente"
+    ],
+    "56": [
+     "indicador_737_mais_recente"
+    ],
+    "59": [
+     "indicador_738_mais_recente"
+    ],
+    "62": [
+     "indicador_739_mais_recente"
+    ],
+    "65": [
+     "indicador_740_mais_recente"
+    ],
+    "68": [
+     "indicador_741_mais_recente"
+    ],
+    "71": [
+     "indicador_742_mais_recente"
+    ],
+    "74": [
+     "indicador_743_mais_recente"
+    ],
+    "77": [
+     "indicador_744_mais_recente"
+    ],
+    "79": [
+     "indicador_745_mais_recente"
+    ],
+    "84": [
+     "indicador_746_mais_recente"
+    ],
+    "87": [
+     "indicador_747_mais_recente"
+    ],
+    "89": [
+     "indicador_748_mais_recente"
+    ],
+    "92": [
+     "indicador_749_mais_recente"
+    ],
+    "95": [
+     "indicador_750_mais_recente"
+    ],
+    "99": [
+     "indicador_753_mais_recente"
+    ],
+    "101": [
+     "indicador_754_mais_recente"
+    ],
+    "103": [
+     "indicador_755_mais_recente"
+    ],
+    "107": [
+     "indicador_756_mais_recente"
+    ],
+    "109": [
+     "indicador_757_mais_recente"
+    ],
+    "114": [
+     "indicador_759_mais_recente"
+    ],
+    "117": [
+     "indicador_762_mais_recente"
+    ],
+    "120": [
+     "indicador_763_mais_recente"
+    ],
+    "122": [
+     "indicador_764_mais_recente"
+    ],
+    "124": [
+     "indicador_765_mais_recente"
+    ],
+    "129": [
+     "indicador_766_mais_recente"
+    ],
+    "131": [
+     "indicador_768_mais_recente"
+    ],
+    "133": [
+     "indicador_769_mais_recente"
+    ],
+    "138": [
+     "indicador_770_mais_recente"
+    ],
+    "141": [
+     "indicador_771_mais_recente"
+    ],
+    "142": [
+     "indicador_772_mais_recente"
+    ],
+    "145": [
+     "indicador_773_mais_recente"
+    ],
+    "148": [
+     "indicador_774_mais_recente"
+    ],
+    "152": [
+     "indicador_775_mais_recente"
+    ],
+    "156": [
+     "indicador_776_mais_recente"
+    ],
+    "157": [
+     "indicador_777_mais_recente"
+    ],
+    "160": [
+     "indicador_778_mais_recente"
+    ],
+    "165": [
+     "indicador_779_mais_recente"
+    ],
+    "168": [
+     "indicador_780_mais_recente"
+    ],
+    "170": [
+     "indicador_781_mais_recente"
+    ],
+    "174": [
+     "indicador_782_mais_recente"
+    ],
+    "177": [
+     "indicador_701276578961424384_mais_recente"
+    ],
+    "180": [
+     "indicador_702379488671694848_mais_recente"
+    ],
+    "184": [
+     "indicador_702389895595556864_mais_recente"
+    ],
+    "188": [
+     "indicador_702392058614906880_mais_recente"
+    ],
+    "190": [
+     "indicador_702651198968954880_mais_recente"
+    ],
+    "195": [
+     "indicador_705907228083486720_mais_recente"
+    ],
+    "196": [
+     "indicador_705907578567917568_mais_recente"
+    ],
+    "197": [
+     "indicador_708192508838936580_mais_recente"
+    ],
+    "199": [
+     "indicador_708192508847325188_mais_recente"
+    ],
+    "209": [
+     "indicador_708192508889268224_mais_recente"
+    ],
+    "210": [
+     "indicador_708192508931211268_mais_recente"
+    ],
+    "211": [
+     "indicador_708192508935405572_mais_recente"
+    ],
+    "213": [
+     "indicador_1133609936989659136_mais_recente"
+    ],
+    "216": [
+     "indicador_1133610659773095936_mais_recente"
+    ],
+    "219": [
+     "indicador_1133611163982962688_mais_recente"
+    ],
+    "223": [
+     "indicador_1133613419646099456_mais_recente"
+    ],
+    "224": [
+     "indicador_1133614011210735616_mais_recente"
+    ],
+    "228": [
+     "indicador_1133618413560602624_mais_recente"
+    ],
+    "232": [
+     "indicador_1133619035009654784_mais_recente"
+    ],
+    "235": [
+     "indicador_1133619551852765184_mais_recente"
+    ],
+    "236": [
+     "indicador_1516955774961582081_mais_recente",
+     "data_nula"
+    ],
+    "239": [
+     "indicador_1516955774961582082_mais_recente"
+    ],
+    "242": [
+     "indicador_1516955774961582083_mais_recente"
+    ],
+    "245": [
+     "indicador_1516955774961582084_mais_recente"
+    ],
+    "248": [
+     "indicador_1516955774961582085_mais_recente"
+    ],
+    "251": [
+     "indicador_1516955774961582086_mais_recente"
+    ],
+    "254": [
+     "indicador_1516955774961582087_mais_recente"
+    ],
+    "257": [
+     "indicador_1516955774961582088_mais_recente"
+    ],
+    "260": [
+     "indicador_1516955774961582089_mais_recente"
+    ],
+    "263": [
+     "indicador_1516955774961582090_mais_recente"
+    ],
+    "266": [
+     "indicador_1516955774961582091_mais_recente"
+    ],
+    "269": [
+     "indicador_1516955774961582092_mais_recente"
+    ],
+    "272": [
+     "indicador_1516955774961582093_mais_recente"
+    ],
+    "275": [
+     "indicador_1516955774961582094_mais_recente"
+    ],
+    "278": [
+     "indicador_1516955774961582095_mais_recente"
+    ],
+    "281": [
+     "indicador_1516955774961582096_mais_recente"
+    ],
+    "284": [
+     "indicador_1516955774961582097_mais_recente"
+    ],
+    "287": [
+     "indicador_1516955774961582098_mais_recente"
+    ],
+    "290": [
+     "indicador_1516955774961582099_mais_recente"
+    ],
+    "293": [
+     "indicador_1516955774961582100_mais_recente"
+    ],
+    "296": [
+     "indicador_1516955774961582101_mais_recente"
+    ],
+    "299": [
+     "indicador_1516955774961582102_mais_recente"
+    ],
+    "302": [
+     "indicador_1516955774961582103_mais_recente"
+    ],
+    "305": [
+     "indicador_1516955774961582104_mais_recente"
+    ],
+    "308": [
+     "indicador_1516955774961582105_mais_recente"
+    ],
+    "311": [
+     "indicador_1516955774961582106_mais_recente"
+    ],
+    "314": [
+     "indicador_1516955774961582107_mais_recente"
+    ],
+    "317": [
+     "indicador_1516955774961582108_mais_recente"
+    ],
+    "320": [
+     "indicador_1516955774961582109_mais_recente"
+    ],
+    "323": [
+     "indicador_1516955774961582110_mais_recente"
+    ],
+    "326": [
+     "indicador_1516955774961582111_mais_recente"
+    ],
+    "329": [
+     "indicador_1516955774961582112_mais_recente"
+    ],
+    "332": [
+     "indicador_1516955774961582113_mais_recente"
+    ],
+    "335": [
+     "indicador_1516955774961582114_mais_recente"
+    ],
+    "338": [
+     "indicador_1516955774961582115_mais_recente"
+    ],
+    "341": [
+     "indicador_1516955774961582116_mais_recente"
+    ],
+    "344": [
+     "indicador_1516955774961582117_mais_recente"
+    ],
+    "347": [
+     "indicador_1516955774961582118_mais_recente"
+    ],
+    "350": [
+     "indicador_1516955774961582119_mais_recente"
+    ],
+    "353": [
+     "indicador_1516955774961582120_mais_recente"
+    ],
+    "356": [
+     "indicador_1516955774961582121_mais_recente"
+    ],
+    "359": [
+     "indicador_1516955774961582122_mais_recente"
+    ],
+    "362": [
+     "indicador_1516955774961582123_mais_recente"
+    ],
+    "365": [
+     "indicador_1516955774961582124_mais_recente"
+    ],
+    "368": [
+     "indicador_1516955774961582125_mais_recente"
+    ],
+    "371": [
+     "indicador_1516955774961582126_mais_recente"
+    ],
+    "374": [
+     "indicador_1516955774961582127_mais_recente"
+    ],
+    "377": [
+     "indicador_1516955774961582128_mais_recente"
+    ],
+    "380": [
+     "indicador_1516955774961582129_mais_recente"
+    ],
+    "383": [
+     "indicador_1516955774961582130_mais_recente"
+    ],
+    "386": [
+     "indicador_1516955774961582131_mais_recente"
+    ],
+    "389": [
+     "indicador_1516955774961582132_mais_recente"
+    ],
+    "392": [
+     "indicador_1516955774961582133_mais_recente"
+    ],
+    "395": [
+     "indicador_1516955774961582134_mais_recente"
+    ],
+    "398": [
+     "indicador_1516955774961582135_mais_recente"
+    ],
+    "401": [
+     "indicador_1516955774961582136_mais_recente"
+    ],
+    "404": [
+     "indicador_1516955774961582137_mais_recente"
+    ],
+    "407": [
+     "indicador_1516955774961582138_mais_recente"
+    ],
+    "410": [
+     "indicador_1516955774961582139_mais_recente"
+    ],
+    "413": [
+     "indicador_1516955774961582140_mais_recente"
+    ],
+    "416": [
+     "indicador_1516955774961582141_mais_recente"
+    ],
+    "419": [
+     "indicador_1516955774961582142_mais_recente"
+    ],
+    "422": [
+     "indicador_1516955774961582143_mais_recente"
+    ],
+    "1060": [
+     "indicador_708192508843130882_mais_recente"
+    ],
+    "4329": [
+     "sorriso_rs_sc_2026-09-22"
+    ],
+    "4330": [
+     "sorriso_rs_sc_2026-09-22"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  },
+  "cotacoes_5.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/5/cotacoes",
+   "capturado_em": "2026-09-23T21:45:48.870298+00:00",
+   "origem_bytes": 3980,
+   "origem_sha256": "7481660b5b2ebf9bdf1172c7479a44a7a8a222ed38699b82878ed58abfe5e2cc",
+   "origem_registros": 17,
+   "bytes": 691,
+   "sha256": "84f91072a8e08ef476df21f9e26f42e55b92a6f3d8356c9f535390e0e7613336",
+   "registros": 3,
+   "posicoes_na_origem": [
+    0,
+    1,
+    16
+   ],
+   "classes": {
+    "0": [
+     "indicador_5_mais_recente",
+     "safra_nula"
+    ],
+    "1": [
+     "indicador_964004064270426112_mais_recente",
+     "valor_nulo",
+     "variacao_nula"
+    ],
+    "16": [
+     "indicador_6_mais_recente"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  },
+  "cotacoes_7.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/7/cotacoes",
+   "capturado_em": "2026-09-23T21:45:49.161304+00:00",
+   "origem_bytes": 2505,
+   "origem_sha256": "c052ef63153611bceb1f713ea4ea2b90f41f10788beef5f19baba11c31e5a8bc",
+   "origem_registros": 10,
+   "bytes": 1241,
+   "sha256": "fd9f46a4a3dde5b9ff29854ea9a85c9a809128229b991aa1a01205e613e24aae",
+   "registros": 5,
+   "posicoes_na_origem": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "classes": {
+    "0": [
+     "indicador_727070707335299226_mais_recente",
+     "safra_nula"
+    ],
+    "1": [
+     "indicador_727070707335299227_mais_recente"
+    ],
+    "2": [
+     "indicador_824160955138088960_mais_recente"
+    ],
+    "3": [
+     "indicador_824410556860506112_mais_recente"
+    ],
+    "4": [
+     "indicador_1159368450114527232_mais_recente"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  },
+  "cotacoes_8.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/8/cotacoes",
+   "capturado_em": "2026-09-23T21:45:49.307013+00:00",
+   "origem_bytes": 9028,
+   "origem_sha256": "48c828bcb054c63d7e2c2e81075c594f90b38e91dd9ce6dfb3f15d7b9d4207a8",
+   "origem_registros": 37,
+   "bytes": 1742,
+   "sha256": "e23e5e64d71b57d5c96c39137d82702f88d99644b72642e0810205b84d036b5b",
+   "registros": 7,
+   "posicoes_na_origem": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    24
+   ],
+   "classes": {
+    "0": [
+     "indicador_700727906502705152_mais_recente",
+     "safra_nula"
+    ],
+    "1": [
+     "indicador_700731223542857728_mais_recente"
+    ],
+    "2": [
+     "indicador_708192508796993536_mais_recente"
+    ],
+    "3": [
+     "indicador_708192508822159367_mais_recente"
+    ],
+    "4": [
+     "indicador_708192508826353665_mais_recente"
+    ],
+    "5": [
+     "indicador_708192508838936577_mais_recente"
+    ],
+    "24": [
+     "indicador_1_mais_recente"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  },
+  "cotacoes_10.json": {
+   "url": "https://api1.imea.com.br/api/v2/mobile/cadeias/10/cotacoes",
+   "capturado_em": "2026-09-23T21:46:17.844049+00:00",
+   "origem_bytes": 8178,
+   "origem_sha256": "1a37eb361a8a4c91cbb70e74bfbd64407ce3ff6aba5e43104fdfe8d7809f7d32",
+   "origem_registros": 33,
+   "bytes": 8178,
+   "sha256": "1a37eb361a8a4c91cbb70e74bfbd64407ce3ff6aba5e43104fdfe8d7809f7d32",
+   "registros": 33,
+   "posicoes_na_origem": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32
+   ],
+   "classes": {
+    "0": [
+     "indicador_727070707335299235_mais_recente",
+     "safra_nula"
+    ],
+    "1": [
+     "indicador_727070707335299236_mais_recente"
+    ],
+    "2": [
+     "indicador_727070707335299237_mais_recente"
+    ],
+    "3": [
+     "indicador_727070707335299238_mais_recente"
+    ],
+    "4": [
+     "indicador_727070707335299239_mais_recente"
+    ],
+    "5": [
+     "indicador_727070707335299240_mais_recente"
+    ],
+    "6": [
+     "indicador_824410556860506199_mais_recente"
+    ],
+    "7": [
+     "indicador_824410556860506200_mais_recente"
+    ],
+    "8": [
+     "indicador_824410556860506201_mais_recente"
+    ],
+    "9": [
+     "indicador_959990130488057856_mais_recente"
+    ],
+    "10": [
+     "indicador_959990820354596864_mais_recente"
+    ],
+    "11": [
+     "indicador_959991505439629312_mais_recente",
+     "valor_nulo",
+     "data_nula",
+     "variacao_nula"
+    ],
+    "12": [
+     "indicador_959991848172986368_mais_recente"
+    ],
+    "13": [
+     "indicador_959992295583588352_mais_recente"
+    ],
+    "14": [
+     "indicador_959992588891267072_mais_recente"
+    ],
+    "15": [
+     "indicador_959993131671953408_mais_recente"
+    ],
+    "16": [
+     "indicador_959993546362789888_mais_recente"
+    ],
+    "17": [
+     "indicador_959994558679031808_mais_recente"
+    ],
+    "18": [
+     "indicador_959995040562618368_mais_recente"
+    ],
+    "19": [
+     "indicador_959995371858108416_mais_recente"
+    ],
+    "20": [
+     "indicador_960047000431042560_mais_recente"
+    ],
+    "21": [
+     "indicador_960047371777941504_mais_recente"
+    ],
+    "22": [
+     "indicador_960048099347079168_mais_recente"
+    ],
+    "23": [
+     "indicador_960048334014193664_mais_recente"
+    ],
+    "24": [
+     "indicador_960088918657540096_mais_recente"
+    ],
+    "25": [
+     "indicador_960089282274336768_mais_recente"
+    ],
+    "26": [
+     "indicador_1224885985160929280_mais_recente"
+    ],
+    "27": [
+     "indicador_1224886589191036928_mais_recente"
+    ],
+    "28": [
+     "indicador_1224930531135660032_mais_recente"
+    ],
+    "29": [
+     "indicador_1224931011849035776_mais_recente"
+    ],
+    "30": [
+     "indicador_1357207036887040000_mais_recente"
+    ],
+    "31": [
+     "indicador_1357209165752172544_mais_recente"
+    ],
+    "32": [
+     "indicador_1357258087694598144_mais_recente"
+    ]
+   },
+   "transformacao": "elementos do array copiados byte a byte da resposta original, na ordem da origem, separados por vírgula entre colchetes"
+  }
+ }
+}

@@ -1,0 +1,207 @@
+{
+  "name": "mapbiomas.cobertura_municipal",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "bioma",
+    "estado",
+    "geocodigo",
+    "classe_id",
+    "id_registro",
+    "ano"
+  ],
+  "required_columns": [
+    "bioma",
+    "estado",
+    "municipio",
+    "classe_id",
+    "classe",
+    "nivel_0",
+    "ano",
+    "area_ha",
+    "geocodigo",
+    "id_registro"
+  ],
+  "dtypes": {
+    "bioma": "str",
+    "estado": "str",
+    "municipio": "str",
+    "classe_id": "int",
+    "classe": "str",
+    "nivel_0": "str",
+    "ano": "int",
+    "area_ha": "float",
+    "geocodigo": "str",
+    "id_registro": "int",
+    "cod_municipio": "int"
+  },
+  "nullable": {
+    "bioma": false,
+    "estado": false,
+    "municipio": false,
+    "classe_id": false,
+    "classe": true,
+    "nivel_0": false,
+    "ano": false,
+    "area_ha": false,
+    "geocodigo": false,
+    "id_registro": false,
+    "cod_municipio": true
+  },
+  "columns": [
+    {
+      "name": "bioma",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "estado",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipio",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe_id",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "classe",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nivel_0",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1985,
+      "max_value": null
+    },
+    {
+      "name": "area_ha",
+      "type": "float",
+      "nullable": false,
+      "unit": "ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "geocodigo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "id_registro",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "classe_id_min": 0,
+    "ano_min": 1985,
+    "area_ha_min": 0,
+    "id_registro_min": 0,
+    "geocodigo_pattern": "[0-9]{7}",
+    "physical_dtypes": {
+      "classe_id": "Int64",
+      "ano": "Int64",
+      "area_ha": "float64",
+      "id_registro": "Int64"
+    },
+    "non_empty_strings": [
+      "bioma",
+      "estado",
+      "municipio",
+      "classe",
+      "nivel_0",
+      "geocodigo"
+    ],
+    "primary_key_scope": "one_collection_and_resource"
+  },
+  "guarantees": [
+    "Geocodigo is the seven-digit textual identifier published by MapBiomas, including lakes",
+    "Published biome, state and municipal intersections remain separate in the primary key",
+    "Published row IDs preserve distinct records within the collection; zero is valid",
+    "No null or blank identity, description or level-zero fields are emitted; classe is null only for a published class id outside the known legend, with a warning",
+    "Area is finite and non-negative in hectares; zero is preserved",
+    "Class, year and published row ID use Int64; area uses float64, including the typed empty frame",
+    "Uniqueness applies within one collection and processed resource, not across revisions"
+  ]
+}

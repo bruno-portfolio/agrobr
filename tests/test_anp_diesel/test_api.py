@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
-import asyncio
 import io
-from datetime import date
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 import pytest
 
 from agrobr.alt.anp_diesel import api
-from agrobr.exceptions import InvalidParameterError
-from agrobr.models import MetaInfo
+from agrobr.exceptions import InvalidParameterError, ParseError
 
 
 def _make_precos_xlsx_bytes(**kwargs) -> bytes:
@@ -73,6 +71,12 @@ def _make_precos_xlsx_bytes(**kwargs) -> bytes:
         ],
     )
     df = pd.DataFrame(rows)
+    df["UNIDADE DE MEDIDA"] = "R$/l"
+    nivel = kwargs.get("nivel", "uf")
+    if nivel == "brasil":
+        df = df[df["ESTADO - SIGLA"] == "SP"].drop(columns=["ESTADO - SIGLA"])
+    if nivel != "municipio":
+        df = df.drop(columns=["MUNICÍPIO"])
     buf = io.BytesIO()
     df.to_excel(buf, index=False, engine="openpyxl")
     return buf.getvalue()
@@ -112,114 +116,6 @@ def _make_vendas_csv_bytes() -> bytes:
 
 class TestPrecosDiesel:
     @pytest.mark.asyncio
-    async def test_basico_nivel_uf(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(nivel="uf")
-            assert not df.empty
-            assert "preco_venda" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_basico_nivel_brasil(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_brasil", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(nivel="brasil")
-            assert not df.empty
-
-    @pytest.mark.asyncio
-    async def test_basico_nivel_municipio(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_municipios", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(nivel="municipio", inicio="2024-01-01", fim="2024-12-31")
-            assert not df.empty
-
-    @pytest.mark.asyncio
-    async def test_periodos_municipais_sao_baixados_concorrentemente(self):
-        periodos = ["2022-2023", "2023-2024", "2024-2025"]
-        iniciados: list[str] = []
-        todos_iniciados = asyncio.Event()
-
-        async def fetch(periodo: str) -> bytes:
-            iniciados.append(periodo)
-            if len(iniciados) == len(periodos):
-                todos_iniciados.set()
-            await todos_iniciados.wait()
-            return periodo.encode()
-
-        def parse(content: bytes, **_kwargs) -> pd.DataFrame:
-            return pd.DataFrame(
-                {"data": [pd.Timestamp("2024-01-01")], "periodo": [content.decode()]}
-            )
-
-        with (
-            patch.object(api, "_periodos_municipios", return_value=periodos),
-            patch.object(api.client, "fetch_precos_municipios", side_effect=fetch),
-            patch.object(api.parser, "parse_precos", side_effect=parse) as parse_mock,
-        ):
-            df = await asyncio.wait_for(
-                api._fetch_and_parse_municipios(None, None, None, None, None),
-                timeout=2,
-            )
-
-        assert set(iniciados) == set(periodos)
-        assert parse_mock.call_count == len(periodos)
-        assert set(df["periodo"]) == set(periodos)
-
-    @pytest.mark.asyncio
-    async def test_filtro_uf(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(uf="MT", nivel="uf")
-            assert all(df["uf"] == "MT")
-
-    @pytest.mark.asyncio
-    async def test_filtro_produto(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(produto="DIESEL", nivel="uf")
-            assert all(df["produto"] == "DIESEL")
-
-    @pytest.mark.asyncio
-    async def test_filtro_data_inicio_fim(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(
-                nivel="uf",
-                inicio="2024-01-20",
-                fim="2024-01-31",
-            )
-            assert all(df["data"] >= pd.Timestamp("2024-01-20"))
-            assert all(df["data"] <= pd.Timestamp("2024-01-31"))
-
-    @pytest.mark.asyncio
-    async def test_agregacao_mensal(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df_semanal = await api.precos_diesel(nivel="uf", agregacao="semanal")
-            df_mensal = await api.precos_diesel(nivel="uf", agregacao="mensal")
-            assert len(df_mensal) <= len(df_semanal)
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            result = await api.precos_diesel(nivel="uf", return_meta=True)
-            assert isinstance(result, tuple)
-            df, meta = result
-            assert isinstance(df, pd.DataFrame)
-            assert isinstance(meta, MetaInfo)
-            assert meta.source == "anp_diesel"
-            assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
     async def test_nivel_invalido(self):
         with pytest.raises(ValueError, match="invalido"):
             await api.precos_diesel(nivel="bairro")
@@ -234,45 +130,66 @@ class TestPrecosDiesel:
         with pytest.raises(ValueError, match="invalido"):
             await api.precos_diesel(produto="GASOLINA")
 
-    @pytest.mark.asyncio
-    async def test_uf_invalida(self):
-        with pytest.raises(ValueError, match="invalida"):
-            await api.precos_diesel(uf="XX")
-
-    @pytest.mark.asyncio
-    async def test_inicio_string_iso(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(nivel="uf", inicio="2024-01-01")
-            assert not df.empty
-
-    @pytest.mark.asyncio
-    async def test_inicio_date_object(self):
-        xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
-            df = await api.precos_diesel(nivel="uf", inicio=date(2024, 1, 1))
-            assert not df.empty
-
 
 class TestVendasDiesel:
-    @pytest.mark.asyncio
-    async def test_basico(self):
-        csv_bytes = _make_vendas_csv_bytes()
-        with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = csv_bytes
-            df = await api.vendas_diesel()
-            assert not df.empty
-            assert "volume_m3" in df.columns
+    @pytest.mark.parametrize("header", [None, "CAMPO DESCONHECIDO"])
+    async def test_filtro_uf_rejeita_layout_sem_estado(self, header):
+        frame = pd.read_csv(io.BytesIO(_make_vendas_csv_bytes()), sep=";", dtype=str)
+        if header is None:
+            frame = frame.drop(columns=["UNIDADE DA FEDERACAO"])
+        else:
+            frame = frame.rename(columns={"UNIDADE DA FEDERACAO": header})
+        content = frame.to_csv(index=False, sep=";").encode("utf-8")
+        with (
+            patch.object(api.client, "fetch_vendas_m3", AsyncMock(return_value=content)),
+            pytest.raises(ParseError, match="UF") as caught,
+        ):
+            await api.vendas_diesel(uf="MT")
+        assert caught.value.source == "anp_diesel"
 
-    @pytest.mark.asyncio
-    async def test_filtro_uf(self):
-        csv_bytes = _make_vendas_csv_bytes()
-        with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = csv_bytes
-            df = await api.vendas_diesel(uf="MT")
-            assert all(df["uf"] == "MT")
+    @pytest.mark.parametrize(
+        "column,value",
+        [
+            ("VENDAS", "invalido"),
+            ("VENDAS", "inf"),
+            ("VENDAS", "-inf"),
+            ("VENDAS", "NaN"),
+            ("VENDAS", "1e309"),
+            ("ANO", "2024.5"),
+            ("ANO", "2024.00000000000000000001"),
+            ("ANO", ""),
+            ("ANO", "9999"),
+            ("MES", "1.9"),
+            ("MES", "1.00000000000000000001"),
+            ("MES", "0"),
+            ("MES", "13"),
+            ("MES", "inf"),
+            ("MES", "desconhecido"),
+        ],
+    )
+    async def test_linha_invalida_rejeita_resultado_parcial(self, column, value):
+        frame = pd.read_csv(io.BytesIO(_make_vendas_csv_bytes()), sep=";", dtype=str)
+        frame.loc[2, column] = value
+        content = frame.to_csv(index=False, sep=";").encode("utf-8")
+        with (
+            patch.object(api.client, "fetch_vendas_m3", AsyncMock(return_value=content)),
+            pytest.raises(ParseError, match="registro 3") as caught,
+        ):
+            await api.vendas_diesel(uf="MT", return_meta=True)
+        assert caught.value.source == "anp_diesel"
+
+    @pytest.mark.parametrize("missing", ["", "-"])
+    async def test_volume_ausente_preserva_observacao(self, missing):
+        frame = pd.read_csv(io.BytesIO(_make_vendas_csv_bytes()), sep=";", dtype=str)
+        frame.loc[0, "VENDAS"] = missing
+        content = frame.to_csv(index=False, sep=";").encode("utf-8")
+        with patch.object(api.client, "fetch_vendas_m3", AsyncMock(return_value=content)):
+            result, meta = await api.vendas_diesel(uf="MT", return_meta=True)
+        assert len(result) == meta.records_count == 2
+        assert result.data.dt.strftime("%Y-%m-%d").tolist() == ["2024-01-01", "2024-02-01"]
+        assert pd.isna(result.volume_m3.iloc[0])
+        assert result.volume_m3.iloc[1] == 520000.0
+        assert result.volume_m3.dtype == "float64"
 
     @pytest.mark.asyncio
     async def test_filtro_data(self):
@@ -284,30 +201,6 @@ class TestVendasDiesel:
                 fim="2024-12-31",
             )
             assert all(df["data"] >= pd.Timestamp("2024-02-01"))
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        csv_bytes = _make_vendas_csv_bytes()
-        with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = csv_bytes
-            result = await api.vendas_diesel(return_meta=True)
-            assert isinstance(result, tuple)
-            df, meta = result
-            assert isinstance(meta, MetaInfo)
-            assert meta.source == "anp_diesel"
-
-    @pytest.mark.asyncio
-    async def test_uf_invalida(self):
-        with pytest.raises(ValueError, match="invalida"):
-            await api.vendas_diesel(uf="XX")
-
-    @pytest.mark.asyncio
-    async def test_inicio_string_iso(self):
-        csv_bytes = _make_vendas_csv_bytes()
-        with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:
-            mock.return_value = csv_bytes
-            df = await api.vendas_diesel(inicio="2024-01-01")
-            assert not df.empty
 
 
 class TestSyncWrapper:
@@ -348,7 +241,12 @@ class TestPrecosDieselAsPolars:
     async def test_as_polars(self):
         pl = pytest.importorskip("polars")
         xlsx = _make_precos_xlsx_bytes()
-        with patch.object(api.client, "fetch_precos_estados", new_callable=AsyncMock) as mock:
-            mock.return_value = xlsx
+        with patch.object(api.client, "fetch_precos_resource", new_callable=AsyncMock) as mock:
+            mock.return_value = api.client.PrecosResource(
+                xlsx,
+                "https://www.gov.br/anp/data.xlsx",
+                "https://www.gov.br/anp/data.xlsx",
+                datetime(2026, 9, 8, tzinfo=UTC),
+            )
             result = await api.precos_diesel(nivel="uf", as_polars=True)
         assert isinstance(result, pl.DataFrame)

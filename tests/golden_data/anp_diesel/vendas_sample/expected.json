@@ -1,12 +1,12 @@
 {
-  "min_rows": 3,
-  "count": 3,
+  "count": 22005,
   "required_columns": ["data", "uf", "regiao", "produto", "volume_m3"],
   "columns": ["data", "uf", "regiao", "produto", "volume_m3"],
-  "first_row": {"uf": "MT", "regiao": "CENTRO-OESTE", "produto": "DIESEL", "volume_m3": 500000.0},
+  "first_row": {"data": "2013-01-01 00:00:00", "uf": "AC", "regiao": "REGIÃO NORTE", "produto": "DIESEL S-10", "volume_m3": 363.0},
+  "last_row": {"data": "2026-07-01 00:00:00", "uf": "TO", "volume_m3": 0.0},
   "checks": {
     "all_products_contain_diesel": true,
-    "volume_m3_positive": true,
+    "published_negative_rows": 1,
     "data_column_is_datetime": true,
     "sorted_by_data_uf": true
   }

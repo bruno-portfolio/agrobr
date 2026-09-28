@@ -1,0 +1,32 @@
+[
+  {
+    "NC": "Nível Territorial (Código)",
+    "NN": "Nível Territorial",
+    "MC": "Unidade de Medida (Código)",
+    "MN": "Unidade de Medida",
+    "V": "Valor",
+    "D1C": "Unidade da Federação (Código)",
+    "D1N": "Unidade da Federação",
+    "D2C": "Ano (Código)",
+    "D2N": "Ano",
+    "D3C": "Variável (Código)",
+    "D3N": "Variável",
+    "D4C": "Tipo de produto extrativo (Código)",
+    "D4N": "Tipo de produto extrativo"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "40",
+    "MN": "Mil Reais",
+    "V": "651058",
+    "D1C": "15",
+    "D1N": "Pará",
+    "D2C": "2023",
+    "D2N": "2023",
+    "D3C": "145",
+    "D3N": "Valor da produção na extração vegetal",
+    "D4C": "3403",
+    "D4N": "1.1 - Açaí (fruto)"
+  }
+]

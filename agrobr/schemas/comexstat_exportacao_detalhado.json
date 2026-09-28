@@ -1,0 +1,193 @@
+{
+  "name": "comexstat.exportacao.detalhado",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [],
+  "required_columns": [
+    "ano",
+    "mes",
+    "ncm",
+    "cod_unidade",
+    "cod_pais",
+    "uf",
+    "cod_via",
+    "cod_urf",
+    "qtd_estatistica",
+    "kg_liquido",
+    "valor_fob_usd"
+  ],
+  "dtypes": {
+    "ano": "int",
+    "mes": "int",
+    "ncm": "str",
+    "cod_unidade": "str",
+    "cod_pais": "str",
+    "uf": "str",
+    "cod_via": "str",
+    "cod_urf": "str",
+    "qtd_estatistica": "int",
+    "kg_liquido": "int",
+    "valor_fob_usd": "float"
+  },
+  "nullable": {
+    "ano": false,
+    "mes": false,
+    "ncm": false,
+    "cod_unidade": false,
+    "cod_pais": false,
+    "uf": false,
+    "cod_via": false,
+    "cod_urf": false,
+    "qtd_estatistica": true,
+    "kg_liquido": true,
+    "valor_fob_usd": true
+  },
+  "columns": [
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1997,
+      "max_value": 9999
+    },
+    {
+      "name": "mes",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "ncm",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_unidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_pais",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_via",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_urf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "qtd_estatistica",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "kg_liquido",
+      "type": "int",
+      "nullable": true,
+      "unit": "kg",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_fob_usd",
+      "type": "float",
+      "nullable": true,
+      "unit": "USD",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "ano_min": 1997,
+    "ano_max": 9999,
+    "mes_min": 1,
+    "mes_max": 12,
+    "qtd_estatistica_min": 0,
+    "kg_liquido_min": 0,
+    "valor_fob_usd_min": 0,
+    "exact_column_order": true,
+    "integer_dtype": "Int64",
+    "float_dtype": "float64",
+    "string_dtype": "string[python]",
+    "codes": "Literal ASCII codes; leading zeros and special codes are preserved",
+    "urf": "Unidade da Receita Federal; no physical port is inferred",
+    "missing_measures": "Missing contributions propagate to the corresponding aggregate"
+  },
+  "guarantees": [
+    "Annual resource validated before any product or dimension filter",
+    "Country, statistical unit, transport mode and Receita Federal codes retain leading zeros",
+    "Detail preserves occurrences; monthly groups only year, month, NCM and UF",
+    "Statistical quantities are available in detail with their reported unit",
+    "Import freight and insurance are retained as separate USD measures",
+    "Output schema and dtypes remain stable for an empty selection"
+  ]
+}

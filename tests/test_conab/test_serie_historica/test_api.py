@@ -1,65 +1,30 @@
-"""Testes para a API publica de serie historica CONAB."""
-
-from io import BytesIO
+import warnings
+from datetime import date
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
-import pandas as pd
+import openpyxl
 import pytest
 
+from agrobr import datasets
 from agrobr.conab.serie_historica import api
 from agrobr.conab.serie_historica.api import produtos_disponiveis
 from agrobr.exceptions import InvalidParameterError
+from tests import helpers
+
+LEVANTAMENTO_SET_2026 = (
+    Path(__file__).resolve().parents[2]
+    / "golden_data/reconciliacao_r3_20260918/7cd4df7946e5c57f.xlsx"
+)
+MANIFEST = helpers.load_serie_historica_manifest()
 
 
-def _make_sample_xls() -> BytesIO:
-    """Cria arquivo Excel de exemplo com 3 abas para mocks."""
-    area_rows = [
-        ["CONAB - Soja - Área Plantada (mil ha)", None, None],
-        [None, None, None],
-        ["Região/UF", "2022/23", "2023/24"],
-        ["CENTRO-OESTE", None, None],
-        ["MT", 11400.0, 12000.0],
-        ["GO", 4300.0, 4500.0],
-        ["SUL", None, None],
-        ["PR", 5700.0, 5900.0],
-        ["BRASIL", 44000.0, 46000.0],
-    ]
-
-    producao_rows = [
-        ["CONAB - Soja - Produção (mil ton)", None, None],
-        [None, None, None],
-        ["Região/UF", "2022/23", "2023/24"],
-        ["CENTRO-OESTE", None, None],
-        ["MT", 39000.0, 41000.0],
-        ["GO", 15000.0, 15800.0],
-        ["SUL", None, None],
-        ["PR", 21000.0, 22000.0],
-        ["BRASIL", 154600.0, 160000.0],
-    ]
-
-    produtividade_rows = [
-        ["CONAB - Soja - Produtividade (kg/ha)", None, None],
-        [None, None, None],
-        ["Região/UF", "2022/23", "2023/24"],
-        ["CENTRO-OESTE", None, None],
-        ["MT", 3421.0, 3417.0],
-        ["GO", 3488.0, 3511.0],
-        ["SUL", None, None],
-        ["PR", 3684.0, 3729.0],
-        ["BRASIL", 3514.0, 3478.0],
-    ]
-
-    buf = BytesIO()
-    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-        for name, rows in [
-            ("Area", area_rows),
-            ("Producao", producao_rows),
-            ("Produtividade", produtividade_rows),
-        ]:
-            df = pd.DataFrame(rows)
-            df.to_excel(writer, sheet_name=name, index=False, header=False)
-    buf.seek(0)
-    return buf
+def _safras_do_levantamento(aba: str) -> set[str]:
+    livro = openpyxl.load_workbook(LEVANTAMENTO_SET_2026, read_only=True)
+    cabecalho = next(livro[aba].iter_rows(min_row=6, max_row=6, values_only=True))
+    livro.close()
+    rotulos = {str(v).removeprefix("Safra ") for v in cabecalho if str(v).startswith("Safra ")}
+    return {f"20{r[:2]}/{r[3:]}" if "/" in r else r for r in rotulos}
 
 
 class TestSerieHistorica:
@@ -67,147 +32,43 @@ class TestSerieHistorica:
     async def test_invalid_product_raises_before_download(self):
         with (
             patch.object(api.client, "download_xls", new_callable=AsyncMock) as download,
-            pytest.raises(InvalidParameterError, match="Disponíveis"),
+            helpers.collect_failures() as check,
         ):
-            await api.serie_historica("banana")
+            with check("erro"), pytest.raises(InvalidParameterError, match="Disponíveis"):
+                await api.serie_historica("banana")
+            with check("antes_da_rede"):
+                assert download.await_count == 0
 
-        download.assert_not_awaited()
 
-    @pytest.mark.asyncio
-    async def test_returns_dataframe(self):
-        xls = _make_sample_xls()
-        metadata = {
-            "url": "https://test.com/sojaseriehist.xls",
-            "produto": "soja",
-            "categoria": "graos",
-            "size_bytes": 1024,
-            "content_type": "application/vnd.ms-excel",
-        }
-
-        with patch.object(
-            api.client,
-            "download_xls",
-            new_callable=AsyncMock,
-            return_value=(xls, metadata),
-        ):
-            df = await api.serie_historica("soja")
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) > 0
-        assert "produto" in df.columns
-        assert "safra" in df.columns
-        assert "uf" in df.columns
-        assert "area_plantada_mil_ha" in df.columns
-        assert all(df["produto"] == "soja")
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        xls = _make_sample_xls()
-        metadata = {
-            "url": "https://test.com/sojaseriehist.xls",
-            "produto": "soja",
-            "categoria": "graos",
-            "size_bytes": 1024,
-            "content_type": "application/vnd.ms-excel",
-        }
-
-        with patch.object(
-            api.client,
-            "download_xls",
-            new_callable=AsyncMock,
-            return_value=(xls, metadata),
-        ):
-            df = await api.serie_historica("soja", uf="MT")
-
-        assert all(df["uf"] == "MT")
-
-    @pytest.mark.asyncio
-    async def test_filter_year_range(self):
-        xls = _make_sample_xls()
-        metadata = {
-            "url": "https://test.com/sojaseriehist.xls",
-            "produto": "soja",
-            "categoria": "graos",
-            "size_bytes": 1024,
-            "content_type": "application/vnd.ms-excel",
-        }
-
-        with patch.object(
-            api.client,
-            "download_xls",
-            new_callable=AsyncMock,
-            return_value=(xls, metadata),
-        ):
-            df = await api.serie_historica("soja", inicio=2023, fim=2023)
-
-        assert all(df["safra"] == "2023/24")
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        xls = _make_sample_xls()
-        metadata = {
-            "url": "https://test.com/sojaseriehist.xls",
-            "produto": "soja",
-            "categoria": "graos",
-            "size_bytes": 1024,
-            "content_type": "application/vnd.ms-excel",
-        }
-
-        with patch.object(
-            api.client,
-            "download_xls",
-            new_callable=AsyncMock,
-            return_value=(xls, metadata),
-        ):
-            df, meta = await api.serie_historica("soja", return_meta=True)
-
-        assert meta.source == "conab_serie_historica"
-        assert meta.attempted_sources == ["conab_serie_historica"]
-        assert meta.selected_source == "conab_serie_historica"
-        assert meta.fetch_timestamp is not None
-        assert meta.records_count == len(df)
-        assert meta.parser_version >= 1
-
-    @pytest.mark.asyncio
-    async def test_metrics_merged(self):
-        xls = _make_sample_xls()
-        metadata = {
-            "url": "https://test.com/sojaseriehist.xls",
-            "produto": "soja",
-            "categoria": "graos",
-            "size_bytes": 1024,
-            "content_type": "application/vnd.ms-excel",
-        }
-
-        with patch.object(
-            api.client,
-            "download_xls",
-            new_callable=AsyncMock,
-            return_value=(xls, metadata),
-        ):
-            df = await api.serie_historica("soja", uf="MT")
-
-        mt_2022 = df[df["safra"] == "2022/23"]
-        assert len(mt_2022) == 1
-        row = mt_2022.iloc[0]
-        assert row["area_plantada_mil_ha"] == pytest.approx(11400.0)
-        assert row["producao_mil_ton"] == pytest.approx(39000.0)
-        assert row["produtividade_kg_ha"] == pytest.approx(3421.0)
+@pytest.mark.parametrize(
+    ("produto", "aba", "hoje", "avisa"),
+    [
+        ("soja", "Soja", date(2026, 9, 22), True),
+        ("canola", "Canola", date(2026, 9, 22), True),
+        ("soja", "Soja", date(2026, 10, 15), False),
+    ],
+)
+async def test_safras_ainda_no_levantamento_mensal_avisam_revisao(
+    produto, aba, hoje, avisa, monkeypatch
+):
+    case = next(item for item in MANIFEST["cases"] if item["product"] == produto)
+    helpers.install_serie_historica_http(monkeypatch, case)
+    monkeypatch.setattr(api, "_hoje", lambda: hoje)
+    with warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        frame = await datasets.serie_historica_safra(produto)
+    mensagens = [str(a.message) for a in avisos if "levantamento mensal" in str(a.message)]
+    publicadas = sorted(set(frame["safra"]) & _safras_do_levantamento(aba))
+    assert publicadas
+    if not avisa:
+        assert mensagens == []
+        return
+    assert len(mensagens) == 1
+    assert mensagens[0].startswith(f"Safra {', '.join(publicadas)} de {produto}:")
+    assert "conab.safras" in mensagens[0]
 
 
 class TestProdutosDisponiveis:
-    def test_returns_list(self):
-        result = produtos_disponiveis()
-        assert isinstance(result, list)
-        assert len(result) > 0
-
-    def test_has_required_keys(self):
-        result = produtos_disponiveis()
-        for item in result:
-            assert "produto" in item
-            assert "categoria" in item
-            assert "url" in item
-
     def test_contains_main_products(self):
         result = produtos_disponiveis()
         products = {item["produto"] for item in result}
@@ -216,8 +77,6 @@ class TestProdutosDisponiveis:
         assert "arroz" in products
         assert "cafe" in products
         assert "cana" in products
-
-    def test_urls_contain_gov_br(self):
-        result = produtos_disponiveis()
-        for item in result:
-            assert "gov.br" in item["url"]
+        assert "feijao_caupi" in products
+        assert "feijao_cores" in products
+        assert "feijao_preto" in products

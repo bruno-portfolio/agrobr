@@ -1,0 +1,36 @@
+{
+  "kind": "independent_derived_relation_oracle_not_a_publisher_table",
+  "expected_file": "expected.json",
+  "sha256": "00cc60e23ca8b224126664529bacb0b986ff5b7bfc401086a5664860a0531ed1",
+  "bytes": 1488159,
+  "rows": 781,
+  "columns": 46,
+  "scalar_cells": 35926,
+  "matched_edges": 285,
+  "geographic_occurrences": 444,
+  "administrative_occurrences": 613,
+  "source_file": "relations.json",
+  "association": "exact_NUP_lexemes_with_occurrence_multiplicity_no_punctuation_repair_no_territorial_identity",
+  "evidence": [
+    {
+      "file": "tests/golden_data/incra/nacional_20260908/metadata.json",
+      "sha256": "208e1d757af46b25f18ea1f4f9dfa821059e45a9580aa9e1f9b1b649bb11daee",
+      "bytes": 4159
+    },
+    {
+      "file": "tests/golden_data/incra/andamento_20260608/oracle.json",
+      "sha256": "132a5e554ccfa3c48152c19949f64f898fbcda04d8ca07db895939cc9e583060",
+      "bytes": 493593
+    },
+    {
+      "file": "PROFILE_RESULTADO.json",
+      "sha256": "c32120c359b5a17155a93605cb955393fa15d8487d44566969187b709e10337a",
+      "bytes": 15713
+    },
+    {
+      "file": "review.json",
+      "sha256": "8dfb01869a77a64bdcee51b1670861e207ce26ac19d9c68affd43c8705075935",
+      "bytes": 126244
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+ "descricao": "Recorte do cadastro de instrumentos da B3 (InstrumentsConsolidatedFile de 22/09/2026): os 1911 instrumentos dos sete ativos agro, entre eles os 721 dos CSVs de posições em aberto de 21 e 22/09/2026 (golden b3/pregoes_20260921_20260922). Valores copiados como texto do registro agro da rodada 18 de conferência (leitor CSV independente, sete ativos, todos os campos); aqui ficam só os campos do vencimento. Oráculo: o mês do contrato é o primeiro mês com a letra M do XprtnCd (glossário, p. 2: formatos MYY e MYOA) a partir do XprtnDt.",
+ "arquivos": [
+  {
+   "file": "instrumentos_agro_20260922.json",
+   "bytes": 251210,
+   "sha256": "92c2276e484c9f8a159d84c6b163d47a793e4b19e4fc757a21c319943d3b1c0f"
+  }
+ ],
+ "campos": [
+  "RptDt",
+  "TckrSymb",
+  "Asst",
+  "MktNm",
+  "XprtnCd",
+  "XprtnDt"
+ ],
+ "origem": {
+  "cadastro": {
+   "token_url": "https://arquivos.b3.com.br/api/download/requestname?fileName=InstrumentsConsolidated&date=2026-09-22&recaptchaToken=",
+   "download_url": "https://arquivos.b3.com.br/api/download?token=%5BREDACTED%5D",
+   "fetched_at": "2026-09-24T03:09:45.401257+00:00",
+   "status": 200,
+   "bytes": 20075590,
+   "sha256": "b70bcbae701b4b979997e58c0c6983b662b4ab934526776dae93a57082c25625",
+   "registro_agro_de_conferencia": {
+    "arquivo": "registro agro da conferência",
+    "sha256": "3babed7a234f393848440eaad2232cbd6c6bb538a32db703d337724b308034cc",
+    "transformacao": "Independent CSV reader; only seven agricultural asset codes retained, all source fields",
+    "instrumentos": 1911
+   }
+  },
+  "glossario": {
+   "url": "https://www.b3.com.br/data/files/CC/85/F8/4C/396D2810AA8B5C28AC094EA8/InstrumentsConsolidatedFile.pdf",
+   "fetched_at": "2026-09-24T03:09:42.260123+00:00",
+   "bytes": 191413,
+   "sha256": "b2cd4a3e16feb4b44291953c7f21a333f84fe022cf4d8ba847cc9c2e71f93439",
+   "last_modified": "Thu, 25 Aug 2022 19:56:24 GMT",
+   "pagina": 2,
+   "XprtnCd": "MYY (M = código do mês, YY = ano) ou MYOA (M = código do mês, Y = código do ano, O = código da opção, A = sequencial alfanumérico)"
+  }
+ }
+}

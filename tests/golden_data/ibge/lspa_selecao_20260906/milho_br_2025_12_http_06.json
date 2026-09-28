@@ -1,0 +1,62 @@
+[
+  {
+    "NC": "1",
+    "NN": "Brasil",
+    "MC": "1006",
+    "MN": "Hectares",
+    "V": "17895899",
+    "D1C": "1",
+    "D1N": "Brasil",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39442",
+    "D3N": "1.16 Milho (2ª Safra)",
+    "D4C": "109",
+    "D4N": "Área plantada"
+  },
+  {
+    "NC": "1",
+    "NN": "Brasil",
+    "MC": "1006",
+    "MN": "Hectares",
+    "V": "17863886",
+    "D1C": "1",
+    "D1N": "Brasil",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39442",
+    "D3N": "1.16 Milho (2ª Safra)",
+    "D4C": "216",
+    "D4N": "Área colhida"
+  },
+  {
+    "NC": "1",
+    "NN": "Brasil",
+    "MC": "1017",
+    "MN": "Toneladas",
+    "V": "116005049",
+    "D1C": "1",
+    "D1N": "Brasil",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39442",
+    "D3N": "1.16 Milho (2ª Safra)",
+    "D4C": "35",
+    "D4N": "Produção"
+  },
+  {
+    "NC": "1",
+    "NN": "Brasil",
+    "MC": "33",
+    "MN": "Quilogramas por Hectare",
+    "V": "6494",
+    "D1C": "1",
+    "D1N": "Brasil",
+    "D2C": "202512",
+    "D2N": "dezembro 2025",
+    "D3C": "39442",
+    "D3N": "1.16 Milho (2ª Safra)",
+    "D4C": "36",
+    "D4N": "Rendimento médio"
+  }
+]

@@ -2,6 +2,32 @@
 
 Guide to solving common problems.
 
+## What to catch
+
+Every agrobr exception inherits from `AgrobrError`. In sources and datasets, HTTP error statuses do not come out as
+httpx exceptions: they come out as `SourceUnavailableError`.
+
+| Exception | Meaning |
+|-----------|---------|
+| `SourceUnavailableError` | The source did not deliver the data: timeout, connection failure or HTTP error status. The message carries the source, the URL and the status ("HTTP 403: a fonte recusou o pedido (bloqueio de WAF ou permissão)", "HTTP 404: o recurso não existe na URL"), and `__cause__` keeps the original exception. In a dataset, every source failed: `attempted_sources` lists the ones tried, in order, `errors` gives the reason for each, and `__cause__` is the error of the last one |
+| `ParseError` | The data arrived, but the source layout changed and the parser cannot read it |
+| `InvalidParameterError` | Parameter rejected before any request; also a `ValueError` |
+| `AgrobrError` | The base: catches any agrobr error |
+
+```python
+from agrobr import datasets
+from agrobr.exceptions import AgrobrError, ParseError, SourceUnavailableError
+
+try:
+    df = await datasets.producao_anual("soja", ano=2023)
+except SourceUnavailableError as error:
+    print(error.attempted_sources, error.errors)
+except ParseError:
+    ...
+except AgrobrError:
+    ...
+```
+
 ## Connection Errors
 
 ### `SourceUnavailableError`
@@ -137,13 +163,15 @@ pip install --upgrade agrobr
 
 ### Corrupted Cache
 
-**Cause:** Problem with DuckDB or a corrupted cache file.
+**Cause:** `agrobr.duckdb` became unreadable (power outage, full disk or antivirus in the middle of a write).
 
-**Solution:** delete the cache file (recreated on next use):
+**Solution:** agrobr moves the damaged database to `agrobr.duckdb.corrompido-<YYYYMMDDHHMM>`, warns with both paths and creates a new database on the next query. If the warning is the cache-unavailable one (the file was in use and could not be moved), close the other agrobr processes and delete the file (recreated on next use):
 
 ```bash
 rm ~/.agrobr/cache/agrobr.duckdb
 ```
+
+Everything agrobr writes, and how to clean it: [What agrobr writes to disk](disco.md).
 
 ### Cache Not Updating
 
@@ -209,14 +237,23 @@ agrobr cepea indicador soja --formato csv > soja.csv
 
 ### Enable Detailed Logs
 
-```bash
-# Via CLI
-agrobr --verbose cepea indicador soja
+As a library, agrobr never writes logs to standard output. Logs go through the standard library's `logging`, as JSON: without
+configuration, only warnings and errors come out, on standard error.
 
-# Via code
-import logging
-logging.basicConfig(level=logging.DEBUG)
+```bash
+# Via CLI (logs go to standard error)
+agrobr --verbose cepea indicador soja
 ```
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG)             # all logs, on standard error
+logging.getLogger("agrobr").setLevel(logging.INFO)   # or only agrobr's level
+```
+
+If your application configures structlog before importing agrobr, its configuration wins: agrobr only configures structlog
+when nobody has.
 
 ### View Current Configuration
 

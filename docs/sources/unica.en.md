@@ -17,6 +17,7 @@ df = await unica.moagem_quinzenal("cana", regiao="centro_sul")
 
 # Season position: production, ATR, sugar/ethanol mix
 df = await unica.safra_resumo(periodo="acumulado")
+df = await unica.safra_resumo(periodo="mensal")  # or "quinzena", depending on the edition
 
 # Annual history by state (1980/1981 to 2020/2021)
 df = await unica.producao_historica("acucar", safra_inicio="2010/2011")
@@ -30,7 +31,7 @@ Requires the `[pdf]` extra for the biweekly report: `pip install agrobr[pdf]`.
 |----------|-----------|------|---------|-------------|
 | `moagem_quinzenal` | `produto` | str | `"cana"` | `cana`, `acucar`, `etanol_total`, `etanol_anidro`, or `etanol_hidratado` |
 | `moagem_quinzenal` | `regiao` | str \| None | None | `sao_paulo`, `centro_sul`, `demais_estados`, or all regions |
-| `safra_resumo` | `periodo` | str | `"acumulado"` | `acumulado` or `quinzena` |
+| `safra_resumo` | `periodo` | str | `"acumulado"` | `acumulado`, `quinzena` or `mensal`; a period the current edition does not publish → `InvalidParameterError` listing the edition's periods |
 | `producao_historica` | `produto` | str | `"cana"` | `cana`, `acucar`, `etanol_anidro`, `etanol_hidratado`, or `etanol_total` |
 | `producao_historica` | `safra_inicio` | str \| None | None | Initial crop year in `YYYY/YYYY` format |
 | `producao_historica` | `safra_fim` | str \| None | None | Final crop year in `YYYY/YYYY` format |
@@ -51,6 +52,23 @@ Requires the `[pdf]` extra for the biweekly report: `pip install agrobr[pdf]`.
 | `variacao_pct` | float | Percentage change |
 | `unidade` | str | `t` (cane/sugar) or `m3` (ethanol) |
 
+## Columns — `safra_resumo`
+
+| Column | Type | Description |
+|---|---|---|
+| `produto` | str | `cana`, `acucar`, `etanol_anidro`, `etanol_hidratado`, `etanol_total`, `atr`, `atr_por_tonelada`, `mix_acucar`, `mix_etanol`, `litros_etanol_por_tonelada`, `kg_acucar_por_tonelada` |
+| `regiao` | str | `centro_sul`, `sao_paulo`, `demais_estados` |
+| `safra` | str | Report season (e.g., `2026/2027`) |
+| `periodo` | str | `acumulado`, `quinzena` or `mensal`, read from the table title |
+| `data_inicio` | datetime | Period start, read from the title (e.g., `2026-06-01` for "junho de 2026") |
+| `data_fim` | datetime | Period end, read from the title (e.g., `2026-07-01` for the accumulated "até 01 de julho de 2026") |
+| `valor` | float | Current-season value for the period |
+| `valor_safra_anterior` | float | Equivalent value for the previous season |
+| `variacao_pct` | float | Percentage change; null for the mix, which the source does not compare |
+| `unidade` | str | `mil_t`, `mi_litros`, `kg_t` (ATR or sugar per ton), `l_t` or `pct` (mix) |
+
+In the accumulated period, `data_fim` is the title date, which UNICA uses as an exclusive bound: the accumulated "até 01 de agosto de 2026" runs through July 31 and equals the accumulated "até 01 de julho" plus the July monthly value, which comes with `data_fim=2026-07-31`. The data stays as published.
+
 ## Columns — `producao_historica`
 
 | Column | Type | Description |
@@ -65,6 +83,16 @@ Requires the `[pdf]` extra for the biweekly report: `pip install agrobr[pdf]`.
 
 - **Biweekly**: the PDF covers the current season + comparison with the previous one; the source
   does not provide a long biweekly history.
+- **Biweekly or monthly edition**: summary Table 2 carries the biweek (e.g., "2ª quinzena de abril de 2026", 2026-05-01
+  edition) or the month (e.g., "junho de 2026", 2026-07-01 edition). agrobr reads the period and the dates from each
+  table title, and a title it does not recognize becomes a `ParseError`. The listing keeps only the current edition: on
+  2026-09-23, the position up to 2026-07-01, published on 2026-08-06.
+- **Revisions**: UNICA revises past biweeks in every edition. Example: Center-South cane accumulated up to 05/01,
+  60,457,836 t in the 2026-05-01 edition and 60,412,599 t in the 2026-07-01 one. agrobr always serves the current edition.
+- **Missing value**: an absence mark (`n/d`, `-`) in place of a number in the summary or in the biweekly series becomes
+  a null value, and the row is kept.
+  A mandatory product (cane, sugar, total ethanol, mix) missing from a period becomes a `ParseError`.
+- **Out of scope**: report Tables 8 (corn ethanol) and 9 (monthly ethanol sales).
 - **History**: the classic site database is **frozen at 2020/2021** — later seasons
   return empty from the source. For the current season use the biweekly functions.
 
@@ -79,5 +107,5 @@ print(meta.source)  # "unica"
 
 - Biweekly report: `https://unicadata.com.br/listagem.php?idMn=63` (PDF, rotating URL)
 - History: `https://unicadata.com.br/xlsHPM.php` (XLSX)
-- Update: biweekly during the season (positions on the 1st and 16th of each month)
+- Update: per season-report edition, biweekly or monthly; the listing only carries the current edition
 - License: `zona_cinza` — educational/research use; for commercial use, consult UNICA

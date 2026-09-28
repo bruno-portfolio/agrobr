@@ -3,11 +3,10 @@
 Pipeline agrobr — Dados Agrícolas Completos
 ============================================
 
-Pipeline demonstrando todas as fontes do agrobr agrobr:
+Pipeline com 6 das fontes do agrobr, em 7 coletas:
 - CEPEA: indicadores de preço
 - CONAB: safras + custos de produção
-- IBGE: PAM
-- INMET: dados meteorológicos
+- INMET: dados meteorológicos (exige token: defina AGROBR_INMET_TOKEN; sem ele, a coleta falha)
 - BCB/SICOR: crédito rural
 - ComexStat: exportações
 - ANDA: entregas de fertilizantes (requer pip install agrobr[pdf])
@@ -15,12 +14,12 @@ Pipeline demonstrando todas as fontes do agrobr agrobr:
 Demonstra:
 - Coleta paralela de múltiplas fontes
 - MetaInfo com proveniência completa
-- Cache hit na segunda execução
+- Cache do CEPEA na segunda execução (from_cache=True); as outras fontes não têm cache no agrobr
 - Exportação em Parquet
 
 Uso:
     python pipeline_cache.py
-    python pipeline_cache.py  # segunda execução → cache hit
+    python pipeline_cache.py  # segunda execução → o CEPEA sai do cache
 """
 
 from __future__ import annotations
@@ -49,12 +48,21 @@ async def coletar_safras() -> tuple[pd.DataFrame, dict[str, object]]:
 
 
 async def coletar_custo_producao() -> tuple[pd.DataFrame, dict[str, object]] | None:
-    """Coleta custos de produção da soja (CONAB)."""
+    """Coleta custos de soja em MT conforme a referência mais recente do catálogo."""
     from agrobr import conab
 
     try:
+        catalogo = await conab.catalogo_custos("soja")
+        planilha = catalogo["planilha"].max()
+        contextos = await conab.catalogo_custos("soja", planilha=planilha)
+        mt = contextos[contextos["uf"].eq("MT") & contextos["status"].eq("identified")]
+        aba = mt.sort_values("ano_referencia")["aba"].iloc[-1]
         df, meta = await conab.custo_producao(  # type: ignore[misc]
-            cultura="soja", uf="MT", safra="2024/25", return_meta=True
+            cultura="soja",
+            uf="MT",
+            planilha=planilha,
+            aba=aba,
+            return_meta=True,
         )
         return df, meta.to_dict()  # type: ignore[union-attr]
     except Exception as e:
@@ -93,7 +101,7 @@ async def coletar_fertilizantes() -> tuple[pd.DataFrame, dict[str, object]] | No
     try:
         from agrobr import anda
 
-        df, meta = await anda.entregas(ano=2024, uf="MT", return_meta=True)  # type: ignore[misc]
+        df, meta = await anda.entregas(ano=2024, return_meta=True)  # type: ignore[misc]
         return df, meta.to_dict()  # type: ignore[union-attr]
     except ImportError:
         print("  [!] ANDA: pdfplumber não instalado (pip install agrobr[pdf])")
@@ -174,7 +182,7 @@ def salvar_parquet(dados: dict[str, pd.DataFrame], output_dir: Path) -> list[str
 async def main() -> None:
     """Pipeline principal."""
     print("=" * 70)
-    print("agrobr agrobr — Pipeline de Dados Agrícolas Completo")
+    print("agrobr — Pipeline de Dados Agrícolas")
     print("=" * 70)
 
     t0 = time.monotonic()
@@ -253,7 +261,9 @@ async def main() -> None:
     print(f"  Fontes coletadas: {len(datasets)}/{len(nomes)}")
     print(f"  Total de registros: {total_records:,}")
     print(f"  Arquivos Parquet: {len(salvos)}")
-    print("\nDica: execute novamente para ver cache hit!")
+    print(
+        "\nDica: execute de novo: o CEPEA sai do cache (from_cache=True); as outras não têm cache."
+    )
     print(f"{'=' * 70}")
 
 

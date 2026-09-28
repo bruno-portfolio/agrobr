@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agrobr"
-version = "1.1.0"
+version = "2.0.0"
 description = "Brazilian agricultural data in one line of code"
 readme = "README.md"
 license = "MIT"
@@ -51,21 +51,23 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "httpx>=0.25.0",
+    "httpx>=0.28.1",
+    "httpcore>=1.0.9",
+    "certifi>=2026.7.22",
     "beautifulsoup4>=4.12.0",
-    "lxml>=5.0.0",
-    "pandas>=2.0.0",
+    "soupsieve>=2.9.0",
+    "lxml>=6.1.0",
+    "pandas>=2.2.2",
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
-    "duckdb>=1.5.0",
+    "duckdb>=1.5.2",
     "structlog>=23.2.0",
     "chardet>=5.2.0",
-    "typer>=0.9.0",
+    "typer>=0.26.0",
     "openpyxl>=3.1.0",
     "python-calamine>=0.3.0",
     "xlrd>=2.0.1",
-    "sidrapy>=0.1.4",
-    "requests>=2.32.0",
+    "requests>=2.33.0",
 ]
 
 [project.optional-dependencies]
@@ -73,17 +75,18 @@ browser = [
     "playwright>=1.55.1",
 ]
 pdf = [
-    "pdfplumber>=0.10.0",
+    "pdfplumber>=0.11.10",
 ]
 bigquery = [
     "basedosdados>=2.0.0",
 ]
 polars = [
     "polars>=0.19.0",
+    "pyarrow>=14.0.1",
 ]
 geo = [
-    "geopandas>=1.0.0",
-    "pyogrio>=0.7",
+    "geopandas>=1.1.4",
+    "pyogrio>=0.8.0",
 ]
 dev = [
     "pytest>=7.4.0",
@@ -91,6 +94,7 @@ dev = [
     "pytest-cov>=4.1.0",
     "pytest-recording>=0.13.0",
     "pytest-timeout>=2.2.0",
+    "pytest-socket>=0.8.1",
     "ruff>=0.4.0",
     "mypy>=1.7.0",
     "pre-commit>=3.5.0",
@@ -120,7 +124,7 @@ Issues = "https://github.com/bruno-portfolio/agrobr/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["agrobr"]
-exclude = ["agrobr/benchmark/**"]
+exclude = ["agrobr/benchmark/**", "**/.claude/**", "**/.env", "**/.env.*"]
 
 [tool.hatch.build.targets.sdist]
 only-include = [
@@ -130,7 +134,7 @@ only-include = [
     "LICENSE",
     "CHANGELOG.md",
 ]
-exclude = ["agrobr/benchmark/**"]
+exclude = ["agrobr/benchmark/**", "**/.claude/**", "**/.env", "**/.env.*"]
 
 [tool.ruff]
 target-version = "py311"
@@ -179,7 +183,7 @@ ignore_errors = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-q --tb=short -m 'not benchmark and not slow and not integration'"
+addopts = "-q --tb=short --disable-socket --allow-unix-socket -m 'not benchmark and not slow and not integration'"
 filterwarnings = [
     "ignore::DeprecationWarning",
 ]

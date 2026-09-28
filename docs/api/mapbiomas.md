@@ -18,13 +18,28 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 |-----------|------|-------------|-----------|
 | `bioma` | `str` | Nao | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pampa", "Pantanal". Se None, todos |
 | `estado` | `str` | Nao | Sigla ou nome completo da UF (ex: `"MT"`, `"Mato Grosso"`). Caixa e acentos são opcionais; valor inválido levanta `ValueError` antes do download |
-| `ano` | `int` | Nao | Ano (1985-2024). Se None, todos os anos |
+| `ano` | `int` | Nao | Ano: 1985-2025 na coleção 11; 1985-2024 na coleção 10. Se None, todos os anos |
 | `classe_id` | `int` | Nao | Codigo de classe MapBiomas (ex: 15 para Pastagem) |
-| `nivel` | `str` | Nao | `"estado"` (default) ou `"municipio"`. Municipal baixa ~660 MB |
-| `municipio` | `str` | Nao | Filtro parcial por nome de municipio (case-insensitive). Requer `nivel="municipio"` |
-| `colecao` | `int` | Nao | Aceita apenas a colecao atual (10) ou None; outros valores levantam ValueError |
+| `nivel` | `str` | Nao | `"estado"` (default) ou `"municipio"`. O arquivo municipal é baixado inteiro antes dos filtros |
+| `municipio` | `str` | Nao | Substring literal do nome, sem distinguir caixa e com espaços externos removidos; não é expressão regular. Requer `nivel="municipio"` |
+| `geocodigo` | `str` | Nao | Código territorial publicado, exatamente sete dígitos ASCII como texto. Filtro exato; requer `nivel="municipio"` |
+| `colecao` | `int` | Nao | `10` ou `11`; `None` usa a coleção atual (11). Outras coleções levantam `ValueError` antes do download |
 | `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
+
+### Seleção da coleção
+
+Cada coleção possui arquivos e revisão histórica próprios. Fixe `colecao` e preserve o recurso e seu hash para reproduzir uma análise; selecionar a coleção não congela seus bytes. A coleção 11 revisa também os anos anteriores a 2025.
+
+```python
+df, meta = await agrobr.mapbiomas.cobertura(
+    estado="MT", ano=2025, colecao=11, return_meta=True
+)
+anterior = await agrobr.mapbiomas.cobertura(estado="MT", ano=2024, colecao=10)
+print(meta.data_sources, meta.source_url)
+```
+
+`meta.data_sources` identifica `mapbiomas_colecao_11` ou `mapbiomas_colecao_10`; `meta.source_url` registra o arquivo consultado. `colecao=10, ano=2025` é inválido. O dataset `datasets.uso_do_solo()` também aceita e encaminha `colecao`.
 
 ### Colunas de Retorno
 
@@ -34,10 +49,26 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 | `estado` | str | Codigo UF (ex: "MT") |
 | `municipio` | str | Nome do municipio (apenas quando `nivel="municipio"`) |
 | `classe_id` | int | Codigo da classe MapBiomas |
-| `classe` | str | Nome da classe (ex: "Pastagem", "Formacao Florestal") |
-| `nivel_0` | str | Categoria: "Natural", "Antropico", "Natural/Antropico", "Indefinido" |
+| `classe` | str | Rótulo normalizado pelo SDK conforme a coleção; não é transcrição literal da aba de legenda |
+| `nivel_0` | str | Texto publicado, como `Natural`, `Antropic`, `Natural/Antropic` e `Undefined` |
 | `ano` | int | Ano de referencia |
 | `area_ha` | float | Area em hectares |
+| `geocodigo` | str | Apenas cobertura municipal: identificador territorial publicado pelo MapBiomas |
+| `id_registro` | Int64 | Apenas cobertura municipal: `ID` numérico original da linha, local à coleção e recurso |
+
+### Cobertura municipal da Coleção 11
+
+O retorno municipal tem dez colunas, na ordem acima, com `geocodigo` e `id_registro` acrescentados após as oito colunas anteriores. `classe_id`, `ano` e `id_registro` usam pandas `Int64`, `area_ha` usa `float64` e os textos usam `object`, inclusive em um recorte vazio. O contrato `mapbiomas.cobertura_municipal` 1.0 verifica a chave `(bioma, estado, geocodigo, classe_id, id_registro, ano)` dentro de uma coleção e recurso. O parser municipal tem versão 2; os contratos e o parser estaduais permanecem próprios.
+
+`geocodigo` preserva a coluna `geocode`; não garante pertencimento ao catálogo municipal atual do IBGE. O recurso inclui Lagoa Mirim e Lagoa dos Patos, e um mesmo código pode ocorrer em mais de uma UF. Os cruzamentos territoriais publicados permanecem separados, sem corrigir UF ou somar áreas automaticamente. `municipio` e `geocodigo` podem ser combinados e ambos devem corresponder à linha.
+
+O arquivo inteiro é baixado, sem cache integrado. O parser percorre todas as linhas e os 41 anos de 1985–2025 antes de concluir, validando identidade, unicidade e áreas também fora dos filtros. Área ausente, negativa, não finita ou incompatível causa `ParseError`; zero é preservado. Somente linhas inteiramente vazias são ignoradas e contabilizadas. A emissão segue a ordem dos anos e das linhas da planilha, sem materializar um DataFrame nacional largo antes do recorte.
+
+Com `return_meta=True`, `source_details` registra o fingerprint de layout, contagens da população e do retorno, estatísticas anuais e `geocodes_with_multiple_states`. `source_details["acquisition"]` distingue recurso HTTP, eventual confirmação de download e membro XLSX extraído. `raw_content_hash` e `raw_content_size` descrevem o corpo HTTP baixado; quando ele é ZIP, o hash do XLSX está em `acquisition["member"]`. Essas evidências não certificam acurácia científica nem equivalência entre revisões.
+
+Na Coleção 10, o recurso usa 40 anos de 1985–2024 e pode publicar múltiplas linhas com a mesma combinação bioma/UF/geocódigo/classe e áreas distintas. `id_registro` preserva o `ID` original para manter essas linhas separadas, sem somá-las ou deduplicá-las. O valor zero é válido; o ID não é gerado pelo parser, não é filtro público e não tem estabilidade prometida entre arquivos, revisões ou coleções. A unicidade do ID publicado é verificada em toda a planilha antes dos filtros. Ambas as coleções retornam o mesmo esquema municipal.
+
+A legenda também depende da coleção: no recurso municipal 10, classe 13 corresponde a **Outras Formações não Florestais**; na 11, a **Mosaico Herbáceo-Arbustivo**. Ambas publicam classe 0 como não observado. Não interprete a igualdade do código entre coleções como equivalência de significado; dentro de uma mesma coleção, os recortes estadual e municipal usam a mesma legenda.
 
 ### Classes MapBiomas (principais)
 
@@ -46,14 +77,14 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 | 3 | Formacao Florestal | Natural |
 | 4 | Formacao Savanica | Natural |
 | 12 | Formacao Campestre | Natural |
-| 15 | Pastagem | Antropico |
-| 18 | Agricultura | Antropico |
-| 39 | Soja | Antropico |
-| 20 | Cana | Antropico |
-| 40 | Arroz | Antropico |
-| 9 | Silvicultura | Antropico |
-| 21 | Mosaico de Usos | Antropico |
-| 24 | Area Urbanizada | Antropico |
+| 15 | Pastagem | Antropic |
+| 18 | Agricultura | Antropic |
+| 39 | Soja | Antropic |
+| 20 | Cana | Antropic |
+| 40 | Arroz | Antropic |
+| 9 | Silvicultura | Antropic |
+| 21 | Mosaico de Usos | Antropic |
+| 24 | Area Urbanizada | Antropic |
 | 33 | Rio, Lago e Oceano | Natural |
 
 ---
@@ -74,10 +105,10 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 |-----------|------|-------------|-----------|
 | `bioma` | `str` | Nao | Filtrar por bioma. Se None, todos |
 | `estado` | `str` | Nao | Sigla ou nome completo da UF. Caixa e acentos são opcionais; valor inválido levanta `ValueError` antes do download |
-| `periodo` | `str` | Nao | Periodo (ex: "2019-2020", "1985-2024") |
+| `periodo` | `str` | Nao | Período da coleção selecionada (ex: `"2019-2020"`, `"1985-2025"` na coleção 11) |
 | `classe_de_id` | `int` | Nao | Codigo da classe de origem |
 | `classe_para_id` | `int` | Nao | Codigo da classe de destino |
-| `colecao` | `int` | Nao | Aceita apenas a colecao atual (10) ou None; outros valores levantam ValueError |
+| `colecao` | `int` | Nao | `10` ou `11`; `None` usa a coleção atual (11). O arquivo de transições pertence à coleção selecionada |
 | `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 
@@ -96,10 +127,9 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 
 ### Periodos Disponiveis
 
-- **Anuais consecutivos:** 1985-1986, 1986-1987, ..., 2023-2024
-- **Quinquenais:** 1985-1990, 1990-1995, ..., 2020-2024
-- **Decenais:** 1985-2000, 2000-2024, 1990-2000, 2000-2010, 2010-2020
-- **Total:** 1985-2024
+Na coleção 11, os períodos anuais vão de `1985-1986` a `2024-2025`, os quinquenais de `1985-1990` a `2020-2025`, e o período total é `1985-2025`. A planilha inclui também intervalos decenais e especiais. Na coleção 10, a série termina em 2024.
+
+Consulte `df.periodo.unique()` sem o filtro `periodo` para obter os intervalos efetivamente publicados na coleção selecionada.
 
 ---
 
@@ -131,14 +161,25 @@ print(f"Area convertida: {df['area_ha'].sum():,.0f} ha")
 
 ### Cobertura municipal (Belem, PA)
 
+Os filtros são aplicados após o download do arquivo municipal da coleção selecionada.
+
 ```python
 import agrobr
 
-# Baixa ~660 MB na primeira chamada — filtre bioma/estado/municipio para reduzir
 df = await agrobr.mapbiomas.cobertura(
     nivel="municipio", estado="Pará", municipio="Belém", ano=2020
 )
 print(df[["municipio", "classe", "area_ha"]].head())
+```
+
+Para selecionar um código territorial exato:
+
+```python
+df, meta = await agrobr.mapbiomas.cobertura(
+    nivel="municipio", geocodigo="5107925", classe_id=39,
+    ano=2025, colecao=11, return_meta=True,
+)
+print(df[["bioma", "estado", "municipio", "geocodigo", "area_ha"]])
 ```
 
 ### Evolucao da soja no Brasil
@@ -154,9 +195,9 @@ print(pivot)
 ## Fonte dos Dados
 
 - **Projeto:** MapBiomas — Mapeamento Anual de Cobertura e Uso da Terra no Brasil
-- **Colecao:** 10 (agosto 2025)
-- **Serie historica:** 1985-2024
+- **Coleção padrão:** 11 (agosto de 2026); coleção 10 disponível explicitamente
+- **Série histórica:** 1985-2025 na coleção 11; 1985-2024 na coleção 10
 - **Resolucao:** 30m (Landsat)
 - **Provedor:** Rede colaborativa multi-institucional
-- **Dados:** [brasil.mapbiomas.org/estatisticas](https://brasil.mapbiomas.org/estatisticas/)
+- **Dados:** [Cobertura e uso da terra — MapBiomas 30m](https://brasil.mapbiomas.org/iniciativas-e-produtos/cobertura-e-uso-da-terra/cobertura-30m/cobertura/)
 - **Licenca:** Dados publicos — livre para uso com citacao ao Projeto MapBiomas

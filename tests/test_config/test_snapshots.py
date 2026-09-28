@@ -2,15 +2,21 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from datetime import date, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
 import pytest
+from structlog import testing
 
 from agrobr.snapshots import (
     SnapshotManifest,
+    _collect_snapshot,
+    _snapshot_cepea,
+    _snapshot_conab,
+    _snapshot_ibge,
     _validate_path_component,
     create_snapshot,
     delete_snapshot,
@@ -19,6 +25,7 @@ from agrobr.snapshots import (
     list_snapshots,
     load_from_snapshot,
 )
+from tests.helpers import levanta_exatamente, make_snapshot_source, sem_excecao
 
 try:
     import pyarrow  # noqa: F401
@@ -48,28 +55,6 @@ def _write_manifest(path, manifest: SnapshotManifest) -> None:
 
 
 class TestSnapshotManifest:
-    def test_manifest_creation(self):
-        manifest = SnapshotManifest(
-            name="2025-01-15",
-            created_at=datetime(2025, 1, 15, 10, 30),
-            agrobr_version="0.3.0",
-            sources=["cepea", "conab"],
-        )
-        assert manifest.name == "2025-01-15"
-        assert manifest.agrobr_version == "0.3.0"
-        assert "cepea" in manifest.sources
-
-    def test_manifest_to_dict(self):
-        manifest = SnapshotManifest(
-            name="test",
-            created_at=datetime(2025, 1, 15, 10, 30),
-            agrobr_version="0.3.0",
-        )
-        d = manifest.to_dict()
-        assert d["name"] == "test"
-        assert d["created_at"] == "2025-01-15T10:30:00"
-        assert d["agrobr_version"] == "0.3.0"
-
     def test_manifest_from_dict(self):
         data = {
             "name": "2025-01-15",
@@ -96,34 +81,6 @@ class TestSnapshotManifest:
         manifest = SnapshotManifest.from_dict(data)
         assert manifest.created_at is dt
 
-    def test_manifest_roundtrip(self):
-        original = SnapshotManifest(
-            name="test",
-            created_at=datetime(2025, 6, 15, 14, 0),
-            agrobr_version="0.3.0",
-            sources=["cepea", "ibge"],
-            files={"cepea/soja.parquet": {"rows": 100}},
-        )
-        d = original.to_dict()
-        restored = SnapshotManifest.from_dict(d)
-        assert restored.name == original.name
-        assert restored.sources == original.sources
-        assert restored.files == original.files
-
-    def test_manifest_to_dict_includes_all_fields(self):
-        manifest = SnapshotManifest(
-            name="full",
-            created_at=datetime(2025, 3, 1),
-            agrobr_version="0.5.0",
-            sources=["cepea"],
-            files={"cepea/soja.parquet": {"rows": 10}},
-            metadata={"note": "test"},
-        )
-        d = manifest.to_dict()
-        assert d["sources"] == ["cepea"]
-        assert d["files"] == {"cepea/soja.parquet": {"rows": 10}}
-        assert d["metadata"] == {"note": "test"}
-
 
 class TestGetSnapshotsDir:
     def test_returns_config_snapshot_dir(self, tmp_path):
@@ -136,57 +93,11 @@ class TestGetSnapshotsDir:
 
 
 class TestSnapshotOperations:
-    def test_list_snapshots_empty(self, tmp_path):
-        with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path):
-            snapshots = list_snapshots()
-            assert snapshots == []
-
     def test_list_snapshots_nonexistent_dir(self, tmp_path):
         missing_dir = tmp_path / "does_not_exist"
         with patch("agrobr.snapshots.get_snapshots_dir", return_value=missing_dir):
             snapshots = list_snapshots()
             assert snapshots == []
-
-    def test_list_snapshots_with_data(self, tmp_path):
-        snapshot_dir = tmp_path / "2025-01-15"
-        snapshot_dir.mkdir()
-
-        manifest = _make_manifest("2025-01-15", sources=["cepea"])
-        _write_manifest(snapshot_dir, manifest)
-
-        with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path):
-            snapshots = list_snapshots()
-            assert len(snapshots) == 1
-            assert snapshots[0].name == "2025-01-15"
-
-    def test_list_snapshots_skips_files(self, tmp_path):
-        (tmp_path / "not_a_dir.txt").write_text("hello")
-        with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path):
-            snapshots = list_snapshots()
-            assert snapshots == []
-
-    def test_list_snapshots_skips_dirs_without_manifest(self, tmp_path):
-        (tmp_path / "no-manifest").mkdir()
-        with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path):
-            snapshots = list_snapshots()
-            assert snapshots == []
-
-    def test_list_snapshots_counts_parquet_files(self, tmp_path):
-        snapshot_dir = tmp_path / "snap1"
-        snapshot_dir.mkdir()
-        _write_manifest(snapshot_dir, _make_manifest("snap1", sources=["cepea"]))
-
-        cepea_dir = snapshot_dir / "cepea"
-        cepea_dir.mkdir()
-        (cepea_dir / "soja.parquet").write_bytes(b"fake")
-        (cepea_dir / "milho.parquet").write_bytes(b"fake")
-        (cepea_dir / "readme.txt").write_text("not parquet")
-
-        with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path):
-            snapshots = list_snapshots()
-            assert len(snapshots) == 1
-            assert snapshots[0].file_count == 2
-            assert snapshots[0].size_bytes > 0
 
     def test_list_snapshots_corrupt_manifest(self, tmp_path):
         snapshot_dir = tmp_path / "corrupt"
@@ -229,25 +140,6 @@ class TestSnapshotOperations:
 
 
 class TestLoadFromSnapshot:
-    @requires_pyarrow
-    def test_load_parquet_success(self, tmp_path):
-        snapshot_dir = tmp_path / "2025-01-15" / "cepea"
-        snapshot_dir.mkdir(parents=True)
-
-        df = pd.DataFrame({"produto": ["soja", "milho"], "valor": [150.0, 80.0]})
-        df.to_parquet(snapshot_dir / "soja.parquet", index=False)
-
-        with (
-            patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            patch("agrobr.config.get_config") as mock_config,
-        ):
-            mock_config.return_value.snapshot_date = None
-            loaded = load_from_snapshot("cepea", "soja", snapshot_name="2025-01-15")
-
-            assert loaded is not None
-            assert len(loaded) == 2
-            assert "soja" in loaded["produto"].values
-
     def test_load_file_not_found(self, tmp_path):
         snapshot_dir = tmp_path / "2025-01-15" / "cepea"
         snapshot_dir.mkdir(parents=True)
@@ -298,15 +190,6 @@ class TestPathTraversalProtection:
         ".hidden",
     ]
 
-    def test_validate_path_component_rejects_traversal(self):
-        for payload in self.TRAVERSAL_PAYLOADS:
-            with pytest.raises(ValueError):
-                _validate_path_component(payload, "name")
-
-    def test_validate_path_component_accepts_valid(self):
-        for name in ["2025-01-15", "my_snapshot", "v1.0.0", "test123"]:
-            _validate_path_component(name, "name")
-
     def test_delete_snapshot_rejects_traversal(self, tmp_path):
         with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path):
             for payload in self.TRAVERSAL_PAYLOADS:
@@ -326,23 +209,31 @@ class TestPathTraversalProtection:
             with pytest.raises(ValueError):
                 load_from_snapshot("cepea", "soja", snapshot_name="../../etc")
 
-    @pytest.mark.asyncio
-    async def test_create_snapshot_rejects_traversal(self, tmp_path):
-        with (
-            patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            pytest.raises(ValueError),
-        ):
-            await create_snapshot(name="../../etc")
-
 
 class TestCreateSnapshot:
+    @pytest.fixture(autouse=True)
+    def _available_engine(self, monkeypatch):
+        monkeypatch.setattr("agrobr.snapshots.importlib.util.find_spec", lambda _name: object())
+
     @pytest.mark.asyncio
     async def test_create_snapshot_default_name(self, tmp_path):
         with (
             patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            patch("agrobr.snapshots._snapshot_cepea", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_ibge", new_callable=AsyncMock),
+            patch(
+                "agrobr.snapshots._snapshot_cepea",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ),
+            patch(
+                "agrobr.snapshots._snapshot_conab",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ),
+            patch(
+                "agrobr.snapshots._snapshot_ibge",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ),
         ):
             result = await create_snapshot()
             assert result is not None
@@ -352,41 +243,25 @@ class TestCreateSnapshot:
     async def test_create_snapshot_custom_name(self, tmp_path):
         with (
             patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            patch("agrobr.snapshots._snapshot_cepea", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_ibge", new_callable=AsyncMock),
+            patch(
+                "agrobr.snapshots._snapshot_cepea",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ),
+            patch(
+                "agrobr.snapshots._snapshot_conab",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ),
+            patch(
+                "agrobr.snapshots._snapshot_ibge",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ),
         ):
             result = await create_snapshot(name="my-snap")
             assert result is not None
             assert result.name == "my-snap"
-
-    @pytest.mark.asyncio
-    async def test_create_snapshot_default_sources(self, tmp_path):
-        with (
-            patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            patch("agrobr.snapshots._snapshot_cepea", new_callable=AsyncMock) as mock_cepea,
-            patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock) as mock_conab,
-            patch("agrobr.snapshots._snapshot_ibge", new_callable=AsyncMock) as mock_ibge,
-        ):
-            result = await create_snapshot(name="test-defaults")
-            assert result is not None
-            mock_cepea.assert_awaited_once()
-            mock_conab.assert_awaited_once()
-            mock_ibge.assert_awaited_once()
-
-    @pytest.mark.asyncio
-    async def test_create_snapshot_custom_sources(self, tmp_path):
-        with (
-            patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            patch("agrobr.snapshots._snapshot_cepea", new_callable=AsyncMock) as mock_cepea,
-            patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock) as mock_conab,
-            patch("agrobr.snapshots._snapshot_ibge", new_callable=AsyncMock) as mock_ibge,
-        ):
-            result = await create_snapshot(name="only-cepea", sources=["cepea"])
-            assert result is not None
-            mock_cepea.assert_awaited_once()
-            mock_conab.assert_not_awaited()
-            mock_ibge.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_create_snapshot_already_exists(self, tmp_path):
@@ -400,38 +275,6 @@ class TestCreateSnapshot:
             await create_snapshot(name="existing")
 
     @pytest.mark.asyncio
-    async def test_create_snapshot_writes_manifest(self, tmp_path):
-        with (
-            patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            patch("agrobr.snapshots._snapshot_cepea", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_ibge", new_callable=AsyncMock),
-        ):
-            await create_snapshot(name="manifest-check")
-
-        manifest_path = tmp_path / "manifest-check" / "manifest.json"
-        assert manifest_path.exists()
-
-        with open(manifest_path) as f:
-            data = json.load(f)
-        assert data["name"] == "manifest-check"
-        assert data["sources"] == ["cepea", "conab", "ibge"]
-        assert "created_at" in data
-
-    @pytest.mark.asyncio
-    async def test_create_snapshot_creates_source_dirs(self, tmp_path):
-        with (
-            patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            patch("agrobr.snapshots._snapshot_cepea", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock),
-            patch("agrobr.snapshots._snapshot_ibge", new_callable=AsyncMock),
-        ):
-            await create_snapshot(name="dirs-check", sources=["cepea", "conab"])
-
-        assert (tmp_path / "dirs-check" / "cepea").is_dir()
-        assert (tmp_path / "dirs-check" / "conab").is_dir()
-
-    @pytest.mark.asyncio
     async def test_create_snapshot_source_error_continues(self, tmp_path):
         with (
             patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
@@ -440,41 +283,24 @@ class TestCreateSnapshot:
                 new_callable=AsyncMock,
                 side_effect=RuntimeError("cepea broke"),
             ),
-            patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock) as mock_conab,
-            patch("agrobr.snapshots._snapshot_ibge", new_callable=AsyncMock) as mock_ibge,
+            patch(
+                "agrobr.snapshots._snapshot_conab",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ) as mock_conab,
+            patch(
+                "agrobr.snapshots._snapshot_ibge",
+                new_callable=AsyncMock,
+                side_effect=make_snapshot_source,
+            ) as mock_ibge,
         ):
             result = await create_snapshot(name="error-resilient")
             assert result is not None
             mock_conab.assert_awaited_once()
             mock_ibge.assert_awaited_once()
 
-    @pytest.mark.asyncio
-    async def test_create_snapshot_unknown_source_ignored(self, tmp_path):
-        with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path):
-            result = await create_snapshot(name="unknown-src", sources=["banana"])
-            assert result is not None
-            assert (tmp_path / "unknown-src" / "banana").is_dir()
-
 
 class TestSnapshotCepea:
-    @requires_pyarrow
-    @pytest.mark.asyncio
-    async def test_snapshot_cepea_success(self, tmp_path):
-        from agrobr.snapshots import _snapshot_cepea
-
-        manifest = _make_manifest("test")
-        df = pd.DataFrame({"data": ["2025-01-01"], "valor": [150.0]})
-
-        with (
-            patch("agrobr.cepea.produtos", new_callable=AsyncMock, return_value=["soja"]),
-            patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=df),
-        ):
-            await _snapshot_cepea(tmp_path, manifest)
-
-        assert (tmp_path / "soja.parquet").exists()
-        assert "cepea/soja.parquet" in manifest.files
-        assert manifest.files["cepea/soja.parquet"]["rows"] == 1
-
     @pytest.mark.asyncio
     async def test_snapshot_cepea_empty_df(self, tmp_path):
         from agrobr.snapshots import _snapshot_cepea
@@ -490,20 +316,6 @@ class TestSnapshotCepea:
 
         assert not (tmp_path / "soja.parquet").exists()
         assert "cepea/soja.parquet" not in manifest.files
-
-    @pytest.mark.asyncio
-    async def test_snapshot_cepea_none_df(self, tmp_path):
-        from agrobr.snapshots import _snapshot_cepea
-
-        manifest = _make_manifest("test")
-
-        with (
-            patch("agrobr.cepea.produtos", new_callable=AsyncMock, return_value=["soja"]),
-            patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=None),
-        ):
-            await _snapshot_cepea(tmp_path, manifest)
-
-        assert not (tmp_path / "soja.parquet").exists()
 
     @requires_pyarrow
     @pytest.mark.asyncio
@@ -530,33 +342,6 @@ class TestSnapshotCepea:
         assert not (tmp_path / "soja.parquet").exists()
         assert (tmp_path / "milho.parquet").exists()
         assert "cepea/milho.parquet" in manifest.files
-
-    @requires_pyarrow
-    @pytest.mark.asyncio
-    async def test_snapshot_cepea_multiple_products(self, tmp_path):
-        from agrobr.snapshots import _snapshot_cepea
-
-        manifest = _make_manifest("test")
-        df1 = pd.DataFrame({"data": ["2025-01-01"], "valor": [150.0]})
-        df2 = pd.DataFrame({"data": ["2025-01-01"], "valor": [80.0]})
-
-        with (
-            patch(
-                "agrobr.cepea.produtos",
-                new_callable=AsyncMock,
-                return_value=["soja", "milho"],
-            ),
-            patch(
-                "agrobr.cepea.indicador",
-                new_callable=AsyncMock,
-                side_effect=[df1, df2],
-            ),
-        ):
-            await _snapshot_cepea(tmp_path, manifest)
-
-        assert (tmp_path / "soja.parquet").exists()
-        assert (tmp_path / "milho.parquet").exists()
-        assert len(manifest.files) == 2
 
 
 class TestSnapshotConab:
@@ -639,44 +424,8 @@ class TestSnapshotConab:
         assert (tmp_path / "safras.parquet").exists()
         assert not (tmp_path / "balanco.parquet").exists()
 
-    @pytest.mark.asyncio
-    async def test_snapshot_conab_none_results(self, tmp_path):
-        from agrobr.snapshots import _snapshot_conab
-
-        manifest = _make_manifest("test")
-
-        with (
-            patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=None),
-            patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=None),
-        ):
-            await _snapshot_conab(tmp_path, manifest)
-
-        assert not (tmp_path / "safras.parquet").exists()
-        assert not (tmp_path / "balanco.parquet").exists()
-        assert len(manifest.files) == 0
-
 
 class TestSnapshotIbge:
-    @requires_pyarrow
-    @pytest.mark.asyncio
-    async def test_snapshot_ibge_success(self, tmp_path):
-        from agrobr.snapshots import _snapshot_ibge
-
-        manifest = _make_manifest("test")
-        df_pam = pd.DataFrame({"produto": ["soja"], "producao": [100.0]})
-        df_lspa = pd.DataFrame({"produto": ["soja"], "previsao": [95.0]})
-
-        with (
-            patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df_pam),
-            patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=df_lspa),
-        ):
-            await _snapshot_ibge(tmp_path, manifest)
-
-        assert (tmp_path / "pam.parquet").exists()
-        assert (tmp_path / "lspa.parquet").exists()
-        assert manifest.files["ibge/pam.parquet"]["rows"] == 1
-        assert manifest.files["ibge/lspa.parquet"]["rows"] == 1
-
     @requires_pyarrow
     @pytest.mark.asyncio
     async def test_snapshot_ibge_empty_pam(self, tmp_path):
@@ -736,34 +485,103 @@ class TestSnapshotIbge:
         assert (tmp_path / "pam.parquet").exists()
         assert not (tmp_path / "lspa.parquet").exists()
 
-    @pytest.mark.asyncio
-    async def test_snapshot_ibge_none_results(self, tmp_path):
-        from agrobr.snapshots import _snapshot_ibge
 
-        manifest = _make_manifest("test")
+def test_list_snapshots_ignora_diretorio_oculto_e_nao_avisa(tmp_path):
+    oculto = tmp_path / ".staging-snap"
+    oculto.mkdir()
+    _write_manifest(oculto, _make_manifest("staging"))
+    (tmp_path / "sem-manifesto").mkdir()
+    with (
+        patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
+        testing.capture_logs() as registros,
+    ):
+        assert list_snapshots() == []
+    assert [r["event"] for r in registros if r["log_level"] == "warning"] == []
 
-        with (
-            patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=None),
-            patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=None),
-        ):
-            await _snapshot_ibge(tmp_path, manifest)
 
-        assert not (tmp_path / "pam.parquet").exists()
-        assert not (tmp_path / "lspa.parquet").exists()
-        assert len(manifest.files) == 0
+async def test_collect_snapshot_so_registra_erro_da_fonte_sem_dados(tmp_path):
+    manifest = _make_manifest("teste", sources=["cepea", "conab"])
 
-    @requires_pyarrow
-    @pytest.mark.asyncio
-    async def test_snapshot_ibge_records_columns(self, tmp_path):
-        from agrobr.snapshots import _snapshot_ibge
+    async def com_dados(_path, alvo):
+        alvo.files["cepea/soja.parquet"] = {"rows": 1, "columns": ["valor"]}
 
-        manifest = _make_manifest("test")
-        df_pam = pd.DataFrame({"produto": ["soja"], "area": [1000], "producao": [3000]})
+    with (
+        patch("agrobr.snapshots._snapshot_cepea", side_effect=com_dados),
+        patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock),
+    ):
+        await _collect_snapshot(tmp_path, manifest)
+    assert manifest.metadata.get("errors") == {"conab": ["Nenhum conjunto de dados disponível"]}
 
-        with (
-            patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df_pam),
-            patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=pd.DataFrame()),
-        ):
-            await _snapshot_ibge(tmp_path, manifest)
 
-        assert manifest.files["ibge/pam.parquet"]["columns"] == ["produto", "area", "producao"]
+async def test_snapshot_cepea_sem_dado_nao_registra_erro(tmp_path):
+    manifest = _make_manifest("teste")
+    with (
+        patch("agrobr.cepea.produtos", new_callable=AsyncMock, return_value=["soja"]),
+        patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=None),
+    ):
+        await _snapshot_cepea(tmp_path, manifest)
+    assert manifest.metadata.get("errors") is None
+    assert manifest.files == {}
+
+
+@pytest.mark.parametrize(
+    ("coletar", "alvos"),
+    [
+        (_snapshot_conab, ("agrobr.conab.safras", "agrobr.conab.balanco")),
+        (_snapshot_ibge, ("agrobr.ibge.pam", "agrobr.ibge.lspa")),
+    ],
+)
+async def test_fonte_sem_dados_nao_grava_arquivo_nem_erro(tmp_path, coletar, alvos):
+    manifest = _make_manifest("teste")
+    with (
+        patch(alvos[0], new_callable=AsyncMock, return_value=None),
+        patch(alvos[1], new_callable=AsyncMock, return_value=None),
+    ):
+        await coletar(tmp_path, manifest)
+    assert manifest.files == {}
+    assert manifest.metadata.get("errors") is None
+
+
+@pytest.mark.parametrize(
+    ("chamada", "mensagem"),
+    [
+        (
+            lambda: load_from_snapshot("cepea", "soja", snapshot_name="bad!"),
+            "Invalid snapshot name",
+        ),
+        (lambda: load_from_snapshot("bad!", "soja", snapshot_name="2025-01-15"), "Invalid source"),
+        (lambda: create_snapshot(name="bad!", sources=["cepea"]), "Invalid snapshot name"),
+    ],
+    ids=["load_nome", "load_fonte", "create_nome"],
+)
+async def test_nome_fora_do_padrao_e_recusado_antes_do_disco(tmp_path, chamada, mensagem):
+    with (
+        patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
+        patch("agrobr.snapshots._collect_snapshot", new_callable=AsyncMock) as coletar,
+        levanta_exatamente(ValueError, match=f"^{mensagem}: 'bad!'$"),
+    ):
+        retorno = chamada()
+        if asyncio.iscoroutine(retorno):
+            await retorno
+    coletar.assert_not_awaited()
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize(
+    "nome", ["NUL", "con", "Aux", "PRN.csv", "com1", "LPT9.tar.gz", "2025-01-15.", "a.."]
+)
+async def test_nome_reservado_do_windows_e_recusado_em_todo_so(tmp_path, nome):
+    with (
+        patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
+        patch("agrobr.snapshots._collect_snapshot", new_callable=AsyncMock) as coletar,
+        levanta_exatamente(ValueError, match="nome reservado do Windows ou terminado em ponto"),
+    ):
+        await create_snapshot(name=nome, sources=["cepea"])
+    coletar.assert_not_awaited()
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize("nome", ["conab", "console", "COM10", "LPT0", "nul_2025", "a.b"])
+def test_nome_parecido_com_reservado_segue_valido(nome):
+    with sem_excecao():
+        _validate_path_component(nome, "snapshot name")

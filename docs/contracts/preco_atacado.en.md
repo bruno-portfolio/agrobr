@@ -1,4 +1,4 @@
-# preco_atacado v1.0
+# preco_atacado v1.1
 
 Wholesale prices at Brazilian CEASAs (CONAB/PROHORT).
 
@@ -10,7 +10,8 @@ Wholesale prices at Brazilian CEASAs (CONAB/PROHORT).
 
 ## Products
 
-48+ dynamic products from PROHORT (validation delegated to the source).
+48+ dynamic products from PROHORT. The source checks the product and the CEASA against what the body itself
+publishes and rejects a name outside it with `InvalidParameterError`, listing the valid ones.
 
 ## Schema
 
@@ -18,7 +19,7 @@ Wholesale prices at Brazilian CEASAs (CONAB/PROHORT).
 |--------|------|----------|------|--------|
 | `data` | date | ❌ | - | Yes |
 | `produto` | str | ❌ | - | Yes |
-| `categoria` | str | ❌ | - | Yes |
+| `categoria` | str | ✅ | - | Yes |
 | `unidade` | str | ❌ | - | Yes |
 | `ceasa` | str | ❌ | - | Yes |
 | `ceasa_uf` | str | ❌ | - | Yes |
@@ -35,6 +36,7 @@ Wholesale prices at Brazilian CEASAs (CONAB/PROHORT).
 - `ceasa_uf` is a 2-letter uppercase state code
 - Monetary values are in BRL
 - `preco` is always > 0 (nulls filtered)
+- `categoria` is FRUTAS, HORTALICAS or OVOS; null only for a product outside agrobr's table, with a warning (1.1)
 
 ## Example
 

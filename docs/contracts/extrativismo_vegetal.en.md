@@ -1,4 +1,4 @@
-# extrativismo_vegetal v1.0
+# extrativismo_vegetal v1.1
 
 Extractive plant production (açaí, Brazil nut, yerba mate, palm heart, etc.) by state or municipality.
 
@@ -19,8 +19,9 @@ Extractive plant production (açaí, Brazil nut, yerba mate, palm heart, etc.) b
 | `ano` | int | ❌ | Reference year |
 | `localidade` | str | ✅ | State or municipality |
 | `localidade_cod` | int | ✅ | IBGE code |
+| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `produto` | str | ❌ | Product name |
-| `valor` | float64 | ✅ | Value (tons or cubic meters) |
+| `valor` | float64 | ✅ | Quantity produced (tons or cubic meters) or, with `variavel="valor_producao"`, production value in thousand reais; the scale is in `unidade` |
 | `unidade` | str | ❌ | Unit of measure |
 | `fonte` | str | ❌ | Data origin |
 

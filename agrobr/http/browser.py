@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import atexit
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -26,24 +25,7 @@ except ImportError:
         "playwright_not_available", hint="pip install playwright && playwright install chromium"
     )
 
-_playwright_instance: Playwright | None = None
-_browser: Browser | None = None
-_lock = asyncio.Lock()
-
-
-def _sync_cleanup() -> None:
-    global _playwright_instance, _browser
-    if _browser is None and _playwright_instance is None:
-        return
-    try:
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(close_browser())
-        loop.close()
-    except Exception:
-        logger.warning("browser_sync_cleanup_failed", exc_info=True)
-
-
-atexit.register(_sync_cleanup)
+_sessions: dict[asyncio.AbstractEventLoop, list[tuple[Playwright, Browser]]] = {}
 
 
 def is_available() -> bool:
@@ -51,8 +33,6 @@ def is_available() -> bool:
 
 
 async def _get_browser() -> Browser:
-    global _playwright_instance, _browser
-
     if not _playwright_available:
         raise SourceUnavailableError(
             source="browser",
@@ -60,76 +40,62 @@ async def _get_browser() -> Browser:
             last_error="Playwright not installed or incompatible with current Python version",
         )
 
-    async with _lock:
-        if _browser is None or not _browser.is_connected():
-            if _playwright_instance is not None:
-                try:
-                    await _playwright_instance.stop()
-                except Exception:
-                    logger.debug("browser_stale_instance_stop_failed", exc_info=True)
-                _playwright_instance = None
-                _browser = None
-
-            logger.info("browser_starting", browser="chromium")
-
-            _playwright_instance = await async_playwright().start()
-            _browser = await _playwright_instance.chromium.launch(
-                headless=True,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-dev-shm-usage",
-                    "--no-sandbox",
-                ],
-            )
-
-            logger.info("browser_started")
-
-        return _browser
+    logger.info("browser_starting", browser="chromium")
+    playwright = await async_playwright().start()
+    try:
+        browser = await playwright.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+            ],
+        )
+    except BaseException:
+        await playwright.stop()
+        raise
+    _sessions.setdefault(asyncio.get_running_loop(), []).append((playwright, browser))
+    logger.info("browser_started")
+    return browser
 
 
-async def close_browser() -> None:
-    global _playwright_instance, _browser
-
-    async with _lock:
-        if _browser is not None:
-            await _browser.close()
-            _browser = None
-            logger.info("browser_closed")
-
-        if _playwright_instance is not None:
-            await _playwright_instance.stop()
-            _playwright_instance = None
+async def close_browser(target: Browser | None = None) -> None:
+    loop = asyncio.get_running_loop()
+    sessions = _sessions.get(loop, [])
+    closing = [session for session in sessions if target is None or session[1] is target]
+    for playwright, browser in closing:
+        sessions.remove((playwright, browser))
+        try:
+            await browser.close()
+        finally:
+            await playwright.stop()
+            if not sessions:
+                _sessions.pop(loop, None)
+        logger.info("browser_closed")
 
 
 @asynccontextmanager
 async def get_page() -> AsyncGenerator[Page, None]:
     browser = await _get_browser()
 
-    ua = UserAgentRotator.get_random()
-    context = await browser.new_context(
-        user_agent=ua,
-        viewport={"width": 1920, "height": 1080},
-        locale="pt-BR",
-        timezone_id="America/Sao_Paulo",
-        extra_http_headers={
-            "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
-        },
-    )
-
-    page = await context.new_page()
-
-    await page.add_init_script(
-        """
-        Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-        });
-    """
-    )
-
     try:
-        yield page
+        context = await browser.new_context(
+            user_agent=UserAgentRotator.get_random(),
+            viewport={"width": 1920, "height": 1080},
+            locale="pt-BR",
+            timezone_id="America/Sao_Paulo",
+            extra_http_headers={"Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"},
+        )
+        try:
+            page = await context.new_page()
+            await page.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+            )
+            yield page
+        finally:
+            await context.close()
     finally:
-        await context.close()
+        await close_browser(browser)
 
 
 async def fetch_with_browser(

@@ -61,12 +61,14 @@ plugins:
             Armadilhas por Fonte: Pitfalls by Source
             Guia R: R Guide
             Guias: Guides
+            Migração para 2.0: Migrating to 2.0
             Normalização: Normalization
             Dependências: Dependencies
             Avançado: Advanced
             Reprodutibilidade: Reproducibility
             Integração Pipelines: Pipeline Integration
             Resiliência: Resilience
+            Disco local: Local disk
             Contratos: Contracts
             Desmatamento PRODES/DETER: Deforestation PRODES/DETER
             Defensivos: Pesticides
@@ -76,6 +78,7 @@ plugins:
             Acervo Fundiário/INCRA: Land Registry/INCRA
             IBAMA Embargos: IBAMA Environmental Embargoes
             Embarques ANEC: ANEC Shipments
+            Séries econômicas: Economic time series
   - mkdocstrings:
       handlers:
         python:
@@ -108,6 +111,7 @@ nav:
   - Datasets:
     - Visão Geral: contracts/index.md
     - abate_trimestral: contracts/abate_trimestral.md
+    - autorizacoes_defensivos: contracts/autorizacoes_defensivos.md
     - balanco: contracts/balanco.md
     - cadastro_rural: contracts/cadastro_rural.md
     - censo_agropecuario: contracts/censo_agropecuario.md
@@ -116,19 +120,31 @@ nav:
     - censo_agropecuario_municipal_1985: contracts/censo_agropecuario_municipal_1985.md
     - clima: contracts/clima.md
     - comercio_internacional: contracts/comercio_internacional.md
+    - comparacao_anual_anec: contracts/comparacao_anual_anec.md
+    - composicao_defensivos: contracts/composicao_defensivos.md
     - condicao_lavouras: contracts/condicao_lavouras.md
+    - cotacoes_cambio: contracts/cotacoes_cambio.md
     - credito_rural: contracts/credito_rural.md
+    - cultivares_protegidas: contracts/cultivares_protegidas.md
+    - cultivares_registradas: contracts/cultivares_registradas.md
     - custo_producao: contracts/custo_producao.md
+    - custo_sociobiodiversidade: contracts/custo_sociobiodiversidade.md
+    - defensivos_formulados: contracts/defensivos_formulados.md
+    - defensivos_tecnicos: contracts/defensivos_tecnicos.md
     - desmatamento: contracts/desmatamento.md
+    - destinos_anec: contracts/destinos_anec.md
     - embarques_anec: contracts/embarques_anec.md
+    - embarques_mensais_anec: contracts/embarques_mensais_anec.md
+    - empregadores_lista_suja: contracts/empregadores_lista_suja.md
     - estimativa_safra: contracts/estimativa_safra.md
+    - expectativas_mercado: contracts/expectativas_mercado.md
     - exportacao: contracts/exportacao.md
     - extrativismo_vegetal: contracts/extrativismo_vegetal.md
     - fertilizante: contracts/fertilizante.md
     - futuros_agricolas: contracts/futuros_agricolas.md
     - importacao: contracts/importacao.md
     - leite_industrial: contracts/leite_industrial.md
-    - lspa: contracts/lspa.md
+    - moedas_cambio: contracts/moedas_cambio.md
     - movimentacao_portuaria: contracts/movimentacao_portuaria.md
     - oferta_demanda_global: contracts/oferta_demanda_global.md
     - pecuaria_municipal: contracts/pecuaria_municipal.md
@@ -136,14 +152,18 @@ nav:
     - posicionamento_fundos: contracts/posicionamento_fundos.md
     - preco_atacado: contracts/preco_atacado.md
     - preco_diario: contracts/preco_diario.md
+    - precos_diesel: contracts/precos_diesel.md
     - producao_anual: contracts/producao_anual.md
     - progresso_safra: contracts/progresso_safra.md
     - queimadas: contracts/queimadas.md
     - seguro_rural: contracts/seguro_rural.md
     - serie_historica_safra: contracts/serie_historica_safra.md
+    - series_economicas: contracts/series_economicas.md
     - silvicultura: contracts/silvicultura.md
+    - unidades_conservacao_federais: contracts/unidades_conservacao_federais.md
     - uso_do_solo: contracts/uso_do_solo.md
     - zoneamento_agricola: contracts/zoneamento_agricola.md
+    - lspa: contracts/lspa.md
   - API Reference:
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md
@@ -152,6 +172,7 @@ nav:
     - IBGE: api/ibge.md
     - NASA POWER: api/nasa_power.md
     - BCB/SICOR: api/bcb.md
+    - Séries econômicas: api/series_economicas.md
     - ComexStat: api/comexstat.md
     - ANDA: api/anda.md
     - ABIOVE: api/abiove.md
@@ -173,7 +194,10 @@ nav:
     - SICAR: api/sicar.md
     - ZARC: api/zarc.md
     - Defensivos: api/defensivos.md
+    - Agrofit datasets: api/defensivos_datasets.md
+    - empregadores_lista_suja: api/empregadores_lista_suja.md
     - RNC/CultivarWeb: api/rnc.md
+    - Cultivares datasets: api/cultivares.md
     - EMBRAPA Solos: api/embrapa_solos.md
     - Fundação Rio Verde: api/rio_verde.md
     - CFTC COT: api/cftc.md
@@ -228,6 +252,7 @@ nav:
     - Armadilhas por Fonte: porting/gotchas.md
     - Guia R: porting/r.md
   - Guias:
+    - Migração para 2.0: guides/migracao-2.md
     - Async: guides/async.md
     - Normalização: guides/normalizacao.md
     - Snapshots: guides/snapshots.md
@@ -238,8 +263,14 @@ nav:
     - Integração Pipelines: advanced/pipelines.md
     - Resiliência: advanced/resilience.md
     - Troubleshooting: advanced/troubleshooting.md
+    - Disco local: advanced/disco.md
   - Contratos:
     - SemVer: contracts/semver.md
+    - BCB Focus: contracts/bcb_focus.md
+    - BCB PTAX: contracts/bcb_ptax.md
+    - BCB crédito rural total: contracts/bcb_credito_rural_total.md
+    - BCB crédito rural registro: contracts/bcb_credito_rural_registro.md
+    - BCB SGS: contracts/bcb_sgs.md
 
 extra:
   social:

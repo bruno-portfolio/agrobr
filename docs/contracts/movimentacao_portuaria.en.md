@@ -38,6 +38,25 @@ Port cargo movement — ANTAQ.
 
 **PK:** `(ano, mes, porto, cd_mercadoria, sentido, tipo_navegacao)`
 
+## Aggregation and reconciliation (2026-09-18)
+
+`datasets.movimentacao_portuaria` **aggregates** the source output by the PK
+`(ano, mes, porto, cd_mercadoria, sentido, tipo_navegacao)`: `peso_bruto_ton`, `qt_carga` and `teu`
+are summed; `complexo_portuario`, `municipio`, `uf`, `regiao`, `mercadoria` and `grupo_mercadoria`
+take the first non-null value in the group; `data_atracacao`, `tipo_operacao`, `natureza_carga`,
+`terminal`, `origem` and `destino` survive only when the group holds a single value - otherwise they
+come out null. Rows without `ano` or `mes` (a carga with no matching atracacao) are dropped before
+aggregation. In the reconciled 2024 excerpt, 10 cargas become 6 rows.
+
+`qt_carga` has no canonical unit: ANTAQ publishes `QTCarga` without one and its meaning changes with
+the cargo type, so the sum is only meaningful inside a homogeneous group. The contract declares
+FLOAT, but the column comes out as `int64` when every published value is integral - the validator
+accepts any numeric dtype.
+
+Offline reconciliation of the 62 published fields, both joins and the six public filters lives in
+`tests/golden_data/reconciliacao_r13_20260918/`. Live capture stays pending while the source is off
+the air.
+
 ## Parameters
 
 - `ano: int` — movement year (required, ≥ 2010)

@@ -1,189 +1,79 @@
-from unittest.mock import patch
+from datetime import UTC, datetime, timedelta
+from unittest.mock import AsyncMock
 
-import httpx
 import pandas as pd
 import pytest
 
-from agrobr.datasets.zoneamento_agricola import (
-    ZONEAMENTO_AGRICOLA_INFO,
-    ZoneamentoAgricolaDataset,
-)
-from agrobr.exceptions import SourceUnavailableError
-
-from .conftest import make_source
-
-
-def _make_df(**overrides):
-    row = {
-        "cultura": "SOJA",
-        "safra": "2024/2025",
-        "geocodigo": "5103403",
-        "uf": "MT",
-        "municipio": "Cuiabá",
-        "solo_codigo": 2,
-        "ciclo_codigo": 1,
-        "clima": None,
-        "manejo": None,
-        "portaria": "Portaria 123/2024",
-        **{f"dec{i}": 0 for i in range(1, 37)},
-    }
-    row["dec10"] = 3
-    row["dec11"] = 4
-    row["dec12"] = 5
-    row.update(overrides)
-    return pd.DataFrame([row])
+from agrobr import datasets
+from agrobr.datasets import zoneamento_agricola as public_zoneamento
+from agrobr.datasets.deterministic import deterministic
+from agrobr.datasets.zoneamento_agricola import ZoneamentoAgricolaDataset
+from agrobr.exceptions import InvalidParameterError
+from agrobr.models import MetaInfo
+from tests.helpers import zarc_frame
 
 
-class TestZoneamentoAgricolaFetch:
-    @pytest.mark.asyncio
-    async def test_fetch_returns_df(self):
-        dataset = ZoneamentoAgricolaDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_make_df())
-        df = await dataset.fetch(cultura="SOJA", uf="MT")
-
-        assert len(df) == 1
-        assert "cultura" in df.columns
-        assert "geocodigo" in df.columns
-        assert "dec1" in df.columns
-        assert "dec36" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_fetch_with_filters(self):
-        mock_fn = make_source(_make_df())
-        dataset = ZoneamentoAgricolaDataset()
-        dataset.info.sources[0].fetch_fn = mock_fn
-        await dataset.fetch(
-            cultura="SOJA",
-            uf="MT",
-            municipio=5103403,
-            safra="2024/2025",
-            solo=2,
-            ciclo=1,
-        )
-
-        call_kwargs = mock_fn.call_args[1]
-        assert call_kwargs["cultura"] == "SOJA"
-        assert call_kwargs["uf"] == "MT"
-        assert call_kwargs["municipio"] == 5103403
-        assert call_kwargs["safra"] == "2024/2025"
-        assert call_kwargs["solo"] == 2
-        assert call_kwargs["ciclo"] == 1
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        dataset = ZoneamentoAgricolaDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_make_df())
-        df, meta = await dataset.fetch(cultura="SOJA", return_meta=True)
-
-        assert meta.dataset == "zoneamento_agricola"
-        assert meta.contract_version == "1.0"
-        assert "zarc" in meta.attempted_sources
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_fetch_no_params(self):
-        mock_fn = make_source(_make_df())
-        dataset = ZoneamentoAgricolaDataset()
-        dataset.info.sources[0].fetch_fn = mock_fn
-        df = await dataset.fetch()
-
-        assert len(df) == 1
-
-    @pytest.mark.asyncio
-    async def test_source_failure(self):
-        dataset = ZoneamentoAgricolaDataset()
-        dataset.info.sources[0].fetch_fn = make_source(
-            _make_df(), raises=httpx.ConnectError("connection failed")
-        )
-        with pytest.raises(SourceUnavailableError):
-            await dataset.fetch(cultura="SOJA")
+@pytest.fixture
+def supplied(monkeypatch):
+    frame = pd.concat(
+        [zarc_frame(dec10=None, registro_origem=105), zarc_frame(dec10=0, registro_origem=109)],
+        ignore_index=True,
+    )
+    fetched = datetime(2026, 9, 7, tzinfo=UTC)
+    meta = MetaInfo(
+        source="zarc",
+        source_url="https://dados.agricultura.gov.br/synthetic.csv",
+        source_method="cache",
+        fetched_at=fetched,
+        fetch_timestamp=fetched,
+        fetch_duration_ms=17,
+        parse_duration_ms=23,
+        raw_content_hash="d" * 64,
+        raw_content_size=12345,
+        records_count=len(frame),
+        columns=frame.columns.tolist(),
+        from_cache=True,
+        cache_key="synthetic-resource-revision",
+        cache_expires_at=fetched + timedelta(days=1),
+        schema_version="2.0",
+        contract_version="2.0",
+        parser_version=2,
+        attempted_sources=["zarc"],
+        selected_source="zarc",
+        source_details={
+            "resources": [{"role": "csv", "sha256": "d" * 64}],
+            "coverage": {"status": "unknown", "reason": "no_source_total"},
+            "parsing": {"source_rows": 200, "validated_rows": 200, "selected_rows": 2},
+        },
+    )
+    fetch = AsyncMock(return_value=(frame, meta))
+    monkeypatch.setattr(ZoneamentoAgricolaDataset.info.sources[0], "fetch_fn", fetch)
+    monkeypatch.setattr(
+        datasets.get_dataset("zoneamento_agricola").info.sources[0], "fetch_fn", fetch
+    )
+    return fetch, frame, meta
 
 
-class TestZoneamentoAgricolaInfo:
-    def test_source_zarc(self):
-        assert len(ZONEAMENTO_AGRICOLA_INFO.sources) == 1
-        assert ZONEAMENTO_AGRICOLA_INFO.sources[0].name == "zarc"
-
-    def test_products_empty(self):
-        assert ZONEAMENTO_AGRICOLA_INFO.products == []
-
-    def test_license_livre(self):
-        assert ZONEAMENTO_AGRICOLA_INFO.license == "livre"
+async def test_dataset_rejects_deterministic_before_source(supplied):
+    fetch, _, _ = supplied
+    async with deterministic("2026-09-06"):
+        with pytest.raises(InvalidParameterError, match="deterministic"):
+            await public_zoneamento(safra="2026/2027")
+    fetch.assert_not_awaited()
 
 
-class TestZoneamentoAgricolaContract:
-    @pytest.mark.asyncio
-    async def test_contract_validation_called(self):
-        dataset = ZoneamentoAgricolaDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_make_df())
-
-        with patch.object(dataset, "_validate_contract") as mock_validate:
-            await dataset.fetch(cultura="SOJA")
-            mock_validate.assert_called_once()
-
-    def test_dec_columns_present(self):
-        df = _make_df()
-        dec_cols = [c for c in df.columns if c.startswith("dec")]
-        assert len(dec_cols) == 36
-        assert "dec1" in dec_cols
-        assert "dec36" in dec_cols
+@pytest.mark.parametrize("flag", ["use_cache", "as_polars", "return_meta"])
+@pytest.mark.parametrize("value", [1, None, "true"])
+async def test_dataset_rejects_non_boolean_before_source(supplied, flag, value):
+    fetch, _, _ = supplied
+    with pytest.raises(InvalidParameterError, match=flag):
+        await public_zoneamento(**{flag: value})
+    fetch.assert_not_awaited()
 
 
-class TestZoneamentoAgricolaFetchFunctions:
-    @pytest.mark.asyncio
-    async def test_fetch_zarc_forwards_params(self):
-        from unittest.mock import AsyncMock, patch
-
-        from .conftest import mock_source_meta
-
-        df = _make_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.zarc.zoneamento",
-            new_callable=AsyncMock,
-            return_value=(df, meta),
-        ) as mock_fn:
-            from agrobr.datasets.zoneamento_agricola import _fetch_zarc
-
-            await _fetch_zarc(
-                "",
-                cultura="SOJA",
-                uf="MT",
-                municipio=5103403,
-                safra="2024/2025",
-                solo=2,
-                ciclo=1,
-            )
-        mock_fn.assert_called_once_with(
-            cultura="SOJA",
-            uf="MT",
-            municipio=5103403,
-            safra="2024/2025",
-            solo=2,
-            ciclo=1,
-            return_meta=True,
-        )
-
-    @pytest.mark.asyncio
-    async def test_fetch_zarc_defaults(self):
-        from unittest.mock import AsyncMock, patch
-
-        from .conftest import mock_source_meta
-
-        df = _make_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.zarc.zoneamento",
-            new_callable=AsyncMock,
-            return_value=(df, meta),
-        ) as mock_fn:
-            from agrobr.datasets.zoneamento_agricola import _fetch_zarc
-
-            await _fetch_zarc("")
-        _, kwargs = mock_fn.call_args
-        assert kwargs["cultura"] is None
-        assert kwargs["uf"] is None
-        assert kwargs["municipio"] is None
-        assert kwargs["safra"] is None
-        assert kwargs["solo"] is None
-        assert kwargs["ciclo"] is None
+@pytest.mark.parametrize("keyword", ["uf_typo", "produto", "snapshot", "limite"])
+async def test_dataset_rejects_unknown_parameter_before_source(supplied, keyword):
+    fetch, _, _ = supplied
+    with pytest.raises(TypeError, match=keyword):
+        await public_zoneamento(**{keyword: "unexpected"})
+    fetch.assert_not_awaited()

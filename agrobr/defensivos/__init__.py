@@ -1,10 +1,8 @@
-"""Defensivos agricolas -- Cadastro Agrofit/MAPA.
+"""Cadastro, autorizações e composição de defensivos do Agrofit/MAPA.
 
-Produtos formulados, autorizacoes de uso e produtos tecnicos registrados no Brasil.
-Fonte: Portal de Dados Abertos do MAPA (CC-BY).
-Cobertura: ~2.8K produtos tecnicos, ~8K formulados, ~267K autorizacoes.
+Fonte: Portal de Dados Abertos do MAPA, sob Creative Commons Attribution.
 """
 
-from agrobr.defensivos.api import autorizacoes, formulados, tecnicos
+from agrobr.defensivos.api import autorizacoes, composicao, formulados, tecnicos
 
-__all__ = ["autorizacoes", "formulados", "tecnicos"]
+__all__ = ["autorizacoes", "composicao", "formulados", "tecnicos"]

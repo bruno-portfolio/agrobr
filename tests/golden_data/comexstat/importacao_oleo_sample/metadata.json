@@ -1,0 +1,10 @@
+{
+  "source": "comexstat",
+  "format": "csv",
+  "url": "https://api-comexstat.mdic.gov.br/general",
+  "captured_at": "2026-09-05",
+  "needs_real_data": false,
+  "sha256": "e3cdd4140dcd99ec51781b22f8c80b80fa33e2e11e34cf28ab3dfcb7a6519536",
+  "notes": "Resposta oficial preservada da auditoria; request.json guarda filtros. Janeiro/2024, óleo de soja: SP tem dois NCMs, 476697 kg e 459899 USD. O teste converte os campos oficiais para o formato CSV bulk consumido pelo client. response.csv é projeção documentada das duas linhas SP, sem modificar valores; response.json é a resposta HTTP original intacta.",
+  "official_response_sha256": "88a95a8c398a940f53441ee16898d1a2dab98d251e4035c8c1e661e5812fa478"
+}

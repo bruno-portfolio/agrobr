@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -49,7 +49,18 @@ CREDITO_RURAL_INFO = DatasetInfo(
             description="BCB API Olinda (OData) com fallback BigQuery",
         ),
     ],
-    products=["soja", "milho", "arroz", "feijao", "trigo", "algodao", "cafe", "cana", "sorgo"],
+    products=[
+        "soja",
+        "milho",
+        "arroz",
+        "feijao",
+        "trigo",
+        "algodao",
+        "cafe",
+        "cana",
+        "mandioca",
+        "sorgo",
+    ],
     contract_version="2.0",
     update_frequency="monthly",
     typical_latency="M+1",
@@ -70,11 +81,10 @@ class CreditoRuralDataset(BaseDataset):
         safra: str | None = None,
         finalidade: str = "custeio",
         uf: str | None = None,
-        agregacao: Literal["uf", "programa"] = "uf",
+        agregacao: Literal["uf", "programa", "registro"] = "uf",
         programa: str | None = None,
         tipo_seguro: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info(
             "dataset_fetch",
@@ -84,10 +94,11 @@ class CreditoRuralDataset(BaseDataset):
             finalidade=finalidade,
         )
 
-        if agregacao not in {"uf", "programa"}:
+        if agregacao not in {"uf", "programa", "registro"}:
             hint = (
-                "O OData SICOR não possui município; use agregacao='uf' ou 'programa'. "
-                "Dados municipais estão disponíveis pelo extra agrobr[bigquery]."
+                "Use agregacao='uf', 'programa' ou 'registro'. O SICOR publica município por produto "
+                "(CusteioMunicipioProduto e InvestMunicipioProduto), que o agrobr ainda não lê; "
+                "o extra agrobr[bigquery] traz dados municipais."
             )
             raise InvalidParameterError(f"agregacao inválida: {agregacao!r}. {hint}")
 
@@ -106,16 +117,27 @@ class CreditoRuralDataset(BaseDataset):
             agregacao=agregacao,
             programa=programa,
             tipo_seguro=tipo_seguro,
-            **kwargs,
         )
 
         df = self._normalize(df, produto, finalidade)
-        self._validate_contract(df)
+        self._validate_contract(df, agregacao=agregacao)
 
         if return_meta:
-            return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
+            return df, self._build_meta(
+                df,
+                source_name,
+                source_meta,
+                attempted,
+                snapshot,
+                contract_name=self._contract_name(agregacao=agregacao),
+            )
 
         return df
+
+    def _contract_name(self, **kwargs: Any) -> str:
+        if kwargs.get("agregacao") == "registro":
+            return "bcb_credito_rural_registro"
+        return "credito_rural"
 
     def _normalize(self, df: pd.DataFrame, produto: str, finalidade: str) -> pd.DataFrame:
         if "produto" not in df.columns:
@@ -134,18 +156,48 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_credito_rural)
 
 
+@overload
 async def credito_rural(
     produto: str,
     safra: str | None = None,
     finalidade: str = "custeio",
     uf: str | None = None,
-    agregacao: Literal["uf", "programa"] = "uf",
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _credito_rural.fetch(
+    return await _credito_rural.fetch(  # type: ignore[call-arg]
         produto,
         safra=safra,
         finalidade=finalidade,
@@ -154,5 +206,5 @@ async def credito_rural(
         programa=programa,
         tipo_seguro=tipo_seguro,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

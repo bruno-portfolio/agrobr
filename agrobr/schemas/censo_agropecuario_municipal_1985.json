@@ -1,51 +1,86 @@
 {
   "name": "ibge.censo_agro_municipal_1985",
-  "schema_version": "1.0",
-  "effective_from": "0.12.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
-  "primary_key": [],
+  "primary_key": [
+    "volume",
+    "tabela",
+    "pagina_pdf",
+    "linha",
+    "coluna"
+  ],
   "required_columns": [
     "ano",
     "uf",
-    "uf_cod",
-    "localidade",
-    "nivel",
+    "volume",
+    "tabela",
     "tema",
-    "categoria",
+    "pagina_pdf",
+    "pagina_impressa",
+    "linha",
+    "coluna",
+    "nivel",
+    "localidade",
+    "coluna_nome",
+    "coluna_nome_lido",
+    "coluna_nome_status",
     "variavel",
     "unidade",
-    "confianca",
-    "fonte"
+    "unidade_lida",
+    "valor",
+    "valor_lido",
+    "marcador",
+    "status",
+    "reparado"
   ],
   "dtypes": {
     "ano": "int",
     "uf": "str",
-    "uf_cod": "int",
-    "localidade": "str",
-    "localidade_cod": "int",
-    "nivel": "str",
+    "volume": "str",
+    "tabela": "int",
     "tema": "str",
-    "categoria": "str",
+    "pagina_pdf": "int",
+    "pagina_impressa": "int",
+    "linha": "int",
+    "coluna": "int",
+    "nivel": "str",
+    "localidade": "str",
+    "coluna_nome": "str",
+    "coluna_nome_lido": "str",
+    "coluna_nome_status": "str",
     "variavel": "str",
-    "valor": "float",
     "unidade": "str",
-    "confianca": "str",
-    "fonte": "str"
+    "unidade_lida": "str",
+    "valor": "int",
+    "valor_lido": "int",
+    "marcador": "str",
+    "status": "str",
+    "reparado": "bool"
   },
   "nullable": {
     "ano": false,
     "uf": false,
-    "uf_cod": false,
-    "localidade": false,
-    "localidade_cod": true,
-    "nivel": false,
+    "volume": false,
+    "tabela": false,
     "tema": false,
-    "categoria": false,
-    "variavel": false,
+    "pagina_pdf": false,
+    "pagina_impressa": true,
+    "linha": false,
+    "coluna": false,
+    "nivel": false,
+    "localidade": false,
+    "coluna_nome": true,
+    "coluna_nome_lido": true,
+    "coluna_nome_status": false,
+    "variavel": true,
+    "unidade": true,
+    "unidade_lida": true,
     "valor": true,
-    "unidade": false,
-    "confianca": false,
-    "fonte": false
+    "valor_lido": true,
+    "marcador": true,
+    "status": false,
+    "reparado": false
   },
   "columns": [
     {
@@ -71,18 +106,29 @@
       "max_value": null
     },
     {
-      "name": "uf_cod",
+      "name": "volume",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Volume do IBGE de onde a casa foi lida (MG tem 2: n18_p1_mg e n18_p2_mg).",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "tabela",
       "type": "int",
       "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": 11,
-      "max_value": 53
+      "min_value": 67,
+      "max_value": 119
     },
     {
-      "name": "localidade",
+      "name": "tema",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -93,13 +139,46 @@
       "max_value": null
     },
     {
-      "name": "localidade_cod",
+      "name": "pagina_pdf",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": null
+    },
+    {
+      "name": "pagina_impressa",
       "type": "int",
       "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
+      "description": "Número impresso no rodapé; nulo quando o rodapé não foi lido nem se deduz das vizinhas.",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "linha",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
       "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "coluna",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Coluna física na página (0 à esquerda); negativa quando a célula não tem coluna identificada.",
       "min_value": null,
       "max_value": null
     },
@@ -115,7 +194,7 @@
       "max_value": null
     },
     {
-      "name": "tema",
+      "name": "localidade",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -126,7 +205,29 @@
       "max_value": null
     },
     {
-      "name": "categoria",
+      "name": "coluna_nome",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "coluna_nome_lido",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "coluna_nome_status",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -139,7 +240,29 @@
     {
       "name": "variavel",
       "type": "str",
-      "nullable": false,
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade_lida",
+      "type": "str",
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -149,7 +272,18 @@
     },
     {
       "name": "valor",
-      "type": "float",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Só na casa confirmada pelas somas impressas (status confirmado_*).",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_lido",
+      "type": "int",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -159,7 +293,18 @@
       "max_value": null
     },
     {
-      "name": "unidade",
+      "name": "marcador",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "status",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -170,19 +315,8 @@
       "max_value": null
     },
     {
-      "name": "confianca",
-      "type": "str",
-      "nullable": false,
-      "unit": null,
-      "stable": true,
-      "deprecated": false,
-      "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "fonte",
-      "type": "str",
+      "name": "reparado",
+      "type": "bool",
       "nullable": false,
       "unit": null,
       "stable": true,
@@ -193,20 +327,25 @@
     }
   ],
   "constraints": {
+    "no_duplicates": true,
     "ano_min": 1985,
     "ano_max": 1985,
-    "uf_cod_min": 11,
-    "uf_cod_max": 53,
-    "valor_min": 0
+    "tabela_min": 67,
+    "tabela_max": 119,
+    "pagina_pdf_min": 1,
+    "linha_min": 0,
+    "valor_min": 0,
+    "valor_lido_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",
     "'ano' is always 1985",
-    "Numeric values are always >= 0",
-    "'fonte' is always 'ibge_censo_agro_municipal_1985'",
-    "Dados extraídos via OCR de PDFs do IBGE — 22 UFs (excluídos MA/PI/CE/RN)",
-    "'confianca' indica qualidade OCR: alta, media ou baixa",
-    "'localidade_cod' pode ser None quando OCR não permite match exato",
-    "PK vazio: OCR pode gerar labels homônimos (ex: 3 'Santo Antônio' em MG)"
+    "1 linha por casa do PDF: a do número e as sem leitura, incertas e fora de coluna, cada uma com o seu 'status'",
+    "'valor' só é preenchido quando 'status' é confirmado_soma_exata ou confirmado_soma_arredondada_2a_compativel",
+    "'valor_lido' traz a leitura sempre que houve leitura, confirmada ou não",
+    "'coluna_nome' só é preenchido quando o nome foi confirmado ('coluna_nome_status' diferente de 'lido' e 'sem_nome')",
+    "A chave (volume, tabela, pagina_pdf, linha, coluna) é única",
+    "O tema de cada tabela vem do título impresso, igual em todos os volumes; o volume omite a tabela que não se aplica",
+    "Sem código de município: os municípios de 1985 não correspondem 1:1 aos códigos atuais"
   ]
 }

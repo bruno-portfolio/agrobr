@@ -1,46 +1,29 @@
-# ANTT Pedagio
+# ANTT Pedágio
 
 ## Sobre a fonte
 
-A **ANTT** (Agencia Nacional de Transportes Terrestres) publica dados abertos de fluxo de veiculos em pracas de pedagio rodoviario no portal [dados.antt.gov.br](https://dados.antt.gov.br).
+A ANTT publica recursos CSV e metadados no [catálogo oficial de dados abertos](https://dados.antt.gov.br/dataset/volume-trafego-praca-pedagio). A disponibilidade depende de ano e frequência. Há recursos mensais desde 2010; os recursos diários atuais cobrem 2024 em diante.
 
-Os dados sao um proxy de escoamento de safra: veiculos comerciais pesados (3+ eixos) correlacionam fortemente com transporte de graos por rodovias.
+## Contrato de fluxo 3.0
 
-## Datasets
+A saída preserva 13 colunas e a modalidade de cobrança, categoria tarifária e frequência publicadas. A chave é `data`, `concessionaria`, `praca`, `sentido`, `tipo_veiculo`, `categoria_eixo`, `tipo_cobranca`, `frequencia`. Modalidades de cobrança não são juntadas. `n_eixos` exige evidência textual explícita; códigos históricos de categoria não são contagens físicas universais. Rótulos e espaços permanecem literais.
 
-### Volume de Trafego (principal)
-- **Cobertura:** 2010-2025 (16 CSVs anuais)
-- **Granularidade:** Mensal, por praca/concessionaria/categoria de veiculo
-- **Formato:** CSV separado por `;`
-- **Schema V1 (2010-2023):** Com header, categoria como texto ("Categoria 1"-"Categoria 9")
-- **Schema V2 (2024+):** Sem header, eixos como numero (2-18)
+`frequencia="mensal"` e `"diaria"` selecionam famílias separadas de recursos. O client não substitui uma frequência ausente por outra. O catálogo determina ano/revisão selecionados; bytes, hashes e estatísticas descrevem a aquisição efetiva.
 
-### Cadastro de Pracas (referencia)
-- **Formato:** CSV unico (~200+ pracas ativas)
-- **Colunas:** `concessionaria`, `praca`, `rodovia`, `uf`, `km`, `municipio`, `latitude`, `longitude`, `situacao`
-- **Uso:** Join automatico com dados de trafego para enriquecer com UF/rodovia/municipio
+## Anomalias conhecidas da fonte
 
-## Licenca
+Nos CSVs mensais, 2020, 2021 e 2023 trazem `mes_ano` fora do dia 1 (fim de mês, série de preenchimento, digitação; 56, 3.258 e 734 linhas), atribuídos ao seu mês; 2013, 2015 e 2023 trazem volumes fracionários ou negativos (4, 3 e 36 linhas), excluídos; ECOSUL dez/2021 está publicado duas vezes com linhas idênticas e conta uma vez. CONCEBRA 2021–2023 publica linhas diárias rotuladas no dia 1 do mês, somadas no mês. Cada caso gera aviso e fica em `source_details`.
 
-CC-BY (Creative Commons Attribution). Dados abertos sem necessidade de autenticacao.
+## Cadastro de praças
 
-## Mapeamento de Categorias
+O cadastro corrente pode fornecer UF, rodovia e município por correspondência literal e única. Não reconstrói geografia histórica. Com filtro de UF/rodovia, praça sem esse vínculo (em 2026, 15 pares em GO, MG e PR) sai do resultado com aviso. O cabeçalho oficial `municipal` alimenta `municipio`; a coluna canônica tem precedência quando ambas existem. Contrato do cadastro: 1.0.1.
 
-| Categoria V1 | Eixos | Tipo |
-|-------------|-------|------|
-| 1 | 2 | Passeio |
-| 2 | 2 | Comercial |
-| 3 | 3 | Passeio |
-| 4 | 3 | Comercial |
-| 5 | 4 | Passeio |
-| 6 | 4 | Comercial |
-| 7 | 5 | Comercial |
-| 8 | 6 | Comercial |
-| 9 | 2 | Moto |
+## Transporte e orçamentos
 
-## Notas tecnicas
+Downloads são lidos em blocos para arquivos temporários em disco. CSV: 512 MiB; spool retido: 1 GiB; bytes transferidos em todas as tentativas: 3 GiB. A sessão é reutilizada dentro da aquisição, sem cache persistente de CSV. Redirecionamentos são rejeitados; HTML HTTP 200 de WAF/manutenção gera `SourceUnavailableError`. Arquivos são fechados em sucesso, falha e cancelamento. Limites de linhas/memória do parser estão na [referência da API](../api/antt_pedagio.md).
 
-- `apenas_pesados=True` filtra `n_eixos >= 3 AND tipo_veiculo == "Comercial"`
-- Volume e agregado por praca/mes/eixo (tipo de cobranca automatica/manual e somado)
-- Default sem filtro de ano = ano atual + anterior (evita baixar 16 CSVs)
-- Encoding: Windows-1252 com fallback chain automatico
+Contagens de veículos pesados podem apoiar estudos de transporte, mas não identificam a carga transportada.
+
+## Licença e dicionário
+
+CC-BY conforme declaração CKAN; não exige autenticação. Veja as [licenças](../licenses.md) e o [dicionário oficial](https://dados.antt.gov.br/dataset/5bf70ec3-b24e-4f73-99a0-78b200f5e915/resource/5cec4e90-24d4-4a43-84e1-121a422bbcd5/download/dicionario_dados_surod_volume-de-trafego-nas-pracas-de-pedagio.pdf).

@@ -1,7 +1,7 @@
 {
   "name": "usda.psd",
-  "schema_version": "1.0",
-  "effective_from": "0.13.0",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "commodity_code",
@@ -13,8 +13,16 @@
     "commodity_code",
     "commodity",
     "country_code",
+    "country",
     "market_year",
-    "attribute"
+    "attribute",
+    "attribute_br",
+    "value",
+    "unit",
+    "attribute_id",
+    "unit_id",
+    "last_update_year",
+    "last_update_month"
   ],
   "dtypes": {
     "commodity_code": "str",
@@ -25,7 +33,11 @@
     "attribute": "str",
     "attribute_br": "str",
     "value": "float",
-    "unit": "str"
+    "unit": "str",
+    "attribute_id": "int",
+    "unit_id": "int",
+    "last_update_year": "int",
+    "last_update_month": "int"
   },
   "nullable": {
     "commodity_code": false,
@@ -36,7 +48,11 @@
     "attribute": false,
     "attribute_br": true,
     "value": true,
-    "unit": true
+    "unit": true,
+    "attribute_id": false,
+    "unit_id": false,
+    "last_update_year": false,
+    "last_update_month": true
   },
   "columns": [
     {
@@ -137,16 +153,65 @@
       "description": "",
       "min_value": null,
       "max_value": null
+    },
+    {
+      "name": "attribute_id",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unit_id",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "last_update_year",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1960,
+      "max_value": null
+    },
+    {
+      "name": "last_update_month",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "market_year_min": 1960
+    "market_year_min": 1960,
+    "last_update_year_min": 1960,
+    "last_update_month_min": 1,
+    "last_update_month_max": 12
   },
   "guarantees": [
     "Column names never change (additions only)",
     "'market_year' is always >= 1960",
     "Long format: one row per commodity/country/year/attribute",
-    "Contract validates long format only; pivot=True skips validation"
+    "Contract validates long format only; pivot=True skips validation",
+    "'attribute', 'unit' and 'country' are the official names of the PSD catalogs (countryCode '00' is the world aggregate, 'World')",
+    "'last_update_year'/'last_update_month' are the USDA's last update of the series (country x market year), not the queried edition; month '00' of old series is null"
   ]
 }

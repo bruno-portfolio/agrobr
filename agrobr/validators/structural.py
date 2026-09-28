@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -120,9 +121,7 @@ def _score_element_counts(
         cur_count = current.get(key, 0)
         if ref_count > 0 and abs(cur_count - ref_count) / ref_count > 0.5:
             diffs[key] = {"reference": ref_count, "current": cur_count}
-    if diffs:
-        return max(0.0, 1 - len(diffs) * 0.2), diffs
-    return 1.0, diffs
+    return max(0.0, 1 - len(diffs) * 0.2), diffs
 
 
 def compare_fingerprints(
@@ -165,7 +164,7 @@ def compare_fingerprints(
     if count_diffs:
         details["element_counts_diff"] = count_diffs
 
-    final_score = sum(scores[k] * _SCORE_WEIGHTS[k] for k in _SCORE_WEIGHTS)
+    final_score = math.fsum(scores[k] * _SCORE_WEIGHTS[k] for k in _SCORE_WEIGHTS)
 
     logger.debug(
         "fingerprint_comparison",
@@ -188,7 +187,7 @@ def load_baseline(source: Fonte, baselines_dir: str | Path = ".structures") -> F
             return None
 
     try:
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
         if "sources" in data and source.value in data["sources"]:

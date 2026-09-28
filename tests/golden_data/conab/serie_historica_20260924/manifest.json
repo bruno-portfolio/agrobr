@@ -1,0 +1,247 @@
+{
+  "fonte": "rodada 21 de conferência (24/09/2026); iguais byte a byte à captura da rodada 2 de conferência (25/09)",
+  "uso": "brasil_total e safras de safra antiga lidos da série histórica",
+  "oraculo": "xlrd, células A1 cruas da linha BRASIL e das UFs; sem o parser do agrobr",
+  "arquivos": [
+    {
+      "file": "amendoim.xls",
+      "produto": "amendoim",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/amendoim/amendoimtotalseriehist.xls",
+      "fetched_at": "2026-09-24T05:39:39.420443+00:00",
+      "status": 200,
+      "bytes": 98304,
+      "sha256": "287901cca0c00dd2409a81e3e98c61989126bc23e01779bb08f3a777457957fa",
+      "origem": "OFF_CONAB_amendoim.xls (cópia byte a byte)"
+    },
+    {
+      "file": "amendoim_1.xls",
+      "produto": "amendoim_1",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/amendoim/amendoim1aseriehist.xls",
+      "fetched_at": "2026-09-24T05:39:40.851605+00:00",
+      "status": 200,
+      "bytes": 101376,
+      "sha256": "b9d02d8234f88e9d6b5a0f2a66b6fbc1bae8b20f9c78afc052eef93d2ae0eeb1",
+      "origem": "OFF_CONAB_amendoim_1.xls (cópia byte a byte)"
+    },
+    {
+      "file": "arroz.xls",
+      "produto": "arroz",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/arroz/arroztotalseriehist.xls",
+      "fetched_at": "2026-09-24T05:39:43.812520+00:00",
+      "status": 200,
+      "bytes": 105472,
+      "sha256": "acf84b368ab7f4fa95720b68000fc268e0405e5db656e92d49d0fba2f9bbe938",
+      "origem": "OFF_CONAB_arroz.xls (cópia byte a byte)"
+    },
+    {
+      "file": "arroz_irrigado.xls",
+      "produto": "arroz_irrigado",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/arroz/arrozirrigadoseriehist.xls",
+      "fetched_at": "2026-09-24T05:39:45.249665+00:00",
+      "status": 200,
+      "bytes": 73216,
+      "sha256": "6093b889bcd597360bd5387cc0db3c77805acf00db650f7375f34baf02ffbdd8",
+      "origem": "OFF_CONAB_arroz_irrigado.xls (cópia byte a byte)"
+    },
+    {
+      "file": "arroz_sequeiro.xls",
+      "produto": "arroz_sequeiro",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/arroz/arrozsequeiroseriehist.xls",
+      "fetched_at": "2026-09-24T05:39:46.690115+00:00",
+      "status": 200,
+      "bytes": 72704,
+      "sha256": "daa655afafc9a0dacd07b9cdd73c1617a4736a92f545fdd6ba37c9dda1da2d56",
+      "origem": "OFF_CONAB_arroz_sequeiro.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao.xls",
+      "produto": "feijao",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaototalseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:01.045270+00:00",
+      "status": 200,
+      "bytes": 97280,
+      "sha256": "8959586c89b5b1e640efad20c8b48d268e1fe6a4c415f115d5f42aea6b7342db",
+      "origem": "OFF_CONAB_feijao.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_1.xls",
+      "produto": "feijao_1",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijao1aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:02.625177+00:00",
+      "status": 200,
+      "bytes": 95744,
+      "sha256": "4f3db3ee6a65bcf7b0da00e989fa6616af840056427bef71e50ee2c7baa3b6b7",
+      "origem": "OFF_CONAB_feijao_1.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_2.xls",
+      "produto": "feijao_2",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijao2aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:04.232625+00:00",
+      "status": 200,
+      "bytes": 95744,
+      "sha256": "dd4175479e4a867944c4861443f45238cbb2813e1509021cbddc6b7d3d6b33eb",
+      "origem": "OFF_CONAB_feijao_2.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_cores_1.xls",
+      "produto": "feijao_cores_1",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaocores1aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:14.603240+00:00",
+      "status": 200,
+      "bytes": 67072,
+      "sha256": "d6bfb7fbbec146d9adbb376081a17dea167bdbc275df42f35f20d0dd9e13de4b",
+      "origem": "OFF_CONAB_feijao_cores_1.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_cores_2.xls",
+      "produto": "feijao_cores_2",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaocores2aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:15.994121+00:00",
+      "status": 200,
+      "bytes": 65024,
+      "sha256": "7b7aafc6848b7f7902455f0f53998f718a112283ad66cee12e28f3d44029f795",
+      "origem": "OFF_CONAB_feijao_cores_2.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_cores_3.xls",
+      "produto": "feijao_cores_3",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaocores3aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:17.354665+00:00",
+      "status": 200,
+      "bytes": 67072,
+      "sha256": "03ef8acc67921135b42f28e2a732631dafd863b54a5a4b4523908fbf1608f9ea",
+      "origem": "OFF_CONAB_feijao_cores_3.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_preto_1.xls",
+      "produto": "feijao_preto_1",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaopreto1aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:20.204794+00:00",
+      "status": 200,
+      "bytes": 60928,
+      "sha256": "262f1a0a967ded62862f4204d29a309712e24fdb4380dc20b49e816b604bfd5b",
+      "origem": "OFF_CONAB_feijao_preto_1.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_preto_2.xls",
+      "produto": "feijao_preto_2",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaopreto2aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:21.560341+00:00",
+      "status": 200,
+      "bytes": 63488,
+      "sha256": "d3d3efe323970839d1d8b6b9142f2c2779f6c9de2c7e72f011d962ab562f6238",
+      "origem": "OFF_CONAB_feijao_preto_2.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_preto_3.xls",
+      "produto": "feijao_preto_3",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaopreto3aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:22.899735+00:00",
+      "status": 200,
+      "bytes": 64512,
+      "sha256": "7c76a37f43a20237085c15e37623b0324a3974a663b13a554bc9a85b1ed057c4",
+      "origem": "OFF_CONAB_feijao_preto_3.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_caupi_1.xls",
+      "produto": "feijao_caupi_1",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaocaupi1aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:08.815029+00:00",
+      "status": 200,
+      "bytes": 67584,
+      "sha256": "96391db03184488077181fad2dc7a64bcc8a9e6dbebf82a24b2c4d294dc028e6",
+      "origem": "OFF_CONAB_feijao_caupi_1.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_caupi_2.xls",
+      "produto": "feijao_caupi_2",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaocaupi2aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:10.290240+00:00",
+      "status": 200,
+      "bytes": 65536,
+      "sha256": "beacae0a069bd0119ec9647c00ab108f5bc7ea73a955b31b7ad6582e9f832188",
+      "origem": "OFF_CONAB_feijao_caupi_2.xls (cópia byte a byte)"
+    },
+    {
+      "file": "feijao_caupi_3.xls",
+      "produto": "feijao_caupi_3",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/feijao/feijaocaupi3aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:11.713675+00:00",
+      "status": 200,
+      "bytes": 68096,
+      "sha256": "1699a00bea7042de691c64f151a1bbc4aa883af7806563c4103e0b21046294ad",
+      "origem": "OFF_CONAB_feijao_caupi_3.xls (cópia byte a byte)"
+    },
+    {
+      "file": "gergelim.xls",
+      "produto": "gergelim",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/gergelim/gergelimseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:24.347717+00:00",
+      "status": 200,
+      "bytes": 64000,
+      "sha256": "e8db27a1f9f9b10cb63d86cbc82c35e9a70915610ed1823f67cefe8abc8de7a3",
+      "origem": "OFF_CONAB_gergelim.xls (cópia byte a byte)"
+    },
+    {
+      "file": "girassol.xls",
+      "produto": "girassol",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/girassol/girassolseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:25.863375+00:00",
+      "status": 200,
+      "bytes": 82432,
+      "sha256": "61d676502476b85c4737ea3cf59dac9300d4c327f52c3c332d64ab312b2a2659",
+      "origem": "OFF_CONAB_girassol.xls (cópia byte a byte)"
+    },
+    {
+      "file": "milho.xls",
+      "produto": "milho",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/milho/milhototalseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:28.837425+00:00",
+      "status": 200,
+      "bytes": 96256,
+      "sha256": "ada57f8dba02154014022d672279d4b4da53589247ace1865d1ef474854ada8a",
+      "origem": "OFF_CONAB_milho.xls (cópia byte a byte)"
+    },
+    {
+      "file": "milho_1.xls",
+      "produto": "milho_1",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/milho/milho1aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:30.467814+00:00",
+      "status": 200,
+      "bytes": 98816,
+      "sha256": "e4fb5ba0104a873c4bfbd1efe5a0d797891fc851457f62ae4d2c6cd0e3fb4476",
+      "origem": "OFF_CONAB_milho_1.xls (cópia byte a byte)"
+    },
+    {
+      "file": "milho_2.xls",
+      "produto": "milho_2",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/milho/milho2aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:32.032949+00:00",
+      "status": 200,
+      "bytes": 83456,
+      "sha256": "9457ea0bcd807174bf00605d7beb896be5a4246166c187f18df18001b55db1fe",
+      "origem": "OFF_CONAB_milho_2.xls (cópia byte a byte)"
+    },
+    {
+      "file": "milho_3.xls",
+      "produto": "milho_3",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/milho/milho3aseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:33.566791+00:00",
+      "status": 200,
+      "bytes": 64000,
+      "sha256": "e39af5dfc8b081c00019a561347d512c80921ba3e70db211f81218e52c94465c",
+      "origem": "OFF_CONAB_milho_3.xls (cópia byte a byte)"
+    },
+    {
+      "file": "sorgo.xls",
+      "produto": "sorgo",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/graos/sorgo/sorgoseriehist.xls",
+      "fetched_at": "2026-09-24T05:40:36.679690+00:00",
+      "status": 200,
+      "bytes": 89088,
+      "sha256": "cf7972f71f7aaa186d4f9272d6e9367a2690aaeb536fcc5c1e8423f70507f5c1",
+      "origem": "OFF_CONAB_sorgo.xls (cópia byte a byte)"
+    }
+  ]
+}

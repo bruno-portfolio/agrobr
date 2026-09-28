@@ -1,394 +1,176 @@
+import csv
+import io
+import json
+import math
+import warnings
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
-from agrobr.bcb.parser import (
-    PARSER_VERSION,
-    agregar_por_programa,
-    agregar_por_uf,
-    parse_credito_rural,
+from agrobr import contracts
+from agrobr.bcb import parser
+from tests.helpers import sem_excecao
+
+ORACULO = Path(__file__).parents[1] / "golden_data/bcb/oraculo_20260923"
+R9_SICOR = (
+    Path(__file__).parents[1]
+    / "golden_data/reconciliacao_r9_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
 )
-from agrobr.exceptions import ParseError
+CORPOS = {
+    "custeio": (R9_SICOR, "VlCusteio", "QtdCusteio"),
+    "investimento": (ORACULO / "sicor_investimento_bovinos_mt_000.json", "VlInvest", "QtdInvest"),
+    "comercializacao": (
+        ORACULO / "sicor_comercializacao_soja_mt_001.json",
+        "VlComerc",
+        "QtdComerc",
+    ),
+}
 
 
-def _sicor_record(
-    safra="2023/2024",
-    uf="MT",
-    cd_uf="51",
-    municipio="SORRISO",
-    cd_municipio="5107248",
-    produto="SOJA",
-    valor=1000000.0,
-    area=500.0,
-    contratos=10,
-    cd_programa=None,
-    cd_sub_programa=None,
-    cd_fonte_recurso=None,
-    cd_tipo_seguro=None,
-    cd_modalidade=None,
-    atividade=None,
-):
-    rec: dict = {
-        "Safra": safra,
-        "AnoEmissao": 2023,
-        "MesEmissao": 9,
-        "cdUF": cd_uf,
-        "UF": uf,
-        "cdMunicipio": cd_municipio,
-        "Municipio": municipio,
-        "Produto": produto,
-        "Valor": valor,
-        "AreaFinanciada": area,
-        "QtdContratos": contratos,
+def tabela(nome: str, delimitador: str) -> dict[str, str]:
+    linhas = csv.reader(
+        io.StringIO((ORACULO / nome).read_bytes().decode("cp1252")), delimiter=delimitador
+    )
+    return {
+        codigo: descricao.split(" - ", 1)[0].replace('"', "").strip()
+        for codigo, descricao, *_resto in list(linhas)[1:]
     }
-    if cd_programa is not None:
-        rec["cdPrograma"] = cd_programa
-    if cd_sub_programa is not None:
-        rec["cdSubPrograma"] = cd_sub_programa
-    if cd_fonte_recurso is not None:
-        rec["cdFonteRecurso"] = cd_fonte_recurso
-    if cd_tipo_seguro is not None:
-        rec["cdTipoSeguro"] = cd_tipo_seguro
-    if cd_modalidade is not None:
-        rec["cdModalidade"] = cd_modalidade
-    if atividade is not None:
-        rec["Atividade"] = atividade
-    return rec
-
-
-class TestParseCreditorRural:
-    def test_parse_basic(self):
-        dados = [_sicor_record()]
-        df = parse_credito_rural(dados)
-
-        assert len(df) == 1
-        assert "safra" in df.columns
-        assert "uf" in df.columns
-        assert "municipio" in df.columns
-        assert "valor" in df.columns
-        assert "area_financiada" in df.columns
-
-    def test_parse_renames_columns(self):
-        dados = [_sicor_record()]
-        df = parse_credito_rural(dados)
-
-        assert "Safra" not in df.columns
-        assert "safra" in df.columns
-        assert "Valor" not in df.columns
-        assert "valor" in df.columns
-
-    def test_safra_derivada_quando_endpoint_nao_retorna(self):
-        rec_jul = _sicor_record()
-        rec_jul.pop("Safra")
-        rec_jul["AnoEmissao"] = 2023
-        rec_jul["MesEmissao"] = 9
-
-        rec_jan = _sicor_record()
-        rec_jan.pop("Safra")
-        rec_jan["AnoEmissao"] = 2024
-        rec_jan["MesEmissao"] = 2
-
-        df = parse_credito_rural([rec_jul, rec_jan])
-
-        assert df["safra"].tolist() == ["2023/2024", "2023/2024"]
-
-    def test_safra_existente_nao_sobrescrita(self):
-        df = parse_credito_rural([_sicor_record(safra="2022/2023")])
-        assert df["safra"].iloc[0] == "2022/2023"
-
-    def test_parse_normalizes_produto(self):
-        dados = [_sicor_record(produto="SOJA")]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["produto"] == "soja"
-
-    def test_parse_normalizes_uf(self):
-        dados = [_sicor_record(uf="mt")]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["uf"] == "MT"
-
-    def test_parse_numeric_conversion(self):
-        dados = [_sicor_record(valor=1500000.50, area=750.25)]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["valor"] == pytest.approx(1500000.50)
-        assert df.iloc[0]["area_financiada"] == pytest.approx(750.25)
-
-    def test_parse_empty_raises(self):
-        with pytest.raises(ParseError) as exc_info:
-            parse_credito_rural([])
-        assert "vazia" in str(exc_info.value).lower()
-        assert exc_info.value.parser_version == PARSER_VERSION
-
-    def test_parse_multiple_records(self):
-        dados = [
-            _sicor_record(municipio="SORRISO", valor=1000000),
-            _sicor_record(municipio="SINOP", valor=800000),
-            _sicor_record(municipio="LUCAS DO RIO VERDE", valor=1200000),
-        ]
-        df = parse_credito_rural(dados)
-
-        assert len(df) == 3
-
-    def test_parse_sorted(self):
-        dados = [
-            _sicor_record(uf="SP", municipio="CAMPINAS"),
-            _sicor_record(uf="MT", municipio="SORRISO"),
-            _sicor_record(uf="MT", municipio="CUIABA"),
-        ]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["uf"] == "MT"
-
-
-class TestParseNewApiColumns:
-    def test_renames_cd_programa(self):
-        dados = [_sicor_record(cd_programa="0050")]
-        df = parse_credito_rural(dados)
-
-        assert "cdPrograma" not in df.columns
-        assert "cd_programa" in df.columns
-        assert df.iloc[0]["cd_programa"] == "0050"
-
-    def test_renames_cd_fonte_recurso(self):
-        dados = [_sicor_record(cd_fonte_recurso="0430")]
-        df = parse_credito_rural(dados)
-
-        assert "cdFonteRecurso" not in df.columns
-        assert "cd_fonte_recurso" in df.columns
-        assert df.iloc[0]["cd_fonte_recurso"] == "0430"
-
-    def test_renames_cd_tipo_seguro(self):
-        dados = [_sicor_record(cd_tipo_seguro="3")]
-        df = parse_credito_rural(dados)
-
-        assert "cdTipoSeguro" not in df.columns
-        assert "cd_tipo_seguro" in df.columns
-
-    def test_renames_cd_modalidade(self):
-        dados = [_sicor_record(cd_modalidade="01")]
-        df = parse_credito_rural(dados)
-
-        assert "cdModalidade" not in df.columns
-        assert "cd_modalidade" in df.columns
-
-    def test_renames_atividade_to_cd_atividade(self):
-        dados = [_sicor_record(atividade="1")]
-        df = parse_credito_rural(dados)
-
-        assert "Atividade" not in df.columns
-        assert "cd_atividade" in df.columns
-        assert df.iloc[0]["cd_atividade"] == "1"
-
-    def test_renames_cd_sub_programa(self):
-        dados = [_sicor_record(cd_sub_programa="0001")]
-        df = parse_credito_rural(dados)
-
-        assert "cdSubPrograma" not in df.columns
-        assert "cd_sub_programa" in df.columns
-
-    def test_all_dimension_columns_together(self):
-        dados = [
-            _sicor_record(
-                cd_programa="0050",
-                cd_sub_programa="0001",
-                cd_fonte_recurso="0303",
-                cd_tipo_seguro="9",
-                cd_modalidade="01",
-                atividade="1",
-            )
-        ]
-        df = parse_credito_rural(dados)
 
-        assert df.iloc[0]["cd_programa"] == "0050"
-        assert df.iloc[0]["cd_sub_programa"] == "0001"
-        assert df.iloc[0]["cd_fonte_recurso"] == "0303"
-        assert df.iloc[0]["cd_tipo_seguro"] == "9"
-        assert df.iloc[0]["cd_modalidade"] == "01"
-        assert df.iloc[0]["cd_atividade"] == "1"
 
-
-class TestEnriquecimento:
-    def test_programa_resolved(self):
-        dados = [_sicor_record(cd_programa="0050")]
-        df = parse_credito_rural(dados)
-
-        assert "programa" in df.columns
-        assert df.iloc[0]["programa"] == "Pronamp"
-
-    def test_fonte_recurso_resolved(self):
-        dados = [_sicor_record(cd_fonte_recurso="0430")]
-        df = parse_credito_rural(dados)
-
-        assert "fonte_recurso" in df.columns
-        assert df.iloc[0]["fonte_recurso"] == "LCA"
-
-    def test_tipo_seguro_resolved(self):
-        dados = [_sicor_record(cd_tipo_seguro="1")]
-        df = parse_credito_rural(dados)
-
-        assert "tipo_seguro" in df.columns
-        assert df.iloc[0]["tipo_seguro"] == "Proagro"
-
-    def test_modalidade_resolved(self):
-        dados = [_sicor_record(cd_modalidade="01")]
-        df = parse_credito_rural(dados)
-
-        assert "modalidade" in df.columns
-        assert df.iloc[0]["modalidade"] == "Individual"
-
-    def test_atividade_resolved(self):
-        dados = [_sicor_record(atividade="1")]
-        df = parse_credito_rural(dados)
-
-        assert "atividade" in df.columns
-        assert df.iloc[0]["atividade"] == "Agricola"
-
-    def test_all_dimensions_resolved(self):
-        dados = [
-            _sicor_record(
-                cd_programa="0001",
-                cd_fonte_recurso="0502",
-                cd_tipo_seguro="3",
-                cd_modalidade="03",
-                atividade="2",
-            )
-        ]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["programa"] == "Pronaf"
-        assert df.iloc[0]["fonte_recurso"] == "FNE"
-        assert df.iloc[0]["tipo_seguro"] == "Seguro privado"
-        assert df.iloc[0]["modalidade"] == "Coletiva"
-        assert df.iloc[0]["atividade"] == "Pecuaria"
-
-
-class TestEnriquecimentoDesconhecido:
-    def test_programa_desconhecido(self):
-        dados = [_sicor_record(cd_programa="9999")]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["programa"] == "Desconhecido (9999)"
-
-    def test_fonte_recurso_desconhecida(self):
-        dados = [_sicor_record(cd_fonte_recurso="0000")]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["fonte_recurso"] == "Desconhecido (0000)"
-
-    def test_tipo_seguro_desconhecido(self):
-        dados = [_sicor_record(cd_tipo_seguro="7")]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["tipo_seguro"] == "Desconhecido (7)"
-
-    def test_modalidade_desconhecida(self):
-        dados = [_sicor_record(cd_modalidade="99")]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["modalidade"] == "Desconhecido (99)"
-
-    def test_atividade_desconhecida(self):
-        dados = [_sicor_record(atividade="5")]
-        df = parse_credito_rural(dados)
-
-        assert df.iloc[0]["atividade"] == "Desconhecido (5)"
-
-
-class TestEnriquecimentoSemColunas:
-    def test_sem_dimensoes_nao_quebra(self):
-        dados = [_sicor_record()]
-        df = parse_credito_rural(dados)
-
-        assert "cd_programa" not in df.columns
-        assert "programa" not in df.columns
-        assert len(df) == 1
-
-
-class TestAgregarPorUf:
-    def test_basic_aggregation(self):
-        dados = [
-            _sicor_record(municipio="SORRISO", valor=1000000, area=500, contratos=10),
-            _sicor_record(municipio="SINOP", valor=800000, area=400, contratos=8),
-        ]
-        df = parse_credito_rural(dados)
-        df_uf = agregar_por_uf(df)
-
-        assert len(df_uf) == 1
-        assert df_uf.iloc[0]["valor"] == pytest.approx(1800000)
-        assert df_uf.iloc[0]["area_financiada"] == pytest.approx(900)
-        assert df_uf.iloc[0]["qtd_contratos"] == 18
-
-    def test_multi_uf(self):
-        dados = [
-            _sicor_record(uf="MT", cd_uf="51", valor=1000000),
-            _sicor_record(uf="PR", cd_uf="41", valor=500000),
-        ]
-        df = parse_credito_rural(dados)
-        df_uf = agregar_por_uf(df)
-
-        assert len(df_uf) == 2
-
-    def test_empty_df(self):
-        df = pd.DataFrame()
-        result = agregar_por_uf(df)
-        assert result.empty
-
-
-class TestAgregarPorPrograma:
-    def test_basic_aggregation(self):
-        dados = [
-            _sicor_record(
-                municipio="SORRISO",
-                valor=1000000,
-                area=500,
-                contratos=10,
-                cd_programa="0050",
-            ),
-            _sicor_record(
-                municipio="SINOP",
-                valor=800000,
-                area=400,
-                contratos=8,
-                cd_programa="0050",
-            ),
-        ]
-        df = parse_credito_rural(dados)
-        df_prog = agregar_por_programa(df)
-
-        assert len(df_prog) == 1
-        assert df_prog.iloc[0]["valor"] == pytest.approx(1800000)
-        assert df_prog.iloc[0]["area_financiada"] == pytest.approx(900)
-        assert df_prog.iloc[0]["qtd_contratos"] == 18
-
-    def test_multi_programa(self):
-        dados = [
-            _sicor_record(cd_programa="0050", valor=1000000),
-            _sicor_record(cd_programa="0001", valor=500000),
-        ]
-        df = parse_credito_rural(dados)
-        df_prog = agregar_por_programa(df)
-
-        assert len(df_prog) == 2
-
-    def test_empty_df(self):
-        df = pd.DataFrame()
-        result = agregar_por_programa(df)
-        assert result.empty
-
-    def test_keeps_programa_name(self):
-        dados = [
-            _sicor_record(cd_programa="0050", valor=1000000),
-            _sicor_record(cd_programa="0050", valor=500000),
-        ]
-        df = parse_credito_rural(dados)
-        df_prog = agregar_por_programa(df)
-
-        assert "programa" in df_prog.columns
-        assert df_prog.iloc[0]["programa"] == "Pronamp"
-
-
-class TestParserVersion:
-    def test_version_is_int(self):
-        assert isinstance(PARSER_VERSION, int)
-        assert PARSER_VERSION >= 2
+PROGRAMAS = tabela("dominio_Programa.csv", ";")
+SEGUROS = tabela("dominio_TipoGarantiaEmpreendimento.csv", ",")
+
+
+def safra(registro: dict) -> str:
+    ano, mes = int(registro["AnoEmissao"]), int(registro["MesEmissao"])
+    inicio = ano if mes >= 7 else ano - 1
+    return f"{inicio}/{(inicio + 1) % 100:02d}"
+
+
+def linhas(frame: pd.DataFrame, colunas: list[str]) -> list[tuple]:
+    return sorted(
+        tuple(None if pd.isna(valor) else valor for valor in linha)
+        for linha in frame[colunas].itertuples(index=False, name=None)
+    )
+
+
+@pytest.mark.parametrize("finalidade", list(CORPOS))
+def test_parse_publica_cada_registro_do_corpo_oficial(finalidade: str):
+    caminho, campo_valor, campo_qtd = CORPOS[finalidade]
+    registros = json.loads(caminho.read_bytes())["value"]
+
+    frame = parser.parse_credito_rural(registros, finalidade=finalidade)
+
+    colunas = [
+        "safra",
+        "uf",
+        "produto",
+        "finalidade",
+        "ano_emissao",
+        "mes_emissao",
+        "valor",
+        "qtd_contratos",
+        "cd_programa",
+        "programa",
+        "cd_tipo_seguro",
+        "tipo_seguro",
+    ]
+    assert linhas(frame, colunas) == sorted(
+        (
+            safra(registro),
+            registro["nomeUF"],
+            registro["nomeProduto"].strip('"').lower(),
+            finalidade,
+            int(registro["AnoEmissao"]),
+            int(registro["MesEmissao"]),
+            registro[campo_valor],
+            registro[campo_qtd],
+            registro["cdPrograma"],
+            PROGRAMAS[registro["cdPrograma"]],
+            registro["cdTipoSeguro"],
+            SEGUROS[registro["cdTipoSeguro"]],
+        )
+        for registro in registros
+    )
+    assert str(frame["valor"].dtype) == "float64"
+    assert [str(frame[coluna].dtype) for coluna in ["ano_emissao", "mes_emissao"]] == ["Int64"] * 2
+    if finalidade == "custeio":
+        assert frame["area_financiada"].isna().all()
+        assert {registro["AreaCusteio"] for registro in registros} == {None}
+
+
+def test_agregacoes_somam_o_corpo_oficial_preservando_nulos():
+    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    frame = parser.parse_credito_rural(registros)
+
+    por_uf = parser.agregar_por_uf(frame)
+    por_programa = parser.agregar_por_programa(frame)
+
+    colunas = ["safra", "uf", "produto", "finalidade"]
+    medidas = ["valor", "area_financiada", "qtd_contratos"]
+    assert por_uf.columns.tolist() == colunas + medidas
+    assert por_programa.columns.tolist() == colunas + ["programa", "cd_programa"] + medidas
+    assert por_uf[["safra", "uf", "produto", "finalidade"]].values.tolist() == [
+        ["2024/25", "MT", "soja", "custeio"]
+    ]
+    assert por_uf["valor"].tolist() == [pytest.approx(math.fsum(r["VlCusteio"] for r in registros))]
+    assert por_uf["qtd_contratos"].tolist() == [sum(r["QtdCusteio"] for r in registros)]
+    assert por_uf["area_financiada"].isna().all()
+    esperado: dict[tuple[str, str], list[float]] = {}
+    for registro in registros:
+        chave = (PROGRAMAS[registro["cdPrograma"]], registro["cdPrograma"])
+        esperado.setdefault(chave, []).append(registro["VlCusteio"])
+    assert por_programa[["programa", "cd_programa"]].apply(tuple, axis=1).tolist() == sorted(
+        esperado
+    )
+    assert por_programa["valor"].tolist() == pytest.approx(
+        [math.fsum(esperado[chave]) for chave in sorted(esperado)]
+    )
+    assert por_programa["area_financiada"].isna().all()
+    vazio = pd.DataFrame()
+    assert parser.agregar_por_uf(vazio) is vazio
+    assert parser.agregar_por_programa(vazio) is vazio
+
+
+def test_parse_vazio_devolve_frame_do_contrato_com_aviso():
+    with warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        frame = parser.parse_credito_rural([])
+    assert [(aviso.category, str(aviso.message)) for aviso in avisos] == [
+        (
+            UserWarning,
+            "Nenhum registro para produto/safra/UF/finalidade; em investimento os produtos "
+            "são itens de investimento, ex.: BOVINOS, CAFÉ, CANA-DE-AÇUCAR, BANANA e tratores.",
+        )
+    ]
+    assert frame.empty
+    assert contracts.get_contract("credito_rural").validate(frame) == (True, [])
+
+
+def test_registros_do_bigquery_sem_dimensoes_publicam_sem_programa():
+    registros = [
+        {
+            "ano_emissao": ano,
+            "mes_emissao": mes,
+            "uf": "mt",
+            "cd_municipio": "5107248",
+            "produto": '"SOJA"',
+            "finalidade": "custeio",
+            "valor": valor,
+            "area_financiada": 98500.0,
+            "qtd_contratos": 1240,
+        }
+        for ano, mes, valor in [(2023, 9, 285431200.0), (2024, 6, 1.5)]
+    ]
+
+    with sem_excecao():
+        frame = parser.parse_credito_rural(registros)
+
+    assert linhas(frame, ["safra", "uf", "produto", "valor", "qtd_contratos"]) == [
+        ("2023/24", "MT", "soja", 1.5, 1240),
+        ("2023/24", "MT", "soja", 285431200.0, 1240),
+    ]
+    assert not {"programa", "tipo_seguro", "fonte_recurso", "modalidade", "atividade"} & set(
+        frame.columns
+    )

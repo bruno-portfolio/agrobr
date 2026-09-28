@@ -4,19 +4,25 @@ import asyncio
 import hashlib
 import json
 import os
-import ssl
+import threading
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple, TypeVar
 from urllib.parse import quote
+from weakref import WeakValueDictionary
 
 import httpx
 import structlog
 
+from agrobr import constants
 from agrobr.constants import MIN_ZIP_SIZE, CacheSettings
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
+from agrobr.http import responses
+from agrobr.http.retry import RetriableStatusError, retry_async, should_retry_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import atomic
 from agrobr.utils.warnings import warn_once
 
 from .models import BASE_URL, FILENAME_PATTERNS
@@ -27,18 +33,19 @@ _CHUNK_SIZE = 64 * 1024
 
 TIMEOUT = get_timeout(read=120.0)
 
-_SSL_CTX = ssl.create_default_context()
-_SSL_CTX.check_hostname = False
-_SSL_CTX.verify_mode = ssl.CERT_NONE
-
-_SSL_WARNING = (
-    "acervo_fundiario (certificacao.incra.gov.br) usa verify=False: cadeia de "
-    "certificados do INCRA incompleta em truststores comuns. Dado e publico e "
-    "o ZIP e validado por magic bytes + SHA256 apos o download."
+_FETCH_LOCKS: WeakValueDictionary[tuple[asyncio.AbstractEventLoop, str], asyncio.Lock] = (
+    WeakValueDictionary()
 )
+_LOCKS_GUARD = threading.Lock()
 
-_FETCH_LOCKS: dict[str, asyncio.Lock] = {}
-_LOCKS_GUARD = asyncio.Lock()
+
+class Aquisicao(NamedTuple):
+    zip_path: Path
+    from_cache: bool
+    fetched_at: datetime
+    source_details: dict[str, str]
+    sha256: str | None = None
+    size_bytes: int = 0
 
 
 def _cache_disabled() -> bool:
@@ -46,11 +53,12 @@ def _cache_disabled() -> bool:
 
 
 async def _get_lock(key: str) -> asyncio.Lock:
-    async with _LOCKS_GUARD:
-        lock = _FETCH_LOCKS.get(key)
+    loop_key = (asyncio.get_running_loop(), key)
+    with _LOCKS_GUARD:
+        lock = _FETCH_LOCKS.get(loop_key)
         if lock is None:
             lock = asyncio.Lock()
-            _FETCH_LOCKS[key] = lock
+            _FETCH_LOCKS[loop_key] = lock
         return lock
 
 
@@ -83,19 +91,8 @@ def _meta_path(tema: str, uf: str | None) -> Path:
 
 
 def _atomic_write_text(target: Path, text: str) -> None:
-    tmp = target.with_suffix(target.suffix + ".tmp")
-    tmp.write_text(text, encoding="utf-8")
-    os.replace(tmp, target)
-
-
-def _cleanup_tmp_files(cdir: Path) -> None:
-    if not cdir.exists():
-        return
-    for tmp in cdir.glob("*.tmp"):
-        try:
-            tmp.unlink()
-        except OSError as exc:
-            logger.debug("acervo_fundiario_cache_tmp_cleanup_failed", path=str(tmp), error=str(exc))
+    with atomic.atomic_output(target) as tmp:
+        tmp.write_text(text, encoding="utf-8")
 
 
 def _load_meta(meta_path: Path) -> dict[str, Any] | None:
@@ -124,24 +121,65 @@ def _validate_zip_bytes_prefix(path: Path) -> bool:
 def _validate_cached_zip(zip_path: Path) -> bool:
     if not zip_path.exists():
         return False
-    if zip_path.stat().st_size < MIN_ZIP_SIZE:
-        logger.warning("acervo_fundiario_cache_zip_too_small", path=str(zip_path))
-        return False
     if not _validate_zip_bytes_prefix(zip_path):
         logger.warning("acervo_fundiario_cache_zip_invalid_magic", path=str(zip_path))
         return False
     return True
 
 
-async def _head(client: httpx.AsyncClient, url: str) -> dict[str, str | int]:
-    response = await client.head(url, timeout=TIMEOUT)
+def _cache_matches_remote(
+    zip_path: Path, cached_meta: dict[str, Any], head_info: dict[str, str | int]
+) -> bool:
+    size = zip_path.stat().st_size
+    if size != cached_meta.get("size_bytes"):
+        return False
+    remote_size = head_info["content_length"]
+    if isinstance(remote_size, int) and remote_size > 0 and remote_size != size:
+        return False
+    matched = False
+    for key in ("etag", "last_modified"):
+        cached = cached_meta.get(key, "")
+        remote = head_info[key]
+        if cached != remote:
+            return False
+        matched = matched or bool(remote)
+    return matched
+
+
+_T = TypeVar("_T")
+
+
+def _conferir_status(response: httpx.Response, url: str) -> None:
     if response.status_code == 404:
         raise SourceUnavailableError(
             source="acervo_fundiario",
             url=url,
-            last_error="HTTP 404 — recurso nao disponivel no servidor INCRA",
+            last_error="HTTP 404 — recurso não disponível no servidor INCRA",
         )
-    response.raise_for_status()
+    if should_retry_status(response.status_code):
+        raise RetriableStatusError(
+            f"HTTP {response.status_code}", request=response.request, response=response
+        )
+    responses.raise_for_status(response, source="acervo_fundiario")
+
+
+async def _com_retry(pedido: Callable[[], Awaitable[_T]], url: str) -> _T:
+    """Repete o pedido nas falhas de rede e nos status transitórios, e tipa a falha final."""
+    try:
+        return await retry_async(pedido)
+    except httpx.HTTPError as exc:
+        raise SourceUnavailableError(
+            source="acervo_fundiario", url=url, last_error=f"{type(exc).__name__}: {exc}"
+        ) from exc
+
+
+async def _head(client: httpx.AsyncClient, url: str) -> dict[str, str | int]:
+    async def pedir() -> httpx.Response:
+        response = await client.head(url, timeout=TIMEOUT)
+        _conferir_status(response, url)
+        return response
+
+    response = await _com_retry(pedir, url)
     headers = response.headers
     last_modified = headers.get("Last-Modified", "")
     etag = headers.get("ETag", "")
@@ -151,44 +189,34 @@ async def _head(client: httpx.AsyncClient, url: str) -> dict[str, str | int]:
 
 async def _stream_download(client: httpx.AsyncClient, url: str, dst_path: Path) -> tuple[int, str]:
     dst_path.parent.mkdir(parents=True, exist_ok=True)
-    _cleanup_tmp_files(dst_path.parent)
-
-    tmp = dst_path.with_suffix(dst_path.suffix + ".tmp")
     sha = hashlib.sha256()
     bytes_written = 0
 
-    try:
+    async with atomic.atomic_output_async(dst_path) as tmp:
         async with client.stream("GET", url, timeout=TIMEOUT) as response:
-            if response.status_code == 404:
-                raise SourceUnavailableError(
-                    source="acervo_fundiario", url=url, last_error="HTTP 404"
-                )
-            response.raise_for_status()
+            _conferir_status(response, url)
             with open(tmp, "wb") as f:
                 async for chunk in response.aiter_bytes(chunk_size=_CHUNK_SIZE):
+                    if bytes_written + len(chunk) > constants.ACERVO_MAX_DOWNLOAD_BYTES:
+                        raise ResourceLimitError(
+                            "acervo_fundiario", "Download excede o orçamento de bytes", url=url
+                        )
                     f.write(chunk)
                     sha.update(chunk)
                     bytes_written += len(chunk)
-    except Exception:
-        tmp.unlink(missing_ok=True)
-        raise
+        if bytes_written < MIN_ZIP_SIZE:
+            raise SourceUnavailableError(
+                source="acervo_fundiario",
+                url=url,
+                last_error=f"Resposta muito pequena ({bytes_written} bytes), esperado ZIP >={MIN_ZIP_SIZE}",
+            )
+        if not _validate_zip_bytes_prefix(tmp):
+            raise SourceUnavailableError(
+                source="acervo_fundiario",
+                url=url,
+                last_error="Resposta não é um ZIP válido (magic bytes incorretas)",
+            )
 
-    if bytes_written < MIN_ZIP_SIZE:
-        tmp.unlink(missing_ok=True)
-        raise SourceUnavailableError(
-            source="acervo_fundiario",
-            url=url,
-            last_error=f"Resposta muito pequena ({bytes_written} bytes), esperado ZIP >={MIN_ZIP_SIZE}",
-        )
-    if not _validate_zip_bytes_prefix(tmp):
-        tmp.unlink(missing_ok=True)
-        raise SourceUnavailableError(
-            source="acervo_fundiario",
-            url=url,
-            last_error="Resposta nao e um ZIP valido (magic bytes incorretas)",
-        )
-
-    os.replace(tmp, dst_path)
     return bytes_written, sha.hexdigest()
 
 
@@ -197,14 +225,16 @@ def _warn_download_size_once() -> None:
         "acervo_fundiario_download_size",
         (
             "acervo_fundiario: download de shapefile estatico do INCRA. "
-            "Tamanhos: SIGEF 8-687 MB por UF, SNCI 0.6-22 MB por UF, Assentamentos 48 MB. "
+            "Tamanhos: SIGEF 2-766 MB por UF, SNCI 0.01-23 MB por UF, Assentamentos 50 MB. "
             "Cache em ~/.agrobr/cache/acervo_fundiario/ (opt-out: use_cache=False ou "
             "AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1)."
         ),
     )
 
 
-async def download_and_cache(tema: str, uf: str | None = None, *, use_cache: bool = True) -> Path:
+async def download_and_cache(
+    tema: str, uf: str | None = None, *, use_cache: bool = True
+) -> Aquisicao:
     if tema not in FILENAME_PATTERNS:
         raise ValueError(f"tema invalido: {tema!r}. Validos: {sorted(FILENAME_PATTERNS)}")
 
@@ -215,12 +245,10 @@ async def download_and_cache(tema: str, uf: str | None = None, *, use_cache: boo
 
     from agrobr.http.rate_limiter import RateLimiter
 
-    warn_once("acervo_fundiario_ssl_verify_off", _SSL_WARNING)
     lock = await _get_lock(_cache_key(tema, uf))
     async with (
         lock,
         httpx.AsyncClient(
-            verify=_SSL_CTX,
             headers=UserAgentRotator.get_bot_headers(),
             follow_redirects=True,
         ) as client,
@@ -229,17 +257,28 @@ async def download_and_cache(tema: str, uf: str | None = None, *, use_cache: boo
 
         if cache_active:
             cached_meta = _load_meta(meta_path)
-            if cached_meta and _validate_cached_zip(zip_path):
+            if cached_meta and "fetched_at" in cached_meta and _validate_cached_zip(zip_path):
                 async with RateLimiter.acquire("acervo_fundiario"):
                     head_info = await _head(client, url)
-                if head_info["last_modified"] == cached_meta.get("last_modified"):
+                if _cache_matches_remote(zip_path, cached_meta, head_info):
                     logger.debug(
                         "acervo_fundiario_cache_hit",
                         tema=tema,
                         uf=uf,
                         last_modified=head_info["last_modified"],
                     )
-                    return zip_path
+                    return Aquisicao(
+                        zip_path,
+                        True,
+                        datetime.fromisoformat(cached_meta["fetched_at"]),
+                        {
+                            "revalidado_em": datetime.now(UTC).isoformat(),
+                            "etag": str(head_info["etag"]),
+                            "last_modified": str(head_info["last_modified"]),
+                        },
+                        cached_meta.get("sha256"),
+                        int(cached_meta.get("size_bytes", 0)),
+                    )
                 logger.info(
                     "acervo_fundiario_cache_stale",
                     tema=tema,
@@ -251,11 +290,14 @@ async def download_and_cache(tema: str, uf: str | None = None, *, use_cache: boo
         _warn_download_size_once()
         logger.info("acervo_fundiario_download_start", tema=tema, uf=uf, url=url)
         async with RateLimiter.acquire("acervo_fundiario"):
-            size_bytes, sha256 = await _stream_download(client, url, zip_path)
+            size_bytes, sha256 = await _com_retry(
+                lambda: _stream_download(client, url, zip_path), url
+            )
 
             if head_info is None:
                 head_info = await _head(client, url)
 
+        fetched_at = datetime.now(UTC)
         _save_meta(
             meta_path,
             {
@@ -266,7 +308,7 @@ async def download_and_cache(tema: str, uf: str | None = None, *, use_cache: boo
                 "etag": head_info["etag"],
                 "size_bytes": size_bytes,
                 "sha256": sha256,
-                "fetched_at": datetime.now(UTC).isoformat(),
+                "fetched_at": fetched_at.isoformat(),
             },
         )
         logger.info(
@@ -276,4 +318,11 @@ async def download_and_cache(tema: str, uf: str | None = None, *, use_cache: boo
             size_bytes=size_bytes,
             sha256=sha256[:16],
         )
-        return zip_path
+        return Aquisicao(
+            zip_path,
+            False,
+            fetched_at,
+            {"etag": str(head_info["etag"]), "last_modified": str(head_info["last_modified"])},
+            sha256,
+            size_bytes,
+        )

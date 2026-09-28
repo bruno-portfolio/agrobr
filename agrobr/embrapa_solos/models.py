@@ -1,147 +1,175 @@
 from __future__ import annotations
 
-from agrobr.constants import URLS, Fonte
+from typing import Annotated, Any, Literal
 
-WFS_BASE: str = URLS[Fonte.EMBRAPA_SOLOS]["geoserver"]
-WFS_VERSION = "2.0.0"
-
-PERFIS_NAMESPACE = "geonode"
-PERFIS_LAYER = "perfis_pronasolos_2020"
-PERFIS_PAGE_SIZE = 5_000
-PERFIS_MAX_FEATURES_GEO = 5_000
-
-PERFIS_PROPERTY_NAMES: list[str] = [
-    "fid",
-    "nivel_leva",
-    "uso_atual",
-    "gcs_latitu",
-    "gcs_longit",
-    "municipio",
-    "uf",
-    "simbolo_ho",
-    "profundida",
-    "areia_tota",
-    "silte",
-    "argila",
-    "ph_h2o",
-    "carbono_or",
-    "valor_t",
-    "valor_v",
-    "aluminio_t",
-    "fosforo_as",
-    "classe_tex",
-]
-
-PERFIS_GEOM_COLUMN = "geom"
-PERFIS_PROPERTY_NAMES_GEO: list[str] = [PERFIS_GEOM_COLUMN] + PERFIS_PROPERTY_NAMES
-
-PERFIS_RENAME_MAP: dict[str, str] = {
-    "gcs_latitu": "latitude",
-    "gcs_longit": "longitude",
-    "simbolo_ho": "horizonte",
-    "profundida": "profundidade",
-    "areia_tota": "areia_total",
-    "carbono_or": "carbono_organico",
-    "valor_t": "ctc",
-    "valor_v": "saturacao_bases",
-    "aluminio_t": "aluminio",
-    "fosforo_as": "fosforo",
-    "classe_tex": "classe_textural",
-    "nivel_leva": "nivel_levantamento",
-}
-
-PERFIS_COLUNAS_SAIDA: list[str] = [
-    "fid",
-    "uf",
-    "municipio",
-    "latitude",
-    "longitude",
-    "horizonte",
-    "profundidade",
-    "areia_total",
-    "silte",
-    "argila",
-    "ph_h2o",
-    "carbono_organico",
-    "ctc",
-    "saturacao_bases",
-    "aluminio",
-    "fosforo",
-    "classe_textural",
-    "nivel_levantamento",
-    "uso_atual",
-]
-
-PERFIS_COLUNAS_SAIDA_GEO: list[str] = PERFIS_COLUNAS_SAIDA + ["geometry"]
-
-PERFIS_NUMERIC_COLS: frozenset[str] = frozenset(
-    {
-        "latitude",
-        "longitude",
-        "areia_total",
-        "silte",
-        "argila",
-        "ph_h2o",
-        "carbono_organico",
-        "ctc",
-        "saturacao_bases",
-        "aluminio",
-        "fosforo",
-    }
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializeAsAny,
+    ValidationInfo,
+    create_model,
+    field_validator,
 )
 
-_REQUIRED_PERFIS: set[str] = {"fid", "uf", "gcs_latitu", "gcs_longit"}
+from agrobr import constants
 
-MAPA_NAMESPACE = "geonode"
-MAPA_LAYER = "brasil_solos_5m_20201104"
-MAPA_PAGE_SIZE = 500
-MAPA_MAX_FEATURES_GEO = 3_000
+from . import _json
 
-MAPA_PROPERTY_NAMES: list[str] = [
-    "ogc_fid",
-    "simbolos",
-    "comp1",
-    "comp2",
-    "comp3",
-    "leg_desc",
-    "area_km2",
-    "ordem1",
-    "subordem1",
-    "gdegrupo1",
-    "ordem2",
-    "subordem2",
-    "gdegrupo2",
-    "leg_sinot",
-    "classe_dom",
-]
+Product = Literal["perfis", "mapa"]
+WFS_BASE = constants.URLS[constants.Fonte.EMBRAPA_SOLOS]["geoserver"]
+WFS_VERSION = constants.EMBRAPA_SOLOS_WFS_VERSION
+PERFIS_NAMESPACE = MAPA_NAMESPACE = constants.EMBRAPA_SOLOS_NAMESPACE
+PERFIS_LAYER = constants.EMBRAPA_SOLOS_LAYERS["perfis"]
+MAPA_LAYER = constants.EMBRAPA_SOLOS_LAYERS["mapa"]
+PERFIS_PAGE_SIZE = constants.EMBRAPA_SOLOS_DEFAULT_PAGE_SIZES["perfis"]
+MAPA_PAGE_SIZE = constants.EMBRAPA_SOLOS_DEFAULT_PAGE_SIZES["mapa"]
+PERFIS_MAX_FEATURES_GEO = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["perfis"]
+MAPA_MAX_FEATURES_GEO = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["mapa"]
+PERFIS_PROPERTY_NAMES = list(constants.EMBRAPA_SOLOS_PERFIS_PROPERTIES)
+MAPA_PROPERTY_NAMES = list(constants.EMBRAPA_SOLOS_MAPA_PROPERTIES)
+PERFIS_GEOM_COLUMN = constants.EMBRAPA_SOLOS_GEOMETRY_COLUMNS["perfis"]
+MAPA_GEOM_COLUMN = constants.EMBRAPA_SOLOS_GEOMETRY_COLUMNS["mapa"]
+PERFIS_PROPERTY_NAMES_GEO = [*PERFIS_PROPERTY_NAMES, PERFIS_GEOM_COLUMN]
+MAPA_PROPERTY_NAMES_GEO = [*MAPA_PROPERTY_NAMES, MAPA_GEOM_COLUMN]
+PERFIS_RENAME_MAP = constants.EMBRAPA_SOLOS_PERFIS_RENAME_MAP
+MAPA_RENAME_MAP = constants.EMBRAPA_SOLOS_MAPA_RENAME_MAP
+PERFIS_COLUNAS_SAIDA = list(constants.EMBRAPA_SOLOS_PERFIS_COLUMNS)
+MAPA_COLUNAS_SAIDA = list(constants.EMBRAPA_SOLOS_MAPA_COLUMNS)
+PERFIS_COLUNAS_SAIDA_GEO = [*PERFIS_COLUNAS_SAIDA, "geometry"]
+MAPA_COLUNAS_SAIDA_GEO = [*MAPA_COLUNAS_SAIDA, "geometry"]
+PERFIS_NUMERIC_COLS = frozenset({"latitude", "longitude"})
 
-MAPA_GEOM_COLUMN = "geometry"
-MAPA_PROPERTY_NAMES_GEO: list[str] = [MAPA_GEOM_COLUMN] + MAPA_PROPERTY_NAMES
 
-MAPA_RENAME_MAP: dict[str, str] = {
-    "ogc_fid": "fid",
-    "leg_desc": "legenda",
-    "leg_sinot": "legenda_sinotica",
-}
+def layout_properties(product: Product) -> tuple[str, ...]:
+    if product not in ("perfis", "mapa"):
+        raise ValueError("Produto Embrapa Solos inválido")
+    return (
+        constants.EMBRAPA_SOLOS_PERFIS_PROPERTIES
+        if product == "perfis"
+        else constants.EMBRAPA_SOLOS_MAPA_PROPERTIES
+    )
 
-MAPA_COLUNAS_SAIDA: list[str] = [
-    "fid",
-    "simbolos",
-    "comp1",
-    "comp2",
-    "comp3",
-    "legenda",
-    "area_km2",
-    "ordem1",
-    "subordem1",
-    "gdegrupo1",
-    "ordem2",
-    "subordem2",
-    "gdegrupo2",
-    "legenda_sinotica",
-    "classe_dom",
-]
 
-MAPA_COLUNAS_SAIDA_GEO: list[str] = MAPA_COLUNAS_SAIDA + ["geometry"]
+def layout_geometry_column(product: Product) -> str:
+    layout_properties(product)
+    return constants.EMBRAPA_SOLOS_GEOMETRY_COLUMNS[product]
 
-_REQUIRED_MAPA: set[str] = {"ogc_fid", "classe_dom"}
+
+class Properties(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid")
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def source_value(cls, value: Any, info: ValidationInfo) -> Any:
+        if value is None:
+            return None
+        if info.field_name in constants.EMBRAPA_SOLOS_INTEGER_BITS:
+            return _json.integer(value, constants.EMBRAPA_SOLOS_INTEGER_BITS[info.field_name])
+        if info.field_name in constants.EMBRAPA_SOLOS_FLOAT_PROPERTIES:
+            return _json.floating(value)
+        return value
+
+
+def property_model(product: Product) -> type[Properties]:
+    definitions: dict[str, Any] = {}
+    for name in layout_properties(product):
+        value_type: Any = (
+            int
+            if name in constants.EMBRAPA_SOLOS_INTEGER_BITS
+            else float
+            if name in constants.EMBRAPA_SOLOS_FLOAT_PROPERTIES
+            else str
+        )
+        definitions[name] = (value_type if name in ("fid", "ogc_fid") else value_type | None, ...)
+    return create_model(
+        "PerfisProperties" if product == "perfis" else "MapaProperties",
+        __base__=Properties,
+        **definitions,
+    )
+
+
+PerfisProperties = property_model("perfis")
+MapaProperties = property_model("mapa")
+
+
+class Geometry(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid")
+    type: Literal["Point", "MultiPolygon"]
+    coordinates: list[Any]
+    bbox: list[float] | None = None
+
+
+class Feature(BaseModel):
+    model_config = ConfigDict(strict=True, extra="ignore")
+    type: Literal["Feature"]
+    id: Annotated[str, Field(min_length=1)]
+    properties: SerializeAsAny[Properties]
+    geometry: Geometry | None
+    bbox: list[float] | None = None
+
+    @field_validator("id")
+    @classmethod
+    def nonblank_identifier(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Feature.id textual não branco obrigatório")
+        return value
+
+
+class CRSProperties(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid")
+    name: str
+
+
+class CRS(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid")
+    type: Literal["name"]
+    properties: CRSProperties
+
+
+class Link(BaseModel):
+    model_config = ConfigDict(strict=True, extra="allow")
+    rel: str
+    href: str
+
+
+class PageEnvelope(BaseModel):
+    model_config = ConfigDict(strict=True, extra="allow")
+    type: Literal["FeatureCollection"]
+    features: list[dict[str, Any]]
+    numberMatched: int | None = None
+    numberReturned: int | None = None
+    totalFeatures: int | None = None
+    crs: CRS | None = None
+    bbox: list[Any] | None = None
+    next: str | None = None
+    links: list[Link] = Field(default_factory=list)
+    timeStamp: str | None = None
+
+    @field_validator("numberMatched", "numberReturned", "totalFeatures", mode="before")
+    @classmethod
+    def counts(cls, value: Any) -> int:
+        if isinstance(value, _json.Number) and value.lexeme == "-0":
+            raise ValueError("Contagem exige inteiro canônico não negativo")
+        result = _json.integer(value, 64)
+        if result < 0:
+            raise ValueError("Contagem negativa")
+        return result
+
+
+class ParsedPage(BaseModel):
+    model_config = ConfigDict(strict=True, arbitrary_types_allowed=True)
+    records: list[Feature]
+    source_rows: int
+    reported_count: int | None
+    returned_count: int | None
+    signatures: list[str]
+    geometries: list[dict[str, Any] | None] | None
+    layout_fingerprint: dict[str, Any]
+    diagnostics: dict[str, Any]
+    statistics: dict[str, Any]
+    warnings: list[str]
+    crs: dict[str, Any] | None
+    bbox: list[float] | None
+    next_link: str | None
+    parser_version: int = 3

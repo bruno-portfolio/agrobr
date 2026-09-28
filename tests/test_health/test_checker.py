@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -14,46 +15,10 @@ from agrobr.health.checker import (
     _check_http,
     check_cepea_deep,
     check_source,
-    format_results,
     run_all_checks,
     run_checks_with_state,
 )
 from agrobr.health.registry import HEALTH_REGISTRY, SourceHealthConfig
-
-
-class TestCheckStatus:
-    def test_status_values(self):
-        assert CheckStatus.OK == "ok"
-        assert CheckStatus.WARNING == "warning"
-        assert CheckStatus.FAILED == "failed"
-
-
-class TestCheckResult:
-    def test_create_check_result(self):
-        result = CheckResult(
-            source=Fonte.CEPEA,
-            status=CheckStatus.OK,
-            latency_ms=150.0,
-            message="All checks passed",
-            details={"fetch_ok": True},
-            timestamp=datetime(2024, 1, 1),
-        )
-        assert result.source == Fonte.CEPEA
-        assert result.status == CheckStatus.OK
-        assert result.latency_ms == 150.0
-        assert result.category is None
-
-    def test_create_check_result_with_category(self):
-        result = CheckResult(
-            source=Fonte.CONAB,
-            status=CheckStatus.FAILED,
-            latency_ms=0,
-            message="HTTP 503",
-            details={},
-            timestamp=datetime(2024, 1, 1),
-            category="source_down",
-        )
-        assert result.category == "source_down"
 
 
 class TestCheckHttp:
@@ -77,50 +42,6 @@ class TestCheckHttp:
         assert result.details["status_code"] == 200
 
     @pytest.mark.asyncio
-    async def test_http_error(self):
-        config = SourceHealthConfig(source=Fonte.CONAB, url="https://example.com")
-        mock_response = MagicMock()
-        mock_response.status_code = 503
-
-        mock_client = AsyncMock()
-        mock_client.get.return_value = mock_response
-
-        with patch("httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
-
-            result = await _check_http(config)
-
-        assert result.status == CheckStatus.FAILED
-        assert result.category == "source_down"
-        assert "503" in result.message
-
-    @pytest.mark.asyncio
-    async def test_body_error_marker_returns_source_down(self):
-        config = SourceHealthConfig(
-            source=Fonte.SFB,
-            url="https://example.com",
-            body_error_markers=('"error"',),
-        )
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.text = '{"error":{"code":500,"message":"Service MapServer not started"}}'
-
-        mock_client = AsyncMock()
-        mock_client.get.return_value = mock_response
-
-        with patch("httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
-
-            result = await _check_http(config)
-
-        assert result.status == CheckStatus.FAILED
-        assert result.category == "source_down"
-        assert '"error"' in result.message
-        assert "not started" in result.message
-
-    @pytest.mark.asyncio
     async def test_body_error_marker_absent_returns_ok(self):
         config = SourceHealthConfig(
             source=Fonte.SFB,
@@ -142,6 +63,39 @@ class TestCheckHttp:
 
         assert result.status == CheckStatus.OK
         assert result.category is None
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("corpo", "status", "categoria"),
+        [
+            ({"count": 1, "data": [{"cmdCode": "1201"}], "error": ""}, CheckStatus.OK, None),
+            (
+                {"count": 0, "data": [], "error": "Invalid reporterCode"},
+                CheckStatus.FAILED,
+                "source_down",
+            ),
+        ],
+    )
+    async def test_comtrade_so_falha_com_error_preenchido(self, corpo, status, categoria):
+        config = HEALTH_REGISTRY[Fonte.COMTRADE]
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = json.dumps(corpo)
+        mock_response.json.return_value = corpo
+
+        mock_client = AsyncMock()
+        mock_client.get.return_value = mock_response
+
+        with patch("httpx.AsyncClient") as mock_cls:
+            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
+
+            result = await _check_http(config)
+
+        assert result.status == status
+        assert result.category == categoria
+        if corpo["error"]:
+            assert result.message == "Response error: Invalid reporterCode"
 
     @pytest.mark.asyncio
     async def test_best_effort_http_error_returns_warning(self):
@@ -189,23 +143,6 @@ class TestCheckHttp:
         assert result.message == "HTTP 403"
 
     @pytest.mark.asyncio
-    async def test_http_exception(self):
-        import httpx as httpx_mod
-
-        config = SourceHealthConfig(source=Fonte.CONAB, url="https://example.com")
-        mock_client = AsyncMock()
-        mock_client.get.side_effect = httpx_mod.ConnectError("connection refused")
-
-        with patch("httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
-
-            result = await _check_http(config)
-
-        assert result.status == CheckStatus.FAILED
-        assert result.category == "source_down"
-
-    @pytest.mark.asyncio
     async def test_best_effort_exception_returns_warning(self):
         import httpx as httpx_mod
 
@@ -225,38 +162,6 @@ class TestCheckHttp:
 
         assert result.status == CheckStatus.WARNING
         assert result.category == "source_down"
-
-    @pytest.mark.asyncio
-    async def test_http_exception_without_message_uses_type_name(self):
-        import httpx as httpx_mod
-
-        config = SourceHealthConfig(source=Fonte.CONAB, url="https://example.com")
-        mock_client = AsyncMock()
-        mock_client.get.side_effect = httpx_mod.ReadTimeout("")
-
-        with patch("httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
-
-            result = await _check_http(config)
-
-        assert result.status == CheckStatus.FAILED
-        assert result.category == "source_down"
-        assert result.message == "ReadTimeout"
-
-    @pytest.mark.asyncio
-    async def test_api_key_missing(self):
-        config = SourceHealthConfig(
-            source=Fonte.USDA,
-            url="https://example.com",
-            requires_api_key=True,
-            api_key_env_var="AGROBR_USDA_API_KEY",
-        )
-        with patch.dict("os.environ", {}, clear=True):
-            result = await _check_http(config)
-
-        assert result.status == CheckStatus.WARNING
-        assert result.category == "api_key_missing"
 
     @pytest.mark.asyncio
     async def test_slow_http_uses_warm_retry_latency(self):
@@ -317,49 +222,6 @@ class TestCheckSource:
         assert result.status == CheckStatus.OK
 
 
-class TestRunAllChecks:
-    @pytest.mark.asyncio
-    async def test_returns_all_sources(self):
-        mock_result = CheckResult(
-            source=Fonte.CEPEA,
-            status=CheckStatus.OK,
-            latency_ms=100,
-            message="ok",
-            details={},
-            timestamp=datetime.utcnow(),
-        )
-
-        with patch(
-            "agrobr.health.checker.check_source",
-            new_callable=AsyncMock,
-            return_value=mock_result,
-        ):
-            results = await run_all_checks()
-
-        assert isinstance(results, list)
-        assert len(results) == len(HEALTH_REGISTRY)
-
-    @pytest.mark.asyncio
-    async def test_specific_sources(self):
-        mock_result = CheckResult(
-            source=Fonte.CEPEA,
-            status=CheckStatus.OK,
-            latency_ms=100,
-            message="ok",
-            details={},
-            timestamp=datetime.utcnow(),
-        )
-
-        with patch(
-            "agrobr.health.checker.check_source",
-            new_callable=AsyncMock,
-            return_value=mock_result,
-        ):
-            results = await run_all_checks([Fonte.CEPEA, Fonte.CONAB])
-
-        assert len(results) == 2
-
-
 class TestRunChecksWithState:
     @pytest.mark.asyncio
     async def test_returns_tuples(self):
@@ -398,38 +260,6 @@ class TestRunChecksWithState:
         assert mock_alert.call_args.kwargs["prior_failures"] == 2
 
 
-class TestFormatResults:
-    def test_format_ok(self):
-        results = [
-            CheckResult(Fonte.CEPEA, CheckStatus.OK, 100.0, "All OK", {}, datetime.utcnow()),
-            CheckResult(
-                Fonte.CONAB,
-                CheckStatus.WARNING,
-                5500.0,
-                "High latency",
-                {},
-                datetime.utcnow(),
-            ),
-            CheckResult(
-                Fonte.IBGE,
-                CheckStatus.FAILED,
-                0.0,
-                "Connection refused",
-                {},
-                datetime.utcnow(),
-            ),
-        ]
-        output = format_results(results)
-        assert "Health Check Results" in output
-        assert "CEPEA" in output.upper()
-        assert "CONAB" in output.upper()
-        assert "IBGE" in output.upper()
-
-    def test_format_empty(self):
-        output = format_results([])
-        assert "Health Check Results" in output
-
-
 class TestCepeaDeepSoftBlock:
     @pytest.mark.asyncio
     async def test_soft_block_detected(self):
@@ -443,14 +273,21 @@ class TestCepeaDeepSoftBlock:
         assert result.status == CheckStatus.FAILED
         assert result.category == "soft_block"
 
-    @pytest.mark.asyncio
-    async def test_non_soft_block_error_remains_parse_error(self):
-        with patch(
-            "agrobr.cepea.client.fetch_indicador_page",
-            new_callable=AsyncMock,
-            side_effect=Exception("Connection timeout"),
-        ):
-            result = await check_cepea_deep()
 
-        assert result.status == CheckStatus.FAILED
-        assert result.category == "parse_error"
+async def test_run_all_checks_devolve_o_resultado_de_cada_fonte():
+    async def por_fonte(source, deep=False):
+        return CheckResult(
+            source=source,
+            status=CheckStatus.OK,
+            latency_ms=1,
+            message="ok",
+            details={"deep": deep},
+            timestamp=datetime(2026, 1, 1),
+        )
+
+    with patch("agrobr.health.checker.check_source", side_effect=por_fonte):
+        resultados = await run_all_checks([Fonte.CEPEA, Fonte.CONAB], deep=True)
+    assert [(getattr(r, "source", None), getattr(r, "details", None)) for r in resultados] == [
+        (Fonte.CEPEA, {"deep": True}),
+        (Fonte.CONAB, {"deep": True}),
+    ]

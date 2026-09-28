@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "numberMatched": 194669,
+  "numberReturned": 1,
+  "features": [
+    {
+      "type": "Feature",
+      "id": "sicar_imoveis_mg.13828149",
+      "geometry": null,
+      "properties": {
+        "cod_imovel": "MG-3108503-0BF1197DD40D456A82DB734740569BCD",
+        "status_imovel": "AT",
+        "dat_criacao": "2025-02-12T22:05:59.088Z",
+        "data_atualizacao": "2025-03-07T16:10:06.509Z",
+        "area": 497.3366,
+        "condicao": "Aguardando análise",
+        "uf": "MG",
+        "municipio": "Botumirim",
+        "cod_municipio_ibge": 3108503,
+        "m_fiscal": 9.9467,
+        "tipo_imovel": "IRU"
+      }
+    }
+  ]
+}

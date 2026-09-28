@@ -1,141 +1,242 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import re
 from typing import Any
 
 import pandas as pd
-import structlog
+from pydantic import ValidationError
 
+from agrobr import constants
 from agrobr.exceptions import ParseError
-from agrobr.utils.geo import check_geopandas, parse_geojson_base
-from agrobr.utils.io import concat_csv_pages
+from agrobr.normalize.regions import UFS_VALIDAS
 
-from .models import (
-    _REQUIRED_MAPA,
-    _REQUIRED_PERFIS,
-    MAPA_COLUNAS_SAIDA,
-    MAPA_COLUNAS_SAIDA_GEO,
-    MAPA_MAX_FEATURES_GEO,
-    MAPA_RENAME_MAP,
-    PERFIS_COLUNAS_SAIDA,
-    PERFIS_COLUNAS_SAIDA_GEO,
-    PERFIS_MAX_FEATURES_GEO,
-    PERFIS_NUMERIC_COLS,
-    PERFIS_RENAME_MAP,
-)
+from . import _geometry, _json, models
 
-logger = structlog.get_logger()
+PARSER_VERSION = 3
 
-PARSER_VERSION = 1
+_DUPLA_CODIFICACAO = re.compile("[ÃÂ][\x80-\xbf]")
 
 
-def parse_perfis_csv(pages: list[bytes]) -> pd.DataFrame:
-    df = concat_csv_pages(
-        pages,
-        source="embrapa_solos",
+def _diagnostic(values: dict[str, Any], category: str, row: int) -> None:
+    item = values.setdefault(category, {"count": 0, "examples": [], "examples_omitted": 0})
+    item["count"] += 1
+    if len(item["examples"]) < constants.EMBRAPA_SOLOS_MAX_DIAGNOSTIC_EXAMPLES:
+        item["examples"].append({"row_index": row})
+    else:
+        item["examples_omitted"] += 1
+
+
+def normalize_uf(value: str | None) -> str | None:
+    normalized = value.strip().upper() if value is not None else None
+    return normalized if normalized in UFS_VALIDAS else None
+
+
+def _statistics(
+    properties: models.Properties, statistics: dict[str, Any], diagnostics: dict[str, Any], row: int
+) -> None:
+    values = properties.model_dump()
+    for field, value in values.items():
+        counts = statistics.setdefault(
+            field, {"null_count": 0, "empty_count": 0, "whitespace_count": 0}
+        )
+        counts["null_count"] += value is None
+        counts["empty_count"] += value == "" if isinstance(value, str) else False
+        counts["whitespace_count"] += (
+            value != "" and value.strip() == "" if isinstance(value, str) else False
+        )
+    if "uf" in values and normalize_uf(values["uf"]) is None:
+        _diagnostic(diagnostics, "unknown_uf", row)
+    for name, bound, category in (
+        ("gcs_latitu", 90, "latitude_outside_range"),
+        ("gcs_longit", 180, "longitude_outside_range"),
+    ):
+        if values.get(name) is not None and abs(values[name]) > bound:
+            _diagnostic(diagnostics, category, row)
+    if values.get("area_km2") is not None and values["area_km2"] < 0:
+        _diagnostic(diagnostics, "negative_area", row)
+
+
+def _parse(content: bytes, product: models.Product, include_geometry: bool) -> models.ParsedPage:
+    fields = models.layout_properties(product)
+    if type(include_geometry) is not bool:
+        raise ValueError("Modo geométrico deve ser bool")
+    raw = _json.decode(content)
+    envelope = models.PageEnvelope.model_validate(raw)
+    next_links = [link.href for link in envelope.links if link.rel == "next"]
+    if envelope.next is not None:
+        next_links.append(envelope.next)
+    if len(set(next_links)) > 1:
+        raise ValueError("Links de continuação contraditórios")
+    size = len(envelope.features)
+    if envelope.numberReturned is not None and envelope.numberReturned != size:
+        raise ValueError("Contagem retornada diverge da página")
+    if envelope.numberMatched is not None and envelope.numberMatched < size:
+        raise ValueError("Página excede contagem publicada")
+    if (
+        envelope.totalFeatures is not None
+        and envelope.numberMatched is not None
+        and envelope.totalFeatures != envelope.numberMatched
+    ):
+        raise ValueError("Contagens publicadas divergentes")
+    if (
+        include_geometry
+        and (envelope.crs is not None or size)
+        and (
+            envelope.crs is None
+            or envelope.crs.properties.name not in constants.EMBRAPA_SOLOS_CRS_NAMES
+        )
+    ):
+        raise ValueError("CRS observado incompatível com EPSG4326")
+    property_class = models.PerfisProperties if product == "perfis" else models.MapaProperties
+    records = []
+    signatures = []
+    geometries: list[dict[str, Any] | None] | None = [] if include_geometry else None
+    diagnostics: dict[str, Any] = {}
+    statistics: dict[str, Any] = {
+        field: {"null_count": 0, "empty_count": 0, "whitespace_count": 0} for field in fields
+    }
+    feature_keys: set[str] = set()
+    warnings = []
+    for index, feature in enumerate(envelope.features):
+        feature_keys.update(feature)
+        properties = property_class.model_validate(feature.get("properties"))
+        if "geometry" not in feature:
+            raise ValueError("Membro geometry ausente")
+        geometry = _geometry.validate(feature["geometry"], product)
+        normalized = {**feature, "properties": properties, "geometry": geometry}
+        if "bbox" in feature:
+            normalized["bbox"] = _geometry.bbox_values(feature["bbox"])
+        record = models.Feature.model_validate(normalized)
+        signature = {"id": feature["id"], "properties": feature["properties"]}
+        if include_geometry:
+            signature["geometry"] = feature["geometry"]
+        signatures.append(
+            hashlib.sha256(
+                json.dumps(
+                    _json.canonical(signature), separators=(",", ":"), ensure_ascii=False
+                ).encode()
+            ).hexdigest()
+        )
+        _statistics(properties, statistics, diagnostics, index)
+        if geometries is not None:
+            geometries.append(geometry)
+        elif geometry is not None:
+            _diagnostic(diagnostics, "unexpected_geometry", index)
+            record.geometry = None
+        records.append(record)
+    if envelope.model_extra or feature_keys - {"type", "id", "properties", "geometry", "bbox"}:
+        warnings.append("Membros adicionais do envelope preservados no recurso bruto")
+    warnings += [
+        f"Diagnóstico Embrapa {name}: {value['count']} ocorrência(s)"
+        for name, value in diagnostics.items()
+    ]
+    layout = {
+        "product": product,
+        "property_names": list(fields),
+        "envelope_keys": sorted(raw),
+        "feature_keys": sorted(feature_keys),
+        "include_geometry": include_geometry,
+    }
+    fingerprint = {
+        "algorithm": "sha256",
+        "version": 1,
+        "parser_version": PARSER_VERSION,
+        **layout,
+        "sha256": hashlib.sha256(
+            json.dumps(layout, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest(),
+    }
+    return models.ParsedPage(
+        records=records,
+        source_rows=size,
+        reported_count=envelope.numberMatched,
+        returned_count=envelope.numberReturned,
+        signatures=signatures,
+        geometries=geometries,
+        layout_fingerprint=fingerprint,
+        diagnostics=diagnostics,
+        statistics=statistics,
+        warnings=warnings,
+        crs=envelope.crs.model_dump() if envelope.crs else None,
+        bbox=_geometry.bbox_values(envelope.bbox),
+        next_link=next_links[0] if next_links else None,
         parser_version=PARSER_VERSION,
-        empty_columns=PERFIS_COLUNAS_SAIDA,
     )
-    if df.empty:
-        return df
 
-    missing = _REQUIRED_PERFIS - set(df.columns)
-    if missing:
+
+def parse_page(
+    content: bytes, *, product: models.Product, include_geometry: bool
+) -> models.ParsedPage:
+    try:
+        return _parse(content, product, include_geometry)
+    except (ValueError, TypeError, KeyError, ValidationError, OverflowError, RecursionError) as exc:
         raise ParseError(
             source="embrapa_solos",
             parser_version=PARSER_VERSION,
-            reason=f"Colunas obrigatórias ausentes (perfis): {missing}",
+            reason=f"Página JSON Embrapa Solos inválida: {str(exc)[:1000]}",
+        ) from exc
+
+
+def _desfazer_dupla_codificacao(texto: str) -> str:
+    if not _DUPLA_CODIFICACAO.search(texto):
+        return texto
+    try:
+        return texto.encode("latin-1").decode("utf-8")
+    except UnicodeError:
+        return texto
+
+
+def reparar_texto(frame: pd.DataFrame) -> tuple[dict[str, int], dict[str, int]]:
+    reparos: dict[str, int] = {}
+    sem_reparo: dict[str, int] = {}
+    for coluna in [nome for nome in frame.columns if frame[nome].dtype == "string"]:
+        original = frame[coluna]
+        reparado = original.map(_desfazer_dupla_codificacao, na_action="ignore").astype(
+            original.dtype
         )
-
-    df = df.rename(columns=PERFIS_RENAME_MAP)
-
-    for col in PERFIS_NUMERIC_COLS:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-
-    if "uf" in df.columns:
-        df["uf"] = df["uf"].fillna("").str.strip().str.upper()
-
-    cols = [c for c in PERFIS_COLUNAS_SAIDA if c in df.columns]
-    df = df[cols].reset_index(drop=True)
-
-    logger.info("embrapa_solos_perfis_parse_ok", records=len(df))
-    return df
+        mudou = (reparado != original).fillna(False)
+        assinatura = original.str.contains(_DUPLA_CODIFICACAO.pattern, regex=True).fillna(False)
+        if trocas := int(mudou.sum()):
+            frame[coluna] = reparado
+            reparos[coluna] = trocas
+        if restantes := int((assinatura & ~mudou).sum()):
+            sem_reparo[coluna] = restantes
+    return reparos, sem_reparo
 
 
-def parse_perfis_geojson(data: bytes) -> Any:
-    gpd = check_geopandas()
-    gdf = parse_geojson_base(
-        data,
-        gpd,
-        source="embrapa_solos",
-        parser_version=PARSER_VERSION,
-        required_cols=_REQUIRED_PERFIS,
-        max_features=PERFIS_MAX_FEATURES_GEO,
-        output_cols_empty=PERFIS_COLUNAS_SAIDA_GEO,
-        truncation_event="embrapa_solos_perfis_geo_truncated",
+def build_frame(records: list[models.Feature], *, product: models.Product) -> pd.DataFrame:
+    fields = models.layout_properties(product)
+    rename = (
+        constants.EMBRAPA_SOLOS_PERFIS_RENAME_MAP
+        if product == "perfis"
+        else constants.EMBRAPA_SOLOS_MAPA_RENAME_MAP
     )
-    if gdf.empty:
-        return gdf
-
-    gdf = gdf.rename(columns=PERFIS_RENAME_MAP)
-    for col in PERFIS_NUMERIC_COLS:
-        if col in gdf.columns:
-            gdf[col] = pd.to_numeric(gdf[col], errors="coerce")
-    if "uf" in gdf.columns:
-        gdf["uf"] = gdf["uf"].fillna("").str.strip().str.upper()
-
-    cols = [c for c in PERFIS_COLUNAS_SAIDA_GEO if c in gdf.columns]
-    return gdf[cols].reset_index(drop=True)
-
-
-def parse_mapa_csv(pages: list[bytes]) -> pd.DataFrame:
-    df = concat_csv_pages(
-        pages,
-        source="embrapa_solos",
-        parser_version=PARSER_VERSION,
-        empty_columns=MAPA_COLUNAS_SAIDA,
+    columns = (
+        constants.EMBRAPA_SOLOS_PERFIS_COLUMNS
+        if product == "perfis"
+        else constants.EMBRAPA_SOLOS_MAPA_COLUMNS
     )
-    if df.empty:
-        return df
-
-    missing = _REQUIRED_MAPA - set(df.columns)
-    if missing:
-        raise ParseError(
-            source="embrapa_solos",
-            parser_version=PARSER_VERSION,
-            reason=f"Colunas obrigatórias ausentes (mapa): {missing}",
-        )
-
-    df = df.rename(columns=MAPA_RENAME_MAP)
-
-    if "area_km2" in df.columns:
-        df["area_km2"] = pd.to_numeric(df["area_km2"], errors="coerce")
-
-    cols = [c for c in MAPA_COLUNAS_SAIDA if c in df.columns]
-    df = df[cols].reset_index(drop=True)
-
-    logger.info("embrapa_solos_mapa_parse_ok", records=len(df))
-    return df
-
-
-def parse_mapa_geojson(data: bytes) -> Any:
-    gpd = check_geopandas()
-    gdf = parse_geojson_base(
-        data,
-        gpd,
-        source="embrapa_solos",
-        parser_version=PARSER_VERSION,
-        required_cols=_REQUIRED_MAPA,
-        max_features=MAPA_MAX_FEATURES_GEO,
-        output_cols_empty=MAPA_COLUNAS_SAIDA_GEO,
-        truncation_event="embrapa_solos_mapa_geo_truncated",
+    values: dict[str, list[Any]] = {name: [] for name in columns}
+    for record in records:
+        source = record.properties.model_dump()
+        for field in fields:
+            values[rename.get(field, field)].append(source[field])
+        if product == "perfis":
+            values["uf"].append(normalize_uf(source["uf"]))
+        values["feature_id"].append(record.id)
+    dtypes = {
+        rename.get(field, field): "Int64"
+        if field in constants.EMBRAPA_SOLOS_INTEGER_BITS
+        else "float64"
+        if field in constants.EMBRAPA_SOLOS_FLOAT_PROPERTIES
+        else "string[python]"
+        for field in fields
+    }
+    return pd.DataFrame(
+        {
+            name: pd.Series(value, dtype=dtypes.get(name, "string[python]"))
+            for name, value in values.items()
+        }
     )
-    if gdf.empty:
-        return gdf
-
-    gdf = gdf.rename(columns=MAPA_RENAME_MAP)
-    if "area_km2" in gdf.columns:
-        gdf["area_km2"] = pd.to_numeric(gdf["area_km2"], errors="coerce")
-
-    cols = [c for c in MAPA_COLUNAS_SAIDA_GEO if c in gdf.columns]
-    return gdf[cols].reset_index(drop=True)

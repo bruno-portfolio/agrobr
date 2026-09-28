@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Literal
+import warnings
+from typing import TYPE_CHECKING, Literal, overload
 
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.ibge import ftp_client, legacy_parser
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.models import MetaInfo
+from agrobr.utils.result import ATRIBUTO_AVISOS, build_source_meta, finalize_result
 
 if TYPE_CHECKING:
     from agrobr.models import MetaInfo
@@ -17,11 +19,63 @@ logger = structlog.get_logger()
 
 TEMAS_LEGADO: list[str] = legacy_parser.TEMAS_LEGADO
 
-_NIVEL_MAP: dict[str, str] = {
-    "brasil": "totais",
-    "uf": "mesorregiao",
-    "municipio": "municipio",
-}
+
+async def _fetch_tables(tema: str, uf: str | None) -> tuple[list[pd.DataFrame], list[str]]:
+    uf_dir = ftp_client.UF_DIRS[uf] if uf else "Brasil"
+    tables = (ftp_client.LEGACY_TEMAS[tema],) if uf else ftp_client.LEGACY_TEMAS_BRASIL[tema]
+    frames = []
+    urls = []
+    for table in tables:
+        content = await ftp_client.download_legacy_zip(table, uf_dir=uf_dir)
+        files = ftp_client.extract_tables_from_zip(content)
+        if not files:
+            raise ParseError(
+                source="ibge_censo_agro_legado",
+                parser_version=legacy_parser.PARSER_VERSION,
+                reason=f"ZIP sem tabelas XLS/HTML: {uf_dir}/{table}",
+            )
+        for filename, data in files:
+            if filename.lower().endswith(".xls"):
+                frame = legacy_parser.parse_legacy_xls(data, tema, filename)
+            elif uf:
+                frame = legacy_parser.parse_legacy_html(data, tema, uf, filename)
+            else:
+                raise ParseError(
+                    source="ibge_censo_agro_legado",
+                    parser_version=legacy_parser.PARSER_VERSION,
+                    reason=f"Layout HTML nacional não reconhecido: {filename}",
+                )
+            if uf and not frame["uf"].eq(uf).all():
+                raise ParseError(
+                    source="ibge_censo_agro_legado",
+                    parser_version=legacy_parser.PARSER_VERSION,
+                    reason=f"Geografia do cabeçalho diverge do diretório {uf_dir}: {filename}",
+                )
+            frames.append(frame)
+        urls.append(ftp_client.legacy_zip_url(table, uf_dir))
+    return frames, urls
+
+
+@overload
+async def censo_agro_legado(
+    tema: str,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def censo_agro_legado(
+    tema: str,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def censo_agro_legado(
@@ -34,36 +88,47 @@ async def censo_agro_legado(
     if tema not in TEMAS_LEGADO:
         raise InvalidParameterError(f"Tema '{tema}' não suportado. Disponíveis: {TEMAS_LEGADO}")
 
+    if nivel not in {"brasil", "uf", "municipio"}:
+        raise InvalidParameterError(f"Nível '{nivel}' inválido. Use brasil, uf ou municipio.")
+    uf = uf.upper() if uf else None
+    if uf and uf not in ftp_client.UF_DIRS:
+        raise InvalidParameterError(
+            f"UF '{uf}' inválida. Disponíveis: {sorted(ftp_client.UF_DIRS)}"
+        )
+    if uf and nivel == "brasil":
+        raise InvalidParameterError("O filtro uf exige nivel='uf' ou nivel='municipio'.")
+
     t0 = time.monotonic()
 
-    tab_name = ftp_client.LEGACY_TEMAS[tema]
-    uf_dir = "Brasil"
-    if uf:
-        uf_upper = uf.upper()
-        if uf_upper not in ftp_client.UF_DIRS:
-            raise InvalidParameterError(
-                f"UF '{uf}' inválida. Disponíveis: {sorted(ftp_client.UF_DIRS)}"
-            )
-        uf_dir = ftp_client.UF_DIRS[uf_upper]
-
-    suffix = "Mn" if uf_dir != "Brasil" else ""
-    zip_bytes = await ftp_client.download_legacy_zip(tab_name, uf_dir=uf_dir)
-    xls_files = ftp_client.extract_xls_from_zip(zip_bytes)
-
     frames: list[pd.DataFrame] = []
-    for filename, xls_data in xls_files:
-        parsed = legacy_parser.parse_legacy_xls(xls_data, tema=tema, filename=filename)
-        if not parsed.empty:
-            frames.append(parsed)
+    source_urls: list[str] = []
+    avisos: list[str] = []
+    locations: list[str | None] = (
+        [None] if nivel == "brasil" else [uf] if uf else list(ftp_client.UF_DIRS)
+    )
+    for location in locations:
+        try:
+            parsed, urls = await _fetch_tables(tema, location)
+        except ParseError as exc:
+            lacuna = ftp_client.LEGACY_LACUNAS.get((location, tema)) if location else None
+            if lacuna is None:
+                raise
+            if uf:
+                raise SourceUnavailableError(
+                    source="ibge_censo_agro_legado", last_error=f"{lacuna}."
+                ) from exc
+            avisos.append(f"censo_agro_legado: {location} fica fora do tema {tema}; {lacuna}.")
+            continue
+        frames.extend(parsed)
+        source_urls.extend(urls)
 
     if not frames:
         df = pd.DataFrame(columns=legacy_parser._OUTPUT_COLS)
     else:
         df = pd.concat(frames, ignore_index=True)
 
-    nivel_geo_value = _NIVEL_MAP.get(nivel)
-    if nivel_geo_value and "nivel_geo" in df.columns:
-        df = df[df["nivel_geo"] == nivel_geo_value].reset_index(drop=True)
+    if "nivel_geo" in df.columns:
+        df = df[df["nivel_geo"] == nivel].reset_index(drop=True)
 
     if "nivel_geo" in df.columns:
         df = df.drop(columns=["nivel_geo"])
@@ -72,6 +137,10 @@ async def censo_agro_legado(
         sort_cols = [c for c in ["localidade", "categoria"] if c in df.columns]
         if sort_cols:
             df = df.sort_values(sort_cols).reset_index(drop=True)
+
+    for aviso in avisos:
+        df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=2)
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
@@ -82,11 +151,12 @@ async def censo_agro_legado(
         nivel=nivel,
         records=len(df),
         elapsed_s=round(fetch_ms / 1000, 2),
+        source_urls=source_urls,
     )
 
     meta = build_source_meta(
         "ibge_censo_agro_legado",
-        f"{ftp_client.FTP_BASE}/{uf_dir}/{tab_name}{suffix}.zip",
+        source_urls[0],
         "ftp_download",
         fetch_ms,
         0,
@@ -96,7 +166,9 @@ async def censo_agro_legado(
         selected_source="ibge_censo_agro_legado",
     )
     meta.dataset = "censo_agropecuario_legado"
-    meta.contract_version = "1.0"
+    meta.contract_version = "2.0"
+    meta.schema_version = "2.0"
+    meta.data_sources = sorted(df["fonte"].dropna().unique().tolist())
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 

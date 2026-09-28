@@ -1,4 +1,4 @@
-# censo_agropecuario v1.0
+# censo_agropecuario v1.2
 
 Agricultural Census 1995/2006/2017 data by theme, state and territorial level.
 
@@ -35,6 +35,7 @@ Agricultural Census 1995/2006/2017 data by theme, state and territorial level.
 | `ano` | int | ❌ | Reference year (1995, 2006 or 2017) |
 | `localidade` | str | ✅ | State or municipality |
 | `localidade_cod` | int | ✅ | IBGE code |
+| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `tema` | str | ❌ | Census theme |
 | `categoria` | str | ❌ | Category within the theme |
 | `variavel` | str | ❌ | Variable name |
@@ -58,12 +59,16 @@ Long format: each row holds one variable/value pair.
 | `efetivo_rebanho` | `cabecas` | head |
 | `uso_terra` | `estabelecimentos` | units |
 | `uso_terra` | `area` | hectares |
-| `lavoura_temporaria` | `estabelecimentos` | units |
+| `lavoura_temporaria` | `estabelecimentos` (2017) or `informantes` (1995) | units |
 | `lavoura_temporaria` | `producao` | varies |
 | `lavoura_temporaria` | `area_colhida` | hectares |
-| `lavoura_permanente` | `estabelecimentos` | units |
+| `lavoura_permanente` | `estabelecimentos` (2017) or `informantes` (1995) | units |
 | `lavoura_permanente` | `producao` | varies |
 | `lavoura_permanente` | `area_colhida` | hectares |
+
+In 1995, the crop themes publish `informantes`: SIDRA variable 151 (tables 492 and 504), which SIDRA labels
+"Número de informantes" (number of informants). In 2017, `estabelecimentos` is the "Número de estabelecimentos
+agropecuários com lavoura temporária" (10084) and, for permanent crops, "com 50 pés e mais existentes" (9504).
 
 ### New themes — categories
 
@@ -80,8 +85,19 @@ Long format: each row holds one variable/value pair.
 
 - Consolidated decennial data (Agricultural Census 1995, 2006 and 2017)
 - 2017 reference period: October 2016 to September 2017
-- Cache with 30-day TTL (stable data)
+- No cache: every call queries IBGE
 - The `ano` parameter filters by census year; `ano=None` returns all available years
+- `categoria = "Total"` is the row the source publishes as the total of the theme's classification (e.g. all
+  irrigation methods, all livestock species). It does not add up with the other categories.
+- `estabelecimentos` does not add up across categories: one establishment can fall in more than one. Irrigation,
+  Brasília 2017: 2,726 establishments in the Total and 3,224 adding up the 11 methods. Additive measures, such as area,
+  match the Total (25,626 ha in both) when no category is confidential. A confidential category comes out null ("X" in
+  the source), and the sum falls below the Total: in the AL livestock herd, 747 head are missing because Buffalo and
+  Ostriches come out "X".
+- The Census counts only agricultural establishments and does not match PAM and PPM, even with the same names: in 2017 it
+  is about 10% below PAM for soybean and corn (up to 20% in PR) and about 20% below PPM for the cattle herd. The reference date also differs: the 2017 Census herd is that of 2017-09-30, and PPM's is that of December 31 of each year.
+- The year 1995 is also in `censo_agropecuario_historico`, with different numbers, because the SIDRA tables are different
+  ([details](./censo_agropecuario_historico.en.md#relationship-with-other-contracts)).
 
 ## Example
 
@@ -105,6 +121,14 @@ df = await ibge.censo_agro('lavoura_temporaria', nivel='municipio', uf='PR')
 
 # With metadata
 df, meta = await ibge.censo_agro('efetivo_rebanho', return_meta=True)
+```
+
+Through the dataset, with the semantic layer's `MetaInfo`:
+
+```python
+from agrobr import datasets
+
+df, meta = await datasets.censo_agropecuario("efetivo_rebanho", uf="MT", return_meta=True)
 ```
 
 ## JSON Schema

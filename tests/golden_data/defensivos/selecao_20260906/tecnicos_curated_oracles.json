@@ -1,0 +1,145 @@
+[
+  {
+    "reason": "campo ausente: EMPRESA_<PAIS>_TIPO",
+    "record_index_1based": 3,
+    "physical_line_1based": 4,
+    "values": {
+      "NUMERO_REGISTRO": "TC07521",
+      "PRODUTO_TECNICO_MARCA_COMERCIAL": "2,4-D Acid Técnico Agrolead ",
+      "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)": "2,4-D (ácido ariloxialcanóico) (980 g/kg)",
+      "CLASSE": "Herbicida",
+      "TITULAR_REGISTRO": "Agro-Lead Brasil Assessoria em Produtos Agrícolas Ltda - EPP",
+      "EMPRESA_<PAIS>_TIPO": "",
+      "CLASSIFICACAO_TOXICOLOGICA": "PT",
+      "CLASSIFICACAO_AMBIENTAL": "III"
+    },
+    "independent_components": [
+      {
+        "ingredient_raw": "2,4-D",
+        "group_raw": "ácido ariloxialcanóico",
+        "concentration_raw": "980 g/kg"
+      }
+    ],
+    "components_in_original_order": 1
+  },
+  {
+    "reason": "registro com zero inicial",
+    "record_index_1based": 9,
+    "physical_line_1based": 10,
+    "values": {
+      "NUMERO_REGISTRO": "0314",
+      "PRODUTO_TECNICO_MARCA_COMERCIAL": "2,4-D Tecnico SWR Agroimport",
+      "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)": "2,4-D (ácido ariloxialcanóico) (960 g/kg)",
+      "CLASSE": "Herbicida",
+      "TITULAR_REGISTRO": "Agro Import do Brasil Ltda. - Porto Alegre/RS",
+      "EMPRESA_<PAIS>_TIPO": " (Shandong Weifang Rainbow Chemical Co., Ltd. - Unidade Fabril 01<CHINA, REPUBLICA POPULAR>FABRICANTE)",
+      "CLASSIFICACAO_TOXICOLOGICA": "I",
+      "CLASSIFICACAO_AMBIENTAL": "III"
+    },
+    "independent_components": [
+      {
+        "ingredient_raw": "2,4-D",
+        "group_raw": "ácido ariloxialcanóico",
+        "concentration_raw": "960 g/kg"
+      }
+    ],
+    "components_in_original_order": 1
+  },
+  {
+    "reason": "decimal com ponto",
+    "record_index_1based": 57,
+    "physical_line_1based": 58,
+    "values": {
+      "NUMERO_REGISTRO": "9514",
+      "PRODUTO_TECNICO_MARCA_COMERCIAL": "Abamectin Tecnico CCAB II",
+      "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)": "Abamectina (avermectina) (910.4 g/kg)",
+      "CLASSE": "Acaricida/Inseticida/Nematicida",
+      "TITULAR_REGISTRO": "CCAB Agro S.A.   São Paulo",
+      "EMPRESA_<PAIS>_TIPO": " (North China Pharmaceutical Group Aino Co., Ltd<CHINA, REPUBLICA POPULAR>FABRICANTE)",
+      "CLASSIFICACAO_TOXICOLOGICA": "I",
+      "CLASSIFICACAO_AMBIENTAL": "III"
+    },
+    "independent_components": [
+      {
+        "ingredient_raw": "Abamectina",
+        "group_raw": "avermectina",
+        "concentration_raw": "910.4 g/kg"
+      }
+    ],
+    "components_in_original_order": 1
+  },
+  {
+    "reason": "grupo com parenteses internos",
+    "record_index_1based": 229,
+    "physical_line_1based": 230,
+    "values": {
+      "NUMERO_REGISTRO": "4694",
+      "PRODUTO_TECNICO_MARCA_COMERCIAL": "Amitraz Técnico Milenia",
+      "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)": "amitraz (bis(arilformamidina)) (970 g/kg)",
+      "CLASSE": "Acaricida",
+      "TITULAR_REGISTRO": "Adama Brasil S.A.- Londrina/PR",
+      "EMPRESA_<PAIS>_TIPO": " (Adama Brasil S.A.- Londrina/PR<BRASIL>FABRICANTE) +  (Adama Brasil S.A. - Taquari<BRASIL>FABRICANTE)",
+      "CLASSIFICACAO_TOXICOLOGICA": "III",
+      "CLASSIFICACAO_AMBIENTAL": "II"
+    },
+    "independent_components": [
+      {
+        "ingredient_raw": "amitraz",
+        "group_raw": "bis(arilformamidina)",
+        "concentration_raw": "970 g/kg"
+      }
+    ],
+    "components_in_original_order": 1
+  },
+  {
+    "reason": "unidade Kg literal incomum",
+    "record_index_1based": 354,
+    "physical_line_1based": 355,
+    "values": {
+      "NUMERO_REGISTRO": "TC02523",
+      "PRODUTO_TECNICO_MARCA_COMERCIAL": "Benalaxyl-M Técnico Isagro",
+      "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)": "benalaxil (acilalaninato) (950 Kg)",
+      "CLASSE": "Fungicida",
+      "TITULAR_REGISTRO": "Gowan Produtos Agrícolas Ltda. - Matriz Campinas/SP",
+      "EMPRESA_<PAIS>_TIPO": " (PI Industries Limited - Panoli<ÍNDIA>FABRICANTE)",
+      "CLASSIFICACAO_TOXICOLOGICA": "Não",
+      "CLASSIFICACAO_AMBIENTAL": "II"
+    },
+    "independent_components": [
+      {
+        "ingredient_raw": "benalaxil",
+        "group_raw": "acilalaninato",
+        "concentration_raw": "950 Kg"
+      }
+    ],
+    "components_in_original_order": 1
+  },
+  {
+    "reason": "dois ingredientes em produto tecnico",
+    "record_index_1based": 1505,
+    "physical_line_1based": 1506,
+    "values": {
+      "NUMERO_REGISTRO": "00301",
+      "PRODUTO_TECNICO_MARCA_COMERCIAL": "Giberelina + Indol Butírico Técnico",
+      "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)": "ácido 4-indol-3-ilbutírico (ácido indolalcanóico) (7 g/L) + ácido giberélico (giberelina) (6.8 g/L)",
+      "CLASSE": "Regulador de Crescimento",
+      "TITULAR_REGISTRO": "Stoller do Brasil Ltda.",
+      "EMPRESA_<PAIS>_TIPO": " (Stoller Enterprises, Inc.<ESTADOS UNIDOS>FABRICANTE)",
+      "CLASSIFICACAO_TOXICOLOGICA": "I",
+      "CLASSIFICACAO_AMBIENTAL": "IV"
+    },
+    "independent_components": [
+      {
+        "ingredient_raw": "ácido 4-indol-3-ilbutírico",
+        "group_raw": "ácido indolalcanóico",
+        "concentration_raw": "7 g/L"
+      },
+      {
+        "ingredient_raw": "ácido giberélico",
+        "group_raw": "giberelina",
+        "concentration_raw": "6.8 g/L"
+      }
+    ],
+    "components_in_original_order": 2
+  }
+]

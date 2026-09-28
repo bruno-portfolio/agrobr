@@ -5,13 +5,14 @@ from agrobr.contracts import (
     Column,
     ColumnType,
     Contract,
+    _legacy,
     register_contract,
 )
 
-IBGE_PAM_V1 = Contract(
+IBGE_PAM_V2 = Contract(
     name="ibge.pam",
-    version="1.0",
-    effective_from="0.3.0",
+    version="2.2",
+    effective_from="2.0.0",
     primary_key=["ano", "produto", "localidade"],
     columns=[
         Column(
@@ -26,6 +27,13 @@ IBGE_PAM_V1 = Contract(
             type=ColumnType.STRING,
             nullable=True,
             stable=True,
+        ),
+        Column(
+            name="localidade_cod",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=False,
+            description="Código IBGE da localidade (D1C do SIDRA); só nas linhas do IBGE.",
         ),
         Column(
             name="produto",
@@ -53,7 +61,7 @@ IBGE_PAM_V1 = Contract(
             name="producao",
             type=ColumnType.FLOAT,
             nullable=True,
-            unit="ton",
+            unit="unidade_producao",
             stable=True,
             min_value=0,
         ),
@@ -61,7 +69,7 @@ IBGE_PAM_V1 = Contract(
             name="rendimento",
             type=ColumnType.FLOAT,
             nullable=True,
-            unit="kg/ha",
+            unit="unidade_rendimento",
             stable=True,
             min_value=0,
         ),
@@ -69,7 +77,7 @@ IBGE_PAM_V1 = Contract(
             name="valor_producao",
             type=ColumnType.FLOAT,
             nullable=True,
-            unit="mil_reais",
+            unit="unidade_valor_producao",
             stable=True,
             min_value=0,
         ),
@@ -79,21 +87,34 @@ IBGE_PAM_V1 = Contract(
             nullable=False,
             stable=True,
         ),
+        Column(name="unidade_producao", type=ColumnType.STRING, nullable=True, stable=False),
+        Column(name="unidade_rendimento", type=ColumnType.STRING, nullable=True, stable=False),
+        Column(name="unidade_valor_producao", type=ColumnType.STRING, nullable=True, stable=False),
+        Column(name="condicao_produto", type=ColumnType.STRING, nullable=True, stable=False),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
         "'ano' is always a valid year (>= 1974)",
         "Numeric values are always >= 0",
+        "As unidades variam por período e são identificadas nas colunas unidade_*",
+        "Café até 2001 é em coco; desde 2002 é beneficiado, sem conversão implícita",
         "'fonte' identifies 'ibge_pam' or the 'conab' fallback",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-IBGE_LSPA_V1 = Contract(
+IBGE_LSPA_V2 = Contract(
     name="ibge.lspa",
-    version="1.0",
-    effective_from="0.3.0",
-    primary_key=["ano", "mes", "produto"],
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=["ano", "mes", "produto", "localidade", "variavel"],
     columns=[
         Column(
             name="ano",
@@ -105,7 +126,7 @@ IBGE_LSPA_V1 = Contract(
         Column(
             name="mes",
             type=ColumnType.INTEGER,
-            nullable=True,
+            nullable=False,
             stable=True,
             min_value=1,
             max_value=12,
@@ -119,9 +140,13 @@ IBGE_LSPA_V1 = Contract(
         Column(
             name="variavel",
             type=ColumnType.STRING,
-            nullable=True,
-            stable=False,
+            nullable=False,
+            stable=True,
         ),
+        Column(name="localidade", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="localidade_cod", type=ColumnType.INTEGER, nullable=False, stable=True),
+        Column(name="variavel_cod", type=ColumnType.INTEGER, nullable=False, stable=True),
+        Column(name="unidade", type=ColumnType.STRING, nullable=False, stable=True),
         Column(
             name="valor",
             type=ColumnType.FLOAT,
@@ -138,7 +163,7 @@ IBGE_LSPA_V1 = Contract(
     guarantees=[
         "Column names never change (additions only)",
         "'ano' is always a valid year",
-        "'mes' is between 1 and 12 when present",
+        "'mes' is always present and between 1 and 12",
         "'fonte' is always 'ibge_lspa'",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
@@ -146,7 +171,7 @@ IBGE_LSPA_V1 = Contract(
 
 IBGE_PPM_V1 = Contract(
     name="ibge.ppm",
-    version="1.0",
+    version="1.1",
     effective_from="0.10.0",
     primary_key=["ano", "especie", "localidade"],
     columns=[
@@ -193,6 +218,13 @@ IBGE_PPM_V1 = Contract(
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
+        ),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
         ),
     ],
     guarantees=[
@@ -268,8 +300,8 @@ IBGE_ABATE_V1 = Contract(
 
 IBGE_CENSO_AGRO_V1 = Contract(
     name="ibge.censo_agro",
-    version="1.0",
-    effective_from="0.10.0",
+    version="1.2",
+    effective_from="2.0.0",
     primary_key=["ano", "tema", "categoria", "variavel", "localidade"],
     columns=[
         Column(
@@ -328,22 +360,38 @@ IBGE_CENSO_AGRO_V1 = Contract(
             nullable=False,
             stable=True,
         ),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
         "'ano' is always a valid census year (>= 1995)",
         "Numeric values are always >= 0",
         "'fonte' is always 'ibge_censo_agro'",
+        "'categoria' 'Total' is the source's own total row; it is not added to the other categories",
+        "Establishment counts ('estabelecimentos') do not add up across categories",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-IBGE_CENSO_AGRO_LEGADO_V1 = Contract(
+IBGE_CENSO_AGRO_LEGADO_V2 = Contract(
     name="ibge.censo_agro_legado",
-    version="1.0",
-    effective_from="0.12.0",
-    primary_key=["ano", "tema", "categoria", "variavel", "localidade"],
+    version="2.1",
+    effective_from="2.0.0",
+    primary_key=["ano", "tema", "categoria", "variavel", "localidade", "uf"],
     columns=[
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+            description="UF do diretório/cabeçalho oficial; nula para Brasil",
+        ),
         Column(
             name="ano",
             type=ColumnType.INTEGER,
@@ -401,6 +449,13 @@ IBGE_CENSO_AGRO_LEGADO_V1 = Contract(
             nullable=False,
             stable=True,
         ),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
@@ -413,7 +468,7 @@ IBGE_CENSO_AGRO_LEGADO_V1 = Contract(
 
 IBGE_CENSO_AGRO_HISTORICO_V1 = Contract(
     name="ibge.censo_agro_historico",
-    version="1.0",
+    version="1.1",
     effective_from="0.13.0",
     primary_key=["ano", "tema", "categoria", "variavel", "localidade"],
     columns=[
@@ -473,6 +528,13 @@ IBGE_CENSO_AGRO_HISTORICO_V1 = Contract(
             nullable=False,
             stable=True,
         ),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
@@ -484,11 +546,11 @@ IBGE_CENSO_AGRO_HISTORICO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-IBGE_CENSO_AGRO_MUNICIPAL_V1 = Contract(
+IBGE_CENSO_AGRO_MUNICIPAL_V2 = Contract(
     name="ibge.censo_agro_municipal_1985",
-    version="1.0",
-    effective_from="0.12.0",
-    primary_key=[],
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=["volume", "tabela", "pagina_pdf", "linha", "coluna"],
     columns=[
         Column(
             name="ano",
@@ -498,98 +560,79 @@ IBGE_CENSO_AGRO_MUNICIPAL_V1 = Contract(
             min_value=1985,
             max_value=1985,
         ),
+        Column(name="uf", type=ColumnType.STRING, nullable=False, stable=True),
         Column(
-            name="uf",
+            name="volume",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
+            description="Volume do IBGE de onde a casa foi lida (MG tem 2: n18_p1_mg e n18_p2_mg).",
         ),
         Column(
-            name="uf_cod",
+            name="tabela",
             type=ColumnType.INTEGER,
             nullable=False,
             stable=True,
-            min_value=11,
-            max_value=53,
+            min_value=67,
+            max_value=119,
+        ),
+        Column(name="tema", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(
+            name="pagina_pdf", type=ColumnType.INTEGER, nullable=False, stable=True, min_value=1
         ),
         Column(
-            name="localidade",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="localidade_cod",
+            name="pagina_impressa",
             type=ColumnType.INTEGER,
             nullable=True,
             stable=True,
+            description="Número impresso no rodapé; nulo quando o rodapé não foi lido nem se deduz das vizinhas.",
         ),
+        Column(name="linha", type=ColumnType.INTEGER, nullable=False, stable=True, min_value=0),
         Column(
-            name="nivel",
-            type=ColumnType.STRING,
+            name="coluna",
+            type=ColumnType.INTEGER,
             nullable=False,
             stable=True,
+            description="Coluna física na página (0 à esquerda); negativa quando a célula não tem coluna identificada.",
         ),
-        Column(
-            name="tema",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="categoria",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="variavel",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
+        Column(name="nivel", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="localidade", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="coluna_nome", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="coluna_nome_lido", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="coluna_nome_status", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="variavel", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="unidade", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="unidade_lida", type=ColumnType.STRING, nullable=True, stable=True),
         Column(
             name="valor",
-            type=ColumnType.FLOAT,
+            type=ColumnType.INTEGER,
             nullable=True,
             stable=True,
             min_value=0,
+            description="Só na casa confirmada pelas somas impressas (status confirmado_*).",
         ),
-        Column(
-            name="unidade",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="confianca",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="fonte",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
+        Column(name="valor_lido", type=ColumnType.INTEGER, nullable=True, stable=True, min_value=0),
+        Column(name="marcador", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="status", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="reparado", type=ColumnType.BOOLEAN, nullable=False, stable=True),
     ],
     guarantees=[
         "Column names never change (additions only)",
         "'ano' is always 1985",
-        "Numeric values are always >= 0",
-        "'fonte' is always 'ibge_censo_agro_municipal_1985'",
-        "Dados extraídos via OCR de PDFs do IBGE — 22 UFs (excluídos MA/PI/CE/RN)",
-        "'confianca' indica qualidade OCR: alta, media ou baixa",
-        "'localidade_cod' pode ser None quando OCR não permite match exato",
-        "PK vazio: OCR pode gerar labels homônimos (ex: 3 'Santo Antônio' em MG)",
+        "1 linha por casa do PDF: a do número e as sem leitura, incertas e fora de coluna, cada uma com o seu 'status'",
+        "'valor' só é preenchido quando 'status' é confirmado_soma_exata ou confirmado_soma_arredondada_2a_compativel",
+        "'valor_lido' traz a leitura sempre que houve leitura, confirmada ou não",
+        "'coluna_nome' só é preenchido quando o nome foi confirmado ('coluna_nome_status' diferente de 'lido' e 'sem_nome')",
+        "A chave (volume, tabela, pagina_pdf, linha, coluna) é única",
+        "O tema de cada tabela vem do título impresso, igual em todos os volumes; o volume omite a tabela que não se aplica",
+        "Sem código de município: os municípios de 1985 não correspondem 1:1 aos códigos atuais",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
 IBGE_SILVICULTURA_V1 = Contract(
     name="ibge.silvicultura",
-    version="1.0",
+    version="1.1",
     effective_from="0.15.0",
     primary_key=["ano", "produto", "localidade"],
     columns=[
@@ -636,6 +679,13 @@ IBGE_SILVICULTURA_V1 = Contract(
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
+        ),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
         ),
     ],
     guarantees=[
@@ -649,7 +699,7 @@ IBGE_SILVICULTURA_V1 = Contract(
 
 IBGE_EXTRACAO_VEGETAL_V1 = Contract(
     name="ibge.extracao_vegetal",
-    version="1.0",
+    version="1.1",
     effective_from="0.15.0",
     primary_key=["ano", "produto", "localidade"],
     columns=[
@@ -696,6 +746,13 @@ IBGE_EXTRACAO_VEGETAL_V1 = Contract(
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
+        ),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
         ),
     ],
     guarantees=[
@@ -771,28 +828,44 @@ IBGE_LEITE_TRIMESTRAL_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-register_contract("lspa", IBGE_LSPA_V1)
+
+register_contract("lspa", IBGE_LSPA_V2)
 register_contract("silvicultura", IBGE_SILVICULTURA_V1)
 register_contract("extrativismo_vegetal", IBGE_EXTRACAO_VEGETAL_V1)
 register_contract("leite_industrial", IBGE_LEITE_TRIMESTRAL_V1)
-register_contract("producao_anual", IBGE_PAM_V1)
+register_contract("producao_anual", IBGE_PAM_V2)
 register_contract("pecuaria_municipal", IBGE_PPM_V1)
 register_contract("abate_trimestral", IBGE_ABATE_V1)
 register_contract("censo_agropecuario", IBGE_CENSO_AGRO_V1)
-register_contract("censo_agropecuario_legado", IBGE_CENSO_AGRO_LEGADO_V1)
+register_contract("censo_agropecuario_legado", IBGE_CENSO_AGRO_LEGADO_V2)
 register_contract("censo_agropecuario_historico", IBGE_CENSO_AGRO_HISTORICO_V1)
-register_contract("censo_agropecuario_municipal_1985", IBGE_CENSO_AGRO_MUNICIPAL_V1)
+register_contract("censo_agropecuario_municipal_1985", IBGE_CENSO_AGRO_MUNICIPAL_V2)
 
 __all__ = [
     "IBGE_ABATE_V1",
     "IBGE_CENSO_AGRO_HISTORICO_V1",
-    "IBGE_CENSO_AGRO_LEGADO_V1",
-    "IBGE_CENSO_AGRO_MUNICIPAL_V1",
+    "IBGE_CENSO_AGRO_LEGADO_V2",
+    "IBGE_CENSO_AGRO_MUNICIPAL_V2",
     "IBGE_CENSO_AGRO_V1",
     "IBGE_EXTRACAO_VEGETAL_V1",
     "IBGE_LEITE_TRIMESTRAL_V1",
-    "IBGE_LSPA_V1",
-    "IBGE_PAM_V1",
+    "IBGE_LSPA_V2",
+    "IBGE_PAM_V2",
     "IBGE_PPM_V1",
     "IBGE_SILVICULTURA_V1",
 ]
+
+
+def __getattr__(name: str) -> Contract:
+    return _legacy.resolve(
+        name,
+        module=__name__,
+        names=frozenset(
+            [
+                "IBGE_LSPA_V1",
+                "IBGE_CENSO_AGRO_LEGADO_V1",
+                "IBGE_PAM_V1",
+                "IBGE_CENSO_AGRO_MUNICIPAL_V1",
+            ]
+        ),
+    )

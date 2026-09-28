@@ -63,12 +63,12 @@ df = antaq_sync.movimentacao(2024, uf="SP")
 
 | Parametro | Tipo | Default | Descricao |
 |---|---|---|---|
-| `ano` | int | obrigatorio | Ano dos dados (2010-2025) |
+| `ano` | int | obrigatorio | Ano dos dados, de 2010 ao último ano publicado; o ano que a ANTAQ ainda não publicou levanta `SourceUnavailableError` |
 | `tipo_navegacao` | str \| None | None | longo_curso, cabotagem, interior, apoio_maritimo, apoio_portuario |
 | `natureza_carga` | str \| None | None | granel_solido, granel_liquido, carga_geral, conteiner |
-| `mercadoria` | str \| None | None | Filtro por mercadoria (substring case-insensitive) |
+| `mercadoria` | str \| None | None | Filtro por mercadoria (substring case-insensitive); sem catálogo estático, a lista vem no `Mercadoria.txt` do ZIP, e um nome fora dela só aparece como resultado vazio |
 | `porto` | str \| None | None | Filtro por porto (substring case-insensitive) |
-| `uf` | str \| None | None | Filtro por UF (ex: SP, PR, MT) |
+| `uf` | str \| None | None | Filtro por UF (ex: SP, PR, MT); UF inexistente é recusada antes da descarga |
 | `sentido` | str \| None | None | embarque ou desembarque |
 | `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
@@ -115,9 +115,43 @@ Join via `IDAtracacao` (FK Carga → Atracacao), lookup via `CDMercadoria`.
 df, meta = await antaq.movimentacao(2024, return_meta=True)
 print(meta.source)           # "antaq"
 print(meta.source_method)    # "requests+zip"
-print(meta.parser_version)   # 1
+print(meta.parser_version)   # 2
 print(meta.records_count)    # ~2.4M para ano completo
 ```
+
+## Reconciliacao offline (18/09/2026)
+
+Os 62 campos publicados nos tres TXT (29 em atracacao, 27 em carga, 6 em mercadoria) tem decisao
+nominal registrada em `tests/golden_data/reconciliacao_r13_20260918/manifest.json`: 21 viram coluna
+de saida, 3 sao chave de join (`IDAtracacao` duas vezes, `CDMercadoria`) e 38 sao ignoradas com
+motivo. Oraculo independente (`csv`/`decimal` da stdlib) conferido celula a celula contra a saida
+publica sobre o recorte real de 2024 preservado em `tests/golden_data/antaq/movimentacao_sample/`.
+
+**Joins e cardinalidade.** A saida parte da carga: `carga -> atracacao` por `IDAtracacao` e
+`carga -> mercadoria` por `CDMercadoria`, ambos `left`. Uma atracacao pode ter varias cargas (no
+recorte, a atracacao `1406197` tem 5), entao o numero de linhas e o numero de cargas, nao de
+atracacoes; atracacao sem carga nao aparece. Carga sem atracacao mantem a linha com `ano`/`mes`
+nulos na API da fonte e e descartada pelo dataset, que exige `ano` e `mes`. Carga com
+`CDMercadoria` fora da tabela mantem a linha com `mercadoria`/`grupo_mercadoria` nulos.
+
+**Colunas com duas origens.** `tipo_navegacao` vem de `Tipo Navegacao` (carga); a atracacao publica
+`Tipo de Navegacao da Atracacao`, que e lida e descartada na projecao do join - as duas divergem
+quando a mesma atracacao movimenta cargas de naturezas diferentes. `uf` vem de `SGUF` (sigla), nao
+de `UF` (nome por extenso). `mercadoria` e a `Nomenclatura Simplificada Mercadoria`; a descricao NCM
+completa (`Mercadoria`) nao e publicada, e o filtro `mercadoria` casa apenas com o nome curto.
+
+**Unidades e rotulos.** `peso_bruto_ton` esta em toneladas: o texto publicado perde o ponto de
+milhar e troca a virgula por ponto. `QTCarga` nao tem unidade publicada pela ANTAQ nem informada no corpo
+(a escala sugere quilos em fertilizantes e unidades em carga de apoio; e inferencia, nao unidade
+publicada) - `qt_carga` e copiado sem conversao.
+`TEU` ausente vira 0. `ano`/`mes` sao o periodo publicado da atracacao (`Ano` e `Mes`, este ultimo
+em texto pt-BR como `jan`), nao a data: uma atracacao iniciada em 22/12/2023 aparece com `ano=2024`
+e `mes=1`.
+
+**Limites.** Os TXT sao extracoes; o ZIP oficial nao esta preservado e a fonte segue fora do ar. A
+captura live continua pendente: sondagem de 18/09/2026 recebeu HTTP 200 redirecionado para o aviso
+oficial (`text/html`, 174.818 bytes, sem assinatura ZIP). O recorte cobre janeiro de 2024 em AM e
+PA; `apoio_maritimo`, carga conteinerizada e `TEU > 0` nao tem caso positivo.
 
 ## Nota de desempenho
 

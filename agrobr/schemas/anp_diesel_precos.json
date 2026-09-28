@@ -1,16 +1,25 @@
 {
   "name": "anp_diesel.precos",
-  "schema_version": "1.0",
-  "effective_from": "0.11.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
-  "primary_key": [
+  "primary_key": [],
+  "required_columns": [
     "data",
     "uf",
     "municipio",
-    "produto"
-  ],
-  "required_columns": [
-    "data"
+    "produto",
+    "preco_venda",
+    "preco_compra",
+    "n_postos",
+    "margem",
+    "periodo_inicio",
+    "periodo_fim",
+    "nivel",
+    "unidade",
+    "agregacao",
+    "n_semanas",
+    "n_postos_media"
   ],
   "dtypes": {
     "data": "date",
@@ -19,18 +28,32 @@
     "produto": "str",
     "preco_venda": "float",
     "preco_compra": "float",
+    "n_postos": "int",
     "margem": "float",
-    "n_postos": "int"
+    "periodo_inicio": "date",
+    "periodo_fim": "date",
+    "nivel": "str",
+    "unidade": "str",
+    "agregacao": "str",
+    "n_semanas": "int",
+    "n_postos_media": "float"
   },
   "nullable": {
     "data": false,
-    "uf": true,
-    "municipio": true,
-    "produto": true,
-    "preco_venda": true,
+    "uf": false,
+    "municipio": false,
+    "produto": false,
+    "preco_venda": false,
     "preco_compra": true,
+    "n_postos": true,
     "margem": true,
-    "n_postos": true
+    "periodo_inicio": false,
+    "periodo_fim": false,
+    "nivel": false,
+    "unidade": false,
+    "agregacao": false,
+    "n_semanas": false,
+    "n_postos_media": true
   },
   "columns": [
     {
@@ -40,51 +63,51 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Início semanal ou primeiro dia do mês de início das semanas",
       "min_value": null,
       "max_value": null
     },
     {
       "name": "uf",
       "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Vazia para Brasil",
       "min_value": null,
       "max_value": null
     },
     {
       "name": "municipio",
       "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Vazio para Brasil e UF",
       "min_value": null,
       "max_value": null
     },
     {
       "name": "produto",
       "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "DIESEL é o óleo diesel B S500 comum; DIESEL S10 é o S10",
       "min_value": null,
       "max_value": null
     },
     {
       "name": "preco_venda",
       "type": "float",
-      "nullable": true,
+      "nullable": false,
       "unit": "BRL/litro",
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Município: média simples dos postos; UF e Brasil: média ponderada pelas vendas das distribuidoras (ANP, desde 31/10/2004)",
       "min_value": 0,
       "max_value": null
     },
@@ -100,10 +123,54 @@
       "max_value": null
     },
     {
+      "name": "n_postos",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Postos da amostra, publicado no semanal e nulo no mensal; não é o peso da média da UF e do Brasil",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
       "name": "margem",
       "type": "float",
       "nullable": true,
       "unit": "BRL/litro",
+      "stable": true,
+      "deprecated": false,
+      "description": "Diferença derivada entre as médias de revenda e distribuição",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "periodo_inicio",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Menor início das semanas selecionadas",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "periodo_fim",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Maior término publicado das semanas selecionadas",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nivel",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
@@ -111,29 +178,66 @@
       "max_value": null
     },
     {
-      "name": "n_postos",
-      "type": "int",
-      "nullable": true,
+      "name": "unidade",
+      "type": "str",
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "agregacao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "n_semanas",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": null
+    },
+    {
+      "name": "n_postos_media",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Média das contagens semanais; não são postos únicos",
       "min_value": 0,
       "max_value": null
     }
   ],
   "constraints": {
-    "no_duplicates": true,
     "preco_venda_min": 0,
     "preco_compra_min": 0,
-    "n_postos_min": 0
+    "n_postos_min": 0,
+    "n_semanas_min": 1,
+    "n_postos_media_min": 0
   },
   "guarantees": [
-    "Column names never change (additions only)",
-    "'uf' is a valid Brazilian state code when present",
-    "'produto' is always 'DIESEL' or 'DIESEL S10'",
-    "'preco_venda' and 'preco_compra' are in BRL/litro when present",
-    "'margem' equals preco_venda - preco_compra",
-    "Data is weekly (date of collection)"
+    "Unidade R$/litro verificada no arquivo, valores monetários float64",
+    "Período semanal publicado preservado; filtro inclusivo pela data de início da semana",
+    "Município selecionado por igualdade após normalização de acentos e espaços",
+    "Ausência de distribuição preservada; margem é diferença de médias, não lucro líquido",
+    "Mensal derivado por média aritmética das médias semanais disponíveis, sem ponderação por postos nem rateio diário",
+    "Mensal usa somente as semanas selecionadas e não garante cobertura do mês completo",
+    "Repetições publicadas são preservadas no semanal; mensal com semana territorial repetida é recusado",
+    "Arquivos correntes com observações históricas; ano do filtro não seleciona edição de publicação",
+    "preco_venda da UF e do Brasil é o publicado, ponderado pelas vendas; não é a média dos níveis de baixo por n_postos"
   ]
 }

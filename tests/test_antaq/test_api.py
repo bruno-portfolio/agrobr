@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import io
 import zipfile
 from unittest.mock import AsyncMock, patch
@@ -10,6 +11,7 @@ import pandas as pd
 import pytest
 
 from agrobr.antaq import api
+from agrobr.utils import time as time_utils
 
 
 def _make_zip(files: dict[str, str]) -> bytes:
@@ -182,8 +184,17 @@ class TestMovimentacao:
         assert meta.attempted_sources == ["antaq_ea"]
         assert meta.selected_source == "antaq_ea"
         assert meta.records_count == len(df)
-        assert meta.parser_version == 1
+        assert meta.parser_version == 2
         assert meta.fetch_timestamp is not None
+        assert (meta.raw_content_hash, meta.raw_content_size) == (
+            hashlib.sha256(ANO_ZIP).hexdigest(),
+            len(ANO_ZIP),
+        )
+        assert meta.source_details == {
+            "mercadoria_url": "https://estatistica.antaq.gov.br/ea/txt/Mercadoria.zip",
+            "mercadoria_sha256": hashlib.sha256(MERC_ZIP).hexdigest(),
+            "mercadoria_bytes": len(MERC_ZIP),
+        }
 
     @pytest.mark.asyncio
     async def test_ano_below_min_raises(self):
@@ -192,8 +203,9 @@ class TestMovimentacao:
 
     @pytest.mark.asyncio
     async def test_ano_above_max_raises(self):
-        with pytest.raises(ValueError, match="2025"):
-            await api.movimentacao(2026)
+        corrente = time_utils.hoje().year
+        with pytest.raises(ValueError, match=f"entre 2010 e {corrente}"):
+            await api.movimentacao(corrente + 1)
 
     @pytest.mark.asyncio
     async def test_invalid_tipo_navegacao_raises(self):

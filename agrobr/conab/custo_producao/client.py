@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import asyncio
 import re
 from io import BytesIO
-from typing import Any
 
 import httpx
 import structlog
@@ -13,7 +11,7 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
-from agrobr.normalize.regions import UFS_VALIDAS, remover_acentos
+from agrobr.normalize.regions import UFS_VALIDAS
 from agrobr.utils.html import parse_links_from_html as _parse_links
 
 logger = structlog.get_logger()
@@ -183,75 +181,3 @@ async def _crawl_folder(folder_url: str) -> list[dict[str, str]]:
         _enrich_link_hints(link)
     logger.info("conab_custo_folder_ok", source="conab_custo", links=len(links))
     return links
-
-
-async def fetch_xlsx_for_cultura(
-    cultura: str,
-    uf: str | None = None,
-    safra: str | None = None,
-) -> tuple[BytesIO, dict[str, Any]]:
-    html = await fetch_custos_page()
-    links = parse_links_from_html(html)
-
-    if not links:
-        raise SourceUnavailableError(
-            source="conab_custo",
-            url=CUSTOS_PAGE,
-            last_error="Nenhum link de planilha encontrado na página",
-        )
-
-    cultura_lower = remover_acentos(cultura.lower())
-    candidates = [link for link in links if cultura_lower in remover_acentos(link["text"].lower())]
-
-    if not candidates:
-        folder_urls = _extract_folder_urls(html)
-        if folder_urls:
-            seen = {link["url"] for link in links}
-            results = await asyncio.gather(
-                *(_crawl_folder(u) for u in folder_urls),
-                return_exceptions=True,
-            )
-            for result in results:
-                if isinstance(result, BaseException):
-                    continue
-                for fl in result:
-                    if fl["url"] not in seen:
-                        links.append(fl)
-                        seen.add(fl["url"])
-            candidates = [
-                link for link in links if cultura_lower in remover_acentos(link["text"].lower())
-            ]
-
-    if uf:
-        uf_upper = uf.upper()
-        filtered = [link for link in candidates if link.get("uf_hint") == uf_upper]
-        if filtered:
-            candidates = filtered
-
-    if safra:
-        filtered = [link for link in candidates if link.get("safra_hint") == safra]
-        if filtered:
-            candidates = filtered
-
-    if not candidates:
-        raise SourceUnavailableError(
-            source="conab_custo",
-            url=CUSTOS_PAGE,
-            last_error=f"Nenhuma planilha encontrada para cultura={cultura}, uf={uf}, safra={safra}",
-        )
-
-    selected = candidates[0]
-
-    xlsx = await download_xlsx(selected["url"])
-
-    metadata = {
-        "url": selected["url"],
-        "titulo": selected["text"],
-        "cultura": cultura,
-    }
-    if selected.get("uf_hint"):
-        metadata["uf"] = selected["uf_hint"]
-    if selected.get("safra_hint"):
-        metadata["safra"] = selected["safra_hint"]
-
-    return xlsx, metadata

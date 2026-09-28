@@ -1,18 +1,30 @@
 {
-  "name": "conab.safras",
-  "schema_version": "2.0",
-  "effective_from": "0.3.0",
+  "name": "estimativa_safra",
+  "schema_version": "3.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
+    "fonte",
     "safra",
     "produto",
     "uf",
-    "levantamento"
+    "levantamento",
+    "ano_lspa",
+    "mes_lspa"
   ],
   "required_columns": [
     "fonte",
     "produto",
-    "safra"
+    "safra",
+    "uf",
+    "area_plantada",
+    "area_colhida",
+    "produtividade",
+    "producao",
+    "levantamento",
+    "data_publicacao",
+    "ano_lspa",
+    "mes_lspa"
   ],
   "dtypes": {
     "fonte": "str",
@@ -24,7 +36,11 @@
     "produtividade": "float",
     "producao": "float",
     "levantamento": "int",
-    "data_publicacao": "date"
+    "data_publicacao": "date",
+    "ano_lspa": "int",
+    "mes_lspa": "int",
+    "unidade_producao": "str",
+    "unidade_area": "str"
   },
   "nullable": {
     "fonte": false,
@@ -36,7 +52,11 @@
     "produtividade": true,
     "producao": true,
     "levantamento": true,
-    "data_publicacao": true
+    "data_publicacao": true,
+    "ano_lspa": true,
+    "mes_lspa": true,
+    "unidade_producao": false,
+    "unidade_area": false
   },
   "columns": [
     {
@@ -148,6 +168,50 @@
       "description": "",
       "min_value": null,
       "max_value": null
+    },
+    {
+      "name": "ano_lspa",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Ano civil efetivo do LSPA; nulo para CONAB",
+      "min_value": 1900,
+      "max_value": null
+    },
+    {
+      "name": "mes_lspa",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Mês efetivo do LSPA; não corresponde ao levantamento CONAB",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "unidade_producao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Unidade da produção: mil_ton nas 2 fontes, como em conab.brasil_total",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade_area",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Unidade das áreas plantada e colhida: mil_ha nas 2 fontes",
+      "min_value": null,
+      "max_value": null
     }
   ],
   "constraints": {
@@ -157,13 +221,17 @@
     "produtividade_min": 0,
     "producao_min": 0,
     "levantamento_min": 1,
-    "levantamento_max": 12
+    "levantamento_max": 12,
+    "ano_lspa_min": 1900,
+    "mes_lspa_min": 1,
+    "mes_lspa_max": 12
   },
   "guarantees": [
-    "Column names never change (additions only)",
-    "'safra' always matches pattern YYYY/YY",
-    "'uf' is always a valid Brazilian state code",
-    "'levantamento' is between 1 and 12",
-    "Numeric values are always >= 0"
+    "Chave distingue fontes, levantamentos CONAB e meses LSPA",
+    "Seleção temporal explícita nunca é substituída por outra referência em fallback",
+    "LSPA conserva ano e mês efetivamente retornados; safra usa o ano civil como ano final",
+    "Sub-safras LSPA incompletas não são apresentadas como totais",
+    "Áreas em mil ha, produção em mil ton e produtividade em kg/ha nas 2 fontes; unidade_area e unidade_producao declaram a escala",
+    "Valores ausentes não são convertidos em zero"
   ]
 }

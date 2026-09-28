@@ -9,7 +9,14 @@
   ],
   "required_columns": [
     "data",
-    "estacao"
+    "estacao",
+    "uf",
+    "temp_media",
+    "temp_max",
+    "temp_min",
+    "precipitacao_mm",
+    "umidade_media",
+    "radiacao_total_kj_m2"
   ],
   "dtypes": {
     "data": "date",

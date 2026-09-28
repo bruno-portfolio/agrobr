@@ -34,6 +34,13 @@ Aquisicao e industrializacao trimestral de leite por UF.
 - Latencia tipica: T+2 meses
 - Serie historica desde 1997
 
+## Notas
+
+- A UF é a do laticínio que adquiriu o leite, não a da produção.
+- Não há linha Brasil: a consulta é por UF (nível territorial 3 do SIDRA).
+- UF em sigilo sai nula, porque o SIDRA publica "X" (por exemplo, RR e DF), e há UF que o SIDRA não publica (o AP não
+  aparece). Por isso a soma das UFs fica abaixo do total do Brasil divulgado pelo IBGE.
+
 ## Exemplo
 
 ```python

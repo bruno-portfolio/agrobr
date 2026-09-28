@@ -1,0 +1,59 @@
+name: Weekly Reconciliation
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Monday 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  reconciliar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -e ".[pdf,geo]"
+
+      - name: Run reconciliation
+        id: reconciliacao
+        run: |
+          set +e
+          python -m scripts.reconciliacao_semanal --saida reconciliacao
+          result=$?
+          cat reconciliacao/resumo.md >> "$GITHUB_STEP_SUMMARY"
+          echo "exit_code=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Upload summary
+        id: artefato
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reconciliacao-${{ github.run_number }}-${{ github.run_attempt }}
+          path: reconciliacao/resumo.*
+          retention-days: 90
+
+      - name: Open or comment issues
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTEFATO: ${{ steps.artefato.outputs.artifact-url }}
+        run: python -m scripts.reconciliacao_semanal --issues reconciliacao/resumo.json --artefato "$ARTEFATO"
+
+      - name: Fail on mismatch or script error
+        if: always() && steps.reconciliacao.outputs.exit_code != '0'
+        run: exit 1

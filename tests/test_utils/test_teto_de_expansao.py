@@ -1,0 +1,252 @@
+from __future__ import annotations
+
+import ast
+import io
+import struct
+import tracemalloc
+import zipfile
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+import openpyxl
+import pytest
+
+from agrobr import constants
+from agrobr.alt.anp_diesel import parser as anp_parser
+from agrobr.antaq import client as antaq_client
+from agrobr.b3 import parser as b3_parser
+from agrobr.cepea import serie as cepea_serie
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
+from agrobr.ibge import ftp_client
+from agrobr.mapbiomas import client as mapbiomas_client
+from agrobr.mapbiomas import municipal_parser
+from agrobr.unica import parser as unica_parser
+from agrobr.utils import io as io_utils
+from tests.helpers import levanta_exatamente, sem_excecao
+
+PACOTE = Path(__file__).resolve().parents[2] / "agrobr"
+TETO = 1024**2
+EXPANSAO = 8 * 1024**2
+FORA_DO_HELPER = {
+    ("utils/io.py", "open_zip_member"): "o próprio helper",
+    ("inmet/client.py", "historico_membros"): "teto próprio (INMET_HISTORICO_MAX_*)",
+    ("conab/custo_producao/_merged.py", "xlsx_header_merges"): (
+        "roda depois do _workbook, que confere a soma e o CRC do XLSX"
+    ),
+    ("defensivos/snapshot.py", "_read_bundle"): "cache local gravado pelo próprio agrobr",
+    ("rnc/snapshot.py", "_read_bundle"): "cache local gravado pelo próprio agrobr",
+}
+
+
+def _eh_zipfile(no: ast.expr | None) -> bool:
+    return isinstance(no, ast.Attribute | ast.Name) and ast.unparse(no) in {
+        "zipfile.ZipFile",
+        "ZipFile",
+    }
+
+
+class _Leituras(ast.NodeVisitor):
+    """Cada leitura de membro de ZIP (``read``, ``open`` ou ``extract``), pela função mais interna."""
+
+    def __init__(self, arquivo: str) -> None:
+        self.arquivo = arquivo
+        self.funcoes: list[tuple[str, set[str]]] = []
+        self.achadas: set[tuple[str, str]] = set()
+
+    def _funcao(self, no: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+        nomes = {
+            arg.arg for arg in no.args.args + no.args.kwonlyargs if _eh_zipfile(arg.annotation)
+        }
+        self.funcoes.append((no.name, nomes))
+        self.generic_visit(no)
+        self.funcoes.pop()
+
+    visit_FunctionDef = _funcao
+    visit_AsyncFunctionDef = _funcao
+
+    def _nomes(self) -> set[str]:
+        return self.funcoes[-1][1] if self.funcoes else set()
+
+    def visit_withitem(self, no: ast.withitem) -> None:
+        if (
+            isinstance(no.context_expr, ast.Call)
+            and _eh_zipfile(no.context_expr.func)
+            and isinstance(no.optional_vars, ast.Name)
+        ):
+            self._nomes().add(no.optional_vars.id)
+        self.generic_visit(no)
+
+    def visit_Assign(self, no: ast.Assign) -> None:
+        if isinstance(no.value, ast.Call) and _eh_zipfile(no.value.func):
+            self._nomes().update(alvo.id for alvo in no.targets if isinstance(alvo, ast.Name))
+        self.generic_visit(no)
+
+    def visit_Call(self, no: ast.Call) -> None:
+        escrita = any(
+            isinstance(valor, ast.Constant) and valor.value == "w"
+            for valor in [*no.args, *(kw.value for kw in no.keywords)]
+        )
+        if (
+            isinstance(no.func, ast.Attribute)
+            and no.func.attr in {"read", "open", "extract", "extractall"}
+            and isinstance(no.func.value, ast.Name)
+            and no.func.value.id in self._nomes()
+            and not escrita
+        ):
+            self.achadas.add((self.arquivo, self.funcoes[-1][0] if self.funcoes else "<modulo>"))
+        self.generic_visit(no)
+
+
+def test_leitura_de_zip_passa_pelo_teto():
+    achadas: set[tuple[str, str]] = set()
+    for arquivo in PACOTE.rglob("*.py"):
+        leituras = _Leituras(arquivo.relative_to(PACOTE).as_posix())
+        leituras.visit(ast.parse(arquivo.read_text(encoding="utf-8")))
+        achadas |= leituras.achadas
+
+    assert sorted(achadas - set(FORA_DO_HELPER)) == []
+    assert sorted(set(FORA_DO_HELPER) - achadas) == []
+
+
+def _zip(membros: dict[str, bytes]) -> bytes:
+    saida = io.BytesIO()
+    with zipfile.ZipFile(saida, "w", zipfile.ZIP_DEFLATED) as arquivo:
+        for nome, dados in membros.items():
+            arquivo.writestr(nome, dados)
+    return saida.getvalue()
+
+
+def _xlsx(celula: bytes) -> bytes:
+    livro = openpyxl.Workbook()
+    livro.active["A1"] = "x"
+    saida = io.BytesIO()
+    livro.save(saida)
+    with zipfile.ZipFile(io.BytesIO(saida.getvalue())) as origem:
+        membros = {info.filename: origem.read(info) for info in origem.infolist()}
+    membros["xl/worksheets/sheet1.xml"] = (
+        b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        b'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        b'<sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>'
+        + celula
+        + b"</t></is></c></row></sheetData></worksheet>"
+    )
+    return _zip(membros)
+
+
+def _forjar(conteudo: bytes, membro: str, declarado: int) -> bytes:
+    """Troca o tamanho expandido declarado do membro, no cabeçalho local e no diretório central."""
+    bruto = bytearray(conteudo)
+    nome = membro.encode()
+    for assinatura, deslocamento, campo, cabecalho in (
+        (b"PK\x03\x04", 26, 22, 30),
+        (b"PK\x01\x02", 28, 24, 46),
+    ):
+        posicao = bruto.find(assinatura)
+        while posicao != -1:
+            tamanho_nome = struct.unpack_from("<H", bruto, posicao + deslocamento)[0]
+            if bytes(bruto[posicao + cabecalho : posicao + cabecalho + tamanho_nome]) == nome:
+                struct.pack_into("<I", bruto, posicao + campo, declarado)
+            posicao = bruto.find(assinatura, posicao + 4)
+    return bytes(bruto)
+
+
+BOMBA_XLSX = _xlsx(b"x" * EXPANSAO)
+LEITORES: dict[str, tuple[str, Callable[[], bytes], Callable[[bytes], Any]]] = {
+    "queimadas": (
+        "queimadas",
+        lambda: _zip({"focos.csv": b"0" * EXPANSAO}),
+        lambda bomba: io_utils.extract_csv_from_zip(
+            bomba, source="queimadas", url="https://exemplo"
+        ),
+    ),
+    "b3_zip_interno": (
+        "b3",
+        lambda: _zip({"PR260925.zip": b"0" * EXPANSAO}),
+        b3_parser.parse_ajustes_zip,
+    ),
+    "b3_xml": (
+        "b3",
+        lambda: _zip({"PR260925.zip": _zip({"BVBG.086.01.xml": b"<a>" + b" " * EXPANSAO})}),
+        b3_parser.parse_ajustes_zip,
+    ),
+    "mapbiomas_zip": (
+        "mapbiomas",
+        lambda: _zip({constants.MAPBIOMAS_MUNICIPAL_MEMBER_11: b"0" * EXPANSAO}),
+        lambda bomba: mapbiomas_client._municipal_member(bomba, "https://exemplo"),
+    ),
+    "mapbiomas_xlsx": (
+        "mapbiomas",
+        lambda: BOMBA_XLSX,
+        lambda bomba: municipal_parser.parse_cobertura_municipal(bomba, colecao=11),
+    ),
+    "antaq": (
+        "antaq",
+        lambda: _zip({"2024Carga.txt": b"0" * EXPANSAO}),
+        lambda bomba: antaq_client._extract_txt_from_zip(bomba, "2024Carga.txt"),
+    ),
+    "ibge_ftp": (
+        "ibge",
+        lambda: _zip({"Tab_3Mn.xls": b"0" * EXPANSAO}),
+        ftp_client.extract_tables_from_zip,
+    ),
+    "anp_xlsx_calamine": ("anp_diesel", lambda: BOMBA_XLSX, anp_parser._read_precos_xlsx),
+    "abiove_xlsx": (
+        "abiove",
+        lambda: BOMBA_XLSX,
+        lambda bomba: io_utils.open_excel_safe(bomba, source="abiove"),
+    ),
+    "cepea_serie_xlsx": ("cepea", lambda: BOMBA_XLSX, cepea_serie.ler_planilha),
+    "unica_xlsx": (
+        "unica",
+        lambda: BOMBA_XLSX,
+        lambda bomba: unica_parser.parse_historico_xlsx(bomba, "cana"),
+    ),
+}
+
+
+@pytest.mark.parametrize("leitor", list(LEITORES))
+def test_bomba_recusada_antes_de_expandir(monkeypatch, leitor):
+    fonte, montar, ler = LEITORES[leitor]
+    bomba = montar()
+    monkeypatch.setitem(constants.MAX_EXPANDED_BYTES, fonte, TETO)
+
+    tracemalloc.start()
+    try:
+        with levanta_exatamente(ResourceLimitError, f"acima do teto de {TETO}"):
+            ler(bomba)
+        _atual, pico = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+
+    assert len(bomba) < 64 * 1024
+    assert pico < EXPANSAO // 2
+
+
+def test_xlsx_com_tamanho_declarado_forjado_e_recusado(monkeypatch):
+    monkeypatch.setitem(constants.MAX_EXPANDED_BYTES, "anp_diesel", 2 * EXPANSAO)
+    forjado = _forjar(BOMBA_XLSX, "xl/worksheets/sheet1.xml", 1024)
+
+    with levanta_exatamente(ResourceLimitError, "não confere com o tamanho e o CRC declarados"):
+        anp_parser._read_precos_xlsx(forjado)
+
+
+def test_zip_com_tamanho_declarado_forjado_para_no_crc():
+    forjado = _forjar(_zip({"focos.csv": b"0" * EXPANSAO}), "focos.csv", 1024)
+
+    with levanta_exatamente(SourceUnavailableError, "Resposta não é um ZIP válido: Bad CRC-32"):
+        io_utils.extract_csv_from_zip(forjado, source="queimadas", url="https://exemplo")
+
+
+def test_xlsx_dentro_do_teto_segue_para_o_leitor():
+    pequeno = _xlsx(b"x" * 10)
+
+    with sem_excecao():
+        io_utils.check_xlsx_expansion(pequeno, source="anp_diesel")
+        io_utils.check_xlsx_expansion(b"\xd0\xcf\x11\xe0 xls antigo", source="cepea")
+        io_utils.check_xlsx_expansion(b"PK\x03\x04 corrompido", source="cepea")
+
+
+def test_fonte_sem_teto_proprio_usa_o_padrao():
+    assert "deral" not in constants.MAX_EXPANDED_BYTES
+    assert io_utils._expansion_limit("deral") == constants.MAX_EXPANDED_BYTES_DEFAULT

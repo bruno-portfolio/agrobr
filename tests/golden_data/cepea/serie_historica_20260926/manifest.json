@@ -1,0 +1,79 @@
+{
+ "source": "cepea",
+ "license": "CC BY-NC 4.0 (CEPEA/ESALQ), reprodução com atribuição",
+ "content": "Séries históricas do CEPEA em XLS (BIFF), inteiras como publicadas, e as páginas dos indicadores capturadas na mesma sessão (26/09/2026, 23:30–23:34 BRT), para o C44: soja Paranaguá (id 92), suíno vivo por UF (129), leite ao produtor (leitep), bezerro MS (8) e o peso médio do bezerro (174).",
+ "resources": [
+  {
+   "file": "soja_92.xls",
+   "url": "https://www.cepea.org.br/br/indicador/series/soja.aspx?id=92",
+   "sha256": "6f1b91cca06411a6a50dff88900148d1e6136c4b46445df681ccc503f9ef6958",
+   "bytes": 381440,
+   "fetched_at": "2026-09-27T02:30:59+00:00",
+   "content_type": "application/vnd.ms-excel"
+  },
+  {
+   "file": "soja_pagina.html",
+   "url": "https://www.cepea.org.br/br/indicador/soja.aspx",
+   "sha256": "899cea5d9a108d56876d2201cfc1d5cb45dbcb1a3acaf7df575be423f810087c",
+   "bytes": 60827,
+   "fetched_at": "2026-09-27T02:30:31+00:00",
+   "content_type": "text/html; charset=UTF-8"
+  },
+  {
+   "file": "suino_129.xls",
+   "url": "https://www.cepea.org.br/br/indicador/series/suino.aspx?id=129",
+   "sha256": "d35c3db5fe749e2a7199fa8a67b7344a5911ab1a108334b54668bfbbeb210950",
+   "bytes": 507392,
+   "fetched_at": "2026-09-27T02:34:30+00:00",
+   "content_type": "application/vnd.ms-excel"
+  },
+  {
+   "file": "suino_pagina.html",
+   "url": "https://www.cepea.org.br/br/indicador/suino.aspx",
+   "sha256": "b693c6325323a14325c2d0ffb08637fcb1fc243387c4a0e87b42b6aa95633d2b",
+   "bytes": 88482,
+   "fetched_at": "2026-09-27T02:32:20+00:00",
+   "content_type": "text/html; charset=UTF-8"
+  },
+  {
+   "file": "leite_leitep.xls",
+   "url": "https://www.cepea.org.br/br/indicador/series/leite.aspx?id=leitep",
+   "sha256": "aea3a9b57af9aebb607bb47c6b281402aa0345daadf10e287ad23f3800950b52",
+   "bytes": 184320,
+   "fetched_at": "2026-09-27T02:34:17+00:00",
+   "content_type": "application/vnd.ms-excel"
+  },
+  {
+   "file": "leite_pagina.html",
+   "url": "https://www.cepea.org.br/br/indicador/leite.aspx",
+   "sha256": "a8c80acddaae2a7590e71deec75f25afcc7724877eb99f0f6c907977da1c2263",
+   "bytes": 50704,
+   "fetched_at": "2026-09-27T02:32:26+00:00",
+   "content_type": "text/html; charset=UTF-8"
+  },
+  {
+   "file": "bezerro_8.xls",
+   "url": "https://www.cepea.org.br/br/indicador/series/bezerro.aspx?id=8",
+   "sha256": "f8530d64f8dd5629e252119bbe44f3fb8ace1ad5114ea4853d54d7f6209a8d45",
+   "bytes": 492544,
+   "fetched_at": "2026-09-27T02:33:23+00:00",
+   "content_type": "application/vnd.ms-excel"
+  },
+  {
+   "file": "bezerro_174.xls",
+   "url": "https://www.cepea.org.br/br/indicador/series/bezerro.aspx?id=174",
+   "sha256": "d74860f21160e57e3fa9a9055f1edab36bea0a4b8a23169ceabacf3dced4133e",
+   "bytes": 371712,
+   "fetched_at": "2026-09-27T02:33:30+00:00",
+   "content_type": "application/vnd.ms-excel"
+  },
+  {
+   "file": "bezerro_pagina.html",
+   "url": "https://www.cepea.org.br/br/indicador/bezerro.aspx",
+   "sha256": "93f8a590b9d88ba7b6b8b434f792488eef40ce0c62d4be5a425623d7a5355603",
+   "bytes": 57823,
+   "fetched_at": "2026-09-27T02:31:52+00:00",
+   "content_type": "text/html; charset=UTF-8"
+  }
+ ]
+}

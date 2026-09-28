@@ -6,17 +6,17 @@ Consolidated deforestation (PRODES) and real-time alerts (DETER) by biome.
 
 | `tipo=` | Contract | Source |
 |---------|----------|--------|
-| `"prodes"` (default) | `DESMATAMENTO_PRODES_V1` | INPE TerraBrasilis |
-| `"deter"` | `DESMATAMENTO_DETER_V1` | INPE TerraBrasilis |
+| `"prodes"` (default) | `DESMATAMENTO_PRODES_V2` | INPE TerraBrasilis |
+| `"deter"` | `DESMATAMENTO_DETER_V2` | INPE TerraBrasilis |
 
 ## Schema: PRODES
 
 | Column | Type | Nullable | Unit | Constraints |
 |--------|------|----------|------|-------------|
-| `ano` | INTEGER | No | — | ≥ 2000 |
+| `ano` | INTEGER | No | — | 1 to 9999, integral |
 | `uf` | STRING | No | — | valid state |
 | `classe` | STRING | No | — | — |
-| `area_km2` | FLOAT | No | km² | ≥ 0 |
+| `area_km2` | FLOAT | Yes | km² | ≥ 0 |
 | `satelite` | STRING | Yes | — | — |
 | `sensor` | STRING | Yes | — | — |
 | `bioma` | STRING | No | — | valid biome |
@@ -31,30 +31,49 @@ Consolidated deforestation (PRODES) and real-time alerts (DETER) by biome.
 | `classe` | STRING | No | — | — |
 | `uf` | STRING | No | — | valid state |
 | `municipio` | STRING | Yes | — | — |
-| `municipio_id` | INTEGER | Yes | — | — |
-| `area_km2` | FLOAT | No | km² | ≥ 0 |
+| `municipio_id` | STRING | Yes | — | — |
+| `cod_municipio` | INTEGER | Yes | — | 7-digit IBGE code, from `municipio_id` |
+| `area_km2` | FLOAT | Yes | km² | ≥ 0 |
 | `satelite` | STRING | Yes | — | — |
 | `sensor` | STRING | Yes | — | — |
 | `bioma` | STRING | No | — | Amazônia or Cerrado |
 
-**PK:** `(data, classe, uf, municipio, bioma)`
+**PK:** `(data, classe, uf, municipio, municipio_id, bioma)`
 
 ## Constraints
 
 - DETER is only available for **Amazônia** and **Cerrado** (fail-fast with `ValueError`)
 - Biome is normalized automatically (`"cerrado"` → `"Cerrado"`)
+- In PRODES, the Amazon is the biome cut, not the Legal Amazon of INPE's headline rate ([source](../sources/desmatamento.en.md))
+
+## Aggregation
+
+Each row is a primary-key group, not a feature. `area_km2` is the **sum of the published feature
+areas** in the group (`area_km` for PRODES, `areamunkm` for DETER) — it is not the official
+deforestation rate. Any missing area in the group makes the total missing, with no partial sum.
+`satelite` and `sensor` carry the published value when it is unique within the group and are null
+when the group mixes values; `meta.source_details["aggregation"]["heterogeneous"]` counts those
+cases. Aggregation requires a reconciled selection: if the local limit truncates it, the dataset
+raises `ContractViolationError` instead of publishing a partial aggregate. The WFS count is checked
+before the download: when it exceeds `max_registros` (default 50,000), the refusal comes at once,
+with the count in the message, without downloading any feature. For a larger selection, use
+`max_registros=None`: the whole Cerrado in 2023 has 68,620 features, and the download takes
+minutes. For individual features use `agrobr.desmatamento.prodes` / `deter` (contracts
+`desmatamento.prodes_feicoes` and `desmatamento.deter_feicoes`).
 
 ## Example
 
 ```python
 from agrobr import datasets
 
-# PRODES — consolidated annual deforestation
-df = await datasets.desmatamento("Cerrado", tipo="prodes", ano=2023)
+# PRODES — consolidated annual deforestation (103 features in DF in 2023)
+df = await datasets.desmatamento("Cerrado", tipo="prodes", ano=2023, uf="DF")
 
-# DETER — deforestation alerts
-df = await datasets.desmatamento("Amazônia", tipo="deter", data_inicio="2024-01-01")
+# DETER — deforestation alerts in Acre, first quarter of 2024
+df = await datasets.desmatamento(
+    "Amazônia", tipo="deter", uf="AC", data_inicio="2024-01-01", data_fim="2024-03-31"
+)
 
-# With metadata
-df, meta = await datasets.desmatamento("Cerrado", return_meta=True)
+# With metadata (all years of the Cerrado in DF: 3,643 features)
+df, meta = await datasets.desmatamento("Cerrado", uf="DF", return_meta=True)
 ```

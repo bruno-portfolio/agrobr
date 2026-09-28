@@ -1,7 +1,7 @@
 {
   "name": "comexstat.exportacao",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "ano",
@@ -12,7 +12,10 @@
   "required_columns": [
     "ano",
     "mes",
-    "produto"
+    "produto",
+    "uf",
+    "kg_liquido",
+    "valor_fob_usd"
   ],
   "dtypes": {
     "ano": "int",
@@ -20,7 +23,8 @@
     "produto": "str",
     "uf": "str",
     "kg_liquido": "float",
-    "valor_fob_usd": "float"
+    "valor_fob_usd": "float",
+    "volume_ton": "float"
   },
   "nullable": {
     "ano": false,
@@ -28,7 +32,8 @@
     "produto": false,
     "uf": true,
     "kg_liquido": true,
-    "valor_fob_usd": true
+    "valor_fob_usd": true,
+    "volume_ton": true
   },
   "columns": [
     {
@@ -96,6 +101,17 @@
       "description": "",
       "min_value": 0,
       "max_value": null
+    },
+    {
+      "name": "volume_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "t",
+      "stable": false,
+      "deprecated": false,
+      "description": "kg_liquido / 1000",
+      "min_value": 0,
+      "max_value": null
     }
   ],
   "constraints": {
@@ -104,7 +120,8 @@
     "mes_min": 1,
     "mes_max": 12,
     "kg_liquido_min": 0,
-    "valor_fob_usd_min": 0
+    "valor_fob_usd_min": 0,
+    "volume_ton_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",

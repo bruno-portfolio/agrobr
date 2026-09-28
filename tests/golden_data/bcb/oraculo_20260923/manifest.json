@@ -1,0 +1,1678 @@
+{
+ "source": "BCB (SGS, PTAX OData, SICOR OData e tabelas de domínio do SICOR)",
+ "transformation": "nenhuma: bytes das respostas HTTP 200 como recebidos; pedidos com as URLs exatas do agrobr",
+ "resources": [
+  {
+   "file": "sgs_selic_000.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:32.772558+00:00",
+   "bytes": 115,
+   "sha256": "f1e6d1e970dfcd466a586997748a1e315c2e0d52b9e469048e80b704b41e7c3b"
+  },
+  {
+   "file": "sgs_ipca_001.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:33.860614+00:00",
+   "bytes": 113,
+   "sha256": "fd4144dfb6c65bdbb7d9771434114b5578d4a17114ef7df2859a5dea037aabb7"
+  },
+  {
+   "file": "sgs_ipca_alimentacao_002.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1635/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:35.096950+00:00",
+   "bytes": 115,
+   "sha256": "8def85c39d5c7f664945b766d52d6f1aee452c8a34391b24a83319e647581a87"
+  },
+  {
+   "file": "sgs_ipa_agropecuario_003.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.7460/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:36.375572+00:00",
+   "bytes": 113,
+   "sha256": "44729ca83e1ea23d75dced3d379c24bff2ce723eeaabedda3d92736041195852"
+  },
+  {
+   "file": "sgs_pib_agropecuaria_004.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.22083/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:37.641070+00:00",
+   "bytes": 118,
+   "sha256": "8997f8269d69ebd2c7bc69a4487fccc8cc26ca0a370ce627d682f3019ac41c1b"
+  },
+  {
+   "file": "sgs_credito_rural_concessoes_pf_005.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.20701/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:38.900385+00:00",
+   "bytes": 115,
+   "sha256": "2e2040b289ed6ae8eb779aa63bb9f158a68477ec60c151f20d19290bd19b0e78"
+  },
+  {
+   "file": "sgs_credito_rural_saldo_pf_006.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.20609/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:40.161851+00:00",
+   "bytes": 118,
+   "sha256": "a9febb6483ac8b69ec255fa807d4173a7599e340720d8fcdfe1a8df8287852cc"
+  },
+  {
+   "file": "sgs_dolar_ptax_venda_007.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:41.243263+00:00",
+   "bytes": 118,
+   "sha256": "3ce175334005de8248b5348f0eddd3180862c513e35f2dd0c2e2f04d3abcd12b"
+  },
+  {
+   "file": "sgs_dolar_ptax_compra_008.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.10813/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:42.491824+00:00",
+   "bytes": 118,
+   "sha256": "5f0ed8aa5e098cd5fd4275a18e6b9cb56f052c54013bf49f2e2fb70a2a9eef88"
+  },
+  {
+   "file": "sgs_cambio_mensal_compra_009.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.3697/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:43.728239+00:00",
+   "bytes": 118,
+   "sha256": "3cd780fc1f7d8fc8244fa0a1d8f73f3c8c1f5c13985442e23f621d360e3772a8"
+  },
+  {
+   "file": "sgs_cambio_mensal_venda_010.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.3698/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:44.963834+00:00",
+   "bytes": 118,
+   "sha256": "8e6ec4c25bac2879b6ecfff9e2444657bfc4d76129e0166ffa45760b332b70aa"
+  },
+  {
+   "file": "sgs_igpm_011.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.189/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:46.049005+00:00",
+   "bytes": 115,
+   "sha256": "4ea30334d5fcc5b1a28c6fcc7496f88249edd36ce9e6b2f8b3e1e0f1e52f160a"
+  },
+  {
+   "file": "sgs_igpdi_012.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.190/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:47.508116+00:00",
+   "bytes": 114,
+   "sha256": "3a15e77f1d4ed77cb458cbbd27d2ec2951b4d8b23b97d3d99bbc918e9cf8ce75"
+  },
+  {
+   "file": "sgs_inpc_013.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.188/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:48.740863+00:00",
+   "bytes": 114,
+   "sha256": "b431c7dd8afb8c3a526d716ba36da7ccfe5769d3636eb4b00e3ca10a5774b501"
+  },
+  {
+   "file": "sgs_cdi_014.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.4392/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:49.849175+00:00",
+   "bytes": 115,
+   "sha256": "752e05ec437d4e2a2b16afe90a5434b13cd5bacbd2c1cf9fe300c7b61735543f"
+  },
+  {
+   "file": "sgs_tjlp_015.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.256/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:51.076880+00:00",
+   "bytes": 112,
+   "sha256": "a31951087da7b2c2023b13c9baebd978dd0b49f4b8a55d483a15f5c9ee54a88f"
+  },
+  {
+   "file": "sgs_tr_016.json",
+   "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.226/dados/ultimos/3?formato=json",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "fetched_at_utc": "2026-09-23T03:54:52.342154+00:00",
+   "bytes": 187,
+   "sha256": "e48e48e09ebaadb78dc9d96b16f9757039530d8d705375019fc552067a0ba379"
+  },
+  {
+   "file": "sicor_investimento_bovinos_mt_000.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/InvestRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22BOVINOS%22'%20and%20nomeUF%20eq%20'MT'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdInvest,VlInvest",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:10.489169+00:00",
+   "bytes": 36198,
+   "sha256": "256d069b0c853213aa5f4d5fb6fe65855dd828d2acac7fe7a143642dccc6a123"
+  },
+  {
+   "file": "sicor_comercializacao_soja_mt_001.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/ComercRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22SOJA%22'%20and%20nomeUF%20eq%20'MT'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdComerc,VlComerc",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:13.749857+00:00",
+   "bytes": 17884,
+   "sha256": "ffef2988e303e52871faf9ecc8cc1b5a7ad1d54aee2987f0350cb35a83198775"
+  },
+  {
+   "file": "ptax_aud_dia_002.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:25.050174+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_aud_dia_003.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:26.109904+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_aud_dia_004.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='AUD'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:27.208433+00:00",
+   "bytes": 997,
+   "sha256": "7eef77c960cbd10f173d2b1f7451361e9871a6da62c029be67317837172ad718"
+  },
+  {
+   "file": "ptax_aud_dia_005.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='AUD'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:28.274742+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_cad_dia_006.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:29.372921+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_cad_dia_007.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:30.434522+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_cad_dia_008.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='CAD'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:31.534978+00:00",
+   "bytes": 997,
+   "sha256": "94d9e29953acc6c776f8b3b18ebe5f37831db217a61ff5bcd1735ad2f29dd59c"
+  },
+  {
+   "file": "ptax_cad_dia_009.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='CAD'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:32.596364+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_chf_dia_010.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:33.885225+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_chf_dia_011.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:34.955671+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_chf_dia_012.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='CHF'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:36.043382+00:00",
+   "bytes": 997,
+   "sha256": "325525e0016c7dcc3496d7e8c5940beb766b2ebd6148ed9d86cd428b20880b17"
+  },
+  {
+   "file": "ptax_chf_dia_013.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='CHF'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:37.110652+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_dkk_dia_014.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:38.210350+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_dkk_dia_015.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:39.269458+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_dkk_dia_016.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='DKK'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:40.377927+00:00",
+   "bytes": 997,
+   "sha256": "e90bafa553cfe0b6da1f692fb81c93a76e38bc4ff5550aa5ea784d0af82930d4"
+  },
+  {
+   "file": "ptax_dkk_dia_017.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='DKK'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:41.459234+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_eur_dia_018.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:42.545343+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_eur_dia_019.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:43.617604+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_eur_dia_020.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='EUR'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:44.722856+00:00",
+   "bytes": 997,
+   "sha256": "ba7dcbd4f170be607db464fc5469936c80489b4963fa92fa2e1f3520f7ed8e2f"
+  },
+  {
+   "file": "ptax_eur_dia_021.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='EUR'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:45.780322+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_gbp_dia_022.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:46.883816+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_gbp_dia_023.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:47.951945+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_gbp_dia_024.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='GBP'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:49.051742+00:00",
+   "bytes": 997,
+   "sha256": "86d035f9376f44dd69960aae6a026e6e849623a26d3b39159c0655069f0d60e5"
+  },
+  {
+   "file": "ptax_gbp_dia_025.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='GBP'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:50.126731+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_jpy_dia_026.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:51.246786+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_jpy_dia_027.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:52.296187+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_jpy_dia_028.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='JPY'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:53.379976+00:00",
+   "bytes": 1017,
+   "sha256": "44ac8225377db2796fc5f0ec3f8a3013bdb772b151c4f68c5a097d515ec27533"
+  },
+  {
+   "file": "ptax_jpy_dia_029.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='JPY'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:54.458217+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_nok_dia_030.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:55.540605+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_nok_dia_031.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:56.602001+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_nok_dia_032.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='NOK'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:57.700413+00:00",
+   "bytes": 997,
+   "sha256": "02d00f95c39693c50f0fe67bce31289b09c93530251def8f9bba9b320deed5c6"
+  },
+  {
+   "file": "ptax_nok_dia_033.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='NOK'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:58.794685+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_sek_dia_034.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:55:59.872869+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_sek_dia_035.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:56:00.933178+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_sek_dia_036.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='SEK'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:56:02.052443+00:00",
+   "bytes": 997,
+   "sha256": "2239189d37c1e3eab00ec1ce821a8b1bc7371db400c2c6e069ca41c588474ad8"
+  },
+  {
+   "file": "ptax_sek_dia_037.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='SEK'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:56:03.123480+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "ptax_usd_dia_038.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:56:04.203075+00:00",
+   "bytes": 784,
+   "sha256": "248823b5dbe4d9cca03a4304a12717f34a3327202d9be70a6e8e99bb5d7ad027"
+  },
+  {
+   "file": "ptax_usd_dia_039.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json&$orderby=simbolo%20asc&$top=1000&$skip=10",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:56:05.260736+00:00",
+   "bytes": 114,
+   "sha256": "eba38c5c2b285978b2fc218f50d69b256320ec2a99c85c8d2d8531d86e118755"
+  },
+  {
+   "file": "ptax_usd_dia_040.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='USD'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:56:06.347371+00:00",
+   "bytes": 997,
+   "sha256": "5d544b9f3a0e7bd822add76e73a48c0450fcaf6c496b41629f489b984bdf0bb7"
+  },
+  {
+   "file": "ptax_usd_dia_041.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='USD'&@d='09-22-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=5",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T03:56:07.410239+00:00",
+   "bytes": 124,
+   "sha256": "3e220cfce5e7bf59a7608761226c6bbaa988cbb58a7c3f0e03a3e50d846b9908"
+  },
+  {
+   "file": "sicor_custeio_milho_mt_000.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22MILHO%22'%20and%20nomeUF%20eq%20'MT'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:05.676207+00:00",
+   "bytes": 61676,
+   "sha256": "7019900ae9654b21075fab862bb5c5353a25f6477bac53d9eab78044a46e6cdb"
+  },
+  {
+   "file": "sicor_custeio_arroz_rs_001.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22ARROZ%22'%20and%20nomeUF%20eq%20'RS'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:10.010067+00:00",
+   "bytes": 83959,
+   "sha256": "717976b7698f932171303b55b4338aa4e5da089cd07ffb463eb7f354ca864cfe"
+  },
+  {
+   "file": "sicor_custeio_feijao_pr_002.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22FEIJ%C3%83O%22'%20and%20nomeUF%20eq%20'PR'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:13.427268+00:00",
+   "bytes": 97123,
+   "sha256": "049ab23de48c99be52aea7c713cd05cb17e6e8279ab45b4003910fa68d37d963"
+  },
+  {
+   "file": "sicor_custeio_trigo_pr_003.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22TRIGO%22'%20and%20nomeUF%20eq%20'PR'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:17.453916+00:00",
+   "bytes": 98682,
+   "sha256": "880eb700ffeb746e547f067cf730ac1a2f8f889c4213a1d4b1001f7c4cf2f6a0"
+  },
+  {
+   "file": "sicor_custeio_algodao_mt_004.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22ALGOD%C3%83O%22'%20and%20nomeUF%20eq%20'MT'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:22.221569+00:00",
+   "bytes": 20127,
+   "sha256": "4dd30f6c11e8943d172031ea252863ec259004911db70fc1973aaa031d57a819"
+  },
+  {
+   "file": "sicor_custeio_cafe_mg_005.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22CAF%C3%89%22'%20and%20nomeUF%20eq%20'MG'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:37.320122+00:00",
+   "bytes": 122854,
+   "sha256": "26411fc168e8771f690ecb5f4e19935624d6bad327540fab1699ca0f939fcd8b"
+  },
+  {
+   "file": "sicor_custeio_cana_sp_006.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22CANA-DE-A%C3%87UCAR%22'%20and%20nomeUF%20eq%20'SP'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:42.680857+00:00",
+   "bytes": 76630,
+   "sha256": "e9f476434644fa064b838ce57b7ec85ecf734a8f4656908704880ced987ce277"
+  },
+  {
+   "file": "sicor_custeio_sorgo_go_007.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22SORGO%22'%20and%20nomeUF%20eq%20'GO'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:46.238794+00:00",
+   "bytes": 24391,
+   "sha256": "2435df9483a26d8c5244a4811fc6f50c03bab0862e1568eeb70969172bd39a1d"
+  },
+  {
+   "file": "sicor_custeio_mandioca_pr_008.json",
+   "url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22MANDIOCA%20(AIPIM,%20MACAXEIRA)%22'%20and%20nomeUF%20eq%20'PR'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+   "status": 200,
+   "content_type": "application/json;charset=UTF-8;odata.metadata=minimal",
+   "fetched_at_utc": "2026-09-23T05:00:50.070598+00:00",
+   "bytes": 66118,
+   "sha256": "a97f7fd2e35204234877971485158a55ff42e06030de19c789b83ffdc857064a"
+  },
+  {
+   "file": "dominio_Programa.csv",
+   "url": "https://www.bcb.gov.br/htms/sicor/Programa.csv",
+   "status": 200,
+   "content_type": "application/octet-stream",
+   "fetched_at_utc": "2026-09-23T03:58:27.816724+00:00",
+   "bytes": 5905,
+   "sha256": "de39b94fea8e6f7c35819231fd0ef03d68c2a71dc8ab3d592371492dc3554fbb"
+  },
+  {
+   "file": "dominio_TipoGarantiaEmpreendimento.csv",
+   "url": "https://www.bcb.gov.br/htms/sicor/TipoGarantiaEmpreendimento.csv",
+   "status": 200,
+   "content_type": "application/octet-stream",
+   "fetched_at_utc": "2026-09-23T03:59:41.216057+00:00",
+   "bytes": 118,
+   "sha256": "74f8a0791a32e32fd443b8a9eb0e01aa46e6455fe64955c4c73a9169ea1f30b8"
+  }
+ ],
+ "cases": [
+  {
+   "id": "sgs_selic",
+   "requests": [
+    {
+     "file": "sgs_selic_000.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_ipca",
+   "requests": [
+    {
+     "file": "sgs_ipca_001.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_ipca_alimentacao",
+   "requests": [
+    {
+     "file": "sgs_ipca_alimentacao_002.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1635/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_ipa_agropecuario",
+   "requests": [
+    {
+     "file": "sgs_ipa_agropecuario_003.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.7460/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_pib_agropecuaria",
+   "requests": [
+    {
+     "file": "sgs_pib_agropecuaria_004.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.22083/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_credito_rural_concessoes_pf",
+   "requests": [
+    {
+     "file": "sgs_credito_rural_concessoes_pf_005.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.20701/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_credito_rural_saldo_pf",
+   "requests": [
+    {
+     "file": "sgs_credito_rural_saldo_pf_006.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.20609/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_dolar_ptax_venda",
+   "requests": [
+    {
+     "file": "sgs_dolar_ptax_venda_007.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_dolar_ptax_compra",
+   "requests": [
+    {
+     "file": "sgs_dolar_ptax_compra_008.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.10813/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_cambio_mensal_compra",
+   "requests": [
+    {
+     "file": "sgs_cambio_mensal_compra_009.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.3697/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_cambio_mensal_venda",
+   "requests": [
+    {
+     "file": "sgs_cambio_mensal_venda_010.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.3698/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_igpm",
+   "requests": [
+    {
+     "file": "sgs_igpm_011.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.189/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_igpdi",
+   "requests": [
+    {
+     "file": "sgs_igpdi_012.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.190/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_inpc",
+   "requests": [
+    {
+     "file": "sgs_inpc_013.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.188/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_cdi",
+   "requests": [
+    {
+     "file": "sgs_cdi_014.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.4392/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_tjlp",
+   "requests": [
+    {
+     "file": "sgs_tjlp_015.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.256/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sgs_tr",
+   "requests": [
+    {
+     "file": "sgs_tr_016.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.226/dados/ultimos/3",
+      "params": {
+       "formato": "json"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_investimento_bovinos_mt",
+   "requests": [
+    {
+     "file": "sicor_investimento_bovinos_mt_000.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/InvestRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"BOVINOS\"' and nomeUF eq 'MT' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdInvest,VlInvest"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_comercializacao_soja_mt",
+   "requests": [
+    {
+     "file": "sicor_comercializacao_soja_mt_001.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/ComercRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"SOJA\"' and nomeUF eq 'MT' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdComerc,VlComerc"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_aud_dia",
+   "requests": [
+    {
+     "file": "ptax_aud_dia_002.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_aud_dia_003.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_aud_dia_004.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'AUD'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_aud_dia_005.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'AUD'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_cad_dia",
+   "requests": [
+    {
+     "file": "ptax_cad_dia_006.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_cad_dia_007.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_cad_dia_008.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'CAD'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_cad_dia_009.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'CAD'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_chf_dia",
+   "requests": [
+    {
+     "file": "ptax_chf_dia_010.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_chf_dia_011.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_chf_dia_012.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'CHF'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_chf_dia_013.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'CHF'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_dkk_dia",
+   "requests": [
+    {
+     "file": "ptax_dkk_dia_014.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_dkk_dia_015.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_dkk_dia_016.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'DKK'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_dkk_dia_017.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'DKK'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_eur_dia",
+   "requests": [
+    {
+     "file": "ptax_eur_dia_018.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_eur_dia_019.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_eur_dia_020.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'EUR'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_eur_dia_021.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'EUR'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_gbp_dia",
+   "requests": [
+    {
+     "file": "ptax_gbp_dia_022.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_gbp_dia_023.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_gbp_dia_024.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'GBP'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_gbp_dia_025.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'GBP'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_jpy_dia",
+   "requests": [
+    {
+     "file": "ptax_jpy_dia_026.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_jpy_dia_027.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_jpy_dia_028.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'JPY'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_jpy_dia_029.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'JPY'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_nok_dia",
+   "requests": [
+    {
+     "file": "ptax_nok_dia_030.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_nok_dia_031.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_nok_dia_032.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'NOK'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_nok_dia_033.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'NOK'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_sek_dia",
+   "requests": [
+    {
+     "file": "ptax_sek_dia_034.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_sek_dia_035.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_sek_dia_036.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'SEK'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_sek_dia_037.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'SEK'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "ptax_usd_dia",
+   "requests": [
+    {
+     "file": "ptax_usd_dia_038.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_usd_dia_039.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas",
+      "params": {
+       "$format": "json",
+       "$orderby": "simbolo asc"
+      },
+      "skip": 10
+     }
+    },
+    {
+     "file": "ptax_usd_dia_040.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'USD'"
+      },
+      "skip": 0
+     }
+    },
+    {
+     "file": "ptax_usd_dia_041.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)",
+      "params": {
+       "$format": "json",
+       "$orderby": "dataHoraCotacao asc,tipoBoletim asc",
+       "@d": "'09-22-2026'",
+       "@m": "'USD'"
+      },
+      "skip": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_milho_mt",
+   "requests": [
+    {
+     "file": "sicor_custeio_milho_mt_000.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"MILHO\"' and nomeUF eq 'MT' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_arroz_rs",
+   "requests": [
+    {
+     "file": "sicor_custeio_arroz_rs_001.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"ARROZ\"' and nomeUF eq 'RS' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_feijao_pr",
+   "requests": [
+    {
+     "file": "sicor_custeio_feijao_pr_002.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"FEIJÃO\"' and nomeUF eq 'PR' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_trigo_pr",
+   "requests": [
+    {
+     "file": "sicor_custeio_trigo_pr_003.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"TRIGO\"' and nomeUF eq 'PR' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_algodao_mt",
+   "requests": [
+    {
+     "file": "sicor_custeio_algodao_mt_004.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"ALGODÃO\"' and nomeUF eq 'MT' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_cafe_mg",
+   "requests": [
+    {
+     "file": "sicor_custeio_cafe_mg_005.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"CAFÉ\"' and nomeUF eq 'MG' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_cana_sp",
+   "requests": [
+    {
+     "file": "sicor_custeio_cana_sp_006.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"CANA-DE-AÇUCAR\"' and nomeUF eq 'SP' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_sorgo_go",
+   "requests": [
+    {
+     "file": "sicor_custeio_sorgo_go_007.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"SORGO\"' and nomeUF eq 'GO' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "sicor_custeio_mandioca_pr",
+   "requests": [
+    {
+     "file": "sicor_custeio_mandioca_pr_008.json",
+     "content_type": "application/json",
+     "match": {
+      "path": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto",
+      "params": {
+       "$filter": "nomeProduto eq '\"MANDIOCA (AIPIM, MACAXEIRA)\"' and nomeUF eq 'PR' and ((AnoEmissao eq '2024' and MesEmissao ge '07') or (AnoEmissao eq '2025' and MesEmissao lt '07'))",
+       "$format": "json",
+       "$select": "nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio"
+      },
+      "skip": 0
+     }
+    }
+   ]
+  }
+ ]
+}

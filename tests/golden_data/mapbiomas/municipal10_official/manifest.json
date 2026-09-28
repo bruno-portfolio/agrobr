@@ -1,0 +1,40 @@
+{
+  "source": {
+    "status": "passed",
+    "file": "request_001_municipal10.body",
+    "size_bytes": 78609681,
+    "sha256": "2020496831bb2bdab5460d3d8b36ae99bc33a90e40403a827dadef76d3798576",
+    "source_url": "https://data.mapbiomas.org/api/access/datafile/254",
+    "http_attempts": 1,
+    "format": "xlsx direct; ZIP container is the workbook package",
+    "declared_content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; name=\"MAPBIOMAS_BRAZIL-COL.10-BIOME_STATE_MUNICIPALITY_DOI.xlsx\";charset=UTF-8",
+    "completed_at": "2026-09-07T03:48:23.661469-03:00",
+    "metadata_size_limit_bytes": 150000000
+  },
+  "files": [
+    {
+      "size_bytes": 4114,
+      "file": "municipal10_duplicates_minimal.xlsx",
+      "sha256": "1298d4925c7a840ee14f4fbd659fbe63e1bdf8f4f792c4499f579237331379cc"
+    },
+    {
+      "size_bytes": 17603,
+      "file": "municipal10_duplicates_minimal_oracle.json",
+      "sha256": "a83e3afcd6ad31117543319f02c6b7c552e41a5aef8d13d473a16013b0b76505"
+    },
+    {
+      "size_bytes": 3112,
+      "file": "municipal10_classes_0_13.xlsx",
+      "sha256": "560140b50a2c9996bca42bfb04b5ff584d9d1198f006dd21b85a9fc9e22ef649"
+    },
+    {
+      "size_bytes": 8146,
+      "file": "municipal10_classes_0_13_oracle.json",
+      "sha256": "bba6563fc3f6e063df9fa7c1ccfb6c9b6dd27e8f522a0f16c072c6b8281bb2dc"
+    }
+  ],
+  "selection": "One pair and one triple of published rows with the same territorial/class key and different published IDs and annual values",
+  "semantics": "Derived miniature XLSX; not the original HTTP body. All 40 published annual columns and original numeric XML values retained.",
+  "derived_rows": 5,
+  "additional_selection": "Two published rows with classes 0 and 13, preserving all 40 annual values; derived miniature XLSX, not HTTP body"
+}

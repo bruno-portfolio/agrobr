@@ -4,6 +4,8 @@ import re
 import unicodedata
 from typing import Literal
 
+import pandas as pd
+
 from agrobr.exceptions import InvalidParameterError
 
 UF = Literal[
@@ -104,9 +106,9 @@ def normalizar_uf(entrada: str) -> str | None:
     if entrada_norm in NOMES_PARA_UF:
         return NOMES_PARA_UF[entrada_norm]
 
-    for nome, uf in NOMES_PARA_UF.items():
+    for nome in sorted(NOMES_PARA_UF, key=len, reverse=True):
         if re.search(rf"(?<!\S){re.escape(nome)}(?!\S)", entrada_norm):
-            return uf
+            return NOMES_PARA_UF[nome]
 
     return None
 
@@ -128,6 +130,17 @@ def ibge_para_uf(codigo: int) -> str:
         if info["ibge"] == codigo:
             return uf
     raise InvalidParameterError(f"Código IBGE inválido: {codigo}")
+
+
+def cod_municipio(codigos: pd.Series) -> pd.Series:
+    """Código IBGE de município em ``Int64``: 7 dígitos com o prefixo de uma UF.
+
+    Número ou texto; o que não for código de município (UF, Brasil, marcador ou ausente) vira nulo.
+    """
+    numeros = pd.to_numeric(codigos, errors="coerce")
+    prefixos = {int(info["ibge"]) for info in UFS.values()}
+    municipal = numeros.mod(1).eq(0) & numeros.floordiv(100_000).isin(prefixos)
+    return numeros.where(municipal.fillna(False).astype(bool)).astype("Int64")
 
 
 def listar_ufs(regiao: str | None = None) -> list[str]:

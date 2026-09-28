@@ -1,6 +1,6 @@
 {
   "name": "mapa_psr.sinistros",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "effective_from": "0.12.0",
   "breaking_policy": "major",
   "primary_key": [
@@ -15,9 +15,20 @@
     "nr_apolice",
     "ano_apolice",
     "uf",
+    "municipio",
+    "cd_ibge",
     "cultura",
+    "classificacao",
     "evento",
-    "valor_indenizacao"
+    "area_total",
+    "valor_indenizacao",
+    "valor_premio",
+    "valor_subvencao",
+    "valor_limite_garantia",
+    "produtividade_estimada",
+    "produtividade_segurada",
+    "nivel_cobertura",
+    "seguradora"
   ],
   "dtypes": {
     "nr_apolice": "str",
@@ -36,7 +47,8 @@
     "produtividade_estimada": "float",
     "produtividade_segurada": "float",
     "nivel_cobertura": "float",
-    "seguradora": "str"
+    "seguradora": "str",
+    "cod_municipio": "int"
   },
   "nullable": {
     "nr_apolice": false,
@@ -55,7 +67,8 @@
     "produtividade_estimada": true,
     "produtividade_segurada": true,
     "nivel_cobertura": true,
-    "seguradora": true
+    "seguradora": true,
+    "cod_municipio": true
   },
   "columns": [
     {
@@ -242,6 +255,17 @@
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
       "min_value": null,
       "max_value": null
     }

@@ -1,399 +1,187 @@
-from unittest.mock import AsyncMock, patch
+import csv
+import hashlib
+import io
+import json
+import math
+import re
+from pathlib import Path
+from unittest.mock import AsyncMock, Mock
 
+import pandas as pd
 import pytest
 
-from agrobr.bcb import api
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr import contracts, datasets
+from agrobr.bcb import api, client, models
+from agrobr.exceptions import InvalidParameterError
+from tests.helpers import collect_failures, levanta_exatamente
+
+ORACULO = Path(__file__).parents[1] / "golden_data/bcb/oraculo_20260923"
+ORACULO_MANIFEST = json.loads((ORACULO / "manifest.json").read_text(encoding="utf-8"))
+R9_SICOR = (
+    Path(__file__).parents[1]
+    / "golden_data/reconciliacao_r9_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
+)
+COLUNAS = [
+    "safra",
+    "produto",
+    "uf",
+    "finalidade",
+    "agregacao",
+    "programa",
+    "cd_programa",
+    "qtd_contratos",
+    "valor",
+    "area_financiada",
+    "fonte",
+]
 
 
-def _mock_sicor_data(
-    cd_programa="0050",
-    cd_fonte_recurso="0303",
-    cd_tipo_seguro="9",
-    cd_modalidade="01",
-    atividade="1",
-):
+def valores(frame: pd.DataFrame, colunas: list[str]) -> list[tuple]:
     return [
-        {
-            "Safra": "2023/2024",
-            "AnoEmissao": 2023,
-            "MesEmissao": 9,
-            "cdUF": "51",
-            "UF": "MT",
-            "cdMunicipio": "5107248",
-            "Municipio": "SORRISO",
-            "Produto": "SOJA",
-            "Valor": 285431200.0,
-            "AreaFinanciada": 98500.0,
-            "QtdContratos": 1240,
-            "cdPrograma": cd_programa,
-            "cdSubPrograma": "0000",
-            "cdFonteRecurso": cd_fonte_recurso,
-            "cdTipoSeguro": cd_tipo_seguro,
-            "cdModalidade": cd_modalidade,
-            "Atividade": atividade,
-        },
-        {
-            "Safra": "2023/2024",
-            "AnoEmissao": 2023,
-            "MesEmissao": 10,
-            "cdUF": "51",
-            "UF": "MT",
-            "cdMunicipio": "5106752",
-            "Municipio": "SINOP",
-            "Produto": "SOJA",
-            "Valor": 142715600.0,
-            "AreaFinanciada": 49250.0,
-            "QtdContratos": 620,
-            "cdPrograma": cd_programa,
-            "cdSubPrograma": "0000",
-            "cdFonteRecurso": cd_fonte_recurso,
-            "cdTipoSeguro": cd_tipo_seguro,
-            "cdModalidade": cd_modalidade,
-            "Atividade": atividade,
-        },
+        tuple(None if pd.isna(valor) else valor for valor in linha)
+        for linha in frame[colunas].itertuples(index=False, name=None)
     ]
 
 
-def _mock_sicor_data_multi_programa():
-    base = _mock_sicor_data(cd_programa="0050")
-    extra = _mock_sicor_data(cd_programa="0001")
-    extra[0]["Municipio"] = "CUIABA"
-    extra[0]["cdMunicipio"] = "5103403"
-    extra[1]["Municipio"] = "RONDONOPOLIS"
-    extra[1]["cdMunicipio"] = "5107602"
-    return base + extra
+def soma(registros: list[dict], campo: str = "VlCusteio") -> float:
+    return math.fsum(registro[campo] for registro in registros)
 
 
-class TestCreditoRural:
-    @pytest.mark.asyncio
-    async def test_returns_dataframe(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24")
+async def test_consulta_publica_agrega_o_corpo_oficial_com_meta(monkeypatch: pytest.MonkeyPatch):
+    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    fetch = AsyncMock(side_effect=[(registros, "odata"), (registros, "bigquery")])
+    monkeypatch.setattr(api.client, "fetch_credito_rural_with_fallback", fetch)
 
-        assert len(df) == 1
-        assert "valor" in df.columns
-        assert "area_financiada" in df.columns
-        assert all(df["produto"] == "soja")
+    frame, meta = await api.credito_rural("soja", safra="2024/25", uf=" mt ", return_meta=True)
 
-    @pytest.mark.asyncio
-    async def test_return_meta_odata(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            df, meta = await api.credito_rural("soja", safra="2023/24", return_meta=True)
-
-        assert meta.source == "bcb_credito"
-        assert meta.attempted_sources == ["bcb_odata"]
-        assert meta.selected_source == "bcb_odata"
-        assert meta.source_method == "httpx"
-        assert meta.fetch_timestamp is not None
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_return_meta_bigquery_fallback(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "bigquery"),
-        ):
-            df, meta = await api.credito_rural("soja", safra="2023/24", return_meta=True)
-
-        assert meta.source == "bcb_credito"
-        assert meta.attempted_sources == ["bcb_odata", "bcb_bigquery"]
-        assert meta.selected_source == "bcb_bigquery"
-        assert meta.source_method == "bigquery"
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_agregacao_uf(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24", agregacao="uf")
-
-        assert len(df) == 1
-        assert df.iloc[0]["valor"] == pytest.approx(285431200.0 + 142715600.0)
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ) as mock_fetch:
-            df = await api.credito_rural("soja", safra="2023/24", uf=" mt ")
-
-        assert len(df) == 1
-        assert all(df["uf"] == "MT")
-        assert mock_fetch.call_args.kwargs["cd_uf"] == "51"
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises_before_request(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_credito_rural_with_fallback",
-                new_callable=AsyncMock,
-            ) as mock_fetch,
-            pytest.raises(ValueError, match="UF invalida"),
-        ):
-            await api.credito_rural("soja", safra="2023/24", uf="XX")
-
-        mock_fetch.assert_not_awaited()
-
-    @pytest.mark.asyncio
-    async def test_schema_version_2_0(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            _, meta = await api.credito_rural("soja", safra="2023/24", return_meta=True)
-
-        assert meta.schema_version == "2.0"
-
-    @pytest.mark.asyncio
-    async def test_municipio_aggregation_rejected_before_request(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_credito_rural_with_fallback",
-                new_callable=AsyncMock,
-            ) as mock_fetch,
-            pytest.raises(InvalidParameterError, match=r"agrobr\[bigquery\]"),
-        ):
-            await api.credito_rural("soja", agregacao="municipio")
-
-        mock_fetch.assert_not_awaited()
-
-
-class TestCreditoRuralContractColumns:
-    @pytest.mark.asyncio
-    async def test_new_columns_present(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24")
-
-        assert df.columns.tolist() == [
-            "safra",
-            "produto",
+    assert fetch.await_args.kwargs == {
+        "finalidade": "custeio",
+        "produto_sicor": '"SOJA"',
+        "safra_sicor": "2024/2025",
+        "cd_uf": "51",
+        "sem_fallback": None,
+    }
+    assert frame.columns.tolist() == COLUNAS
+    assert valores(frame, COLUNAS[:7] + ["qtd_contratos", "area_financiada", "fonte"]) == [
+        (
+            "2024/25",
+            "soja",
+            "MT",
+            "custeio",
             "uf",
-            "finalidade",
-            "agregacao",
-            "programa",
-            "cd_programa",
-            "qtd_contratos",
-            "valor",
-            "area_financiada",
-            "fonte",
-        ]
-
-    @pytest.mark.asyncio
-    async def test_enriched_values(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24", agregacao="programa")
-
-        row = df.iloc[0]
-        assert row["programa"] == "Pronamp"
-        assert row["cd_programa"] == "0050"
-        assert row["fonte"] == "bcb_odata"
-
-
-class TestCreditoRuralFilterPrograma:
-    @pytest.mark.asyncio
-    async def test_filter_programa(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data_multi_programa(), "odata"),
-        ):
-            df = await api.credito_rural(
-                "soja", safra="2023/24", programa="Pronamp", agregacao="programa"
-            )
-
-        assert len(df) == 1
-        assert all(df["programa"].str.lower() == "pronamp")
-
-    @pytest.mark.asyncio
-    async def test_filter_programa_case_insensitive(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data_multi_programa(), "odata"),
-        ):
-            df = await api.credito_rural(
-                "soja", safra="2023/24", programa="pronamp", agregacao="programa"
-            )
-
-        assert len(df) == 1
-
-    @pytest.mark.asyncio
-    async def test_filter_programa_no_match(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            df = await api.credito_rural(
-                "soja", safra="2023/24", programa="Funcafe", agregacao="programa"
-            )
-
-        assert len(df) == 0
-
-
-class TestCreditoRuralFilterTipoSeguro:
-    @pytest.mark.asyncio
-    async def test_filter_tipo_seguro(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(cd_tipo_seguro="9"), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24", tipo_seguro="Nao se aplica")
-
-        assert len(df) == 1
-
-    @pytest.mark.asyncio
-    async def test_filter_tipo_seguro_no_match(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(cd_tipo_seguro="9"), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24", tipo_seguro="Proagro")
-
-        assert len(df) == 0
-
-
-class TestCreditoRuralAgregacaoPrograma:
-    @pytest.mark.asyncio
-    async def test_agregacao_programa(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data_multi_programa(), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24", agregacao="programa")
-
-        assert "programa" in df.columns
-        assert len(df) == 2
-
-    @pytest.mark.asyncio
-    async def test_agregacao_programa_sums_values(self):
-        with patch.object(
-            api.client,
-            "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data_multi_programa(), "odata"),
-        ):
-            df = await api.credito_rural("soja", safra="2023/24", agregacao="programa")
-
-        pronamp = df[df["programa"] == "Pronamp"]
-        assert len(pronamp) == 1
-        assert pronamp.iloc[0]["valor"] == pytest.approx(285431200.0 + 142715600.0)
-
-
-class TestCreditoRuralFallback:
-    @pytest.mark.asyncio
-    async def test_odata_success_no_fallback(self):
-        mock_odata = AsyncMock(return_value=_mock_sicor_data())
-        with patch.object(api.client, "fetch_credito_rural", mock_odata):
-            records, source = await api.client.fetch_credito_rural_with_fallback(
-                finalidade="custeio",
-                produto_sicor="SOJA",
-                safra_sicor="2023/2024",
-            )
-
-        assert source == "odata"
-        assert len(records) == 2
-        mock_odata.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_odata_fails_bigquery_succeeds(self):
-        mock_odata = AsyncMock(
-            side_effect=SourceUnavailableError(source="bcb", last_error="HTTP 500")
+            None,
+            None,
+            sum(r["QtdCusteio"] for r in registros),
+            None,
+            "bcb_odata",
         )
-        mock_bq = AsyncMock(return_value=_mock_sicor_data())
+    ]
+    assert frame["valor"].tolist() == [pytest.approx(soma(registros))]
+    assert (
+        meta.source,
+        meta.source_url,
+        meta.source_method,
+        meta.schema_version,
+        meta.attempted_sources,
+        meta.selected_source,
+        meta.records_count,
+    ) == (
+        "bcb_credito",
+        f"{client.BASE_URL}/CusteioRegiaoUFProduto",
+        "httpx",
+        "2.0",
+        ["bcb_odata"],
+        "bcb_odata",
+        1,
+    )
+    assert meta.fetch_timestamp is not None
+    frame, meta = await api.credito_rural("soja", safra="2024/25", return_meta=True)
+    assert (meta.source_method, meta.attempted_sources, meta.selected_source) == (
+        "bigquery",
+        ["bcb_odata", "bcb_bigquery"],
+        "bcb_bigquery",
+    )
+    assert frame["fonte"].tolist() == ["bcb_bigquery"]
 
-        with (
-            patch.object(api.client, "fetch_credito_rural", mock_odata),
-            patch(
-                "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
-                mock_bq,
+
+async def test_filtros_locais_de_uf_programa_e_seguro(monkeypatch: pytest.MonkeyPatch):
+    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    pronamp_mt = [r for r in registros if r["cdPrograma"] == "0050"]
+    pronamp_go = [dict(r, nomeUF="GO") for r in pronamp_mt[:3]]
+    monkeypatch.setattr(
+        api.client,
+        "fetch_credito_rural_with_fallback",
+        AsyncMock(return_value=(registros + pronamp_go, "odata")),
+    )
+
+    por_uf = await api.credito_rural("soja", safra="2024/25", uf="MT")
+    pronamp = await api.credito_rural("soja", programa="pronamp", agregacao="programa")
+    funcafe = await api.credito_rural("soja", programa="Funcafe", agregacao="programa")
+    proagro = await api.credito_rural("soja", uf="MT", tipo_seguro="proagro TRADICIONAL")
+
+    assert valores(por_uf, ["uf"]) == [("MT",)]
+    assert por_uf["valor"].tolist() == [pytest.approx(soma(registros))]
+    assert valores(pronamp, ["uf", "programa", "cd_programa"]) == [
+        ("GO", "PRONAMP", "0050"),
+        ("MT", "PRONAMP", "0050"),
+    ]
+    assert pronamp["valor"].tolist() == pytest.approx([soma(pronamp_go), soma(pronamp_mt)])
+    assert funcafe.empty and funcafe.columns.tolist() == COLUNAS
+    assert proagro["valor"].tolist() == [
+        pytest.approx(soma([r for r in registros if r["cdTipoSeguro"] == "1"]))
+    ]
+
+
+async def test_recusas_antes_da_fonte(monkeypatch: pytest.MonkeyPatch):
+    fetch = AsyncMock()
+    monkeypatch.setattr(api.client, "fetch_credito_rural_with_fallback", fetch)
+    with collect_failures() as check:
+        for argumentos, erro, motivo in [
+            ({"uf": "XX"}, InvalidParameterError, "UF invalida: 'XX'"),
+            (
+                {"agregacao": "municipio"},
+                InvalidParameterError,
+                "agregacao inválida: 'municipio'. Use agregacao='uf', 'programa' ou 'registro'. O SICOR "
+                "publica município por produto (CusteioMunicipioProduto e InvestMunicipioProduto), "
+                "que o agrobr ainda não lê; o extra agrobr[bigquery] traz dados municipais.",
             ),
-        ):
-            records, source = await api.client.fetch_credito_rural_with_fallback(
-                finalidade="custeio",
-                produto_sicor="SOJA",
-            )
-
-        assert source == "bigquery"
-        assert len(records) == 2
-
-    @pytest.mark.asyncio
-    async def test_both_fail_raises(self):
-        mock_odata = AsyncMock(
-            side_effect=SourceUnavailableError(source="bcb", last_error="HTTP 500")
-        )
-        mock_bq = AsyncMock(
-            side_effect=SourceUnavailableError(source="bcb_bigquery", last_error="Auth failed")
-        )
-
-        with (
-            patch.object(api.client, "fetch_credito_rural", mock_odata),
-            patch(
-                "agrobr.bcb.bigquery_client.fetch_credito_rural_bigquery",
-                mock_bq,
+            (
+                {"finalidade": "industrializacao"},
+                InvalidParameterError,
+                "O SICOR não publica a industrialização por produto; use "
+                "bcb.credito_rural_total(finalidade='industrializacao'), com o total por UF",
             ),
-            pytest.raises(SourceUnavailableError, match="Ambas as fontes"),
-        ):
-            await api.client.fetch_credito_rural_with_fallback(
-                finalidade="custeio",
-            )
+            (
+                {"finalidade": "invalida"},
+                InvalidParameterError,
+                "Finalidade inválida: 'invalida'. Opções: ['custeio', 'investimento', "
+                "'comercializacao']",
+            ),
+            ({"produto": ""}, InvalidParameterError, "produto deve ser uma string não vazia"),
+            (
+                {"produto": "cafe_arabica"},
+                InvalidParameterError,
+                "O SICOR não distingue café arábica/conilon; use 'cafe'",
+            ),
+        ]:
+            with check(argumentos), levanta_exatamente(erro, match=re.escape(motivo)):
+                await api.credito_rural(**{"produto": "soja", "safra": "2023/24", **argumentos})
+    fetch.assert_not_awaited()
 
 
-class TestCreditoRuralAsPolars:
-    @pytest.mark.asyncio
-    async def test_as_polars(self):
-        pl = pytest.importorskip("polars")
-        with patch.object(
+@pytest.mark.asyncio
+async def test_as_polars():
+    pl = pytest.importorskip("polars")
+    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
             api.client,
             "fetch_credito_rural_with_fallback",
-            new_callable=AsyncMock,
-            return_value=(_mock_sicor_data(), "odata"),
-        ):
-            result = await api.credito_rural("soja", safra="2023/24", as_polars=True)
-        assert isinstance(result, pl.DataFrame)
+            AsyncMock(return_value=(registros, "odata")),
+        )
+        result = await api.credito_rural("soja", safra="2024/25", as_polars=True)
+    assert isinstance(result, pl.DataFrame)
+    assert result.columns == COLUNAS
 
 
 @pytest.mark.integration
@@ -403,4 +191,139 @@ async def test_credito_rural_live_filtra_uf_e_safra():
 
     assert not df.empty
     assert set(df["uf"]) == {"MT"}
-    assert set(df["safra"]) == {"2024/2025"}
+    assert set(df["safra"]) == {"2024/25"}
+
+
+@pytest.mark.parametrize("nulo", [None, float("nan")], ids=["none", "nan"])
+async def test_codigo_sicor_nulo_vira_nome_nulo(
+    nulo: float | None, monkeypatch: pytest.MonkeyPatch
+):
+    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    alvo = next(registro for registro in registros if registro["cdPrograma"] == "0999")
+    alvo.update(cdPrograma=nulo, cdModalidade=nulo)
+    restantes = [r for r in registros if r["cdPrograma"] == "0999"]
+    avisos = Mock()
+    monkeypatch.setattr(models, "logger", avisos)
+    monkeypatch.setattr(
+        api.client,
+        "fetch_credito_rural_with_fallback",
+        AsyncMock(return_value=(registros, "odata")),
+    )
+
+    fonte = await api.credito_rural("soja", safra="2024/25", uf="MT", agregacao="programa")
+    dataset = await datasets.credito_rural("soja", safra="2024/25", uf="MT", agregacao="programa")
+
+    for frame in (fonte, dataset):
+        nulos = frame[frame["cd_programa"].isna()]
+        sem_programa = frame[frame["cd_programa"] == "0999"]
+        assert nulos["programa"].isna().all()
+        assert (len(nulos), nulos["valor"].sum(), nulos["qtd_contratos"].sum()) == (
+            1,
+            alvo["VlCusteio"],
+            alvo["QtdCusteio"],
+        )
+        assert sem_programa["programa"].tolist() == [
+            "FINANCIAMENTO SEM VÍNCULO A PROGRAMA ESPECÍFICO"
+        ]
+        assert sem_programa["valor"].sum() == pytest.approx(
+            math.fsum(r["VlCusteio"] for r in restantes)
+        )
+        assert not frame["programa"].astype("string").str.startswith("Desconhecido").any()
+        contracts.validate_dataset(frame, "credito_rural")
+    avisados = {str(chamada.kwargs.get("codigo")) for chamada in avisos.warning.call_args_list}
+    assert not avisados & {"nan", "None", "<NA>"}
+
+
+def corpo_oraculo(nome: str) -> list[dict]:
+    recurso = next(item for item in ORACULO_MANIFEST["resources"] if item["file"] == nome)
+    corpo = (ORACULO / nome).read_bytes()
+    assert hashlib.sha256(corpo).hexdigest() == recurso["sha256"]
+    return json.loads(corpo)["value"]
+
+
+def programas_oficiais() -> dict[str, str]:
+    corpo = (ORACULO / "dominio_Programa.csv").read_bytes().decode("cp1252")
+    return {
+        codigo: descricao.split(" - ", 1)[0].replace('"', "").strip()
+        for codigo, descricao, *_vigencia in list(csv.reader(io.StringIO(corpo), delimiter=";"))[1:]
+    }
+
+
+async def test_programa_e_seguro_publicados_pela_tabela_oficial(monkeypatch: pytest.MonkeyPatch):
+    investimento = corpo_oraculo("sicor_investimento_bovinos_mt_000.json")
+    custeio = json.loads(R9_SICOR.read_bytes())["value"]
+    monkeypatch.setattr(
+        api.client,
+        "fetch_credito_rural_with_fallback",
+        AsyncMock(side_effect=[(investimento, "odata")] + [(custeio, "odata")] * 5),
+    )
+    oficiais = programas_oficiais()
+
+    investimento_fonte = await api.credito_rural(
+        "bovinos", safra="2024/25", finalidade="investimento", uf="MT", agregacao="programa"
+    )
+    custeio_dataset = await datasets.credito_rural(
+        "soja", safra="2024/25", uf="MT", agregacao="programa"
+    )
+
+    for frame, registros, campo in (
+        (investimento_fonte, investimento, "VlInvest"),
+        (custeio_dataset, custeio, "VlCusteio"),
+    ):
+        esperado: dict[str, float] = {}
+        for registro in registros:
+            nome = oficiais[registro["cdPrograma"]]
+            esperado[nome] = esperado.get(nome, 0.0) + registro[campo]
+        assert dict(zip(frame["programa"], frame["valor"], strict=True)) == pytest.approx(esperado)
+    assert {"MODERAGRO", "INOVAGRO", "RenovAgro"} <= set(investimento_fonte["programa"])
+    for consultar in (api.credito_rural, datasets.credito_rural):
+        sem_adesao = await consultar(
+            "soja", safra="2024/25", uf="MT", tipo_seguro="sem adesão a seguro"
+        )
+        proagro_mais = await consultar("soja", safra="2024/25", uf="MT", tipo_seguro="PROAGRO MAIS")
+        assert sem_adesao["valor"].sum() == pytest.approx(
+            math.fsum(r["VlCusteio"] for r in custeio if r["cdTipoSeguro"] == "9")
+        )
+        assert proagro_mais["valor"].sum() == pytest.approx(
+            math.fsum(r["VlCusteio"] for r in custeio if r["cdTipoSeguro"] == "2")
+        )
+
+
+async def test_finalidade_publicada_igual_nas_duas_fontes(monkeypatch: pytest.MonkeyPatch):
+    odata = json.loads(R9_SICOR.read_bytes())["value"]
+    bigquery = [
+        {
+            "ano_emissao": 2024,
+            "mes_emissao": 9,
+            "uf": "MT",
+            "cd_municipio": "5107248",
+            "produto": "SOJA",
+            "finalidade": "CUSTEIO",
+            "valor": 285431200.0,
+            "area_financiada": 98500.0,
+            "qtd_contratos": 1240,
+        }
+    ]
+    fetch = AsyncMock(
+        side_effect=[
+            (odata, "odata"),
+            (bigquery, "bigquery"),
+            (odata, "odata"),
+            (bigquery, "bigquery"),
+        ]
+    )
+    monkeypatch.setattr(api.client, "fetch_credito_rural_with_fallback", fetch)
+
+    publicadas = [
+        (await api.credito_rural("soja", safra="2024/25", uf="MT", finalidade=finalidade))[
+            ["finalidade", "fonte"]
+        ].values.tolist()
+        for finalidade in ["custeio", "custeio", "Custeio", "CUSTEIO"]
+    ]
+
+    assert publicadas == [
+        [["custeio", "bcb_odata"]],
+        [["custeio", "bcb_bigquery"]],
+        [["custeio", "bcb_odata"]],
+        [["custeio", "bcb_bigquery"]],
+    ]

@@ -1,0 +1,378 @@
+{
+  "source": "BCB Focus annual/monthly OData",
+  "scope": "17 original observation/selection response bodies; catalog excluded. Exact queries are preserved; defensive count/nextLink tests are synthetic.",
+  "artifacts": [
+    {
+      "case": "baseline_sdk_anual",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'PIB%20Agropecu%C3%A1ria'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc&$top=6&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'PIB%20Agropecu%C3%A1ria'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc&$top=6&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'PIB Agropecuária' and Data ge '2026-08-28'",
+        "$orderby": "Data desc",
+        "$top": "6",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:02:36.232276-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:35 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "baseline_sdk_anual_001.json",
+      "sha256": "c404b0478861858ecf333bf74dbfc4918d2505831b1a68ca1764519149dcef5b",
+      "size_bytes": 1509
+    },
+    {
+      "case": "annual_detail",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=IndicadorDetalhe%20ne%20null%20and%20IndicadorDetalhe%20ne%20''%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=2&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=IndicadorDetalhe%20ne%20null%20and%20IndicadorDetalhe%20ne%20''%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=2&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "IndicadorDetalhe ne null and IndicadorDetalhe ne '' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc,IndicadorDetalhe asc",
+        "$top": "2",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:02:37.340381-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:36 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "annual_detail_002.json",
+      "sha256": "4e4cbc3d6317931c302fda839c588b67550c35e36764f41d64d7a9029872ab31",
+      "size_bytes": 637
+    },
+    {
+      "case": "monthly_six",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=6&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=6&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "6",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:02:38.450718-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:38 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_six_003.json",
+      "sha256": "b0af6952d105ec86cc5dd010046b21409d3f3b444c561922378c92fe5d46cb63",
+      "size_bytes": 1307
+    },
+    {
+      "case": "monthly_page1",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=3&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=3&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "3",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:02:39.564006-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:39 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_page1_004.json",
+      "sha256": "9384a292ce32cb8a71739f16bc2072da941fb8c982f079eed63fbcbd58bb48f4",
+      "size_bytes": 724
+    },
+    {
+      "case": "monthly_page2",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=3&$skip=3",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=3&$skip=3",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "3",
+        "$skip": "3"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:02:40.663877-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:40 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_page2_005.json",
+      "sha256": "f4efdc6527f74b5fea7ebbaf5b05c0f9d91a9676b86a6fa6ebc19397cda8a947",
+      "size_bytes": 723
+    },
+    {
+      "case": "monthly_count",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0&$count=true",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0&$count=true",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "2",
+        "$skip": "0",
+        "$count": "true"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:02:41.804555-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:41 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_count_006.json",
+      "sha256": "8bec3adf885b991bdcc96ddaee73f575e8e7546baff79d6cf93d181eba18d09f",
+      "size_bytes": 529
+    },
+    {
+      "case": "monthly_inlinecount",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0&$inlinecount=allpages",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0&$inlinecount=allpages",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "2",
+        "$skip": "0",
+        "$inlinecount": "allpages"
+      },
+      "status": 400,
+      "captured_at": "2026-09-07T01:02:42.897586-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:42 GMT",
+        "content-length": "97",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_inlinecount_007.json",
+      "sha256": "de1819433adaf41a40aea6dce2aef7d0c2b8b06fd2170993152041a45fa32673",
+      "size_bytes": 97
+    },
+    {
+      "case": "monthly_short",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'%20and%20DataReferencia%20eq%20'08%2F2028'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=100&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'%20and%20DataReferencia%20eq%20'08%2F2028'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=100&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data eq '2026-08-28' and DataReferencia eq '08/2028'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "100",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:02:44.024293-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:02:43 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_short_008.json",
+      "sha256": "7edfb81e2aef1c9591c7deedd58638a7af0651c30829636f31fb2efea2bf60a5",
+      "size_bytes": 530
+    },
+    {
+      "case": "annual_six",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=6&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=6&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'Balança comercial' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc,IndicadorDetalhe asc",
+        "$top": "6",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:04:15.519479-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:04:15 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "annual_six_009.json",
+      "sha256": "974682f4a7dffe48211240db0879359fc3b92d30d595f130e38cf3cbd292cae4",
+      "size_bytes": 1602
+    },
+    {
+      "case": "annual_page1",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=3&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=3&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'Balança comercial' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc,IndicadorDetalhe asc",
+        "$top": "3",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:04:16.619944-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:04:16 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "annual_page1_010.json",
+      "sha256": "6cddaddf002981dd3963b57e1eb739f4d7948ea3b000f4224b5f6c92e67610d4",
+      "size_bytes": 873
+    },
+    {
+      "case": "annual_page2",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=3&$skip=3",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20eq%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=3&$skip=3",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'Balança comercial' and Data eq '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc,IndicadorDetalhe asc",
+        "$top": "3",
+        "$skip": "3"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:04:17.727175-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:04:17 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "annual_page2_011.json",
+      "sha256": "28f6aae07cddc66552640f65afc3efd612ad70ae4a87f898ce3b7ef959ce6aa1",
+      "size_bytes": 869
+    },
+    {
+      "case": "monthly_large_top_lowercase",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'ipca'%20and%20Data%20eq%20'2026-08-28'%20and%20DataReferencia%20eq%20'08%2F2028'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=1000000&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'ipca'%20and%20Data%20eq%20'2026-08-28'%20and%20DataReferencia%20eq%20'08%2F2028'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=1000000&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'ipca' and Data eq '2026-08-28' and DataReferencia eq '08/2028'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "1000000",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:04:18.838424-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:04:18 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_large_top_lowercase_012.json",
+      "sha256": "f056e7433efab50327d10de9d10ab53c95bc021ac3704e8471fb023b5d8e40d0",
+      "size_bytes": 141
+    },
+    {
+      "case": "missing_indicator",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'AGROBR_INDICADOR_INEXISTENTE_20260907'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'AGROBR_INDICADOR_INEXISTENTE_20260907'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'AGROBR_INDICADOR_INEXISTENTE_20260907'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "2",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:04:19.942717-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:04:19 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "missing_indicator_013.json",
+      "sha256": "f056e7433efab50327d10de9d10ab53c95bc021ac3704e8471fb023b5d8e40d0",
+      "size_bytes": 141
+    },
+    {
+      "case": "future_date",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20ge%20'2099-01-01'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20ge%20'2099-01-01'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=2&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data ge '2099-01-01'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "2",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:04:21.120044-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:04:20 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "future_date_014.json",
+      "sha256": "f056e7433efab50327d10de9d10ab53c95bc021ac3704e8471fb023b5d8e40d0",
+      "size_bytes": 141
+    },
+    {
+      "case": "monthly_count_segment",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais/$count?$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais/$count?$filter=Indicador%20eq%20'IPCA'%20and%20Data%20eq%20'2026-08-28'",
+      "params": {
+        "$filter": "Indicador eq 'IPCA' and Data eq '2026-08-28'"
+      },
+      "status": 403,
+      "captured_at": "2026-09-07T01:04:22.235172-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:04:21 GMT",
+        "content-type": "text/html;charset=ISO-8859-1"
+      },
+      "file": "monthly_count_segment_015.json",
+      "sha256": "a037646cc3511c096bf73e830fd771adbd90b4dfc443e2d294e34a4277dc2186",
+      "size_bytes": 299
+    },
+    {
+      "case": "monthly_api_ge",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=6&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais?$format=json&$filter=Indicador%20eq%20'IPCA'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc&$top=6&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'IPCA' and Data ge '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc",
+        "$top": "6",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:06:19.00282-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:06:18 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "monthly_api_ge_017.json",
+      "sha256": "b0af6952d105ec86cc5dd010046b21409d3f3b444c561922378c92fe5d46cb63",
+      "size_bytes": 1307
+    },
+    {
+      "case": "annual_api_ge",
+      "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=6&$skip=0",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'Balan%C3%A7a%20comercial'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=6&$skip=0",
+      "params": {
+        "$format": "json",
+        "$filter": "Indicador eq 'Balança comercial' and Data ge '2026-08-28'",
+        "$orderby": "Data desc,DataReferencia asc,baseCalculo asc,IndicadorDetalhe asc",
+        "$top": "6",
+        "$skip": "0"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T01:06:20.131049-03:00",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 04:06:19 GMT",
+        "content-type": "application/json;charset=UTF-8;odata.metadata=minimal",
+        "odata-version": "4.0"
+      },
+      "file": "annual_api_ge_018.json",
+      "sha256": "974682f4a7dffe48211240db0879359fc3b92d30d595f130e38cf3cbd292cae4",
+      "size_bytes": 1602
+    }
+  ],
+  "oracles_sha256": "22919071e901114331b754d5ed3abdea6d42fda39f5dd228c27bc646cb8ab9f8"
+}

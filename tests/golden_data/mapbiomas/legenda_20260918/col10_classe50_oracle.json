@@ -1,0 +1,491 @@
+{
+ "origem": {
+  "arquivo": "mapbiomas_col10_biome_state.xlsx",
+  "url": "https://data.mapbiomas.org/api/access/datafile/457?format=original",
+  "sha256": "3a4a4193aa75a6bc0bff788385cbff9d1e9cde3f52e9d723a5220df3ccc70dca",
+  "bytes": 24290425,
+  "capturado_em": "2026-09-18"
+ },
+ "metodo": "openpyxl data_only: cabeçalho e a primeira linha de dados com a classe 50 de cada aba; valores copiados sem edição; workbook novo",
+ "abas": {
+  "COVERAGE_10": {
+   "linha_de_origem": 68,
+   "celulas": {
+    "A": {
+     "cabecalho": "ID",
+     "valor": 66
+    },
+    "B": {
+     "cabecalho": "country",
+     "valor": "Brasil"
+    },
+    "C": {
+     "cabecalho": "biome",
+     "valor": "Amazônia"
+    },
+    "D": {
+     "cabecalho": "state",
+     "valor": "Maranhão"
+    },
+    "E": {
+     "cabecalho": "class",
+     "valor": 50
+    },
+    "F": {
+     "cabecalho": "class_level_0",
+     "valor": "Natural"
+    },
+    "G": {
+     "cabecalho": "class_level_1",
+     "valor": "2. Non Forest Natural Formation"
+    },
+    "H": {
+     "cabecalho": "class_level_2",
+     "valor": "2.4. Herbaceous Sandbank Vegetation"
+    },
+    "I": {
+     "cabecalho": "class_level_3",
+     "valor": "2.4. Herbaceous Sandbank Vegetation"
+    },
+    "J": {
+     "cabecalho": "class_level_4",
+     "valor": "2.4. Herbaceous Sandbank Vegetation"
+    },
+    "K": {
+     "cabecalho": 1985,
+     "valor": 0.8036650512695312
+    },
+    "L": {
+     "cabecalho": 1986,
+     "valor": 0.8036650512695315
+    },
+    "M": {
+     "cabecalho": 1987,
+     "valor": 0.8929424377441406
+    },
+    "N": {
+     "cabecalho": 1988,
+     "valor": 1.160797119140625
+    },
+    "O": {
+     "cabecalho": 1989,
+     "valor": 1.071539593505859
+    },
+    "P": {
+     "cabecalho": 1990,
+     "valor": 1.160806994628906
+    },
+    "Q": {
+     "cabecalho": 1991,
+     "valor": 0.8036658325195314
+    },
+    "R": {
+     "cabecalho": 1992,
+     "valor": 0.8929371032714843
+    },
+    "S": {
+     "cabecalho": 1993,
+     "valor": 0.7144122436523438
+    },
+    "T": {
+     "cabecalho": 1994,
+     "valor": 0.7144291381835939
+    },
+    "U": {
+     "cabecalho": 1995,
+     "valor": 0.8929643981933595
+    },
+    "V": {
+     "cabecalho": 1996,
+     "valor": 0.6250713867187498
+    },
+    "W": {
+     "cabecalho": 1997,
+     "valor": 0.5357925170898438
+    },
+    "X": {
+     "cabecalho": 1998,
+     "valor": 0.5357706298828124
+    },
+    "Y": {
+     "cabecalho": 1999,
+     "valor": 0.7143574829101563
+    },
+    "Z": {
+     "cabecalho": 2000,
+     "valor": 0.535754754638672
+    },
+    "AA": {
+     "cabecalho": 2001,
+     "valor": 0.5357698669433594
+    },
+    "AB": {
+     "cabecalho": 2002,
+     "valor": 0.5357643981933594
+    },
+    "AC": {
+     "cabecalho": 2003,
+     "valor": 0.625056640625
+    },
+    "AD": {
+     "cabecalho": 2004,
+     "valor": 0.6250469787597657
+    },
+    "AE": {
+     "cabecalho": 2005,
+     "valor": 0.7143401428222657
+    },
+    "AF": {
+     "cabecalho": 2006,
+     "valor": 0.8928919738769532
+    },
+    "AG": {
+     "cabecalho": 2007,
+     "valor": 0.8036355957031249
+    },
+    "AH": {
+     "cabecalho": 2008,
+     "valor": 0.982202069091797
+    },
+    "AI": {
+     "cabecalho": 2009,
+     "valor": 0.9822371459960937
+    },
+    "AJ": {
+     "cabecalho": 2010,
+     "valor": 0.8036496643066406
+    },
+    "AK": {
+     "cabecalho": 2011,
+     "valor": 0.6250648376464845
+    },
+    "AL": {
+     "cabecalho": 2012,
+     "valor": 0.8036387084960936
+    },
+    "AM": {
+     "cabecalho": 2013,
+     "valor": 0.4464655090332031
+    },
+    "AN": {
+     "cabecalho": 2014,
+     "valor": 0.5357503967285157
+    },
+    "AO": {
+     "cabecalho": 2015,
+     "valor": 0.71432890625
+    },
+    "AP": {
+     "cabecalho": 2016,
+     "valor": 0.4464559265136719
+    },
+    "AQ": {
+     "cabecalho": 2017,
+     "valor": 0.5357367553710938
+    },
+    "AR": {
+     "cabecalho": 2018,
+     "valor": 0.7143268981933594
+    },
+    "AS": {
+     "cabecalho": 2019,
+     "valor": 0.625023095703125
+    },
+    "AT": {
+     "cabecalho": 2020,
+     "valor": 0.7143360961914063
+    },
+    "AU": {
+     "cabecalho": 2021,
+     "valor": 0.6250616516113282
+    },
+    "AV": {
+     "cabecalho": 2022,
+     "valor": 0.6250653808593749
+    },
+    "AW": {
+     "cabecalho": 2023,
+     "valor": 0.5357844665527344
+    },
+    "AX": {
+     "cabecalho": 2024,
+     "valor": 0.5357844665527344
+    }
+   }
+  },
+  "TRANSITION_10": {
+   "linha_de_origem": 585,
+   "celulas": {
+    "A": {
+     "cabecalho": "ID",
+     "valor": 583
+    },
+    "B": {
+     "cabecalho": "country",
+     "valor": "Brasil"
+    },
+    "C": {
+     "cabecalho": "biome",
+     "valor": "Amazônia"
+    },
+    "D": {
+     "cabecalho": "state",
+     "valor": "Maranhão"
+    },
+    "E": {
+     "cabecalho": "class_from",
+     "valor": 0
+    },
+    "F": {
+     "cabecalho": "class_to",
+     "valor": 50
+    },
+    "G": {
+     "cabecalho": "class_level_1_from",
+     "valor": "6. Not Observed"
+    },
+    "H": {
+     "cabecalho": "class_level_2_from",
+     "valor": "6. Not Observed"
+    },
+    "I": {
+     "cabecalho": "class_level_3_from",
+     "valor": "6. Not Observed"
+    },
+    "J": {
+     "cabecalho": "class_level_4_from",
+     "valor": "6. Not Observed"
+    },
+    "K": {
+     "cabecalho": "class_level_1_to",
+     "valor": "2. Non Forest Natural Formation"
+    },
+    "L": {
+     "cabecalho": "class_level_2_to",
+     "valor": "2.4. Herbaceous Sandbank Vegetation"
+    },
+    "M": {
+     "cabecalho": "class_level_3_to",
+     "valor": "2.4. Herbaceous Sandbank Vegetation"
+    },
+    "N": {
+     "cabecalho": "class_level_4_to",
+     "valor": "2.4. Herbaceous Sandbank Vegetation"
+    },
+    "O": {
+     "cabecalho": "p1985_1986",
+     "valor": 0
+    },
+    "P": {
+     "cabecalho": "p1986_1987",
+     "valor": 0
+    },
+    "Q": {
+     "cabecalho": "p1987_1988",
+     "valor": 0
+    },
+    "R": {
+     "cabecalho": "p1988_1989",
+     "valor": 0
+    },
+    "S": {
+     "cabecalho": "p1989_1990",
+     "valor": 0
+    },
+    "T": {
+     "cabecalho": "p1990_1991",
+     "valor": 0.08928082885742188
+    },
+    "U": {
+     "cabecalho": "p1991_1992",
+     "valor": 0
+    },
+    "V": {
+     "cabecalho": "p1992_1993",
+     "valor": 0
+    },
+    "W": {
+     "cabecalho": "p1993_1994",
+     "valor": 0
+    },
+    "X": {
+     "cabecalho": "p1994_1995",
+     "valor": 0
+    },
+    "Y": {
+     "cabecalho": "p1995_1996",
+     "valor": 0
+    },
+    "Z": {
+     "cabecalho": "p1996_1997",
+     "valor": 0
+    },
+    "AA": {
+     "cabecalho": "p1997_1998",
+     "valor": 0
+    },
+    "AB": {
+     "cabecalho": "p1998_1999",
+     "valor": 0
+    },
+    "AC": {
+     "cabecalho": "p1999_2000",
+     "valor": 0
+    },
+    "AD": {
+     "cabecalho": "p2000_2001",
+     "valor": 0
+    },
+    "AE": {
+     "cabecalho": "p2001_2002",
+     "valor": 0
+    },
+    "AF": {
+     "cabecalho": "p2002_2003",
+     "valor": 0
+    },
+    "AG": {
+     "cabecalho": "p2003_2004",
+     "valor": 0
+    },
+    "AH": {
+     "cabecalho": "p2004_2005",
+     "valor": 0
+    },
+    "AI": {
+     "cabecalho": "p2005_2006",
+     "valor": 0
+    },
+    "AJ": {
+     "cabecalho": "p2006_2007",
+     "valor": 0
+    },
+    "AK": {
+     "cabecalho": "p2007_2008",
+     "valor": 0
+    },
+    "AL": {
+     "cabecalho": "p2008_2009",
+     "valor": 0.08929315795898438
+    },
+    "AM": {
+     "cabecalho": "p2009_2010",
+     "valor": 0
+    },
+    "AN": {
+     "cabecalho": "p2010_2011",
+     "valor": 0
+    },
+    "AO": {
+     "cabecalho": "p2011_2012",
+     "valor": 0
+    },
+    "AP": {
+     "cabecalho": "p2012_2013",
+     "valor": 0
+    },
+    "AQ": {
+     "cabecalho": "p2013_2014",
+     "valor": 0.08928082885742188
+    },
+    "AR": {
+     "cabecalho": "p2014_2015",
+     "valor": 0.0892907958984375
+    },
+    "AS": {
+     "cabecalho": "p2015_2016",
+     "valor": 0
+    },
+    "AT": {
+     "cabecalho": "p2016_2017",
+     "valor": 0
+    },
+    "AU": {
+     "cabecalho": "p2017_2018",
+     "valor": 0
+    },
+    "AV": {
+     "cabecalho": "p2018_2019",
+     "valor": 0
+    },
+    "AW": {
+     "cabecalho": "p2019_2020",
+     "valor": 0
+    },
+    "AX": {
+     "cabecalho": "p2020_2021",
+     "valor": 0
+    },
+    "AY": {
+     "cabecalho": "p2021_2022",
+     "valor": 0
+    },
+    "AZ": {
+     "cabecalho": "p2022_2023",
+     "valor": 0
+    },
+    "BA": {
+     "cabecalho": "p2023_2024",
+     "valor": 0
+    },
+    "BB": {
+     "cabecalho": "p1985_2024",
+     "valor": 0.08929512939453126
+    },
+    "BC": {
+     "cabecalho": "p1985_1990",
+     "valor": 0
+    },
+    "BD": {
+     "cabecalho": "p1990_1995",
+     "valor": 0
+    },
+    "BE": {
+     "cabecalho": "p1995_2000",
+     "valor": 0
+    },
+    "BF": {
+     "cabecalho": "p2000_2005",
+     "valor": 0
+    },
+    "BG": {
+     "cabecalho": "p2005_2010",
+     "valor": 0
+    },
+    "BH": {
+     "cabecalho": "p2010_2015",
+     "valor": 0
+    },
+    "BI": {
+     "cabecalho": "p2015_2020",
+     "valor": 0
+    },
+    "BJ": {
+     "cabecalho": "p2020_2024",
+     "valor": 0
+    },
+    "BK": {
+     "cabecalho": "p1985_2000",
+     "valor": 0
+    },
+    "BL": {
+     "cabecalho": "p2000_2024",
+     "valor": 0.08929512939453126
+    },
+    "BM": {
+     "cabecalho": "p1990_2000",
+     "valor": 0.08928082885742188
+    },
+    "BN": {
+     "cabecalho": "p2000_2010",
+     "valor": 0
+    },
+    "BO": {
+     "cabecalho": "p2010_2020",
+     "valor": 0
+    }
+   }
+  }
+ },
+ "recorte_sha256": "d0cc7a048758ba96be7702d0274b94a4503a9839b9165b500e7981cc2499c862"
+}

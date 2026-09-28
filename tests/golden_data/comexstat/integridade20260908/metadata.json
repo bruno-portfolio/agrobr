@@ -1,0 +1,796 @@
+{
+  "created_at": "2026-09-08T08:48:45.542664+00:00",
+  "real_http": 0,
+  "generator_sha256": "e7ab8e5df497aee31c35e46695ba4fa9940e9186b9e2c21714839f0410415f97",
+  "requested_candidate_entries": 24,
+  "requested_scenarios": 20,
+  "unique_requested_ordinals_reproduced": 41,
+  "offsets": "zero-based bytes, end exclusive; data record ordinals one based, header excluded",
+  "license": {
+    "classification_in_project": "livre",
+    "reference": "docs/licenses.md",
+    "reference_sha256": "821c3a8235f64fbd551fdf3e30c1c098b6b64dfdffe4de4e654f0ea48c4880d1",
+    "source": "MDIC/SECEX public trade statistics",
+    "qualification": "Existing project classification; no additional per-file license text or immutability inferred from website footer."
+  },
+  "artifacts": {
+    "EXP_2025.csv": {
+      "sha256": "9acd8fb40ff67563dbcefd0453dc2b51bcb7d39c2191d0cc6846b9ed0c963c13",
+      "size_bytes": 942,
+      "source_path": "request_001.body",
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_2025.csv",
+      "source_sha256": "34571d3fb125db0423f4a0785e7b40c26c815a90ccfa9783e457a1c34a96b96c",
+      "source_size_bytes": 113715007,
+      "acquired_started_at": "2026-09-08T08:33:23.184664+00:00",
+      "acquired_finished_at": "2026-09-08T08:33:30.363758+00:00",
+      "source_receipt_path": "request_001.json",
+      "source_receipt_sha256": "deb04ee672a7b1077db7183813006bdea6479d25227c5064abeaf3761f66a4b8",
+      "header_exact": "\"CO_ANO\";\"CO_MES\";\"CO_NCM\";\"CO_UNID\";\"CO_PAIS\";\"SG_UF_NCM\";\"CO_VIA\";\"CO_URF\";\"QT_ESTAT\";\"KG_LIQUIDO\";\"VL_FOB\"\r\n",
+      "header_size_bytes": 111,
+      "records": [
+        {
+          "source_ordinal": 2,
+          "source_byte_start": 179,
+          "source_byte_end": 253,
+          "fixture_byte_start": 111,
+          "fixture_byte_end": 185,
+          "raw_line_sha256": "f1534b5ab7a30d02f520135aa2ca33b860129bcb7d3e58b1b4f07db3c3dd22e4",
+          "reasons": [
+            "ncm_leading_zero"
+          ]
+        },
+        {
+          "source_ordinal": 12,
+          "source_byte_start": 865,
+          "source_byte_end": 927,
+          "fixture_byte_start": 185,
+          "fixture_byte_end": 247,
+          "raw_line_sha256": "458f880b85e64c1a65d6527f331a6684e5628714ca2811b3f5b44e37ce226e16",
+          "reasons": [
+            "QT_ESTAT_zero",
+            "KG_LIQUIDO_zero"
+          ]
+        },
+        {
+          "source_ordinal": 45,
+          "source_byte_start": 3063,
+          "source_byte_end": 3131,
+          "fixture_byte_start": 247,
+          "fixture_byte_end": 315,
+          "raw_line_sha256": "cbd20b9e58a798fff3f886e506489dd7f3358d651fa9646f09720f187efeeb4e",
+          "reasons": [
+            "cafe_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 80,
+          "source_byte_start": 5415,
+          "source_byte_end": 5476,
+          "fixture_byte_start": 315,
+          "fixture_byte_end": 376,
+          "raw_line_sha256": "a43c89c5c690728d2742faa2bdf17c289e26545bf76eccb2fad6b9ec7eadfb41",
+          "reasons": [
+            "VL_FOB_zero"
+          ]
+        },
+        {
+          "source_ordinal": 124,
+          "source_byte_start": 8349,
+          "source_byte_end": 8426,
+          "fixture_byte_start": 376,
+          "fixture_byte_end": 453,
+          "raw_line_sha256": "53d6b54b6b362f8d34fda0ec06ed27fbc4cd9e7497f6a6c84de8798a51c1ad26",
+          "reasons": [
+            "algodao_candidate",
+            "first_literal_ncm_in_alias_520100"
+          ]
+        },
+        {
+          "source_ordinal": 412,
+          "source_byte_start": 27833,
+          "source_byte_end": 27914,
+          "fixture_byte_start": 453,
+          "fixture_byte_end": 534,
+          "raw_line_sha256": "ec3704fb7b34bd2abdfa9a72aa18450428fdfb1d96b268d1f3b7c02c79901ba5",
+          "reasons": [
+            "soja_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 460,
+          "source_byte_start": 31092,
+          "source_byte_end": 31154,
+          "fixture_byte_start": 534,
+          "fixture_byte_end": 596,
+          "raw_line_sha256": "6709b7884bb043c598eb2d3e0a07f1f000dce434b049d957ae1eb17838825b1d",
+          "reasons": [
+            "special_uf"
+          ]
+        },
+        {
+          "source_ordinal": 1205,
+          "source_byte_start": 81177,
+          "source_byte_end": 81253,
+          "fixture_byte_start": 596,
+          "fixture_byte_end": 672,
+          "raw_line_sha256": "de6fc801598a32076e12d60b228f153602f39e9b6e82fb7d36ee4a2c16ae6173",
+          "reasons": [
+            "oleo_soja_candidate",
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 1361,
+          "source_byte_start": 91573,
+          "source_byte_end": 91651,
+          "fixture_byte_start": 672,
+          "fixture_byte_end": 750,
+          "raw_line_sha256": "a20faec4114ff58470a15c7e3f4a7a40008623ec1b05eafd2c2f8cb0aae3df26",
+          "reasons": [
+            "fertilizantes_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 1503,
+          "source_byte_start": 101136,
+          "source_byte_end": 101199,
+          "fixture_byte_start": 750,
+          "fixture_byte_end": 813,
+          "raw_line_sha256": "b620a03e90d4a5e3a4bd50487ebc2a211093509334d21b275293db7c433d16ac",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 5203,
+          "source_byte_start": 348367,
+          "source_byte_end": 348432,
+          "fixture_byte_start": 813,
+          "fixture_byte_end": 878,
+          "raw_line_sha256": "bad7536659219f6ebeb151674eae0087603378042afc028555c9b400c3947a21",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 88576,
+          "source_byte_start": 5903568,
+          "source_byte_end": 5903632,
+          "fixture_byte_start": 878,
+          "fixture_byte_end": 942,
+          "raw_line_sha256": "1951e0113a153685cb883b67c0083802d18fc044cd229443d07d0575de34208d",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        }
+      ],
+      "alias_nc_ms_observed": {
+        "1507": [
+          "15071000",
+          "15079011",
+          "15079019",
+          "15079090"
+        ],
+        "520100": [
+          "52010020"
+        ]
+      },
+      "qualification": "Selected complete source records in original relative order, exact byte slices; not a complete filtered population."
+    },
+    "EXP_2026.csv": {
+      "sha256": "f7bf430ab8aa9b1d6fedbf74794c51c52bc5db8ba5942b593826f865bc2a7137",
+      "size_bytes": 1009,
+      "source_path": "request_002.body",
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_2026.csv",
+      "source_sha256": "ef6c4fc3d62e00d9917d2f6c4f1f82382475284c3ad05016c47cb260eaa7b042",
+      "source_size_bytes": 75055366,
+      "acquired_started_at": "2026-09-08T08:33:30.375709+00:00",
+      "acquired_finished_at": "2026-09-08T08:33:35.118114+00:00",
+      "source_receipt_path": "request_002.json",
+      "source_receipt_sha256": "167b503dc9050aca583538a375ffa37af1198f586d6f119edf74da933aa3715e",
+      "header_exact": "\"CO_ANO\";\"CO_MES\";\"CO_NCM\";\"CO_UNID\";\"CO_PAIS\";\"SG_UF_NCM\";\"CO_VIA\";\"CO_URF\";\"QT_ESTAT\";\"KG_LIQUIDO\";\"VL_FOB\"\r\n",
+      "header_size_bytes": 111,
+      "records": [
+        {
+          "source_ordinal": 1,
+          "source_byte_start": 111,
+          "source_byte_end": 184,
+          "fixture_byte_start": 111,
+          "fixture_byte_end": 184,
+          "raw_line_sha256": "6a64b50ab3b6fefecab0a7cf9b0b1689a7bb5591e2a5f08437b8a3997707ae7b",
+          "reasons": [
+            "ncm_leading_zero"
+          ]
+        },
+        {
+          "source_ordinal": 11,
+          "source_byte_start": 804,
+          "source_byte_end": 869,
+          "fixture_byte_start": 184,
+          "fixture_byte_end": 249,
+          "raw_line_sha256": "9f9763b8bdd9c192684f6919d631cd98cfd67706f4cb9f4a76160fb668ff72c2",
+          "reasons": [
+            "cafe_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 26,
+          "source_byte_start": 1842,
+          "source_byte_end": 1906,
+          "fixture_byte_start": 249,
+          "fixture_byte_end": 313,
+          "raw_line_sha256": "bb007c96ed09f17d96749b22312ff5a6499d85c77d1f86fecb0091dcad614dec",
+          "reasons": [
+            "KG_LIQUIDO_zero"
+          ]
+        },
+        {
+          "source_ordinal": 31,
+          "source_byte_start": 2177,
+          "source_byte_end": 2238,
+          "fixture_byte_start": 313,
+          "fixture_byte_end": 374,
+          "raw_line_sha256": "f56a1742a523d2b5cd0941779ff843cd09d62f992174845b5cc776648ea49877",
+          "reasons": [
+            "QT_ESTAT_zero"
+          ]
+        },
+        {
+          "source_ordinal": 171,
+          "source_byte_start": 11591,
+          "source_byte_end": 11652,
+          "fixture_byte_start": 374,
+          "fixture_byte_end": 435,
+          "raw_line_sha256": "c282a792ff94eb72456db12887fde4dbbd1171bf39c11cba61a15dbbae4734bc",
+          "reasons": [
+            "VL_FOB_zero"
+          ]
+        },
+        {
+          "source_ordinal": 237,
+          "source_byte_start": 16008,
+          "source_byte_end": 16084,
+          "fixture_byte_start": 435,
+          "fixture_byte_end": 511,
+          "raw_line_sha256": "fb0213586630303ce6f025e42b6aad2be4564789e6f11557a2e35c1f0923bde9",
+          "reasons": [
+            "algodao_candidate",
+            "first_literal_ncm_in_alias_520100"
+          ]
+        },
+        {
+          "source_ordinal": 376,
+          "source_byte_start": 25359,
+          "source_byte_end": 25423,
+          "fixture_byte_start": 511,
+          "fixture_byte_end": 575,
+          "raw_line_sha256": "885a6367920c0f962bbbbeba0264daf84a10a6046611b5c2cacfd54348e787a6",
+          "reasons": [
+            "special_uf"
+          ]
+        },
+        {
+          "source_ordinal": 471,
+          "source_byte_start": 31800,
+          "source_byte_end": 31881,
+          "fixture_byte_start": 575,
+          "fixture_byte_end": 656,
+          "raw_line_sha256": "4a3a4a6adc8900931a46d0886ecc76188eb97a688ad12ad38935a0e89a1877a4",
+          "reasons": [
+            "soja_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 925,
+          "source_byte_start": 62299,
+          "source_byte_end": 62378,
+          "fixture_byte_start": 656,
+          "fixture_byte_end": 735,
+          "raw_line_sha256": "84872a38f0c4a80f79f8ef527d71cfaea32c41c6261911d62368b88e489537e6",
+          "reasons": [
+            "oleo_soja_candidate",
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 1502,
+          "source_byte_start": 101029,
+          "source_byte_end": 101095,
+          "fixture_byte_start": 735,
+          "fixture_byte_end": 801,
+          "raw_line_sha256": "6e7a5bafb4134b1bcc777ede882fd6ea714b0943ca7f40d48b2d5b35f71ebdca",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 2691,
+          "source_byte_start": 180537,
+          "source_byte_end": 180611,
+          "fixture_byte_start": 801,
+          "fixture_byte_end": 875,
+          "raw_line_sha256": "12d816e429abf9918c430a3fb4902b68a46867082ec160b82242645c101b99a6",
+          "reasons": [
+            "fertilizantes_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 5271,
+          "source_byte_start": 353007,
+          "source_byte_end": 353071,
+          "fixture_byte_start": 875,
+          "fixture_byte_end": 939,
+          "raw_line_sha256": "93679cd098bd04010919ac3d3570b500af2a2a2ff81a25fb3283d09a7b264576",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 167971,
+          "source_byte_start": 11174255,
+          "source_byte_end": 11174325,
+          "fixture_byte_start": 939,
+          "fixture_byte_end": 1009,
+          "raw_line_sha256": "e6198f0d80caf90d17593ec6c36a522b1fdc0788e6324bb4de1126db02bb9cb6",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        }
+      ],
+      "alias_nc_ms_observed": {
+        "1507": [
+          "15071000",
+          "15079011",
+          "15079019",
+          "15079090"
+        ],
+        "520100": [
+          "52010020"
+        ]
+      },
+      "qualification": "Selected complete source records in original relative order, exact byte slices; not a complete filtered population."
+    },
+    "IMP_2025.csv": {
+      "sha256": "3921a0412a0d288d35d4e9435166912d4615849b236702611018fb4a9b009b17",
+      "size_bytes": 1288,
+      "source_path": "request_003.body",
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/IMP_2025.csv",
+      "source_sha256": "b2bca7c775bf361ddb9fb3f3807e05504e9d5f7dd163e0c7a3b93e59aa81628c",
+      "source_size_bytes": 175549886,
+      "acquired_started_at": "2026-09-08T08:33:35.128248+00:00",
+      "acquired_finished_at": "2026-09-08T08:33:46.398139+00:00",
+      "source_receipt_path": "request_003.json",
+      "source_receipt_sha256": "8c618cb5bf3ce6bcbd636372454e09ee5466d5fed1bd7f61169d05e2f506b594",
+      "header_exact": "\"CO_ANO\";\"CO_MES\";\"CO_NCM\";\"CO_UNID\";\"CO_PAIS\";\"SG_UF_NCM\";\"CO_VIA\";\"CO_URF\";\"QT_ESTAT\";\"KG_LIQUIDO\";\"VL_FOB\";\"VL_FRETE\";\"VL_SEGURO\"\r\n",
+      "header_size_bytes": 134,
+      "records": [
+        {
+          "source_ordinal": 2,
+          "source_byte_start": 227,
+          "source_byte_end": 301,
+          "fixture_byte_start": 134,
+          "fixture_byte_end": 208,
+          "raw_line_sha256": "5bfbae78244b1ae7777dd1b2f3db31d36ab02231c83e0f57b522d22b0dd83c6b",
+          "reasons": [
+            "VL_SEGURO_zero"
+          ]
+        },
+        {
+          "source_ordinal": 15,
+          "source_byte_start": 1252,
+          "source_byte_end": 1319,
+          "fixture_byte_start": 208,
+          "fixture_byte_end": 275,
+          "raw_line_sha256": "ffff9b022ad851cce8d7067e3333a222fed74560a0ab4c3dc83125afdf6cbe98",
+          "reasons": [
+            "KG_LIQUIDO_zero",
+            "VL_FRETE_zero"
+          ]
+        },
+        {
+          "source_ordinal": 50,
+          "source_byte_start": 3931,
+          "source_byte_end": 4016,
+          "fixture_byte_start": 275,
+          "fixture_byte_end": 360,
+          "raw_line_sha256": "39b8438418bfe253db014388def21efb7800b72e1f46e147717932f1ee033d35",
+          "reasons": [
+            "ncm_leading_zero"
+          ]
+        },
+        {
+          "source_ordinal": 54,
+          "source_byte_start": 4246,
+          "source_byte_end": 4315,
+          "fixture_byte_start": 360,
+          "fixture_byte_end": 429,
+          "raw_line_sha256": "aa760580e294a001435cde0058a33cd144abf6fd815b1f22034842cf33df32f9",
+          "reasons": [
+            "QT_ESTAT_zero"
+          ]
+        },
+        {
+          "source_ordinal": 907,
+          "source_byte_start": 68754,
+          "source_byte_end": 68848,
+          "fixture_byte_start": 429,
+          "fixture_byte_end": 523,
+          "raw_line_sha256": "82aa7b46ef67170c1b4409a1fecb6d0644fb0bfdc7f0b449080a347013e6c1f4",
+          "reasons": [
+            "fertilizantes_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 1125,
+          "source_byte_start": 85480,
+          "source_byte_end": 85545,
+          "fixture_byte_start": 523,
+          "fixture_byte_end": 588,
+          "raw_line_sha256": "a1d1bd24151a64a57242c85df40f9e1db20a953280ac3cf21b215476f3e0ce14",
+          "reasons": [
+            "VL_FOB_zero"
+          ]
+        },
+        {
+          "source_ordinal": 3767,
+          "source_byte_start": 285574,
+          "source_byte_end": 285653,
+          "fixture_byte_start": 588,
+          "fixture_byte_end": 667,
+          "raw_line_sha256": "b5bac5e38c9be8f6e42d5732e011a5db8cd31984d0dad1c0b8eb9aae36f7c77f",
+          "reasons": [
+            "cafe_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 13820,
+          "source_byte_start": 1041736,
+          "source_byte_end": 1041819,
+          "fixture_byte_start": 667,
+          "fixture_byte_end": 750,
+          "raw_line_sha256": "5042bc8f6b4e50c8ae5feb5b8c60b9210ea08ef3b7eb225eaee13b8dce72dd26",
+          "reasons": [
+            "oleo_soja_candidate",
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 20106,
+          "source_byte_start": 1510896,
+          "source_byte_end": 1510982,
+          "fixture_byte_start": 750,
+          "fixture_byte_end": 836,
+          "raw_line_sha256": "39726699f5311662acff9ee0d08d21b25d2b39b2ce9c51e775037b71656195de",
+          "reasons": [
+            "soja_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 23118,
+          "source_byte_start": 1735324,
+          "source_byte_end": 1735397,
+          "fixture_byte_start": 836,
+          "fixture_byte_end": 909,
+          "raw_line_sha256": "329c29ca1c4de8614c1226f5eca38d1566dde3c92ea0dd814642f95b2900b145",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 25179,
+          "source_byte_start": 1888356,
+          "source_byte_end": 1888429,
+          "fixture_byte_start": 909,
+          "fixture_byte_end": 982,
+          "raw_line_sha256": "7bf137ab0b1db758052cc446189824f297f6e3dcecd6f5ba80ac15553a4de308",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 28488,
+          "source_byte_start": 2133766,
+          "source_byte_end": 2133838,
+          "fixture_byte_start": 982,
+          "fixture_byte_end": 1054,
+          "raw_line_sha256": "2a8721cb199b048ca004af3734ce819aaf5599950a7746ac08e7d517fae63eab",
+          "reasons": [
+            "special_uf"
+          ]
+        },
+        {
+          "source_ordinal": 30308,
+          "source_byte_start": 2268600,
+          "source_byte_end": 2268678,
+          "fixture_byte_start": 1054,
+          "fixture_byte_end": 1132,
+          "raw_line_sha256": "8a45722f31ccb3bdfc004525b53e4565024b086896ffdeb8067a870d620b1144",
+          "reasons": [
+            "algodao_candidate",
+            "first_literal_ncm_in_alias_520100"
+          ]
+        },
+        {
+          "source_ordinal": 141425,
+          "source_byte_start": 10383030,
+          "source_byte_end": 10383108,
+          "fixture_byte_start": 1132,
+          "fixture_byte_end": 1210,
+          "raw_line_sha256": "dab88c798b8b62bdfb6814387049f986c68dc2ebeae207c0a3a94e761992d2a6",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 696697,
+          "source_byte_start": 51088755,
+          "source_byte_end": 51088833,
+          "fixture_byte_start": 1210,
+          "fixture_byte_end": 1288,
+          "raw_line_sha256": "9eb29f1d94fc89159b3791364edcb64473de3f881d1ad614bc64f0c8a6c46e2d",
+          "reasons": [
+            "first_literal_ncm_in_alias_520100"
+          ]
+        }
+      ],
+      "alias_nc_ms_observed": {
+        "1507": [
+          "15071000",
+          "15079011",
+          "15079019",
+          "15079090"
+        ],
+        "520100": [
+          "52010020",
+          "52010090"
+        ]
+      },
+      "qualification": "Selected complete source records in original relative order, exact byte slices; not a complete filtered population."
+    },
+    "IMP_2026.csv": {
+      "sha256": "e73c0b65e51b187dd158985358d2cae272e685852bf3c16b0d1effc0de8c07c9",
+      "size_bytes": 1268,
+      "source_path": "request_004.body",
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/IMP_2026.csv",
+      "source_sha256": "2caa195ab4d85ee14a6da1827f50d87dc20ee75c7f9224d6eaa295170a670449",
+      "source_size_bytes": 120181098,
+      "acquired_started_at": "2026-09-08T08:33:46.408078+00:00",
+      "acquired_finished_at": "2026-09-08T08:33:53.854041+00:00",
+      "source_receipt_path": "request_004.json",
+      "source_receipt_sha256": "2b62498914f97f80a547805ca6add7cbcc3499693d0e60411928933219c74053",
+      "header_exact": "\"CO_ANO\";\"CO_MES\";\"CO_NCM\";\"CO_UNID\";\"CO_PAIS\";\"SG_UF_NCM\";\"CO_VIA\";\"CO_URF\";\"QT_ESTAT\";\"KG_LIQUIDO\";\"VL_FOB\";\"VL_FRETE\";\"VL_SEGURO\"\r\n",
+      "header_size_bytes": 134,
+      "records": [
+        {
+          "source_ordinal": 5,
+          "source_byte_start": 460,
+          "source_byte_end": 530,
+          "fixture_byte_start": 134,
+          "fixture_byte_end": 204,
+          "raw_line_sha256": "4c437c288cb7ffd37b5a2facfb0a22b020feff5de6032be67dedda7379ad2215",
+          "reasons": [
+            "VL_SEGURO_zero"
+          ]
+        },
+        {
+          "source_ordinal": 21,
+          "source_byte_start": 1682,
+          "source_byte_end": 1750,
+          "fixture_byte_start": 204,
+          "fixture_byte_end": 272,
+          "raw_line_sha256": "74fb158fa02d545e2429118997ddedf4d35afe51de14f7180c7d44beddeeb658",
+          "reasons": [
+            "QT_ESTAT_zero",
+            "KG_LIQUIDO_zero"
+          ]
+        },
+        {
+          "source_ordinal": 25,
+          "source_byte_start": 1983,
+          "source_byte_end": 2052,
+          "fixture_byte_start": 272,
+          "fixture_byte_end": 341,
+          "raw_line_sha256": "a5b164f625056fea6e3bd82d4210d411061dd352c53f8f530f32996ec04066b4",
+          "reasons": [
+            "VL_FRETE_zero"
+          ]
+        },
+        {
+          "source_ordinal": 31,
+          "source_byte_start": 2428,
+          "source_byte_end": 2512,
+          "fixture_byte_start": 341,
+          "fixture_byte_end": 425,
+          "raw_line_sha256": "c05671fe6f8268f5078cad213744996437fa1da1c5df43d68df345411f44f898",
+          "reasons": [
+            "ncm_leading_zero"
+          ]
+        },
+        {
+          "source_ordinal": 177,
+          "source_byte_start": 13578,
+          "source_byte_end": 13643,
+          "fixture_byte_start": 425,
+          "fixture_byte_end": 490,
+          "raw_line_sha256": "5f2f15a7e9e72141e0725913edbf07a41c876d9c6a037a1157943acf8775a9ba",
+          "reasons": [
+            "VL_FOB_zero"
+          ]
+        },
+        {
+          "source_ordinal": 1483,
+          "source_byte_start": 112922,
+          "source_byte_end": 113009,
+          "fixture_byte_start": 490,
+          "fixture_byte_end": 577,
+          "raw_line_sha256": "19748412f8a26ad4219f65a3718effe82d62a5ef03a9b30a7ed89cc9610c71be",
+          "reasons": [
+            "fertilizantes_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 1733,
+          "source_byte_start": 132083,
+          "source_byte_end": 132162,
+          "fixture_byte_start": 577,
+          "fixture_byte_end": 656,
+          "raw_line_sha256": "f8c25455f31c432756af40811bbad9d7b05b70f387ccd51483574aec91e4eb9b",
+          "reasons": [
+            "cafe_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 5616,
+          "source_byte_start": 425847,
+          "source_byte_end": 425935,
+          "fixture_byte_start": 656,
+          "fixture_byte_end": 744,
+          "raw_line_sha256": "6b93e89857e945b0bad3116de401044bac8880da6123616f6e492c4152e01060",
+          "reasons": [
+            "oleo_soja_candidate",
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 8625,
+          "source_byte_start": 651634,
+          "source_byte_end": 651726,
+          "fixture_byte_start": 744,
+          "fixture_byte_end": 836,
+          "raw_line_sha256": "9588ec440891dea04ef66c8d3cad92a3c80a8d60688e4e271e9f045ede7d8975",
+          "reasons": [
+            "soja_candidate"
+          ]
+        },
+        {
+          "source_ordinal": 37473,
+          "source_byte_start": 2782018,
+          "source_byte_end": 2782091,
+          "fixture_byte_start": 836,
+          "fixture_byte_end": 909,
+          "raw_line_sha256": "57b63eac0fbe28a155782b1a4c726611985a9cc45a3c5612e0f310e199dbc213",
+          "reasons": [
+            "algodao_candidate",
+            "first_literal_ncm_in_alias_520100"
+          ]
+        },
+        {
+          "source_ordinal": 67686,
+          "source_byte_start": 4979482,
+          "source_byte_end": 4979554,
+          "fixture_byte_start": 909,
+          "fixture_byte_end": 981,
+          "raw_line_sha256": "42e2930268890112fce62d78e6c5b596c8150b1f76bb39574de253bce761f180",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 74061,
+          "source_byte_start": 5440776,
+          "source_byte_end": 5440842,
+          "fixture_byte_start": 981,
+          "fixture_byte_end": 1047,
+          "raw_line_sha256": "d8dc4658cff89884d1b9edf850dbf819fb08eca88542b57c1a688ca1fbe197ed",
+          "reasons": [
+            "special_uf"
+          ]
+        },
+        {
+          "source_ordinal": 274524,
+          "source_byte_start": 20105355,
+          "source_byte_end": 20105429,
+          "fixture_byte_start": 1047,
+          "fixture_byte_end": 1121,
+          "raw_line_sha256": "13f7d5212a32062836e00ec005527320fac3be9717a7a86c0248771a9642d1de",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        },
+        {
+          "source_ordinal": 289086,
+          "source_byte_start": 21195094,
+          "source_byte_end": 21195165,
+          "fixture_byte_start": 1121,
+          "fixture_byte_end": 1192,
+          "raw_line_sha256": "3a68a32c9b5e98f7fb13184406659ff6fdeb7696607b362ab05a56df7d013eee",
+          "reasons": [
+            "first_literal_ncm_in_alias_520100"
+          ]
+        },
+        {
+          "source_ordinal": 619192,
+          "source_byte_start": 45358864,
+          "source_byte_end": 45358940,
+          "fixture_byte_start": 1192,
+          "fixture_byte_end": 1268,
+          "raw_line_sha256": "7195980ec9ffbc5c975a036d3d793cb8d6c44533129ede12d93f1c53b62bd9d5",
+          "reasons": [
+            "first_literal_ncm_in_alias_1507"
+          ]
+        }
+      ],
+      "alias_nc_ms_observed": {
+        "1507": [
+          "15071000",
+          "15079011",
+          "15079019",
+          "15079090"
+        ],
+        "520100": [
+          "52010020",
+          "52010090"
+        ]
+      },
+      "qualification": "Selected complete source records in original relative order, exact byte slices; not a complete filtered population."
+    },
+    "NCM_UNIDADE.csv": {
+      "sha256": "d684a44d1c1abadc5e82aa7f632dcce3ec55af7f2e313c77e4830020742267bb",
+      "size_bytes": 486,
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/tabelas/NCM_UNIDADE.csv",
+      "source_sha256": "d684a44d1c1abadc5e82aa7f632dcce3ec55af7f2e313c77e4830020742267bb",
+      "source_path": "request_001.body",
+      "acquired_started_at": "2026-09-08T08:24:01.432814+00:00",
+      "acquired_finished_at": "2026-09-08T08:24:01.591631+00:00",
+      "source_receipt_path": "request_001.json",
+      "source_receipt_sha256": "78c9921448da8a390b9522105bd42480a6098a7ff9b885825660941274544cdc",
+      "qualification": "Complete dictionary body, byte-for-byte copy with original encoding and ordering."
+    },
+    "PAIS.csv": {
+      "sha256": "da1c1aab0061173d4b5c8f51f79dd9c1083259b1a9ab17b818127d6be3eda07d",
+      "size_bytes": 17404,
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/tabelas/PAIS.csv",
+      "source_sha256": "da1c1aab0061173d4b5c8f51f79dd9c1083259b1a9ab17b818127d6be3eda07d",
+      "source_path": "request_002.body",
+      "acquired_started_at": "2026-09-08T08:24:01.612343+00:00",
+      "acquired_finished_at": "2026-09-08T08:24:01.678018+00:00",
+      "source_receipt_path": "request_002.json",
+      "source_receipt_sha256": "2342d7455cafd4d7dc7005b63541bc0b0b899192cd35dc1b5061601692069ae3",
+      "qualification": "Complete dictionary body, byte-for-byte copy with original encoding and ordering."
+    },
+    "VIA.csv": {
+      "sha256": "e8ab4418e369cefc80facd21f27e0bb9c6184974b01b36a85fa463a1affa7698",
+      "size_bytes": 369,
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/tabelas/VIA.csv",
+      "source_sha256": "e8ab4418e369cefc80facd21f27e0bb9c6184974b01b36a85fa463a1affa7698",
+      "source_path": "request_003.body",
+      "acquired_started_at": "2026-09-08T08:24:01.699869+00:00",
+      "acquired_finished_at": "2026-09-08T08:24:01.737538+00:00",
+      "source_receipt_path": "request_003.json",
+      "source_receipt_sha256": "92802c6f59e2c08d3f992777433d722170f444533b5ec83775e11625f01f4b5f",
+      "qualification": "Complete dictionary body, byte-for-byte copy with original encoding and ordering."
+    },
+    "URF.csv": {
+      "sha256": "1a20764b160cb8d75a659ae49aa69aedc1476c72b3f639dec1c4fa55accfc2bb",
+      "size_bytes": 10714,
+      "source_url": "https://balanca.mdic.gov.br/balanca/bd/tabelas/URF.csv",
+      "source_sha256": "1a20764b160cb8d75a659ae49aa69aedc1476c72b3f639dec1c4fa55accfc2bb",
+      "source_path": "request_004.body",
+      "acquired_started_at": "2026-09-08T08:24:01.757166+00:00",
+      "acquired_finished_at": "2026-09-08T08:24:01.794878+00:00",
+      "source_receipt_path": "request_004.json",
+      "source_receipt_sha256": "bc2f7a312b5130d8614e478c62a3c1f0a158c75f5ca67d81674f08459de00705",
+      "qualification": "Complete dictionary body, byte-for-byte copy with original encoding and ordering."
+    }
+  }
+}

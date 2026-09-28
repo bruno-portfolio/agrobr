@@ -1,0 +1,191 @@
+{
+  "fonte": "INPE Programa Queimadas, CSV mensal de focos (Brasil), mês corrente",
+  "origem": "o arquivo mensal do mês corrente é atualizado durante o mês",
+  "arquivo_inteiro": {
+    "url": "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br_202609.csv",
+    "sha256": "f2d083a7601c30510871e2fbb74bdbf66d583f61abff67135e6186c4d7c567c3",
+    "bytes": 102145164,
+    "linhas": 653483,
+    "capturado_em": "2026-09-26T23:20:41Z",
+    "cabecalhos_http": {
+      "content-length": "102145164",
+      "last-modified": "Sat, 26 Sep 2026 21:56:25 GMT",
+      "etag": "\"6169c8c-65c69e7783440\"",
+      "content-type": "text/csv",
+      "date": "Sat, 26 Sep 2026 23:20:43 GMT"
+    },
+    "ultimo_foco_gmt": "2026-09-25 23:50:00"
+  },
+  "recorte": {
+    "arquivo": "focos_mensal_br_202609_recorte.csv",
+    "sha256": "d8e403b63e740af697e358e3070615aa5debf247853d08de13b30b3769d9e4de",
+    "bytes": 3584,
+    "regra": "cabeçalho, as 5 primeiras linhas, as linhas com o maior data_hora_gmt do arquivo e as 10 últimas linhas, na ordem do arquivo; bytes de cada linha como publicados",
+    "linhas": [
+      {
+        "linha": 2,
+        "sha256": "d97abd323223a655f138a57c7e47d68f1d80b9bd450b0f442114943e294a2445",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 3,
+        "sha256": "bcacf0b95662e8ca7a3ec6e590e8e546f310ce8d46c19989ea934500c496075e",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 4,
+        "sha256": "5120ba1bfd216ccce7082b6c8db4700d26749f21a2aa5cc882c6a18eee857b14",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 5,
+        "sha256": "9644ac2afc8918b51136a8dbe54149b32bff80a884b27d8c6d922a4333735aef",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 6,
+        "sha256": "466a5f91383f1a11bf69339e4cd7fe3b462d90895636b30dfe0a8dcea1b76f64",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 653467,
+        "sha256": "f42a9d8a3194ab6f9ad8a5136989f68224c66cb26208248034cf5e3e155e0f5c",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653468,
+        "sha256": "0bcd1712315cd2119ae8b4daf764b982615e82172866d4964b1e1e4bed3912de",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653469,
+        "sha256": "dd4f7438b9db1e6a8f1f113e26cf7387acce2b091f8c9d19164ba28aa3685cc5",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653470,
+        "sha256": "ed6ce46543d557d8bc41f28f2ab3afbcfbf421dea8ae7d775443a8e798d1645a",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653471,
+        "sha256": "387fb39a4205c52b0cd52ca26000da2930d7680c6bac739c07784b7b00b87838",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653472,
+        "sha256": "e2107d559282238c8fdba75883f9724c7ced5d20bb61b2927a8d461687320eff",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653473,
+        "sha256": "a0b0f53934342c9cdeb80634e66f545e3e4c9db0fbd0a779f8434f957c179ab7",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653474,
+        "sha256": "e0cfad21c2d7215e4fac1687cf61774c045164efc3d4ae8d457f65c84079a381",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653475,
+        "sha256": "103cf22d52a5e1d9849776e4cfb22b9dcb9371bb726048a0337928fb667a0ab3",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653476,
+        "sha256": "9124cf9b01020560a49435d225be215887a69fe384864d92d6c6322c3a1b93e1",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653477,
+        "sha256": "9c136a022abbe6aa2b7447d482f08266babd63fa3d4c0d631943434299e64c69",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653478,
+        "sha256": "306964c6c6c0a8f77e03febe4160b0b8ca3600481b4d9e788c2bb18d7f6e5c68",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653479,
+        "sha256": "f51941b304b59133140569f2acc96a4b182ba7fa512f39544ee8af3de4b93181",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653480,
+        "sha256": "c70949045a9b3d581fb3ea2494c8c3be028bccab1e8cc1621abdd791ff66986d",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653481,
+        "sha256": "43b65d17ab2c2a6c34900a4a61e2af6799b9d585ad39f04ad3c4754f847e95ec",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653482,
+        "sha256": "d0cc650073c5cca22328c8b6628c2f90bd7391f18de1d04ea96a1ccc0a9a3574",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 653483,
+        "sha256": "dd92c807230b4415a4d07700d1481454bc73aefe57b7ff1e37cb9f507810fa76",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+ "descricao": "Edição corrente da planilha de exportações do complexo soja da ABIOVE em 23/09/2026 (exp_202608.xlsx, aba Rel_Exp2026, 'Dados disponíveis até' agosto/2026), com 2025 nas colunas C/F e 2026 nas D/G. Captura de conferência (rodada 13), byte a byte; a edição anterior exp_202512.xlsx é o golden abiove/exportacao_sample.",
+ "pagina_de_recursos": {
+  "url": "https://abiove.org.br/estatisticas/",
+  "status": 200,
+  "captured_at": "2026-09-23T22:35:17.995971+00:00",
+  "sha256": "8f2eef2c8d7dc89b276d612ee7650e6f85671f7886c0c23828bd09bb15087941",
+  "link_excel": "https://abiove.org.br/abiove_content/Abiove/exp_202608.xlsx"
+ },
+ "arquivos": [
+  {
+   "file": "exp_202608.xlsx",
+   "requested_url": "https://abiove.org.br/abiove_content/Abiove/exp_202608.xlsx",
+   "final_url": "https://abiove.org.br/abiove_content/Abiove/exp_202608.xlsx",
+   "status": 200,
+   "captured_at": "2026-09-23T22:11:29.637303+00:00",
+   "bytes": 347079,
+   "sha256": "d10b1e6acbec944f3abf2e34bdde2b85c6ddd0877266978e3ef22d7a99bc7727",
+   "headers": {
+    "date": "Wed, 23 Sep 2026 22:11:34 GMT",
+    "last-modified": "Thu, 10 Sep 2026 16:43:07 GMT",
+    "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+   },
+   "repeticao": {
+    "captured_at": "2026-09-23T22:37:05.602379+00:00",
+    "sha256": "d10b1e6acbec944f3abf2e34bdde2b85c6ddd0877266978e3ef22d7a99bc7727"
+   }
+  }
+ ],
+ "edicao_seguinte_inexistente": {
+  "requested_url": "https://abiove.org.br/abiove_content/Abiove/exp_202609.xlsx",
+  "status": 404,
+  "captured_at": "2026-09-23T22:35:20.425030+00:00"
+ }
+}

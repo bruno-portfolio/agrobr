@@ -1,170 +1,100 @@
-from unittest.mock import AsyncMock, patch
+from __future__ import annotations
 
-import httpx
-import pandas as pd
-import pytest
+import inspect
 
-from agrobr.datasets.comercio_internacional import (
-    COMERCIO_INTERNACIONAL_INFO,
-    ComercioInternacionalDataset,
-)
-from agrobr.exceptions import SourceUnavailableError
+from agrobr import contracts, datasets
+from agrobr.datasets.deterministic import deterministic
+from tests.helpers import collect_failures, fixture_instance, isolated_dataset_case
+from tests.test_datasets.conftest import replay_http
 
-from .conftest import make_source, mock_source_meta
+_case_fixture_replay_http = inspect.unwrap(replay_http)
 
 
-def _make_df(**overrides):
-    row = {
-        "periodo": "2024",
-        "ano": 2024,
-        "mes": float("nan"),
-        "reporter_iso": "BRA",
-        "reporter": "Brazil",
-        "partner_iso": "CHN",
-        "partner": "China",
-        "fluxo_code": "X",
-        "hs_code": "1201",
-        "produto_desc": "Soybeans",
-        "peso_liquido_kg": 50000000.0,
-        "volume_ton": 50000.0,
-        "valor_fob_usd": 25000000.0,
-        "valor_cif_usd": float("nan"),
-        "valor_primario_usd": 25000000.0,
-    }
-    row.update(overrides)
-    return pd.DataFrame([row])
-
-
-class TestComercioInternacionalFetch:
-    @pytest.mark.asyncio
-    async def test_fetch_returns_df(self):
-        dataset = ComercioInternacionalDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_make_df())
-        df = await dataset.fetch("soja")
-
-        assert len(df) == 1
-        assert "periodo" in df.columns
-        assert "valor_fob_usd" in df.columns
-        assert df.iloc[0]["reporter_iso"] == "BRA"
-
-    @pytest.mark.asyncio
-    async def test_params_passthrough(self):
-        mock_fn = make_source(_make_df())
-        dataset = ComercioInternacionalDataset()
-        dataset.info.sources[0].fetch_fn = mock_fn
-        await dataset.fetch(
-            "soja",
-            reporter="US",
-            partner="CN",
-            fluxo="M",
-            periodo="2023",
-            freq="M",
-            api_key="test-key",
-        )
-
-        call_kwargs = mock_fn.call_args[1]
-        assert call_kwargs["reporter"] == "US"
-        assert call_kwargs["partner"] == "CN"
-        assert call_kwargs["fluxo"] == "M"
-        assert call_kwargs["periodo"] == "2023"
-        assert call_kwargs["freq"] == "M"
-        assert call_kwargs["api_key"] == "test-key"
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        dataset = ComercioInternacionalDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_make_df())
-        df, meta = await dataset.fetch("soja", return_meta=True)
-
-        assert meta.dataset == "comercio_internacional"
-        assert meta.contract_version == "1.0"
-        assert "comtrade" in meta.attempted_sources
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_snapshot_default_periodo(self):
-        mock_fn = make_source(_make_df())
-        dataset = ComercioInternacionalDataset()
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        from agrobr.datasets.deterministic import deterministic
-
-        async with deterministic("2023-06-15"):
-            await dataset.fetch("soja")
-
-        call_kwargs = mock_fn.call_args[1]
-        assert call_kwargs["periodo"] == "2023"
-
-    @pytest.mark.asyncio
-    async def test_source_failure(self):
-        dataset = ComercioInternacionalDataset()
-        dataset.info.sources[0].fetch_fn = make_source(
-            _make_df(), raises=httpx.ConnectError("connection failed")
-        )
-        with pytest.raises(SourceUnavailableError):
-            await dataset.fetch("soja")
-
-
-class TestComercioInternacionalValidation:
-    def test_invalid_produto(self):
-        dataset = ComercioInternacionalDataset()
-        with pytest.raises(ValueError, match="banana_inexistente"):
-            dataset._validate_produto("banana_inexistente")
-
-
-class TestComercioInternacionalInfo:
-    def test_source_comtrade(self):
-        assert len(COMERCIO_INTERNACIONAL_INFO.sources) == 1
-        assert COMERCIO_INTERNACIONAL_INFO.sources[0].name == "comtrade"
-
-    def test_products_count(self):
-        assert len(COMERCIO_INTERNACIONAL_INFO.products) == 17
-
-    def test_license_livre(self):
-        assert COMERCIO_INTERNACIONAL_INFO.license == "livre"
-
-
-class TestComercioInternacionalFetchFunctions:
-    @pytest.mark.asyncio
-    async def test_fetch_comtrade_forwards_params(self):
-        df = _make_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.comtrade.comercio", new_callable=AsyncMock, return_value=(df, meta)
-        ) as mock_fn:
-            from agrobr.datasets.comercio_internacional import _fetch_comtrade
-
-            await _fetch_comtrade(
-                "soja",
-                reporter="US",
-                partner="BR",
-                fluxo="M",
-                periodo=2024,
-                freq="M",
-                api_key="key123",
+async def test_comercio_internacional_casos_1(captures):
+    with collect_failures() as check:
+        case = "test_public_dataset_replay_preserves_source_context_and_contract"
+        with (
+            check(case),
+            isolated_dataset_case(case) as monkeypatch,
+            fixture_instance(
+                _case_fixture_replay_http, captures=captures, monkeypatch=monkeypatch
+            ) as replay_http,
+        ):
+            replay_http()
+            frame, meta = await datasets.comercio_internacional(
+                "1201",
+                reporter="BR",
+                partner="CN",
+                periodo=2023,
+                require_complete=True,
+                return_meta=True,
             )
-        mock_fn.assert_called_once_with(
-            "soja",
-            reporter="US",
-            partner="BR",
-            fluxo="M",
-            periodo=2024,
-            freq="M",
-            api_key="key123",
-            return_meta=True,
-        )
+            assert len(frame) == 1 and len(frame.columns) == 27
+            assert frame.iloc[0]["peso_liquido_kg"] == 74471954170.0
+            assert meta.dataset == "comercio_internacional"
+            assert meta.schema_version == meta.contract_version == "2.1"
+            assert meta.selected_source == "comtrade_guest"
+            assert meta.attempted_sources == ["comtrade_guest"]
+            assert meta.source_details["coverage"]["state"] == "complete"
+            assert meta.raw_content_hash
+            assert meta.raw_content_size > 0
+            assert meta.fetched_at.tzinfo is not None
+            contracts.validate_dataset(frame, "comercio_internacional")
+        case = "test_dataset_empty_retains_all_27_columns_and_types"
+        with (
+            check(case),
+            isolated_dataset_case(case) as monkeypatch,
+            fixture_instance(
+                _case_fixture_replay_http, captures=captures, monkeypatch=monkeypatch
+            ) as replay_http,
+        ):
+            replay_http()
+            frame, meta = await datasets.comercio_internacional(
+                "1201", partner="999", periodo=2023, return_meta=True
+            )
+            assert frame.empty and len(frame.columns) == 27
+            assert str(frame["mes"].dtype) == "Int64"
+            assert str(frame["classificacao_original"].dtype) == "boolean"
+            assert str(frame["valor_fob_usd"].dtype) == "float64"
+            assert meta.records_count == 0
+            assert meta.source_details["coverage"]["state"] == "complete"
+            contracts.validate_dataset(frame, "comercio_internacional")
 
-    @pytest.mark.asyncio
-    async def test_fetch_comtrade_defaults(self):
-        df = _make_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.comtrade.comercio", new_callable=AsyncMock, return_value=(df, meta)
-        ) as mock_fn:
-            from agrobr.datasets.comercio_internacional import _fetch_comtrade
 
-            await _fetch_comtrade("soja")
-        _, kwargs = mock_fn.call_args
-        assert kwargs["reporter"] == "BR"
-        assert kwargs["fluxo"] == "X"
-        assert kwargs["freq"] == "A"
+async def test_comercio_internacional_casos_2(captures):
+    with collect_failures() as check:
+        case = "test_snapshot_selects_year_without_freezing_or_truncating_publication"
+        with (
+            check(case),
+            isolated_dataset_case(case) as monkeypatch,
+            fixture_instance(
+                _case_fixture_replay_http, captures=captures, monkeypatch=monkeypatch
+            ) as replay_http,
+        ):
+            requests, _ = replay_http()
+            async with deterministic("2023-06-15"):
+                try:
+                    frame, meta = await datasets.comercio_internacional(
+                        "1201", partner="CN", return_meta=True
+                    )
+                except Exception as erro:
+                    raise AssertionError(f"snapshot não virou o período: {erro!r}") from erro
+            assert frame["periodo"].tolist() == ["2023"]
+            assert meta.snapshot == "2023-06-15"
+            assert all(request.url.params["period"] == "2023" for request in requests)
+            assert meta.source_details["query"]["periods"] == ["2023"]
+        case = "test_explicit_period_takes_precedence_over_snapshot_year"
+        with (
+            check(case),
+            isolated_dataset_case(case) as monkeypatch,
+            fixture_instance(
+                _case_fixture_replay_http, captures=captures, monkeypatch=monkeypatch
+            ) as replay_http,
+        ):
+            replay_http()
+            async with deterministic("2022-01-01"):
+                frame, meta = await datasets.comercio_internacional(
+                    "1201", partner="CN", periodo=2023, return_meta=True
+                )
+            assert frame["periodo"].tolist() == ["2023"]
+            assert meta.source_details["query"]["periods"] == ["2023"]

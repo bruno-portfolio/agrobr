@@ -1,0 +1,447 @@
+{
+  "arquivos": [
+    {
+      "arquivo": "algodao_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2631000/country/BR/year/2024",
+      "status": 200,
+      "sha256": "3747eaf789c82925df2d5885abcd9dccf8c726b98e445a033a758b4023ace277",
+      "bytes": 1789,
+      "capturado_em": "2026-09-25T17:01:05.411117+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "algodao_BR_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2631000/country/BR/year/2025",
+      "status": 200,
+      "sha256": "b5da30f14d5d9e03e242eb82a8cd7dbe864b17b810fedd8c0181b4fb878b5b5e",
+      "bytes": 1789,
+      "capturado_em": "2026-09-25T17:01:06.820196+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "algodao_US_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2631000/country/US/year/2024",
+      "status": 200,
+      "sha256": "8ec85e99946c674cb8b7bea482e341e479d451949491e3f075488e817ee04f29",
+      "bytes": 1791,
+      "capturado_em": "2026-09-25T17:01:08.194552+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "algodao_US_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2631000/country/US/year/2025",
+      "status": 200,
+      "sha256": "39088d382f4789f66154927bc67194577e9ed07558d5309e281afa4ffbf47ba8",
+      "bytes": 1790,
+      "capturado_em": "2026-09-25T17:01:09.552917+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "algodao_world_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2631000/world/year/2024",
+      "status": 200,
+      "sha256": "1775b766fd650b1e115f4d4404f7fcdd5537210354942e0fd90e5b1259599b5d",
+      "bytes": 1803,
+      "capturado_em": "2026-09-25T17:01:12.404385+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "algodao_world_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2631000/world/year/2025",
+      "status": 200,
+      "sha256": "cc8d07df7f728126642e4aaff478ad3dbc5a5f330a23c8b14713d009495b8ba1",
+      "bytes": 1803,
+      "capturado_em": "2026-09-25T17:01:16.221314+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "milho_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0440000/country/BR/year/2024",
+      "status": 200,
+      "sha256": "c008ec8a4ba0f71e574b9d3037408a2c3f1978440808c050a4dfa7ff875f3705",
+      "bytes": 2235,
+      "capturado_em": "2026-09-25T17:00:36.236052+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "milho_BR_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0440000/country/BR/year/2025",
+      "status": 200,
+      "sha256": "ac8169e55e5b5d82bd83269e92d23d9c6ee8b8fa0d4faff43f0b9940befe272e",
+      "bytes": 2236,
+      "capturado_em": "2026-09-25T17:00:37.811101+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "milho_US_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0440000/country/US/year/2024",
+      "status": 200,
+      "sha256": "e4dc63531a3edd35d18b66942959ba6d5cd607e8bea0e6a505d23d607def8a13",
+      "bytes": 2238,
+      "capturado_em": "2026-09-25T17:00:39.481091+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "milho_US_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0440000/country/US/year/2025",
+      "status": 200,
+      "sha256": "0b8d952698d539ba237b0478f104e2ba9fd38fc4d536f47d57b82e9ce4603119",
+      "bytes": 2238,
+      "capturado_em": "2026-09-25T17:00:41.109526+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "milho_world_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0440000/world/year/2024",
+      "status": 200,
+      "sha256": "ccfa197222316d8159f363be20e6ecdda2a4c63206b1f7f027635d7004c71775",
+      "bytes": 2256,
+      "capturado_em": "2026-09-25T17:00:45.512889+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "milho_world_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0440000/world/year/2025",
+      "status": 200,
+      "sha256": "14f7e410b87707717f74291fe38ba7caedd32da41f7d788e49288d4b95b2c411",
+      "bytes": 2252,
+      "capturado_em": "2026-09-25T17:00:49.735037+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "soja_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/BR/year/2024",
+      "status": 200,
+      "sha256": "4373221f590c97b1f3758b7ab8b549e0628ee89090eae3495263589a35981b8c",
+      "bytes": 1936,
+      "capturado_em": "2026-09-25T17:00:23.389561+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "soja_BR_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/BR/year/2025",
+      "status": 200,
+      "sha256": "e482b6d95a9544cafe94bd9cec668d2f202c475ac4a0b4ee8e8ee0aeb0c4b2af",
+      "bytes": 1936,
+      "capturado_em": "2026-09-25T17:00:24.831784+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "soja_US_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/US/year/2024",
+      "status": 200,
+      "sha256": "dc4d3ccea808a530ce0b152df3a30dd90f1b2456710f6bd8859bf47d8d68da73",
+      "bytes": 1933,
+      "capturado_em": "2026-09-25T17:00:26.431333+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "soja_US_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/US/year/2025",
+      "status": 200,
+      "sha256": "93902bde4c65180a31f7ebb99a68299b7c0bb39b8627cd3fffedf2369fcefd14",
+      "bytes": 1933,
+      "capturado_em": "2026-09-25T17:00:27.796524+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "soja_world_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/world/year/2024",
+      "status": 200,
+      "sha256": "f52492eb0a6f52353b74fcd829f8b8032fe44bda4e9d7d831b33bd6110b9edbe",
+      "bytes": 1949,
+      "capturado_em": "2026-09-25T17:00:31.345716+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "soja_world_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/world/year/2025",
+      "status": 200,
+      "sha256": "17594669aef3a378489bc0db56e0d4f93944335ba627656aa9fe0b86e9ae5bd8",
+      "bytes": 1949,
+      "capturado_em": "2026-09-25T17:00:34.835647+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "trigo_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0410000/country/BR/year/2024",
+      "status": 200,
+      "sha256": "7ca2761d644b5544493401c15cbf4b93935be1c690df695bfaf27fa90446f569",
+      "bytes": 2227,
+      "capturado_em": "2026-09-25T17:00:51.316061+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "trigo_BR_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0410000/country/BR/year/2025",
+      "status": 200,
+      "sha256": "4201ca17e293bd785eb3401d3fb3e9947e712f01d535ee856d955df76c8d98e6",
+      "bytes": 2226,
+      "capturado_em": "2026-09-25T17:00:52.718552+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "trigo_US_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0410000/country/US/year/2024",
+      "status": 200,
+      "sha256": "a5fd66e20e17dcb32b8ef6de808d5580c20f300606bb02129741ba824862da33",
+      "bytes": 2232,
+      "capturado_em": "2026-09-25T17:00:54.171990+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "trigo_US_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0410000/country/US/year/2025",
+      "status": 200,
+      "sha256": "f06892d434a92ca1c8c8945d039f19a5d482d6b843271e069884acaf75f8957f",
+      "bytes": 2232,
+      "capturado_em": "2026-09-25T17:00:55.577911+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "trigo_world_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0410000/world/year/2024",
+      "status": 200,
+      "sha256": "3767ded10500b07c46e0e3529c19c097ef9f9f266d2c60398eb5c5f37bc30537",
+      "bytes": 2254,
+      "capturado_em": "2026-09-25T17:00:59.212747+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "trigo_world_2025.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0410000/world/year/2025",
+      "status": 200,
+      "sha256": "3c4d05ccb1ab965183bb9e4bc5af43a463bff4ec1f36fd601764b69f266a6cf6",
+      "bytes": 2254,
+      "capturado_em": "2026-09-25T17:01:03.974604+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "oraculo_r24_72_valores.csv",
+      "sha256": "19f8c4844c50d20df6e2a5237e61c6913435cbec3e673fe9f5f5614aad5e382a",
+      "bytes": 9508,
+      "origem": "Rodada 24 de conferência: 72 valores lidos dos corpos crus e rotulados pelos catálogos oficiais"
+    },
+    {
+      "arquivo": "oraculo_r23_p2a_usda.json",
+      "sha256": "1f92e751d90a9f0b8b3a34fa69b93a8ecc03f1528033830a3acfb351e5ef492c",
+      "bytes": 20826,
+      "origem": "Rodada 23 de conferência: 48 valores de açúcar, arroz, café, farelo e óleo de soja lidos dos corpos crus e rotulados pelos catálogos oficiais"
+    },
+    {
+      "arquivo": "acucar_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0612000/country/BR/year/2024",
+      "status": 200,
+      "sha256": "debf8dd795ac88593fdadf4b0ab1d97453245448dd33356de6005a21e07cc0e1",
+      "bytes": 2363,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:08 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "acucar_mundo_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0612000/world/year/2024",
+      "status": 200,
+      "sha256": "bf7eb7ab785405f7fb47b7d4b1a04c338f898847b504647407a22ea9df3622ec",
+      "bytes": 2394,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:09 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "arroz_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0422110/country/BR/year/2024",
+      "status": 200,
+      "sha256": "136b2f683ad2ab4caa00795f69d0bdd6c9fece6bd1156a1a21b4b16795074053",
+      "bytes": 2219,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:07 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "arroz_mundo_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0422110/world/year/2024",
+      "status": 200,
+      "sha256": "f1aeec5832ff583961a8bc881a28f8389e1c3e927dda951031ee1f1afbc3a6e5",
+      "bytes": 2244,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:08 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "cafe_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0711100/country/BR/year/2024",
+      "status": 200,
+      "sha256": "c1f579c6e00ca44f5f5b2033a13c5e22e8503a0e999c6123de712ea6466f1c95",
+      "bytes": 2812,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:10 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "cafe_mundo_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0711100/world/year/2024",
+      "status": 200,
+      "sha256": "e4e7cb234706714d56b30affd49f889d214b0465de3cd35534efc24bac41b013",
+      "bytes": 2843,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:11 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "farelo_soja_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0813100/country/BR/year/2024",
+      "status": 200,
+      "sha256": "07d086eba87409926a69f63402040d98c331946c6964908001612445cb84323c",
+      "bytes": 2077,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:11 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "farelo_soja_mundo_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0813100/world/year/2024",
+      "status": 200,
+      "sha256": "5a128b1de6014b354abc0f28d2e4adf95059985c0eb0a1b7f3bf330468fca9fc",
+      "bytes": 2095,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:12 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "oleo_soja_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/4232000/country/BR/year/2024",
+      "status": 200,
+      "sha256": "42d1e5bccbad63711f674311d8f0a30a553a920f1dedcbbd9243bc442d844335",
+      "bytes": 1927,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:13 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "oleo_soja_mundo_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/4232000/world/year/2024",
+      "status": 200,
+      "sha256": "c1333404f3b4885452b3548736bd176a531ae855db0a82604bda30fc45b9f567",
+      "bytes": 1937,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:14 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "cat_regioes.json",
+      "url": "https://api.fas.usda.gov/api/psd/regions",
+      "status": 200,
+      "sha256": "c40b473c21e427c548c34870753afef625b30f4d633f3570ccccef21142d1b1a",
+      "bytes": 742,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:06 GMT",
+      "origem": "Rodada 23 de conferência"
+    },
+    {
+      "arquivo": "soja_all_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/all/year/2024",
+      "status": 200,
+      "sha256": "c7b78d1fd29e6f0308fb6d349a5d6e7ef86c2949f6d9db08e739f18aafb639a6",
+      "bytes": 127825,
+      "capturado_em": "2026-09-26T05:06:09.583346+00:00",
+      "origem": "captura USDA, chave: real"
+    },
+    {
+      "arquivo": "acucar_BR_1960.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0612000/country/BR/year/1960",
+      "status": 200,
+      "sha256": "e6bca758a07cec565802a680fc031c902f17df19acd8197175c120f7fe53d0ce",
+      "bytes": 2352,
+      "capturado_em": "2026-09-26T05:15:31.227055+00:00",
+      "origem": "captura USDA, chave: real"
+    },
+    {
+      "arquivo": "soja_BR_1980.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/BR/year/1980",
+      "status": 200,
+      "sha256": "f1ad221cc2fb0078d247fb0949c9a159d65d36f7b6f0e19f9edab27bac0f9b64",
+      "bytes": 1928,
+      "capturado_em": "2026-09-26T05:15:07.601665+00:00",
+      "origem": "captura USDA, chave: real"
+    },
+    {
+      "arquivo": "soja_BR_1950.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/BR/year/1950",
+      "status": 404,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "capturado_em": "2026-09-26T05:15:08.076154+00:00",
+      "origem": "captura USDA, chave: real"
+    },
+    {
+      "arquivo": "soja_ZZ_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/ZZ/year/2024",
+      "status": 200,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "capturado_em": "2026-09-26T05:15:08.598031+00:00",
+      "origem": "captura USDA, chave: real"
+    },
+    {
+      "arquivo": "soja_AB_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/AB/year/2024",
+      "status": 200,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "capturado_em": "2026-09-26T05:32:13.667249+00:00",
+      "origem": "captura USDA, chave: real"
+    },
+    {
+      "arquivo": "codigo_9999999_BR_2024.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/9999999/country/BR/year/2024",
+      "status": 200,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "capturado_em": "2026-09-26T05:15:09.077566+00:00",
+      "origem": "captura USDA, chave: real"
+    },
+    {
+      "arquivo": "sem_chave.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/BR/year/2024",
+      "status": 403,
+      "sha256": "dea4c9ce541d6cbc30a7d3b363cb59c45d70c3e12cd41a9286b5abc7c1bdefe5",
+      "bytes": 133,
+      "capturado_em": "2026-09-26T05:15:09.296438+00:00",
+      "origem": "captura USDA, chave: nenhuma"
+    },
+    {
+      "arquivo": "chave_invalida.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodity/2222000/country/BR/year/2024",
+      "status": 403,
+      "sha256": "78e9d3d7d95caf13965e82e328a01fc19bd55fcab2d7925687bdf20c67b00ed6",
+      "bytes": 141,
+      "capturado_em": "2026-09-26T05:15:09.516354+00:00",
+      "origem": "captura USDA, chave: falsa"
+    }
+  ],
+  "catalogos_do_pacote": [
+    {
+      "arquivo": "agrobr/usda/catalogos/commodityAttributes.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodityAttributes",
+      "sha256": "79ecb2941fada69c78702794b83cd8d928d58fd7ac2b8118f80536c0185b3f3c",
+      "bytes": 4669,
+      "capturado_em": "2026-09-25T17:00:20.496877+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "agrobr/usda/catalogos/commodities.json",
+      "url": "https://api.fas.usda.gov/api/psd/commodities",
+      "sha256": "a76e40365d94c16e0fce4b8c0c17143956cc2caa4b0bf1a186c8abf5fdf9f8d1",
+      "bytes": 3933,
+      "capturado_em": "2026-09-25T16:59:26.295437+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "agrobr/usda/catalogos/countries.json",
+      "url": "https://api.fas.usda.gov/api/psd/countries",
+      "sha256": "4c2fb02322e419619461d34eb987a1c15528b989d73e3b80bd725268281e835a",
+      "bytes": 21231,
+      "capturado_em": "2026-09-25T16:59:27.640928+00:00",
+      "origem": "Rodada 24 de conferência"
+    },
+    {
+      "arquivo": "agrobr/usda/catalogos/unitsOfMeasure.json",
+      "url": "https://api.fas.usda.gov/api/psd/unitsOfMeasure",
+      "sha256": "fb081327e5f09ae8ea7b8f5cb658d70da1f2ee2108da13d786572273becf437c",
+      "bytes": 2302,
+      "capturado_em": "Sat, 26 Sep 2026 02:46:05 GMT",
+      "origem": "Rodada 23 de conferência"
+    }
+  ],
+  "uso": "captura USDA: corpos crus do gateway https://api.fas.usda.gov/api/psd, sem cabeçalho de requisição; a chave foi só no X-Api-Key e não aparece em nenhum arquivo. Soja, milho, trigo e algodão × BR, US e mundo × 2024 e 2025; açúcar, arroz, café, farelo e óleo de soja × BR e mundo × 2024; country/all, série antiga com month 00, ano sem dado (404), país e produto fora do catálogo (200 []), ZZ (Other) sem soja (200 []), sem chave e chave inválida (403)"
+}

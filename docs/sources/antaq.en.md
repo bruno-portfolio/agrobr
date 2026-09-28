@@ -63,12 +63,12 @@ df = antaq_sync.movimentacao(2024, uf="SP")
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `ano` | int | required | Data year (2010-2025) |
+| `ano` | int | required | Data year, from 2010 to the latest published year; a year ANTAQ has not published yet raises `SourceUnavailableError` |
 | `tipo_navegacao` | str \| None | None | longo_curso, cabotagem, interior, apoio_maritimo, apoio_portuario |
 | `natureza_carga` | str \| None | None | granel_solido, granel_liquido, carga_geral, conteiner |
-| `mercadoria` | str \| None | None | Filter by commodity (case-insensitive substring) |
+| `mercadoria` | str \| None | None | Filter by commodity (case-insensitive substring); no static catalog, the list comes in the ZIP's `Mercadoria.txt`, and a name outside it only shows up as an empty result |
 | `porto` | str \| None | None | Filter by port (case-insensitive substring) |
-| `uf` | str \| None | None | Filter by state (e.g. SP, PR, MT) |
+| `uf` | str \| None | None | Filter by state (e.g. SP, PR, MT); an unknown state is rejected before the download |
 | `sentido` | str \| None | None | embarque or desembarque |
 | `as_polars` | bool | False | If True, returns a `polars.DataFrame` |
 | `return_meta` | bool | False | Returns a tuple (DataFrame, MetaInfo) |
@@ -115,9 +115,44 @@ Join via `IDAtracacao` (FK Carga → Atracacao), lookup via `CDMercadoria`.
 df, meta = await antaq.movimentacao(2024, return_meta=True)
 print(meta.source)           # "antaq"
 print(meta.source_method)    # "requests+zip"
-print(meta.parser_version)   # 1
+print(meta.parser_version)   # 2
 print(meta.records_count)    # ~2.4M for a full year
 ```
+
+## Offline reconciliation (2026-09-18)
+
+All 62 published fields across the three TXT members (29 in atracacao, 27 in carga, 6 in mercadoria)
+carry a named decision in `tests/golden_data/reconciliacao_r13_20260918/manifest.json`: 21 become
+output columns, 3 are join keys (`IDAtracacao` twice, `CDMercadoria`) and 38 are ignored with a
+reason. An independent oracle (stdlib `csv`/`decimal`) is compared cell by cell against the public
+output over the real 2024 excerpt preserved in `tests/golden_data/antaq/movimentacao_sample/`.
+
+**Joins and cardinality.** The output starts from carga: `carga -> atracacao` on `IDAtracacao` and
+`carga -> mercadoria` on `CDMercadoria`, both `left`. One atracacao may carry several cargas (in the
+excerpt, atracacao `1406197` has 5), so the row count is the number of cargas, not of atracacoes; an
+atracacao without carga never shows up. A carga without atracacao keeps the row with null `ano`/`mes`
+in the source API and is dropped by the dataset, which requires `ano` and `mes`. A carga whose
+`CDMercadoria` is absent from the table keeps the row with null `mercadoria`/`grupo_mercadoria`.
+
+**Columns with two origins.** `tipo_navegacao` comes from `Tipo Navegacao` (carga); atracacao
+publishes `Tipo de Navegacao da Atracacao`, which is read and dropped in the join projection - the
+two disagree when the same atracacao moves cargo of different natures. `uf` comes from `SGUF` (the
+code), not from `UF` (the spelled-out name). `mercadoria` is the
+`Nomenclatura Simplificada Mercadoria`; the full NCM description (`Mercadoria`) is not published, and
+the `mercadoria` filter only matches the short name.
+
+**Units and labels.** `peso_bruto_ton` is in tonnes: the published text loses the thousands dot and
+the decimal comma becomes a dot. `QTCarga` has no unit published by ANTAQ nor stated in the body
+(the scale suggests kilograms for fertilizers and pieces for support cargo; that is an inference,
+not a published unit) - `qt_carga` is copied unconverted. A missing
+`TEU` becomes 0. `ano`/`mes` are the published atracacao period (`Ano` and `Mes`, the latter as
+pt-BR text such as `jan`), not the date: an atracacao started on 2023-12-22 appears with `ano=2024`
+and `mes=1`.
+
+**Limits.** The TXT files are extractions; the official ZIP is not preserved and the source is still
+offline. Live capture remains pending: a 2026-09-18 probe received HTTP 200 redirected to the
+official outage notice (`text/html`, 174,818 bytes, no ZIP signature). The excerpt covers January
+2024 in AM and PA; `apoio_maritimo`, containerised cargo and `TEU > 0` have no positive case.
 
 ## Performance note
 

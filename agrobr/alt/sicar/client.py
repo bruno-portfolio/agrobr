@@ -1,35 +1,29 @@
-"""SICAR WFS client.
-
-TLS: verify=False is required — geoserver.car.gov.br ships the Sectigo Root R46
-inside the chain (self-signed leaf at position 2). Clients whose truststore
-does not include that root (ex.: certifi pre-2024, uv-managed Python on macOS)
-fail with ``CERTIFICATE_VERIFY_FAILED: self-signed certificate in certificate
-chain``. Data is public, no credentials trafficked, payload validated downstream
-(``utils/geo.fetch_wfs`` rejects HTML/ServiceException/short bodies; parser
-enforces ``required_cols``). SECLEVEL=1 kept for the GeoServer cipher set.
-"""
+"""SICAR WFS client with verified TLS and the GeoServer-compatible cipher policy."""
 
 from __future__ import annotations
 
 import asyncio
 import math
+import os
 import ssl
 from collections.abc import AsyncGenerator
+from typing import Any
 from urllib.parse import quote
 
+import certifi
 import httpx
+import pydantic
 import structlog
 
+from agrobr.exceptions import ParseError
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils.geo import fetch_wfs, parse_wfs_hits
-from agrobr.utils.warnings import warn_once
 
+from . import models
 from .models import (
     MAX_FEATURES_GEO,
     PAGE_SIZE,
-    PROPERTY_NAMES,
-    PROPERTY_NAMES_GEO,
     WFS_BASE,
     WFS_VERSION,
     layer_name,
@@ -42,26 +36,43 @@ TIMEOUT = get_timeout(read=180.0)
 THROTTLE_AFTER_PAGE = 5
 THROTTLE_DELAY = 2.0
 
-_ssl_ctx = ssl.create_default_context()
-_ssl_ctx.check_hostname = False
-_ssl_ctx.verify_mode = ssl.CERT_NONE
-_ssl_ctx.set_ciphers("DEFAULT:@SECLEVEL=1")
 
-_SSL_WARNING = (
-    "SICAR (geoserver.car.gov.br) usa verify=False: o servidor envia o root "
-    "CA Sectigo R46 dentro da cadeia, quebrando a validacao em truststores "
-    "sem esse root. Dado e publico e payload e validado downstream."
-)
+def _create_ssl_context() -> ssl.SSLContext:
+    if os.environ.get("SSL_CERT_FILE"):
+        return ssl.create_default_context(cafile=os.environ["SSL_CERT_FILE"])
+    if os.environ.get("SSL_CERT_DIR"):
+        return ssl.create_default_context(capath=os.environ["SSL_CERT_DIR"])
+    return ssl.create_default_context(cafile=certifi.where())
+
+
+_ssl_ctx: ssl.SSLContext | None = None
+
+
+def _ssl_context() -> ssl.SSLContext:
+    global _ssl_ctx
+    if _ssl_ctx is None:
+        try:
+            context = _create_ssl_context()
+        except OSError as exc:
+            origem = next(
+                (nome for nome in ("SSL_CERT_FILE", "SSL_CERT_DIR") if os.environ.get(nome)),
+                "certifi",
+            )
+            raise OSError(
+                f"SICAR: os certificados de {origem} não carregaram ({exc}); corrija a variável "
+                "ou remova-a para usar o certifi"
+            ) from exc
+        context.set_ciphers("DEFAULT:@SECLEVEL=1")
+        _ssl_ctx = context
+    return _ssl_ctx
 
 
 def make_session() -> httpx.AsyncClient:
-    """Cria `AsyncClient` com config padrao SICAR (TLS verify off + UA + redirects)."""
-    warn_once("sicar_ssl_verify_off", _SSL_WARNING)
     return httpx.AsyncClient(
         timeout=TIMEOUT,
         headers=UserAgentRotator.get_bot_headers(),
         follow_redirects=True,
-        verify=_ssl_ctx,
+        verify=_ssl_context(),
     )
 
 
@@ -70,12 +81,13 @@ def _build_wfs_url(
     *,
     cql_filter: str | None = None,
     count: int | None = PAGE_SIZE,
-    start_index: int = 0,
+    start_index: int | None = 0,
     result_type: str | None = None,
-    output_format: str = "csv",
+    output_format: str = "application/json",
     property_names: list[str] | None = None,
+    srs_name: str | None = None,
 ) -> str:
-    props = ",".join(property_names or PROPERTY_NAMES)
+    props = ",".join(property_names or models.property_names(uf))
     layer = layer_name(uf)
 
     url = (
@@ -83,11 +95,14 @@ def _build_wfs_url(
         f"?service=WFS&version={WFS_VERSION}&request=GetFeature"
         f"&typeNames=sicar:{layer}"
         f"&outputFormat={output_format}"
-        f"&propertyName={props}"
+        f"&propertyName={props}&sortBy=cod_imovel"
     )
     if count is not None:
         url += f"&count={count}"
-    url += f"&startIndex={start_index}"
+    if start_index is not None:
+        url += f"&startIndex={start_index}"
+    if srs_name:
+        url += f"&srsName={srs_name}"
     if result_type:
         url += f"&resultType={result_type}"
     if cql_filter:
@@ -106,20 +121,30 @@ async def fetch_hits(
     return parse_wfs_hits(content, source="sicar")
 
 
-async def fetch_imoveis(uf: str, cql_filter: str | None = None) -> tuple[list[bytes], str]:
+async def fetch_imoveis(
+    uf: str,
+    cql_filter: str | None = None,
+    *,
+    validation_warnings: list[str] | None = None,
+    source_details: dict[str, Any] | None = None,
+) -> tuple[list[bytes], str]:
     async with make_session() as http:
         total = await fetch_hits(uf, cql_filter, client=http)
         logger.info("sicar_hits", uf=uf, total=total, cql_filter=cql_filter)
 
         if total == 0:
-            url = _build_wfs_url(uf, cql_filter=cql_filter)
+            if source_details is not None:
+                source_details.update(anunciados=0, features_unicas=0)
+            url = _build_wfs_url(uf, cql_filter=cql_filter, count=None, start_index=None)
             return [], url
 
-        n_pages = math.ceil(total / PAGE_SIZE)
+        latest_total = total
         pages: list[bytes] = []
-        base_url = _build_wfs_url(uf, cql_filter=cql_filter)
+        seen: set[str] = set()
+        base_url = _build_wfs_url(uf, cql_filter=cql_filter, count=None, start_index=None)
 
-        for i in range(n_pages):
+        i = 0
+        while i * PAGE_SIZE < total:
             start_index = i * PAGE_SIZE
             url = _build_wfs_url(
                 uf,
@@ -133,18 +158,65 @@ async def fetch_imoveis(uf: str, cql_filter: str | None = None) -> tuple[list[by
                 timeout=TIMEOUT,
                 client=http,
             )
+            latest_total = _validate_tabular_page(
+                content, latest_total, seen, validation_warnings=validation_warnings
+            )
+            total = max(total, latest_total)
             pages.append(content)
             logger.debug(
                 "sicar_page",
                 uf=uf,
                 page=i + 1,
-                total_pages=n_pages,
+                total_pages=math.ceil(total / PAGE_SIZE),
                 size=len(content),
             )
             if i >= THROTTLE_AFTER_PAGE:
                 await asyncio.sleep(THROTTLE_DELAY)
+            i += 1
 
+        if len(seen) != latest_total:
+            raise ParseError(
+                source="sicar",
+                parser_version=models.PARSER_VERSION,
+                reason=(
+                    f"Varredura inconsistente: {len(seen)} unicas x {latest_total} anunciadas; "
+                    "a fonte pode ter sido atualizada durante a consulta, repita a consulta"
+                ),
+            )
+
+    if source_details is not None:
+        source_details.update(anunciados=latest_total, features_unicas=len(seen))
     return pages, base_url
+
+
+def _validate_tabular_page(
+    content: bytes,
+    total: int,
+    seen: set[str],
+    *,
+    validation_warnings: list[str] | None = None,
+) -> int:
+    try:
+        collection = models.SicarFeatureCollection.model_validate_json(content)
+    except pydantic.ValidationError as exc:
+        raise ParseError(
+            source="sicar",
+            parser_version=models.PARSER_VERSION,
+            reason=f"Pagina JSON invalida: {exc}",
+        ) from exc
+    if isinstance(collection.numberMatched, int) and collection.numberMatched != total:
+        message = (
+            f"Contagem mudou de {total} para {collection.numberMatched} durante a paginacao; "
+            "a fonte pode ter sido atualizada durante a consulta"
+        )
+        logger.warning(
+            "sicar_count_changed", previous_total=total, observed_total=collection.numberMatched
+        )
+        if validation_warnings is not None:
+            validation_warnings.append(message)
+        total = collection.numberMatched
+    models.validate_feature_ids(collection.features, seen)
+    return total
 
 
 async def stream_imoveis_geo(
@@ -158,13 +230,15 @@ async def stream_imoveis_geo(
     sequencialmente com o throttle pos-pagina. Isso evita acumular todo o
     estado bruto em memoria.
     """
+    models.validate_max_features(max_features)
     if max_features is not None and max_features <= PAGE_SIZE:
         url = _build_wfs_url(
             uf,
             cql_filter=cql_filter,
             count=max_features,
             output_format="application/json",
-            property_names=PROPERTY_NAMES_GEO,
+            property_names=models.property_names(uf, geo=True),
+            srs_name=models.SICAR_CRS,
         )
         async with make_session() as http:
             content = await fetch_wfs(url, source="sicar", timeout=TIMEOUT, client=http)
@@ -181,8 +255,11 @@ async def stream_imoveis_geo(
         base_url = _build_wfs_url(
             uf,
             cql_filter=cql_filter,
+            count=None,
+            start_index=None,
             output_format="application/json",
-            property_names=PROPERTY_NAMES_GEO,
+            property_names=models.property_names(uf, geo=True),
+            srs_name=models.SICAR_CRS,
         )
 
         if limit == 0:
@@ -199,7 +276,8 @@ async def stream_imoveis_geo(
                 count=count,
                 start_index=i * PAGE_SIZE,
                 output_format="application/json",
-                property_names=PROPERTY_NAMES_GEO,
+                property_names=models.property_names(uf, geo=True),
+                srs_name=models.SICAR_CRS,
             )
             content = await fetch_wfs(
                 url,

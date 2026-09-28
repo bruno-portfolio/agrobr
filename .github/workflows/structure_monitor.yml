@@ -41,10 +41,10 @@ jobs:
         id: compare
         run: |
           python scripts/compare_structures.py \
-            --baseline .structures/baseline.json \
+            --baseline agrobr/health/baselines/cepea_baseline.json \
             --current current_structures.json \
             --threshold 0.85 \
-            --output diff_report.json || echo "drift_detected=true" >> $GITHUB_OUTPUT
+            --output diff_report.json || echo "drift_detected=true" >> "$GITHUB_OUTPUT"
 
       - name: Alert on drift
         if: steps.compare.outputs.drift_detected == 'true'

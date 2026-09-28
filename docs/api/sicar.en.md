@@ -4,7 +4,9 @@ Tabular rural property data from the CAR via the SICAR GeoServer WFS.
 
 ## imoveis
 
-Individual rural property records (without geometry).
+Individual rural property records, using GeoJSON projected to attributes only. The tabular query does not require GeoPandas. Contract 2.0 requires UTC creation and update dates, including null columns and empty results.
+
+The `atualizado_apos` filter supports millisecond precision. Additional zeros preserve the instant: `.212000` is sent as `.212`. Submillisecond fractions, such as `.212001`, raise `InvalidParameterError` before network access; GeoServer did not compare these representations with the expected ISO semantics. The same rule applies to both geometry APIs.
 
 ```python
 import agrobr
@@ -18,15 +20,26 @@ df = await agrobr.alt.sicar.imoveis("DF")
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation (e.g. "MT", "DF", "BA") |
 | municipio | str | No | Partial municipality filter (case-insensitive). Mutually exclusive with `cod_municipio` |
-| cod_municipio | int | No | Municipality IBGE code (e.g. 5107925). Mutually exclusive with `municipio` |
+| cod_municipio | int | No | Seven-digit IBGE code with a prefix matching the state (e.g. 5107925). Mutually exclusive with `municipio`; strings, floats and booleans are rejected |
 | status | str | No | AT, PE, SU or CA |
 | tipo | str | No | IRU, AST or PCT |
 | area_min | float | No | Minimum area in hectares |
 | area_max | float | No | Maximum area in hectares |
-| criado_apos | str | No | Minimum creation date (ISO, e.g. "2020-01-01") |
-| atualizado_apos | str | No | Server-side filter for `data_atualizacao` after this date (ISO, e.g. "2026-06-07" or "2026-06-07T00:00:00"). The `data_atualizacao` column is not returned by the WFS (it comes back empty in the result). Unavailable for SP, RS, PR, SC, RJ, TO (the field does not exist in those WFS layers) |
+| criado_apos | str | No | Valid `YYYY-MM-DD` date; creation on or after the cutoff (`>=`) |
+| atualizado_apos | str | No | Update strictly after the cutoff (`>`), as an ISO date/datetime with optional fraction and `Z`/offset; without a timezone, interpreted as UTC. The field is requested where available. Unavailable in PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP and TO |
 | as_polars | bool | No | If True, returns a polars.DataFrame |
 | return_meta | bool | No | If True, returns (DataFrame, MetaInfo) |
+
+Impossible dates, negative/nonfinite areas, reversed ranges and invalid types are rejected before network access. Municipality-code validation checks format and state prefix without consulting a municipality catalog.
+
+The filters query current records and do not reconstruct past versions. The [`cadastro_rural`](../contracts/cadastro_rural.md) dataset exposes the same tabular filters and rejects an active `deterministic` context.
+
+Published occurrences sharing a `cod_imovel` are selected by the latest update when every
+occurrence in the group has an update timestamp; otherwise by creation when all have creation;
+otherwise by the highest numeric feature-ID suffix, which also breaks date ties. With
+`return_meta=True`, warnings and `source_details["sicar"]` expose criteria and discarded
+occurrences (up to 1,000 list entries, with a total count and truncation flag). Pagination rejects
+repeated feature IDs. See the [full rule](../contracts/cadastro_rural.en.md#multiple-occurrences-and-provenance).
 
 ### Returned columns
 
@@ -34,8 +47,8 @@ df = await agrobr.alt.sicar.imoveis("DF")
 |--------|------|-------------|
 | cod_imovel | str | Unique property code |
 | status | str | AT/PE/SU/CA |
-| data_criacao | datetime | Creation date |
-| data_atualizacao | datetime | Last update (nullable) |
+| data_criacao | datetime64[ns, UTC] | UTC instant of creation (nullable) |
+| data_atualizacao | datetime64[ns, UTC] | UTC instant of update (nullable) |
 | area_ha | float | Area in hectares |
 | condicao | str | Registration status (nullable) |
 | uf | str | State abbreviation |
@@ -93,7 +106,7 @@ df = await agrobr.alt.sicar.resumo("MT")
 
 ### Return without municipality (state-level)
 
-Uses `resultType=hits` (4 fast requests, no data download):
+Uses `resultType=hits` (five queries: total and four statuses, without downloading records):
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -105,7 +118,7 @@ Uses `resultType=hits` (4 fast requests, no data download):
 
 ### Return with municipality
 
-Fetches data and aggregates client-side:
+Fetches data, applies the occurrence selection used by `imoveis()`, and aggregates client-side; selection warnings and details accompany `return_meta=True`:
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -153,7 +166,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 | area_min | float | No | Minimum area in hectares |
 | area_max | float | No | Maximum area in hectares |
 | criado_apos | str | No | Minimum creation date (ISO, e.g. "2020-01-01") |
-| atualizado_apos | str | No | Server-side filter for `data_atualizacao` after this date (ISO, e.g. "2026-06-07" or "2026-06-07T00:00:00"). The `data_atualizacao` column is not returned by the WFS (it comes back empty in the result). Unavailable for SP, RS, PR, SC, RJ, TO (the field does not exist in those WFS layers) |
+| atualizado_apos | str | No | Update strictly after the cutoff (`>`), as an ISO date/datetime with optional fraction and `Z`/offset; without a timezone, interpreted as UTC. The field is requested where available. Unavailable in PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP and TO |
 | max_features | int \| None | No | Limit on returned features. Default: 5000. `None` disables the limit |
 | return_meta | bool | No | If True, returns (GeoDataFrame, MetaInfo) |
 
@@ -195,9 +208,12 @@ gdf, meta = await agrobr.alt.sicar.imoveis_geo("DF", return_meta=True)
 
 ### Notes
 
-- Maximum 5,000 features per request (warning if truncated)
-- Single request without pagination (controlled volume)
-- CRS: EPSG:4326 (WGS84)
+- `max_features=5000` is the default result limit; accepts a positive integer or `None`
+- A result that stops at `max_features` comes with a warning in `validation_warnings` and `UserWarning`, and `source_details["sicar"]` carries `truncado=True`, `max_features` and `total_fonte`, the query total at the source (the WFS `numberMatched`); without that total, the warning says there may be more. In DF, the default returns 5,000 of 21,011 properties (2026-09-22 capture)
+- Up to 10,000 features use one request; larger limits and `None` use pages of up to 10,000 features
+- CRS: EPSG:4326 (WGS84). SICAR layers are published in SIRGAS 2000 (EPSG:4674); agrobr requests `srsName=EPSG:4326` and checks the CRS declared by every page with features (any other declaration raises `ParseError`). GeoServer performs the reprojection: in the 2026-09-22 captures, coordinates differ from the SIRGAS 2000 ones by at most 1e-8 degree. Empty results also carry the CRS
+- Repeated occurrences of the same `cod_imovel` follow the [`imoveis()`](#imoveis) rule; with `return_meta=True`, `validation_warnings` and `source_details["sicar"]` record the discards. A repeated feature ID raises `ParseError`, as in tabular pagination
+- Dates are UTC instants; a date without a timezone raises `ParseError`, as in the tabular path
 
 ## imoveis_geo_stream
 
@@ -223,7 +239,7 @@ async for gdf in agrobr.alt.sicar.imoveis_geo_stream("MT"):
 | area_min | float | No | Minimum area in hectares |
 | area_max | float | No | Maximum area in hectares |
 | criado_apos | str | No | Minimum creation date (ISO, e.g. "2020-01-01") |
-| atualizado_apos | str | No | Server-side filter for `data_atualizacao` after this date (ISO, e.g. "2026-06-07" or "2026-06-07T00:00:00"). The `data_atualizacao` column is not returned by the WFS (it comes back empty in the result). Unavailable for SP, RS, PR, SC, RJ, TO (the field does not exist in those WFS layers) |
+| atualizado_apos | str | No | Update strictly after the cutoff (`>`), as an ISO date/datetime with optional fraction and `Z`/offset; without a timezone, interpreted as UTC. The field is requested where available. Unavailable in PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP and TO |
 
 Each yielded item is a `GeoDataFrame` with the same columns as [`imoveis_geo`](#imoveis_geo).
 
@@ -240,9 +256,9 @@ print(total)
 ### Notes
 
 - No `max_features` limit: pages until all the state's records are exhausted
-- Each yield contains up to 10,000 features (one WFS page), downloaded sequentially with throttle
-- Deduplicates `cod_imovel` across batches
-- CRS: EPSG:4326 (WGS84)
+- Each yield corresponds to one WFS page (up to 10,000 features), downloaded sequentially with throttle. Occurrences of each page's last `cod_imovel` move to the next batch, because pages are sorted by `cod_imovel` and a repeated version may fall on the next page; the last batch holds only that code
+- One occurrence per `cod_imovel`, by the [`imoveis()`](#imoveis) rule; a feature ID repeated across pages raises `ParseError`
+- CRS: EPSG:4326 (WGS84), with the same check as [`imoveis_geo`](#imoveis_geo)
 - Async-only: `agrobr.sync` does not support async generators
 
 ## Synchronous Usage

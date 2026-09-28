@@ -5,7 +5,7 @@ import re
 from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize.crops import normalizar_cultura
 
-PARSER_VERSION: int = 1
+PARSER_VERSION: int = 2
 
 SAFRA_RE = re.compile(r"^\d{4}/\d{4}$")
 
@@ -87,6 +87,23 @@ UFS_FORM: list[str] = [
 
 IDTABELA_HISTORICO_PRODUTO = "2494"
 
+PERIODOS_RESUMO: tuple[str, ...] = ("acumulado", "quinzena", "mensal")
+
+MESES: dict[str, int] = {
+    "janeiro": 1,
+    "fevereiro": 2,
+    "marco": 3,
+    "abril": 4,
+    "maio": 5,
+    "junho": 6,
+    "julho": 7,
+    "agosto": 8,
+    "setembro": 9,
+    "outubro": 10,
+    "novembro": 11,
+    "dezembro": 12,
+}
+
 SAFRA_HISTORICO_MIN = "1980/1981"
 SAFRA_HISTORICO_MAX = "2020/2021"
 
@@ -107,6 +124,8 @@ COLUNAS_RESUMO: list[str] = [
     "regiao",
     "safra",
     "periodo",
+    "data_inicio",
+    "data_fim",
     "valor",
     "valor_safra_anterior",
     "variacao_pct",

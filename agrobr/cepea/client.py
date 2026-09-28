@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from datetime import datetime
 from typing import NamedTuple
 
 import httpx
@@ -9,11 +10,14 @@ import structlog
 from agrobr import constants
 from agrobr.constants import _CEPEA_ENDPOINTS
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.retry import RetriableStatusError, retry_async, should_retry_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import decode_content
+from agrobr.utils.io import validate_download
+from agrobr.utils.time import utcnow
 
 logger = structlog.get_logger()
 
@@ -21,6 +25,12 @@ logger = structlog.get_logger()
 class FetchResult(NamedTuple):
     html: str
     source: str
+
+
+class SerieBaixada(NamedTuple):
+    conteudo: bytes
+    url: str
+    fetched_at: datetime
 
 
 _use_browser: bool = False
@@ -70,8 +80,7 @@ def _get_produto_url(produto: str, base: str) -> str:
     return f"{base}/br/indicador/{produto_key}.aspx"
 
 
-async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> FetchResult:
-
+async def _get(url: str, headers: dict[str, str]) -> httpx.Response:
     async def _fetch() -> httpx.Response:
         async with (
             RateLimiter.acquire(constants.Fonte.CEPEA),
@@ -89,10 +98,14 @@ async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> FetchResult:
                     response=response,
                 )
 
-            response.raise_for_status()
+            responses.raise_for_status(response, source="cepea")
             return response
 
-    response = await retry_async(_fetch)
+    return await retry_async(_fetch)
+
+
+async def _fetch_with_httpx(url: str, headers: dict[str, str]) -> FetchResult:
+    response = await _get(url, headers)
 
     declared_encoding = response.charset_encoding
     html, actual_encoding = decode_content(
@@ -166,12 +179,58 @@ async def _fetch_with_alternative_source(produto: str) -> FetchResult:
     return FetchResult(html=html, source="noticias_agricolas")
 
 
+def can_use_alternative_source(produto: str) -> bool:
+    return (
+        _use_alternative_source
+        and produto.lower() != "leite"
+        and produto.lower() in constants.NOTICIAS_AGRICOLAS_PRODUTOS
+    )
+
+
+async def fetch_serie(pagina: str, identificador: str) -> SerieBaixada:
+    """Planilha XLS da série histórica, com os cabeçalhos e o circuito da página do indicador."""
+    headers = UserAgentRotator.get_headers(source="cepea")
+    ultimo_erro = "circuito aberto em todos os endereços"
+    for endpoint in _CEPEA_ENDPOINTS:
+        if _is_circuit_open(endpoint):
+            continue
+        url = f"{endpoint}/br/indicador/series/{pagina}.aspx?id={identificador}"
+        try:
+            response = await _get(url, headers)
+            conteudo = response.content
+            validate_download(conteudo, kinds=("xls",), source="cepea", url=url, min_size=512)
+        except (httpx.HTTPError, SourceUnavailableError) as e:
+            ultimo_erro = str(e)
+            if "403" in ultimo_erro:
+                _open_circuit(endpoint)
+            logger.debug(
+                "cepea_serie_falhou", endpoint_index=_endpoint_index(endpoint), error=ultimo_erro
+            )
+            continue
+        if len(conteudo) > constants.CEPEA_SERIE_MAX_BYTES:
+            ultimo_erro = f"série com {len(conteudo)} bytes, acima do teto de {constants.CEPEA_SERIE_MAX_BYTES}"
+            continue
+        logger.info("cepea_serie_ok", pagina=pagina, id=identificador, bytes=len(conteudo))
+        return SerieBaixada(conteudo, url, utcnow())
+    raise SourceUnavailableError(
+        source="cepea",
+        url=f"{_CEPEA_ENDPOINTS[0]}/br/indicador/series/{pagina}.aspx?id={identificador}",
+        last_error=f"série histórica indisponível: {ultimo_erro}",
+        attempted_sources=["cepea"],
+    )
+
+
 async def fetch_indicador_page(
     produto: str,
     force_browser: bool = False,
     force_alternative: bool = False,
 ) -> FetchResult:
     if force_alternative:
+        if produto.lower() == "leite":
+            raise SourceUnavailableError(
+                source="cepea",
+                last_error="Leite NA usa data de publicação incompatível com o mês de referência CEPEA",
+            )
         return await _fetch_with_alternative_source(produto)
 
     headers = UserAgentRotator.get_headers(source="cepea")
@@ -179,6 +238,7 @@ async def fetch_indicador_page(
     logger.info("http_request", source="cepea", produto=produto, method="GET")
 
     last_error: str = ""
+    attempted_sources = ["cepea"]
 
     if not force_browser:
         result = await _try_endpoints(produto, headers)
@@ -197,7 +257,8 @@ async def fetch_indicador_page(
                 error=last_error,
             )
 
-    if _use_alternative_source:
+    if can_use_alternative_source(produto):
+        attempted_sources.append("noticias_agricolas")
         try:
             return await _fetch_with_alternative_source(produto)
         except Exception as e:
@@ -219,4 +280,5 @@ async def fetch_indicador_page(
         source="cepea",
         url=_get_produto_url(produto, _CEPEA_ENDPOINTS[0]),
         last_error=f"All fetch methods failed. Last error: {last_error}",
+        attempted_sources=attempted_sources,
     )

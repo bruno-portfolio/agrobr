@@ -14,11 +14,22 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+
 jobs:
+  quality:
+    uses: ./.github/workflows/tests.yml
+
   build:
+    needs: quality
     runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
 
       - name: Setup Python
         uses: actions/setup-python@v7
@@ -37,16 +48,20 @@ jobs:
         run: twine check dist/*
 
       - name: Upload artifacts
+        id: upload
         uses: actions/upload-artifact@v7
         with:
-          name: dist
+          name: dist-${{ github.sha }}-${{ github.run_attempt }}
           path: dist/
+          if-no-files-found: error
 
   test:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
 
       - name: Setup Python
         uses: actions/setup-python@v7
@@ -56,8 +71,9 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
-          name: dist
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
           path: dist/
+          digest-mismatch: error
 
       - name: Install package from wheel
         run: |
@@ -65,8 +81,7 @@ jobs:
 
       - name: Test import
         run: |
-          python -c "import agrobr; print(f'agrobr version: {agrobr.__version__}')"
-          python -c "from agrobr import cepea, conab, ibge; print('All modules imported successfully')"
+          python -I scripts/check_installed.py
 
       - name: Test CLI
         run: |
@@ -86,8 +101,9 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
-          name: dist
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
           path: dist/
+          digest-mismatch: error
 
       - name: Publish to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -105,14 +121,15 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
-          name: dist
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
           path: dist/
+          digest-mismatch: error
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
   github-release:
-    needs: publish-pypi
+    needs: [build, publish-pypi]
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     permissions:
@@ -121,8 +138,9 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
-          name: dist
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
           path: dist/
+          digest-mismatch: error
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v3

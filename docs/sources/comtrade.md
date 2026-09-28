@@ -1,100 +1,27 @@
-# UN Comtrade — Comercio Internacional
+# UN Comtrade — comércio internacional
 
-United Nations Comtrade Database. Dados de comercio internacional bilateral reportados por ~200 paises.
+A integração entrega comércio bilateral de mercadorias (tipo C), exportação/importação, períodos anuais ou mensais e classificações HS. O espelho cruza declarações de exportação com importações inversas. Veja a [API e seus seletores](../api/comtrade.md) e o [contrato 2.1](../contracts/comercio_internacional.md).
 
-## Configuracao
+## Rotas e opções
 
-API key opcional. Funciona em guest mode (sem key):
-
-```python
-df = await comtrade.comercio("soja", partner="CN")
-```
-
-Para mais capacidade (100k records/call vs 500):
-
-```bash
-export AGROBR_COMTRADE_API_KEY="sua-key-aqui"
-```
-
-Registre gratuitamente em [comtradeplus.un.org](https://comtradeplus.un.org).
-
-## API
-
-```python
-from agrobr import comtrade
-
-# Comercio bilateral
-df = await comtrade.comercio("soja", reporter="BR", partner="CN", periodo=2024)
-
-# Trade mirror (exportacoes BR vs importacoes CN)
-df = await comtrade.trade_mirror("soja", reporter="BR", partner="CN", periodo=2024)
-
-# Mensal com paginacao automatica
-df = await comtrade.trade_mirror("soja", partner="CN", freq="M", periodo="2022-2024")
-
-# Complexo soja (HS 1201, 1507, 2304)
-df = await comtrade.comercio("complexo_soja", partner="CN")
-```
-
-## Colunas — `comercio`
-
-| Coluna | Tipo | Descricao |
-|---|---|---|
-| `periodo` | str | Periodo: "2024" (anual) ou "202401" (mensal) |
-| `ano` | int | Ano extraido do periodo |
-| `mes` | int | Mes (mensal) ou null (anual) |
-| `reporter_iso` | str | ISO3 do pais reporter (ex: "BRA") |
-| `partner_iso` | str | ISO3 do pais parceiro (ex: "CHN") |
-| `fluxo_code` | str | "X" (exportacao) ou "M" (importacao) |
-| `hs_code` | str | Codigo HS (4 digitos) |
-| `produto_desc` | str | Descricao do produto |
-| `peso_liquido_kg` | float | Peso liquido em kg |
-| `volume_ton` | float | Volume em toneladas (peso_liquido_kg / 1000) |
-| `valor_fob_usd` | float | Valor FOB em USD |
-| `valor_cif_usd` | float | Valor CIF em USD |
-| `valor_primario_usd` | float | FOB para exports, CIF para imports |
-
-## Colunas — `trade_mirror`
-
-Colunas de ambos os lados + discrepancias calculadas:
-
-| Coluna | Descricao |
+| Camada | Entrega |
 |---|---|
-| `peso_liquido_kg_reporter` / `_partner` | Peso declarado por cada lado |
-| `valor_fob_usd_reporter` / `_partner` | Valor FOB de cada lado |
-| `valor_cif_usd_partner` | CIF do lado importador |
-| `diff_peso_kg` | reporter - partner |
-| `diff_valor_fob_usd` | FOB reporter - FOB partner |
-| `ratio_valor` | FOB reporter / CIF partner (esperado ~0.85-0.95) |
-| `ratio_peso` | Peso reporter / peso partner (esperado ~1.0) |
+| Preview público | Consulta sem chave, um período por chamada e contagem independente |
+| Aquisição autenticada | Transporte com chave opcional e replanejamento integral para preview em 401/403 |
+| Bilateral | World explícito ou todos os parceiros publicados; HS individual, alias agrícola ou lista textual |
+| Espelho | Junção externa 1:1, identidade numérica e revisão HS de cada declaração |
+| Dataset semântico | Mesmos seletores, contrato completo inclusive vazio, metadados, sync e Polars |
 
-## Produtos Mapeados
+Rotas: `https://comtradeapi.un.org/public/v1/preview/C/{freq}/HS` e `https://comtradeapi.un.org/data/v1/get/C/{freq}/HS`. O client usa httpx assíncrono, timeout, retry, limites de ritmo e validação Pydantic. Credenciais não entram nos recursos/metadados.
 
-| Nome agrobr | HS Code(s) |
-|---|---|
-| `soja` | 1201 |
-| `complexo_soja` | 1201, 1507, 2304 |
-| `milho` | 1005 |
-| `cafe` | 0901 |
-| `acucar` | 1701 |
-| `carne_bovina` | 0201, 0202 |
-| `carne_frango` | 0207 |
-| `celulose` | 4703 |
+## Evidência e limites
 
-Use `comtrade.produtos()` para lista completa.
+Na sondagem de setembro de 2026, o preview BR/X/2023 com cinco HS e todos os parceiros devolveu 500 linhas; a contagem independente informou 516. A união das consultas disjuntas por HS preservou os 516 registros, incluindo os 16 ausentes. Para soja, World explícito devolveu uma linha e partner omitido devolveu 63 parceiros. Essas evidências sustentam as novas regras; não são contagens globais da base.
 
-## MetaInfo
+A consulta pode permanecer parcial quando um único período/HS excede o acesso disponível. `require_complete=True` rejeita essa saída; o padrão emite aviso e preserva cobertura nos metadados. Revisões e falhas de blocos não viram sucesso vazio. Limites autenticados foram testados por replay, sem homologação com chave real.
 
-```python
-df, meta = await comtrade.comercio("soja", partner="CN", return_meta=True)
-print(meta.source)  # "comtrade"
-print(meta.source_method)  # "httpx"
-```
+A disponibilidade depende de país, período e classificação. Este incremento não entrega serviços, tarifas, bulk, catálogo dinâmico de países, detalhe por transporte/aduana, nem harmonização ou histórico congelado de revisões.
 
-## Fonte
+O lado Brasil vem da declaração do Brasil ao Comtrade e pode divergir da [ComexStat](comexstat.md), que é revisada: no milho para a China em 2024, o Comtrade tem 2.285.068 t e a ComexStat, 2.227.000 t (+2,6%), provavelmente por revisão da SECEX depois do envio. Na soja e no farelo de 2024 e 2025 e no milho de 2025, a diferença não passou de 0,06% (conferido em 25/09/2026). A diferença também pode vir da estimativa da ONU: no frango de 2024 (HS 020711 a 020714), o peso do Comtrade passa o da ComexStat em 0,88%, com o FOB praticamente igual (+0,007%), porque o peso líquido do 020714 é estimado pela ONU. A coluna `peso_liquido_estimado` e o aviso no `MetaInfo` mostram quando isso acontece (conferido em 26/09/2026).
 
-- API: `https://comtradeapi.un.org/data/v1/get/C/{freq}/HS`
-- Formato: JSON (REST API)
-- Atualizacao: mensal (paises reportam com 2-6 meses de atraso)
-- Historico: mensal desde 2000, anual desde 1988
-- Cobertura: ~200 paises, classificacao HS 2-6 digitos
+A categoria interna de licença é `zona_cinza`: consulte [Licenças](../licenses.md#un-comtrade). Referências técnicas: [preview](https://uncomtrade.org/docs/what-is-data-preview/) e [SDK oficial, com countOnly](https://github.com/uncomtrade/comtradeapicall).

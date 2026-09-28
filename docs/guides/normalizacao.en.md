@@ -22,12 +22,42 @@ ibge_para_municipio(5107602)
 buscar_municipios("sorriso", uf="MT")
 # [{'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}]
 
-# Homonyms — without state returns the first; with state it disambiguates
-municipio_para_ibge("Brasília")            # 5300108 (DF)
-municipio_para_ibge("Brasília", "MG")      # 3108909 (Brasília de Minas)
+# Use the full municipality name and the state when available
+municipio_para_ibge("Brasília")                 # 5300108 (DF)
+municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
 ```
 
 Data from the [IBGE Localities API](https://servicodados.ibge.gov.br/api/docs/localidades) — free to use.
+
+## Joining by municipality
+
+Municipal datasets carry the `cod_municipio` column (`Int64`, the 7-digit IBGE code), the same in all of them, so the join
+needs no conversion:
+
+```python
+from agrobr import datasets
+
+pam = await datasets.producao_anual("soja", ano=2023, nivel="municipio", uf="MT")
+zarc = await datasets.zoneamento_agricola(cultura="soja", uf="MT")
+joined = pam.merge(zarc, on="cod_municipio")
+```
+
+Where a row is not a municipality, `cod_municipio` is null: state and Brazil rows of the IBGE surveys, the CONAB fallback (by
+state) and PSR policies without a code. The previous columns stay:
+
+| Dataset | Previous column | Type | `cod_municipio` |
+|---|---|---|---|
+| `producao_anual`, `pecuaria_municipal`, `extrativismo_vegetal`, `silvicultura`, `censo_agropecuario`, `censo_agropecuario_historico`, `censo_agropecuario_legado` | `localidade_cod` | int, at any level | municipality rows only |
+| `cadastro_rural` | `cod_municipio_ibge` | int | the same value |
+| `queimadas` | `municipio_id` | int | the same value |
+| `desmatamento` (DETER) | `municipio_id` | text | as an integer |
+| `seguro_rural` | `cd_ibge` | text | as an integer; null without a code |
+| `uso_do_solo` (municipal) | `geocodigo` | text | as an integer; null when the code has no state prefix |
+| `zoneamento_agricola` | `geocodigo` | text | as an integer |
+
+`censo_agropecuario_municipal_1985` stays out: 1985 municipalities do not map 1:1 to today's codes, and the name comes as read. `precos_diesel` and `movimentacao_portuaria`
+carry only the municipality name; to join them, use `municipio_para_ibge(nome, uf)` (above) and check the names that do not
+match.
 
 ## Reverse Geocoding
 
@@ -60,7 +90,7 @@ gdf = await sicar.imoveis_geo(info["uf"], municipio=info["nome"])
 
 ## Crops
 
-144 variants mapping to 41 canonical crops. Accepts Portuguese, English, with/without accents.
+158 variants mapping to 43 canonical crops. Accepts Portuguese, English, with/without accents.
 
 ```python
 from agrobr.normalize import normalizar_cultura, listar_culturas, is_cultura_valida
@@ -73,17 +103,19 @@ normalizar_cultura("milho 2ª safra")   # "milho_2"
 normalizar_cultura("café arábica")     # "cafe_arabica"
 normalizar_cultura("boi gordo")        # "boi"
 normalizar_cultura("cotton")           # "algodao"
+normalizar_cultura("cafe_conillon")    # "cafe_robusta"
+normalizar_cultura("castanha do pará") # "castanha_do_brasil"
 
 # List canonical
 listar_culturas()
 # ['acucar', 'acucar_cristal', 'acucar_refinado', 'algodao', 'algodao_pluma',
-#  'amendoim', 'arroz', 'aveia', 'batata', 'boi', 'cafe', 'cafe_arabica',
-#  'cafe_robusta', 'cana', 'cebola', 'centeio', 'cevada', 'etanol_anidro',
-#  'etanol_hidratado', 'farelo_soja', 'feijao', 'feijao_1', 'feijao_2',
-#  'feijao_3', 'frango_congelado', 'frango_resfriado', 'laranja',
-#  'laranja_in_natura', 'laranja_industria', 'leite', 'mandioca', 'milho',
-#  'milho_1', 'milho_2', 'milho_3', 'oleo_soja', 'soja', 'sorgo', 'suino',
-#  'tomate', 'trigo']
+#  'amendoim', 'arroz', 'aveia', 'batata', 'bezerro', 'boi', 'cafe',
+#  'cafe_arabica', 'cafe_robusta', 'cana', 'castanha_do_brasil', 'cebola',
+#  'centeio', 'cevada', 'etanol_anidro', 'etanol_hidratado', 'farelo_soja',
+#  'feijao', 'feijao_1', 'feijao_2', 'feijao_3', 'frango_congelado',
+#  'frango_resfriado', 'laranja', 'laranja_in_natura', 'laranja_industria',
+#  'leite', 'mandioca', 'milho', 'milho_1', 'milho_2', 'milho_3', 'oleo_soja',
+#  'soja', 'sorgo', 'suino', 'tomate', 'trigo']
 
 # Validation
 is_cultura_valida("soja em grão")  # True
@@ -145,7 +177,7 @@ from agrobr.normalize import (
     periodo_safra, lista_safras,
 )
 
-safra_atual()                    # "2025/26" (if between Jul/2025 and Jun/2026)
+safra_atual()                    # "2025/26" (between Jul/2025 and Jun/2026, by the Brasília date)
 normalizar_safra("24/25")        # "2024/25"
 normalizar_safra("2024/2025")    # "2024/25"
 validar_safra("2024/25")         # True
@@ -158,6 +190,33 @@ safra_posterior("2024/25")       # "2025/26"
 periodo_safra("2024/25")         # (date(2024, 7, 1), date(2025, 6, 30))
 lista_safras("2020/21", "2024/25")
 # ['2020/21', '2021/22', '2022/23', '2023/24', '2024/25']
+```
+
+## Source dates
+
+Dates that arrive from outside as text go through `dates.converter_coluna`, with the same rule on pandas 2 and 3: IBAMA
+(`data_embargo`, `data_desembargo`), Acervo Fundiário (SIGEF, SNCI and settlement dates), CFTC (`data`), INMET (`data` of
+the observations), MapBiomas Alerta (`data_deteccao`, `data_publicacao`) and Queimadas (`data_hora_gmt`).
+
+- An unreadable value, or one with a year outside 1900–2099 (`DATA_ANO_MINIMO` and `DATA_ANO_MAXIMO`), becomes `NaT`. For
+  IBAMA, so does an act date on a day after the file's own edition (`ULTIMA_ATUALIZACAO_RELATORIO`).
+- When it discards any value, the query raises a `UserWarning` and puts the same message in `meta.validation_warnings`, with
+  the source, the column and the number of present values that became `NaT` (an empty cell does not count).
+- What happens next depends on the source: INMET drops the observation without a date (and the message says so), and CFTC
+  rejects the response with `ParseError`.
+
+**Every date column of the public outputs, from sources and datasets, comes out as `datetime64[ns]`**, with the timezone
+when the source publishes one, in pandas and in polars (`Datetime("ns")`). Without this, the unit varied by source and by
+pandas version (`ns` on 2; `s`, `ms` or `us` on 3), and joining datasets on the date failed in polars. Without the date
+rule, a date outside the `datetime64[ns]` range (before 1677 or after 2262) became `NaT` on pandas 2 and came out as
+published on pandas 3.
+
+```python
+import pandas as pd
+from agrobr.normalize import dates
+
+dates.converter_datas(pd.Series(["2024-01-02", "1667-05-31"]), fonte="exemplo")
+# DatasConvertidas(datas=[Timestamp('2024-01-02'), NaT] as datetime64[ns], descartadas=1)
 ```
 
 ## Units
@@ -198,11 +257,11 @@ encoding, confidence = detect_encoding(raw_bytes)   # ("iso-8859-1", 0.95)
 # Decode with full fallback chain
 text, enc = decode_content(raw_bytes)               # (str, "utf-8")
 
-# Fast chain without chardet (UTF-8 → UTF-8-sig → Windows-1252 → ISO-8859-1)
+# Fast chain without chardet (UTF-8-sig → UTF-8 → Windows-1252 → ISO-8859-1)
 enc = detect_encoding_chain(raw_bytes)              # "windows-1252"
 ```
 
-`detect_encoding_chain` probes the first 4KB in the order UTF-8, UTF-8-sig, Windows-1252, ISO-8859-1 — with chardet as the final fallback. Used internally by the `alt/` parsers for government CSVs.
+`detect_encoding_chain` returns `utf-8-sig` when there is a BOM and, otherwise, the first of UTF-8, Windows-1252 and ISO-8859-1 that decodes the whole content. ISO-8859-1 decodes any byte and ends the chain. `decode_content` follows the same chain after the declared encoding. Both are used internally by the parsers for government CSVs and HTMLs.
 
 ## Brazilian Numbers
 
@@ -225,9 +284,9 @@ parse_numeric_br("abc")          # None (invalid returns None)
 | Sub-module | Functions | Data |
 |---|---|---|
 | `municipalities` | `municipio_para_ibge`, `ibge_para_municipio`, `buscar_municipios`, `coordenada_para_municipio`, `total_municipios` | 5,571 municipalities + centroids |
-| `crops` | `normalizar_cultura`, `listar_culturas`, `is_cultura_valida` | 144 variants, 41 canonical |
+| `crops` | `normalizar_cultura`, `listar_culturas`, `is_cultura_valida` | 158 variants, 43 canonical |
 | `regions` | `normalizar_uf`, `validar_uf`, `uf_para_nome`, `uf_para_regiao`, `uf_para_ibge`, `ibge_para_uf`, `listar_ufs`, `listar_regioes`, `normalizar_municipio`, `normalizar_praca`, `normalizar_bioma` | 27 states, 6 biomes |
-| `dates` | `safra_atual`, `normalizar_safra`, `validar_safra`, `safra_para_anos`, `anos_para_safra`, `safra_anterior`, `safra_posterior`, `periodo_safra`, `lista_safras` | Jul-Jun crop years |
+| `dates` | `safra_atual`, `normalizar_safra`, `validar_safra`, `safra_para_anos`, `anos_para_safra`, `safra_anterior`, `safra_posterior`, `periodo_safra`, `lista_safras`, `converter_datas` | Jul-Jun crop years; dates from 1900 to 2099 |
 | `units` | `converter`, `sacas_para_toneladas`, `toneladas_para_sacas`, `preco_saca_para_tonelada`, `preco_tonelada_para_saca` | sc, ton, bu, @, ha |
 | `encoding` | `detect_encoding`, `decode_content`, `detect_encoding_chain` | ISO-8859-1, CP1252, UTF-8 |
 | `numeric` | `parse_numeric_br` | BR format (1.234,56) |

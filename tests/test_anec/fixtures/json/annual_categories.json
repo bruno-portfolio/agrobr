@@ -1,0 +1,86 @@
+{
+  "_provenance": {
+    "source_url": "https://www.anec.com.br/search",
+    "captured_at": "2026-09-08",
+    "projection": "Statistics navbar; only cuid, nameEN, nameBR, public and children retained"
+  },
+  "props": {
+    "pageProps": {
+      "homeLayoutData": {
+        "navbarCategories": [
+          {
+            "cuid": "ckgtlv73x28892d6yukxskrbj",
+            "nameEN": "Statistics",
+            "nameBR": "Estatísticas ",
+            "public": true,
+            "children": [
+              {
+                "cuid": "ckgtlw0je30472d6yvc53yw8e",
+                "nameEN": "SOYBEANS, previous years  ",
+                "nameBR": "SOJA, anos anteriores  ",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "ckgtnszvj0926n96ycff36kd1",
+                "nameEN": "SOYBEANMEAL, previous years",
+                "nameBR": "FARELO DE SOJA, anos anteriores",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "ckgtnch730731n96y1tacl1l2",
+                "nameEN": "MAIZE, previous years ",
+                "nameBR": "MILHO, anos anteriores ",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "ckjlwb2hw2763049mtx4pgd003i",
+                "nameEN": "2021 All products ",
+                "nameBR": "2021 Todos os produtos ",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "ckjlwaoon2762899mtxbzopsplz",
+                "nameEN": "2022 All Products ",
+                "nameBR": "2022 Todos os Produtos",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "cld0gqflr65339ibtx0nr26ztx",
+                "nameEN": "2023 All Products ",
+                "nameBR": "2023 Todos os Produtos",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "clr7rie04736497vatxx9dx29xo",
+                "nameEN": "2024 All Products",
+                "nameBR": "2024 Todos os Produtos",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "cm5pn0s37134558patx544qm9vc",
+                "nameEN": "2025 All products",
+                "nameBR": "2025 Todos os Produtos",
+                "public": true,
+                "children": []
+              },
+              {
+                "cuid": "cmke9w2wu8873b4txfa547lki",
+                "nameEN": "2026 All products",
+                "nameBR": "2026 Todos os Produtos",
+                "public": true,
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+ "fonte": "comtrade",
+ "descricao": "Classificação que o Brasil reportou em cada ano (disponibilidade oficial, classificationCode) e as duas respostas de 1996: o alias moderno da carne de frango (0 registro) e os códigos da H0 (020721 e 020741 com dados). Corpos integrais, sem transformação.",
+ "arquivos": [
+  {
+   "file": "disponibilidade_br_1996_2024.json",
+   "origem": "conferência",
+   "bytes": 15502,
+   "sha256": "5090ae5c3abb82317e2d05ba9002c12fde6b9e338f35520bae63ad45accca36a",
+   "recibo": {
+    "url": "https://comtradeapi.un.org/public/v1/getDA/C/A/HS?reporterCode=76&period=1996%2C1997%2C1998%2C1999%2C2000%2C2001%2C2002%2C2003%2C2004%2C2005%2C2006%2C2007%2C2008%2C2009%2C2010%2C2011%2C2012%2C2013%2C2014%2C2015%2C2016%2C2017%2C2018%2C2019%2C2020%2C2021%2C2022%2C2023%2C2024",
+    "final_url": "https://comtradeapi.un.org/public/v1/getDA/C/A/HS?reporterCode=76&period=1996%2C1997%2C1998%2C1999%2C2000%2C2001%2C2002%2C2003%2C2004%2C2005%2C2006%2C2007%2C2008%2C2009%2C2010%2C2011%2C2012%2C2013%2C2014%2C2015%2C2016%2C2017%2C2018%2C2019%2C2020%2C2021%2C2022%2C2023%2C2024",
+    "fetched_at": "2026-09-26T02:42:41.319628+00:00",
+    "status": 200,
+    "bytes": 15502,
+    "sha256": "5090ae5c3abb82317e2d05ba9002c12fde6b9e338f35520bae63ad45accca36a"
+   }
+  },
+  {
+   "file": "frango_h0_br_1996.json",
+   "origem": "conferência",
+   "bytes": 4205,
+   "sha256": "ec41c0b290f9d73c02162f3ee24b7e33e08943c6f22679bcd7eb76a4a0b101a3",
+   "recibo": {
+    "url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?period=1996&reporterCode=76&partnerCode=0&partner2Code=0&cmdCode=0207%2C020710%2C020721%2C020741&flowCode=X&customsCode=C00&motCode=0&maxRecords=500&includeDesc=true",
+    "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?period=1996&reporterCode=76&partnerCode=0&partner2Code=0&cmdCode=0207%2C020710%2C020721%2C020741&flowCode=X&customsCode=C00&motCode=0&maxRecords=500&includeDesc=true",
+    "fetched_at": "2026-09-26T01:34:56.186388+00:00",
+    "status": 200,
+    "bytes": 4205,
+    "sha256": "ec41c0b290f9d73c02162f3ee24b7e33e08943c6f22679bcd7eb76a4a0b101a3"
+   }
+  },
+  {
+   "file": "frango_alias_br_1996.json",
+   "origem": "conferência",
+   "bytes": 58,
+   "sha256": "4a5e638b0ee822382130b4a9684ca9529d854576b80395a0427ba188dfeadcc9",
+   "recibo": {
+    "url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?period=1996&reporterCode=76&partnerCode=0&partner2Code=0&cmdCode=020711%2C020712%2C020713%2C020714&flowCode=X&customsCode=C00&motCode=0&maxRecords=500&includeDesc=true",
+    "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?period=1996&reporterCode=76&partnerCode=0&partner2Code=0&cmdCode=020711%2C020712%2C020713%2C020714&flowCode=X&customsCode=C00&motCode=0&maxRecords=500&includeDesc=true",
+    "fetched_at": "2026-09-26T01:33:42.165258+00:00",
+    "status": 200,
+    "bytes": 58,
+    "sha256": "4a5e638b0ee822382130b4a9684ca9529d854576b80395a0427ba188dfeadcc9"
+   }
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+  "method": "stdlib json: full-record equality across all returned fields; composite keys; no agrobr parser used",
+  "row_key": [
+    "typeCode",
+    "freqCode",
+    "period",
+    "reporterCode",
+    "partnerCode",
+    "partner2Code",
+    "cmdCode",
+    "classificationCode",
+    "flowCode",
+    "customsCode",
+    "motCode",
+    "mosCode"
+  ],
+  "partition_hs": {
+    "requested_hs": [
+      "1201",
+      "1005",
+      "0901",
+      "1701",
+      "2304"
+    ],
+    "year": "2023",
+    "whole_returned": 500,
+    "whole_count_only": 516,
+    "partition_rows": {
+      "soy_br_omitted_2023": 63,
+      "coffee_2023": 132,
+      "corn_2023": 116,
+      "sugar_2023": 143,
+      "meal_2023": 62
+    },
+    "union_rows": 516,
+    "missing_in_preview": 16,
+    "missing_by_hs": {
+      "2304": 16
+    },
+    "all_returned_records_match_union": true
+  },
+  "partition_period": {
+    "2022": 400,
+    "2023": 454,
+    "union_rows": 854,
+    "disjoint": true,
+    "parent_request": "HTTP400: Maximum number of periods for preview is 1",
+    "annual_from_monthly": false
+  },
+  "partner": {
+    "omitted_rows": 63,
+    "world_explicit_rows": 1,
+    "world_record_equal": true
+  },
+  "max_records_1": {
+    "camel_case_rows": 63,
+    "lower_case_rows": 63,
+    "effective_preview_cap": 500
+  },
+  "mirror": {
+    "br_export": {
+      "netWgt": 74471954170.0,
+      "fobvalue": 38917721136.0,
+      "cifvalue": null,
+      "primaryValue": 38917721136.0,
+      "isNetWgtEstimated": false
+    },
+    "cn_import": {
+      "netWgt": 59670333925.186,
+      "fobvalue": null,
+      "cifvalue": 40954089983.0,
+      "primaryValue": 40954089983.0,
+      "isNetWgtEstimated": true
+    },
+    "diff_peso_kg": 14801620244.814003,
+    "ratio_fob_cif": 0.9502767892573051,
+    "ratio_peso": 1.2480566015161254
+  },
+  "hs_versions": {
+    "2021": "H5",
+    "2023": "H6",
+    "h5_2023_returned": 0,
+    "h5_2023_count_only": 0
+  },
+  "fixed_dimensions": {
+    "partner2Code": 0,
+    "motCode": 0,
+    "customsCode": "C00",
+    "mosCode": "0",
+    "classificationSearchCode": "HS",
+    "isOriginalClassification": true
+  }
+}

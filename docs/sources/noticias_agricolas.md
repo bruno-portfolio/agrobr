@@ -22,6 +22,11 @@
 
 ## Como funciona no agrobr
 
+Leite está excluído do fallback da API CEPEA. A página NA contém a data de
+fechamento e uma nota de mês de referência, mas o parser autônomo NA expõe
+o fechamento. Essa semântica permanece disponível no módulo NA e não deve
+ser combinada como se fosse o mês de referência retornado por CEPEA.
+
 O módulo Notícias Agrícolas **não é chamado diretamente pelo usuário**. Ele é
 acionado automaticamente pelo módulo CEPEA quando:
 
@@ -35,7 +40,9 @@ Algumas tabelas do NA contêm médias semanais no formato `09 - 13/02/2026`.
 O parser extrai a data final do intervalo e marca esses registros com
 `anomalies=["media_semanal"]` e `meta["tipo"]="media_semanal"`,
 `meta["periodo"]="09 - 13/02/2026"`. Isso permite distinguir cotações
-diárias de médias semanais no DataFrame retornado.
+diárias de médias semanais no DataFrame retornado. A marca `anomalies` é gravada no
+cache e volta na leitura `offline` e dentro do prazo (migração 11 do cache); `tipo` e
+`periodo` ficam só no `Indicador` da coleta.
 
 ## Validação de Conteúdo (Soft Block)
 

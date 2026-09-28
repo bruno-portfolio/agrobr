@@ -113,10 +113,9 @@ buscar_ceasa <- function(produto = NULL) {
   req <- request(url) |>
     req_url_query(
       path = "/public/Prohort/Precos.cda",
-      dataAccessId = "precos",
-      userid = "pentaho",
-      password = "password"
+      dataAccessId = "precos"
     ) |>
+    req_auth_basic("pentaho", "password") |>
     req_headers(
       `Accept` = "application/json",
       `Accept-Language` = "pt-BR"
@@ -517,4 +516,3 @@ agrobr.r/
 - **IBGE municipalities (JSON):** `agrobr/normalize/_municipios_ibge.json`
 - **Golden tests:** `tests/golden_data/`
 - **URL mappings:** `agrobr/constants.py`
-```

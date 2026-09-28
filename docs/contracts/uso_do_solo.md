@@ -4,10 +4,11 @@ Cobertura e uso da terra (MapBiomas) — cobertura anual e transições entre cl
 
 ## Modos
 
-| `tipo=` | Contrato | Fonte |
+| `tipo=` / `nivel=` | Contrato | Fonte |
 |---------|----------|-------|
-| `"cobertura"` (default) | `MAPBIOMAS_COBERTURA_V1` | MapBiomas |
-| `"transicao"` | `MAPBIOMAS_TRANSICAO_V1` | MapBiomas |
+| `"cobertura"` / `"estado"` (padrões) | `MAPBIOMAS_COBERTURA_V2` | MapBiomas |
+| `"cobertura"` / `"municipio"` | `MAPBIOMAS_COBERTURA_MUNICIPAL_V1` | MapBiomas |
+| `"transicao"` / `"estado"` | `MAPBIOMAS_TRANSICAO_V2` | MapBiomas |
 
 ## Schema: Cobertura
 
@@ -16,7 +17,7 @@ Cobertura e uso da terra (MapBiomas) — cobertura anual e transições entre cl
 | `bioma` | STRING | Não | — | Bioma válido |
 | `estado` | STRING | Não | — | UF válida |
 | `classe_id` | INTEGER | Não | — | Código LULC MapBiomas |
-| `classe` | STRING | Não | — | — |
+| `classe` | STRING | Sim | — | Nulo só para código fora da legenda |
 | `nivel_0` | STRING | Sim | — | — |
 | `ano` | INTEGER | Não | — | ≥ 1985 |
 | `area_ha` | FLOAT | Não | ha | ≥ 0 |
@@ -30,9 +31,9 @@ Cobertura e uso da terra (MapBiomas) — cobertura anual e transições entre cl
 | `bioma` | STRING | Não | — | Bioma válido |
 | `estado` | STRING | Não | — | UF válida |
 | `classe_de_id` | INTEGER | Não | — | Código LULC |
-| `classe_de` | STRING | Não | — | — |
+| `classe_de` | STRING | Sim | — | Nulo só para código fora da legenda |
 | `classe_para_id` | INTEGER | Não | — | Código LULC |
-| `classe_para` | STRING | Não | — | — |
+| `classe_para` | STRING | Sim | — | Nulo só para código fora da legenda |
 | `periodo` | STRING | Não | — | Formato YYYY-YYYY |
 | `area_ha` | FLOAT | Não | ha | ≥ 0 |
 
@@ -40,7 +41,57 @@ Cobertura e uso da terra (MapBiomas) — cobertura anual e transições entre cl
 
 ## Nível municipal
 
-Cobertura suporta `nivel="municipio"` — contrato de PK é ignorado nesse modo (PK não inclui município).
+Cobertura com `nivel="municipio"` valida o contrato próprio `mapbiomas.cobertura_municipal` 1.0. A validação de chave não é mais ignorada neste modo. O esquema estadual continua separado.
+
+| Coluna | Tipo físico pandas | Nulo | Significado |
+|--------|--------------------|------|-------------|
+| `bioma` | object | Não | Bioma publicado |
+| `estado` | object | Não | UF do cruzamento publicado |
+| `municipio` | object | Não | Nome territorial publicado, sem espaços externos |
+| `classe_id` | Int64 | Não | Código da classe |
+| `classe` | object | Sim | Rótulo normalizado pelo SDK conforme a coleção; não é transcrição literal da legenda; nulo só para código fora da legenda |
+| `nivel_0` | object | Não | Categoria textual publicada, incluindo `Undefined` |
+| `ano` | Int64 | Não | Ano de referência |
+| `area_ha` | float64 | Não | Área finita e não negativa em hectares; zero preservado |
+| `geocodigo` | object | Não | `geocode` publicado, sete dígitos ASCII como texto |
+| `cod_municipio` | Int64 | Sim | Código IBGE do município tirado do `geocodigo`; nulo quando o código não tem o prefixo de uma UF |
+| `id_registro` | Int64 | Não | `ID` original não negativo, local à coleção e recurso |
+
+A chave é `(bioma, estado, geocodigo, classe_id, id_registro, ano)`, dentro de uma coleção e recurso. Um código pode pertencer a cruzamentos em múltiplas UFs; isso não autoriza remover a UF da chave. `geocodigo` também inclui entidades como lagoas, sem promessa de catálogo municipal atual do IBGE. O `id_registro` é copiado do `ID` original, incluindo zero; não é ordinal gerado nem uma identidade estável entre publicações.
+
+Todos os 41 anos de 1985–2025 e todas as linhas identificadas da Coleção 11 são validados antes de concluir, inclusive dados fora dos filtros. A consulta só acumula as linhas selecionadas. Ausência de área, tipo incompatível, valor não finito/negativo ou repetição da chave completa causam erro; não há imputação nem deduplicação silenciosa. Recortes sem correspondência retornam um DataFrame vazio com os mesmos tipos.
+
+`municipio` busca substring literal sem distinguir caixa; `geocodigo` seleciona exatamente o texto fornecido. Ambos exigem `nivel="municipio"` e podem ser usados juntos. Veja [parâmetros e proveniência da fonte](../api/mapbiomas.md#cobertura-municipal-da-colecao-11).
+
+A Coleção 10 usa o mesmo esquema municipal de dez colunas, com 40 anos de 1985–2024. Seu recurso contém linhas com a mesma combinação territorial e áreas distintas, preservadas por seus IDs originais. Não há soma ou deduplicação automática; o ID publicado repetido causa erro antes dos filtros. `source_details["territorial_keys"]` descreve as repetições territoriais sem classificá-las como erro geográfico.
+
+`classe_id` deve ser interpretado junto da coleção: classe 13 municipal significa **Outras Formações não Florestais** na 10 e **Mosaico Herbáceo-Arbustivo** na 11. Classe 0 corresponde a não observado em ambas. A identidade contratual não estabelece equivalência semântica entre coleções. Dentro de uma coleção, a legenda é a mesma nos recortes estadual e municipal: a classe 0 sai como `Não observado` nos dois. Um código publicado fora da legenda conhecida sai com o rótulo nulo (`classe`, ou `classe_de`/`classe_para` na transição), o `classe_id` publicado e um aviso (`UserWarning` e `meta.validation_warnings`) com os códigos. Até a 1.1.0, o estadual devolvia `Classe {id}`. Célula de classe sem código inteiro é defeito da planilha: a leitura falha com `ParseError`, com a linha e o valor publicado.
+
+A soma das classes de um município é a área mapeada pelo MapBiomas, não a área territorial do IBGE. Nos 93 municípios costeiros com baía ou ilha, ela fica abaixo da área do IBGE, que inclui as águas internas (em Florianópolis, 35% abaixo). Fernando de Noronha não aparece.
+
+Em 5 UFs amazônicas de fronteira, a soma dos municípios publicada passa do estadual publicado, na mesma coleção, ano e classe, com a mesma diferença em 1985, 2000 e 2025 (Coleção 11, conferido em 26/09/2026):
+
+| UF | Σ municípios − estadual, todas as classes | Formação Florestal (classe 3), 2025 |
+|---|---:|---:|
+| RR | +20.059 ha | +19.589 ha (0,14%) |
+| AM | +20.316 ha | +18.615 ha (0,015%) |
+| PA | +9.671 ha | +8.976 ha (0,011%) |
+| AP | +5.851 ha | +5.695 ha (0,057%) |
+| AC | +4.078 ha | +3.996 ha (0,029%) |
+
+Nas outras 22 UFs, a diferença fica abaixo de 1 ha (no RS, com as lagoas, +0,985 ha). O agrobr repassa as 2 publicações como vêm, e o `READ_ME` delas não trata da diferença. Para o total da UF, use `nivel="estado"`, e não a soma dos municípios.
+
+## Coleções
+
+`colecao=11` seleciona a coleção 11 (1985–2025); `colecao=10` identifica a coleção 10 (1985–2024). O padrão `None` usa a coleção 11. O dataset encaminha a seleção para a fonte, sem misturar coleções. Os esquemas municipal, estadual e de transição têm contratos próprios.
+
+Cada coleção revisa o histórico completo. Para reprodução, fixe `colecao` e preserve os bytes e hashes identificados por `meta.source_details["acquisition"]`, além de `meta.source_url`, `meta.fetched_at` e `meta.data_sources`. A coleção não congela uma revisão e não há cache local integrado.
+
+## Seleção e erros
+
+O dataset usa somente MapBiomas, sem fallback para outra instituição. Cobertura aceita os filtros `bioma`, `estado`, `ano`, `classe_id`, `nivel`, `municipio`, `geocodigo` e `colecao`. Transição aceita `bioma`, `estado`, `periodo`, `classe_de_id`, `classe_para_id` e `colecao`, apenas no nível estadual. Filtros do outro modo e opções desconhecidas são rejeitados; não são ignorados.
+
+`as_polars` e `return_meta` exigem booleanos. A conversão para Polars ocorre após a validação do contrato. Não há `produto` nem `use_cache`. O contexto `deterministic` é recusado antes da aquisição, pois não existe seleção de snapshot histórico arbitrário. Erros de aquisição ou parsing podem chegar pela camada de datasets como `SourceUnavailableError`, com detalhes em `errors`; não há retorno parcial de uma planilha inválida.
 
 ## Exemplo
 
@@ -51,7 +102,10 @@ from agrobr import datasets
 df = await datasets.uso_do_solo(tipo="cobertura", bioma="Cerrado", ano=2022)
 
 # Cobertura por município
-df = await datasets.uso_do_solo(tipo="cobertura", nivel="municipio", municipio="Cuiabá")
+df = await datasets.uso_do_solo(
+    tipo="cobertura", nivel="municipio", geocodigo="5107925",
+    ano=2025, colecao=11,
+)
 
 # Transições entre classes
 df = await datasets.uso_do_solo(tipo="transicao", periodo="2020-2021")

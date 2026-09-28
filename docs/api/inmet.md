@@ -1,24 +1,63 @@
 # API INMET
 
-O modulo INMET fornece dados meteorologicos de 600+ estacoes do Instituto Nacional de Meteorologia.
+O módulo oferece catálogo de estações, API observacional autenticada e arquivos históricos públicos de estações automáticas. As funções da fonte não alternam automaticamente entre API, ZIP e NASA; essa seleção pertence a [datasets.clima](../contracts/clima.md).
 
-## Token
+## Acesso e retorno
 
-Dados observacionais via apitempo requerem token:
+`estacao()` e `clima_uf()` usam a API observacional e requerem `AGROBR_INMET_TOKEN`. `estacoes()` e as três funções históricas abaixo funcionam sem token. Configure o token somente quando usar a API observacional:
 
 ```bash
 export AGROBR_INMET_TOKEN=seu_token
 ```
 
-A listagem de estacoes funciona sem token — e `historico()` (abaixo) cobre
-anos fechados sem token algum, via dadoshistoricos do portal.
+Todas as funções aceitam `as_polars=False` e `return_meta=False`. O padrão é pandas; `as_polars=True` requer o extra Polars. Com `return_meta=True`, o retorno é `(frame, MetaInfo)`.
 
-## Funcoes
+## `historico_periodo`
 
-### `historico`
+```python
+async def historico_periodo(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    return_meta: bool = False,
+)
+```
 
-Dados horarios de um ano inteiro de uma estacao, **sem token**, via ZIP anual
-publico do portal (`portal.inmet.gov.br/uploads/dadoshistoricos`).
+Consulta uma estação nos ZIPs de todos os anos do intervalo inclusivo. `codigo` identifica uma estação automática, como `A001`; datas aceitam `date` ou `YYYY-MM-DD`. O intervalo deve ser ordenado, de 2000 ao ano corrente. `agregacao` aceita `"horario"` e `"diario"`.
+
+```python
+from agrobr import inmet
+
+df, meta = await inmet.historico_periodo(
+    "A001", "2000-12-30", "2001-01-02",
+    agregacao="diario", return_meta=True,
+)
+```
+
+Anos sem membro da estação são diagnosticados em `meta.source_details["coverage"]["missing_station_years"]`; o resultado pode ser parcial ou vazio tipado. Isso não prova inexistência da estação ou ausência de observações fora do arquivo publicado. Uma falha de transporte, ZIP ou layout interrompe a consulta, em vez de apresentar apenas os anos que funcionaram.
+
+## `historico_uf`
+
+```python
+async def historico_uf(
+    uf: str,
+    ano: int,
+    as_polars: bool = False,
+    return_meta: bool = False,
+)
+```
+
+Retorna clima mensal da UF usando os membros do ZIP anual, inclusive estações hoje marcadas `Pane`. Não filtra pelo catálogo atual de estações operantes. O ano deve estar entre 2000 e o corrente.
+
+```python
+df, meta = await inmet.historico_uf("GO", 2001, return_meta=True)
+```
+
+Colunas: `mes` (data do primeiro dia do mês), `uf`, `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `num_estacoes`, `estacoes_chuva`, `estacoes_chuva_parciais`, `dias`, `data_inicio` e `data_fim`. Uma UF sem observações no arquivo retorna vazio tipado com diagnóstico na API de fonte; no dataset, isso permite fallback quando a seleção é automática.
+
+## `historico`
 
 ```python
 async def historico(
@@ -27,40 +66,22 @@ async def historico(
     agregacao: str = "horario",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+)
 ```
 
-**Parametros:**
-
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `codigo` | `str` | Codigo da estacao (ex: `"A701"`) |
-| `ano` | `int` | Ano (2000+) |
-| `agregacao` | `str` | `"horario"` (default) ou `"diario"` |
-| `as_polars` | `bool` | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
-
-**Retorno:**
-
-Mesmo schema de `estacao()`: `data`, `hora_utc`, `estacao`, `uf`, `temperatura`,
-`temperatura_max/min`, `umidade(_max/_min)`, `precipitacao_mm`, `pressao_hpa`,
-`vento_ms/dir/rajada_ms`, `radiacao_kj_m2`, `ponto_orvalho`.
-
-**Exemplo:**
+A API anual existente permanece disponível, de 2000 ao ano corrente, usando as mesmas observações históricas. O ano corrente e anos passados podem estar incompletos; não há garantia de 8.760 horas ou 365 dias. Se o membro da estação não existe no ZIP, esta função anual mantém `SourceUnavailableError`.
 
 ```python
-from agrobr import inmet
-
-df = await inmet.historico("A701", 2025)                       # 8.760 horas
-df = await inmet.historico("A001", 2025, agregacao="diario")   # 365 dias
+df = await inmet.historico("A001", 2001, agregacao="diario")
 ```
 
-> O ZIP anual tem ~100 MB (todas as estacoes) e fica em cache de processo —
-> a segunda estacao do mesmo ano nao re-baixa nada.
+## Schemas das observações
 
-### `estacoes`
+O retorno horário contém `data`, `hora_utc`, `estacao`, `uf` e 13 medições: `temperatura`, `temperatura_max`, `temperatura_min`, `umidade`, `umidade_max`, `umidade_min`, `precipitacao_mm`, `pressao_hpa`, `vento_ms`, `vento_dir`, `vento_rajada_ms`, `radiacao_kj_m2`, `ponto_orvalho`. `hora_utc` usa `HH00`, de `0000` a `2300`.
 
-Lista estacoes meteorologicas disponiveis.
+O retorno diário contém `data`, `estacao`, `uf`, `temp_media`, `temp_max`, `temp_min`, `precipitacao_mm`, `umidade_media`, `radiacao_total_kj_m2`. Todas as medições admitem ausência. Datas/horas INMET são UTC; temperatura usa °C, chuva mm, pressão hPa, umidade %, vento m/s, direção graus e radiação kJ/m².
+
+## `estacoes`
 
 ```python
 async def estacoes(
@@ -69,28 +90,12 @@ async def estacoes(
     apenas_operantes: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+)
 ```
 
-**Parametros:**
+Lista o catálogo atual: `tipo="T"` para automáticas ou `"M"` para convencionais. O padrão mantém somente `Operante`; use `apenas_operantes=False` para incluir outras situações. Retorna `codigo`, `nome`, `uf`, `situacao`, `tipo`, `latitude`, `longitude`, `altitude`, `inicio_operacao`. A situação atual não descreve a situação em cada ano histórico.
 
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `tipo` | `str` | `"T"` para automaticas, `"M"` para convencionais |
-| `uf` | `str \| None` | Filtrar por UF |
-| `apenas_operantes` | `bool` | Se True, retorna apenas estacoes ativas |
-| `as_polars` | `bool` | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
-
-**Retorno:**
-
-DataFrame com colunas: `codigo`, `nome`, `uf`, `situacao`, `tipo`, `latitude`, `longitude`, `altitude`, `inicio_operacao`
-
----
-
-### `estacao`
-
-Dados observacionais de uma estacao especifica.
+## `estacao`
 
 ```python
 async def estacao(
@@ -100,29 +105,12 @@ async def estacao(
     agregacao: str = "horario",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+)
 ```
 
-**Parametros:**
+Observações autenticadas de uma estação, com intervalo inclusivo e agregação horária ou diária. Períodos longos são divididos em blocos; falha de aquisição em qualquer bloco interrompe a consulta. HTTP 204 autenticado e medições naturalmente ausentes não são convertidos em zero.
 
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `codigo` | `str` | Codigo da estacao (ex: `"A001"`) |
-| `inicio` | `str \| date` | Data inicial (YYYY-MM-DD) |
-| `fim` | `str \| date` | Data final (YYYY-MM-DD) |
-| `agregacao` | `str` | `"horario"` (default) ou `"diario"` |
-| `as_polars` | `bool` | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
-
-**Retorno:**
-
-DataFrame com observacoes meteorologicas (temperatura, precipitacao, umidade, vento, radiacao, pressao).
-
----
-
-### `clima_uf`
-
-Clima agregado por UF a partir de todas as estacoes do estado.
+## `clima_uf`
 
 ```python
 async def clima_uf(
@@ -130,48 +118,29 @@ async def clima_uf(
     ano: int,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+)
 ```
 
-**Parametros:**
+Agrega mensalmente a API observacional das estações automáticas atualmente operantes na UF. Retorna as mesmas doze colunas mensais de `historico_uf()`. A seleção de estações pode diferir entre as duas rotas.
 
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `uf` | `str` | Sigla UF (ex: `"MT"`, `"SP"`) |
-| `ano` | `int` | Ano de referencia |
-| `as_polars` | `bool` | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
+## Agregação e proveniência
 
-**Retorno:**
+Chuva diária soma horas válidas; radiação diária segue a mesma preservação de ausência. A chuva mensal da UF é a média simples dos totais das estações com chuva válida em todos os dias do mês (`estacoes_chuva`). O dia vale com pelo menos 1 hora válida, e a hora faltante conta como sem chuva, então o total de uma estação completa pode sair subestimado (em GO, jan/2026, faltam 830 horas somando as 18 estações completas, 6,2% das horas). A estação com o mês incompleto fica fora e é contada em `estacoes_chuva_parciais`; sem nenhuma estação completa, `precip_acum_mm` sai nulo, com `UserWarning` e a mesma mensagem em `MetaInfo.validation_warnings`. Temperaturas mensais são médias dos registros diários válidos; não são necessariamente médias com pesos iguais por estação. `num_estacoes` conta estações com linhas no mês. Grupos sem medição válida permanecem nulos; nenhum período é completado ou extrapolado. `dias`, `data_inicio` e `data_fim` dão os dias do mês com chuva ou temperatura válida em alguma estação.
 
-DataFrame com colunas: `mes`, `uf`, `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `num_estacoes`
+Nos retornos históricos, `source_details` inclui acesso, UTC, período, agregação, métodos por variável, recursos com URL/SHA-256/bytes/membros/coleta/cache e metadados das estações da própria edição. A cobertura informa horas observadas e esperadas, valores válidos por variável, primeiro/último dia, anos sem membro e avisos. Membros sem linhas no recorte permanecem explícitos com zero horas. Dados de automáticas são brutos; a validação do parser não equivale a consistência meteorológica.
 
-**Exemplo:**
+O cache dos ZIPs é de processo, limitado a 256 MiB, com TTL de 1 hora para o ano corrente e 24 horas para anos anteriores. Anos podem ser reutilizados enquanto presentes e válidos no cache; arquivos maiores que o limite não são retidos. O hash identifica os bytes consultados e não congela a edição no portal.
 
-```python
-from agrobr import inmet
+## Uso via dataset e sync
 
-# Listar estacoes do MT
-est = await inmet.estacoes(uf="MT")
+`datasets.clima` usa API → ZIP → NASA por UF e API → ZIP por estação. `fonte` explícita é exclusiva. O contrato mensal é 3.1; os contratos diário e horário de estação são 1.0. A coluna mensal `fonte` permanece `inmet` no histórico, enquanto `meta.selected_source` é `inmet_historico`.
 
-# Dados de uma estacao
-df = await inmet.estacao("A001", inicio="2024-01-01", fim="2024-01-31")
-
-# Clima mensal por UF
-df = await inmet.clima_uf("MT", 2024)
-```
-
-## Versao Sincrona
+NASA preserva coordenadas do ponto representativo e usa LST; INMET usa UTC e múltiplas estações no agregado UF. Em contexto `deterministic`, o dataset seleciona o ano do snapshot quando omitido, sem truncar observações nem congelar a edição. Veja o [contrato completo](../contracts/clima.md).
 
 ```python
 from agrobr.sync import inmet
 
-est = inmet.estacoes(uf="MT")
-df = inmet.clima_uf("MT", 2024)
+df = inmet.historico_periodo("A001", "2000-12-30", "2001-01-02", agregacao="diario")
 ```
 
-## Notas
-
-- Fonte: [INMET](https://portal.inmet.gov.br) — licenca livre
-- 600+ estacoes automaticas e convencionais
-- Para dados sem token, use [NASA POWER](nasa_power.md) como alternativa
+Fontes oficiais: [arquivos anuais](https://portal.inmet.gov.br/dadoshistoricos), [catálogo automático](https://portal.inmet.gov.br/paginas/catalogoaut). Consulte [acesso e limites da fonte](../sources/inmet.md).

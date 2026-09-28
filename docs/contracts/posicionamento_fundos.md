@@ -17,7 +17,7 @@ df = await datasets.posicionamento_fundos("milho", start="2026-01-01")
 df = await datasets.posicionamento_fundos("acucar", combined=True)  # futures + options
 ```
 
-## Contrato `cftc.cot` v1.0
+## Contrato `cftc.cot` v1.1
 
 PK: `[data, codigo_cftc]` — effective from 1.1.0
 
@@ -36,8 +36,10 @@ PK: `[data, codigo_cftc]` — effective from 1.1.0
 | `producer_short` | INTEGER | N | contratos |
 | `swap_long` | INTEGER | N | contratos |
 | `swap_short` | INTEGER | N | contratos |
+| `swap_spread` | INTEGER | N | contratos |
 | `other_long` | INTEGER | N | contratos |
 | `other_short` | INTEGER | N | contratos |
+| `other_spread` | INTEGER | N | contratos |
 | `nonreportable_long` | INTEGER | N | contratos |
 | `nonreportable_short` | INTEGER | N | contratos |
 | `change_managed_money_long` | INTEGER | S | contratos |
@@ -53,6 +55,10 @@ As colunas `change_*` são nulas na primeira semana de cada contrato na série
 - `producer_*` — hedgers comerciais (produtores, processadores, tradings)
 - `swap_*` — swap dealers
 - `managed_money_net` = `managed_money_long` − `managed_money_short` (calculado)
+- `open_interest` = compradas (`producer_long` + `swap_long` + `managed_money_long` + `other_long` +
+  `nonreportable_long`) + spreads (`swap_spread` + `managed_money_spread` + `other_spread`), e o mesmo com as vendidas.
+  A identidade é exata nos futuros; no relatório combinado (`combined=True`) a própria CFTC deixa até 1 contrato de
+  resíduo. `swap_spread` e `other_spread` entraram na versão 1.1 (antes, o OI não fechava com as categorias)
 - Posições em número de contratos; `data` é a terça-feira de referência do relatório
 
 ## Determinismo

@@ -1,47 +1,51 @@
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import functools
 import inspect
+import threading
 from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar
+
+from agrobr.utils.warnings import warn_once
 
 T = TypeVar("T")
 
 
-def _get_or_create_event_loop() -> asyncio.AbstractEventLoop:
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        try:
-            return asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            return loop
-
-    try:
-        import nest_asyncio
-
-        nest_asyncio.apply()
-        return loop
-    except ImportError:
-        raise RuntimeError(
-            "Event loop already running. Install nest_asyncio for Jupyter support: "
-            "pip install nest_asyncio"
-        ) from None
-
-
 def run_sync(coro: Awaitable[T]) -> T:
-    loop = _get_or_create_event_loop()
+    """Roda a corrotina; com um loop já rodando (Jupyter), roda numa thread própria.
 
-    if loop.is_running():
-        import nest_asyncio
-
-        nest_asyncio.apply()
-        return loop.run_until_complete(coro)
-    else:
+    A thread leva uma cópia do contexto (modo determinístico, aquisição) e tem o seu
+    ``asyncio.run``; o loop chamador fica parado até ela terminar.
+    """
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
         return asyncio.run(coro)  # type: ignore[arg-type]
+
+    warn_once(
+        "sync_loop_rodando",
+        "agrobr.sync chamado com um loop do asyncio rodando (Jupyter, por exemplo): a consulta "
+        "roda numa thread à parte, e o loop fica parado até ela terminar. Prefira o await na "
+        "API async: df = await agrobr.cepea.indicador('soja').",
+    )
+    context = contextvars.copy_context()
+    outcome: list[tuple[bool, Any]] = []
+
+    def target() -> None:
+        try:
+            outcome.append((True, context.run(asyncio.run, coro)))
+        except BaseException as exc:
+            outcome.append((False, exc))
+
+    thread = threading.Thread(target=target, name="agrobr-sync", daemon=True)
+    thread.start()
+    thread.join()
+    ok, value = outcome[0]
+    if not ok:
+        raise value
+    return value  # type: ignore[no-any-return]
 
 
 def sync_wrapper(async_func: Callable[..., Awaitable[T]]) -> Callable[..., T]:

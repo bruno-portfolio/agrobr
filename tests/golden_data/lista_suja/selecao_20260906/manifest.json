@@ -1,0 +1,105 @@
+{
+  "family": "lista_suja",
+  "source_rows": 579,
+  "encoding": "cp1252",
+  "csv_delimiter": ";",
+  "txt_delimiter": "\t",
+  "periodic_update": "2026-04-06",
+  "registry_updated_at": "2026-09-04",
+  "csv_txt_equal_cells_after_strip": 5790,
+  "existing_identical_pdf": "../../reconciliacao_r11_20260918/mte/mte_pdf_016.pdf.gz",
+  "pdf_sha256": "41f992fa0f9a83acd0d8199b52820165c1947564815402b1b2b426121f2edae6",
+  "artifacts": [
+    {
+      "file": "cadastro_de_empregadores.csv",
+      "bytes": 81270,
+      "sha256": "4a4f81cbf26740b8050d5b0c6af5ddd62868ad207becef3135ba2e4df728b846",
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 00:00:25 GMT",
+        "server": "Zope/(2.13.28, python 2.7.16, linux2) ZServer/1.1",
+        "content-length": "87566",
+        "expires": "Fri, 09 Sep 2016 00:00:25 GMT",
+        "vary": "X-Anonymous",
+        "content-type": "text/csv",
+        "cache-control": "max-age=10, s-maxage=0, must-revalidate",
+        "accept-ranges": "bytes"
+      },
+      "captured_at": "2026-09-07T01:57:03.081198+00:00",
+      "role": "masked_copy_of_official_bytes",
+      "original_bytes": 87566,
+      "original_sha256": "3a9c4d2c71b266706502b1e80a1de1407654e422f61cfa96d375f62dea06fb63"
+    },
+    {
+      "file": "cadastro_de_empregadores.txt",
+      "bytes": 330375,
+      "sha256": "f1a4b4fdd73798fab3e63541a7c793a213acfa7c47e355c0ba65e1f5d4d81880",
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 01:57:10 GMT",
+        "server": "Zope/(2.13.28, python 2.7.16, linux2) ZServer/1.1",
+        "expires": "Fri, 09 Sep 2016 01:57:10 GMT",
+        "vary": "X-Anonymous,Accept-Encoding",
+        "content-type": "text/plain",
+        "cache-control": "max-age=10, s-maxage=0, must-revalidate",
+        "accept-ranges": "bytes",
+        "content-encoding": "gzip",
+        "content-length": "42834"
+      },
+      "captured_at": "2026-09-07T01:57:11.512402+00:00",
+      "role": "masked_copy_of_official_bytes",
+      "original_bytes": 330375,
+      "original_sha256": "b0689d77c89144848c17be74b47af6dfca7c782a1008672a33b3141ca9670085"
+    },
+    {
+      "file": "cadastro_de_empregadores_oracles.json",
+      "bytes": 150172,
+      "sha256": "9ca44f323ba4404b0e379529ce5d3a35dbbbd4c4c893a910d7fe729911bae3bf",
+      "url": null,
+      "headers": {},
+      "captured_at": null,
+      "role": "independent_stdlib_csv_oracles_without_names_or_documents"
+    },
+    {
+      "file": "portal.html",
+      "bytes": 159185,
+      "sha256": "4b4ddea22db423b40dd2877a841e1b57f292d6924ef0c517e59ff8aa1d2d1314",
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "captured_at": "2026-09-07T01:55:54.281538+00:00",
+      "role": "original_official_discovery_html",
+      "headers": {
+        "date": "Mon, 07 Sep 2026 01:20:51 GMT",
+        "content-type": "text/html;charset=utf-8",
+        "content-length": "22592"
+      }
+    }
+  ],
+  "oracles_method": "stdlib csv independent of agrobr parser; field values omitted for employer, identifier and establishment",
+  "masking": {
+    "decisao": "decisão do mantenedor, 25/09/2026",
+    "regra": "decisão do mantenedor (25/09/2026): cópia mascarada. CPF de pessoa física trocado por CPF sintético com DV válido da série fixa 000.000.NNN-DV, na ordem da primeira aparição; nome da pessoa física trocado por 'PESSOA NNN', também onde aparece dentro de Estabelecimento; CPF dentro da razão social de pessoa jurídica trocado pelo CPF sintético, com o resto do nome como publicado; CNPJ e demais dados de pessoa jurídica como publicados. Mesmo layout: no TXT, a largura de cada campo; no PDF, os mesmos glifos (ToUnicode), posições e quebras de linha. Originais fora do repositório, com SHA-256,",
+    "contagens": {
+      "linhas_pessoa_fisica": 389,
+      "cpf_pessoa_fisica_distintos": 383,
+      "nomes_pessoa_fisica_distintos": 383,
+      "estabelecimentos_com_nome_de_pessoa_fisica": 49,
+      "cpf_em_razao_social": 7,
+      "celulas_por_formato": 834
+    },
+    "cpf_em_razao_social_ids": [
+      "77",
+      "136",
+      "201",
+      "223",
+      "275",
+      "304",
+      "430"
+    ],
+    "pdf": {
+      "nomes_em_duas_linhas": 22,
+      "nome_cruzando_quebra_de_linha": 1,
+      "paginas_regravadas": 45
+    },
+    "originais": "(fora do repositório); SHA-256 e bytes originais em artifacts[].original_sha256"
+  }
+}

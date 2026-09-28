@@ -1,0 +1,31 @@
+{
+  "url": "https://api-comexstat.mdic.gov.br/general?language=pt",
+  "payload": {
+    "flow": "import",
+    "monthDetail": true,
+    "period": {
+      "from": "2024-01",
+      "to": "2024-01"
+    },
+    "filters": [
+      {
+        "filter": "heading",
+        "values": [
+          "1507"
+        ]
+      }
+    ],
+    "details": [
+      "state",
+      "ncm"
+    ],
+    "metrics": [
+      "metricFOB",
+      "metricKG"
+    ]
+  },
+  "timestamp": "2026-09-05T21:24:33.380400+00:00",
+  "status": 200,
+  "bytes": 986,
+  "sha256": "88a95a8c398a940f53441ee16898d1a2dab98d251e4035c8c1e661e5812fa478"
+}

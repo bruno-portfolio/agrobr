@@ -1,0 +1,43 @@
+{
+  "type": "FeatureCollection",
+  "numberMatched": 42391,
+  "numberReturned": 2,
+  "features": [
+    {
+      "type": "Feature",
+      "id": "sicar_imoveis_go.16341629",
+      "geometry": null,
+      "properties": {
+        "cod_imovel": "GO-5205802-FC2998F99E054829B0D529A91448F4DD",
+        "status_imovel": "AT",
+        "dat_criacao": "2026-09-16T11:35:21.452Z",
+        "data_atualizacao": "2026-09-16T11:40:14.427Z",
+        "area": 164.4076,
+        "condicao": "Aguardando análise",
+        "uf": "GO",
+        "municipio": "Corumbá de Goiás",
+        "cod_municipio_ibge": 5205802,
+        "m_fiscal": 4.7,
+        "tipo_imovel": "IRU"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sicar_imoveis_go.16341644",
+      "geometry": null,
+      "properties": {
+        "cod_imovel": "GO-5205802-FC2998F99E054829B0D529A91448F4DD",
+        "status_imovel": "AT",
+        "dat_criacao": "2026-09-16T11:40:11.170Z",
+        "data_atualizacao": "2026-09-16T11:41:07.464Z",
+        "area": 164.4076,
+        "condicao": "Aguardando análise",
+        "uf": "GO",
+        "municipio": "Corumbá de Goiás",
+        "cod_municipio_ibge": 5205802,
+        "m_fiscal": 4.7,
+        "tipo_imovel": "IRU"
+      }
+    }
+  ]
+}

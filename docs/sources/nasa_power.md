@@ -16,7 +16,7 @@
 - **URL**: `https://power.larc.nasa.gov/api/temporal/daily/point`
 - **Formato**: JSON
 - **Acesso**: Publico, sem restricoes de autenticacao
-- **Cobertura**: Global, grid 0.5 grau, desde 1981
+- **Cobertura**: Global, consulta por ponto, desde 1981
 - **Comunidade**: AG (Agroclimatology)
 
 ## Parametros Disponveis
@@ -32,6 +32,8 @@
 | `WS2M` | `vento_ms` | m/s | Velocidade do vento a 2m |
 
 ## Uso
+
+Consultas longas são divididas em blocos. Se um bloco falhar após os retries, a chamada inteira levanta `SourceUnavailableError`; blocos anteriores não são devolvidos como uma série completa. `clima_ponto` e `clima_uf` aceitam somente `agregacao="diario"` ou `"mensal"`, com validação antes da rede. Isso não implica que todas as variáveis tenham medições em todos os dias: ausências publicadas pela fonte continuam nulas.
 
 ### Dados por ponto (lat/lon)
 
@@ -66,7 +68,7 @@ asyncio.run(main())
 
 ### Dados por UF
 
-Usa coordenadas centrais da UF como ponto representativo.
+Usa um ponto representativo fixo por UF, escolhido pelo agrobr (`UF_COORDS`). Não é o centroide oficial da UF.
 
 ```python
 # Clima mensal de MT em 2024
@@ -108,17 +110,20 @@ df, meta = await nasa_power.clima_uf("MT", ano=2024, return_meta=True)
 | `umidade_media` | float | Umidade relativa media (%) |
 | `radiacao_media_mj` | float | Radiacao media (MJ/m2/dia) |
 | `vento_medio_ms` | float | Vento medio (m/s) |
+| `dias` | int | Dias do mês com algum parâmetro válido |
+| `data_inicio` | datetime | Primeiro desses dias |
+| `data_fim` | datetime | Último desses dias |
 | `lat` | float | Latitude do ponto |
 | `lon` | float | Longitude do ponto |
 
 ## UFs Disponiveis
 
-Todas as 27 UFs brasileiras possuem coordenadas centrais mapeadas.
+Todas as 27 UFs brasileiras têm um ponto representativo fixo configurado.
 Para analises precisas, usar `clima_ponto()` com coordenadas exatas.
 
 ## Nota sobre Resolucao Espacial
 
-NASA POWER fornece dados em grid de 0.5 grau (~55km). Para UFs grandes
+NASA POWER combina produtos com características espaciais próprias; a consulta por ponto não estabelece uma resolução única para todas as variáveis. Para UFs grandes
 como MT ou PA, o ponto central pode nao representar bem toda a variabilidade
 climatica do estado. Para analises regionais detalhadas, consultar multiplos
 pontos com `clima_ponto()`.
@@ -134,3 +139,11 @@ Não há cache local: cada chamada baixa os dados da NASA POWER.
 | **Frequencia** | Dados com ~2 dias de lag |
 | **Historico** | Desde 1981 |
 | **Resolucao** | Diaria |
+
+## Agregação e ausência de medições
+
+Precipitação é acumulada no tempo por estação. O INMET calcula o valor mensal da UF pela média simples dos acumulados das estações com chuva válida em todos os dias do mês, não pela soma das estações; `estacoes_chuva` e `estacoes_chuva_parciais` contam as que entraram e as que ficaram fora. `num_estacoes` conta estações presentes. O NASA POWER usa um ponto representativo fixo da UF. Suas coordenadas são preservadas pelo dataset; isso não é uma média territorial ou centroide comprovado, nem demonstra uma célula espacial comum a todas as variáveis. O dia padrão NASA usa [LST](https://power.larc.nasa.gov/docs/services/api/temporal/daily/#time-standards), enquanto o INMET usa UTC; o dataset registra essa distinção em `base_tempo`.
+
+O dado do NASA POWER é a reanálise MERRA-2 em ponto de grade, e não uma estação, até o mês anterior; no mês corrente é o GEOS-IT, de baixa latência, que a NASA substitui pelo MERRA-2 depois, e a radiação recente vem do FLASHFlux, que o SYN1deg substitui ([fontes da NASA POWER](https://power.larc.nasa.gov/docs/methodology/data/sources/); a NASA recomenda parar a análise de tendência 2 meses antes). O `source_details` traz as fontes que o cabeçalho de cada consulta declara (`fontes` e `fontes_por_bloco`) e o trecho de baixa latência (`periodos_baixa_latencia`, com a `origem` e se é `exato`), e o `validation_warnings`, um aviso por fonte. O cabeçalho só dá as fontes da janela: num bloco com as 2, o início do GEOS-IT sai da regra da NASA (o MERRA-2 fecha por mês) quando há um só dia 1 no bloco; com mais de um, o aviso cobre o bloco e diz que o cabeçalho não separa por dia. Comparado ao INMET em 2025 (conferência de 26/09/2026), a chuva anual saiu 41% abaixo no DF e 27% abaixo em MT, e a temperatura média mensal, até 2,9 °C acima. No `datasets.clima` com `fonte=None`, a troca de rota muda a natureza do dado: veja o [contrato `clima`](../contracts/clima.md).
+
+Grupos inteiramente sem medições permanecem nulos: ausência não significa 0 mm. Somatórios usam somente as medições disponíveis, sem completar ou extrapolar horas/dias faltantes; `dias`, `data_inicio` e `data_fim` dão a cobertura de cada mês; compare-os com o calendário antes de comparar totais. A mesma preservação de ausência vale para radiação diária INMET. O contrato mensal `clima` 3.1 permite precipitação e temperaturas nulas; `clima_estacao` diário e `clima_estacao_horaria` horário são ambos 1.0. No mensal, `lat`/`lon` preservam o ponto NASA, e `agregacao_espacial` distingue `ponto_grade` de `estacoes` INMET.

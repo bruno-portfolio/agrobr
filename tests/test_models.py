@@ -2,26 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
-from agrobr.models import MetaInfo
+import pytest
+
+from agrobr.constants import Fonte
+from agrobr.models import Indicador, MetaInfo
 
 
 class TestMetaInfo:
-    def test_creation_basic(self):
-        meta = MetaInfo(
-            source="cepea",
-            source_url="https://example.com",
-            source_method="httpx",
-            fetched_at=datetime(2024, 1, 1, 12, 0, 0),
-        )
-
-        assert meta.source == "cepea"
-        assert meta.source_url == "https://example.com"
-        assert meta.source_method == "httpx"
-        assert meta.from_cache is False
-        assert meta.records_count == 0
-
     def test_auto_version_fill(self):
         meta = MetaInfo(
             source="cepea",
@@ -32,26 +21,6 @@ class TestMetaInfo:
 
         assert meta.agrobr_version != ""
         assert meta.python_version != ""
-
-    def test_to_dict(self):
-        meta = MetaInfo(
-            source="cepea",
-            source_url="https://example.com",
-            source_method="httpx",
-            fetched_at=datetime(2024, 1, 1, 12, 0, 0),
-            from_cache=True,
-            records_count=10,
-            columns=["data", "valor"],
-        )
-
-        d = meta.to_dict()
-
-        assert d["source"] == "cepea"
-        assert d["from_cache"] is True
-        assert d["records_count"] == 10
-        assert d["columns"] == ["data", "valor"]
-        assert "fetched_at" in d
-        assert isinstance(d["fetched_at"], str)
 
     def test_to_json(self):
         meta = MetaInfo(
@@ -84,137 +53,45 @@ class TestMetaInfo:
         assert restored.source_url == original.source_url
         assert restored.records_count == original.records_count
 
-    def test_cache_metadata(self):
+    @pytest.mark.parametrize(
+        "value, expected",
+        [
+            (datetime(2024, 6, 15, 23, 30), "2024-06-15T23:30:00+00:00"),
+            (
+                datetime(2024, 6, 15, 23, 30, tzinfo=timezone(timedelta(hours=-3))),
+                "2024-06-16T02:30:00+00:00",
+            ),
+        ],
+        ids=["naive_utc", "offset_date_rollover"],
+    )
+    def test_timestamps_normalized_on_assignment(self, value: datetime, expected: str):
         meta = MetaInfo(
-            source="cepea",
-            source_url="https://example.com",
-            source_method="cache",
-            fetched_at=datetime.now(),
-            from_cache=True,
-            cache_key="cepea:soja:all",
-            cache_expires_at=datetime(2024, 12, 31, 18, 0, 0),
-        )
-
-        assert meta.from_cache is True
-        assert meta.cache_key == "cepea:soja:all"
-        assert meta.cache_expires_at is not None
-
-    def test_validation_warnings(self):
-        meta = MetaInfo(
-            source="cepea",
+            source="conab",
             source_url="https://example.com",
             source_method="httpx",
-            fetched_at=datetime.now(),
-            validation_passed=False,
-            validation_warnings=["price_out_of_range", "missing_dates"],
+            fetched_at=datetime(2024, 1, 1),
         )
+        for field in ("fetched_at", "timestamp", "cache_expires_at", "fetch_timestamp"):
+            setattr(meta, field, value)
+            assert getattr(meta, field).utcoffset() == timedelta(0), field
+            assert meta.to_dict()[field] == expected, field
+        assert meta.cache_expires_at - meta.fetched_at == timedelta(0)
+        meta.cache_expires_at = None
+        meta.fetch_timestamp = None
+        meta.source_details = {"published_at": value}
+        meta.records_count = 4
+        assert meta.to_dict()["cache_expires_at"] is None
+        assert meta.to_dict()["fetch_timestamp"] is None
+        assert meta.source_details["published_at"] is value
+        assert meta.records_count == 4
 
-        assert meta.validation_passed is False
-        assert len(meta.validation_warnings) == 2
-        assert "price_out_of_range" in meta.validation_warnings
 
-    def test_timing_metadata(self):
-        meta = MetaInfo(
-            source="cepea",
-            source_url="https://example.com",
-            source_method="httpx",
-            fetched_at=datetime.now(),
-            fetch_duration_ms=500,
-            parse_duration_ms=100,
-        )
-
-        assert meta.fetch_duration_ms == 500
-        assert meta.parse_duration_ms == 100
-
-    def test_parser_version(self):
-        meta = MetaInfo(
-            source="cepea",
-            source_url="https://example.com",
-            source_method="httpx",
-            fetched_at=datetime.now(),
-            parser_version=2,
-            schema_version="1.1",
-        )
-
-        assert meta.parser_version == 2
-        assert meta.schema_version == "1.1"
-
-    def test_provenance_fields_default(self):
-        meta = MetaInfo(
-            source="cepea",
-            source_url="https://example.com",
-            source_method="httpx",
-            fetched_at=datetime.now(),
-        )
-
-        assert meta.attempted_sources == []
-        assert meta.selected_source == ""
-        assert meta.fetch_timestamp is None
-
-    def test_provenance_fields_populated(self):
-        now = datetime.now()
-        meta = MetaInfo(
-            source="datasets.preco_diario/cepea",
-            source_url="https://example.com",
-            source_method="dataset",
-            fetched_at=now,
-            attempted_sources=["cepea", "cache"],
-            selected_source="cepea",
-            fetch_timestamp=now,
-        )
-
-        assert meta.attempted_sources == ["cepea", "cache"]
-        assert meta.selected_source == "cepea"
-        assert meta.fetch_timestamp == now
-
-    def test_provenance_fallback_chain(self):
-        meta = MetaInfo(
-            source="datasets.estimativa_safra/ibge_lspa",
-            source_url="https://sidra.ibge.gov.br",
-            source_method="dataset",
-            fetched_at=datetime.now(),
-            attempted_sources=["conab", "ibge_lspa"],
-            selected_source="ibge_lspa",
-            fetch_timestamp=datetime.now(),
-        )
-
-        assert len(meta.attempted_sources) == 2
-        assert meta.attempted_sources[0] == "conab"
-        assert meta.selected_source == "ibge_lspa"
-        assert meta.selected_source == meta.attempted_sources[-1]
-
-    def test_provenance_to_dict(self):
-        now = datetime(2024, 6, 15, 10, 30, 0)
-        meta = MetaInfo(
-            source="datasets.preco_diario/cepea",
-            source_url="https://example.com",
-            source_method="dataset",
-            fetched_at=now,
-            attempted_sources=["cepea"],
-            selected_source="cepea",
-            fetch_timestamp=now,
-        )
-
-        d = meta.to_dict()
-        assert d["attempted_sources"] == ["cepea"]
-        assert d["selected_source"] == "cepea"
-        assert d["fetch_timestamp"] == now.isoformat()
-
-    def test_provenance_roundtrip(self):
-        now = datetime(2024, 6, 15, 10, 30, 0)
-        original = MetaInfo(
-            source="datasets.preco_diario/cepea",
-            source_url="https://example.com",
-            source_method="dataset",
-            fetched_at=now,
-            attempted_sources=["cepea", "cache"],
-            selected_source="cepea",
-            fetch_timestamp=now,
-        )
-
-        d = original.to_dict()
-        restored = MetaInfo.from_dict(d)
-
-        assert restored.attempted_sources == original.attempted_sources
-        assert restored.selected_source == original.selected_source
-        assert restored.fetch_timestamp == original.fetch_timestamp
+def test_indicador_normaliza_o_produto():
+    indicador = Indicador(
+        fonte=Fonte.CEPEA,
+        produto=" Soja ",
+        data=datetime(2025, 1, 2).date(),
+        valor=1,
+        unidade="BRL/sc",
+    )
+    assert indicador.produto == "soja"

@@ -1,9 +1,0 @@
-{
-  "source": "defensivos",
-  "parser_module": "agrobr.defensivos.parser",
-  "parser_function": "parse_formulados_csv",
-  "captured_at": "2026-03-13T12:00:00Z",
-  "parser_version": 1,
-  "url": "https://dados.agricultura.gov.br/dataset/6c913699-e82e-4da3-a0a1-fb6c431e367f/resource/25ab48c9-6280-47db-b7a0-73d6a1e8e96c/download/produtos_formulados_e_autorizacoes_de_uso.csv",
-  "notes": "Amostra de produtos formulados + autorizacoes de uso (Agrofit/MAPA)"
-}

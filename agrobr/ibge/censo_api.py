@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-import asyncio
 import time
 from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import constants
 from agrobr.cache.keys import build_cache_key
-from agrobr.cache.policies import calculate_expiry
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client
-from agrobr.ibge._helpers import NIVEL_MAP_HISTORICO, SIDRA_BASE, resolve_ibge_code
+from agrobr.ibge._helpers import NIVEL_MAP_HISTORICO, SIDRA_BASE, registrar_canal, resolve_ibge_code
 from agrobr.ibge.censo_tables import (
     _CENSO_ALL_VAR_IDS,
     _CENSO_CATEGORIA_COL_INDEX,
@@ -22,6 +21,7 @@ from agrobr.ibge.censo_tables import (
     _VAR_AS_CATEGORIA,
 )
 from agrobr.models import MetaInfo
+from agrobr.utils import tasks
 from agrobr.utils.result import finalize_result
 from agrobr.utils.time import utcnow
 
@@ -42,6 +42,16 @@ def _empty_censo_df() -> pd.DataFrame:
             "fonte",
         ]
     )
+
+
+def _validate_censo_keys(df: pd.DataFrame, source: str, parser_version: int) -> None:
+    keys = ["ano", "localidade_cod", "tema", "categoria", "variavel"]
+    if not df.empty and df.duplicated(keys).any():
+        raise ParseError(
+            source=source,
+            parser_version=parser_version,
+            reason="Observações censitárias duplicadas por ano, localidade, tema, categoria e variável",
+        )
 
 
 def _parse_censo_raw(
@@ -96,10 +106,9 @@ def _parse_censo_raw(
     df = df.rename(columns=rename_map)
 
     if "valor" in df.columns:
-        df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
-
-    if "categoria" in df.columns:
-        df = df[df["categoria"].str.lower() != "total"]
+        df["valor"] = pd.to_numeric(df["valor"].replace("-", "0"), errors="coerce").astype(
+            "float64"
+        )
 
     if "ano_cod" in df.columns:
         df["ano"] = pd.to_numeric(df["ano_cod"], errors="coerce").astype("Int64")
@@ -154,6 +163,7 @@ async def _fetch_censo_multi_table(
     table_specs: list[tuple[str, dict[str, str]]],
     territorial_level: str,
     ibge_code: str,
+    meta: MetaInfo | None = None,
 ) -> pd.DataFrame:
     key = (tema, ano_key)
     classifications: dict[str, str | list[str]] = dict(_CLASSIFICACOES_CENSO_AGRO.get(key, {}))
@@ -168,11 +178,12 @@ async def _fetch_censo_multi_table(
             period="all",
             classifications=classifications,
         )
+        registrar_canal(meta, df)
         if df.empty:
             return pd.DataFrame()
         return _parse_censo_raw(df, tema, ano_key, var_map=vm)
 
-    results = await asyncio.gather(*[_fetch_one_table(tc, vm) for tc, vm in table_specs])
+    results = await tasks.gather_or_cancel(*[_fetch_one_table(tc, vm) for tc, vm in table_specs])
     frames = [df for df in results if not df.empty]
 
     if not frames:
@@ -185,13 +196,14 @@ async def _fetch_censo_single(
     ano_key: str,
     territorial_level: str,
     ibge_code: str,
+    meta: MetaInfo | None = None,
 ) -> pd.DataFrame:
     key = (tema, ano_key)
 
     multi_spec = _CENSO_MULTI_TABLE.get(key)
     if multi_spec:
         return await _fetch_censo_multi_table(
-            tema, ano_key, multi_spec, territorial_level, ibge_code
+            tema, ano_key, multi_spec, territorial_level, ibge_code, meta
         )
 
     table_code = client.TABELAS_CENSO_AGRO[tema][ano_key]
@@ -207,6 +219,7 @@ async def _fetch_censo_single(
         period="all",
         classifications=classifications,
     )
+    registrar_canal(meta, df)
 
     if df.empty:
         return _empty_censo_df()
@@ -257,9 +270,14 @@ def _process_var_as_categoria(
     df = df.rename(columns=rename_map)
 
     if "valor" in df.columns:
-        df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
+        df["valor"] = pd.to_numeric(df["valor"].replace("-", "0"), errors="coerce").astype(
+            "float64"
+        )
 
-    df["ano"] = int(ano_key)
+    if "ano_cod" in df.columns:
+        df["ano"] = pd.to_numeric(df["ano_cod"], errors="coerce").astype("Int64")
+    else:
+        df["ano"] = int(ano_key)
 
     if "variavel_cod" in df.columns:
         df["categoria"] = df["variavel_cod"].map(lambda v: vac.get(str(v), ("", "", ""))[0])
@@ -335,6 +353,7 @@ async def censo_agro(
         fetched_at=utcnow(),
         attempted_sources=["ibge_censo_agro"],
         selected_source="ibge_censo_agro",
+        parser_version=constants.IBGE_CENSO_PARSER_VERSION,
     )
     logger.info(
         "ibge_censo_agro_request",
@@ -364,12 +383,16 @@ async def censo_agro(
 
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
 
-    results = await asyncio.gather(
-        *[_fetch_censo_single(tema_lower, ak, territorial_level, ibge_code) for ak in anos_fetch]
+    results = await tasks.gather_or_cancel(
+        *[
+            _fetch_censo_single(tema_lower, ak, territorial_level, ibge_code, meta)
+            for ak in anos_fetch
+        ]
     )
     frames = [df for df in results if not df.empty]
 
     df = pd.concat(frames, ignore_index=True) if frames else _empty_censo_df()
+    _validate_censo_keys(df, "ibge_censo_agro", constants.IBGE_CENSO_PARSER_VERSION)
 
     if not df.empty and "ano" in df.columns and "localidade" in df.columns:
         df = df.sort_values(["ano", "localidade"]).reset_index(drop=True)
@@ -382,7 +405,6 @@ async def censo_agro(
         {"tema": tema, "ano": ano, "uf": uf},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_censo_agro")
 
     logger.info(
         "ibge_censo_agro_success",
@@ -398,9 +420,6 @@ async def temas_censo_agro() -> list[str]:
 
 
 def _parse_censo_historico_raw(df: pd.DataFrame, tema: str) -> pd.DataFrame:
-    if df.empty:
-        return _empty_censo_df()
-
     periodos_set = {str(p) for p in client.PERIODOS_CENSO_HISTORICO[tema]}
     var_codes_set = set(client.VARIAVEIS_CENSO_HISTORICO[tema].values())
     reverse_vars = {v: k for k, v in client.VARIAVEIS_CENSO_HISTORICO[tema].items()}
@@ -460,7 +479,7 @@ def _parse_censo_historico_raw(df: pd.DataFrame, tema: str) -> pd.DataFrame:
     mn_unit = df["MN"] if "MN" in df.columns else pd.Series("", index=df.index)
     result["unidade"] = fixed_unit.fillna(cat_unit).fillna(mn_unit).fillna("")
 
-    result["valor"] = pd.to_numeric(df["V"], errors="coerce")
+    result["valor"] = pd.to_numeric(df["V"].replace("-", "0"), errors="coerce").astype("float64")
     result["tema"] = tema
     result["fonte"] = "ibge_censo_agro_historico"
 
@@ -518,6 +537,7 @@ async def censo_agro_historico(
         fetched_at=utcnow(),
         attempted_sources=["ibge_censo_agro_historico"],
         selected_source="ibge_censo_agro_historico",
+        parser_version=constants.IBGE_CENSO_HISTORICO_PARSER_VERSION,
     )
     logger.info(
         "ibge_censo_agro_historico_request",
@@ -573,8 +593,12 @@ async def censo_agro_historico(
         period=period,
         classifications=classifications,
     )
+    registrar_canal(meta, df)
 
     df = _empty_censo_df() if df.empty else _parse_censo_historico_raw(df, tema_lower)
+    _validate_censo_keys(
+        df, "ibge_censo_agro_historico", constants.IBGE_CENSO_HISTORICO_PARSER_VERSION
+    )
 
     if not df.empty and "ano" in df.columns and "localidade" in df.columns:
         df = df.sort_values(["ano", "localidade"]).reset_index(drop=True)
@@ -587,7 +611,6 @@ async def censo_agro_historico(
         {"tema": tema, "ano": ano, "uf": uf},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_censo_agro")
 
     logger.info(
         "ibge_censo_agro_historico_success",

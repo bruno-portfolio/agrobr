@@ -17,6 +17,33 @@
 - **Formato**: JSON
 - **Acesso**: Publico, sem autenticacao
 
+### Canal de acesso e fallback
+
+Todas as consultas tabulares (PAM, LSPA, PPM, abate, PEVS, leite, PIB agropecuario e censos) passam por
+`agrobr.ibge.client.fetch_sidra`. A API SIDRA (`apisidra.ibge.gov.br`) e o canal principal; desde setembro
+de 2026 ela responde 403 com desafio Cloudflare a clientes programaticos. Quando a SIDRA falha (403, HTML,
+5xx ou rede), a mesma tabela e consultada na API de agregados do IBGE
+(`servicodados.ibge.gov.br/api/v3/agregados`), com os mesmos seletores traduzidos
+(`t/p/v/n/c` → `agregados/{tabela}/periodos/{p}/variaveis/{v}?localidades=N{n}[...]&classificacao=c[...]`)
+e a resposta convertida para o mesmo formato de colunas da SIDRA (`NC`, `NN`, `MC`, `MN`, `V`, `D1C`…), de
+modo que parsers e contratos nao mudam. Diferencas conhecidas do canal de fallback: `MC` (codigo da unidade)
+vem vazio, porque a API de agregados publica apenas o nome da unidade; `allxp` vira `all`; o nome do periodo
+(`D2N`) vem do endpoint `/periodos` da propria tabela. O canal usado fica em
+`MetaInfo.source_details["canal"]` (`sidra`, `servicodados` ou `misto`), `source_details["consultas"]` lista canal e URL
+de cada consulta, `attempted_sources` ganha `ibge_servicodados` e `selected_source` passa a ser `ibge_servicodados`
+quando o fallback foi usado (o dataset herda essa proveniencia); `source_url` aponta para a URL consultada;
+a primeira queda emite um `warnings.warn` unico por processo. Os valores dos dois canais foram conferidos
+iguais para o LSPA de julho/2026 (soja). O probe de saude do IBGE consulta a API de agregados.
+
+Cada consulta também pede `/agregados/{tabela}/periodos` e registra a data de modificação dos períodos devolvidos, que
+diz de qual edição veio o número: `source_details["periodos_modificacao"]` sai como `{tabela: {período: data ISO}}` (a
+PAM 2024 foi revista em 17/09/2026), e cada item de `consultas` traz `tabela` e `periodos_modificacao`. O `01/01/0001` que
+o IBGE publica para período sem data sai nulo. Se o pedido de metadado falhar, a consulta segue, e o motivo vai em
+`periodos_modificacao_erro`.
+
+Resposta sem observações (`[]`, por exemplo período ainda não publicado), em qualquer um dos dois canais, devolve
+DataFrame vazio com as mesmas colunas de uma resposta com dados e emite um aviso (`warnings.warn`, uma vez por tabela e período).
+
 ## Pesquisas Disponiveis
 
 ### PAM - Producao Agricola Municipal
@@ -30,6 +57,13 @@
 - **Tabela SIDRA**: 6588
 - **Cobertura**: Nacional/UF
 - **Frequencia**: Mensal
+- **Contrato**: [LSPA 2.0](../contracts/lspa.md), uma linha por ano/mês/localidade/produto/variável, com unidade explícita; sem `mes`, preserva os meses disponíveis do ano
+
+`ibge.lspa("soja", ano=2025, mes="01", uf="MT")` aceita mês inteiro ou string inteira de 1 a 12. `uf=None` consulta o agregado Brasil. Um período não publicado pode retornar DataFrame vazio; HTTP 200 não comprova disponibilidade de observações.
+
+O [dataset `estimativa_safra` 3.1](../contracts/estimativa_safra.md) pode selecionar essa fonte com `fonte="ibge_lspa"` ou `mes`, preservando `ano_lspa` e `mes_lspa`. Seu parâmetro `safra="2024/25"` seleciona o ano civil final, 2025; esse rótulo de safra não é uma dimensão nativa LSPA. No dataset, sem mês seleciona-se o último período com observações, enquanto a API de fonte sem mês preserva a série mensal disponível.
+
+O dataset agrega os componentes esperados de milho e feijão, converte hectares/toneladas para mil ha/mil toneladas e recalcula produtividade pelos totais. Componentes ausentes, duplicatas ou unidades/localidades incompatíveis são rejeitados; valores NA continuam ausentes. Não use `levantamento` CONAB como mês LSPA nem some estimativas mensais como fluxos de produção.
 
 ### PPM - Pesquisa da Pecuaria Municipal
 
@@ -57,6 +91,8 @@
 - **Periodos**: 1995, 2006 e 2017 (conforme tema)
 - **Temas**: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente, preparo_solo, adubacao, calagem, agrotoxicos, praticas_agricolas, irrigacao, despesa_adubos
 - **Formato**: Long format (variavel/valor por linha)
+- **Linha Total**: publicada como a fonte (`categoria = "Total"`), sem se somar às demais; `estabelecimentos`
+  não soma entre categorias
 
 ### Censo Agropecuario — Serie Historica (1920-2006)
 
@@ -67,26 +103,44 @@
 - **Temas**: 9 temas com serie historica longa
 - **Quirks**: Aves em mil cabecas (tab 281), unidades mistas por categoria (tabs 282/283/1730/1731), classificacoes sem Total (tabs 281/282/283/1730/1731)
 
-### Censo Agropecuario 1985 — Dados Municipais (PDFs OCR)
+### Censo Agropecuario 1985 — Dados Municipais (PDFs do IBGE)
 
-- **Fonte**: PDFs estaduais da Biblioteca IBGE
-- **Formato**: CSVs extraidos via OCR hibrida (PyMuPDF coords + correcao OCR)
-- **Cobertura**: 22 UFs, ate municipio (mesorregiao, microrregiao, municipio)
+- **Fonte**: os 28 PDFs estaduais da Biblioteca do IBGE (27 UFs; Minas Gerais em 2 volumes). MA, PI, CE e RN usam a versão que o
+  IBGE republicou em 03/09/2018, com camada de texto.
+- **Formato**: pacote do agrobr em Parquet (`agrobr/data/censo_1985/`), 1 linha por casa do PDF, extraído pela camada
+  de texto, com o RapidOCR como 2ª leitura; o manifesto guarda o SHA-256 de cada PDF.
+- **Cobertura**: 27 UFs, até município (mesorregião, microrregião, município); 85,8 % das células lidas têm coluna
+  identificada (a lista por volume está no contrato).
 - **Frequencia**: Unica (Censo 1985)
-- **Temas**: 53 temas (propriedade, uso da terra, pessoal, mecanizacao, pecuaria, lavouras, producao)
-- **UFs excluidas**: MA, PI, CE, RN (PDFs sem camada OCR)
-- **Acesso**: Dados bundled no pacote (agrobr/data/censo_1985/)
-- **Qualidade**: campo `confianca` (alta/media/baixa), 77.9% cross-validation estadual↔nacional
+- **Temas**: 53 temas, 1 por tabela (67 a 119), pelo título impresso
+- **Confiança**: `valor` só na casa confirmada pelas somas impressas (0 erro nos oráculos cegos); `valor_lido` e o `status` para o
+  resto, com a precisão medida no [contrato](../contracts/censo_agropecuario_municipal_1985.md)
+- **Acesso**: local, sem rede
 - **URL catalogo**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768
 
 ### Censo Agropecuario 1995/96 — Temas Legados (FTP)
 
 - **Fonte**: FTP IBGE (`ftp.ibge.gov.br`)
-- **Formato**: XLS legado (xlrd)
-- **Cobertura**: Brasil (mesorregioes, microrregioes, municipios)
+- **Formato**: ZIPs com XLS legado (BIFF5/BIFF8) ou HTML
+- **Cobertura**: Brasil, totais estaduais e municípios; `uf` distingue municípios homônimos
+- **Contrato**: [Censo legado 2.0](../contracts/censo_agropecuario_legado.md), com categorias, variáveis e unidades dos cabeçalhos oficiais
 - **Frequencia**: Unica (Censo 1995/96)
 - **Temas**: tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro
 - **Acesso**: Publico, sem autenticacao
+
+As fixtures de regressão cobrem os seis temas nas 27 UFs: 161 combinações com
+dados e uma rejeição esperada. Na captura de setembro de 2026, o arquivo
+[Pará/Tab_7Mn.zip](https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Para/Tab_7Mn.zip)
+de máquinas contém os mesmos bytes da tabela de pessoal ocupado, e nenhum dos 11
+`Tab_*Mn` do Pará traz a Tabela 7 (conferido de novo em 27/09/2026). A consulta de
+máquinas com `uf='PA'` levanta `SourceUnavailableError`, e a consulta sem `uf`
+devolve as outras 26 UFs, com o aviso no `MetaInfo` e um `UserWarning`; o tema não
+é substituído por dados de pessoal ou por uma tabela de outra granularidade.
+
+Os cabeçalhos BIFF8 de máquinas em Sergipe distinguem plantio, colheita,
+caminhões e utilitários, mesmo quando as caixas de texto se sobrepõem. As
+regressões conferem células oficiais, unidades, escalas financeiras e os zeros
+da legenda; os valores estaduais não são reconstruídos pela soma dos municípios.
 
 ### PEVS — Silvicultura
 
@@ -97,7 +151,7 @@
 - **Produtos**: carvao, lenha, madeira_tora, madeira_celulose, acacia_negra, eucalipto_folha, resina (14 total)
 - **Especies area**: eucalipto, pinus, outras
 - **Variaveis**: quantidade_produzida (var 142), valor_producao (var 143), area (var 6549)
-- **Unidades**: Toneladas ou Metros cubicos (conforme produto)
+- **Unidades**: campo `MN` da resposta SIDRA, conforme variável e período; produção física em toneladas ou metros cúbicos, área em hectares e valor da produção em moeda (por exemplo, `Mil Reais` em 2023)
 
 ### PEVS — Extracao Vegetal
 
@@ -107,7 +161,7 @@
 - **Serie**: 1986-presente
 - **Produtos**: acai, castanha_caju, castanha_para, erva_mate, mangaba, palmito, pequi_fruto, pinhao, umbu, hevea_coagulado, hevea_liquido, carnauba_cera, carnauba_po, piacava, carvao, lenha, madeira_tora, babacu, copaiba, cumaru, pequi_amendoa (21 total)
 - **Variaveis**: quantidade_produzida (var 144), valor_producao (var 145)
-- **Unidades**: Toneladas (maioria) ou Metros cubicos (lenha, madeira_tora)
+- **Unidades**: campo `MN` da resposta SIDRA; quantidade em toneladas ou metros cúbicos e valor da produção em moeda (por exemplo, `Mil Reais` em 2023)
 
 ### Leite Trimestral — Pesquisa Trimestral do Leite
 
@@ -230,7 +284,7 @@ produtos = await ibge.produtos_lspa()
 # ['soja', 'milho_1', 'milho_2', 'arroz', 'feijao_1', 'feijao_2', ...]
 ```
 
-Nota: No LSPA, `milho_1` e `milho_2` referem-se a primeira e segunda safras.
+Nota: No LSPA, `milho_1` e `milho_2` referem-se à primeira e segunda safras de milho do mesmo ano civil. O alias `milho` da API de fonte devolve os componentes separados; sua agregação ocorre no dataset.
 
 ## UFs Disponiveis
 
@@ -295,8 +349,10 @@ asyncio.run(main())
 | `caprino` | Caprino | cabecas |
 | `ovino` | Ovino | cabecas |
 | `galinaceos_total` | Galinaceos (total) | cabecas |
-| `galinhas_poedeiras` | Galinhas poedeiras | cabecas |
+| `galinhas` | Galinhas (inclui poedeiras e matrizeiras) | cabecas |
 | `codornas` | Codornas | cabecas |
+
+`galinhas_poedeiras`: alias depreciado de `galinhas` (`FutureWarning`).
 
 ### Producao de origem animal (tabela 74)
 
@@ -428,18 +484,7 @@ temas = await ibge.temas_censo_agro()
 
 ## Cache
 
-| Pesquisa | TTL | Stale maximo |
-|----------|-----|--------------|
-| PAM | 7 dias | 90 dias |
-| LSPA | 24 horas | 30 dias |
-| PPM | 7 dias | 90 dias |
-| Abate | 7 dias | 90 dias |
-| Censo Agro | 30 dias | 90 dias |
-| Censo Agro Legado | 90 dias | 90 dias |
-| Silvicultura (PEVS) | 7 dias | 90 dias |
-| Extracao Vegetal (PEVS) | 7 dias | 90 dias |
-| Leite Trimestral | 7 dias | 90 dias |
-| PIB Agro | 7 dias | 90 dias |
+Não há cache local: cada chamada consulta o IBGE, e o `MetaInfo` sai com `from_cache=False` e `cache_expires_at` nulo.
 
 ## Atualizacao
 
@@ -597,9 +642,27 @@ asyncio.run(main())
 | `setor` | str | Setor economico |
 | `fonte` | str | "ibge_pib" |
 
+## Limites e erros
+
+Rajadas de consultas ao SIDRA podem provocar uma verificação antibot do Cloudflare (`challenge`). Quando a resposta 403 contém `cf-mitigated: challenge` ou a página “Just a moment”, a consulta levanta `SourceUnavailableError` com a indicação `Cloudflare challenge` e orientação para reduzir a taxa de requisições. Aguarde antes de tentar novamente; esse 403 não é repetido automaticamente.
+
 ## Notas
 
-- PEVS Silvicultura: 14 produtos, dados anuais desde 1986. Area plantada (tab 5930) com 3 especies. Cache 7 dias
-- PEVS Extracao Vegetal: 21 produtos, dados anuais desde 1986. Unidades mistas (Toneladas vs Metros cubicos). Cache 7 dias
-- Leite Trimestral: tabela 1086, 3 variaveis pivotadas em colunas wide. Serie desde 1997. Cache 7 dias
-- PIB Agropecuario: tabs 1846/6612, 4 setores, nivel Brasil. Serie desde 1996. Sem contrato (macro view). Cache 7 dias
+- PEVS Silvicultura: 14 produtos, dados anuais desde 1986. Area plantada (tab 5930) com 3 especies
+- PEVS Extracao Vegetal: 21 produtos, dados anuais desde 1986. Unidades mistas (Toneladas vs Metros cubicos)
+- Leite Trimestral: tabela 1086, 3 variaveis pivotadas em colunas wide. Serie desde 1997
+- PIB Agropecuario: tabs 1846/6612, 4 setores, nivel Brasil. Serie desde 1996. Sem contrato (macro view)
+
+## Períodos e cobertura histórica
+
+PAM anterior a 1988 pode não publicar área plantada. `datasets.producao_anual` representa a ausência por `Float64` nulo; também mantém nulo o valor da produção quando não solicitado. As demais medidas não são preenchidas automaticamente, para não esconder mudanças na fonte.
+
+PPM rejeita anos futuros com `InvalidParameterError`, também em `datasets.pecuaria_municipal`. Abate, leite trimestral e PIB agro aceitam `2025-4`, `2025-T4`, `2025T4`, `2025/4` e `2025Q4`, normalizados para `202504`. Formatos inválidos são rejeitados antes da rede.
+
+## Unidades e quebras históricas da PAM
+
+Os valores publicados não são convertidos implicitamente. `unidade_producao`, `unidade_rendimento` e `unidade_valor_producao` identificam a escala de cada linha. Laranja anterior a 2001 usa `mil_frutos` e `frutos/ha`; desde 2001, `ton` e `kg/ha`. `condicao_produto` distingue café `em_coco` até 2001 e `beneficiado` desde 2002. As moedas históricas permanecem identificadas, sem conversão para reais nem correção de inflação. Consulte as [notas metodológicas do IBGE](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
+
+`localidade_cod` (contrato `producao_anual` 2.1) traz o código IBGE da localidade como o SIDRA publica (D1C): 7 dígitos no município, 2 na UF e 1 no Brasil. Use-o para juntar municípios entre anos, porque o nome publicado muda (e o do DF sai como "Brasília (DF)", sem o " - UF" dos demais). No `producao_anual`, só as linhas do IBGE trazem o código; o fallback da CONAB não.
+
+O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.1; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.

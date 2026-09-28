@@ -1,13 +1,31 @@
-from unittest.mock import AsyncMock, patch
+import json
+from pathlib import Path
 
-import httpx
 import pandas as pd
 import pytest
 
-from agrobr.datasets.censo_agropecuario import CensoAgropecuarioDataset
-from agrobr.exceptions import SourceUnavailableError
+from agrobr import datasets
+from agrobr.ibge import client
+from tests import helpers
 
-from .conftest import make_source, mock_source_meta
+DESPESAS_2017 = (
+    Path(__file__).resolve().parents[1]
+    / "golden_data/ibge/censo_2017_despesa_adubos_20260923/sidra_6899_uf.json"
+)
+URL_6899 = (
+    "https://apisidra.ibge.gov.br/values/t/6899/n3/all/h/n/p/all/v/2,1996"
+    "/c829/46302/c210/45953/c218/46502/c12517/113601"
+)
+
+
+@pytest.fixture(autouse=True)
+def sem_periodos_ibge(monkeypatch: pytest.MonkeyPatch) -> None:
+    """As capturas deste módulo não trazem o `/periodos`."""
+
+    async def sem_metadado(_table_code: str, _df: object) -> dict[str, object]:
+        return {}
+
+    monkeypatch.setattr(client, "_periodos_modificacao", sem_metadado)
 
 
 def _mock_df():
@@ -28,97 +46,36 @@ def _mock_df():
     )
 
 
-class TestCensoAgropecuarioFetch:
-    @pytest.mark.asyncio
-    async def test_fetch_returns_dataframe(self):
-        dataset = CensoAgropecuarioDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
-
-        df = await dataset.fetch("efetivo_rebanho")
-
-        assert len(df) == 1
-        assert "tema" in df.columns
-        assert "valor" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_fetch_return_meta(self):
-        dataset = CensoAgropecuarioDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
-
-        df, meta = await dataset.fetch("efetivo_rebanho", return_meta=True)
-
-        assert meta.dataset == "censo_agropecuario"
-        assert meta.contract_version == "1.0"
-        assert meta.attempted_sources == ["ibge_censo_agro"]
-        assert meta.selected_source == "ibge_censo_agro"
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_fetch_invalid_produto(self):
-        dataset = CensoAgropecuarioDataset()
-        with pytest.raises(ValueError, match="não suportado"):
-            await dataset.fetch("aveia")
+def test_dataset_do_censo_oferece_todos_os_temas_da_fonte():
+    assert set(datasets.info("censo_agropecuario")["products"]) == set(client.TEMAS_CENSO_AGRO)
 
 
-class TestCensoAgropecuarioKwargs:
-    @pytest.mark.asyncio
-    async def test_passes_uf_kwarg(self):
-        dataset = CensoAgropecuarioDataset()
-        mock_fn = make_source(_mock_df())
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        await dataset.fetch("efetivo_rebanho", uf="MG")
-
-        _, call_kwargs = mock_fn.call_args
-        assert call_kwargs["uf"] == "MG"
-
-    @pytest.mark.asyncio
-    async def test_passes_nivel_kwarg(self):
-        dataset = CensoAgropecuarioDataset()
-        mock_fn = make_source(_mock_df())
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        await dataset.fetch("efetivo_rebanho", nivel="municipio")
-
-        _, call_kwargs = mock_fn.call_args
-        assert call_kwargs["nivel"] == "municipio"
-
-
-class TestCensoAgropecuarioSourceFail:
-    @pytest.mark.asyncio
-    async def test_source_fails_raises(self):
-        dataset = CensoAgropecuarioDataset()
-        dataset.info.sources[0].fetch_fn = AsyncMock(side_effect=httpx.ConnectError("test"))
-
-        with pytest.raises(SourceUnavailableError):
-            await dataset.fetch("efetivo_rebanho")
-
-
-class TestCensoAgropecuarioFetchFunctions:
-    @pytest.mark.asyncio
-    async def test_fetch_ibge_censo_agro_forwards_params(self):
-        df = _mock_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.ibge.censo_agro", new_callable=AsyncMock, return_value=(df, meta)
-        ) as mock_fn:
-            from agrobr.datasets.censo_agropecuario import _fetch_ibge_censo_agro
-
-            await _fetch_ibge_censo_agro("efetivo_rebanho", uf="MG", nivel="municipio")
-        mock_fn.assert_called_once_with(
-            "efetivo_rebanho", uf="MG", nivel="municipio", return_meta=True
-        )
-
-    @pytest.mark.asyncio
-    async def test_fetch_ibge_censo_agro_defaults(self):
-        df = _mock_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.ibge.censo_agro", new_callable=AsyncMock, return_value=(df, meta)
-        ) as mock_fn:
-            from agrobr.datasets.censo_agropecuario import _fetch_ibge_censo_agro
-
-            await _fetch_ibge_censo_agro("uso_terra")
-        _, kwargs = mock_fn.call_args
-        assert kwargs["uf"] is None
-        assert kwargs["nivel"] == "uf"
+async def test_despesa_com_adubos_confere_a_tabela_oficial_6899(monkeypatch):
+    oficial = json.loads(DESPESAS_2017.read_text(encoding="utf-8"))
+    path, params, skip = helpers.replay_signature(URL_6899)
+    pedido = {"match": {"path": path, "params": dict(params), "skip": skip}}
+    pedido |= {"file": DESPESAS_2017.name, "content_type": "application/json"}
+    seen = helpers.install_replay_http(monkeypatch, {"requests": [pedido]}, DESPESAS_2017.parent)
+    try:
+        frame = await datasets.censo_agropecuario("despesa_adubos", ano=2017)
+    finally:
+        helpers.assert_replay_served(seen)
+    assert {(linha["D5N"], linha["D4N"], linha["D6N"], linha["D7N"]) for linha in oficial} == {
+        ("Adubos e corretivos", "Total", "Total", "Total")
+    }
+    esperado = {
+        (
+            linha["D1N"],
+            int(linha["D1C"]),
+            "estabelecimentos" if linha["D3C"] == "2" else "valor_mil_reais",
+        ): (float(linha["V"]), linha["MN"].lower())
+        for linha in oficial
+    }
+    observado = {
+        (r.localidade, r.localidade_cod, r.variavel): (r.valor, r.unidade)
+        for r in frame.itertuples()
+    }
+    assert len(frame) == len(oficial) == 54
+    assert observado == esperado
+    assert observado[("São Paulo", 35, "valor_mil_reais")] == (5590636.0, "mil reais")
+    assert set(zip(frame["ano"], frame["tema"], strict=True)) == {(2017, "despesa_adubos")}

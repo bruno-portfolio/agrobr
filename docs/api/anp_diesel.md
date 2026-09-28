@@ -27,7 +27,7 @@ async def precos_diesel(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `uf` | `str \| None` | Filtro por UF (ex: SP, MT, PR) |
-| `municipio` | `str \| None` | Filtro por municipio (substring case-insensitive) |
+| `municipio` | `str \| None` | Filtro por municipio (correspondência exata após normalizar caixa/acentos) |
 | `produto` | `str` | "DIESEL" ou "DIESEL S10" (default) |
 | `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD) |
 | `fim` | `str \| date \| None` | Data final (YYYY-MM-DD) |
@@ -38,8 +38,7 @@ async def precos_diesel(
 
 **Retorno:**
 
-DataFrame com colunas: `data`, `uf`, `municipio`, `produto`, `preco_venda`,
-`preco_compra`, `margem`, `n_postos`
+Contrato de fonte `anp_diesel_precos` 2.0, com 15 colunas: `data`, `uf`, `municipio`, `produto`, `preco_venda`, `preco_compra`, `n_postos`, `margem`, `periodo_inicio`, `periodo_fim`, `nivel`, `unidade`, `agregacao`, `n_semanas`, `n_postos_media`. O [dataset `precos_diesel`](../contracts/precos_diesel.md) tem contrato próprio 1.0, com as mesmas colunas.
 
 **Exemplo:**
 
@@ -112,6 +111,23 @@ df = alt.anp_diesel.vendas_diesel()
 ## Notas
 
 - Fonte: [ANP Gov.br](https://www.gov.br/anp/) — licenca `livre` (Decreto 8.777/2016)
-- Dados: XLSX bulk (precos 2013+), XLS (volumes)
-- XLSX de precos por municipio podem ser grandes (50-100MB) — cache por periodo do arquivo
-- TTL cache: 7 dias
+- Dados: XLSX bulk (precos 2013+), CSV (volumes)
+- Planilhas municipais grandes são baixadas integralmente; não há cache persistente.
+
+## Períodos de preços e catálogo
+
+`data` é o início publicado da semana, não o instante de aquisição. Filtros de data selecionam esse início e preservam o fim publicado. O mensal usa o mês do início semanal e a média simples dos preços semanais disponíveis, sem ponderação por postos ou dias. `n_postos` fica nulo; `n_postos_media` e `n_semanas` descrevem as observações selecionadas. Semanas ausentes não são inventadas.
+
+No nível municipal, intervalos de anos são resolvidos pelos links publicados; anos além do catálogo configurado acionam descoberta no catálogo oficial. Período válido sem recurso publicado gera `SourceUnavailableError` com a cobertura do catálogo. Datas malformadas ou invertidas geram `InvalidParameterError`.
+
+Metadados preservam URLs pedida/final dos recursos, aquisição, hashes, população semanal e cobertura selecionada. Veja o [contrato do dataset](../contracts/precos_diesel.md).
+
+## Preço de venda por nível
+
+`preco_venda` não tem a mesma natureza em todos os níveis. No município, é a média aritmética simples dos preços dos postos da amostra. Na UF e no Brasil, desde 31/10/2004, é a média ponderada pelas vendas que as distribuidoras informam à ANP (nota da [página da série histórica](https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/serie-historica-do-levantamento-de-precos)). `n_postos` é o tamanho da amostra e fecha entre os níveis: a UF soma os postos dos seus municípios, e o Brasil, os das UFs. Mas não é o peso, e recompor a UF pela média dos municípios ponderada por `n_postos` erra: na semana de 06/09/2026, o diesel S10 de AL sai a 6,84 R$/l com 25 postos, e a média dos 4 municípios ponderada por postos dá 7,20 R$/l. `produto="DIESEL"` é o óleo diesel B S500 comum, como diz a própria planilha; `"DIESEL S10"` é o S10.
+
+## Semanas na virada do ano
+
+Nas planilhas municipais, uma semana iniciada no fim de dezembro pode estar no arquivo do período seguinte. A seleção inclui o arquivo adjacente disponível quando necessário: a semana de 31/12/2023 a 06/01/2024 está em `2024–2025`, pertence ao filtro de dezembro de 2023 e entra na média desse mês. A consulta pode baixar dois arquivos mesmo com início e fim no mesmo ano.
+
+O mensal desta API é calculado a partir das semanas selecionadas; não usa as planilhas mensais separadas que a ANP também publica. A ausência de preço de distribuição nos arquivos municipais mantém `preco_compra` e `margem` nulos. Os recibos de aquisição identificam todos os arquivos usados.

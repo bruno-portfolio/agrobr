@@ -1,5 +1,4 @@
 {
-  "count_min": 72,
   "columns": [
     "ano",
     "mes",
@@ -18,7 +17,7 @@
     "farelo",
     "grao",
     "milho",
-    "oleo",
-    "total"
-  ]
+    "oleo"
+  ],
+  "count": 48
 }

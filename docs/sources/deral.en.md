@@ -23,29 +23,54 @@ df = await deral.condicao_lavouras("trigo")
 |---|---|---|
 | `produto` | str | Monitored crop; beans and corn preserve the season as `feijao_1`, `feijao_2`, `milho_1`, or `milho_2` |
 | `data` | str | Reference date (dd/mm/yyyy) |
-| `condicao` | str | `boa`, `media` or `ruim`; empty for planting and harvest progress records |
+| `condicao` | str | `boa`, `media` or `ruim`; planting and harvest progress come in the columns below, in the same record |
 | `pct` | float | Percentage of the crop in that condition |
 | `plantio_pct` | float | Planting progress (%) |
 | `colheita_pct` | float | Harvest progress (%) |
 
+## Published dates and percentages
+
+`data` comes from the sheet's reference-date cell, including cells outside the
+header, and is normalized to `dd/mm/yyyy`. Excel dates, `dd/mm/yyyy`,
+`dd-mm-yyyy` and `dd-mm-yy` are recognized; two-digit years use 2000+.
+A sheet name never replaces a missing date: the parser raises `ParseError`
+identifying the sheet.
+An unreadable sheet stops parsing with `ParseError`; no partial result is returned.
+
+The table is sorted by `produto`, by date in chronological order and by `condicao`: the last row
+of each product is the most recent reference. `data` stays `dd/mm/yyyy` text, as in the contract,
+so `max()` or a text sort of that column is not chronological; convert with
+`pd.to_datetime(df["data"], format="%d/%m/%Y")`.
+
+The PC.xls footnote defines `"-"` as absolute zero. In percentage columns,
+this dash, including surrounding whitespace, becomes `0.0`; empty cells remain null.
+`source_method` reports the reader actually used, such as `httpx+xlrd` for
+the September 2026 BIFF capture, including any fallback reader.
+
 ## Products
 
-soja, milho, milho_1 (verão), milho_2 (safrinha), trigo, feijao,
-feijao_1, feijao_2, mandioca, cana, cafe, aveia, cevada, canola.
+8 crops observed in the captures examined (February and September 2026):
+cafe, cevada, feijao_1, feijao_2, milho_1 (summer crop), milho_2 (second crop), soja, trigo.
+
+Oats, sugarcane, canola, cassava and aggregate corn/bean totals have parser aliases,
+but were not observed in these weekly report captures. The source API retains
+these aliases; the `milho` and `feijao` filters select the corresponding published
+crop seasons. The dataset advertises only the eight crops above, whose availability
+varies by edition.
 
 ## Risk Note
 
 DERAL publishes data in Excel spreadsheets (PC.xls). The layout may change
-without notice between crop seasons. The parser automatically detects the
-products in the spreadsheet tabs and extracts conditions and progress. Drastic
-format changes may require a parser update.
+without notice between crop seasons. The parser reads the condition sheets
+(one row per crop, with the ruim, média, boa, plantada and colhida columns) and
+skips the others. Drastic format changes may require a parser update.
 
 ## MetaInfo
 
 ```python
 df, meta = await deral.condicao_lavouras("soja", return_meta=True)
 print(meta.source)  # "deral"
-print(meta.source_method)  # "httpx+openpyxl"
+print(meta.source_method)  # "httpx+xlrd"
 ```
 
 ## Source
@@ -54,3 +79,25 @@ print(meta.source_method)  # "httpx+openpyxl"
 - Format: Excel (.xls)
 - Update: weekly
 - Coverage: Paraná
+
+## Reconciliation of the February and September 2026 workbooks
+
+Both original PC.xls captures are BIFF/XLS: 26 sheets, 438 condition records
+and 730 numeric condition, planting and harvest cells checked directly.
+The `.xlsx` extension retained by the older golden file does not describe its
+actual format. No original XLSX publication was located to certify that parser
+variant.
+
+Percentages in these captures are percentage points (0–100), with no conversion
+from percent-formatted fractions. Phenological stage and commercialization
+columns, potato rows and second-season soybean rows are outside the current
+contract. A sheet reporting a holiday without observations produces no records
+or zeros. The sheet named `18-12-2017` publishes 08/01/2018 as its reference;
+the date comes from the cell, as published. When a dated sheet name (`dd-mm-yy` or
+`dd-mm-yyyy`) differs from the cell date, as here and in `19-09-2021`, with 20/09/2021,
+parsing follows the cell and warns in `validation_warnings` and `UserWarning`.
+
+Parser 2 requires the Ruim, Média, Boa, Plantada and Colhida headers in tables
+containing several crops. A missing header raises `ParseError` in the source
+and `SourceUnavailableError` with the reason in the dataset, preventing partial
+success containing only historical sheets. The contract remains at version 1.0.

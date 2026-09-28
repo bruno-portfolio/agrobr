@@ -1,0 +1,625 @@
+NC,NN,MC,MN,V,D1C,D1N,D2C,D2N,D3C,D3N,D4C,D4N
+6,Município,1006,Hectares,5,1100015,Alta Floresta D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,330,1100015,Alta Floresta D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100015,Alta Floresta D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1100015,Alta Floresta D'Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,330,1100015,Alta Floresta D'Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100015,Alta Floresta D'Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,143,1100015,Alta Floresta D'Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,4920,1100015,Alta Floresta D'Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,60,1100015,Alta Floresta D'Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,28600,1100015,Alta Floresta D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,14909,1100015,Alta Floresta D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12000,1100015,Alta Floresta D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,25,1100023,Ariquemes - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,115,1100023,Ariquemes - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,8,1100023,Ariquemes - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,25,1100023,Ariquemes - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,115,1100023,Ariquemes - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,8,1100023,Ariquemes - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,881,1100023,Ariquemes - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2825,1100023,Ariquemes - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,60,1100023,Ariquemes - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,35240,1100023,Ariquemes - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,24565,1100023,Ariquemes - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,7500,1100023,Ariquemes - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,6,1100031,Cabixi - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,22,1100031,Cabixi - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,1,1100031,Cabixi - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,6,1100031,Cabixi - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,22,1100031,Cabixi - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,1,1100031,Cabixi - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,194,1100031,Cabixi - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,436,1100031,Cabixi - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,13,1100031,Cabixi - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,32333,1100031,Cabixi - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19818,1100031,Cabixi - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,13000,1100031,Cabixi - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,26,1100049,Cacoal - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,190,1100049,Cacoal - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,55,1100049,Cacoal - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,26,1100049,Cacoal - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,190,1100049,Cacoal - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,55,1100049,Cacoal - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,1176,1100049,Cacoal - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,3440,1100049,Cacoal - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,749,1100049,Cacoal - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,45231,1100049,Cacoal - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18105,1100049,Cacoal - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,13618,1100049,Cacoal - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,20,1100056,Cerejeiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1100056,Cerejeiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1100056,Cerejeiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,20,1100056,Cerejeiras - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1100056,Cerejeiras - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1100056,Cerejeiras - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,794,1100056,Cerejeiras - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1823,1100056,Cerejeiras - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1100056,Cerejeiras - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,39700,1100056,Cerejeiras - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,16573,1100056,Cerejeiras - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1100056,Cerejeiras - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,2,1100064,Colorado do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,156,1100064,Colorado do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,1,1100064,Colorado do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,2,1100064,Colorado do Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,156,1100064,Colorado do Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,1,1100064,Colorado do Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,76,1100064,Colorado do Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,3100,1100064,Colorado do Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,12,1100064,Colorado do Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,38000,1100064,Colorado do Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19872,1100064,Colorado do Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12000,1100064,Colorado do Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,20,1100072,Corumbiara - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,145,1100072,Corumbiara - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,2,1100072,Corumbiara - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,20,1100072,Corumbiara - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,145,1100072,Corumbiara - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,2,1100072,Corumbiara - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,420,1100072,Corumbiara - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2595,1100072,Corumbiara - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,24,1100072,Corumbiara - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,21000,1100072,Corumbiara - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,17897,1100072,Corumbiara - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12000,1100072,Corumbiara - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,5,1100080,Costa Marques - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,250,1100080,Costa Marques - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,35,1100080,Costa Marques - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1100080,Costa Marques - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,250,1100080,Costa Marques - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,35,1100080,Costa Marques - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,200,1100080,Costa Marques - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,4500,1100080,Costa Marques - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,456,1100080,Costa Marques - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,40000,1100080,Costa Marques - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1100080,Costa Marques - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,13029,1100080,Costa Marques - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,-,1100098,Espigão D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,315,1100098,Espigão D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1100098,Espigão D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,-,1100098,Espigão D'Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,315,1100098,Espigão D'Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1100098,Espigão D'Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,-,1100098,Espigão D'Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,5355,1100098,Espigão D'Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1100098,Espigão D'Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,-,1100098,Espigão D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,17000,1100098,Espigão D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1100098,Espigão D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,1,1100106,Guajará-Mirim - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,330,1100106,Guajará-Mirim - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,1,1100106,Guajará-Mirim - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,1,1100106,Guajará-Mirim - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,330,1100106,Guajará-Mirim - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,1,1100106,Guajará-Mirim - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,33,1100106,Guajará-Mirim - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,6476,1100106,Guajará-Mirim - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,8,1100106,Guajará-Mirim - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,33000,1100106,Guajará-Mirim - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19624,1100106,Guajará-Mirim - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,8000,1100106,Guajará-Mirim - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,6,1100114,Jaru - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,460,1100114,Jaru - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100114,Jaru - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,6,1100114,Jaru - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,460,1100114,Jaru - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100114,Jaru - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,209,1100114,Jaru - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,11880,1100114,Jaru - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,59,1100114,Jaru - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,34833,1100114,Jaru - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,25826,1100114,Jaru - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,11800,1100114,Jaru - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,20,1100122,Ji-Paraná - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,143,1100122,Ji-Paraná - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,4,1100122,Ji-Paraná - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,20,1100122,Ji-Paraná - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,143,1100122,Ji-Paraná - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,4,1100122,Ji-Paraná - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,717,1100122,Ji-Paraná - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2574,1100122,Ji-Paraná - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,54,1100122,Ji-Paraná - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,35850,1100122,Ji-Paraná - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1100122,Ji-Paraná - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,13500,1100122,Ji-Paraná - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,9,1100130,Machadinho D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,436,1100130,Machadinho D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,7,1100130,Machadinho D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,9,1100130,Machadinho D'Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,436,1100130,Machadinho D'Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,7,1100130,Machadinho D'Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,257,1100130,Machadinho D'Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,10450,1100130,Machadinho D'Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,70,1100130,Machadinho D'Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,28556,1100130,Machadinho D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,23968,1100130,Machadinho D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,10000,1100130,Machadinho D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,5,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,200,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,600,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,40000,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,20000,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1100148,Nova Brasilândia D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,14,1100155,Ouro Preto do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,120,1100155,Ouro Preto do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100155,Ouro Preto do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,14,1100155,Ouro Preto do Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,120,1100155,Ouro Preto do Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100155,Ouro Preto do Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,380,1100155,Ouro Preto do Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2640,1100155,Ouro Preto do Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,80,1100155,Ouro Preto do Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,27143,1100155,Ouro Preto do Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,22000,1100155,Ouro Preto do Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,16000,1100155,Ouro Preto do Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,50,1100189,Pimenta Bueno - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,160,1100189,Pimenta Bueno - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,15,1100189,Pimenta Bueno - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,50,1100189,Pimenta Bueno - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,160,1100189,Pimenta Bueno - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,15,1100189,Pimenta Bueno - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,1500,1100189,Pimenta Bueno - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,3200,1100189,Pimenta Bueno - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,195,1100189,Pimenta Bueno - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1100189,Pimenta Bueno - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,20000,1100189,Pimenta Bueno - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,13000,1100189,Pimenta Bueno - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,56,1100205,Porto Velho - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,8660,1100205,Porto Velho - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,10,1100205,Porto Velho - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,56,1100205,Porto Velho - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,8660,1100205,Porto Velho - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,10,1100205,Porto Velho - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,2258,1100205,Porto Velho - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,169906,1100205,Porto Velho - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,112,1100205,Porto Velho - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,40321,1100205,Porto Velho - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19620,1100205,Porto Velho - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,11200,1100205,Porto Velho - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,6,1100254,Presidente Médici - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1100254,Presidente Médici - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,20,1100254,Presidente Médici - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,6,1100254,Presidente Médici - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1100254,Presidente Médici - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,20,1100254,Presidente Médici - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,192,1100254,Presidente Médici - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2050,1100254,Presidente Médici - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,145,1100254,Presidente Médici - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,32000,1100254,Presidente Médici - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18636,1100254,Presidente Médici - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,7250,1100254,Presidente Médici - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,2,1100262,Rio Crespo - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1100262,Rio Crespo - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1100262,Rio Crespo - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,2,1100262,Rio Crespo - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1100262,Rio Crespo - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1100262,Rio Crespo - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,60,1100262,Rio Crespo - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2830,1100262,Rio Crespo - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1100262,Rio Crespo - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1100262,Rio Crespo - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,25727,1100262,Rio Crespo - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1100262,Rio Crespo - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,20,1100288,Rolim de Moura - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,126,1100288,Rolim de Moura - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,60,1100288,Rolim de Moura - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,20,1100288,Rolim de Moura - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,126,1100288,Rolim de Moura - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,60,1100288,Rolim de Moura - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,600,1100288,Rolim de Moura - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2280,1100288,Rolim de Moura - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,850,1100288,Rolim de Moura - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1100288,Rolim de Moura - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18095,1100288,Rolim de Moura - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,14167,1100288,Rolim de Moura - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,19,1100296,Santa Luzia D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,14,1100296,Santa Luzia D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100296,Santa Luzia D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,19,1100296,Santa Luzia D'Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,14,1100296,Santa Luzia D'Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100296,Santa Luzia D'Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,638,1100296,Santa Luzia D'Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,302,1100296,Santa Luzia D'Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,30,1100296,Santa Luzia D'Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,33579,1100296,Santa Luzia D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,21571,1100296,Santa Luzia D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,6000,1100296,Santa Luzia D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,2,1100304,Vilhena - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,15,1100304,Vilhena - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,6,1100304,Vilhena - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,2,1100304,Vilhena - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,15,1100304,Vilhena - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,6,1100304,Vilhena - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,42,1100304,Vilhena - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,300,1100304,Vilhena - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,72,1100304,Vilhena - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,21000,1100304,Vilhena - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,20000,1100304,Vilhena - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12000,1100304,Vilhena - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,5,1100320,São Miguel do Guaporé - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,108,1100320,São Miguel do Guaporé - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,2,1100320,São Miguel do Guaporé - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1100320,São Miguel do Guaporé - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,108,1100320,São Miguel do Guaporé - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,2,1100320,São Miguel do Guaporé - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,125,1100320,São Miguel do Guaporé - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1944,1100320,São Miguel do Guaporé - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,16,1100320,São Miguel do Guaporé - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,25000,1100320,São Miguel do Guaporé - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1100320,São Miguel do Guaporé - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,8000,1100320,São Miguel do Guaporé - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,-,1100338,Nova Mamoré - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,200,1100338,Nova Mamoré - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100338,Nova Mamoré - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,-,1100338,Nova Mamoré - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,200,1100338,Nova Mamoré - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100338,Nova Mamoré - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,-,1100338,Nova Mamoré - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,4350,1100338,Nova Mamoré - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,64,1100338,Nova Mamoré - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,-,1100338,Nova Mamoré - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,21750,1100338,Nova Mamoré - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12800,1100338,Nova Mamoré - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,10,1100346,Alvorada D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,65,1100346,Alvorada D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,3,1100346,Alvorada D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,10,1100346,Alvorada D'Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,65,1100346,Alvorada D'Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,3,1100346,Alvorada D'Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,280,1100346,Alvorada D'Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1280,1100346,Alvorada D'Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,32,1100346,Alvorada D'Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,28000,1100346,Alvorada D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19692,1100346,Alvorada D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,10667,1100346,Alvorada D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,6,1100379,Alto Alegre dos Parecis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,25,1100379,Alto Alegre dos Parecis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,1,1100379,Alto Alegre dos Parecis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,6,1100379,Alto Alegre dos Parecis - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,25,1100379,Alto Alegre dos Parecis - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,1,1100379,Alto Alegre dos Parecis - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,192,1100379,Alto Alegre dos Parecis - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,440,1100379,Alto Alegre dos Parecis - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,8,1100379,Alto Alegre dos Parecis - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,32000,1100379,Alto Alegre dos Parecis - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,17600,1100379,Alto Alegre dos Parecis - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,8000,1100379,Alto Alegre dos Parecis - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,-,1100403,Alto Paraíso - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1100403,Alto Paraíso - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100403,Alto Paraíso - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,-,1100403,Alto Paraíso - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1100403,Alto Paraíso - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100403,Alto Paraíso - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,-,1100403,Alto Paraíso - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,750,1100403,Alto Paraíso - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,56,1100403,Alto Paraíso - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,-,1100403,Alto Paraíso - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,25000,1100403,Alto Paraíso - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,11200,1100403,Alto Paraíso - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,2,1100452,Buritis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,130,1100452,Buritis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,7,1100452,Buritis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,2,1100452,Buritis - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,130,1100452,Buritis - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,7,1100452,Buritis - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,70,1100452,Buritis - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2860,1100452,Buritis - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,84,1100452,Buritis - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,35000,1100452,Buritis - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,22000,1100452,Buritis - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12000,1100452,Buritis - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,6,1100502,Novo Horizonte do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,52,1100502,Novo Horizonte do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1100502,Novo Horizonte do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,6,1100502,Novo Horizonte do Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,52,1100502,Novo Horizonte do Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1100502,Novo Horizonte do Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,180,1100502,Novo Horizonte do Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1036,1100502,Novo Horizonte do Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1100502,Novo Horizonte do Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1100502,Novo Horizonte do Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19923,1100502,Novo Horizonte do Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1100502,Novo Horizonte do Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,19,1100601,Cacaulândia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,60,1100601,Cacaulândia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100601,Cacaulândia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1100601,Cacaulândia - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,60,1100601,Cacaulândia - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100601,Cacaulândia - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,166,1100601,Cacaulândia - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2100,1100601,Cacaulândia - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,68,1100601,Cacaulândia - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,33200,1100601,Cacaulândia - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,35000,1100601,Cacaulândia - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,13600,1100601,Cacaulândia - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,9,1100700,Campo Novo de Rondônia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,302,1100700,Campo Novo de Rondônia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,6,1100700,Campo Novo de Rondônia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,9,1100700,Campo Novo de Rondônia - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,302,1100700,Campo Novo de Rondônia - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,6,1100700,Campo Novo de Rondônia - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,208,1100700,Campo Novo de Rondônia - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,7800,1100700,Campo Novo de Rondônia - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,60,1100700,Campo Novo de Rondônia - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,23111,1100700,Campo Novo de Rondônia - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,25828,1100700,Campo Novo de Rondônia - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,10000,1100700,Campo Novo de Rondônia - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,50,1100809,Candeias do Jamari - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,1700,1100809,Candeias do Jamari - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,5,1100809,Candeias do Jamari - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,50,1100809,Candeias do Jamari - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,1700,1100809,Candeias do Jamari - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,5,1100809,Candeias do Jamari - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,2000,1100809,Candeias do Jamari - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,33850,1100809,Candeias do Jamari - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,41,1100809,Candeias do Jamari - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,40000,1100809,Candeias do Jamari - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19912,1100809,Candeias do Jamari - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,8200,1100809,Candeias do Jamari - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,3,1100908,Castanheiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,15,1100908,Castanheiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1100908,Castanheiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,3,1100908,Castanheiras - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,15,1100908,Castanheiras - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1100908,Castanheiras - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,54,1100908,Castanheiras - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,257,1100908,Castanheiras - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1100908,Castanheiras - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,18000,1100908,Castanheiras - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,17133,1100908,Castanheiras - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1100908,Castanheiras - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,2,1100924,Chupinguaia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,100,1100924,Chupinguaia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,3,1100924,Chupinguaia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,2,1100924,Chupinguaia - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,100,1100924,Chupinguaia - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,3,1100924,Chupinguaia - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,70,1100924,Chupinguaia - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1564,1100924,Chupinguaia - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,36,1100924,Chupinguaia - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,35000,1100924,Chupinguaia - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,15640,1100924,Chupinguaia - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12000,1100924,Chupinguaia - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,4,1100940,Cujubim - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,132,1100940,Cujubim - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,10,1100940,Cujubim - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,4,1100940,Cujubim - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,132,1100940,Cujubim - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,10,1100940,Cujubim - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,114,1100940,Cujubim - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2904,1100940,Cujubim - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,110,1100940,Cujubim - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,28500,1100940,Cujubim - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,22000,1100940,Cujubim - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,11000,1100940,Cujubim - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,2,1101005,Governador Jorge Teixeira - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,190,1101005,Governador Jorge Teixeira - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1101005,Governador Jorge Teixeira - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,2,1101005,Governador Jorge Teixeira - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,190,1101005,Governador Jorge Teixeira - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1101005,Governador Jorge Teixeira - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,58,1101005,Governador Jorge Teixeira - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,5850,1101005,Governador Jorge Teixeira - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1101005,Governador Jorge Teixeira - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,29000,1101005,Governador Jorge Teixeira - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,30789,1101005,Governador Jorge Teixeira - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1101005,Governador Jorge Teixeira - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,50,1101104,Itapuã do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,681,1101104,Itapuã do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,7,1101104,Itapuã do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,50,1101104,Itapuã do Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,681,1101104,Itapuã do Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,7,1101104,Itapuã do Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,1449,1101104,Itapuã do Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,12939,1101104,Itapuã do Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,90,1101104,Itapuã do Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,28980,1101104,Itapuã do Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19000,1101104,Itapuã do Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12857,1101104,Itapuã do Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,-,1101203,Ministro Andreazza - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,65,1101203,Ministro Andreazza - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,6,1101203,Ministro Andreazza - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,-,1101203,Ministro Andreazza - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,65,1101203,Ministro Andreazza - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,6,1101203,Ministro Andreazza - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,-,1101203,Ministro Andreazza - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1317,1101203,Ministro Andreazza - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,63,1101203,Ministro Andreazza - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,-,1101203,Ministro Andreazza - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,20262,1101203,Ministro Andreazza - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,10500,1101203,Ministro Andreazza - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,5,1101302,Mirante da Serra - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,200,1101302,Mirante da Serra - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,2,1101302,Mirante da Serra - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1101302,Mirante da Serra - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,200,1101302,Mirante da Serra - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,2,1101302,Mirante da Serra - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,160,1101302,Mirante da Serra - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,4450,1101302,Mirante da Serra - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,15,1101302,Mirante da Serra - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,32000,1101302,Mirante da Serra - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,22250,1101302,Mirante da Serra - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,7500,1101302,Mirante da Serra - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,6,1101401,Monte Negro - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,315,1101401,Monte Negro - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,6,1101401,Monte Negro - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,6,1101401,Monte Negro - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,315,1101401,Monte Negro - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,6,1101401,Monte Negro - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,192,1101401,Monte Negro - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,9765,1101401,Monte Negro - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,67,1101401,Monte Negro - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,32000,1101401,Monte Negro - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,31000,1101401,Monte Negro - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,11167,1101401,Monte Negro - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,3,1101435,Nova União - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1101435,Nova União - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1101435,Nova União - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,3,1101435,Nova União - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1101435,Nova União - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1101435,Nova União - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,96,1101435,Nova União - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,540,1101435,Nova União - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1101435,Nova União - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,32000,1101435,Nova União - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1101435,Nova União - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1101435,Nova União - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,5,1101450,Parecis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,124,1101450,Parecis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,2,1101450,Parecis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1101450,Parecis - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,124,1101450,Parecis - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,2,1101450,Parecis - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,150,1101450,Parecis - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2232,1101450,Parecis - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,21,1101450,Parecis - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1101450,Parecis - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1101450,Parecis - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,10500,1101450,Parecis - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,3,1101468,Pimenteiras do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,10,1101468,Pimenteiras do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,1,1101468,Pimenteiras do Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,3,1101468,Pimenteiras do Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,10,1101468,Pimenteiras do Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,1,1101468,Pimenteiras do Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,90,1101468,Pimenteiras do Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,165,1101468,Pimenteiras do Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,12,1101468,Pimenteiras do Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1101468,Pimenteiras do Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,16500,1101468,Pimenteiras do Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,12000,1101468,Pimenteiras do Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,2,1101476,Primavera de Rondônia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,70,1101476,Primavera de Rondônia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,4,1101476,Primavera de Rondônia - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,2,1101476,Primavera de Rondônia - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,70,1101476,Primavera de Rondônia - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,4,1101476,Primavera de Rondônia - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,60,1101476,Primavera de Rondônia - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1385,1101476,Primavera de Rondônia - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,52,1101476,Primavera de Rondônia - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1101476,Primavera de Rondônia - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,19786,1101476,Primavera de Rondônia - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,13000,1101476,Primavera de Rondônia - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,1,1101484,São Felipe D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,43,1101484,São Felipe D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,4,1101484,São Felipe D'Oeste - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,1,1101484,São Felipe D'Oeste - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,43,1101484,São Felipe D'Oeste - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,4,1101484,São Felipe D'Oeste - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,33,1101484,São Felipe D'Oeste - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,754,1101484,São Felipe D'Oeste - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,42,1101484,São Felipe D'Oeste - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,33000,1101484,São Felipe D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,17535,1101484,São Felipe D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,10500,1101484,São Felipe D'Oeste - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,-,1101492,São Francisco do Guaporé - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,75,1101492,São Francisco do Guaporé - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,1,1101492,São Francisco do Guaporé - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,-,1101492,São Francisco do Guaporé - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,75,1101492,São Francisco do Guaporé - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,1,1101492,São Francisco do Guaporé - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,-,1101492,São Francisco do Guaporé - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,1500,1101492,São Francisco do Guaporé - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,8,1101492,São Francisco do Guaporé - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,-,1101492,São Francisco do Guaporé - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,20000,1101492,São Francisco do Guaporé - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,8000,1101492,São Francisco do Guaporé - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,6,1101500,Seringueiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1101500,Seringueiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1101500,Seringueiras - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,6,1101500,Seringueiras - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,110,1101500,Seringueiras - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1101500,Seringueiras - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,120,1101500,Seringueiras - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,2600,1101500,Seringueiras - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1101500,Seringueiras - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,20000,1101500,Seringueiras - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,23636,1101500,Seringueiras - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1101500,Seringueiras - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,3,1101559,Teixeirópolis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1101559,Teixeirópolis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1101559,Teixeirópolis - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,3,1101559,Teixeirópolis - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,30,1101559,Teixeirópolis - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1101559,Teixeirópolis - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,138,1101559,Teixeirópolis - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,540,1101559,Teixeirópolis - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1101559,Teixeirópolis - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,46000,1101559,Teixeirópolis - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1101559,Teixeirópolis - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1101559,Teixeirópolis - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,30,1101609,Theobroma - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,314,1101609,Theobroma - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1101609,Theobroma - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,30,1101609,Theobroma - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,314,1101609,Theobroma - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1101609,Theobroma - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,750,1101609,Theobroma - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,9990,1101609,Theobroma - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1101609,Theobroma - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,25000,1101609,Theobroma - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,31815,1101609,Theobroma - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1101609,Theobroma - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,5,1101708,Urupá - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,22,1101708,Urupá - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,-,1101708,Urupá - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1101708,Urupá - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,22,1101708,Urupá - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,-,1101708,Urupá - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,150,1101708,Urupá - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,396,1101708,Urupá - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,-,1101708,Urupá - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,30000,1101708,Urupá - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1101708,Urupá - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,-,1101708,Urupá - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,30,1101757,Vale do Anari - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,20,1101757,Vale do Anari - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,3,1101757,Vale do Anari - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,30,1101757,Vale do Anari - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,20,1101757,Vale do Anari - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,3,1101757,Vale do Anari - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,1020,1101757,Vale do Anari - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,400,1101757,Vale do Anari - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,33,1101757,Vale do Anari - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,34000,1101757,Vale do Anari - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,20000,1101757,Vale do Anari - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,11000,1101757,Vale do Anari - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja
+6,Município,1006,Hectares,5,1101807,Vale do Paraíso - RO,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+6,Município,1006,Hectares,32,1101807,Vale do Paraíso - RO,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+6,Município,1006,Hectares,2,1101807,Vale do Paraíso - RO,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+6,Município,1006,Hectares,5,1101807,Vale do Paraíso - RO,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+6,Município,1006,Hectares,32,1101807,Vale do Paraíso - RO,2024,2024,216,Área colhida,40119,Mandioca
+6,Município,1006,Hectares,2,1101807,Vale do Paraíso - RO,2024,2024,216,Área colhida,40151,Laranja
+6,Município,1017,Toneladas,200,1101807,Vale do Paraíso - RO,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+6,Município,1017,Toneladas,576,1101807,Vale do Paraíso - RO,2024,2024,214,Quantidade produzida,40119,Mandioca
+6,Município,1017,Toneladas,16,1101807,Vale do Paraíso - RO,2024,2024,214,Quantidade produzida,40151,Laranja
+6,Município,33,Quilogramas por Hectare,40000,1101807,Vale do Paraíso - RO,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+6,Município,33,Quilogramas por Hectare,18000,1101807,Vale do Paraíso - RO,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+6,Município,33,Quilogramas por Hectare,8000,1101807,Vale do Paraíso - RO,2024,2024,112,Rendimento médio da produção,40151,Laranja

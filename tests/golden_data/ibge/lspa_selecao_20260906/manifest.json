@@ -1,0 +1,68 @@
+{
+  "source": "ibge_lspa",
+  "table": "6588",
+  "capture_date": "2026-09-06",
+  "requests": [
+    {
+      "case": "soja_mt_2025_01",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n3/51/h/n/p/202501/c48/39443",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/6588/n3/51/h/n/p/202501/c48/39443",
+      "status": 200,
+      "captured_at": "2026-09-06T22:49:49.696146+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "body_file": "soja_mt_2025_01_http_01.json",
+      "sha256": "e74f3c497c85eca4a52e5f84fb23b4c7f5830c1171c755764dfd068cc9821728"
+    },
+    {
+      "case": "soja_mt_2025_12",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n3/51/h/n/p/202512/c48/39443",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/6588/n3/51/h/n/p/202512/c48/39443",
+      "status": 200,
+      "captured_at": "2026-09-06T22:49:50.805763+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "body_file": "soja_mt_2025_12_http_02.json",
+      "sha256": "4a4439422275a32ef6fc9e3089365baaed6889525876aa066ee485782cf98de5"
+    },
+    {
+      "case": "milho_br_2025_01",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202501/c48/39442",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202501/c48/39442",
+      "status": 200,
+      "captured_at": "2026-09-06T22:49:51.899355+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "body_file": "milho_br_2025_01_http_03.json",
+      "sha256": "85f5ec59e4d2ee38f7f4ef1a82d63aef06687a8a29ebfd39edc725935b3a545d"
+    },
+    {
+      "case": "milho_br_2025_01",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202501/c48/39441",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202501/c48/39441",
+      "status": 200,
+      "captured_at": "2026-09-06T22:49:51.911377+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "body_file": "milho_br_2025_01_http_04.json",
+      "sha256": "af447b8865918669f1cd79084d23f4c55b8d9f5d1ea5662823f331131c46fdca"
+    },
+    {
+      "case": "milho_br_2025_12",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202512/c48/39441",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202512/c48/39441",
+      "status": 200,
+      "captured_at": "2026-09-06T22:49:53.005470+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "body_file": "milho_br_2025_12_http_05.json",
+      "sha256": "24e104bf9887e6a70877acdf41adc420e8abe8e9e214d090620ae229b358d78e"
+    },
+    {
+      "case": "milho_br_2025_12",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202512/c48/39442",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202512/c48/39442",
+      "status": 200,
+      "captured_at": "2026-09-06T22:49:53.018511+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "body_file": "milho_br_2025_12_http_06.json",
+      "sha256": "c376a0cbc3c2951dd81fe638bfc4555dd6cce35905a1b4097559dd2d949347af"
+    }
+  ],
+  "notes": "Respostas HTTP oficiais preservadas byte a byte. Oráculos de produção dos testes foram fixados a partir da conferência independente das capturas."
+}

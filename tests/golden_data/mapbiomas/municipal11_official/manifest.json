@@ -1,0 +1,39 @@
+{
+  "roundtrip_compared_cells": 7810,
+  "files": [
+    {
+      "size_bytes": 181365,
+      "sha256": "f66e6540647c2f6694cefa991cd114fe74668f8273113224ecb68217b09f7933",
+      "file": "municipal11_selected.xlsx"
+    },
+    {
+      "size_bytes": 412224,
+      "sha256": "cd747e0fd41f8f395ce543db927dac19599ba64f51f6cef7b392100390772c87",
+      "file": "raw_oracle.json"
+    },
+    {
+      "size_bytes": 267,
+      "sha256": "221d3a29b91aff684263419fde81b8f3f4f02171e9e6cb35b2018805c63dc54b",
+      "file": "verification.json"
+    }
+  ],
+  "selection": "Distrito Federal/Sorriso/Comodoro/Cáceres/Brasília + first4 class0 rows + all geocode2703007 rows",
+  "semantics": "Derived miniature package; selected numeric XML lexemes and strings preserved, row indices remapped; not the original HTTP body",
+  "derived_rows": 142,
+  "source": {
+    "status": "passed",
+    "file": "request_004_municipal11_confirmed.body",
+    "size_bytes": 78296450,
+    "sha256": "c223fd84dcdd21e49d651788ff5a726a7e3aa04d2eab730e99407dd80a8d3e30",
+    "source_url": "https://drive.google.com/uc?export=download&id=1otOqymHuixvkRGVl65zTTNyfaHo46Gqk",
+    "http_attempts": 4,
+    "completed_at": "2026-09-07T03:29:40.04227-03:00",
+    "public_confirmation_query_values_redacted_in_urls": true,
+    "bodies_preserved_unmodified": true
+  },
+  "original_xlsx": {
+    "xlsx": "MAPBIOMAS_BRAZIL-COL.11-BIOME_STATE_MUNICIPALITY.xlsx",
+    "xlsx_sha256": "8de70a35fdd35f943e059763d128825ee08c0978948311ac03c769e0f178abfe",
+    "sheet": "COVERAGE_11"
+  }
+}

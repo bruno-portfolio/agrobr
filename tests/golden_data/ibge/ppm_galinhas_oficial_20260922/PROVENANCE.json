@@ -1,0 +1,22 @@
+{
+  "capture_session": "conferência, rodada 5, reaproveitada, 22/09/2026",
+  "source": "IBGE (API de agregados v3)",
+  "method": "Respostas oficiais preservadas byte a byte, sem reserializar.",
+  "notes": "Notas técnicas PPM 2024 (https://www.ibge.gov.br/biblioteca/visualizacao/periodicos/84/ppm_2024_v52_br_notas_tecnicas.pdf, sha256 88746b76a203330daa2a6ed07df47d7de773287d1a28fa3f02c33ed0dc711d29, capturadas em 2026-09-22T21:24:16Z), página 8 do PDF (6 impressa), verbete galinhas: 'Total de aves fêmeas da espécie Gallus gallus destinadas à produção de ovos, independentemente do destino da produção (consumo, industrialização ou incubação). Inclui poedeiras e matrizeiras.'",
+  "files": [
+    {
+      "file": "agregados_3939_2024_galinhas.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos/2024/variaveis/105?localidades=N1%5B1%5D%7CN3%5B35%5D&classificacao=79%5B32793%5D",
+      "fetched_at": "2026-09-22T21:24:14.275918+00:00",
+      "sha256": "7179b792be705a782429d1ad991e9c852c264cf615f3544e57e43fd2ba1369ce",
+      "bytes": 434
+    },
+    {
+      "file": "metadados_3939.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/metadados",
+      "fetched_at": "2026-09-22T21:13:09.625030+00:00",
+      "sha256": "8d9056f7de4ce55a74c382495a31639b6996aa79eb575c0440a4b1ca47d79078",
+      "bytes": 1136
+    }
+  ]
+}

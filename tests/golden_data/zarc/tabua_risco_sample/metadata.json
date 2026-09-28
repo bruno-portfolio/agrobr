@@ -1,6 +1,0 @@
-{
-    "source": "zarc",
-    "format": "csv",
-    "parser_module": "agrobr.zarc.parser",
-    "parser_function": "parse_tabua_risco"
-}

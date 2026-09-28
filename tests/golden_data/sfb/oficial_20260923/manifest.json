@@ -1,0 +1,404 @@
+{
+ "fonte": "SFB — ArcGIS REST de mapas.florestal.gov.br",
+ "respostas": [
+  {
+   "cenario": "cnfp_df",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27DF%27&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:34.877652+00:00",
+   "bytes": 12,
+   "sha256": "f2715110bf46132c4555c9aa8eafcb4d7c58740623ed89681655c25fbd69581f",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:40 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_df_00.json"
+  },
+  {
+   "cenario": "cnfp_df",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27DF%27&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=json&returnGeometry=false&orderByFields=fid&resultRecordCount=29",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:36.932620+00:00",
+   "bytes": 8654,
+   "sha256": "cc7cdd957c256242ea5b59c2536bac24cb7a7257ee518fe8ee54b0d90c402be7",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:42 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_df_01.json"
+  },
+  {
+   "cenario": "cnfp_ap",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27AP%27&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:39.033006+00:00",
+   "bytes": 13,
+   "sha256": "88aba889c0dc359d40facce34f5a3fc97a4c415cc661e1272c2b8fb74ac4c2c5",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:44 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_ap_00.json"
+  },
+  {
+   "cenario": "cnfp_ap",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27AP%27&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=json&returnGeometry=false&orderByFields=fid&resultRecordCount=218",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:41.090079+00:00",
+   "bytes": 55598,
+   "sha256": "0d81869441c706b7cd10b58b5dc9d560c192bd3981ba7be1a5db34c5f4132883",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:46 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_ap_01.json"
+  },
+  {
+   "cenario": "cnfp_es",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27ES%27&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:43.207483+00:00",
+   "bytes": 13,
+   "sha256": "ddc145298a2d10ec990933906b4a12fd2f2deca0834672a665516809d7dd7257",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:48 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_es_00.json"
+  },
+  {
+   "cenario": "cnfp_es",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27ES%27&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=json&returnGeometry=false&orderByFields=fid&resultRecordCount=198",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:45.266091+00:00",
+   "bytes": 51099,
+   "sha256": "eb49b35671c2cbae0477744aeb0ebbaca6a8d026e319afe4a7435ef0dae3925f",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:50 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_es_01.json"
+  },
+  {
+   "cenario": "cnfp_ma",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27MA%27&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:47.367792+00:00",
+   "bytes": 14,
+   "sha256": "28d4c81f971181a48476058a1fc20fb3485237d38f46a6b87e8ca177e199e6a8",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:52 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_ma_00.json"
+  },
+  {
+   "cenario": "cnfp_ma",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27MA%27&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=json&returnGeometry=false&orderByFields=fid&resultRecordCount=1669",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:49.477377+00:00",
+   "bytes": 416125,
+   "sha256": "1a9522022e9a6248a3ec0d3bfa67083bd3e834b9def1aae31dc0ec66a7d1841b",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:54 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_ma_01.json"
+  },
+  {
+   "cenario": "cnfp_pa",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27PA%27&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:51.578699+00:00",
+   "bytes": 14,
+   "sha256": "7486e5fde3e42c9ca276f21f82f8aceee9825f733faacdb8699678b46ca7abdc",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:56 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_pa_00.json"
+  },
+  {
+   "cenario": "cnfp_pa",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27PA%27&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=json&returnGeometry=false&orderByFields=fid&resultRecordCount=2000",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:53.676461+00:00",
+   "bytes": 479296,
+   "sha256": "51eb05e2fc92e29b0f9dc86a4568bfceb7b5f5a182003173f638e5e02077b499",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:21:59 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_pa_01.json"
+  },
+  {
+   "cenario": "cnfp_pa",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=%28uf%3D%27PA%27%29+AND+fid+%3E+16273&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=json&returnGeometry=false&orderByFields=fid&resultRecordCount=992",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:21:55.772197+00:00",
+   "bytes": 254373,
+   "sha256": "0fa1fca395862726dc2db5a9123cd8620a088b0c7fd0cc4b011ec99cad3b11be",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:22:01 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_pa_02.json"
+  },
+  {
+   "cenario": "concessoes",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:22:06.217214+00:00",
+   "bytes": 11,
+   "sha256": "286ef99473842386e093b70e2cb43524734dcd35c826f5b736d6444f65ad4686",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:22:11 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776549142293\""
+   },
+   "file": "concessoes_00.json"
+  },
+  {
+   "cenario": "concessoes",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=1%3D1&outFields=fid%2Cnome_uc%2Cuf%2Cbioma%2Chectares%2Ccriacao%2Cgrupo%2Ccat_nome&outSR=4326&f=json&returnGeometry=false&orderByFields=fid&resultRecordCount=8",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:22:08.262159+00:00",
+   "bytes": 2351,
+   "sha256": "17616f41641ac7b086a26a2442ba899c308cc0a62c97329c3594c7dc451dbbca",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:22:13 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776549142293\""
+   },
+   "file": "concessoes_01.json"
+  },
+  {
+   "cenario": "concessoes_oceano",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-31.0%2C-2.0%2C-30.0%2C-1.0&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:22:14.700874+00:00",
+   "bytes": 11,
+   "sha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:22:20 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776549142293\""
+   },
+   "file": "concessoes_oceano_00.json"
+  },
+  {
+   "cenario": "cnfp_df_cerrado_apa",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27DF%27+AND+bioma%3D%27CERRADO%27+AND+categoria%3D%27APA%27&outFields=%2A&outSR=4326&f=json&geometry=-48.3%2C-16.1%2C-47.3%2C-15.4&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:30.148730+00:00",
+   "bytes": 11,
+   "sha256": "b0beaf5a3dbe82ae841ac88bdc3b1174d7e4dec57454b6539e556e58eaadc600",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:35 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_df_cerrado_apa_00.json"
+  },
+  {
+   "cenario": "cnfp_df_cerrado_apa",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27DF%27+AND+bioma%3D%27CERRADO%27+AND+categoria%3D%27APA%27&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=json&geometry=-48.3%2C-16.1%2C-47.3%2C-15.4&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=fid&resultRecordCount=7",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:32.203583+00:00",
+   "bytes": 3211,
+   "sha256": "3f214422d1e5a2539f306cfa1c8e2fe6524ccb786ee63d48115dac99de2e32de",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:37 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_df_cerrado_apa_01.json"
+  },
+  {
+   "cenario": "cnfp_geo_df_arie",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27DF%27+AND+bioma%3D%27CERRADO%27+AND+categoria%3D%27ARIE%27&outFields=%2A&outSR=4326&f=json&geometry=-48.3%2C-16.1%2C-47.3%2C-15.4&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:34.311536+00:00",
+   "bytes": 11,
+   "sha256": "a7b59f14220279bf034e35863bb5c8f0e489b130e214b6eead2d04fe26f2ea8b",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:39 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_geo_df_arie_00.json"
+  },
+  {
+   "cenario": "cnfp_geo_df_arie",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?where=uf%3D%27DF%27+AND+bioma%3D%27CERRADO%27+AND+categoria%3D%27ARIE%27&outFields=fid%2Cnome%2Cuf%2Cbioma%2Ccategoria%2Ctipo%2Cgoverno%2Cclasse%2Carea_ha%2Canocriacao%2Cmunicipio&outSR=4326&f=geojson&geometry=-48.3%2C-16.1%2C-47.3%2C-15.4&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&orderByFields=fid&resultRecordCount=5",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:36.380370+00:00",
+   "bytes": 60826,
+   "sha256": "1072955705429787d92242f60fa31a2e8f0d4ddc3c8299c08e291fa642247eb5",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:41 GMT",
+    "content-type": "application/geo+json;charset=UTF-8",
+    "etag": "\"1776450889740\""
+   },
+   "file": "cnfp_geo_df_arie_01.json"
+  },
+  {
+   "cenario": "concessoes_pa",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=uf%3D%27PA%27&outFields=%2A&outSR=4326&f=json&geometry=-60.0%2C-10.0%2C-45.0%2C0.0&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:38.482828+00:00",
+   "bytes": 11,
+   "sha256": "a5fb8eb97856970b61d9f466deb64f7659e835ee8ec5497003b78438fe888cad",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:43 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776549142293\""
+   },
+   "file": "concessoes_pa_00.json"
+  },
+  {
+   "cenario": "concessoes_pa",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=uf%3D%27PA%27&outFields=fid%2Cnome_uc%2Cuf%2Cbioma%2Chectares%2Ccriacao%2Cgrupo%2Ccat_nome&outSR=4326&f=json&geometry=-60.0%2C-10.0%2C-45.0%2C0.0&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false&orderByFields=fid&resultRecordCount=4",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:40.535959+00:00",
+   "bytes": 1672,
+   "sha256": "58629aa1fed3c27513e1d766fbf465b46debe83dcdfdc720832707e80f6c87dd",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:45 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776549142293\""
+   },
+   "file": "concessoes_pa_01.json"
+  },
+  {
+   "cenario": "concessoes_geo_ro",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=uf%3D%27RO%27&outFields=%2A&outSR=4326&f=json&geometry=-66.0%2C-13.0%2C-59.0%2C-7.0&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:42.629119+00:00",
+   "bytes": 11,
+   "sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:48 GMT",
+    "content-type": "application/json;charset=UTF-8",
+    "etag": "\"1776549142293\""
+   },
+   "file": "concessoes_geo_ro_00.json"
+  },
+  {
+   "cenario": "concessoes_geo_ro",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=uf%3D%27RO%27&outFields=fid%2Cnome_uc%2Cuf%2Cbioma%2Chectares%2Ccriacao%2Cgrupo%2Ccat_nome&outSR=4326&f=geojson&geometry=-66.0%2C-13.0%2C-59.0%2C-7.0&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&orderByFields=fid&resultRecordCount=2",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:44.702278+00:00",
+   "bytes": 134195,
+   "sha256": "7e10b9fbaa7ae04e0bc106a31db2314ad5f8ab9c3aa4e0e74af9f777ce92eb72",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:34:50 GMT",
+    "content-type": "application/geo+json;charset=UTF-8",
+    "etag": "\"1776549142293\""
+   },
+   "file": "concessoes_geo_ro_01.json"
+  },
+  {
+   "cenario": "ifn_df",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/Conglomerado/FeatureServer/0/query?where=no_uf%3D%27DF%27+AND+no_bioma%3D%27CERRADO%27&outFields=%2A&outSR=4326&f=json&geometry=-48.3%2C-16.1%2C-47.3%2C-15.4&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:34:56.822704+00:00",
+   "bytes": 108,
+   "sha256": "1a017895d0f7ea163c2b5696ea295ceb9cb48a9a6358db8972d67b1574a114d8",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:35:02 GMT",
+    "content-type": "application/json;charset=UTF-8"
+   },
+   "file": "ifn_df_00.json"
+  },
+  {
+   "cenario": "ifn_geo_df",
+   "url": "https://mapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/Conglomerado/FeatureServer/0/query?where=no_uf%3D%27DF%27+AND+no_bioma%3D%27CERRADO%27&outFields=%2A&outSR=4326&f=json&geometry=-48.3%2C-16.1%2C-47.3%2C-15.4&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "status": 200,
+   "fetched_at": "2026-09-24T01:35:08.924103+00:00",
+   "bytes": 108,
+   "sha256": "1a017895d0f7ea163c2b5696ea295ceb9cb48a9a6358db8972d67b1574a114d8",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:35:14 GMT",
+    "content-type": "application/json;charset=UTF-8"
+   },
+   "file": "ifn_geo_df_00.json"
+  }
+ ],
+ "oraculo_geometria": [
+  {
+   "arquivo": "geometria_cnfp_df_arie.json",
+   "origem": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?f=json&objectIds=787%2C812%2C813%2C1030%2C1092%2C1343%2C1360%2C1959%2C1955%2C1963%2C2047%2C2048%2C2563%2C3089%2C3160%2C3441%2C5600%2C8457%2C11007%2C11008%2C12163%2C12676%2C16990%2C17748%2C19065%2C19105%2C19114%2C19110%2C19141&outFields=%2A&returnGeometry=true&outSR=4326",
+   "sha256_origem": "ad7efc230cf4f130186059a5f5082335d30a3b922d2b0677c1017becd04575e4",
+   "bytes_origem": 2581224,
+   "sha256": "41156f17a792876956d3ef3726ec0c3733c9f49916fcd31e2fed6e469ff67aa8",
+   "transformacao": "elementos de features copiados byte a byte da resposta original, na ordem da origem, entre [ e ]",
+   "posicoes": [
+    {
+     "fid": 1959,
+     "inicio": 2231602,
+     "fim": 2232680
+    },
+    {
+     "fid": 1955,
+     "inicio": 2232681,
+     "fim": 2249983
+    },
+    {
+     "fid": 1963,
+     "inicio": 2249984,
+     "fim": 2271718
+    },
+    {
+     "fid": 2047,
+     "inicio": 2271719,
+     "fim": 2277812
+    },
+    {
+     "fid": 2048,
+     "inicio": 2277813,
+     "fim": 2293923
+    }
+   ]
+  },
+  {
+   "arquivo": "geometria_concessoes_ro.json",
+   "origem": "https://mapas.florestal.gov.br/server/rest/services/Hosted/unidades_concessoes_florestais/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json",
+   "sha256_origem": "7da7772d417d012b169d065c71a15e35f8a9ace8069dcedfe6876804b185d1b1",
+   "bytes_origem": 988441,
+   "sha256": "5c38fdb5f27aea088f85f8894d93d6e0deae114ed085e5df0a9193a94adee520",
+   "transformacao": "elementos de features copiados byte a byte da resposta original, na ordem da origem, entre [ e ]",
+   "posicoes": [
+    {
+     "fid": 3,
+     "inicio": 189848,
+     "fim": 298541
+    },
+    {
+     "fid": 4,
+     "inicio": 298542,
+     "fim": 324474
+    }
+   ]
+  }
+ ],
+ "waf": {
+  "arquivo": "waf_request_rejected.html",
+  "url": "https://mapas.florestal.gov.br/server/rest/services/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9/query?objectIds=1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C12%2C13%2C14%2C15%2C16%2C17%2C1…",
+  "status": 200,
+  "fetched_at": "2026-09-24T01:09:50.733280+00:00",
+  "sha256": "a8786d490b52e929ccf94a4fff987b76568c386a5bd5c061ff687a205aa3bfa7",
+  "nota": "WAF rejeita URL longa (1000 objectIds): HTML 'Request Rejected' com status 200; os 21 lotes deram o mesmo"
+ }
+}

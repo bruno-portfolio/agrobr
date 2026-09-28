@@ -5,11 +5,15 @@ granularity. Each dataset has its own `schema_version` (independent of `lib_vers
 
 ## Rules
 
+The library version also follows SemVer and bumps major when behavior changes
+broadly, even when not every dataset contract changes.
+
 | Change type | Bump | Example |
 |---|---|---|
 | Field removed or renamed | **Major** | Rename `preco` → `price` |
 | Data type changed (narrowing) | **Major** | `price: float64` → `price: str` |
 | Required column becomes optional | **Major** | `uf: required` → `uf: nullable` |
+| Primary key changes observation identity | **Major** | `estimativa_safra` 3.0 distinguishes source and LSPA month |
 | New optional column added | Minor | Add `latitude` |
 | Constraint added | Minor | Add `price_min: 0` |
 | New fallback source | Patch | Add ABIOVE as backup |
@@ -34,6 +38,8 @@ can break downstream code that depends on the current schema.
 
 ### `estimativa_safra`
 
+Contract 3.0: key `[fonte, safra, produto, uf, levantamento, ano_lspa, mes_lspa]`. This change prevents collisions between LSPA months and requires updating stored keys, even though the previous ten columns remain. `CONAB_SAFRA_V2` remains the source's 2.0 contract.
+
 | Column | Type | Guarantee | Since |
 |---|---|---|---|
 | `produto` | `str` | required | v0.4.0 |
@@ -45,6 +51,8 @@ can break downstream code that depends on the current schema.
 | `producao` | `float` | optional, >= 0 | v0.4.0 |
 | `levantamento` | `int` | optional, 1-12; null when the source is LSPA | v1.2.0 |
 | `data_publicacao` | `date` | optional; null when the source is LSPA | v1.2.0 |
+| `ano_lspa` | `Int64` | nullable; observed LSPA year, null for CONAB | contract 3.0 |
+| `mes_lspa` | `Int64` | nullable, 1–12; observed LSPA month, null for CONAB | contract 3.0 |
 | `fonte` | `str` | required | v0.6.0 |
 
 ### `producao_anual` (IBGE PAM)

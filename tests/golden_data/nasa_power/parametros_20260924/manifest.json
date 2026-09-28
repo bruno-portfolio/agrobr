@@ -1,0 +1,19 @@
+{
+ "descricao": "NASA POWER diário de ponto (-12,6; -56,1), jan/2025, com os 5 parâmetros do catálogo do agrobr fora do R10 (GWETROOT, GWETTOP, PS, T2MDEW, WS10M); corpo inteiro, com o bloco 'parameters' (unidade e nome oficiais).",
+ "arquivos": [
+  {
+   "file": "mt_202501_extras.json",
+   "requested_url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=GWETROOT%2CGWETTOP%2CPS%2CT2MDEW%2CWS10M&community=AG&longitude=-56.1&latitude=-12.6&start=20250101&end=20250131&format=JSON&time-standard=LST",
+   "final_url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=GWETROOT%2CGWETTOP%2CPS%2CT2MDEW%2CWS10M&community=AG&longitude=-56.1&latitude=-12.6&start=20250101&end=20250131&format=JSON&time-standard=LST",
+   "status": 200,
+   "captured_at": "2026-09-24T03:47:13.594879+00:00",
+   "bytes": 3276,
+   "sha256": "e4ef28e498908dfad098e14592cfaa606cb4337ab9a0a4d0cbd5a0a63efc106a",
+   "headers": {
+    "content-type": "application/json",
+    "content-length": "3276",
+    "date": "Thu, 24 Sep 2026 03:47:19 GMT"
+   }
+  }
+ ]
+}

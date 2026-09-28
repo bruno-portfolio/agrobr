@@ -1,968 +1,605 @@
-"""Testes para agrobr.alt.sicar.api."""
-
 from __future__ import annotations
 
+import copy
+import gzip
+import hashlib
+import json
+import math
+from collections import Counter
+from datetime import datetime
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
+from typing import Any
+from unittest.mock import AsyncMock, Mock
+from xml.etree import ElementTree
 
+import httpx
 import pandas as pd
 import pytest
 
-from agrobr.alt.sicar import api
-from agrobr.alt.sicar.api import (
-    _build_cql_filter,
-    imoveis,
-    imoveis_geo,
-    imoveis_geo_stream,
-    resumo,
+from agrobr import contracts
+from agrobr.alt.sicar import api, client, parser
+from agrobr.alt.sicar.models import COLUNAS_IMOVEIS_GEO
+from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.utils import geo as geo_utils
+from tests import helpers
+from tests.helpers import collect_failures
+
+GOLDEN = Path(__file__).parents[1] / "golden_data"
+GEO = GOLDEN / "sicar/geo_20260922"
+GEO_MANIFEST = json.loads((GEO / "manifest.json").read_text(encoding="utf-8"))
+R11 = GOLDEN / "reconciliacao_r11_20260918/sicar"
+URL = "https://geoserver.car.gov.br/geoserver/sicar/wfs"
+INSTANTES = [
+    ("2026-09-01T16:44:58.004Z", "2026-09-01T16:44:58.004Z"),
+    ("2026-09-01T13:44:58.004-03:00", "2026-09-01T16:44:58.004Z"),
+    ("2026-09-01T16:44:58.004", "2026-09-01T16:44:58.004Z"),
+    ("2026-09-03T14:27:12.212000+00:00", "2026-09-03T14:27:12.212Z"),
+    ("2026-09-03T14:27:12.212000000Z", "2026-09-03T14:27:12.212Z"),
+    ("2026-09-03T14:27:12.212000000000Z", "2026-09-03T14:27:12.212Z"),
+    ("2026-09-03T14:27:12.2Z", "2026-09-03T14:27:12.200Z"),
+    ("2026-09-03T14:27:12.21Z", "2026-09-03T14:27:12.210Z"),
+    ("2026-09-03T14:27:12.000000000Z", "2026-09-03T14:27:12Z"),
+    ("2026-09-03T11:27:12.212000-03:00", "2026-09-03T14:27:12.212Z"),
+    ("2026-09-03", "2026-09-03T00:00:00Z"),
+]
+
+
+def geo_capture(name: str) -> bytes:
+    resource = next(item for item in GEO_MANIFEST["resources"] if item["file"] == name)
+    content = (GEO / name).read_bytes()
+    assert hashlib.sha256(content).hexdigest() == resource["sha256"]
+    return content
+
+
+def geo_features(name: str) -> list[dict[str, Any]]:
+    return json.loads(geo_capture(name))["features"]
+
+
+def geo_linha(feature: dict[str, Any]) -> tuple[Any, ...]:
+    values = feature["properties"]
+    updated = values.get("data_atualizacao")
+    return (
+        values["cod_imovel"],
+        values["status_imovel"],
+        datetime.fromisoformat(values["dat_criacao"]),
+        None if updated is None else datetime.fromisoformat(updated),
+        values["area"],
+        values["condicao"],
+        values["uf"],
+        values["municipio"],
+        values["cod_municipio_ibge"],
+        values["m_fiscal"],
+        values["tipo_imovel"],
+        values["cod_municipio_ibge"],
+        feature["geometry"],
+    )
+
+
+def instante(texto: str | None) -> str | None:
+    if texto is None:
+        return None
+    return datetime.fromisoformat(texto).isoformat().replace("+00:00", "Z")
+
+
+def descarte(descartada: dict[str, Any], mantida: dict[str, Any], criterio: str) -> dict[str, Any]:
+    valores = descartada["properties"]
+    return {
+        "cod_imovel": valores["cod_imovel"],
+        "feature_id": descartada["id"],
+        "feature_id_mantida": mantida["id"],
+        "criterio": criterio,
+        "data_atualizacao": instante(valores.get("data_atualizacao")),
+        "data_criacao": instante(valores["dat_criacao"]),
+    }
+
+
+def geo_rows(frame: Any) -> list[tuple[Any, ...]]:
+    assert type(frame).__name__ == "GeoDataFrame"
+    assert list(frame.columns) == COLUNAS_IMOVEIS_GEO
+    assert frame.crs.to_epsg() == 4326
+    return [
+        (
+            *(None if pd.isna(value) else value for value in row[:-1]),
+            json.loads(json.dumps(row[-1].__geo_interface__)),
+        )
+        for row in frame.itertuples(index=False, name=None)
+    ]
+
+
+def resumo_esperado(features: list[dict[str, Any]]) -> dict[str, Any]:
+    values = [feature["properties"] for feature in features]
+    status = Counter(item["status_imovel"] for item in values)
+    tipos = Counter(item["tipo_imovel"] for item in values)
+    areas = [item["area"] for item in values]
+    fiscais = [item["m_fiscal"] for item in values]
+    return {
+        "total": len(values),
+        "ativos": status["AT"],
+        "pendentes": status["PE"],
+        "suspensos": status["SU"],
+        "cancelados": status["CA"],
+        "area_total_ha": math.fsum(areas),
+        "area_media_ha": math.fsum(areas) / len(areas),
+        "modulos_fiscais_medio": math.fsum(fiscais) / len(fiscais),
+        "por_tipo_IRU": tipos["IRU"],
+        "por_tipo_AST": tipos["AST"],
+        "por_tipo_PCT": tipos["PCT"],
+    }
+
+
+def test_cql_exato_por_filtro():
+    casos: list[tuple[dict[str, Any], str | None]] = [
+        ({}, None),
+        ({"municipio": "Sorriso"}, "municipio ILIKE '%Sorriso%'"),
+        ({"municipio": "D'Oeste 50%_x"}, "municipio ILIKE '%D''Oeste 50\\%\\_x%'"),
+        (
+            {
+                "cod_municipio": 5107925,
+                "status": "at",
+                "tipo": "iru",
+                "area_min": 0,
+                "area_max": 0,
+                "criado_apos": "2024-02-29",
+                "atualizado_apos": "2026-01-01T23:59:59.123000",
+            },
+            "cod_municipio_ibge=5107925 AND status_imovel='AT' AND tipo_imovel='IRU' "
+            "AND area>=0 AND area<=0 AND dat_criacao>='2024-02-29' "
+            "AND data_atualizacao>'2026-01-01T23:59:59.123Z'",
+        ),
+        *(
+            ({"atualizado_apos": corte}, f"data_atualizacao>'{esperado}'")
+            for corte, esperado in INSTANTES
+        ),
+    ]
+    with collect_failures() as check:
+        for filtros, esperado in casos:
+            with check(filtros):
+                assert api._build_cql_filter(**filtros) == esperado
+
+
+async def test_imoveis_traz_o_hash_e_o_tamanho_do_corpo_wfs(monkeypatch: pytest.MonkeyPatch):
+    corpo = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([corpo], URL)))
+
+    with helpers.sem_excecao():
+        _, meta = await api.imoveis("df", cod_municipio=5300108, return_meta=True)
+
+    helpers.conferir_corpo(meta, corpo)
+    assert meta.source_url == URL
+
+
+async def test_imoveis_ordena_a_saida_por_cod_imovel(monkeypatch: pytest.MonkeyPatch):
+    documento = json.loads(gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes()))
+    codigos = sorted(feature["properties"]["cod_imovel"] for feature in documento["features"])
+    documento["features"].reverse()
+    fetch = AsyncMock(return_value=([json.dumps(documento).encode()], URL))
+    monkeypatch.setattr(client, "fetch_imoveis", fetch)
+
+    frame = await api.imoveis("df", cod_municipio=5300108)
+
+    assert frame["cod_imovel"].tolist() == codigos
+    assert fetch.await_args.args == ("DF", "cod_municipio_ibge=5300108")
+
+
+async def test_geo_publica_propriedades_e_geometria_do_corpo(monkeypatch: pytest.MonkeyPatch):
+    body = geo_capture("df_geo_srs4326_count3.json")
+    features = json.loads(body)["features"]
+    fetch = AsyncMock(return_value=([body], URL))
+    monkeypatch.setattr(client, "fetch_imoveis_geo", fetch)
+    monkeypatch.setattr(client, "fetch_hits", AsyncMock(return_value=len(features)))
+
+    frame, meta = await api.imoveis_geo("df", max_features=None, return_meta=True)
+
+    assert geo_rows(frame) == [geo_linha(feature) for feature in features]
+    assert fetch.await_args.args == ("DF", None)
+    assert fetch.await_args.kwargs == {"max_features": None}
+    assert (meta.selected_source, meta.attempted_sources) == ("sicar_wfs_geo", ["sicar_wfs_geo"])
+    assert meta.records_count == len(features)
+    helpers.conferir_corpo(meta, body)
+    invertido = json.loads(body)
+    invertido["features"].reverse()
+    fetch.return_value = ([json.dumps(invertido).encode()], URL)
+    ordenado = await api.imoveis_geo("df", max_features=None)
+    assert geo_rows(ordenado) == [geo_linha(feature) for feature in features]
+
+
+@pytest.mark.parametrize(
+    ("arquivo", "uf", "cod_municipio", "descartes"),
+    [
+        (
+            "ms_5007901_geo.json",
+            "MS",
+            5007901,
+            [
+                ("sicar_imoveis_ms.16368904", "sicar_imoveis_ms.16369101", "data_atualizacao"),
+                ("sicar_imoveis_ms.16369728", "sicar_imoveis_ms.16369495", "data_atualizacao"),
+            ],
+        ),
+        (
+            "mt_5103353_geo.json",
+            "MT",
+            5103353,
+            [("sicar_imoveis_mt.16367470", "sicar_imoveis_mt.16367477", "data_criacao")],
+        ),
+        (
+            "rs_4320552_geo.json",
+            "RS",
+            4320552,
+            [("sicar_imoveis_rs.16368583", "sicar_imoveis_rs.16368593", "data_criacao")],
+        ),
+    ],
 )
-from agrobr.alt.sicar.models import COLUNAS_IMOVEIS, COLUNAS_IMOVEIS_GEO
+async def test_geo_real_seleciona_a_versao_mais_recente_como_o_tabular(
+    monkeypatch: pytest.MonkeyPatch,
+    arquivo: str,
+    uf: str,
+    cod_municipio: int,
+    descartes: list[tuple[str, str, str]],
+):
+    body = geo_capture(arquivo)
+    features = {feature["id"]: feature for feature in json.loads(body)["features"]}
+    fetch = AsyncMock(return_value=([body], URL))
+    monkeypatch.setattr(client, "fetch_imoveis_geo", fetch)
 
-GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "sicar"
-
-
-def call_args_cql(mock: AsyncMock) -> str:
-    args = mock.call_args
-    return args[0][1] if len(args[0]) > 1 else args[1].get("cql_filter", "")
-
-
-def _load_golden_pages(name: str) -> list[bytes]:
-    csv_path = GOLDEN_DIR / name / "response.csv"
-    return [csv_path.read_bytes()]
-
-
-class TestBuildCqlFilter:
-    def test_no_filters(self):
-        assert _build_cql_filter() is None
-
-    def test_municipio_ilike(self):
-        result = _build_cql_filter(municipio="Sorriso")
-        assert "municipio ILIKE '%Sorriso%'" in result
-
-    def test_status_filter(self):
-        result = _build_cql_filter(status="AT")
-        assert "status_imovel='AT'" in result
-
-    def test_tipo_filter(self):
-        result = _build_cql_filter(tipo="IRU")
-        assert "tipo_imovel='IRU'" in result
-
-    def test_area_min(self):
-        result = _build_cql_filter(area_min=100.0)
-        assert "area>=100.0" in result
-
-    def test_area_max(self):
-        result = _build_cql_filter(area_max=500.0)
-        assert "area<=500.0" in result
-
-    def test_criado_apos(self):
-        result = _build_cql_filter(criado_apos="2020-01-01")
-        assert "dat_criacao>='2020-01-01'" in result
-
-    def test_atualizado_apos_date(self):
-        result = _build_cql_filter(atualizado_apos="2026-06-07")
-        assert "data_atualizacao>'2026-06-07'" in result
-
-    def test_atualizado_apos_datetime(self):
-        result = _build_cql_filter(atualizado_apos="2026-06-07T00:00:00")
-        assert "data_atualizacao>'2026-06-07T00:00:00'" in result
-
-    def test_atualizado_apos_invalido(self):
-        with pytest.raises(ValueError, match="atualizado_apos"):
-            _build_cql_filter(atualizado_apos="07/06/2026")
-
-    def test_compound_filter(self):
-        result = _build_cql_filter(municipio="Sorriso", status="AT", area_min=100.0)
-        assert " AND " in result
-        assert "municipio ILIKE" in result
-        assert "status_imovel" in result
-        assert "area>=" in result
-
-    def test_municipio_escaping(self):
-        result = _build_cql_filter(municipio="It's a test")
-        assert "It''s a test" in result
-
-    def test_cod_municipio_filter(self):
-        result = _build_cql_filter(cod_municipio=1508159)
-        assert "cod_municipio_ibge=1508159" in result
-
-    def test_cod_municipio_ignores_municipio(self):
-        result = _build_cql_filter(cod_municipio=1508159)
-        assert "ILIKE" not in result
-
-    def test_municipio_and_cod_municipio_prefers_cod(self):
-        result = _build_cql_filter(cod_municipio=1508159, municipio=None)
-        assert "cod_municipio_ibge=1508159" in result
-
-
-class TestImoveis:
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF"):
-            await imoveis("XX")
-
-    @pytest.mark.asyncio
-    async def test_invalid_status_raises(self):
-        with pytest.raises(ValueError, match="Status"):
-            await imoveis("DF", status="INVALID")
-
-    @pytest.mark.asyncio
-    async def test_invalid_tipo_raises(self):
-        with pytest.raises(ValueError, match="Tipo"):
-            await imoveis("DF", tipo="XYZ")
-
-    @pytest.mark.asyncio
-    async def test_municipio_and_cod_municipio_raises(self):
-        with pytest.raises(ValueError, match="municipio.*cod_municipio"):
-            await imoveis("DF", municipio="Brasilia", cod_municipio=5300108)
-
-    @pytest.mark.asyncio
-    async def test_cod_municipio_filter(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=0,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=([], "https://test.url"),
-            ) as mock_fetch,
-        ):
-            await imoveis("PA", cod_municipio=1508159)
-
-        cql = mock_fetch.call_args[0][1]
-        assert "cod_municipio_ibge=1508159" in cql
-
-    @pytest.mark.asyncio
-    async def test_atualizado_apos_filter(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=0,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=([], "https://test.url"),
-            ) as mock_fetch,
-        ):
-            await imoveis("MG", atualizado_apos="2026-06-07T00:00:00")
-
-        cql = mock_fetch.call_args[0][1]
-        assert "data_atualizacao>'2026-06-07T00:00:00'" in cql
-
-    @pytest.mark.asyncio
-    async def test_atualizado_apos_unsupported_uf_raises(self):
-        with pytest.raises(ValueError, match="atualizado_apos"):
-            await imoveis("SP", atualizado_apos="2026-06-07")
-
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
-        reason="No golden data",
+    frame, meta = await api.imoveis_geo(
+        uf, cod_municipio=cod_municipio, criado_apos="2026-09-22", return_meta=True
     )
-    async def test_returns_dataframe(self):
-        pages = _load_golden_pages("imoveis_df_sample")
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=5,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=(pages, "https://test.url"),
-            ),
-        ):
-            df = await imoveis("DF")
 
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 10
-        for col in COLUNAS_IMOVEIS:
-            assert col in df.columns
-
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
-        reason="No golden data",
+    descartadas = {descartada for descartada, _mantida, _criterio in descartes}
+    mantidas = sorted(
+        (
+            feature
+            for identificador, feature in features.items()
+            if identificador not in descartadas
+        ),
+        key=lambda feature: feature["properties"]["cod_imovel"],
     )
-    async def test_return_meta(self):
-        pages = _load_golden_pages("imoveis_df_sample")
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=5,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=(pages, "https://test.url"),
-            ),
-        ):
-            df, meta = await imoveis("DF", return_meta=True)
-
-        assert meta.source == "sicar"
-        assert meta.records_count == len(df)
-        assert meta.parser_version == 1
-        assert meta.source_method == "httpx+wfs+csv"
-
-    @pytest.mark.asyncio
-    async def test_empty_result(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=0,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=([], "https://test.url"),
-            ),
-        ):
-            df = await imoveis("DF")
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 0
-
-    @pytest.mark.asyncio
-    async def test_uf_case_insensitive(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=0,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=([], "https://test.url"),
-            ),
-        ):
-            df = await imoveis("df")  # lowercase
-
-        assert isinstance(df, pd.DataFrame)
-
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
-        reason="No golden data",
+    assert geo_rows(frame) == [geo_linha(feature) for feature in mantidas]
+    assert fetch.await_args.args == (
+        uf,
+        f"cod_municipio_ibge={cod_municipio} AND dat_criacao>='2026-09-22'",
     )
-    async def test_sorted_by_cod_imovel(self):
-        pages = _load_golden_pages("imoveis_df_sample")
+    assert meta.source_details.get("sicar") == {
+        "features_unicas": len(features),
+        "codigos_colapsados": len(descartes),
+        "versoes_descartadas_total": len(descartes),
+        "versoes_descartadas": [
+            descarte(features[descartada], features[mantida], criterio)
+            for descartada, mantida, criterio in descartes
+        ],
+        "versoes_descartadas_truncadas": False,
+        "criterios": {"data_atualizacao": 0, "data_criacao": 0, "feature_id": 0}
+        | Counter(criterio for *_ids, criterio in descartes),
+    }
+    assert len(meta.validation_warnings) == 1
+    assert meta.validation_warnings[0].startswith(f"{len(descartes)} codigos de imovel")
+
+
+async def test_stream_real_seleciona_a_versao_mesmo_dividida_entre_paginas(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    paginas = [
+        geo_capture("df_vazio_geo.json"),
+        geo_capture("ms_5007901_stream_p0.json"),
+        geo_capture("ms_5007901_stream_p1.json"),
+    ]
+    features = {
+        feature["id"]: feature for pagina in paginas for feature in json.loads(pagina)["features"]
+    }
+    captured = []
+
+    async def stream(uf: str, cql_filter: str | None = None, *, max_features: int | None = 5000):
+        captured.append((uf, cql_filter, max_features))
+        for pagina in paginas:
+            yield [pagina], URL
+
+    monkeypatch.setattr(client, "stream_imoveis_geo", stream)
+    lotes = [
+        lote
+        async for lote in api.imoveis_geo_stream(
+            "MS", cod_municipio=5007901, criado_apos="2026-09-22"
+        )
+    ]
+
+    mantidas = [
+        features[identificador]
+        for identificador in (
+            "sicar_imoveis_ms.16369101",
+            "sicar_imoveis_ms.16367807",
+            "sicar_imoveis_ms.16368897",
+            "sicar_imoveis_ms.16369495",
+        )
+    ]
+    assert [len(lote) for lote in lotes] == [3, 1]
+    assert geo_rows(pd.concat(lotes)) == [geo_linha(feature) for feature in mantidas]
+    assert captured == [("MS", "cod_municipio_ibge=5007901 AND dat_criacao>='2026-09-22'", None)]
+
+
+async def test_stream_sem_feicoes_nao_entrega_lote(monkeypatch: pytest.MonkeyPatch):
+    vazia = geo_capture("df_vazio_geo.json")
+
+    async def stream(*_args: Any, **_kwargs: Any):
+        for _pagina in range(2):
+            yield [vazia], URL
+
+    monkeypatch.setattr(client, "stream_imoveis_geo", stream)
+
+    lotes = [lote async for lote in api.imoveis_geo_stream("DF", criado_apos="2099-01-01")]
+
+    assert lotes == []
+
+
+async def test_geo_recusa_feature_repetida_como_o_tabular(monkeypatch: pytest.MonkeyPatch):
+    pagina = geo_capture("ms_5007901_stream_p1.json")
+
+    async def stream(*_args: Any, **_kwargs: Any):
+        for _repeticao in range(2):
+            yield [pagina], URL
+
+    monkeypatch.setattr(client, "stream_imoveis_geo", stream)
+    with collect_failures() as check:
         with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=5,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=(pages, "https://test.url"),
-            ),
+            check("lote"),
+            pytest.raises(ParseError, match=r"id de feature repetido sicar_imoveis_ms\.16369495"),
         ):
-            df = await imoveis("DF")
+            parser.parse_imoveis_geojson([pagina, pagina])
+        with check("stream"), pytest.raises(ParseError, match="id de feature repetido"):
+            _lotes = [lote async for lote in api.imoveis_geo_stream("MS", cod_municipio=5007901)]
 
-        cods = df["cod_imovel"].tolist()
-        assert cods == sorted(cods)
+
+async def test_geo_rotula_o_srid_declarado_pela_fonte(monkeypatch: pytest.MonkeyPatch):
+    caso = next(item for item in GEO_MANIFEST["cases"] if item["id"] == "df_srid")
+    arquivos = {
+        (
+            pedido["match"]["path"],
+            tuple(sorted(pedido["match"]["params"].items())),
+            pedido["match"]["skip"],
+        ): pedido["file"]
+        for pedido in caso["requests"]
+    }
+    seen = helpers.install_replay_http(monkeypatch, caso, GEO)
+    try:
+        resultado = await api.imoveis_geo(**caso["query"], return_meta=True)
+    except ParseError as erro:
+        resultado = erro
+    finally:
+        helpers.assert_replay_served(seen)
+
+    servidos = [arquivos[helpers.replay_signature(url)] for url in seen["served"]]
+    corpo = json.loads(geo_capture(servidos[-1]))
+    declarado = int(corpo["crs"]["properties"]["name"].rsplit(":", 1)[1])
+    assert not isinstance(resultado, ParseError), resultado
+    frame, _meta = resultado
+    assert frame.crs.to_epsg() == declarado
+    assert geo_rows(frame) == [geo_linha(feature) for feature in corpo["features"]]
 
 
-class TestImoveisLargeQueryWarning:
-    def _warning_events(self, mock_logger) -> list[str]:
-        return [c.args[0] for c in mock_logger.warning.call_args_list]
+def test_geo_recusa_pagina_com_crs_diferente_do_pedido():
+    sem_crs = json.loads(geo_capture("df_geo_srs4326_count3.json")) | {"crs": None}
+    casos = [
+        ("4674", geo_capture("df_geo_agrobr_count3.json"), "urn:ogc:def:crs:EPSG::4674"),
+        ("sem crs", json.dumps(sem_crs).encode(), "None"),
+    ]
+    with collect_failures() as check:
+        for nome, pagina, declarado in casos:
+            with (
+                check(nome),
+                pytest.raises(ParseError, match=f"CRS declarado {declarado} diverge do EPSG:4326"),
+            ):
+                parser.parse_imoveis_geojson([pagina])
+        with check("vazia sem crs"):
+            assert parser.parse_imoveis_geojson([geo_capture("df_vazio_geo.json")]).empty
 
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
-        reason="No golden data",
+
+async def test_geo_recusa_data_sem_fuso_como_o_tabular(monkeypatch: pytest.MonkeyPatch):
+    documento = json.loads(geo_capture("df_geo_srs4326_count3.json"))
+    for feature in documento["features"]:
+        for campo in ("dat_criacao", "data_atualizacao"):
+            feature["properties"][campo] = feature["properties"][campo].removesuffix("Z")
+    monkeypatch.setattr(
+        client,
+        "fetch_imoveis_geo",
+        AsyncMock(return_value=([json.dumps(documento).encode()], URL)),
     )
-    async def test_warns_when_total_exceeds_threshold(self):
-        pages = _load_golden_pages("imoveis_df_sample")
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=200_000),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=(pages, "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            await imoveis("MT")
 
-        assert "sicar_large_query" in self._warning_events(mock_logger)
+    with pytest.raises(ParseError, match="Data JSON sem fuso em data_criacao"):
+        await api.imoveis_geo("DF", municipio="Brasília")
 
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
-        reason="No golden data",
+
+async def test_geo_vazio_preserva_colunas_tipos_e_crs(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        client,
+        "fetch_imoveis_geo",
+        AsyncMock(return_value=([geo_capture("df_vazio_geo.json")], URL)),
     )
-    async def test_no_warning_when_total_below_threshold(self):
-        pages = _load_golden_pages("imoveis_df_sample")
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=(pages, "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            await imoveis("DF")
 
-        assert "sicar_large_query" not in self._warning_events(mock_logger)
-
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
-        reason="No golden data",
+    frame, meta = await api.imoveis_geo(
+        "DF", cod_municipio=5300108, criado_apos="2099-01-01", return_meta=True
     )
-    async def test_skips_preflight_check_when_municipio_filter(self):
-        pages = _load_golden_pages("imoveis_df_sample")
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock) as mock_hits,
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=(pages, "https://test.url"),
-            ),
+
+    with collect_failures() as check:
+        for nome, resultado in (
+            ("página vazia", frame),
+            ("sem páginas", parser.parse_imoveis_geojson([])),
         ):
-            await imoveis("DF", municipio="Brasilia")
+            with check(nome):
+                assert resultado.empty
+                assert list(resultado.columns) == COLUNAS_IMOVEIS_GEO
+                assert resultado.crs is not None and resultado.crs.to_epsg() == 4326
+                assert str(resultado["data_criacao"].dtype) == "datetime64[ns, UTC]"
+                assert str(resultado["data_atualizacao"].dtype) == "datetime64[ns, UTC]"
+    assert meta.records_count == 0
 
-        mock_hits.assert_not_called()
 
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_df_sample" / "response.csv").exists(),
-        reason="No golden data",
+async def test_condicao_nula_na_fonte_continua_nula(monkeypatch: pytest.MonkeyPatch):
+    xsd = ElementTree.fromstring(geo_capture("describe_df.xsd"))
+    campo = next(
+        elemento
+        for elemento in xsd.iter("{http://www.w3.org/2001/XMLSchema}element")
+        if elemento.get("name") == "condicao"
     )
-    async def test_hit_count_check_source_unavailable_is_logged_and_swallowed(self):
-        from agrobr.exceptions import SourceUnavailableError
-
-        pages = _load_golden_pages("imoveis_df_sample")
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                side_effect=SourceUnavailableError(source="sicar", last_error="TLS handshake"),
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=(pages, "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            df = await imoveis("DF")
-
-        assert len(df) == 10
-        assert "sicar_hit_count_check_failed" in self._warning_events(mock_logger)
-
-
-class TestResumo:
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF"):
-            await resumo("XX")
-
-    @pytest.mark.asyncio
-    async def test_uf_level_mode(self):
-        with patch.object(
-            api.client,
-            "fetch_hits",
-            new_callable=AsyncMock,
-            side_effect=[1000, 600, 200, 150, 50],
-        ):
-            df = await resumo("DF")
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 1
-        assert df["total"].iloc[0] == 1000
-        assert df["ativos"].iloc[0] == 600
-        assert df["pendentes"].iloc[0] == 200
-        assert df["suspensos"].iloc[0] == 150
-        assert df["cancelados"].iloc[0] == 50
-
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_mt_municipio" / "response.csv").exists(),
-        reason="No golden data",
+    assert (campo.get("nillable"), campo.get("minOccurs")) == ("true", "0")
+    geo = json.loads(geo_capture("df_geo_srs4326_count3.json"))
+    tabular = json.loads(gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes()))
+    for documento in (geo, tabular):
+        documento["features"][0]["properties"]["condicao"] = None
+        del documento["features"][1]["properties"]["condicao"]
+    monkeypatch.setattr(
+        client, "fetch_imoveis_geo", AsyncMock(return_value=([json.dumps(geo).encode()], URL))
     )
-    async def test_municipio_mode(self):
-        pages = _load_golden_pages("imoveis_mt_municipio")
-        with patch.object(
-            api.client,
-            "fetch_imoveis",
-            new_callable=AsyncMock,
-            return_value=(pages, "https://test.url"),
-        ):
-            df = await resumo("MT", municipio="SORRISO")
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 1
-        assert df["total"].iloc[0] == 10
-        assert df["ativos"].iloc[0] == 10
-        assert df["pendentes"].iloc[0] == 0
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        with patch.object(
-            api.client,
-            "fetch_hits",
-            new_callable=AsyncMock,
-            side_effect=[100, 60, 20, 15, 5],
-        ):
-            df, meta = await resumo("DF", return_meta=True)
-
-        assert meta.source == "sicar"
-        assert meta.records_count == 1
-
-    @pytest.mark.asyncio
-    async def test_uf_case_insensitive(self):
-        with patch.object(
-            api.client,
-            "fetch_hits",
-            new_callable=AsyncMock,
-            side_effect=[0, 0, 0, 0, 0],
-        ):
-            df = await resumo("df")  # lowercase
-        assert isinstance(df, pd.DataFrame)
-
-    @pytest.mark.asyncio
-    async def test_municipio_and_cod_municipio_raises(self):
-        with pytest.raises(ValueError, match="municipio.*cod_municipio"):
-            await resumo("MT", municipio="Sorriso", cod_municipio=5107925)
-
-    @pytest.mark.asyncio
-    @pytest.mark.skipif(
-        not (GOLDEN_DIR / "imoveis_mt_municipio" / "response.csv").exists(),
-        reason="No golden data",
+    monkeypatch.setattr(
+        client, "fetch_imoveis", AsyncMock(return_value=([json.dumps(tabular).encode()], URL))
     )
-    async def test_cod_municipio_mode(self):
-        pages = _load_golden_pages("imoveis_mt_municipio")
-        with patch.object(
-            api.client,
-            "fetch_imoveis",
-            new_callable=AsyncMock,
-            return_value=(pages, "https://test.url"),
-        ) as mock_fetch:
-            df = await resumo("MT", cod_municipio=5107925)
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 1
-        cql = mock_fetch.call_args[0][1]
-        assert "cod_municipio_ibge=5107925" in cql
-
-
-DUPLICATE_CSV = (
-    b"FID,cod_imovel,status_imovel,dat_criacao,data_atualizacao,"
-    b"area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel\n"
-    b"s.1,PA-001,AT,2014-06-15T10:30:00Z,2023-01-10T14:20:00Z,"
-    b"120.5,,PA,BELEM,1501402,5.0,IRU\n"
-    b"s.2,PA-001,AT,2014-06-15T10:30:00Z,2022-05-01T10:00:00Z,"
-    b"120.5,,PA,BELEM,1501402,5.0,IRU\n"
-    b"s.3,PA-002,PE,2018-03-22T08:15:00Z,,"
-    b"45.2,,PA,BELEM,1501402,1.8,IRU\n"
-)
-
-NULL_DATA_CRIACAO_CSV = (
-    b"FID,cod_imovel,status_imovel,dat_criacao,data_atualizacao,"
-    b"area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel\n"
-    b"s.1,PA-001,AT,,2023-01-10T14:20:00Z,"
-    b"120.5,,PA,BELEM,1501402,5.0,IRU\n"
-    b"s.2,PA-002,PE,2018-03-22T08:15:00Z,,"
-    b"45.2,,PA,BELEM,1501402,1.8,IRU\n"
-)
-
-
-class TestImoveisDedup:
-    @pytest.mark.asyncio
-    async def test_dedup_removes_duplicates(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=3,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=([DUPLICATE_CSV], "https://test.url"),
-            ),
-        ):
-            df = await imoveis("PA")
-
-        assert len(df) == 2
-        assert df["cod_imovel"].is_unique
-
-    @pytest.mark.asyncio
-    async def test_dedup_keeps_most_recent(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=3,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=([DUPLICATE_CSV], "https://test.url"),
-            ),
-        ):
-            df = await imoveis("PA")
-
-        pa001 = df[df["cod_imovel"] == "PA-001"]
-        assert len(pa001) == 1
-        assert pa001["data_atualizacao"].iloc[0].year == 2023
-
-
-def _load_golden_geojson() -> bytes:
-    geo_path = GOLDEN_DIR / "imoveis_geo_sample" / "response.geojson"
-    return geo_path.read_bytes()
-
-
-class TestImoveisGeo:
-    gpd = pytest.importorskip("geopandas")
-
-    @pytest.mark.asyncio
-    async def test_returns_geodataframe(self):
-        import geopandas
-
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-        ):
-            gdf = await imoveis_geo("DF")
-
-        assert isinstance(gdf, geopandas.GeoDataFrame)
-        assert len(gdf) == 10
-        for col in COLUNAS_IMOVEIS_GEO:
-            assert col in gdf.columns
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-        ):
-            gdf, meta = await imoveis_geo("DF", return_meta=True)
-
-        assert meta.source == "sicar"
-        assert meta.records_count == len(gdf)
-        assert meta.source_method == "httpx+wfs+geojson"
-        assert meta.selected_source == "sicar_wfs_geo"
-
-    @pytest.mark.asyncio
-    async def test_filter_municipio(self):
-        geojson = _load_golden_geojson()
-        mock_fetch = AsyncMock(return_value=([geojson], "https://test.url"))
-        with patch.object(api.client, "fetch_imoveis_geo", mock_fetch):
-            await imoveis_geo("DF", municipio="Brasilia")
-
-        call_args = mock_fetch.call_args
-        cql = call_args[0][1] if len(call_args[0]) > 1 else call_args[1].get("cql_filter")
-        assert cql is not None
-        assert "municipio ILIKE" in cql
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF"):
-            await imoveis_geo("XX")
-
-    @pytest.mark.asyncio
-    async def test_municipio_and_cod_municipio_raises(self):
-        with pytest.raises(ValueError, match="municipio.*cod_municipio"):
-            await imoveis_geo("DF", municipio="Brasilia", cod_municipio=5300108)
-
-    @pytest.mark.asyncio
-    async def test_cod_municipio_filter(self):
-        geojson = _load_golden_geojson()
-        mock_fetch = AsyncMock(return_value=([geojson], "https://test.url"))
-        with patch.object(api.client, "fetch_imoveis_geo", mock_fetch):
-            await imoveis_geo("PA", cod_municipio=1508159)
-
-        cql = call_args_cql(mock_fetch)
-        assert "cod_municipio_ibge=1508159" in cql
-
-    @pytest.mark.asyncio
-    async def test_atualizado_apos_filter(self):
-        geojson = _load_golden_geojson()
-        mock_fetch = AsyncMock(return_value=([geojson], "https://test.url"))
-        with patch.object(api.client, "fetch_imoveis_geo", mock_fetch):
-            await imoveis_geo("MG", atualizado_apos="2026-06-07T00:00:00")
-
-        cql = call_args_cql(mock_fetch)
-        assert "data_atualizacao>'2026-06-07T00:00:00'" in cql
-
-    @pytest.mark.asyncio
-    async def test_atualizado_apos_unsupported_uf_raises(self):
-        with pytest.raises(ValueError, match="atualizado_apos"):
-            await imoveis_geo("RS", atualizado_apos="2026-06-07")
-
-    @pytest.mark.asyncio
-    async def test_dedup_by_cod_imovel(self):
-        import json
-
-        geojson_data = json.loads(_load_golden_geojson())
-        geojson_data["features"].append(geojson_data["features"][0])
-        data = json.dumps(geojson_data).encode()
-
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=11),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([data], "https://test.url"),
-            ),
-        ):
-            gdf = await imoveis_geo("DF")
-
-        assert gdf["cod_imovel"].is_unique
-
-    @pytest.mark.asyncio
-    async def test_empty_result(self):
-        import geopandas
-
-        empty = b'{"type":"FeatureCollection","features":[]}'
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=0),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([empty], "https://test.url"),
-            ),
-        ):
-            gdf = await imoveis_geo("DF")
-
-        assert isinstance(gdf, geopandas.GeoDataFrame)
-        assert len(gdf) == 0
-
-
-class TestImoveisGeoLargeQueryWarning:
-    gpd = pytest.importorskip("geopandas")
-
-    def _warning_events(self, mock_logger) -> list[str]:
-        return [c.args[0] for c in mock_logger.warning.call_args_list]
-
-    @pytest.mark.asyncio
-    async def test_warns_when_unbounded_total_exceeds_threshold(self):
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=200_000),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            await imoveis_geo("MT", max_features=None)
-
-        assert "sicar_geo_large_query" in self._warning_events(mock_logger)
-
-    @pytest.mark.asyncio
-    async def test_no_warning_when_max_features_caps_below_threshold(self):
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=200_000),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            await imoveis_geo("MT", max_features=5_000)
-
-        assert "sicar_geo_large_query" not in self._warning_events(mock_logger)
-
-    @pytest.mark.asyncio
-    async def test_warns_when_max_features_itself_exceeds_threshold(self):
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=500_000),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            await imoveis_geo("MT", max_features=150_000)
-
-        assert "sicar_geo_large_query" in self._warning_events(mock_logger)
-
-    @pytest.mark.asyncio
-    async def test_no_warning_when_total_below_threshold(self):
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock, return_value=10),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            await imoveis_geo("DF", max_features=None)
-
-        assert "sicar_geo_large_query" not in self._warning_events(mock_logger)
-
-    @pytest.mark.asyncio
-    async def test_skips_preflight_check_when_municipio_filter(self):
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(api.client, "fetch_hits", new_callable=AsyncMock) as mock_hits,
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-        ):
-            await imoveis_geo("MT", municipio="Sorriso", max_features=None)
-
-        mock_hits.assert_not_called()
-
-    @pytest.mark.asyncio
-    async def test_hit_count_check_httpx_error_is_logged_and_swallowed(self):
-        import httpx
-
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                side_effect=httpx.ConnectError("boom"),
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            gdf = await imoveis_geo("MT", max_features=None)
-
-        assert len(gdf) == 10
-        assert "sicar_geo_hit_count_check_failed" in self._warning_events(mock_logger)
-
-    @pytest.mark.asyncio
-    async def test_hit_count_check_source_unavailable_is_logged_and_swallowed(self):
-        from agrobr.exceptions import SourceUnavailableError
-
-        geojson = _load_golden_geojson()
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                side_effect=SourceUnavailableError(source="sicar", last_error="TLS handshake"),
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis_geo",
-                new_callable=AsyncMock,
-                return_value=([geojson], "https://test.url"),
-            ),
-            patch.object(api, "logger") as mock_logger,
-        ):
-            gdf = await imoveis_geo("MT", max_features=None)
-
-        assert len(gdf) == 10
-        assert "sicar_geo_hit_count_check_failed" in self._warning_events(mock_logger)
-
-
-class TestImoveisGeoStream:
-    gpd = pytest.importorskip("geopandas")
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF"):
-            async for _ in imoveis_geo_stream("XX"):
-                pass
-
-    @pytest.mark.asyncio
-    async def test_invalid_status_raises(self):
-        with pytest.raises(ValueError, match="Status"):
-            async for _ in imoveis_geo_stream("DF", status="INVALID"):
-                pass
-
-    @pytest.mark.asyncio
-    async def test_invalid_tipo_raises(self):
-        with pytest.raises(ValueError, match="Tipo"):
-            async for _ in imoveis_geo_stream("DF", tipo="XYZ"):
-                pass
-
-    @pytest.mark.asyncio
-    async def test_municipio_and_cod_municipio_raises(self):
-        with pytest.raises(ValueError, match="municipio.*cod_municipio"):
-            async for _ in imoveis_geo_stream("DF", municipio="Brasilia", cod_municipio=5300108):
-                pass
-
-    @pytest.mark.asyncio
-    async def test_atualizado_apos_unsupported_uf_raises(self):
-        with pytest.raises(ValueError, match="atualizado_apos"):
-            async for _ in imoveis_geo_stream("TO", atualizado_apos="2026-06-07"):
-                pass
-
-    @pytest.mark.asyncio
-    async def test_yields_geodataframe_per_batch(self):
-        import geopandas
-
-        geojson = _load_golden_geojson()
-
-        async def fake_stream(*_args, **_kwargs):
-            yield [geojson], "https://test.url"
-
-        with patch.object(api.client, "stream_imoveis_geo", fake_stream):
-            results = [gdf async for gdf in imoveis_geo_stream("DF")]
-
-        assert len(results) == 1
-        assert isinstance(results[0], geopandas.GeoDataFrame)
-        assert len(results[0]) == 10
-        for col in COLUNAS_IMOVEIS_GEO:
-            assert col in results[0].columns
-
-    @pytest.mark.asyncio
-    async def test_dedup_across_batches(self):
-        import json
-
-        features = json.loads(_load_golden_geojson())["features"]
-
-        def page(feats: list[dict]) -> bytes:
-            return json.dumps({"type": "FeatureCollection", "features": feats}).encode()
-
-        async def fake_stream(*_args, **_kwargs):
-            yield [page(features[:6])], "https://test.url"
-            yield [page(features[5:])], "https://test.url"
-
-        with patch.object(api.client, "stream_imoveis_geo", fake_stream):
-            results = [gdf async for gdf in imoveis_geo_stream("DF")]
-
-        assert len(results) == 2
-        assert sum(len(gdf) for gdf in results) == 10
-        all_cods = pd.concat([gdf["cod_imovel"] for gdf in results])
-        assert all_cods.is_unique
-
-    @pytest.mark.asyncio
-    async def test_empty_batch_is_skipped(self):
-        empty = b'{"type":"FeatureCollection","features":[]}'
-        geojson = _load_golden_geojson()
-
-        async def fake_stream(*_args, **_kwargs):
-            yield [empty], "https://test.url"
-            yield [geojson], "https://test.url"
-
-        with patch.object(api.client, "stream_imoveis_geo", fake_stream):
-            results = [gdf async for gdf in imoveis_geo_stream("DF")]
-
-        assert len(results) == 1
-        assert len(results[0]) == 10
-
-    @pytest.mark.asyncio
-    async def test_passes_cql_filter_and_max_features_none(self):
-        geojson = _load_golden_geojson()
-        captured: dict[str, object] = {}
-
-        async def fake_stream(uf, cql_filter=None, *, max_features=None):
-            captured["uf"] = uf
-            captured["cql_filter"] = cql_filter
-            captured["max_features"] = max_features
-            yield [geojson], "https://test.url"
-
-        with patch.object(api.client, "stream_imoveis_geo", fake_stream):
-            async for _ in imoveis_geo_stream("DF", municipio="Brasilia"):
-                pass
-
-        assert captured["uf"] == "DF"
-        assert captured["max_features"] is None
-        assert "municipio ILIKE" in captured["cql_filter"]
-
-    @pytest.mark.asyncio
-    async def test_passes_atualizado_apos_filter(self):
-        geojson = _load_golden_geojson()
-        captured: dict[str, object] = {}
-
-        async def fake_stream(uf, cql_filter=None, *, max_features=None):
-            captured["uf"] = uf
-            captured["cql_filter"] = cql_filter
-            captured["max_features"] = max_features
-            yield [geojson], "https://test.url"
-
-        with patch.object(api.client, "stream_imoveis_geo", fake_stream):
-            async for _ in imoveis_geo_stream("MG", atualizado_apos="2026-06-07T00:00:00"):
-                pass
-
-        assert "data_atualizacao>'2026-06-07T00:00:00'" in captured["cql_filter"]
-
-
-class TestImoveisNullDataCriacao:
-    @pytest.mark.asyncio
-    async def test_null_data_criacao_accepted(self):
-        with (
-            patch.object(
-                api.client,
-                "fetch_hits",
-                new_callable=AsyncMock,
-                return_value=2,
-            ),
-            patch.object(
-                api.client,
-                "fetch_imoveis",
-                new_callable=AsyncMock,
-                return_value=([NULL_DATA_CRIACAO_CSV], "https://test.url"),
-            ),
-        ):
-            df = await imoveis("PA")
-
-        assert len(df) == 2
-        assert pd.isna(df[df["cod_imovel"] == "PA-001"]["data_criacao"].iloc[0])
+
+    resultados = {
+        "geo": (await api.imoveis_geo("DF", municipio="Brasília"), geo),
+        "tabular": (await api.imoveis("DF", cod_municipio=5300108), tabular),
+    }
+
+    with collect_failures() as check:
+        for nome, (frame, documento) in resultados.items():
+            with check(nome):
+                esperado = {
+                    feature["properties"]["cod_imovel"]: feature["properties"].get("condicao")
+                    for feature in documento["features"]
+                }
+                obtido = {
+                    codigo: None if pd.isna(valor) else valor
+                    for codigo, valor in zip(frame["cod_imovel"], frame["condicao"], strict=True)
+                }
+                assert obtido == esperado
+                contracts.validate_dataset(
+                    pd.DataFrame(frame.drop(columns="geometry", errors="ignore")), "sicar_imoveis"
+                )
+
+
+async def test_geo_incompativel_vira_parse_error(monkeypatch: pytest.MonkeyPatch):
+    base = json.loads(geo_capture("df_geo_srs4326_count3.json"))
+    misto = copy.deepcopy(base)
+    misto["features"][1]["properties"]["dat_criacao"] = "2019-12-12T13:53:36.353"
+    invalido = copy.deepcopy(base)
+    invalido["features"][0]["properties"]["status_imovel"] = "INVALIDO"
+    sem_area = copy.deepcopy(base)
+    for feature in sem_area["features"]:
+        del feature["properties"]["area"]
+    casos = [
+        ("fusos misturados", json.dumps(misto).encode(), "com e sem fuso"),
+        ("registro inválido", json.dumps(invalido).encode(), "Status invalido"),
+        ("propriedade ausente", json.dumps(sem_area).encode(), "Colunas obrigatorias"),
+        ("JSON inválido", b"not json at all {{{", "GeoJSON"),
+    ]
+    with collect_failures() as check:
+        for nome, body, mensagem in casos:
+            with check(nome), pytest.raises(ParseError, match=mensagem):
+                monkeypatch.setattr(
+                    client, "fetch_imoveis_geo", AsyncMock(return_value=([body], URL))
+                )
+                await api.imoveis_geo("DF", municipio="Brasília")
+
+
+def test_aviso_de_truncamento_so_quando_a_pagina_unica_atinge_o_limite(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    unica = geo_capture("df_geo_srs4326_count3.json")
+    duas = [unica, geo_capture("ms_5007901_stream_p1.json")]
+    casos = [
+        ([unica], 3, 3, ["sicar_geo_truncated"]),
+        ([unica], 4, 3, []),
+        (duas, 1, 4, []),
+    ]
+    with collect_failures() as check:
+        for pages, limite, linhas, esperado in casos:
+            with check((len(pages), limite)):
+                logger = Mock()
+                monkeypatch.setattr(geo_utils, "logger", logger)
+                frame = parser.parse_imoveis_geojson(pages, max_features=limite)
+                assert len(frame) == linhas
+                assert [call.args[0] for call in logger.warning.call_args_list] == esperado
+
+
+async def test_resumo_municipal_agrega_as_linhas_publicadas(monkeypatch: pytest.MonkeyPatch):
+    body = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    features = json.loads(body)["features"]
+    fetch = AsyncMock(side_effect=[([body], URL), ([], URL)])
+    monkeypatch.setattr(client, "fetch_imoveis", fetch)
+
+    frame = await api.resumo("DF", municipio="Brasília")
+    vazio = await api.resumo("DF", cod_municipio=5300108)
+
+    assert frame.to_dict("records") == [pytest.approx(resumo_esperado(features), rel=1e-12)]
+    assert vazio.to_dict("records") == [
+        dict.fromkeys(resumo_esperado(features), 0)
+        | dict.fromkeys(("area_total_ha", "area_media_ha", "modulos_fiscais_medio"), 0.0)
+    ]
+    assert [call.args[:2] for call in fetch.await_args_list] == [
+        ("DF", "municipio ILIKE '%Brasília%'"),
+        ("DF", "cod_municipio_ibge=5300108"),
+    ]
+
+
+async def test_resumo_estadual_conta_cada_status_pela_sondagem(monkeypatch: pytest.MonkeyPatch):
+    contagens = {
+        None: 21006,
+        "status_imovel='AT'": 19000,
+        "status_imovel='PE'": 1200,
+        "status_imovel='SU'": 500,
+        "status_imovel='CA'": 306,
+    }
+
+    async def hits(uf: str, cql_filter: str | None = None, **_kwargs: Any) -> int:
+        assert uf == "DF"
+        return contagens[cql_filter]
+
+    monkeypatch.setattr(client, "fetch_hits", hits)
+    frame = await api.resumo("df")
+    assert frame.to_dict("records") == [
+        {"total": 21006, "ativos": 19000, "pendentes": 1200, "suspensos": 500, "cancelados": 306}
+    ]
+
+
+async def test_sondagem_de_volume_avisa_e_nao_derruba_a_consulta(monkeypatch: pytest.MonkeyPatch):
+    body = geo_capture("df_geo_srs4326_count3.json")
+    tabular = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    monkeypatch.setattr(client, "fetch_imoveis_geo", AsyncMock(return_value=([body], URL)))
+    monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([tabular], URL)))
+    indisponivel = SourceUnavailableError(source="sicar", last_error="TLS")
+    casos: list[tuple[str, dict[str, Any], int | Exception, int, str | None]] = [
+        ("imoveis", {}, 200_000, 1, "sicar_large_query"),
+        ("imoveis", {}, 100_000, 1, None),
+        ("imoveis", {"cod_municipio": 5300108}, 0, 0, None),
+        ("imoveis", {}, indisponivel, 1, "sicar_hit_count_check_failed"),
+        ("imoveis_geo", {"max_features": None}, 200_000, 1, "sicar_geo_large_query"),
+        ("imoveis_geo", {"max_features": 5_000}, 200_000, 1, None),
+        ("imoveis_geo", {"max_features": 150_000}, 500_000, 1, "sicar_geo_large_query"),
+        ("imoveis_geo", {"max_features": None}, 100_000, 1, None),
+        ("imoveis_geo", {"municipio": "Brasília", "max_features": None}, 0, 0, None),
+        (
+            "imoveis_geo",
+            {"max_features": None},
+            httpx.ConnectError("boom"),
+            1,
+            "sicar_geo_hit_count_check_failed",
+        ),
+        (
+            "imoveis_geo",
+            {"max_features": None},
+            indisponivel,
+            1,
+            "sicar_geo_hit_count_check_failed",
+        ),
+    ]
+    with collect_failures() as check:
+        for nome, filtros, sondagem, chamadas, evento in casos:
+            with check((nome, filtros, sondagem)):
+                logger = Mock()
+                if isinstance(sondagem, Exception):
+                    hits = AsyncMock(side_effect=sondagem)
+                else:
+                    hits = AsyncMock(return_value=sondagem)
+                monkeypatch.setattr(api, "logger", logger)
+                monkeypatch.setattr(client, "fetch_hits", hits)
+                frame = await getattr(api, nome)("DF", **filtros)
+                assert len(frame) == (3 if nome == "imoveis_geo" else 62)
+                avisos = [call.args[0] for call in logger.warning.call_args_list]
+                assert avisos == ([] if evento is None else [evento])
+                assert hits.await_count == chamadas

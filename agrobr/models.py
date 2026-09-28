@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import copy
 import json
 import sys
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -55,7 +56,7 @@ class Safra(BaseModel):
     unidade_area: str = Field(default="mil_ha")
     unidade_producao: str = Field(default="mil_ton")
     levantamento: int = Field(..., ge=1, le=12)
-    data_publicacao: date
+    data_publicacao: date | None = None
     meta: dict[str, Any] = Field(default_factory=dict)
 
     parsed_at: datetime = Field(default_factory=utcnow)
@@ -101,9 +102,24 @@ class MetaInfo:
     snapshot: str | None = None
     attempted_sources: list[str] = dataclass_field(default_factory=list)
     selected_source: str = ""
+    data_sources: list[str] = dataclass_field(default_factory=list)
     fetch_timestamp: datetime | None = None
+    source_details: dict[str, Any] = dataclass_field(default_factory=dict)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if (
+            name in ("fetched_at", "timestamp", "cache_expires_at", "fetch_timestamp")
+            and value is not None
+        ):
+            value = (
+                value.replace(tzinfo=UTC) if value.utcoffset() is None else value.astimezone(UTC)
+            )
+        super().__setattr__(name, value)
 
     def __post_init__(self) -> None:
+        for name in ("fetched_at", "timestamp", "cache_expires_at", "fetch_timestamp"):
+            setattr(self, name, getattr(self, name))
+
         if not self.agrobr_version:
             from agrobr import __version__
 
@@ -141,15 +157,40 @@ class MetaInfo:
             "snapshot": self.snapshot,
             "attempted_sources": self.attempted_sources,
             "selected_source": self.selected_source,
+            "data_sources": self.data_sources,
             "fetch_timestamp": (self.fetch_timestamp.isoformat() if self.fetch_timestamp else None),
+            "license": self.license,
+            **(
+                {"source_details": copy.deepcopy(self.source_details)}
+                if self.source_details
+                else {}
+            ),
         }
+
+    @property
+    def license(self) -> str | None:
+        """Classificação de licença do dado (``docs/licenses.md``).
+
+        A mais restritiva entre as fontes de ``data_sources``; sem elas, a da fonte
+        selecionada (ou da ``source``). Nula quando nenhuma está na tabela.
+        """
+        from agrobr import constants
+
+        classes = [c for nome in self.data_sources if (c := constants.licenca_da_fonte(nome))]
+        if classes:
+            return max(classes, key=constants.LICENCAS_EM_ORDEM.index)
+        for nome in (self.selected_source, self.source.rsplit("/", 1)[-1]):
+            if classe := constants.licenca_da_fonte(nome):
+                return classe
+        return None
 
     def to_json(self, indent: int = 2) -> str:
         return json.dumps(self.to_dict(), indent=indent, ensure_ascii=False)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> MetaInfo:
-        data = data.copy()
+        data = copy.deepcopy(data)
+        data.pop("license", None)
 
         for key in ["fetched_at", "timestamp", "cache_expires_at", "fetch_timestamp"]:
             if data.get(key) and isinstance(data[key], str):

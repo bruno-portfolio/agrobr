@@ -1,7 +1,7 @@
 {
   "name": "sicar.imoveis",
-  "schema_version": "1.0",
-  "effective_from": "0.12.0",
+  "schema_version": "2.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "cod_imovel"
@@ -9,7 +9,10 @@
   "required_columns": [
     "cod_imovel",
     "status",
+    "data_criacao",
+    "data_atualizacao",
     "area_ha",
+    "condicao",
     "uf",
     "municipio",
     "cod_municipio_ibge",
@@ -27,7 +30,8 @@
     "municipio": "str",
     "cod_municipio_ibge": "int",
     "modulos_fiscais": "float",
-    "tipo": "str"
+    "tipo": "str",
+    "cod_municipio": "int"
   },
   "nullable": {
     "cod_imovel": false,
@@ -40,7 +44,8 @@
     "municipio": false,
     "cod_municipio_ibge": false,
     "modulos_fiscais": false,
-    "tipo": false
+    "tipo": false,
+    "cod_municipio": true
   },
   "columns": [
     {
@@ -72,9 +77,10 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Instante UTC informado pelo GeoJSON; datetime64[ns, UTC], inclusive nulos",
       "min_value": null,
-      "max_value": null
+      "max_value": null,
+      "timezone": "UTC"
     },
     {
       "name": "data_atualizacao",
@@ -83,9 +89,10 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Instante UTC informado pelo GeoJSON; datetime64[ns, UTC], inclusive nulos",
       "min_value": null,
-      "max_value": null
+      "max_value": null,
+      "timezone": "UTC"
     },
     {
       "name": "area_ha",
@@ -163,12 +170,69 @@
       "description": "",
       "min_value": null,
       "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+      "min_value": null,
+      "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
     "area_ha_min": 0,
-    "modulos_fiscais_min": 0
+    "modulos_fiscais_min": 0,
+    "data_criacao_timezone": "UTC",
+    "data_atualizacao_timezone": "UTC",
+    "status_allowed": [
+      "AT",
+      "CA",
+      "PE",
+      "SU"
+    ],
+    "tipo_allowed": [
+      "AST",
+      "IRU",
+      "PCT"
+    ],
+    "uf_allowed": [
+      "AC",
+      "AL",
+      "AM",
+      "AP",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MG",
+      "MS",
+      "MT",
+      "PA",
+      "PB",
+      "PE",
+      "PI",
+      "PR",
+      "RJ",
+      "RN",
+      "RO",
+      "RR",
+      "RS",
+      "SC",
+      "SE",
+      "SP",
+      "TO"
+    ],
+    "non_empty_strings": [
+      "cod_imovel",
+      "municipio"
+    ]
   },
   "guarantees": [
     "Column names never change (additions only)",
@@ -176,6 +240,9 @@
     "'status' is always AT, PE, SU, or CA",
     "'tipo' is always IRU, AST, or PCT",
     "'area_ha' is always >= 0",
-    "'uf' is always a valid Brazilian state code"
+    "'uf' is always a valid Brazilian state code",
+    "Datas de criação e atualização são instantes UTC, inclusive em retornos vazios",
+    "Data de atualização ausente na camada permanece nula, sem atribuir outro instante",
+    "Filtros incrementais não reconstituem versões históricas do cadastro"
   ]
 }

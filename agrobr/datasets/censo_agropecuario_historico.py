@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -9,6 +9,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
 
 logger = structlog.get_logger()
 
@@ -18,10 +19,11 @@ async def _fetch_ibge_censo_agro_historico(
 ) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import ibge
 
+    ano = kwargs.get("ano")
     uf = kwargs.get("uf")
     nivel = kwargs.get("nivel", "uf")
 
-    result = await ibge.censo_agro_historico(tema, uf=uf, nivel=nivel, return_meta=True)
+    result = await ibge.censo_agro_historico(tema, ano=ano, uf=uf, nivel=nivel, return_meta=True)
 
     return _unpack_result(result)
 
@@ -48,7 +50,7 @@ CENSO_AGROPECUARIO_HISTORICO_INFO = DatasetInfo(
         "lavoura_permanente",
         "lavoura_temporaria",
     ],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="never",
     typical_latency="N/A",
     source_url=SIDRA_BASE,
@@ -68,7 +70,7 @@ class CensoAgropecuarioHistoricoDataset(BaseDataset):
         uf: str | None = None,
         nivel: str = "uf",
         return_meta: bool = False,
-        **kwargs: Any,
+        ano: int | list[int] | None = None,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info(
             "dataset_fetch",
@@ -80,9 +82,10 @@ class CensoAgropecuarioHistoricoDataset(BaseDataset):
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, uf=uf, nivel=nivel, **kwargs
+            produto, uf=uf, nivel=nivel, ano=ano
         )
 
+        df = df.assign(cod_municipio=regions.cod_municipio(df["localidade_cod"]))
         self._validate_contract(df)
 
         if return_meta:
@@ -98,13 +101,38 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_censo_agropecuario_historico)
 
 
+@overload
+async def censo_agropecuario_historico(
+    tema: str,
+    uf: str | None = None,
+    nivel: str = "uf",
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+    ano: int | list[int] | None = None,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def censo_agropecuario_historico(
+    tema: str,
+    uf: str | None = None,
+    nivel: str = "uf",
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+    ano: int | list[int] | None = None,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def censo_agropecuario_historico(
     tema: str,
     uf: str | None = None,
     nivel: str = "uf",
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
+    ano: int | list[int] | None = None,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _censo_agropecuario_historico.fetch(
-        tema, uf=uf, nivel=nivel, return_meta=return_meta, **kwargs
+    return await _censo_agropecuario_historico.fetch(  # type: ignore[call-arg]
+        tema, uf=uf, nivel=nivel, return_meta=return_meta, as_polars=as_polars, ano=ano
     )

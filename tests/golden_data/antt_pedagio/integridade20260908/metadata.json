@@ -1,0 +1,389 @@
+{
+  "http_real": 0,
+  "scope": "Selected complete CSV records; not a complete resource or representative population sample.",
+  "encoding": "cp1252",
+  "license": {
+    "id": "cc-by",
+    "title": "Creative Commons Atribui\u00e7\u00e3o",
+    "url": "http://www.opendefinition.org/licenses/cc-by",
+    "evidence_path": "request_001.body",
+    "evidence_sha256": "234cf52faabf83e5f0793cb51ea9d551043a4a8e5a5db68dc4c00b585a808fc9",
+    "qualification": "License announced by the captured ANTT CKAN dataset; subset preserves attribution and source receipts."
+  },
+  "samples": {
+    "mensal_2026": {
+      "file": "mensal_2026.csv",
+      "year": 2026,
+      "frequency": "mensal",
+      "sha256": "0f91a362a024c6f8f5e5a2598840d9a58c03ddfdb15390ea7f46093dca690892",
+      "size_bytes": 600,
+      "header_bytes": 96,
+      "source_path": "request_001.body",
+      "source_sha256": "3e8003303750c6955f5e56ea7ef70e6f693028904f53d91762ffa248eb3ae299",
+      "source_size_bytes": 9412519,
+      "url": "https://dados.antt.gov.br/dataset/5bf70ec3-b24e-4f73-99a0-78b200f5e915/resource/b475d3ac-e804-4ca3-94f7-106bbd40d2b5/download/volume-trafego-praca-pedagio-2026_mensal_consolidado.csv",
+      "started_at": "2026-09-08T05:00:35.605998+00:00",
+      "finished_at": "2026-09-08T05:00:37.962253+00:00",
+      "receipt_file": "mensal_2026.receipt.json",
+      "receipt_sha256": "d94d11c8714284e06688bb41620ab0b5dca5752f11fed6fa62b7faa56bd884d3",
+      "records": [
+        {
+          "source_record": 1,
+          "byte_start": 96,
+          "byte_end": 197,
+          "raw_sha256": "9f7a7910961808be0d8ef1221593fe1ecf3337db79ffe4afbcba8cb1fea185db",
+          "physical_line_end": 2,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "01/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "10",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "1,00"
+          }
+        },
+        {
+          "source_record": 2,
+          "byte_start": 197,
+          "byte_end": 298,
+          "raw_sha256": "26efcf96ce1fae62db22f08f8ed7a945638b5f7c8072ca4df51ecd88e241375f",
+          "physical_line_end": 3,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "01/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "11",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "9,00"
+          }
+        },
+        {
+          "source_record": 3,
+          "byte_start": 298,
+          "byte_end": 399,
+          "raw_sha256": "ba2a1b01037197212fa2844cd12fcfd93dfb493b6c737eecc2068b2b2333c3ec",
+          "physical_line_end": 4,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "01/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "12",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "1,00"
+          }
+        },
+        {
+          "source_record": 348,
+          "byte_start": 33652,
+          "byte_end": 33753,
+          "raw_sha256": "fffd3e629b195f62ccb46ec80502e5aec6616c051519515883a08e84c11126a4",
+          "physical_line_end": 349,
+          "selection_reasons": [
+            "later_reference"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "02/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "10",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "7,00"
+          }
+        },
+        {
+          "source_record": 14868,
+          "byte_start": 1400536,
+          "byte_end": 1400636,
+          "raw_sha256": "248ad00800a904e87edb0c27cbd28b50e8de8df690e837ab14d49a9edc9da2a2",
+          "physical_line_end": 14869,
+          "selection_reasons": [
+            "outer_whitespace"
+          ],
+          "cells": {
+            "concessionaria": "ECOVIAS CAPIXABA",
+            "mes_ano": "01/2026",
+            "sentido": "Crescente",
+            "praca": "P1 - Pedro Can\u00e1rio ",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "10",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "60,00"
+          }
+        }
+      ]
+    },
+    "diario_2026": {
+      "file": "diario_2026.csv",
+      "year": 2026,
+      "frequency": "diaria",
+      "sha256": "6f735601805981cd999e2fed0fb52b10ab0306f5a8b2c9cf6ad5353835b699b4",
+      "size_bytes": 616,
+      "header_bytes": 96,
+      "source_path": "request_002.body",
+      "source_sha256": "bc4bf423611afa6d6443c7661138502cbe93145ec3dc11d8faa8091accde49c1",
+      "source_size_bytes": 181926964,
+      "url": "https://dados.antt.gov.br/dataset/5bf70ec3-b24e-4f73-99a0-78b200f5e915/resource/27d33a3c-651f-4d3c-8af2-117bb1d6fb14/download/volume-trafego-praca-pedagio-2026_diario.csv",
+      "started_at": "2026-09-08T05:00:39.966754+00:00",
+      "finished_at": "2026-09-08T05:01:11.306966+00:00",
+      "receipt_file": "diario_2026.receipt.json",
+      "receipt_sha256": "eec7d05de42080a469c844d54c6188a1628a3880781142043af654c44c19b203",
+      "records": [
+        {
+          "source_record": 1,
+          "byte_start": 96,
+          "byte_end": 201,
+          "raw_sha256": "ca4acc7723d59a1a12f93400619c229342c7eced45407b40e412f4ec00e3cdc3",
+          "physical_line_end": 2,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "01/01/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "2",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "135,00"
+          }
+        },
+        {
+          "source_record": 2,
+          "byte_start": 201,
+          "byte_end": 305,
+          "raw_sha256": "61282cd04a6c1d7ceed0272a8abc2d0d1e89929c9aea0d42a98f59662210cbbf",
+          "physical_line_end": 3,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "01/01/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "2",
+            "tipo_de_veiculo": "Passeio",
+            "volume_total": "3051,00"
+          }
+        },
+        {
+          "source_record": 3,
+          "byte_start": 305,
+          "byte_end": 410,
+          "raw_sha256": "275ce49f75fc68108025326a8708e736187165fbcfecbd788eb2aed84db18362",
+          "physical_line_end": 4,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "01/01/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "3",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "142,00"
+          }
+        },
+        {
+          "source_record": 242,
+          "byte_start": 23738,
+          "byte_end": 23842,
+          "raw_sha256": "fb92a725556a9834889e12fdc75f162173b1b5e9f0afb158d7bc21a8336c27a5",
+          "physical_line_end": 243,
+          "selection_reasons": [
+            "later_reference"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FLUMINENSE",
+            "mes_ano": "02/01/2026",
+            "sentido": "Crescente",
+            "praca": "Casimiro de Abreu",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "12",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "1,00"
+          }
+        },
+        {
+          "source_record": 309949,
+          "byte_start": 29766367,
+          "byte_end": 29766469,
+          "raw_sha256": "f566cd5a368e5265071a0e0342ea6f57e0385058e11e51e14841bf3cf82eff99",
+          "physical_line_end": 309950,
+          "selection_reasons": [
+            "outer_whitespace"
+          ],
+          "cells": {
+            "concessionaria": "ECOVIAS CAPIXABA",
+            "mes_ano": "01/01/2026",
+            "sentido": "Crescente",
+            "praca": "P1 - Pedro Can\u00e1rio ",
+            "tipo_cobranca": "Autom\u00e1tica",
+            "categoria_eixo": "2",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "19,00"
+          }
+        }
+      ]
+    },
+    "legado_2010": {
+      "file": "legado_2010.csv",
+      "year": 2010,
+      "frequency": "mensal",
+      "sha256": "f35898768cad86140fb2c96b268cf1b08da0df0b4437b206c4ce557701a57e07",
+      "size_bytes": 709,
+      "header_bytes": 91,
+      "source_path": "request_003.body",
+      "source_sha256": "78c588335653438749a2c869e2fdf8bdbaef14832e2086867ce2e8e764d37eff",
+      "source_size_bytes": 1420258,
+      "url": "https://dados.antt.gov.br/dataset/5bf70ec3-b24e-4f73-99a0-78b200f5e915/resource/4c1c6cde-61a3-4704-9b01-4bb6e75b874d/download/volume-trafego-praca-pedagio-2010.csv",
+      "started_at": "2026-09-08T05:01:13.311557+00:00",
+      "finished_at": "2026-09-08T05:01:13.779301+00:00",
+      "receipt_file": "legado_2010.receipt.json",
+      "receipt_sha256": "1fa09dd2a10fd5cc3f7e59573e64d74ee7b6cd34344c5f31fefef46781973aab",
+      "records": [
+        {
+          "source_record": 1,
+          "byte_start": 91,
+          "byte_end": 194,
+          "raw_sha256": "7760ddcbb0cedbed018ef79dc66a07e0e9b0db3cdafb4020e5ee1956d50ab14d",
+          "physical_line_end": 2,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FERN\u00c3O DIAS",
+            "mes_ano": "01/01/2010",
+            "sentido": "Crescente",
+            "praca": "2 (Vargem)",
+            "tipo_cobranca": "N/I",
+            "categoria": "Categoria 1",
+            "tipo_de_veiculo": "Passeio",
+            "volume_total": "277638,00"
+          }
+        },
+        {
+          "source_record": 2,
+          "byte_start": 194,
+          "byte_end": 298,
+          "raw_sha256": "ab23ed8b4a7044efd8c9f3bf5f4e1997a6b8d292e80c61e5270e2b03f06ef9e0",
+          "physical_line_end": 3,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FERN\u00c3O DIAS",
+            "mes_ano": "01/01/2010",
+            "sentido": "Crescente",
+            "praca": "2 (Vargem)",
+            "tipo_cobranca": "N/I",
+            "categoria": "Categoria 2",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "24788,00"
+          }
+        },
+        {
+          "source_record": 3,
+          "byte_start": 298,
+          "byte_end": 398,
+          "raw_sha256": "81771fe658eb4bbcc84df1ba3b8c2891e64e689c2a379475b0286481e75fcc04",
+          "physical_line_end": 4,
+          "selection_reasons": [
+            "initial_occurrence"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FERN\u00c3O DIAS",
+            "mes_ano": "01/01/2010",
+            "sentido": "Crescente",
+            "praca": "2 (Vargem)",
+            "tipo_cobranca": "N/I",
+            "categoria": "Categoria 3",
+            "tipo_de_veiculo": "Passeio",
+            "volume_total": "703,00"
+          }
+        },
+        {
+          "source_record": 5,
+          "byte_start": 502,
+          "byte_end": 601,
+          "raw_sha256": "f2d411e92d667fda5e350c9c9a13836a23ffaec41e5f92a61bbd2d1a7891edf3",
+          "physical_line_end": 6,
+          "selection_reasons": [
+            "category5"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FERN\u00c3O DIAS",
+            "mes_ano": "01/01/2010",
+            "sentido": "Crescente",
+            "praca": "2 (Vargem)",
+            "tipo_cobranca": "N/I",
+            "categoria": "Categoria 5",
+            "tipo_de_veiculo": "Passeio",
+            "volume_total": "61,00"
+          }
+        },
+        {
+          "source_record": 10,
+          "byte_start": 1010,
+          "byte_end": 1109,
+          "raw_sha256": "099329f68c6c1c10cdceed00689f9f75ebc39b28ddfa915de6a58277c599a75d",
+          "physical_line_end": 11,
+          "selection_reasons": [
+            "atypical"
+          ],
+          "cells": {
+            "concessionaria": "AUTOPISTA FERN\u00c3O DIAS",
+            "mes_ano": "01/01/2010",
+            "sentido": "Crescente",
+            "praca": "2 (Vargem)",
+            "tipo_cobranca": "N/I",
+            "categoria": "Outros",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "10692,00"
+          }
+        },
+        {
+          "source_record": 7881,
+          "byte_start": 817138,
+          "byte_end": 817251,
+          "raw_sha256": "a602aaff70068430af09ce73ee4850ef390150b14be90d00f29b214bcd8e76a0",
+          "physical_line_end": 7882,
+          "selection_reasons": [
+            "zero"
+          ],
+          "cells": {
+            "concessionaria": "CRT",
+            "mes_ano": "01/01/2010",
+            "sentido": "Crescente",
+            "praca": "Pra\u00e7a PA1 BR-116/RJ km 114,50 - Bloqueio",
+            "tipo_cobranca": "N/I",
+            "categoria": "Categoria 10",
+            "tipo_de_veiculo": "Comercial",
+            "volume_total": "0,00"
+          }
+        }
+      ]
+    }
+  }
+}

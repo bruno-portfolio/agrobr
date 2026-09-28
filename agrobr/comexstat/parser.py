@@ -1,147 +1,146 @@
 from __future__ import annotations
 
-from io import StringIO
+from typing import TYPE_CHECKING, BinaryIO
 
-import pandas as pd
 import structlog
+from pydantic import ValidationError
 
-from agrobr.exceptions import ParseError
+from agrobr import constants
+from agrobr.comexstat import _csv, _retention, _scan, models
+from agrobr.exceptions import ResourceLimitError
+
+if TYPE_CHECKING:
+    from agrobr.comexstat.query import ComexQuery
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 1
-
-COLUNAS_MAP: dict[str, str] = {
-    "CO_ANO": "ano",
-    "CO_MES": "mes",
-    "CO_NCM": "ncm",
-    "CO_UNID": "cod_unidade",
-    "CO_PAIS": "cod_pais",
-    "SG_UF_NCM": "uf",
-    "CO_VIA": "cod_via",
-    "CO_URF": "cod_porto",
-    "QT_ESTAT": "qtd_estatistica",
-    "KG_LIQUIDO": "kg_liquido",
-    "VL_FOB": "valor_fob_usd",
-}
+PARSER_VERSION = 2
+ParsedResource = models.ParsedResource
 
 
-def _detect_separator(csv_text: str) -> str:
-    first_line = csv_text.split("\n")[0]
-    if ";" in first_line:
-        return ";"
-    return ","
-
-
-def _parse_comexstat_csv(
-    csv_text: str,
-    ncm: str | None = None,
-    uf: str | None = None,
-    fluxo: str = "exportação",
-) -> pd.DataFrame:
-    if not csv_text or len(csv_text.strip()) < 10:
-        raise ParseError(
-            source="comexstat",
-            parser_version=PARSER_VERSION,
-            reason=f"CSV de {fluxo} vazio",
+def _columns(query: ComexQuery) -> tuple[tuple[str, ...], dict[str, str]]:
+    names: tuple[str, ...]
+    if query.agregacao == "mensal":
+        names = ("ano", "mes", "ncm", "uf", "kg_liquido", "valor_fob_usd", "volume_ton")
+        if query.fluxo == "importacao":
+            names += ("valor_frete_usd", "valor_seguro_usd")
+    else:
+        raw = (
+            constants.COMEXSTAT_EXPORT_PROPERTIES
+            if query.fluxo == "exportacao"
+            else constants.COMEXSTAT_IMPORT_PROPERTIES
         )
-
-    sep = _detect_separator(csv_text)
-
-    try:
-        df = pd.read_csv(
-            StringIO(csv_text),
-            sep=sep,
-            dtype={"CO_NCM": str, "SG_UF_NCM": str},
-            low_memory=False,
+        names = tuple(constants.COMEXSTAT_RENAME_MAP[name] for name in raw)
+    types = {
+        name: (
+            "Int64"
+            if name in ("ano", "mes", "kg_liquido", "qtd_estatistica")
+            else "float64"
+            if name.startswith("valor_") or name == "volume_ton"
+            else "string"
         )
-    except Exception as e:
-        raise ParseError(
-            source="comexstat",
-            parser_version=PARSER_VERSION,
-            reason=f"Erro ao ler CSV de {fluxo}: {e}",
-        ) from e
+        for name in names
+    }
+    return names, types
 
-    if df.empty:
-        raise ParseError(
-            source="comexstat",
-            parser_version=PARSER_VERSION,
-            reason=f"CSV de {fluxo} parseado mas sem registros",
-        )
 
-    rename = {k: v for k, v in COLUNAS_MAP.items() if k in df.columns}
-    df = df.rename(columns=rename)
-
-    if "ncm" in df.columns:
-        df["ncm"] = df["ncm"].astype(str).str.zfill(8)
-
-    if ncm and "ncm" in df.columns:
-        df = df[df["ncm"].str.startswith(ncm)]
-
-    if uf and "uf" in df.columns:
-        df = df[df["uf"] == uf.upper()]
-
-    for col in ("kg_liquido", "valor_fob_usd", "qtd_estatistica"):
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-
-    for col in ("ano", "mes"):
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
-
-    if "uf" in df.columns:
-        df["uf"] = df["uf"].str.upper().str.strip()
-
-    sort_cols = [c for c in ("ano", "mes", "ncm", "uf") if c in df.columns]
-    if sort_cols:
-        df = df.sort_values(sort_cols).reset_index(drop=True)
-
-    logger.info(
-        "comexstat_parsed",
-        records=len(df),
-        ncm_filter=ncm,
-        uf_filter=uf,
+def parse_resource(file: BinaryIO, query: ComexQuery) -> models.ParsedResource:
+    scanner = _scan.ResourceScan(query)
+    encoding, attempts = _csv.detect_encoding(file)
+    model: type[models.ExportRecord] = (
+        models.ExportRecord if query.fluxo == "exportacao" else models.ImportRecord
     )
+    expected = (
+        constants.COMEXSTAT_EXPORT_PROPERTIES
+        if query.fluxo == "exportacao"
+        else constants.COMEXSTAT_IMPORT_PROPERTIES
+    )
+    with _csv.open_rows(file, encoding, expected) as rows:
+        for ordinal, raw in rows:
+            try:
+                scanner.accept(model.model_validate(raw))
+            except (ValidationError, ValueError) as exc:
+                raise _csv.error(f"Registro {ordinal}: {exc}") from exc
+        try:
+            selected = scanner.output_rows()
+        except ValueError as exc:
+            raise _csv.error(f"Agregação não representável: {exc}") from exc
+        columns, dtypes = _columns(query)
+        frame = scanner.memory.build(selected, columns, dtypes)
+        details: dict[str, object] = {
+            "parser_version": PARSER_VERSION,
+            "encoding": encoding,
+            "encoding_attempts": attempts,
+            "layout_fingerprint": rows.fingerprint,
+            "source_columns": list(rows.header),
+            "source_rows": rows.records,
+            "validated_rows": scanner.validated_rows,
+            "selected_rows": scanner.selected_rows,
+            "output_rows": len(frame),
+            "eof_reached": rows.eof,
+            "aggregation": query.agregacao,
+            "null_aggregation": "any_null_propagates",
+            "statistics": scanner.statistics(),
+            "retained_bytes_estimate": scanner.memory.peak,
+            "frame_resident_bytes": scanner.memory.frame_bytes(frame),
+            "memory_basis": "pooled_literal_objects_rows_groups_arrays_column_bridge_plus_8MiB_scratch_not_RSS",
+            "max_linhas": query.max_linhas,
+            "max_memoria_bytes": query.max_memoria_bytes,
+            "row_limit_basis": "selected_occurrences_before_aggregation",
+            "order": "source_occurrences" if query.agregacao == "detalhado" else "ano_mes_ncm_uf",
+            "money_sum_basis": "exact_integer_coefficient_decimal_scale_then_binary64",
+        }
+    logger.info(
+        "comexstat_parsed", source_rows=rows.records, output_rows=len(frame), encoding=encoding
+    )
+    return models.ParsedResource(frame, details)
 
-    return df
 
-
-def parse_exportacao(
-    csv_text: str,
-    ncm: str | None = None,
-    uf: str | None = None,
-) -> pd.DataFrame:
-    return _parse_comexstat_csv(csv_text, ncm=ncm, uf=uf, fluxo="exportação")
-
-
-def parse_importacao(
-    csv_text: str,
-    ncm: str | None = None,
-    uf: str | None = None,
-) -> pd.DataFrame:
-    return _parse_comexstat_csv(csv_text, ncm=ncm, uf=uf, fluxo="importação")
-
-
-def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
-    if df.empty:
-        return df
-
-    group_cols = [c for c in ("ano", "mes", "ncm", "uf") if c in df.columns]
-    if not group_cols:
-        return df
-
-    agg_dict: dict[str, str] = {}
-    if "kg_liquido" in df.columns:
-        agg_dict["kg_liquido"] = "sum"
-    if "valor_fob_usd" in df.columns:
-        agg_dict["valor_fob_usd"] = "sum"
-
-    if not agg_dict:
-        return df
-
-    result = df.groupby(group_cols, as_index=False).agg(agg_dict)
-
-    if "kg_liquido" in result.columns:
-        result["volume_ton"] = result["kg_liquido"] / 1000.0
-
-    return result.sort_values(group_cols).reset_index(drop=True)
+def parse_dictionary(
+    file: BinaryIO,
+    *,
+    tabela: str,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
+) -> models.ParsedResource:
+    memory = _retention.Retention(max_memoria_bytes)
+    encoding, attempts = _csv.detect_encoding(file)
+    expected = constants.COMEXSTAT_DICTIONARY_PROPERTIES[tabela]
+    model = models.DICTIONARY_MODELS[tabela]
+    retained: list[tuple[object, ...]] = []
+    with _csv.open_rows(file, encoding, expected) as rows:
+        for ordinal, raw in rows:
+            try:
+                record = model.model_validate(raw)
+            except ValidationError as exc:
+                raise _csv.error(f"Registro {ordinal}: {exc}") from exc
+            if max_linhas is not None and ordinal > max_linhas:
+                raise ResourceLimitError(source="comexstat", reason="Dicionário excede max_linhas")
+            memory.reserve(128 + len(expected) * 16)
+            retained.append(
+                tuple(
+                    memory.intern(getattr(record, constants.COMEXSTAT_RENAME_MAP[name]))
+                    for name in expected
+                )
+            )
+        columns = tuple(constants.COMEXSTAT_RENAME_MAP[name] for name in expected)
+        frame = memory.build(retained, columns, dict.fromkeys(columns, "string"))
+        details: dict[str, object] = {
+            "parser_version": PARSER_VERSION,
+            "encoding": encoding,
+            "encoding_attempts": attempts,
+            "layout_fingerprint": rows.fingerprint,
+            "source_columns": list(rows.header),
+            "source_rows": rows.records,
+            "validated_rows": rows.records,
+            "selected_rows": rows.records,
+            "output_rows": len(frame),
+            "eof_reached": rows.eof,
+            "tabela": tabela,
+            "retained_bytes_estimate": memory.peak,
+            "frame_resident_bytes": memory.frame_bytes(frame),
+            "memory_basis": "pooled_literals_tuples_arrays_column_bridge_plus_8MiB_scratch_not_RSS",
+            "order": "source_occurrences",
+            "primary_key": [],
+        }
+    return models.ParsedResource(frame, details)

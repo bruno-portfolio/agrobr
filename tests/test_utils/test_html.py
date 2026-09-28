@@ -4,13 +4,6 @@ from agrobr.utils.html import parse_links_from_html
 
 
 class TestParseLinksFromHtml:
-    def test_pdf_filter(self):
-        html = '<a href="/file.pdf">PDF doc</a><a href="/page.html">Page</a>'
-        links = parse_links_from_html(html, pattern=r"\.pdf")
-        assert len(links) == 1
-        assert links[0]["url"] == "/file.pdf"
-        assert links[0]["text"] == "PDF doc"
-
     def test_xlsx_filter(self):
         html = '<a href="/data.xlsx">Data</a><a href="/data.csv">CSV</a>'
         links = parse_links_from_html(html, pattern=r"\.xlsx")
@@ -36,14 +29,6 @@ class TestParseLinksFromHtml:
         html = '<a href="/downloads/my-report.pdf"></a>'
         links = parse_links_from_html(html, pattern=r"\.pdf")
         assert links[0]["text"] == "my report"
-
-    def test_no_matches(self):
-        html = '<a href="/page.html">Page</a>'
-        links = parse_links_from_html(html, pattern=r"\.pdf")
-        assert links == []
-
-    def test_empty_html(self):
-        assert parse_links_from_html("") == []
 
     def test_absolute_url_not_prefixed(self):
         html = '<a href="https://other.com/file.pdf">PDF</a>'

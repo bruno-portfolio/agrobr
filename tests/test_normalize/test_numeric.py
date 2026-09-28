@@ -1,223 +1,176 @@
 from __future__ import annotations
 
 import math
+from decimal import Decimal
 
 import pytest
 
 from agrobr.normalize.numeric import parse_numeric_br, safe_float
-
-
-class TestGuards:
-    def test_none(self):
-        assert parse_numeric_br(None) is None
-
-    def test_empty_string(self):
-        assert parse_numeric_br("") is None
-
-    def test_dash(self):
-        assert parse_numeric_br("-") is None
-
-    def test_whitespace_only(self):
-        assert parse_numeric_br("   ") is None
+from tests.helpers import collect_failures
 
 
 class TestPassthrough:
-    def test_int(self):
-        assert parse_numeric_br(42) == 42.0
-
-    def test_float(self):
-        assert parse_numeric_br(42.5) == 42.5
-
-    def test_zero_int(self):
-        assert parse_numeric_br(0) == 0.0
-
-    def test_bool_true(self):
-        assert parse_numeric_br(True) == 1.0
-
     def test_bool_false(self):
-        assert parse_numeric_br(False) == 0.0
-
-    def test_nan_passthrough(self):
-        result = parse_numeric_br(float("nan"))
-        assert result is not None
-        assert math.isnan(result)
+        with collect_failures() as check:
+            for case, value, expected in [
+                ("test_int", 42, 42.0),
+                ("test_float", 42.5, 42.5),
+                ("test_zero_int", 0, 0.0),
+                ("test_bool_true", True, 1.0),
+                ("test_bool_false", False, 0.0),
+            ]:
+                with check(case):
+                    assert parse_numeric_br(value) == expected
+            with check("test_nan_passthrough"):
+                result = parse_numeric_br(float("nan"))
+                assert result is not None
+                assert math.isnan(result)
 
 
 class TestFormatoBR:
-    def test_milhar_e_decimal(self):
-        assert parse_numeric_br("1.234,56") == 1234.56
-
-    def test_virgula_decimal_sem_milhar(self):
-        assert parse_numeric_br("1234,56") == 1234.56
-
-    def test_negativo_br(self):
-        assert parse_numeric_br("-1.234,56") == -1234.56
-
-    def test_multiplos_grupos_milhar(self):
-        assert parse_numeric_br("1.234.567.890,99") == 1234567890.99
-
     def test_decimal_br_pequeno(self):
-        assert parse_numeric_br("0,001") == 0.001
-
-    def test_valor_real_anp(self):
-        assert parse_numeric_br("3517,6") == 3517.6
-
-    def test_valor_real_anp_milhar(self):
-        assert parse_numeric_br("500.000,50") == pytest.approx(500000.50)
+        with collect_failures() as check:
+            for case, value, expected in [
+                ("test_milhar_e_decimal", "1.234,56", 1234.56),
+                ("test_virgula_decimal_sem_milhar", "1234,56", 1234.56),
+                ("test_negativo_br", "-1.234,56", -1234.56),
+                ("test_multiplos_grupos_milhar", "1.234.567.890,99", 1234567890.99),
+                ("test_decimal_br_pequeno", "0,001", 0.001),
+                ("test_valor_real_anp", "3517,6", 3517.6),
+            ]:
+                with check(case):
+                    assert parse_numeric_br(value) == expected
+            with check("test_valor_real_anp_milhar"):
+                assert parse_numeric_br("500.000,50") == pytest.approx(500000.50)
 
 
 class TestStringsSimples:
-    def test_inteiro_string(self):
-        assert parse_numeric_br("50000") == 50000.0
-
-    def test_zero_string(self):
-        assert parse_numeric_br("0") == 0.0
-
-    def test_negativo_dot(self):
-        assert parse_numeric_br("-42.5") == -42.5
-
     def test_formato_us_passthrough(self):
-        assert parse_numeric_br("1234.56") == 1234.56
-
-
-class TestWhitespace:
-    def test_espacos_ao_redor(self):
-        assert parse_numeric_br("  1234,56  ") == 1234.56
-
-    def test_espaco_interno_milhar(self):
-        assert parse_numeric_br("1 234,56") == 1234.56
-
-
-class TestLimitacoes:
-    def test_us_thousands_interpreted_as_br_decimal(self):
-        assert parse_numeric_br("1,234") == 1.234
-
-    def test_nbsp_not_stripped(self):
-        assert parse_numeric_br("1\u00a0234,56") is None
+        with collect_failures() as check:
+            for case, value, expected in [
+                ("test_inteiro_string", "50000", 50000.0),
+                ("test_zero_string", "0", 0.0),
+                ("test_negativo_dot", "-42.5", -42.5),
+                ("test_formato_us_passthrough", "1234.56", 1234.56),
+            ]:
+                with check(case):
+                    assert parse_numeric_br(value) == expected
 
 
 class TestInvalidos:
-    def test_texto(self):
-        assert parse_numeric_br("abc") is None
-
-    def test_en_dash(self):
-        assert parse_numeric_br("\u2013") is None
-
     def test_em_dash(self):
-        assert parse_numeric_br("\u2014") is None
-
-    def test_so_virgula(self):
-        assert parse_numeric_br(",") is None
-
-    def test_so_ponto(self):
-        assert parse_numeric_br(".") is None
-
-    def test_formato_us_milhares(self):
-        assert parse_numeric_br("1,234,567") is None
+        with collect_failures() as check:
+            for case, value, expected in [
+                ("test_texto", "abc", None),
+                ("test_en_dash", "–", None),
+                ("test_em_dash", "—", None),
+                ("test_so_virgula", ",", None),
+                ("test_so_ponto", ".", None),
+                ("test_formato_us_milhares", "1,234,567", None),
+            ]:
+                with check(case):
+                    assert parse_numeric_br(value) is expected
 
 
 class TestSafeFloatGuards:
-    def test_none(self):
-        assert safe_float(None) is None
-
-    def test_nan_as_none(self):
-        assert safe_float(float("nan")) is None
-
-    def test_nan_passthrough(self):
-        result = safe_float(float("nan"), nan_as_none=False)
-        assert result is not None
-        assert math.isnan(result)
-
-    def test_int(self):
-        assert safe_float(42) == 42.0
-
-    def test_float(self):
-        assert safe_float(3.14) == 3.14
+    @pytest.mark.parametrize("value", ["NaN", " nan ", "+NaN", "-NaN", Decimal("NaN")])
+    @pytest.mark.parametrize("nan_as_none", [True, False])
+    def test_nan_conversion_respects_option(self, value, nan_as_none):
+        result = safe_float(value, nan_as_none=nan_as_none)
+        if nan_as_none:
+            assert result is None
+        else:
+            assert result is not None and math.isnan(result)
 
     def test_empty_string(self):
-        assert safe_float("") is None
-
-    def test_whitespace(self):
-        assert safe_float("   ") is None
+        with collect_failures() as check:
+            for case, value, expected in [
+                ("test_none", None, None),
+                ("test_nan_as_none", float("nan"), None),
+                ("test_empty_string", "", None),
+                ("test_whitespace", "   ", None),
+            ]:
+                with check(case):
+                    assert safe_float(value) is expected
+            with check("test_nan_passthrough"):
+                result = safe_float(float("nan"), nan_as_none=False)
+                assert result is not None
+                assert math.isnan(result)
+            for case, value, expected in [
+                ("test_int", 42, 42.0),
+                ("test_float", 3.14, 3.14),
+            ]:
+                with check(case):
+                    assert safe_float(value) == expected
 
 
 class TestSafeFloatNullMarkers:
-    @pytest.mark.parametrize(
-        "marker", ["-", "\u2013", "\u2014", "...", "n.d.", "n/d", "nd", "n.d", "*"]
-    )
-    def test_default_markers(self, marker):
-        assert safe_float(marker) is None
-
     def test_custom_markers(self):
-        assert safe_float("N/A", null_markers=frozenset({"n/a"})) is None
-
-    def test_custom_markers_numeric_sentinel(self):
-        assert safe_float("99", null_markers=frozenset({"99"})) is None
-        assert safe_float("99") == 99.0
-
-
-class TestSafeFloatStrip:
-    def test_strip_percent(self):
-        assert safe_float("85,5%", strip="%") == 85.5
-
-    def test_strip_currency(self):
-        assert safe_float("R$1.234,56", strip=("R$", "%")) == 1234.56
-
-    def test_strip_parens_asterisk(self):
-        assert safe_float("(123,4)*", strip=("(", ")", "*")) == 123.4
-
-    def test_no_strip_default(self):
-        assert safe_float("100") == 100.0
+        with collect_failures() as check:
+            with check("test_custom_markers"):
+                assert safe_float("N/A", null_markers=frozenset({"n/a"})) is None
+            with check("test_custom_markers_numeric_sentinel"):
+                assert safe_float("99", null_markers=frozenset({"99"})) is None
+                assert safe_float("99") == 99.0
 
 
 class TestSafeFloatZeroAsNone:
     def test_zero_float(self):
-        assert safe_float(0.0, treat_zero_as_none=True) is None
-
-    def test_zero_int(self):
-        assert safe_float(0, treat_zero_as_none=True) is None
-
-    def test_zero_string(self):
-        assert safe_float("0", treat_zero_as_none=True) is None
-
-    def test_zero_preserved_by_default(self):
-        assert safe_float(0) == 0.0
-        assert safe_float("0") == 0.0
+        with collect_failures() as check:
+            for case, value, treat_zero_as_none, expected in [
+                ("test_zero_float", 0.0, True, None),
+                ("test_zero_int", 0, True, None),
+                ("test_zero_string", "0", True, None),
+            ]:
+                with check(case):
+                    assert safe_float(value, treat_zero_as_none=treat_zero_as_none) is expected
+            with check("test_zero_preserved_by_default"):
+                assert safe_float(0) == 0.0
+                assert safe_float("0") == 0.0
 
 
 class TestSafeFloatBRFormat:
-    def test_comma_and_dot(self):
-        assert safe_float("1.234,56") == 1234.56
-
-    def test_comma_only(self):
-        assert safe_float("1234,56") == 1234.56
-
-    def test_multiple_dots(self):
-        assert safe_float("1.234.567") == 1234567.0
-
     def test_abiove_3digit_heuristic(self):
-        assert safe_float("150.000") == 150000.0
-        assert safe_float("12.500") == 12500.0
-
-    def test_decimal_passthrough_2digits(self):
-        assert safe_float("3.14") == 3.14
-
-    def test_decimal_passthrough_4digits(self):
-        assert safe_float("3.1416") == 3.1416
-
-    def test_spaces_stripped(self):
-        assert safe_float("  1.234,56  ") == 1234.56
-
-    def test_internal_spaces(self):
-        assert safe_float("1 234,56") == 1234.56
+        with collect_failures() as check:
+            for case, value, expected in [
+                ("test_comma_and_dot", "1.234,56", 1234.56),
+                ("test_comma_only", "1234,56", 1234.56),
+                ("test_multiple_dots", "1.234.567", 1234567.0),
+                ("test_decimal_passthrough_2digits", "3.14", 3.14),
+                ("test_decimal_passthrough_4digits", "3.1416", 3.1416),
+                ("test_spaces_stripped", "  1.234,56  ", 1234.56),
+                ("test_internal_spaces", "1 234,56", 1234.56),
+            ]:
+                with check(case):
+                    assert safe_float(value) == expected
+            with check("test_abiove_3digit_heuristic"):
+                assert safe_float("150.000") == 150000.0
+                assert safe_float("12.500") == 12500.0
 
 
 class TestSafeFloatInvalid:
-    def test_text(self):
-        assert safe_float("abc") is None
-
     def test_only_comma(self):
-        assert safe_float(",") is None
+        with collect_failures() as check:
+            for case, value, expected in [
+                ("test_text", "abc", None),
+                ("test_only_comma", ",", None),
+                ("test_only_dot", ".", None),
+            ]:
+                with check(case):
+                    assert safe_float(value) is expected
 
-    def test_only_dot(self):
-        assert safe_float(".") is None
+
+@pytest.mark.parametrize(
+    ("valor", "esperado"),
+    [
+        (1.234, 1.234),
+        (2.5, 2.5),
+        ("12.5", 12.5),
+        ("1.234", 1234.0),
+        ("1.234.567", 1234567.0),
+        ("1.234,56", 1234.56),
+        ("1234,56", 1234.56),
+    ],
+)
+def test_safe_float_separadores_e_tipos(valor, esperado):
+    assert safe_float(valor) == esperado

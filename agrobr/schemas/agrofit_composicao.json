@@ -1,0 +1,165 @@
+{
+  "name": "defensivos.composicao",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "tipo",
+    "nr_registro",
+    "ordem_componente"
+  ],
+  "required_columns": [
+    "tipo",
+    "nr_registro",
+    "ordem_componente",
+    "ingrediente_ativo",
+    "grupo_quimico",
+    "componente_texto",
+    "concentracao_texto",
+    "concentracao_valor",
+    "concentracao_unidade"
+  ],
+  "dtypes": {
+    "tipo": "str",
+    "nr_registro": "str",
+    "ordem_componente": "int",
+    "ingrediente_ativo": "str",
+    "grupo_quimico": "str",
+    "componente_texto": "str",
+    "concentracao_texto": "str",
+    "concentracao_valor": "float",
+    "concentracao_unidade": "str"
+  },
+  "nullable": {
+    "tipo": false,
+    "nr_registro": false,
+    "ordem_componente": false,
+    "ingrediente_ativo": true,
+    "grupo_quimico": true,
+    "componente_texto": false,
+    "concentracao_texto": true,
+    "concentracao_valor": true,
+    "concentracao_unidade": true
+  },
+  "columns": [
+    {
+      "name": "tipo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nr_registro",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ordem_componente",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": null
+    },
+    {
+      "name": "ingrediente_ativo",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "grupo_quimico",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "componente_texto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "concentracao_texto",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "concentracao_valor",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "concentracao_unidade",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "ordem_componente_min": 1,
+    "concentracao_valor_min": 0,
+    "nr_registro_pattern": "[A-Za-z0-9][\\w./-]*",
+    "tipo_allowed": [
+      "formulados",
+      "tecnicos"
+    ],
+    "non_empty_strings": [
+      "componente_texto"
+    ]
+  },
+  "guarantees": [
+    "Uma linha por posição do componente no registro e na família de produto",
+    "Ingredientes repetidos em posições distintas não são deduplicados",
+    "Concentração e unidade originais são preservadas, sem conversão dimensional implícita",
+    "Valor não interpretável permanece nulo; ausência não equivale a zero",
+    "Composição não é multiplicada pelo número de autorizações de uso"
+  ]
+}

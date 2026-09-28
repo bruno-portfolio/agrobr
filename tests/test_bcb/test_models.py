@@ -1,153 +1,158 @@
-from agrobr.bcb.models import (
-    SICOR_ATIVIDADES,
-    SICOR_FONTES_RECURSO,
-    SICOR_MODALIDADES,
-    SICOR_PRODUTOS,
-    SICOR_PROGRAMAS,
-    SICOR_TIPOS_SEGURO,
-    UF_CODES,
-    normalize_safra_sicor,
-    resolve_atividade,
-    resolve_fonte_recurso,
-    resolve_modalidade,
-    resolve_produto_sicor,
-    resolve_programa,
-    resolve_tipo_seguro,
-)
+import csv
+import hashlib
+import io
+import json
+import re
+from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
+
+from agrobr.bcb import models
+from agrobr.exceptions import InvalidParameterError
+from tests.helpers import collect_failures, sem_excecao
+
+ORACULO = Path(__file__).parents[1] / "golden_data/bcb/oraculo_20260923"
+ORACULO_MANIFEST = json.loads((ORACULO / "manifest.json").read_text(encoding="utf-8"))
+DOMINIOS = Path(__file__).parents[1] / "golden_data/bcb/sicor_dominios_20260927"
+DOMINIOS_MANIFEST = json.loads((DOMINIOS / "manifest.json").read_text(encoding="utf-8"))
 
 
-class TestNormalizeSafraSicor:
-    def test_full_format(self):
-        assert normalize_safra_sicor("2023/2024") == "2023/2024"
-
-    def test_short_format(self):
-        assert normalize_safra_sicor("2023/24") == "2023/2024"
-
-    def test_year_only(self):
-        assert normalize_safra_sicor("2024") == "2023/2024"
-
-    def test_strip(self):
-        assert normalize_safra_sicor("  2023/24  ") == "2023/2024"
-
-    def test_century_boundary(self):
-        assert normalize_safra_sicor("2099/00") == "2099/2100"
+def tabela_oficial(nome: str, delimitador: str) -> list[list[str]]:
+    recurso = next(item for item in ORACULO_MANIFEST["resources"] if item["file"] == nome)
+    corpo = (ORACULO / nome).read_bytes()
+    assert hashlib.sha256(corpo).hexdigest() == recurso["sha256"]
+    return list(csv.reader(io.StringIO(corpo.decode("cp1252")), delimiter=delimitador))[1:]
 
 
-class TestResolveProdutoSicor:
-    def test_known_products(self):
-        assert resolve_produto_sicor("soja") == "SOJA"
-        assert resolve_produto_sicor("milho") == "MILHO"
-        assert resolve_produto_sicor("algodao") == "ALGODAO HERBACEO"
-        assert resolve_produto_sicor("cafe") == "CAFE"
-
-    def test_unknown_product(self):
-        assert resolve_produto_sicor("quinoa") == "QUINOA"
-
-    def test_case_insensitive(self):
-        assert resolve_produto_sicor("SOJA") == "SOJA"
-        assert resolve_produto_sicor("Soja") == "SOJA"
+def nome_publicado(descricao: str) -> str:
+    return descricao.split(" - ", 1)[0].replace('"', "").strip()
 
 
-class TestUfCodes:
-    def test_main_states(self):
-        assert UF_CODES["MT"] == "51"
-        assert UF_CODES["SP"] == "35"
-        assert UF_CODES["PR"] == "41"
-        assert UF_CODES["GO"] == "52"
+def test_dicionarios_sicor_seguem_as_tabelas_oficiais_do_bcb():
+    programas = {
+        codigo: nome_publicado(descricao)
+        for codigo, descricao, *_vigencia in tabela_oficial("dominio_Programa.csv", ";")
+    }
+    seguros = dict(tabela_oficial("dominio_TipoGarantiaEmpreendimento.csv", ","))
 
-    def test_all_states(self):
-        assert len(UF_CODES) == 27
-
-    def test_sicor_produtos_completeness(self):
-        assert len(SICOR_PRODUTOS) >= 10
-
-
-class TestSicorProgramas:
-    def test_known_entries(self):
-        assert SICOR_PROGRAMAS["0001"] == "Pronaf"
-        assert SICOR_PROGRAMAS["0050"] == "Pronamp"
-        assert SICOR_PROGRAMAS["0999"] == "Sem programa especifico"
-
-    def test_minimum_size(self):
-        assert len(SICOR_PROGRAMAS) >= 10
+    assert programas == models.SICOR_PROGRAMAS
+    assert seguros == models.SICOR_TIPOS_SEGURO
+    with sem_excecao():
+        resolvidos = {codigo: models.resolve_programa(codigo) for codigo in programas}
+        resolvidos_seguro = {codigo: models.resolve_tipo_seguro(codigo) for codigo in seguros}
+    assert (resolvidos, resolvidos_seguro) == (programas, seguros)
+    assert (programas["0153"], programas["0156"], programas["0162"], programas["0222"]) == (
+        "MODERAGRO",
+        "ABC + Programa para a Adaptação à Mudança do Clima e Baixa Emissão de Carbono",
+        "INOVAGRO",
+        "RenovAgro",
+    )
+    assert (seguros["2"], seguros["9"]) == ("Proagro mais", "Sem adesão a seguro")
 
 
-class TestSicorFontesRecurso:
-    def test_known_entries(self):
-        assert SICOR_FONTES_RECURSO["0201"] == "Recursos obrigatorios (MCR 6.2)"
-        assert SICOR_FONTES_RECURSO["0430"] == "LCA"
-        assert SICOR_FONTES_RECURSO["0505"] == "Funcafe"
+def test_fonte_modalidade_e_atividade_seguem_as_tabelas_oficiais_do_bcb():
+    def dominio(nome: str, delimitador: str) -> list[list[str]]:
+        recurso = next(item for item in DOMINIOS_MANIFEST["resources"] if item["file"] == nome)
+        corpo = (DOMINIOS / nome).read_bytes()
+        assert hashlib.sha256(corpo).hexdigest() == recurso["sha256"]
+        return list(csv.reader(io.StringIO(corpo.decode("cp1252")), delimiter=delimitador))[1:]
 
-    def test_minimum_size(self):
-        assert len(SICOR_FONTES_RECURSO) >= 8
+    fontes = {
+        codigo: descricao.strip()
+        for codigo, descricao, *_vigencia in dominio("dominio_FonteRecursos.csv", ";")
+    }
+    modalidades: dict[str, set[str]] = {}
+    for *_finalidade_atividade, codigo, nome in dominio("dominio_Modalidade.csv", ";"):
+        modalidades.setdefault(codigo, set()).add(nome.strip())
+    atividades = dict(dominio("dominio_Atividade.csv", ","))
 
-
-class TestSicorTiposSeguro:
-    def test_covers_known_codes(self):
-        assert "1" in SICOR_TIPOS_SEGURO
-        assert "2" in SICOR_TIPOS_SEGURO
-        assert "3" in SICOR_TIPOS_SEGURO
-        assert "9" in SICOR_TIPOS_SEGURO
-
-    def test_values(self):
-        assert SICOR_TIPOS_SEGURO["1"] == "Proagro"
-        assert SICOR_TIPOS_SEGURO["3"] == "Seguro privado"
-
-
-class TestSicorModalidades:
-    def test_known_entries(self):
-        assert SICOR_MODALIDADES["01"] == "Individual"
-        assert SICOR_MODALIDADES["03"] == "Coletiva"
-
-
-class TestSicorAtividades:
-    def test_known_entries(self):
-        assert SICOR_ATIVIDADES["1"] == "Agricola"
-        assert SICOR_ATIVIDADES["2"] == "Pecuaria"
-
-
-class TestResolvePrograma:
-    def test_known(self):
-        assert resolve_programa("0050") == "Pronamp"
-        assert resolve_programa("0001") == "Pronaf"
-
-    def test_unknown_fallback(self):
-        result = resolve_programa("9999")
-        assert result == "Desconhecido (9999)"
-
-
-class TestResolveFonteRecurso:
-    def test_known(self):
-        assert resolve_fonte_recurso("0430") == "LCA"
-        assert resolve_fonte_recurso("0303") == "Poupanca rural controlados"
-
-    def test_unknown_fallback(self):
-        result = resolve_fonte_recurso("0000")
-        assert result == "Desconhecido (0000)"
+    assert fontes == models.SICOR_FONTES_RECURSO
+    assert modalidades == {codigo: {nome} for codigo, nome in models.SICOR_MODALIDADES.items()}
+    assert atividades == models.SICOR_ATIVIDADES
+    assert [
+        models.resolve_fonte_recurso(codigo) for codigo in ["0201", "0303", "0403", "0430", "0505"]
+    ] == [
+        "OBRIGATÓRIOS - MCR 6.2 - DIRECIONADA/CONTROLADA",
+        "POUPANÇA RURAL - DIRECIONADA/NÃO CONTROLADA",
+        "RECURSOS LIVRES - EQUALIZADA - LIVRE/CONTROLADA",
+        "LETRA DE CRÉDITO DO AGRONEGÓCIO (LCA) - DIRECIONADA/NÃO CONTROLADA",
+        "BNDES/FINAME - EQUALIZADA - DIRECIONADA/CONTROLADA",
+    ]
+    assert [models.resolve_modalidade(codigo) for codigo in ["01", "16", "20", "25", "27"]] == [
+        "LAVOURA",
+        "AQUISIÇÃO DE ANIMAIS DE SERVIÇO (USO AGRICULTURA)",
+        "FEE (EX-LEC)",
+        "ESTOCAGEM",
+        "AQUISIÇÃO DE ANIMAIS",
+    ]
+    assert [models.resolve_atividade(codigo) for codigo in ["1", "2"]] == [
+        "Agrícola",
+        "Pecuário(a)",
+    ]
+    assert (
+        models.resolve_fonte_recurso("0999"),
+        models.resolve_modalidade("88"),
+        models.resolve_atividade("7"),
+    ) == (None, None, None)
 
 
-class TestResolveTipoSeguro:
-    def test_known(self):
-        assert resolve_tipo_seguro("1") == "Proagro"
-        assert resolve_tipo_seguro("9") == "Nao se aplica"
+def test_safra_e_produto_viram_a_grafia_do_sicor():
+    with sem_excecao():
+        safras = [
+            models.normalize_safra_sicor(safra)
+            for safra in ["2023/2024", "2023/24", "2024", "  2023/24  ", "2099/00"]
+        ]
+    assert safras == ["2023/2024", "2023/2024", "2023/2024", "2023/2024", "2099/2100"]
+    grafias = {
+        "soja": "SOJA",
+        "SOJA": "SOJA",
+        "Soja": "SOJA",
+        "milho": "MILHO",
+        "cafe": "CAFÉ",
+        "café": "CAFÉ",
+        "feijao": "FEIJÃO",
+        "feijão": "FEIJÃO",
+        "algodao": "ALGODÃO",
+        "algodão": "ALGODÃO",
+        "cana": "CANA-DE-AÇUCAR",
+        "quinoa": "QUINOA",
+        ' "bovinos" ': "BOVINOS",
+        '"cafe"': "CAFÉ",
+    }
+    assert {alias: models.resolve_produto_sicor(alias) for alias in grafias} == {
+        alias: f'"{nome}"' for alias, nome in grafias.items()
+    }
+    with collect_failures() as check:
+        for produto, motivo in [
+            ("", "produto deve ser uma string não vazia"),
+            (" ", "produto deve ser uma string não vazia"),
+            (None, "produto deve ser uma string não vazia"),
+            ("cafe_arabica", "O SICOR não distingue café arábica/conilon; use 'cafe'"),
+            ("Café_Conilon", "O SICOR não distingue café arábica/conilon; use 'cafe'"),
+        ]:
+            with check(produto), pytest.raises(InvalidParameterError, match=re.escape(motivo)):
+                models.resolve_produto_sicor(produto)
 
-    def test_unknown_fallback(self):
-        result = resolve_tipo_seguro("5")
-        assert result == "Desconhecido (5)"
 
-
-class TestResolveModalidade:
-    def test_known(self):
-        assert resolve_modalidade("01") == "Individual"
-
-    def test_unknown_fallback(self):
-        assert resolve_modalidade("99") == "Desconhecido (99)"
-
-
-class TestResolveAtividade:
-    def test_known(self):
-        assert resolve_atividade("1") == "Agricola"
-        assert resolve_atividade("2") == "Pecuaria"
-
-    def test_unknown_fallback(self):
-        assert resolve_atividade("3") == "Desconhecido (3)"
+def test_codigos_das_dimensoes_viram_nome_ou_desconhecido(monkeypatch: pytest.MonkeyPatch):
+    avisos = Mock()
+    monkeypatch.setattr(models, "logger", avisos)
+    conhecidos = [
+        (models.resolve_programa, "0050", "PRONAMP"),
+        (models.resolve_tipo_seguro, "1", "Proagro tradicional"),
+    ]
+    assert [resolver(codigo) for resolver, codigo, _nome in conhecidos] == [
+        nome for *_resto, nome in conhecidos
+    ]
+    avisos.warning.assert_not_called()
+    desconhecidos = [
+        (models.resolve_programa, "9999", "programa"),
+        (models.resolve_tipo_seguro, "7", "tipo_seguro"),
+    ]
+    assert [resolver(codigo) for resolver, codigo, _dominio in desconhecidos] == [
+        f"Desconhecido ({codigo})" for _resolver, codigo, _dominio in desconhecidos
+    ]
+    assert [chamada.kwargs for chamada in avisos.warning.call_args_list] == [
+        {"dominio": dominio, "codigo": codigo} for _resolver, codigo, dominio in desconhecidos
+    ]

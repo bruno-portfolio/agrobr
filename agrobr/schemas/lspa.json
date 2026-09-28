@@ -1,16 +1,24 @@
 {
   "name": "ibge.lspa",
-  "schema_version": "1.0",
-  "effective_from": "0.3.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "ano",
     "mes",
-    "produto"
+    "produto",
+    "localidade",
+    "variavel"
   ],
   "required_columns": [
     "ano",
+    "mes",
     "produto",
+    "variavel",
+    "localidade",
+    "localidade_cod",
+    "variavel_cod",
+    "unidade",
     "fonte"
   ],
   "dtypes": {
@@ -18,14 +26,22 @@
     "mes": "int",
     "produto": "str",
     "variavel": "str",
+    "localidade": "str",
+    "localidade_cod": "int",
+    "variavel_cod": "int",
+    "unidade": "str",
     "valor": "float",
     "fonte": "str"
   },
   "nullable": {
     "ano": false,
-    "mes": true,
+    "mes": false,
     "produto": false,
-    "variavel": true,
+    "variavel": false,
+    "localidade": false,
+    "localidade_cod": false,
+    "variavel_cod": false,
+    "unidade": false,
     "valor": true,
     "fonte": false
   },
@@ -44,7 +60,7 @@
     {
       "name": "mes",
       "type": "int",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -66,9 +82,53 @@
     {
       "name": "variavel",
       "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
-      "stable": false,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "localidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "localidade_cod",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "variavel_cod",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "unidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
       "deprecated": false,
       "description": "",
       "min_value": null,
@@ -106,7 +166,7 @@
   "guarantees": [
     "Column names never change (additions only)",
     "'ano' is always a valid year",
-    "'mes' is between 1 and 12 when present",
+    "'mes' is always present and between 1 and 12",
     "'fonte' is always 'ibge_lspa'"
   ]
 }

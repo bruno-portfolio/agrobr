@@ -1,0 +1,135 @@
+tests/golden_data/anp_diesel/vendas_sample/response.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/cepea/pages_20260905/*.html -text -whitespace
+tests/golden_data/cepea/sanity_20260906/*.html -text -whitespace
+tests/golden_data/cepea/cache_ttl_20260923/** -text
+tests/golden_data/cepea/serie_historica_20260926/** -text
+tests/golden_data/na/leite_publicacao_20260906/response.html -text -whitespace
+tests/golden_data/comexstat/importacao_oleo_sample/response.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/icmbio/official_20260905/cerrado.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/rnc/snpc_20260906/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/rnc/snpc_20260906/*.html -text -whitespace
+tests/test_antt_pedagio/fixtures/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/ibge/lspa_catalogo_oficial/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/ibge/lspa_cafe_202607/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/conab/safra_2025_26_agosto/*.html -text -whitespace
+tests/golden_data/ibge/pam_expansao_20260906/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/golden_data/acervo_fundiario/** -text
+tests/golden_data/anec/weekly_w34_2026/** -text
+tests/golden_data/antt_pedagio/integridade20260908/** -text
+tests/golden_data/censo_1985_municipal/** -text
+tests/golden_data/bcb/focus_selecao_20260907/** -text
+tests/golden_data/bcb/oraculo_20260923/** -text
+tests/golden_data/bcb/ptax_selecao_20260907/** -text
+tests/golden_data/bcb/sgs_selecao_20260907/** -text
+tests/golden_data/bcb/sicor_dominios_20260927/** -text
+tests/golden_data/bcb/sicor_regiao_uf_20260925/** -text
+tests/golden_data/comexstat/importacao_oleo_sample/** -text
+tests/golden_data/comexstat/integridade20260908/** -text
+tests/golden_data/comexstat/ncm_oficial_20260922/** -text
+tests/golden_data/comtrade/selecao_20260906/** -text
+tests/golden_data/conab/safra_2025_26_agosto/** -text
+tests/golden_data/conab/levantamento_12_2024_25_20260922/** -text
+tests/golden_data/conab/serie_historica_20260917/** -text
+tests/golden_data/conab/serie_historica_zeros_20260923/** -text
+tests/golden_data/conab/serie_historica_20260924/** -text
+tests/golden_data/conab/sociobio_20260916/** -text
+tests/golden_data/conab_progresso/historico_20250927/** -text
+tests/golden_data/defensivos/selecao_20260906/** -text
+tests/golden_data/desmatamento/selecao_20260907/** -text
+tests/golden_data/desmatamento/geo_20260923/** -text
+tests/golden_data/embrapa_solos/official_20260907/** -text
+tests/golden_data/embrapa_solos/oficial_20260923/** -text
+tests/golden_data/embrapa_solos/r39_20260926/** -text
+tests/golden_data/funai/official_20260907/** -text
+tests/golden_data/funai/oficial_20260923/** -text
+tests/golden_data/ibama/oficial_20260923/** -text
+tests/golden_data/imea/oficial_20260923/** -text
+tests/golden_data/rio_verde/oraculo_20260923.json -text
+tests/golden_data/ibge/censo_2006_oficial_20260922/** -text
+tests/golden_data/ibge/censo_2017_despesa_adubos_20260923/** -text
+tests/golden_data/ibge/censo_rotulos_1995_20260927/** -text
+tests/golden_data/ibge/censo_2017_oficial_20260922/** -text
+tests/golden_data/ibge/censo_legado_oficial/** -text
+tests/golden_data/ibge/lspa_selecao_20260906/** -text
+tests/golden_data/ibge/pevs_valor_oficial/** -text
+tests/golden_data/ibge/ppm_galinhas_oficial_20260922/** -text
+tests/golden_data/icmbio/official_20260905/** -text
+tests/golden_data/icmbio/ucs_20260908/** -text
+tests/golden_data/icmbio/crs_20260923/** -text
+tests/golden_data/incra/andamento_20260608/** -text
+tests/golden_data/incra/nacional_20260908/** -text
+tests/golden_data/incra/vinculos_20260908/** -text
+tests/golden_data/incra/wfs_v2_20260908/** -text
+tests/golden_data/inmet/selecao_20260906/** -text
+tests/golden_data/lista_suja/selecao_20260906/** -text
+tests/golden_data/mapbiomas/collection11_official/** -text
+tests/golden_data/mapbiomas/municipal10_official/** -text
+tests/golden_data/mapbiomas/municipal11_official/** -text
+tests/golden_data/mapbiomas/legenda_20260918/** -text
+tests/golden_data/na/leite_publicacao_20260906/** -text
+tests/golden_data/rnc/selecao_20260907/** -text
+tests/golden_data/sicar/geo_20260922/** -text
+tests/golden_data/sicar/selecao_20260906/** -text
+tests/golden_data/sicar/versoes_20260916/** -text
+tests/golden_data/incra/andamento_20260903/** -text
+tests/golden_data/ana/oficial_20260923/** -text
+tests/golden_data/ibge/dtb_2025/** -text
+tests/golden_data/zarc/edicoes_20260923/** -text
+tests/golden_data/conab_ceasa/prohort_grupos_20260923/** -text
+tests/golden_data/sfb/oficial_20260923/** -text
+tests/golden_data/b3/pregoes_20260921_20260922/** -text
+tests/golden_data/cftc/cot_20260923/** -text
+tests/golden_data/conab_ceasa/precos_20260923/** -text
+tests/golden_data/unica/oficial_20260923/** -text
+tests/golden_data/inmet/estacoes_20260924/** -text
+tests/golden_data/nasa_power/parametros_20260924/** -text
+tests/golden_data/b3/cadastro_20260922/** -text
+tests/golden_data/ibge/censo_2017_total_20260924/** -text
+tests/golden_data/abiove/edicao_202608/** -text
+tests/golden_data/comtrade/aliases_20260925/** -text
+tests/golden_data/comtrade/classificacao_br_20260926/** -text
+tests/golden_data/comtrade/r29_20260926/** -text
+tests/golden_data/queimadas/r48_202408/** -text
+tests/golden_data/queimadas/mes_corrente_202609/** -text
+tests/golden_data/queimadas/dia_corrente_20260926/** -text
+tests/golden_data/ibge/periodos_20260926/** -text
+tests/golden_data/noticias_agricolas/paginas_20260925/** -text
+tests/golden_data/cftc/spreads_20260925/** -text
+tests/golden_data/ibge/pam_localidade_cod_20260925/** -text
+tests/golden_data/nasa_power/cobertura_mensal_20260925/** -text
+tests/golden_data/inmet/chuva_mes_completo_20260925/** -text
+tests/golden_data/zarc/renomeacoes_20260925/** -text
+tests/golden_data/anec/semanas_20260925/** -text
+tests/golden_data/anec/rotulos_20260926/** -text
+tests/golden_data/anec/quatro_produtos_20260926/** -text
+tests/golden_data/anec/linha_total_20260926/** -text
+tests/golden_data/cepea/trigo_duas_pracas_20260925/** -text
+tests/golden_data/imea/duplicatas_20260926/** -text
+tests/golden_data/usda/psd_gateway_20260926/** -text
+tests/golden_data/mapbiomas_alerta/oficial_20260926/** -text
+tests/golden_data/abiove/exportacao_sample/** -text
+tests/golden_data/cepea/soja_sample/** -text
+tests/golden_data/conab/custos_20260908/** -text
+tests/golden_data/deral/pc_20260915/** -text
+tests/golden_data/mapa_psr/sinistros_sample/** -text
+tests/golden_data/anp_diesel/precos_sample/metadata.json -text
+tests/golden_data/anp_diesel/vendas_sample/expected.json -text
+tests/golden_data/anp_diesel/vendas_sample/metadata.json -text
+tests/golden_data/bcb/custeio_sample/expected.json -text
+tests/golden_data/conab_progresso/progresso_sample/expected.json -text
+tests/golden_data/deral/pc_sample/metadata.json -text
+tests/golden_data/mapa_psr/apolices_sample/metadata.json -text
+tests/golden_data/mapa_psr/apolices_sample/response.csv -text
+tests/golden_data/nasa_power/daily_sample/metadata.json -text
+tests/golden_data/nasa_power/daily_sample/response.json -text
+tests/golden_data/queimadas/focos_sample/expected.json -text
+tests/golden_data/antaq/movimentacao_sample/atracacao.txt -text
+tests/golden_data/antaq/movimentacao_sample/carga.txt -text
+tests/golden_data/antaq/movimentacao_sample/mercadoria.txt -text
+tests/golden_data/ibge/pam_soja_sample/response.csv -text
+tests/golden_data/ibge/abate_bovino_sample/response.csv -text
+tests/golden_data/ibge/leite_trimestral_sample/response.csv -text
+tests/golden_data/ibge/pib_agro_sample/response.csv -text
+tests/golden_data/ibge/censo_agro_efetivo_sample/response.csv -text
+tests/golden_data/conab_ceasa/precos_sample/ceasas_response.json -text
+tests/golden_data/conab_ceasa/precos_sample/precos_response.json -text

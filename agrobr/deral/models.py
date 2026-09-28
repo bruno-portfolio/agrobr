@@ -1,21 +1,16 @@
 from __future__ import annotations
 
-DERAL_PRODUTOS: dict[str, str] = {
-    "soja": "Soja",
-    "milho": "Milho",
-    "milho_1": "Milho 1ª safra",
-    "milho_2": "Milho 2ª safra",
-    "trigo": "Trigo",
-    "feijao": "Feijão",
-    "feijao_1": "Feijão 1ª safra",
-    "feijao_2": "Feijão 2ª safra",
-    "mandioca": "Mandioca",
-    "cana": "Cana-de-açúcar",
-    "cafe": "Café",
-    "aveia": "Aveia",
-    "cevada": "Cevada",
-    "canola": "Canola",
-}
+DERAL_PRODUTOS_PUBLICADOS: tuple[str, ...] = (
+    "cafe",
+    "cevada",
+    "feijao_1",
+    "feijao_2",
+    "milho_1",
+    "milho_2",
+    "soja",
+    "trigo",
+)
+"""Culturas observadas no PC.xls entre fevereiro e setembro de 2026."""
 
 _PRODUTO_ALIASES: dict[str, str] = {
     "soja": "soja",
@@ -47,23 +42,7 @@ _PRODUTO_ALIASES: dict[str, str] = {
     "canola": "canola",
 }
 
-_CONDICAO_ALIASES: dict[str, str] = {
-    "boa": "boa",
-    "bom": "boa",
-    "média": "media",
-    "media": "media",
-    "regular": "media",
-    "ruim": "ruim",
-    "má": "ruim",
-    "ma": "ruim",
-}
-
 
 def normalize_produto(nome: str) -> str:
     key = nome.strip().lower()
     return _PRODUTO_ALIASES.get(key, key)
-
-
-def normalize_condicao(cond: str) -> str:
-    key = cond.strip().lower()
-    return _CONDICAO_ALIASES.get(key, key)

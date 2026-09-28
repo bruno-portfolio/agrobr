@@ -1,20 +1,25 @@
 {
   "name": "desmatamento.deter",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "2.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "data",
     "classe",
     "uf",
     "municipio",
+    "municipio_id",
     "bioma"
   ],
   "required_columns": [
     "data",
     "classe",
     "uf",
+    "municipio",
+    "municipio_id",
     "area_km2",
+    "satelite",
+    "sensor",
     "bioma"
   ],
   "dtypes": {
@@ -22,11 +27,12 @@
     "classe": "str",
     "uf": "str",
     "municipio": "str",
-    "municipio_id": "int",
+    "municipio_id": "str",
     "area_km2": "float",
     "satelite": "str",
     "sensor": "str",
-    "bioma": "str"
+    "bioma": "str",
+    "cod_municipio": "int"
   },
   "nullable": {
     "data": false,
@@ -34,10 +40,11 @@
     "uf": false,
     "municipio": true,
     "municipio_id": true,
-    "area_km2": false,
+    "area_km2": true,
     "satelite": true,
     "sensor": true,
-    "bioma": false
+    "bioma": false,
+    "cod_municipio": true
   },
   "columns": [
     {
@@ -86,7 +93,7 @@
     },
     {
       "name": "municipio_id",
-      "type": "int",
+      "type": "str",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -98,7 +105,7 @@
     {
       "name": "area_km2",
       "type": "float",
-      "nullable": false,
+      "nullable": true,
       "unit": "km2",
       "stable": true,
       "deprecated": false,
@@ -138,17 +145,73 @@
       "description": "",
       "min_value": null,
       "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+      "min_value": null,
+      "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
-    "area_km2_min": 0
+    "area_km2_min": 0,
+    "string_dtype": "string[python] with pd.NA",
+    "integer_dtype": "Int64",
+    "float_dtype": "float64",
+    "date_dtype": "datetime64[ns]",
+    "date_semantics": "civil_midnight_without_timezone",
+    "uf_domain": [
+      "AC",
+      "AL",
+      "AM",
+      "AP",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MG",
+      "MS",
+      "MT",
+      "PA",
+      "PB",
+      "PE",
+      "PI",
+      "PR",
+      "RJ",
+      "RN",
+      "RO",
+      "RR",
+      "RS",
+      "SC",
+      "SE",
+      "SP",
+      "TO"
+    ],
+    "biome_domain": [
+      "Amazônia",
+      "Caatinga",
+      "Cerrado",
+      "Mata Atlântica",
+      "Pampa",
+      "Pantanal"
+    ],
+    "feature_identity": "aggregate_group_key_only",
+    "aggregate_classe": "nonblank"
   },
   "guarantees": [
-    "Column names never change (additions only)",
-    "'data' is always a valid date",
-    "'area_km2' is always >= 0",
-    "'uf' is always a valid Brazilian state code",
-    "'bioma' is always 'Amazônia' or 'Cerrado'"
+    "Código municipal participa da chave do grupo e permanece textual",
+    "Ocorrências com ID repetido permanecem na população de entrada da agregação",
+    "Qualquer área municipal ausente no grupo produz total ausente",
+    "Área UC e área original nunca substituem ou se somam à área municipal",
+    "Seleção cortada por limite local não é publicada como agregado integral",
+    "Reconciliação quantitativa não representa snapshot transacional"
   ]
 }

@@ -1,30 +1,23 @@
-"""Testes para agrobr.alt.antt_pedagio.api."""
-
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from datetime import datetime
+from unittest.mock import Mock
 
-import httpx
 import pandas as pd
 import pytest
 
-from agrobr.alt.antt_pedagio.api import (
-    _filtrar_fluxo,
-    fluxo_pedagio,
-    pracas_pedagio,
-)
-from agrobr.models import MetaInfo
+from agrobr import deterministic
+from agrobr.alt.antt_pedagio import api
+from agrobr.alt.antt_pedagio.api import fluxo_pedagio, pracas_pedagio
+from agrobr.exceptions import InvalidParameterError
+from tests.helpers import install_anttpedagio_source
 
-# Sample CSV bytes for mocking
-V1_CSV = (
-    b"concessionaria;praca;mes_ano;categoria;tipo_cobranca;sentido;quantidade\n"
-    b"CCR AutoBAn;Campinas;01/01/2023;Categoria 1;Automatica;Crescente;50000\n"
-    b"CCR AutoBAn;Campinas;01/01/2023;Categoria 4;Automatica;Crescente;12000\n"
-    b"CCR AutoBAn;Campinas;01/01/2023;Categoria 8;Automatica;Decrescente;8000\n"
-    b"Arteris;Jacarezinho;01/01/2023;Categoria 1;Automatica;Crescente;20000\n"
-    b"Arteris;Jacarezinho;01/01/2023;Categoria 7;Automatica;Crescente;5000\n"
-)
-
+TRAFEGO_HEADER = "concessionaria;mes_ano;sentido;praca;tipo_cobranca;categoria_eixo;tipo_de_veiculo;volume_total\n"
+DAILY_CSV = (
+    TRAFEGO_HEADER + "CCR (Sul);14/01/2025;Crescente;P1;Manual;2;Comercial;11,00\n"
+    "CCR (Sul);15/01/2025;Crescente;P1;Manual;2;Comercial;12,00\n"
+    "CCR (Sul);15/01/2025;Crescente;P1;Automática;2;Comercial;13,00\n"
+).encode()
 PRACAS_CSV = (
     b"concessionaria;praca_de_pedagio;rodovia;uf;km_m;municipio;lat;lon;situacao\n"
     b"CCR AutoBAn;Campinas;SP-348;SP;87+500;Campinas;-22.9;-47.0;Ativa\n"
@@ -32,213 +25,109 @@ PRACAS_CSV = (
 )
 
 
-# ============================================================================
-# fluxo_pedagio
-# ============================================================================
+async def test_fluxo_diario_preserva_dia_e_filtra_intervalo_inclusivo(monkeypatch):
+    install_anttpedagio_source(monkeypatch, {"volume-2025_diario.csv": DAILY_CSV})
+    frame = await fluxo_pedagio(
+        ano=2025,
+        frequencia="diaria",
+        enriquecer=False,
+        data_inicio="2025-01-15",
+        data_fim="2025-01-15",
+        tipo_cobranca="Manual",
+    )
+    assert frame["data"].tolist() == [pd.Timestamp("2025-01-15")]
+    assert frame["volume"].tolist() == [12]
+    assert frame["frequencia"].tolist() == ["diaria"]
 
 
-class TestFluxoPedagio:
-    def test_filter_concessionaria_literal(self):
-        source = pd.DataFrame({"concessionaria": ["CCR (Sul)", "CCR Sul"], "n_eixos": [2, 2]})
-
-        df = _filtrar_fluxo(
-            source,
-            concessionaria="CCR (Sul)",
-            praca=None,
-            rodovia=None,
-            uf=None,
-            tipo_veiculo=None,
-            apenas_pesados=False,
-        )
-
-        assert df["concessionaria"].tolist() == ["CCR (Sul)"]
-
-    @pytest.mark.asyncio
-    async def test_basic_call(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023)
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) > 0
-        assert "data" in df.columns
-        assert "volume" in df.columns
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023, uf="SP")
-
-        if len(df) > 0 and "uf" in df.columns:
-            assert (df["uf"].dropna() == "SP").all()
-
-    @pytest.mark.asyncio
-    async def test_filter_concessionaria(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023, concessionaria="CCR")
-
-        assert len(df) > 0
-        assert all("CCR" in c for c in df["concessionaria"] if c)
-
-    @pytest.mark.asyncio
-    async def test_filter_praca(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023, praca="Campinas")
-
-        assert len(df) > 0
-        assert all("Campinas" in p for p in df["praca"] if p)
-
-    @pytest.mark.asyncio
-    async def test_apenas_pesados(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023, apenas_pesados=True)
-
-        assert len(df) > 0
-        assert (df["n_eixos"] >= 3).all()
-        assert (df["tipo_veiculo"] == "Comercial").all()
-
-    @pytest.mark.asyncio
-    async def test_filter_tipo_veiculo(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023, tipo_veiculo="Passeio")
-
-        if len(df) > 0:
-            assert (df["tipo_veiculo"] == "Passeio").all()
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            result = await fluxo_pedagio(ano=2023, return_meta=True)
-
-        assert isinstance(result, tuple)
-        df, meta = result
-        assert isinstance(df, pd.DataFrame)
-        assert isinstance(meta, MetaInfo)
-        assert meta.source == "antt_pedagio"
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_empty_result(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[])
-            mock_client.fetch_pracas = AsyncMock(return_value=b"")
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023)
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 0
-
-    @pytest.mark.asyncio
-    async def test_pracas_fetch_failure_graceful(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(side_effect=httpx.ConnectError("network error"))
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023)
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) > 0  # Should work even without pracas
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF"):
-            await fluxo_pedagio(uf="XX")
-
-    @pytest.mark.asyncio
-    async def test_sorted_output(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_trafego_anos = AsyncMock(return_value=[(2023, V1_CSV)])
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_TRAFEGO_SLUG = "test-slug"
-
-            df = await fluxo_pedagio(ano=2023)
-
-        if len(df) > 1:
-            dates = df["data"].tolist()
-            assert dates == sorted(dates)
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"ano": True},
+        {"ano": 2025.0},
+        {"ano": 2009},
+        {"ano": 2025, "ano_inicio": 2024},
+        {"ano_inicio": 2025, "ano_fim": 2024},
+        {"frequencia": "anual"},
+        {"frequencia": pd.NA},
+        {"concessionaria": " "},
+        {"uf": "XX"},
+        {"as_polars": 1},
+        {"return_meta": "sim"},
+        {"apenas_pesados": 1},
+        {"enriquecer": 0},
+        {"max_linhas": False},
+        {"max_memoria_bytes": 0},
+        {"ano": 2025, "data_inicio": "2025-02-30"},
+        {"ano": 2025, "data_inicio": "2025-01-02"},
+        {"ano": 2025, "data_inicio": datetime(2025, 1, 1)},
+        {"ano": 2025, "data_inicio": "2024-01-01"},
+        {"ano": 2024, "data_inicio": "2025-01-01"},
+        {
+            "ano": 2025,
+            "frequencia": "diaria",
+            "data_inicio": "2025-01-02",
+            "data_fim": "2025-01-01",
+        },
+        {"enriquecer": False, "uf": "SP"},
+    ],
+)
+async def test_fluxo_parametros_invalidos_antes_de_http(monkeypatch, options):
+    calls, _ = install_anttpedagio_source(monkeypatch, {})
+    with pytest.raises(Exception) as caught:
+        await fluxo_pedagio(**options)
+    assert caught.type is InvalidParameterError, caught.value
+    assert calls == []
 
 
-# ============================================================================
-# pracas_pedagio
-# ============================================================================
+@pytest.mark.parametrize("function", [fluxo_pedagio, pracas_pedagio])
+async def test_deterministic_recusado_antes_de_http(monkeypatch, function):
+    calls, _ = install_anttpedagio_source(monkeypatch, {})
+    async with deterministic("2026-09-07"):
+        with pytest.raises(Exception) as caught:
+            await function()
+    assert caught.type is InvalidParameterError, caught.value
+    assert "deterministic" in str(caught.value)
+    assert calls == []
+
+
+@pytest.mark.parametrize("function", [fluxo_pedagio, pracas_pedagio])
+async def test_polars_ausente_antes_de_http(monkeypatch, function):
+    calls, _ = install_anttpedagio_source(monkeypatch, {})
+
+    def missing(name):
+        raise ImportError(name)
+
+    monkeypatch.setattr(api.importlib, "import_module", missing)
+    with pytest.raises(Exception) as caught:
+        await function(as_polars=True)
+    assert caught.type is ImportError, caught.value
+    assert "pip install agrobr[polars]" in str(caught.value)
+    assert calls == []
+
+
+async def test_fluxo_valida_ano_antes_de_consultar_opcional(monkeypatch):
+    calls, _ = install_anttpedagio_source(monkeypatch, {})
+    loader = Mock(return_value=None)
+    monkeypatch.setattr(api.importlib, "import_module", loader)
+    with pytest.raises(InvalidParameterError, match="ano"):
+        await fluxo_pedagio(ano=True, as_polars=True)
+    assert loader.call_count == 0
+    assert calls == []
 
 
 class TestPracasPedagio:
-    @pytest.mark.asyncio
-    async def test_basic_call(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_PRACAS_SLUG = "test-slug"
-
-            df = await pracas_pedagio()
-
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 2
-
-    @pytest.mark.asyncio
-    async def test_filter_uf(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_PRACAS_SLUG = "test-slug"
-
-            df = await pracas_pedagio(uf="SP")
-
-        assert len(df) == 1
-        assert df.iloc[0]["uf"] == "SP"
-
-    @pytest.mark.asyncio
-    async def test_filter_rodovia(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_PRACAS_SLUG = "test-slug"
-
-            df = await pracas_pedagio(rodovia="BR-153")
-
-        assert len(df) == 1
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        with patch("agrobr.alt.antt_pedagio.api.client") as mock_client:
-            mock_client.fetch_pracas = AsyncMock(return_value=PRACAS_CSV)
-            mock_client.DATASET_PRACAS_SLUG = "test-slug"
-
-            result = await pracas_pedagio(return_meta=True)
-
-        assert isinstance(result, tuple)
-        df, meta = result
-        assert isinstance(meta, MetaInfo)
-        assert meta.source == "antt_pedagio"
-
-    @pytest.mark.asyncio
-    async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="UF"):
-            await pracas_pedagio(uf="XX")
+    @pytest.mark.parametrize("empty", [False, True])
+    async def test_polars_preserva_texto_nulos_e_coordenadas(self, monkeypatch, empty):
+        polars = pytest.importorskip("polars")
+        body = PRACAS_CSV.replace(b"-23.1;-49.9;Ativa", b";;")
+        calls, _ = install_anttpedagio_source(monkeypatch, {}, plazas=body)
+        frame, meta = await pracas_pedagio(
+            uf="AC" if empty else None, as_polars=True, return_meta=True
+        )
+        assert frame.shape == (0 if empty else 2, 9)
+        assert frame.schema["lat"] == frame.schema["lon"] == polars.Float64
+        assert frame.schema["concessionaria"] == frame.schema["situacao"] == polars.Utf8
+        assert frame["lat"].to_list() == ([] if empty else [-22.9, None])
+        assert frame["situacao"].to_list() == ([] if empty else ["Ativa", ""])
+        assert meta.records_count == len(frame) and len(calls) == 2

@@ -1,0 +1,218 @@
+{
+  "name": "bcb.focus",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "periodicidade",
+    "indicador",
+    "indicador_detalhe",
+    "data",
+    "data_referencia",
+    "base_calculo"
+  ],
+  "required_columns": [
+    "indicador",
+    "data",
+    "data_referencia",
+    "media",
+    "mediana",
+    "desvio_padrao",
+    "minimo",
+    "maximo",
+    "numero_respondentes",
+    "base_calculo",
+    "periodicidade",
+    "indicador_detalhe"
+  ],
+  "dtypes": {
+    "indicador": "str",
+    "data": "date",
+    "data_referencia": "str",
+    "media": "float",
+    "mediana": "float",
+    "desvio_padrao": "float",
+    "minimo": "float",
+    "maximo": "float",
+    "numero_respondentes": "int",
+    "base_calculo": "int",
+    "periodicidade": "str",
+    "indicador_detalhe": "str"
+  },
+  "nullable": {
+    "indicador": false,
+    "data": false,
+    "data_referencia": false,
+    "media": true,
+    "mediana": true,
+    "desvio_padrao": true,
+    "minimo": true,
+    "maximo": true,
+    "numero_respondentes": true,
+    "base_calculo": true,
+    "periodicidade": false,
+    "indicador_detalhe": true
+  },
+  "columns": [
+    {
+      "name": "indicador",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data",
+      "type": "date",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_referencia",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "media",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "mediana",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "desvio_padrao",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "minimo",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "maximo",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "numero_respondentes",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 2147483647
+    },
+    {
+      "name": "base_calculo",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 2147483647
+    },
+    {
+      "name": "periodicidade",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "indicador_detalhe",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "numero_respondentes_min": 0,
+    "numero_respondentes_max": 2147483647,
+    "base_calculo_min": 0,
+    "base_calculo_max": 2147483647,
+    "date_dtype": "datetime64[ns]",
+    "date_semantics": "civil_survey_date_without_timezone",
+    "integer_dtype": "Int64",
+    "float_dtype": "float64",
+    "date_order": "descending",
+    "reference_formats": {
+      "anual": "YYYY",
+      "mensal": "MM/YYYY"
+    },
+    "null_key_semantics": "missing_dimension; empty_detail_text_is_distinct",
+    "periodicidade_semantics": "forecast_horizon_granularity",
+    "statistical_consistency": "source_values_preserved_with_diagnostics"
+  },
+  "guarantees": [
+    "Doze colunas estáveis, incluindo resultados vazios e ausências explícitas",
+    "Data da pesquisa e horizonte textual da previsão são dimensões distintas",
+    "Detalhe anual e base de cálculo preservam a identidade das expectativas",
+    "Valores negativos finitos são preservados sem imputação ou arredondamento",
+    "Duplicatas ou falhas de página interrompem a aquisição, sem retorno parcial",
+    "Limite local e ausência de contagem independente são explícitos nos metadados",
+    "Estatísticas internas inconsistentes permanecem publicadas com diagnóstico, sem certificação científica"
+  ]
+}

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 from typing import TYPE_CHECKING, Any, Literal, overload
 
@@ -52,13 +53,13 @@ def _build_where(
     clauses: list[str] = []
     if uf:
         field = fields.get("uf", "uf")
-        clauses.append(f"{field}='{_escape_filter_value(uf.upper())}'")
+        clauses.append(f"{field}='{_escape_filter_value(uf)}'")
     if bioma:
         field = fields.get("bioma", "bioma")
         clauses.append(f"{field}='{_escape_filter_value(bioma.upper())}'")
     if categoria:
         field = fields.get("categoria", "categoria")
-        clauses.append(f"{field}='{_escape_filter_value(categoria.upper())}'")
+        clauses.append(f"{field}='{_escape_filter_value(categoria)}'")
 
     return " AND ".join(clauses) if clauses else "1=1"
 
@@ -94,6 +95,8 @@ async def _fetch_and_parse_tabular(
         parser.PARSER_VERSION,
         attempted_sources=[f"sfb_{layer_key}"],
         selected_source=f"sfb_{layer_key}",
+        raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
+        raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -129,6 +132,8 @@ async def _fetch_and_parse_geo(
             parser.PARSER_VERSION,
             attempted_sources=[f"sfb_{layer_key}_geo"],
             selected_source=f"sfb_{layer_key}_geo",
+            raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
+            raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
         )
         return gdf, meta
     return gdf
@@ -169,7 +174,6 @@ async def cnfp(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
@@ -215,7 +219,6 @@ async def cnfp_geo(
     categoria: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
@@ -260,7 +263,6 @@ async def concessoes(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
@@ -296,7 +298,6 @@ async def concessoes_geo(
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
@@ -340,7 +341,6 @@ async def ifn_conglomerados(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
@@ -381,7 +381,6 @@ async def ifn_conglomerados_geo(
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)

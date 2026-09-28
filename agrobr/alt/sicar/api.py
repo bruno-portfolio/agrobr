@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import re
+import hashlib
+import json
 import time
 from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING, Any, Literal, overload
@@ -9,27 +10,55 @@ import httpx
 import pandas as pd
 import structlog
 
+from agrobr import contracts
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.validation import validate_year_uf
 
-from . import client, parser
+from . import client, models, parser
 from .models import (
     MAX_FEATURES_WARNING,
-    STATUS_VALIDOS,
-    TIPO_VALIDOS,
     UFS_SEM_DATA_ATUALIZACAO,
     WFS_BASE,
 )
-
-_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-_DATETIME_RE = re.compile(r"^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?)?$")
 
 if TYPE_CHECKING:
     import geopandas as gpd
 
 logger = structlog.get_logger()
+
+
+def _corpo(pages: list[bytes], consulta: str) -> dict[str, Any]:
+    """Proveniência das páginas WFS: com várias, o topo é o manifesto canônico ``{query, resources}``."""
+    if not pages:
+        return {"raw_content_hash": None, "raw_content_size": 0}
+    if len(pages) == 1:
+        return {
+            "raw_content_hash": hashlib.sha256(pages[0]).hexdigest(),
+            "raw_content_size": len(pages[0]),
+        }
+    recursos = [
+        {"pagina": indice, "sha256": hashlib.sha256(pagina).hexdigest(), "bytes": len(pagina)}
+        for indice, pagina in enumerate(pages, 1)
+    ]
+    manifesto = json.dumps(
+        {"query": consulta, "resources": recursos},
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return {
+        "raw_content_hash": hashlib.sha256(manifesto).hexdigest(),
+        "raw_content_size": len(manifesto),
+        "source_details": {
+            "query": consulta,
+            "resources": recursos,
+            "hash_kind": "resource_manifest_sha256",
+            "manifest_encoding": "canonical_json_utf8",
+            "manifest_fields": ["query", "resources"],
+            "resource_bytes": sum(recurso["bytes"] for recurso in recursos),
+        },
+    }
 
 
 def _build_cql_filter(
@@ -43,6 +72,16 @@ def _build_cql_filter(
     criado_apos: str | None = None,
     atualizado_apos: str | None = None,
 ) -> str | None:
+    models.validate_cql_filters(
+        municipio=municipio,
+        cod_municipio=cod_municipio,
+        status=status,
+        tipo=tipo,
+        area_min=area_min,
+        area_max=area_max,
+        criado_apos=criado_apos,
+        atualizado_apos=atualizado_apos,
+    )
     parts: list[str] = []
 
     if cod_municipio is not None:
@@ -64,19 +103,10 @@ def _build_cql_filter(
         parts.append(f"area<={area_max}")
 
     if criado_apos:
-        if not _DATE_RE.match(criado_apos):
-            raise InvalidParameterError(
-                f"criado_apos invalido (esperado YYYY-MM-DD): {criado_apos!r}"
-            )
         parts.append(f"dat_criacao>='{criado_apos}'")
 
     if atualizado_apos:
-        if not _DATETIME_RE.match(atualizado_apos):
-            raise InvalidParameterError(
-                f"atualizado_apos invalido (esperado YYYY-MM-DD ou YYYY-MM-DDTHH:MM:SS): "
-                f"{atualizado_apos!r}"
-            )
-        parts.append(f"data_atualizacao>'{atualizado_apos}'")
+        parts.append(f"data_atualizacao>'{models.normalize_updated_after(atualizado_apos)}'")
 
     return " AND ".join(parts) if parts else None
 
@@ -96,18 +126,9 @@ def _validar_filtros_imoveis(
     status: str | None,
     tipo: str | None,
 ) -> str:
-    validate_year_uf(uf=uf)
-
-    if municipio is not None and cod_municipio is not None:
-        raise InvalidParameterError("Use 'municipio' ou 'cod_municipio', nao ambos")
-
-    if status is not None and status.upper() not in STATUS_VALIDOS:
-        raise InvalidParameterError(f"Status '{status}' invalido. Opcoes: {sorted(STATUS_VALIDOS)}")
-
-    if tipo is not None and tipo.upper() not in TIPO_VALIDOS:
-        raise InvalidParameterError(f"Tipo '{tipo}' invalido. Opcoes: {sorted(TIPO_VALIDOS)}")
-
-    return uf.strip().upper()
+    return models.validate_filters(
+        uf, municipio=municipio, cod_municipio=cod_municipio, status=status, tipo=tipo
+    )
 
 
 async def _warn_consulta_grande(uf_upper: str, cql: str | None, max_features: int | None) -> None:
@@ -126,17 +147,6 @@ async def _warn_consulta_grande(uf_upper: str, cql: str | None, max_features: in
             )
     except (httpx.HTTPError, SourceUnavailableError):
         logger.warning("sicar_geo_hit_count_check_failed", uf=uf_upper, exc_info=True)
-
-
-def _dedup_imoveis_geo(gdf: Any) -> Any:
-    if gdf.empty or "cod_imovel" not in gdf.columns:
-        return gdf
-    before = len(gdf)
-    gdf = gdf.drop_duplicates(subset=["cod_imovel"], keep="first")
-    gdf = gdf.sort_values("cod_imovel").reset_index(drop=True)
-    if len(gdf) < before:
-        logger.info("sicar_geo_dedup", removed=before - len(gdf), remaining=len(gdf))
-    return gdf
 
 
 @overload
@@ -186,7 +196,6 @@ async def imoveis(
     atualizado_apos: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf_upper = _validar_filtros_imoveis(uf, municipio, cod_municipio, status, tipo)
 
@@ -230,31 +239,38 @@ async def imoveis(
             logger.warning("sicar_hit_count_check_failed", uf=uf_upper, exc_info=True)
 
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_imoveis(uf_upper, cql)
+    validation_warnings: list[str] = []
+    sicar_details: dict[str, Any] = {}
+    pages, source_url = await client.fetch_imoveis(
+        uf_upper, cql, validation_warnings=validation_warnings, source_details=sicar_details
+    )
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_imoveis_csv(pages)
+    df = parser.parse_imoveis_json(
+        pages, source_details=sicar_details, validation_warnings=validation_warnings
+    )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    if not df.empty and "cod_imovel" in df.columns:
-        before = len(df)
-        df = df.drop_duplicates(subset=["cod_imovel"], keep="first")
-        df = df.sort_values("cod_imovel").reset_index(drop=True)
-        if len(df) < before:
-            logger.info("sicar_dedup", removed=before - len(df), remaining=len(df))
+    df = df.sort_values("cod_imovel").reset_index(drop=True)
 
+    contracts.validate_dataset(df, "sicar_imoveis")
     meta = build_source_meta(
         "sicar",
         source_url,
-        "httpx+wfs+csv",
+        "httpx+wfs+geojson",
         fetch_ms,
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        schema_version=contracts.get_contract("sicar_imoveis").version,
         attempted_sources=["sicar_wfs"],
         selected_source="sicar_wfs",
+        **_corpo(pages, source_url),
     )
+    meta.validation_warnings.extend(validation_warnings)
+    if sicar_details:
+        meta.source_details["sicar"] = sicar_details
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
@@ -305,8 +321,8 @@ async def imoveis_geo(
     atualizado_apos: str | None = None,
     max_features: int | None = 5000,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
+    models.validate_max_features(max_features)
     uf_upper = _validar_filtros_imoveis(uf, municipio, cod_municipio, status, tipo)
 
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
@@ -341,10 +357,17 @@ async def imoveis_geo(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    gdf = parser.parse_imoveis_geojson(pages, max_features=max_features)
+    validation_warnings: list[str] = []
+    sicar_details: dict[str, Any] = {}
+    gdf = parser.parse_imoveis_geojson(
+        pages,
+        max_features=max_features,
+        source_details=sicar_details,
+        validation_warnings=validation_warnings,
+    )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    gdf = _dedup_imoveis_geo(gdf)
+    gdf = gdf.sort_values("cod_imovel").reset_index(drop=True)
 
     if return_meta:
         meta = build_source_meta(
@@ -357,7 +380,10 @@ async def imoveis_geo(
             parser.PARSER_VERSION,
             attempted_sources=["sicar_wfs_geo"],
             selected_source="sicar_wfs_geo",
+            **_corpo(pages, source_url),
         )
+        meta.validation_warnings.extend(validation_warnings)
+        meta.source_details["sicar"] = sicar_details
         return gdf, meta
 
     return gdf
@@ -377,10 +403,12 @@ async def imoveis_geo_stream(
 ) -> AsyncGenerator[gpd.GeoDataFrame, None]:
     """Itera sobre os imoveis rurais geoespaciais de uma UF em batches de baixo consumo de memoria.
 
-    Cada yield e um GeoDataFrame parcial com ate PAGE_SIZE features (uma pagina WFS).
-    Ideal para processar volumes grandes (max_features=None implicito) sem acumular
-    tudo em memoria antes de comecar a usar os dados. Async-only: sem suporte em
-    agrobr.sync.
+    Cada yield e um GeoDataFrame parcial de uma pagina WFS (PAGE_SIZE features). As
+    ocorrencias do ultimo cod_imovel de cada pagina seguem para o lote seguinte, porque
+    as paginas vem ordenadas por cod_imovel e uma versao repetida pode cair na pagina
+    seguinte; a versao mantida segue a regra de imoveis(). Ideal para processar volumes
+    grandes (max_features=None implicito) sem acumular tudo em memoria antes de comecar
+    a usar os dados. Async-only: sem suporte em agrobr.sync.
     """
     uf_upper = _validar_filtros_imoveis(uf, municipio, cod_municipio, status, tipo)
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
@@ -396,16 +424,27 @@ async def imoveis_geo_stream(
         atualizado_apos=atualizado_apos,
     )
 
-    seen_cod_imovel: set[str] = set()
+    seen: set[str] = set()
+    retidas: Any = None
+    retidas_ids: list[str] = []
     async for batch_pages, _url in client.stream_imoveis_geo(uf_upper, cql, max_features=None):
-        gdf = parser.parse_imoveis_geojson(batch_pages, max_features=None)
+        gdf, ids, _ = parser.parse_geo_pages(batch_pages, seen=seen)
         if gdf.empty:
             continue
-        if "cod_imovel" in gdf.columns:
-            gdf = gdf[~gdf["cod_imovel"].isin(seen_cod_imovel)]
-            seen_cod_imovel.update(gdf["cod_imovel"].tolist())
-        if not gdf.empty:
-            yield gdf
+        if retidas is not None:
+            gdf = pd.concat([retidas, gdf], ignore_index=True)
+            ids = retidas_ids + ids
+        ultimo = (gdf["cod_imovel"] == gdf["cod_imovel"].iloc[-1]).to_numpy()
+        retidas = gdf[ultimo].reset_index(drop=True)
+        retidas_ids = [feature_id for feature_id, fica in zip(ids, ultimo, strict=True) if fica]
+        prontas = gdf[~ultimo].reset_index(drop=True)
+        if not prontas.empty:
+            prontas_ids = [
+                feature_id for feature_id, fica in zip(ids, ultimo, strict=True) if not fica
+            ]
+            yield parser.select_versions(prontas, prontas_ids)
+    if retidas is not None:
+        yield parser.select_versions(retidas, retidas_ids)
 
 
 @overload
@@ -437,17 +476,15 @@ async def resumo(
     cod_municipio: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    validate_year_uf(uf=uf)
-    uf_upper = uf.strip().upper()
-
-    if municipio is not None and cod_municipio is not None:
-        raise InvalidParameterError("Use 'municipio' ou 'cod_municipio', nao ambos")
+    uf_upper = models.validate_filters(uf, municipio=municipio, cod_municipio=cod_municipio)
 
     logger.info("sicar_resumo", uf=uf_upper, municipio=municipio, cod_municipio=cod_municipio)
 
     t0 = time.monotonic()
+    validation_warnings: list[str] = []
+    sicar_details: dict[str, Any] = {}
+    pages: list[bytes] = []
 
     if municipio is None and cod_municipio is None:
         async with client.make_session() as http:
@@ -476,23 +513,31 @@ async def resumo(
     else:
         cql = _build_cql_filter(municipio=municipio, cod_municipio=cod_municipio)
 
-        pages, source_url = await client.fetch_imoveis(uf_upper, cql)
+        pages, source_url = await client.fetch_imoveis(
+            uf_upper, cql, validation_warnings=validation_warnings, source_details=sicar_details
+        )
         fetch_ms = int((time.monotonic() - t0) * 1000)
 
         t1 = time.monotonic()
-        df_raw = parser.parse_imoveis_csv(pages)
+        df_raw = parser.parse_imoveis_json(
+            pages, source_details=sicar_details, validation_warnings=validation_warnings
+        )
         df = parser.agregar_resumo(df_raw)
         parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = build_source_meta(
         "sicar",
         source_url,
-        "httpx+wfs+csv",
+        "httpx+wfs+geojson" if municipio is not None or cod_municipio is not None else "httpx+wfs",
         fetch_ms,
         parse_ms,
         df,
         parser.PARSER_VERSION,
         attempted_sources=["sicar_wfs"],
         selected_source="sicar_wfs",
+        **_corpo(pages, source_url),
     )
+    meta.validation_warnings.extend(validation_warnings)
+    if sicar_details:
+        meta.source_details["sicar"] = sicar_details
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

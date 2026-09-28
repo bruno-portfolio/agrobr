@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import hashlib
+import socket
 import sys
+from pathlib import Path
 
 import pytest
+
+from tests.helpers import local_socketpair
 
 try:
     import _duckdb
@@ -15,8 +20,48 @@ except (ImportError, AttributeError):
     pass
 
 
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--live-matrix-report",
+        type=Path,
+        help="Grava cobertura e resultados da matriz de datasets live em JSON",
+    )
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    if sys.platform == "win32":
+        monkeypatch = pytest.MonkeyPatch()
+        monkeypatch.setattr(socket, "socketpair", local_socketpair)
+        config.add_cleanup(monkeypatch.undo)
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    for item in items:
+        if item.get_closest_marker("integration") is not None:
+            item.add_marker(pytest.mark.enable_socket)
+
+
+@pytest.fixture(scope="session")
+def _cache_root(tmp_path_factory):
+    return tmp_path_factory.mktemp("agrobr-cache")
+
+
 @pytest.fixture(autouse=True)
-def _fast_retry(monkeypatch):
+def _isolated_duckdb_cache(_cache_root, monkeypatch, request):
+    from agrobr.cache import duckdb_store
+
+    key = hashlib.sha256(request.node.nodeid.encode()).hexdigest()[:16]
+    monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(_cache_root / key))
+    monkeypatch.setattr(duckdb_store, "_store", None)
+    yield
+    if duckdb_store._store is not None:
+        duckdb_store._store.close()
+
+
+@pytest.fixture(autouse=True)
+def _fast_retry(monkeypatch, request):
+    if any(request.node.get_closest_marker(marker) for marker in ("benchmark", "integration")):
+        return
     monkeypatch.setenv("AGROBR_HTTP_RETRY_BASE_DELAY", "0.001")
     monkeypatch.setenv("AGROBR_HTTP_RETRY_MAX_DELAY", "0.01")
     from agrobr import constants
@@ -24,6 +69,20 @@ def _fast_retry(monkeypatch):
     for field in constants.HTTPSettings.model_fields:
         if field.startswith("rate_limit_"):
             monkeypatch.setenv(f"AGROBR_HTTP_{field.upper()}", "0.001")
+
+
+@pytest.fixture
+def serie_historica():
+    """Liga a série histórica do CEPEA, que os testes desligam por padrão: sem rede, ela só avisaria."""
+
+
+@pytest.fixture(autouse=True)
+def _sem_serie_historica_do_cepea(monkeypatch, request):
+    if "serie_historica" in request.fixturenames or request.node.get_closest_marker("integration"):
+        return
+    from agrobr.cepea import api
+
+    monkeypatch.setattr(api, "_precisa_da_serie", lambda *_args: False)
 
 
 @pytest.fixture(autouse=True)

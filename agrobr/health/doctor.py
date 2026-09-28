@@ -1,21 +1,18 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import httpx
 import structlog
 
 from agrobr import __version__
 from agrobr.cache.duckdb_store import get_store
-from agrobr.cache.policies import get_next_update_info
-from agrobr.constants import Fonte
-from agrobr.health.registry import HEALTH_REGISTRY
-from agrobr.http.user_agents import UserAgentRotator
+from agrobr.cache.policies import SOURCE_POLICY_MAP, get_next_update_info
+from agrobr.health import checker
+from agrobr.health.registry import HEALTH_REGISTRY, SourceHealthConfig
 from agrobr.utils.time import utcnow
 
 logger = structlog.get_logger()
@@ -28,6 +25,7 @@ class SourceStatus:
     status: str
     latency_ms: int
     error: str | None = None
+    category: str | None = None
 
 
 @dataclass
@@ -36,6 +34,8 @@ class CacheStats:
     size_bytes: int
     total_records: int
     by_source: dict[str, dict[str, Any]] = field(default_factory=dict)
+    status: str = "ok"
+    error: str | None = None
 
 
 @dataclass
@@ -60,10 +60,13 @@ class DiagnosticsResult:
                     "status": s.status,
                     "latency_ms": s.latency_ms,
                     "error": s.error,
+                    "category": s.category,
                 }
                 for s in self.sources
             ],
             "cache": {
+                "status": self.cache.status,
+                "error": self.cache.error,
                 "location": self.cache.location,
                 "size_mb": round(self.cache.size_bytes / 1024 / 1024, 2),
                 "total_records": self.cache.total_records,
@@ -89,8 +92,12 @@ class DiagnosticsResult:
         for s in self.sources:
             if s.status == "ok":
                 icon = "[OK]"
+            elif s.status == "warning":
+                icon = "[WARN]"
             elif s.status == "slow":
                 icon = "[SLOW]"
+            elif s.status == "not_verified":
+                icon = "[NOT VERIFIED]"
             else:
                 icon = "[FAIL]"
 
@@ -103,6 +110,8 @@ class DiagnosticsResult:
             [
                 "",
                 "Cache Status",
+                f"  Status:        {self.cache.status}",
+                f"  Error:         {self.cache.error or '-'}",
                 f"  Location:      {self.cache.location}",
                 f"  Size:          {self.cache.size_bytes / 1024 / 1024:.2f} MB",
                 f"  Total records: {self.cache.total_records:,}",
@@ -144,46 +153,32 @@ class DiagnosticsResult:
         if self.overall_status == "healthy":
             lines.append("[OK] All systems operational")
         elif self.overall_status == "degraded":
-            lines.append("[WARN] System degraded - some sources unavailable")
+            lines.append("[WARN] System degraded - check diagnostic warnings")
         else:
-            lines.append("[FAIL] System error - check source connectivity")
+            lines.append("[FAIL] System error - check cache and source diagnostics")
 
         lines.append("")
         return "\n".join(lines)
 
 
-async def _check_source(name: str, url: str, timeout: float = 10.0) -> SourceStatus:
-    start = time.perf_counter()
-    headers = UserAgentRotator.get_headers(source="health_check")
-
-    try:
-        async with httpx.AsyncClient(timeout=timeout, headers=headers) as http_client:
-            response = await http_client.get(url, follow_redirects=True)
-            latency_ms = int((time.perf_counter() - start) * 1000)
-
-            if response.status_code < 400:
-                status = "ok" if latency_ms < 2000 else "slow"
-                return SourceStatus(name, url, status, latency_ms)
-
-            return SourceStatus(
-                name,
-                url,
-                "error",
-                latency_ms,
-                error=f"HTTP {response.status_code}",
-            )
-
-    except httpx.TimeoutException:
-        latency_ms = int((time.perf_counter() - start) * 1000)
-        return SourceStatus(name, url, "error", latency_ms, error="timeout")
-
-    except httpx.ConnectError as e:
-        latency_ms = int((time.perf_counter() - start) * 1000)
-        return SourceStatus(name, url, "error", latency_ms, error=f"connection error: {e}")
-
-    except Exception as e:
-        latency_ms = int((time.perf_counter() - start) * 1000)
-        return SourceStatus(name, url, "error", latency_ms, error=str(e))
+async def _check_source(config: SourceHealthConfig) -> SourceStatus:
+    result = await checker._check_http(config)
+    status = {
+        checker.CheckStatus.OK: "ok",
+        checker.CheckStatus.WARNING: "warning",
+        checker.CheckStatus.FAILED: "error",
+        checker.CheckStatus.NOT_VERIFIED: "not_verified",
+    }[result.status]
+    if result.category == "slow":
+        status = "slow"
+    return SourceStatus(
+        config.source.value.upper(),
+        config.url,
+        status,
+        int(result.latency_ms),
+        error=result.message if result.status != checker.CheckStatus.OK else None,
+        category=result.category,
+    )
 
 
 def _get_cache_stats() -> CacheStats:
@@ -193,34 +188,18 @@ def _get_cache_stats() -> CacheStats:
         size_bytes = cache_path.stat().st_size if cache_path.exists() else 0
 
         by_source: dict[str, dict[str, Any]] = {}
-        conn = store._get_conn()
-        if conn is None:
-            return CacheStats(
-                location=str(cache_path),
-                size_bytes=size_bytes,
-                total_records=0,
-                by_source={},
-            )
-
-        for fonte in Fonte:
-            try:
-                result = conn.execute(
-                    """
-                    SELECT COUNT(*), MIN(data), MAX(data)
-                    FROM indicadores
-                    WHERE LOWER(fonte) = ?
-                    """,
-                    [fonte.value],
-                ).fetchone()
-
-                if result and result[0] > 0:
-                    by_source[fonte.value] = {
-                        "count": result[0],
-                        "oldest": str(result[1]) if result[1] else None,
-                        "newest": str(result[2]) if result[2] else None,
-                    }
-            except Exception:
-                logger.warning("cache_stats_source_query_failed", fonte=fonte.value, exc_info=True)
+        with store._conexao() as conn:
+            if conn is None:
+                raise RuntimeError("Conexão com o cache indisponível")
+            rows = conn.execute(
+                "SELECT LOWER(fonte), COUNT(*), MIN(data), MAX(data) FROM indicadores GROUP BY LOWER(fonte)"
+            ).fetchall()
+        for fonte, count, oldest, newest in rows:
+            by_source[fonte] = {
+                "count": count,
+                "oldest": str(oldest) if oldest else None,
+                "newest": str(newest) if newest else None,
+            }
 
         total_records = sum(s.get("count", 0) for s in by_source.values())
 
@@ -234,6 +213,8 @@ def _get_cache_stats() -> CacheStats:
     except Exception as e:
         logger.warning("cache_stats_failed", error=str(e))
         return CacheStats(
+            status="error",
+            error=f"{type(e).__name__}: {e}",
             location="unknown",
             size_bytes=0,
             total_records=0,
@@ -242,58 +223,43 @@ def _get_cache_stats() -> CacheStats:
 
 
 def _get_last_collections() -> dict[str, datetime | None]:
-    collections: dict[str, datetime | None] = {}
-
-    try:
-        store = get_store()
-        conn = store._get_conn()
+    with get_store()._conexao() as conn:
         if conn is None:
-            return collections
-
-        for fonte in Fonte:
-            try:
-                result = conn.execute(
-                    """
-                    SELECT MAX(collected_at)
-                    FROM indicadores
-                    WHERE LOWER(fonte) = ?
-                    """,
-                    [fonte.value],
-                ).fetchone()
-
-                collections[fonte.value] = result[0] if result and result[0] else None
-
-            except Exception:
-                logger.warning("last_collection_query_failed", fonte=fonte.value, exc_info=True)
-                collections[fonte.value] = None
-
-    except Exception:
-        logger.warning("last_collections_failed", exc_info=True)
-
-    return collections
+            raise RuntimeError("Conexão com o cache indisponível")
+        rows = conn.execute(
+            "SELECT LOWER(fonte), MAX(collected_at) FROM indicadores GROUP BY LOWER(fonte)"
+        ).fetchall()
+    return dict(rows)
 
 
 async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: ARG001
-    # Build check list from registry (all 22 sources)
-    sources_to_check = [
-        (config.source.value.upper(), config.url) for config in HEALTH_REGISTRY.values()
-    ]
+    semaphore = asyncio.Semaphore(8)
 
-    source_tasks = [_check_source(name, url) for name, url in sources_to_check]
-    sources = await asyncio.gather(*source_tasks)
+    async def probe(config: SourceHealthConfig) -> SourceStatus:
+        async with semaphore:
+            return await _check_source(config)
+
+    sources = await asyncio.gather(*[probe(config) for config in HEALTH_REGISTRY.values()])
 
     cache = _get_cache_stats()
 
     cache_expiry: dict[str, dict[str, str]] = {}
-    for fonte in Fonte:
+    for fonte in SOURCE_POLICY_MAP:
         cache_expiry[fonte.value] = get_next_update_info(fonte.value)
 
-    last_collections = _get_last_collections()
+    last_collections: dict[str, datetime | None] = {}
+    if cache.status == "ok":
+        try:
+            last_collections = _get_last_collections()
+        except Exception as exc:
+            cache.status = "error"
+            cache.error = f"{type(exc).__name__}: {exc}"
+            logger.warning("last_collections_failed", error=cache.error)
 
     error_count = sum(1 for s in sources if s.status == "error")
-    if error_count == len(sources):
+    if cache.status == "error" or (sources and error_count == len(sources)):
         overall_status = "error"
-    elif error_count > 0:
+    elif any(s.status != "ok" for s in sources):
         overall_status = "degraded"
     else:
         overall_status = "healthy"

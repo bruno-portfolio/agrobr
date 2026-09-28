@@ -1,80 +1,86 @@
 from __future__ import annotations
 
+import hashlib
+import importlib
 import time
+from datetime import date
+from typing import Any, Literal, overload
 
-import httpx
 import pandas as pd
-import structlog
 
-from agrobr.exceptions import ParseError
+from agrobr import constants
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import build_source_meta
 from agrobr.utils.validation import validate_year_uf
 
-from . import client, parser
-from .models import (
-    ANO_INICIO,
-    COLUNAS_FLUXO,
-    DATASET_PRACAS_SLUG,
-    DATASET_TRAFEGO_SLUG,
-    _resolve_anos,
-)
-
-logger = structlog.get_logger()
+from . import _fluxo, client, parser, query
+from .models import DATASET_PRACAS_SLUG
 
 
-def _montar_fluxo(trafego_data: list[tuple[int, bytes]], pracas_raw: bytes) -> pd.DataFrame:
-    dfs: list[pd.DataFrame] = []
-    for ano_val, content in trafego_data:
-        dfs.append(parser.parse_trafego(content, ano=ano_val))
+def _output_guards(*, as_polars: bool, return_meta: bool) -> None:
+    from agrobr.datasets.deterministic import get_snapshot
 
-    df_out = pd.DataFrame(columns=COLUNAS_FLUXO) if not dfs else pd.concat(dfs, ignore_index=True)
-
-    if pracas_raw:
+    query.validate_flags(as_polars=as_polars, return_meta=return_meta)
+    if get_snapshot() is not None:
+        raise InvalidParameterError(
+            "antt_pedagio não suporta deterministic: recursos CKAN mutáveis"
+        )
+    if as_polars:
         try:
-            df_pracas = parser.parse_pracas(pracas_raw)
-            return parser.join_fluxo_pracas(df_out, df_pracas)
-        except (ParseError, KeyError, ValueError):
-            logger.warning("antt_pedagio_join_fallback", reason="parse/join failed")
-
-    for col in ("rodovia", "uf", "municipio"):
-        if col not in df_out.columns:
-            df_out[col] = None
-    return df_out
+            importlib.import_module("polars")
+        except ImportError:
+            raise ImportError(
+                "polars é necessário para as_polars=True. Instale com: pip install agrobr[polars]"
+            ) from None
 
 
-def _filtrar_fluxo(
-    df_out: pd.DataFrame,
+@overload
+async def fluxo_pedagio(
+    ano: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    concessionaria: str | None = None,
+    rodovia: str | None = None,
+    uf: str | None = None,
+    praca: str | None = None,
+    tipo_veiculo: str | None = None,
+    apenas_pesados: bool = False,
+    as_polars: bool = False,
     *,
-    concessionaria: str | None,
-    praca: str | None,
-    rodovia: str | None,
-    uf: str | None,
-    tipo_veiculo: str | None,
-    apenas_pesados: bool,
-) -> pd.DataFrame:
-    filtros = (
-        ("concessionaria", concessionaria, "contains"),
-        ("praca", praca, "contains"),
-        ("rodovia", rodovia, "upper_eq"),
-        ("uf", uf.upper() if uf else None, "eq"),
-        ("tipo_veiculo", tipo_veiculo, "eq"),
-    )
-    for col, valor, modo in filtros:
-        if not valor or col not in df_out.columns:
-            continue
-        if modo == "contains":
-            df_out = df_out[df_out[col].str.contains(valor, case=False, na=False, regex=False)]
-        elif modo == "upper_eq":
-            df_out = df_out[df_out[col].str.upper() == valor.upper()]
-        else:
-            df_out = df_out[df_out[col] == valor]
+    return_meta: Literal[False] = False,
+    frequencia: Literal["mensal", "diaria"] = "mensal",
+    tipo_cobranca: str | None = None,
+    data_inicio: date | str | None = None,
+    data_fim: date | str | None = None,
+    enriquecer: bool = True,
+    max_linhas: int = constants.ANTT_PARSER_MAX_ROWS,
+    max_memoria_bytes: int = constants.ANTT_PARSER_MAX_MEMORY_BYTES,
+) -> pd.DataFrame: ...
 
-    if apenas_pesados:
-        mask = (df_out["n_eixos"] >= 3) & (df_out["tipo_veiculo"] == "Comercial")
-        df_out = df_out[mask]
 
-    return df_out
+@overload
+async def fluxo_pedagio(
+    ano: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    concessionaria: str | None = None,
+    rodovia: str | None = None,
+    uf: str | None = None,
+    praca: str | None = None,
+    tipo_veiculo: str | None = None,
+    apenas_pesados: bool = False,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+    frequencia: Literal["mensal", "diaria"] = "mensal",
+    tipo_cobranca: str | None = None,
+    data_inicio: date | str | None = None,
+    data_fim: date | str | None = None,
+    enriquecer: bool = True,
+    max_linhas: int = constants.ANTT_PARSER_MAX_ROWS,
+    max_memoria_bytes: int = constants.ANTT_PARSER_MAX_MEMORY_BYTES,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def fluxo_pedagio(
@@ -89,53 +95,73 @@ async def fluxo_pedagio(
     apenas_pesados: bool = False,
     as_polars: bool = False,
     return_meta: bool = False,
+    *,
+    frequencia: Literal["mensal", "diaria"] = "mensal",
+    tipo_cobranca: str | None = None,
+    data_inicio: date | str | None = None,
+    data_fim: date | str | None = None,
+    enriquecer: bool = True,
+    max_linhas: int = constants.ANTT_PARSER_MAX_ROWS,
+    max_memoria_bytes: int = constants.ANTT_PARSER_MAX_MEMORY_BYTES,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    validate_year_uf(uf=uf, ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim, ano_min=ANO_INICIO)
-
-    anos = _resolve_anos(ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim)
-
-    t0 = time.monotonic()
-    trafego_data = await client.fetch_trafego_anos(anos)
-
-    try:
-        pracas_raw = await client.fetch_pracas()
-    except httpx.HTTPError:
-        logger.warning("antt_pedagio_pracas_fallback", reason="fetch failed")
-        pracas_raw = b""
-
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df_out = _montar_fluxo(trafego_data, pracas_raw)
-    df_out = _filtrar_fluxo(
-        df_out,
+    query.validate_flags(as_polars=as_polars, return_meta=return_meta)
+    validated = query.build_query(
+        ano=ano,
+        ano_inicio=ano_inicio,
+        ano_fim=ano_fim,
+        frequencia=frequencia,
         concessionaria=concessionaria,
-        praca=praca,
         rodovia=rodovia,
         uf=uf,
+        praca=praca,
         tipo_veiculo=tipo_veiculo,
+        tipo_cobranca=tipo_cobranca,
+        data_inicio=data_inicio,
+        data_fim=data_fim,
         apenas_pesados=apenas_pesados,
+        enriquecer=enriquecer,
+        max_linhas=max_linhas,
+        max_memoria_bytes=max_memoria_bytes,
+    )
+    _output_guards(as_polars=as_polars, return_meta=return_meta)
+    return await _fluxo.fetch(validated, as_polars=as_polars, return_meta=return_meta)
+
+
+def _pracas_polars(frame: pd.DataFrame) -> Any:
+    module = importlib.import_module("polars")
+    return module.DataFrame(
+        {
+            name: module.Series(
+                name,
+                [None if pd.isna(value) else value for value in frame[name]],
+                dtype=module.Float64 if name in ("lat", "lon") else module.Utf8,
+                strict=True,
+            )
+            for name in frame.columns
+        }
     )
 
-    final_cols = [c for c in COLUNAS_FLUXO if c in df_out.columns]
-    df_out = df_out[final_cols]
 
-    df_out = df_out.sort_values(
-        ["data", "concessionaria", "praca"], na_position="last"
-    ).reset_index(drop=True)
+@overload
+async def pracas_pedagio(
+    uf: str | None = None,
+    rodovia: str | None = None,
+    situacao: str | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
 
-    parse_ms = int((time.monotonic() - t1) * 1000)
 
-    meta = build_source_meta(
-        "antt_pedagio",
-        f"https://dados.antt.gov.br/dataset/{DATASET_TRAFEGO_SLUG}",
-        "httpx",
-        fetch_ms,
-        parse_ms,
-        df_out,
-        parser.PARSER_VERSION,
-    )
-    return finalize_result(df_out, meta, as_polars=as_polars, return_meta=return_meta)
+@overload
+async def pracas_pedagio(
+    uf: str | None = None,
+    rodovia: str | None = None,
+    situacao: str | None = None,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def pracas_pedagio(
@@ -145,10 +171,19 @@ async def pracas_pedagio(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    query.validate_flags(as_polars=as_polars, return_meta=return_meta)
+    query._text("uf", uf)
+    query._text("rodovia", rodovia)
+    query._text("situacao", situacao)
     validate_year_uf(uf=uf)
+    _output_guards(as_polars=as_polars, return_meta=return_meta)
+    if uf is not None:
+        uf = uf.strip().upper()
 
+    source_urls: list[str] = []
     t0 = time.monotonic()
-    raw = await client.fetch_pracas()
+    async with client.session(reuse=False):
+        raw = await client.fetch_pracas(source_urls=source_urls)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
@@ -170,11 +205,20 @@ async def pracas_pedagio(
 
     meta = build_source_meta(
         "antt_pedagio",
-        f"https://dados.antt.gov.br/dataset/{DATASET_PRACAS_SLUG}",
+        source_urls[0]
+        if source_urls
+        else f"https://dados.antt.gov.br/dataset/{DATASET_PRACAS_SLUG}",
         "httpx",
         fetch_ms,
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        schema_version="1.0.1",
+        raw_content_hash=hashlib.sha256(raw).hexdigest(),
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    meta.dataset = "antt_pedagio_pracas"
+    meta.contract_version = "1.0.1"
+    meta.data_sources = ["antt_pedagio"]
+    meta.raw_content_size = len(raw)
+    result = _pracas_polars(df) if as_polars else df
+    return (result, meta) if return_meta else result

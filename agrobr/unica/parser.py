@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import calendar
 import io
 import re
 from typing import Any, NamedTuple
@@ -10,6 +11,7 @@ import structlog
 
 from agrobr.exceptions import ParseError
 from agrobr.normalize.regions import normalizar_uf, remover_acentos
+from agrobr.utils import io as io_utils
 
 from . import models
 
@@ -19,8 +21,14 @@ SAFRA_CAPA_RE = re.compile(r"S\s*AFRA\s+(\d{4}/\d{4})", re.IGNORECASE)
 POSICAO_RE = re.compile(r"Posi[çc][ãa]o\s+at[ée]\s+(\d{2}/\d{2}/\d{4})", re.IGNORECASE)
 TABELA_TITULO_RE = re.compile(r"Tabela\s+(\d+)\.")
 QUINZENA_LINE_RE = re.compile(r"^(\d{2}/\d{2})(?:\s+(.*))?$")
-PRIMEIRO_NUMERO_RE = re.compile(r"-?\d[\d.,]*%?")
+AUSENTE = frozenset({"n/d", "nd", "-", "–", "—"})
 UNIDADE_XLSX_RE = re.compile(r"Unidade:\s*(.+)", re.IGNORECASE)
+_DATA_TITULO = r"(\d{1,2})o? de ([a-z]+) de (\d{4})"
+ACUMULADA_RE = re.compile(rf"ACUMULADA entre {_DATA_TITULO} ate {_DATA_TITULO}", re.IGNORECASE)
+MENSAL_RE = re.compile(r"MENSAL referente a ([a-z]+) de (\d{4})", re.IGNORECASE)
+QUINZENAL_RE = re.compile(
+    r"QUINZENAL referente a ([12])a quinzena de ([a-z]+) de (\d{4})", re.IGNORECASE
+)
 
 
 class ParsedQuinzenal(NamedTuple):
@@ -76,13 +84,23 @@ def _token_to_float(token: str) -> float | None:
     return float(raw.replace(".", "").replace(",", "."))
 
 
-def _split_label_e_tokens(line: str) -> tuple[str, list[float | None]]:
-    match = PRIMEIRO_NUMERO_RE.search(line)
-    if not match:
-        return line.strip(), []
-    label = line[: match.start()].strip()
-    tokens = line[match.start() :].split()
-    return label, [_token_to_float(t) for t in tokens]
+def _e_valor(token: str) -> bool:
+    return token.lower() in AUSENTE or _token_to_float(token) is not None
+
+
+def _split_label_e_tokens(line: str) -> tuple[str, list[str]]:
+    partes = line.split()
+    inicio = next((i for i, parte in enumerate(partes) if _e_valor(parte)), len(partes))
+    return " ".join(partes[:inicio]), partes[inicio:]
+
+
+def _valor(token: str, contexto: str, line: str) -> float | None:
+    if token.lower() in AUSENTE:
+        return None
+    valor = _token_to_float(token)
+    if valor is None:
+        raise _parse_error(f"{contexto}: valor não numérico '{token}'", line)
+    return valor
 
 
 def _quinzena_to_date(quinzena: str, safra: str) -> pd.Timestamp:
@@ -133,36 +151,65 @@ def _localizar_tabelas(textos: list[str]) -> dict[int, str]:
     return paginas
 
 
+def _data_do_titulo(dia: str, mes: str, ano: str) -> pd.Timestamp:
+    return pd.Timestamp(year=int(ano), month=models.MESES[mes.lower()], day=int(dia))
+
+
+def _periodo_do_titulo(titulo: str) -> tuple[str, pd.Timestamp, pd.Timestamp]:
+    texto = remover_acentos(titulo)
+    if match := ACUMULADA_RE.search(texto):
+        dia1, mes1, ano1, dia2, mes2, ano2 = match.groups()
+        return "acumulado", _data_do_titulo(dia1, mes1, ano1), _data_do_titulo(dia2, mes2, ano2)
+    if match := MENSAL_RE.search(texto):
+        ano, mes = int(match.group(2)), models.MESES[match.group(1).lower()]
+        ultimo = calendar.monthrange(ano, mes)[1]
+        return (
+            "mensal",
+            pd.Timestamp(year=ano, month=mes, day=1),
+            pd.Timestamp(year=ano, month=mes, day=ultimo),
+        )
+    if match := QUINZENAL_RE.search(texto):
+        ano, mes = int(match.group(3)), models.MESES[match.group(2).lower()]
+        inicio, fim = (1, 15) if match.group(1) == "1" else (16, calendar.monthrange(ano, mes)[1])
+        return (
+            "quinzena",
+            pd.Timestamp(year=ano, month=mes, day=inicio),
+            pd.Timestamp(year=ano, month=mes, day=fim),
+        )
+    raise _parse_error(f"Título de período não reconhecido nas Tabelas 1-2: {titulo!r}", titulo)
+
+
 def _parse_resumo(paginas: dict[int, str], safra: str) -> pd.DataFrame:
     registros: list[dict[str, Any]] = []
     texto = paginas[1]
-    periodo: str | None = None
+    periodo: tuple[str, pd.Timestamp, pd.Timestamp] | None = None
 
     for line in texto.split("\n"):
         titulo = TABELA_TITULO_RE.match(line.strip())
         if titulo:
-            num = int(titulo.group(1))
-            periodo = {1: "acumulado", 2: "quinzena"}.get(num)
+            periodo = _periodo_do_titulo(line) if int(titulo.group(1)) in (1, 2) else None
             continue
         if periodo is None:
             continue
 
-        label, tokens = _split_label_e_tokens(line)
+        label, brutos = _split_label_e_tokens(line)
         label_norm = _normalizar_label(label)
-        if not label_norm or not tokens:
+        if not label_norm or not brutos:
             continue
 
         valores: list[tuple[float | None, float | None, float | None]]
-        if len(tokens) == 6 and label_norm in models.MIX_LABELS:
+        if len(brutos) == 6 and label_norm in models.MIX_LABELS:
             produto = models.MIX_LABELS[label_norm]
             unidade = "pct"
+            tokens = [_valor(bruto, "Resumo", line) for bruto in brutos]
             valores = [
                 (tokens[0], tokens[1], None),
                 (tokens[2], tokens[3], None),
                 (tokens[4], tokens[5], None),
             ]
-        elif len(tokens) == 9 and label_norm in models.RESUMO_LABELS:
+        elif len(brutos) == 9 and label_norm in models.RESUMO_LABELS:
             produto, unidade = models.RESUMO_LABELS[label_norm]
+            tokens = [_valor(bruto, "Resumo", line) for bruto in brutos]
             valores = [
                 (tokens[0], tokens[1], tokens[2]),
                 (tokens[3], tokens[4], tokens[5]),
@@ -174,17 +221,14 @@ def _parse_resumo(paginas: dict[int, str], safra: str) -> pd.DataFrame:
         for regiao, (anterior, atual, variacao) in zip(
             ["centro_sul", "sao_paulo", "demais_estados"], valores, strict=True
         ):
-            if atual is None or anterior is None:
-                raise _parse_error(
-                    f"Resumo: '{label_norm}' ({regiao}) com valor não numérico",
-                    line,
-                )
             registros.append(
                 {
                     "produto": produto,
                     "regiao": regiao,
                     "safra": safra,
-                    "periodo": periodo,
+                    "periodo": periodo[0],
+                    "data_inicio": periodo[1],
+                    "data_fim": periodo[2],
                     "valor": atual,
                     "valor_safra_anterior": anterior,
                     "variacao_pct": variacao,
@@ -214,20 +258,13 @@ def _parse_series(paginas: dict[int, str], safra: str) -> pd.DataFrame:
                 continue
             quinzena = match.group(1)
             resto = match.group(2) or ""
-            tokens = [_token_to_float(t) for t in resto.split()]
-            if not tokens:
+            brutos = resto.split()
+            if not brutos:
                 continue
-            if len(tokens) != 9:
-                raise _parse_error(
-                    f"Tabela {numero_tabela}: quinzena {quinzena} com {len(tokens)} "
-                    f"valores (esperado 9)",
-                    line,
-                )
-            if any(t is None for t in tokens):
-                raise _parse_error(
-                    f"Tabela {numero_tabela}: quinzena {quinzena} com token não numérico",
-                    line,
-                )
+            contexto = f"Tabela {numero_tabela}: quinzena {quinzena}"
+            if len(brutos) != 9:
+                raise _parse_error(f"{contexto} com {len(brutos)} valores (esperado 9)", line)
+            tokens = [_valor(bruto, contexto, line) for bruto in brutos]
 
             for regiao, offset in zip(models.REGIOES_QUINZENAL, [0, 3, 6], strict=True):
                 registros.append(
@@ -252,11 +289,11 @@ def _parse_series(paginas: dict[int, str], safra: str) -> pd.DataFrame:
 
 
 def _validate_resumo(df: pd.DataFrame) -> None:
-    produtos = set(df["produto"])
     obrigatorios = {"cana", "acucar", "etanol_total", "mix_acucar", "mix_etanol"}
-    faltantes = obrigatorios - produtos
-    if faltantes:
-        raise _parse_error(f"Produtos ausentes no resumo: {sorted(faltantes)}")
+    for periodo, produtos in df.groupby("periodo")["produto"]:
+        faltantes = obrigatorios - set(produtos)
+        if faltantes:
+            raise _parse_error(f"Produtos ausentes no resumo ({periodo}): {sorted(faltantes)}")
 
     mix = df[df["produto"].isin(["mix_acucar", "mix_etanol"])]["valor"].dropna()
     if not mix.between(0, 100).all():
@@ -281,6 +318,7 @@ def _validate_series(df: pd.DataFrame) -> None:
 
 
 def parse_historico_xlsx(content: bytes, produto: str) -> pd.DataFrame:
+    io_utils.check_xlsx_expansion(content, source="unica")
     workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=True, read_only=True)
     rows = [list(row) for row in workbook.active.iter_rows(values_only=True)]
     workbook.close()

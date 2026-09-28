@@ -1,20 +1,31 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import io
 import os
+import re
+import time
+import weakref
 import zipfile
-from datetime import date, timedelta
+import zlib
+from collections import OrderedDict
+from dataclasses import dataclass, replace
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 import httpx
 import structlog
 
+from agrobr import constants
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ParseError, ResourceLimitError, SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+
+from . import models, parser, transport
 
 logger = structlog.get_logger()
 
@@ -51,7 +62,7 @@ async def _get_json(
 
     async def _do_request(c: httpx.AsyncClient) -> list[dict[str, Any]]:
         response = await retry_on_status(
-            lambda: c.get(url),
+            lambda: transport.get(c, url, public_url=public_url, token=token),
             source="inmet",
         )
 
@@ -69,20 +80,24 @@ async def _get_json(
             return []
 
         try:
-            response.raise_for_status()
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 403:
+            responses.raise_for_status(response, source="inmet")
+        except SourceUnavailableError as e:
+            if response.status_code == 403:
                 raise SourceUnavailableError(
                     source="inmet",
                     url=public_url,
                     last_error="HTTP 403 Forbidden — defina AGROBR_INMET_TOKEN",
-                ) from e
+                ) from e.__cause__
             raise
 
         try:
             data = response.json()
         except ValueError as e:
-            body = response.text[:200]
+            body = response.text
+            if token:
+                body = transport.redact_token(body, token)
+                transport.sanitize_parse_error(e, token)
+            body = body[:200]
             last_error = (
                 "Token INMET inválido (AGROBR_INMET_TOKEN)"
                 if "CHAVE" in body.upper()
@@ -121,8 +136,8 @@ async def fetch_dados_estacao(
     *,
     http: httpx.AsyncClient | None = None,
 ) -> list[dict[str, Any]]:
-    if inicio > fim:
-        raise ValueError(f"inicio ({inicio}) deve ser <= fim ({fim})")
+    codigo = models.validate_codigo(codigo)
+    inicio, fim = models.validate_periodo(inicio, fim)
 
     logger.info(
         "inmet_fetch_dados",
@@ -134,18 +149,16 @@ async def fetch_dados_estacao(
     async def _run(c: httpx.AsyncClient | None) -> list[dict[str, Any]]:
         all_data: list[dict[str, Any]] = []
         chunk_start = inicio
-        chunks = 0
-        failed = 0
         last_error: SourceUnavailableError | None = None
 
         while chunk_start <= fim:
             chunk_end = min(chunk_start + timedelta(days=MAX_DAYS_PER_REQUEST - 1), fim)
 
             path = f"/estacao/{chunk_start.isoformat()}/{chunk_end.isoformat()}/{codigo}"
-            chunks += 1
 
             try:
                 chunk_data = await _get_json(path, http=c, requires_token=True)
+                parser.validate_observation_scope(chunk_data, chunk_start, chunk_end, codigo=codigo)
                 all_data.extend(chunk_data)
                 logger.debug(
                     "inmet_chunk_ok",
@@ -155,7 +168,6 @@ async def fetch_dados_estacao(
                     records=len(chunk_data),
                 )
             except SourceUnavailableError as e:
-                failed += 1
                 last_error = e
                 logger.warning(
                     "inmet_chunk_unavailable",
@@ -166,7 +178,7 @@ async def fetch_dados_estacao(
 
             chunk_start = chunk_end + timedelta(days=1)
 
-        if failed == chunks and last_error is not None:
+        if last_error is not None:
             raise last_error
         return all_data
 
@@ -178,76 +190,166 @@ async def fetch_dados_estacao(
         return await _run(c)
 
 
-HISTORICO_MIN_ANO = 2000
+HISTORICO_MIN_ANO = constants.INMET_HISTORICO_MIN_ANO
 
 HISTORICO_TIMEOUT = get_timeout(read=600.0)
 
 MIN_HISTORICO_ZIP = 100_000
 
-_historico_zip_cache: tuple[int, bytes] | None = None
+
+@dataclass(frozen=True)
+class HistoricoArquivo:
+    ano: int
+    content: bytes
+    url: str
+    sha256: str
+    fetched_at: datetime
+    expires_at: float
+    from_cache: bool = False
 
 
-async def fetch_historico_estacao(codigo: str, ano: int) -> tuple[bytes, str]:
-    """Baixa o ZIP anual do dadoshistoricos (~100 MB, todas as estações; cache
-    de 1 ano por processo) e extrai apenas o CSV da estação pedida. Fonte
-    pública sem token — alternativa ao apitempo para dados históricos."""
+_historico_zip_cache: OrderedDict[int, HistoricoArquivo] | None = None
+_historico_locks: weakref.WeakKeyDictionary[Any, dict[int, asyncio.Lock]] = (
+    weakref.WeakKeyDictionary()
+)
+
+
+def _cache_historico(archive: HistoricoArquivo) -> None:
     global _historico_zip_cache
-    if ano < HISTORICO_MIN_ANO:
-        raise ValueError(f"Ano {ano} fora do dadoshistoricos (disponível de {HISTORICO_MIN_ANO}+)")
+    if _historico_zip_cache is None:
+        _historico_zip_cache = OrderedDict()
+    if len(archive.content) > constants.INMET_HISTORICO_CACHE_MAX_BYTES:
+        return
+    _historico_zip_cache[archive.ano] = archive
+    _historico_zip_cache.move_to_end(archive.ano)
+    while (
+        sum(len(item.content) for item in _historico_zip_cache.values())
+        > constants.INMET_HISTORICO_CACHE_MAX_BYTES
+    ):
+        _historico_zip_cache.popitem(last=False)
 
-    url = f"{URLS[Fonte.INMET]['dadoshistoricos']}/{ano}.zip"
 
-    if _historico_zip_cache is not None and _historico_zip_cache[0] == ano:
-        logger.debug("inmet_historico_cache_hit", ano=ano)
-        zip_bytes = _historico_zip_cache[1]
-    else:
-        logger.info("inmet_historico_request", url=url, ano=ano)
+def invalidate_historico(ano: int) -> None:
+    if _historico_zip_cache is not None:
+        _historico_zip_cache.pop(ano, None)
+
+
+async def fetch_historico_arquivo(ano: int) -> HistoricoArquivo:
+    models.validate_ano(ano)
+    loop_locks = _historico_locks.setdefault(asyncio.get_running_loop(), {})
+    async with loop_locks.setdefault(ano, asyncio.Lock()):
+        if _historico_zip_cache is not None and ano in _historico_zip_cache:
+            cached = _historico_zip_cache[ano]
+            if time.monotonic() < cached.expires_at:
+                _historico_zip_cache.move_to_end(ano)
+                return replace(cached, from_cache=True)
+            invalidate_historico(ano)
+        url = f"{URLS[Fonte.INMET]['dadoshistoricos']}/{ano}.zip"
         headers = UserAgentRotator.get_headers(source="inmet")
         async with httpx.AsyncClient(
             timeout=HISTORICO_TIMEOUT, headers=headers, follow_redirects=True
-        ) as c:
-            response = await retry_on_status(lambda: c.get(url), source="inmet")
+        ) as http:
+            response = await retry_on_status(lambda: http.get(url), source="inmet")
             if response.status_code == 404:
                 raise SourceUnavailableError(
                     source="inmet",
                     url=url,
-                    last_error=f"Ano {ano} indisponível no dadoshistoricos",
+                    last_error=f"HTTP 404: ano {ano} indisponível no dadoshistoricos",
                 )
-            response.raise_for_status()
-            zip_bytes = response.content
-
-        if not zipfile.is_zipfile(io.BytesIO(zip_bytes)):
+            responses.raise_for_status(response, source="inmet")
+            content = response.content
+        if not zipfile.is_zipfile(io.BytesIO(content)):
+            raise SourceUnavailableError(
+                source="inmet", url=url, last_error="Resposta não é um ZIP válido"
+            )
+        if len(content) < MIN_HISTORICO_ZIP:
             raise SourceUnavailableError(
                 source="inmet",
                 url=url,
-                last_error="Resposta não é um ZIP válido",
+                last_error=f"ZIP anual com {len(content)} bytes — possível truncamento",
             )
-        if len(zip_bytes) < MIN_HISTORICO_ZIP:
-            raise SourceUnavailableError(
-                source="inmet",
-                url=url,
-                last_error=f"ZIP anual com {len(zip_bytes)} bytes — possível truncamento",
-            )
-        _historico_zip_cache = (ano, zip_bytes)
-        logger.info("inmet_historico_zip_ok", ano=ano, bytes=len(zip_bytes))
+        ttl = (
+            constants.INMET_HISTORICO_CACHE_CURRENT_TTL
+            if ano == date.today().year
+            else constants.INMET_HISTORICO_CACHE_CLOSED_TTL
+        )
+        archive = HistoricoArquivo(
+            ano,
+            content,
+            url,
+            hashlib.sha256(content).hexdigest(),
+            datetime.now(UTC),
+            time.monotonic() + ttl,
+        )
+        _cache_historico(archive)
+        return archive
 
-    alvo = codigo.strip().upper()
+
+def historico_membros(
+    archive: HistoricoArquivo, *, codigo: str | None = None, uf: str | None = None
+) -> list[tuple[str, str, str, bytes]]:
+    selected: list[tuple[str, str, str, bytes]] = []
     try:
-        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
-            membros = [n for n in zf.namelist() if f"_{alvo}_" in n.upper()]
-            if not membros:
-                raise SourceUnavailableError(
-                    source="inmet",
-                    url=url,
-                    last_error=f"Estação {alvo} sem dados no ano {ano}",
+        with zipfile.ZipFile(io.BytesIO(archive.content)) as zipped:
+            entries = [
+                info
+                for info in zipped.infolist()
+                if not info.is_dir() and info.filename.lower().endswith(".csv")
+            ]
+            if not entries or len({info.filename for info in entries}) != len(entries):
+                raise ParseError(
+                    source="inmet", parser_version=2, reason="ZIP sem CSVs ou com nomes duplicados"
                 )
-            return zf.read(membros[0]), url
-    except zipfile.BadZipFile as e:
-        raise SourceUnavailableError(
-            source="inmet",
-            url=url,
-            last_error=f"Resposta não é um ZIP válido: {e}",
-        ) from e
+            members: list[tuple[zipfile.ZipInfo, str, str]] = []
+            for info in sorted(entries, key=lambda entry: entry.filename):
+                name = info.filename.replace("\\", "/").rsplit("/", 1)[-1]
+                match = re.match(r"INMET_[A-Z]+_([A-Z]{2})_([A-Z0-9]{4,8})_", name.upper())
+                if match is None:
+                    raise ParseError(
+                        source="inmet",
+                        parser_version=2,
+                        reason=f"Membro histórico não reconhecido: {info.filename}",
+                    )
+                member_uf, member_code = match.groups()
+                if (codigo is None or codigo == member_code) and (uf is None or uf == member_uf):
+                    members.append((info, member_code, member_uf))
+            if (
+                any(
+                    info.file_size > constants.INMET_HISTORICO_MAX_MEMBER_BYTES
+                    for info, _, _ in members
+                )
+                or sum(info.file_size for info, _, _ in members)
+                > constants.INMET_HISTORICO_MAX_EXPANDED_BYTES
+            ):
+                raise ResourceLimitError(
+                    "inmet",
+                    "Expansão dos CSVs históricos selecionados excede o orçamento",
+                    url=archive.url,
+                )
+            for info, member_code, member_uf in members:
+                with zipped.open(info) as member:
+                    content = member.read(constants.INMET_HISTORICO_MAX_MEMBER_BYTES + 1)
+                if len(content) > constants.INMET_HISTORICO_MAX_MEMBER_BYTES:
+                    raise ResourceLimitError(
+                        "inmet", "CSV histórico excede o orçamento", url=archive.url
+                    )
+                selected.append((info.filename, member_code, member_uf, content))
+    except (
+        zipfile.BadZipFile,
+        RuntimeError,
+        NotImplementedError,
+        OSError,
+        EOFError,
+        zlib.error,
+    ) as exc:
+        invalidate_historico(archive.ano)
+        raise ParseError(
+            source="inmet", parser_version=2, reason=f"ZIP/CRC inválido: {exc}"
+        ) from exc
+    except (ParseError, ResourceLimitError):
+        invalidate_historico(archive.ano)
+        raise
+    return selected
 
 
 async def fetch_dados_estacoes_uf(
@@ -299,15 +401,14 @@ async def fetch_dados_estacoes_uf(
                 except SourceUnavailableError:
                     raise
                 except (httpx.HTTPError, httpx.TimeoutException) as e:
-                    logger.warning(
-                        "inmet_station_error",
-                        estacao=codigo,
-                        error=str(e),
-                    )
-                    return []
+                    raise SourceUnavailableError(
+                        source="inmet",
+                        url=f"{BASE_URL}/estacao/{inicio}/{fim}/{codigo}",
+                        last_error=f"Falha HTTP na estação {codigo}: {e}",
+                    ) from e
 
         tasks: list[asyncio.Task[list[dict[str, Any]]]] = []
-        source_error: SourceUnavailableError | None = None
+        source_error: SourceUnavailableError | ParseError | None = None
         try:
             async with asyncio.TaskGroup() as task_group:
                 tasks = [
@@ -319,6 +420,10 @@ async def fetch_dados_estacoes_uf(
                 error
                 for error in error_group.exceptions
                 if isinstance(error, SourceUnavailableError)
+            )
+        except* ParseError as parse_group:
+            source_error = next(
+                error for error in parse_group.exceptions if isinstance(error, ParseError)
             )
 
         if source_error is not None:

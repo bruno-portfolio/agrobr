@@ -30,8 +30,8 @@ with server-side filters (CQL_FILTER) and transparent pagination.
 |-------|------|-----------|
 | cod_imovel | string | Unique property code (UF-IBGE-hash) |
 | status | string | AT (Active), PE (Pending), SU (Suspended), CA (Cancelled) |
-| data_criacao | datetime | Registration creation date |
-| data_atualizacao | datetime | Last update (nullable) |
+| data_criacao | datetime UTC | Instant of record creation |
+| data_atualizacao | datetime UTC | Last update (nullable) |
 | area_ha | float | Total area in hectares |
 | condicao | string | Registration condition (nullable) |
 | uf | string | State abbreviation |
@@ -42,18 +42,50 @@ with server-side filters (CQL_FILTER) and transparent pagination.
 
 ## Notes
 
+- **Tabular format 2.0:** `imoveis()` uses GeoJSON attributes only, without geometry or
+  GeoPandas. Dates are UTC, including null columns and empty results. Official CSV clocks
+  lacked a timezone and differed from the UTC instants in JSON and CQL cutoffs; no fixed
+  offset is applied to convert old CSV captures
 - **Incremental update:** `imoveis()`, `imoveis_geo()` and `imoveis_geo_stream()` accept
   `atualizado_apos` (CQL `data_atualizacao>'...'`, ISO date or datetime) to fetch only
-  records updated after a given date. The filter is applied server-side only: the
-  `data_atualizacao` column is not returned by the WFS (it comes back empty in the result).
-  Unavailable in SP, RS, PR, SC, RJ and TO — the `data_atualizacao` field does not exist
-  in those state WFS layers
+  records updated after a given date. The column is requested in the 15 layers that provide it.
+  The field does not exist in PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP or TO: the filter
+  raises before network access in these states, and the column remains null in queries without
+  that filter. Coverage was checked using `DescribeFeatureType` for all 27 layers on 2026-09-06
+- **Current state:** creation (`>=`) and update (`>`) filters select records available at query
+  time. They do not retrieve previous revisions or deletions. The `cadastro_rural` dataset also
+  accepts municipality-code and update filters, and rejects `deterministic`
 - **Geometry available:** `imoveis_geo()` returns a `GeoDataFrame` with MultiPolygon polygons
-  (EPSG:4326) via WFS GeoJSON. Requires `pip install agrobr[geo]`. Max 5,000 features per request
-- **Transparent pagination:** large queries are paginated automatically (10,000 records per page)
+  (EPSG:4326) via WFS GeoJSON. Requires `pip install agrobr[geo]`. The default result limit is
+  5,000 features; `max_features` above 10,000 or `None` uses pagination. A cut result warns
+  (`validation_warnings`, `UserWarning` and `source_details["sicar"]["truncado"]`). All 27 layers declare
+  SIRGAS 2000 (`DefaultCRS` EPSG:4674, checked on 2026-09-22); agrobr requests `srsName=EPSG:4326`
+  and rejects with `ParseError` any page with features that declares another CRS
+- **Filter precision:** `atualizado_apos` accepts milliseconds with optional additional zeros.
+  `.212000` is sent as `.212`; submillisecond values raise without rounding
+- **Pagination:** large queries use 10,000-record pages sorted by `cod_imovel` in both
+  tabular and geospatial paths. The source advertises `PagingIsTransactionSafe=FALSE`:
+  sorting fixes the record order but does not guarantee a snapshot across pages during
+  concurrent updates
+- **Counts during tabular pagination:** changes in `numberMatched` produce a warning log and
+  `MetaInfo.validation_warnings` (with `return_meta=True`). The largest observed total
+  determines how many pages to request; the final number of unique feature IDs must match the last
+  announced count. Repeated feature IDs or a final mismatch raise `ParseError` with instructions to
+  repeat the query. There is no automatic retry or guarantee of snapshot completeness;
+  warnings are also preserved in `cadastro_rural` and municipality summaries
+- **Repeated occurrences:** after the scan, `imoveis()`, municipality summaries, `imoveis_geo()`
+  and `imoveis_geo_stream()` select one occurrence per `cod_imovel`. The comparison field is chosen for the whole group: update if
+  available for every occurrence; otherwise creation if available for every occurrence; otherwise
+  the highest numeric feature-ID suffix. Date ties use the same ID rule. The 12 states without
+  updates are listed above. `cadastro_rural` keeps contract 2.0, its key and eleven columns.
+  Warnings and `source_details["sicar"]` record feature counts, collapsed codes, discarded
+  occurrences and criteria. The discard list contains up to 1,000 items and flags truncation.
+  See the [selection rule and provenance fields](../contracts/cadastro_rural.en.md#multiple-occurrences-and-provenance)
+- **No cache:** every call queries the CAR GeoServer; repeating the query downloads everything again
 - **Extended timeout:** 180s read timeout for states with many records (BA, MG, MT)
 - **SSL:** the CAR GeoServer uses a legacy cipher suite that rejects the standard TLS handshake.
-  The client uses a custom SSLContext with `@SECLEVEL=1` to enable compatible ciphers.
+  The client uses an `SSLContext` with `@SECLEVEL=1` while retaining certificate and hostname
+  verification. Certificate trust failures do not activate an unverified fallback
 - **EUDR relevance:** data essential for compliance with the EU Deforestation Regulation
 
 ## License
@@ -66,3 +98,28 @@ License: **CC-BY** — free use with attribution to the source.
 - [Portal CAR](https://www.car.gov.br)
 - [SICAR Consulta Publica](https://www.car.gov.br/publico/imoveis/index)
 - [Dados Abertos SFB](https://www.gov.br/agricultura/pt-br/assuntos/servico-florestal-brasileiro)
+
+## Tabular reconciliation on 2026-09-18
+
+Six preserved queries cover DF, MT, SP, GO and RS, comparing every row and all
+eleven columns with independent readings of the GeoJSON bodies. The complete
+DF query contains 21,006 features across three pages, including 513 null update
+timestamps. An MT query preserves a zero fiscal-module value; SP and RS
+illustrate layers without the update field. The six queries contain 21,183
+record occurrences, with overlap between the two DF selections.
+
+The 27 state XSDs inventory properties, types and nullability, explicitly
+excluding geometry from this tabular variant. Two complete historical GO/RS
+pages of 10,000 features each check version selection by update and creation:
+each page yields 9,999 properties. These supplements exercise the parser;
+they are neither complete historical populations nor complete HTTP replays
+of those populations.
+
+Matching counts do not guarantee a transactional snapshot. Capture hashes,
+sizes, URLs and timestamps are retained in the receipts and reconciliation
+manifest; with several pages, `MetaInfo` carries each one in `source_details["resources"]` (SHA-256
+and bytes) and, at the top, the hash of the `{query, resources}` manifest (`hash_kind`
+`resource_manifest_sha256`). The
+`python -m scripts.reconciliar_sicar --output result.json` comparator checks
+preserved local bodies. It neither fetches new network data nor compares
+independent sources.

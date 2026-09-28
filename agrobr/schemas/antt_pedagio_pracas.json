@@ -1,7 +1,7 @@
 {
   "name": "antt_pedagio.pracas",
-  "schema_version": "1.0",
-  "effective_from": "0.12.0",
+  "schema_version": "1.0.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "concessionaria",
@@ -9,7 +9,14 @@
   ],
   "required_columns": [
     "concessionaria",
-    "praca_de_pedagio"
+    "praca_de_pedagio",
+    "rodovia",
+    "uf",
+    "km_m",
+    "municipio",
+    "lat",
+    "lon",
+    "situacao"
   ],
   "dtypes": {
     "concessionaria": "str",

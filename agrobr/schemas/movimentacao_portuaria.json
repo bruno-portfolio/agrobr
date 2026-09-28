@@ -13,7 +13,26 @@
   ],
   "required_columns": [
     "ano",
-    "mes"
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
   ],
   "dtypes": {
     "ano": "int",

@@ -1,0 +1,208 @@
+{
+  "name": "comparacao_anual_anec",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "edicao_id",
+    "revisado_em",
+    "ano_base",
+    "ano_comparacao",
+    "mes",
+    "produto"
+  ],
+  "required_columns": [
+    "mes",
+    "produto",
+    "ano_base",
+    "ano_comparacao",
+    "valor_base_ton",
+    "valor_comparacao_ton",
+    "eh_estimativa",
+    "ano_relatorio",
+    "semana_relatorio",
+    "edicao_id",
+    "publicado_em",
+    "revisado_em"
+  ],
+  "dtypes": {
+    "mes": "int",
+    "produto": "str",
+    "ano_base": "int",
+    "ano_comparacao": "int",
+    "valor_base_ton": "float",
+    "valor_comparacao_ton": "float",
+    "eh_estimativa": "bool",
+    "ano_relatorio": "int",
+    "semana_relatorio": "int",
+    "edicao_id": "str",
+    "publicado_em": "datetime",
+    "revisado_em": "datetime"
+  },
+  "nullable": {
+    "mes": false,
+    "produto": false,
+    "ano_base": false,
+    "ano_comparacao": false,
+    "valor_base_ton": true,
+    "valor_comparacao_ton": true,
+    "eh_estimativa": false,
+    "ano_relatorio": false,
+    "semana_relatorio": false,
+    "edicao_id": false,
+    "publicado_em": false,
+    "revisado_em": false
+  },
+  "columns": [
+    {
+      "name": "mes",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ano_base",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1900,
+      "max_value": null
+    },
+    {
+      "name": "ano_comparacao",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1900,
+      "max_value": null
+    },
+    {
+      "name": "valor_base_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_comparacao_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "eh_estimativa",
+      "type": "bool",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ano_relatorio",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 2026,
+      "max_value": null
+    },
+    {
+      "name": "semana_relatorio",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 53
+    },
+    {
+      "name": "edicao_id",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "publicado_em",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "revisado_em",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "mes_min": 1,
+    "mes_max": 12,
+    "ano_base_min": 1900,
+    "ano_comparacao_min": 1900,
+    "valor_base_ton_min": 0,
+    "valor_comparacao_ton_min": 0,
+    "ano_relatorio_min": 2026,
+    "semana_relatorio_min": 1,
+    "semana_relatorio_max": 53
+  },
+  "guarantees": [
+    "Anos das duas séries explícitos; valores em toneladas",
+    "eh_estimativa aplica-se ao ano_comparacao",
+    "total_products preserva o agregado publicado separadamente dos produtos",
+    "Uma observação por edição, atualização, par de anos, mês e produto"
+  ]
+}

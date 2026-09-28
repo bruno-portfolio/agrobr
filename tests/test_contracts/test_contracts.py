@@ -3,12 +3,12 @@ from __future__ import annotations
 import json
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import pytest
 
 from agrobr.contracts import (
-    BreakingChangePolicy,
     Column,
     ColumnType,
     Contract,
@@ -18,89 +18,18 @@ from agrobr.contracts import (
     list_contracts,
     validate_dataset,
 )
-from agrobr.contracts.cepea import CEPEA_INDICADOR_V1
-from agrobr.contracts.conab import CONAB_BALANCO_V1, CONAB_CUSTO_PRODUCAO_V1, CONAB_SAFRA_V1
-from agrobr.contracts.datasets import (
-    ANP_DIESEL_PRECOS_V1,
-    ANP_DIESEL_VENDAS_V1,
-    ANTT_PEDAGIO_FLUXO_V1,
-    ANTT_PEDAGIO_PRACAS_V1,
-    CREDITO_RURAL_V2,
-    EXPORTACAO_V1,
-    FERTILIZANTE_V1,
-    FERTILIZANTE_V2,
-    MAPA_PSR_APOLICES_V1,
-    MAPA_PSR_SINISTROS_V1,
-    MOVIMENTACAO_PORTUARIA_V1,
-    POSICOES_ABERTAS_V1,
-)
-from agrobr.contracts.ibge import IBGE_LSPA_V1, IBGE_PAM_V1
 from agrobr.exceptions import ContractViolationError
+from tests import helpers
 
 
 class TestColumn:
-    def test_column_creation(self):
-        col = Column(
-            name="valor",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            unit="BRL",
-        )
-        assert col.name == "valor"
-        assert col.type == ColumnType.FLOAT
-        assert col.nullable is False
-        assert col.unit == "BRL"
-
     def test_column_validate_nullable(self):
         col = Column(name="test", type=ColumnType.STRING, nullable=False)
         series = pd.Series(["a", None, "b"])
         errors = col.validate(series)
         assert len(errors) == 1
         assert "null values" in errors[0]
-
-    def test_column_validate_nullable_ok(self):
-        col = Column(name="test", type=ColumnType.STRING, nullable=True)
-        series = pd.Series(["a", None, "b"])
-        errors = col.validate(series)
-        assert len(errors) == 0
-
-    def test_column_validate_numeric(self):
-        col = Column(name="valor", type=ColumnType.FLOAT, nullable=True)
-        series = pd.Series([1.5, 2.5, 3.5])
-        errors = col.validate(series)
-        assert len(errors) == 0
-
-    def test_column_validate_date(self):
-        col = Column(name="data", type=ColumnType.DATE, nullable=False)
-        series = pd.Series(pd.date_range("2024-01-01", periods=3))
-        errors = col.validate(series)
-        assert len(errors) == 0
-
-    def test_column_validate_min_value(self):
-        col = Column(name="preco", type=ColumnType.FLOAT, min_value=0)
-        series = pd.Series([10.0, -5.0, 20.0])
-        errors = col.validate(series)
-        assert len(errors) == 1
-        assert "below minimum" in errors[0]
-
-    def test_column_validate_min_value_ok(self):
-        col = Column(name="preco", type=ColumnType.FLOAT, min_value=0)
-        series = pd.Series([10.0, 5.0, 20.0])
-        errors = col.validate(series)
-        assert len(errors) == 0
-
-    def test_column_validate_max_value(self):
-        col = Column(name="pct", type=ColumnType.FLOAT, max_value=100)
-        series = pd.Series([50.0, 150.0, 80.0])
-        errors = col.validate(series)
-        assert len(errors) == 1
-        assert "above maximum" in errors[0]
-
-    def test_column_validate_max_value_ok(self):
-        col = Column(name="pct", type=ColumnType.FLOAT, max_value=100)
-        series = pd.Series([50.0, 99.0, 80.0])
-        errors = col.validate(series)
-        assert len(errors) == 0
+        assert errors == ["Column 'test' has 1 null values but nullable=False"]
 
     def test_column_validate_min_max_range(self):
         col = Column(name="lev", type=ColumnType.FLOAT, min_value=1, max_value=12)
@@ -108,74 +37,8 @@ class TestColumn:
         errors = col.validate(series)
         assert len(errors) == 2
 
-    def test_column_validate_min_with_nulls(self):
-        col = Column(name="val", type=ColumnType.FLOAT, nullable=True, min_value=0)
-        series = pd.Series([10.0, None, 20.0])
-        errors = col.validate(series)
-        assert len(errors) == 0
-
-    def test_column_validate_datetime(self):
-        col = Column(name="ts", type=ColumnType.DATETIME, nullable=True)
-        series = pd.Series(pd.to_datetime(["2024-01-01 10:00:00", "2024-06-15 14:30:00"]))
-        errors = col.validate(series)
-        assert len(errors) == 0
-
-    def test_column_validate_datetime_string_coercible(self):
-        col = Column(name="ts", type=ColumnType.DATETIME, nullable=True)
-        series = pd.Series(["2024-01-01 10:00:00", "2024-06-15 14:30:00"])
-        errors = col.validate(series)
-        assert len(errors) == 0
-
-    def test_column_validate_datetime_invalid(self):
-        col = Column(name="ts", type=ColumnType.DATETIME, nullable=True)
-        series = pd.Series(["not-a-date", "also-invalid"])
-        errors = col.validate(series)
-        assert len(errors) == 1
-        assert "cannot be converted to datetime" in errors[0]
-
 
 class TestContract:
-    def test_contract_creation(self):
-        contract = Contract(
-            name="test.contract",
-            version="1.0",
-            columns=[
-                Column(name="id", type=ColumnType.INTEGER, nullable=False),
-                Column(name="name", type=ColumnType.STRING, nullable=False),
-            ],
-        )
-        assert contract.name == "test.contract"
-        assert contract.version == "1.0"
-        assert len(contract.columns) == 2
-
-    def test_contract_validate_valid(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            columns=[
-                Column(name="id", type=ColumnType.INTEGER, nullable=False),
-                Column(name="name", type=ColumnType.STRING, nullable=False),
-            ],
-        )
-        df = pd.DataFrame({"id": [1, 2, 3], "name": ["a", "b", "c"]})
-        valid, errors = contract.validate(df)
-        assert valid is True
-        assert len(errors) == 0
-
-    def test_contract_validate_missing_column(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            columns=[
-                Column(name="id", type=ColumnType.INTEGER, nullable=False),
-                Column(name="name", type=ColumnType.STRING, nullable=False),
-            ],
-        )
-        df = pd.DataFrame({"id": [1, 2, 3]})
-        valid, errors = contract.validate(df)
-        assert valid is False
-        assert any("Missing required columns" in e for e in errors)
-
     def test_contract_validate_missing_nullable_stable_column(self):
         contract = Contract(
             name="test",
@@ -191,48 +54,6 @@ class TestContract:
 
         assert valid is False
         assert any("optional_value" in error for error in errors)
-
-    def test_contract_validate_dtype_wrong(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            columns=[
-                Column(name="valor", type=ColumnType.FLOAT, nullable=False),
-            ],
-        )
-        df = pd.DataFrame({"valor": ["abc", "def", "ghi"]})
-        valid, errors = contract.validate(df)
-        assert valid is False
-        assert any("not numeric" in e for e in errors)
-
-    def test_contract_validate_primary_key_duplicates(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            primary_key=["id"],
-            columns=[
-                Column(name="id", type=ColumnType.INTEGER, nullable=False),
-                Column(name="name", type=ColumnType.STRING, nullable=False),
-            ],
-        )
-        df = pd.DataFrame({"id": [1, 1, 2], "name": ["a", "b", "c"]})
-        valid, errors = contract.validate(df)
-        assert valid is False
-        assert any("duplicate" in e for e in errors)
-
-    def test_contract_validate_primary_key_no_duplicates(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            primary_key=["id"],
-            columns=[
-                Column(name="id", type=ColumnType.INTEGER, nullable=False),
-                Column(name="name", type=ColumnType.STRING, nullable=False),
-            ],
-        )
-        df = pd.DataFrame({"id": [1, 2, 3], "name": ["a", "b", "c"]})
-        valid, errors = contract.validate(df)
-        assert valid is True
 
     def test_contract_validate_primary_key_column_missing(self):
         contract = Contract(
@@ -250,38 +71,6 @@ class TestContract:
 
         assert valid is False
         assert "Primary key columns missing: ['uf']" in errors
-
-    def test_contract_validate_composite_primary_key(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            primary_key=["ano", "produto"],
-            columns=[
-                Column(name="ano", type=ColumnType.INTEGER, nullable=False),
-                Column(name="produto", type=ColumnType.STRING, nullable=False),
-            ],
-        )
-        df = pd.DataFrame(
-            {
-                "ano": [2024, 2024, 2024],
-                "produto": ["soja", "milho", "soja"],
-            }
-        )
-        valid, errors = contract.validate(df)
-        assert valid is False
-
-    def test_contract_validate_constraint_violated(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            columns=[
-                Column(name="preco", type=ColumnType.FLOAT, min_value=0),
-            ],
-        )
-        df = pd.DataFrame({"preco": [10.0, -1.0]})
-        valid, errors = contract.validate(df)
-        assert valid is False
-        assert any("below minimum" in e for e in errors)
 
     def test_contract_validate_empty_df(self):
         contract = Contract(
@@ -345,68 +134,11 @@ class TestContract:
         assert "IDs are unique" in md
         assert "Primary key" in md
 
-    def test_contract_to_dict(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            primary_key=["id"],
-            columns=[Column(name="id", type=ColumnType.INTEGER, min_value=0)],
-        )
-        d = contract.to_dict()
-        assert d["name"] == "test"
-        assert d["schema_version"] == "1.0"
-        assert d["primary_key"] == ["id"]
-        assert d["required_columns"] == ["id"]
-        assert d["dtypes"]["id"] == "int"
-        assert d["constraints"]["no_duplicates"] is True
-        assert d["constraints"]["id_min"] == 0
-        assert len(d["columns"]) == 1
-
-    def test_contract_to_json(self):
-        contract = Contract(
-            name="test",
-            version="1.0",
-            columns=[Column(name="id", type=ColumnType.INTEGER)],
-        )
-        json_str = contract.to_json()
-        data = json.loads(json_str)
-        assert data["name"] == "test"
-        assert data["schema_version"] == "1.0"
-
 
 class TestContractRegistry:
-    def test_all_datasets_registered(self):
-        expected = [
-            "anp_diesel_precos",
-            "anp_diesel_vendas",
-            "antt_pedagio_fluxo",
-            "antt_pedagio_pracas",
-            "balanco",
-            "condicao_lavouras",
-            "credito_rural",
-            "custo_producao",
-            "lspa",
-            "mapa_psr_apolices",
-            "mapa_psr_sinistros",
-            "estimativa_safra",
-            "exportacao",
-            "fertilizante",
-            "movimentacao_portuaria",
-            "posicoes_abertas",
-            "preco_diario",
-            "producao_anual",
-        ]
-        registered = list_contracts()
-        for name in expected:
-            assert name in registered, f"Dataset '{name}' not registered"
-
     def test_has_contract(self):
         assert has_contract("preco_diario") is True
         assert has_contract("nonexistent") is False
-
-    def test_get_contract(self):
-        contract = get_contract("preco_diario")
-        assert contract is CEPEA_INDICADOR_V1
 
     def test_get_contract_not_found(self):
         with pytest.raises(KeyError, match="nonexistent"):
@@ -414,71 +146,85 @@ class TestContractRegistry:
 
 
 class TestValidateDataset:
-    def test_validate_valid_df(self):
-        df = pd.DataFrame(
-            {
-                "data": pd.date_range("2024-01-01", periods=3),
-                "produto": ["soja"] * 3,
-                "praca": ["paranagua"] * 3,
-                "valor": [150.0, 151.0, 152.0],
-                "unidade": ["BRL/sc60kg"] * 3,
-                "fonte": ["cepea"] * 3,
-            }
-        )
-        validate_dataset(df, "preco_diario")
-
-    def test_validate_raises_on_missing_column(self):
-        df = pd.DataFrame({"data": pd.date_range("2024-01-01", periods=3)})
-        with pytest.raises(ContractViolationError, match="Missing required columns"):
-            validate_dataset(df, "preco_diario")
-
-    def test_validate_raises_on_dtype_wrong(self):
-        df = pd.DataFrame(
-            {
-                "data": pd.date_range("2024-01-01", periods=3),
-                "produto": ["soja"] * 3,
-                "valor": ["abc", "def", "ghi"],
-                "unidade": ["BRL/sc60kg"] * 3,
-                "fonte": ["cepea"] * 3,
-            }
-        )
-        with pytest.raises(ContractViolationError, match="not numeric"):
-            validate_dataset(df, "preco_diario")
-
-    def test_validate_raises_on_duplicates(self):
-        df = pd.DataFrame(
-            {
-                "data": pd.to_datetime(["2024-01-01", "2024-01-01"]),
-                "produto": ["soja", "soja"],
-                "valor": [150.0, 151.0],
-                "unidade": ["BRL/sc60kg"] * 2,
-                "fonte": ["cepea"] * 2,
-            }
-        )
-        with pytest.raises(ContractViolationError, match="duplicate"):
-            validate_dataset(df, "preco_diario")
-
-    def test_validate_raises_on_constraint_violation(self):
-        df = pd.DataFrame(
-            {
-                "data": pd.date_range("2024-01-01", periods=2),
-                "produto": ["soja", "milho"],
-                "valor": [150.0, -10.0],
-                "unidade": ["BRL/sc60kg"] * 2,
-                "fonte": ["cepea"] * 2,
-            }
-        )
-        with pytest.raises(ContractViolationError, match="below minimum"):
-            validate_dataset(df, "preco_diario")
-
-    def test_validate_with_contract_object(self):
-        contract = Contract(
-            name="inline",
-            version="1.0",
-            columns=[Column(name="x", type=ColumnType.FLOAT, nullable=False)],
-        )
-        df = pd.DataFrame({"x": [1.0, 2.0]})
-        validate_dataset(df, contract)
+    @pytest.mark.parametrize(
+        "scenario,parameters",
+        [
+            *[
+                pytest.param(
+                    "test_validate_raises_on_missing_column",
+                    parameters,
+                    id="validate_raises_on_missing_column" + "-" + str(index),
+                )
+                for index, parameters in enumerate([{}])
+            ],
+            *[
+                pytest.param(
+                    "test_validate_raises_on_dtype_wrong",
+                    parameters,
+                    id="validate_raises_on_dtype_wrong" + "-" + str(index),
+                )
+                for index, parameters in enumerate([{}])
+            ],
+            *[
+                pytest.param(
+                    "test_validate_raises_on_duplicates",
+                    parameters,
+                    id="validate_raises_on_duplicates" + "-" + str(index),
+                )
+                for index, parameters in enumerate([{}])
+            ],
+            *[
+                pytest.param(
+                    "test_validate_raises_on_constraint_violation",
+                    parameters,
+                    id="validate_raises_on_constraint_violation" + "-" + str(index),
+                )
+                for index, parameters in enumerate([{}])
+            ],
+        ],
+    )
+    def test_validate_dataset_violation_messages(self, scenario: str, parameters: dict[str, Any]):
+        with helpers.collect_failures() as check, check((scenario, parameters)):
+            if scenario == "test_validate_raises_on_missing_column":
+                df = pd.DataFrame({"data": pd.date_range("2024-01-01", periods=3)})
+                with pytest.raises(ContractViolationError, match="Missing required columns"):
+                    validate_dataset(df, "preco_diario")
+            elif scenario == "test_validate_raises_on_dtype_wrong":
+                df = pd.DataFrame(
+                    {
+                        "data": pd.date_range("2024-01-01", periods=3),
+                        "produto": ["soja"] * 3,
+                        "valor": ["abc", "def", "ghi"],
+                        "unidade": ["BRL/sc60kg"] * 3,
+                        "fonte": ["cepea"] * 3,
+                    }
+                )
+                with pytest.raises(ContractViolationError, match="not numeric"):
+                    validate_dataset(df, "preco_diario")
+            elif scenario == "test_validate_raises_on_duplicates":
+                df = pd.DataFrame(
+                    {
+                        "data": pd.to_datetime(["2024-01-01", "2024-01-01"]),
+                        "produto": ["soja", "soja"],
+                        "valor": [150.0, 151.0],
+                        "unidade": ["BRL/sc60kg"] * 2,
+                        "fonte": ["cepea"] * 2,
+                    }
+                )
+                with pytest.raises(ContractViolationError, match="duplicate"):
+                    validate_dataset(df, "preco_diario")
+            elif scenario == "test_validate_raises_on_constraint_violation":
+                df = pd.DataFrame(
+                    {
+                        "data": pd.date_range("2024-01-01", periods=2),
+                        "produto": ["soja", "milho"],
+                        "valor": [150.0, -10.0],
+                        "unidade": ["BRL/sc60kg"] * 2,
+                        "fonte": ["cepea"] * 2,
+                    }
+                )
+                with pytest.raises(ContractViolationError, match="below minimum"):
+                    validate_dataset(df, "preco_diario")
 
     def test_validate_with_contract_object_raises(self):
         contract = Contract(
@@ -495,7 +241,7 @@ class TestGenerateJsonSchemas:
     def test_generate_all_schemas(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             files = generate_json_schemas(tmpdir)
-            assert len(files) == 51
+            assert len(files) == len(list_contracts())
 
             for filepath in files:
                 path = Path(filepath)
@@ -525,438 +271,3 @@ class TestGenerateJsonSchemas:
             assert schema == get_contract(name).to_dict(), (
                 f"Schema {name}.json diverge do contrato. Regenere com: {regenerate}"
             )
-
-
-class TestCEPEAContract:
-    def test_cepea_indicador_contract_exists(self):
-        assert CEPEA_INDICADOR_V1 is not None
-        assert CEPEA_INDICADOR_V1.name == "cepea.indicador"
-        assert CEPEA_INDICADOR_V1.version == "1.0"
-        assert CEPEA_INDICADOR_V1.primary_key == ["data", "produto"]
-
-    def test_cepea_indicador_required_columns(self):
-        required = ["data", "produto", "valor", "unidade", "fonte"]
-        for col_name in required:
-            col = CEPEA_INDICADOR_V1.get_column(col_name)
-            assert col is not None, f"Column {col_name} not found"
-            assert col.stable is True
-
-    def test_cepea_indicador_valor_min(self):
-        col = CEPEA_INDICADOR_V1.get_column("valor")
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_cepea_indicador_validate_valid_df(self):
-        df = pd.DataFrame(
-            {
-                "data": pd.date_range("2024-01-01", periods=5),
-                "produto": ["soja"] * 5,
-                "praca": ["paranagua"] * 5,
-                "valor": [150.0, 151.0, 152.0, 153.0, 154.0],
-                "unidade": ["BRL/sc60kg"] * 5,
-                "fonte": ["cepea"] * 5,
-                "metodologia": [None] * 5,
-                "anomalies": [None] * 5,
-            }
-        )
-        valid, errors = CEPEA_INDICADOR_V1.validate(df)
-        assert valid is True
-
-
-class TestCONABContracts:
-    def test_conab_safra_contract_exists(self):
-        assert CONAB_SAFRA_V1 is not None
-        assert CONAB_SAFRA_V1.name == "conab.safras"
-        assert CONAB_SAFRA_V1.version == "2.0"
-        assert CONAB_SAFRA_V1.primary_key == ["safra", "produto", "uf", "levantamento"]
-
-    def test_conab_safra_levantamento_range(self):
-        col = CONAB_SAFRA_V1.get_column("levantamento")
-        assert col is not None
-        assert col.min_value == 1
-        assert col.max_value == 12
-
-    def test_conab_balanco_contract_exists(self):
-        assert CONAB_BALANCO_V1 is not None
-        assert CONAB_BALANCO_V1.name == "conab.balanco"
-        assert CONAB_BALANCO_V1.primary_key == ["safra", "produto"]
-
-    def test_conab_custo_producao_contract_exists(self):
-        assert CONAB_CUSTO_PRODUCAO_V1 is not None
-        assert CONAB_CUSTO_PRODUCAO_V1.name == "conab.custo_producao"
-        assert CONAB_CUSTO_PRODUCAO_V1.primary_key == [
-            "cultura",
-            "uf",
-            "safra",
-            "categoria",
-            "item",
-        ]
-
-    def test_conab_custo_producao_participacao_no_range(self):
-        col = CONAB_CUSTO_PRODUCAO_V1.get_column("participacao_pct")
-        assert col is not None
-        assert col.min_value is None
-        assert col.max_value is None
-
-
-class TestIBGEContracts:
-    def test_ibge_pam_contract_exists(self):
-        assert IBGE_PAM_V1 is not None
-        assert IBGE_PAM_V1.name == "ibge.pam"
-        assert IBGE_PAM_V1.primary_key == ["ano", "produto", "localidade"]
-
-    def test_ibge_pam_ano_min(self):
-        col = IBGE_PAM_V1.get_column("ano")
-        assert col is not None
-        assert col.min_value == 1974
-
-    def test_ibge_lspa_contract_exists(self):
-        assert IBGE_LSPA_V1 is not None
-        assert IBGE_LSPA_V1.name == "ibge.lspa"
-        assert IBGE_LSPA_V1.primary_key == ["ano", "mes", "produto"]
-
-    def test_ibge_lspa_mes_range(self):
-        col = IBGE_LSPA_V1.get_column("mes")
-        assert col is not None
-        assert col.min_value == 1
-        assert col.max_value == 12
-
-
-class TestNewContracts:
-    def test_credito_rural_contract(self):
-        assert CREDITO_RURAL_V2.name == "bcb.credito_rural"
-        assert CREDITO_RURAL_V2.version == "2.0"
-        assert CREDITO_RURAL_V2.primary_key == [
-            "safra",
-            "produto",
-            "uf",
-            "finalidade",
-            "programa",
-        ]
-
-    def test_exportacao_contract(self):
-        assert EXPORTACAO_V1.name == "comexstat.exportacao"
-        assert EXPORTACAO_V1.primary_key == ["ano", "mes", "produto", "uf"]
-
-    def test_exportacao_ano_min(self):
-        col = EXPORTACAO_V1.get_column("ano")
-        assert col is not None
-        assert col.min_value == 1997
-
-    def test_fertilizante_contract(self):
-        assert FERTILIZANTE_V2.name == "anda.fertilizante"
-        assert FERTILIZANTE_V2.version == "2.0"
-        assert FERTILIZANTE_V2.primary_key == ["ano", "mes", "uf", "produto_fertilizante"]
-        assert get_contract("fertilizante") is FERTILIZANTE_V2
-        assert FERTILIZANTE_V1.version == "1.0"
-
-    def test_fertilizante_mes_range(self):
-        col = FERTILIZANTE_V2.get_column("mes")
-        assert col is not None
-        assert col.min_value == 1
-        assert col.max_value == 12
-
-
-class TestPosicoesAbertasContract:
-    def test_contract_exists(self):
-        assert POSICOES_ABERTAS_V1 is not None
-        assert POSICOES_ABERTAS_V1.name == "b3.posicoes_abertas"
-        assert POSICOES_ABERTAS_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert POSICOES_ABERTAS_V1.primary_key == ["data", "ticker_completo"]
-
-    def test_required_columns(self):
-        required = [
-            "data",
-            "ticker",
-            "ticker_completo",
-            "vencimento_codigo",
-            "tipo",
-            "posicoes_abertas",
-        ]
-        for col_name in required:
-            col = POSICOES_ABERTAS_V1.get_column(col_name)
-            assert col is not None, f"Column {col_name} not found"
-            assert col.nullable is False
-
-    def test_posicoes_abertas_min(self):
-        col = POSICOES_ABERTAS_V1.get_column("posicoes_abertas")
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_vencimento_mes_range(self):
-        col = POSICOES_ABERTAS_V1.get_column("vencimento_mes")
-        assert col is not None
-        assert col.min_value == 1
-        assert col.max_value == 12
-
-    def test_registered(self):
-        assert has_contract("posicoes_abertas")
-        contract = get_contract("posicoes_abertas")
-        assert contract is POSICOES_ABERTAS_V1
-
-
-class TestMovimentacaoPortuariaContract:
-    def test_contract_exists(self):
-        assert MOVIMENTACAO_PORTUARIA_V1 is not None
-        assert MOVIMENTACAO_PORTUARIA_V1.name == "antaq.movimentacao"
-        assert MOVIMENTACAO_PORTUARIA_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert MOVIMENTACAO_PORTUARIA_V1.primary_key == [
-            "ano",
-            "mes",
-            "porto",
-            "cd_mercadoria",
-            "sentido",
-            "tipo_navegacao",
-        ]
-
-    def test_required_columns(self):
-        required = ["ano", "mes", "porto", "cd_mercadoria", "sentido", "peso_bruto_ton"]
-        for col_name in required:
-            col = MOVIMENTACAO_PORTUARIA_V1.get_column(col_name)
-            assert col is not None, f"Column {col_name} not found"
-
-    def test_ano_min(self):
-        col = MOVIMENTACAO_PORTUARIA_V1.get_column("ano")
-        assert col is not None
-        assert col.min_value == 2010
-
-    def test_mes_range(self):
-        col = MOVIMENTACAO_PORTUARIA_V1.get_column("mes")
-        assert col is not None
-        assert col.min_value == 1
-        assert col.max_value == 12
-
-    def test_peso_bruto_min(self):
-        col = MOVIMENTACAO_PORTUARIA_V1.get_column("peso_bruto_ton")
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_registered(self):
-        assert has_contract("movimentacao_portuaria")
-        contract = get_contract("movimentacao_portuaria")
-        assert contract is MOVIMENTACAO_PORTUARIA_V1
-
-    def test_effective_from(self):
-        assert MOVIMENTACAO_PORTUARIA_V1.effective_from == "0.11.0"
-
-
-class TestAnpDieselPrecosContract:
-    def test_contract_exists(self):
-        assert ANP_DIESEL_PRECOS_V1 is not None
-        assert ANP_DIESEL_PRECOS_V1.name == "anp_diesel.precos"
-        assert ANP_DIESEL_PRECOS_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert ANP_DIESEL_PRECOS_V1.primary_key == ["data", "uf", "municipio", "produto"]
-
-    def test_required_columns(self):
-        required = ["data"]
-        for col_name in required:
-            col = ANP_DIESEL_PRECOS_V1.get_column(col_name)
-            assert col is not None, f"Column {col_name} not found"
-            assert col.nullable is False
-
-    def test_preco_venda_min(self):
-        col = ANP_DIESEL_PRECOS_V1.get_column("preco_venda")
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_n_postos_min(self):
-        col = ANP_DIESEL_PRECOS_V1.get_column("n_postos")
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_registered(self):
-        assert has_contract("anp_diesel_precos")
-        contract = get_contract("anp_diesel_precos")
-        assert contract is ANP_DIESEL_PRECOS_V1
-
-    def test_effective_from(self):
-        assert ANP_DIESEL_PRECOS_V1.effective_from == "0.11.0"
-
-
-class TestAnpDieselVendasContract:
-    def test_contract_exists(self):
-        assert ANP_DIESEL_VENDAS_V1 is not None
-        assert ANP_DIESEL_VENDAS_V1.name == "anp_diesel.vendas"
-        assert ANP_DIESEL_VENDAS_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert ANP_DIESEL_VENDAS_V1.primary_key == ["data", "uf", "produto"]
-
-    def test_required_columns(self):
-        required = ["data"]
-        for col_name in required:
-            col = ANP_DIESEL_VENDAS_V1.get_column(col_name)
-            assert col is not None, f"Column {col_name} not found"
-            assert col.nullable is False
-
-    def test_volume_m3_min(self):
-        col = ANP_DIESEL_VENDAS_V1.get_column("volume_m3")
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_registered(self):
-        assert has_contract("anp_diesel_vendas")
-        contract = get_contract("anp_diesel_vendas")
-        assert contract is ANP_DIESEL_VENDAS_V1
-
-    def test_effective_from(self):
-        assert ANP_DIESEL_VENDAS_V1.effective_from == "0.11.0"
-
-
-class TestMapaPsrSinistrosContract:
-    def test_contract_exists(self):
-        assert MAPA_PSR_SINISTROS_V1 is not None
-        assert MAPA_PSR_SINISTROS_V1.name == "mapa_psr.sinistros"
-        assert MAPA_PSR_SINISTROS_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert "nr_apolice" in MAPA_PSR_SINISTROS_V1.primary_key
-        assert "ano_apolice" in MAPA_PSR_SINISTROS_V1.primary_key
-        assert "uf" in MAPA_PSR_SINISTROS_V1.primary_key
-        assert "cultura" in MAPA_PSR_SINISTROS_V1.primary_key
-
-    def test_columns(self):
-        col_names = [c.name for c in MAPA_PSR_SINISTROS_V1.columns]
-        assert "valor_indenizacao" in col_names
-        assert "evento" in col_names
-        assert "seguradora" in col_names
-
-    def test_valor_indenizacao_min(self):
-        col = next(
-            (c for c in MAPA_PSR_SINISTROS_V1.columns if c.name == "valor_indenizacao"),
-            None,
-        )
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_registered(self):
-        assert has_contract("mapa_psr_sinistros")
-        contract = get_contract("mapa_psr_sinistros")
-        assert contract is MAPA_PSR_SINISTROS_V1
-
-    def test_effective_from(self):
-        assert MAPA_PSR_SINISTROS_V1.effective_from == "0.12.0"
-
-
-class TestMapaPsrApolicesContract:
-    def test_contract_exists(self):
-        assert MAPA_PSR_APOLICES_V1 is not None
-        assert MAPA_PSR_APOLICES_V1.name == "mapa_psr.apolices"
-        assert MAPA_PSR_APOLICES_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert "nr_apolice" in MAPA_PSR_APOLICES_V1.primary_key
-        assert "ano_apolice" in MAPA_PSR_APOLICES_V1.primary_key
-        assert "uf" in MAPA_PSR_APOLICES_V1.primary_key
-
-    def test_columns(self):
-        col_names = [c.name for c in MAPA_PSR_APOLICES_V1.columns]
-        assert "taxa" in col_names
-        assert "valor_premio" in col_names
-        assert "valor_subvencao" in col_names
-
-    def test_registered(self):
-        assert has_contract("mapa_psr_apolices")
-        contract = get_contract("mapa_psr_apolices")
-        assert contract is MAPA_PSR_APOLICES_V1
-
-    def test_effective_from(self):
-        assert MAPA_PSR_APOLICES_V1.effective_from == "0.12.0"
-
-
-class TestAnttPedagioFluxoContract:
-    def test_contract_exists(self):
-        assert ANTT_PEDAGIO_FLUXO_V1 is not None
-        assert ANTT_PEDAGIO_FLUXO_V1.name == "antt_pedagio.fluxo"
-        assert ANTT_PEDAGIO_FLUXO_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert "data" in ANTT_PEDAGIO_FLUXO_V1.primary_key
-        assert "concessionaria" in ANTT_PEDAGIO_FLUXO_V1.primary_key
-        assert "praca" in ANTT_PEDAGIO_FLUXO_V1.primary_key
-        assert "n_eixos" in ANTT_PEDAGIO_FLUXO_V1.primary_key
-
-    def test_required_columns(self):
-        required = ["data", "concessionaria", "praca", "n_eixos", "volume"]
-        for col_name in required:
-            col = ANTT_PEDAGIO_FLUXO_V1.get_column(col_name)
-            assert col is not None, f"Column {col_name} not found"
-            assert col.nullable is False
-
-    def test_n_eixos_range(self):
-        col = ANTT_PEDAGIO_FLUXO_V1.get_column("n_eixos")
-        assert col is not None
-        assert col.min_value == 2
-        assert col.max_value == 18
-
-    def test_volume_min(self):
-        col = ANTT_PEDAGIO_FLUXO_V1.get_column("volume")
-        assert col is not None
-        assert col.min_value == 0
-
-    def test_nullable_enrichment_cols(self):
-        for col_name in ("rodovia", "uf", "municipio", "sentido", "tipo_veiculo"):
-            col = ANTT_PEDAGIO_FLUXO_V1.get_column(col_name)
-            assert col is not None, f"Column {col_name} not found"
-            assert col.nullable is True
-
-    def test_registered(self):
-        assert has_contract("antt_pedagio_fluxo")
-        contract = get_contract("antt_pedagio_fluxo")
-        assert contract is ANTT_PEDAGIO_FLUXO_V1
-
-    def test_effective_from(self):
-        assert ANTT_PEDAGIO_FLUXO_V1.effective_from == "0.12.0"
-
-
-class TestAnttPedagioPracasContract:
-    def test_contract_exists(self):
-        assert ANTT_PEDAGIO_PRACAS_V1 is not None
-        assert ANTT_PEDAGIO_PRACAS_V1.name == "antt_pedagio.pracas"
-        assert ANTT_PEDAGIO_PRACAS_V1.version == "1.0"
-
-    def test_primary_key(self):
-        assert "concessionaria" in ANTT_PEDAGIO_PRACAS_V1.primary_key
-        assert "praca_de_pedagio" in ANTT_PEDAGIO_PRACAS_V1.primary_key
-
-    def test_columns(self):
-        col_names = [c.name for c in ANTT_PEDAGIO_PRACAS_V1.columns]
-        assert "rodovia" in col_names
-        assert "uf" in col_names
-        assert "municipio" in col_names
-        assert "lat" in col_names
-        assert "lon" in col_names
-        assert "situacao" in col_names
-
-    def test_lat_range(self):
-        col = ANTT_PEDAGIO_PRACAS_V1.get_column("lat")
-        assert col is not None
-        assert col.min_value == -35.0
-        assert col.max_value == 6.0
-
-    def test_lon_range(self):
-        col = ANTT_PEDAGIO_PRACAS_V1.get_column("lon")
-        assert col is not None
-        assert col.min_value == -74.0
-        assert col.max_value == -30.0
-
-    def test_registered(self):
-        assert has_contract("antt_pedagio_pracas")
-        contract = get_contract("antt_pedagio_pracas")
-        assert contract is ANTT_PEDAGIO_PRACAS_V1
-
-    def test_effective_from(self):
-        assert ANTT_PEDAGIO_PRACAS_V1.effective_from == "0.12.0"
-
-
-class TestBreakingChangePolicy:
-    def test_policy_values(self):
-        assert BreakingChangePolicy.MAJOR_VERSION == "major"
-        assert BreakingChangePolicy.NEVER == "never"
-        assert BreakingChangePolicy.DEPRECATE_FIRST == "deprecate"

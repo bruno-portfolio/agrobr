@@ -6,6 +6,9 @@
 
 ## Source Table
 
+The same table lives in the code (`agrobr.constants.LICENCAS`), checked by a test against this page, and
+the data's classification reaches `MetaInfo.license`.
+
 | Source | License | Commercial Use | Classification | Terms URL |
 |-------|---------|---------------|---------------|----------------|
 | **CEPEA/ESALQ** | CC BY-NC 4.0 | Requires CEPEA authorization | `nc` | [License](https://www.cepea.org.br/br/licenca-de-uso-de-dados.aspx) |
@@ -23,11 +26,11 @@
 | **ABIOVE** | No public terms; authorization requested (Feb/2026) | Awaiting response | `zona_cinza` | [abiove.org.br](https://abiove.org.br) |
 | **ANEC** | No public terms found; no formal contact | Check with the association | `zona_cinza` | [anec.com.br](https://anec.com.br) |
 | **USDA PSD** | U.S. Public Domain | Yes (U.S. government) | `livre` | [Ag Data Commons](https://data.nal.usda.gov/dataset/usda-foreign-agricultural-service-production-supply-and-distribution-database) |
-| **UN Comtrade** | UN public data | Yes (public data) | `livre` | [Comtrade](https://comtradeplus.un.org) |
+| **UN Comtrade** | UN terms with redistribution conditions and exceptions | Application-dependent | `zona_cinza` | [Official policy](https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/) |
 | **CFTC COT** | U.S. Public Domain | Yes (U.S. government) | `livre` | [CFTC Public Reporting](https://publicreporting.cftc.gov) |
 | **IMEA** | Restrictive: redistribution prohibited without written authorization | No | `restrito` | [Terms of Use](https://imea.com.br/imea-site/termo-de-uso.html) |
 | **DERAL** | Public state government data (PR) | Yes (public data) | `livre` | [SEAB/PR](https://www.agricultura.pr.gov.br) |
-| **INMET** | Public federal government data | Yes (public data, token required) | `livre` | [INMET](https://portal.inmet.gov.br) |
+| **INMET** | Public federal government data | Yes (public data; observation API requires a token, public ZIPs do not) | `livre` | [INMET — historical archives](https://portal.inmet.gov.br/dadoshistoricos) |
 | **Notícias Agrícolas** | All rights reserved (Law 9.610/98) | No | `restrito` | — |
 | **Queimadas/INPE** | Public federal government data | Yes (public data, with citation) | `livre` | [BDQueimadas](https://queimadas.dgi.inpe.br) |
 | **Desmatamento PRODES/DETER** | Public federal government data | Yes (public data, with citation) | `livre` | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) |
@@ -40,14 +43,14 @@
 | **IBGE Censo Agro Municipal 1985** | Public federal government data | Yes (public data) | `livre` | [IBGE Library](https://biblioteca.ibge.gov.br) |
 | **B3 Futuros Agro** | No public terms for programmatic access | Check with B3 | `zona_cinza` | [B3](https://www.b3.com.br) |
 | **CONAB CEASA/PROHORT** | Public credentials embedded in the frontend, API not officially documented | Check with CONAB | `zona_cinza` | [CONAB Portal](https://portaldeinformacoes.conab.gov.br) |
-| **MAPA Agrofit (Pesticides)** | CC-BY 4.0 | Yes | `livre` | [dados.agricultura.gov.br](https://dados.agricultura.gov.br/dataset/6c913699-e82e-4da3-a0a1-fb6c431e367f) |
+| **MAPA Agrofit (Pesticides)** | Creative Commons Attribution (version not specified by the portal; verified September 7, 2026) | Yes, with attribution | `livre` | [Agrofit/MAPA](https://dados.agricultura.gov.br/dataset/sistema-de-agrotoxicos-fitossanitarios-agrofit) |
 | **ZARC** | Public federal government data (CC-BY) | Yes | `livre` | [dados.agricultura.gov.br](https://dados.agricultura.gov.br/dataset/tabua-de-risco-zoneamento-agricola-de-risco-climatico) |
 | **ANA/SNIRH** | Public data | Yes | `livre` | [SNIRH](https://portal1.snirh.gov.br) |
-| **FUNAI Indigenous Lands** | CC BY-ND 3.0 | Yes (with citation, no derivatives) | `livre` | [geoserver.funai.gov.br](https://geoserver.funai.gov.br) |
-| **IBAMA Embargoes** | ODbL (Open Database License) | Yes (with citation) | `livre` | [IBAMA Open Data](https://dadosabertos.ibama.gov.br) |
+| **FUNAI Indigenous Lands** | FUNAI term for geoprocessing and maps: reproduction with source citation (portal footer: CC BY-ND 3.0) | Yes (with citation) | `livre` | [FUNAI — geoprocessing and maps](https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas) |
+| **IBAMA Embargoes** | "Outra (Aberta)" (other, open) in the catalog; federal open data (Decree 8,777/2016: free use, crediting the source) | Yes (with citation) | `livre` | [IBAMA Open Data — embargo terms](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo) |
 | **ICMBio Federal UCs** | Public federal government data | Yes (public data) | `livre` | [geoservicos.inde.gov.br](https://geoservicos.inde.gov.br) |
 | **INCRA Quilombolas** | Public federal government data | Yes (public data) | `livre` | [cmr.funai.gov.br](https://cmr.funai.gov.br) |
-| **Lista Suja** | Freedom of Information Act | Yes | `livre` | [Ministry of Labor and Employment](https://www.gov.br/trabalho-e-emprego) |
+| **Lista Suja** | Portal footer: CC BY-ND 3.0; no separate file license located | See terms below | `livre` (existing classification) | [MTE — official registry](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo) |
 | **MapBiomas Alerta** | Free (citation required) | Yes | `livre` | [MapBiomas Alerta](https://plataforma.alerta.mapbiomas.org) |
 | **SFB** | Public data | Yes | `livre` | [SFB](https://mapas.florestal.gov.br) |
 | **RNC/CultivarWeb** | Public federal government data | Yes (public data) | `livre` | [CultivarWeb](https://sistemas.agricultura.gov.br/snpc/cultivarweb) |
@@ -162,9 +165,59 @@
   session. Educational/research use; commercial redistribution should be checked
   with UNICA.
 
+### FUNAI
+
+Verified on September 23, 2026: [FUNAI's official geoprocessing and maps page](https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas) states the data-specific
+terms of use: the content of the geoprocessing and map files "may be reproduced provided the source is cited, except in
+cases specified otherwise and content replicated from other sources". The same text is in the abstract of the
+`Funai:tis_poligonais` layer in the WFS. The gov.br portal footer states the
+[Creative Commons Attribution-NoDerivatives 3.0 Unported](https://creativecommons.org/licenses/by-nd/3.0/) license for the site content.
+
+The `livre` classification is kept on the basis of the data-specific term, which only requires citing the source. The
+no-derivatives restriction of the generic footer is not repeated in the data term; anyone redistributing modified
+material should assess both texts.
+
+### IBAMA
+
+Verified on September 23, 2026: the [Fiscalização - termo de embargo](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo)
+dataset, from which agrobr reads the CSV, declares CKAN's "Outra (Aberta)" (other, open) license, with no text of its
+own. The ODbL cited before belonged to the "Termos de Embargo" dataset (PAMGIA shapefile, now offline). As federal open
+data, the definition in [Decree 8,777/2016](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm),
+art. 2, III, applies: an open license "that allows its free use, consumption or cross-referencing, limited to crediting
+the authorship or the source". The `livre` classification is kept. The source CSV carries the name and CPF/CNPJ of the
+embargoed party; agrobr does not expose those fields.
+
+### Lista Suja
+
+Verified on September 7, 2026: the [official MTE page](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo) publishes the files without authentication and states [Creative Commons Attribution-NoDerivs 3.0 Unported](https://creativecommons.org/licenses/by-nd/3.0/) in its footer. No separate license statement for the CSV, TXT, XLSX, and PDF files was located.
+
+The existing `livre` classification remains an internal category without claiming unrestricted permission for derivatives. The license indicated by the portal includes attribution and modified-material distribution conditions; its [official summary](https://creativecommons.org/licenses/by-nd/3.0/deed.en) distinguishes a mere format change from a derivative. Public access and freedom-of-information provisions do not replace checking the terms applicable to redistribution. The module retains its existing CPF/CNPJ notice and publication provenance.
+
+The [`empregadores_lista_suja` dataset](api/empregadores_lista_suja.en.md) reuses the same publication and preserves attribution and provenance. This wrapper does not establish a separate file license or add historical or CEAC coverage.
+
+### BCB SGS
+
+On September 7, 2026, the [official SGS series 1 catalogue](https://dadosabertos.bcb.gov.br/dataset/1-taxa-de-cambio---livre---dolar-americano-venda---diario) and its CKAN metadata stated **Open Data Commons Open Database License (ODbL)**. This evidence identifies that dataset's license; it was not individually verified for every code accepted by the generic API.
+
+agrobr retains the existing institutional `livre` category. It does not replace the particular dataset's license conditions. Observation responses contain no license, unit, or frequency; retain the code and provenance to associate output with the specific catalogue.
+
+The [`series_economicas` dataset](api/series_economicas.en.md) reuses these resources and preserves the code and acquisition identity. The wrapper does not establish a separate license or extend the series 1 verification to other codes.
+
+### BCB Focus
+
+Verified on September 7, 2026: the [official Market Expectations catalogue](https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado) and its [annual](https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado/resource/57d46ecb-4d27-45e9-8145-c173e0b94ff5) and [monthly](https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado/resource/c26059cc-2b28-41c5-a258-88a7c2b664d0) resources declare **Open Data Commons Open Database License (ODbL)**. agrobr retains its internal `livre` category, which does not replace the license conditions. Preserve BCB attribution and resource provenance.
+
+This API handles aggregate statistics from the annual/monthly entities. The current catalogue marks the institutional microdata service as deactivated; that separate family is outside this delivery and is not used as a fallback.
+
+### BCB PTAX
+
+Verified on September 7, 2026: the [daily exchange-rate bulletin dataset](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios) and its [currencies](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/9d07b9dc-c2bc-47ca-af92-10b18bcd0d69), [day](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/db9b40bf-9b8f-47c4-a82d-3a3afab52e90), and [period](https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios/resource/0439af6a-d9be-4bf7-bf1a-60583e5f4c1c) resources state **Open Data Commons Open Database License (ODbL)**. The internal `livre` category remains and does not replace the license conditions. Preserve attribution and resource provenance.
+
+This verification covers the OData catalogue and generic routes used by agrobr. It does not generalize their terms to conversion services, other quote datasets, the all-currencies CSV, or the historical exclusions table. The SDK preserves quotes/parities without calculating retail rates or conversions.
+
 ### Brazilian Government Sources
 
-CONAB (including Crop Progress), IBGE, BCB, ComexStat, DERAL, INMET, INPE (Queimadas, PRODES/DETER), ANP, ANTT, SICAR (Brazilian Forest Service), IBAMA, ANA/SNIRH, SFB and Lista Suja (Ministry of Labor) are Brazilian public agencies.
+CONAB (including Crop Progress), IBGE, BCB, ComexStat, DERAL, INMET, INPE (Queimadas, PRODES/DETER), ANP, ANTT, SICAR (Brazilian Forest Service), IBAMA, ANA/SNIRH, and SFB are Brazilian public agencies.
 MapBiomas is a multi-institutional project that provides open data with mandatory citation.
 Data produced by public agencies in the exercise of their functions is, as a rule,
 publicly accessible (Freedom of Information Act — Law 12.527/2011). There is no
@@ -188,12 +241,9 @@ check whether CC0 was explicitly applied.
 
 ### UN Comtrade
 
-- **Classification:** `livre`
-- **Situation:** Public UN data on bilateral international trade.
-  Public API with guest mode (no authentication) and free tier (free registration).
-- **Data used:** Bilateral trade by HS code (FOB/CIF values, weight,
-  quantity) via REST API v1. Trade mirror compares the reporter's export
-  declarations vs the partner's imports.
+- **Internal classification:** `zona_cinza`, reviewed September 2026; first-call warning.
+- The [official policy](https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/) reserves UN rights and distinguishes internal use from redistribution. It lists exceptions for certain free presentations/extractions alongside licensing requirements and commercial conditions. Applicability requires checking the actual use; public API access does not establish unrestricted redistribution.
+- **Data used:** bilateral HS trade and mirror, retaining UN Comtrade attribution. Public validation did not consult credentials or publish data to third parties.
 
 ### CFTC COT
 
@@ -204,3 +254,17 @@ check whether CC0 was explicitly applied.
 - **Data used:** Weekly Commitments of Traders (COT) report,
   Disaggregated format, for agricultural contracts on CBOT/CME/ICE
   (managed money, producer/merchant, swap dealers and other reportables positions).
+
+## Defensivos Agrofit
+
+Verified on September 7, 2026: the [official Agrofit/MAPA portal](https://dados.agricultura.gov.br/dataset/sistema-de-agrotoxicos-fitossanitarios-agrofit) identifies the formulated-product and technical-product CSV resources under **Creative Commons Attribution**, without specifying a version. The internal classification is `livre`; preserve attribution to MAPA/Agrofit and the resource provenance.
+
+The four [Agrofit datasets](api/defensivos_datasets.en.md) reuse those same two CSV resources. Formulated products and use authorizations come from the formulated-product export; technical products come from the technical-product export; composition is extracted from the published component text in either family. The dataset layer does not create a new license or establish current legal authorization from the raw `situacao` value.
+
+This verification does not extend to company records, product labels or package leaflets, or historical changes. Those additional resources require their own scope and terms to be verified.
+
+## RNC/SNPC — CultivarWeb
+
+Verified on September 7, 2026: the [official CultivarWeb system](https://sistemas.agricultura.gov.br/snpc/cultivarweb/index.php) provides public searches of registered and protected cultivars without a personal account. No specific license declaration was found in the CSV exports or forms inspected. The footer of the [Gov.br application consultation page](https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-agricolas/protecao-de-cultivar/consultar-pedido-de-protecao) specifies CC BY-ND 3.0 for that page's content; this statement was not attributed to the system's CSV files.
+
+The existing institutional classification `livre` remains an internal category. It does not establish an unrestricted license to redistribute the files. The two [cultivar datasets](api/cultivares.en.md) reuse the public exports and retain their origin, acquisition times and hashes. They neither create a separate license nor infer cultivar exploitation rights from registry entries. Restricted proceedings, attachments and revision history are outside this expansion.

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -9,6 +8,7 @@ import structlog
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils import time as time_utils
 
 logger = structlog.get_logger()
 
@@ -17,19 +17,18 @@ async def _fetch_anda(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaIn
     from agrobr import anda
 
     ano = kwargs.get("ano")
-    uf = kwargs.get("uf")
 
     if ano is None:
-        ano = datetime.now(UTC).year
+        ano = time_utils.hoje().year
 
-    result = await anda.entregas(ano, produto=produto, uf=uf, return_meta=True)
+    result = await anda.entregas(ano, produto=produto, return_meta=True)
 
     return _unpack_result(result)
 
 
 FERTILIZANTE_INFO = DatasetInfo(
     name="fertilizante",
-    description="Entregas de fertilizantes ao mercado brasileiro por UF e mês",
+    description="Entregas mensais de fertilizantes ao mercado brasileiro (total nacional)",
     sources=[
         DatasetSource(
             name="anda",
@@ -57,9 +56,7 @@ class FertilizanteDataset(BaseDataset):
         self,
         produto: str = "total",
         ano: int | None = None,
-        uf: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="fertilizante", produto=produto, ano=ano)
 
@@ -67,21 +64,12 @@ class FertilizanteDataset(BaseDataset):
         if snapshot and ano is None:
             ano = int(snapshot[:4])
 
-        df, source_name, source_meta, attempted = await self._try_sources(
-            produto, ano=ano, uf=uf, **kwargs
-        )
+        df, source_name, source_meta, attempted = await self._try_sources(produto, ano=ano)
 
-        df = self._normalize(df)
         self._validate_contract(df)
 
         if return_meta:
             return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-
-        return df
-
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
-        if "produto_fertilizante" not in df.columns:
-            df["produto_fertilizante"] = "total"
 
         return df
 
@@ -93,11 +81,32 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_fertilizante)
 
 
+@overload
 async def fertilizante(
     produto: str = "total",
     ano: int | None = None,
-    uf: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def fertilizante(
+    produto: str = "total",
+    ano: int | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def fertilizante(
+    produto: str = "total",
+    ano: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _fertilizante.fetch(produto, ano=ano, uf=uf, return_meta=return_meta, **kwargs)
+    return await _fertilizante.fetch(  # type: ignore[call-arg]
+        produto, ano=ano, return_meta=return_meta, as_polars=as_polars
+    )

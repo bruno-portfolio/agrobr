@@ -24,6 +24,8 @@ Animal slaughter by species, quarter and state (cattle, hogs, poultry).
 | `peso_carcacas` | float64 | ✅ | Total carcass weight (kg) |
 | `fonte` | str | ❌ | Data origin |
 
+The dataset returns the states and has no Brazil row. IBGE suppresses (cell `X`) the states with few respondents for confidentiality, and they come out null (cattle 2025: AP, DF and PB). As a result, the sum of the states falls short of the published Brazil total: for cattle in the first two quarters of 2025, by 0.4 %. For the national total, use SIDRA table 1092 at the Brazil level.
+
 ## Primary Key
 
 `[trimestre, especie, localidade]`

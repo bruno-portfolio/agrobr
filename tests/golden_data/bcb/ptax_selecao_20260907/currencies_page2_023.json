@@ -1,0 +1,1 @@
+{"@odata.context":"https://was-p.bcnet.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata$metadata#Moedas","value":[{"simbolo":"DKK","nomeFormatado":"Coroa dinamarquesa","tipoMoeda":"A"},{"simbolo":"EUR","nomeFormatado":"Euro","tipoMoeda":"B"},{"simbolo":"GBP","nomeFormatado":"Libra Esterlina","tipoMoeda":"B"}]}

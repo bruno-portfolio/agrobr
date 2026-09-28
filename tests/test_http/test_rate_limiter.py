@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import asyncio
 import time
+import warnings
+from types import SimpleNamespace
 
 import pytest
 
 from agrobr import constants
+from agrobr.http import rate_limiter
 from agrobr.http.rate_limiter import RateLimiter
 
 
@@ -23,149 +26,110 @@ class TestRateLimiter:
     """Testes para RateLimiter."""
 
     @pytest.mark.asyncio
-    async def test_acquire_allows_first_request_immediately(self):
-        start = time.monotonic()
+    @pytest.mark.parametrize("elapsed", [0.0, 0.25, 1.0, 1.5])
+    async def test_acquire_enforces_delay_between_requests(self, monkeypatch, elapsed):
+        clock = SimpleNamespace(now=100.0)
+        waits: list[float] = []
+
+        async def controlled_sleep(delay: float) -> None:
+            waits.append(delay)
+            clock.now += delay
+
+        monkeypatch.setenv("AGROBR_HTTP_RATE_LIMIT_IBGE", "1.0")
+        monkeypatch.setattr(rate_limiter, "time", SimpleNamespace(monotonic=lambda: clock.now))
+        monkeypatch.setattr(rate_limiter, "_async_sleep", controlled_sleep)
+
         async with RateLimiter.acquire(constants.Fonte.IBGE):
-            pass
-        elapsed = time.monotonic() - start
-        assert elapsed < 0.5
+            clock.now += 0.5
+        assert waits == []
+        assert RateLimiter._last_request["ibge"] == 100.5
 
-    @pytest.mark.asyncio
-    async def test_acquire_enforces_delay_between_requests(self):
-        async with RateLimiter.acquire(constants.Fonte.IBGE):
-            pass
-
-        start = time.monotonic()
-        async with RateLimiter.acquire(constants.Fonte.IBGE):
-            pass
-        elapsed = time.monotonic() - start
-
-        delay = RateLimiter._get_delay(constants.Fonte.IBGE.value)
-        assert elapsed >= delay * 0.8
-
-    @pytest.mark.asyncio
-    async def test_different_sources_independent(self):
+        clock.now += elapsed
         async with RateLimiter.acquire(constants.Fonte.IBGE):
             pass
 
-        start = time.monotonic()
-        async with RateLimiter.acquire(constants.Fonte.BCB):
-            pass
-        elapsed = time.monotonic() - start
-        assert elapsed < 0.5
-
-    @pytest.mark.asyncio
-    async def test_reset_clears_state(self):
-        async with RateLimiter.acquire(constants.Fonte.CEPEA):
-            pass
-
-        RateLimiter.reset()
-
-        start = time.monotonic()
-        async with RateLimiter.acquire(constants.Fonte.CEPEA):
-            pass
-        elapsed = time.monotonic() - start
-        assert elapsed < 0.5
-
-    @pytest.mark.asyncio
-    async def test_concurrent_requests_serialized(self):
-        order: list[int] = []
-
-        async def task(n: int) -> None:
-            async with RateLimiter.acquire(constants.Fonte.ABIOVE):
-                order.append(n)
-
-        await asyncio.gather(task(1), task(2), task(3))
-        assert len(order) == 3
-
-    def test_get_delay_returns_configured_value(self):
-        delay = RateLimiter._get_delay("cepea")
-        settings = constants.HTTPSettings()
-        assert delay == settings.rate_limit_cepea
+        assert waits == ([1.0 - elapsed] if elapsed < 1.0 else [])
+        assert RateLimiter._last_request["ibge"] == 100.5 + max(elapsed, 1.0)
 
     def test_get_delay_unknown_source_returns_default(self):
         delay = RateLimiter._get_delay("unknown_source")
         settings = constants.HTTPSettings()
         assert delay == settings.rate_limit_default
 
-    @pytest.mark.asyncio
-    async def test_all_sources_have_delay(self):
-        for fonte in constants.Fonte:
-            delay = RateLimiter._get_delay(fonte.value)
-            assert delay > 0, f"{fonte} has no delay configured"
+
+async def test_reset_esquece_intervalo_e_semaforo_por_fonte():
+    async with RateLimiter.acquire("fonte_teste"):
+        pass
+    assert "fonte_teste" in RateLimiter._last_request
+    assert "fonte_teste" in RateLimiter._next_slot
+    assert "fonte_teste" in RateLimiter._vagas
+    RateLimiter.reset()
+    assert RateLimiter._last_request == {}
+    assert RateLimiter._next_slot == {}
+    assert RateLimiter._vagas == {}
+    assert dict(RateLimiter._semaphores) == {}
 
 
-class TestRateLimiterConcurrency:
-    @pytest.mark.asyncio
-    async def test_concurrent_requests_burst(self):
-        timestamps: list[float] = []
+async def test_concorrencia_por_fonte_respeita_o_maximo(monkeypatch):
+    monkeypatch.setattr(
+        constants,
+        "HTTPSettings",
+        lambda: SimpleNamespace(max_concurrent_default=1, rate_limit_default=0.0),
+    )
+    ativos = 0
+    pico = 0
 
-        async def task() -> None:
-            async with RateLimiter.acquire("b3"):
-                timestamps.append(time.monotonic())
-                await asyncio.sleep(0.05)
+    async def usar():
+        nonlocal ativos, pico
+        async with RateLimiter.acquire("fonte_concorrente"):
+            ativos += 1
+            pico = max(pico, ativos)
+            await asyncio.sleep(0.01)
+            ativos -= 1
 
-        start = time.monotonic()
-        await asyncio.gather(task(), task(), task())
-        total = time.monotonic() - start
-
-        assert total < 1.5
-        spread = max(timestamps) - min(timestamps)
-        assert spread < 0.5
-
-    @pytest.mark.asyncio
-    async def test_default_concurrent_is_one(self):
-        order: list[int] = []
-
-        async def task(n: int) -> None:
-            async with RateLimiter.acquire("usda"):
-                order.append(n)
-                await asyncio.sleep(0.01)
-
-        await asyncio.gather(task(1), task(2), task(3))
-        assert len(order) == 3
-
-    @pytest.mark.asyncio
-    async def test_burst_then_pause_pattern(self):
-        settings = constants.HTTPSettings()
-        delay = settings.rate_limit_b3
-
-        timestamps: list[float] = []
-
-        async def task() -> None:
-            async with RateLimiter.acquire("b3"):
-                timestamps.append(time.monotonic())
-                await asyncio.sleep(0.02)
-
-        await asyncio.gather(*[task() for _ in range(6)])
-
-        assert len(timestamps) == 6
-        timestamps.sort()
-        burst1 = timestamps[:3]
-        burst2 = timestamps[3:]
-        assert max(burst1) - min(burst1) < 0.5
-        gap = min(burst2) - max(burst1)
-        assert gap >= delay * 0.7
+    await asyncio.gather(usar(), usar(), usar())
+    assert pico == 1
 
 
-class TestRateLimiterCrossLoop:
-    def test_survives_loop_change(self):
-        async def use_limiter():
-            async with RateLimiter.acquire("test_source"):
-                pass
+async def test_vaga_do_processo_tem_o_maximo_e_espera_com_teto(monkeypatch):
+    monkeypatch.setenv("AGROBR_HTTP_TIMEOUT_READ", "0.2")
+    vaga = RateLimiter._vaga("fonte_presa")
+    assert vaga.acquire(blocking=False)
 
-        asyncio.run(use_limiter())
-        asyncio.run(use_limiter())
+    async def pedir():
+        async with RateLimiter.acquire("fonte_presa"):
+            return time.monotonic()
 
-    def test_state_reset_on_loop_change(self):
-        loops: list[asyncio.AbstractEventLoop] = []
+    try:
+        assert not vaga.acquire(blocking=False)
+        with warnings.catch_warnings(record=True) as avisos:
+            warnings.simplefilter("always")
+            inicio = time.monotonic()
+            try:
+                fim = await asyncio.wait_for(pedir(), timeout=5)
+            except TimeoutError:
+                fim = None
+    finally:
+        vaga.release()
 
-        async def use_and_capture():
-            loops.append(asyncio.get_running_loop())
-            async with RateLimiter.acquire("test_source"):
-                pass
+    assert fim is not None, "a espera pela vaga presa não tem teto"
+    assert fim - inicio >= 0.15
+    assert [aviso for aviso in avisos if "vaga de fonte_presa" in str(aviso.message)]
 
-        asyncio.run(use_and_capture())
-        assert "test_source" in RateLimiter._semaphores
-        asyncio.run(use_and_capture())
-        assert loops[0] is not loops[1]
+
+async def test_reserva_espaca_os_inicios_com_concorrencia(monkeypatch):
+    monkeypatch.setattr(
+        constants,
+        "HTTPSettings",
+        lambda: SimpleNamespace(max_concurrent_default=2, rate_limit_default=0.3),
+    )
+    inicios: list[float] = []
+
+    async def usar():
+        async with RateLimiter.acquire("fonte_dupla"):
+            inicios.append(time.monotonic())
+            await asyncio.sleep(0.4)
+
+    await asyncio.gather(usar(), usar())
+    primeiro, segundo = sorted(inicios)
+    assert segundo - primeiro >= 0.25

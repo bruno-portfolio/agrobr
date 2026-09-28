@@ -1,6 +1,7 @@
 name: Tests
 
 on:
+  workflow_call:
   push:
     branches: [main]
   pull_request:
@@ -30,12 +31,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip setuptools wheel
           pip install -e ".[dev,pdf,geo]"
 
       - name: Run linting
         run: |
-          ruff check agrobr/ tests/
-          ruff format --check agrobr/ tests/
+          ruff check agrobr/ tests/ scripts/ examples/
+          ruff format --check agrobr/ tests/ scripts/ examples/
 
       - name: Run type checking
         run: |
@@ -43,7 +45,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v -m "not integration and not benchmark" --cov=agrobr --cov-report=xml --cov-report=term-missing
+          pytest tests/ -v --disable-socket --allow-unix-socket -m "not integration and not benchmark" --cov=agrobr --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage
         uses: codecov/codecov-action@v7
@@ -57,3 +59,94 @@ jobs:
           python -m pip install --upgrade pip
           pip install pip-audit
           pip-audit --skip-editable
+
+  minimum-compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install compatibility dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -c scripts/constraints-minimum.txt -e ".[dev,pdf,geo,polars]"
+
+      - name: Check typing and minimum dependency compatibility
+        run: |
+          python -m mypy agrobr/
+          python -m pip check
+          python -m pytest tests/ --disable-socket --allow-unix-socket -m "not integration and not benchmark" -ra
+
+      - name: Audit minimum environment
+        run: |
+          python -m pip install -c scripts/constraints-minimum.txt pip-audit
+          python -m pip_audit --skip-editable
+
+  windows-async:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -e ".[dev,pdf]"
+      - name: Check async execution and atomic writes with network blocked
+        run: python -m pytest tests/test_network_isolation.py tests/test_http/test_rate_limiter.py tests/test_bcb/test_client.py tests/test_sync.py tests/test_acervo_fundiario/test_concurrent_downloads.py tests/test_acervo_fundiario/test_replace_retry.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
+      - name: Check native Windows typing
+        run: python -m mypy agrobr/
+      - name: Check fixtures and streams without UTF-8 mode
+        run: python -X utf8=0 -m pytest tests/test_rnc/test_client.py tests/test_abiove/test_official_workbook.py tests/test_mapa_psr/test_official_claims.py tests/test_mapa_psr/test_streaming.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
+      - name: Check cache upgrades and dataset composition on Windows
+        run: python -X utf8=0 -m pytest tests/test_cache/ tests/test_cepea/ tests/test_datasets/test_preco_diario.py tests/test_live_matrix_policy.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
+
+  calculator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: node --test calculadora/tests/*.test.mjs
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install documentation dependencies
+        run: python -m pip install ".[docs]"
+      - name: Build documentation with strict validation
+        run: python -m mkdocs build --strict
+
+  core-package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Build and install core wheel
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install build
+          python -m build --wheel
+          python -m pip install dist/*.whl
+          python -m pip check
+      - name: Check installed package outside checkout imports
+        env:
+          AGROBR_CACHE_CACHE_DIR: ${{ runner.temp }}/agrobr-core-cache
+        run: python -I scripts/check_installed.py

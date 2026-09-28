@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 from typing import TYPE_CHECKING, Any, Literal, overload
 
@@ -11,12 +12,16 @@ from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_uf
 
-from . import client, parser
+from . import client, models, parser
 
 if TYPE_CHECKING:
     import geopandas as gpd
 
 logger = structlog.get_logger()
+
+
+def _details(df: pd.DataFrame) -> dict[str, Any]:
+    return {"ultima_atualizacao_relatorio": df.attrs.get(models.EDICAO_COLUMN_CSV)}
 
 
 @overload
@@ -45,14 +50,13 @@ async def embargos(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     logger.info("ibama_embargos", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    csv_bytes, source_url = await client.fetch_embargos_zip()
+    csv_bytes, source_url = await client.fetch_embargos_csv()
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
@@ -62,13 +66,16 @@ async def embargos(
     meta = build_source_meta(
         "ibama",
         source_url,
-        "httpx+zip+csv",
+        "httpx+csv",
         fetch_ms,
         parse_ms,
         df,
         parser.PARSER_VERSION,
         attempted_sources=["ibama_sifisc"],
         selected_source="ibama_sifisc",
+        raw_content_hash=hashlib.sha256(csv_bytes).hexdigest(),
+        raw_content_size=len(csv_bytes),
+        source_details=_details(df),
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -96,14 +103,13 @@ async def embargos_geo(
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     logger.info("ibama_embargos_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    csv_bytes, source_url = await client.fetch_embargos_zip()
+    csv_bytes, source_url = await client.fetch_embargos_csv()
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
@@ -114,13 +120,16 @@ async def embargos_geo(
         meta = build_source_meta(
             "ibama",
             source_url,
-            "httpx+zip+csv+wkt",
+            "httpx+csv+wkt",
             fetch_ms,
             parse_ms,
             gdf,
             parser.PARSER_VERSION,
             attempted_sources=["ibama_sifisc"],
             selected_source="ibama_sifisc",
+            raw_content_hash=hashlib.sha256(csv_bytes).hexdigest(),
+            raw_content_size=len(csv_bytes),
+            source_details=_details(gdf),
         )
         return gdf, meta
 

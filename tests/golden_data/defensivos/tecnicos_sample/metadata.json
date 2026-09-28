@@ -1,9 +1,0 @@
-{
-  "source": "defensivos",
-  "parser_module": "agrobr.defensivos.parser",
-  "parser_function": "parse_tecnicos_csv",
-  "captured_at": "2026-03-13T12:00:00Z",
-  "parser_version": 1,
-  "url": "https://dados.agricultura.gov.br/dataset/6c913699-e82e-4da3-a0a1-fb6c431e367f/resource/3d7a62e6-82e0-4e70-ac75-71ed29e63753/download/produtos_tecnicos.csv",
-  "notes": "Amostra de produtos tecnicos registrados (Agrofit/MAPA)"
-}

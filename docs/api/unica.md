@@ -45,7 +45,7 @@ mix açúcar/etanol e rendimentos por região.
 ```python
 async def safra_resumo(
     *,
-    periodo: Literal["acumulado", "quinzena"] = "acumulado",
+    periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -53,9 +53,13 @@ async def safra_resumo(
 
 **Retorno:**
 
-DataFrame com colunas: `produto`, `regiao`, `safra`, `periodo`, `valor`,
-`valor_safra_anterior`, `variacao_pct`, `unidade`. Produtos incluem `cana`, `acucar`,
+DataFrame com colunas: `produto`, `regiao`, `safra`, `periodo`, `data_inicio`, `data_fim`,
+`valor`, `valor_safra_anterior`, `variacao_pct`, `unidade`. Produtos incluem `cana`, `acucar`,
 `etanol_*`, `atr`, `atr_por_tonelada`, `kg_acucar_por_tonelada`, `mix_acucar`, `mix_etanol`.
+
+O período e as datas vêm do título das Tabelas 1-2 da edição corrente, e o período publicado muda com a edição: a de
+01/07/2026 traz o acumulado e o mês (junho), e a de 01/05/2026, o acumulado e a 2ª quinzena de abril. Pedir um período
+que a edição não publica levanta `InvalidParameterError` com os períodos da edição.
 
 ### `producao_historica`
 
@@ -96,7 +100,7 @@ from agrobr import unica
 # Moagem acumulada da safra corrente, Centro-Sul
 df = await unica.moagem_quinzenal("cana", regiao="centro_sul")
 
-# Mix açúcar/etanol e ATR da quinzena
+# Mix açúcar/etanol e ATR da quinzena (só em edição quinzenal; na mensal, periodo="mensal")
 df = await unica.safra_resumo(periodo="quinzena")
 
 # Histórico de açúcar por estado

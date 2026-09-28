@@ -1,6 +1,6 @@
 # Reprodutibilidade
 
-O agrobr permite análises 100% reproduzíveis.
+O agrobr oferece consultas ao cache local e metadados para apoiar análises reproduzíveis. A garantia temporal depende do dataset e da preservação dos dados consultados.
 
 ## Modo Determinístico
 
@@ -28,12 +28,15 @@ async def meu_pipeline():
 |---------|-----------|
 | **Formato** | `"YYYY-MM-DD"` — data máxima de corte |
 | **Filtro** | Datasets com suporte a snapshot (ex.: `preco_diario`) filtram por `data <= snapshot` |
-| **Rede** | Datasets com suporte a snapshot consultam apenas o cache local (offline) |
+| **Rede** | Datasets com suporte a snapshot consultam apenas o cache local (offline); sem o produto no cache, `preco_diario` levanta `SourceUnavailableError` |
 | **Escopo** | Isolado por contexto async (contextvars) — não afeta outras tasks |
-| **MetaInfo** | Campo `snapshot` preenchido automaticamente em todos os datasets |
+| **MetaInfo** | Campo `snapshot` registra o contexto nos datasets que aceitam esse modo; isoladamente, não comprova uma versão histórica |
+| **Aviso** | Dataset que consulta a fonte corrente dentro do contexto avisa em `validation_warnings` e com `UserWarning` que o dado não é o da data |
 
 !!! note "Suporte por dataset"
-    O filtro por data e o modo offline são aplicados pelos datasets que implementam suporte a snapshot (hoje `preco_diario`). Os demais registram o `snapshot` no `MetaInfo` para proveniência, mas consultam as fontes normalmente.
+    O filtro por data e o modo offline são aplicados por `preco_diario`. Outros datasets podem registrar o contexto e consultar fontes correntes; isso não congela revisões históricas, e o aviso em `validation_warnings` diz isso. `cadastro_rural` rejeita o contexto antes da rede, pois o WFS SICAR oferece cadastro corrente e os filtros incrementais não reconstituem o estado passado. Consulte o contrato de cada dataset.
+
+Em `clima`, o contexto fornece somente o ano padrão do modo UF quando `ano` é omitido. Uma consulta com snapshot `2001-06-01` pode incluir dezembro de 2001. O modo estação mantém o intervalo explícito; nenhum dos modos congela revisões da fonte ou força execução offline. `meta.source_details.deterministic` declara esses limites. Para os ZIPs INMET, `source_details.resources` registra URL, SHA-256, instante da aquisição, cache e membros selecionados; preserve os arquivos ou resultados correspondentes para reproduzir a edição. O cache de processo expira e não substitui um acervo de pesquisa.
 
 ## Verificando o Modo
 
@@ -55,8 +58,14 @@ print(get_snapshot())      # None
 ```python
 async with datasets.deterministic("2024-12-31"):
     df_precos = await datasets.preco_diario("soja")
-    df_safra = await datasets.estimativa_safra("soja", safra="2024/25")
+
+df_safra = await datasets.estimativa_safra("soja", safra="2024/25")
+df_safra.to_parquet("estimativa_safra_2024_25.parquet")
 ```
+
+A `estimativa_safra` não fica congelada: a CONAB revisa a estimativa a cada levantamento, e o dataset consulta o corrente
+(dentro do contexto, avisa isso em `validation_warnings`). Guarde o arquivo usado, ou um [snapshot](../guides/snapshots.md),
+junto do paper.
 
 ### Backtests
 
@@ -109,6 +118,9 @@ Para reprodutibilidade total, o cache local deve conter os dados históricos:
 
 1. Execute as consultas normalmente primeiro (popula o cache)
 2. Use modo determinístico para reproduzir
+
+Sem o produto no cache, o `preco_diario` levanta `SourceUnavailableError`; um período sem dado, com o produto no
+cache, volta vazio.
 
 ```python
 df = await datasets.preco_diario("soja")

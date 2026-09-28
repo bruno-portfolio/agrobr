@@ -1,6 +1,0 @@
-{
-    "dataset": "terras_indigenas",
-    "format": "csv",
-    "parser": "parse_terras_indigenas_csv",
-    "source": "funai"
-}

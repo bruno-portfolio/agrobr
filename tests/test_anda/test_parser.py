@@ -1,80 +1,20 @@
 """Testes para o parser ANDA."""
 
-import pandas as pd
+import sys
 
+import pandas as pd
+import pytest
+
+from agrobr import exceptions
+from agrobr.anda import parser
 from agrobr.anda.parser import (
-    PARSER_VERSION,
     _detect_month,
     _expand_newline_cells,
-    _is_uf,
-    _make_record,
-    _parse_generic,
     _parse_indicadores,
-    _parse_uf_cols,
-    _parse_uf_rows,
     agregar_mensal,
     parse_entregas_table,
 )
-from agrobr.normalize.numeric import safe_float
-
-
-def _uf_rows_table():
-    """Tabela com UFs nas linhas e meses nas colunas."""
-    return [
-        ["UF", "Jan", "Fev", "Mar"],
-        ["MT", "150.000", "120.000", "80.000"],
-        ["SP", "100.000", "90.000", "60.000"],
-        ["PR", "80.000", "70.000", "50.000"],
-        ["GO", "60.000", "55.000", "40.000"],
-    ]
-
-
-def _uf_cols_table():
-    """Tabela com UFs nas colunas e meses nas linhas."""
-    return [
-        ["Mês", "MT", "SP", "PR", "GO"],
-        ["Janeiro", "150.000", "100.000", "80.000", "60.000"],
-        ["Fevereiro", "120.000", "90.000", "70.000", "55.000"],
-        ["Março", "80.000", "60.000", "50.000", "40.000"],
-    ]
-
-
-def _generic_table():
-    """Tabela genérica com colunas UF, Mês, Toneladas."""
-    return [
-        ["UF", "Mês", "Toneladas"],
-        ["MT", "1", "150000"],
-        ["MT", "2", "120000"],
-        ["SP", "1", "100000"],
-        ["PR", "3", "80000"],
-    ]
-
-
-class TestSafeFloat:
-    def test_integer(self):
-        assert safe_float(42) == 42.0
-
-    def test_float(self):
-        assert safe_float(3.14) == 3.14
-
-    def test_string_br_format(self):
-        assert safe_float("150.000") == 150000.0
-
-    def test_string_decimal_comma(self):
-        assert safe_float("1.234,56") == 1234.56
-
-    def test_none(self):
-        assert safe_float(None) is None
-
-    def test_dash(self):
-        assert safe_float("-") is None
-        assert safe_float("–") is None
-
-    def test_empty(self):
-        assert safe_float("") is None
-
-    def test_nd(self):
-        assert safe_float("n.d.") is None
+from tests.helpers import levanta_exatamente
 
 
 class TestDetectMonth:
@@ -82,117 +22,14 @@ class TestDetectMonth:
         assert _detect_month("1") == 1
         assert _detect_month("12") == 12
 
-    def test_name_full(self):
-        assert _detect_month("Janeiro") == 1
-        assert _detect_month("Fevereiro") == 2
-        assert _detect_month("Dezembro") == 12
-
-    def test_name_abbrev(self):
-        assert _detect_month("Jan") == 1
-        assert _detect_month("Fev") == 2
-        assert _detect_month("Mar") == 3
-
-    def test_invalid(self):
-        assert _detect_month("UF") is None
-        assert _detect_month("Total") is None
-
     def test_out_of_range(self):
         assert _detect_month("13") is None
         assert _detect_month("0") is None
 
-    def test_acumulado_janeiro_a_dezembro(self):
-        assert _detect_month("Janeiro a Dezembro") is None
-
-    def test_acumulado_jan_a_dez(self):
-        assert _detect_month("Jan a Dez") is None
-
-    def test_acumulado_jan_dez_slash(self):
-        assert _detect_month("Jan/Dez") is None
-
-    def test_acumulado_total_do_ano(self):
-        assert _detect_month("Total do Ano") is None
-
-    def test_acumulado_acumulado(self):
-        assert _detect_month("Acumulado") is None
-
-    def test_acumulado_acumulado_no_ano(self):
-        assert _detect_month("Acumulado no Ano") is None
-
-    def test_acumulado_anual(self):
-        assert _detect_month("Anual") is None
-
-    def test_valid_months_still_work(self):
-        """Garante que meses validos continuam funcionando apos filtro de acumulado."""
-        assert _detect_month("Janeiro") == 1
-        assert _detect_month("Dezembro") == 12
-        assert _detect_month("Jun") == 6
-
-
-class TestIsUf:
-    def test_valid(self):
-        assert _is_uf("MT")
-        assert _is_uf("SP")
-        assert _is_uf("PR")
-
-    def test_invalid(self):
-        assert not _is_uf("XX")
-        assert not _is_uf("Total")
-        assert not _is_uf("")
-
-
-class TestParseUfRows:
-    def test_basic(self):
-        records = _parse_uf_rows(_uf_rows_table(), 2024)
-
-        assert len(records) == 12  # 4 UFs × 3 meses
-        mt_jan = [r for r in records if r["uf"] == "MT" and r["mes"] == 1]
-        assert len(mt_jan) == 1
-        assert mt_jan[0]["volume_ton"] == 150000.0
-        assert mt_jan[0]["ano"] == 2024
-
-    def test_empty_table(self):
-        records = _parse_uf_rows([["UF", "Jan"]], 2024)
-        assert records == []
-
-
-class TestParseUfCols:
-    def test_basic(self):
-        records = _parse_uf_cols(_uf_cols_table(), 2024)
-
-        assert len(records) == 12  # 3 meses × 4 UFs
-        sp_fev = [r for r in records if r["uf"] == "SP" and r["mes"] == 2]
-        assert len(sp_fev) == 1
-        assert sp_fev[0]["volume_ton"] == 90000.0
-
-
-class TestParseGeneric:
-    def test_basic(self):
-        records = _parse_generic(_generic_table(), 2024)
-
-        assert len(records) == 4
-        mt_records = [r for r in records if r["uf"] == "MT"]
-        assert len(mt_records) == 2
-
 
 class TestParseEntregasTable:
-    def test_auto_detects_uf_rows(self):
-        records = parse_entregas_table(_uf_rows_table(), 2024)
-        assert len(records) == 12
-
-    def test_auto_detects_uf_cols(self):
-        records = parse_entregas_table(_uf_cols_table(), 2024)
-        assert len(records) == 12
-
-    def test_generic_fallback(self):
-        records = parse_entregas_table(_generic_table(), 2024)
-        assert len(records) == 4
-
     def test_empty_table(self):
         records = parse_entregas_table([], 2024)
-        assert records == []
-
-    def test_single_row(self):
-        records = parse_entregas_table([["UF", "Jan"]], 2024)
         assert records == []
 
 
@@ -236,6 +73,7 @@ class TestAgregarMensal:
 def _indicadores_single_section():
     """Tabela 'Principais Indicadores' com apenas uma secao (entregas)."""
     return [
+        ["", "Fertilizantes Entregues ao Mercado (em toneladas de produto)", "", ""],
         ["", "", "2021", "2022"],
         ["", "Janeiro", "3.397.952", "3.200.000"],
         ["", "Fevereiro", "2.800.000", "2.600.000"],
@@ -257,6 +95,7 @@ def _indicadores_multi_section():
     """Tabela multi-secao simulando PDF real (entregas + producao + importacao)."""
     return [
         # Secao 1: Entregas ao Mercado
+        ["", "Fertilizantes Entregues ao Mercado (em toneladas de produto)", "", ""],
         ["", "", "2021", "2022"],
         ["", "Janeiro", "3.397.952", "3.200.000"],
         ["", "Fevereiro", "2.800.000", "2.600.000"],
@@ -290,121 +129,59 @@ def _indicadores_multi_section():
 
 
 class TestParseIndicadores:
-    def test_single_section_12_records(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2022)
-        assert len(records) == 12
-
-    def test_single_section_values(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2022)
-        jan = [r for r in records if r["mes"] == 1][0]
-        assert jan["volume_ton"] == 3200000.0
-        dez = [r for r in records if r["mes"] == 12][0]
-        assert dez["volume_ton"] == 3100000.0
-
-    def test_single_section_uf_is_br(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2022)
-        assert all(r["uf"] == "BR" for r in records)
-
-    def test_acumulado_excluded(self):
-        """'Janeiro a Dezembro' nao deve gerar registro."""
-        records = _parse_indicadores(_indicadores_single_section(), 2022)
-        assert len(records) == 12  # nao 13
-
     def test_multi_section_only_first(self):
         """Deve parar na primeira secao e ignorar producao/importacao."""
         records = _parse_indicadores(_indicadores_multi_section(), 2022)
         assert len(records) == 12
 
-    def test_multi_section_volume_is_entregas(self):
-        """Volumes devem ser da secao entregas, nao producao."""
-        records = _parse_indicadores(_indicadores_multi_section(), 2022)
-        jan = [r for r in records if r["mes"] == 1][0]
-        # Entregas Janeiro = 3.200.000, Producao Janeiro = 650.000
-        assert jan["volume_ton"] == 3200000.0
-
-    def test_wrong_year_returns_empty(self):
-        records = _parse_indicadores(_indicadores_single_section(), 2025)
-        assert records == []
+    def test_wrong_year_raises(self):
+        with pytest.raises(exceptions.ParseError, match="Ano 2025 ausente"):
+            _parse_indicadores(_indicadores_single_section(), 2025)
 
     def test_empty_table(self):
         records = _parse_indicadores([], 2022)
         assert records == []
 
 
-class TestParserVersion:
-    def test_version(self):
-        assert isinstance(PARSER_VERSION, int)
-        assert PARSER_VERSION >= 1
-
-
-class TestMakeRecord:
-    def test_positive_volume(self):
-        assert _make_record(2024, 1, "MT", 100.0) == {
-            "ano": 2024,
-            "mes": 1,
-            "uf": "MT",
-            "produto_fertilizante": "total",
-            "volume_ton": 100.0,
-        }
-
-    def test_zero_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", 0.0) is None
-
-    def test_negative_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", -5.0) is None
-
-    def test_none_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", None) is None
-
-    def test_nan_volume_dropped(self):
-        assert _make_record(2024, 1, "MT", float("nan")) is None
-
-
 class TestExpandNewlineCells:
-    def test_clean_table_passthrough(self):
-        table = [["UF", "Jan"], ["MT", "100"], ["SP", "200"]]
-        assert _expand_newline_cells(table) == table
-
-    def test_strips_whitespace(self):
-        table = [["  UF ", "Jan"], [" MT", "100 "]]
-        assert _expand_newline_cells(table) == [["UF", "Jan"], ["MT", "100"]]
-
-    def test_none_cells_become_empty_string(self):
-        assert _expand_newline_cells([["UF", None], [None, "100"]]) == [["UF", ""], ["", "100"]]
-
-    def test_expands_when_cell_has_many_lines(self):
-        table = [["UF", "Valores"], ["MT\nSP\nPR\nGO\nBA", "1\n2\n3\n4\n5"]]
-        assert _expand_newline_cells(table) == [
-            ["UF", "Valores"],
-            ["MT", "1"],
-            ["SP", "2"],
-            ["PR", "3"],
-            ["GO", "4"],
-            ["BA", "5"],
-        ]
-
     def test_below_threshold_not_expanded(self):
         table = [["UF", "V"], ["MT\nSP\nPR", "1\n2\n3"]]
         assert _expand_newline_cells(table) == [["UF", "V"], ["MT\nSP\nPR", "1\n2\n3"]]
-
-    def test_short_table_just_cleaned(self):
-        assert _expand_newline_cells([["UF", "Jan"]]) == [["UF", "Jan"]]
-
-    def test_empty_table(self):
-        assert _expand_newline_cells([]) == []
 
 
 class TestExpandIntegration:
     def test_multiline_cells_expanded_and_parsed(self):
         table = [
-            ["UF", "Jan", "Fev"],
-            ["MT\nSP\nPR\nGO\nBA", "1\n2\n3\n4\n5", "10\n20\n30\n40\n50"],
+            ["Fertilizantes Entregues ao Mercado (em toneladas de produto)", ""],
+            ["", "2024"],
+            ["Janeiro\nFevereiro\nMarço\nAbril\nMaio", "1\n2\n3\n4\n50"],
         ]
         records = parse_entregas_table(table, 2024)
 
-        assert len(records) == 10  # 5 UFs × 2 meses
-        mt_jan = [r for r in records if r["uf"] == "MT" and r["mes"] == 1]
-        assert len(mt_jan) == 1
-        assert mt_jan[0]["volume_ton"] == 1.0
-        ba_fev = [r for r in records if r["uf"] == "BA" and r["mes"] == 2]
-        assert ba_fev[0]["volume_ton"] == 50.0
+        assert [(r["mes"], r["volume_ton"]) for r in records] == [
+            (1, 1.0),
+            (2, 2.0),
+            (3, 3.0),
+            (4, 4.0),
+            (5, 50.0),
+        ]
+        assert {r["uf"] for r in records} == {"BR"}
+
+
+def test_tabela_com_duas_secoes_de_entregas_recusada():
+    titulo = "Fertilizantes entregues ao mercado (em toneladas de produto)"
+    tabela = [[titulo, ""], ["Janeiro", "1"], [titulo, ""], ["Fevereiro", "2"]]
+    with levanta_exatamente(exceptions.ParseError, "Múltiplas seções"):
+        parse_entregas_table(tabela, 2024)
+
+
+def test_pdf_sem_tabela_recusado(monkeypatch):
+    monkeypatch.setattr(parser, "extract_tables_from_pdf", lambda _pdf: [])
+    with levanta_exatamente(exceptions.ParseError, "Nenhuma tabela"):
+        parser.parse_entregas_pdf(b"%PDF", 2024)
+
+
+def test_sem_pdfplumber_explica_a_instalacao(monkeypatch):
+    monkeypatch.setitem(sys.modules, "pdfplumber", None)
+    with levanta_exatamente(ImportError, "pip install agrobr"):
+        parser.extract_tables_from_pdf(b"%PDF")

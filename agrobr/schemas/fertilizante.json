@@ -12,7 +12,9 @@
   "required_columns": [
     "ano",
     "mes",
-    "produto_fertilizante"
+    "uf",
+    "produto_fertilizante",
+    "volume_ton"
   ],
   "dtypes": {
     "ano": "int",

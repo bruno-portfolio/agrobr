@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Literal, overload
+from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 
 from . import client, parser
-from .models import CULTURAS_VALIDAS, normalizar_cultura
+from .models import CULTURAS_VALIDAS, ESTADO_MEDIA, normalizar_cultura
 
 logger = structlog.get_logger()
 
@@ -47,7 +48,6 @@ async def progresso_safra(
     semana_url: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     logger.info(
         "conab_progresso_safra",
@@ -79,7 +79,20 @@ async def progresso_safra(
 
     if estado is not None:
         estado_upper = estado.strip().upper()
-        df = df[df["estado"].str.upper() == estado_upper].reset_index(drop=True)
+        selecionado = df[df["estado"].str.upper() == estado_upper]
+        media = df[df["estado"] == ESTADO_MEDIA]
+        if estado_upper == "BR" and selecionado.empty and not media.empty:
+            coberturas = "; ".join(
+                f"{linha.cultura} {linha.operacao}: {linha.n_estados} estados, "
+                f"{linha.cobertura_area_pct:.1%} da área"
+                for linha in media.drop_duplicates(["cultura", "operacao"]).itertuples()
+            )
+            raise InvalidParameterError(
+                "A CONAB não publica Brasil no progresso de safra: a planilha traz a média da "
+                f"própria CONAB dos estados monitorados ({coberturas}). "
+                f"Use estado={ESTADO_MEDIA!r}."
+            )
+        df = selecionado.reset_index(drop=True)
 
     if operacao is not None:
         op_title = operacao.strip().title()
@@ -93,6 +106,7 @@ async def progresso_safra(
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        schema_version="2.0",
         attempted_sources=["conab_govbr"],
         selected_source="conab_govbr",
     )

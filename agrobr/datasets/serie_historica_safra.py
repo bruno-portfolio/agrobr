@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -39,7 +39,7 @@ SERIE_HISTORICA_SAFRA_INFO = DatasetInfo(
         ),
     ],
     products=_PRODUCTS,
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="yearly",
     typical_latency="safra+6 meses",
     source_url="https://www.conab.gov.br/info-agro/safras/serie-historica-das-safras",
@@ -61,8 +61,8 @@ class SerieHistoricaSafraDataset(BaseDataset):
         fim: int | None = None,
         uf: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+        produto = self._produto_do_dataset(produto)
         logger.info(
             "dataset_fetch",
             dataset="serie_historica_safra",
@@ -76,7 +76,7 @@ class SerieHistoricaSafraDataset(BaseDataset):
             inicio = int(snapshot[:4]) - 5
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, inicio=inicio, fim=fim, uf=uf, **kwargs
+            produto, inicio=inicio, fim=fim, uf=uf
         )
 
         df = self._normalize(df, produto)
@@ -98,6 +98,30 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_serie_historica_safra)
 
 
+@overload
+async def serie_historica_safra(
+    produto: str,
+    *,
+    inicio: int | None = None,
+    fim: int | None = None,
+    uf: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def serie_historica_safra(
+    produto: str,
+    *,
+    inicio: int | None = None,
+    fim: int | None = None,
+    uf: str | None = None,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def serie_historica_safra(
     produto: str,
     *,
@@ -105,8 +129,8 @@ async def serie_historica_safra(
     fim: int | None = None,
     uf: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _serie_historica_safra.fetch(
-        produto, inicio=inicio, fim=fim, uf=uf, return_meta=return_meta, **kwargs
+    return await _serie_historica_safra.fetch(  # type: ignore[call-arg]
+        produto, inicio=inicio, fim=fim, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

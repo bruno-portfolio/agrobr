@@ -28,6 +28,35 @@ df = await datasets.futuros_agricolas("boi", tipo="historico", inicio="2025-01-0
 df = await datasets.futuros_agricolas("boi", tipo="posicoes", data="2025-03-05")
 ```
 
+### Histórico de posições abertas
+
+```python
+df, meta = await datasets.futuros_agricolas(
+    "boi", tipo="oi_historico", inicio="2026-09-03", fim="2026-09-04", return_meta=True
+)
+```
+
+Informe produto, início e fim inclusivos em `AAAA-MM-DD`; `data` não se aplica
+a esse modo. `vencimento` aceita o código do mês do contrato (ex.: `V26`), que
+traz o futuro e as opções daquele mês, ou o código publicado de uma opção
+(ex.: `VVJK`); outro formato é recusado antes da rede. As consultas percorrem
+dias úteis sequencialmente e retornam tanto
+futuros quanto opções, identificados pela coluna `tipo`.
+
+`data` com `tipo="historico"` ou `"oi_historico"`, e `inicio` ou `fim` com `"ajustes"` ou `"posicoes"`, levantam
+`InvalidParameterError` antes da rede: o parâmetro que não se aplica ao tipo era descartado em silêncio.
+
+A fonte mantém uma janela recente, sem garantir a recuperação de datas antigas.
+Use datas recentes ao executar o exemplo. Dias úteis sem posições para o filtro
+são relacionados em `meta.validation_warnings`; isso pode refletir arquivo não
+publicado, ausência do instrumento ou vencimento, e não comprova a existência
+de pregão. Um intervalo só de fim de semana retorna vazio. Datas invertidas
+são rejeitadas antes da rede.
+
+Falhas de rede, HTTP 400 no download e erros de parsing interrompem a consulta,
+mesmo quando outros dias já foram obtidos. O contexto de snapshot não recupera
+arquivos expirados nem altera o intervalo explicitamente informado.
+
 ## Produtos
 
 `boi`, `milho`, `cafe_arabica`, `cafe_conillon`, `etanol`, `soja_cross`, `soja_fob`
@@ -54,7 +83,14 @@ PK: `[data, ticker, vencimento_codigo]`
 | `ajuste_por_contrato` | FLOAT | Y |
 | `unidade` | STRING | Y |
 
-### `tipo="posicoes"` → `POSICOES_ABERTAS_V1`
+No boi gordo (BGI), o `ajuste_atual` do último dia de negociação não é a liquidação do contrato, que usa a média de 5 dias
+úteis do Indicador do Boi Gordo. No milho (CCM), o ajuste do vencimento é a liquidação.
+
+`ajuste_por_contrato` é o valor do ajuste por contrato, na moeda de cotação: reais em BGI, CCM, CNL e ETH, e dólares em ICF,
+SJC e SOY. A moeda é o prefixo de `unidade` (`BRL` ou `USD`); o valor é por contrato, e não por unidade de cotação. Somar a
+coluna entre produtos mistura moedas.
+
+### `tipo="posicoes"` / `tipo="oi_historico"` → `POSICOES_ABERTAS_V1`
 
 PK: `[data, ticker_completo]`
 
@@ -65,12 +101,14 @@ PK: `[data, ticker_completo]`
 | `descricao` | STRING | Y |
 | `ticker_completo` | STRING | N |
 | `vencimento_codigo` | STRING | N |
-| `vencimento_mes` | INTEGER | Y |
-| `vencimento_ano` | INTEGER | Y |
+| `vencimento_mes` | INTEGER | N |
+| `vencimento_ano` | INTEGER | N |
 | `tipo` | STRING | N |
 | `posicoes_abertas` | INTEGER | N |
 | `variacao_posicoes` | INTEGER | Y |
 | `unidade` | STRING | Y |
+
+`unidade` é a unidade de cotação do contrato (ex.: `BRL/@`). `posicoes_abertas` e `variacao_posicoes` contam contratos e não estão nessa unidade.
 
 ## Licença
 

@@ -1,0 +1,18 @@
+{
+ "source": "funai",
+ "format": "wfs2_geojson",
+ "license": "termo da FUNAI para geoprocessamento e mapas: reprodução com citação da fonte",
+ "content": "Recorte do AC: as 3 terras em que a área declarada (superficie_perimetro_ha) diverge do polígono em mais de 5 % na R56 (73878, 8601, 31301) e as 2 menores do AC como controle, com a geometria em EPSG:4326.",
+ "codigos": [
+  8601,
+  22201,
+  31301,
+  67601,
+  73878
+ ],
+ "url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg%2Cthe_geom&outputFormat=application%2Fjson&srsName=EPSG%3A4326&sortBy=terrai_codigo+A&CQL_FILTER=terrai_codigo+IN+%288601%2C22201%2C31301%2C67601%2C73878%29",
+ "file": "pagina.json",
+ "sha256": "962e97d8a4b5a9a8069110d6f210bba392415a4166333ada42e2b909d87597e6",
+ "bytes": 232714,
+ "fetched_at": "2026-09-27T02:13:43+00:00"
+}

@@ -1,57 +1,30 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from agrobr.utils import time as time_utils
+
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
-
-
-def _load_json(name: str) -> dict[str, Any]:
-    path = FIXTURES_DIR / "json" / name
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _load_html(name: str) -> str:
-    path = FIXTURES_DIR / "html" / name
-    return path.read_text(encoding="utf-8")
 
 
 @pytest.fixture
 def category_2026_p1_payload() -> dict[str, Any]:
-    return _load_json("category_2026_p1.json")
-
-
-@pytest.fixture
-def category_2026_p2_payload() -> dict[str, Any]:
-    return _load_json("category_2026_p2.json")
-
-
-@pytest.fixture
-def category_empty_payload() -> dict[str, Any]:
-    return _load_json("category_empty.json")
-
-
-@pytest.fixture
-def article_w16_payload() -> dict[str, Any]:
-    return _load_json("article_w16_2026.json")
-
-
-@pytest.fixture
-def wrapper_min_html() -> str:
-    return _load_html("wrapper_min.html")
+    return json.loads((FIXTURES_DIR / "json" / "category_2026_p1.json").read_text(encoding="utf-8"))
 
 
 @pytest.fixture
 def no_next_data_html() -> str:
-    return _load_html("no_next_data.html")
+    return (FIXTURES_DIR / "html" / "no_next_data.html").read_text(encoding="utf-8")
 
 
 @pytest.fixture
 def malformed_json_html() -> str:
-    return _load_html("malformed_json.html")
+    return (FIXTURES_DIR / "html" / "malformed_json.html").read_text(encoding="utf-8")
 
 
 def make_html(payload: dict[str, Any]) -> str:
@@ -84,3 +57,8 @@ def _reset_anec_list_cache():
     yield
     _client._list_cache_clear()
     _parse_cache_clear()
+
+
+@pytest.fixture(autouse=True)
+def reference_year(monkeypatch):
+    monkeypatch.setattr(time_utils, "utcnow", lambda: datetime(2026, 9, 8))

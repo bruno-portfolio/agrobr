@@ -1,0 +1,578 @@
+{
+  "evidence": "Original CONAB workbooks inspected independently with openpyxl. Published crop-year tokens with a slash now identify the first year and retain the literal token. The three workbooks have no unresolved contexts/headers; orphan A49 remains a parse exclusion. Physical sheet lists, sample cells and raw formats are retained.",
+  "products": [
+    {
+      "label": "Açaí",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/acai_serie_historica_2008-2025.xlsx",
+      "planilha": "acai_serie_historica_2008-2025.xlsx",
+      "canonical": "acai"
+    },
+    {
+      "label": "Andiroba (amêndoa)",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/andiroba_serie_historica_2008-2025.xlsx",
+      "planilha": "andiroba_serie_historica_2008-2025.xlsx",
+      "canonical": "andiroba"
+    },
+    {
+      "label": "Babaçu (amêndoa)",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/babacu_serie_historica_2010-2025.xlsx",
+      "planilha": "babacu_serie_historica_2010-2025.xlsx",
+      "canonical": "babacu"
+    },
+    {
+      "label": "Baru (amêndoa)",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/baru_serie_historica_2010-2025.xlsx",
+      "planilha": "baru_serie_historica_2010-2025.xlsx",
+      "canonical": "baru"
+    },
+    {
+      "label": "Borracha",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/borracha_serie_historica_2008-2025_sociobio.xlsx",
+      "planilha": "borracha_serie_historica_2008-2025_sociobio.xlsx",
+      "canonical": "borracha"
+    },
+    {
+      "label": "Buriti (fruto)",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/buriti_serie_historica_2010-2025.xlsx",
+      "planilha": "buriti_serie_historica_2010-2025.xlsx",
+      "canonical": "buriti"
+    },
+    {
+      "label": "Cacau",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/cacau_serie_historica_2011-2025_sociobio.xlsx",
+      "planilha": "cacau_serie_historica_2011-2025_sociobio.xlsx",
+      "canonical": "cacau"
+    },
+    {
+      "label": "Carnaúba",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/serie-historica-custos-carnauba-2009-a-2022.xlsx",
+      "planilha": "serie-historica-custos-carnauba-2009-a-2022.xlsx",
+      "canonical": "carnauba"
+    },
+    {
+      "label": "Castanha-do-brasil",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/castanha_do_brasil_serie_historica_2008-2025.xlsx",
+      "planilha": "castanha_do_brasil_serie_historica_2008-2025.xlsx",
+      "canonical": "castanha_do_brasil"
+    },
+    {
+      "label": "Fava d'anta",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/serie-historica-custos-fava-danta-2014-a-2022.xlsx",
+      "planilha": "serie-historica-custos-fava-danta-2014-a-2022.xlsx",
+      "canonical": "fava_danta"
+    },
+    {
+      "label": "Juçara (fruto)",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/jucara_serie_historica_2012-2025.xlsx",
+      "planilha": "jucara_serie_historica_2012-2025.xlsx",
+      "canonical": "jucara"
+    },
+    {
+      "label": "Licuri",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/serie-historica-custos-licuri-2017-a-2022.xlsx",
+      "planilha": "serie-historica-custos-licuri-2017-a-2022.xlsx",
+      "canonical": "licuri"
+    },
+    {
+      "label": "Macaúba",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/macauba_serie_historica_2013-2025.xlsx",
+      "planilha": "macauba_serie_historica_2013-2025.xlsx",
+      "canonical": "macauba"
+    },
+    {
+      "label": "Mangaba",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/mangaba_serie_historica_2010-2025.xlsx",
+      "planilha": "mangaba_serie_historica_2010-2025.xlsx",
+      "canonical": "mangaba"
+    },
+    {
+      "label": "Murumuru",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/murumuru_serie_historica_2017-2025.xlsx",
+      "planilha": "murumuru_serie_historica_2017-2025.xlsx",
+      "canonical": "murumuru"
+    },
+    {
+      "label": "Pequi",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/pequi_serie_historica_2010-2025.xlsx",
+      "planilha": "pequi_serie_historica_2010-2025.xlsx",
+      "canonical": "pequi"
+    },
+    {
+      "label": "Piaçava",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/piacava_serie_historica_2011-2025.xlsx",
+      "planilha": "piacava_serie_historica_2011-2025.xlsx",
+      "canonical": "piacava"
+    },
+    {
+      "label": "Pirarucu",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/pirarucu_serie_historica_2015-2025.xlsx",
+      "planilha": "pirarucu_serie_historica_2015-2025.xlsx",
+      "canonical": "pirarucu"
+    },
+    {
+      "label": "Pinhão de Araucária",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/pinhao_serie_historica_2012-2025.xlsx",
+      "planilha": "pinhao_serie_historica_2012-2025.xlsx",
+      "canonical": "pinhao"
+    },
+    {
+      "label": "Umbu",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/sociobiodiversidade/umbu_serie_historica_2010-2025.xlsx",
+      "planilha": "umbu_serie_historica_2010-2025.xlsx",
+      "canonical": "umbu"
+    }
+  ],
+  "resource_count": 37,
+  "workbooks": {
+    "acai.xlsx": {
+      "sha256": "859a2c943e16d068afe6eebbf882371a7db39dbd760ca967977108741be01078",
+      "sheets": 81,
+      "data_sheets": [
+        "Boca do Acre-AM-2024",
+        "Codajás-AM-2008",
+        "Codajás-AM-2009",
+        "Codajás-AM-2010",
+        "Codajás-AM-2011",
+        "Codajás-AM-2012",
+        "Codajás-AM-2013",
+        "Codajás-AM-2014",
+        "Codajás-AM-2015",
+        "Codajás-AM-2016",
+        "Codajás-AM-2017",
+        "Codajás-AM-2018",
+        "Codajás-AM-2019",
+        "Codajás-AM-2020",
+        "Codajás-AM-2021",
+        "Codajás-AM-2022",
+        "Codajás-AM-2023",
+        "Codajás-AM-2024",
+        "Abaetuba-PA-2016",
+        "Abaetuba-PA-2017",
+        "Abaetuba-PA-2018",
+        "Abaetuba-PA-2019",
+        "Abaetuba-PA-2020",
+        "Abaetuba-PA-2021",
+        "Abaetuba-PA-2022",
+        "Belém-PA-2017",
+        "Belém-PA-2018",
+        "Belém-PA-2019",
+        "Belém-PA-2020",
+        "Belém-PA-2021",
+        "Belém-PA-2022",
+        "Bujaru-PA-2019",
+        "Bujaru-PA-2020",
+        "Bujaru-PA-2021",
+        "Bujaru-PA-2022",
+        "Cametá-PA-2008",
+        "Cametá-PA-2009",
+        "Cametá-PA-2010",
+        "Cametá-PA-2011",
+        "Cametá-PA-2012",
+        "Cametá-PA-2013",
+        "Cametá-PA-2014",
+        "Curralinho-PA-2023",
+        "Curralinho-PA-2024",
+        "Igarapé-Miri-PA-2008",
+        "Igarapé-Miri-PA-2009",
+        "Igarapé-Miri-PA-2010",
+        "Igarapé-Miri-PA-2011",
+        "Igarapé-Miri-PA-2012",
+        "Igarapé-Miri-PA-2013",
+        "Igarapé-Miri-PA-2014",
+        "Igarapé-Miri-PA-2015",
+        "Igarapé-Miri-PA-2016",
+        "Igarapé-Miri-PA-2017",
+        "Igarapé-Miri-PA-2018",
+        "Igarapé-Miri-PA-2019",
+        "Igarapé-Miri-PA-2020",
+        "Igarapé-Miri-PA-2021",
+        "Igarapé-Miri-PA-2022",
+        "Igarapé-Miri-PA-2023",
+        "Igarapé-Miri-PA-2024",
+        "Limoeiro do Ajuru-PA-2023",
+        "Limoeiro do Ajuru-PA-2024",
+        "Ponta de Pedras-PA-2008",
+        "Ponta de Pedras-PA-2009",
+        "Ponta de Pedras-PA-2010",
+        "Ponta de Pedras-PA-2011",
+        "Ponta de Pedras-PA-2012",
+        "Ponta de Pedras-PA-2013",
+        "Ponta de Pedras-PA-2014",
+        "Ponta de Pedras-PA-2015",
+        "Ponta de Pedras-PA-2016",
+        "Ponta de Pedras-PA-2017",
+        "Ponta de Pedras-PA-2018",
+        "Ponta de Pedras-PA-2019",
+        "Ponta de Pedras-PA-2020",
+        "Ponta de Pedras-PA-2021",
+        "Ponta de Pedras-PA-2022",
+        "Ponta de Pedras-PA-2023",
+        "Ponta de Pedras-PA-2024"
+      ],
+      "unresolved": [],
+      "identified_count": 80,
+      "parse_errors": [
+        {
+          "aba": "Igarapé-Miri-PA-2008",
+          "cell": "A49",
+          "value": 0
+        },
+        {
+          "aba": "Igarapé-Miri-PA-2009",
+          "cell": "A49",
+          "value": 0
+        }
+      ],
+      "parsed_count": 78,
+      "samples": [
+        {
+          "aba": "Boca do Acre-AM-2024",
+          "row_count": 54,
+          "rows_from": 8,
+          "rows_through": 61,
+          "sample_row": 16,
+          "item": "6 - Mão de obra",
+          "cells": {
+            "valor": {
+              "cell": "B16",
+              "raw_value": 26103,
+              "format": "#,###,###,##0.0000",
+              "value": 26103
+            },
+            "valor_unidade_produto": {
+              "cell": "C16",
+              "raw_value": 1.45664,
+              "format": "#,###,###,##0.0000",
+              "value": 1.45664
+            },
+            "participacao_pct": {
+              "cell": "D16",
+              "raw_value": 67.2,
+              "format": "#,###,###,##0.0000",
+              "value": 67.2
+            },
+            "participacao_ct_pct": {
+              "cell": "E16",
+              "raw_value": 66.92,
+              "format": "#,###,###,##0.0000",
+              "value": 66.92
+            }
+          }
+        },
+        {
+          "aba": "Codajás-AM-2008",
+          "row_count": 38,
+          "rows_from": 9,
+          "rows_through": 46,
+          "sample_row": 10,
+          "item": "  1 - Mão-de-obra para a extração do açai nativo",
+          "cells": {
+            "valor": {
+              "cell": "B10",
+              "raw_value": 800,
+              "format": "#,##0.00_);(#,##0.00)",
+              "value": 800
+            },
+            "valor_unidade_produto": {
+              "cell": "C10",
+              "raw_value": 0.53,
+              "format": "#,##0.00_);(#,##0.00)",
+              "value": 0.53
+            },
+            "participacao_pct": {
+              "cell": "D10",
+              "raw_value": 0.7377069886222765,
+              "format": "0.00%",
+              "value": 73.77069886222765
+            }
+          }
+        },
+        {
+          "aba": "Codajás-AM-2018",
+          "row_count": 63,
+          "rows_from": 9,
+          "rows_through": 71,
+          "sample_row": 17,
+          "item": "6 - Mão-de-obra",
+          "cells": {
+            "valor": {
+              "cell": "H17",
+              "raw_value": 2000,
+              "format": "#,##0.00",
+              "value": 2000
+            },
+            "valor_unidade_produto": {
+              "cell": "I17",
+              "raw_value": 1.33,
+              "format": "#,##0.00",
+              "value": 1.33
+            },
+            "participacao_pct": {
+              "cell": "J17",
+              "raw_value": 89.77,
+              "format": "#,##0.00",
+              "value": 89.77
+            },
+            "participacao_ct_pct": {
+              "cell": "M17",
+              "raw_value": 88.52,
+              "format": "#,##0.00",
+              "value": 88.52
+            }
+          }
+        },
+        {
+          "aba": "Igarapé-Miri-PA-2010",
+          "row_count": 37,
+          "rows_from": 9,
+          "rows_through": 47,
+          "sample_row": 44,
+          "item": "GESTÃO DA PROPRIEDADE FAMILIAR",
+          "cells": {
+            "valor": {
+              "cell": "B44",
+              "raw_value": 1436.57,
+              "format": "#,##0.00_);(#,##0.00)",
+              "value": 1436.57
+            },
+            "valor_unidade_produto": {
+              "cell": "C44",
+              "raw_value": 0.52,
+              "format": "#,##0.00_);(#,##0.00)",
+              "value": 0.52
+            },
+            "participacao_pct": {
+              "cell": "D44",
+              "raw_value": 1,
+              "format": "0.00%",
+              "value": 100
+            }
+          }
+        }
+      ]
+    },
+    "carnauba.xlsx": {
+      "sha256": "544b7391a1802bad42f7b8c15f7447b8b4d67c311b665c10554b674f216be7bd",
+      "sheets": 78,
+      "data_sheets": [
+        "Pó Cerífero-Granja-CE-2018",
+        "Pó Cerífero-Granja-CE-2019",
+        "Pó Cerífero-Granja-CE-2020",
+        "Pó Cerífero-Granja-CE-2021",
+        "Pó Cerífero-Granja-CE-2022",
+        "Cera-Russas-CE-2015",
+        "Cera-Russas-CE-2016",
+        "Cera-Russas-CE-2017",
+        "Cera-Russas-CE-2018",
+        "Cera-Russas-CE-2019",
+        "Cera-Russas-CE-2020",
+        "Cera-Russas-CE-2021",
+        "Cera-Russas-CE-2022",
+        "Pó Cerífero-Russas-CE-2009",
+        "Pó Cerífero-Russas-CE-2010",
+        "Pó Cerífero-Russas-CE-2011",
+        "Pó Cerífero-Russas-CE-2012",
+        "Pó Cerífero-Russas-CE-2013",
+        "Pó Cerífero-Russas-CE-2014",
+        "Pó Cerífero-Russas-CE-2015",
+        "Pó Cerífero-Russas-CE-2016",
+        "Pó Cerífero-Russas-CE-2017",
+        "Pó Cerífero-Russas-CE-2018",
+        "Pó Cerífero-Russas-CE-2019",
+        "Pó Cerífero-Russas-CE-2020",
+        "Pó Cerífero-Russas-CE-2021",
+        "Pó Cerífero-Russas-CE-2022",
+        "Pó Cerífero-Campo Maior-PI-2009",
+        "Pó Cerífero-Campo Maior-PI-2010",
+        "Pó Cerífero-Campo Maior-PI-2011",
+        "Pó Cerífero-Campo Maior-PI-2012",
+        "Pó Cerífero-Campo Maior-PI-2013",
+        "Pó Cerífero-Campo Maior-PI-2014",
+        "Pó Cerífero-Campo Maior-PI-2015",
+        "Pó Cerífero-Campo Maior-PI-2016",
+        "Pó Cerífero-Campo Maior-PI-2017",
+        "Pó Cerífero-Campo Maior-PI-2018",
+        "Pó Cerífero-Campo Maior-PI-2019",
+        "Pó Cerífero-Campo Maior-PI-2020",
+        "Pó Cerífero-Campo Maior-PI-2021",
+        "Pó Cerífero-Campo Maior-PI-2022",
+        "Pó Cerífero-Piripiri-PI-2009",
+        "Pó Cerífero-Piripiri-PI-2010",
+        "Pó Cerífero-Piripiri-PI-2011",
+        "Pó Cerífero-Piripiri-PI-2012",
+        "Pó Cerífero-Piripiri-PI-2013",
+        "Pó Cerífero-Piripiri-PI-2014",
+        "Pó Cerífero-Piripiri-PI-2015",
+        "Pó Cerífero-Piripiri-PI-2016",
+        "Pó Cerífero-Piripiri-PI-2017",
+        "Pó Cerífero-Piripiri-PI-2018",
+        "Pó Cerífero-Piripiri-PI-2019",
+        "Pó Cerífero-Piripiri-PI-2020",
+        "Pó Cerífero-Piripiri-PI-2021",
+        "Pó Cerífero-Piripiri-PI-2022",
+        "Cera-Açu-RN-2015",
+        "Cera-Açu-RN-2016",
+        "Cera-Açu-RN-2017",
+        "Cera-Açu-RN-2018",
+        "Cera-Açu-RN-2019",
+        "Cera-Açu-RN-2020",
+        "Cera-Açu-RN-2021",
+        "Cera-Açu-RN-2022",
+        "Pó-Cerífero-Açu-RN-2014",
+        "Pó-Cerífero-Açu-RN-2015",
+        "Pó-Cerífero-Açu-RN-2016",
+        "Pó Cerífero-Açu-RN-2017",
+        "Pó Cerífero-Açu-RN-2018",
+        "Pó Cerífero-Açu-RN-2019",
+        "Pó Cerífero-Açu-RN-2020",
+        "Pó Cerífero-Açu-RN-2021",
+        "Pó Cerífero-Açu-RN-2022",
+        "Pó Cerífero-Mossoró-RN-2009",
+        "Pó Cerífero-Mossoró-RN-2010",
+        "Pó Cerífero-Mossoró-RN-2011",
+        "Pó Cerífero-Mossoró-RN-2012",
+        "Pó Cerífero-Mossoró-RN-2013"
+      ],
+      "unresolved": [],
+      "identified_count": 77,
+      "parse_errors": [],
+      "parsed_count": 77,
+      "samples": [
+        {
+          "aba": "Cera-Russas-CE-2015",
+          "row_count": 43,
+          "rows_from": 9,
+          "rows_through": 51,
+          "sample_row": 12,
+          "item": "  3 - Mão-de-obra temporária",
+          "cells": {
+            "valor": {
+              "cell": "B12",
+              "raw_value": 420,
+              "format": "#,##0.00_);(#,##0.00)",
+              "value": 420
+            },
+            "valor_unidade_produto": {
+              "cell": "C12",
+              "raw_value": 1.94,
+              "format": "#,##0.00_);(#,##0.00)",
+              "value": 1.94
+            },
+            "participacao_pct": {
+              "cell": "D12",
+              "raw_value": 0.10647560874205338,
+              "format": "0.00%",
+              "value": 10.647560874205338
+            }
+          }
+        }
+      ]
+    },
+    "acai_2025.xlsx": {
+      "sha256": "2a489837c6f2013f14f80b489bf35c2b582024e78a99fbc8b8c2a6f3a56b89ad",
+      "sheets": 85,
+      "data_sheets": [
+        "Boca do Acre-AM-2024",
+        "Boca do Acre-AM-2025",
+        "Codajás-AM-2008",
+        "Codajás-AM-2009",
+        "Codajás-AM-2010",
+        "Codajás-AM-2011",
+        "Codajás-AM-2012",
+        "Codajás-AM-2013",
+        "Codajás-AM-2014",
+        "Codajás-AM-2015",
+        "Codajás-AM-2016",
+        "Codajás-AM-2017",
+        "Codajás-AM-2018",
+        "Codajás-AM-2019",
+        "Codajás-AM-2020",
+        "Codajás-AM-2021",
+        "Codajás-AM-2022",
+        "Codajás-AM-2023",
+        "Codajás-AM-2024",
+        "Abaetuba-PA-2016",
+        "Abaetuba-PA-2017",
+        "Abaetuba-PA-2018",
+        "Abaetuba-PA-2019",
+        "Abaetuba-PA-2020",
+        "Abaetuba-PA-2021",
+        "Abaetuba-PA-2022",
+        "Belém-PA-2017",
+        "Belém-PA-2018",
+        "Belém-PA-2019",
+        "Belém-PA-2020",
+        "Belém-PA-2021",
+        "Belém-PA-2022",
+        "Bujaru-PA-2019",
+        "Bujaru-PA-2020",
+        "Bujaru-PA-2021",
+        "Bujaru-PA-2022",
+        "Cametá-PA-2008",
+        "Cametá-PA-2009",
+        "Cametá-PA-2010",
+        "Cametá-PA-2011",
+        "Cametá-PA-2012",
+        "Cametá-PA-2013",
+        "Cametá-PA-2014",
+        "Curralinho-PA-2023",
+        "Curralinho-PA-2024",
+        "Curralinho-PA-2025",
+        "Igarapé-Miri-PA-2008",
+        "Igarapé-Miri-PA-2009",
+        "Igarapé-Miri-PA-2010",
+        "Igarapé-Miri-PA-2011",
+        "Igarapé-Miri-PA-2012",
+        "Igarapé-Miri-PA-2013",
+        "Igarapé-Miri-PA-2014",
+        "Igarapé-Miri-PA-2015",
+        "Igarapé-Miri-PA-2016",
+        "Igarapé-Miri-PA-2017",
+        "Igarapé-Miri-PA-2018",
+        "Igarapé-Miri-PA-2019",
+        "Igarapé-Miri-PA-2020",
+        "Igarapé-Miri-PA-2021",
+        "Igarapé-Miri-PA-2022",
+        "Igarapé-Miri-PA-2023",
+        "Igarapé-Miri-PA-2024",
+        "Igarapé-Miri-PA-2025",
+        "Limoeiro do Ajuru-PA-2023",
+        "Limoeiro do Ajuru-PA-2024",
+        "Limoeiro do Ajuru-PA-2025",
+        "Ponta de Pedras-PA-2008",
+        "Ponta de Pedras-PA-2009",
+        "Ponta de Pedras-PA-2010",
+        "Ponta de Pedras-PA-2011",
+        "Ponta de Pedras-PA-2012",
+        "Ponta de Pedras-PA-2013",
+        "Ponta de Pedras-PA-2014",
+        "Ponta de Pedras-PA-2015",
+        "Ponta de Pedras-PA-2016",
+        "Ponta de Pedras-PA-2017",
+        "Ponta de Pedras-PA-2018",
+        "Ponta de Pedras-PA-2019",
+        "Ponta de Pedras-PA-2020",
+        "Ponta de Pedras-PA-2021",
+        "Ponta de Pedras-PA-2022",
+        "Ponta de Pedras-PA-2023",
+        "Ponta de Pedras-PA-2024"
+      ],
+      "unresolved": [],
+      "identified_count": 84,
+      "parse_errors": [
+        {
+          "aba": "Igarapé-Miri-PA-2008",
+          "cell": "A49",
+          "value": 0
+        },
+        {
+          "aba": "Igarapé-Miri-PA-2009",
+          "cell": "A49",
+          "value": 0
+        }
+      ],
+      "parsed_count": 82,
+      "samples": []
+    }
+  }
+}

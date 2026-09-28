@@ -1,0 +1,1 @@
+{"@odata.context":"https://was-p.bcnet.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata$metadata#_CotacaoMoedaPeriodo","value":[{"paridadeCompra":1.16250,"paridadeVenda":1.16270,"cotacaoCompra":5.91080,"cotacaoVenda":5.91260,"dataHoraCotacao":"2026-09-03 10:03:11.059773","tipoBoletim":"Abertura"}]}

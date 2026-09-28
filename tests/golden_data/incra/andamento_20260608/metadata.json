@@ -1,0 +1,26 @@
+{
+  "source": "INCRA administrative publication",
+  "edition": "2026-06-08",
+  "files": [
+    {
+      "file": "publication.pdf",
+      "source_path": "andamento_probe/capturas_v2/request_001.body",
+      "sha256": "31b64548615ce682f54f0e11f7690ce2a9d49da477b8cad92b26b48b07e68d0f",
+      "bytes": 694165
+    },
+    {
+      "file": "publisher.html",
+      "source_path": "andamento_probe/capturas_v1/request_001.body",
+      "sha256": "1952c77e10572a294e417501620d55272b1d716673b4c5037403ca07b9a8e6cb",
+      "bytes": 411938
+    },
+    {
+      "file": "oracle.json",
+      "source_path": "andamento_probe/oracle_complete_v3/records.json",
+      "sha256": "132a5e554ccfa3c48152c19949f64f898fbcda04d8ca07db895939cc9e583060",
+      "bytes": 493593
+    }
+  ],
+  "oracle_basis": "PDF clipping and graphical regional groups; independent PDFium review; no SDK producer output",
+  "semantic_primary_key": []
+}

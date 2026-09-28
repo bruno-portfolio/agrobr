@@ -7,6 +7,7 @@ import pytest
 
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.utils.geo import fetch_arcgis_count, fetch_wfs, parse_wfs_hits
+from tests import helpers
 
 
 class TestParseWfsHits:
@@ -421,6 +422,45 @@ class TestParseGeojsonBase:
             "geometry": {"type": "Point", "coordinates": [0, 0]},
             "properties": props,
         }
+
+    @pytest.mark.parametrize(
+        "crs,aceito",
+        [
+            (None, True),
+            ({"type": "name", "properties": {"name": "urn:ogc:def:crs:EPSG::4326"}}, True),
+            ({"type": "name", "properties": {"name": "EPSG:4326"}}, True),
+            ({"type": "name", "properties": {"name": "urn:ogc:def:crs:EPSG::4674"}}, False),
+            ({"type": "link", "properties": {"href": "crs.wkt"}}, False),
+            ("EPSG:4326", False),
+        ],
+        ids=["ausente", "urn_4326", "nome_4326", "urn_4674", "sem_nome", "texto"],
+    )
+    def test_crs_declarado_confere_com_o_pedido(self, crs, aceito):
+        import json
+
+        from agrobr.utils.geo import parse_geojson_base
+
+        corpo: dict = {"type": "FeatureCollection", "features": [self._feature(col1="a")]}
+        if crs is not None:
+            corpo["crs"] = crs
+        dados = json.dumps(corpo).encode()
+        argumentos: dict = {
+            "source": "test",
+            "parser_version": 1,
+            "required_cols": {"col1"},
+            "max_features": 100,
+            "output_cols_empty": ["col1", "geometry"],
+            "truncation_event": "test_truncated",
+        }
+        if aceito:
+            with helpers.sem_excecao():
+                gdf = parse_geojson_base(dados, gpd, **argumentos)
+            assert gdf.crs.to_epsg() == 4326
+        else:
+            with pytest.raises((ParseError, KeyError, TypeError)) as caught:
+                parse_geojson_base(dados, gpd, **argumentos)
+            assert caught.type is ParseError
+            assert "diverge do EPSG:4326 solicitado" in str(caught.value)
 
     def test_normal(self):
         from agrobr.utils.geo import parse_geojson_base

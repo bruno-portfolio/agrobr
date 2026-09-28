@@ -69,7 +69,6 @@ docker build --build-arg EXTRAS="browser,pdf,polars" -t agrobr:extras .
 | `polars` | yes | Pre-built manylinux wheels |
 | `bigquery` | yes | Google Cloud client |
 | `geo` | **uncertain** | geopandas/pyogrio may work (GDAL bundled in the wheel). Not verified |
-| `app` | yes | Streamlit works, but adds ~200MB and requires `-p 8501:8501` |
 | `dev` | don't use | Dev tooling (pytest, ruff, mypy) |
 | `docs` | don't use | mkdocs |
 
@@ -106,5 +105,4 @@ docker run -it --rm \
 
 - **Ephemeral cache** without a volume mount. Use `-v agrobr-cache:/home/agrobr/.agrobr`.
 - **Image ~2.3GB** (Chromium ~1.5GB + pandas ~100MB + duckdb ~80MB + other deps).
-- **`agrobr/data/censo_1985/`** — 11MB of static CSVs included in the image (runtime data for `ibge.censo_municipal_1985()`).
-```
+- **`agrobr/data/censo_1985/`** — the 1985 municipal census Parquet package (8.8 MB, plus the 68 KB coverage file and the manifest) ships in the image; it is what `ibge.censo_agro_municipal_1985()` reads, with no network.

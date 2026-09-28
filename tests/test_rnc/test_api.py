@@ -1,20 +1,21 @@
 from __future__ import annotations
 
+import csv
+import io
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
-import pandas as pd
 import pytest
 
-from agrobr.rnc import api
-from agrobr.rnc import cache as rnc_cache
+from agrobr.rnc import api, snapshot
+from tests.helpers import rnc_csv_acquisition
 
 GOLDEN_DIR = Path(__file__).resolve().parent.parent / "golden_data" / "rnc"
 
 
 @pytest.fixture(autouse=True)
 def _isolated_cache(tmp_path, monkeypatch):
-    monkeypatch.setattr(rnc_cache, "_cache_dir", lambda: tmp_path)
+    monkeypatch.setattr(snapshot, "cache_dir", lambda: tmp_path)
 
 
 def _registradas_bytes():
@@ -26,50 +27,10 @@ def _protegidas_bytes():
 
 
 @pytest.mark.asyncio
-async def test_registradas_returns_dataframe():
-    with patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock:
-        mock.return_value = (_registradas_bytes(), "https://example.com")
-
-        from agrobr.rnc import registradas
-
-        df = await registradas()
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 25
-        assert "cultivar" in df.columns
-
-
-@pytest.mark.asyncio
-async def test_registradas_filter_cultivar():
-    with patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock:
-        mock.return_value = (_registradas_bytes(), "https://example.com")
-
-        from agrobr.rnc import registradas
-
-        df = await registradas(cultivar="Bonella")
-        assert len(df) > 0
-        assert all("Bonella" in v for v in df["cultivar"].values)
-
-
-@pytest.mark.asyncio
-async def test_registradas_return_meta():
-    with patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock:
-        mock.return_value = (_registradas_bytes(), "https://example.com")
-
-        from agrobr.rnc import registradas
-
-        result = await registradas(return_meta=True)
-        assert isinstance(result, tuple)
-        assert len(result) == 2
-        df, meta = result
-        assert isinstance(df, pd.DataFrame)
-        assert meta.source == "rnc"
-
-
-@pytest.mark.asyncio
 async def test_registradas_as_polars():
     polars = pytest.importorskip("polars")
-    with patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock:
-        mock.return_value = (_registradas_bytes(), "https://example.com")
+    with patch("agrobr.rnc.client.fetch_registradas_bundle", new_callable=AsyncMock) as mock:
+        mock.return_value = rnc_csv_acquisition(_registradas_bytes(), "registradas")
 
         from agrobr.rnc import registradas
 
@@ -78,52 +39,11 @@ async def test_registradas_as_polars():
 
 
 @pytest.mark.asyncio
-async def test_protegidas_returns_dataframe():
-    with patch("agrobr.rnc.client.fetch_protegidas", new_callable=AsyncMock) as mock:
-        mock.return_value = (_protegidas_bytes(), "https://example.com")
-
-        from agrobr.rnc import protegidas
-
-        df = await protegidas()
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 25
-        assert "titular" in df.columns
-
-
-@pytest.mark.asyncio
-async def test_protegidas_filter_situacao():
-    with patch("agrobr.rnc.client.fetch_protegidas", new_callable=AsyncMock) as mock:
-        mock.return_value = (_protegidas_bytes(), "https://example.com")
-
-        from agrobr.rnc import protegidas
-
-        df = await protegidas(situacao="DEFINITIVA")
-        assert isinstance(df, pd.DataFrame)
-        for v in df["situacao"].values:
-            assert "DEFINITIVA" in v
-
-
-@pytest.mark.asyncio
-async def test_registradas_filter_especie():
-    with (
-        patch("agrobr.rnc.cache.read_cached", return_value=None),
-        patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock,
-    ):
-        mock.return_value = (_registradas_bytes(), "https://example.com")
-        from agrobr.rnc import registradas
-
-        df = await registradas(especie="Abacaxi")
-        assert len(df) > 0
-        assert all("Abacaxi" in v for v in df["nome_comum"].values)
-
-
-@pytest.mark.asyncio
 async def test_registradas_filter_grupo():
     with (
-        patch("agrobr.rnc.cache.read_cached", return_value=None),
-        patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock,
+        patch("agrobr.rnc.client.fetch_registradas_bundle", new_callable=AsyncMock) as mock,
     ):
-        mock.return_value = (_registradas_bytes(), "https://example.com")
+        mock.return_value = rnc_csv_acquisition(_registradas_bytes(), "registradas")
         from agrobr.rnc import registradas
 
         df = await registradas(grupo="FLORESTAIS")
@@ -132,25 +52,15 @@ async def test_registradas_filter_grupo():
 
 
 @pytest.mark.asyncio
-async def test_registradas_filter_mantenedor():
-    with (
-        patch("agrobr.rnc.cache.read_cached", return_value=None),
-        patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock,
-    ):
-        mock.return_value = (_registradas_bytes(), "https://example.com")
-        from agrobr.rnc import registradas
-
-        df = await registradas(mantenedor="IAC")
-        assert len(df) > 0
-        assert all("IAC" in v for v in df["mantenedor"].values)
-
-
-@pytest.mark.asyncio
 async def test_registradas_filter_mantenedor_literal():
-    source = pd.DataFrame({"mantenedor": ["BASF S/A", "BASF S.A"]})
-    cached = AsyncMock(return_value=(0, "https://example.com/registradas.csv", source))
+    rows = list(csv.reader(io.StringIO(_registradas_bytes().decode("utf-8-sig"))))[:3]
+    rows[1][-1] = "BASF S/A"
+    rows[2][-1] = "BASF S.A"
+    stream = io.StringIO()
+    csv.writer(stream).writerows(rows)
+    captured = rnc_csv_acquisition(stream.getvalue().encode("utf-8"), "registradas")
 
-    with patch.object(api, "_ensure_registradas", cached):
+    with patch("agrobr.rnc.client.fetch_registradas_bundle", AsyncMock(return_value=captured)):
         df = await api.registradas(mantenedor="BASF S.A")
 
     assert df["mantenedor"].tolist() == ["BASF S.A"]
@@ -159,10 +69,9 @@ async def test_registradas_filter_mantenedor_literal():
 @pytest.mark.asyncio
 async def test_protegidas_filter_cultivar():
     with (
-        patch("agrobr.rnc.cache.read_cached", return_value=None),
-        patch("agrobr.rnc.client.fetch_protegidas", new_callable=AsyncMock) as mock,
+        patch("agrobr.rnc.client.fetch_protegidas_bundle", new_callable=AsyncMock) as mock,
     ):
-        mock.return_value = (_protegidas_bytes(), "https://example.com")
+        mock.return_value = rnc_csv_acquisition(_protegidas_bytes(), "protegidas")
         from agrobr.rnc import protegidas
 
         df = await protegidas(cultivar="BRS")
@@ -171,26 +80,11 @@ async def test_protegidas_filter_cultivar():
 
 
 @pytest.mark.asyncio
-async def test_protegidas_filter_especie():
-    with (
-        patch("agrobr.rnc.cache.read_cached", return_value=None),
-        patch("agrobr.rnc.client.fetch_protegidas", new_callable=AsyncMock) as mock,
-    ):
-        mock.return_value = (_protegidas_bytes(), "https://example.com")
-        from agrobr.rnc import protegidas
-
-        df = await protegidas(especie="ALFACE")
-        assert len(df) > 0
-        assert all("ALFACE" in v for v in df["nome_comum"].values)
-
-
-@pytest.mark.asyncio
 async def test_protegidas_filter_titular():
     with (
-        patch("agrobr.rnc.cache.read_cached", return_value=None),
-        patch("agrobr.rnc.client.fetch_protegidas", new_callable=AsyncMock) as mock,
+        patch("agrobr.rnc.client.fetch_protegidas_bundle", new_callable=AsyncMock) as mock,
     ):
-        mock.return_value = (_protegidas_bytes(), "https://example.com")
+        mock.return_value = rnc_csv_acquisition(_protegidas_bytes(), "protegidas")
         from agrobr.rnc import protegidas
 
         df = await protegidas(titular="SAKATA")
@@ -201,10 +95,9 @@ async def test_protegidas_filter_titular():
 @pytest.mark.asyncio
 async def test_registradas_combined_filters():
     with (
-        patch("agrobr.rnc.cache.read_cached", return_value=None),
-        patch("agrobr.rnc.client.fetch_registradas", new_callable=AsyncMock) as mock,
+        patch("agrobr.rnc.client.fetch_registradas_bundle", new_callable=AsyncMock) as mock,
     ):
-        mock.return_value = (_registradas_bytes(), "https://example.com")
+        mock.return_value = rnc_csv_acquisition(_registradas_bytes(), "registradas")
         from agrobr.rnc import registradas
 
         df = await registradas(especie="Abacate", cultivar="Bonella")

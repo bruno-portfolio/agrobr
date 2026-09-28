@@ -8,6 +8,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
+from pathlib import Path
 from typing import Any
 
 import structlog
@@ -20,11 +21,14 @@ from agrobr.utils.time import utcnow
 
 logger = structlog.get_logger()
 
+CEPEA_BASELINES = Path(__file__).resolve().parent / "baselines"
+
 
 class CheckStatus(StrEnum):
     OK = "ok"
     WARNING = "warning"
     FAILED = "failed"
+    NOT_VERIFIED = "not_verified"
 
 
 @dataclass
@@ -65,9 +69,9 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
     ):
         return CheckResult(
             source=config.source,
-            status=CheckStatus.WARNING,
+            status=CheckStatus.NOT_VERIFIED,
             latency_ms=0,
-            message=f"API key not set ({config.api_key_env_var})",
+            message=f"não verificado: {config.api_key_env_var} ausente, a fonte não foi consultada",
             details={},
             timestamp=utcnow(),
             category="api_key_missing",
@@ -76,6 +80,9 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
     start = time.monotonic()
     details: dict[str, Any] = {}
     headers = UserAgentRotator.get_headers(source="health_check")
+    chave = os.environ.get(config.api_key_env_var or "")
+    if config.api_key_header and chave:
+        headers[config.api_key_header] = chave
 
     try:
         async with httpx.AsyncClient(
@@ -148,6 +155,23 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
                         category="source_down",
                     )
 
+        if config.json_error_field:
+            try:
+                erro = response.json().get(config.json_error_field)
+            except (ValueError, AttributeError):
+                erro = "corpo não é um objeto JSON"
+            if erro:
+                details["json_error"] = str(erro)[:500]
+                return CheckResult(
+                    source=config.source,
+                    status=_source_down_status(config),
+                    latency_ms=latency,
+                    message=f"Response {config.json_error_field}: {details['json_error']}",
+                    details=details,
+                    timestamp=utcnow(),
+                    category="source_down",
+                )
+
         if latency > 5000:
             return CheckResult(
                 source=config.source,
@@ -193,7 +217,8 @@ async def check_cepea_deep() -> CheckResult:
     from agrobr.cepea import client as cepea_client
     from agrobr.cepea.parsers import fingerprint as fp
     from agrobr.cepea.parsers.detector import get_parser_with_fallback
-    from agrobr.validators.structural import compare_fingerprints
+    from agrobr.noticias_agricolas import parser as na_parser
+    from agrobr.validators.structural import compare_fingerprints, load_baseline
 
     start = time.monotonic()
     details: dict[str, Any] = {}
@@ -205,8 +230,9 @@ async def check_cepea_deep() -> CheckResult:
 
         details["fetch_ok"] = True
         details["latency_ms"] = latency
+        da_na = fetch_result.source == "noticias_agricolas"
 
-        if latency > 5000:
+        if latency > 5000 and not da_na:
             return CheckResult(
                 source=Fonte.CEPEA,
                 status=CheckStatus.WARNING,
@@ -217,10 +243,15 @@ async def check_cepea_deep() -> CheckResult:
                 category="slow",
             )
 
-        current_fp = fp.extract_fingerprint(html, Fonte.CEPEA, "health_check")
-        baseline_fp = fp.load_baseline_fingerprint(".structures/baseline.json")
-
-        if baseline_fp:
+        baseline_fp = load_baseline(Fonte.CEPEA, CEPEA_BASELINES)
+        if da_na:
+            details["fingerprint_nao_comparado"] = (
+                f"a página veio de {fetch_result.source}, e não do CEPEA"
+            )
+        elif baseline_fp is None:
+            details["fingerprint_nao_comparado"] = f"baseline indisponível em {CEPEA_BASELINES}"
+        else:
+            current_fp = fp.extract_fingerprint(html, Fonte.CEPEA, "health_check")
             similarity, diff = compare_fingerprints(current_fp, baseline_fp)
             details["fingerprint_similarity"] = similarity
             details["fingerprint_diff"] = diff
@@ -238,8 +269,12 @@ async def check_cepea_deep() -> CheckResult:
             elif similarity < 0.85:
                 details["warning"] = "Fingerprint drift detected"
 
-        parser, results = await get_parser_with_fallback(html, "soja")
-        details["parser_version"] = parser.version
+        if da_na:
+            results = na_parser.parse_indicador(html, "soja")
+            details["parser_version"] = na_parser.PARSER_VERSION
+        else:
+            parser, results = await get_parser_with_fallback(html, "soja")
+            details["parser_version"] = parser.version
         details["records_parsed"] = len(results)
 
         if not results:
@@ -253,6 +288,10 @@ async def check_cepea_deep() -> CheckResult:
                 category="parse_error",
             )
 
+        if "fingerprint_nao_comparado" in details:
+            details["warning"] = (
+                f"Fingerprint não comparado: {details['fingerprint_nao_comparado']}"
+            )
         status = CheckStatus.WARNING if details.get("warning") else CheckStatus.OK
         return CheckResult(
             source=Fonte.CEPEA,
@@ -372,6 +411,7 @@ def format_results(results: list[CheckResult]) -> str:
             CheckStatus.OK: "\u2713",
             CheckStatus.WARNING: "\u26a0",
             CheckStatus.FAILED: "\u2717",
+            CheckStatus.NOT_VERIFIED: "?",
         }[result.status]
 
         lines.append(

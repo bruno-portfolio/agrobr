@@ -2,6 +2,8 @@
 
 O módulo IBGE fornece acesso aos dados do Sistema IBGE de Recuperação Automática (SIDRA).
 
+As consultas SIDRA usam HTTP assíncrono direto, com timeout total de 120 segundos por tentativa, cancelamento e retry exponencial de falhas transitórias. Não há uma thread de transporte pendente após timeout. A montagem da consulta segue os [parâmetros oficiais do SIDRA](https://apisidra.ibge.gov.br/home/ajuda).
+
 ## Funções
 
 ### `pam`
@@ -38,8 +40,8 @@ async def pam(
 |--------|----------|
 | `area_plantada` | Área plantada (hectares) |
 | `area_colhida` | Área colhida (hectares) |
-| `producao` | Quantidade produzida (toneladas) |
-| `rendimento` | Rendimento médio (kg/ha) |
+| `producao` | Quantidade produzida (ver `unidade_producao`) |
+| `rendimento` | Rendimento médio (ver `unidade_rendimento`) |
 
 **Exemplo:**
 
@@ -82,12 +84,14 @@ async def lspa(
 |-----------|------|-----------|
 | `produto` | `str` | Código do produto |
 | `ano` | `int \| str \| None` | Ano. Default: atual |
-| `mes` | `int \| str \| None` | Mês (1-12). Default: último |
+| `mes` | `int \| str \| None` | Mês (1-12). Sem filtro: meses disponíveis do ano solicitado |
 | `uf` | `str \| None` | Filtrar por UF |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
-**Produtos LSPA (19 códigos):**
+O [contrato LSPA 2.0](../contracts/lspa.md) retorna uma linha por ano, mês, localidade, produto e variável. `mes` sempre está presente; `variavel`, `variavel_cod` e `unidade` identificam a medida. `datasets.estimativa_safra` continua consolidando o mês mais recente e convertendo às unidades do próprio contrato.
+
+**Produtos LSPA (21 códigos, além dos aliases):**
 
 | Código | Produto |
 |--------|---------|
@@ -99,13 +103,15 @@ async def lspa(
 | `feijao_2` | Feijão 2ª safra |
 | `feijao_3` | Feijão 3ª safra |
 | `trigo` | Trigo |
-| `algodao` | Algodão herbáceo |
-| `cafe` | Café |
+| `algodao` | Algodão herbáceo em caroço |
+| `cafe_arabica` | Café arábica (desde 2012) |
+| `cafe_canephora` | Café canephora (desde 2012) |
 | `amendoim_1` | Amendoim 1ª safra |
 | `amendoim_2` | Amendoim 2ª safra |
 | `aveia` | Aveia |
 | `batata_1` | Batata-inglesa 1ª safra |
 | `batata_2` | Batata-inglesa 2ª safra |
+| `batata_3` | Batata-inglesa 3ª safra |
 | `cevada` | Cevada |
 | `mamona` | Mamona |
 | `sorgo` | Sorgo |
@@ -120,7 +126,12 @@ Nomes genéricos expandem automaticamente para sub-safras e retornam um DataFram
 | `milho` | `milho_1` + `milho_2` |
 | `feijao` | `feijao_1` + `feijao_2` + `feijao_3` |
 | `amendoim` | `amendoim_1` + `amendoim_2` |
-| `batata` | `batata_1` + `batata_2` |
+| `batata` | `batata_1` + `batata_2` + `batata_3` |
+| `cafe` | Total oficial até 2011; `cafe_arabica` + `cafe_canephora` desde 2012 |
+
+As espécies e safras permanecem separadas em `produto`. O total histórico de café
+usa `produto="cafe"`. Rendimentos não são aditivos; para um agregado, calcule
+produção × 1.000 / área colhida. `produtos_lspa()` inclui códigos e aliases.
 
 **Exemplo:**
 
@@ -200,8 +211,10 @@ async def ppm(
 | `caprino` | Caprino |
 | `ovino` | Ovino |
 | `galinaceos_total` | Galináceos (total) |
-| `galinhas_poedeiras` | Galinhas poedeiras |
+| `galinhas` | Galinhas (categoria IBGE "Galináceos - galinhas": inclui poedeiras e matrizeiras) |
 | `codornas` | Codornas |
+
+`galinhas_poedeiras` segue aceito como alias depreciado de `galinhas`, com `FutureWarning`; a saída vem com `especie="galinhas"`.
 
 **Produtos de origem animal:**
 
@@ -363,12 +376,16 @@ async def censo_agro(
 | `efetivo_rebanho` | `cabecas` | cabeças |
 | `uso_terra` | `estabelecimentos` | unidades |
 | `uso_terra` | `area` | hectares |
-| `lavoura_temporaria` | `estabelecimentos` | unidades |
+| `lavoura_temporaria` | `estabelecimentos` (2017) ou `informantes` (1995) | unidades |
 | `lavoura_temporaria` | `producao` | varia |
 | `lavoura_temporaria` | `area_colhida` | hectares |
-| `lavoura_permanente` | `estabelecimentos` | unidades |
+| `lavoura_permanente` | `estabelecimentos` (2017) ou `informantes` (1995) | unidades |
 | `lavoura_permanente` | `producao` | varia |
 | `lavoura_permanente` | `area_colhida` | hectares |
+
+Em 1995, as lavouras publicam `informantes`: a variável 151 da SIDRA (tabelas 492 e 504), que a SIDRA chama de
+"Número de informantes". Em 2017, `estabelecimentos` é o "Número de estabelecimentos agropecuários com lavoura
+temporária" (10084) e, na permanente, "com 50 pés e mais existentes" (9504).
 
 **Categorias dos novos temas (exemplos):**
 
@@ -423,9 +440,9 @@ async def temas_censo_agro() -> list[str]
 
 ### `censo_agro_legado`
 
-Obtém dados do Censo Agropecuário 1995/96 — 6 temas legados via FTP (XLS).
+Obtém dados do Censo Agropecuário 1995/96 — seis temas via FTP, em ZIPs com tabelas XLS ou HTML.
 
-> **Nota:** `nivel='uf'` retorna dados por **mesorregião** (não por UF individual) — particularidade do formato legado; `nivel='municipio'` e `nivel='brasil'` funcionam normalmente.
+O [contrato 2.0](../contracts/censo_agropecuario_legado.md) distingue Brasil, totais estaduais e municípios pelas tabelas oficiais. `nivel='uf'` é o padrão e consulta as 27 UFs quando `uf` não é informado. `nivel='brasil'` inclui as categorias nacionais de atividade e não aceita filtro `uf`. A coluna `uf` identifica o estado de municípios homônimos; códigos municipais ausentes na fonte permanecem nulos. Variáveis e unidades vêm dos cabeçalhos reais. O IBGE não publica a tabela municipal de máquinas do Pará (o `Para/Tab_7Mn.zip` traz a Tabela 6, de pessoal ocupado): `tema='maquinas'` sem `uf` devolve as outras 26 UFs, com o aviso em `MetaInfo.validation_warnings` e um `UserWarning`, e `uf='PA'` levanta `SourceUnavailableError`.
 
 ```python
 async def censo_agro_legado(
@@ -463,14 +480,14 @@ async def censo_agro_legado(
 ```python
 from agrobr import ibge
 
-# Tecnologia por mesorregião
+# Tecnologia por UF
 df = await ibge.censo_agro_legado('tecnologia')
 
 # Pessoal ocupado em São Paulo
 df = await ibge.censo_agro_legado('pessoal_ocupado', uf='SP')
 
-# Máquinas — nível município
-df = await ibge.censo_agro_legado('maquinas', nivel='municipio')
+# Máquinas nos municípios de Goiás
+df = await ibge.censo_agro_legado('maquinas', uf='GO', nivel='municipio')
 
 # Com metadados
 df, meta = await ibge.censo_agro_legado('tecnologia', return_meta=True)
@@ -582,7 +599,8 @@ agrobr ibge temas-historico
 
 ### `censo_agro_municipal_1985`
 
-Obtém dados do Censo Agropecuário 1985 a nível municipal (extraídos via OCR de PDFs IBGE).
+Censo Agropecuário 1985, tabelas municipais 67 a 119 dos 28 volumes estaduais do IBGE (27 UFs; Minas Gerais em 2 volumes). O
+agrobr extraiu os números dos PDFs do IBGE e os traz num pacote local (`agrobr/data/censo_1985/`): a consulta não usa a rede.
 
 ```python
 async def censo_agro_municipal_1985(
@@ -595,56 +613,38 @@ async def censo_agro_municipal_1985(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parâmetros:**
-
-| Parâmetro | Tipo | Descrição |
-|-----------|------|-----------|
-| `tema` | `str` | Tema (53 disponíveis — use `temas_censo_agro_municipal_1985()`) |
-| `uf` | `str \| None` | Filtrar por UF (22 UFs disponíveis) |
-| `nivel` | `str \| None` | Filtrar: total, mesorregiao, microrregiao, municipio |
-| `as_polars` | `bool` | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Retornar MetaInfo |
-
-**Exemplo:**
-
-```python
-from agrobr import ibge
-
-# Propriedade de terras em São Paulo
-df = await ibge.censo_agro_municipal_1985('propriedade_terras', uf='SP')
-
-# Apenas municípios
-df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', nivel='municipio')
-
-# Com metadados
-df, meta = await ibge.censo_agro_municipal_1985('propriedade_terras', return_meta=True)
-```
-
----
-
-### `temas_censo_agro_municipal_1985`
-
-Lista temas disponíveis no Censo Agropecuário Municipal 1985.
+- **1 linha por casa do PDF**, com o `status` de cada uma: a casa do número e também as sem leitura, as sem coluna identificada e
+  as fora da grade.
+- **`valor` só vem na casa confirmada pelas somas impressas** (município → microrregião → mesorregião → UF). `valor_lido` traz a
+  leitura sempre. Filtre por `status` para escolher o nível de confiança; a precisão medida de cada `status` está no
+  [contrato](../contracts/censo_agropecuario_municipal_1985.md).
+- `tema`: um dos 53 temas (`temas_censo_agro_municipal_1985()`), um por tabela, pelo título impresso.
+- `uf`: sigla. A UF cujo volume não traz a tabela levanta `InvalidParameterError` com o motivo (o IBGE omite a tabela que não se
+  aplica ao estado). A tabela que está no volume, mas de que a extração não leu nenhuma casa (AM 80, AP 80, RR 80 e RR 119),
+  levanta `ParseError` com as páginas e o motivo.
+- `nivel`: `uf`, `mesorregiao`, `microrregiao` ou `municipio`.
+- Tema, UF ou nível inválidos levantam `InvalidParameterError` antes de ler o pacote.
+- `MetaInfo`:
+  - com 1 volume, `source_url` e `raw_content_hash` são o PDF do IBGE e o SHA-256 dele;
+  - com mais de 1, são o catálogo e o SHA-256 da lista de PDFs.
+  - `source_method="pacote"`, `from_cache=False`; o `source_details` traz os volumes e a cobertura por página da consulta.
 
 ```python
-async def temas_censo_agro_municipal_1985() -> list[str]
+df = await ibge.censo_agro_municipal_1985("efetivo_bovinos", uf="ES")
+confirmadas = df[df["valor"].notna()]
 ```
 
-#### CLI
+### `temas_censo_agro_municipal_1985` / `cobertura_censo_agro_municipal_1985`
 
-```bash
-# Dados de propriedade de terras em SP
-agrobr ibge censo-municipal-1985 propriedade_terras --uf SP
+`temas_censo_agro_municipal_1985()` lista os 53 temas. `cobertura_censo_agro_municipal_1985()` dá, por tema, as UFs com casas no
+pacote.
 
-# Formato CSV
-agrobr ibge censo-municipal-1985 efetivo_bovinos --formato csv
-
-# Filtrar por nível
-agrobr ibge censo-municipal-1985 utilizacao_terras --nivel municipio --uf MG
-
-# Listar temas disponíveis
-agrobr ibge temas-municipal-1985
+```python
+temas = await ibge.temas_censo_agro_municipal_1985()
+cobertura = await ibge.cobertura_censo_agro_municipal_1985()
 ```
+
+A CLI tem `agrobr ibge temas-municipal-1985` e `agrobr ibge censo-municipal-1985 <tema> [--uf] [--nivel] [--formato]`.
 
 ---
 
@@ -901,7 +901,7 @@ df, meta = await ibge.pib_agro(return_meta=True)
 | Frequência | Anual | Mensal | Anual | Trimestral | Anual | Trimestral | Trimestral | Decenial | Única (1995/96) | Decenial | Única (1985) |
 | Granularidade | Até município | Até UF | Até município | Brasil + UF | Até município | UF | Brasil | Até município | Até município | Brasil/Região/UF | Até município |
 | Tipo | Consolidados | Estimativas | Consolidados | Consolidados | Consolidados | Consolidados | Estimativas | Censitários | Censitários (FTP) | Censitários | Censitários (OCR) |
-| Disponibilidade | T+1 ano | T+1 mês | T+1 ano | T+2 meses | T+1 ano | T+2 meses | T+2 meses | Pós-censo | Estático | Estático | Estático |
+| Disponibilidade | T+1 ano | T+1 mês | T+1 ano | T+2 meses | T+1 ano | T+2 meses | T+2 meses | Pós-censo | Estático | Estático | Estático (pacote local) |
 | Escopo | Lavouras | Lavouras | Pecuária | Abate | Silvicultura + Extr. vegetal | Leite (aquisição, industrialização) | PIB setorial | Estrutura agro | 6 temas legados | 9 temas (1920-2006) | 53 temas (1985) |
 
 ## Tabelas SIDRA Utilizadas
@@ -960,7 +960,7 @@ df = ibge.censo_agro('preparo_solo', ano=2017)
 df = ibge.censo_agro_legado('tecnologia')
 df = ibge.censo_agro_legado('pessoal_ocupado', uf='SP')
 df = ibge.censo_agro_historico('estabelecimentos_area', ano=1985)
-df = ibge.censo_agro_municipal_1985('propriedade_terras', uf='SP')
+temas_1985 = ibge.temas_censo_agro_municipal_1985()
 df = ibge.silvicultura('madeira_tora', ano=2023)
 df = ibge.extracao_vegetal('acai', ano=2023)
 df = ibge.leite_trimestral(trimestre='202303')
@@ -975,7 +975,32 @@ df = ibge.pib_agro(trimestre='202501')
 - PAM é consolidada anualmente após colheita
 - PPM é consolidada anualmente (setembro), série desde 1974
 - Abate Trimestral disponível desde 1997, atualizado a cada trimestre (T+2 meses)
-- Censo Agropecuário: 11 temas, dados de 1995, 2006 e/ou 2017 conforme disponibilidade. Referência 2017: out/2016 a set/2017. Cache 30 dias
-- Censo Agropecuário Legado: 6 temas FTP (tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro). Ano fixo 1995. Cache 90 dias
-- Série Histórica: 9 temas, 1920-2006, até UF (municipal NÃO disponível). Unidades mistas por categoria (Aves=Mil cabeças, etc). Cache 30 dias
-- Censo Municipal 1985: 53 temas, dados municipais de 22 UFs, extraídos via OCR de PDFs estaduais do IBGE. Dados estáticos (bundled). Campo `confianca` indica qualidade OCR
+- Censo Agropecuário: 11 temas, dados de 1995, 2006 e/ou 2017 conforme disponibilidade. Referência 2017: out/2016 a set/2017
+- Censo Agropecuário Legado: 6 temas FTP (tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro). Ano fixo 1995
+- Série Histórica: 9 temas, 1920-2006, até UF (municipal NÃO disponível). Unidades mistas por categoria (Aves=Mil cabeças, etc)
+- Censo Municipal 1985: 53 temas (tabelas 67 a 119), 27 UFs, casa a casa, num pacote local; `valor` só na casa confirmada pelas somas impressas e `valor_lido` sempre, com o `status` de cada casa (contrato 2.0)
+
+## Unidades e quebras históricas da PAM
+
+Os valores publicados não são convertidos implicitamente. `unidade_producao`, `unidade_rendimento` e `unidade_valor_producao` identificam a escala de cada linha. Laranja anterior a 2001 usa `mil_frutos` e `frutos/ha`; desde 2001, `ton` e `kg/ha`. `condicao_produto` distingue café `em_coco` até 2001 e `beneficiado` desde 2002. As moedas históricas permanecem identificadas, sem conversão para reais nem correção de inflação. Consulte as [notas metodológicas do IBGE](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
+
+`localidade_cod` (contrato `producao_anual` 2.1) traz o código IBGE da localidade como o SIDRA publica (D1C): 7 dígitos no município, 2 na UF e 1 no Brasil. Use-o para juntar municípios entre anos, porque o nome publicado muda (e o do DF sai como "Brasília (DF)", sem o " - UF" dos demais). No `producao_anual`, só as linhas do IBGE trazem o código; o fallback da CONAB não.
+
+O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.1; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.
+
+O parser PAM 2 preserva também localidades e medidas inteiramente ausentes ou suprimidas. Duas observações para a mesma localidade, ano e medida, inclusive aliases de variável que colidem, geram `ParseError`; variáveis sem mapeamento também são recusadas. Não há seleção silenciosa do primeiro valor. O schema permanece 2.0.
+
+Nas APIs PEVS, `variavel="valor_producao"` preserva a unidade monetária publicada em `unidade` e retorna `valor` como `float64`, mesmo quando todos os valores são inteiros. O parser é 2; os contratos de silvicultura e extrativismo permanecem 1.0.
+
+As APIs trimestrais de abate, leite e PIB usam parser 2. No abate, `-` representa
+zero, enquanto `X` e `...` continuam nulos; peso disponível é preservado mesmo
+sem a observação de cabeças. Abate e leite rejeitam observações duplicadas na
+mesma variável, trimestre e localidade antes do cruzamento. `preco_medio` do
+leite e `valor` do PIB usam `float64`, inclusive quando todos os valores são inteiros.
+
+O censo SIDRA atual usa parser 3, que publica a linha `Total` da fonte, e o
+histórico usa parser 2. Nos dois, `-` representa zero, e
+`X`/`...` continuam nulos. A chave ano/localidade/tema/categoria/variável
+deve ser única, inclusive entre tabelas complementares. No preparo do solo
+com variável como categoria, o ano da resposta é preservado quando informado;
+o ano da tabela só é usado quando essa dimensão está ausente.

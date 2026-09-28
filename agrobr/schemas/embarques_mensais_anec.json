@@ -1,0 +1,207 @@
+{
+  "name": "embarques_mensais_anec",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "edicao_id",
+    "revisado_em",
+    "ano",
+    "mes",
+    "produto"
+  ],
+  "required_columns": [
+    "ano",
+    "mes",
+    "produto",
+    "valor_ton",
+    "eh_estimativa",
+    "valor_min_ton",
+    "valor_max_ton",
+    "ano_relatorio",
+    "semana_relatorio",
+    "edicao_id",
+    "publicado_em",
+    "revisado_em"
+  ],
+  "dtypes": {
+    "ano": "int",
+    "mes": "int",
+    "produto": "str",
+    "valor_ton": "float",
+    "eh_estimativa": "bool",
+    "valor_min_ton": "float",
+    "valor_max_ton": "float",
+    "ano_relatorio": "int",
+    "semana_relatorio": "int",
+    "edicao_id": "str",
+    "publicado_em": "datetime",
+    "revisado_em": "datetime"
+  },
+  "nullable": {
+    "ano": false,
+    "mes": false,
+    "produto": false,
+    "valor_ton": true,
+    "eh_estimativa": false,
+    "valor_min_ton": true,
+    "valor_max_ton": true,
+    "ano_relatorio": false,
+    "semana_relatorio": false,
+    "edicao_id": false,
+    "publicado_em": false,
+    "revisado_em": false
+  },
+  "columns": [
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1900,
+      "max_value": null
+    },
+    {
+      "name": "mes",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "valor_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "eh_estimativa",
+      "type": "bool",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "valor_min_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "valor_max_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "ton",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "ano_relatorio",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 2026,
+      "max_value": null
+    },
+    {
+      "name": "semana_relatorio",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 53
+    },
+    {
+      "name": "edicao_id",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "publicado_em",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "revisado_em",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "ano_min": 1900,
+    "mes_min": 1,
+    "mes_max": 12,
+    "valor_ton_min": 0,
+    "valor_min_ton_min": 0,
+    "valor_max_ton_min": 0,
+    "ano_relatorio_min": 2026,
+    "semana_relatorio_min": 1,
+    "semana_relatorio_max": 53
+  },
+  "guarantees": [
+    "Volumes em toneladas; ausências não são convertidas em zero",
+    "Faixas publicadas preservam os limites e deixam valor_ton ausente",
+    "eh_estimativa indica a marca de programação do boletim; falso não garante mês realizado",
+    "Edição e atualização do arquivo identificam a versão publicada"
+  ]
+}

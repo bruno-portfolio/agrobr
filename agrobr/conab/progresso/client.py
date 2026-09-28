@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+import posixpath
 from functools import partial
+from urllib.parse import urljoin, urlsplit
 
 import httpx
 import structlog
 from bs4 import BeautifulSoup
 
-from agrobr.constants import MIN_XLSX_SIZE, URLS, Fonte
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.constants import URLS, Fonte
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import io
 
 from .models import BASE_URL
 
@@ -21,6 +24,24 @@ logger = structlog.get_logger()
 TIMEOUT = get_timeout(read=60.0)
 
 PAGE_SIZE = 20
+
+_CONAB_HOST = urlsplit(BASE_URL).netloc
+
+
+async def _so_na_conab(request: httpx.Request) -> None:
+    """Recusa, antes de enviar, o pedido (a ``semana_url``, o redirecionamento dela ou um link) fora da CONAB."""
+    url = request.url
+    if (
+        url.scheme != "https"
+        or url.host != _CONAB_HOST
+        or url.port is not None
+        or url.userinfo
+        or not f"{url.path}/".startswith("/conab/")
+    ):
+        raise InvalidParameterError(
+            f"pedido fora da CONAB recusado: {url}; a semana_url e os links dela têm de ficar em "
+            f"https://{_CONAB_HOST}/conab/"
+        )
 
 
 def _extract_week_links(html: str) -> list[tuple[str, str]]:
@@ -37,13 +58,89 @@ def _extract_week_links(html: str) -> list[tuple[str, str]]:
     return results
 
 
-def _extract_plantio_link(html: str) -> str | None:
+def _is_spreadsheet_link(url: str) -> bool:
+    return urlsplit(url).path.lower().endswith((".xlsx", ".xls", "/@@download/file"))
+
+
+def _extract_plantio_link(html: str, page_url: str = _CONAB_BASE + "/") -> str | None:
     soup = BeautifulSoup(html, "lxml")
-    for a in soup.find_all("a", href=True):
-        href = str(a["href"])
-        if "plantio" in href.lower() and "colheita" in href.lower():
-            return href if href.startswith("http") else f"{_CONAB_BASE}{href}"
+    node = soup.select_one("#content-core") or soup.select_one("#content") or soup
+    candidates = []
+    for anchor in node.select("a[href]"):
+        label = (str(anchor["href"]) + " " + anchor.get_text(" ", strip=True)).lower()
+        if "plantio" in label and "colheita" in label:
+            candidates.append(anchor)
+    for anchor in candidates:
+        if _is_spreadsheet_link(str(anchor["href"])):
+            return urljoin(page_url, str(anchor["href"]))
+    for anchor in candidates:
+        if (
+            urlsplit(str(anchor["href"])).path.rstrip("/").endswith("/view")
+            or anchor.get("title") == "File"
+        ):
+            return urljoin(page_url, str(anchor["href"]))
+    for anchor in candidates:
+        if not posixpath.splitext(urlsplit(str(anchor["href"])).path)[1]:
+            return urljoin(page_url, str(anchor["href"]))
     return None
+
+
+def _extract_download_link(html: str, page_url: str) -> str:
+    soup = BeautifulSoup(html, "lxml")
+    node = soup.select_one("#content-core") or soup.select_one("#content") or soup
+    links = {
+        urljoin(page_url, str(anchor["href"]))
+        for anchor in node.select("a[href]")
+        if _is_spreadsheet_link(str(anchor["href"]))
+    }
+    if len(links) != 1:
+        raise SourceUnavailableError(
+            source="conab_progresso",
+            url=page_url,
+            last_error=f"Ficha contém {len(links)} downloads de planilha candidatos: {page_url}",
+        )
+    return next(iter(links))
+
+
+async def _get(client: httpx.AsyncClient, url: str) -> httpx.Response:
+    response = await retry_on_status(partial(client.get, url), source="conab")
+    if response.status_code != 200:
+        raise SourceUnavailableError(
+            source="conab_progresso", url=url, last_error=f"HTTP {response.status_code}"
+        )
+    return response
+
+
+def _validate_spreadsheet(content: bytes, url: str) -> None:
+    try:
+        io.validate_download(
+            content, kinds=("xlsx", "xls"), source="conab_progresso", url=url, min_size=8
+        )
+    except SourceUnavailableError as error:
+        preview = content[:60].decode("utf-8", errors="replace")
+        reason = (
+            "página HTML recebida no lugar do arquivo"
+            if content.lstrip().startswith(b"<")
+            else "assinatura XLSX/XLS inválida"
+        )
+        raise SourceUnavailableError(
+            source="conab_progresso",
+            url=url,
+            last_error=f"{reason}; url={url}; início={preview!r}",
+        ) from error
+
+
+async def _download_spreadsheet(client: httpx.AsyncClient, url: str) -> tuple[bytes, str]:
+    response = await _get(client, url)
+    try:
+        _validate_spreadsheet(response.content, url)
+    except SourceUnavailableError:
+        if _is_spreadsheet_link(url):
+            raise
+        url = _extract_download_link(response.text, str(response.url))
+        response = await _get(client, url)
+        _validate_spreadsheet(response.content, url)
+    return response.content, url
 
 
 async def list_semanas(max_pages: int = 4) -> list[tuple[str, str]]:
@@ -72,17 +169,11 @@ async def fetch_xlsx_semanal(week_url: str) -> tuple[bytes, str]:
         timeout=TIMEOUT,
         headers=UserAgentRotator.get_headers(source="conab_progresso"),
         follow_redirects=True,
+        event_hooks={"request": [_so_na_conab]},
     ) as client:
         logger.debug("conab_progresso_week", url=week_url)
-        resp = await retry_on_status(lambda: client.get(week_url), source="conab")
-        if resp.status_code != 200:
-            raise SourceUnavailableError(
-                source="conab_progresso",
-                url=week_url,
-                last_error=f"HTTP {resp.status_code}",
-            )
-
-        xlsx_url = _extract_plantio_link(resp.text)
+        resp = await _get(client, week_url)
+        xlsx_url = _extract_plantio_link(resp.text, str(resp.url))
         if xlsx_url is None:
             raise SourceUnavailableError(
                 source="conab_progresso",
@@ -91,26 +182,9 @@ async def fetch_xlsx_semanal(week_url: str) -> tuple[bytes, str]:
             )
 
         logger.debug("conab_progresso_xlsx", url=xlsx_url)
-        xlsx_resp = await retry_on_status(lambda: client.get(xlsx_url), source="conab")
-        if xlsx_resp.status_code != 200:
-            raise SourceUnavailableError(
-                source="conab_progresso",
-                url=xlsx_url,
-                last_error=f"HTTP {xlsx_resp.status_code}",
-            )
-
-        ct = xlsx_resp.headers.get("content-type", "")
-        if "spreadsheet" not in ct and "excel" not in ct and len(xlsx_resp.content) < MIN_XLSX_SIZE:
-            raise SourceUnavailableError(
-                source="conab_progresso",
-                url=xlsx_url,
-                last_error=f"Content-Type inesperado: {ct}",
-            )
-
-        logger.info(
-            "conab_progresso_xlsx_ok", source="conab_progresso", size=len(xlsx_resp.content)
-        )
-        return xlsx_resp.content, xlsx_url
+        content, download_url = await _download_spreadsheet(client, xlsx_url)
+        logger.info("conab_progresso_xlsx_ok", source="conab_progresso", size=len(content))
+        return content, download_url
 
 
 async def fetch_latest() -> tuple[bytes, str, str]:

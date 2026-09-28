@@ -35,7 +35,7 @@ async def movimentacao(
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ano` | `int` | Data year (2010-2025) |
+| `ano` | `int` | Data year, from 2010 to the latest published year |
 | `tipo_navegacao` | `str \| None` | longo_curso, cabotagem, interior, apoio_maritimo, apoio_portuario |
 | `natureza_carga` | `str \| None` | granel_solido, granel_liquido, carga_geral, conteiner |
 | `mercadoria` | `str \| None` | Filter by commodity (case-insensitive substring) |

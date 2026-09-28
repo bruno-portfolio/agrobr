@@ -1,17 +1,19 @@
 from __future__ import annotations
 
+import hashlib
 import time
-from datetime import UTC, datetime
-from typing import Any, Literal, overload
+import warnings
+from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
 from agrobr.models import MetaInfo
+from agrobr.utils import time as time_utils
 from agrobr.utils.result import build_source_meta, finalize_result
 
 from . import client, parser
-from .models import resolve_commodity_code, resolve_country_code
+from .models import resolve_attributes, resolve_commodity_code, resolve_country_code
 
 logger = structlog.get_logger()
 
@@ -54,38 +56,41 @@ async def psd(
     api_key: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     commodity_code = resolve_commodity_code(commodity)
-    year = market_year or datetime.now(UTC).year
+    pedidos = resolve_attributes(attributes)
+    country_lower = country.strip().lower()
 
+    async def buscar(ano: int) -> client.RespostaPSD:
+        if country_lower == "world":
+            return await client.fetch_psd_world(commodity_code, ano, api_key)
+        if country_lower == "all":
+            return await client.fetch_psd_all_countries(commodity_code, ano, api_key)
+        country_code = resolve_country_code(country)
+        return await client.fetch_psd_country(commodity_code, country_code, ano, api_key)
+
+    tentados = [market_year or time_utils.utcnow().year]
     logger.info(
         "usda_psd",
         commodity=commodity,
         commodity_code=commodity_code,
         country=country,
-        year=year,
+        year=tentados[0],
     )
 
     t0 = time.monotonic()
-    source_url = f"{client.BASE_URL}/psd/commodity/{commodity_code}"
-
-    country_lower = country.strip().lower()
-    if country_lower == "world":
-        records = await client.fetch_psd_world(commodity_code, year, api_key)
-    elif country_lower == "all":
-        records = await client.fetch_psd_all_countries(commodity_code, year, api_key)
-    else:
-        country_code = resolve_country_code(country)
-        records = await client.fetch_psd_country(commodity_code, country_code, year, api_key)
-
+    resposta = await buscar(tentados[0])
+    df = parser.parse_psd_response(resposta.dados)
+    if market_year is None and df.empty:
+        tentados.append(tentados[0] - 1)
+        resposta = await buscar(tentados[-1])
+        df = parser.parse_psd_response(resposta.dados)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_psd_response(records)
 
-    if attributes:
-        df = parser.filter_attributes(df, attributes)
+    if pedidos:
+        df = parser.filter_attributes(df, pedidos)
 
     if pivot:
         df = parser.pivot_attributes(df)
@@ -94,7 +99,7 @@ async def psd(
 
     meta = build_source_meta(
         "usda",
-        source_url,
+        resposta.url,
         "httpx",
         fetch_ms,
         parse_ms,
@@ -102,5 +107,19 @@ async def psd(
         parser.PARSER_VERSION,
         attempted_sources=["usda_psd"],
         selected_source="usda_psd",
+        raw_content_hash=hashlib.sha256(resposta.corpo).hexdigest() if resposta.corpo else None,
+        raw_content_size=len(resposta.corpo),
+        source_details={
+            "market_year": tentados[-1],
+            "market_year_tentados": tentados,
+            "market_year_padrao": market_year is None,
+        },
     )
+    if resposta.status == 404:
+        aviso = (
+            f"usda: a fonte respondeu HTTP 404 para o ano {tentados[-1]}: sem dado publicado para a "
+            "combinação (ou a URL da API mudou); o resultado vem vazio"
+        )
+        meta.validation_warnings.append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=2)
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

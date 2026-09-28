@@ -1,0 +1,42 @@
+{
+ "descricao": "SIDRA tabela 5457 (PAM), soja em grão 2024, nível município: DF (5300108) e as 15 cidades de RR. Corpos inteiros da Rodada 25 de conferência, pedidos com linha de cabeçalho (sem /h/n) e com v antes de p (D2 = variável, D3 = ano). O cliente pede /h/n e p antes de v: o teste tira a linha de cabeçalho e troca D2 com D3, sem mexer nos valores. Oráculo: o D1C de cada município.",
+ "origem": "rodada_25",
+ "corpos": {
+  "DF": {
+   "arquivo": "DF.json",
+   "bytes": 2085,
+   "sha256": "dcd036a8ee4dcbe279d157ac5eb152c92525aebc4ef5e92ece58b149d2928952",
+   "requested_url": "https://apisidra.ibge.gov.br/values/t/5457/n6/5300108/v/8331,216,214,112,215/p/2024/c782/40124",
+   "status": 200,
+   "fetched_at": "2026-09-25T19:52:56.350236+00:00",
+   "municipios": {
+    "Brasília (DF)": "5300108"
+   }
+  },
+  "RR": {
+   "arquivo": "RR.json",
+   "bytes": 24358,
+   "sha256": "df5f787c0bd4b08240ac937f603eec9d9f5c5eb33953d1f99c53dafa520f1894",
+   "requested_url": "https://apisidra.ibge.gov.br/values/t/5457/n6/in%20n3%2014/v/8331,216,214,112,215/p/2024/c782/40124",
+   "status": 200,
+   "fetched_at": "2026-09-25T19:52:58.362190+00:00",
+   "municipios": {
+    "Amajari - RR": "1400027",
+    "Alto Alegre - RR": "1400050",
+    "Boa Vista - RR": "1400100",
+    "Bonfim - RR": "1400159",
+    "Cantá - RR": "1400175",
+    "Caracaraí - RR": "1400209",
+    "Caroebe - RR": "1400233",
+    "Iracema - RR": "1400282",
+    "Mucajaí - RR": "1400308",
+    "Normandia - RR": "1400407",
+    "Pacaraima - RR": "1400456",
+    "Rorainópolis - RR": "1400472",
+    "São João da Baliza - RR": "1400506",
+    "São Luiz do Anauá - RR": "1400605",
+    "Uiramutã - RR": "1400704"
+   }
+  }
+ }
+}

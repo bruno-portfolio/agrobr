@@ -34,6 +34,14 @@ Quarterly milk acquisition and processing by state.
 - Typical latency: Q+2 months
 - Historical series since 1997
 
+## Notes
+
+- The state is that of the dairy that bought the milk, not where it was produced.
+- There is no Brazil row: the query is by state (SIDRA territorial level 3).
+- A state under statistical confidentiality comes out null, because SIDRA publishes "X" (for example, RR and DF), and some
+  states are not published by SIDRA (AP does not appear). That is why the sum of the states falls below the Brazil total
+  released by IBGE.
+
 ## Example
 
 ```python

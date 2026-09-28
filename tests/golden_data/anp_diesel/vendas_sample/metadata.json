@@ -4,8 +4,9 @@
   "parser_module": "agrobr.alt.anp_diesel.parser",
   "parser_functions": ["parse_vendas"],
   "url": "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/arquivos/vdpb/vct/vendas-oleo-diesel-tipo-m3-2013-2025.csv",
-  "captured_at": "2026-02-21T08:25:42Z",
-  "needs_real_data": true,
+  "captured_at": "2026-09-05T21:33:44Z",
+  "needs_real_data": false,
+  "sha256": "70aa489541192a6db6a329d8078ac59c0a2e2b7436b3b6340f9c344a1c32ecb4",
   "parser_version": 2,
-  "notes": "Migrated from XLS pivot table to CSV dados abertos. Old XLS (vendas-combustiveis-m3.xls) uses Excel pivot tables that broke the header detection parser. New CSV is flat, semicolon-delimited, long format (ANO;MES;GRANDE REGIAO;UNIDADE DA FEDERACAO;PRODUTO;VENDAS). Real data capture pending."
+  "notes": "Unmodified official CSV, UTF-8 BOM and accented headers. 22005 records, January 2013 through July 2026 despite the filename ending in 2025. Zero values and one published negative observation are preserved: Sergipe, December 2025, maritime diesel, -70 m3. The source does not explain that negative value in the CSV."
 }

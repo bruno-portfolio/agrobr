@@ -31,7 +31,7 @@ UNIDADES: dict[str, str] = {
     "BGI": "BRL/@",
     "CCM": "BRL/sc60kg",
     "ICF": "USD/sc60kg",
-    "CNL": "USD/ton",
+    "CNL": "BRL/sc60kg",
     "ETH": "BRL/m3",
     "SJC": "USD/sc60kg",
     "SOY": "USD/ton",
@@ -77,11 +77,3 @@ def parse_vencimento(codigo: str) -> tuple[int, int]:
     year = 2000 + year_suffix if year_suffix < 100 else year_suffix
     month = MONTH_CODES[letter]
     return year, month
-
-
-def parse_numero_br(texto: str) -> float | None:
-    texto = texto.strip()
-    if not texto or texto == "-":
-        return None
-    texto = texto.replace(".", "").replace(",", ".")
-    return float(texto)

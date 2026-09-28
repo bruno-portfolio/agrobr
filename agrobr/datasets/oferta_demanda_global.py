@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -57,12 +57,12 @@ OFERTA_DEMANDA_GLOBAL_INFO = DatasetInfo(
         ),
     ],
     products=_PRODUCTS,
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="monthly",
     typical_latency="M+1",
     source_url="https://apps.fas.usda.gov/psdonline/app/index.html",
     source_institution="USDA/FAS",
-    unit="1000 MT / 1000 HA / MT/HA",
+    unit="coluna unit por linha: (1000 MT), (1000 HA), (MT/HA); algodão em 1000 480 lb. Bales; café em (1000 60 KG BAGS)",
     license="livre",
 )
 
@@ -80,7 +80,6 @@ class OfertaDemandaGlobalDataset(BaseDataset):
         pivot: bool = False,
         api_key: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="oferta_demanda_global", produto=produto)
 
@@ -95,7 +94,6 @@ class OfertaDemandaGlobalDataset(BaseDataset):
             attributes=attributes,
             pivot=pivot,
             api_key=api_key,
-            **kwargs,
         )
 
         df = self._normalize(df)
@@ -117,6 +115,34 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_oferta_demanda_global)
 
 
+@overload
+async def oferta_demanda_global(
+    produto: str,
+    *,
+    country: str | None = "BR",
+    market_year: int | None = None,
+    attributes: list[str] | None = None,
+    pivot: bool = False,
+    api_key: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def oferta_demanda_global(
+    produto: str,
+    *,
+    country: str | None = "BR",
+    market_year: int | None = None,
+    attributes: list[str] | None = None,
+    pivot: bool = False,
+    api_key: str | None = None,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def oferta_demanda_global(
     produto: str,
     *,
@@ -126,9 +152,9 @@ async def oferta_demanda_global(
     pivot: bool = False,
     api_key: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _oferta_demanda_global.fetch(
+    return await _oferta_demanda_global.fetch(  # type: ignore[call-arg]
         produto,
         country=country,
         market_year=market_year,
@@ -136,5 +162,5 @@ async def oferta_demanda_global(
         pivot=pivot,
         api_key=api_key,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

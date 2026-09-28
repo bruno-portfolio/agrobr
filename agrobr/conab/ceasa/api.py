@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import asyncio
 import time
-from typing import Any, Literal, overload
+from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils import tasks
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
@@ -43,7 +44,6 @@ async def precos(
     ceasa: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     warn_once(
         "conab_ceasa",
@@ -56,7 +56,7 @@ async def precos(
     logger.info("conab_ceasa_precos", produto=produto, ceasa=ceasa)
 
     t0 = time.monotonic()
-    (precos_json, source_url), (ceasas_json, _) = await asyncio.gather(
+    (precos_json, source_url), (ceasas_json, _) = await tasks.gather_or_cancel(
         client.fetch_precos(),
         client.fetch_ceasas(),
     )
@@ -66,12 +66,24 @@ async def precos(
     df = parser.parse_precos(precos_json, ceasas_json)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
+    publicados = {coluna: sorted(df[coluna].dropna().unique()) for coluna in ("produto", "ceasa")}
+
     if produto is not None:
         produto_upper = produto.strip().upper()
+        if produto_upper not in {nome.upper() for nome in publicados["produto"]}:
+            raise InvalidParameterError(
+                f"Produto {produto!r} fora do que a CONAB/PROHORT publica. "
+                f"Válidos: {publicados['produto']}"
+            )
         df = df[df["produto"].str.upper() == produto_upper].reset_index(drop=True)
 
     if ceasa is not None:
         ceasa_upper = ceasa.strip().upper()
+        if not any(ceasa_upper in nome.upper() for nome in publicados["ceasa"]):
+            raise InvalidParameterError(
+                f"CEASA {ceasa!r} fora do que a CONAB/PROHORT publica. "
+                f"Válidas: {publicados['ceasa']}"
+            )
         df = df[df["ceasa"].str.upper().str.contains(ceasa_upper, regex=False)].reset_index(
             drop=True
         )

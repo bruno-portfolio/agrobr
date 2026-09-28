@@ -61,6 +61,8 @@ def safe_float(
     except (ValueError, TypeError):
         return None
 
+    if nan_as_none and math.isnan(result):
+        return None
     if treat_zero_as_none and result == 0.0:
         return None
     return result

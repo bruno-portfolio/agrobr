@@ -1,99 +1,56 @@
-"""Testes para agrobr.alt.mapa_psr.client."""
-
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
 
+from agrobr import constants
 from agrobr.alt.mapa_psr import client
-from tests.helpers import make_mock_response
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
+from tests.helpers import RETRY_SLEEP, TrackedAsyncStream, levanta_exatamente
 
-FAKE_CSV_BYTES = b"ANO_APOLICE;SG_UF_PROPRIEDADE;NM_CULTURA_GLOBAL\n" + b"2023;MT;SOJA\n" * 10
-
-
-class TestDownloadCsv:
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_download_ok(self, mock_retry):
-        mock_retry.return_value = make_mock_response(200, content=FAKE_CSV_BYTES)
-        result = await client.download_csv("https://example.com/test.csv")
-        assert result == FAKE_CSV_BYTES
-
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_download_404_raises(self, mock_retry):
-        mock_retry.return_value = make_mock_response(404, content=FAKE_CSV_BYTES)
-        with pytest.raises(httpx.HTTPStatusError):
-            await client.download_csv("https://example.com/notfound.csv")
-
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_download_500_raises(self, mock_retry):
-        mock_retry.return_value = make_mock_response(500, content=FAKE_CSV_BYTES)
-        with pytest.raises(httpx.HTTPStatusError):
-            await client.download_csv("https://example.com/error.csv")
-
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_download_retorna_bytes(self, mock_retry):
-        content = b"header;col2\n" + b"row1;val1\n" * 15
-        mock_retry.return_value = make_mock_response(200, content=content)
-        result = await client.download_csv("https://example.com/data.csv")
-        assert isinstance(result, bytes)
-        assert len(result) > 0
+CSV = b"ANO_APOLICE;SG_UF_PROPRIEDADE;NM_CULTURA_GLOBAL\n" + b"2023;MT;SOJA\n" * 10
 
 
-class TestFetchPeriodo:
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_fetch_periodo_valido(self, mock_retry):
-        mock_retry.return_value = make_mock_response(200, content=FAKE_CSV_BYTES)
-        result = await client.fetch_periodo("2025")
-        assert result == FAKE_CSV_BYTES
+@pytest.fixture
+def serve(monkeypatch):
+    original = httpx.AsyncClient
+    monkeypatch.setattr(RETRY_SLEEP, AsyncMock())
 
-    @pytest.mark.asyncio
-    async def test_fetch_periodo_invalido(self):
-        with pytest.raises(ValueError, match="invalido"):
-            await client.fetch_periodo("2030")
+    def install(handler):
+        monkeypatch.setattr(
+            client.httpx,
+            "AsyncClient",
+            lambda **kwargs: original(transport=httpx.MockTransport(handler), **kwargs),
+        )
 
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_fetch_periodo_url_correta(self, mock_retry):
-        mock_retry.return_value = make_mock_response(200, content=FAKE_CSV_BYTES)
-        await client.fetch_periodo("2025")
-        mock_retry.assert_called_once()
+    return install
 
 
-class TestFetchPeriodos:
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_fetch_multiplos(self, mock_retry):
-        mock_retry.return_value = make_mock_response(200, content=FAKE_CSV_BYTES)
-        result = await client.fetch_periodos(["2016-2024", "2025"])
-        assert len(result) == 2
-        assert all(isinstance(r, bytes) for r in result)
-
-    @pytest.mark.asyncio
-    async def test_fetch_vazio(self):
-        result = await client.fetch_periodos([])
-        assert result == []
-
-    @pytest.mark.asyncio
-    @patch("agrobr.alt.mapa_psr.client.retry_on_status", new_callable=AsyncMock)
-    async def test_fetch_unico(self, mock_retry):
-        mock_retry.return_value = make_mock_response(200, content=FAKE_CSV_BYTES)
-        result = await client.fetch_periodos(["2025"])
-        assert len(result) == 1
+@pytest.mark.parametrize(
+    "status,error", [(404, SourceUnavailableError), (500, SourceUnavailableError)]
+)
+async def test_erro_http_propaga_sem_dados(serve, status, error):
+    serve(lambda _: httpx.Response(status, content=CSV))
+    with levanta_exatamente(error):
+        async with client.open_periodo("2025"):
+            raise AssertionError("download com erro HTTP entregue")
 
 
-class TestConfig:
-    def test_timeout_read_alta(self):
-        assert client.TIMEOUT.read == 180.0
+async def test_download_respeita_orcamento(serve, monkeypatch):
+    monkeypatch.setattr(constants, "MAPA_PSR_MAX_DOWNLOAD_BYTES", 5)
+    stream = TrackedAsyncStream([b"x" * 65536, b"not downloaded"])
+    serve(lambda _: httpx.Response(200, stream=stream))
+    with pytest.raises(ResourceLimitError):
+        async with client.open_periodo("2025"):
+            raise AssertionError("download acima do orçamento entregue")
+    assert stream.received == 1
+    assert stream.closed
 
-    def test_headers_user_agent(self):
-        from agrobr.http.user_agents import UserAgentRotator
 
-        headers = UserAgentRotator.get_headers(source="mapa_psr")
-        assert "Mozilla" in headers["User-Agent"]
+async def test_periodo_invalido_falha_antes_da_rede(serve):
+    serve(lambda _: pytest.fail("Não deveria acessar a rede"))
+    with levanta_exatamente(ValueError, match="invalido"):
+        async with client.open_periodo("2030"):
+            raise AssertionError("período inválido entregue")

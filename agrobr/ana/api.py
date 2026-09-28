@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 from typing import TYPE_CHECKING, Any, Literal, overload
 
@@ -49,26 +50,23 @@ _UF_TO_ESTADO: dict[str, str] = {
 }
 
 
-def _build_where(*, uf: str | None = None, uf_field: str = "UF") -> str:
+def _build_where(*, uf: str | None = None) -> str:
     if not uf:
         return "1=1"
-    if uf_field == "NM_ESTADO":
-        estado = _UF_TO_ESTADO.get(uf, uf).upper()
-        return f"NM_ESTADO='{estado}'"
-    return f"{uf_field}='{uf}'"
+    estado = _UF_TO_ESTADO.get(uf, uf).upper()
+    return f"NM_ESTADO='{estado}'"
 
 
 async def _fetch_and_parse_tabular(
     layer_key: str,
     *,
     uf: str | None = None,
-    uf_field: str = "UF",
     bbox: tuple[float, float, float, float] | None = None,
     max_features: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    where = _build_where(uf=uf, uf_field=uf_field)
+    where = _build_where(uf=uf)
     logger.info(f"ana_{layer_key}", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
@@ -95,6 +93,8 @@ async def _fetch_and_parse_tabular(
         parser.PARSER_VERSION,
         attempted_sources=[f"ana_{layer_key}"],
         selected_source=f"ana_{layer_key}",
+        raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
+        raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -103,12 +103,11 @@ async def _fetch_and_parse_geo(
     layer_key: str,
     *,
     uf: str | None = None,
-    uf_field: str = "UF",
     bbox: tuple[float, float, float, float] | None = None,
     max_features: int | None = None,
     return_meta: bool = False,
 ) -> Any:
-    where = _build_where(uf=uf, uf_field=uf_field)
+    where = _build_where(uf=uf)
     logger.info(f"ana_{layer_key}_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
@@ -136,6 +135,8 @@ async def _fetch_and_parse_geo(
             parser.PARSER_VERSION,
             attempted_sources=[f"ana_{layer_key}_geo"],
             selected_source=f"ana_{layer_key}_geo",
+            raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
+            raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
         )
         return gdf, meta
     return gdf
@@ -172,7 +173,6 @@ async def hidrografia(
     max_features: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_tabular(
@@ -207,7 +207,6 @@ async def hidrografia_geo(
     bbox: tuple[float, float, float, float],
     max_features: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_geo(
@@ -252,14 +251,12 @@ async def pivos_irrigacao(
     max_features: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_tabular(
         "pivos_irrigacao",
         uf=uf,
-        uf_field="NM_ESTADO",
         bbox=bbox,
         max_features=max_features,
         as_polars=as_polars,
@@ -293,14 +290,12 @@ async def pivos_irrigacao_geo(
     bbox: tuple[float, float, float, float] | None = None,
     max_features: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_geo(
         "pivos_irrigacao",
         uf=uf,
-        uf_field="NM_ESTADO",
         bbox=bbox,
         max_features=max_features,
         return_meta=return_meta,
@@ -338,7 +333,6 @@ async def demanda_irrigacao(
     max_features: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_tabular(
@@ -373,7 +367,6 @@ async def demanda_irrigacao_geo(
     bbox: tuple[float, float, float, float],
     max_features: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_geo(
@@ -415,7 +408,6 @@ async def disponibilidade_hidrica(
     max_features: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_tabular(
@@ -450,7 +442,6 @@ async def disponibilidade_hidrica_geo(
     bbox: tuple[float, float, float, float] | None = None,
     max_features: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> Any:
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_geo(

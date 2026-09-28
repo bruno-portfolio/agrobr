@@ -1,0 +1,172 @@
+{
+  "source": "SICAR GeoServer WFS 2.0.0 (https://geoserver.car.gov.br/geoserver/sicar/wfs)",
+  "transformation": "nenhuma: bytes das respostas HTTP 200 como recebidos",
+  "declared_crs": {
+    "capabilities_default_crs": "urn:ogc:def:crs:EPSG::4674 nas 27 camadas sicar_imoveis_*",
+    "sem_srsName": "urn:ogc:def:crs:EPSG::4674",
+    "com_srsName_EPSG_4326": "urn:ogc:def:crs:EPSG::4326",
+    "pagina_vazia": null
+  },
+  "resources": [
+    {
+      "file": "describe_df.xsd",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_df",
+      "fetched_at_utc": "2026-09-23T02:26:16.226917+00:00",
+      "status": 200,
+      "content_type": "application/gml+xml; version=3.2",
+      "bytes": 2067,
+      "sha256": "746ba0c190691353b2282e05d6dcdb08e9ff36e16c2b903867382c264ac1b091"
+    },
+    {
+      "file": "df_hits.xml",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits",
+      "fetched_at_utc": "2026-09-23T02:44:52.201055+00:00",
+      "status": 200,
+      "content_type": "text/xml",
+      "bytes": 968,
+      "sha256": "a6e56f40762c8e12db61bbf7ebd4c3865968f128c1da24c33f89f550545c7f4c"
+    },
+    {
+      "file": "df_geo_agrobr_count3.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=3&startIndex=0",
+      "fetched_at_utc": "2026-09-23T02:26:16.310294+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 2720,
+      "sha256": "43a9c4d8ed4434d39b8e037174877846dda18a2aacd557651aaf4141986887e7"
+    },
+    {
+      "file": "df_geo_srs4326_count3.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=3&startIndex=0&srsName=EPSG:4326",
+      "fetched_at_utc": "2026-09-23T02:26:29.130316+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 2737,
+      "sha256": "82e23705860de4cb5181185403020b9a8a565c751e20a09286c3bd68cec460be"
+    },
+    {
+      "file": "df_vazio_geo.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=5000&startIndex=0&srsName=EPSG:4326&CQL_FILTER=cod_municipio_ibge%3D5300108%20AND%20dat_criacao%3E%3D%272099-01-01%27",
+      "fetched_at_utc": "2026-09-23T02:44:52.123059+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 147,
+      "sha256": "872ac7296dc6ce7c26805e309cfee18f9eb11cdf742792f3d16e3daf742fa51e"
+    },
+    {
+      "file": "ms_5007901_geo.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_ms&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=5000&startIndex=0&srsName=EPSG:4326&CQL_FILTER=cod_municipio_ibge%3D5007901%20AND%20dat_criacao%3E%3D%272026-09-22%27",
+      "fetched_at_utc": "2026-09-23T02:44:51.532344+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 41982,
+      "sha256": "03ec677a525f1fb3b04c9ece8a6f7e74b5ec5ad8b4f1f5a93bf13f21b0978811"
+    },
+    {
+      "file": "mt_5103353_geo.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mt&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=5000&startIndex=0&srsName=EPSG:4326&CQL_FILTER=cod_municipio_ibge%3D5103353%20AND%20dat_criacao%3E%3D%272026-09-22%27",
+      "fetched_at_utc": "2026-09-23T02:44:51.928835+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 3900,
+      "sha256": "899922d537d110a706b09c3d92e66e866c3a37a56e6d57b9105e731c1b29a8de"
+    },
+    {
+      "file": "rs_4320552_geo.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=5000&startIndex=0&srsName=EPSG:4326&CQL_FILTER=cod_municipio_ibge%3D4320552%20AND%20dat_criacao%3E%3D%272026-09-22%27",
+      "fetched_at_utc": "2026-09-23T02:44:52.029311+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 2746,
+      "sha256": "cd468eb9fa46ef2e27b1ce8de54160bd6b7fb4614bd46ab47404de26417b31a1"
+    },
+    {
+      "file": "ms_5007901_stream_p0.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_ms&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=5&startIndex=0&srsName=EPSG:4326&CQL_FILTER=cod_municipio_ibge%3D5007901%20AND%20dat_criacao%3E%3D%272026-09-22%27",
+      "fetched_at_utc": "2026-09-23T02:45:26.090683+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 37389,
+      "sha256": "abfeb70440a05c957ee492bcc3df0bec2e788243b3d3250f2b0f1a47d5522afb"
+    },
+    {
+      "file": "ms_5007901_stream_p1.json",
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_ms&outputFormat=application/json&propertyName=geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=1&startIndex=5&srsName=EPSG:4326&CQL_FILTER=cod_municipio_ibge%3D5007901%20AND%20dat_criacao%3E%3D%272026-09-22%27",
+      "fetched_at_utc": "2026-09-23T02:45:26.212973+00:00",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "bytes": 6461,
+      "sha256": "b6cf4950c68fd64787be02eb78649b690a5036eed017baf30ea63ccfafc44ade"
+    }
+  ],
+  "cases": [
+    {
+      "id": "df_srid",
+      "query": {
+        "uf": "DF",
+        "max_features": 3
+      },
+      "requests": [
+        {
+          "file": "df_hits.xml",
+          "content_type": "text/xml",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits"
+            },
+            "skip": 0
+          }
+        },
+        {
+          "file": "df_geo_agrobr_count3.json",
+          "content_type": "application/json",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "3",
+              "startIndex": "0"
+            },
+            "skip": 0
+          }
+        },
+        {
+          "file": "df_geo_srs4326_count3.json",
+          "content_type": "application/json",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "geo_area_imovel,cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "3",
+              "startIndex": "0",
+              "srsName": "EPSG:4326"
+            },
+            "skip": 0
+          }
+        }
+      ]
+    }
+  ]
+}

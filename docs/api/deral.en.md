@@ -57,3 +57,23 @@ df = deral.condicao_lavouras("soja")
 - Source: [DERAL/SEAB-PR](https://www.agricultura.pr.gov.br) — `livre` license
 - Parana-exclusive data
 - Published in Excel (PC.xls) — layout may vary between crop years
+
+## Reconciliation of the February and September 2026 workbooks
+
+Both original PC.xls captures are BIFF/XLS: 26 sheets, 438 condition records
+and 730 numeric condition, planting and harvest cells checked directly.
+The `.xlsx` extension retained by the older golden file does not describe its
+actual format. No original XLSX publication was located to certify that parser
+variant.
+
+Percentages in these captures are percentage points (0–100), with no conversion
+from percent-formatted fractions. Phenological stage and commercialization
+columns, potato rows and second-season soybean rows are outside the current
+contract. A sheet reporting a holiday without observations produces no records
+or zeros. The sheet named `18-12-2017` publishes 08/01/2018 as its reference;
+the date comes from the cell, as published.
+
+Parser 2 requires the Ruim, Média, Boa, Plantada and Colhida headers in tables
+containing several crops. A missing header raises `ParseError` in the source
+and `SourceUnavailableError` with the reason in the dataset, preventing partial
+success containing only historical sheets. The contract remains at version 1.0.

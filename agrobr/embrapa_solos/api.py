@@ -1,25 +1,101 @@
 from __future__ import annotations
 
-import time
-from typing import Any, Literal, overload
+import importlib
+import warnings
+from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import constants
+from agrobr.contracts import embrapa_solos as contracts
+from agrobr.exceptions import ContractViolationError, InvalidParameterError, ParseError
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import validate_bbox
-from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.validation import validate_uf
+from agrobr.utils import geo, result
 from agrobr.utils.warnings import warn_once
 
-from . import client, parser
+from . import acquisition, client, metadata, query
+
+if TYPE_CHECKING:
+    import geopandas as gpd
 
 logger = structlog.get_logger()
 
-_NC_WARNING = (
-    "EMBRAPA Solos: CC BY-NC 3.0 BR — uso comercial requer autorizacao. "
-    "Classificacao: nc. Veja docs/licenses.md."
-)
+
+def _geoframe(acquired: acquisition.SolosAcquisition, geopandas: Any) -> pd.DataFrame:
+    geometries = acquired.geometries
+    if geometries is None or len(geometries) != len(acquired.frame):
+        raise ParseError(
+            source="embrapa_solos",
+            parser_version=3,
+            reason="Geometrias divergem das ocorrências selecionadas",
+        )
+    crs = acquired.query.output_crs
+    if geometries:
+        features = (
+            {"type": "Feature", "properties": {}, "geometry": geometry} for geometry in geometries
+        )
+        geometry = geopandas.GeoDataFrame.from_features(features, crs=crs).geometry
+    else:
+        geometry = geopandas.GeoSeries([], crs=crs)
+    return cast(pd.DataFrame, geopandas.GeoDataFrame(acquired.frame, geometry=geometry, crs=crs))
+
+
+async def _fetch(
+    *,
+    product: Literal["perfis", "mapa"],
+    include_geometry: bool,
+    as_polars: bool,
+    return_meta: bool,
+    unknown: dict[str, Any],
+    **selection: Any,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    from agrobr.datasets.deterministic import get_snapshot
+
+    if unknown:
+        raise TypeError(f"Argumentos desconhecidos em embrapa_solos: {sorted(unknown)}")
+    if type(as_polars) is not bool or type(return_meta) is not bool:
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
+    if get_snapshot() is not None:
+        raise InvalidParameterError(
+            "embrapa_solos não suporta deterministic: WFS sem edição imutável"
+        )
+    validated = query.build_query(product=product, include_geometry=include_geometry, **selection)
+    warn_once("embrapa_solos", constants.EMBRAPA_SOLOS_NC_WARNING)
+    geopandas = geo.check_geopandas() if include_geometry else None
+    if as_polars:
+        try:
+            importlib.import_module("polars")
+        except ImportError:
+            raise ImportError(
+                "polars é necessário para as_polars=True. Instale com: pip install agrobr[polars]"
+            ) from None
+    logger.info("embrapa_solos_fetch", product=product, include_geometry=include_geometry)
+    acquired = await client.fetch_acquisition(validated)
+    contract = contracts.PERFIS_V2 if product == "perfis" else contracts.MAPA_V2
+    valid, errors = contract.validate(acquired.frame)
+    if not valid:
+        raise ContractViolationError(dataset=contract.name, violation="; ".join(errors))
+    frame = _geoframe(acquired, geopandas) if include_geometry else acquired.frame
+    meta = metadata.build_meta(acquired, frame)
+    remote = acquired.coverage.remote
+    if remote.truncated:
+        warnings.warn(
+            f"EMBRAPA Solos: prefixo remoto de {remote.accepted_rows} de {remote.expected_before} ocorrências; "
+            f"filtro local retornou {len(frame)} linhas. A seleção permanece parcial; "
+            "use max_registros=None para retirar o teto de ocorrências.",
+            UserWarning,
+            stacklevel=3,
+        )
+    return result.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            column.name for column in contract.columns if column.type.value == "str"
+        ),
+    )
 
 
 @overload
@@ -27,6 +103,8 @@ async def perfis(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -35,9 +113,11 @@ async def perfis(
 @overload
 async def perfis(
     *,
-    uf: str | None = ...,
-    bbox: tuple[float, float, float, float] | None = ...,
-    as_polars: bool = ...,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
@@ -46,96 +126,23 @@ async def perfis(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    warn_once("embrapa_solos", _NC_WARNING)
-    uf = validate_uf(uf)
-    bbox = validate_bbox(bbox)
-    logger.info("embrapa_solos_perfis", uf=uf, bbox=bbox)
-
-    t0 = time.monotonic()
-    pages, source_url = await client.fetch_perfis(bbox=bbox)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_perfis_csv(pages)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    if uf is not None and not df.empty:
-        df = df[df["uf"] == uf].reset_index(drop=True)
-
-    meta = build_source_meta(
-        "embrapa_solos",
-        source_url,
-        "httpx+wfs+csv",
-        fetch_ms,
-        parse_ms,
-        df,
-        parser.PARSER_VERSION,
-        attempted_sources=["embrapa_geoinfo"],
-        selected_source="embrapa_geoinfo",
+    return await _fetch(
+        product="perfis",
+        include_geometry=False,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        unknown=kwargs,
+        uf=uf,
+        bbox=bbox,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
-
-
-@overload
-async def perfis_geo(
-    *,
-    uf: str | None = None,
-    bbox: tuple[float, float, float, float] | None = None,
-    return_meta: Literal[False] = False,
-) -> Any: ...
-
-
-@overload
-async def perfis_geo(
-    *,
-    uf: str | None = ...,
-    bbox: tuple[float, float, float, float] | None = ...,
-    return_meta: Literal[True],
-) -> tuple[Any, MetaInfo]: ...
-
-
-async def perfis_geo(
-    *,
-    uf: str | None = None,
-    bbox: tuple[float, float, float, float] | None = None,
-    return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
-) -> Any:
-    warn_once("embrapa_solos", _NC_WARNING)
-    uf = validate_uf(uf)
-    bbox = validate_bbox(bbox)
-    logger.info("embrapa_solos_perfis_geo", uf=uf, bbox=bbox)
-
-    t0 = time.monotonic()
-    geojson_bytes, source_url = await client.fetch_perfis_geo(bbox=bbox)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    gdf = parser.parse_perfis_geojson(geojson_bytes)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    if uf is not None and not gdf.empty:
-        gdf = gdf[gdf["uf"] == uf].reset_index(drop=True)
-
-    if return_meta:
-        meta = build_source_meta(
-            "embrapa_solos",
-            source_url,
-            "httpx+wfs+geojson",
-            fetch_ms,
-            parse_ms,
-            gdf,
-            parser.PARSER_VERSION,
-            attempted_sources=["embrapa_geoinfo_geo"],
-            selected_source="embrapa_geoinfo_geo",
-        )
-        return gdf, meta
-
-    return gdf
 
 
 @overload
@@ -143,6 +150,8 @@ async def mapa_solos(
     *,
     ordem: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -151,9 +160,11 @@ async def mapa_solos(
 @overload
 async def mapa_solos(
     *,
-    ordem: str | None = ...,
-    bbox: tuple[float, float, float, float] | None = ...,
-    as_polars: bool = ...,
+    ordem: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
@@ -162,95 +173,108 @@ async def mapa_solos(
     *,
     ordem: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    warn_once("embrapa_solos", _NC_WARNING)
-    bbox = validate_bbox(bbox)
-    logger.info("embrapa_solos_mapa", ordem=ordem, bbox=bbox)
-
-    t0 = time.monotonic()
-    pages, source_url = await client.fetch_mapa_solos(bbox=bbox)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_mapa_csv(pages)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    if ordem is not None and not df.empty:
-        df = df[df["ordem1"].str.contains(ordem, case=False, na=False, regex=False)].reset_index(
-            drop=True
-        )
-
-    meta = build_source_meta(
-        "embrapa_solos",
-        source_url,
-        "httpx+wfs+csv",
-        fetch_ms,
-        parse_ms,
-        df,
-        parser.PARSER_VERSION,
-        attempted_sources=["embrapa_geoinfo"],
-        selected_source="embrapa_geoinfo",
+    return await _fetch(
+        product="mapa",
+        include_geometry=False,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        unknown=kwargs,
+        ordem=ordem,
+        bbox=bbox,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
-async def mapa_solos_geo(
+async def perfis_geo(
     *,
-    ordem: str | None = None,
+    uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["perfis"],
+    tamanho_pagina: int | None = None,
     return_meta: Literal[False] = False,
-) -> Any: ...
+) -> gpd.GeoDataFrame: ...
+
+
+@overload
+async def perfis_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["perfis"],
+    tamanho_pagina: int | None = None,
+    return_meta: Literal[True],
+) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
+
+
+async def perfis_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["perfis"],
+    tamanho_pagina: int | None = None,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> Any:
+    return await _fetch(
+        product="perfis",
+        include_geometry=True,
+        as_polars=False,
+        return_meta=return_meta,
+        unknown=kwargs,
+        uf=uf,
+        bbox=bbox,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
+    )
 
 
 @overload
 async def mapa_solos_geo(
     *,
-    ordem: str | None = ...,
-    bbox: tuple[float, float, float, float] | None = ...,
+    ordem: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["mapa"],
+    tamanho_pagina: int | None = None,
+    return_meta: Literal[False] = False,
+) -> gpd.GeoDataFrame: ...
+
+
+@overload
+async def mapa_solos_geo(
+    *,
+    ordem: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["mapa"],
+    tamanho_pagina: int | None = None,
     return_meta: Literal[True],
-) -> tuple[Any, MetaInfo]: ...
+) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
 
 async def mapa_solos_geo(
     *,
     ordem: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["mapa"],
+    tamanho_pagina: int | None = None,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
+    **kwargs: Any,
 ) -> Any:
-    warn_once("embrapa_solos", _NC_WARNING)
-    bbox = validate_bbox(bbox)
-    logger.info("embrapa_solos_mapa_geo", ordem=ordem, bbox=bbox)
-
-    t0 = time.monotonic()
-    geojson_bytes, source_url = await client.fetch_mapa_solos_geo(bbox=bbox)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    gdf = parser.parse_mapa_geojson(geojson_bytes)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    if ordem is not None and not gdf.empty:
-        gdf = gdf[gdf["ordem1"].str.contains(ordem, case=False, na=False, regex=False)].reset_index(
-            drop=True
-        )
-
-    if return_meta:
-        meta = build_source_meta(
-            "embrapa_solos",
-            source_url,
-            "httpx+wfs+geojson",
-            fetch_ms,
-            parse_ms,
-            gdf,
-            parser.PARSER_VERSION,
-            attempted_sources=["embrapa_geoinfo_geo"],
-            selected_source="embrapa_geoinfo_geo",
-        )
-        return gdf, meta
-
-    return gdf
+    return await _fetch(
+        product="mapa",
+        include_geometry=True,
+        as_polars=False,
+        return_meta=return_meta,
+        unknown=kwargs,
+        ordem=ordem,
+        bbox=bbox,
+        max_registros=max_registros,
+        tamanho_pagina=tamanho_pagina,
+    )

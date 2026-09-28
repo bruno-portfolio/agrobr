@@ -1,24 +1,30 @@
 {
   "name": "ibge.censo_agro_legado",
-  "schema_version": "1.0",
-  "effective_from": "0.12.0",
+  "schema_version": "2.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "ano",
     "tema",
     "categoria",
     "variavel",
-    "localidade"
+    "localidade",
+    "uf"
   ],
   "required_columns": [
+    "uf",
     "ano",
+    "localidade",
+    "localidade_cod",
     "tema",
     "categoria",
     "variavel",
+    "valor",
     "unidade",
     "fonte"
   ],
   "dtypes": {
+    "uf": "str",
     "ano": "int",
     "localidade": "str",
     "localidade_cod": "int",
@@ -27,9 +33,11 @@
     "variavel": "str",
     "valor": "float",
     "unidade": "str",
-    "fonte": "str"
+    "fonte": "str",
+    "cod_municipio": "int"
   },
   "nullable": {
+    "uf": true,
     "ano": false,
     "localidade": true,
     "localidade_cod": true,
@@ -38,9 +46,21 @@
     "variavel": false,
     "valor": true,
     "unidade": false,
-    "fonte": false
+    "fonte": false,
+    "cod_municipio": true
   },
   "columns": [
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "UF do diretório/cabeçalho oficial; nula para Brasil",
+      "min_value": null,
+      "max_value": null
+    },
     {
       "name": "ano",
       "type": "int",
@@ -137,6 +157,17 @@
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "cod_municipio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
       "min_value": null,
       "max_value": null
     }

@@ -146,6 +146,7 @@ LAYERS: dict[str, LayerConfig] = {
     "cnfp": {
         "service_path": "Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9",
         "max_record_count": 2000,
+        "oid_field": "fid",
         "fields": "fid,nome,uf,bioma,categoria,tipo,governo,classe,area_ha,anocriacao,municipio",
         "rename_map": {
             "anocriacao": "ano_criacao",
@@ -168,6 +169,7 @@ LAYERS: dict[str, LayerConfig] = {
     "concessoes": {
         "service_path": "Hosted/unidades_concessoes_florestais/FeatureServer/0",
         "max_record_count": 2000,
+        "oid_field": "fid",
         "fields": "fid,nome_uc,uf,bioma,hectares,criacao,grupo,cat_nome",
         "rename_map": {
             "nome_uc": "nome",

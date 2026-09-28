@@ -1,0 +1,21 @@
+{
+  "capture_session": "23/09/2026",
+  "source": "IBGE, Divisão Territorial Brasileira 2025 (DTB), relatório de municípios",
+  "method": "Membro do ZIP oficial preservado byte a byte, sem reserializar.",
+  "archive": {
+    "url": "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/DTB_2025.zip",
+    "fetched_at": "2026-09-23T07:19:13.245192+00:00",
+    "last_modified": "Thu, 26 Mar 2026 21:07:36 GMT",
+    "sha256": "d077a0e48c36cf18bcc96268b4a436200c014c6b8522c1a62d894acaf39dad27",
+    "bytes": 1635600
+  },
+  "files": [
+    {
+      "file": "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.xls",
+      "archive_member": "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.xls",
+      "sha256": "b93bf9220ab84f72ff1066981f6aad2817b3d1c44405800209b1577034fece10",
+      "bytes": 1004544
+    }
+  ],
+  "data_base": "31/12/2025"
+}

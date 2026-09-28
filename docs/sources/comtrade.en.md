@@ -1,100 +1,27 @@
-# UN Comtrade — International Trade
+# UN Comtrade — international trade
 
-United Nations Comtrade Database. Bilateral international trade data reported by ~200 countries.
+The integration provides bilateral merchandise trade (type C), exports/imports, annual or monthly periods and HS classification. The mirror compares export declarations with reverse imports. See the [API selectors](../api/comtrade.md) and [contract 2.1](../contracts/comercio_internacional.md).
 
-## Configuration
+## Routes and options
 
-API key optional. Works in guest mode (without a key):
-
-```python
-df = await comtrade.comercio("soja", partner="CN")
-```
-
-For more capacity (100k records/call vs 500):
-
-```bash
-export AGROBR_COMTRADE_API_KEY="sua-key-aqui"
-```
-
-Register for free at [comtradeplus.un.org](https://comtradeplus.un.org).
-
-## API
-
-```python
-from agrobr import comtrade
-
-# Bilateral trade
-df = await comtrade.comercio("soja", reporter="BR", partner="CN", periodo=2024)
-
-# Trade mirror (BR exports vs CN imports)
-df = await comtrade.trade_mirror("soja", reporter="BR", partner="CN", periodo=2024)
-
-# Monthly with automatic pagination
-df = await comtrade.trade_mirror("soja", partner="CN", freq="M", periodo="2022-2024")
-
-# Soybean complex (HS 1201, 1507, 2304)
-df = await comtrade.comercio("complexo_soja", partner="CN")
-```
-
-## Columns — `comercio`
-
-| Column | Type | Description |
-|---|---|---|
-| `periodo` | str | Period: "2024" (annual) or "202401" (monthly) |
-| `ano` | int | Year extracted from the period |
-| `mes` | int | Month (monthly) or null (annual) |
-| `reporter_iso` | str | ISO3 of the reporter country (e.g. "BRA") |
-| `partner_iso` | str | ISO3 of the partner country (e.g. "CHN") |
-| `fluxo_code` | str | "X" (export) or "M" (import) |
-| `hs_code` | str | HS code (4 digits) |
-| `produto_desc` | str | Product description |
-| `peso_liquido_kg` | float | Net weight in kg |
-| `volume_ton` | float | Volume in tonnes (peso_liquido_kg / 1000) |
-| `valor_fob_usd` | float | FOB value in USD |
-| `valor_cif_usd` | float | CIF value in USD |
-| `valor_primario_usd` | float | FOB for exports, CIF for imports |
-
-## Columns — `trade_mirror`
-
-Columns from both sides + computed discrepancies:
-
-| Column | Description |
+| Layer | Delivery |
 |---|---|
-| `peso_liquido_kg_reporter` / `_partner` | Weight declared by each side |
-| `valor_fob_usd_reporter` / `_partner` | FOB value of each side |
-| `valor_cif_usd_partner` | CIF of the importing side |
-| `diff_peso_kg` | reporter - partner |
-| `diff_valor_fob_usd` | FOB reporter - FOB partner |
-| `ratio_valor` | FOB reporter / CIF partner (expected ~0.85-0.95) |
-| `ratio_peso` | Weight reporter / weight partner (expected ~1.0) |
+| Public preview | No key, one period per request and an independent count |
+| Authenticated acquisition | Optional key transport and full preview replanning on 401/403 |
+| Bilateral | Explicit World or all published partners; individual HS, agricultural alias or textual list |
+| Mirror | Outer 1:1 join, numeric identity and each declaration's HS revision |
+| Semantic dataset | Same selectors, full contract including empty output, metadata, sync and Polars |
 
-## Mapped Products
+Routes: `https://comtradeapi.un.org/public/v1/preview/C/{freq}/HS` and `https://comtradeapi.un.org/data/v1/get/C/{freq}/HS`. The client uses async httpx, timeouts, retries, rate limits and Pydantic validation. Credentials do not enter resources or metadata.
 
-| agrobr name | HS Code(s) |
-|---|---|
-| `soja` | 1201 |
-| `complexo_soja` | 1201, 1507, 2304 |
-| `milho` | 1005 |
-| `cafe` | 0901 |
-| `acucar` | 1701 |
-| `carne_bovina` | 0201, 0202 |
-| `carne_frango` | 0207 |
-| `celulose` | 4703 |
+## Evidence and limits
 
-Use `comtrade.produtos()` for the full list.
+The September 2026 probe of BR/X/2023, five HS codes and all partners returned 500 preview rows against an independent count of 516. The union of disjoint HS queries preserved all 516 records, including the missing 16. Soybeans returned one explicit World row versus 63 published partners when the parameter was omitted. These observations support query semantics; they are not global database counts.
 
-## MetaInfo
+A single period/HS may still exceed available access. `require_complete=True` rejects such output; the default warns and records coverage. Revisions and failed blocks do not become successful empty responses. Authenticated behavior was tested with replay, without a real key.
 
-```python
-df, meta = await comtrade.comercio("soja", partner="CN", return_meta=True)
-print(meta.source)  # "comtrade"
-print(meta.source_method)  # "httpx"
-```
+Availability depends on country, period and classification. Services, tariffs, bulk, a dynamic country catalog, transport/customs detail, harmonization and frozen revision history are outside this increment.
 
-## Source
+The Brazil side comes from Brazil's declaration to Comtrade and may diverge from [ComexStat](comexstat.md), which is revised: for corn to China in 2024, Comtrade has 2,285,068 t and ComexStat 2,227,000 t (+2.6%), probably because SECEX revised the data after the submission. For soybean and soybean meal in 2024 and 2025 and for corn in 2025, the difference was at most 0.06% (checked on 2026-09-25). The difference may also come from UN estimation: for chicken in 2024 (HS 020711 to 020714), Comtrade's weight exceeds ComexStat's by 0.88%, with FOB practically equal (+0.007%), because the net weight of 020714 is estimated by the UN. The `peso_liquido_estimado` column and the `MetaInfo` warning show when this happens (checked on 2026-09-26).
 
-- API: `https://comtradeapi.un.org/data/v1/get/C/{freq}/HS`
-- Format: JSON (REST API)
-- Update: monthly (countries report with a 2-6 month lag)
-- History: monthly since 2000, annual since 1988
-- Coverage: ~200 countries, HS classification 2-6 digits
+The internal license category is `zona_cinza`; see [Licenses](../licenses.md#un-comtrade). Technical references: [preview](https://uncomtrade.org/docs/what-is-data-preview/) and the [official SDK with countOnly](https://github.com/uncomtrade/comtradeapicall).

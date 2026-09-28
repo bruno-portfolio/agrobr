@@ -69,9 +69,15 @@ df = cepea.indicador("soja")
 df.head()
 ```
 
-> **Note:** If you use `agrobr.sync` inside a Jupyter with a running event loop,
-> agrobr will automatically try to use `nest_asyncio`. Install it with
-> `pip install nest_asyncio` if needed.
+> **Note:** With a running event loop (Jupyter), prefer the `await` from option 1.
+> `agrobr.sync` also works, without `nest_asyncio`: the query runs in a separate
+> thread, with its own `asyncio.run` and the cell's context (deterministic mode),
+> and the notebook loop waits until it finishes. The first time, agrobr warns
+> (`UserWarning`) and recommends `await`.
+
+> **Note:** `agrobr.sync` wraps the functions that return a result.
+> `sicar.imoveis_geo_stream` is still an async generator, because it yields the batches as
+> they arrive: consume it with `async for` inside an `async` function, as in the async API.
 
 ### MetaInfo in the notebook
 
@@ -190,7 +196,7 @@ pipeline_agro()
 
 ## Modules available via `agrobr.sync`
 
-Every agrobr module is available in the sync API:
+Every agrobr source and dataset is available in the sync API, with the same signatures at runtime. Type checkers and editors do not see them, because the mirror is dynamic and returns `Any`; for typed code, use the async API, whose `return_meta` has `@overload`:
 
 ```python
 from agrobr.sync import (

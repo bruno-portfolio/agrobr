@@ -1,0 +1,57 @@
+{
+ "descricao": "Matriz oficial de preços diários do PROHORT (Pentaho CDA precoDia: MDXProdutoPreco, 48 produtos × 43 CEASAs, 1.974 células com preço) e o catálogo de CEASAs (MDXceasa), pelo caminho do cliente do agrobr. Byte a byte iguais às capturas de conferência na rodada 12 (23/09/2026).",
+ "arquivos": [
+  {
+   "file": "precos_response.json",
+   "bytes": 13293,
+   "sha256": "020e5111306de681a72c28030454b7cd99a0d3ec664ea55ac79f55df8b6bc515"
+  },
+  {
+   "file": "ceasas_response.json",
+   "bytes": 2658,
+   "sha256": "5723a367e788ee5a6cd3f22ef6c3add597f038d2819b70600ef405fc708d30d5"
+  }
+ ],
+ "recibos": {
+  "MDXProdutoPreco": {
+   "nome": "MDXProdutoPreco",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FprecoDia.cda&dataAccessId=MDXProdutoPreco&userid=pentaho&password=password",
+   "final_url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FprecoDia.cda&dataAccessId=MDXProdutoPreco&userid=pentaho&password=password",
+   "fetched_at": "2026-09-24T01:29:35.483998+00:00",
+   "status": 200,
+   "bytes": 13293,
+   "sha256": "020e5111306de681a72c28030454b7cd99a0d3ec664ea55ac79f55df8b6bc515",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:29:40 GMT",
+    "content-type": "application/json"
+   },
+   "arquivo": "MDXProdutoPreco.bin"
+  },
+  "MDXceasa": {
+   "nome": "MDXceasa",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FprecoDia.cda&dataAccessId=MDXceasa&userid=pentaho&password=password",
+   "final_url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery?path=%2Fhome%2FPROHORT%2FprecoDia.cda&dataAccessId=MDXceasa&userid=pentaho&password=password",
+   "fetched_at": "2026-09-24T01:29:35.560936+00:00",
+   "status": 200,
+   "bytes": 2658,
+   "sha256": "5723a367e788ee5a6cd3f22ef6c3add597f038d2819b70600ef405fc708d30d5",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:29:40 GMT",
+    "content-type": "application/json"
+   },
+   "arquivo": "MDXceasa.bin"
+  }
+ },
+ "conferencia": {
+  "precos_response.json": {
+   "captura": "ceasa_prices_official.json",
+   "fetched_at": "2026-09-23T21:15:26.789643+00:00",
+   "sha256_igual": true
+  },
+  "ceasas_response.json": {
+   "captura": "ceasa_ceasas_official.json",
+   "fetched_at": "2026-09-23T21:15:27.334368+00:00",
+   "sha256_igual": true
+  }
+ }
+}

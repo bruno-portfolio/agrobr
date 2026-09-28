@@ -1,103 +1,139 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+import copy
+import hashlib
+import json
+from pathlib import Path
 
+import httpx
 import pytest
 
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
-from agrobr.zarc.client import discover_resources, download_csv, fetch_tabua_risco
-from tests.helpers import make_mock_async_client, make_mock_response
+from agrobr import constants
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    ResourceLimitError,
+    SourceUnavailableError,
+)
+from agrobr.zarc import api, client
+from tests.helpers import TrackedAsyncStream, levanta_exatamente
 
 
-class TestDiscoverResources:
-    @pytest.mark.asyncio
-    async def test_discover_resources_ok(self):
-        ckan_json = {
-            "success": True,
-            "result": {
-                "resources": [
-                    {
-                        "id": "r1",
-                        "name": "Safra 2025/2026",
-                        "url": "https://x/25.csv",
-                        "format": "CSV",
-                    },
-                    {"id": "r2", "name": "Safra perene", "url": "https://x/p.csv", "format": "CSV"},
-                ]
-            },
-        }
-        mock_response = make_mock_response(200, json_data=ckan_json)
-
-        with patch("agrobr.zarc.client.httpx.AsyncClient") as mock_cls:
-            mock_client = make_mock_async_client()
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
-
-            with patch("agrobr.zarc.client.retry_on_status", new_callable=AsyncMock) as mock_retry:
-                mock_retry.return_value = mock_response
-                result = await discover_resources()
-
-        assert len(result) == 2
-        assert result[0]["name"] == "Safra 2025/2026"
-        assert result[1]["url"] == "https://x/p.csv"
-
-    @pytest.mark.asyncio
-    async def test_discover_resources_invalid_response(self):
-        mock_response = make_mock_response(200, json_data={"error": "not found"})
-
-        with patch("agrobr.zarc.client.httpx.AsyncClient") as mock_cls:
-            mock_client = make_mock_async_client()
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
-
-            with patch("agrobr.zarc.client.retry_on_status", new_callable=AsyncMock) as mock_retry:
-                mock_retry.return_value = mock_response
-                with pytest.raises(SourceUnavailableError, match="missing 'result'"):
-                    await discover_resources()
+@pytest.mark.parametrize(
+    "csv,limit",
+    [
+        (True, "ZARC_MAX_DOWNLOAD_BYTES"),
+        (False, "ZARC_MAX_CATALOG_BYTES"),
+        (True, "ZARC_MAX_TRANSFER_BYTES"),
+    ],
+)
+async def test_orcamento_aborta_antes_do_resto_do_stream(monkeypatch, csv, limit):
+    monkeypatch.setattr(constants, limit, 5)
+    stream = TrackedAsyncStream([b"1234", b"5678", b"not downloaded"])
+    original = httpx.AsyncClient
+    monkeypatch.setattr(
+        client.httpx,
+        "AsyncClient",
+        lambda **kwargs: original(
+            transport=httpx.MockTransport(lambda _: httpx.Response(200, stream=stream)), **kwargs
+        ),
+    )
+    with levanta_exatamente(ResourceLimitError, match="orçamento"):
+        await client._get("https://example.test/resource", csv=csv)
+    assert stream.received == 2
+    assert stream.closed
 
 
-class TestDownloadCsv:
-    @pytest.mark.asyncio
-    async def test_download_csv_ok(self):
-        content = b"col1;col2\n" + b"val1;val2\n" * 15
-        mock_response = make_mock_response(200, content=content)
-
-        with patch("agrobr.zarc.client.httpx.AsyncClient") as mock_cls:
-            mock_client = make_mock_async_client()
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
-
-            with patch("agrobr.zarc.client.retry_on_status", new_callable=AsyncMock) as mock_retry:
-                mock_retry.return_value = mock_response
-                result = await download_csv("https://x/test.csv")
-
-        assert result == content
-
-    @pytest.mark.asyncio
-    async def test_download_csv_too_small(self):
-        mock_response = make_mock_response(200, content=b"tiny")
-
-        with patch("agrobr.zarc.client.httpx.AsyncClient") as mock_cls:
-            mock_client = make_mock_async_client()
-            mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
-
-            with patch("agrobr.zarc.client.retry_on_status", new_callable=AsyncMock) as mock_retry:
-                mock_retry.return_value = mock_response
-                with pytest.raises(SourceUnavailableError, match="muito pequeno"):
-                    await download_csv("https://x/test.csv")
+@pytest.mark.asyncio
+async def test_discover_legacy_resources_keeps_four_fields(zarc_replay):
+    resources = await client.discover_resources()
+    assert len(resources) == 3
+    assert set(resources[0]) == {"id", "name", "url", "format"}
+    assert len(zarc_replay["requests"]) == 1
 
 
-class TestFetchTabuaRisco:
-    @pytest.mark.asyncio
-    async def test_fetch_safra_not_found(self):
-        resources = [
-            {"id": "r1", "name": "Safra 2025/2026", "url": "https://x/25.csv", "format": "CSV"},
-        ]
+@pytest.mark.asyncio
+async def test_typed_catalog_retains_announced_revision(zarc_replay):
+    listing = await client.discover_catalog()
+    safra, resource = listing.select(None)
+    assert safra == "2026/2027"
+    assert resource.last_modified == "2026-09-07T00:00:00"
+    assert listing.acquisition.sha256
+    assert len(zarc_replay["requests"]) == 1
 
-        with patch(
-            "agrobr.zarc.client.discover_resources", new_callable=AsyncMock
-        ) as mock_discover:
-            mock_discover.return_value = resources
-            with pytest.raises(InvalidParameterError, match="não encontrada"):
-                await fetch_tabua_risco("2020/2021")
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {},
+        {"success": False, "result": {"resources": []}},
+        {"success": "true", "result": {"resources": []}},
+        {"success": True, "result": {"resources": {}}},
+        {"success": True, "result": {"resources": [{"id": 1}]}},
+    ],
+)
+async def test_invalid_catalog_is_parse_error(zarc_replay, payload):
+    zarc_replay["catalog"] = payload
+    with pytest.raises(ParseError):
+        await client.discover_catalog()
+
+
+@pytest.mark.asyncio
+async def test_official_catalog_types_are_accepted(zarc_replay):
+    path = Path(__file__).parents[1] / "golden_data/zarc/selecao_20260907/catalog.json"
+    zarc_replay["catalog"] = json.loads(path.read_bytes())
+    listing = await client.discover_catalog()
+    assert listing.select("2016/2017")[0] == "2016/2017"
+    assert listing.select("2026/2027")[0] == "2026/2027"
+    assert listing.select("perene")[0] == "perene"
+
+
+@pytest.mark.asyncio
+async def test_duplicate_safra_is_not_first_match(zarc_replay):
+    resources = zarc_replay["catalog"]["result"]["resources"]
+    duplicate = copy.deepcopy(resources[1])
+    duplicate["id"] = "other"
+    resources.append(duplicate)
+    listing = await client.discover_catalog()
+    with pytest.raises(ParseError, match="ambígu"):
+        listing.select("2026/2027")
+    assert len(zarc_replay["requests"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_unavailable_safra_never_downloads(zarc_replay):
+    with pytest.raises(InvalidParameterError, match="não encontrada"):
+        await api.zoneamento(safra="2000/2001", use_cache=False)
+    assert len(zarc_replay["requests"]) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("safra", [True, "2026/2028"])
+async def test_invalid_safra_precedes_http(zarc_replay, safra):
+    with pytest.raises(InvalidParameterError):
+        await api.zoneamento(safra=safra, use_cache=False)
+    assert not zarc_replay["requests"]
+
+
+@pytest.mark.asyncio
+async def test_download_legacy_wrapper_preserves_bytes(zarc_replay):
+    expected = zarc_replay["bodies"]["2016_2017"]
+    assert await client.download_csv("https://example.org/2016_2017.csv") == expected
+
+
+@pytest.mark.asyncio
+async def test_download_acquisition_uses_csv_hash(zarc_replay):
+    captured = await client.download_acquisition("https://example.org/perene.csv")
+    assert captured.resource.sha256 == hashlib.sha256(captured.content).hexdigest()
+    assert captured.resource.size_bytes == len(captured.content)
+    assert captured.resource.headers["etag"] == "replayed"
+    assert len(zarc_replay["requests"]) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("body", [b"tiny", b"<!DOCTYPE html><html>" + b"wrong" * 100])
+async def test_invalid_download_is_not_a_csv(zarc_replay, body):
+    zarc_replay["bodies"]["perene"] = body
+    with pytest.raises(SourceUnavailableError):
+        await client.download_csv("https://example.org/perene.csv")

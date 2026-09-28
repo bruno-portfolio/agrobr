@@ -6,6 +6,8 @@
   "url": "https://dados.agricultura.gov.br/dataset/sisser3",
   "captured_at": "2026-02-21T08:39:36Z",
   "needs_real_data": false,
-  "parser_version": 1,
-  "notes": "Real PSR 2006-2015 data (first 200KB, ~795 rows). Contains anos 2007-2008, 3 culturas, 7 UFs. PII columns (NM_SEGURADO, NR_DOCUMENTO_SEGURADO) are stripped by parser. Note: VALOR_INDENIZACAO column has encoding issues (accented A) and is not mapped by parser."
+  "parser_version": 2,
+  "masked": true,
+  "original_sha256": "a6543807a523cbb6fd981409adada7dae9e67a686e581748b77e9cbc62824bd5",
+  "notes": "Real PSR 2006-2015 data (first 200KB, 795 rows), captured on the original date above; no new collection. Contains anos 2007-2008, 3 culturas, 7 UFs. PII columns (NM_SEGURADO, NR_DOCUMENTO_SEGURADO) are stripped by parser and masked in this copy (synthetic NM_SEGURADO and NR_DOCUMENTO_SEGURADO digits). Historical parser v1 did not recognize the valid Windows-1252 header VALOR_INDENIZAÇÃO. Parser v2 normalizes its accents and preserves 14 positive indemnities totaling BRL 106230.83 and 781 missing values."
 }

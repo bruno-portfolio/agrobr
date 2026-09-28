@@ -1,0 +1,500 @@
+from __future__ import annotations
+
+import hashlib
+import io
+import json
+import warnings
+from datetime import UTC, date, datetime
+from decimal import ROUND_HALF_UP, Decimal
+from pathlib import Path
+from unittest.mock import AsyncMock
+
+import duckdb
+import httpx
+import pandas as pd
+import pytest
+
+from agrobr import constants, datasets
+from agrobr.cache import duckdb_store
+from agrobr.cepea import api, client, serie
+from agrobr.cepea.parsers.detector import get_parser_with_fallback
+from agrobr.exceptions import ParseError, SourceUnavailableError
+from tests.helpers import levanta_exatamente, sem_excecao
+
+GOLDEN = Path(__file__).parents[1] / "golden_data" / "cepea" / "serie_historica_20260926"
+MANIFESTO = json.loads((GOLDEN / "manifest.json").read_bytes())
+HOJE = date(2026, 9, 26)
+SERIES = {
+    ("soja", "92"): "soja_92.xls",
+    ("suino", "129"): "suino_129.xls",
+    ("leite", "leitep"): "leite_leitep.xls",
+    ("bezerro", "8"): "bezerro_8.xls",
+    ("bezerro", "174"): "bezerro_174.xls",
+}
+AGOSTO = {"inicio": "2026-08-01", "fim": "2026-08-20"}
+BAIXADA = datetime(2026, 9, 27, 2, 30)
+
+pytestmark = pytest.mark.usefixtures("serie_historica")
+
+
+def corpo(nome: str) -> bytes:
+    recurso = next(item for item in MANIFESTO["resources"] if item["file"] == nome)
+    conteudo = (GOLDEN / nome).read_bytes()
+    assert hashlib.sha256(conteudo).hexdigest() == recurso["sha256"]
+    return conteudo
+
+
+def planilha(nome: str) -> pd.DataFrame:
+    tabela = pd.read_excel(io.BytesIO(corpo(nome)), engine="calamine", header=None)
+    return tabela.iloc[4:].dropna(how="all")
+
+
+def diario(nome: str, inicio: str, fim: str) -> pd.DataFrame:
+    tabela = planilha(nome)
+    dias = pd.to_datetime(tabela[0], format="%d/%m/%Y")
+    return tabela[(dias >= inicio) & (dias <= fim)]
+
+
+def avisos_de(emitidos: list[warnings.WarningMessage], prefixo: str) -> list[str]:
+    return [str(aviso.message) for aviso in emitidos if str(aviso.message).startswith(prefixo)]
+
+
+@pytest.fixture
+def cache(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    store = duckdb_store.DuckDBStore(constants.CacheSettings(cache_dir=tmp_path / "cache"))
+    monkeypatch.setattr(api, "get_store", lambda: store)
+    monkeypatch.setattr(duckdb_store, "get_store", lambda: store)
+    monkeypatch.setattr(api, "_today", lambda: HOJE)
+    yield store
+    store.close()
+
+
+@pytest.fixture
+def baixar(monkeypatch: pytest.MonkeyPatch) -> AsyncMock:
+    async def servir(pagina: str, identificador: str) -> client.SerieBaixada:
+        url = f"https://www.cepea.org.br/br/indicador/series/{pagina}.aspx?id={identificador}"
+        return client.SerieBaixada(corpo(SERIES[(pagina, identificador)]), url, BAIXADA)
+
+    fetch = AsyncMock(side_effect=servir)
+    monkeypatch.setattr(api.client, "fetch_serie", fetch)
+    return fetch
+
+
+@pytest.fixture
+def sem_pagina(monkeypatch: pytest.MonkeyPatch) -> AsyncMock:
+    fetch = AsyncMock(side_effect=AssertionError("período fechado não volta à página"))
+    monkeypatch.setattr(api, "_fetch_and_parse", fetch)
+    return fetch
+
+
+@pytest.mark.parametrize(
+    ("produto", "nome", "pracas"),
+    [
+        ("soja", "soja_92.xls", {"Paranaguá/PR"}),
+        ("suino", "suino_129.xls", set(constants.CEPEA_PRACAS_REGIONAIS["suino"])),
+        ("bezerro", "bezerro_8.xls", {"Mato Grosso do Sul"}),
+        ("leite", "leite_leitep.xls", None),
+    ],
+)
+def test_serie_publica_cada_valor_positivo_da_planilha(produto, nome, pracas):
+    tabela = planilha(nome)
+    valores = (
+        tabela.iloc[:, 3:4]
+        if produto == "leite"
+        else tabela.iloc[:, 1 : 6 if produto == "suino" else 2]
+    )
+    positivos = int((valores.apply(pd.to_numeric, errors="coerce") > 0).sum().sum())
+
+    with sem_excecao():
+        indicadores = serie.parse_serie(corpo(nome), produto)
+
+    assert len(indicadores) == positivos
+    esperadas = pracas or {str(estado).strip() for estado in tabela[2]}
+    assert {ind.praca for ind in indicadores} == esperadas
+    assert {ind.parser_version for ind in indicadores} == {constants.CEPEA_SERIE_PARSER_VERSION}
+
+
+def test_serie_de_outro_indicador_e_recusada():
+    with levanta_exatamente(ParseError, "título da série"):
+        serie.parse_serie(corpo("soja_92.xls"), "suino")
+
+
+def test_cabecalho_fora_do_padrao_e_recusado(monkeypatch: pytest.MonkeyPatch):
+    tabela = serie.ler_planilha(corpo("soja_92.xls"))
+    tabela.iat[3, 1] = "A prazo R$"
+    monkeypatch.setattr(serie, "ler_planilha", lambda _conteudo: tabela)
+    with levanta_exatamente(ParseError, "cabeçalho da série"):
+        serie.parse_serie(b"", "soja")
+
+
+def test_recuo_para_o_xlrd_le_o_mesmo_e_recusa_arquivo_truncado(monkeypatch: pytest.MonkeyPatch):
+    conteudo = corpo("soja_92.xls")
+    pelo_calamine = serie.ler_planilha(conteudo)
+    ler_excel, abrir_excel = pd.read_excel, pd.ExcelFile
+
+    def sem_calamine(*args, **kwargs):
+        if kwargs.get("engine") == "calamine":
+            raise ValueError("calamine indisponível")
+        return ler_excel(*args, **kwargs)
+
+    monkeypatch.setattr(serie.pd, "read_excel", sem_calamine)
+    pelo_xlrd = serie.ler_planilha(conteudo)
+    assert pelo_xlrd.fillna("").astype(str).values.tolist() == (
+        pelo_calamine.fillna("").astype(str).values.tolist()
+    )
+
+    def truncado(*args, **kwargs):
+        livro = abrir_excel(*args, **kwargs)
+        livro.book.sheet_by_index(0)._dimnrows += 10
+        return livro
+
+    monkeypatch.setattr(serie.pd, "ExcelFile", truncado)
+    with levanta_exatamente(ParseError, "série truncada"):
+        serie.ler_planilha(conteudo)
+
+
+@pytest.mark.parametrize(
+    ("produto", "pagina", "nome"),
+    [
+        ("soja", "soja_pagina.html", "soja_92.xls"),
+        ("suino", "suino_pagina.html", "suino_129.xls"),
+        ("bezerro", "bezerro_pagina.html", "bezerro_8.xls"),
+        ("leite", "leite_pagina.html", "leite_leitep.xls"),
+    ],
+)
+async def test_linhas_recentes_da_serie_batem_com_a_pagina(produto, pagina, nome):
+    _, da_pagina = await get_parser_with_fallback(corpo(pagina).decode("utf-8"), produto)
+    da_serie = {
+        (ind.praca, ind.data): float(ind.valor) for ind in serie.parse_serie(corpo(nome), produto)
+    }
+
+    pares = [(float(ind.valor), da_serie.get((ind.praca, ind.data))) for ind in da_pagina]
+
+    assert len(pares) >= 15
+    if produto == "leite":
+        centavos = [
+            float(Decimal(str(publicado)).quantize(Decimal("0.01"), ROUND_HALF_UP))
+            for publicado, _ in pares
+        ]
+        assert centavos == [gravado for _, gravado in pares]
+        assert any(
+            centavo != publicado for centavo, (publicado, _) in zip(centavos, pares, strict=True)
+        )
+    else:
+        assert [publicado for publicado, _ in pares] == [gravado for _, gravado in pares]
+
+
+@pytest.mark.usefixtures("sem_pagina")
+async def test_periodo_fechado_vem_da_serie_e_depois_do_cache(cache, baixar):
+    esperado = diario("soja_92.xls", **AGOSTO)
+
+    with sem_excecao():
+        frame, meta = await api.indicador("soja", **AGOSTO, return_meta=True)
+        de_novo, meta_cache = await api.indicador("soja", **AGOSTO, return_meta=True)
+
+    assert frame["valor"].tolist() == esperado[1].astype(float).tolist()
+    assert frame["valor_usd"].tolist() == esperado[2].astype(float).tolist()
+    assert (meta.selected_source, meta.from_cache, meta.source_method) == (
+        "cepea",
+        False,
+        "httpx+xls",
+    )
+    sha_da_serie = hashlib.sha256(corpo("soja_92.xls")).hexdigest()
+    assert meta.raw_content_hash == sha_da_serie
+    assert [recurso["sha256"] for recurso in meta.source_details.get("resources", [])] == [
+        meta.raw_content_hash
+    ]
+    assert (meta.cache_expires_at, meta_cache.cache_expires_at) == (None, None)
+    assert (meta_cache.from_cache, meta_cache.selected_source) == (True, "cache")
+    assert de_novo["valor"].tolist() == frame["valor"].tolist()
+    assert baixar.await_count == 1
+    assert cache.serie_cobertura("soja") == (date(2026, 9, 25), BAIXADA)
+    assert meta.fetched_at == meta.fetch_timestamp == BAIXADA.replace(tzinfo=UTC)
+    assert meta.source_details["resources"][0]["fetched_at"] == "2026-09-27T02:30:00+00:00"
+
+
+@pytest.mark.usefixtures("cache", "sem_pagina")
+async def test_periodo_depois_do_que_a_serie_cobre_baixa_de_novo(baixar, monkeypatch):
+    with sem_excecao():
+        await api.indicador("soja", **AGOSTO)
+    monkeypatch.setattr(api, "_today", lambda: date(2026, 11, 30))
+    monkeypatch.setattr(api, "utcnow", lambda: datetime(2026, 11, 30, 15))
+    with sem_excecao():
+        await api.indicador("soja", **AGOSTO)
+    assert baixar.await_count == 1
+    with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
+        warnings.simplefilter("always")
+        frame = await api.indicador("soja", inicio="2026-10-01", fim="2026-10-31")
+    assert baixar.await_count == 2
+    assert frame.empty
+    assert avisos_de(emitidos, "cepea: sem dado de 'soja' entre 2026-10-01 e 2026-10-31")
+
+
+@pytest.mark.usefixtures("cache", "baixar", "sem_pagina")
+async def test_preco_diario_do_periodo_fechado_vem_da_serie():
+    esperado = diario("soja_92.xls", **AGOSTO)
+
+    with sem_excecao():
+        frame, meta = await datasets.preco_diario("soja", **AGOSTO, return_meta=True)
+
+    obtidos = dict(zip(frame["data"].dt.strftime("%d/%m/%Y"), frame["valor"], strict=True))
+    assert obtidos == dict(zip(esperado[0], esperado[1].astype(float), strict=True))
+    assert meta.from_cache is False
+    assert [recurso["papel"] for recurso in meta.source_details.get("resources", [])] == ["serie"]
+
+
+@pytest.mark.usefixtures("cache", "sem_pagina")
+async def test_periodo_fechado_sem_serie_e_sem_cache_levanta(monkeypatch: pytest.MonkeyPatch):
+    falha = SourceUnavailableError("cepea", last_error="série histórica indisponível: HTTP 403")
+    monkeypatch.setattr(api.client, "fetch_serie", AsyncMock(side_effect=falha))
+
+    with levanta_exatamente(SourceUnavailableError, "HTTP 403") as erro:
+        await api.indicador("soja", **AGOSTO)
+
+    assert erro.value.attempted_sources == ["cepea", "cache"]
+
+
+@pytest.mark.usefixtures("cache")
+async def test_serie_fora_com_a_pagina_no_ar_avisa(monkeypatch: pytest.MonkeyPatch):
+    falha = SourceUnavailableError("cepea", last_error="série histórica indisponível: HTTP 403")
+    monkeypatch.setattr(api.client, "fetch_serie", AsyncMock(side_effect=falha))
+    pagina = client.FetchResult(corpo("soja_pagina.html").decode("utf-8"), "cepea")
+    monkeypatch.setattr(api.client, "fetch_indicador_page", AsyncMock(return_value=pagina))
+
+    with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
+        warnings.simplefilter("always")
+        frame, meta = await api.indicador(
+            "soja", inicio="2026-08-01", fim="2026-09-25", return_meta=True
+        )
+
+    prefixo = "cepea: série histórica de 'soja' indisponível"
+    assert [aviso for aviso in meta.validation_warnings if aviso.startswith(prefixo)] == avisos_de(
+        emitidos, prefixo
+    )
+    assert len(avisos_de(emitidos, prefixo)) == 1
+    assert frame["data"].min() == pd.Timestamp("2026-09-04")
+
+
+@pytest.mark.usefixtures("baixar", "sem_pagina")
+async def test_leite_vale_a_pagina_e_a_serie_completa_o_historico(cache):
+    _, da_pagina = await get_parser_with_fallback(
+        corpo("leite_pagina.html").decode("utf-8"), "leite"
+    )
+    cache.indicadores_upsert(api._indicadores_to_dicts(da_pagina))
+    publicados = {ind.data: float(ind.valor) for ind in da_pagina if ind.praca == "RS"}
+    tabela = planilha("leite_leitep.xls")
+    meses = {
+        "JAN": 1,
+        "FEV": 2,
+        "MAR": 3,
+        "ABR": 4,
+        "MAI": 5,
+        "JUN": 6,
+        "JUL": 7,
+        "AGO": 8,
+        "SET": 9,
+        "OUT": 10,
+        "NOV": 11,
+        "DEZ": 12,
+    }
+    gravados = {
+        date(int(ano), meses[str(mes)], 1): float(preco)
+        for ano, mes, estado, preco in tabela.itertuples(index=False)
+        if str(estado).strip() == "RS" and int(ano) >= 2025
+    }
+
+    with sem_excecao():
+        frame, meta = await api.indicador(
+            "leite", inicio="2025-01-01", fim="2026-07-31", praca="RS", return_meta=True
+        )
+
+    obtidos = dict(zip(frame["data"].dt.date, frame["valor"], strict=True))
+    assert obtidos == {**gravados, **publicados}
+    assert any(publicados[dia] != gravados[dia] for dia in publicados)
+    assert meta.source_details.get("pagina_desde") == min(publicados).isoformat()
+
+
+@pytest.mark.usefixtures("cache", "baixar", "sem_pagina")
+async def test_bezerro_do_historico_traz_o_peso_medio():
+    pesos = diario("bezerro_174.xls", "2025-01-02", "2025-01-31")
+
+    with sem_excecao():
+        frame, meta = await api.indicador(
+            "bezerro", inicio="2025-01-02", fim="2025-01-31", return_meta=True
+        )
+
+    assert frame["peso_medio_kg"].tolist() == pesos[1].astype(float).tolist()
+    assert [recurso.get("papel") for recurso in meta.source_details.get("resources", [])] == [
+        "serie",
+        "serie_peso",
+    ]
+    assert meta.fetched_at == meta.fetch_timestamp == BAIXADA.replace(tzinfo=UTC)
+
+
+@pytest.mark.usefixtures("cache", "sem_pagina")
+async def test_laranja_sem_serie_avisa_e_nao_baixa(baixar):
+    with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
+        warnings.simplefilter("always")
+        frame, meta = await api.indicador(
+            "laranja_industria", inicio="2025-01-01", fim="2025-01-31", return_meta=True
+        )
+
+    prefixo = "cepea: o CEPEA não publica série histórica de 'laranja_industria'"
+    assert frame.empty
+    assert avisos_de(emitidos, prefixo)
+    assert [aviso for aviso in meta.validation_warnings if aviso.startswith(prefixo)]
+    baixar.assert_not_awaited()
+
+
+@pytest.fixture
+def circuito(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(client, "_circuit_state", {})
+
+
+def _resposta(url: str, status: int, conteudo: bytes) -> httpx.Response:
+    return httpx.Response(status, content=conteudo, request=httpx.Request("GET", url))
+
+
+@pytest.mark.usefixtures("circuito")
+async def test_fetch_serie_devolve_o_xls_e_pula_o_endereco_bloqueado(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    conteudo = corpo("soja_92.xls")
+    pedidos: list[str] = []
+
+    async def get(url: str, _headers: dict[str, str]) -> httpx.Response:
+        pedidos.append(url)
+        if len(pedidos) == 1:
+            bloqueio = _resposta(url, 403, b"Forbidden")
+            raise httpx.HTTPStatusError(
+                "403 Forbidden", request=bloqueio.request, response=bloqueio
+            )
+        return _resposta(url, 200, conteudo)
+
+    monkeypatch.setattr(client, "_get", get)
+    baixada = await client.fetch_serie("soja", "92")
+    de_novo = await client.fetch_serie("soja", "92")
+
+    assert (baixada.conteudo, de_novo.conteudo) == (conteudo, conteudo)
+    assert baixada.url == pedidos[1] == pedidos[2]
+    assert all(url.endswith("/br/indicador/series/soja.aspx?id=92") for url in pedidos)
+    assert len(pedidos) == 3
+
+
+@pytest.mark.usefixtures("circuito")
+async def test_fetch_serie_recusa_html_e_arquivo_acima_do_teto(monkeypatch: pytest.MonkeyPatch):
+    respostas = iter([b"<!DOCTYPE html>" + b" " * 600, corpo("soja_92.xls")])
+
+    async def get(url: str, _headers: dict[str, str]) -> httpx.Response:
+        return _resposta(url, 200, next(respostas))
+
+    monkeypatch.setattr(client, "_get", get)
+    monkeypatch.setattr(constants, "CEPEA_SERIE_MAX_BYTES", 1000)
+    with levanta_exatamente(SourceUnavailableError, "acima do teto") as erro:
+        await client.fetch_serie("soja", "92")
+    assert erro.value.attempted_sources == ["cepea"]
+
+
+@pytest.mark.usefixtures("cache")
+async def test_force_refresh_baixa_serie_e_pagina_e_lista_os_2_corpos(baixar, monkeypatch):
+    pagina = corpo("soja_pagina.html")
+    fetch = AsyncMock(return_value=client.FetchResult(pagina.decode("utf-8"), "cepea"))
+    monkeypatch.setattr(api.client, "fetch_indicador_page", fetch)
+    monkeypatch.setattr(api, "utcnow", lambda: datetime(2026, 9, 27, 3))
+
+    with sem_excecao():
+        await api.indicador("soja", **AGOSTO)
+        _, meta = await api.indicador("soja", **AGOSTO, force_refresh=True, return_meta=True)
+
+    recursos = meta.source_details.get("resources", [])
+    assert baixar.await_count == 2
+    assert fetch.await_count == 1
+    assert [recurso["papel"] for recurso in recursos] == ["serie", "pagina"]
+    sha_da_pagina = hashlib.sha256(pagina).hexdigest()
+    assert recursos[1]["sha256"] == sha_da_pagina
+    assert (meta.raw_content_hash, meta.raw_content_size) == (None, 0)
+    horas = [datetime.fromisoformat(recurso["fetched_at"]) for recurso in recursos]
+    assert horas == [BAIXADA.replace(tzinfo=UTC), datetime(2026, 9, 27, 3, tzinfo=UTC)]
+    assert meta.fetched_at == meta.fetch_timestamp == max(horas)
+
+
+@pytest.mark.usefixtures("sem_pagina", "baixar")
+async def test_cache_com_erro_ainda_devolve_a_serie(cache, monkeypatch):
+    def quebrado(*_args, **_kwargs):
+        raise duckdb.Error("cache corrompido")
+
+    monkeypatch.setattr(cache, "indicadores_query", quebrado)
+    esperado = diario("soja_92.xls", **AGOSTO)
+
+    with sem_excecao():
+        frame = await api.indicador("soja", **AGOSTO)
+
+    assert frame["valor"].tolist() == esperado[1].astype(float).tolist()
+
+
+@pytest.mark.usefixtures("sem_pagina")
+async def test_cache_danificado_vai_para_o_lado_e_a_consulta_segue(cache, baixar):
+    await api.indicador("soja", **AGOSTO)
+    tamanho = cache.db_path.stat().st_size
+    with cache.db_path.open("r+b") as arquivo:
+        arquivo.truncate(tamanho // 2)
+    duckdb.connect(str(cache.db_path)).close()
+    esperado = diario("soja_92.xls", **AGOSTO)
+
+    with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
+        warnings.simplefilter("always")
+        frame, meta = await api.indicador("soja", **AGOSTO, return_meta=True)
+        de_novo, meta_cache = await api.indicador("soja", **AGOSTO, return_meta=True)
+
+    movidos = list(cache.db_path.parent.glob("agrobr.duckdb.corrompido-*"))
+    assert len(movidos) == 1
+    assert frame["valor"].tolist() == esperado[1].astype(float).tolist()
+    assert de_novo["valor"].tolist() == frame["valor"].tolist()
+    assert (meta.from_cache, meta_cache.from_cache) == (False, True)
+    assert baixar.await_count == 2
+    [aviso] = avisos_de(emitidos, "agrobr: o cache em")
+    assert f"o cache em {cache.db_path} está danificado" in aviso
+    assert f"movido para {movidos[0]}" in aviso
+
+
+@pytest.mark.usefixtures("cache", "sem_pagina")
+async def test_serie_de_layout_novo_e_sem_cache_levanta_parse_error(monkeypatch):
+    url = "https://www.cepea.org.br/br/indicador/series/soja.aspx?id=92"
+    trocada = client.SerieBaixada(corpo("suino_129.xls"), url, datetime(2026, 9, 27, 2, 30))
+    monkeypatch.setattr(api.client, "fetch_serie", AsyncMock(return_value=trocada))
+
+    with levanta_exatamente(ParseError, "título da série"):
+        await api.indicador("soja", **AGOSTO)
+
+
+def test_cobertura_da_serie_sem_conexao_e_nula(cache, monkeypatch):
+    monkeypatch.setattr(cache, "_get_conn", lambda: None)
+    cache.serie_registrar("soja", date(2026, 9, 25), BAIXADA)
+    assert cache.serie_cobertura("soja") is None
+
+
+@pytest.mark.usefixtures("sem_pagina")
+async def test_leite_com_a_pagina_no_cache_baixa_a_serie_uma_vez(cache, baixar, monkeypatch):
+    monkeypatch.setattr(api, "utcnow", lambda: datetime(2026, 9, 27, 3))
+    _, da_pagina = await get_parser_with_fallback(
+        corpo("leite_pagina.html").decode("utf-8"), "leite"
+    )
+    cache.indicadores_upsert(api._indicadores_to_dicts(da_pagina))
+
+    for _ in range(3):
+        with sem_excecao():
+            await api.indicador("leite", inicio="2025-01-01", fim="2026-08-31")
+
+    assert baixar.await_count == 1
+    assert cache.serie_cobertura("leite") == (date(2026, 7, 1), BAIXADA)
+
+
+@pytest.mark.usefixtures("cache", "sem_pagina")
+async def test_dentro_da_validade_a_serie_nao_se_baixa_de_novo(baixar, monkeypatch):
+    monkeypatch.setattr(api, "utcnow", lambda: datetime(2026, 9, 27, 3))
+    with sem_excecao():
+        await api.indicador("soja", **AGOSTO)
+    monkeypatch.setattr(api, "_today", lambda: date(2026, 11, 30))
+    with sem_excecao():
+        await api.indicador("soja", inicio="2026-10-01", fim="2026-10-31")
+    assert baixar.await_count == 1

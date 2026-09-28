@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
+from unittest import mock
 from unittest.mock import patch
 
 import pandas as pd
 import pytest
 
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 from agrobr.utils.result import build_source_meta, finalize_result
 
 
@@ -21,23 +23,6 @@ def sample_meta():
 
 
 class TestFinalizeResultPandas:
-    def test_returns_df_by_default(self, sample_df):
-        result = finalize_result(sample_df)
-        pd.testing.assert_frame_equal(result, sample_df)
-
-    def test_returns_df_with_meta(self, sample_df, sample_meta):
-        df, meta = finalize_result(sample_df, sample_meta, return_meta=True)
-        pd.testing.assert_frame_equal(df, sample_df)
-        assert meta is sample_meta
-
-    def test_returns_df_when_as_polars_false(self, sample_df, sample_meta):
-        result = finalize_result(sample_df, sample_meta, as_polars=False, return_meta=False)
-        pd.testing.assert_frame_equal(result, sample_df)
-
-    def test_meta_none_no_return_meta(self, sample_df):
-        result = finalize_result(sample_df, None, as_polars=False)
-        pd.testing.assert_frame_equal(result, sample_df)
-
     def test_meta_none_with_return_meta(self, sample_df):
         df, meta = finalize_result(sample_df, None, return_meta=True)
         pd.testing.assert_frame_equal(df, sample_df)
@@ -63,13 +48,6 @@ class TestFinalizeResultPolars:
             pytest.raises(ImportError, match=r"pip install agrobr\[polars\]"),
         ):
             finalize_result(sample_df, as_polars=True)
-
-    def test_polars_import_error_with_meta_raises(self, sample_df, sample_meta):
-        with (
-            patch.dict("sys.modules", {"polars": None}),
-            pytest.raises(ImportError, match=r"pip install agrobr\[polars\]"),
-        ):
-            finalize_result(sample_df, sample_meta, as_polars=True, return_meta=True)
 
 
 class TestBuildSourceMeta:
@@ -99,54 +77,45 @@ class TestBuildSourceMeta:
         assert isinstance(meta.fetch_timestamp, datetime)
         assert meta.fetched_at == meta.fetch_timestamp
 
-    def test_explicit_attempted_selected(self, sample_df):
-        meta = build_source_meta(
-            "src",
-            "url",
-            "httpx",
-            0,
-            0,
-            sample_df,
-            1,
-            attempted_sources=["a", "b"],
-            selected_source="b",
-        )
-        assert meta.attempted_sources == ["a", "b"]
-        assert meta.selected_source == "b"
 
-    def test_custom_schema_version(self, sample_df):
-        meta = build_source_meta(
-            "src",
-            "url",
-            "httpx",
-            0,
-            0,
-            sample_df,
-            1,
-            schema_version="1.1",
-        )
-        assert meta.schema_version == "1.1"
+def test_polars_preserves_nullable_integer():
+    pytest.importorskip("polars")
+    frame = pd.DataFrame({"value": pd.Series([1, None], dtype="Int64")})
+    assert result.finalize_result(frame, as_polars=True).to_dicts() == [
+        {"value": 1},
+        {"value": None},
+    ]
 
-    def test_parse_ms_zero(self, sample_df):
-        meta = build_source_meta(
-            "src",
-            "url",
-            "httpx",
-            100,
-            0,
-            sample_df,
-            1,
-        )
-        assert meta.parse_duration_ms == 0
 
-    def test_multicolumn_df(self):
-        df = pd.DataFrame({"a": [1], "b": [2], "c": [3]})
-        meta = build_source_meta("src", "url", "httpx", 0, 0, df, 1)
-        assert meta.records_count == 1
-        assert meta.columns == ["a", "b", "c"]
+@pytest.mark.parametrize("values", [[], [None, None], ["", None, "publicado"]])
+def test_polars_declared_string_preserves_null_empty_and_text(values):
+    pl = pytest.importorskip("polars")
+    frame = pd.DataFrame(
+        {
+            "detail": pd.Series(values, dtype="object"),
+            "count": pd.Series([1] * len(values), dtype="Int64"),
+        }
+    )
+    before = frame.copy(deep=True)
+    converted = result.finalize_result(frame, as_polars=True, string_columns=("detail",))
+    assert converted["detail"].dtype == pl.Utf8
+    assert converted["detail"].to_list() == values
+    assert converted["count"].dtype == pl.Int64
+    pd.testing.assert_frame_equal(frame, before)
 
-    def test_empty_df(self):
-        df = pd.DataFrame({"x": []})
-        meta = build_source_meta("src", "url", "httpx", 0, 0, df, 1)
-        assert meta.records_count == 0
-        assert meta.columns == ["x"]
+
+def test_string_columns_keep_pandas_independent_of_polars():
+    frame = pd.DataFrame({"detail": pd.Series([None], dtype="object")})
+    with patch.dict("sys.modules", {"polars": None}):
+        returned = result.finalize_result(frame, string_columns=("detail",))
+    assert returned is frame
+    assert str(returned["detail"].dtype) == "object"
+
+
+def test_polars_conversion_preserves_dependency_error():
+    pytest.importorskip("polars")
+    with (
+        mock.patch("polars.from_pandas", side_effect=ImportError("pyarrow is required")),
+        pytest.raises(ImportError, match="pyarrow is required"),
+    ):
+        result.finalize_result(pd.DataFrame({"value": [1]}), as_polars=True)

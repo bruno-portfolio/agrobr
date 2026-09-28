@@ -1,0 +1,31 @@
+{
+  "source": "acervo_fundiario",
+  "format": "shapefile_zip",
+  "parser_module": "agrobr.acervo_fundiario.parser",
+  "parser_function": "parse_assentamentos",
+  "url": "https://certificacao.incra.gov.br/csv_shp/zip/Assentamento%20Brasil.zip",
+  "captured_at": "2026-09-23T02:54:39.033452+00:00",
+  "last_modified": "Tue, 22 Sep 2026 18:35:08 GMT",
+  "etag": "\"854ae417c14add1:0\"",
+  "sha256": "86403c659c7a2ade5ea372b876211582315f92df207b85ac0384a9b0e086aeb1",
+  "bytes": 31243,
+  "original_sha256": "d49eb93e1642f55824b08d15cb474f8d1662f31e15c2f1cac653bd393ebf5a6e",
+  "original_bytes": 50071517,
+  "license": "nc",
+  "license_reference": "docs/licenses.md — Acervo Fundiario/INCRA",
+  "needs_real_data": false,
+  "reduction": "Records at source_positions of the official shapefile, in original order. DBF header, field descriptors and record bytes, SHP record contents and PRJ retained byte for byte. Only the DBF record count, SHP record numbers (renumbered 1..n), SHP/SHX file lengths, header bounding boxes (and Z range) and the SHX index were recomputed; ZIP repackaged. No values generated or normalized.",
+  "privacy": "Nomes públicos de projetos de assentamento e contagens agregadas; nenhum beneficiário, CPF/CNPJ ou parcela privada.",
+  "oracle": "tests/test_acervo_fundiario/oficial.py: DBF descriptors/records and SHP geometry read with struct, Latin-1 decoded; no agrobr parser, GDAL or pyogrio involved.",
+  "source_positions": [
+    0,
+    1,
+    2,
+    739,
+    956,
+    1634,
+    4889,
+    5992,
+    7836
+  ]
+}

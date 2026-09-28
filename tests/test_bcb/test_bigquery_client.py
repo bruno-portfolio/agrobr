@@ -1,230 +1,159 @@
 """Testes para o fallback BigQuery do BCB/SICOR."""
 
+import re
 import time
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
 
-from agrobr.bcb.bigquery_client import (
-    BQ_COLUMNS_MAP,
-    _build_query,
-    _check_basedosdados,
-    _query_bigquery_sync,
-    fetch_credito_rural_bigquery,
-)
+from agrobr.bcb import bigquery_client
 from agrobr.exceptions import SourceUnavailableError
+from tests.helpers import collect_failures, levanta_exatamente, sem_excecao
 
 
-class TestCheckBasedosdados:
-    def test_raises_when_not_installed(self):
-        with (
-            patch.dict("sys.modules", {"basedosdados": None}),
-            pytest.raises(SourceUnavailableError, match="basedosdados"),
-        ):
-            _check_basedosdados()
+def test_basedosdados_ausente_ou_sem_billing_e_recusado(monkeypatch: pytest.MonkeyPatch):
+    with (
+        patch.dict("sys.modules", {"basedosdados": None}),
+        levanta_exatamente(
+            SourceUnavailableError,
+            match=re.escape(
+                "basedosdados não instalado. Instale com: pip install agrobr[bigquery]"
+            ),
+        ),
+    ):
+        bigquery_client._check_basedosdados()
+    with patch.dict("sys.modules", {"basedosdados": MagicMock()}):
+        bigquery_client._check_basedosdados()
+    monkeypatch.delenv("AGROBR_BQ_BILLING_PROJECT", raising=False)
+    sem_billing = MagicMock()
+    sem_billing.config.billing_project_id = None
+    with (
+        patch.dict("sys.modules", {"basedosdados": sem_billing}),
+        levanta_exatamente(SourceUnavailableError, match="AGROBR_BQ_BILLING_PROJECT"),
+    ):
+        bigquery_client._query_bigquery_sync("SELECT 1")
+    sem_billing.read_sql.assert_not_called()
 
-    def test_ok_when_installed(self):
-        mock_bd = MagicMock()
-        with patch.dict("sys.modules", {"basedosdados": mock_bd}):
-            _check_basedosdados()
 
-
-class TestBillingProject:
-    def test_sem_billing_raise_com_hint(self, monkeypatch):
-        monkeypatch.delenv("AGROBR_BQ_BILLING_PROJECT", raising=False)
-        mock_bd = MagicMock()
-        mock_bd.config.billing_project_id = None
-
-        with (
-            patch.dict("sys.modules", {"basedosdados": mock_bd}),
-            pytest.raises(SourceUnavailableError, match="AGROBR_BQ_BILLING_PROJECT"),
-        ):
-            _query_bigquery_sync("SELECT 1")
-
-        mock_bd.read_sql.assert_not_called()
-
-    def test_env_var_define_billing(self, monkeypatch):
+def test_billing_do_ambiente_ou_da_configuracao_e_colunas_renomeadas(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    linha = {
+        "ano": 2023,
+        "mes": 9,
+        "sigla_uf": "MT",
+        "id_municipio": "5107248",
+        "nome_produto": "SOJA",
+        "nome_finalidade": "CUSTEIO",
+        "valor_parcela": 285431200.0,
+        "area_financiada": 98500.0,
+        "qtd_contratos": 1240.0,
+    }
+    bd = MagicMock()
+    bd.config.billing_project_id = "proj-config"
+    bd.read_sql.side_effect = [pd.DataFrame(), None, pd.DataFrame([linha])]
+    monkeypatch.delenv("AGROBR_BQ_BILLING_PROJECT", raising=False)
+    with patch.dict("sys.modules", {"basedosdados": bd}), sem_excecao():
+        assert bigquery_client._query_bigquery_sync("SELECT 1") == []
         monkeypatch.setenv("AGROBR_BQ_BILLING_PROJECT", "proj-env")
-        mock_bd = MagicMock()
-        mock_bd.config.billing_project_id = None
-        mock_bd.read_sql.return_value = pd.DataFrame()
+        assert bigquery_client._query_bigquery_sync("SELECT 2") == []
+        registros = bigquery_client._query_bigquery_sync("SELECT 3")
+    assert [chamada.kwargs["billing_project_id"] for chamada in bd.read_sql.call_args_list] == [
+        "proj-config",
+        "proj-env",
+        "proj-env",
+    ]
+    assert registros == [
+        {
+            "ano_emissao": 2023,
+            "mes_emissao": 9,
+            "uf": "MT",
+            "cd_municipio": "5107248",
+            "produto": "SOJA",
+            "finalidade": "CUSTEIO",
+            "valor": 285431200.0,
+            "area_financiada": 98500.0,
+            "qtd_contratos": 1240,
+        }
+    ]
+    assert type(registros[0]["qtd_contratos"]) is int
+    bd.read_sql.side_effect = RuntimeError("quota")
+    with (
+        patch.dict("sys.modules", {"basedosdados": bd}),
+        levanta_exatamente(SourceUnavailableError, match="BigQuery error: quota"),
+    ):
+        bigquery_client._query_bigquery_sync("SELECT 4")
 
-        with patch.dict("sys.modules", {"basedosdados": mock_bd}):
-            result = _query_bigquery_sync("SELECT 1")
 
-        assert result == []
-        assert mock_bd.read_sql.call_args.kwargs["billing_project_id"] == "proj-env"
-
-    def test_config_billing_usado_sem_env(self, monkeypatch):
-        monkeypatch.delenv("AGROBR_BQ_BILLING_PROJECT", raising=False)
-        mock_bd = MagicMock()
-        mock_bd.config.billing_project_id = "proj-config"
-        mock_bd.read_sql.return_value = pd.DataFrame()
-
-        with patch.dict("sys.modules", {"basedosdados": mock_bd}):
-            _query_bigquery_sync("SELECT 1")
-
-        assert mock_bd.read_sql.call_args.kwargs["billing_project_id"] == "proj-config"
-
-
-class TestBuildQuery:
-    def test_custeio_default(self):
-        query = _build_query(finalidade="custeio")
-        assert "nome_finalidade = 'CUSTEIO'" in query
-        assert "basedosdados.br_bcb_sicor.microdados_operacao" in query
-        assert "GROUP BY" in query
-
-    def test_with_produto(self):
-        query = _build_query(finalidade="custeio", produto="SOJA")
-        assert "SOJA" in query
-        assert "LIKE" in query
-
-    def test_with_safra_ano(self):
-        query = _build_query(finalidade="custeio", safra_ano=2023)
-        assert "(ano = 2023 AND mes >= 7)" in query
-        assert "(ano = 2024 AND mes < 7)" in query
-
-    def test_with_uf(self):
-        query = _build_query(finalidade="custeio", uf="MT")
-        assert "sigla_uf = 'MT'" in query
-
-    def test_investimento(self):
-        query = _build_query(finalidade="investimento")
-        assert "INVESTIMENTO" in query
-
-    def test_all_filters(self):
-        query = _build_query(
-            finalidade="custeio",
-            produto="MILHO",
-            safra_ano=2024,
-            uf="PR",
+def test_consulta_sql_filtra_e_sanitiza():
+    with sem_excecao():
+        padrao = bigquery_client._build_query(finalidade="custeio")
+        completa = bigquery_client._build_query(
+            finalidade="custeio", produto='"MILHO"', safra_ano=2024, uf="pr"
         )
-        assert "CUSTEIO" in query
-        assert "MILHO" in query
-        assert "ano = 2024" in query
-        assert "sigla_uf = 'PR'" in query
+        investimento = bigquery_client._build_query("investimento")
+        comercializacao = bigquery_client._build_query("comercializacao")
+    assert "nome_finalidade = 'CUSTEIO'" in padrao
+    assert "basedosdados.br_bcb_sicor.microdados_operacao" in padrao
+    assert padrao.endswith(
+        "GROUP BY ano, mes, sigla_uf, id_municipio, nome_produto, nome_finalidade\nORDER BY ano, sigla_uf, nome_produto"
+    )
+    assert (
+        "WHERE nome_finalidade = 'CUSTEIO' AND UPPER(nome_produto) = 'MILHO' AND "
+        "((ano = 2024 AND mes >= 7) OR (ano = 2025 AND mes < 7)) AND sigla_uf = 'PR'"
+    ) in completa
+    assert "nome_finalidade = 'INVESTIMENTO'" in investimento
+    assert "nome_finalidade = 'COMERCIALIZAÇÃO'" in comercializacao
+    with collect_failures() as check:
+        for argumentos, motivo in [
+            ({"produto": "SOJA'; DROP"}, "Caractere invalido em produto"),
+            ({"uf": "M;T"}, "Caractere invalido em uf"),
+            ({"uf": "MTT"}, "UF deve ter 2 caracteres: 'MTT'"),
+        ]:
+            with check(argumentos), levanta_exatamente(ValueError, match=re.escape(motivo)):
+                bigquery_client._build_query(**argumentos)
 
 
-class TestFetchCreditoRuralBigquery:
-    @pytest.mark.asyncio
-    async def test_returns_records(self):
-        mock_df = pd.DataFrame(
-            [
-                {
-                    "ano": 2023,
-                    "mes": 9,
-                    "sigla_uf": "MT",
-                    "id_municipio": "5107248",
-                    "nome_produto": "SOJA",
-                    "nome_finalidade": "CUSTEIO",
-                    "valor_parcela": 285431200.0,
-                    "area_financiada": 98500.0,
-                    "qtd_contratos": 1240,
-                },
+async def test_busca_converte_safra_e_uf_e_propaga_falhas(monkeypatch: pytest.MonkeyPatch):
+    consultas: list[str] = []
+
+    def consultar(query: str) -> list[dict]:
+        consultas.append(query)
+        return []
+
+    monkeypatch.setattr(bigquery_client, "_query_bigquery_sync", consultar)
+    with sem_excecao():
+        resultados = [
+            await bigquery_client.fetch_credito_rural_bigquery(**argumentos)
+            for argumentos in [
+                {"safra_sicor": "2023/2024", "cd_uf": "51"},
+                {"cd_uf": "999"},
             ]
-        )
+        ]
+    assert resultados == [[], []]
+    assert "(ano = 2023 AND mes >= 7)" in consultas[0] and "sigla_uf = 'MT'" in consultas[0]
+    assert "sigla_uf =" not in consultas[1]
+    with levanta_exatamente(ValueError, "abc"):
+        await bigquery_client.fetch_credito_rural_bigquery(safra_sicor="abc", cd_uf="MT")
+    assert len(consultas) == 2
+    falha = SourceUnavailableError(source="bcb_bigquery", last_error="Auth failed")
 
-        mock_bd = MagicMock()
-        mock_bd.read_sql.return_value = mock_df
-        mock_bd.config.billing_project_id = "test-project"
+    def falhar(_query: str) -> list[dict]:
+        raise falha
 
-        with (
-            patch.dict("sys.modules", {"basedosdados": mock_bd}),
-            patch(
-                "agrobr.bcb.bigquery_client._query_bigquery_sync",
-                return_value=mock_df.rename(
-                    columns={k: v for k, v in BQ_COLUMNS_MAP.items() if k in mock_df.columns}
-                ).to_dict("records"),
-            ),
-        ):
-            records = await fetch_credito_rural_bigquery(
-                finalidade="custeio",
-                produto_sicor="SOJA",
-                safra_sicor="2023/2024",
-            )
+    monkeypatch.setattr(bigquery_client, "_query_bigquery_sync", falhar)
+    with levanta_exatamente(SourceUnavailableError) as capturada:
+        await bigquery_client.fetch_credito_rural_bigquery(finalidade="custeio")
+    assert capturada.value is falha
 
-        assert len(records) == 1
-        assert records[0]["uf"] == "MT"
-        assert records[0]["valor"] == 285431200.0
+    def lenta(_query: str) -> list[dict]:
+        time.sleep(1)
+        return []
 
-    @pytest.mark.asyncio
-    async def test_safra_year_extraction(self):
-        with patch(
-            "agrobr.bcb.bigquery_client._query_bigquery_sync",
-            return_value=[],
-        ) as mock_query:
-            result = await fetch_credito_rural_bigquery(
-                finalidade="custeio",
-                safra_sicor="2023/2024",
-            )
-
-        assert result == []
-        call_query = mock_query.call_args[0][0]
-        assert "ano = 2023" in call_query
-
-    @pytest.mark.asyncio
-    async def test_cd_uf_to_sigla_conversion(self):
-        with patch(
-            "agrobr.bcb.bigquery_client._query_bigquery_sync",
-            return_value=[],
-        ) as mock_query:
-            await fetch_credito_rural_bigquery(
-                finalidade="custeio",
-                cd_uf="51",
-            )
-
-        call_query = mock_query.call_args[0][0]
-        assert "sigla_uf = 'MT'" in call_query
-
-    @pytest.mark.asyncio
-    async def test_sigla_uf_passthrough(self):
-        with patch(
-            "agrobr.bcb.bigquery_client._query_bigquery_sync",
-            return_value=[],
-        ) as mock_query:
-            await fetch_credito_rural_bigquery(
-                finalidade="custeio",
-                cd_uf="MT",
-            )
-
-        call_query = mock_query.call_args[0][0]
-        assert "sigla_uf = 'MT'" in call_query
-
-    @pytest.mark.asyncio
-    async def test_timeout_raises_source_unavailable(self, monkeypatch):
-        monkeypatch.setattr("agrobr.bcb.bigquery_client.BQ_TIMEOUT", 0.01)
-
-        def _slow_query(query):  # noqa: ARG001
-            time.sleep(1)
-            return []
-
-        with (
-            patch(
-                "agrobr.bcb.bigquery_client._query_bigquery_sync",
-                side_effect=_slow_query,
-            ),
-            pytest.raises(SourceUnavailableError, match="timeout"),
-        ):
-            await fetch_credito_rural_bigquery(finalidade="custeio")
-
-    @pytest.mark.asyncio
-    async def test_raises_when_bigquery_fails(self):
-        with (
-            patch(
-                "agrobr.bcb.bigquery_client._query_bigquery_sync",
-                side_effect=SourceUnavailableError(source="bcb_bigquery", last_error="Auth failed"),
-            ),
-            pytest.raises(SourceUnavailableError, match="bcb_bigquery"),
-        ):
-            await fetch_credito_rural_bigquery(finalidade="custeio")
-
-
-class TestConstants:
-    def test_columns_map_has_essential_keys(self):
-        assert "sigla_uf" in BQ_COLUMNS_MAP
-        assert "nome_produto" in BQ_COLUMNS_MAP
-        assert "valor_parcela" in BQ_COLUMNS_MAP
-        assert BQ_COLUMNS_MAP["sigla_uf"] == "uf"
-        assert BQ_COLUMNS_MAP["nome_produto"] == "produto"
-        assert BQ_COLUMNS_MAP["valor_parcela"] == "valor"
+    monkeypatch.setattr(bigquery_client, "BQ_TIMEOUT", 0.01)
+    monkeypatch.setattr(bigquery_client, "_query_bigquery_sync", lenta)
+    with levanta_exatamente(
+        SourceUnavailableError, match=re.escape("BigQuery timeout after 0.01s")
+    ):
+        await bigquery_client.fetch_credito_rural_bigquery(finalidade="custeio")

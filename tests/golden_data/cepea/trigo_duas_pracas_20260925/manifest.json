@@ -1,0 +1,461 @@
+{
+ "format_version": 1,
+ "file": "trigo_cepea.html",
+ "sha256": "86b1f2a1c8e68e245bbe4ee4e554bf3e634fb4a931716141324f56e4f7b336cb",
+ "bytes": 61266,
+ "source": "trigo_cepea.html (conferência, Rodada 21, 25/09/2026)",
+ "transformation": "texto decodificado pelo client do agrobr na captura da R21; o arquivo da R21 tem CRLF (write_text no Windows), e aqui volta a LF, que é o conteúdo cujo SHA a R21 registrou",
+ "oracle": "html.parser da biblioteca padrão, sem o agrobr; cada imagenet-table-titulo e a tabela seguinte",
+ "rows": [
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 0,
+   "data": "2026-09-25",
+   "praca": "Paraná",
+   "valor": "1538.4",
+   "valor_usd": "296.42",
+   "celulas": [
+    "25/09/2026",
+    "1.538,40",
+    "-0,07%",
+    "5,63%",
+    "296,42"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 1,
+   "data": "2026-09-24",
+   "praca": "Paraná",
+   "valor": "1539.43",
+   "valor_usd": "296.5",
+   "celulas": [
+    "24/09/2026",
+    "1.539,43",
+    "0,38%",
+    "5,70%",
+    "296,50"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 2,
+   "data": "2026-09-23",
+   "praca": "Paraná",
+   "valor": "1533.55",
+   "valor_usd": "296.8",
+   "celulas": [
+    "23/09/2026",
+    "1.533,55",
+    "-0,11%",
+    "5,30%",
+    "296,80"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 3,
+   "data": "2026-09-22",
+   "praca": "Paraná",
+   "valor": "1535.23",
+   "valor_usd": "300.85",
+   "celulas": [
+    "22/09/2026",
+    "1.535,23",
+    "0,20%",
+    "5,41%",
+    "300,85"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 4,
+   "data": "2026-09-21",
+   "praca": "Paraná",
+   "valor": "1532.17",
+   "valor_usd": "300.01",
+   "celulas": [
+    "21/09/2026",
+    "1.532,17",
+    "1,45%",
+    "5,20%",
+    "300,01"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 5,
+   "data": "2026-09-18",
+   "praca": "Paraná",
+   "valor": "1510.24",
+   "valor_usd": "293.48",
+   "celulas": [
+    "18/09/2026",
+    "1.510,24",
+    "0,03%",
+    "3,70%",
+    "293,48"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 6,
+   "data": "2026-09-17",
+   "praca": "Paraná",
+   "valor": "1509.74",
+   "valor_usd": "293.67",
+   "celulas": [
+    "17/09/2026",
+    "1.509,74",
+    "-0,15%",
+    "3,66%",
+    "293,67"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 7,
+   "data": "2026-09-16",
+   "praca": "Paraná",
+   "valor": "1512.0",
+   "valor_usd": "292.97",
+   "celulas": [
+    "16/09/2026",
+    "1.512,00",
+    "0,16%",
+    "3,82%",
+    "292,97"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 8,
+   "data": "2026-09-15",
+   "praca": "Paraná",
+   "valor": "1509.58",
+   "valor_usd": "292.89",
+   "celulas": [
+    "15/09/2026",
+    "1.509,58",
+    "0,35%",
+    "3,65%",
+    "292,89"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 9,
+   "data": "2026-09-14",
+   "praca": "Paraná",
+   "valor": "1504.29",
+   "valor_usd": "292.04",
+   "celulas": [
+    "14/09/2026",
+    "1.504,29",
+    "0,98%",
+    "3,29%",
+    "292,04"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 10,
+   "data": "2026-09-11",
+   "praca": "Paraná",
+   "valor": "1489.65",
+   "valor_usd": "290.72",
+   "celulas": [
+    "11/09/2026",
+    "1.489,65",
+    "1,12%",
+    "2,28%",
+    "290,72"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 11,
+   "data": "2026-09-10",
+   "praca": "Paraná",
+   "valor": "1473.16",
+   "valor_usd": "288.74",
+   "celulas": [
+    "10/09/2026",
+    "1.473,16",
+    "0,76%",
+    "1,15%",
+    "288,74"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 12,
+   "data": "2026-09-09",
+   "praca": "Paraná",
+   "valor": "1462.05",
+   "valor_usd": "286.17",
+   "celulas": [
+    "09/09/2026",
+    "1.462,05",
+    "0,04%",
+    "0,39%",
+    "286,17"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 13,
+   "data": "2026-09-08",
+   "praca": "Paraná",
+   "valor": "1461.42",
+   "valor_usd": "287.0",
+   "celulas": [
+    "08/09/2026",
+    "1.461,42",
+    "0,27%",
+    "0,34%",
+    "287,00"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+   "linha": 14,
+   "data": "2026-09-04",
+   "praca": "Paraná",
+   "valor": "1457.55",
+   "valor_usd": "284.12",
+   "celulas": [
+    "04/09/2026",
+    "1.457,55",
+    "0,07%",
+    "0,08%",
+    "284,12"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 0,
+   "data": "2026-09-25",
+   "praca": "Rio Grande do Sul",
+   "valor": "1437.03",
+   "valor_usd": "276.88",
+   "celulas": [
+    "25/09/2026",
+    "1.437,03",
+    "0,31%",
+    "6,52%",
+    "276,88"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 1,
+   "data": "2026-09-24",
+   "praca": "Rio Grande do Sul",
+   "valor": "1432.54",
+   "valor_usd": "275.91",
+   "celulas": [
+    "24/09/2026",
+    "1.432,54",
+    "1,00%",
+    "6,19%",
+    "275,91"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 2,
+   "data": "2026-09-23",
+   "praca": "Rio Grande do Sul",
+   "valor": "1418.34",
+   "valor_usd": "274.5",
+   "celulas": [
+    "23/09/2026",
+    "1.418,34",
+    "-0,08%",
+    "5,14%",
+    "274,50"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 3,
+   "data": "2026-09-22",
+   "praca": "Rio Grande do Sul",
+   "valor": "1419.47",
+   "valor_usd": "278.16",
+   "celulas": [
+    "22/09/2026",
+    "1.419,47",
+    "-0,03%",
+    "5,22%",
+    "278,16"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 4,
+   "data": "2026-09-21",
+   "praca": "Rio Grande do Sul",
+   "valor": "1419.84",
+   "valor_usd": "278.02",
+   "celulas": [
+    "21/09/2026",
+    "1.419,84",
+    "1,38%",
+    "5,25%",
+    "278,02"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 5,
+   "data": "2026-09-18",
+   "praca": "Rio Grande do Sul",
+   "valor": "1400.5",
+   "valor_usd": "272.15",
+   "celulas": [
+    "18/09/2026",
+    "1.400,50",
+    "1,11%",
+    "3,81%",
+    "272,15"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 6,
+   "data": "2026-09-17",
+   "praca": "Rio Grande do Sul",
+   "valor": "1385.09",
+   "valor_usd": "269.42",
+   "celulas": [
+    "17/09/2026",
+    "1.385,09",
+    "0,37%",
+    "2,67%",
+    "269,42"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 7,
+   "data": "2026-09-16",
+   "praca": "Rio Grande do Sul",
+   "valor": "1380.03",
+   "valor_usd": "267.4",
+   "celulas": [
+    "16/09/2026",
+    "1.380,03",
+    "1,37%",
+    "2,30%",
+    "267,40"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 8,
+   "data": "2026-09-15",
+   "praca": "Rio Grande do Sul",
+   "valor": "1361.32",
+   "valor_usd": "264.13",
+   "celulas": [
+    "15/09/2026",
+    "1.361,32",
+    "0,30%",
+    "0,91%",
+    "264,13"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 9,
+   "data": "2026-09-14",
+   "praca": "Rio Grande do Sul",
+   "valor": "1357.21",
+   "valor_usd": "263.48",
+   "celulas": [
+    "14/09/2026",
+    "1.357,21",
+    "-0,12%",
+    "0,61%",
+    "263,48"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 10,
+   "data": "2026-09-11",
+   "praca": "Rio Grande do Sul",
+   "valor": "1358.79",
+   "valor_usd": "265.18",
+   "celulas": [
+    "11/09/2026",
+    "1.358,79",
+    "0,00%",
+    "0,72%",
+    "265,18"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 11,
+   "data": "2026-09-10",
+   "praca": "Rio Grande do Sul",
+   "valor": "1358.79",
+   "valor_usd": "266.32",
+   "celulas": [
+    "10/09/2026",
+    "1.358,79",
+    "-0,19%",
+    "0,72%",
+    "266,32"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 12,
+   "data": "2026-09-09",
+   "praca": "Rio Grande do Sul",
+   "valor": "1361.39",
+   "valor_usd": "266.47",
+   "celulas": [
+    "09/09/2026",
+    "1.361,39",
+    "0,47%",
+    "0,92%",
+    "266,47"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 13,
+   "data": "2026-09-08",
+   "praca": "Rio Grande do Sul",
+   "valor": "1355.06",
+   "valor_usd": "266.11",
+   "celulas": [
+    "08/09/2026",
+    "1.355,06",
+    "0,00%",
+    "0,45%",
+    "266,11"
+   ]
+  },
+  {
+   "tabela": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+   "linha": 14,
+   "data": "2026-09-04",
+   "praca": "Rio Grande do Sul",
+   "valor": "1355.06",
+   "valor_usd": "264.14",
+   "celulas": [
+    "04/09/2026",
+    "1.355,06",
+    "-0,32%",
+    "0,45%",
+    "264,14"
+   ]
+  }
+ ]
+}

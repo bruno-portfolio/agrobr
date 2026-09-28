@@ -10,10 +10,11 @@ def get_timeout(
     *,
     read: float | None = None,
 ) -> httpx.Timeout:
+    """``read`` é o mínimo do cliente; ``AGROBR_HTTP_TIMEOUT_READ`` maior prevalece."""
     s = settings or HTTPSettings()
     return httpx.Timeout(
         connect=s.timeout_connect,
-        read=read if read is not None else s.timeout_read,
+        read=s.timeout_read if read is None else max(read, s.timeout_read),
         write=s.timeout_write,
         pool=s.timeout_pool,
     )

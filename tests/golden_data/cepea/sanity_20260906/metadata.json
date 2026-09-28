@@ -1,0 +1,8 @@
+{
+  "source": "CEPEA/ESALQ-USP",
+  "license": "CC BY-NC 4.0",
+  "capture": "2026-09-06 UTC",
+  "rows": 337,
+  "oracle": "Independent html.parser table/cell selection + Decimal conversion, no agrobr imports; every observation matched prior CSV oracle. Historical full XLS rows compared using xlrd and Calamine; source bytes retained under .",
+  "history_limits": "Soy/cafe legacy bands preserved: extrema since 2015 only for aliases; other nine markets use all positive observations. Milk XLS rounds to 2 decimal places; HTML preserves 4. Zero milk cells are not valid Indicador prices. Citrus has separate partial documentary calibration, not a complete historic min/max."
+}

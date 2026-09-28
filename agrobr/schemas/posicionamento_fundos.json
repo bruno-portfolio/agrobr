@@ -1,6 +1,6 @@
 {
   "name": "cftc.cot",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "effective_from": "1.1.0",
   "breaking_policy": "major",
   "primary_key": [
@@ -24,7 +24,10 @@
     "other_long",
     "other_short",
     "nonreportable_long",
-    "nonreportable_short"
+    "nonreportable_short",
+    "change_managed_money_long",
+    "change_managed_money_short",
+    "change_open_interest"
   ],
   "dtypes": {
     "data": "date",
@@ -40,8 +43,10 @@
     "producer_short": "int",
     "swap_long": "int",
     "swap_short": "int",
+    "swap_spread": "int",
     "other_long": "int",
     "other_short": "int",
+    "other_spread": "int",
     "nonreportable_long": "int",
     "nonreportable_short": "int",
     "change_managed_money_long": "int",
@@ -62,8 +67,10 @@
     "producer_short": false,
     "swap_long": false,
     "swap_short": false,
+    "swap_spread": false,
     "other_long": false,
     "other_short": false,
+    "other_spread": false,
     "nonreportable_long": false,
     "nonreportable_short": false,
     "change_managed_money_long": true,
@@ -215,6 +222,17 @@
       "max_value": null
     },
     {
+      "name": "swap_spread",
+      "type": "int",
+      "nullable": false,
+      "unit": "contratos",
+      "stable": false,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
       "name": "other_long",
       "type": "int",
       "nullable": false,
@@ -231,6 +249,17 @@
       "nullable": false,
       "unit": "contratos",
       "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "other_spread",
+      "type": "int",
+      "nullable": false,
+      "unit": "contratos",
+      "stable": false,
       "deprecated": false,
       "description": "",
       "min_value": 0,
@@ -302,8 +331,10 @@
     "producer_short_min": 0,
     "swap_long_min": 0,
     "swap_short_min": 0,
+    "swap_spread_min": 0,
     "other_long_min": 0,
     "other_short_min": 0,
+    "other_spread_min": 0,
     "nonreportable_long_min": 0,
     "nonreportable_short_min": 0
   },
@@ -313,6 +344,7 @@
     "'commodity' is the canonical agrobr crop name",
     "'codigo_cftc' is the stable CFTC contract market code",
     "Position columns are always >= 0; managed_money_net = long - short",
+    "open_interest = producer + swap + managed_money + other + nonreportable longs, plus the swap, managed_money and other spreads (exact in futures; the combined report can leave 1 contract)",
     "'change_*' columns are null only on the first observation of a contract",
     "One row per data x codigo_cftc"
   ]

@@ -1,0 +1,779 @@
+{
+  "count": 100,
+  "first": {
+    "data": "2026-09-01",
+    "praca": "RS",
+    "valor": "2.6560",
+    "unidade": "BRL/L"
+  },
+  "last": {
+    "data": "2025-12-02",
+    "praca": "ES",
+    "valor": "2.2424",
+    "unidade": "BRL/L"
+  },
+  "periods": [
+    {
+      "publication": "2026-09-01",
+      "reference_note": "Julho/26",
+      "prices": {
+        "RS": "2.6560",
+        "SC": "2.7887",
+        "PR": "2.8989",
+        "SP": "2.9695",
+        "MG": "3.0231",
+        "GO": "2.9410",
+        "BA": "2.6730",
+        "Brasil": "2.8761",
+        "RJ": "2.7240",
+        "ES": "2.7319"
+      }
+    },
+    {
+      "publication": "2026-08-03",
+      "reference_note": "Junho/26",
+      "prices": {
+        "RS": "2.5365",
+        "SC": "2.7071",
+        "PR": "2.7710",
+        "SP": "2.8350",
+        "MG": "2.8927",
+        "GO": "2.7723",
+        "BA": "2.5818",
+        "Brasil": "2.7464",
+        "RJ": "2.8043",
+        "ES": "2.6513"
+      }
+    },
+    {
+      "publication": "2026-07-01",
+      "reference_note": "Maio/26",
+      "prices": {
+        "RS": "2.4884",
+        "SC": "2.6289",
+        "PR": "2.6756",
+        "SP": "2.6999",
+        "MG": "2.7726",
+        "GO": "2.6319",
+        "BA": "2.4575",
+        "Brasil": "2.6617",
+        "RJ": "2.7571",
+        "ES": "2.5509"
+      }
+    },
+    {
+      "publication": "2026-06-01",
+      "reference_note": "Abril/26",
+      "prices": {
+        "RS": "2.5169",
+        "SC": "2.6868",
+        "PR": "2.7596",
+        "SP": "2.6470",
+        "MG": "2.7534",
+        "GO": "2.5894",
+        "BA": "2.3536",
+        "Brasil": "2.6584",
+        "RJ": "2.5712",
+        "ES": "2.2934"
+      }
+    },
+    {
+      "publication": "2026-05-04",
+      "reference_note": "Março/26",
+      "prices": {
+        "RS": "2.3061",
+        "SC": "2.3593",
+        "PR": "2.4719",
+        "SP": "2.4249",
+        "MG": "2.4580",
+        "GO": "2.3391",
+        "BA": "2.1858",
+        "Brasil": "2.3924",
+        "RJ": "2.2789",
+        "ES": "2.0555"
+      }
+    },
+    {
+      "publication": "2026-04-01",
+      "reference_note": "Fevereiro/26",
+      "prices": {
+        "RS": "2.0962",
+        "SC": "2.0727",
+        "PR": "2.1660",
+        "SP": "2.1963",
+        "MG": "2.2030",
+        "GO": "2.1037",
+        "BA": "2.0967",
+        "Brasil": "2.1464",
+        "RJ": "2.1370",
+        "ES": "1.9865"
+      }
+    },
+    {
+      "publication": "2026-03-02",
+      "reference_note": "Janeiro/26",
+      "prices": {
+        "RS": "2.0046",
+        "SC": "1.9580",
+        "PR": "2.0355",
+        "SP": "2.1056",
+        "MG": "2.0633",
+        "GO": "1.9193",
+        "BA": "2.0665",
+        "Brasil": "2.0216",
+        "RJ": "2.0617",
+        "ES": "1.9263"
+      }
+    },
+    {
+      "publication": "2026-02-02",
+      "reference_note": "Dezembro/25",
+      "prices": {
+        "RS": "2.0098",
+        "SC": "1.9092",
+        "PR": "2.0022",
+        "SP": "2.1180",
+        "MG": "2.0270",
+        "GO": "1.8761",
+        "BA": "2.0559",
+        "Brasil": "1.9966",
+        "RJ": "2.0578",
+        "ES": "1.9564"
+      }
+    },
+    {
+      "publication": "2026-01-05",
+      "reference_note": "Novembro/25",
+      "prices": {
+        "RS": "2.0653",
+        "SC": "2.0140",
+        "PR": "2.0616",
+        "SP": "2.2340",
+        "MG": "2.1875",
+        "GO": "2.0171",
+        "BA": "2.2011",
+        "Brasil": "2.1122",
+        "RJ": "2.2817",
+        "ES": "2.0170"
+      }
+    },
+    {
+      "publication": "2025-12-02",
+      "reference_note": "Outubro/25",
+      "prices": {
+        "RS": "2.2170",
+        "SC": "2.2040",
+        "PR": "2.2924",
+        "SP": "2.4150",
+        "MG": "2.3884",
+        "GO": "2.2103",
+        "BA": "2.3720",
+        "Brasil": "2.2996",
+        "RJ": "2.4512",
+        "ES": "2.2424"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "data": "2026-09-01",
+      "praca": "RS",
+      "valor": "2.6560",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "SC",
+      "valor": "2.7887",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "PR",
+      "valor": "2.8989",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "SP",
+      "valor": "2.9695",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "MG",
+      "valor": "3.0231",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "GO",
+      "valor": "2.9410",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "BA",
+      "valor": "2.6730",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "Brasil",
+      "valor": "2.8761",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "RJ",
+      "valor": "2.7240",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-09-01",
+      "praca": "ES",
+      "valor": "2.7319",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "RS",
+      "valor": "2.5365",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "SC",
+      "valor": "2.7071",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "PR",
+      "valor": "2.7710",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "SP",
+      "valor": "2.8350",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "MG",
+      "valor": "2.8927",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "GO",
+      "valor": "2.7723",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "BA",
+      "valor": "2.5818",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "Brasil",
+      "valor": "2.7464",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "RJ",
+      "valor": "2.8043",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-08-03",
+      "praca": "ES",
+      "valor": "2.6513",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "RS",
+      "valor": "2.4884",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "SC",
+      "valor": "2.6289",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "PR",
+      "valor": "2.6756",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "SP",
+      "valor": "2.6999",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "MG",
+      "valor": "2.7726",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "GO",
+      "valor": "2.6319",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "BA",
+      "valor": "2.4575",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "Brasil",
+      "valor": "2.6617",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "RJ",
+      "valor": "2.7571",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-07-01",
+      "praca": "ES",
+      "valor": "2.5509",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "RS",
+      "valor": "2.5169",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "SC",
+      "valor": "2.6868",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "PR",
+      "valor": "2.7596",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "SP",
+      "valor": "2.6470",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "MG",
+      "valor": "2.7534",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "GO",
+      "valor": "2.5894",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "BA",
+      "valor": "2.3536",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "Brasil",
+      "valor": "2.6584",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "RJ",
+      "valor": "2.5712",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-06-01",
+      "praca": "ES",
+      "valor": "2.2934",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "RS",
+      "valor": "2.3061",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "SC",
+      "valor": "2.3593",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "PR",
+      "valor": "2.4719",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "SP",
+      "valor": "2.4249",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "MG",
+      "valor": "2.4580",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "GO",
+      "valor": "2.3391",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "BA",
+      "valor": "2.1858",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "Brasil",
+      "valor": "2.3924",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "RJ",
+      "valor": "2.2789",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-05-04",
+      "praca": "ES",
+      "valor": "2.0555",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "RS",
+      "valor": "2.0962",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "SC",
+      "valor": "2.0727",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "PR",
+      "valor": "2.1660",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "SP",
+      "valor": "2.1963",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "MG",
+      "valor": "2.2030",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "GO",
+      "valor": "2.1037",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "BA",
+      "valor": "2.0967",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "Brasil",
+      "valor": "2.1464",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "RJ",
+      "valor": "2.1370",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-04-01",
+      "praca": "ES",
+      "valor": "1.9865",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "RS",
+      "valor": "2.0046",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "SC",
+      "valor": "1.9580",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "PR",
+      "valor": "2.0355",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "SP",
+      "valor": "2.1056",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "MG",
+      "valor": "2.0633",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "GO",
+      "valor": "1.9193",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "BA",
+      "valor": "2.0665",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "Brasil",
+      "valor": "2.0216",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "RJ",
+      "valor": "2.0617",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-03-02",
+      "praca": "ES",
+      "valor": "1.9263",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "RS",
+      "valor": "2.0098",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "SC",
+      "valor": "1.9092",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "PR",
+      "valor": "2.0022",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "SP",
+      "valor": "2.1180",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "MG",
+      "valor": "2.0270",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "GO",
+      "valor": "1.8761",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "BA",
+      "valor": "2.0559",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "Brasil",
+      "valor": "1.9966",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "RJ",
+      "valor": "2.0578",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-02-02",
+      "praca": "ES",
+      "valor": "1.9564",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "RS",
+      "valor": "2.0653",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "SC",
+      "valor": "2.0140",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "PR",
+      "valor": "2.0616",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "SP",
+      "valor": "2.2340",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "MG",
+      "valor": "2.1875",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "GO",
+      "valor": "2.0171",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "BA",
+      "valor": "2.2011",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "Brasil",
+      "valor": "2.1122",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "RJ",
+      "valor": "2.2817",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2026-01-05",
+      "praca": "ES",
+      "valor": "2.0170",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "RS",
+      "valor": "2.2170",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "SC",
+      "valor": "2.2040",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "PR",
+      "valor": "2.2924",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "SP",
+      "valor": "2.4150",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "MG",
+      "valor": "2.3884",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "GO",
+      "valor": "2.2103",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "BA",
+      "valor": "2.3720",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "Brasil",
+      "valor": "2.2996",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "RJ",
+      "valor": "2.4512",
+      "unidade": "BRL/L"
+    },
+    {
+      "data": "2025-12-02",
+      "praca": "ES",
+      "valor": "2.2424",
+      "unidade": "BRL/L"
+    }
+  ]
+}

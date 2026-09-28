@@ -1,0 +1,397 @@
+{
+  "source": "BCB SGS public observations",
+  "scope": "22 original SGS response bodies, including selection errors and documented missing-values404. Catalog responses deliberately excluded. Oracles retain independent analysis; only data-series assertions are used.",
+  "artifacts": [
+    {
+      "case": "long_sdk",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=01%2F01%2F2010&dataFinal=31%2F12%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2010",
+        "dataFinal": "31/12/2024"
+      },
+      "status": 406,
+      "captured_at": "2026-09-07T03:26:45.846184+00:00",
+      "size_bytes": 802,
+      "sha256": "add95bad7448a896aeb5a5ba20e504d381e83c88ee1797f23d5b342bd51f3276",
+      "file": "long_sdk_001.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"322-aq9zqolBROXoqAsqbW/m9H3tYbE\""
+      }
+    },
+    {
+      "case": "part2010_2019",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=01%2F01%2F2010&dataFinal=31%2F12%2F2019",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2010",
+        "dataFinal": "31/12/2019"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:27:07.293869+00:00",
+      "size_bytes": 97969,
+      "sha256": "69c131b9a8e5c025b5a50cec25a52feb74b63777c0bf41a3f27b70c55567015a",
+      "file": "part2010_2019_002.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"17eb1-wyaKB8T7nj3KMTOr4EnarNiGUmc\""
+      }
+    },
+    {
+      "case": "part2020_2024",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=01%2F01%2F2020&dataFinal=31%2F12%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2020",
+        "dataFinal": "31/12/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:27:13.791817+00:00",
+      "size_bytes": 48946,
+      "sha256": "be696b7c21f249e5cc1b750b98ffdbe8ee65394a7802ffb1b77e8748652a754b",
+      "file": "part2020_2024_003.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"bf32-6nZapzAOCXjDmjXegkydeZ/h8+w\""
+      }
+    },
+    {
+      "case": "exact10",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=04%2F01%2F2010&dataFinal=04%2F01%2F2020",
+      "params": {
+        "formato": "json",
+        "dataInicial": "04/01/2010",
+        "dataFinal": "04/01/2020"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:27:33.760116+00:00",
+      "size_bytes": 98047,
+      "sha256": "023fa74bba04c68a291e7c210616cbffa961f0c25cbd4ea189bf4f837d8c4b15",
+      "file": "exact10_004.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"17eff-uF1mqtf5WG7/rw8BzTnqN85Og/M\""
+      }
+    },
+    {
+      "case": "exact10_plus1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=04%2F01%2F2010&dataFinal=05%2F01%2F2020",
+      "params": {
+        "formato": "json",
+        "dataInicial": "04/01/2010",
+        "dataFinal": "05/01/2020"
+      },
+      "status": 406,
+      "captured_at": "2026-09-07T03:27:34.886850+00:00",
+      "size_bytes": 802,
+      "sha256": "c1f63531e4789c1f6f64b63ca4d5aee972a3ddc34c16f737515053a133db23bd",
+      "file": "exact10_plus1_005.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"322-/+Gv5sc+5MQGUIBpqanOvREi3PA\""
+      }
+    },
+    {
+      "case": "leap_clamped",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=29%2F02%2F2012&dataFinal=28%2F02%2F2022",
+      "params": {
+        "formato": "json",
+        "dataInicial": "29/02/2012",
+        "dataFinal": "28/02/2022"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:27:57.515588+00:00",
+      "size_bytes": 97969,
+      "sha256": "3a6c4b3734fa02ee8c1f3444131e4b3820fc257174d1800332791c6bcaadec62",
+      "file": "leap_clamped_006.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"17eb1-ddOcAbrqqyhY9ACDMsOZiZRvn9M\""
+      }
+    },
+    {
+      "case": "leap_plus1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=29%2F02%2F2012&dataFinal=01%2F03%2F2022",
+      "params": {
+        "formato": "json",
+        "dataInicial": "29/02/2012",
+        "dataFinal": "01/03/2022"
+      },
+      "status": 406,
+      "captured_at": "2026-09-07T03:27:58.633480+00:00",
+      "size_bytes": 802,
+      "sha256": "a7420bbac7d40c5b7fc9a29920233696d1e85809a9618c6f68361ea525a3b15b",
+      "file": "leap_plus1_007.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"322-5xyKa4lHnko4rN704XGBgrYLG6s\""
+      }
+    },
+    {
+      "case": "weekend_sdk",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=06%2F01%2F2024&dataFinal=07%2F01%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "06/01/2024",
+        "dataFinal": "07/01/2024"
+      },
+      "status": 404,
+      "captured_at": "2026-09-07T03:27:59.892893+00:00",
+      "size_bytes": 112,
+      "sha256": "9b8e7cafb477591fa3e61ef473e61968278235bfe9978b3aeaa5c0eb3e42419a",
+      "file": "weekend_sdk_008.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"70-kXQw19tU0g9C4E25Dqdk6uleoPQ\""
+      }
+    },
+    {
+      "case": "monthly433",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=01%2F01%2F2024&dataFinal=31%2F12%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2024",
+        "dataFinal": "31/12/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:28:00.980557+00:00",
+      "size_bytes": 446,
+      "sha256": "c7c681ec890b126300f58facb801368ec741ec0f976afb7afd9109ffcd62c052",
+      "file": "monthly433_009.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"1be-Lx8kqFx6w00lCh3qFlaFzM8V6+w\""
+      }
+    },
+    {
+      "case": "monthly433_between",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=02%2F01%2F2024&dataFinal=31%2F01%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "02/01/2024",
+        "dataFinal": "31/01/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:28:02.196237+00:00",
+      "size_bytes": 38,
+      "sha256": "36886030f1101de458b374efd33d72cfd2744165fc03fb4c226413a3ba6b0149",
+      "file": "monthly433_between_010.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"26-ZgarEvGQrqvwEo4wlhy079Eyl6Q\""
+      }
+    },
+    {
+      "case": "last3_sdk",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados/ultimos/3?formato=json",
+      "params": {
+        "formato": "json"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:28:03.287180+00:00",
+      "size_bytes": 118,
+      "sha256": "85bba1f9a4af8f350efa6ccc442fd2406771088c8b376947af7194a1154f1f54",
+      "file": "last3_sdk_011.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"76-XW1NhKOss9g+oTxL9VjRuTFXh2c\""
+      }
+    },
+    {
+      "case": "dates_last3_sdk",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=01%2F01%2F2024&dataFinal=10%2F01%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2024",
+        "dataFinal": "10/01/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:28:04.579922+00:00",
+      "size_bytes": 274,
+      "sha256": "09a348f1fb73a5f370702d918111b48ce4cfb60b6ab98dc39d5ad88ddea77dce",
+      "file": "dates_last3_sdk_012.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"112-Sj9m737iA2NXPZq9PpUZZTgUQb0\""
+      }
+    },
+    {
+      "case": "end_only",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataFinal=31%2F12%2F2024",
+      "params": {
+        "formato": "json",
+        "dataFinal": "31/12/2024"
+      },
+      "status": 406,
+      "captured_at": "2026-09-07T03:29:48.108402+00:00",
+      "size_bytes": 802,
+      "sha256": "add95bad7448a896aeb5a5ba20e504d381e83c88ee1797f23d5b342bd51f3276",
+      "file": "end_only_015.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"322-aq9zqolBROXoqAsqbW/m9H3tYbE\""
+      }
+    },
+    {
+      "case": "start_only",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=01%2F09%2F2026",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/09/2026"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:29:49.343712+00:00",
+      "size_bytes": 157,
+      "sha256": "eb1f664d4ee48f4d8891db65fdee5a166ae587233c6e8fd7068222da0d198b50",
+      "file": "start_only_016.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"9d-mhJpjdgTqhTVQ8+c7Bkr7j4pDwk\""
+      }
+    },
+    {
+      "case": "monthly_boundary_left",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=01%2F01%2F2024&dataFinal=15%2F06%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2024",
+        "dataFinal": "15/06/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:30:52.808058+00:00",
+      "size_bytes": 223,
+      "sha256": "3f15295d4e958cb67110b1d4f261d12d980ec3e09627c24dc62f63951fbb1a32",
+      "file": "monthly_boundary_left_017.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"df-gOzUT1CEtl6ybnn5P6Ljx3JwWQk\""
+      }
+    },
+    {
+      "case": "monthly_boundary_right",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=16%2F06%2F2024&dataFinal=31%2F12%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "16/06/2024",
+        "dataFinal": "31/12/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:30:54.057385+00:00",
+      "size_bytes": 261,
+      "sha256": "f359a34283392332d7c3054877160837bc7537023e6ebdb856ce6f47c07b4976",
+      "file": "monthly_boundary_right_018.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"105-5Ra45INOgGLQgBgygP14010PWeo\""
+      }
+    },
+    {
+      "case": "short_boundary",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json&dataInicial=30%2F12%2F2019&dataFinal=03%2F01%2F2020",
+      "params": {
+        "formato": "json",
+        "dataInicial": "30/12/2019",
+        "dataFinal": "03/01/2020"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:30:55.353093+00:00",
+      "size_bytes": 157,
+      "sha256": "fc88251ec8d71dffa15fd140520461d055000141c428ec15bc84ea20e48d360c",
+      "file": "short_boundary_019.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"9d-kRHr+BEg9pa5l2xR087GAXexznY\""
+      }
+    },
+    {
+      "case": "monthly_year_left",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=15%2F12%2F2023&dataFinal=31%2F12%2F2023",
+      "params": {
+        "formato": "json",
+        "dataInicial": "15/12/2023",
+        "dataFinal": "31/12/2023"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:32:10.681886+00:00",
+      "size_bytes": 38,
+      "sha256": "541e4140f120425675b4a411b3ebfd8d921f16e6e26f4df09e169b8a66d4302c",
+      "file": "monthly_year_left_022.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"26-5auU3Z3p0+H899rg8sdBpfSwIH8\""
+      }
+    },
+    {
+      "case": "monthly_year_right",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=01%2F01%2F2024&dataFinal=15%2F01%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2024",
+        "dataFinal": "15/01/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:32:11.903856+00:00",
+      "size_bytes": 38,
+      "sha256": "36886030f1101de458b374efd33d72cfd2744165fc03fb4c226413a3ba6b0149",
+      "file": "monthly_year_right_023.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"26-ZgarEvGQrqvwEo4wlhy079Eyl6Q\""
+      }
+    },
+    {
+      "case": "quarterly_year_left",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.22083/dados?formato=json&dataInicial=15%2F11%2F2023&dataFinal=31%2F12%2F2023",
+      "params": {
+        "formato": "json",
+        "dataInicial": "15/11/2023",
+        "dataFinal": "31/12/2023"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:32:13.172792+00:00",
+      "size_bytes": 40,
+      "sha256": "cdb9b93f3d3f20d2aaf86ed709a098c5c8bd979e1af8a621c0361ae96a2b8287",
+      "file": "quarterly_year_left_024.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"28-jJJ3Zf6RNFCwmWtPWJXVUb2bHj4\""
+      }
+    },
+    {
+      "case": "quarterly_year_right",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.22083/dados?formato=json&dataInicial=01%2F01%2F2024&dataFinal=15%2F02%2F2024",
+      "params": {
+        "formato": "json",
+        "dataInicial": "01/01/2024",
+        "dataFinal": "15/02/2024"
+      },
+      "status": 200,
+      "captured_at": "2026-09-07T03:32:14.394370+00:00",
+      "size_bytes": 40,
+      "sha256": "353142a389b31023b08eef7e23008d5a167e549631acd1965a421d46c7f56061",
+      "file": "quarterly_year_right_025.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"28-pBpZc0o2CJX0NXiQTMf5Ilk8no4\""
+      }
+    },
+    {
+      "case": "last21",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados/ultimos/21?formato=json",
+      "params": {
+        "formato": "json"
+      },
+      "status": 400,
+      "captured_at": "2026-09-07T03:32:15.609955+00:00",
+      "size_bytes": 137,
+      "sha256": "568352be3e6bbd2ecc998e40566e2397773c1c185b21528c5b4cc57e97b77cd5",
+      "file": "last21_026.json",
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"89-cx0mxilp6eiplSxrrsa+9DNxWos\""
+      }
+    }
+  ],
+  "oracles_sha256": "95451c9dfe73fd3e2fa1ec8e59dfce9b17c10ab6038be2d7d18b60a70a9dc5a6"
+}

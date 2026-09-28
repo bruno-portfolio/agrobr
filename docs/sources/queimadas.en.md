@@ -112,11 +112,20 @@ df = await queimadas.focos(
 | `risco_fogo` | float | Risk index (0-1) |
 | `frp` | float | Fire Radiative Power (MW) |
 
+In some months the source publishes hotspots outside the contract: an equal copy comes out once; a repeated key that differs
+only in FRP comes out as 1 row with a null `frp`; one that differs in another column is dropped from the result; and a negative
+FRP comes out null. Each case comes with a warning and the count. The 7 months of 2023–2025 where this happened and the rules
+are in the [contract](../contracts/queimadas.md#negative-frp-and-repeated-hotspot).
+
 ## Satellites
 
 INPE monitors fire hotspots with 13 satellites. The reference satellite is
 AQUA_M-T (MODIS), used in the official statistics for having the longest and
 most consistent time series.
+
+Without `satelite=`, `focos()` returns the hotspots of every satellite, and the count adds up each one's detections: in August
+2025 there were 594,309 hotspots in total and 18,451 from AQUA_M-T. INPE's per-state statistics use only the reference
+satellite; to compare with them, pass `satelite="AQUA_M-T"`.
 
 ## Cache
 
@@ -127,4 +136,12 @@ There is no local cache: every call downloads the data from INPE.
 | Aspect | Value |
 |---------|-------|
 | **Frequency** | Daily |
-| **Reference satellite** | AQUA_M-T passes ~13h and ~01h30 UTC |
+| **Reference satellite** | AQUA_M-T, passing around 13:30 and 01:30 nominal local time; `hora_gmt` is in GMT |
+
+The monthly file of the current month and the daily file of the current day are partial and change during the period:
+`focos()` warns and says in `source_details` up to which hotspot the file goes and its `Last-Modified`. See the
+[contract](../contracts/queimadas.md#partial-current-month).
+
+## Historical files
+
+Legacy CSVs with `latitude`, `longitude`, and `data_pas` are normalized to the current output schema. When no monthly file exists, `focos()` falls back to the annual ZIP. For 2020, the download is around 81 MB and the uncompressed CSV is 584 MB; account for the memory needed to process the full year as well.

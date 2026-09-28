@@ -10,17 +10,17 @@ DEFENSE LAYERS - AGROBR
 LAYER 1: PREVENTION
   ├─ Structure Monitor (6h)    → Detects changes early
   ├─ Golden Data Tests (CI)    → Ensures parsing doesn't regress
-  └─ Fingerprint Baseline      → Reference for comparison
+  └─ Fingerprint Baseline      → Reference for health --deep
 
 LAYER 2: DETECTION
-  ├─ Fingerprint Check         → HTML structurally different?
+  ├─ R$ value column           → Parser rejects a page without it
+  ├─ Fingerprint               → Only in health --deep and CI
   ├─ can_parse() Confidence    → Parser recognizes structure?
   └─ User-Agent Rotation       → Avoids IP blocking
 
 LAYER 3: VALIDATION
   ├─ Pydantic Validation       → Correct types and formats?
-  ├─ Sanity Check              → Values within range?
-  └─ Completeness Check        → Partial data (< 80%)?
+  └─ Sanity Check (optional)   → validate_sanity=True: flags and warns
 
 LAYER 4: FALLBACK
   ├─ Parser Cascade            → Tries next parser
@@ -83,7 +83,7 @@ Each source has its own rate limit, configurable via env vars:
 | ZARC | 2 seconds | `AGROBR_HTTP_RATE_LIMIT_ZARC` |
 | Default | 1 second | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` |
 
-The table shows the main sources; each supported source has its own rate limit (default 1 second). Beyond the interval between requests, per-source concurrency is controlled by `max_concurrent_<source>` (default 1; B3 and IBGE use 3), via semaphores that allow parallel requests to different sources.
+The table shows the main sources; each supported source has its own rate limit (default 1 second). Beyond the interval between requests, per-source concurrency is controlled by `max_concurrent_<source>` (default 1; B3 and IBGE use 3), via semaphores that allow parallel requests to different sources. The interval and the concurrency hold for the whole process: across `agrobr.sync` calls (each with its own `asyncio.run`), across loops and across threads. The wait for a slot across threads is capped (`AGROBR_HTTP_TIMEOUT_READ`); at the cap, the request goes ahead with a warning, and the interval still holds.
 
 ## Centralized HTTP Configuration
 
@@ -102,13 +102,18 @@ export AGROBR_HTTP_RETRY_BASE_DELAY=1.0
 export AGROBR_HTTP_RETRY_MAX_DELAY=30.0
 ```
 
+Source clients set the read timeout above the 30 s default: ComexStat 120 s; ZARC, PSR and SICAR 180 s;
+INMET 600 s; the others between 30 and 300 s, in each `client.py`'s `get_timeout(read=...)`.
+`AGROBR_HTTP_TIMEOUT_READ` works as a minimum: when larger than the client's value, it wins; when smaller,
+the client's value stays. `CONNECT`, `WRITE` and `POOL` apply to every source HTTP client.
+
 Via code:
 
 ```python
 from agrobr.http import get_timeout
 
 timeout = get_timeout()             # httpx.Timeout (defaults)
-timeout = get_timeout(read=60.0)    # override the read timeout only
+timeout = get_timeout(read=60.0)    # 60 s read, or AGROBR_HTTP_TIMEOUT_READ if larger
 ```
 
 ## Rotating User-Agent
@@ -129,11 +134,8 @@ Fallback chain for encoding:
 
 1. UTF-8 (default)
 2. Windows-1252 (CP1252, Excel BR default — superset of Latin-1, comes first because ISO-8859-1 decodes any byte and would kill the rest of the chain)
-3. ISO-8859-1 (Latin-1, common in old BR sites)
-4. UTF-16 (rare)
-5. ASCII
-6. Automatic detection (chardet, confidence > 0.7)
-7. UTF-8 with replacement (last resort)
+3. ISO-8859-1 (Latin-1, common in old BR sites). It decodes any byte sequence, so the chain ends there: no step after
+   it would ever run.
 
 ## Excel Engine Fallback
 
@@ -154,6 +156,38 @@ xlrd guard: OLE2/BIFF files (.xls) use xlrd directly, with no calamine fallback.
 
 Helpers: `open_excel_safe()` (multi-sheet) and `read_excel_safe()` (single-sheet)
 in `agrobr/utils/io.py`.
+
+## Expansion limit (ZIP and XLSX)
+
+A small compressed file can expand to gigabytes. Before decompressing, agrobr checks how much each ZIP member and each XLSX
+expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises `ResourceLimitError` when it goes over:
+
+- **ZIP** (Queimadas, B3, MapBiomas, ANTAQ and the IBGE legacy census): the member goes through `read_zip_member` or
+  `open_zip_member`, which check the declared size. `zipfile` never returns more than the declared size: a member that expands
+  beyond it fails the CRC.
+- **XLSX** (`read_excel_safe`, `open_excel_safe`, the CEPEA series, the MapBiomas municipal file and UNICA):
+  `check_xlsx_expansion` adds up the declared size of the members and checks the CRC of each one as a stream, before the
+  spreadsheet reader. calamine does not honour the declared size: without the CRC, an XLSX with a forged size would get through.
+
+| Source | Limit | Largest file published (measured on 2026-09-27) |
+|---|---|---|
+| Queimadas | 2 GiB | 2024 yearly CSV: 905 MB |
+| B3 | 512 MiB | 13 MB inner ZIP; 144 MB XML |
+| MapBiomas | 1 GiB | municipal XLSX: 267 MB |
+| ANTAQ | 4 GiB | not measured: the site has been down since 2026-06-23 |
+| IBGE (legacy census, FTP) | 16 MiB | 122 KB |
+| ANP | 512 MiB | 2022–2023 price sheet: 152 MB |
+| ABIOVE, UNICA, CONAB and CONAB progress | 64 MiB | 0.8 MB, 1.0 MB, 3.9 MB and 0.2 MB |
+| Other sources | 256 MiB | the CEPEA series, DERAL and the CONAB historical series publish XLS, which is not compressed |
+
+The CONAB production cost and the INMET history have their own limit (`CONAB_CUSTOS_MAX_EXPANDED_BYTES` and
+`INMET_HISTORICO_MAX_*`). PDF has no limit: pdfplumber decompresses each stream in full.
+
+## Request outside the source host
+
+`conab.progresso_safra(semana_url=...)` only follows pages under `https://www.gov.br/conab/`. Any other URL, or a redirect or
+link that leaves it, raises `InvalidParameterError` before the request goes out. In an application that passes the end user's
+URL along, this closes requests to internal addresses.
 
 ## Source Fallback
 
@@ -182,9 +216,27 @@ Each step returns a `FetchResult(html, source)` that explicitly identifies the H
 
 ## Cache
 
-The local cache uses DuckDB. CEPEA expires at 18h (smart TTL); other sources use a fixed TTL per policy (e.g. CONAB 24h, IBGE 7 days). When the fetch fails, the stale cache is returned with a warning. Without a stale cache, the behavior depends on the layer: the direct source `cepea.indicador()` returns an empty DataFrame (with a warning in `MetaInfo`); the datasets (`datasets.*`, which try sources in a cascade) raise `SourceUnavailableError` when all sources are exhausted.
+The local cache uses DuckDB and holds only CEPEA indicators, including the Notícias Agrícolas fallback rows. They expire at the first 18h BRT (21h UTC) turnover on a business day after collection (smart TTL). Other sources do not use this cache: IBGE, BCB, ComexStat, and SICAR query the source on every call, and those with a cache of their own (INMET, ZARC, RNC, and the CONAB cost catalog, among others) describe it on their page. When the CEPEA fetch fails, the stale cache is returned with `StaleDataWarning`. With no network and no cache, the behavior depends on the layer: the direct source `cepea.indicador()` raises `SourceUnavailableError` (up to 1.1.0, it returned an empty table); the datasets (`datasets.*`, which try sources in a cascade) raise `SourceUnavailableError` when all sources are exhausted.
 
 ### Cache Flow
+
+Internal cache fallback also emits `SourceFallbackWarning` in datasets;
+promoting it to an error interrupts the query. Warm/offline cache is not a new
+fallback attempt. `MetaInfo.selected_source="cache"` identifies local retrieval,
+while `data_sources` retains the providers of returned rows.
+
+Migration failures differ from cache-opening unavailability: `CacheMigrationError`
+interrupts access instead of silently degrading to empty data. The connection stays
+open only during each operation, so another process (a 2nd notebook, a worker)
+uses the same cache; the upsert writes all or nothing. Without access to the file
+(read-only folder, full disk, another process writing), the operation goes on
+without cache, and agrobr warns once (`UserWarning`) with the path, the reason and
+the `AGROBR_CACHE_CACHE_DIR` hint. An unreadable database (incomplete read, checksum or
+invalid file) is moved aside as `agrobr.duckdb.corrompido-<YYYYMMDDHHMM>`, with a warning, and the
+next query creates a new database ([what agrobr writes to disk](disco.md)). Pending migrations
+preserve originals in quarantine and remove active rows only in the same
+transaction that records the version. See [preservation and
+recovery](../guides/migracao-2.md#18-automatic-preservation-of-existing-caches).
 
 ```
 Request
@@ -206,7 +258,11 @@ Fetch source
 
 ## Layout Fingerprinting
 
-Detects layout changes before they cause errors:
+Compares the structure of the CEPEA page with a baseline. It runs only in `agrobr health --deep`
+and in the CI Structure Monitor: collection (`cepea.indicador`, `datasets.preco_diario`) does not
+compare fingerprints. During collection, the defense against layout changes is the parser: without
+the R$ value column recognized by its header, it raises `ParseError`, and the query moves on to
+Notícias Agrícolas (when enabled) and then to the cache. A US$ header never becomes a price in reais.
 
 **Fingerprint components:**
 - Table CSS classes
@@ -215,26 +271,76 @@ Detects layout changes before they cause errors:
 - Count of structural elements
 - Hash of the tag hierarchy
 
-**Thresholds:**
+**`health --deep` thresholds:**
 
-| Similarity | Action |
+| Similarity | Check result |
 |--------------|------|
-| > 85% | OK, normal parsing |
-| 70-85% | Warning, attempts parsing |
-| < 70% | Error, layout changed too much |
+| > 85% | `ok` |
+| 70-85% | `warning` (drift) |
+| < 70% | `failed` (layout changed too much) |
+
+The `health --deep` baseline ships with the package (`agrobr/health/baselines/cepea_baseline.json`,
+the soybean page of 2026-09-27), and the check works from any folder. Without it, or when the page
+came from Notícias Agrícolas, the check returns `warning` with the reason, without comparing.
 
 ## Statistical Validation
 
-Sanity checks based on historical ranges:
+All 22 CEPEA identifiers have unit and value range rules. Enable these checks
+with `cepea.indicador(produto, validate_sanity=True)`. An incompatible unit
+produces `unit_mismatch` before numeric comparisons; currency, weight and cents
+are not converted implicitly.
 
 ```python
-# Example: Soybean
-min_value = 30   # R$/bag (historical minimum ~R$40)
-max_value = 300  # R$/bag (historical maximum ~R$200)
-max_daily_change = 15%  # Maximum daily change
+from agrobr.validators.sanity import PRICE_RULES
+
+rule = PRICE_RULES["soja"]
+print(rule.expected_unit)         # BRL/sc60kg
+print(rule.min_value)             # 30
+print(rule.max_value)             # 300
+print(rule.max_daily_change_pct)  # 15
 ```
 
-Anomalies are flagged in the data but do not block the return (soft validation).
+| Product | Expected unit | Inclusive range | Maximum temporal change |
+|---|---|---|---|
+| `soja`, `soja_parana` | BRL/sc60kg | 30–300 | 15% |
+| `milho` | BRL/sc60kg | 15–150 | 15% |
+| `cafe`, `cafe_arabica` | BRL/sc60kg | 200–3000 | 10% |
+| `cafe_robusta` | BRL/sc60kg | 100–3000 | 10% |
+| `bezerro` | BRL/cabeca | 800–8000 | 10% |
+| `boi`, `boi_gordo` | BRL/@ | 100–500 | 10% |
+| `trigo` | BRL/ton | 20 × 1000/60 to 150 × 1000/60 | 15% |
+| `algodao` | cBRL/lb | 50 × 100 × 0.45359237/15 to 250 × 100 × 0.45359237/15 | 10% |
+| `arroz` | BRL/sc50kg | 8–300 | no limit |
+| `acucar` | BRL/sc50kg | 8–400 | no limit |
+| `acucar_refinado` | BRL/kg | 0.2–8 | no limit |
+| `frango_congelado`, `frango_resfriado` | BRL/kg | 0.6–20 | no limit |
+| `suino` | BRL/kg | 0.8–30 | no limit |
+| `etanol_hidratado` | BRL/L | 0.1–8 | no daily limit; weekly series |
+| `etanol_anidro` | BRL/L | 0.1–10 | no daily limit; weekly series |
+| `leite` | BRL/L | 0.1–8 | no daily limit; monthly series |
+| `laranja_industria`, `laranja_in_natura` | BRL/cx40.8kg | 4–300 | no limit |
+
+These ranges are engineering choices and require revision as markets change.
+For rice, sugars, chickens, live hogs, ethanols and milk, the new limits use half
+the positive minimum and twice the maximum in the official history available
+in September 2026, rounded outward to one significant digit. Published milk
+zeros are excluded from calibration: `Indicador` already requires a positive
+price.
+
+Citrus uses individual official references from 2014/2015 and 2024, without a
+complete historical scan. The nine preexisting rules were not recalibrated.
+Paraná soybean inherits the soybean range policy while keeping its regional
+series; arabica coffee is an alias of coffee. No temporal threshold was inferred
+for the other eleven newly covered products.
+
+Temporal comparisons separate product, market and unit; chicken, ethanol and
+orange products remain distinct series. Ranges are not confidence intervals
+and cannot detect every scale error. `validate_sanity=True` adds anomalies to
+the response without rejecting it, with a summary of the flagged rows (how many and
+which rules) in `MetaInfo.validation_warnings` and a `UserWarning`;
+`validate_batch(..., strict=True)` rejects
+critical anomalies. Custom rules may omit `expected_unit` to retain their
+previous behavior.
 
 ## Health Checks
 
@@ -243,7 +349,9 @@ Automatic checks:
 1. **Connectivity**: Does HTTP GET respond?
 2. **Latency**: < 5 seconds?
 3. **Parsing**: Does the parser extract data?
-4. **Fingerprint**: Structure similar to baseline?
+4. **Fingerprint** (CEPEA, `--deep` only): structure similar to the packaged baseline?
+   Without a baseline, or when the page came from Notícias Agrícolas, the check returns
+   `warning` with the reason.
 
 HTTP requests that take more than 5 seconds are retried once. Health checks use
 the lower latency and record the first measurement in `cold_start_ms`, preventing
@@ -260,6 +368,28 @@ degraded state and fails instead of silently resetting the counters.
 - **Daily Health Check**: twice a day (9h and 21h BRT)
 - **Structure Monitor**: every 6 hours
 - **Tests**: on every PR
+- **Weekly Reconciliation**: Mondays at 6h BRT (below)
+
+### Weekly reconciliation
+
+The `reconciliacao.yml` workflow runs the `scripts/reconciliar_*.py` scripts against the
+official sources, one at a time, and gives each source a state:
+
+- `ok`;
+- `mismatch`;
+- `indisponível`: the source is down or blocked the runner;
+- `não verificado`: the credential is missing, or the script is outside the weekly run (no live
+  mode, for instance). It is never a success;
+- `erro do script`.
+
+The summary is kept as a run artifact. The job fails on `mismatch` or `erro do script`.
+Locally, `python -m scripts.reconciliacao_semanal imea` runs one source and writes the summary
+and the script's full JSON to `reports/reconciliacao_semanal/`.
+
+Each source with `mismatch` gets the issue "Reconciliação semanal: mismatch em <fonte>". While
+it stays open, the following weeks comment on it. The issue carries only the state, the counts,
+the case identifiers and the artifact link. The details, which may contain source values, come
+from the local run.
 
 ## Alerts
 
@@ -306,7 +436,7 @@ agrobr doctor
 ### Sample output
 
 ```
-agrobr diagnostics v1.1.0
+agrobr diagnostics v2.0.0
 ==================================================
 
 Sources Connectivity
@@ -317,17 +447,14 @@ Sources Connectivity
 Cache Status
   Location:      ~/.agrobr/cache/agrobr.duckdb
   Size:          2.40 MB
-  Total records: 1,247
+  Total records: 1,152
 
   By source:
     CEPEA: 847 records (2025-01-21 to 2026-02-04)
-    CONAB: 305 records (2024-01-01 to 2026-02-04)
-    IBGE: 95 records (2020-01-01 to 2023-12-31)
+    NOTICIAS_AGRICOLAS: 305 records (2024-01-01 to 2026-02-04)
 
 Cache Expiry
-  CEPEA: Expira as 18h (atualizacao CEPEA)
-  CONAB: TTL 24 horas
-  IBGE: TTL 7 dias
+  CEPEA: Expira às 18h BRT (atualização CEPEA)
 
 Configuration
   Alternative source: enabled (Notícias Agrícolas via httpx)

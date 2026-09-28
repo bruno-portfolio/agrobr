@@ -1,0 +1,19 @@
+{
+ "fonte": "WFS ICMBio (geoservicos.inde.gov.br), capturas da rodada 11 de conferência, copiadas byte a byte",
+ "arquivos": {
+  "geo_4674.json": {
+   "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&outputFormat=application%2Fjson&CQL_FILTER=BBOX%28the_geom%2C-56%2C-16%2C-54%2C-14%2C%27EPSG%3A4674%27%29&maxFeatures=1000",
+   "fetched_at": "2026-09-23T20:33:18.522419+00:00",
+   "status": 200,
+   "bytes": 17236,
+   "sha256": "68ee336a21ba9655ffc56f299226b6c09fe75518bf9304027b8f5d53953a9a42"
+  },
+  "geo_4326.json": {
+   "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&outputFormat=application%2Fjson&CQL_FILTER=BBOX%28the_geom%2C-56%2C-16%2C-54%2C-14%2C%27EPSG%3A4674%27%29&maxFeatures=500&srsName=EPSG%3A4326",
+   "fetched_at": "2026-09-23T20:41:32.028770+00:00",
+   "status": 200,
+   "bytes": 17249,
+   "sha256": "77d63adc9fa524813fb465a64560a4dfe2a9173ba3cda344267d2d3aae8c2615"
+  }
+ }
+}

@@ -1,38 +1,28 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Literal, overload
+import warnings
+from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import contracts
+from agrobr.contracts import bcb_focus
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils import result
 
-from . import focus_client
+from . import focus_client, focus_metadata, focus_parser, focus_query
 
 logger = structlog.get_logger()
-
-PARSER_VERSION = 1
-
-_COLUMN_MAP: dict[str, str] = {
-    "Indicador": "indicador",
-    "Data": "data",
-    "DataReferencia": "data_referencia",
-    "Media": "media",
-    "Mediana": "mediana",
-    "DesvioPadrao": "desvio_padrao",
-    "Minimo": "minimo",
-    "Maximo": "maximo",
-    "numeroRespondentes": "numero_respondentes",
-    "baseCalculo": "base_calculo",
-}
 
 
 @overload
 async def focus(
     indicador: str = "PIB Agropecuária",
     *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
     data_inicial: str | None = None,
     max_registros: int | None = None,
@@ -45,6 +35,7 @@ async def focus(
 async def focus(
     indicador: str = "PIB Agropecuária",
     *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
     data_inicial: str | None = None,
     max_registros: int | None = None,
@@ -56,46 +47,37 @@ async def focus(
 async def focus(
     indicador: str = "PIB Agropecuária",
     *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
     data_inicial: str | None = None,
     max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    t0 = time.monotonic()
-
-    records, source_url = await focus_client.fetch_focus(
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
+    query = focus_query.build_query(
         indicador,
+        periodicidade=periodicidade,
         top=top,
         data_inicial=data_inicial,
         max_registros=max_registros,
     )
-
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = _parse_focus(records)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    meta = build_source_meta(
-        "bcb_focus",
-        source_url,
-        "httpx",
-        fetch_ms,
-        parse_ms,
-        df,
-        PARSER_VERSION,
-        attempted_sources=["bcb_focus"],
-        selected_source="bcb_focus",
+    logger.info("bcb_focus_selection", query=query.model_dump(mode="json"))
+    started = time.monotonic()
+    acquired = await focus_client.fetch_focus_acquisition(query)
+    fetch_ms = int((time.monotonic() - started) * 1000)
+    for warning in acquired.warnings:
+        warnings.warn(warning, UserWarning, stacklevel=2)
+    started = time.monotonic()
+    frame = focus_parser.build_frame(acquired.records)
+    contracts.validate_dataset(frame, bcb_focus.BCB_FOCUS_V2)
+    parse_ms = int((time.monotonic() - started) * 1000)
+    meta = focus_metadata.build_meta(acquired, frame, fetch_ms=fetch_ms, parse_ms=parse_ms)
+    return result.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=("indicador_detalhe",),
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
-
-
-def _parse_focus(records: list[dict[str, Any]]) -> pd.DataFrame:
-    if not records:
-        return pd.DataFrame(columns=list(_COLUMN_MAP.values()))
-
-    df = pd.DataFrame(records)
-    df = df.rename(columns=_COLUMN_MAP)
-    df["data"] = pd.to_datetime(df["data"])
-    return df[list(_COLUMN_MAP.values())]

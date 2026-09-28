@@ -2,20 +2,54 @@ from agrobr.constants import URLS, Fonte
 
 GRAPHQL_URL: str = URLS[Fonte.MAPBIOMAS_ALERTA]["graphql"]
 
+PAGE_SIZE = 500
+MAX_REGISTROS_PADRAO = 5000
+TIPOS_DATA: dict[str, str] = {"deteccao": "DetectedAt", "publicacao": "PublishedAt"}
+JANELA_PUBLICACAO_DIAS = 293
+FONTES: frozenset[str] = frozenset(
+    {
+        "All",
+        "DeterbAmazonia",
+        "DeterCerrado",
+        "DeterPantanal",
+        "Glad",
+        "IefMg",
+        "InemaBa",
+        "ProdesAmazonia",
+        "ProdesCerrado",
+        "ProdesMataAtlantica",
+        "ProdesPampa",
+        "ProdesPantanal",
+        "ProdesCaatinga",
+        "Sad",
+        "SadCaatinga",
+        "SadCerrado",
+        "SadMataAtlantica",
+        "SadPampa",
+        "SadPantanal",
+        "SipamSar",
+        "SiradX",
+        "SosAtlas",
+        "SosInpe",
+    }
+)
+
 ALERTS_QUERY = """
 query alerts(
   $page: Int, $limit: Int,
-  $startDate: BaseDate, $endDate: BaseDate,
+  $startDate: BaseDate, $endDate: BaseDate, $dateType: DateTypes,
   $sources: [SourceTypes!],
   $boundingBox: [Float!],
-  $territoryIds: [Int!]
+  $territoryIds: [Int!],
+  $sortField: AlertSortField, $sortDirection: SortDirection
 ) {
   alerts(
     page: $page, limit: $limit,
-    startDate: $startDate, endDate: $endDate,
+    startDate: $startDate, endDate: $endDate, dateType: $dateType,
     sources: $sources,
     boundingBox: $boundingBox,
-    territoryIds: $territoryIds
+    territoryIds: $territoryIds,
+    sortField: $sortField, sortDirection: $sortDirection
   ) {
     collection {
       alertCode

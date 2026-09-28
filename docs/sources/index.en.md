@@ -11,7 +11,7 @@ All sources support `return_meta=True` for full traceability.
 | [CONAB](conab.md) | Crops, costs, historical series, [weekly progress](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Monthly/Weekly/Daily | National production |
 | [IBGE/SIDRA](ibge.md) | Statistics | Annual/Monthly/Quarterly | Official data (PAM, LSPA, PPM, Slaughter, PEVS, Milk, GDP, Census) |
 | [NASA POWER](nasa_power.md) | Climatology | Daily | Global, 0.5 degree grid |
-| [BCB/SICOR](bcb.md) | Rural credit, time series, exchange rates, forecasts | Monthly | Crop/state (+ BigQuery) |
+| [BCB](bcb.en.md) | Rural credit, time series, exchange-rate bulletins, and forecasts | Varies by service | Crop/state, series, currency/bulletin, or indicator |
 | [ComexStat](comexstat.md) | Exports | Weekly | NCM/state |
 | [ANDA](anda.md) | Fertilizers | Monthly | State/month |
 | [ABIOVE](abiove.md) | Soybean complex exports | Monthly | Volume/revenue |
@@ -25,7 +25,7 @@ All sources support `return_meta=True` for full traceability.
 | [Deforestation PRODES/DETER](desmatamento.md) | Deforestation + alerts | Annual/Daily | Amazônia, Cerrado, Pantanal |
 | [MapBiomas](mapbiomas.md) | Land cover and use | Annual | Municipalities (1985-present) |
 | [B3 Agricultural Futures](b3.md) | Daily settlements + open interest | Daily | 7 agricultural contracts |
-| [UN Comtrade](comtrade.md) | Bilateral trade + trade mirror | Monthly/Annual | ~200 countries, HS codes |
+| [UN Comtrade](comtrade.md) | Bilateral 2.1 and mirror 2.0, counts and partitions | Monthly/Annual | HS, World or published partners |
 | [ANTAQ](antaq.md) | Port cargo movement | Annual | ⚠️ Source offline since 2026-06-23 |
 | [ANP Diesel](anp_diesel.md) | Resale prices + diesel volumes | Weekly/Monthly | States, municipalities, 2013+ |
 | [ANTT Pedagio](antt_pedagio.md) | Vehicle traffic at toll plazas | Monthly | 200+ plazas, 2010+ |
@@ -33,18 +33,18 @@ All sources support `return_meta=True` for full traceability.
 | [SICAR](sicar.md) | Rural Environmental Registry (CAR) | Continuous | 27 states, 7.4M+ properties |
 | [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 32 crops, all municipalities |
 | [Agrofit/MAPA](defensivos.md) | Registered pesticides | Continuous | ~8K formulated products, ~267K authorizations |
-| [FUNAI Indigenous Lands](funai.md) | Indigenous lands (WFS geo) | Continuous | ~740 TIs, all states |
+| [FUNAI Indigenous Lands](funai.md) | Indigenous lands (WFS geo) | Continuous | 665 territories, all states |
 | [ICMBio Federal Conservation Units](icmbio.md) | Federal conservation units (WFS geo) | Continuous | 344 federal UCs |
-| [INCRA Quilombola Territories](incra.md) | Quilombola territories (WFS geo) | Continuous | ~426 territories |
-| [Land Registry/INCRA](acervo_fundiario.md) | Certified parcels + settlements (shapefile ZIP) | Continuous | SIGEF (15 states) + SNCI (10 states) + settlements Brazil |
-| [IBAMA Environmental Embargoes](ibama.md) | Environmental embargoes (SIFISC CSV + WKT) | Monthly | ~114K embargoes |
+| [INCRA Quilombola Territories](incra.md) | Quilombola perimeters (WFS geo), process progress (PDF) and NUP links | Continuous | 445 perimeters and 649 processes (2026-09-22) |
+| [Land Registry/INCRA](acervo_fundiario.md) | Certified parcels + settlements (shapefile ZIP) | Continuous | SIGEF (27 states) + SNCI (27 states) + settlements Brazil |
+| [IBAMA Environmental Embargoes](ibama.md) | Environmental embargoes (open-data CSV + WKT) | Daily | ~116K terms |
 | [MapBiomas Alerta](mapbiomas_alerta.md) | Deforestation alerts (GraphQL) | Weekly | National |
-| [Lista Suja](lista_suja.md) | Forced-labor registry (PDF) | Semiannual | National |
+| [Lista Suja](lista_suja.md) | MTE registry (CSV/TXT; PDF alternative) | Periodic publication with interim updates | National |
 | [ANA/SNIRH](ana.md) | Hydrography, irrigation, water availability (ArcGIS REST) | Variable | National |
 | [SFB](sfb.md) | Public forests, concessions, IFN (ArcGIS REST) | Annual | National |
 | [RNC/CultivarWeb](rnc.md) | Registered/protected cultivars | Continuous | ~37K registered, ~5K protected |
 | [EMBRAPA Solos](embrapa_solos.md) | Soil profiles and soil map | Continuous | 34K profiles, 2.8K polygons |
-| [Fundação Rio Verde](rio_verde.md) | MT soybean cultivar trials | Annual | ~97 cultivars x 4 seasons |
+| [Fundação Rio Verde](rio_verde.md) | MT soybean cultivar trials | Annual | 3 seasons (2023/24 to 2025/26), up to 4 sowing windows |
 | [CFTC COT](cftc.md) | Fund positioning in agricultural futures | Weekly | 12 Chicago/NY contracts, 2006+ |
 | [UNICA](unica.md) | Center-South sugar/ethanol crushing and production | Biweekly | Current crop year + history 1980-2021 |
 

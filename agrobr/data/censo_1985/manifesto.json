@@ -1,0 +1,256 @@
+{
+ "volumes": [
+  {
+   "volume": "n2_ro",
+   "uf": "RO",
+   "arquivo": "ca_1985_n2_ro.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n2_ro.pdf",
+   "sha256": "02a5162288b23fe4368f1c647f7965c75892b747fdeae96ed4b97d34edd27fdf",
+   "bytes": 7151606,
+   "conferido_em": "2026-09-27T08:09:58+00:00"
+  },
+  {
+   "volume": "n3_ac",
+   "uf": "AC",
+   "arquivo": "ca_1985_n3_ac.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n3_ac.pdf",
+   "sha256": "f4e00da46bcbc48f66d2c336eb16e394df406cc1fc8e294b1573d75f731d222d",
+   "bytes": 6448725,
+   "conferido_em": "2026-09-27T08:09:58+00:00"
+  },
+  {
+   "volume": "n4_am",
+   "uf": "AM",
+   "arquivo": "ca_1985_n4_am.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n4_am.pdf",
+   "sha256": "a4e166c11196f43e91528e909dd2b20a06580d730a38cdc13db745f41b975e55",
+   "bytes": 9468096,
+   "conferido_em": "2026-09-27T08:09:59+00:00"
+  },
+  {
+   "volume": "n5_rr",
+   "uf": "RR",
+   "arquivo": "ca_1985_n5_rr.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n5_rr.pdf",
+   "sha256": "47a275c53d1a7b01856a52da71b72b2c44c81c1f330e7e1f899ce73d394c88d0",
+   "bytes": 7849570,
+   "conferido_em": "2026-09-27T08:09:59+00:00"
+  },
+  {
+   "volume": "n6_pa",
+   "uf": "PA",
+   "arquivo": "ca_1985_n6_pa.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n6_pa.pdf",
+   "sha256": "a42067fd0bce5b1e1a02422cc858c4fca591f8f29cd7cde36448fb0fac077773",
+   "bytes": 11504114,
+   "conferido_em": "2026-09-27T08:09:59+00:00"
+  },
+  {
+   "volume": "n7_ap",
+   "uf": "AP",
+   "arquivo": "ca_1985_n7_ap.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n7_ap.pdf",
+   "sha256": "3268bb3f7ac9d0e0b7fd533f83dba7e826a4378ac722f4f6412330f0cd85d0c1",
+   "bytes": 5989149,
+   "conferido_em": "2026-09-27T08:09:59+00:00"
+  },
+  {
+   "volume": "n8_to",
+   "uf": "TO",
+   "arquivo": "ca_1985_n8_to.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n8_to.pdf",
+   "sha256": "dd19c466a08b5834d99d0d72d5a4148e67d786e5e5422bec09ba182c3f2876cb",
+   "bytes": 8885599,
+   "conferido_em": "2026-09-27T08:09:59+00:00"
+  },
+  {
+   "volume": "n9_ma",
+   "uf": "MA",
+   "arquivo": "ca_1985_n9_ma.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n9_ma.pdf",
+   "sha256": "e6cbfcd896ae061ee2b13e9bfb1b9c97d175bed56f244550889ed3586dbb7363",
+   "bytes": 14617762,
+   "conferido_em": "2026-09-27T08:09:59+00:00"
+  },
+  {
+   "volume": "n10_pi",
+   "uf": "PI",
+   "arquivo": "ca_1985_n10_pi.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n10_pi.pdf",
+   "sha256": "bd3f70f2b0e4628388d5c0778ca04723fdd461717681bfc9c48efe6b05c2288b",
+   "bytes": 12550563,
+   "conferido_em": "2026-09-27T08:09:59+00:00"
+  },
+  {
+   "volume": "n11_ce",
+   "uf": "CE",
+   "arquivo": "ca_1985_n11_ce.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n11_ce.pdf",
+   "sha256": "f4b5303a6e51cb440f05f182ee1c5e483909b5f1433591ef24ffe5af05d80033",
+   "bytes": 15565608,
+   "conferido_em": "2026-09-27T08:10:00+00:00"
+  },
+  {
+   "volume": "n12_rn",
+   "uf": "RN",
+   "arquivo": "ca_1985_n12_rn.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n12_rn.pdf",
+   "sha256": "ff504a6822bb63bc631a5af9d7bc46f0eedaa1ab67565436c052227b3759f3d0",
+   "bytes": 14044064,
+   "conferido_em": "2026-09-27T08:10:00+00:00"
+  },
+  {
+   "volume": "n13_pb",
+   "uf": "PB",
+   "arquivo": "ca_1985_n13_pb.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n13_pb.pdf",
+   "sha256": "efdc50f789e2066822615a70d7ec5f0afde5f3af098f03789f4be2b22011d5ef",
+   "bytes": 15342597,
+   "conferido_em": "2026-09-27T08:10:00+00:00"
+  },
+  {
+   "volume": "n14_pe",
+   "uf": "PE",
+   "arquivo": "ca_1985_n14_pe.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n14_pe.pdf",
+   "sha256": "e2110611a297f1349294d111ca638f21479c124f46dd4fb977a0c5c431b53207",
+   "bytes": 17120930,
+   "conferido_em": "2026-09-27T08:10:01+00:00"
+  },
+  {
+   "volume": "n15_al",
+   "uf": "AL",
+   "arquivo": "ca_1985_n15_al.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n15_al.pdf",
+   "sha256": "71e454bd80e89ff5648ca0f7103fc03cb9fe4533fc0fe3940eb59f1482df5913",
+   "bytes": 10566140,
+   "conferido_em": "2026-09-27T08:10:01+00:00"
+  },
+  {
+   "volume": "n16_se",
+   "uf": "SE",
+   "arquivo": "ca_1985_n16_se.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n16_se.pdf",
+   "sha256": "e062dd6412637fc1e99319cb6cdc9209835df6355cde17a02f05daf73814f651",
+   "bytes": 9388819,
+   "conferido_em": "2026-09-27T08:10:01+00:00"
+  },
+  {
+   "volume": "n17_ba",
+   "uf": "BA",
+   "arquivo": "ca_1985_n17_ba.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n17_ba.pdf",
+   "sha256": "93cb03311d29f1dbe99f7f2a33f2b93222ad87bbc4032e24b9d2e8186eaf72f6",
+   "bytes": 27204300,
+   "conferido_em": "2026-09-27T08:10:01+00:00"
+  },
+  {
+   "volume": "n18_p1_mg",
+   "uf": "MG",
+   "arquivo": "ca_1985_n18_p1_mg.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n18_p1_mg.pdf",
+   "sha256": "a1607c199646e916a1b7e4a27b235f2137cb72858a51feab8d56e7585b7ed2e1",
+   "bytes": 30498361,
+   "conferido_em": "2026-09-27T08:10:02+00:00"
+  },
+  {
+   "volume": "n18_p2_mg",
+   "uf": "MG",
+   "arquivo": "ca_1985_n18_p2_mg.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n18_p2_mg.pdf",
+   "sha256": "0f872a7efb0559c807a78d0d29fbc2143ccd8debcddfc3bafd25800a3815e847",
+   "bytes": 22388687,
+   "conferido_em": "2026-09-27T08:10:02+00:00"
+  },
+  {
+   "volume": "n19_es",
+   "uf": "ES",
+   "arquivo": "ca_1985_n19_es.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n19_es.pdf",
+   "sha256": "19b2fd08ca8f4bf852c7c5c9d872073caf8039a180ac8fadc1dbab1a978f62d0",
+   "bytes": 10666192,
+   "conferido_em": "2026-09-27T08:10:02+00:00"
+  },
+  {
+   "volume": "n20_rj",
+   "uf": "RJ",
+   "arquivo": "ca_1985_n20_rj.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n20_rj.pdf",
+   "sha256": "14a4482a5c08923c861c1532f28f3e9b033bd05a9818fada6ac5d516bcf3be93",
+   "bytes": 11642271,
+   "conferido_em": "2026-09-27T08:10:03+00:00"
+  },
+  {
+   "volume": "n21_sp",
+   "uf": "SP",
+   "arquivo": "ca_1985_n21_sp.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n21_sp.pdf",
+   "sha256": "92a0fd7e04f92c7c4ac2ae02511dcf3220feb15c1dd7726e6986d2a1120e48f0",
+   "bytes": 41621616,
+   "conferido_em": "2026-09-27T08:10:03+00:00"
+  },
+  {
+   "volume": "n22_pr",
+   "uf": "PR",
+   "arquivo": "ca_1985_n22_pr.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n22_pr.pdf",
+   "sha256": "110780c7c3362127ad2431e91a1f14fb7d444d3807f295058a1db0c6959de9d4",
+   "bytes": 28013812,
+   "conferido_em": "2026-09-27T08:10:04+00:00"
+  },
+  {
+   "volume": "n23_sc",
+   "uf": "SC",
+   "arquivo": "ca_1985_n23_sc.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n23_sc.pdf",
+   "sha256": "df3dc76eb0120fe10c20de191a1fe4ccc0579bad242c5d2012b8bee3343fa320",
+   "bytes": 19761420,
+   "conferido_em": "2026-09-27T08:10:04+00:00"
+  },
+  {
+   "volume": "n24_rs",
+   "uf": "RS",
+   "arquivo": "ca_1985_n24_rs.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n24_rs.pdf",
+   "sha256": "e0d281d6a996045f4666ced80131260634389dc71f0d1dc7e89fb1dd8b33d486",
+   "bytes": 24954757,
+   "conferido_em": "2026-09-27T08:10:04+00:00"
+  },
+  {
+   "volume": "n25_ms",
+   "uf": "MS",
+   "arquivo": "ca_1985_n25_ms.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n25_ms.pdf",
+   "sha256": "49a12f1c8198cdbc7a8b3da563c623eee6fd0f45b545effffe69a82395a97468",
+   "bytes": 11646711,
+   "conferido_em": "2026-09-27T08:10:05+00:00"
+  },
+  {
+   "volume": "n26_mt",
+   "uf": "MT",
+   "arquivo": "ca_1985_n26_mt.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n26_mt.pdf",
+   "sha256": "7dd33182ee5b08c03905b750e7f56d28321cf8ca402302e918861ae05241565b",
+   "bytes": 10088361,
+   "conferido_em": "2026-09-27T08:10:05+00:00"
+  },
+  {
+   "volume": "n27_go",
+   "uf": "GO",
+   "arquivo": "ca_1985_n27_go.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n27_go.pdf",
+   "sha256": "b2bbdffbd2bd383cf828b5262da50d7e56f33a086d4a97f7fd529b3950786fa0",
+   "bytes": 18374725,
+   "conferido_em": "2026-09-27T08:10:05+00:00"
+  },
+  {
+   "volume": "n28_df",
+   "uf": "DF",
+   "arquivo": "ca_1985_n28_df.pdf",
+   "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/47/ca_1985_n28_df.pdf",
+   "sha256": "4ca60b7ad38468249ccca05f46526966273376a7268dbe8dbdaf7bb9269c34d0",
+   "bytes": 5404535,
+   "conferido_em": "2026-09-27T08:10:05+00:00"
+  }
+ ]
+}

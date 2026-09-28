@@ -35,11 +35,11 @@
 
 | Dataset | UFs disponíveis | Tamanho típico | Granularidade |
 |---|---|---|---|
-| **SIGEF** | 15/27 (AC, AL, AM, BA, ES, GO, MA, MG, MS, MT, PA, PR, SC, SP, TO) | 8-687 MB por UF | Por UF |
-| **SNCI** | 10/27 (BA, GO, MG, MS, MT, PA, PI, SC, SP, TO) | 0.6-22 MB por UF | Por UF |
-| **Assentamentos** | Brasil único | 48 MB | Brasil completo, filtro UF client-side |
+| **SIGEF** | 27/27 | 2-766 MB por UF | Por UF |
+| **SNCI** | 27/27 | 0,01-23 MB por UF | Por UF |
+| **Assentamentos** | Brasil único | 50 MB | Brasil completo, filtro UF client-side |
 
-UFs não listadas levantam `SourceUnavailableError` com a lista de disponíveis. Ausência reflete dados upstream do INCRA, não bug do agrobr.
+O INCRA publica SIGEF e SNCI para as 27 UFs (sondagem de 22/09/2026). UF sem arquivo no servidor levanta `SourceUnavailableError` (HTTP 404).
 
 ## Funções públicas
 
@@ -54,7 +54,7 @@ async def main():
     df_pl = await acervo_fundiario.sigef("SP", as_polars=True)
     gdf = await acervo_fundiario.sigef_geo("GO", bbox=(-50, -16, -49, -15))
 
-    # SNCI — parcelas certificadas pré-2013
+    # SNCI — certificações do sistema anterior ao SIGEF (sem corte por data; há registros até 2016)
     df = await acervo_fundiario.snci("GO")
     gdf = await acervo_fundiario.snci_geo("MT")
 
@@ -68,15 +68,20 @@ asyncio.run(main())
 
 ## Cache filesystem
 
-Arquivos baixados ficam em `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` com `meta.json` ao lado contendo `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`.
+Arquivos baixados ficam em `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` com `{UF}.json` ao lado contendo `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. Onde fica e como limpar: [O que o agrobr grava no disco](../advanced/disco.md).
 
-A revalidação usa o header `Last-Modified` do servidor: a 2ª chamada faz HEAD (~50ms) e reusa cache se o arquivo não mudou.
+Com `return_meta=True`, o `MetaInfo` diz de onde veio o arquivo. Quando o HEAD confirma o cache: `from_cache=True`, `fetched_at` = coleta original do ZIP (o `fetched_at` do `{UF}.json`) e `source_details` com `revalidado_em`, `etag` e `last_modified`. Num download novo: `from_cache=False`, `fetched_at` = o download e `source_details` só com `etag` e `last_modified`.
+
+A revalidação faz HEAD e exige ao menos um validador presente (`ETag` ou
+`Last-Modified`) coincidente. Divergências nesses headers ou no tamanho
+invalidam o cache; ausência de ambos exige novo download. Locks são locais
+ao event loop, e cada escrita limpa somente seu próprio temporário.
 
 **Tamanho potencial do cache:**
 
-- SIGEF Brasil completo (15 UFs) ≈ 2.4 GB (maior: MG=687 MB, SP=322 MB, PR=287 MB)
-- SNCI Brasil completo (10 UFs) ≈ 84 MB
-- Assentamentos Brasil = 48 MB
+- SIGEF Brasil completo (27 UFs) ≈ 3,1 GB (maior: MG=766 MB, SP=356 MB, PR=312 MB)
+- SNCI Brasil completo (27 UFs) ≈ 105 MB
+- Assentamentos Brasil = 50 MB
 
 Por demanda. Caso casual de 1-3 UFs costuma ficar abaixo de 1 GB.
 
@@ -109,7 +114,7 @@ export AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1
 | registro_data | datetime | Data do registro (nullable) |
 | cod_municipio | int | Código IBGE do município |
 | uf | str | Sigla UF (mapeada de `uf_id` IBGE) |
-| geometry | Polygon | Geometria (apenas em `_geo`) |
+| geometry | Polygon Z | Geometria com altitude nos vértices (apenas em `_geo`) |
 
 ### SNCI
 
@@ -144,7 +149,7 @@ export AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1
 | area_calc_ha | float | Área calculada em hectares |
 | sr | str | Superintendência regional (nullable) |
 | descricao_fase | str | Descrição da fase (nullable) |
-| geometry | Polygon | Apenas em `_geo` |
+| geometry | Polygon | Apenas em `_geo`; nula quando a fonte publica o registro sem geometria (1 de 8.216 em 22/09/2026) |
 
 ## Filtros
 
@@ -160,12 +165,11 @@ gdf = await acervo_fundiario.sigef_geo("MG", bbox=(-44, -18, -43, -17))
 
 O dataset de assentamentos é Brasil único — o filtro `uf` é client-side, normalizando a coluna `uf` (`.str.upper().str.strip()`) e comparando.
 
-Dados upstream do INCRA têm UFs inválidas conhecidas (`MB`=501 rows, `SM`=200 rows, `12`, `'ma'`). O parser não filtra essas rows silenciosamente — um log warning `acervo_fundiario_dirty_uf_data` reporta os counts. Filtro `uf="MG"` retorna apenas rows com `MG` válido; as inválidas continuam no DataFrame quando `uf=None`.
+Se a fonte trouxer UF fora das 27 siglas, o parser não descarta a linha: o log `acervo_fundiario_dirty_uf_data` reporta as contagens. Filtro `uf="MG"` retorna apenas linhas com `MG`; as demais continuam no DataFrame quando `uf=None`. Na captura de 22/09/2026, as 8.216 linhas tinham UF válida.
 
 ## Limitações
 
-- **12 UFs faltam SIGEF** (AP, CE, DF, PB, PE, PI, RJ, RN, RO, RR, RS, SE) — não há registro upstream
-- **17 UFs faltam SNCI** — só Centro-Oeste/Sudeste/Sul/parte do Norte cobertos
-- **Cert SSL inválido** no servidor — agrobr usa TLS relaxado (`check_hostname=False`, `verify_mode=CERT_NONE`). Servidor é gov.br público.
+- **TLS verificado** — downloads e health check validam certificado e hostname.
+  Falhas de certificado interrompem a conexão, sem desabilitar a verificação.
 - **Sem distinção particular/público** — o shapefile não tem campo de tipo (era distinção do WFS legacy)
 - **Tamanho de cache pode acumular GB** — ver seção "Cache filesystem"

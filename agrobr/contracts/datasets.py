@@ -5,8 +5,16 @@ from agrobr.contracts import (
     Column,
     ColumnType,
     Contract,
+    _legacy,
     register_contract,
 )
+from agrobr.contracts.antt_pedagio import ANTT_PEDAGIO_FLUXO_V3
+from agrobr.contracts.mapbiomas import MAPBIOMAS_COBERTURA_MUNICIPAL_V1
+from agrobr.contracts.rnc import RNC_PROTEGIDAS_V1, RNC_REGISTRADAS_V1
+from agrobr.contracts.zarc import ZONEAMENTO_AGRICOLA_V2
+
+register_contract("rnc_registradas", RNC_REGISTRADAS_V1)
+register_contract("rnc_protegidas", RNC_PROTEGIDAS_V1)
 
 CREDITO_RURAL_V2 = Contract(
     name="bcb.credito_rural",
@@ -19,6 +27,7 @@ CREDITO_RURAL_V2 = Contract(
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
+            description="Safra de julho a junho do mês de emissão, no formato AAAA/AA (2023/24) da camada; o SICOR não publica safra",
         ),
         Column(
             name="produto",
@@ -141,6 +150,16 @@ _COMEX_COLUMNS = [
     ),
 ]
 
+_VOLUME_TON = Column(
+    name="volume_ton",
+    type=ColumnType.FLOAT,
+    nullable=True,
+    unit="t",
+    stable=False,
+    min_value=0,
+    description="kg_liquido / 1000",
+)
+
 _COMEX_GUARANTEES = [
     "Column names never change (additions only)",
     "'ano' is always >= 1997",
@@ -148,83 +167,42 @@ _COMEX_GUARANTEES = [
     "Numeric values are always >= 0",
 ]
 
-EXPORTACAO_V1 = Contract(
+EXPORTACAO_V1_1 = Contract(
     name="comexstat.exportacao",
-    version="1.0",
-    effective_from="0.10.0",
+    version="1.1",
+    effective_from="2.0.0",
     primary_key=["ano", "mes", "produto", "uf"],
-    columns=_COMEX_COLUMNS,
+    columns=[*_COMEX_COLUMNS, _VOLUME_TON],
     guarantees=_COMEX_GUARANTEES,
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-FERTILIZANTE_V1 = Contract(
+
+FERTILIZANTE_V2 = Contract(
     name="anda.fertilizante",
-    version="1.0",
-    effective_from="0.10.0",
-    primary_key=["ano", "mes", "uf", "produto_fertilizante"],
+    version="2.0",
     columns=[
-        Column(
-            name="ano",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-            min_value=2000,
-        ),
-        Column(
-            name="mes",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-            min_value=1,
-            max_value=12,
-        ),
-        Column(
-            name="uf",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="produto_fertilizante",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="volume_ton",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="ton",
-            stable=True,
-            min_value=0,
-        ),
+        Column(name="ano", type=ColumnType.INTEGER, min_value=2000),
+        Column(name="mes", type=ColumnType.INTEGER, min_value=1, max_value=12),
+        Column(name="uf", type=ColumnType.STRING, nullable=True),
+        Column(name="produto_fertilizante", type=ColumnType.STRING),
+        Column(name="volume_ton", type=ColumnType.FLOAT, nullable=True, unit="ton", min_value=0),
     ],
+    primary_key=["ano", "mes", "uf", "produto_fertilizante"],
     guarantees=[
         "Column names never change (additions only)",
         "'ano' is always >= 2000",
         "'mes' is between 1 and 12",
         "Numeric values are always >= 0",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
-
-FERTILIZANTE_V2 = Contract(
-    name="anda.fertilizante",
-    version="2.0",
-    effective_from="1.2.0",
-    primary_key=FERTILIZANTE_V1.primary_key.copy(),
-    columns=FERTILIZANTE_V1.columns.copy(),
-    guarantees=[
-        *FERTILIZANTE_V1.guarantees,
         "'produto_fertilizante' is always 'total'",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+    effective_from="1.2.0",
 )
 
 FOCOS_QUEIMADAS_V1 = Contract(
     name="queimadas.focos",
-    version="1.0",
+    version="1.1",
     effective_from="0.10.0",
     primary_key=["data", "lat", "lon", "satelite", "hora_gmt"],
     columns=[
@@ -323,6 +301,13 @@ FOCOS_QUEIMADAS_V1 = Contract(
             stable=True,
             min_value=0,
         ),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
@@ -334,145 +319,11 @@ FOCOS_QUEIMADAS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-DESMATAMENTO_PRODES_V1 = Contract(
-    name="desmatamento.prodes",
-    version="1.0",
-    effective_from="0.10.0",
-    primary_key=["ano", "uf", "classe", "bioma"],
-    columns=[
-        Column(
-            name="ano",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-            min_value=2000,
-        ),
-        Column(
-            name="uf",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="classe",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="area_km2",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            unit="km2",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="satelite",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="sensor",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="bioma",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-    ],
-    guarantees=[
-        "Column names never change (additions only)",
-        "'ano' is always >= 2000",
-        "'area_km2' is always >= 0",
-        "'uf' is always a valid Brazilian state code",
-        "'bioma' is always a valid Brazilian biome name",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
 
-DESMATAMENTO_DETER_V1 = Contract(
-    name="desmatamento.deter",
-    version="1.0",
-    effective_from="0.10.0",
-    primary_key=["data", "classe", "uf", "municipio", "bioma"],
-    columns=[
-        Column(
-            name="data",
-            type=ColumnType.DATE,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="classe",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="uf",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="municipio",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="municipio_id",
-            type=ColumnType.INTEGER,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="area_km2",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            unit="km2",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="satelite",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="sensor",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="bioma",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-    ],
-    guarantees=[
-        "Column names never change (additions only)",
-        "'data' is always a valid date",
-        "'area_km2' is always >= 0",
-        "'uf' is always a valid Brazilian state code",
-        "'bioma' is always 'Amazônia' or 'Cerrado'",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
-
-MAPBIOMAS_COBERTURA_V1 = Contract(
+MAPBIOMAS_COBERTURA_V2 = Contract(
     name="mapbiomas.cobertura",
-    version="1.0",
-    effective_from="0.10.0",
+    version="2.0",
+    effective_from="2.0.0",
     primary_key=["bioma", "estado", "classe_id", "ano"],
     columns=[
         Column(
@@ -496,7 +347,7 @@ MAPBIOMAS_COBERTURA_V1 = Contract(
         Column(
             name="classe",
             type=ColumnType.STRING,
-            nullable=False,
+            nullable=True,
             stable=True,
         ),
         Column(
@@ -528,14 +379,15 @@ MAPBIOMAS_COBERTURA_V1 = Contract(
         "'ano' is always between 1985 and current year",
         "'area_ha' is always >= 0",
         "'classe_id' maps to MapBiomas LULC legend codes",
+        "'classe' is null only for a published class id outside the known legend, with a warning",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-MAPBIOMAS_TRANSICAO_V1 = Contract(
+MAPBIOMAS_TRANSICAO_V2 = Contract(
     name="mapbiomas.transicao",
-    version="1.0",
-    effective_from="0.10.0",
+    version="2.0",
+    effective_from="2.0.0",
     primary_key=["bioma", "estado", "classe_de_id", "classe_para_id", "periodo"],
     columns=[
         Column(
@@ -559,7 +411,7 @@ MAPBIOMAS_TRANSICAO_V1 = Contract(
         Column(
             name="classe_de",
             type=ColumnType.STRING,
-            nullable=False,
+            nullable=True,
             stable=True,
         ),
         Column(
@@ -571,7 +423,7 @@ MAPBIOMAS_TRANSICAO_V1 = Contract(
         Column(
             name="classe_para",
             type=ColumnType.STRING,
-            nullable=False,
+            nullable=True,
             stable=True,
         ),
         Column(
@@ -596,6 +448,7 @@ MAPBIOMAS_TRANSICAO_V1 = Contract(
         "'periodo' always matches pattern YYYY-YYYY",
         "'area_ha' is always >= 0",
         "'classe_de_id' and 'classe_para_id' map to MapBiomas LULC legend codes",
+        "'classe_de' and 'classe_para' are null only for a published class id outside the known legend, with a warning",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
@@ -687,6 +540,83 @@ CONAB_PROGRESSO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+CONAB_PROGRESSO_V1_1 = Contract(
+    name=CONAB_PROGRESSO_V1.name,
+    version="1.1",
+    effective_from="2.0.0",
+    primary_key=list(CONAB_PROGRESSO_V1.primary_key),
+    columns=[
+        *CONAB_PROGRESSO_V1.columns,
+        Column(
+            name="revisado",
+            type=ColumnType.BOOLEAN,
+            nullable=True,
+            stable=False,
+            description="Marca de revisão * em algum percentual; nulo sem percentual numérico",
+        ),
+    ],
+    guarantees=[
+        *CONAB_PROGRESSO_V1.guarantees,
+        "Percentuais com sufixo * preservam o valor e a indicação de revisão pela CONAB",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+CONAB_PROGRESSO_V2 = Contract(
+    name=CONAB_PROGRESSO_V1.name,
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=list(CONAB_PROGRESSO_V1.primary_key),
+    columns=[
+        *(
+            Column(
+                name="estado",
+                type=ColumnType.STRING,
+                nullable=False,
+                stable=True,
+                description=(
+                    "UF de 2 letras; MEDIA_ESTADOS para a média da CONAB dos estados monitorados; "
+                    "BR só quando a planilha publica Brasil"
+                ),
+            )
+            if column.name == "estado"
+            else column
+            for column in CONAB_PROGRESSO_V1_1.columns
+        ),
+        Column(
+            name="n_estados",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Estados da média da CONAB, lido da nota publicada; nulo nas UFs",
+        ),
+        Column(
+            name="cobertura_area_pct",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=False,
+            unit="fracao",
+            min_value=0.0,
+            max_value=1.0,
+            description=(
+                "Fração da área cultivada coberta pelos estados monitorados, lida da nota "
+                "publicada (0.98 = 98%); nulo nas UFs"
+            ),
+        ),
+    ],
+    guarantees=[
+        "PK unica por combinacao cultura + safra + operacao + estado + semana",
+        "Valores percentuais entre 0.0 e 1.0 (fracao, nao %)",
+        "Dados semanais publicados pela CONAB",
+        "'estado' é a UF de 2 letras; MEDIA_ESTADOS é a média da própria CONAB dos estados "
+        "monitorados (n_estados, cobertura_area_pct), não o Brasil; BR só quando a CONAB publica "
+        "Brasil",
+        "n_estados e cobertura_area_pct saem da nota publicada, sem recálculo",
+        "Percentuais com sufixo * preservam o valor e a indicação de revisão pela CONAB",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 AJUSTE_DIARIO_V1 = Contract(
     name="b3.ajuste_diario",
     version="1.0",
@@ -752,8 +682,8 @@ AJUSTE_DIARIO_V1 = Contract(
 
 PRECO_ATACADO_V1 = Contract(
     name="conab.preco_atacado",
-    version="1.0",
-    effective_from="0.10.0",
+    version="1.1",
+    effective_from="2.0.0",
     primary_key=["data", "produto", "ceasa"],
     columns=[
         Column(
@@ -771,7 +701,7 @@ PRECO_ATACADO_V1 = Contract(
         Column(
             name="categoria",
             type=ColumnType.STRING,
-            nullable=False,
+            nullable=True,
             stable=True,
         ),
         Column(
@@ -804,7 +734,7 @@ PRECO_ATACADO_V1 = Contract(
     guarantees=[
         "PK unica por combinacao data + produto + ceasa",
         "'produto' sempre em maiusculas (ex: TOMATE, ABACAXI)",
-        "'categoria' sempre FRUTAS ou HORTALICAS",
+        "'categoria' FRUTAS, HORTALICAS ou OVOS; nula só para produto fora da tabela do agrobr, com aviso",
         "'unidade' sempre KG, UN ou DZ",
         "'ceasa_uf' sempre codigo UF de 2 letras",
         "'preco' sempre > 0 (nulls filtrados)",
@@ -814,8 +744,8 @@ PRECO_ATACADO_V1 = Contract(
 
 POSICOES_ABERTAS_V1 = Contract(
     name="b3.posicoes_abertas",
-    version="1.0",
-    effective_from="0.11.0",
+    version="1.1",
+    effective_from="2.0.0",
     primary_key=["data", "ticker_completo"],
     columns=[
         Column(name="data", type=ColumnType.DATE, nullable=False, stable=True),
@@ -831,7 +761,7 @@ POSICOES_ABERTAS_V1 = Contract(
         Column(
             name="vencimento_mes",
             type=ColumnType.INTEGER,
-            nullable=True,
+            nullable=False,
             stable=True,
             min_value=1,
             max_value=12,
@@ -839,7 +769,7 @@ POSICOES_ABERTAS_V1 = Contract(
         Column(
             name="vencimento_ano",
             type=ColumnType.INTEGER,
-            nullable=True,
+            nullable=False,
             stable=True,
             min_value=2000,
         ),
@@ -858,276 +788,13 @@ POSICOES_ABERTAS_V1 = Contract(
         "PK unica por combinacao data + ticker_completo",
         "'ticker' sempre em {BGI, CCM, ETH, ICF, SJC, CNL}",
         "'tipo' sempre 'futuro' ou 'opcao'",
+        "'vencimento_mes'/'vencimento_ano' do contrato em futuros e opcoes (a expiracao pode cair no mes anterior)",
         "'posicoes_abertas' sempre >= 0",
         "Dados apenas para dias uteis (sem pregao em weekends/feriados)",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-COMERCIO_BILATERAL_V1 = Contract(
-    name="comtrade.comercio",
-    version="1.0",
-    effective_from="0.11.0",
-    primary_key=["periodo", "reporter_iso", "partner_iso", "hs_code", "fluxo_code"],
-    columns=[
-        Column(
-            name="periodo",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="ano",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-            min_value=1988,
-        ),
-        Column(
-            name="mes",
-            type=ColumnType.INTEGER,
-            nullable=True,
-            stable=True,
-            min_value=1,
-            max_value=12,
-        ),
-        Column(
-            name="reporter_iso",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="reporter",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="partner_iso",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="partner",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="fluxo_code",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="hs_code",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="produto_desc",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="peso_liquido_kg",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="kg",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="volume_ton",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="ton",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="valor_fob_usd",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="USD",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="valor_cif_usd",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="USD",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="valor_primario_usd",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="USD",
-            stable=True,
-            min_value=0,
-        ),
-    ],
-    guarantees=[
-        "Column names never change (additions only)",
-        "'ano' is always >= 1988",
-        "'mes' is between 1 and 12 when present",
-        "Numeric values are always >= 0 when present",
-        "'fluxo_code' is always 'X' (export) or 'M' (import)",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
-
-TRADE_MIRROR_V1 = Contract(
-    name="comtrade.trade_mirror",
-    version="1.0",
-    effective_from="0.11.0",
-    primary_key=["periodo", "hs_code", "reporter_iso", "partner_iso"],
-    columns=[
-        Column(
-            name="periodo",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="ano",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-            min_value=1988,
-        ),
-        Column(
-            name="mes",
-            type=ColumnType.INTEGER,
-            nullable=True,
-            stable=True,
-            min_value=1,
-            max_value=12,
-        ),
-        Column(
-            name="hs_code",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="produto_desc",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="reporter_iso",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="partner_iso",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="peso_liquido_kg_reporter",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="kg",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="valor_fob_usd_reporter",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="USD",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="volume_ton_reporter",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="ton",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="peso_liquido_kg_partner",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="kg",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="valor_fob_usd_partner",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="USD",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="valor_cif_usd_partner",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="USD",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="volume_ton_partner",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="ton",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="diff_peso_kg",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="kg",
-            stable=True,
-        ),
-        Column(
-            name="diff_valor_fob_usd",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="USD",
-            stable=True,
-        ),
-        Column(
-            name="ratio_valor",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="ratio_peso",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            stable=True,
-        ),
-    ],
-    guarantees=[
-        "Column names never change (additions only)",
-        "'ano' is always >= 1988",
-        "'mes' is between 1 and 12 when present",
-        "Mirror compares reporter exports (FOB) vs partner imports (CIF)",
-        "'ratio_valor' expected range ~0.85-0.95 for normal trade (FOB/CIF)",
-        "'ratio_peso' expected ~1.0 for normal trade",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
 
 MOVIMENTACAO_PORTUARIA_V1 = Contract(
     name="antaq.movimentacao",
@@ -1281,93 +948,19 @@ MOVIMENTACAO_PORTUARIA_V1 = Contract(
 )
 
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
-register_contract("conab_progresso", CONAB_PROGRESSO_V1)
+register_contract("conab_progresso", CONAB_PROGRESSO_V2)
 register_contract("preco_atacado", PRECO_ATACADO_V1)
 register_contract("credito_rural", CREDITO_RURAL_V2)
-register_contract("desmatamento_prodes", DESMATAMENTO_PRODES_V1)
-register_contract("desmatamento_deter", DESMATAMENTO_DETER_V1)
-register_contract("exportacao", EXPORTACAO_V1)
+register_contract("exportacao", EXPORTACAO_V1_1)
 register_contract("fertilizante", FERTILIZANTE_V2)
 register_contract("focos_queimadas", FOCOS_QUEIMADAS_V1)
 register_contract("queimadas", FOCOS_QUEIMADAS_V1)
-register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V1)
-register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V1)
-register_contract("comercio_bilateral", COMERCIO_BILATERAL_V1)
+register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V2)
+register_contract("mapbiomas_cobertura_municipal", MAPBIOMAS_COBERTURA_MUNICIPAL_V1)
+register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V2)
 register_contract("movimentacao_portuaria", MOVIMENTACAO_PORTUARIA_V1)
-register_contract("trade_mirror", TRADE_MIRROR_V1)
 register_contract("posicoes_abertas", POSICOES_ABERTAS_V1)
 
-ANP_DIESEL_PRECOS_V1 = Contract(
-    name="anp_diesel.precos",
-    version="1.0",
-    effective_from="0.11.0",
-    primary_key=["data", "uf", "municipio", "produto"],
-    columns=[
-        Column(
-            name="data",
-            type=ColumnType.DATE,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="uf",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="municipio",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="produto",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="preco_venda",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="BRL/litro",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="preco_compra",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="BRL/litro",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="margem",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            unit="BRL/litro",
-            stable=True,
-        ),
-        Column(
-            name="n_postos",
-            type=ColumnType.INTEGER,
-            nullable=True,
-            stable=True,
-            min_value=0,
-        ),
-    ],
-    guarantees=[
-        "Column names never change (additions only)",
-        "'uf' is a valid Brazilian state code when present",
-        "'produto' is always 'DIESEL' or 'DIESEL S10'",
-        "'preco_venda' and 'preco_compra' are in BRL/litro when present",
-        "'margem' equals preco_venda - preco_compra",
-        "Data is weekly (date of collection)",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
 
 ANP_DIESEL_VENDAS_V1 = Contract(
     name="anp_diesel.vendas",
@@ -1418,12 +1011,11 @@ ANP_DIESEL_VENDAS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-register_contract("anp_diesel_precos", ANP_DIESEL_PRECOS_V1)
 register_contract("anp_diesel_vendas", ANP_DIESEL_VENDAS_V1)
 
 MAPA_PSR_SINISTROS_V1 = Contract(
     name="mapa_psr.sinistros",
-    version="1.0",
+    version="1.1",
     effective_from="0.12.0",
     primary_key=["nr_apolice", "ano_apolice", "uf", "cultura", "cd_ibge", "evento"],
     columns=[
@@ -1479,6 +1071,13 @@ MAPA_PSR_SINISTROS_V1 = Contract(
         Column(name="produtividade_segurada", type=ColumnType.FLOAT, nullable=True, stable=True),
         Column(name="nivel_cobertura", type=ColumnType.FLOAT, nullable=True, stable=True),
         Column(name="seguradora", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
@@ -1493,9 +1092,9 @@ MAPA_PSR_SINISTROS_V1 = Contract(
 
 MAPA_PSR_APOLICES_V1 = Contract(
     name="mapa_psr.apolices",
-    version="1.0",
+    version="1.2",
     effective_from="0.12.0",
-    primary_key=["nr_apolice", "ano_apolice", "uf", "cultura", "cd_ibge"],
+    primary_key=["nr_apolice", "ano_apolice", "uf", "cultura", "cd_ibge", "seguradora"],
     columns=[
         Column(name="nr_apolice", type=ColumnType.STRING, nullable=False, stable=True),
         Column(name="ano_apolice", type=ColumnType.INTEGER, nullable=False, stable=True),
@@ -1549,7 +1148,14 @@ MAPA_PSR_APOLICES_V1 = Contract(
         Column(name="produtividade_segurada", type=ColumnType.FLOAT, nullable=True, stable=True),
         Column(name="nivel_cobertura", type=ColumnType.FLOAT, nullable=True, stable=True),
         Column(name="taxa", type=ColumnType.FLOAT, nullable=True, stable=True),
-        Column(name="seguradora", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="seguradora", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(
+            name="cod_municipio",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
@@ -1564,100 +1170,11 @@ MAPA_PSR_APOLICES_V1 = Contract(
 register_contract("mapa_psr_sinistros", MAPA_PSR_SINISTROS_V1)
 register_contract("mapa_psr_apolices", MAPA_PSR_APOLICES_V1)
 
-ANTT_PEDAGIO_FLUXO_V1 = Contract(
-    name="antt_pedagio.fluxo",
-    version="1.0",
-    effective_from="0.12.0",
-    primary_key=["data", "concessionaria", "praca", "sentido", "n_eixos"],
-    columns=[
-        Column(
-            name="data",
-            type=ColumnType.DATE,
-            nullable=False,
-            stable=True,
-            description="1o dia do mes",
-        ),
-        Column(
-            name="concessionaria",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="praca",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="sentido",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-            description="Crescente/Decrescente",
-        ),
-        Column(
-            name="n_eixos",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-            min_value=2,
-            max_value=18,
-            description="Numero de eixos do veiculo (2-18)",
-        ),
-        Column(
-            name="tipo_veiculo",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-            description="Passeio/Comercial/Moto",
-        ),
-        Column(
-            name="volume",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-            min_value=0,
-            description="Volume de veiculos no mes",
-        ),
-        Column(
-            name="rodovia",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-            description="Rodovia (do join com cadastro de pracas)",
-        ),
-        Column(
-            name="uf",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-            description="UF (do join com cadastro de pracas)",
-        ),
-        Column(
-            name="municipio",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-            description="Municipio (do join com cadastro de pracas)",
-        ),
-    ],
-    guarantees=[
-        "Column names never change (additions only)",
-        "'data' is always the 1st day of the month",
-        "'n_eixos' is always between 2 and 18",
-        "'volume' is always >= 0",
-        "'uf' is a valid Brazilian state code when present",
-        "'tipo_veiculo' is always Passeio, Comercial, or Moto when present",
-        "Data since 2010 (ANTT open data inception)",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
 
 ANTT_PEDAGIO_PRACAS_V1 = Contract(
     name="antt_pedagio.pracas",
-    version="1.0",
-    effective_from="0.12.0",
+    version="1.0.1",
+    effective_from="2.0.0",
     primary_key=["concessionaria", "praca_de_pedagio"],
     columns=[
         Column(
@@ -1729,104 +1246,40 @@ ANTT_PEDAGIO_PRACAS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-register_contract("antt_pedagio_fluxo", ANTT_PEDAGIO_FLUXO_V1)
+register_contract("antt_pedagio_fluxo", ANTT_PEDAGIO_FLUXO_V3)
 register_contract("antt_pedagio_pracas", ANTT_PEDAGIO_PRACAS_V1)
 
-SICAR_IMOVEIS_V1 = Contract(
-    name="sicar.imoveis",
-    version="1.0",
-    effective_from="0.12.0",
-    primary_key=["cod_imovel"],
+
+IMPORTACAO_V1_2 = Contract(
+    name="comexstat.importacao",
+    version="1.2",
+    effective_from="2.0.0",
+    primary_key=["ano", "mes", "produto", "uf"],
     columns=[
+        *_COMEX_COLUMNS,
         Column(
-            name="cod_imovel",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="status",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="data_criacao",
-            type=ColumnType.DATETIME,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="data_atualizacao",
-            type=ColumnType.DATETIME,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="area_ha",
+            name="valor_frete_usd",
             type=ColumnType.FLOAT,
-            nullable=False,
-            unit="ha",
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="condicao",
-            type=ColumnType.STRING,
             nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="uf",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="municipio",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="cod_municipio_ibge",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="modulos_fiscais",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            stable=True,
+            stable=False,
             min_value=0,
+            unit="USD",
         ),
         Column(
-            name="tipo",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
+            name="valor_seguro_usd",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=False,
+            min_value=0,
+            unit="USD",
         ),
+        _VOLUME_TON,
     ],
     guarantees=[
-        "Column names never change (additions only)",
-        "'cod_imovel' is always non-empty",
-        "'status' is always AT, PE, SU, or CA",
-        "'tipo' is always IRU, AST, or PCT",
-        "'area_ha' is always >= 0",
-        "'uf' is always a valid Brazilian state code",
+        *_COMEX_GUARANTEES,
+        "Freight and insurance are retained when published as separate USD measures",
+        "NCM prefixes are consolidated at the product grain without summing statistical units",
     ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
-
-IMPORTACAO_V1 = Contract(
-    name="comexstat.importacao",
-    version="1.0",
-    effective_from="0.13.0",
-    primary_key=["ano", "mes", "produto", "uf"],
-    columns=_COMEX_COLUMNS,
-    guarantees=_COMEX_GUARANTEES,
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
 PIB_AGRO_V1 = Contract(
@@ -1888,8 +1341,8 @@ PIB_AGRO_V1 = Contract(
 
 SERIE_HISTORICA_SAFRA_V1 = Contract(
     name="conab.serie_historica_safra",
-    version="1.0",
-    effective_from="0.13.0",
+    version="1.1",
+    effective_from="2.0.0",
     primary_key=["produto", "safra", "regiao", "uf"],
     columns=[
         Column(name="produto", type=ColumnType.STRING, nullable=False, stable=True),
@@ -1917,11 +1370,35 @@ SERIE_HISTORICA_SAFRA_V1 = Contract(
             stable=True,
             min_value=0,
         ),
+        Column(
+            name="area_em_producao_mil_ha",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=False,
+            min_value=0,
+            description="Café: área em produção, em mil hectares.",
+        ),
+        Column(
+            name="area_formacao_mil_ha",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=False,
+            min_value=0,
+            description="Café: área em formação, em mil hectares.",
+        ),
+        Column(
+            name="area_colhida_mil_ha",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=False,
+            min_value=0,
+            description="Cana: área colhida, em mil hectares.",
+        ),
     ],
     guarantees=[
         "PK unica por combinacao produto + safra + regiao + uf",
         "'produto' lowercase (ex: soja, milho_2)",
-        "'safra' formato YYYY/YY (ex: 2023/24)",
+        "'safra' e o periodo publicado pela CONAB: YYYY/YY (ex: 2023/24) ou YYYY (ex: 2025; cafe e cereais de inverno)",
         "'regiao' quando presente: NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL",
         "'uf' quando presente: codigo UF de 2 letras uppercase",
         "Metricas (area, producao, produtividade) >= 0 quando presentes",
@@ -1929,87 +1406,6 @@ SERIE_HISTORICA_SAFRA_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-CLIMA_V1 = Contract(
-    name="datasets.clima",
-    version="1.0",
-    effective_from="0.13.0",
-    primary_key=["mes", "uf"],
-    columns=[
-        Column(name="mes", type=ColumnType.DATE, nullable=False, stable=True),
-        Column(name="uf", type=ColumnType.STRING, nullable=False, stable=True),
-        Column(
-            name="precip_acum_mm",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            stable=True,
-            unit="mm",
-            min_value=0,
-        ),
-        Column(
-            name="temp_media",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            stable=True,
-            unit="°C",
-        ),
-        Column(
-            name="temp_max_media",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            stable=True,
-            unit="°C",
-        ),
-        Column(
-            name="temp_min_media",
-            type=ColumnType.FLOAT,
-            nullable=False,
-            stable=True,
-            unit="°C",
-        ),
-        Column(
-            name="num_estacoes",
-            type=ColumnType.INTEGER,
-            nullable=True,
-            stable=True,
-            min_value=0,
-        ),
-        Column(
-            name="umidade_media",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            stable=True,
-            unit="%",
-            min_value=0,
-            max_value=100,
-        ),
-        Column(
-            name="radiacao_media_mj",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            stable=True,
-            unit="MJ/m²",
-            min_value=0,
-        ),
-        Column(
-            name="vento_medio_ms",
-            type=ColumnType.FLOAT,
-            nullable=True,
-            stable=True,
-            unit="m/s",
-            min_value=0,
-        ),
-        Column(name="fonte", type=ColumnType.STRING, nullable=False, stable=True),
-    ],
-    guarantees=[
-        "PK unica por combinacao mes + uf",
-        "'uf' sempre uppercase 2 letras",
-        "'fonte' sempre 'inmet' ou 'nasa_power'",
-        "'num_estacoes' presente apenas quando fonte='inmet'",
-        "'umidade_media', 'radiacao_media_mj', 'vento_medio_ms' presentes apenas quando fonte='nasa_power'",
-        "Agregacao mensal: 'mes' sempre primeiro dia do mes",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
 
 CLIMA_ESTACAO_V1 = Contract(
     name="datasets.clima_estacao",
@@ -2060,8 +1456,8 @@ CLIMA_ESTACAO_V1 = Contract(
 
 OFERTA_DEMANDA_GLOBAL_V1 = Contract(
     name="usda.psd",
-    version="1.0",
-    effective_from="0.13.0",
+    version="1.1",
+    effective_from="2.0.0",
     primary_key=["commodity_code", "country_code", "market_year", "attribute"],
     columns=[
         Column(
@@ -2119,113 +1515,55 @@ OFERTA_DEMANDA_GLOBAL_V1 = Contract(
             nullable=True,
             stable=True,
         ),
+        Column(
+            name="attribute_id",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="unit_id",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="last_update_year",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1960,
+        ),
+        Column(
+            name="last_update_month",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=1,
+            max_value=12,
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
         "'market_year' is always >= 1960",
         "Long format: one row per commodity/country/year/attribute",
         "Contract validates long format only; pivot=True skips validation",
+        "'attribute', 'unit' and 'country' are the official names of the PSD catalogs "
+        "(countryCode '00' is the world aggregate, 'World')",
+        "'last_update_year'/'last_update_month' are the USDA's last update of the series "
+        "(country x market year), not the queried edition; month '00' of old series is null",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-ZONEAMENTO_AGRICOLA_V1 = Contract(
-    name="zarc.zoneamento",
-    version="1.0",
-    effective_from="0.13.0",
-    primary_key=["cultura", "safra", "geocodigo", "solo_codigo", "ciclo_codigo"],
-    columns=[
-        Column(
-            name="cultura",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="safra",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="geocodigo",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="uf",
-            type=ColumnType.STRING,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="municipio",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="solo_codigo",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="ciclo_codigo",
-            type=ColumnType.INTEGER,
-            nullable=False,
-            stable=True,
-        ),
-        Column(
-            name="clima",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="manejo",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        Column(
-            name="portaria",
-            type=ColumnType.STRING,
-            nullable=True,
-            stable=True,
-        ),
-        *[
-            Column(
-                name=f"dec{i}",
-                type=ColumnType.INTEGER,
-                nullable=True,
-                stable=True,
-            )
-            for i in range(1, 37)
-        ],
-    ],
-    guarantees=[
-        "Column names never change (additions only)",
-        "'geocodigo' is always 7-digit IBGE municipal code",
-        "'uf' is always a valid Brazilian state code (2 letters)",
-        "'dec1'..'dec36' represent risk per 10-day period (0-5)",
-        "'safra' is 'YYYY/YYYY' or 'perene'",
-    ],
-    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
-)
 
-register_contract("sicar_imoveis", SICAR_IMOVEIS_V1)
-register_contract("cadastro_rural", SICAR_IMOVEIS_V1)
-register_contract("importacao", IMPORTACAO_V1)
+register_contract("importacao", IMPORTACAO_V1_2)
 register_contract("pib_agro", PIB_AGRO_V1)
-register_contract("progresso_safra", CONAB_PROGRESSO_V1)
+register_contract("progresso_safra", CONAB_PROGRESSO_V2)
 register_contract("serie_historica_safra", SERIE_HISTORICA_SAFRA_V1)
-register_contract("clima", CLIMA_V1)
 register_contract("clima_estacao", CLIMA_ESTACAO_V1)
 register_contract("oferta_demanda_global", OFERTA_DEMANDA_GLOBAL_V1)
-register_contract("comercio_internacional", COMERCIO_BILATERAL_V1)
-register_contract("zoneamento_agricola", ZONEAMENTO_AGRICOLA_V1)
+register_contract("zoneamento_agricola", ZONEAMENTO_AGRICOLA_V2)
 
 CONDICAO_LAVOURAS_V1 = Contract(
     name="deral.condicao_lavouras",
@@ -2295,7 +1633,7 @@ register_contract("condicao_lavouras", CONDICAO_LAVOURAS_V1)
 
 EMBARQUES_ANEC_V1 = Contract(
     name="anec.embarques",
-    version="1.0",
+    version="1.1",
     effective_from="1.0.6",
     primary_key=["porto", "produto", "periodo"],
     columns=[
@@ -2326,11 +1664,44 @@ EMBARQUES_ANEC_V1 = Contract(
             unit="ton",
             min_value=0,
         ),
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=False,
+            description="Ano da edição impresso no boletim (Week NN/AAAA)",
+            min_value=2026,
+        ),
+        Column(
+            name="semana",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=False,
+            description="Semana da edição impressa no boletim (Week NN/AAAA)",
+            min_value=1,
+            max_value=53,
+        ),
+        Column(
+            name="data_inicio",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Primeiro dia do período, lido do rótulo do boletim",
+        ),
+        Column(
+            name="data_fim",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Último dia do período, lido do rótulo do boletim",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
         "'valor_ton' is always >= 0 when present",
         "One row per porto x produto x periodo",
+        "Datas lidas dos rótulos do boletim, nunca da semana ISO; nulas quando os dois rótulos "
+        "não formam semanas consecutivas de 7 dias",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
@@ -2339,7 +1710,7 @@ register_contract("embarques_anec", EMBARQUES_ANEC_V1)
 
 POSICIONAMENTO_FUNDOS_V1 = Contract(
     name="cftc.cot",
-    version="1.0",
+    version="1.1",
     effective_from="1.1.0",
     primary_key=["data", "codigo_cftc"],
     columns=[
@@ -2419,6 +1790,14 @@ POSICIONAMENTO_FUNDOS_V1 = Contract(
             min_value=0,
         ),
         Column(
+            name="swap_spread",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=False,
+            unit="contratos",
+            min_value=0,
+        ),
+        Column(
             name="other_long",
             type=ColumnType.INTEGER,
             nullable=False,
@@ -2431,6 +1810,14 @@ POSICIONAMENTO_FUNDOS_V1 = Contract(
             type=ColumnType.INTEGER,
             nullable=False,
             stable=True,
+            unit="contratos",
+            min_value=0,
+        ),
+        Column(
+            name="other_spread",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=False,
             unit="contratos",
             min_value=0,
         ),
@@ -2478,6 +1865,7 @@ POSICIONAMENTO_FUNDOS_V1 = Contract(
         "'commodity' is the canonical agrobr crop name",
         "'codigo_cftc' is the stable CFTC contract market code",
         "Position columns are always >= 0; managed_money_net = long - short",
+        "open_interest = producer + swap + managed_money + other + nonreportable longs, plus the swap, managed_money and other spreads (exact in futures; the combined report can leave 1 contract)",
         "'change_*' columns are null only on the first observation of a contract",
         "One row per data x codigo_cftc",
     ],
@@ -2488,35 +1876,58 @@ register_contract("posicionamento_fundos", POSICIONAMENTO_FUNDOS_V1)
 
 __all__ = [
     "AJUSTE_DIARIO_V1",
-    "ANP_DIESEL_PRECOS_V1",
     "ANP_DIESEL_VENDAS_V1",
-    "ANTT_PEDAGIO_FLUXO_V1",
+    "ANTT_PEDAGIO_FLUXO_V3",
     "ANTT_PEDAGIO_PRACAS_V1",
     "CLIMA_ESTACAO_V1",
-    "CLIMA_V1",
-    "COMERCIO_BILATERAL_V1",
     "CONAB_PROGRESSO_V1",
+    "CONAB_PROGRESSO_V1_1",
+    "CONAB_PROGRESSO_V2",
     "CONDICAO_LAVOURAS_V1",
     "CREDITO_RURAL_V2",
-    "DESMATAMENTO_DETER_V1",
-    "DESMATAMENTO_PRODES_V1",
-    "EXPORTACAO_V1",
-    "FERTILIZANTE_V1",
+    "EXPORTACAO_V1_1",
     "FERTILIZANTE_V2",
     "FOCOS_QUEIMADAS_V1",
-    "IMPORTACAO_V1",
+    "IMPORTACAO_V1_2",
     "MAPA_PSR_APOLICES_V1",
     "MAPA_PSR_SINISTROS_V1",
-    "MAPBIOMAS_COBERTURA_V1",
-    "MAPBIOMAS_TRANSICAO_V1",
+    "MAPBIOMAS_COBERTURA_V2",
+    "MAPBIOMAS_COBERTURA_MUNICIPAL_V1",
+    "MAPBIOMAS_TRANSICAO_V2",
     "MOVIMENTACAO_PORTUARIA_V1",
     "OFERTA_DEMANDA_GLOBAL_V1",
     "PIB_AGRO_V1",
     "POSICIONAMENTO_FUNDOS_V1",
     "POSICOES_ABERTAS_V1",
     "PRECO_ATACADO_V1",
+    "RNC_PROTEGIDAS_V1",
+    "RNC_REGISTRADAS_V1",
     "SERIE_HISTORICA_SAFRA_V1",
-    "SICAR_IMOVEIS_V1",
-    "TRADE_MIRROR_V1",
-    "ZONEAMENTO_AGRICOLA_V1",
 ]
+
+
+def __getattr__(name: str) -> Contract:
+    return _legacy.resolve(
+        name,
+        module=__name__,
+        names=frozenset(
+            [
+                "ANP_DIESEL_PRECOS_V1",
+                "ANTT_PEDAGIO_FLUXO_V1",
+                "ANTT_PEDAGIO_FLUXO_V2",
+                "COMERCIO_BILATERAL_V1",
+                "TRADE_MIRROR_V1",
+                "DESMATAMENTO_PRODES_V1",
+                "DESMATAMENTO_DETER_V1",
+                "CLIMA_V1",
+                "FERTILIZANTE_V1",
+                "IMPORTACAO_V1",
+                "EXPORTACAO_V1",
+                "CLIMA_V2",
+                "ZONEAMENTO_AGRICOLA_V1",
+                "SICAR_IMOVEIS_V1",
+                "MAPBIOMAS_COBERTURA_V1",
+                "MAPBIOMAS_TRANSICAO_V1",
+            ]
+        ),
+    )

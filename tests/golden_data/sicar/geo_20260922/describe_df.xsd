@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:sicar="/sicar" xmlns:wfs="http://www.opengis.net/wfs/2.0" elementFormDefault="qualified" targetNamespace="/sicar">
+  <xsd:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="https://geoserver.car.gov.br/geoserver/schemas/gml/3.2.1/gml.xsd"/>
+  <xsd:complexType name="sicar_imoveis_dfType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="cod_imovel" nillable="false" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="status_imovel" nillable="false" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="dat_criacao" nillable="false" type="xsd:dateTime"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="data_atualizacao" nillable="true" type="xsd:dateTime"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="area" nillable="false" type="xsd:decimal"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="condicao" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="uf" nillable="false" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="municipio" nillable="false" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="cod_municipio_ibge" nillable="false" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="m_fiscal" nillable="false" type="xsd:decimal"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="tipo_imovel" nillable="false" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="geo_area_imovel" nillable="true" type="gml:MultiSurfacePropertyType"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="sicar_imoveis_df" substitutionGroup="gml:AbstractFeature" type="sicar:sicar_imoveis_dfType"/>
+</xsd:schema>

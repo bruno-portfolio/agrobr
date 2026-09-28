@@ -1,0 +1,70 @@
+{
+  "extracted_at": "2026-09-16T19:54:17.819689-03:00",
+  "transformation": "Only the named property-code features are retained unchanged. numberReturned is adjusted to the subset; original numberMatched is preserved. Pagination tests rewrap these real features with synthetic page counts, explicitly.",
+  "resources": [
+    {
+      "file": "go_duplicates.json",
+      "sha256": "777b4b10b8185d2bce4f28331a3847a82962fecc09fa600b9a6f35bb9f9ff462",
+      "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_go&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+      "fetched_at": "2026-09-16T18:14:53.756734-03:00",
+      "source_sha256": "7d796907a1f57f4328c779aaf1ff24b913fee289f015ee79d9a5248175b08d19",
+      "source_number_matched": 42391,
+      "source_feature_indices_zero_based": [
+        9423,
+        9424
+      ],
+      "features": [
+        "sicar_imoveis_go.16341629",
+        "sicar_imoveis_go.16341644"
+      ],
+      "source_body": "GO_1_request_009.body.gz"
+    },
+    {
+      "file": "rs_duplicates.json",
+      "sha256": "3d41076081f07875ed0ec3ef69aad48ebcca30cf12eb94f19c3e7562421e32b7",
+      "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=20000&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+      "fetched_at": "2026-09-16T18:18:23.156738-03:00",
+      "source_sha256": "9295dd99a0a99e46d210ce16aa99a804e14b8abfa52c097e9f87fe839853d3ca",
+      "source_number_matched": 82550,
+      "source_feature_indices_zero_based": [
+        3847,
+        3848
+      ],
+      "features": [
+        "sicar_imoveis_rs.16343473",
+        "sicar_imoveis_rs.16343592"
+      ],
+      "source_body": "RS_1_request_036.body.gz"
+    },
+    {
+      "file": "mg_page_before.json",
+      "sha256": "9b89dea1b0a4e2d611c2f64a4f06ea56b4b24784ab8bed97a6c70055ba890510",
+      "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mg&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=10000&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+      "fetched_at": "2026-09-16T18:15:53.196984-03:00",
+      "source_sha256": "9f3b9748cd385258022df58c61604ad44de3b1e29e7ff696b21fb351b0f62ab8",
+      "source_number_matched": 194669,
+      "source_feature_indices_zero_based": [
+        9999
+      ],
+      "features": [
+        "sicar_imoveis_mg.13828149"
+      ],
+      "source_body": "MG_1_request_013.body.gz"
+    },
+    {
+      "file": "mg_page_after.json",
+      "sha256": "ee2a3efb98ac2da21bff6fefb51e91a3aeeab3668499381ceb47f6dfb181f69d",
+      "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mg&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=20000&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+      "fetched_at": "2026-09-16T18:16:08.464651-03:00",
+      "source_sha256": "612fabaa4768f1acc089c98544c6f1232e88d668901822d527abea3a29f8bcba",
+      "source_number_matched": 194670,
+      "source_feature_indices_zero_based": [
+        0
+      ],
+      "features": [
+        "sicar_imoveis_mg.13828149"
+      ],
+      "source_body": "MG_1_request_014.body.gz"
+    }
+  ]
+}

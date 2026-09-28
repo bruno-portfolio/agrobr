@@ -1,0 +1,101 @@
+{
+  "capture_session": "22/09/2026",
+  "source": "IBGE (SIDRA e API de agregados v3)",
+  "method": "Respostas oficiais preservadas byte a byte, sem reserializar.",
+  "files": [
+    {
+      "file": "sidra_6857_df_municipio.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6857/n6/in%20N3%2053/h/n/p/all/v/2372,2373/c12604/all",
+      "fetched_at": "2026-09-22T19:16:07.604559+00:00",
+      "sha256": "96fe6da01a2a051e63f44c264383cf609b0d57ec21bea915e7a24dd3c37c2329",
+      "bytes": 13001
+    },
+    {
+      "file": "metadados_6848.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6848/metadados",
+      "fetched_at": "2026-09-22T19:07:40.033608+00:00",
+      "sha256": "fb9b805825eeaac104440ba3a87fb65df747bd4c05e4839b39537b06abdf3270",
+      "bytes": 5781
+    },
+    {
+      "file": "metadados_6849.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6849/metadados",
+      "fetched_at": "2026-09-22T19:07:41.076429+00:00",
+      "sha256": "1557b83d3eeeb5c6b4f681eed21524a8c622461523b031ac57809493e6389e9a",
+      "bytes": 4782
+    },
+    {
+      "file": "metadados_6851.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6851/metadados",
+      "fetched_at": "2026-09-22T19:07:42.115034+00:00",
+      "sha256": "cc2064b4f28a1f1cb37862839db2a6cfd4d1d34a3c57185fdba9dbd23171105a",
+      "bytes": 4958
+    },
+    {
+      "file": "metadados_6855.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6855/metadados",
+      "fetched_at": "2026-09-22T19:07:38.994769+00:00",
+      "sha256": "6fd8641852b698047c052ede66583f0963c019979c162793bf20db7a560e0845",
+      "bytes": 4200
+    },
+    {
+      "file": "metadados_6857.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6857/metadados",
+      "fetched_at": "2026-09-22T19:07:44.237028+00:00",
+      "sha256": "c18144abfc028e400153b958f643e1102b6fcef0be85c840f0264aaf4912cee1",
+      "bytes": 4040
+    },
+    {
+      "file": "metadados_6881.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6881/metadados",
+      "fetched_at": "2026-09-22T19:07:35.857349+00:00",
+      "sha256": "11ed5ba7e9397b18441c72a7dc4ec3973efa638bc71e3e60a74f0376dda2f25b",
+      "bytes": 5261
+    },
+    {
+      "file": "metadados_6899.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6899/metadados",
+      "fetched_at": "2026-09-22T19:07:45.273351+00:00",
+      "sha256": "1d4543507e016b8e1e0cf45e7073e40739166d5ee479bc73d7dd9feb962cc1cb",
+      "bytes": 4370
+    },
+    {
+      "file": "metadados_6907.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/metadados",
+      "fetched_at": "2026-09-22T19:07:34.807174+00:00",
+      "sha256": "e9e4f362d6f7d5fbc6be69b9777576f2e1ef01d3e61a8d6a14564b862d8f1ed4",
+      "bytes": 3077
+    },
+    {
+      "file": "metadados_6956.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6956/metadados",
+      "fetched_at": "2026-09-22T19:07:37.939164+00:00",
+      "sha256": "6e46e72ea1ac4b44b3fcea46599121456a8cba8074310acb2a844810fd09deb6",
+      "bytes": 10094
+    },
+    {
+      "file": "metadados_6957.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6957/metadados",
+      "fetched_at": "2026-09-22T19:07:36.895850+00:00",
+      "sha256": "6b2c7269d76ec2b5dbcea7480250a1505974b65e73c1510da5d6316002dfe794",
+      "bytes": 8006
+    },
+    {
+      "file": "metadados_8561.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/8561/metadados",
+      "fetched_at": "2026-09-22T19:07:43.188959+00:00",
+      "sha256": "0f85636c598ccae7de92deb4254545b04833ea10f52707a6f899e1d4f6d13d48",
+      "bytes": 5092
+    }
+  ],
+  "cross_check": {
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6857/periodos/2017/variaveis/2372|2373?localidades=N6[5300108]&classificacao=12604[118477]",
+    "sha256": "adbe10442d70b18e3fc8bdd11dcda2ad2c4108bee958c7af306c4b07054b7c38",
+    "fetched_at": "2026-09-22T17:54:52.127471+00:00",
+    "cells": {
+      "2372": "2726",
+      "2373": "25626"
+    },
+    "origem": "conferência, rodada 1"
+  }
+}

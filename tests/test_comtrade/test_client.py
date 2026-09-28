@@ -1,235 +1,309 @@
 from __future__ import annotations
 
+import hashlib
 import json
-from pathlib import Path
-from unittest.mock import AsyncMock, patch
+import traceback
 
+import httpx
 import pytest
 
-from agrobr.comtrade import client
-from agrobr.comtrade.client import _chunk_period
-from agrobr.exceptions import SourceUnavailableError
-from tests.helpers import make_mock_async_client, make_mock_response
-
-RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
-
-GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "comtrade" / "comercio_sample"
+from agrobr.comtrade import client, query
+from agrobr.exceptions import ParseError, SourceUnavailableError
 
 
-_FETCH_ARGS = {
-    "reporter": 76,
-    "partner": 156,
-    "hs_codes": ["1201"],
-    "flow": "X",
-    "period": "2024",
-}
+def selection(**changes):
+    return query.build_query(
+        **{
+            "reporter": 76,
+            "partner": 156,
+            "hs_codes": ["1201"],
+            "flow": "X",
+            "period": "2023",
+            "freq": "A",
+            **changes,
+        }
+    )
 
 
-class TestChunkPeriod:
-    def test_simple_year_passes_through(self):
-        assert _chunk_period("2024", "A") == ["2024"]
-
-    def test_simple_month_passes_through(self):
-        assert _chunk_period("202401", "M") == ["202401"]
-
-    def test_monthly_range_3_years(self):
-        chunks = _chunk_period("2022-2024", "M")
-        assert len(chunks) == 3
-        assert "202201" in chunks[0]
-        assert "202212" in chunks[0]
-        assert "202301" in chunks[1]
-        assert "202401" in chunks[2]
-        assert "202412" in chunks[2]
-
-    def test_annual_range_over_12(self):
-        chunks = _chunk_period("2010-2024", "A")
-        assert len(chunks) == 2
-        first_years = chunks[0].split(",")
-        assert len(first_years) == 12
-        assert first_years[0] == "2010"
-        assert first_years[-1] == "2021"
-        second_years = chunks[1].split(",")
-        assert len(second_years) == 3
-        assert second_years[0] == "2022"
-        assert second_years[-1] == "2024"
-
-    def test_exact_12_months_single_chunk(self):
-        chunks = _chunk_period("2024-2024", "M")
-        assert len(chunks) == 1
-        periods = chunks[0].split(",")
-        assert len(periods) == 12
-
-    def test_annual_range_within_12(self):
-        chunks = _chunk_period("2020-2024", "A")
-        assert len(chunks) == 1
-        years = chunks[0].split(",")
-        assert len(years) == 5
-
-    def test_no_dash_passthrough(self):
-        assert _chunk_period("202401,202402", "M") == ["202401,202402"]
+async def test_replay_bilateral_count_and_data_preserve_resources(replay_http, captures):
+    requests, synthetic = replay_http()
+    result = await client.fetch_trade_acquisition(selection(), require_complete=True)
+    assert len(result.records) == 1
+    assert result.records[0].model_dump(by_alias=True)["netWgt"] == 74471954170.0
+    assert result.coverage.state == "complete"
+    assert result.selected_source == "comtrade_guest"
+    assert result.attempted_sources == ["comtrade_guest"]
+    assert len(requests) == len(result.resources) == 2
+    data = next(item for item in result.resources if item.role == "data")
+    assert data.sha256 == hashlib.sha256(captures["bodies"]["soy_br_cn_2023"]).hexdigest()
+    assert data.size_bytes == len(captures["bodies"]["soy_br_cn_2023"])
+    assert data.fetched_at.utcoffset().total_seconds() == 0
+    assert all("Ocp-Apim-Subscription-Key" not in request.headers for request in requests)
+    assert len(synthetic) == 1
 
 
-class TestApiKey:
-    def test_no_key_returns_none(self):
-        with patch.dict("os.environ", {}, clear=True):
-            assert client._get_api_key(None) is None
+async def test_replay_500_preview_refines_to_all_516_without_counting_parent(replay_http, captures):
+    requests, synthetic = replay_http()
+    result = await client.fetch_trade_acquisition(
+        selection(
+            partner=None,
+            hs_codes=["1201", "1005", "0901", "1701", "2304"],
+        ),
+        require_complete=True,
+    )
+    assert len(result.records) == 516
+    assert result.coverage.state == "complete"
+    assert result.coverage.expected_count == 516
+    assert len(requests) == 7
+    assert synthetic == []
+    records = [row.model_dump(by_alias=True) for row in result.records]
+    assert len({(row["period"], row["cmdCode"], row["partnerCode"]) for row in records}) == 516
+    parent = [
+        resource
+        for resource in result.resources
+        if resource.role == "data" and resource.received_count == 500
+    ]
+    assert len(parent) == 1
+    assert not parent[0].accepted
+    assert (
+        sum(
+            resource.received_count
+            for resource in result.resources
+            if resource.role == "data" and resource.accepted
+        )
+        == 516
+    )
+    expected = []
+    for name in ["soy_br_omitted_2023", "coffee_2023", "corn_2023", "sugar_2023", "meal_2023"]:
+        expected.extend(json.loads(captures["bodies"][name])["data"])
 
-    def test_explicit_key_used(self):
-        assert client._get_api_key("my-key") == "my-key"
+    def by_key(row):
+        return row["period"], row["cmdCode"], row["partnerCode"]
 
-    def test_env_var_used(self):
-        with patch.dict("os.environ", {"AGROBR_COMTRADE_API_KEY": "env-key"}):
-            assert client._get_api_key(None) == "env-key"
-
-    def test_max_records_with_key(self):
-        assert client._max_records("key") == 100_000
-
-    def test_max_records_guest(self):
-        assert client._max_records(None) == 500
+    assert {by_key(row): row["netWgt"] for row in records} == {
+        by_key(row): row["netWgt"] for row in expected
+    }
 
 
-class TestBuildHeaders:
-    def test_headers_with_key(self):
-        h = client._build_headers("my-key")
-        assert h["Ocp-Apim-Subscription-Key"] == "my-key"
-        assert "Accept" in h
+@pytest.mark.parametrize("status", [404, 429, 500, 599])
+async def test_second_period_http_failure_never_returns_first_period_as_complete(
+    status, replay_http
+):
+    def override(request, _index):
+        if request.url.params["period"] == "2023":
+            return httpx.Response(status, json={"error": "unavailable"})
+        return None
 
-    def test_headers_without_key(self):
-        h = client._build_headers(None)
-        assert "Ocp-Apim-Subscription-Key" not in h
-        assert "Accept" in h
+    requests, _ = replay_http(override)
+    with pytest.raises((httpx.HTTPStatusError, SourceUnavailableError)):
+        await client.fetch_trade_acquisition(selection(period="2022-2023"))
+    assert any(request.url.params["period"] == "2022" for request in requests)
+    assert any(request.url.params["period"] == "2023" for request in requests)
 
 
-class TestFetchTradeData:
-    @pytest.mark.asyncio
-    async def test_success_returns_records(self):
-        golden = json.loads(GOLDEN_DIR.joinpath("response.json").read_text())
-        resp = make_mock_response(200, json_data=golden)
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+@pytest.mark.parametrize("require_complete", [False, True])
+async def test_minimal_leaf_missing_records_is_explicit_partial_or_strict_error(
+    require_complete, replay_http, captures
+):
+    def override(request, _index):
+        if request.url.params.get("countOnly", "").lower() == "true":
+            body = json.loads(captures["bodies"]["agro5_2023_count"])
+            body["count"] = 599
+            return httpx.Response(200, json=body)
+        return None
 
-        with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
-            records, url = await client.fetch_trade_data(
-                reporter=76,
-                partner=156,
-                hs_codes=["1201", "1507", "2304"],
-                flow="X",
-                period="2024",
-                freq="A",
-            )
+    replay_http(override)
+    if require_complete:
+        with pytest.raises(SourceUnavailableError):
+            await client.fetch_trade_acquisition(selection(), require_complete=True)
+    else:
+        result = await client.fetch_trade_acquisition(selection())
+        assert len(result.records) == 1
+        assert result.coverage.state == "partial"
+        assert result.coverage.expected_count == 599
+        assert result.warnings
 
-        assert len(records) == 8
-        assert records[0]["cmdCode"] == "1201"
 
-    @pytest.mark.asyncio
-    async def test_auth_401_falls_back_to_guest(self):
-        golden = json.loads(GOLDEN_DIR.joinpath("response.json").read_text())
-        resp_401 = make_mock_response(401, json_data={"data": []})
-        resp_ok = make_mock_response(200, json_data=golden)
+@pytest.mark.parametrize("damage", ["count_below_rows", "record_outside_query", "duplicate_record"])
+async def test_inconsistent_data_is_rejected_without_global_dedup(damage, replay_http, captures):
+    def override(request, _index):
+        if request.url.params.get("countOnly", "").lower() == "true":
+            return None
+        body = json.loads(captures["bodies"]["soy_br_cn_2023"])
+        if damage == "count_below_rows":
+            body["count"] = 0
+        elif damage == "record_outside_query":
+            body["data"][0]["reporterCode"] = 842
+        else:
+            body["data"].append(body["data"][0].copy())
+            body["count"] = 2
+        return httpx.Response(200, json=body)
 
-        call_count = 0
+    replay_http(override)
+    with pytest.raises(ParseError):
+        await client.fetch_trade_acquisition(selection())
 
-        async def _side(*_args, **_kwargs):
-            nonlocal call_count
-            call_count += 1
-            return resp_401 if call_count == 1 else resp_ok
 
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(side_effect=_side)
+@pytest.mark.parametrize("status", [401, 403])
+async def test_simulated_auth_failure_restarts_guest_without_secret_in_provenance(
+    status, replay_http
+):
+    secret = "synthetic-comtrade-secret-09"
 
-        with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
-            records, url = await client.fetch_trade_data(**_FETCH_ARGS, api_key="bad-key")
+    def override(request, _index):
+        if "/data/v1/get/" in request.url.path:
+            assert request.headers["Ocp-Apim-Subscription-Key"] == secret
+            return httpx.Response(status, json={"error": secret})
+        assert "Ocp-Apim-Subscription-Key" not in request.headers
+        return None
 
-        assert len(records) == 8
-        assert "public/v1/preview" in url
+    requests, _ = replay_http(override)
+    result = await client.fetch_trade_acquisition(selection(), api_key=secret)
+    assert result.attempted_sources == ["comtrade_authenticated", "comtrade_guest"]
+    assert result.selected_source == "comtrade_guest"
+    assert len(result.records) == 1
+    assert secret not in result.model_dump_json(exclude={"records"})
+    assert all(secret not in str(request.url) for request in requests)
+    assert result.fallback
 
-    @pytest.mark.asyncio
-    async def test_both_endpoints_401_raises(self):
-        resp_401 = make_mock_response(401, json_data={"data": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_401)
 
-        with (
-            patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="401/403"),
-        ):
-            await client.fetch_trade_data(**_FETCH_ARGS, api_key="bad-key")
+@pytest.mark.parametrize(
+    "received,expected,state",
+    [
+        (499, 499, "complete"),
+        (500, 500, "complete"),
+        (500, 501, "partial"),
+        (500, 599, "partial"),
+        (500, 499, "invalid"),
+    ],
+)
+async def test_limit_uses_independent_count_not_size_alone(
+    received, expected, state, replay_http, captures
+):
+    original = json.loads(captures["bodies"]["soy_br_cn_2023"])["data"][0]
+    rows = [{**original, "partnerCode": code} for code in range(received)]
+    placeholder = json.loads(captures["bodies"]["agro5_2023_count"])["data"]
 
-    @pytest.mark.asyncio
-    async def test_guest_no_key_uses_preview(self):
-        resp = make_mock_response(200, json_data={"data": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+    def override(request, _index):
+        counting = request.url.params.get("countOnly", "").lower() == "true"
+        return httpx.Response(
+            200,
+            json={
+                "count": expected if counting else received,
+                "data": placeholder if counting else rows,
+                "error": "",
+            },
+        )
 
-        with (
-            patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client),
-            patch.dict("os.environ", {}, clear=True),
-        ):
-            _records, url = await client.fetch_trade_data(**_FETCH_ARGS)
+    requests, _ = replay_http(override)
+    if state == "invalid":
+        with pytest.raises(ParseError):
+            await client.fetch_trade_acquisition(selection(partner=None))
+    else:
+        result = await client.fetch_trade_acquisition(selection(partner=None))
+        assert result.coverage.state == state
+        assert len(result.records) == received
+        assert result.coverage.expected_count == expected
+    assert len(requests) == 2
 
-        assert "public/v1/preview" in url
-        call_kwargs = mock_client.get.call_args
-        params = call_kwargs.kwargs.get("params", call_kwargs[1].get("params", {}))
-        assert params["maxRecords"] == "500"
 
-    @pytest.mark.asyncio
-    async def test_500_retries(self):
-        resp_500 = make_mock_response(500, json_data={"data": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp_500)
+async def test_simulated_auth_partial_plan_is_discarded_and_all_periods_restart_guest(
+    replay_http, captures
+):
+    raw = json.loads(captures["bodies"]["soy_br_cn_2023"])["data"][0]
+    placeholder = json.loads(captures["bodies"]["agro5_2023_count"])["data"]
 
-        with (
-            patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client),
-            patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await client.fetch_trade_data(**_FETCH_ARGS)
+    def override(request, _index):
+        params = request.url.params
+        auth = "/data/v1/get/" in request.url.path
+        years = params["period"].split(",")
+        if auth and years == ["2023"]:
+            return httpx.Response(401, json={"error": "synthetic rejected second block"})
+        assert len(years) <= (12 if auth else 1)
+        rows = []
+        if "2022" in years:
+            rows = [{**raw, "period": "2022", "refYear": 2022, "refPeriodId": 20220101}]
+        elif "2023" in years:
+            rows = [raw]
+        if auth:
+            rows[0]["netWgt"] = 123.0
+        counting = params.get("countOnly", "").lower() == "true"
+        return httpx.Response(
+            200, json={"count": len(rows), "data": placeholder if counting else rows, "error": ""}
+        )
 
-        assert mock_client.get.call_count > 1
+    requests, _ = replay_http(override)
+    result = await client.fetch_trade_acquisition(
+        selection(period="2011-2023"), api_key="synthetic-auth-key", require_complete=True
+    )
+    assert len(result.records) == 2
+    assert all(row.model_dump(by_alias=True)["netWgt"] == raw["netWgt"] for row in result.records)
+    assert result.selected_source == "comtrade_guest"
+    assert all(
+        not resource.accepted for resource in result.resources if resource.access == "authenticated"
+    )
+    assert {
+        request.url.params["period"] for request in requests if "/public/" in request.url.path
+    } == {str(year) for year in range(2011, 2024)}
 
-    @pytest.mark.asyncio
-    async def test_empty_response(self):
-        resp = make_mock_response(200, json_data={"data": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
 
-        with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
-            records, url = await client.fetch_trade_data(**_FETCH_ARGS)
+@pytest.mark.parametrize("failure", ["transport", "http", "json"])
+async def test_secret_in_untrusted_failure_does_not_escape_in_logs_or_formatted_exception(
+    failure, replay_http, capsys
+):
+    secret = "sentinel-secret-do-not-publish-09"
 
-        assert records == []
+    def override(request, _index):
+        if failure == "transport":
+            return httpx.ReadTimeout(secret, request=request)
+        if failure == "http":
+            return httpx.Response(400, json={"error": secret})
+        return httpx.Response(200, content=secret.encode())
 
-    @pytest.mark.asyncio
-    async def test_chunked_period_multiple_requests(self):
-        golden = json.loads(GOLDEN_DIR.joinpath("response.json").read_text())
-        resp = make_mock_response(200, json_data=golden)
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+    replay_http(override)
+    with pytest.raises((SourceUnavailableError, ParseError)) as exc:
+        await client.fetch_trade_acquisition(selection(), api_key=secret)
+    captured = capsys.readouterr()
+    assert secret not in captured.out + captured.err
+    assert secret not in "".join(traceback.format_exception(exc.value))
 
-        with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
-            records, url = await client.fetch_trade_data(
-                reporter=76,
-                partner=156,
-                hs_codes=["1201"],
-                flow="X",
-                period="2022-2024",
-                freq="M",
-            )
 
-        assert mock_client.get.call_count == 3
-        assert len(records) == 24
+@pytest.mark.parametrize("damage", ["lost_parent_identity", "changed_parent_value"])
+async def test_refinement_cannot_claim_complete_by_replacing_parent_records(
+    damage, replay_http, captures
+):
+    original_parent = json.loads(captures["bodies"]["agro5_2023"])["data"]
+    known = next(row for row in original_parent if row["cmdCode"] == "1201")
 
-    @pytest.mark.asyncio
-    async def test_auth_key_uses_data_endpoint(self):
-        resp = make_mock_response(200, json_data={"data": []})
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+    def override(request, _index):
+        params = request.url.params
+        if params["cmdCode"] != "1201" or params.get("countOnly", "").lower() == "true":
+            return None
+        body = json.loads(captures["bodies"]["soy_br_omitted_2023"])
+        row = next(row for row in body["data"] if row["partnerCode"] == known["partnerCode"])
+        if damage == "lost_parent_identity":
+            row["partnerCode"] = 99999
+        else:
+            row["netWgt"] = (row["netWgt"] or 0) + 1
+        return httpx.Response(200, json=body)
 
-        with patch("agrobr.comtrade.client.httpx.AsyncClient", return_value=mock_client):
-            _records, url = await client.fetch_trade_data(**_FETCH_ARGS, api_key="valid-key")
+    replay_http(override)
+    with pytest.raises(ParseError):
+        await client.fetch_trade_acquisition(
+            selection(partner=None, hs_codes=["1201", "1005", "0901", "1701", "2304"]),
+            require_complete=True,
+        )
 
-        assert "data/v1/get" in url
-        call_kwargs = mock_client.get.call_args
-        headers = call_kwargs.kwargs.get("headers", call_kwargs[1].get("headers", {}))
-        assert headers["Ocp-Apim-Subscription-Key"] == "valid-key"
-        params = call_kwargs.kwargs.get("params", call_kwargs[1].get("params", {}))
-        assert params["maxRecords"] == "100000"
+
+async def test_auth_redirect_to_other_origin_never_sends_credential(replay_http):
+    secret = "synthetic-auth-origin-sentinel"
+
+    def override(_request, _index):
+        return httpx.Response(302, headers={"location": "https://example.org/collect"})
+
+    requests, _ = replay_http(override)
+    with pytest.raises((SourceUnavailableError, ParseError)) as exc:
+        await client.fetch_trade_acquisition(selection(), api_key=secret)
+    assert len(requests) == 1
+    assert requests[0].url.host == "comtradeapi.un.org"
+    assert secret not in str(exc.value)

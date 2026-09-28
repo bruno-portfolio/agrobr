@@ -1,0 +1,81 @@
+{
+ "descricao": "CFTC Disaggregated: relatório combined (futuros + opções, recurso kh3c-gbw2) de soja em 06/2026 com a mesma consulta do cliente, e os nomes oficiais dos mercados (`cftc_contract_market_code`, `market_and_exchange_names`) dos 12 códigos da tabela do agrobr em 30/06/2026, nos dois recursos. Corpos inteiros.",
+ "arquivos": [
+  {
+   "file": "cftc_soja_202606_combined.json",
+   "bytes": 34722,
+   "sha256": "e56d62734f53b1573431bfad390e2cc48bc60fbb0effc21687085eb1845a456e"
+  },
+  {
+   "file": "cftc_nomes_disaggregated_futures_20260630.json",
+   "bytes": 1923,
+   "sha256": "53fbcb04905e5cb4b97d59d4ded07c6367c7de01b6deb310f561e3321f3d87c1"
+  },
+  {
+   "file": "cftc_nomes_disaggregated_combined_20260630.json",
+   "bytes": 1923,
+   "sha256": "53fbcb04905e5cb4b97d59d4ded07c6367c7de01b6deb310f561e3321f3d87c1"
+  }
+ ],
+ "recibos": {
+  "cftc_soja_202606_combined": {
+   "name": "cftc_soja_202606_combined",
+   "requested_url": "https://publicreporting.cftc.gov/resource/kh3c-gbw2.json?%24where=cftc_contract_market_code+in%28%27005602%27%29+AND+report_date_as_yyyy_mm_dd+%3E%3D+%272026-06-01T00%3A00%3A00.000%27+AND+report_date_as_yyyy_mm_dd+%3C%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=report_date_as_yyyy_mm_dd%2Ccftc_contract_market_code&%24limit=50000",
+   "final_url": "https://publicreporting.cftc.gov/resource/kh3c-gbw2.json?%24where=cftc_contract_market_code+in%28%27005602%27%29+AND+report_date_as_yyyy_mm_dd+%3E%3D+%272026-06-01T00%3A00%3A00.000%27+AND+report_date_as_yyyy_mm_dd+%3C%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=report_date_as_yyyy_mm_dd%2Ccftc_contract_market_code&%24limit=50000",
+   "status": 200,
+   "captured_at": "2026-09-24T01:33:50.640692+00:00",
+   "bytes": 34722,
+   "sha256": "e56d62734f53b1573431bfad390e2cc48bc60fbb0effc21687085eb1845a456e",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:33:55 GMT",
+    "content-type": "application/json;charset=utf-8",
+    "etag": "\"aG90ZWwuNTEzMDRfM180NTFMYVpXRmYyUk03MTdwRTZseEw3d18zR1RERFU---gzipn8hfNknVynA7XV4li5cBTkJ7u_Q--gzip--gzip\"",
+    "last-modified": "Fri, 18 Sep 2026 19:30:07 GMT"
+   }
+  },
+  "cftc_nomes_disaggregated_futures_20260630": {
+   "name": "cftc_nomes_disaggregated_futures_20260630",
+   "requested_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24select=cftc_contract_market_code%2Cmarket_and_exchange_names%2Creport_date_as_yyyy_mm_dd&%24where=cftc_contract_market_code+in%28%27005602%27%2C%27026603%27%2C%27007601%27%2C%27002602%27%2C%27001602%27%2C%27080732%27%2C%27083731%27%2C%27033661%27%2C%27057642%27%2C%27054642%27%2C%27040701%27%2C%27039601%27%29+AND+report_date_as_yyyy_mm_dd+%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=cftc_contract_market_code&%24limit=1000",
+   "final_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24select=cftc_contract_market_code%2Cmarket_and_exchange_names%2Creport_date_as_yyyy_mm_dd&%24where=cftc_contract_market_code+in%28%27005602%27%2C%27026603%27%2C%27007601%27%2C%27002602%27%2C%27001602%27%2C%27080732%27%2C%27083731%27%2C%27033661%27%2C%27057642%27%2C%27054642%27%2C%27040701%27%2C%27039601%27%29+AND+report_date_as_yyyy_mm_dd+%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=cftc_contract_market_code&%24limit=1000",
+   "status": 200,
+   "captured_at": "2026-09-24T01:33:50.916189+00:00",
+   "bytes": 1923,
+   "sha256": "53fbcb04905e5cb4b97d59d4ded07c6367c7de01b6deb310f561e3321f3d87c1",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:33:56 GMT",
+    "content-type": "application/json;charset=utf-8",
+    "etag": "\"aG90ZWwuNTEzMDRfM180NTFDLVlTcmJaOUgzbFByZEdLbEZtdVlPQ01pX2M---gzirEiCWa79NEJ319BJkd6eVJrTbLpQ--gzip--gzip\"",
+    "last-modified": "Fri, 18 Sep 2026 19:30:07 GMT"
+   }
+  },
+  "cftc_nomes_disaggregated_combined_20260630": {
+   "name": "cftc_nomes_disaggregated_combined_20260630",
+   "requested_url": "https://publicreporting.cftc.gov/resource/kh3c-gbw2.json?%24select=cftc_contract_market_code%2Cmarket_and_exchange_names%2Creport_date_as_yyyy_mm_dd&%24where=cftc_contract_market_code+in%28%27005602%27%2C%27026603%27%2C%27007601%27%2C%27002602%27%2C%27001602%27%2C%27080732%27%2C%27083731%27%2C%27033661%27%2C%27057642%27%2C%27054642%27%2C%27040701%27%2C%27039601%27%29+AND+report_date_as_yyyy_mm_dd+%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=cftc_contract_market_code&%24limit=1000",
+   "final_url": "https://publicreporting.cftc.gov/resource/kh3c-gbw2.json?%24select=cftc_contract_market_code%2Cmarket_and_exchange_names%2Creport_date_as_yyyy_mm_dd&%24where=cftc_contract_market_code+in%28%27005602%27%2C%27026603%27%2C%27007601%27%2C%27002602%27%2C%27001602%27%2C%27080732%27%2C%27083731%27%2C%27033661%27%2C%27057642%27%2C%27054642%27%2C%27040701%27%2C%27039601%27%29+AND+report_date_as_yyyy_mm_dd+%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=cftc_contract_market_code&%24limit=1000",
+   "status": 200,
+   "captured_at": "2026-09-24T01:33:51.180834+00:00",
+   "bytes": 1923,
+   "sha256": "53fbcb04905e5cb4b97d59d4ded07c6367c7de01b6deb310f561e3321f3d87c1",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 01:33:56 GMT",
+    "content-type": "application/json;charset=utf-8",
+    "etag": "\"aG90ZWwuNTEzMDRfM180NTFMU25HVWlzZUxLOUZiREJDWlE1MFl5aEJyU3c---gzirVuU8ikOS8UR5MWI-78tdidfIF8w--gzip--gzip\"",
+    "last-modified": "Fri, 18 Sep 2026 19:30:07 GMT"
+   }
+  }
+ },
+ "mercado_esperado": {
+  "soja": "SOYBEANS - CHICAGO BOARD OF TRADE",
+  "farelo_soja": "SOYBEAN MEAL - CHICAGO BOARD OF TRADE",
+  "oleo_soja": "SOYBEAN OIL - CHICAGO BOARD OF TRADE",
+  "milho": "CORN - CHICAGO BOARD OF TRADE",
+  "trigo": "WHEAT-SRW - CHICAGO BOARD OF TRADE",
+  "acucar": "SUGAR NO. 11 - ICE FUTURES U.S.",
+  "cafe": "COFFEE C - ICE FUTURES U.S.",
+  "algodao": "COTTON NO. 2 - ICE FUTURES U.S.",
+  "boi": "LIVE CATTLE - CHICAGO MERCANTILE EXCHANGE",
+  "suino": "LEAN HOGS - CHICAGO MERCANTILE EXCHANGE",
+  "laranja": "FRZN CONCENTRATED ORANGE JUICE - ICE FUTURES U.S.",
+  "arroz": "ROUGH RICE - CHICAGO BOARD OF TRADE"
+ }
+}

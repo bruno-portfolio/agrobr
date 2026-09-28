@@ -7,6 +7,7 @@ import structlog
 
 from agrobr.constants import MIN_HTML_SIZE, MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -31,7 +32,7 @@ async def _get_with_retry(url: str) -> httpx.Response:
             lambda: client.get(url),
             source="anda",
         )
-        response.raise_for_status()
+        responses.raise_for_status(response, source="anda")
         return response
 
 
@@ -114,7 +115,7 @@ def _extract_ano_real(target: dict[str, str], ano: int) -> int:
     return ano
 
 
-async def fetch_entregas_pdf(ano: int) -> tuple[bytes, int]:
+async def fetch_entregas_pdf(ano: int) -> tuple[bytes, int, dict[str, str]]:
     html = await fetch_estatisticas_page()
     links = parse_links_from_html(html, pattern=r"\.pdf")
 
@@ -135,4 +136,4 @@ async def fetch_entregas_pdf(ano: int) -> tuple[bytes, int]:
     logger.debug("anda_pdf_found_detail", url=target["url"])
     logger.info("anda_pdf_found", source="anda", ano=ano, ano_real=ano_real, text=target["text"])
     pdf_bytes = await download_file(target["url"])
-    return pdf_bytes, ano_real
+    return pdf_bytes, ano_real, target

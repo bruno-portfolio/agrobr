@@ -1,18 +1,35 @@
-from unittest.mock import AsyncMock, patch
+import json
+from pathlib import Path
 
 import httpx
 import pandas as pd
 import pytest
 
+from agrobr import datasets
 from agrobr.datasets.deterministic import deterministic
 from agrobr.datasets.silvicultura import (
-    SILVICULTURA_INFO,
     SilviculturaDataset,
-    silvicultura,
 )
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError
+from agrobr.ibge import client
+from tests.helpers import collect_failures, isolated_dataset_case
 
-from .conftest import make_source, mock_source_meta
+from .conftest import make_source
+
+PEVS_VALOR = (
+    Path(__file__).resolve().parents[1]
+    / "golden_data/ibge/pevs_valor_oficial/silvicultura_valor.json"
+)
+
+
+@pytest.fixture(autouse=True)
+def sem_periodos_ibge(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Os replays deste módulo não trazem o `/periodos`."""
+
+    async def sem_metadado(_table_code: str, _df: object) -> dict[str, object]:
+        return {}
+
+    monkeypatch.setattr(client, "_periodos_modificacao", sem_metadado)
 
 
 def _mock_df():
@@ -31,169 +48,59 @@ def _mock_df():
     )
 
 
-class TestSilviculturaInfo:
-    def test_single_source(self):
-        assert len(SILVICULTURA_INFO.sources) == 1
-        assert SILVICULTURA_INFO.sources[0].name == "ibge_silvicultura"
-
-    def test_license_livre(self):
-        assert SILVICULTURA_INFO.license == "livre"
-
-
 class TestSilviculturaFetch:
-    @pytest.mark.asyncio
-    async def test_fetch_returns_dataframe(self):
-        dataset = SilviculturaDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
+    async def test_silvicultura_fetch_casos_1(self):
+        with collect_failures() as check:
+            case = "test_snapshot_sets_ano_minus_1"
+            with check(case), isolated_dataset_case(case):
+                dataset = SilviculturaDataset()
+                mock_fn = make_source(_mock_df())
+                dataset.info.sources[0].fetch_fn = mock_fn
 
-        df = await dataset.fetch("eucalipto_folha")
+                async with deterministic("2024-06-15"):
+                    await dataset.fetch("eucalipto_folha")
 
-        assert len(df) == 1
-        assert "valor" in df.columns
-        assert "unidade" in df.columns
+                _, kwargs = mock_fn.call_args
+                assert kwargs["ano"] == 2023
+            case = "test_snapshot_does_not_override_explicit_ano"
+            with check(case), isolated_dataset_case(case):
+                dataset = SilviculturaDataset()
+                mock_fn = make_source(_mock_df())
+                dataset.info.sources[0].fetch_fn = mock_fn
 
-    @pytest.mark.asyncio
-    async def test_fetch_return_meta(self):
-        dataset = SilviculturaDataset()
-        dataset.info.sources[0].fetch_fn = make_source(_mock_df())
+                async with deterministic("2024-06-15"):
+                    await dataset.fetch("eucalipto_folha", ano=2021)
 
-        df, meta = await dataset.fetch("eucalipto_folha", return_meta=True)
-
-        assert meta.dataset == "silvicultura"
-        assert meta.contract_version == "1.0"
-        assert meta.attempted_sources == ["ibge_silvicultura"]
-        assert meta.selected_source == "ibge_silvicultura"
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_fetch_invalid_produto(self):
-        dataset = SilviculturaDataset()
-        with pytest.raises(ValueError, match="não suportado"):
-            await dataset.fetch("soja")
-
-    @pytest.mark.asyncio
-    async def test_snapshot_sets_ano_minus_1(self):
-        dataset = SilviculturaDataset()
-        mock_fn = make_source(_mock_df())
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        async with deterministic("2024-06-15"):
-            await dataset.fetch("eucalipto_folha")
-
-        _, kwargs = mock_fn.call_args
-        assert kwargs["ano"] == 2023
-
-    @pytest.mark.asyncio
-    async def test_snapshot_does_not_override_explicit_ano(self):
-        dataset = SilviculturaDataset()
-        mock_fn = make_source(_mock_df())
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        async with deterministic("2024-06-15"):
-            await dataset.fetch("eucalipto_folha", ano=2021)
-
-        _, kwargs = mock_fn.call_args
-        assert kwargs["ano"] == 2021
+                _, kwargs = mock_fn.call_args
+                assert kwargs["ano"] == 2021
 
 
-class TestSilviculturaKwargs:
-    @pytest.mark.asyncio
-    async def test_passes_variavel_kwarg(self):
-        mock_fn = make_source(_mock_df())
-        dataset = SilviculturaDataset()
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        await dataset.fetch("eucalipto_folha", variavel="valor_producao")
-
-        call_kwargs = mock_fn.call_args[1]
-        assert call_kwargs["variavel"] == "valor_producao"
-
-    @pytest.mark.asyncio
-    async def test_passes_nivel_and_uf(self):
-        mock_fn = make_source(_mock_df())
-        dataset = SilviculturaDataset()
-        dataset.info.sources[0].fetch_fn = mock_fn
-
-        await dataset.fetch("eucalipto_folha", nivel="municipio", uf="MG")
-
-        call_kwargs = mock_fn.call_args[1]
-        assert call_kwargs["nivel"] == "municipio"
-        assert call_kwargs["uf"] == "MG"
+async def test_catalogo_anuncia_so_o_que_o_dataset_entrega():
+    catalogo = datasets.info("silvicultura")
+    unidades = {client.UNIDADES_SILVICULTURA[produto] for produto in catalogo["products"]}
+    valor = json.loads(PEVS_VALOR.read_text(encoding="utf-8"))[1]["MN"]
+    assert set(catalogo["unit"].split(" / ")) == unidades | {valor}
+    assert "área" not in catalogo["description"].lower()
+    with pytest.raises(InvalidParameterError, match="Produto 'eucalipto' não suportado"):
+        await datasets.silvicultura("eucalipto", ano=2024, uf="MG", variavel="area")
 
 
-class TestSilviculturaSourceFail:
-    @pytest.mark.asyncio
-    async def test_source_fails_raises(self):
-        dataset = SilviculturaDataset()
-        dataset.info.sources[0].fetch_fn = make_source(
-            pd.DataFrame(), raises=httpx.ConnectError("test")
-        )
+async def test_valor_da_producao_confere_a_celula_oficial_em_mil_reais(monkeypatch):
+    oficial = json.loads(PEVS_VALOR.read_text(encoding="utf-8"))[1]
 
-        with pytest.raises(SourceUnavailableError):
-            await dataset.fetch("eucalipto_folha")
+    async def send(_client, request, **_kwargs):
+        return httpx.Response(200, json=[oficial], request=request)
 
-
-class TestSilviculturaPublicAPI:
-    @pytest.mark.asyncio
-    async def test_public_function_delegates(self):
-        with patch.object(SilviculturaDataset, "fetch", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = _mock_df()
-            await silvicultura("eucalipto_folha", ano=2022, nivel="uf", uf="MG")
-
-            mock_fetch.assert_called_once_with(
-                "eucalipto_folha",
-                ano=2022,
-                nivel="uf",
-                uf="MG",
-                variavel="quantidade_produzida",
-                return_meta=False,
-            )
-
-    @pytest.mark.asyncio
-    async def test_public_function_return_meta(self):
-        with patch.object(SilviculturaDataset, "fetch", new_callable=AsyncMock) as mock_fetch:
-            mock_fetch.return_value = (_mock_df(), mock_source_meta())
-            result = await silvicultura("eucalipto_folha", return_meta=True)
-
-            assert isinstance(result, tuple)
-            assert len(result) == 2
-            assert isinstance(result[0], pd.DataFrame)
-
-
-class TestSilviculturaFetchFunctions:
-    @pytest.mark.asyncio
-    async def test_fetch_ibge_silvicultura_forwards_params(self):
-        df = _mock_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.ibge.silvicultura", new_callable=AsyncMock, return_value=(df, meta)
-        ) as mock_fn:
-            from agrobr.datasets.silvicultura import _fetch_ibge_silvicultura
-
-            await _fetch_ibge_silvicultura(
-                "eucalipto_folha", ano=2022, nivel="municipio", uf="MG", variavel="valor_producao"
-            )
-        mock_fn.assert_called_once_with(
-            "eucalipto_folha",
-            ano=2022,
-            nivel="municipio",
-            uf="MG",
-            variavel="valor_producao",
-            return_meta=True,
-        )
-
-    @pytest.mark.asyncio
-    async def test_fetch_ibge_silvicultura_defaults(self):
-        df = _mock_df()
-        meta = mock_source_meta()
-        with patch(
-            "agrobr.ibge.silvicultura", new_callable=AsyncMock, return_value=(df, meta)
-        ) as mock_fn:
-            from agrobr.datasets.silvicultura import _fetch_ibge_silvicultura
-
-            await _fetch_ibge_silvicultura("carvao")
-        _, kwargs = mock_fn.call_args
-        assert kwargs["ano"] is None
-        assert kwargs["nivel"] == "uf"
-        assert kwargs["uf"] is None
-        assert kwargs["variavel"] == "quantidade_produzida"
+    monkeypatch.setattr(httpx.AsyncClient, "send", send)
+    frame = await datasets.silvicultura(
+        "madeira_tora", ano=2023, uf="PR", variavel="valor_producao"
+    )
+    assert frame[["ano", "localidade_cod", "valor", "unidade"]].to_dict("records") == [
+        {
+            "ano": int(oficial["D2C"]),
+            "localidade_cod": int(oficial["D1C"]),
+            "valor": float(oficial["V"]),
+            "unidade": oficial["MN"],
+        }
+    ]
+    assert oficial["MN"] in datasets.info("silvicultura")["unit"].split(" / ")

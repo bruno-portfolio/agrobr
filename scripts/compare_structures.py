@@ -1,7 +1,8 @@
 """Compara estruturas atuais com baseline.
 
 Uso:
-    python scripts/compare_structures.py --baseline .structures/baseline.json --current current_structures.json
+    python scripts/compare_structures.py --baseline agrobr/health/baselines/cepea_baseline.json \
+        --current current_structures.json
 """
 
 from __future__ import annotations
@@ -37,8 +38,9 @@ def compare(
         shutil.copy(current_path, baseline_path)
         return False
 
-    baseline = json.loads(baseline_file.read_text())
-    current = json.loads(current_file.read_text())
+    baseline = json.loads(baseline_file.read_text(encoding="utf-8"))
+    current = json.loads(current_file.read_text(encoding="utf-8"))
+    baselines = baseline["sources"] if "sources" in baseline else {baseline.get("source"): baseline}
 
     report = {
         "baseline_date": baseline.get("collected_at"),
@@ -49,6 +51,13 @@ def compare(
     }
 
     for source, current_data in current.get("sources", {}).items():
+        if "skipped" in current_data:
+            report["comparisons"].append(
+                {"source": source, "status": "skipped", "reason": current_data["skipped"]}
+            )
+            print(f"[SKIP] {source}: {current_data['skipped']}")
+            continue
+
         if "error" in current_data:
             report["comparisons"].append(
                 {
@@ -61,7 +70,7 @@ def compare(
             print(f"[ERROR] {source}: {current_data['error']}")
             continue
 
-        baseline_data = baseline.get("sources", {}).get(source)
+        baseline_data = baselines.get(source)
         if not baseline_data or "error" in baseline_data:
             report["comparisons"].append(
                 {

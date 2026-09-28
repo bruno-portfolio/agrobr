@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -35,7 +35,7 @@ PRECO_ATACADO_INFO = DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="daily",
     typical_latency="D+1",
     source_url="http://dw.ceasa.gov.br",
@@ -57,7 +57,6 @@ class PrecoAtacadoDataset(BaseDataset):
         *,
         ceasa: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info(
             "dataset_fetch",
@@ -69,18 +68,14 @@ class PrecoAtacadoDataset(BaseDataset):
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto or "", ceasa=ceasa, **kwargs
+            produto or "", ceasa=ceasa
         )
 
-        df = self._normalize(df)
         self._validate_contract(df)
 
         if return_meta:
             return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
 
-        return df
-
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
@@ -91,11 +86,33 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_preco_atacado)
 
 
+@overload
+async def preco_atacado(
+    produto: str | None = None,
+    *,
+    ceasa: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def preco_atacado(
+    produto: str | None = None,
+    *,
+    ceasa: str | None = None,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def preco_atacado(
     produto: str | None = None,
     *,
     ceasa: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _preco_atacado.fetch(produto, ceasa=ceasa, return_meta=return_meta, **kwargs)
+    return await _preco_atacado.fetch(  # type: ignore[call-arg]
+        produto, ceasa=ceasa, return_meta=return_meta, as_polars=as_polars
+    )

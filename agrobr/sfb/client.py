@@ -25,4 +25,5 @@ async def fetch_layer(
         bbox=bbox,
         max_features=max_features,
         f=f,
+        return_geometry=False if f == "json" else None,
     )

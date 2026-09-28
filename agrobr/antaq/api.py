@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 from typing import Literal, overload
 
@@ -8,7 +9,6 @@ import structlog
 
 from agrobr.antaq import client, parser
 from agrobr.antaq.models import (
-    MAX_ANO_DEFAULT,
     MIN_ANO,
     PARSER_VERSION,
     resolve_natureza_carga,
@@ -16,7 +16,9 @@ from agrobr.antaq.models import (
 )
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils import time as time_utils
 from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.validation import validate_uf
 
 logger = structlog.get_logger()
 
@@ -63,11 +65,11 @@ async def movimentacao(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    if ano < MIN_ANO or ano > MAX_ANO_DEFAULT:
-        raise InvalidParameterError(
-            f"Ano deve estar entre {MIN_ANO} e {MAX_ANO_DEFAULT}, recebido: {ano}"
-        )
+    corrente = time_utils.hoje().year
+    if ano < MIN_ANO or ano > corrente:
+        raise InvalidParameterError(f"Ano deve estar entre {MIN_ANO} e {corrente}, recebido: {ano}")
 
+    uf = validate_uf(uf)
     tipo_nav_filtro = resolve_tipo_navegacao(tipo_navegacao)
     nat_carga_filtro = resolve_natureza_carga(natureza_carga)
 
@@ -143,5 +145,12 @@ async def movimentacao(
         PARSER_VERSION,
         attempted_sources=["antaq_ea"],
         selected_source="antaq_ea",
+        raw_content_hash=hashlib.sha256(ano_zip).hexdigest(),
+        raw_content_size=len(ano_zip),
+        source_details={
+            "mercadoria_url": client.MERCADORIA_URL,
+            "mercadoria_sha256": hashlib.sha256(merc_zip).hexdigest(),
+            "mercadoria_bytes": len(merc_zip),
+        },
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

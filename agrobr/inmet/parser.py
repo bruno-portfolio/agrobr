@@ -1,17 +1,27 @@
 from __future__ import annotations
 
+import contextlib
+import csv
+import hashlib
 import io
+import json
+from datetime import date
 from typing import Any
 
 import pandas as pd
+import pydantic
 import structlog
 
 from agrobr.exceptions import ParseError
+from agrobr.normalize import dates, encoding
 from agrobr.normalize.regions import remover_acentos
+
+from . import models
 
 logger = structlog.get_logger()
 
 PARSER_VERSION = 1
+HISTORICO_PARSER_VERSION = 2
 
 COLUNAS_HORARIAS = {
     "DT_MEDICAO": "data",
@@ -52,6 +62,44 @@ COLUNAS_NUMERICAS = [
 SENTINEL = -9999.0
 
 
+def validate_observation_scope(
+    dados: list[dict[str, Any]],
+    inicio: date,
+    fim: date,
+    *,
+    codigo: str | None = None,
+    uf: str | None = None,
+) -> None:
+    for raw in dados:
+        identity = None
+        with contextlib.suppress(pydantic.ValidationError):
+            identity = models.APIObservationIdentity.model_validate(raw)
+        if identity is None:
+            raise ParseError(
+                source="inmet",
+                parser_version=PARSER_VERSION,
+                reason="Identidade/data de observação inválida na API",
+            )
+        if codigo is not None and identity.codigo != codigo:
+            raise ParseError(
+                source="inmet",
+                parser_version=PARSER_VERSION,
+                reason="API retornou estação diferente da solicitada",
+            )
+        if uf is not None and identity.uf != uf:
+            raise ParseError(
+                source="inmet",
+                parser_version=PARSER_VERSION,
+                reason="API retornou UF diferente da solicitada",
+            )
+        if not inicio <= identity.data <= fim:
+            raise ParseError(
+                source="inmet",
+                parser_version=PARSER_VERSION,
+                reason="API retornou observação fora do intervalo solicitado",
+            )
+
+
 def parse_observacoes(dados: list[dict[str, Any]]) -> pd.DataFrame:
     if not dados:
         raise ParseError(
@@ -73,13 +121,25 @@ def parse_observacoes(dados: list[dict[str, Any]]) -> pd.DataFrame:
 
     df = df.rename(columns=colunas_presentes)
 
+    if "hora_utc" not in df:
+        raise ParseError(
+            source="inmet", parser_version=PARSER_VERSION, reason="Hora UTC ausente na observação"
+        )
+    try:
+        df["hora_utc"] = df["hora_utc"].map(models.normalize_hora_utc)
+    except ValueError as exc:
+        raise ParseError(
+            source="inmet", parser_version=PARSER_VERSION, reason="Hora UTC inválida na observação"
+        ) from exc
+
     for col in COLUNAS_NUMERICAS:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
             df.loc[df[col] == SENTINEL, col] = pd.NA
 
-    if "data" in df.columns:
-        df["data"] = pd.to_datetime(df["data"], errors="coerce")
+    dates.converter_coluna(
+        df, "data", fonte="inmet", efeito=" As observações sem data saíram do resultado."
+    )
 
     df = df.dropna(subset=["data"])
     df = df.sort_values(["estacao", "data", "hora_utc"]).reset_index(drop=True)
@@ -126,71 +186,167 @@ def _mapear_header_historico(header: list[str]) -> dict[str, str]:
     return rename
 
 
+def _historico_header(raw: bytes) -> tuple[models.HistoricoEstacao, list[str], int]:
+    lines = raw.decode(encoding.detect_encoding_chain(raw)).splitlines()
+    if len(lines) < 3:
+        raise ParseError(source="inmet", parser_version=2, reason="CSV histórico truncado")
+    metadata: dict[str, str] = {}
+    for index, line in enumerate(lines):
+        header = next(csv.reader([line], delimiter=";"))
+        rename = _mapear_header_historico(header)
+        if {"data", "hora_utc", "precipitacao_mm"}.issubset(rename.values()):
+            try:
+                station = models.HistoricoEstacao.model_validate(
+                    {
+                        "codigo": metadata.get("codigo (wmo)"),
+                        "uf": metadata.get("uf"),
+                        "nome": metadata.get("estacao"),
+                        "regiao": metadata.get("regiao"),
+                        "latitude": metadata.get("latitude"),
+                        "longitude": metadata.get("longitude"),
+                        "altitude": metadata.get("altitude"),
+                        "fundacao": metadata.get("data de fundacao"),
+                    }
+                )
+            except pydantic.ValidationError as exc:
+                raise ParseError(
+                    source="inmet", parser_version=2, reason=f"Metadata inválida: {exc}"
+                ) from exc
+            return station, lines, index
+        key, _, value = line.partition(";")
+        normalized = remover_acentos(key).strip().rstrip(":").lower()
+        if normalized.startswith("data de fundacao"):
+            normalized = "data de fundacao"
+        metadata[normalized] = value.strip()
+    raise ParseError(
+        source="inmet", parser_version=2, reason="Header do CSV histórico não reconhecido"
+    )
+
+
+def parse_historico_metadata(raw: bytes) -> models.HistoricoEstacao:
+    return _historico_header(raw)[0]
+
+
+def historico_layout_fingerprint(raw: bytes) -> dict[str, str | int]:
+    _, lines, header_index = _historico_header(raw)
+
+    def normalize(value: str) -> str:
+        return " ".join(remover_acentos(value).strip().lower().split())
+
+    layout = {
+        "delimiter": ";",
+        "metadata_keys": [
+            normalize(line.partition(";")[0].strip().rstrip(":")) for line in lines[:header_index]
+        ],
+        "columns": [
+            normalize(column) for column in next(csv.reader([lines[header_index]], delimiter=";"))
+        ],
+    }
+    encoded = json.dumps(layout, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    return {
+        "algorithm": "sha256",
+        "version": 1,
+        "parser_version": HISTORICO_PARSER_VERSION,
+        "sha256": hashlib.sha256(encoded).hexdigest(),
+    }
+
+
+def empty_historico(agregacao: str = "horario") -> pd.DataFrame:
+    if agregacao == "horario":
+        types = dict.fromkeys(COLUNAS_NUMERICAS, "float64")
+        types.update(
+            {"data": "datetime64[ns]", "hora_utc": "object", "estacao": "object", "uf": "object"}
+        )
+        return pd.DataFrame(
+            {name: pd.Series(dtype=types[name]) for name in COLUNAS_HORARIAS.values()}
+        )
+    if agregacao == "diario":
+        types = dict.fromkeys(
+            (
+                "temp_media",
+                "temp_max",
+                "temp_min",
+                "precipitacao_mm",
+                "umidade_media",
+                "radiacao_total_kj_m2",
+            ),
+            "float64",
+        )
+        types = {"data": "datetime64[ns]", "estacao": "object", "uf": "object", **types}
+    else:
+        types = {
+            "mes": "datetime64[ns]",
+            "uf": "object",
+            "precip_acum_mm": "float64",
+            "temp_media": "float64",
+            "temp_max_media": "float64",
+            "temp_min_media": "float64",
+            "num_estacoes": "int64",
+            "estacoes_chuva": "int64",
+            "estacoes_chuva_parciais": "int64",
+            "dias": "int64",
+            "data_inicio": "datetime64[ns]",
+            "data_fim": "datetime64[ns]",
+        }
+    return pd.DataFrame({name: pd.Series(dtype=dtype) for name, dtype in types.items()})
+
+
 def parse_historico_csv(raw: bytes, codigo: str) -> pd.DataFrame:
-    """CSV anual do dadoshistoricos: 8 linhas de metadados, header com nomes
-    longos que variam entre anos (matching por prefixo normalizado), latin-1
-    e vírgula decimal. Saída no mesmo schema de `parse_observacoes`."""
-    texto = raw.decode("latin-1")
-    linhas = texto.splitlines()
-    if len(linhas) < 10:
+    station, lines, index = _historico_header(raw)
+    if station.codigo != models.validate_codigo(codigo):
         raise ParseError(
-            source="inmet",
-            parser_version=PARSER_VERSION,
-            reason=f"CSV histórico truncado ({len(linhas)} linhas)",
+            source="inmet", parser_version=2, reason="Estação do cabeçalho difere da solicitada"
         )
-
-    meta: dict[str, str] = {}
-    for linha in linhas[:8]:
-        chave, _, valor = linha.partition(";")
-        meta[remover_acentos(chave).strip().rstrip(":").lower()] = valor.strip()
-
-    header = linhas[8].split(";")
+    reader = csv.reader(io.StringIO("\n".join(lines[index:])), delimiter=";")
+    header = next(reader)
     rename = _mapear_header_historico(header)
-    obrigatorias = {"data", "hora_utc", "precipitacao_mm"}
-    if not obrigatorias.issubset(rename.values()):
-        raise ParseError(
-            source="inmet",
-            parser_version=PARSER_VERSION,
-            reason=f"Header do CSV histórico não reconhecido: {header[:4]}",
-        )
-
-    df = pd.read_csv(io.StringIO("\n".join(linhas[8:])), sep=";", dtype=str)
-    df = df.rename(columns=rename)
-    df = df[[c for c in df.columns if c in rename.values()]]
-
-    df["data"] = pd.to_datetime(
-        df["data"].str.replace("/", "-", regex=False), format="%Y-%m-%d", errors="coerce"
+    if len(set(rename.values())) != len(rename):
+        raise ParseError(source="inmet", parser_version=2, reason="Colunas históricas duplicadas")
+    records: list[dict[str, Any]] = []
+    for line_number, row in enumerate(reader, start=index + 2):
+        if not row or not any(cell.strip() for cell in row):
+            continue
+        if len(row) != len(header):
+            raise ParseError(
+                source="inmet",
+                parser_version=2,
+                reason=f"Linha {line_number} truncada ou com colunas extras",
+            )
+        values = {
+            rename[name]: value for name, value in zip(header, row, strict=True) if name in rename
+        }
+        try:
+            record = models.HistoricoObservacao.model_validate(values).model_dump()
+        except pydantic.ValidationError as exc:
+            raise ParseError(
+                source="inmet", parser_version=2, reason=f"Linha {line_number} inválida: {exc}"
+            ) from exc
+        records.append(record)
+    if not records:
+        return empty_historico()
+    df = pd.DataFrame(records)
+    df["data"] = pd.to_datetime(df["data"])
+    df["estacao"] = station.codigo
+    df["uf"] = station.uf
+    df[COLUNAS_NUMERICAS] = df[COLUNAS_NUMERICAS].astype("float64")
+    return (
+        df[list(COLUNAS_HORARIAS.values())].sort_values(["data", "hora_utc"]).reset_index(drop=True)
     )
-    df["hora_utc"] = (
-        df["hora_utc"].str.replace(" UTC", "", regex=False).str.replace(":", "", regex=False)
-    )
-    df["estacao"] = codigo.strip().upper()
-    df["uf"] = meta.get("uf", "")
-
-    for col in COLUNAS_NUMERICAS:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col].str.replace(",", ".", regex=False), errors="coerce")
-            df.loc[df[col] == SENTINEL, col] = pd.NA
-
-    df = df.dropna(subset=["data"])
-    ordem = [c for c in COLUNAS_HORARIAS.values() if c in df.columns]
-    df = df[ordem].sort_values(["data", "hora_utc"]).reset_index(drop=True)
-
-    logger.debug("inmet_historico_parse_ok", estacao=codigo, records=len(df))
-    return df
 
 
 def agregar_diario(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
 
-    agg_dict: dict[str, tuple[str, str]] = {
+    agg_dict: dict[str, tuple[str, Any]] = {
         "temp_media": ("temperatura", "mean"),
         "temp_max": ("temperatura_max", "max"),
         "temp_min": ("temperatura_min", "min"),
-        "precipitacao_mm": ("precipitacao_mm", "sum"),
+        "precipitacao_mm": ("precipitacao_mm", lambda values: values.sum(min_count=1)),
         "umidade_media": ("umidade", "mean"),
-        "radiacao_total_kj_m2": ("radiacao_kj_m2", "sum"),
+        "radiacao_total_kj_m2": ("radiacao_kj_m2", lambda values: values.sum(min_count=1)),
     }
 
     agg_filtrado = {k: v for k, v in agg_dict.items() if v[0] in df.columns}
@@ -221,7 +377,9 @@ def agregar_mensal_uf(df: pd.DataFrame) -> pd.DataFrame:
     agg: dict[str, pd.NamedAgg] = {}
 
     if "precipitacao_mm" in df.columns:
-        agg["precip_acum_mm"] = pd.NamedAgg(column="precipitacao_mm", aggfunc="sum")
+        agg["precip_acum_mm"] = pd.NamedAgg(
+            column="precipitacao_mm", aggfunc=lambda values: values.sum(min_count=1)
+        )
     if "temp_media" in df.columns:
         agg["temp_media"] = pd.NamedAgg(column="temp_media", aggfunc="mean")
     if "temp_max" in df.columns:
@@ -234,7 +392,28 @@ def agregar_mensal_uf(df: pd.DataFrame) -> pd.DataFrame:
     if not agg:
         return df
 
-    result = df.groupby(["mes", "uf"]).agg(**agg).reset_index()
+    result = df.groupby(["mes", "uf"]).agg(**agg)
+    if "precipitacao_mm" in df.columns and "estacao" in df.columns:
+        chuva = df.groupby(["mes", "uf", "estacao"])["precipitacao_mm"].agg(
+            total=lambda values: values.sum(min_count=1), dias="count"
+        )
+        dias_no_mes = pd.PeriodIndex(chuva.index.get_level_values("mes")).days_in_month.to_numpy()
+        completa = chuva["dias"].eq(dias_no_mes)
+        parcial = chuva["dias"].gt(0) & ~completa
+        result["precip_acum_mm"] = (
+            chuva["total"].where(completa).groupby(level=["mes", "uf"]).mean()
+        )
+        result["estacoes_chuva"] = completa.groupby(level=["mes", "uf"]).sum()
+        result["estacoes_chuva_parciais"] = parcial.groupby(level=["mes", "uf"]).sum()
+    medidas = [c for c in ("precipitacao_mm", "temp_media", "temp_max", "temp_min") if c in df]
+    cobertura = (
+        df[df[medidas].notna().any(axis=1)]
+        .groupby(["mes", "uf"])["data"]
+        .agg(dias="nunique", data_inicio="min", data_fim="max")
+    )
+    result = result.join(cobertura)
+    result["dias"] = result["dias"].fillna(0).astype("int64")
+    result = result.reset_index()
     result["mes"] = result["mes"].dt.to_timestamp()
 
     return result

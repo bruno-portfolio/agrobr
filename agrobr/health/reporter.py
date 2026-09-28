@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import json
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,9 @@ class HealthReport:
         ok_count = sum(1 for r in self.results if r.status == CheckStatus.OK)
         warning_count = sum(1 for r in self.results if r.status == CheckStatus.WARNING)
         failed_count = sum(1 for r in self.results if r.status == CheckStatus.FAILED)
+        not_verified = [
+            r.source.value for r in self.results if r.status == CheckStatus.NOT_VERIFIED
+        ]
 
         avg_latency = sum(r.latency_ms for r in self.results) / total if total > 0 else 0
 
@@ -42,6 +46,7 @@ class HealthReport:
             "avg_latency_ms": avg_latency,
             "all_passed": failed_count == 0,
             "has_warnings": warning_count > 0,
+            "not_verified": not_verified,
         }
 
     @property
@@ -103,6 +108,7 @@ class HealthReport:
             f"- OK: {self.summary['ok']}",
             f"- Warnings: {self.summary['warnings']}",
             f"- Failures: {self.summary['failures']}",
+            f"- Not verified: {', '.join(self.summary['not_verified']) or 'none'}",
             f"- Success rate: {self.summary['success_rate']:.1%}",
             f"- Average latency: {self.summary['avg_latency_ms']:.0f}ms",
             "",
@@ -161,10 +167,10 @@ class HealthReport:
             rows.append(
                 f"""
                 <tr>
-                    <td>{r.source.value}</td>
-                    <td style="color: {color}; font-weight: bold;">{r.status.value}</td>
+                    <td>{html.escape(r.source.value)}</td>
+                    <td style="color: {color}; font-weight: bold;">{html.escape(r.status.value)}</td>
                     <td>{r.latency_ms:.0f}ms</td>
-                    <td>{r.message}</td>
+                    <td>{html.escape(r.message)}</td>
                 </tr>
             """
             )
@@ -243,6 +249,7 @@ class HealthReport:
                 CheckStatus.OK: "[OK]",
                 CheckStatus.WARNING: "[WARN]",
                 CheckStatus.FAILED: "[FAIL]",
+                CheckStatus.NOT_VERIFIED: "[NOT VERIFIED]",
             }.get(r.status, "[?]")
 
             print(f"  {status_symbol} {r.source.value}: {r.message} ({r.latency_ms:.0f}ms)")

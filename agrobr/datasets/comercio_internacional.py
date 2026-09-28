@@ -1,48 +1,33 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
-from agrobr.comtrade.models import HS_PRODUTOS_AGRO
-from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
+from agrobr.comtrade import models
+from agrobr.datasets import base, registry
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 logger = structlog.get_logger()
 
-_PRODUCTS = sorted(HS_PRODUTOS_AGRO.keys())
+_PRODUCTS = sorted(models.HS_PRODUTOS_AGRO)
 
 
 async def _fetch_comtrade(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import comtrade
 
-    reporter: str = kwargs.get("reporter", "BR") or "BR"
-    partner: str | None = kwargs.get("partner")
-    fluxo: str = kwargs.get("fluxo", "X")
-    periodo: str | int | None = kwargs.get("periodo")
-    freq: str = kwargs.get("freq", "A")
-    api_key: str | None = kwargs.get("api_key")
-
-    result = await comtrade.comercio(
-        produto,
-        reporter=reporter,
-        partner=partner,
-        fluxo=fluxo,
-        periodo=periodo,
-        freq=freq,
-        api_key=api_key,
-        return_meta=True,
-    )
-    return _unpack_result(result)
+    fetched = await comtrade.comercio(produto, return_meta=True, **kwargs)
+    return base._unpack_result(fetched)
 
 
-COMERCIO_INTERNACIONAL_INFO = DatasetInfo(
+COMERCIO_INTERNACIONAL_INFO = base.DatasetInfo(
     name="comercio_internacional",
-    description="Comércio internacional bilateral de commodities agrícolas — UN Comtrade (HS codes, qualquer reporter/partner)",
+    description="Comércio internacional bilateral de commodities agrícolas — UN Comtrade",
     sources=[
-        DatasetSource(
+        base.DatasetSource(
             name="comtrade",
             priority=1,
             fetch_fn=_fetch_comtrade,
@@ -50,18 +35,61 @@ COMERCIO_INTERNACIONAL_INFO = DatasetInfo(
         ),
     ],
     products=_PRODUCTS,
-    contract_version="1.0",
+    contract_version="2.1",
     update_frequency="monthly",
     typical_latency="M+2",
     source_url="https://comtradeplus.un.org",
     source_institution="United Nations / Comtrade",
     unit="kg / USD",
-    license="livre",
+    license="zona_cinza",
 )
 
 
-class ComercioInternacionalDataset(BaseDataset):
+class ComercioInternacionalDataset(base.BaseDataset):
     info = COMERCIO_INTERNACIONAL_INFO
+
+    def _validate_produto(self, produto: str) -> None:
+        models.resolve_hs(produto)
+
+    def _resolve_provenance(
+        self, source_name: str, source_meta: MetaInfo | None, attempted: list[str]
+    ) -> tuple[str, list[str]]:
+        if source_meta is None:
+            return source_name, attempted
+        selected = source_meta.selected_source or source_name
+        channels = source_meta.attempted_sources or [selected]
+        return selected, list(dict.fromkeys(attempted[:-1] + channels))
+
+    def _build_meta(
+        self,
+        df: pd.DataFrame,
+        source_name: str,
+        source_meta: MetaInfo | None,
+        attempted: list[str],
+        snapshot: str | None,
+        *,
+        from_cache: bool = False,
+        contract_name: str | None = None,
+    ) -> MetaInfo:
+        meta = super()._build_meta(
+            df,
+            source_name,
+            source_meta,
+            attempted,
+            snapshot,
+            from_cache=from_cache,
+            contract_name=contract_name,
+        )
+        if source_meta is not None:
+            meta.raw_content_hash = source_meta.raw_content_hash
+            meta.raw_content_size = source_meta.raw_content_size
+            meta.fetch_duration_ms = source_meta.fetch_duration_ms
+            meta.parse_duration_ms = source_meta.parse_duration_ms
+        if snapshot:
+            meta.source_details["snapshot_scope"] = (
+                "default_year_only; source revisions are not frozen"
+            )
+        return meta
 
     async def fetch(  # type: ignore[override]
         self,
@@ -70,19 +98,19 @@ class ComercioInternacionalDataset(BaseDataset):
         reporter: str = "BR",
         partner: str | None = None,
         fluxo: str = "X",
-        periodo: str | None = None,
+        periodo: str | int | None = None,
         freq: str = "A",
         api_key: str | None = None,
+        require_complete: bool = False,
+        as_polars: bool = False,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        logger.info("dataset_fetch", dataset="comercio_internacional", produto=produto)
+        from agrobr.comtrade import api
 
         snapshot = get_snapshot()
         if snapshot and periodo is None:
             periodo = snapshot[:4]
-
-        df, source_name, source_meta, attempted = await self._try_sources(
+        selection = api.prepare_query(
             produto,
             reporter=reporter,
             partner=partner,
@@ -90,25 +118,70 @@ class ComercioInternacionalDataset(BaseDataset):
             periodo=periodo,
             freq=freq,
             api_key=api_key,
-            **kwargs,
+            require_complete=require_complete,
+            as_polars=as_polars,
+            return_meta=return_meta,
         )
-
-        df = self._normalize(df)
-        self._validate_contract(df)
-
-        if return_meta:
-            return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-        return df
+        logger.info(
+            "dataset_fetch", dataset=self.info.name, query=selection.model_dump(mode="json")
+        )
+        frame, source_name, source_meta, attempted = await self._try_sources(
+            produto,
+            reporter=reporter,
+            partner=partner,
+            fluxo=selection.flow,
+            periodo=selection.requested_period,
+            freq=selection.freq,
+            api_key=api_key,
+            require_complete=require_complete,
+        )
+        frame = self._normalize(frame)
+        self._validate_contract(frame)
+        meta = (
+            self._build_meta(frame, source_name, source_meta, attempted, snapshot)
+            if return_meta
+            else None
+        )
+        return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
     def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
 _comercio_internacional = ComercioInternacionalDataset()
+registry.register(_comercio_internacional)
 
-from agrobr.datasets.registry import register  # noqa: E402
 
-register(_comercio_internacional)
+@overload
+async def comercio_internacional(
+    produto: str,
+    *,
+    reporter: str = "BR",
+    partner: str | None = None,
+    fluxo: str = "X",
+    periodo: str | int | None = None,
+    freq: str = "A",
+    api_key: str | None = None,
+    require_complete: bool = False,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def comercio_internacional(
+    produto: str,
+    *,
+    reporter: str = "BR",
+    partner: str | None = None,
+    fluxo: str = "X",
+    periodo: str | int | None = None,
+    freq: str = "A",
+    api_key: str | None = None,
+    require_complete: bool = False,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def comercio_internacional(
@@ -117,11 +190,12 @@ async def comercio_internacional(
     reporter: str = "BR",
     partner: str | None = None,
     fluxo: str = "X",
-    periodo: str | None = None,
+    periodo: str | int | None = None,
     freq: str = "A",
     api_key: str | None = None,
+    require_complete: bool = False,
+    as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     return await _comercio_internacional.fetch(
         produto,
@@ -131,6 +205,7 @@ async def comercio_internacional(
         periodo=periodo,
         freq=freq,
         api_key=api_key,
+        require_complete=require_complete,
+        as_polars=as_polars,
         return_meta=return_meta,
-        **kwargs,
     )

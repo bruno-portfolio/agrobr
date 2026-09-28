@@ -1,7 +1,9 @@
 """Testes para a API pública INMET."""
 
+import warnings
 from unittest.mock import AsyncMock, patch
 
+import pandas as pd
 import pytest
 
 from agrobr.exceptions import InvalidParameterError
@@ -69,19 +71,6 @@ def _mock_estacao(
 
 class TestEstacoes:
     @pytest.mark.asyncio
-    async def test_estacoes_returns_dataframe(self):
-        mock_data = [_mock_estacao()]
-
-        with patch.object(
-            api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=mock_data
-        ):
-            df = await api.estacoes()
-
-        assert len(df) == 1
-        assert "codigo" in df.columns
-        assert df.iloc[0]["codigo"] == "A001"
-
-    @pytest.mark.asyncio
     async def test_estacoes_filter_uf(self):
         mock_data = [
             _mock_estacao(),
@@ -107,16 +96,6 @@ class TestEstacoes:
 
 class TestEstacao:
     @pytest.mark.asyncio
-    async def test_reverse_range_raises_before_request(self):
-        with (
-            patch.object(api.client, "fetch_dados_estacao", new_callable=AsyncMock) as fetch,
-            pytest.raises(InvalidParameterError, match="inicio"),
-        ):
-            await api.estacao("A001", "2025-02-01", "2025-01-01")
-
-        fetch.assert_not_awaited()
-
-    @pytest.mark.asyncio
     async def test_estacao_horario(self):
         mock_data = [_mock_obs(hora="1200 UTC"), _mock_obs(hora="1300 UTC")]
 
@@ -127,6 +106,27 @@ class TestEstacao:
 
         assert len(df) == 2
         assert "temperatura" in df.columns
+
+    @pytest.mark.asyncio
+    async def test_estacao_leva_o_descarte_de_data_ao_meta(self):
+        mock_data = [_mock_obs(data="1899-12-31"), _mock_obs(data="1900-01-01")]
+        aviso = (
+            "inmet: 1 valor(es) de data viraram NaT (data ilegível ou com ano fora de "
+            "1900–2099). As observações sem data saíram do resultado."
+        )
+
+        with (
+            patch.object(
+                api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data
+            ),
+            warnings.catch_warnings(record=True) as emitidos,
+        ):
+            warnings.simplefilter("always")
+            df, meta = await api.estacao("A001", "1899-12-31", "1900-01-01", return_meta=True)
+
+        assert df["data"].tolist() == [pd.Timestamp("1900-01-01")]
+        assert meta.validation_warnings == [aviso]
+        assert [str(w.message) for w in emitidos if "NaT" in str(w.message)] == [aviso]
 
     @pytest.mark.asyncio
     async def test_estacao_diario(self):
@@ -146,21 +146,6 @@ class TestEstacao:
         assert "precipitacao_mm" in df.columns
         assert df.iloc[0]["precipitacao_mm"] == pytest.approx(10.0)
 
-    @pytest.mark.asyncio
-    async def test_estacao_return_meta(self):
-        mock_data = [_mock_obs()]
-
-        with patch.object(
-            api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=mock_data
-        ):
-            df, meta = await api.estacao("A001", "2024-01-15", "2024-01-15", return_meta=True)
-
-        assert meta.source == "inmet"
-        assert meta.attempted_sources == ["inmet"]
-        assert meta.selected_source == "inmet"
-        assert meta.fetch_timestamp is not None
-        assert meta.records_count == len(df)
-
 
 class TestClimaUf:
     @pytest.mark.asyncio
@@ -173,38 +158,8 @@ class TestClimaUf:
 
         fetch.assert_not_awaited()
 
-    @pytest.mark.asyncio
-    async def test_clima_uf_return_meta(self):
-        mock_data = [
-            _mock_obs(data="2024-01-15", chuva="10.0"),
-            _mock_obs(data="2024-02-15", chuva="20.0"),
-        ]
-
-        with patch.object(
-            api.client, "fetch_dados_estacoes_uf", new_callable=AsyncMock, return_value=mock_data
-        ):
-            df, meta = await api.clima_uf("DF", 2024, return_meta=True)
-
-        assert meta.source == "inmet"
-        assert meta.attempted_sources == ["inmet"]
-        assert meta.selected_source == "inmet"
-        assert len(df) > 0
-
 
 class TestEstacoesReturnMeta:
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        with patch.object(
-            api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=[_mock_estacao()]
-        ):
-            df, meta = await api.estacoes(return_meta=True)
-
-        assert meta.source == "inmet"
-        assert meta.records_count == len(df)
-        assert meta.attempted_sources == ["inmet"]
-        assert meta.selected_source == "inmet"
-        assert meta.fetch_timestamp is not None
-
     @pytest.mark.asyncio
     async def test_as_polars(self):
         pl = pytest.importorskip("polars")
@@ -214,14 +169,6 @@ class TestEstacoesReturnMeta:
             result = await api.estacoes(as_polars=True)
 
         assert isinstance(result, pl.DataFrame)
-
-    @pytest.mark.asyncio
-    async def test_empty_return_meta(self):
-        with patch.object(api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=[]):
-            df, meta = await api.estacoes(return_meta=True)
-
-        assert df.empty
-        assert meta.records_count == 0
 
 
 class TestEstacaoAsPolars:

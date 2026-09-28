@@ -6,16 +6,32 @@ from typing import Literal, overload
 import pandas as pd
 import structlog
 
+from agrobr import constants
 from agrobr.cache.keys import build_cache_key
-from agrobr.cache.policies import calculate_expiry
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client
-from agrobr.ibge._helpers import SIDRA_BASE, resolve_ibge_code, resolve_period
+from agrobr.ibge._helpers import (
+    SIDRA_BASE,
+    registrar_canal,
+    resolve_ibge_code,
+    resolve_period,
+    resolve_quarter_period,
+)
 from agrobr.models import MetaInfo
 from agrobr.utils.result import finalize_result
 from agrobr.utils.time import utcnow
 
 logger = structlog.get_logger()
+
+_LEITE_COLUMNS = [
+    "trimestre",
+    "localidade",
+    "localidade_cod",
+    "leite_adquirido",
+    "leite_industrializado",
+    "preco_medio",
+    "fonte",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -61,6 +77,7 @@ async def silvicultura(
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_silvicultura",
+        parser_version=constants.IBGE_PEVS_PARSER_VERSION,
         source_url=SIDRA_BASE,
         source_method="httpx",
         fetched_at=utcnow(),
@@ -118,6 +135,7 @@ async def silvicultura(
         period=period,
         classifications=classifications,
     )
+    registrar_canal(meta, df)
 
     df = client.parse_sidra_response(
         df,
@@ -142,10 +160,9 @@ async def silvicultura(
         df["localidade_cod"] = pd.to_numeric(df["localidade_cod"], errors="coerce").astype("Int64")
 
     df["produto"] = produto_lower
-    if variavel_lower == "area":
-        df["unidade"] = "Hectares"
-    else:
-        df["unidade"] = client.UNIDADES_SILVICULTURA.get(produto_lower, "")
+    df["unidade"] = df["unidade_medida"]
+    if variavel_lower == "valor_producao":
+        df["valor"] = df["valor"].astype("float64")
     df["fonte"] = "ibge_silvicultura"
 
     output_cols = [
@@ -163,7 +180,6 @@ async def silvicultura(
         {"produto": produto, "ano": ano, "variavel": variavel},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_silvicultura")
 
     logger.info("ibge_silvicultura_success", produto=produto, records=len(df))
 
@@ -221,6 +237,7 @@ async def extracao_vegetal(
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_extracao_vegetal",
+        parser_version=constants.IBGE_PEVS_PARSER_VERSION,
         source_url=SIDRA_BASE,
         source_method="httpx",
         fetched_at=utcnow(),
@@ -268,6 +285,7 @@ async def extracao_vegetal(
         period=period,
         classifications=classifications,
     )
+    registrar_canal(meta, df)
 
     df = client.parse_sidra_response(
         df,
@@ -292,7 +310,9 @@ async def extracao_vegetal(
         df["localidade_cod"] = pd.to_numeric(df["localidade_cod"], errors="coerce").astype("Int64")
 
     df["produto"] = produto_lower
-    df["unidade"] = client.UNIDADES_EXTRACAO_VEGETAL.get(produto_lower, "")
+    df["unidade"] = df["unidade_medida"]
+    if variavel_lower == "valor_producao":
+        df["valor"] = df["valor"].astype("float64")
     df["fonte"] = "ibge_extracao_vegetal"
 
     output_cols = [
@@ -310,7 +330,6 @@ async def extracao_vegetal(
         {"produto": produto, "ano": ano, "variavel": variavel},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_extracao_vegetal")
 
     logger.info("ibge_extracao_vegetal_success", produto=produto, records=len(df))
 
@@ -355,6 +374,7 @@ async def leite_trimestral(
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_leite_trimestral",
+        parser_version=constants.IBGE_LEITE_PARSER_VERSION,
         source_url=SIDRA_BASE,
         source_method="httpx",
         fetched_at=utcnow(),
@@ -375,7 +395,7 @@ async def leite_trimestral(
     if uf:
         ibge_code = client.uf_to_ibge_code(uf)
 
-    period = resolve_period(trimestre)
+    period = resolve_quarter_period(trimestre)
 
     df = await client.fetch_sidra(
         table_code=table_code,
@@ -384,6 +404,7 @@ async def leite_trimestral(
         variable=var_codes,
         period=period,
     )
+    registrar_canal(meta, df)
 
     df = client.parse_sidra_response(
         df,
@@ -408,6 +429,13 @@ async def leite_trimestral(
     var_name_map = {v: k for k, v in client.VARIAVEIS_LEITE.items()}
     merge_keys = [c for c in ["trimestre", "localidade", "localidade_cod"] if c in df.columns]
 
+    if df.duplicated(merge_keys + ["variavel_cod"]).any():
+        raise ParseError(
+            source="ibge_leite_trimestral",
+            parser_version=constants.IBGE_LEITE_PARSER_VERSION,
+            reason="Observação duplicada por trimestre, localidade e variável de leite",
+        )
+
     pivot_frames = []
     for var_code, col_name in var_name_map.items():
         subset = df[df["variavel_cod"].astype(str) == var_code].copy()
@@ -420,9 +448,9 @@ async def leite_trimestral(
     if pivot_frames:
         result = pivot_frames[0]
         for pf in pivot_frames[1:]:
-            result = result.merge(pf, on=merge_keys, how="outer")
+            result = result.merge(pf, on=merge_keys, how="outer", validate="one_to_one")
     else:
-        result = pd.DataFrame()
+        result = pd.DataFrame(columns=_LEITE_COLUMNS)
 
     if not result.empty:
         result["fonte"] = "ibge_leite_trimestral"
@@ -430,20 +458,10 @@ async def leite_trimestral(
         for col in ["leite_adquirido", "leite_industrializado", "preco_medio"]:
             if col in result.columns:
                 result[col] = pd.to_numeric(result[col], errors="coerce")
+        if "preco_medio" in result.columns:
+            result["preco_medio"] = result["preco_medio"].astype("float64")
 
-        output_cols = [
-            c
-            for c in [
-                "trimestre",
-                "localidade",
-                "localidade_cod",
-                "leite_adquirido",
-                "leite_industrializado",
-                "preco_medio",
-                "fonte",
-            ]
-            if c in result.columns
-        ]
+        output_cols = [c for c in _LEITE_COLUMNS if c in result.columns]
         result = result[output_cols].reset_index(drop=True)
 
     df = result
@@ -456,7 +474,6 @@ async def leite_trimestral(
         {"trimestre": trimestre},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_leite_trimestral")
 
     logger.info("ibge_leite_trimestral_success", records=len(df))
 
@@ -500,6 +517,7 @@ async def pib_agro(
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_pib",
+        parser_version=constants.IBGE_PIB_PARSER_VERSION,
         source_url=SIDRA_BASE,
         source_method="httpx",
         fetched_at=utcnow(),
@@ -535,7 +553,7 @@ async def pib_agro(
     var_code = client.VARIAVEIS_PIB[precos_lower]
     setor_cod = client.SETORES_PIB[setor_lower]
 
-    period = resolve_period(trimestre)
+    period = resolve_quarter_period(trimestre)
 
     classifications: dict[str, str | list[str]] = {"11255": setor_cod}
 
@@ -547,6 +565,7 @@ async def pib_agro(
         period=period,
         classifications=classifications,
     )
+    registrar_canal(meta, df)
 
     df = client.parse_sidra_response(
         df,
@@ -572,6 +591,7 @@ async def pib_agro(
     else:
         df["unidade"] = "R$ (milhões)" if precos_lower == "corrente" else "R$ de 1995 (milhões)"
 
+    df["valor"] = df["valor"].astype("float64")
     df["setor"] = setor_lower
     df["fonte"] = "ibge_pib"
 
@@ -588,7 +608,6 @@ async def pib_agro(
         {"trimestre": trimestre, "precos": precos, "setor": setor},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_pib")
 
     logger.info("ibge_pib_agro_success", records=len(df))
 

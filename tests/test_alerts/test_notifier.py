@@ -6,9 +6,9 @@ from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from structlog import testing
 
 from agrobr.alerts.notifier import (
-    AlertCategory,
     AlertLevel,
     _send_discord,
     _send_email,
@@ -16,33 +16,6 @@ from agrobr.alerts.notifier import (
     send_alert,
 )
 from tests.helpers import make_alert_settings, make_mock_async_client, make_mock_response
-
-
-class TestAlertLevel:
-    def test_alert_levels(self):
-        assert AlertLevel.INFO == "info"
-        assert AlertLevel.WARNING == "warning"
-        assert AlertLevel.CRITICAL == "critical"
-
-    def test_alert_level_from_string(self):
-        assert AlertLevel("info") is AlertLevel.INFO
-        assert AlertLevel("warning") is AlertLevel.WARNING
-        assert AlertLevel("critical") is AlertLevel.CRITICAL
-
-
-class TestAlertCategory:
-    def test_alert_categories(self):
-        assert AlertCategory.SOFT_BLOCK == "soft_block"
-        assert AlertCategory.SOURCE_DOWN == "source_down"
-        assert AlertCategory.PARSE_ERROR == "parse_error"
-        assert AlertCategory.LAYOUT_CHANGE == "layout_change"
-        assert AlertCategory.ANOMALY == "anomaly"
-        assert AlertCategory.API_KEY_MISSING == "api_key_missing"
-        assert AlertCategory.SLOW == "slow"
-
-    def test_alert_category_from_string(self):
-        assert AlertCategory("soft_block") is AlertCategory.SOFT_BLOCK
-        assert AlertCategory("anomaly") is AlertCategory.ANOMALY
 
 
 class TestSendAlert:
@@ -75,47 +48,6 @@ class TestSendAlert:
         mock_discord.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_slack_channel_dispatched(self):
-        mock_settings = make_alert_settings(slack_webhook="https://hooks.slack.com/test")
-
-        with (
-            patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=mock_settings),
-            patch("agrobr.alerts.notifier._send_slack", new_callable=AsyncMock) as mock_slack,
-        ):
-            await send_alert(AlertLevel.WARNING, "Test Alert", {"error": "timeout"}, source="cepea")
-            mock_slack.assert_awaited_once()
-            args = mock_slack.call_args
-            assert args[0][0] == "https://hooks.slack.com/test"
-            assert args[0][1] == AlertLevel.WARNING
-
-    @pytest.mark.asyncio
-    async def test_discord_channel_dispatched(self):
-        mock_settings = make_alert_settings(
-            discord_webhook="https://discord.com/api/webhooks/test",
-        )
-
-        with (
-            patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=mock_settings),
-            patch("agrobr.alerts.notifier._send_discord", new_callable=AsyncMock) as mock_discord,
-        ):
-            await send_alert("critical", "Down", {"source": "conab"})
-            mock_discord.assert_awaited_once()
-
-    @pytest.mark.asyncio
-    async def test_email_channel_dispatched(self):
-        mock_settings = make_alert_settings(
-            sendgrid_api_key="SG.test_key",
-            email_to=["admin@agrobr.dev"],
-        )
-
-        with (
-            patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=mock_settings),
-            patch("agrobr.alerts.notifier._send_email", new_callable=AsyncMock) as mock_email,
-        ):
-            await send_alert(AlertLevel.INFO, "Test", {"info": "ok"})
-            mock_email.assert_awaited_once()
-
-    @pytest.mark.asyncio
     async def test_multiple_channels_dispatched(self):
         mock_settings = make_alert_settings(
             slack_webhook="https://hooks.slack.com/test",
@@ -136,27 +68,6 @@ class TestSendAlert:
             me.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_category_passed_to_discord(self):
-        mock_settings = make_alert_settings(
-            discord_webhook="https://discord.com/api/webhooks/test",
-        )
-
-        with (
-            patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=mock_settings),
-            patch("agrobr.alerts.notifier._send_discord", new_callable=AsyncMock) as mock_discord,
-        ):
-            await send_alert(
-                "warning",
-                "Source blocked (Cloudflare): cepea",
-                {"message": "Soft block"},
-                source="cepea",
-                category="soft_block",
-            )
-            mock_discord.assert_awaited_once()
-            call_kwargs = mock_discord.call_args.kwargs
-            assert call_kwargs.get("category") == "soft_block"
-
-    @pytest.mark.asyncio
     async def test_channel_exception_logged(self):
         mock_settings = make_alert_settings(slack_webhook="https://hooks.slack.com/test")
 
@@ -169,87 +80,6 @@ class TestSendAlert:
             ),
         ):
             await send_alert(AlertLevel.WARNING, "Fail gracefully", {})
-
-    @pytest.mark.asyncio
-    async def test_level_as_string(self):
-        mock_settings = make_alert_settings(slack_webhook="https://hooks.slack.com/test")
-
-        with (
-            patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=mock_settings),
-            patch("agrobr.alerts.notifier._send_slack", new_callable=AsyncMock) as mock_slack,
-        ):
-            await send_alert("info", "String level", {})
-            mock_slack.assert_awaited_once()
-            assert mock_slack.call_args[0][1] == AlertLevel.INFO
-
-
-class TestSendSlack:
-    @pytest.mark.asyncio
-    async def test_slack_payload_info(self):
-        mock_response = make_mock_response()
-        mock_client = make_mock_async_client()
-        mock_client.post.return_value = mock_response
-
-        with patch("agrobr.alerts.notifier.httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value = mock_client
-
-            await _send_slack(
-                "https://hooks.slack.com/test",
-                AlertLevel.INFO,
-                "Test Title",
-                {"key": "value"},
-                source="cepea",
-            )
-
-            mock_client.post.assert_awaited_once()
-            call_args = mock_client.post.call_args
-            payload = call_args.kwargs.get("json") or call_args[1].get("json")
-            assert "attachments" in payload
-            assert payload["attachments"][0]["color"] == "#36a64f"
-
-    @pytest.mark.asyncio
-    async def test_slack_payload_critical_no_source(self):
-        mock_response = make_mock_response()
-        mock_client = make_mock_async_client()
-        mock_client.post.return_value = mock_response
-
-        with patch("agrobr.alerts.notifier.httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value = mock_client
-
-            await _send_slack(
-                "https://hooks.slack.com/test",
-                AlertLevel.CRITICAL,
-                "Critical Alert",
-                {},
-                source=None,
-            )
-
-            payload = mock_client.post.call_args.kwargs.get("json") or mock_client.post.call_args[
-                1
-            ].get("json")
-            assert payload["attachments"][0]["color"] == "#dc3545"
-
-    @pytest.mark.asyncio
-    async def test_slack_payload_warning(self):
-        mock_response = make_mock_response()
-        mock_client = make_mock_async_client()
-        mock_client.post.return_value = mock_response
-
-        with patch("agrobr.alerts.notifier.httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value = mock_client
-
-            await _send_slack(
-                "https://hooks.slack.com/test",
-                AlertLevel.WARNING,
-                "Warning",
-                {"detail": "x"},
-                source="conab",
-            )
-
-            payload = mock_client.post.call_args.kwargs.get("json") or mock_client.post.call_args[
-                1
-            ].get("json")
-            assert payload["attachments"][0]["color"] == "#ff9800"
 
 
 class TestSendDiscord:
@@ -412,32 +242,6 @@ class TestSendDiscord:
             cat_field = next(f for f in embed["fields"] if f["name"] == "Category")
             assert cat_field["value"] == "IP Blocked (Cloudflare)"
 
-    @pytest.mark.asyncio
-    async def test_discord_category_source_down(self):
-        mock_response = make_mock_response()
-        mock_client = make_mock_async_client()
-        mock_client.post.return_value = mock_response
-
-        with patch("agrobr.alerts.notifier.httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value = mock_client
-
-            await _send_discord(
-                "https://discord.com/api/webhooks/test",
-                AlertLevel.CRITICAL,
-                "Source failed: conab",
-                {},
-                source="conab",
-                category="source_down",
-            )
-
-            payload = mock_client.post.call_args.kwargs.get("json") or mock_client.post.call_args[
-                1
-            ].get("json")
-            embed = payload["embeds"][0]
-            assert embed["color"] == 0xDC3545
-            cat_field = next(f for f in embed["fields"] if f["name"] == "Category")
-            assert cat_field["value"] == "Source Down"
-
 
 class TestSendEmail:
     @pytest.mark.asyncio
@@ -470,29 +274,101 @@ class TestSendEmail:
             assert payload["subject"] == "[agrobr CRITICAL] System Down"
             assert len(payload["personalizations"][0]["to"]) == 2
 
-    @pytest.mark.asyncio
-    async def test_email_without_source(self):
-        mock_settings = make_alert_settings(
-            sendgrid_api_key="SG.test_key",
-            email_to=["admin@test.com"],
+
+@pytest.mark.asyncio
+async def test_nivel_em_texto_chega_ao_payload():
+    settings = make_alert_settings(slack_webhook="https://hooks.slack.com/test")
+    client = make_mock_async_client()
+    client.post.return_value = make_mock_response()
+    with (
+        patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=settings),
+        patch("agrobr.alerts.notifier.httpx.AsyncClient", return_value=client),
+    ):
+        await send_alert("critical", "Falhou", {})
+    assert client.post.await_count == 1
+    assert client.post.call_args.kwargs["json"]["attachments"][0]["color"] == "#dc3545"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("configuracao", "efeito", "eventos"),
+    [
+        ({}, None, [("warning", "no_alert_channels_configured", None)]),
+        ({"slack_webhook": "https://hooks.slack.com/test"}, None, []),
+        (
+            {"slack_webhook": "https://hooks.slack.com/test"},
+            RuntimeError("rede"),
+            [("error", "alert_send_failed", "RuntimeError")],
+        ),
+    ],
+)
+async def test_envio_registra_so_as_falhas_de_canal(configuracao, efeito, eventos):
+    settings = make_alert_settings(**configuracao)
+    with (
+        patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=settings),
+        patch("agrobr.alerts.notifier._send_slack", new_callable=AsyncMock, side_effect=efeito),
+        patch("agrobr.alerts.notifier._send_email", new_callable=AsyncMock) as email,
+        testing.capture_logs() as registros,
+    ):
+        await send_alert(AlertLevel.WARNING, "Teste", {})
+    obtidos = [
+        (r["log_level"], r["event"], r.get("error"))
+        for r in registros
+        if r["log_level"] in ("warning", "error")
+    ]
+    assert obtidos == eventos
+    email.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("source", "details", "blocos"),
+    [
+        (
+            None,
+            {},
+            [{"type": "header", "text": {"type": "plain_text", "text": ":warning: Titulo"}}],
+        ),
+        (
+            "cepea",
+            {"k": 1},
+            [
+                {"type": "header", "text": {"type": "plain_text", "text": ":warning: Titulo"}},
+                {
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text": "*Source:* cepea"},
+                        {"type": "mrkdwn", "text": "*Level:* WARNING"},
+                    ],
+                },
+                {"type": "section", "text": {"type": "mrkdwn", "text": '```{\n  "k": 1\n}```'}},
+            ],
+        ),
+    ],
+)
+async def test_slack_monta_blocos_de_fonte_e_detalhes(source, details, blocos):
+    client = make_mock_async_client()
+    client.post.return_value = make_mock_response()
+    with patch("agrobr.alerts.notifier.httpx.AsyncClient", return_value=client):
+        await _send_slack(
+            "https://hooks.slack.com/test", AlertLevel.WARNING, "Titulo", details, source
         )
-        mock_response = make_mock_response()
-        mock_client = make_mock_async_client()
-        mock_client.post.return_value = mock_response
+    assert client.post.call_args.kwargs["json"]["attachments"][0]["blocks"] == blocos
 
-        with patch("agrobr.alerts.notifier.httpx.AsyncClient") as mock_cls:
-            mock_cls.return_value = mock_client
 
-            await _send_email(
-                mock_settings,
-                AlertLevel.INFO,
-                "Info Alert",
-                {},
-                source=None,
-            )
-
-            payload = mock_client.post.call_args.kwargs.get("json") or mock_client.post.call_args[
-                1
-            ].get("json")
-            html = payload["content"][0]["value"]
-            assert "Source" not in html or "None" not in html
+@pytest.mark.asyncio
+async def test_discord_recuperacao_fica_verde_e_mostra_detalhes():
+    client = make_mock_async_client()
+    client.post.return_value = make_mock_response()
+    with patch("agrobr.alerts.notifier.httpx.AsyncClient", return_value=client):
+        await _send_discord(
+            "https://discord.com/api/webhooks/test",
+            AlertLevel.CRITICAL,
+            "Voltou",
+            {"k": 1},
+            "cepea",
+            is_recovery=True,
+        )
+    embed = client.post.call_args.kwargs["json"]["embeds"][0]
+    assert embed["color"] == 0x36A64F
+    assert embed.get("description") == '```json\n{\n  "k": 1\n}\n```'

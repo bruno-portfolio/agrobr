@@ -1,0 +1,7 @@
+concessionaria;mes_ano;sentido;praca;tipo_cobranca;categoria;tipo_de_veiculo;volume_total
+"AUTOPISTA FERNÃO DIAS";"01/01/2010";"Crescente";"2 (Vargem)";"N/I";"Categoria 1";"Passeio";277638,00
+"AUTOPISTA FERNÃO DIAS";"01/01/2010";"Crescente";"2 (Vargem)";"N/I";"Categoria 2";"Comercial";24788,00
+"AUTOPISTA FERNÃO DIAS";"01/01/2010";"Crescente";"2 (Vargem)";"N/I";"Categoria 3";"Passeio";703,00
+"AUTOPISTA FERNÃO DIAS";"01/01/2010";"Crescente";"2 (Vargem)";"N/I";"Categoria 5";"Passeio";61,00
+"AUTOPISTA FERNÃO DIAS";"01/01/2010";"Crescente";"2 (Vargem)";"N/I";"Outros";"Comercial";10692,00
+"CRT";"01/01/2010";"Crescente";"Praça PA1 BR-116/RJ km 114,50 - Bloqueio";"N/I";"Categoria 10";"Comercial";0,00

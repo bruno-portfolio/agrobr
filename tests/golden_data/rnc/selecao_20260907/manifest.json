@@ -1,0 +1,252 @@
+{
+  "method": "Derived subsets of complete official CSV records, all source cells preserved through stdlib csv.reader/writer; output oracle uses explicit positional meanings, str.strip and datetime.strptime only; no agrobr/pandas imports",
+  "families": {
+    "registradas": {
+      "family": "registradas",
+      "url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_registradas.php?postado=1&acao=pesquisar",
+      "sha256": "0d531781ae8a1b3caa4a2198b4029244cb055b70ac64738a793c46947eb7a689",
+      "size_bytes": 5605848,
+      "rows": 38335,
+      "columns": 10,
+      "http_attempts": 4,
+      "duration_seconds": 14.738450398000168,
+      "csv_file": "004_registradas.csv",
+      "subset_rows": 29,
+      "subset_sha256": "81adab3e184d897c8170b5cc83483ff9dcd567599b4995c10f448d3a61ae91b4",
+      "subset_size_bytes": 4746,
+      "source_record_numbers": [
+        1,
+        2,
+        19,
+        29,
+        33,
+        43,
+        46,
+        49,
+        75,
+        635,
+        663,
+        841,
+        883,
+        1483,
+        1552,
+        1617,
+        1696,
+        1897,
+        1931,
+        2847,
+        3279,
+        3953,
+        8020,
+        9859,
+        12487,
+        14908,
+        24899,
+        36471,
+        38335
+      ],
+      "cell_mapping": "Each records[i].raw_cells[j] equals complete source CSV record source_record, column source_header[j]; one-based data records exclude header",
+      "source_bytes_equal_20260906": true,
+      "html_origin": {
+        "form": {
+          "family": "registradas",
+          "method": "GET",
+          "url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_registradas.php",
+          "started_at": "2026-09-07T07:56:23.244616+00:00",
+          "status": 200,
+          "finished_at": "2026-09-07T07:56:24.503986+00:00",
+          "raw_sha256": "d526686fa30c26de2a8fafbd7a8293677f454d66812bc7af42a951cf05b712b1",
+          "raw_size_bytes": 1207653,
+          "stored_sha256": "60229b88ca6c1604cdcecd12ada91fb0e6c92a72865c29ddb4026c5690447a95",
+          "stored_size_bytes": 793,
+          "file": "total_001_registradas.sanitized.html",
+          "sanitized": true,
+          "reported_totals": [],
+          "reported_total_literals": [],
+          "headers": {
+            "date": "Mon, 07 Sep 2026 07:56:23 GMT",
+            "cache-control": "no-store, no-cache, must-revalidate",
+            "content-type": "text/html; charset=UTF-8"
+          }
+        },
+        "search": {
+          "family": "registradas",
+          "method": "POST",
+          "url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_registradas.php",
+          "started_at": "2026-09-07T07:56:24.704436+00:00",
+          "status": 200,
+          "finished_at": "2026-09-07T07:56:27.305386+00:00",
+          "raw_sha256": "1c7f49622573d9098b4019142eaf5f93bf397488ecf4a2249906f8faa96ab933",
+          "raw_size_bytes": 175858,
+          "stored_sha256": "1321025eb2fef188f1f9e67bbb74e3924e77a021fb59f7dbc4c05a18903e04cb",
+          "stored_size_bytes": 693,
+          "file": "total_002_registradas.sanitized.html",
+          "sanitized": true,
+          "reported_totals": [
+            38335
+          ],
+          "reported_total_literals": [
+            "38335"
+          ],
+          "headers": {
+            "date": "Mon, 07 Sep 2026 07:56:24 GMT",
+            "cache-control": "no-store, no-cache, must-revalidate",
+            "content-type": "text/html; charset=UTF-8"
+          }
+        },
+        "same_session_as_export": false,
+        "template_count_adjustment": 29,
+        "reported_official_total": 38335
+      }
+    },
+    "protegidas": {
+      "family": "protegidas",
+      "url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_protegidas.php?acao=pesquisar&cs=1&postado=1",
+      "sha256": "ce6ac0b01b0659224546d77022b2abd21543e268852a9d69b714bb46616002a2",
+      "size_bytes": 2440368,
+      "rows": 5424,
+      "columns": 11,
+      "http_attempts": 4,
+      "duration_seconds": 7.4482384749999255,
+      "csv_file": "008_protegidas.csv",
+      "subset_rows": 27,
+      "subset_sha256": "d7824000ff8e2928fa76d2f242b5c4031f8b290ede6e78f6fb02b344e062e52c",
+      "subset_size_bytes": 17863,
+      "source_record_numbers": [
+        1,
+        2,
+        4,
+        5,
+        18,
+        30,
+        56,
+        69,
+        74,
+        123,
+        147,
+        214,
+        231,
+        604,
+        1738,
+        1863,
+        2053,
+        2069,
+        2529,
+        2634,
+        2735,
+        3743,
+        3990,
+        4017,
+        4690,
+        4937,
+        5424
+      ],
+      "cell_mapping": "Each records[i].raw_cells[j] equals complete source CSV record source_record, column source_header[j]; one-based data records exclude header",
+      "source_bytes_equal_20260906": true,
+      "html_origin": {
+        "form": {
+          "family": "protegidas",
+          "method": "GET",
+          "url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_protegidas.php",
+          "started_at": "2026-09-07T07:56:30.313413+00:00",
+          "status": 200,
+          "finished_at": "2026-09-07T07:56:30.637658+00:00",
+          "raw_sha256": "382af6b4dc55d217e77127be54cc6455bbfd42b192c72078847b5c9199c799cd",
+          "raw_size_bytes": 34313,
+          "stored_sha256": "ac69a1c00fef433013870d1f9f0e3161b31de2cba582d11c6d7fc255be3e4561",
+          "stored_size_bytes": 753,
+          "file": "total_003_protegidas.sanitized.html",
+          "sanitized": true,
+          "reported_totals": [],
+          "reported_total_literals": [],
+          "headers": {
+            "date": "Mon, 07 Sep 2026 07:56:30 GMT",
+            "cache-control": "no-store, no-cache, must-revalidate",
+            "content-type": "text/html; charset=UTF-8"
+          }
+        },
+        "search": {
+          "family": "protegidas",
+          "method": "POST",
+          "url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_protegidas.php",
+          "started_at": "2026-09-07T07:56:30.647583+00:00",
+          "status": 200,
+          "finished_at": "2026-09-07T07:56:31.218361+00:00",
+          "raw_sha256": "300d8a476e430d58fe6ccbf5ff681b8ffc0e35f4e39152e135601c6cd30ba63c",
+          "raw_size_bytes": 41014,
+          "stored_sha256": "68528aaf8474de03de7e046a23819072c99fea25c003446fed0f8ca26d53ef66",
+          "stored_size_bytes": 744,
+          "file": "total_004_protegidas.sanitized.html",
+          "sanitized": true,
+          "reported_totals": [
+            5424
+          ],
+          "reported_total_literals": [
+            "5424"
+          ],
+          "headers": {
+            "date": "Mon, 07 Sep 2026 07:56:30 GMT",
+            "cache-control": "no-store, no-cache, must-revalidate",
+            "content-type": "text/html; charset=UTF-8"
+          }
+        },
+        "same_session_as_export": false,
+        "template_count_adjustment": 27,
+        "reported_official_total": 5424
+      }
+    }
+  },
+  "files": [
+    {
+      "file": "README.md",
+      "sha256": "3f9a5cf95a35e79c5353291499f25fdfeb50ca8a8558fc2780b30d2d0e775629",
+      "size_bytes": 2353
+    },
+    {
+      "file": "expected.json",
+      "sha256": "bb155227d03ae84388f24a710b0e38b09348a78073c08547818557b6b0663c80",
+      "size_bytes": 123393
+    },
+    {
+      "file": "protegidas.csv",
+      "sha256": "d7824000ff8e2928fa76d2f242b5c4031f8b290ede6e78f6fb02b344e062e52c",
+      "size_bytes": 17863
+    },
+    {
+      "file": "protegidas_form.html",
+      "sha256": "ac69a1c00fef433013870d1f9f0e3161b31de2cba582d11c6d7fc255be3e4561",
+      "size_bytes": 753
+    },
+    {
+      "file": "protegidas_search_official_total.html",
+      "sha256": "2931e0ef150322604ea25d4183c5426ba5cc6398f4fb6cd4669007e7355c5618",
+      "size_bytes": 787
+    },
+    {
+      "file": "protegidas_search_subset.html",
+      "sha256": "d3f0d3162f990a0762432509f1cf8e096ed4a2edcb986ac43c9b680679ff152a",
+      "size_bytes": 785
+    },
+    {
+      "file": "registradas.csv",
+      "sha256": "81adab3e184d897c8170b5cc83483ff9dcd567599b4995c10f448d3a61ae91b4",
+      "size_bytes": 4746
+    },
+    {
+      "file": "registradas_form.html",
+      "sha256": "60229b88ca6c1604cdcecd12ada91fb0e6c92a72865c29ddb4026c5690447a95",
+      "size_bytes": 793
+    },
+    {
+      "file": "registradas_search_official_total.html",
+      "sha256": "689af4b8f3c053ae8b7960002c92468cb31ea8bdd8d281409d554f3fccd38976",
+      "size_bytes": 737
+    },
+    {
+      "file": "registradas_search_subset.html",
+      "sha256": "cd5a0d868df8836d3df1d420927c7164c85760282a4bcff309373ebd1496470d",
+      "size_bytes": 734
+    }
+  ],
+  "html_policy": "Reconstructed anonymous form structure; actual tokens/cookies never stored. Official-count HTML derives count text from supplementary search, not original export session. Replay templates have explicitly synthetic totals equal to subset size."
+}

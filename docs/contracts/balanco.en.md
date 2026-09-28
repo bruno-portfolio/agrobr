@@ -1,4 +1,4 @@
-# balanco v1.0
+# balanco v1.1
 
 Supply/demand balance for commodities.
 
@@ -8,15 +8,16 @@ Supply/demand balance for commodities.
 |----------|--------|-------------|
 | 1 | CONAB | Supply and Demand Balance |
 
-The CONAB source requires Playwright and Chromium:
+CONAB uses HTTP first. Playwright and Chromium are optional transport fallback dependencies:
 
 ```bash
 pip install agrobr[browser]
 python -m playwright install chromium
 ```
 
-Without this requirement, the dataset raises `SourceUnavailableError`; `balanco`
-has no fallback source.
+`balanco` has no alternative fallback source. If HTTP and the optional transport fail, the dataset raises `SourceUnavailableError`.
+
+Without `levantamento`, `safra` selects the most recent publication whose Suprimento sheet carries that crop year; the current edition covers the last seven crop years (six for soybean), already revised. The returned table is that publication's and may contain rows for several periods. With `levantamento=N`, the Nth survey of the crop year itself is returned, which is the original edition. Wheat balance periods remain annual. The last published revision of each product and period takes precedence.
 
 ## Products
 
@@ -26,15 +27,21 @@ has no fallback source.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
-| `safra` | str | ❌ | Crop year in "2024/25" format |
+| `safra` | str | ❌ | Published crop year, e.g. "2024/25", or calendar year for wheat |
 | `produto` | str | ❌ | Product name |
 | `estoque_inicial` | float64 | ✅ | Opening stock (thousand tons) |
 | `producao` | float64 | ✅ | Production (thousand tons) |
 | `importacao` | float64 | ✅ | Imports (thousand tons) |
-| `suprimento` | float64 | ✅ | Total supply (thousand tons) |
-| `consumo` | float64 | ✅ | Domestic consumption (thousand tons) |
+| `suprimento` | float64 | ✅ | Total supply (thousand tons): opening stock + production + imports, added up by agrobr; null if a term is missing |
+| `consumo` | float64 | ✅ | Domestic consumption (thousand tons): seeds/other + crushing, added up by agrobr (soybean 2025/26, Sep/26: 3,766 + 62,137.7 = 65,903.7); null if a term is missing |
 | `exportacao` | float64 | ✅ | Exports (thousand tons) |
 | `estoque_final` | float64 | ✅ | Ending stock (thousand tons) |
+| `demanda_total` | float64 | ✅ | Published demand (thousand tons); null in wide/legacy layouts |
+| `levantamento` | str | ✅ | Textual revision label, such as `set/26`; null when unpublished |
+| `unidade` | str | ❌ | Metric unit: `mil_ton` |
+| `fonte` | str | ❌ | Selected dataset source: `conab` |
+
+All numeric columns use float64, including empty results. Contract 1.1 adds optional columns without changing the required 1.0 columns; `CONAB_BALANCO_V1` remains available and `CONAB_BALANCO_V1_1` is active. Unpublished demand is left null rather than derived; `levantamento` is a revision label, not the survey number.
 
 ## Guarantees
 
@@ -49,8 +56,11 @@ from agrobr import datasets
 # Current crop-year balance
 df = await datasets.balanco("soja")
 
-# Specific crop-year balance
+# Specific crop-year balance (latest revision)
 df = await datasets.balanco("soja", safra="2024/25")
+
+# Original edition: the crop year's own 12th survey
+df = await datasets.balanco("soja", safra="2024/25", levantamento=12)
 
 # With metadata
 df, meta = await datasets.balanco("soja", return_meta=True)

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import time
 import warnings
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple, overload
 
@@ -16,7 +17,7 @@ from agrobr import constants
 from agrobr.cache.duckdb_store import get_store
 from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
-from agrobr.cepea import client
+from agrobr.cepea import client, serie
 from agrobr.cepea.parsers import v1
 from agrobr.cepea.parsers.detector import get_parser_with_fallback
 from agrobr.exceptions import (
@@ -27,8 +28,9 @@ from agrobr.exceptions import (
 )
 from agrobr.models import Indicador, MetaInfo
 from agrobr.normalize import regions
+from agrobr.noticias_agricolas import parser as na_parser
 from agrobr.utils.result import finalize_result
-from agrobr.utils.time import utcnow
+from agrobr.utils.time import hoje, utcnow
 from agrobr.utils.warnings import warn_once
 from agrobr.validators.sanity import validate_batch
 
@@ -37,7 +39,7 @@ if TYPE_CHECKING:
 
 logger = structlog.get_logger()
 
-SOURCE_WINDOW_DAYS = 10
+SOURCE_WINDOW_DAYS = 25
 
 _LICENSE_WARNING = (
     "CEPEA/ESALQ: dados sob CC BY-NC 4.0; uso comercial requer autorização do "
@@ -49,17 +51,27 @@ def _warn_license() -> None:
     warn_once("cepea_license", _LICENSE_WARNING)
 
 
+def _today() -> date:
+    return hoje()
+
+
 def _normalize_dates(
     inicio: str | date | None,
     fim: str | date | None,
 ) -> tuple[date, date]:
     try:
+        if any(isinstance(value, datetime) and pd.isna(value) for value in (inicio, fim)):
+            raise TypeError
         if isinstance(inicio, str):
             inicio = datetime.strptime(inicio, "%Y-%m-%d").date()
+        elif isinstance(inicio, datetime):
+            inicio = inicio.date()
         elif inicio is not None and not isinstance(inicio, date):
             raise TypeError
         if isinstance(fim, str):
             fim = datetime.strptime(fim, "%Y-%m-%d").date()
+        elif isinstance(fim, datetime):
+            fim = fim.date()
         elif fim is not None and not isinstance(fim, date):
             raise TypeError
     except (TypeError, ValueError) as exc:
@@ -67,7 +79,7 @@ def _normalize_dates(
             "Datas inválidas. Use objetos date ou strings no formato YYYY-MM-DD."
         ) from exc
     if fim is None:
-        fim = date.today()
+        fim = _today()
     if inicio is None:
         inicio = fim - timedelta(days=365)
     if inicio > fim:
@@ -92,11 +104,21 @@ def _normalize_praca(produto: str, praca: object | None) -> str | None:
     if not isinstance(praca, str):
         raise InvalidParameterError("praca deve ser uma string")
     requested = regions.slugificar_praca(praca.strip())
-    source_label = v1.PRACAS.get(produto)
-    valid = [regions.slugificar_praca(source_label)] if source_label else []
+    valid = _pracas(produto)
     if requested not in valid:
         raise InvalidParameterError(f"Praça inválida para {produto!r}: {praca!r}. Opções: {valid}")
     return requested
+
+
+def _vencido(ultima_coleta: datetime | None) -> bool:
+    return (
+        ultima_coleta is not None
+        and calculate_expiry(constants.Fonte.CEPEA, desde=ultima_coleta) <= utcnow()
+    )
+
+
+def _periodo_fechado(fim: date) -> bool:
+    return fim < _today() - timedelta(days=SOURCE_WINDOW_DAYS)
 
 
 def _needs_fetch(
@@ -105,15 +127,17 @@ def _needs_fetch(
     fim: date,
     force_refresh: bool,
     offline: bool,
+    ultima_coleta: datetime | None = None,
 ) -> bool:
     if offline:
         return False
     if force_refresh:
         return True
-    today = date.today()
-    recent_start = today - timedelta(days=SOURCE_WINDOW_DAYS)
-    if fim < recent_start:
+    if _periodo_fechado(fim):
         return False
+    if ultima_coleta is not None:
+        return _vencido(ultima_coleta)
+    recent_start = _today() - timedelta(days=SOURCE_WINDOW_DAYS)
     existing_dates = {ind.data for ind in indicadores}
     for i in range(min(SOURCE_WINDOW_DAYS, (fim - max(inicio, recent_start)).days + 1)):
         check_date = fim - timedelta(days=i)
@@ -122,9 +146,133 @@ def _needs_fetch(
     return False
 
 
+def _avisar(meta: MetaInfo, aviso: str) -> None:
+    meta.validation_warnings.append(aviso)
+    warnings.warn(aviso, UserWarning, stacklevel=3)
+
+
+def _precisa_da_serie(
+    store: Any, produto: str, inicio: date, fim: date, force_refresh: bool
+) -> bool:
+    """A série se baixa quando o período antes da janela recente não está coberto por ela.
+
+    A cobertura é a última data que a série publicou, registrada no download (a página sobrescreve
+    as linhas recentes e não serve de medida). Dentro da validade do download (a virada das 18h do
+    CEPEA), a série não se baixa de novo; a folga cobre o fim de semana e o mês do leite.
+    """
+    janela = _today() - timedelta(days=SOURCE_WINDOW_DAYS)
+    if produto not in constants.CEPEA_SERIES or inicio >= janela:
+        return False
+    if force_refresh:
+        return True
+    cobertura = store.serie_cobertura(produto)
+    if cobertura is None:
+        return True
+    publicada_ate, baixada_em = cobertura
+    folga = timedelta(days=62 if produto == "leite" else 7)
+    return _vencido(baixada_em) and publicada_ate + folga < min(fim, janela)
+
+
+async def _baixar_a_serie(store: Any, produto: str) -> tuple[list[Indicador], list[dict[str, Any]]]:
+    """Baixa a série inteira e grava no cache só o dia que ele ainda não tem.
+
+    A linha do cache prevalece: no leite, a página publica 4 casas, e a série, 2.
+
+    Returns:
+        Os indicadores novos e os recursos baixados, para a proveniência.
+    """
+    indicadores: list[Indicador] = []
+    pesos: dict[date, float] = {}
+    recursos: list[dict[str, Any]] = []
+    for pagina, identificador, papel in constants.CEPEA_SERIES[produto]:
+        baixada = await client.fetch_serie(pagina, identificador)
+        rotulo = "serie_peso" if papel == "peso" else "serie"
+        recursos.append(
+            {
+                "papel": rotulo,
+                "url": baixada.url,
+                "sha256": hashlib.sha256(baixada.conteudo).hexdigest(),
+                "bytes": len(baixada.conteudo),
+                "fetched_at": baixada.fetched_at.replace(tzinfo=UTC).isoformat(),
+            }
+        )
+        if papel == "peso":
+            pesos = serie.parse_peso(baixada.conteudo)
+        else:
+            indicadores.extend(serie.parse_serie(baixada.conteudo, produto, papel))
+    for ind in indicadores:
+        if ind.data in pesos:
+            ind.meta["peso_medio_kg"] = pesos[ind.data]
+    try:
+        existentes = {(linha["praca"], linha["data"]) for linha in store.indicadores_query(produto)}
+        novos = [ind for ind in indicadores if (ind.praca, ind.data) not in existentes]
+        store.indicadores_upsert(_indicadores_to_dicts(novos))
+        if indicadores:
+            store.serie_registrar(produto, max(ind.data for ind in indicadores), baixada.fetched_at)
+    except duckdb.Error as e:
+        logger.warning("cache_upsert_failed", produto=produto, error=str(e))
+        novos = indicadores
+    logger.info(
+        "cepea_serie_gravada", produto=produto, recebidos=len(indicadores), novos=len(novos)
+    )
+    return novos, recursos
+
+
+def _carimbar_serie(meta: MetaInfo, recursos: list[dict[str, Any]], pagina_baixada: bool) -> None:
+    """Proveniência: com 1 corpo, o topo é o dele; com vários, fica nulo.
+
+    A hora do topo, nos 2 campos, é a aquisição mais recente entre os corpos.
+    """
+    if pagina_baixada:
+        recursos = [
+            *recursos,
+            {
+                "papel": "pagina",
+                "url": meta.source_url,
+                "sha256": meta.raw_content_hash,
+                "bytes": meta.raw_content_size,
+                "fetched_at": meta.fetch_timestamp.isoformat() if meta.fetch_timestamp else None,
+            },
+        ]
+    meta.source_details["resources"] = recursos
+    unico = recursos[0] if len(recursos) == 1 else None
+    meta.raw_content_hash = unico["sha256"] if unico else None
+    meta.raw_content_size = unico["bytes"] if unico else 0
+    meta.source_url = recursos[0]["url"]
+    meta.fetched_at = meta.fetch_timestamp = max(
+        datetime.fromisoformat(recurso["fetched_at"]) for recurso in recursos
+    )
+
+
 def _warn_stale(message: str, meta: MetaInfo) -> None:
     warnings.warn(message, StaleDataWarning, stacklevel=3)
     meta.validation_warnings.append("stale_data: using cache after empty fetch")
+
+
+def _set_cache_meta(meta: MetaInfo, *, fallback: bool = False) -> None:
+    meta.from_cache = True
+    meta.source = "cache_fallback" if fallback else "cache"
+    meta.source_method = "duckdb"
+    meta.source_url = ""
+    meta.selected_source = "cache"
+    meta.attempted_sources = (
+        list(dict.fromkeys(meta.attempted_sources + ["cache"])) if fallback else ["cache"]
+    )
+
+
+def _registrar_versoes(meta: MetaInfo, indicadores: list[Indicador]) -> None:
+    """Do cache, ``parser_version`` é a versão gravada nos registros (a maior, se houver mais de
+    uma); versão diferente da informada vai por fonte em ``source_details["parser_versions"]``."""
+    versoes: dict[str, set[int]] = {}
+    for ind in indicadores:
+        versoes.setdefault(ind.fonte.value, set()).add(ind.parser_version)
+    todas = {versao for lista in versoes.values() for versao in lista}
+    if meta.from_cache and todas:
+        meta.parser_version = max(todas)
+    if todas - {meta.parser_version}:
+        meta.source_details["parser_versions"] = {
+            fonte: sorted(lista) for fonte, lista in sorted(versoes.items())
+        }
 
 
 class _FetchResult(NamedTuple):
@@ -147,17 +295,14 @@ def _noticias_agricolas_source_url(produto: str) -> str:
     return f"{constants.URLS[constants.Fonte.NOTICIAS_AGRICOLAS]['cotacoes']}/{produto_key}"
 
 
-async def _fetch_and_parse(produto: str) -> _FetchResult:
+async def _parse_fetch_result(produto: str, fetch_result: client.FetchResult) -> _FetchResult:
     parse_start = time.perf_counter()
-    fetch_result = await client.fetch_indicador_page(produto)
     html = fetch_result.html
     source_name = fetch_result.source
     raw_size = len(html.encode("utf-8"))
-    raw_hash = f"sha256:{hashlib.sha256(html.encode('utf-8')).hexdigest()[:16]}"
+    raw_hash = hashlib.sha256(html.encode("utf-8")).hexdigest()
 
     if source_name == "noticias_agricolas":
-        from agrobr.noticias_agricolas import parser as na_parser
-
         new_indicadores = na_parser.parse_indicador(html, produto)
         source_url = _noticias_agricolas_source_url(produto)
         parser_version = na_parser.PARSER_VERSION
@@ -171,6 +316,11 @@ async def _fetch_and_parse(produto: str) -> _FetchResult:
         source_url = _cepea_source_url(produto)
         parser_version = parser.version
 
+    if not new_indicadores:
+        raise ParseError(
+            source=source_name, parser_version=parser_version, reason="Nenhum indicador extraído"
+        )
+
     parse_ms = int((time.perf_counter() - parse_start) * 1000)
     return _FetchResult(
         indicadores=new_indicadores,
@@ -181,6 +331,99 @@ async def _fetch_and_parse(produto: str) -> _FetchResult:
         raw_size=raw_size,
         parse_ms=parse_ms,
     )
+
+
+async def _fetch_and_parse(produto: str) -> _FetchResult:
+    fetched = await client.fetch_indicador_page(produto)
+    try:
+        return await _parse_fetch_result(produto, fetched)
+    except ParseError as primary_error:
+        if fetched.source == "noticias_agricolas" or not client.can_use_alternative_source(produto):
+            raise
+        logger.warning("cepea_content_fallback", produto=produto)
+        try:
+            alternative = await client.fetch_indicador_page(produto, force_alternative=True)
+        except (httpx.HTTPError, SourceUnavailableError) as alternative_error:
+            raise ParseError(
+                source="cepea",
+                parser_version=primary_error.parser_version,
+                reason=f"Página CEPEA sem dados reconhecidos; fallback indisponível: {alternative_error}",
+                attempted_sources=["cepea", "noticias_agricolas"],
+            ) from alternative_error
+        return await _parse_fetch_result(produto, alternative)
+
+
+def _observation_key(ind: Indicador) -> tuple[date, str, str]:
+    return ind.data, ind.produto, regions.slugificar_praca(ind.praca) if ind.praca else ""
+
+
+def _source_priority(source: str) -> int:
+    return {"cepea": 0, "noticias_agricolas": 1}.get(source, 2)
+
+
+def _revision_order(ind: Indicador) -> tuple[datetime, int, int, str]:
+    parsed_at = ind.parsed_at
+    timestamp = (
+        parsed_at.replace(tzinfo=UTC) if parsed_at.tzinfo is None else parsed_at.astimezone(UTC)
+    )
+    return (
+        timestamp,
+        ind.revisao,
+        ind.parser_version,
+        json.dumps(ind.model_dump(mode="json"), sort_keys=True, ensure_ascii=False),
+    )
+
+
+def _merge_indicadores(cached: list[Indicador], fetched: list[Indicador]) -> list[Indicador]:
+    records = {
+        (*_observation_key(ind), ind.fonte): ind for ind in sorted(cached, key=_revision_order)
+    }
+    records.update(
+        {(*_observation_key(ind), ind.fonte): ind for ind in sorted(fetched, key=_revision_order)}
+    )
+    return list(records.values())
+
+
+def _select_indicadores(indicadores: list[Indicador]) -> list[Indicador]:
+    records: dict[tuple[date, str, str], Indicador] = {}
+    for ind in sorted(
+        _merge_indicadores(indicadores, []),
+        key=lambda ind: (_source_priority(ind.fonte.value), ind.fonte.value),
+    ):
+        records.setdefault(_observation_key(ind), ind)
+    return [records[key] for key in sorted(records)]
+
+
+@overload
+async def indicador(
+    produto: str,
+    praca: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    _moeda: str = "BRL",
+    as_polars: Literal[False] = False,
+    validate_sanity: bool = False,
+    force_refresh: bool = False,
+    offline: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def indicador(
+    produto: str,
+    praca: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    _moeda: str = "BRL",
+    as_polars: Literal[False] = False,
+    validate_sanity: bool = False,
+    force_refresh: bool = False,
+    offline: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 @overload
@@ -231,6 +474,11 @@ async def indicador(
 
     Busca dados do cache DuckDB e, se necessário, faz fetch na fonte
     (CEPEA ou Notícias Agrícolas como fallback).
+    A página do indicador publica uma janela recente, normalmente cerca de 15 pregões.
+    Período anterior a ela vem da série histórica do CEPEA, baixada inteira e gravada
+    no cache na primeira vez; laranja não tem série. Etanol é semanal. Para leite,
+    ``data`` é o primeiro dia do mês de referência, não a data de publicação, e
+    ``praca`` é a UF.
 
     Args:
         produto: Código do produto (ex: "soja", "milho", "boi_gordo").
@@ -240,7 +488,7 @@ async def indicador(
         fim: Data final. Default: hoje.
         _moeda: Reservado para conversão futura de moeda. Sem efeito atual.
         as_polars: Retorna ``polars.DataFrame`` em vez de pandas.
-        validate_sanity: Aplica validação estatística (outliers, gaps).
+        validate_sanity: Confere unidade, faixa e variação temporal quando houver regra.
         force_refresh: Ignora cache e força fetch na fonte.
         offline: Usa apenas cache local, sem requests HTTP.
         return_meta: Retorna tupla ``(df, MetaInfo)`` com metadados de proveniência.
@@ -258,6 +506,7 @@ async def indicador(
     )
     store = get_store()
     indicadores: list[Indicador] = []
+    ultima_coleta = None
 
     if not force_refresh:
         try:
@@ -267,18 +516,14 @@ async def indicador(
                 fim=datetime.combine(fim, datetime.max.time()),
                 praca=praca,
             )
+            ultima_coleta = store.indicadores_ultima_coleta(produto)
         except duckdb.Error as e:
             logger.warning("cache_query_failed", produto=produto, error=str(e))
             cached_data = []
 
         indicadores = _dicts_to_indicadores(cached_data)
 
-        if indicadores:
-            meta.from_cache = True
-            meta.source = "cache"
-            meta.source_method = "duckdb"
-            meta.attempted_sources = ["cache"]
-            meta.selected_source = "cache"
+        _set_cache_meta(meta)
 
         logger.info(
             "history_query",
@@ -288,8 +533,40 @@ async def indicador(
             cached_count=len(indicadores),
         )
 
-    if _needs_fetch(indicadores, inicio, fim, force_refresh, offline):
+    recursos: list[dict[str, Any]] = []
+    pagina_baixada = False
+    erro_da_serie: SourceUnavailableError | ParseError | None = None
+    if not offline and _precisa_da_serie(store, produto, inicio, fim, force_refresh):
+        try:
+            novos, recursos = await _baixar_a_serie(store, produto)
+        except (SourceUnavailableError, ParseError) as e:
+            erro_da_serie = e
+            _avisar(
+                meta,
+                f"cepea: série histórica de {produto!r} indisponível ({e}); o resultado traz só o "
+                "que a página e o cache tinham no período.",
+            )
+        else:
+            indicadores = _merge_indicadores(indicadores, novos)
+            meta.source = meta.selected_source = "cepea"
+            meta.source_method = "httpx+xls"
+            meta.attempted_sources = ["cepea"]
+            meta.from_cache = False
+            meta.parser_version = constants.CEPEA_SERIE_PARSER_VERSION
+    elif (
+        not offline
+        and produto not in constants.CEPEA_SERIES
+        and inicio < _today() - timedelta(days=SOURCE_WINDOW_DAYS)
+    ):
+        _avisar(
+            meta,
+            f"cepea: o CEPEA não publica série histórica de {produto!r}; antes da janela recente, "
+            "o resultado traz só o que o cache acumulou.",
+        )
+
+    if _needs_fetch(indicadores, inicio, fim, force_refresh, offline, ultima_coleta):
         logger.info("fetching_from_source", produto=produto)
+        meta.attempted_sources = ["cepea"]
 
         try:
             result = await _fetch_and_parse(produto)
@@ -303,13 +580,20 @@ async def indicador(
                 else ["cepea"]
             )
             meta.selected_source = meta.source
+            if result.source_name == "noticias_agricolas":
+                meta.validation_warnings.append(
+                    "source_fetch_failed: a página do CEPEA não respondeu ou veio sem dados "
+                    "reconhecidos; os dados são da Notícias Agrícolas"
+                )
             meta.source_method = "httpx"
             meta.parse_duration_ms = result.parse_ms
             meta.source_url = result.source_url
             meta.raw_content_hash = result.raw_hash
             meta.raw_content_size = result.raw_size
+            meta.fetch_timestamp = utcnow()
             meta.parser_version = result.parser_version
             meta.from_cache = False
+            pagina_baixada = True
 
             if result.indicadores:
                 new_dicts = _indicadores_to_dicts(result.indicadores)
@@ -326,15 +610,7 @@ async def indicador(
                     saved=saved_count,
                 )
 
-                existing_dates = {ind.data for ind in indicadores}
-                for ind in result.indicadores:
-                    if ind.data not in existing_dates:
-                        indicadores.append(ind)
-            elif indicadores:
-                _warn_stale(
-                    f"Fresh fetch for '{produto}' returned no data. Using cached data.",
-                    meta,
-                )
+                indicadores = _merge_indicadores(indicadores, result.indicadores)
 
         except (httpx.HTTPError, SourceUnavailableError, ParseError, OSError) as e:
             logger.warning(
@@ -343,6 +619,10 @@ async def indicador(
                 error=str(e),
             )
             meta.validation_warnings.append(f"source_fetch_failed: {e}")
+            if isinstance(e, (SourceUnavailableError, ParseError)):
+                meta.attempted_sources = list(
+                    dict.fromkeys(meta.attempted_sources + e.attempted_sources)
+                )
             if not indicadores:
                 cached_fallback = store.indicadores_query(
                     produto=produto,
@@ -352,12 +632,26 @@ async def indicador(
                 )
                 if cached_fallback:
                     indicadores = _dicts_to_indicadores(cached_fallback)
-                    _warn_stale(
-                        f"All sources failed for '{produto}'. Using stale cache ({len(indicadores)} records).",
-                        meta,
-                    )
-                    meta.from_cache = True
-                    meta.source = "cache_fallback"
+            if indicadores:
+                _set_cache_meta(meta, fallback=True)
+                _warn_stale(
+                    f"Fresh fetch failed or returned no data for '{produto}'. Using stale cache ({len(indicadores)} records).",
+                    meta,
+                )
+            if not indicadores:
+                if isinstance(e, ParseError):
+                    raise
+                raise SourceUnavailableError(
+                    source="cepea",
+                    last_error=str(e),
+                    attempted_sources=list(dict.fromkeys(meta.attempted_sources + ["cache"])),
+                ) from e
+    elif not indicadores and not offline:
+        _avisar(
+            meta, f"cepea: sem dado de {produto!r} entre {inicio} e {fim} na fonte nem no cache."
+        )
+
+    indicadores = _select_indicadores(indicadores)
 
     if validate_sanity and indicadores:
         indicadores, anomalies = await validate_batch(indicadores)
@@ -372,7 +666,37 @@ async def indicador(
             if ind.praca and regions.slugificar_praca(ind.praca) == praca_slug
         ]
 
+    if validate_sanity:
+        marcadas = [ind for ind in indicadores if ind.anomalies]
+        if marcadas:
+            regras = sorted({anomalia for ind in marcadas for anomalia in ind.anomalies})
+            _avisar(
+                meta,
+                f"cepea: a sanidade marcou {len(marcadas)} de {len(indicadores)} linhas "
+                f"({'; '.join(regras)}); veja a coluna anomalies",
+            )
+
+    if erro_da_serie is not None and not indicadores:
+        if isinstance(erro_da_serie, ParseError):
+            raise erro_da_serie
+        raise SourceUnavailableError(
+            source="cepea",
+            last_error=str(erro_da_serie),
+            attempted_sources=list(dict.fromkeys(["cepea", *meta.attempted_sources, "cache"])),
+        ) from erro_da_serie
+
     df = _to_dataframe(indicadores)
+    meta.data_sources = sorted({ind.fonte.value for ind in indicadores})
+    _registrar_versoes(meta, indicadores)
+    if recursos:
+        _carimbar_serie(meta, recursos, pagina_baixada)
+    da_pagina = [
+        ind.data
+        for ind in indicadores
+        if ind.parser_version != constants.CEPEA_SERIE_PARSER_VERSION
+    ]
+    if produto == "leite" and da_pagina and len(da_pagina) < len(indicadores):
+        meta.source_details["pagina_desde"] = min(da_pagina).isoformat()
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -382,9 +706,23 @@ async def indicador(
         {"produto": produto, "praca": praca or "all"},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry(constants.Fonte.CEPEA)
+    if meta.from_cache and indicadores:
+        meta.fetched_at = max(ind.parsed_at for ind in indicadores)
+    meta.from_cache = meta.from_cache and bool(indicadores)
+    meta.cache_expires_at = (
+        calculate_expiry(constants.Fonte.CEPEA, desde=meta.fetched_at)
+        if indicadores and not _periodo_fechado(fim)
+        else None
+    )
 
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+
+
+_META_COLUMNS = ("valor_usd", "peso_medio_kg")
+
+
+def _cached_meta(d: dict[str, Any]) -> dict[str, Any]:
+    return {key: float(d[key]) for key in _META_COLUMNS if d.get(key) is not None}
 
 
 def _dicts_to_indicadores(dicts: list[dict[str, Any]]) -> list[Indicador]:
@@ -400,6 +738,9 @@ def _dicts_to_indicadores(dicts: list[dict[str, Any]]) -> list[Indicador]:
                 unidade=d.get("unidade", "BRL/unidade"),
                 metodologia=d.get("metodologia"),
                 parser_version=d.get("parser_version", 1),
+                parsed_at=d.get("collected_at") or utcnow(),
+                meta=_cached_meta(d),
+                anomalies=list(d.get("anomalies") or []),
             )
             indicadores.append(ind)
         except (KeyError, ValueError, TypeError) as e:
@@ -419,8 +760,11 @@ def _indicadores_to_dicts(indicadores: list[Indicador]) -> list[dict[str, Any]]:
             "metodologia": ind.metodologia,
             "variacao_percentual": ind.meta.get("variacao_percentual"),
             "parser_version": ind.parser_version,
+            "valor_usd": ind.meta.get("valor_usd"),
+            "peso_medio_kg": ind.meta.get("peso_medio_kg"),
+            "anomalies": ind.anomalies,
         }
-        for ind in indicadores
+        for ind in sorted(indicadores, key=_revision_order)
     ]
 
 
@@ -428,21 +772,31 @@ async def produtos() -> list[str]:
     return list(constants.CEPEA_PRODUTOS.keys())
 
 
-async def pracas(produto: str) -> list[str]:
-    produto_slug = _normalize_produto(produto)
-    praca = v1.PRACAS.get(produto_slug)
+def _pracas(produto: str) -> list[str]:
+    if produto in constants.CEPEA_PRACAS_REGIONAIS:
+        return [
+            regions.slugificar_praca(label) for label in constants.CEPEA_PRACAS_REGIONAIS[produto]
+        ]
+    praca = v1.PRACAS.get(produto)
     return [regions.slugificar_praca(praca)] if praca else []
 
 
+async def pracas(produto: str) -> list[str]:
+    return _pracas(_normalize_produto(produto))
+
+
 async def ultimo(produto: str, praca: str | None = None, offline: bool = False) -> Indicador:
+    """Último indicador disponível; leite usa o mês de referência e pode ter defasagem mensal."""
     produto = _normalize_produto(produto)
+    if produto == "leite" and praca is None:
+        praca = "BRASIL"
     praca = _normalize_praca(produto, praca)
     _warn_license()
     store = get_store()
     indicadores: list[Indicador] = []
 
-    fim = date.today()
-    inicio = fim - timedelta(days=30)
+    fim = _today()
+    inicio = fim - timedelta(days=365 if produto == "leite" else 30)
 
     cached_data = store.indicadores_query(
         produto=produto,
@@ -454,33 +808,30 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
     if cached_data:
         indicadores = _dicts_to_indicadores(cached_data)
 
+    erro_de_rede: Exception | None = None
     if not offline:
-        has_recent = any(ind.data >= fim - timedelta(days=3) for ind in indicadores)
+        freshness = (
+            (fim.replace(day=1) - timedelta(days=32)).replace(day=1)
+            if produto == "leite"
+            else fim - timedelta(days=3)
+        )
+        has_recent = any(ind.data >= freshness for ind in indicadores)
 
-        if not has_recent:
+        if not has_recent or _vencido(store.indicadores_ultima_coleta(produto)):
             try:
-                fetch_result = await client.fetch_indicador_page(produto)
-                html = fetch_result.html
-                source_name = fetch_result.source
-
-                if source_name == "noticias_agricolas":
-                    from agrobr.noticias_agricolas.parser import parse_indicador as na_parse
-
-                    new_indicadores = na_parse(html, produto)
-                else:
-                    parser, new_indicadores = await get_parser_with_fallback(html, produto)
+                result = await _fetch_and_parse(produto)
+                new_indicadores = result.indicadores
 
                 if new_indicadores:
                     new_dicts = _indicadores_to_dicts(new_indicadores)
                     store.indicadores_upsert(new_dicts)
 
-                    existing_dates = {ind.data for ind in indicadores}
-                    for ind in new_indicadores:
-                        if ind.data not in existing_dates:
-                            indicadores.append(ind)
+                    indicadores = _merge_indicadores(indicadores, new_indicadores)
 
             except (httpx.HTTPError, SourceUnavailableError, ParseError, OSError) as e:
                 logger.warning("source_fetch_failed", produto=produto, error=str(e))
+                if not isinstance(e, ParseError):
+                    erro_de_rede = e
 
     if praca:
         praca_slug = regions.slugificar_praca(praca)
@@ -490,13 +841,24 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
             if ind.praca and regions.slugificar_praca(ind.praca) == praca_slug
         ]
 
+    if not indicadores and offline:
+        raise SourceUnavailableError(
+            source="cepea", last_error="offline sem dado no cache", attempted_sources=["cache"]
+        )
+    if not indicadores and erro_de_rede is not None:
+        raise SourceUnavailableError(
+            source="cepea",
+            last_error=str(erro_de_rede),
+            attempted_sources=getattr(erro_de_rede, "attempted_sources", ["cepea"]) + ["cache"],
+        ) from erro_de_rede
     if not indicadores:
         raise ParseError(
             source="cepea",
-            parser_version=1,
+            parser_version=constants.CEPEA_PARSER_VERSION,
             reason=f"No indicators found for {produto}",
         )
 
+    indicadores = _select_indicadores(indicadores)
     indicadores.sort(key=lambda x: x.data, reverse=True)
     return indicadores[0]
 
@@ -513,6 +875,8 @@ def _to_dataframe(indicadores: list[Indicador]) -> pd.DataFrame:
                 "fonte": pd.Series(dtype="object"),
                 "metodologia": pd.Series(dtype="object"),
                 "anomalies": pd.Series(dtype="object"),
+                "valor_usd": pd.Series(dtype="float64"),
+                "peso_medio_kg": pd.Series(dtype="float64"),
             }
         )
 
@@ -525,12 +889,15 @@ def _to_dataframe(indicadores: list[Indicador]) -> pd.DataFrame:
             "unidade": ind.unidade,
             "fonte": ind.fonte.value,
             "metodologia": ind.metodologia,
-            "anomalies": ind.anomalies if ind.anomalies else None,
+            "anomalies": json.dumps(ind.anomalies, ensure_ascii=False) if ind.anomalies else None,
+            "valor_usd": ind.meta.get("valor_usd"),
+            "peso_medio_kg": ind.meta.get("peso_medio_kg"),
         }
         for ind in indicadores
     ]
 
     df = pd.DataFrame(data)
+    df[list(_META_COLUMNS)] = df[list(_META_COLUMNS)].astype("float64")
     df["data"] = pd.to_datetime(df["data"])
     df = df.sort_values("data").reset_index(drop=True)
 

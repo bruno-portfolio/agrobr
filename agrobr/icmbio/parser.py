@@ -4,6 +4,8 @@ from typing import Any
 
 import pandas as pd
 import structlog
+from lxml import etree
+from pydantic import ValidationError
 
 from agrobr.exceptions import ParseError
 from agrobr.utils.geo import check_geopandas, parse_geojson_base
@@ -13,23 +15,30 @@ from .models import (
     COLUNAS_SAIDA,
     COLUNAS_SAIDA_GEO,
     MAX_FEATURES_GEO,
+    PROPERTY_NAMES,
     RENAME_MAP,
+    FeatureCount,
+    UnidadeConservacao,
 )
 
 logger = structlog.get_logger()
 
-PARSER_VERSION = 2
+PARSER_VERSION = 3
 
 _REQUIRED_COLS_RAW = {"cnuc", "nomeuc", "grupouc", "areahaalb"}
 
 
 def parse_ucs_csv(data: bytes) -> pd.DataFrame:
-    df = read_csv_safe(data, source="icmbio", parser_version=PARSER_VERSION, label="CSV ICMBio UCs")
-
-    if df.empty:
-        return pd.DataFrame(columns=COLUNAS_SAIDA)
-
-    missing = _REQUIRED_COLS_RAW - set(df.columns)
+    df = read_csv_safe(
+        data,
+        source="icmbio",
+        parser_version=PARSER_VERSION,
+        label="CSV ICMBio UCs",
+        dtype="string[python]",
+        keep_default_na=False,
+        na_filter=False,
+    )
+    missing = set(PROPERTY_NAMES) - set(df.columns)
     if missing:
         raise ParseError(
             source="icmbio",
@@ -37,17 +46,41 @@ def parse_ucs_csv(data: bytes) -> pd.DataFrame:
             reason=f"Colunas obrigatorias ausentes: {missing}",
         )
 
-    df = df.rename(columns=RENAME_MAP)
-
-    df["area_ha"] = pd.to_numeric(df["area_ha"], errors="coerce")
-    df["ano_criacao"] = pd.to_numeric(df["ano_criacao"], errors="coerce").astype("Int64")
-    df["grupo"] = df["grupo"].str.upper()
-
-    output_cols = [c for c in COLUNAS_SAIDA if c in df.columns]
-    df = df[output_cols].reset_index(drop=True)
+    try:
+        rows = [
+            UnidadeConservacao.model_validate(row).model_dump()
+            for row in df.to_dict(orient="records")
+        ]
+    except ValidationError as exc:
+        raise ParseError(
+            source="icmbio", parser_version=PARSER_VERSION, reason=f"UC invalida: {exc}"
+        ) from exc
+    df = pd.DataFrame(rows, columns=PROPERTY_NAMES, dtype=object).rename(columns=RENAME_MAP)
+    dtypes = dict.fromkeys(COLUNAS_SAIDA, "string[python]")
+    dtypes.update(area_ha="float64", ano_criacao="Int64")
+    df = df[COLUNAS_SAIDA].astype(dtypes)
 
     logger.info("icmbio_ucs_parse_ok", records=len(df))
     return df
+
+
+def parse_feature_count(data: bytes) -> int:
+    try:
+        xml_parser = etree.XMLParser(resolve_entities=False, load_dtd=False, no_network=True)
+        root = etree.fromstring(data, parser=xml_parser)
+        if root.getroottree().docinfo.doctype:
+            raise ValueError("DOCTYPE nao permitido")
+        if root.tag != "{http://www.opengis.net/wfs}FeatureCollection":
+            raise ValueError("Resposta WFS FeatureCollection esperada")
+        return FeatureCount.model_validate(
+            {"number_of_features": root.get("numberOfFeatures")}
+        ).number_of_features
+    except (etree.XMLSyntaxError, ValueError) as exc:
+        raise ParseError(
+            source="icmbio",
+            parser_version=PARSER_VERSION,
+            reason=f"Contagem WFS invalida: {exc}",
+        ) from exc
 
 
 def parse_ucs_geojson(data: bytes) -> Any:

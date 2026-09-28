@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 from typing import Literal, overload
 
@@ -14,6 +15,7 @@ from agrobr.utils.warnings import warn_once
 from . import client, parser
 from .models import (
     PARSER_VERSION,
+    PERIODOS_RESUMO,
     PRODUTOS_HISTORICO,
     PRODUTOS_QUINZENAL,
     REGIOES_QUINZENAL,
@@ -72,7 +74,7 @@ async def moagem_quinzenal(
     if regiao is not None and regiao not in REGIOES_QUINZENAL:
         raise InvalidParameterError(f"Região '{regiao}' inválida. Opções: {REGIOES_QUINZENAL}")
 
-    parsed, source_url, fetch_ms, parse_ms = await _fetch_and_parse_quinzenal()
+    parsed, source_url, fetch_ms, parse_ms, pdf_bytes = await _fetch_and_parse_quinzenal()
 
     df = parsed.series[parsed.series["produto"] == produto_canonico]
     if regiao is not None:
@@ -89,6 +91,8 @@ async def moagem_quinzenal(
         PARSER_VERSION,
         attempted_sources=["unica"],
         selected_source="unica",
+        raw_content_hash=hashlib.sha256(pdf_bytes).hexdigest(),
+        raw_content_size=len(pdf_bytes),
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -96,7 +100,7 @@ async def moagem_quinzenal(
 @overload
 async def safra_resumo(
     *,
-    periodo: Literal["acumulado", "quinzena"] = "acumulado",
+    periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -105,7 +109,7 @@ async def safra_resumo(
 @overload
 async def safra_resumo(
     *,
-    periodo: Literal["acumulado", "quinzena"] = "acumulado",
+    periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
     as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -113,24 +117,32 @@ async def safra_resumo(
 
 async def safra_resumo(
     *,
-    periodo: Literal["acumulado", "quinzena"] = "acumulado",
+    periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     """Resumo da posição da safra Centro-Sul (Tabelas 1-2 do relatório UNICA).
 
     Moagem, açúcar, etanol, ATR, mix açúcar/etanol e rendimentos por região,
-    no acumulado da safra ou na quinzena corrente, sempre comparando com a
-    safra anterior.
+    no acumulado da safra ou no período da edição (quinzena ou mês), sempre
+    comparando com a safra anterior. Período e datas vêm do título de cada
+    tabela; pedir um período que a edição corrente não publica levanta
+    InvalidParameterError com os períodos disponíveis.
     """
     _warn_license()
-    if periodo not in ("acumulado", "quinzena"):
+    if periodo not in PERIODOS_RESUMO:
         raise InvalidParameterError(
-            f"Período '{periodo}' inválido. Opções: ['acumulado', 'quinzena']"
+            f"Período '{periodo}' inválido. Opções: {list(PERIODOS_RESUMO)}"
         )
 
-    parsed, source_url, fetch_ms, parse_ms = await _fetch_and_parse_quinzenal()
+    parsed, source_url, fetch_ms, parse_ms, pdf_bytes = await _fetch_and_parse_quinzenal()
 
+    disponiveis = sorted(set(parsed.resumo["periodo"]))
+    if periodo not in disponiveis:
+        raise InvalidParameterError(
+            f"A edição de {parsed.posicao:%d/%m/%Y} não publica o período '{periodo}'. "
+            f"Períodos da edição: {disponiveis}"
+        )
     df = parsed.resumo[parsed.resumo["periodo"] == periodo].reset_index(drop=True)
 
     meta = build_source_meta(
@@ -143,6 +155,8 @@ async def safra_resumo(
         PARSER_VERSION,
         attempted_sources=["unica"],
         selected_source="unica",
+        raw_content_hash=hashlib.sha256(pdf_bytes).hexdigest(),
+        raw_content_size=len(pdf_bytes),
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -206,6 +220,8 @@ async def producao_historica(
         PARSER_VERSION,
         attempted_sources=["unica"],
         selected_source="unica",
+        raw_content_hash=hashlib.sha256(content).hexdigest(),
+        raw_content_size=len(content),
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -213,16 +229,16 @@ async def producao_historica(
 _parsed_cache: tuple[str, parser.ParsedQuinzenal] | None = None
 
 
-async def _fetch_and_parse_quinzenal() -> tuple[parser.ParsedQuinzenal, str, int, int]:
-    """Cache de 1 entrada keyed pela URL do PDF (que carrega o md5 do arquivo):
-    `moagem_quinzenal` e `safra_resumo` na mesma sessão pagam um único parse."""
+async def _fetch_and_parse_quinzenal() -> tuple[parser.ParsedQuinzenal, str, int, int, bytes]:
+    """Cache de 1 entrada keyed pela URL do PDF: `moagem_quinzenal` e
+    `safra_resumo` na mesma sessão pagam um único parse."""
     global _parsed_cache
     t0 = time.monotonic()
     pdf_bytes, source_url = await client.fetch_quinzenal_pdf()
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     if _parsed_cache is not None and _parsed_cache[0] == source_url:
-        return _parsed_cache[1], source_url, fetch_ms, 0
+        return _parsed_cache[1], source_url, fetch_ms, 0, pdf_bytes
 
     t1 = time.monotonic()
     parsed = parser.parse_quinzenal_pdf(pdf_bytes)
@@ -235,4 +251,4 @@ async def _fetch_and_parse_quinzenal() -> tuple[parser.ParsedQuinzenal, str, int
         posicao=str(parsed.posicao.date()),
         series_rows=len(parsed.series),
     )
-    return parsed, source_url, fetch_ms, parse_ms
+    return parsed, source_url, fetch_ms, parse_ms, pdf_bytes

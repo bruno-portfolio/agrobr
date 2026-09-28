@@ -21,6 +21,7 @@ from agrobr.ibge.censo_api import (
 )
 from agrobr.ibge.censo_municipal_1985 import (
     censo_agro_municipal_1985,
+    cobertura_censo_agro_municipal_1985,
     temas_censo_agro_municipal_1985,
 )
 from agrobr.ibge.legacy_api import censo_agro_legado, temas_censo_agro_legado
@@ -40,6 +41,7 @@ __all__ = [
     "censo_agro_historico",
     "censo_agro_legado",
     "censo_agro_municipal_1985",
+    "cobertura_censo_agro_municipal_1985",
     "especies_abate",
     "especies_ppm",
     "especies_silvicultura_area",

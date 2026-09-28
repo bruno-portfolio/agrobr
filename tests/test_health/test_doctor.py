@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -11,60 +11,9 @@ from agrobr.health.doctor import (
     CacheStats,
     DiagnosticsResult,
     SourceStatus,
-    _check_source,
     run_diagnostics,
 )
 from agrobr.health.registry import HEALTH_REGISTRY
-
-
-class TestSourceStatus:
-    def test_source_status_ok(self):
-        status = SourceStatus(
-            name="CEPEA",
-            url="https://example.com",
-            status="ok",
-            latency_ms=100,
-        )
-        assert status.name == "CEPEA"
-        assert status.status == "ok"
-        assert status.latency_ms == 100
-        assert status.error is None
-
-    def test_source_status_error(self):
-        status = SourceStatus(
-            name="CEPEA",
-            url="https://example.com",
-            status="error",
-            latency_ms=5000,
-            error="timeout",
-        )
-        assert status.status == "error"
-        assert status.error == "timeout"
-
-
-class TestCacheStats:
-    def test_cache_stats_empty(self):
-        stats = CacheStats(
-            location="/tmp/cache.db",
-            size_bytes=0,
-            total_records=0,
-            by_source={},
-        )
-        assert stats.total_records == 0
-        assert stats.by_source == {}
-
-    def test_cache_stats_with_data(self):
-        stats = CacheStats(
-            location="/tmp/cache.db",
-            size_bytes=1024 * 1024,
-            total_records=1000,
-            by_source={
-                "cepea": {"count": 500, "oldest": "2024-01-01", "newest": "2024-12-31"},
-                "conab": {"count": 500, "oldest": "2024-01-01", "newest": "2024-12-31"},
-            },
-        )
-        assert stats.total_records == 1000
-        assert "cepea" in stats.by_source
 
 
 class TestDiagnosticsResult:
@@ -88,104 +37,83 @@ class TestDiagnosticsResult:
         assert len(d["sources"]) == 1
         assert d["sources"][0]["status"] == "ok"
 
-    def test_to_rich_healthy(self):
-        result = DiagnosticsResult(
-            version="0.2.0",
-            timestamp=datetime(2024, 1, 1, 12, 0, 0),
-            sources=[
-                SourceStatus("CEPEA", "https://example.com", "ok", 100),
-            ],
-            cache=CacheStats("/tmp", 1024, 100, {}),
-            last_collections={},
-            cache_expiry={},
-            config={},
-            overall_status="healthy",
-        )
 
-        output = result.to_rich()
-        assert "agrobr diagnostics" in output
-        assert "[OK]" in output
-
-    def test_to_rich_degraded(self):
-        result = DiagnosticsResult(
-            version="0.2.0",
-            timestamp=datetime(2024, 1, 1, 12, 0, 0),
-            sources=[
-                SourceStatus("CEPEA", "https://example.com", "error", 5000, "timeout"),
-            ],
-            cache=CacheStats("/tmp", 1024, 100, {}),
-            last_collections={},
-            cache_expiry={},
-            config={},
-            overall_status="degraded",
-        )
-
-        output = result.to_rich()
-        assert "[WARN]" in output or "[FAIL]" in output
+@pytest.mark.parametrize(
+    ("overall", "final"),
+    [
+        ("healthy", "[OK] All systems operational"),
+        ("degraded", "[WARN] System degraded - check diagnostic warnings"),
+        ("error", "[FAIL] System error - check cache and source diagnostics"),
+    ],
+)
+def test_to_rich_status_lines(overall, final):
+    result = DiagnosticsResult(
+        version="2.0.0",
+        timestamp=datetime(2024, 1, 1, 12, 0, 0),
+        sources=[
+            SourceStatus("A", "https://a", "ok", 10),
+            SourceStatus("B", "https://b", "warning", 20),
+            SourceStatus("C", "https://c", "slow", 30),
+            SourceStatus("D", "https://d", "error", 40, "timeout"),
+        ],
+        cache=CacheStats("/tmp", 0, 0, {}),
+        last_collections={},
+        cache_expiry={},
+        config={},
+        overall_status=overall,
+    )
+    lines = result.to_rich().split("\n")
+    assert f"  [OK] {'A':<35} {10:>5}ms" in lines
+    assert f"  [WARN] {'B':<35} {20:>5}ms" in lines
+    assert f"  [SLOW] {'C':<35} {30:>5}ms" in lines
+    assert f"  [FAIL] {'D':<35} {40:>5}ms  (timeout)" in lines
+    assert final in lines
 
 
-class TestCheckSource:
-    @pytest.mark.asyncio
-    async def test_check_source_success(self):
-        with patch("agrobr.health.doctor.httpx.AsyncClient") as mock_client:
-            mock_response = MagicMock()
-            mock_response.status_code = 200
-            mock_client.return_value.__aenter__ = AsyncMock(return_value=mock_client.return_value)
-            mock_client.return_value.__aexit__ = AsyncMock()
-            mock_client.return_value.get = AsyncMock(return_value=mock_response)
+@pytest.mark.parametrize(
+    ("statuses", "cache_status", "overall"),
+    [
+        (("ok",), "ok", "healthy"),
+        (("warning", "ok"), "ok", "degraded"),
+        (("error",), "ok", "error"),
+        (("ok",), "error", "error"),
+    ],
+)
+async def test_run_diagnostics_overall_status(statuses, cache_status, overall):
+    results = [
+        SourceStatus(str(nome), "https://fonte", statuses[min(i, len(statuses) - 1)], 5)
+        for i, nome in enumerate(HEALTH_REGISTRY)
+    ]
+    collected = {"cepea": datetime(2024, 1, 1)}
+    with (
+        patch("agrobr.health.doctor._check_source", AsyncMock(side_effect=results)),
+        patch(
+            "agrobr.health.doctor._get_cache_stats",
+            return_value=CacheStats("/tmp", 0, 0, {}, status=cache_status),
+        ),
+        patch("agrobr.health.doctor._get_last_collections", return_value=collected) as last,
+        patch("agrobr.health.doctor.get_next_update_info", return_value={}),
+    ):
+        result = await run_diagnostics()
+    assert result.overall_status == overall
+    assert result.last_collections == (collected if cache_status == "ok" else {})
+    assert last.call_count == (1 if cache_status == "ok" else 0)
 
-            status = await _check_source("Test", "https://example.com")
-            assert status.status in ("ok", "slow")
 
-    @pytest.mark.asyncio
-    async def test_check_source_timeout(self):
-        import httpx
-
-        with patch("agrobr.health.doctor.httpx.AsyncClient") as mock_client_class:
-            mock_instance = MagicMock()
-            mock_instance.get = AsyncMock(side_effect=httpx.TimeoutException("timeout"))
-            mock_client_class.return_value.__aenter__ = AsyncMock(return_value=mock_instance)
-            mock_client_class.return_value.__aexit__ = AsyncMock(return_value=None)
-
-            status = await _check_source("Test", "https://example.com")
-            assert status.status == "error"
-            assert status.error == "timeout"
-
-
-class TestRunDiagnostics:
-    @pytest.mark.asyncio
-    async def test_run_diagnostics_returns_result(self):
-        with patch("agrobr.health.doctor._check_source") as mock_check:
-            mock_check.return_value = SourceStatus("Test", "https://example.com", "ok", 100)
-
-            with patch("agrobr.health.doctor._get_cache_stats") as mock_cache:
-                mock_cache.return_value = CacheStats("/tmp", 0, 0, {})
-
-                with patch("agrobr.health.doctor._get_last_collections") as mock_collections:
-                    mock_collections.return_value = {}
-
-                    with patch("agrobr.health.doctor.get_next_update_info") as mock_expiry:
-                        mock_expiry.return_value = {"type": "ttl", "ttl": "24h"}
-
-                        result = await run_diagnostics()
-
-                        assert isinstance(result, DiagnosticsResult)
-                        assert result.version is not None
-
-    @pytest.mark.asyncio
-    async def test_run_diagnostics_checks_all_sources(self):
-        with patch("agrobr.health.doctor._check_source") as mock_check:
-            mock_check.return_value = SourceStatus("Test", "https://example.com", "ok", 100)
-
-            with patch("agrobr.health.doctor._get_cache_stats") as mock_cache:
-                mock_cache.return_value = CacheStats("/tmp", 0, 0, {})
-
-                with patch("agrobr.health.doctor._get_last_collections") as mock_collections:
-                    mock_collections.return_value = {}
-
-                    with patch("agrobr.health.doctor.get_next_update_info") as mock_expiry:
-                        mock_expiry.return_value = {"type": "ttl", "ttl": "24h"}
-
-                        result = await run_diagnostics()
-
-                        assert len(result.sources) == len(HEALTH_REGISTRY)
+async def test_run_diagnostics_expiracao_so_de_fonte_com_cache():
+    results = [SourceStatus(str(nome), "https://fonte", "ok", 5) for nome in HEALTH_REGISTRY]
+    with (
+        patch("agrobr.health.doctor._check_source", AsyncMock(side_effect=results)),
+        patch("agrobr.health.doctor._get_cache_stats", return_value=CacheStats("/tmp", 0, 0, {})),
+        patch("agrobr.health.doctor._get_last_collections", return_value={}),
+        patch("agrobr.cache.policies.utcnow", return_value=datetime(2026, 9, 23, 12, 0)),
+    ):
+        result = await run_diagnostics()
+    assert result.cache_expiry == {
+        "cepea": {
+            "type": "smart",
+            "expires_at": "2026-09-23 21:00",
+            "description": "Expira às 18h BRT (atualização CEPEA)",
+        }
+    }
+    assert "TTL" not in result.to_rich()

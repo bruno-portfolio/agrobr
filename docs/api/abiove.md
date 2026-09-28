@@ -18,6 +18,7 @@ async def exportacao(
     mes: int | None = None,
     produto: str | None = None,
     agregacao: str = "detalhado",
+    edicao: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -28,9 +29,10 @@ async def exportacao(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `ano` | `int` | Ano de referencia |
-| `mes` | `int \| None` | Mes especifico (1-12). None retorna todos |
+| `mes` | `int \| None` | Mês dos dados (1-12). None retorna todos os meses publicados |
 | `produto` | `str \| None` | Filtrar: `"grao"`, `"farelo"`, `"oleo"`, `"milho"`, `"total"` (agregado) |
 | `agregacao` | `str` | `"detalhado"` (por produto/mes) ou `"mensal"` (soma) |
+| `edicao` | `str \| None` | Edição da planilha, `"AAAA-MM"` (ex.: `"2025-12"`), de `ano` ou `ano + 1`. None lê a edição mais recente que publica `ano` |
 | `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
@@ -51,7 +53,18 @@ df = await abiove.exportacao(2024, produto="farelo")
 
 # Mes especifico
 df = await abiove.exportacao(2024, mes=6)
+
+# Número original de dez/2025, da edição de dezembro
+df = await abiove.exportacao(2025, mes=12, edicao="2025-12")
 ```
+
+**Edição:**
+
+A ABIOVE publica uma planilha por edição mensal (`exp_AAAAMM.xlsx`), com o ano da edição e o anterior, e revê meses já publicados. Sem `edicao`, o agrobr lê a edição mais recente que traz `ano`: primeiro as do ano seguinte (que trazem `ano` como comparação), depois as do próprio ano, da mais nova para a mais antiga, sem passar do mês corrente. Em setembro/2026, `exportacao(2025)` lê `exp_202608.xlsx`, que revê 19 das 96 células de 2025 publicadas em `exp_202512.xlsx` (farelo, dez/2025: 1.990.304,323 t, e não 2.020.365,023 t).
+
+- A edição lida fica em `MetaInfo.source_details["edicao"]` (`arquivo` e `mes`), e o SHA-256 da planilha em `raw_content_hash`.
+- `mes` só filtra o mês dos dados: mês ainda não publicado devolve DataFrame vazio, e `mes` fora de 1-12 levanta `InvalidParameterError` antes da rede, como `edicao` em outro formato ou de outro ano, `produto` fora da lista e `agregacao` diferente de `"detalhado"` e `"mensal"`.
+- Falha na edição mais recente (timeout, HTTP 5xx) levanta `SourceUnavailableError`; o agrobr só passa para a edição anterior quando a mais recente não existe (HTTP 404).
 
 ## Versao Sincrona
 

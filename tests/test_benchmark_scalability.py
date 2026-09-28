@@ -15,8 +15,11 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import copy
 import gc
+import json
 import pickle
+import re
 import statistics
 import time
 import tracemalloc
@@ -740,105 +743,57 @@ class TestSyncWrapperStress:
 
 
 class TestGoldenDataScaling:
-    def _load_golden_cepea_html(self) -> str | None:
-        cepea_dir = GOLDEN_DIR / "cepea"
-        if not cepea_dir.exists():
-            return None
-        for case_dir in cepea_dir.iterdir():
-            if case_dir.is_dir() and (case_dir / "response.html").exists():
-                return (case_dir / "response.html").read_text(encoding="utf-8")
-        return None
+    @staticmethod
+    def _load_fixture(source: str, produto: str) -> str:
+        for case in sorted((GOLDEN_DIR / source).iterdir()):
+            metadata = case / "metadata.json"
+            response = case / "response.html"
+            if response.exists() and metadata.exists():
+                meta = json.loads(metadata.read_text(encoding="utf-8"))
+                if meta.get("produto", meta.get("parser_kwargs", {}).get("produto")) == produto:
+                    return response.read_text(encoding="utf-8")
+        raise AssertionError(f"Missing golden HTML: {source}/{produto}")
+
+    @staticmethod
+    def _multiply_rows(html: str) -> str:
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(html, "lxml")
+        rows = [
+            row
+            for row in soup.select("table tr")
+            if row.find("td")
+            and re.fullmatch(
+                r"(?:\d{2}\s*-\s*)?\d{2}/\d{2}/\d{4}", row.find("td").get_text(strip=True)
+            )
+        ]
+        assert rows
+        for row in rows:
+            for _ in range(9):
+                row.insert_after(copy.deepcopy(row))
+        return str(soup)
 
     def test_golden_cepea_10x(self):
-        html = self._load_golden_cepea_html()
-        if html is None:
-            pytest.skip("No CEPEA golden data")
-
-        from bs4 import BeautifulSoup
-
-        soup = BeautifulSoup(html, "lxml")
-        tables = soup.find_all("table")
-        if not tables:
-            pytest.skip("No tables in golden HTML")
-
-        table = tables[0]
-        rows = table.find_all("tr")[1:]
-        if not rows:
-            pytest.skip("No data rows")
-
-        original_count = len(rows)
-        for _ in range(9):
-            for row in rows[:original_count]:
-                import copy
-
-                new_row = copy.copy(row)
-                table.append(new_row)
-
-        multiplied_html = str(soup)
-
         from agrobr.cepea.parsers.v1 import CepeaParserV1
 
+        html = self._load_fixture("cepea", "soja")
         parser = CepeaParserV1()
-
+        original = parser.parse(html, "soja")
         start = time.perf_counter()
-        try:
-            results = parser.parse(multiplied_html, "soja")
-            elapsed = (time.perf_counter() - start) * 1000
-            print(
-                f"\n  [GOLDEN] CEPEA 10x ({original_count}->{original_count * 10} rows): {_fmt(elapsed)}, parsed={len(results)}"
-            )
-        except Exception as e:
-            elapsed = (time.perf_counter() - start) * 1000
-            print(f"\n  [GOLDEN] CEPEA 10x FAILED: {e} after {_fmt(elapsed)}")
-
-    def _load_golden_na_html(self) -> str | None:
-        na_dir = GOLDEN_DIR / "na"
-        if not na_dir.exists():
-            return None
-        for case_dir in na_dir.iterdir():
-            if case_dir.is_dir() and (case_dir / "response.html").exists():
-                return (case_dir / "response.html").read_text(encoding="utf-8")
-        return None
+        results = parser.parse(self._multiply_rows(html), "soja")
+        elapsed = (time.perf_counter() - start) * 1000
+        assert original
+        assert len(results) == len(original) * 10
+        print(f"\\n  [GOLDEN] CEPEA 10x: {_fmt(elapsed)}, parsed={len(results)}")
 
     def test_golden_na_10x(self):
-        html = self._load_golden_na_html()
-        if html is None:
-            pytest.skip("No NA golden data")
-
-        from bs4 import BeautifulSoup
-
-        soup = BeautifulSoup(html, "lxml")
-        tables = soup.find_all("table")
-        if not tables:
-            pytest.skip("No tables in golden HTML")
-
-        table = tables[0]
-        tbody = table.find("tbody")
-        container = tbody if tbody else table
-        rows = container.find_all("tr")
-        data_rows = [r for r in rows if r.find("td")]
-        if not data_rows:
-            pytest.skip("No data rows")
-
-        original_count = len(data_rows)
-        for _ in range(9):
-            for row in data_rows[:original_count]:
-                import copy
-
-                new_row = copy.copy(row)
-                container.append(new_row)
-
-        multiplied_html = str(soup)
-
         from agrobr.noticias_agricolas.parser import parse_indicador
 
+        html = self._load_fixture("na", "soja")
+        original = parse_indicador(html, produto="soja")
         start = time.perf_counter()
-        try:
-            results = parse_indicador(multiplied_html, produto="soja")
-            elapsed = (time.perf_counter() - start) * 1000
-            print(
-                f"\n  [GOLDEN] NA 10x ({original_count}->{original_count * 10} rows): {_fmt(elapsed)}, parsed={len(results)}"
-            )
-        except Exception as e:
-            elapsed = (time.perf_counter() - start) * 1000
-            print(f"\n  [GOLDEN] NA 10x FAILED: {e} after {_fmt(elapsed)}")
+        results = parse_indicador(self._multiply_rows(html), produto="soja")
+        elapsed = (time.perf_counter() - start) * 1000
+        assert original
+        assert len(results) == len(original) * 10
+        print(f"\\n  [GOLDEN] NA 10x: {_fmt(elapsed)}, parsed={len(results)}")

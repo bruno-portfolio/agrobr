@@ -1,0 +1,10 @@
+{
+  "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/11o-levantamento-safra-2025-26/site_previsao_de_safra-por_produto-ago-2026.xlsx",
+  "status": 200,
+  "length": 985966,
+  "magic": "b'PK\\x03\\x04\\x14\\x00\\x06\\x00'",
+  "captured_at": "2026-09-06",
+  "sha256": "11c0cc26d3bb185636ee244deb2a161fa47ed42a82e93b7a7d157c00f262918d",
+  "safra": "2025/26",
+  "levantamento": 11
+}

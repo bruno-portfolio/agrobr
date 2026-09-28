@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from agrobr import constants
+
 if TYPE_CHECKING:
-    from agrobr.datasets.base import BaseDataset
+    from agrobr.datasets.base import BaseDataset, DatasetInfo
 
 _REGISTRY: dict[str, BaseDataset] = {}
 
@@ -31,6 +33,13 @@ def info(name: str) -> dict[str, Any]:
     return get_dataset(name).info.to_dict()
 
 
+def _licencas(info: DatasetInfo) -> str:
+    classes = {fonte.name: constants.licenca_da_fonte(fonte.name) for fonte in info.sources}
+    if len({classe for classe in classes.values() if classe}) < 2:
+        return info.license
+    return ", ".join(f"{classe} ({fonte})" for fonte, classe in classes.items() if classe)
+
+
 def describe(name: str) -> str:
     d = get_dataset(name)
     i = d.info
@@ -39,7 +48,7 @@ def describe(name: str) -> str:
         f"  {i.description}",
         f"  Institution: {i.source_institution or 'N/A'}",
         f"  URL: {i.source_url or 'N/A'}",
-        f"  License: {i.license}",
+        f"  License: {_licencas(i)}",
         f"  Products: {', '.join(i.products)}",
         f"  Sources: {' > '.join(s.name for s in i.sources)}",
         f"  Frequency: {i.update_frequency} (latency: {i.typical_latency})",

@@ -2,7 +2,9 @@
 
 > Brazilian agricultural data in one line of code
 
-**🇧🇷 [Leia em Português](README.pt-BR.md)**
+**⚠️ agrobr 2.0 has breaking changes.** Before upgrading, read the [summary of what breaks](https://www.agrobr.dev/docs/en/guides/migracao-2/#summary-what-breaks) in the migration guide. To stay on the 1.x series for now: `pip install "agrobr<2"`.
+
+**🇧🇷 [Leia em Português](https://github.com/bruno-portfolio/agrobr/blob/main/README.pt-BR.md)**
 
 [![PyPI version](https://img.shields.io/pypi/v/agrobr)](https://pypi.org/project/agrobr/)
 [![Downloads](https://static.pepy.tech/badge/agrobr)](https://pepy.tech/project/agrobr)
@@ -17,7 +19,7 @@
 
 <p align="center">
   <a href="https://htmlpreview.github.io/?https://github.com/bruno-portfolio/agrobr/blob/main/docs/canopy.html">
-    <img src="docs/canopy.svg" width="100%" />
+    <img src="https://raw.githubusercontent.com/bruno-portfolio/agrobr/main/docs/canopy.svg" width="100%" />
   </a>
 </p>
 
@@ -25,7 +27,7 @@ Python infrastructure for Brazilian agricultural data with a semantic layer over
 
 Brazil is one of the world's largest agricultural producers, but its public data is scattered across dozens of government portals, each with its own format, encoding and quirks. agrobr turns all of that into clean, validated DataFrames.
 
-**v1.1.0** — 6,400+ passing tests, 92% coverage, golden tests with reference fixtures per source, centralized retry in every HTTP client.
+**v2.0.0** — 53 datasets | 88 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -38,7 +40,7 @@ pip install agrobr
 
 With optional extras:
 ```bash
-pip install agrobr[pdf]             # pdfplumber for ANDA, Lista Suja, Rio Verde
+pip install agrobr[pdf]             # pdfplumber for ANDA, Rio Verde and the Lista Suja PDF route
 pip install agrobr[polars]          # Polars support
 pip install agrobr[browser]         # Playwright (optional, for JS-heavy sources)
 pip install agrobr[bigquery]        # Base dos Dados (BCB/SICOR fallback)
@@ -46,8 +48,8 @@ pip install agrobr[geo]             # GeoPandas — enables _geo variants (PRODE
 pip install agrobr[all]             # All optional runtime integrations
 ```
 
-CONAB crop surveys and supply/demand balances require the browser extra and a local
-Chromium installation:
+CONAB crop surveys and supply/demand balances use HTTP first; Playwright and Chromium are an
+optional transport fallback:
 
 ```bash
 pip install agrobr[browser]
@@ -106,11 +108,11 @@ print(await cepea.pracas('soja'))   # trading locations per product
 
 | Source | Flagship function | Doc |
 |--------|-------------------|-----|
-| **B3** agri futures | `b3.ajustes(data="13/02/2025")`, `b3.posicoes_abertas(data=...)`, `b3.historico(contrato="boi", inicio=..., fim=...)` | [docs/sources/b3.md](docs/sources/b3.md) |
-| **CFTC COT** fund positioning (Chicago/NY) | `cftc.cot("soja", start="2026-05-01")` | [docs/sources/cftc.md](docs/sources/cftc.md) |
-| **IMEA** Mato Grosso | `imea.cotacoes("soja", safra="24/25")` | [docs/sources/imea.md](docs/sources/imea.md) |
-| **CONAB CEASA** | `conab.ceasa_precos(produto="tomate", ceasa="SAO PAULO")` | [docs/sources/conab_ceasa.md](docs/sources/conab_ceasa.md) |
-| **ANP Diesel** | `alt.anp_diesel.precos_diesel(uf="MT")`, `alt.anp_diesel.vendas_diesel(uf="MT")` | [docs/sources/anp_diesel.md](docs/sources/anp_diesel.md) |
+| **B3** agri futures | `b3.ajustes(data="13/02/2025")`, `b3.posicoes_abertas(data=...)`, `b3.historico(contrato="boi", inicio=..., fim=...)` | [docs/sources/b3.md](https://www.agrobr.dev/docs/sources/b3/) |
+| **CFTC COT** fund positioning (Chicago/NY) | `cftc.cot("soja", start="2026-05-01")` | [docs/sources/cftc.md](https://www.agrobr.dev/docs/sources/cftc/) |
+| **IMEA** Mato Grosso | `imea.cotacoes("soja", safra="24/25")` | [docs/sources/imea.md](https://www.agrobr.dev/docs/sources/imea/) |
+| **CONAB CEASA** | `conab.ceasa_precos(produto="tomate", ceasa="SAO PAULO")` | [docs/sources/conab_ceasa.md](https://www.agrobr.dev/docs/sources/conab_ceasa/) |
+| **ANP Diesel** | `alt.anp_diesel.precos_diesel(uf="MT")`, `alt.anp_diesel.vendas_diesel(uf="MT")` | [docs/sources/anp_diesel.md](https://www.agrobr.dev/docs/sources/anp_diesel/) |
 
 ### Production and crop seasons
 
@@ -124,7 +126,12 @@ df = await conab.safras('soja', safra='2024/25')
 df = await conab.balanco('soja')
 df = await conab.serie_historica('soja', inicio=2010, fim=2024)
 df = await conab.progresso_safra(cultura='Soja', estado='MT', operacao='Colheita')
-df = await conab.custo_producao(cultura='soja', uf='MT', safra='2024/25')
+catalogo = await conab.catalogo_custos("soja")
+planilha = catalogo["planilha"].max()
+contextos = await conab.catalogo_custos("soja", planilha=planilha)
+mt = contextos[contextos["uf"].eq("MT") & contextos["status"].eq("identified")]
+aba = mt.sort_values("ano_referencia")["aba"].iloc[-1]
+df = await conab.custo_producao("soja", uf="MT", planilha=planilha, aba=aba)
 
 # IBGE — Municipal Agricultural Production (annual)
 df = await ibge.pam('soja', ano=2023, nivel='uf')
@@ -136,20 +143,22 @@ df = await ibge.abate('frango', trimestre='202303', uf='PR')
 # Agricultural Census — 1995/2006/2017 + historical series 1920-2006 + 1985 municipal
 df = await ibge.censo_agro('efetivo_rebanho')
 df = await ibge.censo_agro_historico('estabelecimentos_area')
-df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', uf='SP')
+temas_1985 = await ibge.temas_censo_agro_municipal_1985()
 ```
+
+**Local package, one row per PDF cell.** agrobr extracted the numbers of the 53 themes (tables 67 to 119 of the IBGE's 28 state volumes) and ships them in `agrobr/data/censo_1985/`: queries do not use the network. `valor` is filled only when the cell was confirmed by the printed sums (municipality → microregion → mesoregion → state); `valor_lido` always carries the reading, and `status` gives the confidence level, with the precision measured against blind oracles. See the [contract](https://www.agrobr.dev/docs/en/contracts/censo_agropecuario_municipal_1985/).
 
 | Source | Flagship function | Doc |
 |--------|-------------------|-----|
-| **IBGE PEVS** | `ibge.silvicultura('madeira_tora', ano=2023)`, `ibge.extracao_vegetal('acai', ano=2023)` | [docs/sources/ibge.md](docs/sources/ibge.md) |
-| **IBGE Milk** | `ibge.leite_trimestral(trimestre='202303', uf='MG')` | [docs/sources/ibge.md](docs/sources/ibge.md) |
-| **IBGE Agri GDP** | `ibge.pib_agro(trimestre='202501', setor='agropecuaria')` | [docs/sources/ibge.md](docs/sources/ibge.md) |
-| **DERAL** Paraná crop conditions | `deral.condicao_lavouras('soja')` | [docs/sources/deral.md](docs/sources/deral.md) |
-| **USDA PSD** international | `usda.psd('soja', country='BR', market_year=2024)` (requires `AGROBR_USDA_API_KEY`) | [docs/sources/usda.md](docs/sources/usda.md) |
-| **ABIOVE** soybean complex | `abiove.exportacao(ano=2024, produto='grao')` | [docs/sources/abiove.md](docs/sources/abiove.md) |
-| **ANEC** weekly shipments | `anec.embarques(ano=2026)`, `anec.destinos(ano=2026)` | [docs/sources/anec.md](docs/sources/anec.md) |
-| **UNICA** Center-South sugarcane crush | `unica.moagem_quinzenal('cana')`, `unica.safra_resumo()`, `unica.producao_historica('acucar')` | [docs/sources/unica.md](docs/sources/unica.md) |
-| **Rio Verde** cultivar trials (MT) | `rio_verde.ensaio_soja(safra='2025/2026')` | [docs/sources/rio_verde.md](docs/sources/rio_verde.md) |
+| **IBGE PEVS** | `ibge.silvicultura('madeira_tora', ano=2023)`, `ibge.extracao_vegetal('acai', ano=2023)` | [docs/sources/ibge.md](https://www.agrobr.dev/docs/sources/ibge/) |
+| **IBGE Milk** | `ibge.leite_trimestral(trimestre='202303', uf='MG')` | [docs/sources/ibge.md](https://www.agrobr.dev/docs/sources/ibge/) |
+| **IBGE Agri GDP** | `ibge.pib_agro(trimestre='202501', setor='agropecuaria')` | [docs/sources/ibge.md](https://www.agrobr.dev/docs/sources/ibge/) |
+| **DERAL** Paraná crop conditions | `deral.condicao_lavouras('soja')` | [docs/sources/deral.md](https://www.agrobr.dev/docs/sources/deral/) |
+| **USDA PSD** international | `usda.psd('soja', country='BR', market_year=2024)` (requires `AGROBR_USDA_API_KEY`) | [docs/sources/usda.md](https://www.agrobr.dev/docs/sources/usda/) |
+| **ABIOVE** soybean complex | `abiove.exportacao(ano=2024, produto='grao')` | [docs/sources/abiove.md](https://www.agrobr.dev/docs/sources/abiove/) |
+| **ANEC** weekly shipments | `anec.embarques(ano=2026)`, `anec.destinos(ano=2026)` | [docs/sources/anec.md](https://www.agrobr.dev/docs/sources/anec/) |
+| **UNICA** Center-South sugarcane crush | `unica.moagem_quinzenal('cana')`, `unica.safra_resumo()`, `unica.producao_historica('acucar')` | [docs/sources/unica.md](https://www.agrobr.dev/docs/sources/unica/) |
+| **Rio Verde** cultivar trials (MT) | `rio_verde.ensaio_soja(safra='2025/2026')` | [docs/sources/rio_verde.md](https://www.agrobr.dev/docs/sources/rio_verde/) |
 
 ### Trade and logistics
 
@@ -160,7 +169,7 @@ from agrobr import comexstat, comtrade
 
 # Brazilian exports/imports by NCM code and state, monthly
 df = await comexstat.exportacao('soja', ano=2024, agregacao='mensal')
-df = await comexstat.importacao('fertilizante', ano=2024)
+df = await comexstat.importacao('fertilizantes', ano=2024)
 
 # Worldwide bilateral trade (UN Comtrade)
 df = await comtrade.comercio('soja', reporter='BR')
@@ -169,8 +178,8 @@ df = await comtrade.trade_mirror('soja', reporter='BR')   # exporter/importer cr
 
 | Source | Flagship function | Doc |
 |--------|-------------------|-----|
-| **ANTAQ** ports | `antaq.movimentacao(ano=2024)` | [docs/sources/antaq.md](docs/sources/antaq.md) |
-| **ANTT** toll traffic | `alt.antt_pedagio.fluxo_pedagio(ano=2024)`, `alt.antt_pedagio.pracas_pedagio(uf='SP')` | [docs/sources/antt_pedagio.md](docs/sources/antt_pedagio.md) |
+| **ANTAQ** ports | `antaq.movimentacao(ano=2024)` | [docs/sources/antaq.md](https://www.agrobr.dev/docs/sources/antaq/) |
+| **ANTT** toll traffic | `alt.antt_pedagio.fluxo_pedagio(ano=2024)`, `alt.antt_pedagio.pracas_pedagio(uf='SP')` | [docs/sources/antt_pedagio.md](https://www.agrobr.dev/docs/sources/antt_pedagio/) |
 
 ### Credit, FX and insurance
 
@@ -185,11 +194,11 @@ df = await bcb.credito_rural('soja', safra='2024/25', programa='Pronamp')
 
 # BCB SGS — time series (Selic rate, IPCA inflation, agri PPI, FX, etc.)
 df = await bcb.sgs('selic', ultimos=12)
-df = await bcb.sgs('ipa_agropecuario', data_inicial='2020-01-01')
+df = await bcb.sgs('ipa_agricola', data_inicial='01/01/2020')
 df = await bcb.sgs('pib_agropecuaria')                    # also: ipca, igpm, cdi, tjlp, dolar_ptax_venda...
 
 # BCB PTAX — official USD/BRL rate
-df = await bcb.ptax(data_inicial='2024-01-01', data_final='2024-12-31')
+df = await bcb.ptax(data_inicial='01/01/2024', data_final='31/12/2024')
 
 # BCB Focus — market expectations survey
 df = await bcb.focus('PIB Agropecuária')
@@ -241,6 +250,7 @@ df = await desmatamento.deter(
 # MapBiomas — land use and land cover (1985-present)
 df = await mapbiomas.cobertura(estado='MT', ano=2022)
 df = await mapbiomas.transicao(estado='PA')
+df = await mapbiomas.cobertura(nivel='municipio', geocodigo='5107925', ano=2025)
 
 # Geo variants (require agrobr[geo])
 gdf = await desmatamento.prodes_geo(bioma='Cerrado', ano=2022, uf='MT')
@@ -249,10 +259,10 @@ gdf = await queimadas.focos_geo(ano=2024, mes=9, uf='MT')
 
 | Source | Flagship function | Doc |
 |--------|-------------------|-----|
-| **MapBiomas Alerta** | `mapbiomas_alerta.alertas(start_date='2024-01-01')` (requires `AGROBR_MAPBIOMAS_ALERTA_TOKEN`) | [docs/sources/mapbiomas_alerta.md](docs/sources/mapbiomas_alerta.md) |
-| **IBAMA** embargoes | `ibama.embargos(uf='PA')` | [docs/sources/ibama.md](docs/sources/ibama.md) |
-| **ICMBio** federal protected areas | `icmbio.ucs(uf='AM', grupo='PI')` | [docs/sources/icmbio.md](docs/sources/icmbio.md) |
-| **SFB** public forests | `sfb.cnfp(uf='AM')`, `sfb.concessoes(uf='AM')`, `sfb.ifn_conglomerados(uf='MT')` | [docs/sources/sfb.md](docs/sources/sfb.md) |
+| **MapBiomas Alerta** | `mapbiomas_alerta.alertas(start_date='2024-01-01')` (requires `AGROBR_MAPBIOMAS_ALERTA_TOKEN`) | [docs/sources/mapbiomas_alerta.md](https://www.agrobr.dev/docs/sources/mapbiomas_alerta/) |
+| **IBAMA** embargoes | `ibama.embargos(uf='PA')` | [docs/sources/ibama.md](https://www.agrobr.dev/docs/sources/ibama/) |
+| **ICMBio** federal protected areas | `icmbio.ucs(uf='AM', grupo='PI')` | [docs/sources/icmbio.md](https://www.agrobr.dev/docs/sources/icmbio/) |
+| **SFB** public forests | `sfb.cnfp(uf='AM')`, `sfb.concessoes(uf='AM')`, `sfb.ifn_conglomerados(uf='MT')` | [docs/sources/sfb.md](https://www.agrobr.dev/docs/sources/sfb/) |
 
 ### Land registries
 
@@ -295,14 +305,14 @@ ANDA (fertilizers), Agrofit (registered pesticides), RNC (plant cultivars), List
 from agrobr import anda, defensivos, rnc, lista_suja, zarc
 
 # ANDA — fertilizer deliveries (requires agrobr[pdf])
-df = await anda.entregas(ano=2024, uf='MT')
+df = await anda.entregas(ano=2024)
 
 # Agrofit — pesticides registered in Brazil
 df = await defensivos.formulados(ingrediente_ativo='glifosato')
 df = await defensivos.tecnicos(titular='Bayer')
 df = await defensivos.autorizacoes(cultura='soja')
 
-# RNC/CultivarWeb — registered (~37K) and protected (~5K) cultivars
+# RNC/CultivarWeb — current registered and protected cultivars
 df = await rnc.registradas(especie='Soja')
 df = await rnc.protegidas(titular='Embrapa')
 
@@ -311,12 +321,12 @@ df = await lista_suja.empregadores(uf='PA')
 
 # ZARC — agricultural climate risk zoning (planting windows)
 df = await zarc.zoneamento(cultura='soja', uf='MT')
-print(zarc.culturas())   # 32 crops available
+print(zarc.culturas())   # 107 crops (annual, perennial and legacy labels)
 ```
 
 ## Semantic layer — datasets
 
-When you want the data and don't care about the source, use `datasets`. Each dataset orchestrates an automatic fallback chain and returns tracked provenance.
+Use `datasets` for normalized data with tracked provenance. Automatic fallback applies where a dataset has compatible alternative sources configured; datasets with a single source use that source exclusively.
 
 ```python
 from agrobr import datasets
@@ -344,17 +354,17 @@ print(meta.selected_source, meta.attempted_sources, meta.contract_version)
 print(datasets.list_datasets())
 ```
 
-36 datasets available. See the [full list](#available-datasets) below.
+53 datasets available. See the [full list](#available-datasets) below.
 
 ## Reproducibility — snapshots and deterministic mode
 
-Snapshots capture local data as parquet for full reproducibility — ideal for papers, audits and CI pipelines.
+Snapshots export data as parquet for reproducible analyses — papers, audits and CI pipelines.
 
 ```python
 from agrobr import datasets
 from agrobr.snapshots import create_snapshot, list_snapshots, delete_snapshot
 
-# Create a snapshot (saves current data under ~/.agrobr/snapshots/)
+# Create a snapshot (saves current data under ~/.agrobr/snapshots/; CONAB and IBGE go to the network)
 info = await create_snapshot("2025-Q4")
 info = await create_snapshot(sources=["cepea", "conab"])
 
@@ -363,10 +373,16 @@ for s in list_snapshots():
     print(s.name, s.file_count, f"{s.size_bytes/1024/1024:.1f} MB")
 delete_snapshot("2025-Q4")
 
-# Deterministic mode — queries read only from the active snapshot, no network
+# Deterministic mode — pins the reference date; only preco_diario reads the local cache, with no network
 async with datasets.deterministic("2025-12-31"):
     df = await datasets.preco_diario("soja")
 ```
+
+Deterministic mode does not read snapshots: it pins the reference date. Only `preco_diario` honors it, reading the local
+cache, with no network, up to that date (without the product in the cache, it raises `SourceUnavailableError`). Other
+datasets either reject the context before the network or query the current source and warn, in `validation_warnings`
+and with a `UserWarning`, that the data is not that date's. See the
+[snapshots guide](https://www.agrobr.dev/docs/guides/snapshots/).
 
 Via CLI:
 
@@ -390,7 +406,7 @@ df = datasets.preco_diario('soja')
 df = alt.sicar.imoveis('DF')
 ```
 
-Every top-level source plus `alt` is available under `agrobr.sync` with the same signatures.
+Every top-level source plus `alt` is available under `agrobr.sync` with the same signatures at runtime. Type checkers and editors do not see them, because the mirror is dynamic and returns `Any`; for typed code, use the async API.
 
 ## Polars support
 
@@ -429,20 +445,36 @@ agrobr snapshot use 2025-Q4   # validates the snapshot and shows how to activate
 
 | Dataset | Description | Sources |
 |---------|-------------|---------|
+| `cotacoes_cambio` | PTAX quotes by currency and bulletin | BCB |
+| `expectativas_mercado` | Annual and monthly BCB Focus expectations | BCB |
+| `moedas_cambio` | Current PTAX currency catalogue | BCB |
+| `precos_diesel` | ANP weekly prices and explicit monthly aggregates | ANP |
+| `unidades_conservacao_federais` | Federal conservation-unit attributes | ICMBio |
 | `abate_trimestral` | Cattle, hog and poultry slaughter by state | IBGE |
+| `autorizacoes_defensivos` | Use authorizations preserving published multiplicity | Agrofit/MAPA |
 | `balanco` | Supply/demand balance | CONAB |
 | `cadastro_rural` | Rural environmental registry (properties by state) | SICAR/GeoServer WFS |
 | `censo_agropecuario` | Agricultural census 1995/2006/2017 (11 themes) | IBGE |
 | `censo_agropecuario_historico` | Census historical series 1920-2006 (9 themes) | IBGE SIDRA |
 | `censo_agropecuario_legado` | 1995/96 census — 6 legacy themes (FTP) | IBGE FTP |
-| `censo_agropecuario_municipal_1985` | 1985 municipal census — 53 themes via OCR (22 states) | IBGE PDFs |
+| `censo_agropecuario_municipal_1985` | 1985 census — 53 themes, one row per PDF cell, `valor` only when confirmed by the printed sums | IBGE PDFs |
 | `clima` | Monthly/daily climate data by state or station | INMET → NASA POWER |
 | `comercio_internacional` | Bilateral international trade by HS code | UN Comtrade |
+| `comparacao_anual_anec` | Monthly comparison between explicit years by report edition | ANEC |
+| `composicao_defensivos` | Components and concentrations by family and registration | Agrofit/MAPA |
 | `condicao_lavouras` | Weekly crop conditions in Paraná | DERAL |
 | `credito_rural` | Rural credit by crop (program, insurance, modality) | BCB/SICOR → BigQuery |
+| `cultivares_protegidas` | Protected cultivars by application, preserving conditional end-date text | CultivarWeb/SNPC |
+| `cultivares_registradas` | Registered cultivars with exact textual registration IDs | CultivarWeb/RNC |
 | `custo_producao` | Production costs | CONAB |
+| `custo_sociobiodiversidade` | Sociobiodiversity costs in published units | CONAB |
+| `defensivos_formulados` | Formulated products by registration | Agrofit/MAPA |
+| `defensivos_tecnicos` | Technical products by registration | Agrofit/MAPA |
 | `desmatamento` | PRODES/DETER deforestation — consolidated + alerts | INPE TerraBrasilis |
+| `destinos_anec` | Cumulative destination shares with period and edition | ANEC |
 | `embarques_anec` | Weekly shipments by port (soybean, meal, corn, DDGS, sorghum, wheat) | ANEC |
+| `embarques_mensais_anec` | Monthly volumes and estimate ranges by report edition | ANEC |
+| `empregadores_lista_suja` | Current national MTE employer registry; not restricted to agriculture | MTE / Lista Suja |
 | `estimativa_safra` | Current season estimates | CONAB → IBGE LSPA |
 | `exportacao` | Agricultural exports | ComexStat → ABIOVE |
 | `extrativismo_vegetal` | Non-timber forest products (açaí, Brazil nut, yerba mate) | IBGE PEVS |
@@ -453,18 +485,25 @@ agrobr snapshot use 2025-Q4   # validates the snapshot and shows how to activate
 | `movimentacao_portuaria` | Port cargo throughput (bulk, general, container) | ANTAQ |
 | `oferta_demanda_global` | Global commodity supply/demand | USDA PSD |
 | `pecuaria_municipal` | Municipal livestock (herds and animal products) | IBGE PPM |
-| `posicionamento_fundos` | Weekly trader positioning in Chicago/NY agri futures (COT) | CFTC |
 | `pib_agro` | Agricultural GDP by sector and quarter | IBGE SIDRA |
+| `posicionamento_fundos` | Weekly trader positioning in Chicago/NY agri futures (COT) | CFTC |
 | `preco_atacado` | Wholesale produce prices at CEASA hubs | CONAB CEASA/PROHORT |
 | `preco_diario` | Daily spot prices | CEPEA → cache |
 | `producao_anual` | Consolidated annual production | IBGE PAM → CONAB |
 | `progresso_safra` | Weekly planting/harvest progress | CONAB |
 | `queimadas` | Satellite fire hotspots (6 biomes) | INPE |
 | `seguro_rural` | Rural insurance policies and claims | MAPA PSR |
-| `serie_historica_safra` | Crop season historical series — 32 crops since 1976 | CONAB |
+| `serie_historica_safra` | Crop historical series — 45 products, coverage varies by crop | CONAB |
+| `series_economicas` | Economic time series by SGS code or alias, date range and latest observations | BCB SGS |
 | `silvicultura` | Forestry production (eucalyptus, pine, charcoal) | IBGE PEVS |
 | `uso_do_solo` | Annual land use and cover by state/municipality | MapBiomas |
 | `zoneamento_agricola` | Agricultural climate risk zoning (ZARC) | MAPA/Embrapa |
+
+The [Lista Suja dataset](https://www.agrobr.dev/docs/en/api/empregadores_lista_suja/) reuses the current MTE publication and its CSV/PDF routes, without a historical snapshot or a second institutional source.
+
+The four [Agrofit datasets](https://www.agrobr.dev/docs/en/api/defensivos_datasets/) reuse the single `defensivos` source and its existing contracts. They have no fallback to another source.
+
+The two [cultivar datasets](https://www.agrobr.dev/docs/en/api/cultivares/) expose the current RNC/SNPC exports with exact ID filters, a 24-hour raw acquisition cache, and source provenance. For example, `await datasets.cultivares_registradas(nr_registro='42039', return_meta=True)`. Protected cultivars retain the published end-date text in `termino_protecao_texto`; conditional protection is not converted to an invented date. These datasets do not provide historical snapshots.
 
 ## Supported sources
 
@@ -474,7 +513,7 @@ Availability is monitored automatically. Run `agrobr health` to check locally (o
 |--------|------|:-----------:|--------|
 | CEPEA | Price indicators (22 products) | ✅ | Working |
 | CONAB | Crop surveys, supply/demand, costs, historical series, weekly progress, CEASA wholesale prices | ✅ | Working |
-| IBGE | PAM, LSPA, PPM, slaughter, PEVS, milk, GDP, agricultural census (1985/1995-96/2006/2017 + historical series) | ✅ | Working |
+| IBGE | PAM, LSPA, PPM, slaughter, PEVS, milk, GDP, agricultural census (1995-96/2006/2017 + historical series) | ✅ | Municipal 1985 census from the local package (`valor` only when confirmed); other routes operational |
 | NASA POWER | Daily/monthly climatology (0.5° grid) | ✅ | Working |
 | BCB/SICOR | Rural credit by crop + SGS series + PTAX + Focus | ✅¹ | Working |
 | ComexStat | Exports and imports by NCM code/state | ✅¹ | Working |
@@ -499,23 +538,23 @@ Availability is monitored automatically. Run `agrobr health` to check locally (o
 | ZARC | Climate risk zoning (planting windows by municipality/crop/soil) | ✅ | Working |
 | Agrofit/MAPA | Registered pesticides — formulations, authorizations, technical products (~8K) | ✅ | Working |
 | MapBiomas Alerta | Deforestation alerts via GraphQL (500K+ alerts) | ✅ | Requires `AGROBR_MAPBIOMAS_ALERTA_TOKEN` |
-| Lista Suja | Slave-labor employer registry via XLSX | ✅ | Working |
+| Lista Suja | Current MTE employer registry, CSV/TXT with PDF alternative | ✅ | Working |
 | ANA/SNIRH | Hydrography, center-pivot irrigation, water demand/availability (ArcGIS REST) | ✅ | Working |
-| SFB | Public forests (CNFP), forest concessions, national forest inventory (ArcGIS REST) | ✅ | Working |
-| FUNAI | Indigenous lands (WFS) — ~740 territories, state/phase/bbox filters | ✅ | Working |
-| IBAMA | Environmental embargoes (SIFISC CSV dump + WKT geometries) — ~114K records, state/bbox filter | ✅ | Working |
+| SFB | Public forests (CNFP), forest concessions, national forest inventory (ArcGIS REST) | ✅ | Working (IFN offline since 2026-09-02) |
+| FUNAI | Indigenous lands (WFS) — 665 territories, state/phase/bbox filters | ✅ | Working |
+| IBAMA | Environmental embargoes (open-data CSV + WKT geometries) — ~116K records, daily update, state/bbox filter | ✅ | Working |
 | ICMBio | Federal protected areas (WFS) — 344 units | ✅ | Working |
 | INCRA | Quilombola territories (WFS) — ~426 territories | ✅ | Working |
-| INCRA land registry | SIGEF certified parcels (15 states) + SNCI (10 states) + settlements — shapefile ZIP | ✅ | Working |
-| RNC/CultivarWeb | Registered (~37K) and protected (~5K) cultivars — MAPA/SNPC | ✅ | Working |
+| INCRA land registry | SIGEF certified parcels (27 states) + SNCI (27 states) + settlements — shapefile ZIP | ✅ | Working |
+| RNC/CultivarWeb | Current registered and protected cultivars; exact IDs and published end-date text — MAPA/SNPC | ✅ | Working |
 | EMBRAPA Soils | PronaSolos soil profiles (34K+) + SiBCS soil map (2.8K polygons) | ✅ | Working |
-| Fundação Rio Verde | Soybean cultivar trials in MT — ~97 cultivars × 4 planting dates (PDF) | ✅ | Working |
+| Fundação Rio Verde | Soybean cultivar trials in MT — 2023/24 to 2025/26 seasons, up to 4 planting dates (PDF) | ✅ | Working |
 | CFTC COT | Weekly trader positioning — managed money, producers, swaps (12 agri contracts, 2006+) | ✅ | Working |
 | UNICA | Center-South sugarcane crush, sugar/ethanol production, mix and ATR (biweekly PDF + historical XLSX) | ✅ | Working |
 
 > ¹ Golden test with synthetic data — `needs_real_data` for validation against the live API.
 >
-> Several sources have restrictive or gray-area licenses — CEPEA `nc`, IMEA and Notícias Agrícolas `restrito`, INCRA land registry `nc`, and B3/ABIOVE/ANDA/ANEC/UNICA `zona_cinza`. They emit `warnings.warn` on first call. See [docs/licenses.md](docs/licenses.md) for the full table.
+> Several sources have restrictive or gray-area licenses — CEPEA `nc`, IMEA and Notícias Agrícolas `restrito`, INCRA land registry `nc`, and B3/ABIOVE/ANDA/ANEC/UNICA `zona_cinza`. They emit `warnings.warn` on first call. See [docs/licenses.md](https://www.agrobr.dev/docs/licenses/) for the full table.
 
 ## Contracts & Schemas
 
@@ -568,11 +607,11 @@ normalizar_safra("24/25")                 # "2024/25"
 
 - **Golden tests with reference fixtures per source** — automated validation against real or documented synthetic data
 - **Full HTTP resilience** — centralized retry in every client, 429 handling, Retry-After
-- **6,400+ passing tests, 92% coverage** — including scalability benchmarks (memory, volume, async)
-- **Semantic layer** — standardized datasets with automatic fallback and tracked provenance
+- **Validation by increment** — recorded test scope, public-call evidence and limitations; scalability benchmarks cover memory, volume and async behavior
+- **Semantic layer** — standardized datasets with tracked provenance and fallback where alternative sources are configured
 - **Formal contracts** — versioned schemas with automatic validation, primary keys and constraints
 - **JSON schemas** exported under `agrobr/schemas/`
-- **Deterministic mode + snapshots** — full reproducibility for papers/audits
+- **Deterministic mode + snapshots** — reproducibility for papers and audits (deterministic mode in `preco_diario`; CEPEA/CONAB/IBGE snapshots)
 - **Cross-source normalization** — IBGE municipalities, crops, states, crop seasons standardized
 - **Async-first** with a sync wrapper for pipelines (Airflow, Prefect, Dagster)
 - **pandas + polars support** in every API and dataset
@@ -587,7 +626,7 @@ agrobr is a **fetch + normalize** library, not a storage framework. Every call g
 
 - **CEPEA indicator cache** — the only source with a persistent local cache. DuckDB with smart TTL: expires at 6pm (official CEPEA publish time), avoiding redundant calls during the day.
 - **Optional snapshots** — you create them explicitly via `create_snapshot()` for reproducibility.
-- **Permanent history is the consumer's responsibility** — sources that serve historical series (CONAB `serie_historica`, IBGE PAM/PPM, BCB SGS, etc.) already return the full range in a single request. To accumulate daily sources, use a scheduler + parquet (next section).
+- **Permanent history is the consumer's responsibility** — historical APIs expose the observations currently published for a requested range. A single agrobr call may acquire several resources; BCB SGS splits long ranges into calendar blocks. This does not reconstruct earlier revisions. To retain successive publications, use a scheduler + parquet (next section).
 
 ## Keeping data up to date
 
@@ -619,16 +658,16 @@ See the [pipelines guide](https://www.agrobr.dev/docs/advanced/pipelines/) and t
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/bruno-portfolio/agrobr/blob/main/CONTRIBUTING.md) for details.
 
 ## Data licenses
 
 > **Important:** agrobr itself is MIT-licensed, but the **data** it accesses
 > belongs to the respective sources and carries their own licenses.
 > CEPEA/ESALQ data, for example, is CC BY-NC 4.0 (commercial use requires
-> authorization). See **[docs/licenses.md](docs/licenses.md)** for the full
+> authorization). See **[docs/licenses.md](https://www.agrobr.dev/docs/licenses/)** for the full
 > table of sources, licenses and classifications.
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](https://github.com/bruno-portfolio/agrobr/blob/main/LICENSE) for details.

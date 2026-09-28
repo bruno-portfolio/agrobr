@@ -1,8 +1,29 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime
 
 from agrobr.exceptions import InvalidParameterError
+from agrobr.normalize import dates
+
+
+def validate_safra(safra: str | None) -> str | None:
+    if safra is None:
+        return None
+    if not isinstance(safra, str):
+        raise InvalidParameterError("safra deve ser uma string com anos consecutivos")
+    text = re.sub(r"\s*/\s*", "/", safra.strip())
+    complete = re.fullmatch(r"(\d{4})/(\d{4})", text)
+    if complete and int(complete[2]) != int(complete[1]) + 1:
+        raise InvalidParameterError(f"Safra deve conter anos consecutivos: {safra!r}")
+    try:
+        normalized = dates.normalizar_safra(text)
+        first, last = dates.safra_para_anos(normalized)
+    except ValueError as exc:
+        raise InvalidParameterError(str(exc)) from exc
+    if last != first + 1:
+        raise InvalidParameterError(f"Safra deve conter anos consecutivos: {safra!r}")
+    return normalized
 
 
 def validate_uf(uf: str | None) -> str | None:

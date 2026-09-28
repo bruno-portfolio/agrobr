@@ -1,26 +1,45 @@
 from __future__ import annotations
 
+import hashlib
+import importlib.util
 import json
 import re
 import shutil
+import tempfile
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 import pandas as pd
 import structlog
 
 from agrobr.config import get_config
+from agrobr.exceptions import SnapshotError
 
 logger = structlog.get_logger()
 
 _SAFE_NAME_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_\-\.]*$")
+_WINDOWS_RESERVED = frozenset(
+    {
+        "CON",
+        "PRN",
+        "AUX",
+        "NUL",
+        *(f"COM{n}" for n in range(1, 10)),
+        *(f"LPT{n}" for n in range(1, 10)),
+    }
+)
 
 
 def _validate_path_component(value: str, label: str) -> None:
     if not value or not _SAFE_NAME_RE.match(value):
         raise ValueError(f"Invalid {label}: {value!r}")
+    if value.endswith(".") or value.split(".", 1)[0].upper() in _WINDOWS_RESERVED:
+        raise ValueError(
+            f"Invalid {label}: {value!r} (nome reservado do Windows ou terminado em ponto; "
+            "o snapshot tem de abrir em qualquer sistema)"
+        )
 
 
 @dataclass
@@ -73,7 +92,7 @@ def list_snapshots() -> list[SnapshotInfo]:
 
     snapshots = []
     for path in sorted(snapshots_dir.iterdir()):
-        if not path.is_dir():
+        if not path.is_dir() or path.name.startswith("."):
             continue
 
         manifest_path = path / "manifest.json"
@@ -81,7 +100,7 @@ def list_snapshots() -> list[SnapshotInfo]:
             continue
 
         try:
-            with open(manifest_path) as f:
+            with open(manifest_path, encoding="utf-8") as f:
                 manifest = SnapshotManifest.from_dict(json.load(f))
 
             size = sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
@@ -123,6 +142,16 @@ async def create_snapshot(
 
     if sources is None:
         sources = ["cepea", "conab", "ibge"]
+    if any(source not in {"cepea", "conab", "ibge"} for source in sources):
+        raise ValueError("Fontes inválidas para snapshot. Válidas: cepea, conab, ibge")
+    sources = list(dict.fromkeys(sources))
+
+    if not any(
+        importlib.util.find_spec(engine) is not None for engine in ("pyarrow", "fastparquet")
+    ):
+        raise ImportError(
+            'pyarrow é necessário para snapshots. Instale com: pip install "pyarrow>=14.0.1"'
+        )
 
     snapshots_dir = get_snapshots_dir()
     snapshot_path = snapshots_dir / name
@@ -133,7 +162,7 @@ async def create_snapshot(
     if snapshot_path.exists():
         raise ValueError(f"Snapshot '{name}' already exists")
 
-    snapshot_path.mkdir(parents=True, exist_ok=True)
+    snapshots_dir.mkdir(parents=True, exist_ok=True)
 
     manifest = SnapshotManifest(
         name=name,
@@ -142,10 +171,41 @@ async def create_snapshot(
         sources=sources,
     )
 
-    for source in sources:
-        source_path = snapshot_path / source
-        source_path.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=f".{name}-", dir=snapshots_dir) as temporary:
+        staging = Path(temporary)
+        await _collect_snapshot(staging, manifest)
+        if not manifest.files:
+            raise SnapshotError(manifest.metadata.get("errors", {}))
+        try:
+            for filename, info in manifest.files.items():
+                info["sha256"] = _file_digest(staging / filename)
+            manifest.metadata["integrity"] = "sha256"
+            with open(staging / "manifest.json", "w", encoding="utf-8") as stream:
+                json.dump(manifest.to_dict(), stream, indent=2, ensure_ascii=False)
+            if snapshot_path.exists():
+                raise ValueError(f"Snapshot '{name}' already exists")
+            staging.rename(snapshot_path)
+        except OSError as exc:
+            raise SnapshotError(
+                {"snapshot": [str(exc)]},
+                message="Falha ao publicar snapshot.",
+            ) from exc
 
+    logger.info("snapshot_created", name=name, path=str(snapshot_path))
+    return SnapshotInfo(
+        name=name,
+        path=snapshot_path,
+        created_at=manifest.created_at,
+        size_bytes=sum(p.stat().st_size for p in snapshot_path.rglob("*") if p.is_file()),
+        sources=sources,
+        file_count=len(manifest.files),
+    )
+
+
+async def _collect_snapshot(path: Path, manifest: SnapshotManifest) -> None:
+    for source in manifest.sources:
+        source_path = path / source
+        source_path.mkdir()
         try:
             if source == "cepea":
                 await _snapshot_cepea(source_path, manifest)
@@ -153,15 +213,20 @@ async def create_snapshot(
                 await _snapshot_conab(source_path, manifest)
             elif source == "ibge":
                 await _snapshot_ibge(source_path, manifest)
-        except Exception as e:
-            logger.error("snapshot_source_error", source=source, error=str(e))
+        except Exception as exc:
+            logger.error("snapshot_source_error", source=source, error=str(exc))
+            _record_error(manifest, source, str(exc))
+        if not any(filename.startswith(f"{source}/") for filename in manifest.files):
+            _record_error(manifest, source, "Nenhum conjunto de dados disponível")
 
-    with open(snapshot_path / "manifest.json", "w") as f:
-        json.dump(manifest.to_dict(), f, indent=2)
 
-    logger.info("snapshot_created", name=name, path=str(snapshot_path))
+def _file_digest(path: Path) -> str:
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
-    return get_snapshot(name)  # type: ignore
+
+def _record_error(manifest: SnapshotManifest, source: str, message: str) -> None:
+    manifest.metadata.setdefault("errors", {}).setdefault(source, []).append(message)
 
 
 async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
@@ -174,7 +239,6 @@ async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
             df = await cepea.indicador(produto, offline=True)
             if df is None:
                 continue
-            df = cast(pd.DataFrame, df)
             if not df.empty:
                 file_path = path / f"{produto}.parquet"
                 df.to_parquet(file_path, index=False)
@@ -184,6 +248,7 @@ async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
                 }
         except Exception as e:
             logger.warning("snapshot_produto_error", produto=produto, error=str(e))
+            _record_error(manifest, "cepea", f"{produto}: {e}")
 
 
 async def _snapshot_conab(path: Path, manifest: SnapshotManifest) -> None:
@@ -200,6 +265,7 @@ async def _snapshot_conab(path: Path, manifest: SnapshotManifest) -> None:
             }
     except Exception as e:
         logger.warning("snapshot_conab_safras_error", error=str(e))
+        _record_error(manifest, "conab", f"safras: {e}")
 
     try:
         df = await conab.balanco()
@@ -212,6 +278,7 @@ async def _snapshot_conab(path: Path, manifest: SnapshotManifest) -> None:
             }
     except Exception as e:
         logger.warning("snapshot_conab_balanco_error", error=str(e))
+        _record_error(manifest, "conab", f"balanco: {e}")
 
 
 async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
@@ -228,6 +295,7 @@ async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
             }
     except Exception as e:
         logger.warning("snapshot_ibge_pam_error", error=str(e))
+        _record_error(manifest, "ibge", f"pam: {e}")
 
     try:
         df = await ibge.lspa(produto="soja")
@@ -240,6 +308,7 @@ async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
             }
     except Exception as e:
         logger.warning("snapshot_ibge_lspa_error", error=str(e))
+        _record_error(manifest, "ibge", f"lspa: {e}")
 
 
 def load_from_snapshot(
@@ -273,6 +342,30 @@ def load_from_snapshot(
             path=str(snapshot_path),
         )
         return None
+
+    manifest_path = snapshots_dir / snapshot_name / "manifest.json"
+    if manifest_path.exists():
+        try:
+            manifest = SnapshotManifest.from_dict(
+                json.loads(manifest_path.read_text(encoding="utf-8"))
+            )
+            chave = f"{source}/{dataset}.parquet"
+            registrada = next(
+                (nome for nome in manifest.files if nome.casefold() == chave.casefold()), chave
+            )
+            expected = manifest.files.get(registrada, {}).get("sha256")
+            if (expected or manifest.metadata.get("integrity") == "sha256") and (
+                expected != _file_digest(snapshot_path)
+            ):
+                raise SnapshotError(
+                    {source: [f"SHA-256 divergente: {dataset}.parquet"]},
+                    message="Integridade do snapshot comprometida.",
+                )
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise SnapshotError(
+                {source: [str(exc)]},
+                message="Não foi possível verificar o snapshot.",
+            ) from exc
 
     return pd.read_parquet(snapshot_path)
 

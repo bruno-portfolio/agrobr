@@ -77,7 +77,7 @@ _CLASSIFICACOES_CENSO_AGRO: dict[tuple[str, str], dict[str, str]] = {
 
 _CENSO_VAR_NOME: dict[str, str] = {
     "105": "cabecas",
-    "151": "estabelecimentos",
+    "151": "informantes",
     "214": "producao",
     "216": "area_colhida",
     "10010": "estabelecimentos",
@@ -91,6 +91,8 @@ _CENSO_VAR_NOME: dict[str, str] = {
     "9504": "estabelecimentos",
     "9506": "producao",
     "10078": "area_colhida",
+    "2372": "estabelecimentos",
+    "2373": "area",
 }
 
 _CENSO_VAR_UNIDADE: dict[str, str] = {
@@ -109,6 +111,8 @@ _CENSO_VAR_UNIDADE: dict[str, str] = {
     "9504": "unidades",
     "9506": "",
     "10078": "hectares",
+    "2372": "unidades",
+    "2373": "hectares",
 }
 
 _CENSO_ALL_VAR_IDS: set[str] = set(_CENSO_VAR_NOME.keys())
@@ -158,12 +162,12 @@ _CENSO_MULTI_TABLE: dict[tuple[str, str], list[tuple[str, dict[str, str]]]] = {
     ],
     ("lavoura_temporaria", "1995"): [
         ("497", {"producao": "214"}),
-        ("492", {"estabelecimentos": "151"}),
+        ("492", {"informantes": "151"}),
         ("503", {"area_colhida": "216"}),
     ],
     ("lavoura_permanente", "1995"): [
         ("509", {"producao": "214"}),
-        ("504", {"estabelecimentos": "151"}),
+        ("504", {"informantes": "151"}),
         ("510", {"area_colhida": "216"}),
     ],
 }

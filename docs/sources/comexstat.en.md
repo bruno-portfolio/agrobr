@@ -28,43 +28,27 @@ df = await comexstat.exportacao("soja", ano=2024, uf="MT")
 | `ano` | int | Year |
 | `mes` | int | Month (1-12) |
 | `ncm` | str | NCM code (8 digits) |
-| `uf` | str | State of origin |
+| `uf` (exports) | str | State where the goods were produced, regardless of the exporter's seat ([MDIC FAQ 10](https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/perguntas-frequentes-faq/12-por-que-a)) |
+| `uf` (imports) | str | State of the importer's tax domicile, not the goods' destination in the country ([MDIC FAQ 10](https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/perguntas-frequentes-faq/12-por-que-a)) |
 | `kg_liquido` | float | Net weight (kg) |
 | `valor_fob_usd` | float | FOB value (USD) |
 | `volume_ton` | float | Volume in tonnes |
 
 ## Products
 
-17 agricultural products mapped by NCM prefix (full mapping: 31 keys, including fertilizers and pesticides):
+`produto` accepts an alias or an NCM prefix of 2 to 8 digits. The alias table, with
+what each alias includes and excludes, is in the [ComexStat API](../api/comexstat.md).
 
-| Product | NCM | Type |
-|---|---|---|
-| soja | 12019000 | exact |
-| soja_semeadura | 12011000 | exact |
-| oleo_soja | 1507 | prefix (crude, refined, and other soybean oils) |
-| oleo_soja_bruto | 15071000 | exact |
-| farelo_soja | 23040010 | exact |
-| milho | 10059010 | exact |
-| cafe | 09011110 | exact |
-| cafe_conilon | 09011190 | exact |
-| algodao | 520100 | prefix (5201.00.20 + 5201.00.90) |
-| algodao_cardado | 520300 | prefix (5203.00.00) |
-| trigo | 10019900 | exact |
-| arroz | 10063021 | exact |
-| acucar | 17011400 | exact |
-| etanol | 22071000 | exact |
-| carne_bovina | 02023000 | exact |
-| carne_frango | 02071400 | exact |
-| carne_suina | 02032900 | exact |
+> **Note:** the filter uses `str.startswith` with the alias prefixes (an alias may have
+> several, and `defensivos`/`agrotoxicos` exclude the codes put up exclusively for
+> household sanitation use). Each alias sums the codes in force in each year: when the
+> nomenclature splits or renumbers a code (ethanol, soybeans, wheat, sugar, DAP,
+> chicken), the series has no gap, including the transition year. `ssp` and `tsp`
+> only have an equivalent code since 2017 and reject earlier years.
 
-> **Note:** The NCM filter uses `str.startswith(prefix)`. 8-digit prefixes
-> are equivalent to an exact match; shorter prefixes (6 digits) capture all
-> subheadings. This is necessary because some products (e.g. algodao) do not
-> have a generic NCM in the CSV — Brazil uses detailed subheadings.
-
-`oleo_soja` uses the `1507` prefix, and the standalone API preserves one row
-per NCM code. The semantic `exportacao` dataset consolidates those codes by
-year, month, and state; `oleo_soja_bruto` remains limited to code `15071000`.
+The standalone API preserves one row per NCM code. The `exportacao` and `importacao`
+datasets consolidate each product's codes by year, month, and state; `oleo_soja_bruto`
+remains limited to code `15071000`.
 
 ## MetaInfo
 
@@ -75,9 +59,16 @@ print(meta.source)  # "comexstat"
 
 ## Technical notes
 
-- The site `balanca.economia.gov.br` has an incomplete SSL certificate.
-  The client uses `verify=False` in httpx to work around the issue.
-- Each annual CSV is ~100MB. The download is done once and filtered in memory.
+- The site `balanca.economia.gov.br` does not send the complete certificate chain. The client verifies
+  TLS in full (hostname included), with SERPRO's intermediate certificate checked by SHA-256 and added
+  to the authorities (`certifi`, `SSL_CERT_FILE` or `SSL_CERT_DIR`).
+- No cache: every call downloads the flow's annual CSV (~100 MB) and filters it in memory, and several
+  queries for the same year download the file again. `produto` takes 1 alias or 1 NCM prefix per call,
+  not a list; for several codes in a single download, use the common prefix (the standalone API returns
+  1 row per NCM).
+- Each annual CSV is ~100 MB. The download goes to a temporary file and is checked against the GET's
+  `Content-Length` or, without it, the HEAD of the same file; without either, the result warns in
+  `validation_warnings` ("tamanho do arquivo não conferido").
 
 ## Source
 

@@ -1,4 +1,4 @@
-# balanco v1.0
+# balanco v1.1
 
 Balanço de oferta e demanda de commodities.
 
@@ -8,15 +8,16 @@ Balanço de oferta e demanda de commodities.
 |------------|-------|-----------|
 | 1 | CONAB | Balanço de Oferta e Demanda |
 
-A fonte CONAB exige Playwright e Chromium:
+A fonte CONAB usa HTTP primeiro. Playwright e Chromium são opcionais para fallback de transporte:
 
 ```bash
 pip install agrobr[browser]
 python -m playwright install chromium
 ```
 
-Sem esse requisito, o dataset levanta `SourceUnavailableError`; `balanco` não
-possui fonte de fallback.
+`balanco` não possui fonte alternativa de fallback. Se HTTP e o transporte opcional falharem, o dataset levanta `SourceUnavailableError`.
+
+Sem `levantamento`, `safra` escolhe a publicação mais recente cuja aba Suprimento traz essa safra; a edição corrente cobre as últimas sete safras (seis na soja), já revisadas. A tabela devolvida é a dessa publicação e pode conter linhas de vários períodos. Com `levantamento=N`, vem o N-ésimo levantamento da própria safra, que é a edição original. Para o trigo, os períodos do balanço permanecem anuais. A última revisão publicada de cada produto e período prevalece.
 
 ## Produtos
 
@@ -26,15 +27,21 @@ possui fonte de fallback.
 
 | Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
-| `safra` | str | ❌ | Safra no formato "2024/25" |
+| `safra` | str | ❌ | Biênio publicado, como "2024/25", ou ano civil para trigo |
 | `produto` | str | ❌ | Nome do produto |
 | `estoque_inicial` | float64 | ✅ | Estoque inicial (mil ton) |
 | `producao` | float64 | ✅ | Produção (mil ton) |
 | `importacao` | float64 | ✅ | Importação (mil ton) |
-| `suprimento` | float64 | ✅ | Suprimento total (mil ton) |
-| `consumo` | float64 | ✅ | Consumo interno (mil ton) |
+| `suprimento` | float64 | ✅ | Suprimento total (mil ton): estoque inicial + produção + importação, somados pelo agrobr; nulo se faltar uma parcela |
+| `consumo` | float64 | ✅ | Consumo interno (mil ton): sementes/outros + processamento, somados pelo agrobr (soja 2025/26, set/26: 3.766 + 62.137,7 = 65.903,7); nulo se faltar uma parcela |
 | `exportacao` | float64 | ✅ | Exportação (mil ton) |
 | `estoque_final` | float64 | ✅ | Estoque final (mil ton) |
+| `demanda_total` | float64 | ✅ | Demanda publicada (mil ton); nula no wide e no long antigo |
+| `levantamento` | str | ✅ | Rótulo textual da revisão, como `set/26`; nulo quando não publicado |
+| `unidade` | str | ❌ | Unidade das métricas: `mil_ton` |
+| `fonte` | str | ❌ | Fonte selecionada no dataset: `conab` |
+
+Todas as colunas numéricas usam float64, inclusive em resultados vazios. O contrato 1.1 adiciona colunas opcionais sem alterar as obrigatórias da versão 1.0; `CONAB_BALANCO_V1` permanece disponível e `CONAB_BALANCO_V1_1` é o ativo. Demanda não publicada fica nula, sem cálculo substituto; `levantamento` é o rótulo da revisão, não o número do levantamento.
 
 ## Garantias
 
@@ -49,8 +56,11 @@ from agrobr import datasets
 # Balanço safra corrente
 df = await datasets.balanco("soja")
 
-# Balanço safra específica
+# Balanço safra específica (revisão mais recente)
 df = await datasets.balanco("soja", safra="2024/25")
+
+# Edição original: 12º levantamento da própria safra
+df = await datasets.balanco("soja", safra="2024/25", levantamento=12)
 
 # Com metadados
 df, meta = await datasets.balanco("soja", return_meta=True)

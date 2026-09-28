@@ -1,0 +1,209 @@
+{
+  "name": "rnc.protegidas",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "nr_processo"
+  ],
+  "required_columns": [
+    "cultivar",
+    "nome_cientifico",
+    "nome_comum",
+    "nr_processo",
+    "situacao",
+    "nr_certificado",
+    "inicio_protecao",
+    "termino_protecao",
+    "titular",
+    "representante_legal",
+    "melhoristas",
+    "termino_protecao_texto"
+  ],
+  "dtypes": {
+    "cultivar": "str",
+    "nome_cientifico": "str",
+    "nome_comum": "str",
+    "nr_processo": "str",
+    "situacao": "str",
+    "nr_certificado": "str",
+    "inicio_protecao": "date",
+    "termino_protecao": "date",
+    "titular": "str",
+    "representante_legal": "str",
+    "melhoristas": "str",
+    "termino_protecao_texto": "str"
+  },
+  "nullable": {
+    "cultivar": false,
+    "nome_cientifico": false,
+    "nome_comum": false,
+    "nr_processo": false,
+    "situacao": false,
+    "nr_certificado": false,
+    "inicio_protecao": true,
+    "termino_protecao": true,
+    "titular": false,
+    "representante_legal": false,
+    "melhoristas": false,
+    "termino_protecao_texto": false
+  },
+  "columns": [
+    {
+      "name": "cultivar",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome_cientifico",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome_comum",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nr_processo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "situacao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nr_certificado",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "inicio_protecao",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "termino_protecao",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "titular",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "representante_legal",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "melhoristas",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "termino_protecao_texto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Célula publicada de término com espaços externos removidos",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "primary_key_scope": "one_family_and_resource",
+    "non_empty_strings": [
+      "nr_processo"
+    ],
+    "date_dtype": "datetime64[ns]",
+    "date_semantics": "civil_date_without_timezone_or_time",
+    "blank_strings": "preserved",
+    "protection_end_text_matches_date": true,
+    "protection_end_null_texts": [
+      "",
+      "até a emissão do certificado definitivo"
+    ],
+    "protection_end_date_pattern": "[0-9]{2}/[0-9]{2}/[0-9]{4}"
+  },
+  "guarantees": [
+    "Uma linha por número de processo textual na exportação SNPC processada",
+    "Certificados repetidos entre processos são preservados; não constituem chave",
+    "Texto original de término é preservado, inclusive datas, vazio e condição publicada",
+    "Término é nulo somente para texto vazio ou a condição oficial sem data determinada",
+    "Datas civis usam datetime64[ns], sem timezone ou horário; ausência não é imputada",
+    "Campos compostos e situação não são divididos, deduplicados ou interpretados juridicamente"
+  ]
+}

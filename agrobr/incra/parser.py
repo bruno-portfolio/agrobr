@@ -1,96 +1,196 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any
 
 import pandas as pd
-import structlog
+from pydantic import ValidationError
 
+from agrobr import constants
 from agrobr.exceptions import ParseError
-from agrobr.utils.geo import check_geopandas, parse_geojson_base
-from agrobr.utils.io import read_csv_safe
+from agrobr.normalize import regions
 
-from .models import (
-    COLUNAS_SAIDA,
-    COLUNAS_SAIDA_GEO,
-    MAX_FEATURES_GEO,
-    MAX_FEATURES_TABULAR,
-    RENAME_MAP,
-)
+from . import _geometry, _json, models
 
-logger = structlog.get_logger()
-
-PARSER_VERSION = 1
-
-_REQUIRED_COLS_RAW = {"cd_quilomb", "no_comunidade", "sg_uf", "nu_area_ha"}
+PARSER_VERSION = 2
 
 
-def parse_quilombolas_csv(data: bytes) -> pd.DataFrame:
-    df = read_csv_safe(data, source="incra", parser_version=PARSER_VERSION, label="CSV quilombolas")
+def _diagnostic(values: dict[str, Any], category: str, row: int) -> None:
+    entry = values.setdefault(category, {"count": 0, "examples": [], "examples_omitted": 0})
+    entry["count"] += 1
+    if len(entry["examples"]) < constants.INCRA_MAX_DIAGNOSTIC_EXAMPLES:
+        entry["examples"].append({"row_index": row})
+    else:
+        entry["examples_omitted"] += 1
 
-    if df.empty:
-        return pd.DataFrame(columns=COLUNAS_SAIDA)
 
-    missing = _REQUIRED_COLS_RAW - set(df.columns)
-    if missing:
+def _statistics(
+    properties: models.Properties, statistics: dict[str, Any], diagnostics: dict[str, Any], row: int
+) -> None:
+    for name, value in properties.model_dump().items():
+        item = statistics[name]
+        item["null_count"] += value is None
+        item["empty_count"] += isinstance(value, str) and value == ""
+        item["whitespace_count"] += isinstance(value, str) and value != "" and not value.strip()
+    uf = properties.sg_uf
+    if uf is not None and uf.strip().upper() not in regions.UFS_VALIDAS:
+        _diagnostic(diagnostics, "unknown_uf_token", row)
+    area = properties.nu_area_ha
+    if area is not None and area < 0:
+        _diagnostic(diagnostics, "negative_area", row)
+    if properties.nu_familia is not None and properties.nu_familia < 0:
+        _diagnostic(diagnostics, "negative_families", row)
+
+
+def _hash(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(_json.canonical(value), ensure_ascii=False, separators=(",", ":")).encode(
+            "utf-8"
+        )
+    ).hexdigest()
+
+
+def _envelope(
+    content: bytes, include_geometry: bool
+) -> tuple[dict[str, Any], models.PageEnvelope, str | None]:
+    raw = _json.decode(content)
+    envelope = models.PageEnvelope.model_validate(raw)
+    size = len(envelope.features)
+    if envelope.numberReturned is not None and envelope.numberReturned != size:
+        raise ValueError("numberReturned diverge das ocorrências")
+    totals = [
+        value for value in (envelope.numberMatched, envelope.totalFeatures) if value is not None
+    ]
+    if len(set(totals)) > 1 or any(value < size for value in totals):
+        raise ValueError("Contagens de população divergentes")
+    links = [link.href for link in envelope.links if link.rel == "next"]
+    if envelope.next is not None:
+        links.append(envelope.next)
+    if len(set(links)) > 1:
+        raise ValueError("Links de continuação contraditórios")
+    if (
+        include_geometry
+        and (envelope.crs is not None or size)
+        and (envelope.crs is None or envelope.crs.properties.name not in constants.INCRA_CRS_NAMES)
+    ):
+        raise ValueError("CRS declarado incompatível com EPSG4326 solicitado")
+    return raw, envelope, links[0] if links else None
+
+
+def _parse(content: bytes, include_geometry: bool) -> models.ParsedPage:
+    if type(include_geometry) is not bool:
+        raise ValueError("include_geometry deve ser bool")
+    raw, envelope, next_link = _envelope(content, include_geometry)
+    records: list[models.Feature] = []
+    signatures, identifiers = [], []
+    sort_keys = []
+    geometries: list[dict[str, Any] | None] | None = [] if include_geometry else None
+    statistics = {
+        name: {"null_count": 0, "empty_count": 0, "whitespace_count": 0}
+        for name in constants.INCRA_PROPERTIES
+    }
+    diagnostics: dict[str, Any] = {}
+    feature_keys: set[str] = set()
+    for index, feature in enumerate(envelope.features):
+        feature_keys.update(feature)
+        properties = models.Properties.model_validate(feature.get("properties"))
+        if "geometry" not in feature:
+            raise ValueError("Membro geometry ausente")
+        geometry = _geometry.validate(feature["geometry"])
+        normalized = {**feature, "properties": properties, "geometry": geometry}
+        if "bbox" in feature:
+            normalized["bbox"] = _geometry.bbox_values(feature["bbox"])
+        record = models.Feature.model_validate(normalized)
+        signature = {
+            "properties": {
+                **feature["properties"],
+                **{name: getattr(properties, name) for name in constants.INCRA_INTEGER_BITS},
+            }
+        }
+        if include_geometry:
+            signature["geometry"] = feature["geometry"]
+        signatures.append(_hash(signature))
+        identifiers.append(_hash(feature["id"]))
+        sort_keys.append((properties.cd_quilomb, properties.nu_processo, properties.no_comunidade))
+        _statistics(properties, statistics, diagnostics, index)
+        if geometries is not None:
+            geometries.append(geometry)
+            if geometry is None:
+                _diagnostic(diagnostics, "null_geometry", index)
+            elif not geometry["coordinates"]:
+                _diagnostic(diagnostics, "empty_geometry", index)
+        elif geometry is not None:
+            _diagnostic(diagnostics, "unexpected_geometry", index)
+            record.geometry = None
+        records.append(record)
+    layout = {
+        "property_names": list(constants.INCRA_PROPERTIES),
+        "envelope_keys": sorted(raw),
+        "feature_keys": sorted(feature_keys),
+        "include_geometry": include_geometry,
+    }
+    fingerprint = {
+        "algorithm": "sha256",
+        "version": 1,
+        "parser_version": PARSER_VERSION,
+        **layout,
+        "sha256": _hash(layout),
+    }
+    return models.ParsedPage(
+        records=records,
+        source_rows=len(records),
+        reported_count=envelope.numberMatched,
+        returned_count=envelope.numberReturned,
+        signatures=signatures,
+        identifier_signatures=identifiers,
+        sort_keys=sort_keys,
+        geometries=geometries,
+        layout_fingerprint=fingerprint,
+        diagnostics=diagnostics,
+        statistics=statistics,
+        warnings=[
+            f"Diagnóstico INCRA {name}: {item['count']} ocorrência(s)"
+            for name, item in diagnostics.items()
+        ],
+        crs=envelope.crs.model_dump() if envelope.crs else None,
+        bbox=_geometry.bbox_values(envelope.bbox),
+        next_link=next_link,
+        source_timestamp=envelope.timeStamp,
+        parser_version=PARSER_VERSION,
+    )
+
+
+def parse_page(content: bytes, *, include_geometry: bool) -> models.ParsedPage:
+    try:
+        return _parse(content, include_geometry)
+    except (ValueError, TypeError, KeyError, ValidationError, OverflowError, RecursionError) as exc:
         raise ParseError(
             source="incra",
             parser_version=PARSER_VERSION,
-            reason=f"Colunas obrigatorias ausentes: {missing}",
-        )
-
-    if len(df) >= MAX_FEATURES_TABULAR:
-        logger.warning(
-            "incra_quilombolas_truncated",
-            max_features=MAX_FEATURES_TABULAR,
-            records=len(df),
-        )
-
-    df = df.rename(columns=RENAME_MAP)
-
-    df["area_ha"] = pd.to_numeric(df["area_ha"], errors="coerce")
-    df["familias"] = pd.to_numeric(df["familias"], errors="coerce").astype("Int64")
-    df["data_publicacao"] = pd.to_datetime(df["data_publicacao"], errors="coerce")
-    df["data_titulo"] = pd.to_datetime(df["data_titulo"], errors="coerce")
-
-    output_cols = [c for c in COLUNAS_SAIDA if c in df.columns]
-    df = df[output_cols].reset_index(drop=True)
-
-    logger.info("incra_quilombolas_parse_ok", records=len(df))
-    return df
+            reason=f"Página INCRA inválida: {str(exc)[:1000]}",
+        ) from exc
 
 
-def parse_quilombolas_geojson(data: bytes) -> Any:
-    gpd = check_geopandas()
-    gdf = parse_geojson_base(
-        data,
-        gpd,
-        source="incra",
-        parser_version=PARSER_VERSION,
-        required_cols=_REQUIRED_COLS_RAW,
-        max_features=MAX_FEATURES_GEO,
-        output_cols_empty=COLUNAS_SAIDA_GEO,
-        truncation_event="incra_quilombolas_geo_truncated",
+def build_frame(records: list[models.Feature]) -> pd.DataFrame:
+    values: dict[str, list[Any]] = {name: [] for name in constants.INCRA_COLUMNS}
+    for record in records:
+        for name, value in record.properties.model_dump().items():
+            values[constants.INCRA_RENAME_MAP.get(name, name)].append(value)
+        values["feature_id"].append(record.id)
+    integer_names = {
+        constants.INCRA_RENAME_MAP.get(name, name) for name in constants.INCRA_INTEGER_BITS
+    }
+    return pd.DataFrame(
+        {
+            name: pd.Series(
+                items,
+                dtype="Int64"
+                if name in integer_names
+                else "float64"
+                if name == "area_ha"
+                else "string[python]",
+            )
+            for name, items in values.items()
+        }
     )
-    if gdf.empty:
-        return gdf
-
-    gdf = gdf.rename(columns=RENAME_MAP)
-    gdf["area_ha"] = pd.to_numeric(gdf["area_ha"], errors="coerce")
-    gdf["familias"] = pd.to_numeric(gdf["familias"], errors="coerce").astype("Int64")
-    gdf["data_publicacao"] = pd.to_datetime(gdf["data_publicacao"], errors="coerce")
-    gdf["data_titulo"] = pd.to_datetime(gdf["data_titulo"], errors="coerce")
-
-    invalid_mask = ~gdf.geometry.is_valid
-    n_invalid = int(invalid_mask.sum())
-    if n_invalid > 0:
-        from shapely.validation import make_valid
-
-        gdf.loc[invalid_mask, "geometry"] = gdf.loc[invalid_mask, "geometry"].apply(make_valid)
-        logger.warning(
-            "incra_quilombolas_geo_repaired",
-            invalid=n_invalid,
-            total=len(gdf),
-        )
-
-    output_cols = [c for c in COLUNAS_SAIDA_GEO if c in gdf.columns]
-    return gdf[output_cols].reset_index(drop=True)

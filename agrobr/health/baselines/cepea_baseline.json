@@ -1,0 +1,47 @@
+{
+  "source": "cepea",
+  "url": "soja",
+  "collected_at": "2026-09-27T05:14:33.618943",
+  "table_classes": [
+    [
+      "imagenet-col-12",
+      "imagenet-table",
+      "imagenet-th2"
+    ],
+    [
+      "imagenet-col-12",
+      "imagenet-table",
+      "imagenet-th2"
+    ]
+  ],
+  "key_ids": [
+    "equipe-precos-comercializacao",
+    "imagenet-indicador1",
+    "imagenet-indicador2",
+    "imagenet-link-serie-preco"
+  ],
+  "structure_hash": "05f97f2190c8",
+  "table_headers": [
+    [
+      "Valor R$*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$*"
+    ],
+    [
+      "Valor R$*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$*"
+    ]
+  ],
+  "element_counts": {
+    "tables": 2,
+    "forms": 1,
+    "divs_with_id": 20,
+    "inputs": 10,
+    "selects": 0,
+    "links": 113,
+    "scripts": 16
+  }
+}

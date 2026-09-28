@@ -58,12 +58,25 @@ pip install -e ".[bigquery]"  # Base dos Dados (fallback BCB)
 ## Rodando testes
 
 ```bash
-pytest                        # Todos (exceto slow/benchmark)
+pytest                        # Unitários sem rede (exceto slow/benchmark/integration)
 pytest -x -q                  # Fail-fast
 pytest --cov=agrobr           # Com cobertura
 pytest -m integration         # Apenas integração (requer rede)
 pytest -m slow                # Testes lentos
 pytest tests/test_cepea/      # Apenas um módulo
+```
+
+Os testes unitários usam `pytest-socket` para bloquear sockets de rede; sockets Unix
+continuam permitidos para o event loop assíncrono. No Windows, o par local de
+`socketpair` permite o canal interno do `asyncio`, mantendo bloqueados os demais
+sockets TCP/UDP e a resolução DNS. Testes marcados como `integration`
+habilitam a rede explicitamente. Complete os mocks de transporte dos testes unitários
+quando uma consulta auxiliar for adicionada.
+
+Para verificar a leitura decimal e os controles da calculadora, use Node.js 24:
+
+```bash
+node --test calculadora/tests/*.test.mjs
 ```
 
 O coverage gate é **85%**. PRs que reduzam cobertura significativamente precisam de justificativa.
@@ -83,6 +96,9 @@ Pre-commit hooks rodam `ruff` e `mypy` automaticamente em cada commit. Se prefer
 ```bash
 pre-commit run --all-files
 ```
+
+Os hooks `trailing-whitespace`, `end-of-file-fixer` e `check-added-large-files` ignoram `tests/golden_data/`: o golden
+guarda os bytes publicados pela fonte, e o hook não pode reescrevê-los nem barrar o tamanho deles.
 
 ## Padrões de código
 
@@ -126,6 +142,15 @@ Use exceções específicas — nunca `except Exception` genérico:
 - Múltiplas asserções por teste são OK
 - `-> None` não necessário em métodos de teste
 
+Remover testes exige prova de que o que fica ainda pega o defeito:
+
+- sem oráculo independente (o dado publicado pela fonte, conferido fora do código), não há corte;
+- o teste que fica tem de pegar bug de rótulo, recorte, unidade ou valor: um mutante de `scripts/mutacao_testes.py`
+  que produz esse bug precisa falhar numa asserção, não numa exceção qualquer;
+- todo corte passa pelo gate de cobertura (`--cov-branch`, antes × depois): nenhuma linha ou ramo do `agrobr`
+  deixa de ser coberto sem destino declarado;
+- o executor de mutantes roda numa cópia congelada da árvore (`--root`), nunca na árvore de trabalho.
+
 ## Estrutura do projeto
 
 ```
@@ -143,7 +168,7 @@ agrobr/
 │   ├── conab/                 #    Cada fonte tem:
 │   ├── ibge/                  #    client.py → parser.py → models.py → api.py
 │   ├── usda/                  #
-│   ├── b3/                    #    26 fontes no total
+│   ├── b3/                    #    40 fontes no total
 │   ├── ...                    #
 │   │
 │   ├── alt/                   # Fontes alternativas (anp_diesel, antt, mapa_psr, sicar)
@@ -152,7 +177,7 @@ agrobr/
 │   │   ├── base.py            #    BaseDataset (fallback, contrato, meta)
 │   │   ├── registry.py        #    Auto-descoberta de datasets
 │   │   ├── deterministic.py   #    Modo determinístico (contextvars)
-│   │   └── *.py               #    34 datasets
+│   │   └── *.py               #    36 datasets
 │   │
 │   ├── contracts/             # Schema contracts + validação
 │   ├── schemas/               # JSON schemas gerados
@@ -260,6 +285,59 @@ Verifique e documente em `docs/licenses.md` antes do merge:
 - Contract doc em `docs/contracts/<dataset>.md`
 - Source doc em `docs/sources/<fonte>.md`
 - Atualizar `mkdocs.yml`, `README.md`, `docs/index.md` e `CHANGELOG.md`
+
+## Gates de publicação
+
+`publish.yml` chama o workflow local `tests.yml` do mesmo commit antes do build.
+Esse gate reúne Python 3.11–3.13, dependências mínimas, Windows, Ruff, mypy,
+calculadora, documentação estrita e instalação somente core. O pacote é
+construído uma vez; o smoke de instalação e os destinos de publicação baixam
+esse mesmo artefato por ID, com verificação de digest.
+
+O workflow semanal de integração produz log, JUnit e `live_matrix.json`.
+Indisponibilidade inesperada falha. Exceções conhecidas ficam registradas por
+dataset: USDA sem chave e HTTP 522 no arquivo ANTAQ de 2024. Uma execução da
+matriz sem nenhum dataset validado também falha, mesmo que todas as consultas
+selecionadas tenham uma exceção conhecida. Revise a exceção quando a fonte
+voltar a responder; violações de contrato e erros de parser não são exceções.
+
+Uma execução local reproduz o registro de cobertura com:
+
+```bash
+pytest tests/integration/test_datasets_live.py -m integration --live-matrix-report=live_matrix.json --junitxml=live_matrix.xml
+```
+
+## Reconciliação semanal
+
+O workflow `reconciliacao.yml` roda toda segunda-feira (09:00 UTC) os `scripts/reconciliar_*.py`
+contra as fontes oficiais, um por vez, e dá a cada fonte um de cinco estados:
+
+- `ok`;
+- `mismatch`: a saída do agrobr ou a estrutura da fonte divergiu do registrado;
+- `indisponível`: a fonte está fora do ar ou bloqueou o acesso;
+- `não verificado`: falta a credencial, ou o script está fora da execução semanal (sem modo ao
+  vivo, por exemplo). Nunca conta como sucesso;
+- `erro do script`.
+
+O resumo (`resumo.json` e `resumo.md`) fica como artefato da execução. O job falha só com
+`mismatch` ou `erro do script`. Para rodar localmente uma fonte, ou todas:
+
+```bash
+python -m scripts.reconciliacao_semanal imea
+python -m scripts.reconciliacao_semanal
+```
+
+O resumo e o JSON completo de cada script, com os problemas encontrados, ficam em
+`reports/reconciliacao_semanal/`.
+
+Cada fonte com `mismatch` abre a issue "Reconciliação semanal: mismatch em <fonte>". Enquanto
+ela estiver aberta, as execuções seguintes comentam nela. A issue traz só o estado, a contagem,
+os identificadores dos casos divergentes e o link do artefato. O detalhe, que pode ter valores
+da fonte, sai da execução local.
+
+Um script novo em `scripts/reconciliar_<fonte>.py` entra sozinho, rodado com `--output`.
+Argumentos extras, credencial e scripts fora da execução semanal ficam declarados no topo de
+`scripts/reconciliacao_semanal.py`.
 
 ## Commits
 

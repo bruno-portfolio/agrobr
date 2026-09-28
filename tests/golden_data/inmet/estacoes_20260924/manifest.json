@@ -1,0 +1,33 @@
+{
+ "descricao": "Catálogo oficial de estações do INMET (apitempo /estacoes/T e /estacoes/M, sem token), pela URL do cliente do agrobr; corpos inteiros.",
+ "arquivos": [
+  {
+   "file": "estacoes_T.json",
+   "requested_url": "https://apitempo.inmet.gov.br/estacoes/T",
+   "final_url": "https://apitempo.inmet.gov.br/estacoes/T",
+   "status": 200,
+   "captured_at": "2026-09-24T03:47:12.260848+00:00",
+   "bytes": 262900,
+   "sha256": "3f2dc2bbafe46ed0e840c49cd58a9971d2cb1eee33e39b1fb4c49042b3f2816c",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 03:31:42 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "content-length": "262900"
+   }
+  },
+  {
+   "file": "estacoes_M.json",
+   "requested_url": "https://apitempo.inmet.gov.br/estacoes/M",
+   "final_url": "https://apitempo.inmet.gov.br/estacoes/M",
+   "status": 200,
+   "captured_at": "2026-09-24T03:47:12.335483+00:00",
+   "bytes": 34288,
+   "sha256": "9b0951fd92cb229d98f400826671feb2f0d6dac1832c59c5b0339df76ee113eb",
+   "headers": {
+    "date": "Thu, 24 Sep 2026 03:31:42 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "content-length": "34288"
+   }
+  }
+ ]
+}

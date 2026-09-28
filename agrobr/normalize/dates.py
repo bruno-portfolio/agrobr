@@ -1,7 +1,85 @@
 from __future__ import annotations
 
 import re
+import warnings
 from datetime import date
+from typing import NamedTuple
+
+import pandas as pd
+import structlog
+
+from agrobr.utils.result import ATRIBUTO_AVISOS
+from agrobr.utils.time import hoje
+
+logger = structlog.get_logger()
+
+DATA_ANO_MINIMO = 1900
+DATA_ANO_MAXIMO = 2099
+
+
+class DatasConvertidas(NamedTuple):
+    datas: pd.Series
+    descartadas: int
+
+
+def converter_datas(
+    valores: pd.Series,
+    *,
+    fonte: str,
+    formato: str | None = None,
+    dayfirst: bool = False,
+    ate: pd.Timestamp | None = None,
+) -> DatasConvertidas:
+    """Converte a coluna em datas com o mesmo resultado no pandas 2 e no 3.
+
+    Valor ilegível, com ano fora de `DATA_ANO_MINIMO`–`DATA_ANO_MAXIMO` ou, com `ate`, de dia
+    posterior a ele vira `NaT`. `descartadas` conta os valores presentes que viraram `NaT`
+    (vazio não conta). A saída é sempre em nanossegundos.
+    """
+    datas = pd.to_datetime(valores, errors="coerce", format=formato, dayfirst=dayfirst)
+    fora = ~datas.dt.year.between(DATA_ANO_MINIMO, DATA_ANO_MAXIMO)
+    if ate is not None:
+        fora |= datas.dt.normalize() > ate.normalize()
+    datas = datas.mask(fora).dt.as_unit("ns")
+    texto = valores.astype("string").str.strip()
+    descartadas = int((texto.notna() & texto.ne("") & datas.isna()).sum())
+    if descartadas:
+        logger.warning(
+            "datas_descartadas",
+            fonte=fonte,
+            coluna=str(valores.name),
+            descartadas=descartadas,
+            intervalo=f"{DATA_ANO_MINIMO}-{DATA_ANO_MAXIMO}",
+        )
+    return DatasConvertidas(datas, descartadas)
+
+
+def converter_coluna(
+    df: pd.DataFrame,
+    coluna: str,
+    *,
+    fonte: str,
+    formato: str | None = None,
+    dayfirst: bool = False,
+    ate: pd.Timestamp | None = None,
+    efeito: str = "",
+) -> None:
+    """Converte `df[coluna]` com `converter_datas`; havendo descarte, emite `UserWarning` e
+    anota a mensagem em `df.attrs`, de onde o `build_source_meta` a leva ao `MetaInfo`."""
+    convertidas = converter_datas(
+        df[coluna], fonte=fonte, formato=formato, dayfirst=dayfirst, ate=ate
+    )
+    df[coluna] = convertidas.datas
+    if not convertidas.descartadas:
+        return
+    limite = f" ou de dia posterior a {ate:%Y-%m-%d}" if ate is not None else ""
+    aviso = (
+        f"{fonte}: {convertidas.descartadas} valor(es) de {coluna} viraram NaT (data ilegível "
+        f"ou com ano fora de {DATA_ANO_MINIMO}–{DATA_ANO_MAXIMO}{limite}).{efeito}"
+    )
+    df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+    warnings.warn(aviso, UserWarning, stacklevel=2)
+
 
 MESES_PT: dict[str, int] = {
     "janeiro": 1,
@@ -45,7 +123,7 @@ INICIO_SAFRA_MES = 7
 
 def safra_atual(data: date | None = None) -> str:
     if data is None:
-        data = date.today()
+        data = hoje()
 
     ano_inicio = data.year if data.month >= INICIO_SAFRA_MES else data.year - 1
 

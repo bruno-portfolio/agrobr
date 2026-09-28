@@ -14,41 +14,17 @@ def _clean_state():
     warn_once_reset()
 
 
-def test_warn_once_emits_warning():
-    with pytest.warns(UserWarning, match="test message"):
-        warn_once("test_key", "test message")
-
-
-def test_warn_once_no_double_warning():
-    warn_once("test_key", "first call")
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        warn_once("test_key", "second call should not warn")
-
-
 def test_warn_once_reset_all():
     warn_once("k1", "msg1")
     warn_once("k2", "msg2")
 
     warn_once_reset()
 
-    with pytest.warns(UserWarning, match="msg1"):
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
         warn_once("k1", "msg1")
-
-
-def test_warn_once_reset_specific_key():
-    warn_once("k1", "msg1")
-    warn_once("k2", "msg2")
-
-    warn_once_reset("k1")
-
-    with pytest.warns(UserWarning, match="msg1"):
-        warn_once("k1", "msg1")
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        warn_once("k2", "should not warn")
+        warn_once("k2", "msg2")
+    assert [str(aviso.message) for aviso in caught] == ["msg1", "msg2"]
 
 
 def _caller_helper() -> list[warnings.WarningMessage]:

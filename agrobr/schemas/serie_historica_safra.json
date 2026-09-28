@@ -1,7 +1,7 @@
 {
   "name": "conab.serie_historica_safra",
-  "schema_version": "1.0",
-  "effective_from": "0.13.0",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "produto",
@@ -11,7 +11,12 @@
   ],
   "required_columns": [
     "produto",
-    "safra"
+    "safra",
+    "regiao",
+    "uf",
+    "area_plantada_mil_ha",
+    "producao_mil_ton",
+    "produtividade_kg_ha"
   ],
   "dtypes": {
     "produto": "str",
@@ -20,7 +25,10 @@
     "uf": "str",
     "area_plantada_mil_ha": "float",
     "producao_mil_ton": "float",
-    "produtividade_kg_ha": "float"
+    "produtividade_kg_ha": "float",
+    "area_em_producao_mil_ha": "float",
+    "area_formacao_mil_ha": "float",
+    "area_colhida_mil_ha": "float"
   },
   "nullable": {
     "produto": false,
@@ -29,7 +37,10 @@
     "uf": true,
     "area_plantada_mil_ha": true,
     "producao_mil_ton": true,
-    "produtividade_kg_ha": true
+    "produtividade_kg_ha": true,
+    "area_em_producao_mil_ha": true,
+    "area_formacao_mil_ha": true,
+    "area_colhida_mil_ha": true
   },
   "columns": [
     {
@@ -108,18 +119,54 @@
       "description": "",
       "min_value": 0,
       "max_value": null
+    },
+    {
+      "name": "area_em_producao_mil_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Café: área em produção, em mil hectares.",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "area_formacao_mil_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Café: área em formação, em mil hectares.",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "area_colhida_mil_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Cana: área colhida, em mil hectares.",
+      "min_value": 0,
+      "max_value": null
     }
   ],
   "constraints": {
     "no_duplicates": true,
     "area_plantada_mil_ha_min": 0,
     "producao_mil_ton_min": 0,
-    "produtividade_kg_ha_min": 0
+    "produtividade_kg_ha_min": 0,
+    "area_em_producao_mil_ha_min": 0,
+    "area_formacao_mil_ha_min": 0,
+    "area_colhida_mil_ha_min": 0
   },
   "guarantees": [
     "PK unica por combinacao produto + safra + regiao + uf",
     "'produto' lowercase (ex: soja, milho_2)",
-    "'safra' formato YYYY/YY (ex: 2023/24)",
+    "'safra' e o periodo publicado pela CONAB: YYYY/YY (ex: 2023/24) ou YYYY (ex: 2025; cafe e cereais de inverno)",
     "'regiao' quando presente: NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL",
     "'uf' quando presente: codigo UF de 2 letras uppercase",
     "Metricas (area, producao, produtividade) >= 0 quando presentes"

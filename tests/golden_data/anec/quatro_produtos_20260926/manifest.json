@@ -1,0 +1,134 @@
+{
+ "fonte": "anec",
+ "oraculo": "Rodada 32 de conferência: PDFs oficiais com recibo (.request.json) e texto PDFium independente (ANEC_2026_w01_a653_pdfium_text.txt, ANEC_2026_w02_a654_pdfium_text.txt), sem o parser do agrobr; Rodada 35: leitura manual de Santos. linha_total e total_products_impresso são os valores impressos no boletim.",
+ "regra": "Até a W2/2026 o boletim publica 4 produtos (Soybean, Soybean meal, Maize e Wheat) em cada período; da W3/2026 em diante, 6 (com DDGS e Sorghum). Coluna sem nome de produto é recusada: o agrobr não adivinha o produto.",
+ "boletins": {
+  "2026-01": {
+   "pdf": "rotulos_20260926/weekly_w01_2026.pdf",
+   "bytes": 260998,
+   "sha256": "254924f1a57ae31bc8b45e925198e8df19b5b5a5d8cfb469403f74ffd559eb89",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmke9xl1a0001aftx54ww2yrr.pdf",
+    "final_url": "https://www.anec.com.br/uploads/cmke9xl1a0001aftx54ww2yrr.pdf",
+    "fetched_at": "2026-09-26T02:49:55.874374+00:00",
+    "status": 200,
+    "bytes": 260998,
+    "sha256": "254924f1a57ae31bc8b45e925198e8df19b5b5a5d8cfb469403f74ffd559eb89"
+   },
+   "artigo": {
+    "id": 653,
+    "cuid": "cmkea1cct9211b4txxpmnomu8",
+    "title_en": "ANEC - 01.2026 Accumulated Exports",
+    "slug_en": "anec-012026-accumulated-exports",
+    "created_at": "2026-01-14T17:10:42.126Z",
+    "pdf_url": "https://www.anec.com.br/uploads/cmke9xl1a0001aftx54ww2yrr.pdf",
+    "media_updated_at": "2026-01-14T17:07:46.753Z"
+   },
+   "linha_total": {
+    "last_week/soybean": 524158,
+    "last_week/soybean_meal": 303624,
+    "last_week/maize": 1142549,
+    "last_week/wheat": 111431,
+    "current_week/soybean": 362247,
+    "current_week/soybean_meal": 597460,
+    "current_week/maize": 919280,
+    "current_week/wheat": 144290
+   },
+   "santos_soja": {
+    "last_week": [
+     "2026-01-04",
+     "2026-01-10",
+     253387
+    ],
+    "current_week": [
+     "2026-01-11",
+     "2026-01-17",
+     168677
+    ]
+   },
+   "mensal_janeiro_2025": {
+    "soybean": 1124713,
+    "soybean_meal": 1643745,
+    "maize": 3185203,
+    "wheat": 660691
+   },
+   "total_products_impresso": 6614352
+  },
+  "2026-02": {
+   "pdf": "quatro_produtos_20260926/weekly_w02_2026.pdf",
+   "bytes": 261812,
+   "sha256": "2d0fe4756b9d4a8ae242a5800ebfb37269c2b9a5a89d7652f2dad2a7a35c45e7",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmkobv7oo00011vtxhx9o992w.pdf",
+    "final_url": "https://www.anec.com.br/uploads/cmkobv7oo00011vtxhx9o992w.pdf",
+    "fetched_at": "2026-09-26T02:49:58.124330+00:00",
+    "status": 200,
+    "bytes": 261812,
+    "sha256": "2d0fe4756b9d4a8ae242a5800ebfb37269c2b9a5a89d7652f2dad2a7a35c45e7"
+   },
+   "artigo": {
+    "id": 654,
+    "cuid": "cmkoby4yl19624ftx8vuxvmrj",
+    "title_en": "ANEC - 02.2026 Accumulated Exports",
+    "slug_en": "anec-022026-accumulated-exports",
+    "created_at": "2026-01-21T18:01:53.565Z",
+    "pdf_url": "https://www.anec.com.br/uploads/cmkobv7oo00011vtxhx9o992w.pdf",
+    "media_updated_at": "2026-01-21T17:59:37.134Z"
+   },
+   "linha_total": {
+    "last_week/soybean": 109000,
+    "last_week/soybean_meal": 463104,
+    "last_week/maize": 810380,
+    "last_week/wheat": 147330,
+    "current_week/soybean": 676645,
+    "current_week/soybean_meal": 467550,
+    "current_week/maize": 434686,
+    "current_week/wheat": 0
+   },
+   "nota_linha_total": "O trigo da semana corrente sai impresso como \"-\", sem embarque.",
+   "santos_soja": {
+    "last_week": [
+     "2026-01-11",
+     "2026-01-17",
+     40608
+    ],
+    "current_week": [
+     "2026-01-18",
+     "2026-01-24",
+     82480
+    ]
+   },
+   "mensal_janeiro_2025": {
+    "soybean": 1124713,
+    "soybean_meal": 1643745,
+    "maize": 3185203,
+    "wheat": 660691
+   },
+   "total_products_impresso": 6614352
+  },
+  "2026-14": {
+   "pdf": "quatro_produtos_20260926/weekly_w14_2026.pdf",
+   "bytes": 879282,
+   "sha256": "92b1db10a4c9fdcb55a17631448e8761e42eddeb0adb99ed4690ba90e524bbd0",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmo7f3ly50000aztx2er7672c.pdf",
+    "final_url": "https://www.anec.com.br/uploads/cmo7f3ly50000aztx2er7672c.pdf",
+    "fetched_at": "2026-09-26T02:50:35.461799+00:00",
+    "status": 200,
+    "bytes": 879282,
+    "sha256": "92b1db10a4c9fdcb55a17631448e8761e42eddeb0adb99ed4690ba90e524bbd0"
+   },
+   "artigo": {
+    "id": 670,
+    "cuid": "cmo7f4q3w15025bntxu3fcwc2u",
+    "title_en": "ANEC - 14.2026 Accumulated Exports",
+    "slug_en": "anec-142026-accumulated-exports",
+    "created_at": "2026-04-20T16:37:44.108Z",
+    "pdf_url": "https://www.anec.com.br/uploads/cmo7f3ly50000aztx2er7672c.pdf",
+    "media_updated_at": "2026-04-20T16:36:52.070Z"
+   },
+   "esperado": "ParseError",
+   "observacao": "A primeira coluna da semana corrente tem dados e nenhum rótulo de produto; só Soybean meal, Maize, Wheat, DDGS e Sorghum estão nomeados nessa metade (R35, ANEC_W14_source_observation.json)."
+  }
+ }
+}

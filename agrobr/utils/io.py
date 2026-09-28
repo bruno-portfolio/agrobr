@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import io
 import zipfile
-from typing import Any, Literal
+import zlib
+from typing import IO, Any, Literal
 
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr import constants
+from agrobr.exceptions import ParseError, ResourceLimitError, SourceUnavailableError
 from agrobr.normalize.encoding import detect_encoding_chain
 
 _ExcelEngine = Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"]
@@ -61,6 +63,68 @@ def validate_download(
     )
 
 
+def _expansion_limit(source: str) -> int:
+    return constants.MAX_EXPANDED_BYTES.get(source, constants.MAX_EXPANDED_BYTES_DEFAULT)
+
+
+def open_zip_member(
+    archive: zipfile.ZipFile, member: str | zipfile.ZipInfo, *, source: str, url: str = ""
+) -> IO[bytes]:
+    """Abre 1 membro do ZIP se o tamanho expandido declarado cabe no teto da fonte.
+
+    O ``zipfile`` não entrega mais do que o tamanho declarado: o que o membro expandir além dele falha no CRC
+    (``zipfile.BadZipFile``). Por isso conferir o declarado basta para o ``zipfile``.
+    """
+    info = member if isinstance(member, zipfile.ZipInfo) else archive.getinfo(member)
+    limit = _expansion_limit(source)
+    if info.file_size > limit:
+        raise ResourceLimitError(
+            source,
+            f"o membro {info.filename} do ZIP expande para {info.file_size} bytes, "
+            f"acima do teto de {limit}",
+            url=url,
+        )
+    return archive.open(info)
+
+
+def read_zip_member(
+    archive: zipfile.ZipFile, member: str | zipfile.ZipInfo, *, source: str, url: str = ""
+) -> bytes:
+    with open_zip_member(archive, member, source=source, url=url) as stream:
+        return stream.read()
+
+
+def check_xlsx_expansion(raw: bytes, *, source: str, url: str = "") -> None:
+    """Recusa, antes do leitor de planilha, o XLSX que expande além do teto da fonte.
+
+    Soma o tamanho declarado dos membros e confere o CRC de cada um em stream. O calamine não respeita o tamanho
+    declarado: um membro que expande além dele só aparece no CRC. Arquivo que não abre como ZIP segue para o leitor,
+    que dá o erro dele.
+    """
+    if not raw.startswith(b"PK"):
+        return
+    limit = _expansion_limit(source)
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            total = sum(info.file_size for info in archive.infolist())
+            if total > limit:
+                raise ResourceLimitError(
+                    source,
+                    f"o XLSX expande para {total} bytes, acima do teto de {limit}",
+                    url=url,
+                )
+            wrong = archive.testzip()
+    except (zipfile.BadZipFile, zlib.error, EOFError):
+        return
+    if wrong is not None:
+        raise ResourceLimitError(
+            source,
+            f"o membro {wrong} do XLSX não confere com o tamanho e o CRC declarados; "
+            "a expansão real não é conhecida",
+            url=url,
+        )
+
+
 def _extract_bytes(data: bytes | io.BytesIO) -> bytes:
     if isinstance(data, io.BytesIO):
         return data.getvalue()
@@ -75,6 +139,7 @@ def open_excel_safe(
     engine: _ExcelEngine | None = None,
 ) -> pd.ExcelFile:
     raw = _extract_bytes(data)
+    check_xlsx_expansion(raw, source=source)
     try:
         return pd.ExcelFile(io.BytesIO(raw), engine=engine)
     except Exception as primary_err:
@@ -108,6 +173,7 @@ def read_excel_safe(
     **kwargs: Any,
 ) -> pd.DataFrame:
     raw = _extract_bytes(data)
+    check_xlsx_expansion(raw, source=source)
     try:
         df: pd.DataFrame = pd.read_excel(io.BytesIO(raw), **kwargs)
         return df
@@ -157,30 +223,6 @@ def read_csv_safe(
         ) from e
 
 
-def concat_csv_pages(
-    pages: list[bytes],
-    *,
-    source: str,
-    parser_version: int,
-    empty_columns: list[str],
-) -> pd.DataFrame:
-    if not pages:
-        return pd.DataFrame(columns=empty_columns)
-
-    dfs: list[pd.DataFrame] = []
-    for i, data in enumerate(pages):
-        df = read_csv_safe(
-            data, source=source, parser_version=parser_version, label=f"CSV pagina {i}"
-        )
-        if not df.empty:
-            dfs.append(df)
-
-    if not dfs:
-        return pd.DataFrame(columns=empty_columns)
-
-    return pd.concat(dfs, ignore_index=True)
-
-
 def extract_csv_from_zip(data: bytes, *, source: str, url: str) -> bytes:
     try:
         with zipfile.ZipFile(io.BytesIO(data)) as zf:
@@ -191,7 +233,7 @@ def extract_csv_from_zip(data: bytes, *, source: str, url: str) -> bytes:
                     url=url,
                     last_error="ZIP não contém arquivo CSV",
                 )
-            return zf.read(csv_names[0])
+            return read_zip_member(zf, csv_names[0], source=source, url=url)
     except zipfile.BadZipFile as e:
         raise SourceUnavailableError(
             source=source,

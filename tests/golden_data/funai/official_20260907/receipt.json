@@ -1,0 +1,342 @@
+{
+  "copied_at": "2026-09-07T22:44:10.162713+00:00",
+  "capture_started_at": "2026-09-07T22:35:38.363428+00:00",
+  "capture_finished_at": "2026-09-07T22:36:19.397687+00:00",
+  "summary_sha256": "e16f03917da9be19bdc1a98c0a3789530b6be7cf73f020e3e35d835b776706ea",
+  "command_sha256": "feeb090034dad5cfe8ab6db44335c965ff7bd0566d2d2e6f9e6ebd1ebfe12c5b",
+  "frozen_manifest_sha256": "469d1e62ba6abb5e0c06cf7fb8cb6236ca5dd1094228c057cdccbaae09cc1f45",
+  "byte_basis": "unmodified_decoded_http_bodies",
+  "scope": "fixed_six_code_selection_not_national_population",
+  "files": {
+    "hits_before.xml": {
+      "source_body": "request_001.body",
+      "source_receipt": "request_001_finished.json",
+      "source_receipt_sha256": "28e3cf046d7adbbef072711139fb465294beaa008851d81a1121f6ead4496533",
+      "sha256": "773fe90d504eb1f62b059fec9eefaf181de4a42d7fa4c18cd5cd5936062e7253",
+      "size_bytes": 1155,
+      "receipt": {
+        "index": 0,
+        "logical_operation": 0,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29&sortBy=terrai_codigo+A%2Cgid+A&resultType=hits",
+        "method": "GET",
+        "started_at": "2026-09-07T22:35:48.833692+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:35:51 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:35:49.000004+00:00",
+        "body_file": "request_001.body",
+        "size_bytes": 1155,
+        "sha256": "773fe90d504eb1f62b059fec9eefaf181de4a42d7fa4c18cd5cd5936062e7253",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:35:49.011055+00:00"
+      }
+    },
+    "reference.json": {
+      "source_body": "request_002.body",
+      "source_receipt": "request_002_finished.json",
+      "source_receipt_sha256": "9f445aea46256386bf7072ab85ab1dee3e69179265e09709b95e99929872c111",
+      "sha256": "ea32729e3ebdd495c7fd3e7e7c77fb91d1fb7cf209646b32200cf868a842fdac",
+      "size_bytes": 4742,
+      "receipt": {
+        "index": 1,
+        "logical_operation": 1,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=6&startIndex=0&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29&sortBy=terrai_codigo+A%2Cgid+A",
+        "method": "GET",
+        "started_at": "2026-09-07T22:35:51.017106+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:35:53 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:35:51.310184+00:00",
+        "body_file": "request_002.body",
+        "size_bytes": 4742,
+        "sha256": "ea32729e3ebdd495c7fd3e7e7c77fb91d1fb7cf209646b32200cf868a842fdac",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:35:51.318059+00:00"
+      }
+    },
+    "page1.json": {
+      "source_body": "request_003.body",
+      "source_receipt": "request_003_finished.json",
+      "source_receipt_sha256": "ff666901024b1865874e6c6d35c3247caafa62da934676894577e8ed83460b7c",
+      "sha256": "a3c7cd3c9fc089387671e5985d5211302afcfb17913d9d6dd946e351f131916d",
+      "size_bytes": 2686,
+      "receipt": {
+        "index": 2,
+        "logical_operation": 2,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=3&startIndex=0&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29&sortBy=terrai_codigo+A%2Cgid+A",
+        "method": "GET",
+        "started_at": "2026-09-07T22:35:53.325029+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:35:55 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:35:53.607072+00:00",
+        "body_file": "request_003.body",
+        "size_bytes": 2686,
+        "sha256": "a3c7cd3c9fc089387671e5985d5211302afcfb17913d9d6dd946e351f131916d",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:35:53.615369+00:00"
+      }
+    },
+    "page2.json": {
+      "source_body": "request_004.body",
+      "source_receipt": "request_004_finished.json",
+      "source_receipt_sha256": "44ebf64a281a359916fa22c3396caadec2d0d0931f255918a80e2398e0599a86",
+      "sha256": "3faf982e668299940ef4692525e4d0a1746f5118eaa5f7ea23d84fe077bbc1ff",
+      "size_bytes": 4101,
+      "receipt": {
+        "index": 3,
+        "logical_operation": 3,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=4&startIndex=2&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29&sortBy=terrai_codigo+A%2Cgid+A",
+        "method": "GET",
+        "started_at": "2026-09-07T22:35:55.622356+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:35:58 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:35:55.902455+00:00",
+        "body_file": "request_004.body",
+        "size_bytes": 4101,
+        "sha256": "3faf982e668299940ef4692525e4d0a1746f5118eaa5f7ea23d84fe077bbc1ff",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:35:55.909399+00:00"
+      }
+    },
+    "terminal.json": {
+      "source_body": "request_005.body",
+      "source_receipt": "request_005_finished.json",
+      "source_receipt_sha256": "58bfa4f134f66a88efd1749a0c3d81c15bcab1529ef9ddf9c7a5adfe961ffb72",
+      "sha256": "2d82b07889dc6991f4c7c2d4874ba229991cc3a2848c37045fac86deee3732ae",
+      "size_bytes": 792,
+      "receipt": {
+        "index": 4,
+        "logical_operation": 4,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=1&startIndex=6&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29&sortBy=terrai_codigo+A%2Cgid+A",
+        "method": "GET",
+        "started_at": "2026-09-07T22:35:57.916655+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:36:00 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:35:58.213138+00:00",
+        "body_file": "request_005.body",
+        "size_bytes": 792,
+        "sha256": "2d82b07889dc6991f4c7c2d4874ba229991cc3a2848c37045fac86deee3732ae",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:35:58.221833+00:00"
+      }
+    },
+    "hits_after.xml": {
+      "source_body": "request_006.body",
+      "source_receipt": "request_006_finished.json",
+      "source_receipt_sha256": "884c3ad31e2812f8fd4b3a05a5f994873f0c5c7f9f7d98518c80a064f326edad",
+      "sha256": "773fe90d504eb1f62b059fec9eefaf181de4a42d7fa4c18cd5cd5936062e7253",
+      "size_bytes": 1155,
+      "receipt": {
+        "index": 5,
+        "logical_operation": 5,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29&sortBy=terrai_codigo+A%2Cgid+A&resultType=hits",
+        "method": "GET",
+        "started_at": "2026-09-07T22:36:00.227780+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:36:02 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:36:00.347407+00:00",
+        "body_file": "request_006.body",
+        "size_bytes": 1155,
+        "sha256": "773fe90d504eb1f62b059fec9eefaf181de4a42d7fa4c18cd5cd5936062e7253",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:36:00.351377+00:00"
+      }
+    },
+    "uf_mt.json": {
+      "source_body": "request_007.body",
+      "source_receipt": "request_007_finished.json",
+      "source_receipt_sha256": "5cf1224b20bf716ce9e291439cec6c701228e4888fa99c61b507731434c16ccc",
+      "sha256": "9938992a6754db7901ae2f783e707adf8da01b09d4fc8d8498b3b1682c3bb2a2",
+      "size_bytes": 1528,
+      "receipt": {
+        "index": 6,
+        "logical_operation": 6,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=6&startIndex=0&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29+AND+uf_sigla+LIKE+%27%25MT%25%27&sortBy=terrai_codigo+A%2Cgid+A",
+        "method": "GET",
+        "started_at": "2026-09-07T22:36:02.358088+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:36:04 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:36:02.633787+00:00",
+        "body_file": "request_007.body",
+        "size_bytes": 1528,
+        "sha256": "9938992a6754db7901ae2f783e707adf8da01b09d4fc8d8498b3b1682c3bb2a2",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:36:02.640368+00:00"
+      }
+    },
+    "fase_regularizada.json": {
+      "source_body": "request_008.body",
+      "source_receipt": "request_008_finished.json",
+      "source_receipt_sha256": "0c3469e2a5f2d3f75641898ff01f428f6ae8091e7f29a188617bfe3155245cf7",
+      "sha256": "b9771a397ed92a05ee9e89f0c1f8f188a12cabdcc2eeb070f6754f7262e24beb",
+      "size_bytes": 3398,
+      "receipt": {
+        "index": 7,
+        "logical_operation": 7,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg&count=6&startIndex=0&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29+AND+fase_ti%3D%27Regularizada%27&sortBy=terrai_codigo+A%2Cgid+A",
+        "method": "GET",
+        "started_at": "2026-09-07T22:36:04.647790+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:36:07 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:36:04.940364+00:00",
+        "body_file": "request_008.body",
+        "size_bytes": 3398,
+        "sha256": "b9771a397ed92a05ee9e89f0c1f8f188a12cabdcc2eeb070f6754f7262e24beb",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:36:04.947598+00:00"
+      }
+    },
+    "geo_default.json": {
+      "source_body": "request_009.body",
+      "source_receipt": "request_009_finished.json",
+      "source_receipt_sha256": "48b7505c4d66553c87b5306f8d09ec8b5be6f4ad924f9ee4a895c8ac046ab1b6",
+      "sha256": "0853d9fe54c5418dc542ca3b3a963c52dddde06a2a5f0454621b4619f2af7f35",
+      "size_bytes": 4653,
+      "receipt": {
+        "index": 8,
+        "logical_operation": 8,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg%2Cthe_geom&count=6&startIndex=0&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29+AND+terrai_codigo%3D101&sortBy=terrai_codigo+A%2Cgid+A",
+        "method": "GET",
+        "started_at": "2026-09-07T22:36:06.954275+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:36:09 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:36:07.376561+00:00",
+        "body_file": "request_009.body",
+        "size_bytes": 4653,
+        "sha256": "0853d9fe54c5418dc542ca3b3a963c52dddde06a2a5f0454621b4619f2af7f35",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:36:07.384632+00:00"
+      }
+    },
+    "geo.json": {
+      "source_body": "request_010.body",
+      "source_receipt": "request_010_finished.json",
+      "source_receipt_sha256": "418533be25e598591846df59d4cbb3908b869cf5eabfd5fb869c5f2630ce81c1",
+      "sha256": "d36018bfbe83501c581120a1b211edf2627ec5a4d3f7ed0fe03205837d3ec9a9",
+      "size_bytes": 4653,
+      "receipt": {
+        "index": 9,
+        "logical_operation": 9,
+        "requested_url": "https://geoserver.funai.gov.br/geoserver/Funai/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Funai%3Atis_poligonais&outputFormat=application%2Fjson&propertyName=gid%2Cterrai_codigo%2Cterrai_nome%2Cetnia_nome%2Cmunicipio_nome%2Cuf_sigla%2Csuperficie_perimetro_ha%2Cfase_ti%2Cmodalidade_ti%2Creestudo_ti%2Ccr%2Cfaixa_fronteira%2Cundadm_codigo%2Cundadm_nome%2Cundadm_sigla%2Cdominio_uniao%2Cdata_atualizacao%2Cepsg%2Cthe_geom&count=6&startIndex=0&CQL_FILTER=terrai_codigo+IN+%28101%2C201%2C601%2C2001%2C2301%2C64501%29+AND+terrai_codigo%3D101&sortBy=terrai_codigo+A%2Cgid+A&srsName=EPSG%3A4326",
+        "method": "GET",
+        "started_at": "2026-09-07T22:36:09.392311+00:00",
+        "forwarded": true,
+        "complete_body_saved": true,
+        "request_headers": {
+          "accept-encoding": "gzip, deflate",
+          "user-agent": "agrobr/2.0.0 (https://github.com/bruno-portfolio/agrobr)",
+          "accept": "application/json, text/html, */*;q=0.8"
+        },
+        "status": 200,
+        "headers": {
+          "date": "Mon, 07 Sep 2026 22:36:12 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-encoding": "gzip"
+        },
+        "received_at": "2026-09-07T22:36:09.826887+00:00",
+        "body_file": "request_010.body",
+        "size_bytes": 4653,
+        "sha256": "d36018bfbe83501c581120a1b211edf2627ec5a4d3f7ed0fe03205837d3ec9a9",
+        "body_encoding": "decoded_http_content_not_wire",
+        "finished_at": "2026-09-07T22:36:09.833328+00:00"
+      }
+    }
+  }
+}

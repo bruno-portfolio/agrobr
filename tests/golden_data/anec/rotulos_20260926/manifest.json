@@ -1,0 +1,192 @@
+{
+ "fonte": "anec",
+ "oraculo": "Rodada 32 de conferência, ANEC_all_editions.csv e ANEC_interval_oracle.json: extração PDFium independente, rótulos literais e todas as janelas de 7 dias do calendário; sem o parser do agrobr.",
+ "regra": "O início da last_week precisa ficar a até 7 dias de date(ano, 1, 1) + (semana - 1) semanas; fora disso, datas nulas com aviso.",
+ "boletins": {
+  "2025-50": {
+   "pdf": "weekly_w50_2025.pdf",
+   "bytes": 273118,
+   "sha256": "c6a3d6436c41e821ddf8bd90f926168e89b67e56a610088700d65eb185fb9f7c",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmjdc7ixs0000zxtx9yrufva7.pdf",
+    "final_url": "https://www.anec.com.br/uploads/cmjdc7ixs0000zxtx9yrufva7.pdf",
+    "fetched_at": "2026-09-26T02:49:45.957474+00:00",
+    "status": 200,
+    "sha256": "c6a3d6436c41e821ddf8bd90f926168e89b67e56a610088700d65eb185fb9f7c"
+   },
+   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "rotulos_impressos": [
+    "07th to 13th Jan",
+    "14th to 20th Jan"
+   ],
+   "referencia_da_edicao": "2025-12-10",
+   "leitura_independente": {
+    "last_week": [
+     "2026-01-07",
+     "2026-01-13"
+    ],
+    "current_week": [
+     "2026-01-14",
+     "2026-01-20"
+    ],
+    "distancia_da_referencia_dias": 28
+   },
+   "esperado": {
+    "last_week": null,
+    "current_week": null
+   }
+  },
+  "2025-52": {
+   "pdf": "weekly_w52_2025.pdf",
+   "bytes": 269420,
+   "sha256": "82e62baf25dfa49c843e66d9b8a1db217982a1d5e678030116377e3234d508dd",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmjxayfhx0003zatxcuha7his.pdf",
+    "final_url": "https://www.anec.com.br/uploads/cmjxayfhx0003zatxcuha7his.pdf",
+    "fetched_at": "2026-09-26T02:49:50.867191+00:00",
+    "status": 200,
+    "sha256": "82e62baf25dfa49c843e66d9b8a1db217982a1d5e678030116377e3234d508dd"
+   },
+   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "rotulos_impressos": [
+    "21st to 27th Dec",
+    "28th to 03rd Jan"
+   ],
+   "referencia_da_edicao": "2025-12-24",
+   "leitura_independente": {
+    "last_week": [
+     "2025-12-21",
+     "2025-12-27"
+    ],
+    "current_week": [
+     "2025-12-28",
+     "2026-01-03"
+    ],
+    "distancia_da_referencia_dias": -3
+   },
+   "esperado": {
+    "last_week": [
+     "2025-12-21",
+     "2025-12-27"
+    ],
+    "current_week": [
+     "2025-12-28",
+     "2026-01-03"
+    ]
+   }
+  },
+  "2025-53": {
+   "pdf": "weekly_w53_2025.pdf",
+   "bytes": 522925,
+   "sha256": "52a9c7878150cc64d614805712059403022d108092040f5fece4c13ce9a9522a",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmk5r584o0001xmtxa1wm5mqg.pdf",
+    "final_url": "https://www.anec.com.br/uploads/cmk5r584o0001xmtxa1wm5mqg.pdf",
+    "fetched_at": "2026-09-26T02:49:53.477075+00:00",
+    "status": 200,
+    "sha256": "52a9c7878150cc64d614805712059403022d108092040f5fece4c13ce9a9522a"
+   },
+   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "rotulos_impressos": [
+    "28th to 03rd Jan",
+    "04th to 10th Jan"
+   ],
+   "referencia_da_edicao": "2025-12-31",
+   "leitura_independente": {
+    "last_week": [
+     "2025-12-28",
+     "2026-01-03"
+    ],
+    "current_week": [
+     "2026-01-04",
+     "2026-01-10"
+    ],
+    "distancia_da_referencia_dias": -3
+   },
+   "esperado": {
+    "last_week": [
+     "2025-12-28",
+     "2026-01-03"
+    ],
+    "current_week": [
+     "2026-01-04",
+     "2026-01-10"
+    ]
+   }
+  },
+  "2026-01": {
+   "pdf": "weekly_w01_2026.pdf",
+   "bytes": 260998,
+   "sha256": "254924f1a57ae31bc8b45e925198e8df19b5b5a5d8cfb469403f74ffd559eb89",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmke9xl1a0001aftx54ww2yrr.pdf",
+    "final_url": "https://www.anec.com.br/uploads/cmke9xl1a0001aftx54ww2yrr.pdf",
+    "fetched_at": "2026-09-26T02:49:55.874374+00:00",
+    "status": 200,
+    "sha256": "254924f1a57ae31bc8b45e925198e8df19b5b5a5d8cfb469403f74ffd559eb89"
+   },
+   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "rotulos_impressos": [
+    "04th to 10th Jan",
+    "11th to 17th Jan"
+   ],
+   "referencia_da_edicao": "2026-01-01",
+   "leitura_independente": {
+    "last_week": [
+     "2026-01-04",
+     "2026-01-10"
+    ],
+    "current_week": [
+     "2026-01-11",
+     "2026-01-17"
+    ],
+    "distancia_da_referencia_dias": 3
+   },
+   "esperado": {
+    "last_week": [
+     "2026-01-04",
+     "2026-01-10"
+    ],
+    "current_week": [
+     "2026-01-11",
+     "2026-01-17"
+    ]
+   }
+  },
+  "2026-35": {
+   "pdf": "weekly_w35_2026.pdf",
+   "bytes": 854640,
+   "sha256": "66cf85845803fd449a9bc076fb28c290db37e6e9d3623a649008e5c9ea05b84f",
+   "recibo": {
+    "url": "https://www.anec.com.br/uploads/cmtvv41hy000077txhwtx44js.pdf",
+    "sha256": "66cf85845803fd449a9bc076fb28c290db37e6e9d3623a649008e5c9ea05b84f",
+    "rotulos": [
+     "(06th to 12th Aug )",
+     "(30th to 05th Aug )",
+     "Week 35/2026"
+    ]
+   },
+   "origem_do_corpo": "conferência, R21",
+   "rotulos_impressos": [
+    "30th to 05th Aug",
+    "06th to 12th Aug"
+   ],
+   "referencia_da_edicao": "2026-08-27",
+   "leitura_independente": {
+    "last_week": [
+     "2026-07-30",
+     "2026-08-05"
+    ],
+    "current_week": [
+     "2026-08-06",
+     "2026-08-12"
+    ],
+    "distancia_da_referencia_dias": -28
+   },
+   "esperado": {
+    "last_week": null,
+    "current_week": null
+   }
+  }
+ }
+}

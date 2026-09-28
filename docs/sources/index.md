@@ -11,7 +11,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [CONAB](conab.md) | Safras, custos, serie historica, [progresso semanal](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Mensal/Semanal/Diaria | Producao nacional |
 | [IBGE/SIDRA](ibge.md) | Estatisticas | Anual/Mensal/Trimestral | Dados oficiais (PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo) |
 | [NASA POWER](nasa_power.md) | Climatologia | Diaria | Global, grid 0.5 grau |
-| [BCB/SICOR](bcb.md) | Credito rural, series temporais, cambio, expectativas | Mensal | Cultura/UF (+ BigQuery) |
+| [BCB](bcb.md) | Crédito rural, séries temporais, câmbio/boletins e expectativas | Varia por serviço | Cultura/UF, série, moeda/boletim ou indicador |
 | [ComexStat](comexstat.md) | Exportacoes | Semanal | NCM/UF |
 | [ANDA](anda.md) | Fertilizantes | Mensal | UF/mes |
 | [ABIOVE](abiove.md) | Exportacao complexo soja | Mensal | Volume/receita |
@@ -25,7 +25,7 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [Desmatamento PRODES/DETER](desmatamento.md) | Desmatamento + alertas | Anual/Diária | Amazônia, Cerrado, Pantanal |
 | [MapBiomas](mapbiomas.md) | Cobertura e uso da terra | Anual | Municípios (1985-presente) |
 | [B3 Futuros Agro](b3.md) | Ajustes diarios + posicoes em aberto | Diaria | 7 contratos agricolas |
-| [UN Comtrade](comtrade.md) | Comercio bilateral + trade mirror | Mensal/Anual | ~200 paises, HS codes |
+| [UN Comtrade](comtrade.md) | Bilateral 2.1 e espelho 2.0, contagem e partições | Mensal/Anual | HS, World ou parceiros publicados |
 | [ANTAQ](antaq.md) | Movimentacao portuaria de carga | Anual | ⚠️ Fonte fora do ar desde 23/06/2026 |
 | [ANP Diesel](anp_diesel.md) | Precos revenda + volumes diesel | Semanal/Mensal | UFs, municipios, 2013+ |
 | [ANTT Pedagio](antt_pedagio.md) | Fluxo de veiculos em pracas de pedagio | Mensal | 200+ pracas, 2010+ |
@@ -33,18 +33,18 @@ Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
 | [SICAR](sicar.md) | Cadastro Ambiental Rural | Continua | 27 UFs, 7.4M+ imoveis |
 | [ZARC](zarc.md) | Zoneamento Agrícola de Risco Climático | Semanal | 32 culturas, todos os municípios |
 | [Agrofit/MAPA](defensivos.md) | Agrotoxicos registrados | Continua | ~8K formulados, ~267K autorizacoes |
-| [FUNAI Terras Indigenas](funai.md) | Terras indigenas (WFS geo) | Continua | ~740 TIs, todas UFs |
+| [FUNAI Terras Indigenas](funai.md) | Terras indigenas (WFS geo) | Continua | 665 TIs, todas as UFs |
 | [ICMBio UCs Federais](icmbio.md) | Unidades de conservacao federais (WFS geo) | Continua | 344 UCs federais |
-| [INCRA Quilombolas](incra.md) | Territorios quilombolas (WFS geo) | Continua | ~426 territorios |
-| [Acervo Fundiario/INCRA](acervo_fundiario.md) | Parcelas certificadas + assentamentos (shapefile ZIP) | Continua | SIGEF (15 UFs) + SNCI (10 UFs) + assentamentos Brasil |
-| [IBAMA Embargos](ibama.md) | Embargos ambientais (CSV SIFISC + WKT) | Mensal | ~114K embargos |
+| [INCRA Quilombolas](incra.md) | Perímetros quilombolas (WFS geo), andamento dos processos (PDF) e vínculos por NUP | Continua | 445 perímetros e 649 processos (22/09/2026) |
+| [Acervo Fundiario/INCRA](acervo_fundiario.md) | Parcelas certificadas + assentamentos (shapefile ZIP) | Continua | SIGEF (27 UFs) + SNCI (27 UFs) + assentamentos Brasil |
+| [IBAMA Embargos](ibama.md) | Embargos ambientais (CSV de dados abertos + WKT) | Diária | ~116 mil termos |
 | [MapBiomas Alerta](mapbiomas_alerta.md) | Alertas de desmatamento (GraphQL) | Semanal | Nacional |
-| [Lista Suja](lista_suja.md) | Cadastro de trabalho escravo (PDF) | Semestral | Nacional |
+| [Lista Suja](lista_suja.md) | Cadastro MTE (CSV/TXT; alternativa PDF) | Publicação periódica com atualizações intermediárias | Nacional |
 | [ANA/SNIRH](ana.md) | Hidrografia, irrigacao, disponibilidade hidrica (ArcGIS REST) | Variavel | Nacional |
 | [SFB](sfb.md) | Florestas publicas, concessoes, IFN (ArcGIS REST) | Anual | Nacional |
 | [RNC/CultivarWeb](rnc.md) | Cultivares registradas/protegidas | Contínua | ~37K registradas, ~5K protegidas |
 | [EMBRAPA Solos](embrapa_solos.md) | Perfis de solo e mapa pedológico | Contínua | 34K perfis, 2.8K polígonos |
-| [Fundação Rio Verde](rio_verde.md) | Ensaios cultivares soja MT | Anual | ~97 cultivares x 4 épocas |
+| [Fundação Rio Verde](rio_verde.md) | Ensaios cultivares soja MT | Anual | 3 safras (2023/24 a 2025/26), até 4 épocas |
 | [CFTC COT](cftc.md) | Posicionamento de fundos em futuros agro | Semanal | 12 contratos Chicago/NY, 2006+ |
 | [UNICA](unica.md) | Moagem e producao acucar/etanol Centro-Sul | Quinzenal | Safra corrente + historico 1980-2021 |
 

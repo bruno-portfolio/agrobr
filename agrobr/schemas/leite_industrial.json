@@ -9,6 +9,11 @@
   ],
   "required_columns": [
     "trimestre",
+    "localidade",
+    "localidade_cod",
+    "leite_adquirido",
+    "leite_industrializado",
+    "preco_medio",
     "fonte"
   ],
   "dtypes": {

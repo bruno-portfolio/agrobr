@@ -33,17 +33,12 @@ async def main() -> None:
             ultimo_preco = precos.iloc[-1]
             print(f"Último valor: R$ {ultimo_preco['valor']:.2f}/sc em {ultimo_preco['data']}")
 
-            media_30d = precos["valor"].mean()
-            max_30d = precos["valor"].max()
-            min_30d = precos["valor"].min()
+            print(f"Média (365 dias): R$ {precos['valor'].mean():.2f}/sc")
+            print(f"Máxima: R$ {precos['valor'].max():.2f}/sc")
+            print(f"Mínima: R$ {precos['valor'].min():.2f}/sc")
 
-            print(f"Média (30 dias): R$ {media_30d:.2f}/sc")
-            print(f"Máxima: R$ {max_30d:.2f}/sc")
-            print(f"Mínima: R$ {min_30d:.2f}/sc")
-
-            if "variacao_pct" in precos.columns:
-                var_total = ((precos.iloc[-1]["valor"] / precos.iloc[0]["valor"]) - 1) * 100
-                print(f"Variação no período: {var_total:+.2f}%")
+            var_total = ((precos.iloc[-1]["valor"] / precos.iloc[0]["valor"]) - 1) * 100
+            print(f"Variação no período: {var_total:+.2f}%")
     except Exception as e:
         print(f"Erro ao coletar preços: {e}")
 
@@ -56,26 +51,21 @@ async def main() -> None:
         if not safras.empty:
             brasil = safras[safras["uf"].isna() | (safras["uf"] == "BRASIL")]
             if brasil.empty:
-                total_area = safras["area_mil_ha"].sum()
-                total_prod = safras["producao_mil_t"].sum()
+                total_area = safras["area_plantada"].sum()
+                total_prod = safras["producao"].sum()
             else:
-                total_area = brasil["area_mil_ha"].iloc[0] if "area_mil_ha" in brasil.columns else 0
-                total_prod = (
-                    brasil["producao_mil_t"].iloc[0] if "producao_mil_t" in brasil.columns else 0
-                )
+                total_area = brasil["area_plantada"].iloc[0]
+                total_prod = brasil["producao"].iloc[0]
 
             print(f"Área plantada: {total_area:,.0f} mil ha")
             print(f"Produção estimada: {total_prod:,.0f} mil t")
 
             print("\nTop 5 estados produtores:")
-            top5 = (
-                safras.nlargest(5, "producao_mil_t")
-                if "producao_mil_t" in safras.columns
-                else safras.head()
-            )
+            estados = safras[safras["uf"].notna() & (safras["uf"] != "BRASIL")]
+            top5 = estados.nlargest(5, "producao")
             for _, row in top5.iterrows():
                 uf = row.get("uf", "N/A")
-                prod = row.get("producao_mil_t", 0)
+                prod = row["producao"]
                 print(f"  {uf}: {prod:,.0f} mil t")
     except Exception as e:
         print(f"Erro ao coletar safras: {e}")

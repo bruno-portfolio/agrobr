@@ -1,0 +1,16 @@
+{
+ "fonte": "rodada 15 de conferência: cache nativo do agrobr preenchido pela API pública",
+ "arquivos": {
+  "RR.json": {
+   "origem": "RR.json (cópia byte a byte)",
+   "sha256": "b1e61d7c4aa25d43d92212fbfa66739ae78169b70d97cfcbeb10c3785286d734"
+  }
+ },
+ "zip_do_cache": {
+  "nao_copiado": "RR.zip",
+  "motivo": "mantém nomes de imóvel que são prenome ou sobrenome de pessoa (regra de privacidade do V acervo)",
+  "sha256_armazenado": "3daffaa6be8987b99770794288e4fd9b836c1ed2646b2576156f3be158b0e2df",
+  "sha256_original": "4ef1d00ea55de4cd197a7507a5d5891060b8c3bc26cd86f20a91ba6b6f8484ff",
+  "substituto": "tests/golden_data/acervo_fundiario/snci_rr_20260922/response.zip (recorte do mesmo original, mesmos ETag e Last-Modified)"
+ }
+}

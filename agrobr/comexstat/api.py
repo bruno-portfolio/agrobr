@@ -1,76 +1,67 @@
 from __future__ import annotations
 
+import importlib
 import time
 from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import constants
+from agrobr.comexstat import client, parser, query, result
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.time import utcnow
-from agrobr.utils.validation import validate_uf
-
-from . import client
-from .models import resolve_ncm
-from .parser import PARSER_VERSION, agregar_mensal, parse_exportacao, parse_importacao
 
 logger = structlog.get_logger()
 
-_PARSE_FN = {"exportacao": parse_exportacao, "importacao": parse_importacao}
-_CSV_PREFIX = {"exportacao": "EXP", "importacao": "IMP"}
+
+def _output_guards(*, as_polars: bool, return_meta: bool) -> None:
+    from agrobr.datasets.deterministic import get_snapshot
+
+    query.validate_flags(as_polars=as_polars, return_meta=return_meta)
+    if get_snapshot() is not None:
+        raise InvalidParameterError(
+            "Comex Stat não suporta deterministic: os arquivos são mutáveis"
+        )
+    if as_polars:
+        try:
+            importlib.import_module("polars")
+        except ImportError:
+            raise ImportError(
+                "polars é necessário para as_polars=True. Instale com: pip install agrobr[polars]"
+            ) from None
 
 
 async def _fetch_comexstat(
-    fluxo: str,
-    produto: str,
-    ano: int | None,
-    uf: str | None,
-    agregacao: str,
+    selected: query.ComexQuery,
+    *,
     as_polars: bool,
     return_meta: bool,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    if ano is None:
-        ano = utcnow().year - 1
-        logger.info("comexstat_default_ano", ano=ano)
-    if not isinstance(ano, int) or isinstance(ano, bool):
-        raise InvalidParameterError("ano deve ser inteiro")
-    if not 1997 <= ano <= utcnow().year:
-        raise InvalidParameterError(f"ano deve estar entre 1997 e {utcnow().year}")
-    uf = validate_uf(uf)
-    if agregacao not in {"mensal", "detalhado"}:
-        raise InvalidParameterError("agregacao deve ser 'mensal' ou 'detalhado'")
-
-    ncm = resolve_ncm(produto)
-
-    t0 = time.monotonic()
-    logger.info(f"comexstat_{fluxo}_request", produto=produto, ncm=ncm, ano=ano, uf=uf)
-
-    fetch_fn = getattr(client, f"fetch_{fluxo}_csv")
-    csv_text: str = await fetch_fn(ano)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = _PARSE_FN[fluxo](csv_text, ncm=ncm, uf=uf)
-
-    if agregacao == "mensal":
-        df = agregar_mensal(df)
-
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
-    logger.info(f"comexstat_{fluxo}_ok", produto=produto, ncm=ncm, ano=ano, records=len(df))
-
-    meta = build_source_meta(
-        "comexstat",
-        f"{client.BULK_CSV_BASE}/{_CSV_PREFIX[fluxo]}_{ano}.csv",
-        "httpx",
-        fetch_ms,
-        parse_ms,
-        df,
-        PARSER_VERSION,
+    _output_guards(as_polars=as_polars, return_meta=return_meta)
+    started = time.monotonic()
+    async with client.open_csv(fluxo=selected.fluxo, ano=selected.ano) as acquired:
+        fetch_ms = int((time.monotonic() - started) * 1000)
+        parse_started = time.monotonic()
+        parsed = parser.parse_resource(acquired.file, selected)
+    logger.info(
+        "comexstat_parsed_resource",
+        fluxo=selected.fluxo,
+        ano=selected.ano,
+        produto=selected.produto,
+        records=len(parsed.frame),
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return result.finish(
+        parsed,
+        acquired,
+        selected.to_dict(),
+        f"comexstat_{selected.fluxo}_{selected.agregacao}",
+        as_polars=as_polars,
+        return_meta=return_meta,
+        max_memoria_bytes=selected.max_memoria_bytes,
+        fetch_ms=fetch_ms,
+        parse_started=parse_started,
+    )
 
 
 @overload
@@ -80,8 +71,13 @@ async def exportacao(
     uf: str | None = None,
     agregacao: str = "mensal",
     as_polars: bool = False,
-    *,
     return_meta: Literal[False] = False,
+    *,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
 ) -> pd.DataFrame: ...
 
 
@@ -94,6 +90,11 @@ async def exportacao(
     as_polars: bool = False,
     *,
     return_meta: Literal[True],
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
@@ -104,8 +105,27 @@ async def exportacao(
     agregacao: str = "mensal",
     as_polars: bool = False,
     return_meta: bool = False,
+    *,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _fetch_comexstat("exportacao", produto, ano, uf, agregacao, as_polars, return_meta)
+    query.validate_flags(as_polars=as_polars, return_meta=return_meta)
+    selected = query.build_query(
+        fluxo="exportacao",
+        produto=produto,
+        ano=ano,
+        uf=uf,
+        pais=pais,
+        via=via,
+        urf=urf,
+        agregacao=agregacao,
+        max_linhas=max_linhas,
+        max_memoria_bytes=max_memoria_bytes,
+    )
+    return await _fetch_comexstat(selected, as_polars=as_polars, return_meta=return_meta)
 
 
 @overload
@@ -115,8 +135,13 @@ async def importacao(
     uf: str | None = None,
     agregacao: str = "mensal",
     as_polars: bool = False,
-    *,
     return_meta: Literal[False] = False,
+    *,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
 ) -> pd.DataFrame: ...
 
 
@@ -129,6 +154,11 @@ async def importacao(
     as_polars: bool = False,
     *,
     return_meta: Literal[True],
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
@@ -139,5 +169,68 @@ async def importacao(
     agregacao: str = "mensal",
     as_polars: bool = False,
     return_meta: bool = False,
+    *,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _fetch_comexstat("importacao", produto, ano, uf, agregacao, as_polars, return_meta)
+    query.validate_flags(as_polars=as_polars, return_meta=return_meta)
+    selected = query.build_query(
+        fluxo="importacao",
+        produto=produto,
+        ano=ano,
+        uf=uf,
+        pais=pais,
+        via=via,
+        urf=urf,
+        agregacao=agregacao,
+        max_linhas=max_linhas,
+        max_memoria_bytes=max_memoria_bytes,
+    )
+    return await _fetch_comexstat(selected, as_polars=as_polars, return_meta=return_meta)
+
+
+@overload
+async def dicionario(
+    tabela: str,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def dicionario(
+    tabela: str,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def dicionario(
+    tabela: str,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    query.validate_flags(as_polars=as_polars, return_meta=return_meta)
+    selected = query.dictionary_table(tabela)
+    _output_guards(as_polars=as_polars, return_meta=return_meta)
+    started = time.monotonic()
+    async with client.open_dictionary(selected) as acquired:
+        fetch_ms = int((time.monotonic() - started) * 1000)
+        parse_started = time.monotonic()
+        parsed = parser.parse_dictionary(acquired.file, tabela=selected)
+    return result.finish(
+        parsed,
+        acquired,
+        {"tabela": selected, "pedido": {"tabela": tabela}},
+        f"comexstat_dicionario_{selected}",
+        as_polars=as_polars,
+        return_meta=return_meta,
+        max_memoria_bytes=constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
+        fetch_ms=fetch_ms,
+        parse_started=parse_started,
+    )

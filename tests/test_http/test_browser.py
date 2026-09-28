@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from agrobr.exceptions import SourceUnavailableError
+from tests.helpers import levanta_exatamente, sem_excecao
 
 
 class TestIsAvailable:
@@ -16,29 +18,6 @@ class TestIsAvailable:
 
 
 class TestFetchWithBrowser:
-    @pytest.mark.asyncio
-    async def test_no_response_raises(self):
-        from agrobr.http import browser
-
-        mock_page = AsyncMock()
-        mock_page.goto = AsyncMock(return_value=None)
-
-        mock_context = AsyncMock()
-        mock_context.new_page = AsyncMock(return_value=mock_page)
-        mock_context.close = AsyncMock()
-
-        mock_browser = AsyncMock()
-        mock_browser.is_connected = MagicMock(return_value=True)
-        mock_browser.new_context = AsyncMock(return_value=mock_context)
-
-        with (
-            patch.object(browser, "_playwright_available", True),
-            patch.object(browser, "_browser", mock_browser),
-            patch.object(browser, "_lock", AsyncMock()),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await browser.fetch_with_browser("https://example.com", source="test")
-
     @pytest.mark.asyncio
     async def test_cloudflare_block_detected(self):
         from agrobr.http import browser
@@ -63,41 +42,10 @@ class TestFetchWithBrowser:
 
         with (
             patch.object(browser, "_playwright_available", True),
-            patch.object(browser, "_browser", mock_browser_inst),
-            patch.object(browser, "_lock", AsyncMock()),
+            patch.object(browser, "_get_browser", AsyncMock(return_value=mock_browser_inst)),
             pytest.raises(SourceUnavailableError, match="Cloudflare"),
         ):
             await browser.fetch_with_browser("https://example.com", source="test")
-
-    @pytest.mark.asyncio
-    async def test_successful_fetch(self):
-        from agrobr.http import browser
-
-        mock_response = MagicMock()
-        mock_response.status = 200
-
-        mock_page = AsyncMock()
-        mock_page.goto = AsyncMock(return_value=mock_response)
-        mock_page.content = AsyncMock(return_value="<html>Success</html>")
-        mock_page.wait_for_selector = AsyncMock()
-        mock_page.wait_for_timeout = AsyncMock()
-        mock_page.add_init_script = AsyncMock()
-
-        mock_context = AsyncMock()
-        mock_context.new_page = AsyncMock(return_value=mock_page)
-        mock_context.close = AsyncMock()
-
-        mock_browser_inst = AsyncMock()
-        mock_browser_inst.is_connected = MagicMock(return_value=True)
-        mock_browser_inst.new_context = AsyncMock(return_value=mock_context)
-
-        with (
-            patch.object(browser, "_playwright_available", True),
-            patch.object(browser, "_browser", mock_browser_inst),
-            patch.object(browser, "_lock", AsyncMock()),
-        ):
-            html = await browser.fetch_with_browser("https://example.com", source="test")
-        assert "Success" in html
 
     @pytest.mark.asyncio
     async def test_with_wait_selector(self):
@@ -123,8 +71,7 @@ class TestFetchWithBrowser:
 
         with (
             patch.object(browser, "_playwright_available", True),
-            patch.object(browser, "_browser", mock_browser_inst),
-            patch.object(browser, "_lock", AsyncMock()),
+            patch.object(browser, "_get_browser", AsyncMock(return_value=mock_browser_inst)),
         ):
             html = await browser.fetch_with_browser(
                 "https://example.com", source="test", wait_selector="table"
@@ -156,8 +103,7 @@ class TestFetchWithBrowser:
 
         with (
             patch.object(browser, "_playwright_available", True),
-            patch.object(browser, "_browser", mock_browser_inst),
-            patch.object(browser, "_lock", AsyncMock()),
+            patch.object(browser, "_get_browser", AsyncMock(return_value=mock_browser_inst)),
         ):
             html = await browser.fetch_with_browser(
                 "https://example.com", source="test", wait_selector="table"
@@ -185,34 +131,61 @@ class TestCloseBrowser:
         mock_browser_inst = AsyncMock()
         mock_pw = AsyncMock()
 
-        original_browser = browser._browser
-        original_pw = browser._playwright_instance
-
-        browser._browser = mock_browser_inst
-        browser._playwright_instance = mock_pw
-
-        try:
+        loop = asyncio.get_running_loop()
+        with patch.object(browser, "_sessions", {loop: [(mock_pw, mock_browser_inst)]}):
             await browser.close_browser()
             mock_browser_inst.close.assert_called_once()
             mock_pw.stop.assert_called_once()
-            assert browser._browser is None
-            assert browser._playwright_instance is None
-        finally:
-            browser._browser = original_browser
-            browser._playwright_instance = original_pw
+            assert not browser._sessions
 
-    @pytest.mark.asyncio
-    async def test_close_when_none(self):
-        from agrobr.http import browser
 
-        original_browser = browser._browser
-        original_pw = browser._playwright_instance
+def _navegador(resposta, conteudo="<html>ok</html>", goto_erro=None):
+    pagina = AsyncMock()
+    pagina.goto = AsyncMock(return_value=resposta, side_effect=goto_erro)
+    pagina.content = AsyncMock(return_value=conteudo)
+    pagina.wait_for_selector = AsyncMock()
+    pagina.wait_for_timeout = AsyncMock()
+    pagina.add_init_script = AsyncMock()
+    contexto = AsyncMock()
+    contexto.new_page = AsyncMock(return_value=pagina)
+    contexto.close = AsyncMock()
+    navegador = AsyncMock()
+    navegador.is_connected = MagicMock(return_value=True)
+    navegador.new_context = AsyncMock(return_value=contexto)
+    return navegador, pagina
 
-        browser._browser = None
-        browser._playwright_instance = None
 
-        try:
-            await browser.close_browser()
-        finally:
-            browser._browser = original_browser
-            browser._playwright_instance = original_pw
+@pytest.mark.parametrize(
+    ("resposta", "goto_erro", "mensagem"),
+    [
+        (None, None, "No response received"),
+        (MagicMock(status=200), RuntimeError("navegador caiu"), "navegador caiu"),
+    ],
+)
+async def test_falha_do_navegador_vira_fonte_indisponivel_com_o_motivo(
+    resposta, goto_erro, mensagem
+):
+    from agrobr.http import browser
+
+    navegador, _ = _navegador(resposta, goto_erro=goto_erro)
+    with (
+        patch.object(browser, "_playwright_available", True),
+        patch.object(browser, "_get_browser", AsyncMock(return_value=navegador)),
+        levanta_exatamente(SourceUnavailableError, match=mensagem),
+    ):
+        await browser.fetch_with_browser("https://example.com", source="test")
+
+
+async def test_pagina_200_que_cita_challenge_nao_e_bloqueio_nem_espera_seletor():
+    from agrobr.http import browser
+
+    conteudo = "<html>Weekly challenge results</html>"
+    navegador, pagina = _navegador(MagicMock(status=200), conteudo=conteudo)
+    with (
+        patch.object(browser, "_playwright_available", True),
+        patch.object(browser, "_get_browser", AsyncMock(return_value=navegador)),
+        sem_excecao(),
+    ):
+        html = await browser.fetch_with_browser("https://example.com", source="test")
+    assert html == conteudo
+    pagina.wait_for_selector.assert_not_awaited()

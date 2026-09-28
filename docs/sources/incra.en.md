@@ -1,49 +1,30 @@
 # INCRA — Quilombola Territories
 
-!!! warning "Breaking change — legacy code"
+!!! warning "Breaking change — humanized phases"
     Previous versions accepted phases in a humanized format (`"Titulada"`,
     `"Em Titulacao"`, `"Decreto Publicado"`, `"RTID em Elaboracao"`,
-    `"RTID Publicado"`). These values **never matched** the real data from the
-    CMR/FUNAI server (which returns them in UPPERCASE), but the CQL filter was
-    silently applied by the server and returned an empty result with no error
-    — a silent functional bug.
-
-    **As of this version, these values raise `ValueError`.** Migration:
-
-    | Before | After |
-    |-------|--------|
-    | `fase="Titulada"` | `fase="TITULADO"` |
-    | `fase="Em Titulacao"` | `fase="PORTARIA"` |
-    | `fase="Decreto Publicado"` | `fase="DECRETO"` |
-    | `fase="RTID em Elaboracao"` | `fase="RTID"` |
-    | `fase="RTID Publicado"` | `fase="TITULO PARCIAL"` |
-
-    Anyone using the old phase format was silently getting an empty DataFrame
-    — incorrect behavior. The new error makes the inconsistency explicit.
-    See [Filters](#filters) below for the canonical list.
+    `"RTID Publicado"`). These values **never matched** the data from the
+    CMR/FUNAI server (published in UPPERCASE) and the filter returned an
+    empty result with no error. They now raise `InvalidParameterError`
+    (a `ValueError` subclass). See the [canonical list](#valid-phases).
 
 ## Overview
 
 | Item | Detail |
-|------|---------|
-| Provider | INCRA (Instituto Nacional de Colonizacao e Reforma Agraria) |
-| Data | Quilombola territories |
-| Access | OGC WFS (CMR/FUNAI GeoServer) |
-| Format | CSV (tabular) / GeoJSON (geo) |
+|------|--------|
+| Provider | INCRA (layer published on the CMR/FUNAI GeoServer) and INCRA's quilombola page |
+| Data | Quilombola territory perimeters, process progress table (PDF) and the links between them |
+| Access | WFS 2.0.0 as JSON (`cmr.funai.gov.br/geoserver/ows`) and a PDF on `gov.br/incra` |
 | Authentication | None |
-| License | Brazilian federal public data |
-| Features | ~426 territories |
+| License | Federal government public data |
+| Size | 445 perimeters in the WFS and 649 processes in the PDF (2026-09-22) |
 
-## Access via WFS
-
-| Parameter | Value |
-|-----------|-------|
-| Endpoint | `cmr.funai.gov.br/geoserver/ows` |
-| WFS Version | 1.0.0 |
-| Layer | `CMR-PUBLICO:lim_quilombolas_a` |
-| CRS | EPSG:4674 |
-
-The layer is hosted on FUNAI's CMR server, not on INCRA.
+| Function | Returns |
+|----------|---------|
+| `quilombolas()` | `DataFrame` with 22 columns, one row per published perimeter |
+| `quilombolas_geo()` | `GeoDataFrame` with the same 22 columns + `geometry` (EPSG:4326) |
+| `andamento_quilombola()` | `DataFrame` with the 15 columns of the "Andamento dos processos" table (requires `agrobr[pdf]`) |
+| `vinculos_quilombolas()` | `DataFrame` with 46 columns linking perimeters and processes by NUP (requires `agrobr[pdf]`) |
 
 ## Usage Example
 
@@ -52,83 +33,139 @@ import asyncio
 from agrobr import incra
 
 async def main():
-    # All quilombola territories
     df = await incra.quilombolas()
-
-    # Filter by state
-    df = await incra.quilombolas(uf="BA")
-
-    # Filter by process phase
-    df = await incra.quilombolas(fase="TITULADO")
-
-    # Combine filters
     df = await incra.quilombolas(uf="BA", fase="TITULADO")
-
-    # With geometry (requires geopandas)
     gdf = await incra.quilombolas_geo(bbox=(-42, -15, -40, -13))
-
-    # With metadata
-    df, meta = await incra.quilombolas(return_meta=True)
+    andamento, meta = await incra.andamento_quilombola(return_meta=True)
+    vinculos = await incra.vinculos_quilombolas()
 
 asyncio.run(main())
 ```
 
-## Filters
+## Perimeters (`quilombolas` and `quilombolas_geo`)
 
-Parameters accepted by `quilombolas()` and `quilombolas_geo()`:
+Layer `CMR-PUBLICO:lim_quilombolas_a`, queried through WFS 2.0.0/JSON sorted by
+`cd_quilomb, nu_processo, no_comunidade`, with a count before and after the acquisition and
+pages overlapping by one occurrence to detect changes during pagination.
 
-| Parameter | Type | Description |
-|-----------|------|-----------|
-| `uf` | str \| None | State abbreviation (case-insensitive) |
-| `fase` | str \| None | Process phase (see table below) |
-| `bbox` | tuple\[float, float, float, float\] \| None | (minlon, minlat, maxlon, maxlat) in EPSG:4674 |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `uf` | str \| None | None | State code; compared ignoring case and outer whitespace |
+| `fase` | str \| None | None | One of the [7 selectors](#valid-phases), literal comparison |
+| `bbox` | tuple \| None | None | `(minlon, minlat, maxlon, maxlat)` in **EPSG:4326**; the server preselects and agrobr confirms by intersection |
+| `max_registros` | int \| None | 1500 | Cap on perimeters read; `None` removes the cap |
+| `tamanho_pagina` | int \| None | 250 (tabular) / 10 (geo) | At most 1000 (tabular) and 100 (geo) |
+
+The `uf` and `fase` filters are applied locally after the download: the server does not
+honor `CQL_FILTER` on those fields. An invalid parameter raises `InvalidParameterError`
+before any request. When `max_registros` cuts the population, a `UserWarning` says the
+selection came from a remote prefix. `deterministic()` is not supported (the WFS publishes
+no immutable edition).
+
+### Columns
+
+| Column | Source attribute | Type | Note |
+|--------|------------------|------|------|
+| `codigo` | `cd_quilomb` | Int64 | Null for 64% of the perimeters and 0 for 9 (2026-09-22); not a primary key |
+| `nome` | `no_comunidade` | string | |
+| `municipio` | `no_municipio` | string | |
+| `uf` | `sg_uf` | string | Published text, not normalized |
+| `area_ha` | `nu_area_ha` | float64 | Published hectares, not recomputed |
+| `familias` | `nu_familia` | Int64 | |
+| `fase` | `ds_fase` | string | See [phases](#valid-phases) |
+| `titulado` | `st_titulad` | string | `T`/`F` (the source also publishes `t`/`f`), not converted to boolean |
+| `data_publicacao` | `dt_publica` | string | Literal XSD date (`YYYY-MM-DD`) |
+| `data_titulo` | `dt_titulo` | string | Same |
+| `feature_id` | feature id | string | Identifier received from the server; stability not proven |
+| `regional` | `co_sr` | string | Regional superintendency (`SR-05`, …) |
+| `processo` | `nu_processo` | string | NUP as published (may hold more than one or an atypical format) |
+| `data_publicacao_2` | `dt_public1` | string | Literal XSD date |
+| `responsavel` | `no_responsavel` | string | Responsible agency (INCRA, ITERPA, …) |
+| `esfera` | `no_esfera` | string | Published text (`FEDERAL`, `Federal`, …) |
+| `data_cadastro` | `dt_cadastro` | string | Literal XSD dateTime; the source writes the same load time on every feature and it changes on each reload |
+| `codigo_sipra` | `cd_sipra` | string | |
+| `descricao` | `ds_descricao` | string | |
+| `data_decreto` | `dt_decreto` | string | Literal XSD date |
+| `tipo_levantamento` | `tp_levanta` | string | |
+| `escala` | `nr_escalao` | string | Survey scale (`1:15.000`, …) |
+
+Dates stay as text: agrobr validates the literal against the XSD and does not convert time
+zone, precision or calendar. The source uses `0001-01-01` as a placeholder in `data_titulo`
+(3 perimeters) and `data_decreto` (2) — treat it as missing in analysis. Null, zero, empty
+text and the text `NULL` are kept as published.
+
+### Geometry
+
+`quilombolas_geo()` requests `srsName=EPSG:4326` and checks the CRS declared on each page.
+Coordinates are returned as received: **no reprojection and no topology repair** — polygons
+that are invalid at the source stay invalid. A null geometry becomes `None`; an empty
+geometry stays empty. Requires `agrobr[geo]`.
 
 ### Valid phases
 
 | Value | Meaning |
-|-------|-------------|
+|-------|---------|
 | `CCDRU` | Concession of Real Right of Use |
 | `DECRETO` | Expropriation decree published |
 | `PORTARIA` | Recognition ordinance published |
-| `RTID` | Technical Report of Identification and Delimitation |
-| `TITULADO` | Territory with definitive title issued |
-| `TITULO ANULADO` | Title annulled by court decision |
-| `TITULO PARCIAL` | Partial titling (part of the territory) |
+| `RTID` | Technical Identification and Delimitation Report |
+| `TITULADO` | Territory with an issued title |
+| `TITULO ANULADO` | Title annulled |
+| `TITULO PARCIAL` | Partial titling |
 
-Values outside this list raise `ValueError`.
+On 2026-09-22 the layer also had 15 perimeters with a null phase and 1 with the text `INCRA`.
+Those rows are returned by `quilombolas()` without `fase`, but no selector reaches them.
 
-!!! note "Client-side filters"
-    The `uf` and `fase` filters are applied **after** the download (the
-    CMR/FUNAI server does not honor `CQL_FILTER` on these fields). The full
-    dataset (~426 territories) is downloaded on every call, regardless of the
-    filters. Use `bbox` to reduce the response size on the server.
+## Process progress (`andamento_quilombola`)
 
-## Columns
+Reads the "Andamento dos processos — Quadro geral" PDF linked on INCRA's quilombola page.
+Each row is a table record, in published order (a process may appear on more than one row);
+the row count is reconciled with the total declared in the footer ("N processos com algum
+tipo de andamento no INCRA").
 
-| Column | Type | Description |
-|--------|------|-----------|
-| codigo | str | Territory code |
-| nome | str | Community name |
-| municipio | str | Municipality |
-| uf | str | State (abbreviation) |
-| area_ha | float | Area in hectares |
-| familias | Int64 | Number of families (nullable) |
-| fase | str | Process phase |
-| titulado | str | "T" (titled) or "F" (not titled) |
-| data_publicacao | datetime | Publication date |
-| data_titulo | datetime | Title date (nullable) |
+| Column | Type | Content |
+|--------|------|---------|
+| `regional` | string | Label of the regional group drawn in the PDF (`SR(05)BA`, …) |
+| `numero_publicado` | Int64 | Published position (1…N) |
+| `processo`, `comunidade`, `municipio` | string | Cell text; line breaks become `\n` |
+| `area_ha_texto`, `familias_texto` | string | Number in the published format (`2.629,0532`), not converted |
+| `edital_rtid_1`, `edital_rtid_2`, `retificacao_edital_1`, `retificacao_edital_2`, `portaria`, `retificacao_portaria`, `decreto`, `titulo` | string | Published text: dates, several acts, notes (`Não precisa`, `Em Elaboração`, `**`) or empty |
+
+Text partially clipped by the PDF grid is kept whole.
+
+**Edition.** The edition is the PDF's **internal date** (the date printed above "Fonte:
+INCRA-DQ"). The date in the file name is only the download locator. When they differ, a
+`UserWarning` and `meta.validation_warnings` quote both dates, and `source_details` keeps
+`publication.file_date` and `publication.internal_edition`. `edicao=` (a date or
+`"YYYY-MM-DD"`) must match the internal date; an edition that is no longer published raises
+`InvalidParameterError` naming the current one. The page links a single PDF: on 2026-09-22
+the file named `08_06_2026` carried the content of 2026-09-03 (649 processes). A redirect (3xx) of the page or of
+the PDF raises `SourceUnavailableError` ("Redirecionamento administrativo não demonstrado").
+
+## Links (`vinculos_quilombolas`)
+
+Combines `quilombolas()` (whole population, no filters) and `andamento_quilombola()` through
+the literal NUP reference (`NNNNN.NNNNNN/YYYY-DD`) found in `processo` on both sides. One row
+per pair of occurrences (cartesian product when the NUP repeats) plus one row for each
+reference without a pair and for each cell without a recognizable NUP.
+
+| `estado_vinculo` | Meaning |
+|------------------|---------|
+| `vinculo_exato` | The same NUP appears in the perimeter and in the process table |
+| `sem_referencia_administrativa` | Perimeter NUP missing from the PDF |
+| `sem_referencia_geografica` | PDF NUP missing from the layer |
+| `referencia_nao_reconhecida` | Cell text outside the NUP pattern (no punctuation repair) |
+| `referencia_ausente` | Empty or null cell |
+
+The 46 columns are the 9 relation columns (`estado_vinculo`, `referencia_tipo`,
+`referencia_literal`, occurrence positions and counts, `referencia_repetida`) followed by the
+22 perimeter columns prefixed `perimetro_` and the 15 progress columns prefixed
+`administrativo_`. A shared NUP does not prove territorial identity. `max_vinculos` (default
+50,000) stops with `SourceUnavailableError` if the expansion exceeds the cap. On 2026-09-22:
+817 rows, 286 exact links.
 
 ## Limitations
 
-- Data hosted on the FUNAI/CMR server, not INCRA
-- Limit of 1500 features per request. When reached, the log
-  `incra_quilombolas_truncated` (or `incra_quilombolas_geo_truncated`) is emitted
-- The `uf`/`fase` filters are client-side (they do not reduce network traffic)
-- Some dates may be missing (nullable)
-- The `familias` field is nullable (not all records have this information)
-- The `codigo` field (cd_quilomb) is nullable: ~63% of the records are
-  pre-registration territories identified by CMR/FUNAI that have not yet
-  received an official INCRA code. Use `df["codigo"].notna()` to filter only
-  registered territories
-- Invalid geometries in the GeoJSON are repaired via `shapely.validation.make_valid`
-  with the log `incra_quilombolas_geo_repaired`
+- Perimeters and the PDF are acquired at different moments, with no joint snapshot.
+- `codigo`, `processo` and `feature_id` are not primary keys; repeated occurrences are kept.
+- The WFS count and the PDF change without notice; agrobr records hashes and dates of every resource in `MetaInfo`.

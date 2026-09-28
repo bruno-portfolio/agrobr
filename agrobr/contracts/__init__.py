@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from enum import StrEnum
+from numbers import Number
 from typing import Any
 
 import pandas as pd
@@ -48,27 +49,67 @@ class Column:
         if self.type in (ColumnType.DATE, ColumnType.DATETIME):
             if not pd.api.types.is_datetime64_any_dtype(series):
                 try:
-                    pd.to_datetime(series.dropna())
-                except Exception:
+                    if any(isinstance(value, Number) for value in series.dropna()):
+                        raise TypeError("numeric values are not dates")
+                    if pd.to_datetime(series.dropna()).isna().any():
+                        raise ValueError("non-null values became missing dates")
+                except (ValueError, TypeError, OverflowError):
                     errors.append(f"Column '{self.name}' cannot be converted to {self.type.value}")
 
         elif self.type == ColumnType.INTEGER:
             if not pd.api.types.is_integer_dtype(series):
                 non_null = series.dropna()
-                if len(non_null) > 0:
-                    try:
-                        non_null.astype(int)
-                    except (ValueError, TypeError):
-                        errors.append(f"Column '{self.name}' contains non-integer values")
+                if not (
+                    pd.api.types.is_numeric_dtype(series)
+                    and not pd.api.types.is_bool_dtype(series)
+                    and not pd.api.types.is_complex_dtype(series)
+                    and not non_null.isin([float("inf"), float("-inf")]).any()
+                    and (non_null % 1 == 0).all()
+                ):
+                    errors.append(f"Column '{self.name}' contains non-integer values")
 
-        elif self.type in (
-            ColumnType.FLOAT,
-            ColumnType.DECIMAL,
-        ) and not pd.api.types.is_numeric_dtype(series):
-            errors.append(f"Column '{self.name}' is not numeric")
+        elif self.type == ColumnType.STRING:
+            if not (
+                (not pd.api.types.is_object_dtype(series) and pd.api.types.is_string_dtype(series))
+                or (
+                    pd.api.types.is_object_dtype(series)
+                    and pd.api.types.infer_dtype(series, skipna=True)
+                    in {"string", "unicode", "empty"}
+                )
+                or (
+                    isinstance(series.dtype, pd.CategoricalDtype)
+                    and pd.api.types.infer_dtype(series.cat.categories, skipna=True)
+                    in {"string", "unicode", "empty"}
+                )
+            ):
+                errors.append(f"Column '{self.name}' is not a string column")
+
+        elif self.type == ColumnType.BOOLEAN:
+            if not (
+                pd.api.types.is_bool_dtype(series)
+                or (
+                    pd.api.types.is_object_dtype(series)
+                    and all(isinstance(value, bool) for value in series.dropna())
+                )
+            ):
+                errors.append(f"Column '{self.name}' is not a boolean column")
+
+        elif self.type in (ColumnType.FLOAT, ColumnType.DECIMAL):
+            if (
+                not pd.api.types.is_numeric_dtype(series)
+                or pd.api.types.is_bool_dtype(series)
+                or pd.api.types.is_complex_dtype(series)
+            ):
+                errors.append(f"Column '{self.name}' is not numeric (finite real values required)")
+            elif series.dropna().isin([float("inf"), float("-inf")]).any():
+                errors.append(f"Column '{self.name}' contains non-finite values")
 
         non_null = series.dropna()
-        if pd.api.types.is_numeric_dtype(non_null) and len(non_null) > 0:
+        if (
+            pd.api.types.is_numeric_dtype(non_null)
+            and not pd.api.types.is_complex_dtype(non_null)
+            and len(non_null) > 0
+        ):
             if self.min_value is not None and (non_null < self.min_value).any():
                 actual_min = float(non_null.min())
                 errors.append(
@@ -93,8 +134,26 @@ class Contract:
     breaking_policy: BreakingChangePolicy = BreakingChangePolicy.MAJOR_VERSION
     effective_from: str = ""
 
+    def empty_frame(self) -> pd.DataFrame:
+        dtypes = {
+            ColumnType.INTEGER: "Int64",
+            ColumnType.FLOAT: "Float64",
+            ColumnType.DECIMAL: "Float64",
+            ColumnType.STRING: "object",
+            ColumnType.DATE: "datetime64[ns]",
+            ColumnType.DATETIME: "datetime64[ns]",
+            ColumnType.BOOLEAN: "boolean",
+        }
+        return pd.DataFrame(
+            {column.name: pd.Series(dtype=dtypes[column.type]) for column in self.columns}
+        )
+
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         errors: list[str] = []
+
+        duplicate_columns = df.columns[df.columns.duplicated()].unique().tolist()
+        if duplicate_columns:
+            return False, [f"Duplicate column labels: {duplicate_columns}"]
 
         required_cols = [c.name for c in self.columns if c.stable]
         missing = set(required_cols) - set(df.columns)
@@ -170,7 +229,7 @@ class Contract:
             "effective_from": self.effective_from,
             "breaking_policy": self.breaking_policy.value,
             "primary_key": self.primary_key,
-            "required_columns": [c.name for c in self.columns if not c.nullable and c.stable],
+            "required_columns": [c.name for c in self.columns if c.stable],
             "dtypes": {c.name: c.type.value for c in self.columns},
             "nullable": {c.name: c.nullable for c in self.columns},
             "columns": [
@@ -224,6 +283,12 @@ def _auto_discover_contracts() -> None:
 
 
 def register_contract(dataset_name: str, contract: Contract) -> None:
+    previous = _CONTRACT_REGISTRY.get(dataset_name)
+    if previous is not None and previous is not contract:
+        raise ValueError(
+            f"Contract already registered for {dataset_name!r}: "
+            f"{previous.name} {previous.version}; received {contract.name} {contract.version}"
+        )
     _CONTRACT_REGISTRY[dataset_name] = contract
 
 

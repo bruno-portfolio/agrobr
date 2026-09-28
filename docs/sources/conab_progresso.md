@@ -16,6 +16,10 @@
 
 A CONAB publica semanalmente o "Progresso de Safra" com informacoes sobre os percentuais de plantio e colheita das principais culturas anuais do Brasil. Os dados sao coletados pelos escritorios regionais da companhia e consolidados nacionalmente.
 
+Os percentuais por UF são compilados pela CONAB a partir dos levantamentos estaduais, e a data da coluna é a semana da publicação
+da CONAB. No Paraná, o valor repete o levantamento do DERAL da segunda-feira anterior (no boletim de 18/09/2026, o DERAL de
+14/09, em 5 de 5 culturas); `deral.condicao_lavouras` traz a data do levantamento.
+
 O agrobr acessa os XLSX publicados na pagina de Progresso de Safra do portal gov.br/conab. Cada semana possui um arquivo XLSX com dados de semeadura e colheita por cultura e estado.
 
 ## Culturas Monitoradas
@@ -35,9 +39,11 @@ O agrobr acessa os XLSX publicados na pagina de Progresso de Safra do portal gov
 O XLSX semanal contem uma sheet "Progresso de safra" com blocos repetidos por cultura:
 
 1. **Header da cultura**: "Soja - Safra 2025/26"
-2. **Nota de cobertura**: "(Esses N estados correspondem a X% da area)"
+2. **Nota de cobertura**: "(Esses N estados correspondem a X% da área cultivada)", lida em `n_estados` e `cobertura_area_pct`
 3. **Semeadura**: tabela com Estado, ano anterior, semana anterior, semana atual, media 5 anos
-4. **Colheita**: mesma estrutura (quando aplicavel)
+4. **Colheita**: mesma estrutura (quando aplicavel); o percentual dos blocos marcados com `*` é calculado sobre o semeado acumulado
+5. **Linha "N estados"** no fim de cada bloco: média da própria CONAB dos estados monitorados, publicada como `estado =
+   "MEDIA_ESTADOS"`, não como Brasil
 
 Valores sao fracoes (0.0-1.0), nao percentuais.
 

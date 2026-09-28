@@ -1,6 +1,21 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field, field_validator
+
+
+class SheetDecision(BaseModel):
+    estado: Literal["mapeada", "ignorada", "desconhecida"]
+    campo: str | None = None
+    multiplicador: float | None = None
+    motivo: str | None = None
+
+
+class PeriodDecision(BaseModel):
+    estado: Literal["mapeada", "ignorada"]
+    safra: str
+    motivo: Literal["previsao"] | None = None
 
 
 class SafraHistorica(BaseModel):
@@ -9,6 +24,9 @@ class SafraHistorica(BaseModel):
     regiao: str | None = None
     uf: str | None = Field(None, min_length=2, max_length=2)
     area_plantada_mil_ha: float | None = Field(None, ge=0)
+    area_em_producao_mil_ha: float | None = Field(None, ge=0)
+    area_formacao_mil_ha: float | None = Field(None, ge=0)
+    area_colhida_mil_ha: float | None = Field(None, ge=0)
     producao_mil_ton: float | None = Field(None, ge=0)
     produtividade_kg_ha: float | None = Field(None, ge=0)
 
@@ -51,7 +69,12 @@ SERIE_HISTORICA_PRODUTOS: dict[str, str] = {
     "feijão total": "feijao",
     "algodao": "algodao",
     "algodão": "algodao",
+    "algodao em caroco": "algodao",
+    "algodão em caroço": "algodao",
+    "algodao em pluma": "algodao_pluma",
     "algodão em pluma": "algodao_pluma",
+    "caroco de algodao": "algodao_caroco",
+    "caroço de algodão": "algodao_caroco",
     "trigo": "trigo",
     "sorgo": "sorgo",
     "aveia": "aveia",

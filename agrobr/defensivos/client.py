@@ -4,6 +4,7 @@ import httpx
 import structlog
 
 from agrobr.constants import URLS, Fonte
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -32,7 +33,7 @@ async def _download(url: str, timeout: httpx.Timeout, min_size: int, label: str)
             lambda: http.get(url),
             source="defensivos",
         )
-        response.raise_for_status()
+        responses.raise_for_status(response, source="defensivos")
         content = response.content
 
         if len(content) < min_size:

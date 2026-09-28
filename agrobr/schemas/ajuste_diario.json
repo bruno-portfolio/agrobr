@@ -11,9 +11,15 @@
   "required_columns": [
     "data",
     "ticker",
+    "descricao",
     "vencimento_codigo",
     "vencimento_mes",
-    "vencimento_ano"
+    "vencimento_ano",
+    "ajuste_anterior",
+    "ajuste_atual",
+    "variacao",
+    "ajuste_por_contrato",
+    "unidade"
   ],
   "dtypes": {
     "data": "date",

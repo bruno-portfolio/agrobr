@@ -112,11 +112,20 @@ df = await queimadas.focos(
 | `risco_fogo` | float | Indice de risco (0-1) |
 | `frp` | float | Fire Radiative Power (MW) |
 
+A fonte publica, em alguns meses, focos fora do contrato: a cópia igual sai uma vez; a chave repetida que difere só no FRP
+sai em 1 linha com o `frp` nulo; a que difere em outra coluna sai do resultado; e o FRP negativo sai nulo. Cada caso vem com
+aviso e a contagem. Os 7 meses de 2023–2025 em que isso acontecia e as regras estão no
+[contrato](../contracts/queimadas.md#frp-negativo-e-foco-repetido).
+
 ## Satelites
 
 O INPE monitora focos de calor com 13 satelites. O satelite de referencia e o
 AQUA_M-T (MODIS), utilizado nas estatisticas oficiais por ter serie temporal
 mais longa e consistente.
+
+Sem `satelite=`, `focos()` devolve os focos de todos os satélites, e a contagem soma as detecções de cada um: em agosto de
+2025, foram 594.309 focos no total e 18.451 do AQUA_M-T. As estatísticas do INPE por estado usam só o satélite de
+referência; para comparar com elas, passe `satelite="AQUA_M-T"`.
 
 ## Cache
 
@@ -127,4 +136,12 @@ Não há cache local: cada chamada baixa os dados do INPE.
 | Aspecto | Valor |
 |---------|-------|
 | **Frequencia** | Diaria |
-| **Satelite referencia** | AQUA_M-T passagens ~13h e ~01h30 UTC |
+| **Satelite referencia** | AQUA_M-T, com passagens por volta das 13h30 e da 01h30, hora local nominal; `hora_gmt` vem em GMT |
+
+O arquivo mensal do mês corrente e o diário do dia corrente são parciais e mudam durante o período: `focos()` avisa e diz no
+`source_details` até qual foco o arquivo vai e o `Last-Modified` dele. Veja o
+[contrato](../contracts/queimadas.md#mes-corrente-parcial).
+
+## Arquivos históricos
+
+Os CSVs legados com `latitude`, `longitude` e `data_pas` são normalizados para a mesma saída dos arquivos atuais. Quando não existe arquivo mensal, `focos()` usa o ZIP anual. Em 2020, são cerca de 81 MB de download e 584 MB de CSV descompactado; considere também a memória necessária para processar o ano completo.

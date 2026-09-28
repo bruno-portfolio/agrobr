@@ -1,0 +1,22 @@
+{
+  "source": "IBGE Censo Agropecuario 1995/96",
+  "source_base_url": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/",
+  "manifest": "manifest.json",
+  "manifest_sha256": "8681663e791a72af5efd0acf2df42a7784981ad62e347e16fbdc227762159c45",
+  "expected": "expected.json",
+  "expected_sha256": "0f9615561ca9e066579cc9a6c63ba3ad206244d975cbe910cb22147501c8ce14",
+  "capture_script": "capture_matrix.py",
+  "oracle_script": "build_oracles.py",
+  "source_inventory": "source_inventory.json",
+  "timestamp_policy": "Preserve timestamps explicitly recorded by the source capture; null when historical per-response timestamps were not stored. Never infer them from file modification times.",
+  "original_bytes_unchanged": true,
+  "new_http_downloads": 128,
+  "reused_report_captures": 22,
+  "existing_fixture_references": 12,
+  "url_count": 162,
+  "unique_zip_contents": 161,
+  "new_zip_files": 149,
+  "expected_data_cases": 161,
+  "expected_rejection_cases": 1,
+  "exception": "Para/Tab_7Mn.zip duplicates Tab_6Mn.zip in the official source; both URLs reference the same bytes."
+}

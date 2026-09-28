@@ -71,45 +71,9 @@ def reset_config() -> None:
     _config = None
 
 
-def configure(
-    cache_enabled: bool | None = None,
-    cache_path: str | Path | None = None,
-    browser_fallback: bool | None = None,
-    alternative_source: bool | None = None,
-    log_level: str | None = None,
-) -> None:
-    """Deprecated: nunca teve efeito sobre fetch/cache/fallback.
-
-    Use variáveis de ambiente AGROBR_* para cache/HTTP e
-    datasets.deterministic() para o modo determinístico.
-    """
-    import warnings
-
-    warnings.warn(
-        "agrobr.configure() esta deprecated e NAO tem efeito sobre fetch, cache ou "
-        "fallback de fontes. Use variaveis de ambiente AGROBR_* e "
-        "datasets.deterministic(). Sera removida na versao 2.0.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    config = get_config()
-
-    if cache_enabled is not None:
-        config.cache_enabled = cache_enabled
-    if cache_path is not None:
-        config.cache_path = Path(cache_path) if isinstance(cache_path, str) else cache_path
-    if browser_fallback is not None:
-        config.browser_fallback = browser_fallback
-    if alternative_source is not None:
-        config.alternative_source = alternative_source
-    if log_level is not None:
-        config.log_level = log_level
-
-
 __all__ = [
     "AgrobrConfig",
     "set_mode",
     "get_config",
     "reset_config",
-    "configure",
 ]

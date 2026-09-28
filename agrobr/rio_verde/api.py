@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import time
-from typing import Any, Literal, overload
+from typing import Literal, overload
 
 import pandas as pd
 import structlog
@@ -12,7 +13,7 @@ from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
-from .models import SAFRAS_URLS
+from .models import SAFRAS_FORA_DO_LAYOUT, SAFRAS_URLS
 
 logger = structlog.get_logger()
 
@@ -46,8 +47,12 @@ async def ensaio_soja(
     empresa: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    if safra in SAFRAS_FORA_DO_LAYOUT:
+        raise InvalidParameterError(
+            f"Safra {safra!r} publicada pela Fundação Rio Verde num layout que o agrobr não lê "
+            f"({SAFRAS_FORA_DO_LAYOUT[safra]}). Opções: {sorted(SAFRAS_URLS)}"
+        )
     if safra not in SAFRAS_URLS:
         raise InvalidParameterError(
             f"Safra {safra!r} não disponível. Opções: {sorted(SAFRAS_URLS)}"
@@ -82,6 +87,8 @@ async def ensaio_soja(
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        raw_content_hash=hashlib.sha256(raw).hexdigest(),
+        raw_content_size=len(raw),
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 

@@ -5,22 +5,25 @@
 | Item | Detail |
 |------|---------|
 | Provider | IBAMA (Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renovaveis) |
-| Data | Embargo terms for environmental infractions (SIFISC) |
-| Access | CSV dump download (dadosabertos.ibama.gov.br) |
-| Format | Zipped CSV (~47 MB, ~170 MB uncompressed) with WKT geometries |
+| Data | Embargo terms for environmental infractions (IBAMA enforcement system) |
+| Access | CSV of the "Fiscalização - termo de embargo" dataset on IBAMA's open data portal |
+| Format | UTF-8 CSV with BOM, `;`, quoted fields, ~208 MB uncompressed (the source publishes no compressed version), WKT geometries |
 | Authentication | None |
-| License | ODbL (Open Database License) |
-| Records | ~114K embargo terms, monthly update |
+| License | "Outra (Aberta)" (other, open) in the catalog; federal open data, free use with source credit ([details](../licenses.md#ibama)) |
+| Records | 116,332 terms (edition of September 23, 2026), daily update |
 
-> The siscom.ibama.gov.br GeoServer WFS was decommissioned by the source in 2026.
-> Access has migrated to the official SIFISC dump on the open data platform.
+> Since 2.0.0 agrobr reads the dataset's current resource. The old ZIP
+> (`dadosabertos.ibama.gov.br/dados/SIFISC/termo_embargo/termo_embargo/termo_embargo_csv.zip`) stopped on May 3, 2026
+> and is no longer in the catalog. The catalog link to the CSV has a path error (`dados/TERMOS/TERMO_EMBARGO/...`,
+> 404); the published file is at the address below.
 
 ## Access
 
 | Parameter | Value |
 |-----------|-------|
-| URL | `dadosabertos.ibama.gov.br/dados/SIFISC/termo_embargo/termo_embargo/termo_embargo_csv.zip` |
-| Update | Monthly (Last-Modified on the server) |
+| URL | `stibamadadosabertosprd.blob.core.windows.net/dados-abertos/dados/TERMOS_DE_EMBARGO/TERMO_EMBARGO/termo_de_embargo.csv` |
+| Catalog | [dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo) |
+| Update | Daily; the edition read (`ULTIMA_ATUALIZACAO_RELATORIO`, Brasília time) goes to `meta.source_details["ultima_atualizacao_relatorio"]` |
 | Filters | `uf` and `bbox` applied client-side after the download |
 
 ## Usage Example
@@ -40,7 +43,7 @@ async def main():
     gdf = await ibama.embargos_geo(uf="RR")
     gdf = await ibama.embargos_geo(bbox=(-56, -16, -54, -14))
 
-    # With metadata
+    # With metadata (source edition in meta.source_details)
     df, meta = await ibama.embargos(return_meta=True)
 
     # Polars
@@ -53,37 +56,47 @@ asyncio.run(main())
 
 | Column | Type | Description |
 |--------|------|-----------|
-| seq_tad | str | Term identifier in SIFISC (empty in records from the AIE Mob system) |
-| numero_tad | str | Embargo Term number |
-| data_embargo | datetime | Embargo date |
+| seq_tad | str | Term identifier in the enforcement system (empty in the 2,862 AIe terms) |
+| numero_tad | str | Embargo Term number (numeric until Oct 7, 2019; alphanumeric in AIe) |
+| data_embargo | datetime | Date and time the term was issued, Brasília time without time zone |
 | num_processo | str | Administrative process number |
-| descricao | str | Embargo/infraction description |
-| codigo_municipio | str | Municipality IBGE code |
+| descricao | str | Embargo description, free text from the source |
+| codigo_municipio | str | Municipality IBGE code (7 digits; 2 terms carry `431173 `, 6 digits and a space, as in the source) |
 | municipio | str | Municipality |
 | uf | str | State (abbreviation) |
-| latitude / longitude | float | Term coordinates |
-| area_embargada_ha | float | Embargoed area in hectares |
+| latitude / longitude | float | Reference point of the term, as in the source: 94,655 terms with a point; 4,416 with both zeroed (`0` = not informed) and 17,261 with an empty coordinate; 387 points outside Brazil's bounding rectangle |
+| area_embargada_ha | float | Embargoed area in hectares (4 decimal places with a comma in the source; an area with a dot raises `ParseError`) |
 | nome_imovel | str | Property name |
-| status | str | Form status (Lavrado, Cancelado, ...) |
-| cancelado | bool | Term cancelled |
-| data_desembargo | datetime | Disembargo date (NaT if active) |
+| status | str | Term status: Lavrado, Cancelado, Substituído por outro, Excluído (empty in AIe terms) |
+| cancelado | bool | `SIT_CANCELADO = S` |
+| data_desembargo | datetime | Date the disembargo was recorded; NaT = no disembargo recorded (the source sets `SIT_DESEMBARGO = S` on exactly these terms) |
 
-`embargos_geo` adds `geometry` (Polygon/MultiPolygon, EPSG:4326) parsed from the WKT
-of the dump itself — only records with a polygon.
+`embargos_geo` adds `geometry` (Polygon/MultiPolygon) read from the WKT in the CSV itself — only records with a
+polygon (58,984 in the September 23, 2026 edition). The CSV declares no SRID; the origin database in IBAMA's GIS
+(`adm_embargos_ibama_a`) is in SIRGAS 2000 (EPSG:4674), and agrobr labels EPSG:4326 without reprojecting (the EPSG
+SIRGAS 2000 → WGS 84 transformation is a null transformation).
 
 ## Particularities
 
-- **PII excluded**: the source dump carries the name and CPF/CNPJ of the embargoed
-  party; agrobr does not expose those fields (project policy). Anyone who needs them for
-  compliance can download the raw CSV from the source.
-- **Dirty dates in the source**: some records have impossible dates (e.g., year 2925);
-  they are preserved when syntactically valid and become `NaT` when they do not parse.
-- **bbox** filters by the point (lat/lon) of the term, not by polygon intersection.
+- **PII excluded**: the source CSV carries the name and CPF/CNPJ of the embargoed
+  party; agrobr does not expose those fields (project policy). `descricao` is free text from the source.
+  Anyone who needs them for compliance can download the raw CSV from the source.
+- **Dirty dates in the source**: there are dates outside any plausible range (years 1667, 2063, 2080, 2090 and 2925).
+  Under agrobr's date rule ([Normalization](../guides/normalizacao.en.md#source-dates)), the same on pandas 2 and 3, a
+  date with a year outside 1900–2099 (1667 and 2925) and one on a day after the file's own edition
+  (`ULTIMA_ATUALIZACAO_RELATORIO`; in the 23/09/2026 edition, 2063, 2080 and 2090) become `NaT`: a term cannot be dated
+  after the file that publishes it. The query warns with a `UserWarning` and in `meta.validation_warnings`, with the column
+  and the count. Both date columns come out as `datetime64[ns]`.
+- **bbox**: `embargos(bbox=...)` filters by the term's reference point (lat/lon); `embargos_geo(bbox=...)` filters by
+  polygon intersection with the box. They can differ: in the example bbox, 9 terms have the point inside and the
+  polygon outside, and 4 have the polygon inside and the point outside or missing.
+- **Geometries**: 1 unreadable WKT (open ring) is dropped with a log warning; 129 polygons with invalid topology are
+  returned as published.
 - **Geo with no filter**: `embargos_geo()` without `uf`/`bbox` parses WKT for all of Brazil
-  — slow; a warning is emitted.
+  (~4 s); a warning is emitted. With `bbox`, the WKT of the whole selection is read.
 
 ## Limitations
 
 - Geometry present in part of the records (embargoes without a polygon are left out of the geo)
-- Full download (~47 MB) on every call — filters are client-side
-- ODbL: free use with attribution to the source
+- Full download (~208 MB) on every call — filters are client-side
+- License: see [Licenses](../licenses.md#ibama)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -70,7 +70,6 @@ class MovimentacaoPortuariaDataset(BaseDataset):
         tipo_navegacao: str | None = None,
         natureza_carga: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         snapshot = get_snapshot()
 
@@ -89,7 +88,6 @@ class MovimentacaoPortuariaDataset(BaseDataset):
             sentido=sentido,
             tipo_navegacao=tipo_navegacao,
             natureza_carga=natureza_carga,
-            **kwargs,
         )
 
         df = self._normalize(df)
@@ -144,6 +142,36 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_movimentacao_portuaria)
 
 
+@overload
+async def movimentacao_portuaria(
+    *,
+    ano: int,
+    mercadoria: str | None = None,
+    porto: str | None = None,
+    uf: str | None = None,
+    sentido: str | None = None,
+    tipo_navegacao: str | None = None,
+    natureza_carga: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def movimentacao_portuaria(
+    *,
+    ano: int,
+    mercadoria: str | None = None,
+    porto: str | None = None,
+    uf: str | None = None,
+    sentido: str | None = None,
+    tipo_navegacao: str | None = None,
+    natureza_carga: str | None = None,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def movimentacao_portuaria(
     *,
     ano: int,
@@ -154,9 +182,9 @@ async def movimentacao_portuaria(
     tipo_navegacao: str | None = None,
     natureza_carga: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _movimentacao_portuaria.fetch(
+    return await _movimentacao_portuaria.fetch(  # type: ignore[call-arg]
         ano=ano,
         mercadoria=mercadoria,
         porto=porto,
@@ -165,5 +193,5 @@ async def movimentacao_portuaria(
         tipo_navegacao=tipo_navegacao,
         natureza_carga=natureza_carga,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

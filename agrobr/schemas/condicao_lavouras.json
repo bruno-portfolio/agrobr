@@ -11,7 +11,10 @@
   "required_columns": [
     "produto",
     "data",
-    "condicao"
+    "condicao",
+    "pct",
+    "plantio_pct",
+    "colheita_pct"
   ],
   "dtypes": {
     "produto": "str",

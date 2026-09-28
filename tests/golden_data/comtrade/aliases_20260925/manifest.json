@@ -1,0 +1,222 @@
+{
+ "referencia": [
+  {
+   "file": "referencia/HS.json",
+   "classificacao": "Combined HS",
+   "entradas": 165,
+   "sha256": "7b1a6242ad55a52f9e4226dffd58eaa99be39b9bb5c1183ae2427d3288479b6d",
+   "bytes": 35855,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/HS.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:26:57.491118+00:00",
+    "bytes": 1952940,
+    "sha256": "be126fb18bf0b3f34e84872414606847c09b6935b11185946ccb3cc1e6d2b98b",
+    "entradas": 8262
+   }
+  },
+  {
+   "file": "referencia/H0.json",
+   "classificacao": "HS1992",
+   "entradas": 111,
+   "sha256": "026981cc28f05cc835f43f5792f6501bb0e54ea11c5daf03b67d534da3323ffb",
+   "bytes": 19794,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/H0.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:27:01.762290+00:00",
+    "bytes": 1351970,
+    "sha256": "05cd59ce7156f373214162eb6c2be702c924b41b795c098b4eb595429711ee07",
+    "entradas": 6382
+   }
+  },
+  {
+   "file": "referencia/H1.json",
+   "classificacao": "HS1996",
+   "entradas": 114,
+   "sha256": "041be6345bf507b8c7cfe2e66a2ac1f69737df6f04e61120d270ce523bbe3a7a",
+   "bytes": 20570,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/H1.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:27:04.197083+00:00",
+    "bytes": 1328293,
+    "sha256": "061715cee302b21e4399975b315255ff4c70b7c130a337aab6bc4bb0d5176dad",
+    "entradas": 6475
+   }
+  },
+  {
+   "file": "referencia/H2.json",
+   "classificacao": "HS2002",
+   "entradas": 120,
+   "sha256": "866c757754e6cbb70a834a6927f1830e604f370e9c9bfd272926abe9b230489b",
+   "bytes": 20856,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/H2.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:27:06.585852+00:00",
+    "bytes": 1272466,
+    "sha256": "1c626435d0e8c608f1d32c74ce039113cdea36460cf2e146b8121d3c33a37a36",
+    "entradas": 6570
+   }
+  },
+  {
+   "file": "referencia/H3.json",
+   "classificacao": "HS2007",
+   "entradas": 121,
+   "sha256": "0f2119667591bc70781addb82e6c5a7f17c87df89719c32fabdfa7fceee93877",
+   "bytes": 21078,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/H3.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:27:09.410638+00:00",
+    "bytes": 1234894,
+    "sha256": "a49afade7d921b4eac6a7fbefcc2fa4f5085b1299c0f958f4728a38aca7db0be",
+    "entradas": 6374
+   }
+  },
+  {
+   "file": "referencia/H4.json",
+   "classificacao": "HS2012",
+   "entradas": 133,
+   "sha256": "ec66696b5c2af1477e67d9cc1e6a61cfc87684dc1d73f09b63d7aa2989bf1af7",
+   "bytes": 22944,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/H4.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:27:11.831506+00:00",
+    "bytes": 1266080,
+    "sha256": "29b35dfc510f94e8360cfe3d2eefdabfb47c69a28e6b5628f9a3b6d824789a33",
+    "entradas": 6530
+   }
+  },
+  {
+   "file": "referencia/H5.json",
+   "classificacao": "HS2017",
+   "entradas": 133,
+   "sha256": "a080f6b2c3f26304a8d72fb708ab0d48de8f24ac72daf97672c21b3072d6f35c",
+   "bytes": 29635,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/H5.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:27:14.222953+00:00",
+    "bytes": 1632156,
+    "sha256": "079987eba4e5e1f60e63368e2aa8d7ac68c29fa6f3a889466dbd5276272f2431",
+    "entradas": 6709
+   }
+  },
+  {
+   "file": "referencia/H6.json",
+   "classificacao": "HS2022",
+   "entradas": 140,
+   "sha256": "a95b06c3f6462679b365204ad0770e9abf275db0900a8ae0d08bc2088221cce5",
+   "bytes": 31586,
+   "inteiro": {
+    "url": "https://comtradeapi.un.org/files/v1/app/reference/H6.json",
+    "status": 200,
+    "captured_at": "2026-09-25T15:27:16.794596+00:00",
+    "bytes": 1750838,
+    "sha256": "e266823e1299d1307c5d7986eb738b83aa5e5bd9af675bf19bf372220660be15",
+    "entradas": 6940
+   }
+  }
+ ],
+ "previews": [
+  {
+   "file": "preview_soja_2025.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=1201%2C120110%2C120190&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=1201%2C120110%2C120190&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-25T15:28:49.529346+00:00",
+   "bytes": 2999,
+   "sha256": "5ce8b58db053ecc203cc7057fe8d0cba7ccacbfd157cc0d09a0f37d2dac51da1",
+   "captura": "lote 4",
+   "no_repositorio": false,
+   "arquivado_em": "preview_soja_2025.json"
+  },
+  {
+   "file": "preview_frango_2025.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=0207%2C020711%2C020712%2C020713%2C020714&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=0207%2C020711%2C020712%2C020713%2C020714&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-25T15:27:19.370729+00:00",
+   "bytes": 5262,
+   "sha256": "976ccb8fcb42eb055353898671a0964e16da261cbc579ed26b6f7f66bbb72586",
+   "captura": "lote 4",
+   "no_repositorio": false,
+   "arquivado_em": "preview_frango_2025.json"
+  },
+  {
+   "file": "preview_frango_1995.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=0207%2C020710%2C020721%2C020739%2C020741%2C020750&period=1995&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=0207%2C020710%2C020721%2C020739%2C020741%2C020750&period=1995&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-25T15:28:52.625089+00:00",
+   "bytes": 6231,
+   "sha256": "c77df8d0504b9878d0adfc844a8f49446e93fe23af4698d2913a9c663c3f037e",
+   "captura": "lote 4",
+   "no_repositorio": false,
+   "arquivado_em": "preview_frango_1995.json"
+  },
+  {
+   "file": "preview_cafe_2025.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=0901%2C090111%2C090112%2C090121%2C090122%2C090190&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=0901%2C090111%2C090112%2C090121%2C090122%2C090190&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-25T15:27:21.886406+00:00",
+   "bytes": 5943,
+   "sha256": "cc19ab0af50575c03f9e0977bd0d38fd7b921fbc3e2d8056489ccb3f0b510736",
+   "captura": "lote 4",
+   "no_repositorio": false,
+   "arquivado_em": "preview_cafe_2025.json"
+  },
+  {
+   "file": "preview_algodao_2025.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=5201%2C5202%2C5203&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=5201%2C5202%2C5203&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-25T15:27:24.438692+00:00",
+   "bytes": 2944,
+   "sha256": "11aa2b4cb32355f4d8cc1773f082338387cc8fcb29afd303f5f35c9916fd6897",
+   "captura": "lote 4",
+   "no_repositorio": false,
+   "arquivado_em": "preview_algodao_2025.json"
+  },
+  {
+   "file": "preview_celulose_2025.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=4701%2C4702%2C4703%2C4704%2C4705%2C4706&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=4701%2C4702%2C4703%2C4704%2C4705%2C4706&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-25T15:27:26.945847+00:00",
+   "bytes": 6015,
+   "sha256": "198cd642b2b389accf62bcb941de2f7c1380c3f89cc8ec76e3dbdf4e8be6a145",
+   "captura": "lote 4",
+   "no_repositorio": false,
+   "arquivado_em": "preview_celulose_2025.json"
+  },
+  {
+   "file": "preview_suco_laranja_2025.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=200911%2C200912%2C200919&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=200911%2C200912%2C200919&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-23T22:19:31.203598+00:00",
+   "bytes": 3348,
+   "sha256": "b69468713731105b896543f89de572a7b0fa1f0df83cb3847113a27cb60a1ee7",
+   "captura": "conferência, rodada 13",
+   "no_repositorio": false,
+   "arquivado_em": "preview_suco_laranja_2025.json"
+  },
+  {
+   "file": "preview_suco_2009_2025.json",
+   "requested_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=2009&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "final_url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=2009&period=2025&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+   "status": 200,
+   "captured_at": "2026-09-23T22:23:23.999651+00:00",
+   "bytes": 1186,
+   "sha256": "124e8d2d662bbfe489c3003affeb7002bc7611af6de07f3c93aa63021f21ed2f",
+   "captura": "conferência, rodada 13",
+   "no_repositorio": false,
+   "arquivado_em": "preview_suco_2009_2025.json"
+  }
+ ]
+}

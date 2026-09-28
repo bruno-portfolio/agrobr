@@ -5,6 +5,7 @@ import structlog
 
 from agrobr.constants import MIN_XLSX_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -34,10 +35,10 @@ async def _fetch_bytes(url: str) -> bytes:
             raise SourceUnavailableError(
                 source="deral",
                 url=url,
-                last_error="Arquivo não encontrado (404)",
+                last_error="HTTP 404: arquivo não encontrado",
             )
 
-        response.raise_for_status()
+        responses.raise_for_status(response, source="deral")
 
         content = response.content
         io_utils.validate_download(

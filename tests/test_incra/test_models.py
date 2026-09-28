@@ -1,99 +1,47 @@
 from __future__ import annotations
 
-from agrobr.incra.models import (
-    COLUNAS_SAIDA,
-    COLUNAS_SAIDA_GEO,
-    FASES_VALIDAS,
-    GEOM_COLUMN,
-    LAYER,
-    MAX_FEATURES_GEO,
-    MAX_FEATURES_TABULAR,
-    NAMESPACE,
-    PROPERTY_NAMES,
-    PROPERTY_NAMES_GEO,
-    RENAME_MAP,
-    WFS_BASE,
-    WFS_VERSION,
-)
+import pytest
+from pydantic import ValidationError
+
+from agrobr.incra import models
+from tests.helpers import incra_features
 
 
-class TestConstants:
-    def test_wfs_version_is_1_0_0(self):
-        assert WFS_VERSION == "1.0.0"
+@pytest.mark.parametrize("value", [None, "", "2026-09-07", "2026-09-07T00:00:00Z "])
+def test_registration_requires_nonnull_valid_datetime(value):
+    raw = incra_features()[0]["properties"]
+    raw["dt_cadastro"] = value
+    with pytest.raises(ValidationError, match="dt_cadastro"):
+        models.Properties.model_validate(raw)
 
-    def test_layer(self):
-        assert LAYER == "lim_quilombolas_a"
 
-    def test_namespace_is_cmr_publico(self):
-        assert NAMESPACE == "CMR-PUBLICO"
+@pytest.mark.parametrize("field", ["dt_publica", "dt_public1", "dt_titulo", "dt_decreto"])
+def test_invalid_civil_date_is_not_coerced_to_null(field):
+    raw = incra_features()[0]["properties"]
+    raw[field] = "2023-02-29"
+    with pytest.raises(ValidationError, match=field):
+        models.Properties.model_validate(raw)
 
-    def test_geom_column(self):
-        assert GEOM_COLUMN == "geom"
 
-    def test_wfs_base_url(self):
-        assert "cmr.funai.gov.br" in WFS_BASE
+@pytest.mark.parametrize("field", ["cd_quilomb", "nu_familia"])
+@pytest.mark.parametrize("value", [True, "1", 1.5, 2**31, -(2**31) - 1])
+def test_integer_properties_reject_type_fraction_or_out_of_range(field, value):
+    raw = incra_features()[0]["properties"]
+    raw[field] = value
+    with pytest.raises(ValidationError, match=field):
+        models.Properties.model_validate(raw)
 
-    def test_max_features_geo_has_headroom(self):
-        assert MAX_FEATURES_GEO >= 1000
 
-    def test_max_features_tabular_has_headroom(self):
-        assert MAX_FEATURES_TABULAR >= 1000
+@pytest.mark.parametrize("identifier", [None, "", " ", 113])
+def test_feature_id_must_be_nonblank_literal_string(identifier):
+    feature = incra_features()[0]
+    feature["id"] = identifier
+    with pytest.raises(ValidationError, match="id"):
+        models.Feature.model_validate(feature)
 
-    def test_property_names_has_required(self):
-        assert "cd_quilomb" in PROPERTY_NAMES
-        assert "no_comunidade" in PROPERTY_NAMES
-        assert "sg_uf" in PROPERTY_NAMES
-        assert "nu_area_ha" in PROPERTY_NAMES
-        assert "nu_familia" in PROPERTY_NAMES
-        assert "ds_fase" in PROPERTY_NAMES
-        assert "st_titulad" in PROPERTY_NAMES
-        assert "dt_publica" in PROPERTY_NAMES
-        assert "dt_titulo" in PROPERTY_NAMES
 
-    def test_property_names_geo_starts_with_geom(self):
-        assert PROPERTY_NAMES_GEO[0] == GEOM_COLUMN
-        for pn in PROPERTY_NAMES:
-            assert pn in PROPERTY_NAMES_GEO
-
-    def test_rename_map_keys_match_property_names(self):
-        for key in RENAME_MAP:
-            assert key in PROPERTY_NAMES
-
-    def test_rename_map_values_match_colunas_saida(self):
-        for val in RENAME_MAP.values():
-            assert val in COLUNAS_SAIDA
-
-    def test_colunas_saida_has_required(self):
-        assert "codigo" in COLUNAS_SAIDA
-        assert "nome" in COLUNAS_SAIDA
-        assert "municipio" in COLUNAS_SAIDA
-        assert "uf" in COLUNAS_SAIDA
-        assert "area_ha" in COLUNAS_SAIDA
-        assert "familias" in COLUNAS_SAIDA
-        assert "fase" in COLUNAS_SAIDA
-        assert "titulado" in COLUNAS_SAIDA
-        assert "data_publicacao" in COLUNAS_SAIDA
-        assert "data_titulo" in COLUNAS_SAIDA
-
-    def test_colunas_saida_geo_has_geometry(self):
-        assert "geometry" in COLUNAS_SAIDA_GEO
-
-    def test_colunas_saida_geo_contains_all_tabular(self):
-        for col in COLUNAS_SAIDA:
-            assert col in COLUNAS_SAIDA_GEO
-
-    def test_fases_validas_real(self):
-        assert (
-            frozenset(
-                {
-                    "CCDRU",
-                    "DECRETO",
-                    "PORTARIA",
-                    "RTID",
-                    "TITULADO",
-                    "TITULO ANULADO",
-                    "TITULO PARCIAL",
-                }
-            )
-            == FASES_VALIDAS
-        )
+def test_feature_geometry_name_must_be_layer_column():
+    feature = incra_features(include_geometry=True)[0]
+    feature["geometry_name"] = "the_geom"
+    with pytest.raises(ValidationError, match="geometry_name"):
+        models.Feature.model_validate(feature)

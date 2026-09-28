@@ -1,119 +1,135 @@
-"""Testes para os modelos USDA PSD."""
+from __future__ import annotations
 
-import pytest
+import hashlib
+import json
 
 from agrobr.exceptions import InvalidParameterError
-from agrobr.usda.models import (
-    PSD_ATTRIBUTES,
-    PSD_COLUMNS_MAP,
-    PSD_COMMODITIES,
-    PSD_COUNTRIES,
-    commodity_name,
-    resolve_commodity_code,
-    resolve_country_code,
-)
+from agrobr.usda import models
+from tests.helpers import levanta_exatamente, sem_excecao
+
+from .conftest import GOLDEN, corpo
+
+PRODUTOS_OFICIAIS = {
+    "soja": ("2222000", "Oilseed, Soybean"),
+    "milho": ("0440000", "Corn"),
+    "trigo": ("0410000", "Wheat"),
+    "arroz": ("0422110", "Rice, Milled"),
+    "algodao": ("2631000", "Cotton"),
+    "acucar": ("0612000", "Sugar, Centrifugal"),
+    "farelo_soja": ("0813100", "Meal, Soybean"),
+    "oleo_soja": ("4232000", "Oil, Soybean"),
+    "cafe": ("0711100", "Coffee, Green"),
+}
+
+ATRIBUTOS_OFICIAIS = {
+    4: ("area_colhida", "Area Harvested"),
+    20: ("estoque_inicial", "Beginning Stocks"),
+    28: ("producao", "Production"),
+    57: ("importacao", "Imports"),
+    86: ("oferta_total", "Total Supply"),
+    88: ("exportacao", "Exports"),
+    176: ("estoque_final", "Ending Stocks"),
+    178: ("distribuicao_total", "Total Distribution"),
+    184: ("produtividade", "Yield"),
+}
+
+PAISES_OFICIAIS = {
+    "brasil": ("BR", "Brazil"),
+    "eua": ("US", "United States"),
+    "china": ("CH", "China"),
+    "argentina": ("AR", "Argentina"),
+    "india": ("IN", "India"),
+    "indonesia": ("ID", "Indonesia"),
+    "mexico": ("MX", "Mexico"),
+    "ue": ("E4", "European Union"),
+}
 
 
-class TestResolveCommodityCode:
-    def test_soja(self):
-        assert resolve_commodity_code("soja") == "2222000"
-
-    def test_soybeans_english(self):
-        assert resolve_commodity_code("soybeans") == "2222000"
-
-    def test_milho(self):
-        assert resolve_commodity_code("milho") == "0440000"
-
-    def test_trigo(self):
-        assert resolve_commodity_code("trigo") == "0410000"
-
-    def test_arroz(self):
-        assert resolve_commodity_code("arroz") == "0422110"
-
-    def test_algodao(self):
-        assert resolve_commodity_code("algodao") == "2631000"
-
-    def test_acucar(self):
-        assert resolve_commodity_code("acucar") == "0612000"
-
-    def test_cafe(self):
-        assert resolve_commodity_code("cafe") == "0711100"
-
-    def test_coffee_english(self):
-        assert resolve_commodity_code("coffee") == "0711100"
-
-    def test_direct_code(self):
-        assert resolve_commodity_code("2222000") == "2222000"
-
-    def test_unknown_raises(self):
-        with pytest.raises(InvalidParameterError, match="Opções.*soja"):
-            resolve_commodity_code("banana")
-
-    def test_case_insensitive(self):
-        assert resolve_commodity_code("Soja") == "2222000"
-        assert resolve_commodity_code("MILHO") == "0440000"
+def test_catalogos_do_pacote_sao_os_bytes_oficiais():
+    dados = json.loads((GOLDEN / "manifest.json").read_bytes())
+    catalogos = {entrada["arquivo"]: entrada for entrada in dados["catalogos_do_pacote"]}
+    assert sorted(p.name for p in models.CATALOGOS.iterdir()) == [
+        "commodities.json",
+        "commodityAttributes.json",
+        "countries.json",
+        "unitsOfMeasure.json",
+    ]
+    for arquivo in models.CATALOGOS.iterdir():
+        entrada = catalogos[f"agrobr/usda/catalogos/{arquivo.name}"]
+        assert hashlib.sha256(arquivo.read_bytes()).hexdigest() == entrada["sha256"]
+        assert entrada["url"] == f"https://api.fas.usda.gov/api/psd/{arquivo.stem}"
 
 
-class TestResolveCountryCode:
-    def test_brasil(self):
-        assert resolve_country_code("brasil") == "BR"
-        assert resolve_country_code("brazil") == "BR"
-        assert resolve_country_code("BR") == "BR"
-
-    def test_eua(self):
-        assert resolve_country_code("eua") == "US"
-        assert resolve_country_code("usa") == "US"
-        assert resolve_country_code("US") == "US"
-
-    def test_china(self):
-        assert resolve_country_code("china") == "CH"
-
-    def test_short_code_passthrough(self):
-        assert resolve_country_code("AR") == "AR"
-        assert resolve_country_code("IN") == "IN"
-
-    def test_unknown_long_name_raises(self):
-        with pytest.raises(InvalidParameterError, match="Opções.*brasil"):
-            resolve_country_code("pais_inventado")
+def test_cadastro_de_produtos_bate_com_o_catalogo():
+    oficiais = models.nomes_de_produto()
+    for nome, (codigo, oficial) in PRODUTOS_OFICIAIS.items():
+        assert models.resolve_commodity_code(nome) == codigo
+        assert oficiais[codigo] == oficial
+        assert models.commodity_name(codigo) == nome
+    assert oficiais["4233000"] == "Oil, Cottonseed"
+    assert [models.commodity_name(c) for c in ("0430000", "9999999")] == ["Barley", "9999999"]
+    assert set(models.PSD_COMMODITIES.values()) == {c for c, _ in PRODUTOS_OFICIAIS.values()}
 
 
-class TestCommodityName:
-    def test_known_codes(self):
-        assert commodity_name("2222000") == "soja"
-        assert commodity_name("0440000") == "milho"
-        assert commodity_name("0410000") == "trigo"
+def test_cadastro_de_atributos_bate_com_o_catalogo():
+    oficiais = models.nomes_de_atributo()
+    for atributo, (rotulo, nome) in ATRIBUTOS_OFICIAIS.items():
+        assert oficiais[atributo] == nome
+        assert models.attribute_br("2222000", atributo) == rotulo
+    assert set(models.PSD_ATTRIBUTES) == set(ATRIBUTOS_OFICIAIS)
+    assert oficiais[125] == "Domestic Consumption"
+    assert oficiais[models.CONSUMO_DOMESTICO["0612000"]] == "Total Disappearance"
+    assert oficiais[models.CONSUMO_DOMESTICO["2631000"]] == "Domestic Use"
+    assert oficiais[models.PERDAS["2631000"]] == "Loss"
 
-    def test_cafe(self):
-        assert commodity_name("0711100") == "cafe"
 
-    def test_unknown_returns_code(self):
-        assert commodity_name("9999999") == "9999999"
+def test_paises_do_cadastro_batem_com_o_catalogo():
+    oficiais = models.nomes_de_pais()
+    for nome, (codigo, oficial) in PAISES_OFICIAIS.items():
+        with sem_excecao():
+            resolvido = models.resolve_country_code(nome)
+        assert resolvido == codigo
+        assert oficiais[codigo] == oficial
+    assert (oficiais["E2"], oficiais["E3"]) == ("EU-15", "EU-25")
+    assert models.MUNDO not in oficiais
+    regioes = {r["regionCode"]: r["regionName"] for r in json.loads(corpo("cat_regioes.json"))}
+    assert regioes["R00"] == models.NOME_MUNDO
 
 
-class TestConstants:
-    def test_commodities_has_main_products(self):
-        assert "soja" in PSD_COMMODITIES
-        assert "milho" in PSD_COMMODITIES
-        assert "trigo" in PSD_COMMODITIES
-        assert "arroz" in PSD_COMMODITIES
-        assert "algodao" in PSD_COMMODITIES
-        assert "acucar" in PSD_COMMODITIES
-        assert "cafe" in PSD_COMMODITIES
+def test_resolve_commodity_code():
+    with sem_excecao():
+        resolvidos = [
+            models.resolve_commodity_code(n) for n in (" Soja ", "soybean_meal", "0430000")
+        ]
+    assert resolvidos == ["2222000", "0813100", "0430000"]
+    for invalido in ("9999999", "feijao", "4233"):
+        with levanta_exatamente(InvalidParameterError, "Commodity desconhecida"):
+            models.resolve_commodity_code(invalido)
+    with levanta_exatamente(InvalidParameterError, "string"):
+        models.resolve_commodity_code(2222000)  # type: ignore[arg-type]
 
-    def test_attributes_has_main_ids(self):
-        assert 125 in PSD_ATTRIBUTES  # Production
-        assert 88 in PSD_ATTRIBUTES  # Exports
-        assert 130 in PSD_ATTRIBUTES  # Imports
-        assert 84 in PSD_ATTRIBUTES  # Ending Stocks
-        assert 57 in PSD_ATTRIBUTES  # Domestic Consumption
 
-    def test_countries_has_brazil(self):
-        assert PSD_COUNTRIES["brasil"] == "BR"
-        assert PSD_COUNTRIES["brazil"] == "BR"
+def test_resolve_country_code():
+    with sem_excecao():
+        resolvidos = [models.resolve_country_code(n) for n in ("ar", " E4 ")]
+    assert resolvidos == ["AR", "E4"]
+    for invalido in ("AB", "00", "brasill"):
+        with levanta_exatamente(InvalidParameterError, "País desconhecido"):
+            models.resolve_country_code(invalido)
+    with levanta_exatamente(InvalidParameterError, "string"):
+        models.resolve_country_code(None)  # type: ignore[arg-type]
 
-    def test_columns_map_has_key_fields(self):
-        assert "CommodityCode" in PSD_COLUMNS_MAP
-        assert "CountryCode" in PSD_COLUMNS_MAP
-        assert "MarketYear" in PSD_COLUMNS_MAP
-        assert "Value" in PSD_COLUMNS_MAP
-        assert "AttributeDescription" in PSD_COLUMNS_MAP
+
+def test_resolve_attributes():
+    assert models.resolve_attributes(None) is None
+    assert models.resolve_attributes([" Production", "CONSUMO_DOMESTICO", "perdas", "Crush"]) == [
+        "production",
+        "consumo_domestico",
+        "perdas",
+        "crush",
+    ]
+    with levanta_exatamente(InvalidParameterError, r"\['produção'\]"):
+        models.resolve_attributes(["producao", "produção"])
+    for invalido in ("Production", ["Production", 28]):
+        with levanta_exatamente(InvalidParameterError, "lista de strings"):
+            models.resolve_attributes(invalido)  # type: ignore[arg-type]

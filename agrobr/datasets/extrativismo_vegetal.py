@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -9,6 +9,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
 
 logger = structlog.get_logger()
 
@@ -55,13 +56,13 @@ EXTRATIVISMO_VEGETAL_INFO = DatasetInfo(
         "madeira_tora",
         "hevea_coagulado",
     ],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="yearly",
     typical_latency="Y+1",
     source_url=SIDRA_BASE,
     source_institution="IBGE",
     min_date="1986-01-01",
-    unit="Toneladas / Metros cúbicos",
+    unit="Toneladas / Metros cúbicos / Mil Reais",
     license="livre",
 )
 
@@ -77,8 +78,8 @@ class ExtrativsmoVegetalDataset(BaseDataset):
         uf: str | None = None,
         variavel: str = "quantidade_produzida",
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+        produto = self._produto_do_dataset(produto)
         logger.info("dataset_fetch", dataset="extrativismo_vegetal", produto=produto, ano=ano)
 
         snapshot = get_snapshot()
@@ -86,9 +87,10 @@ class ExtrativsmoVegetalDataset(BaseDataset):
             ano = int(snapshot[:4]) - 1
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, ano=ano, nivel=nivel, uf=uf, variavel=variavel, **kwargs
+            produto, ano=ano, nivel=nivel, uf=uf, variavel=variavel
         )
 
+        df = df.assign(cod_municipio=regions.cod_municipio(df["localidade_cod"]))
         self._validate_contract(df)
 
         if return_meta:
@@ -104,6 +106,32 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_extrativismo_vegetal)
 
 
+@overload
+async def extrativismo_vegetal(
+    produto: str,
+    ano: int | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    uf: str | None = None,
+    variavel: str = "quantidade_produzida",
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def extrativismo_vegetal(
+    produto: str,
+    ano: int | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    uf: str | None = None,
+    variavel: str = "quantidade_produzida",
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def extrativismo_vegetal(
     produto: str,
     ano: int | None = None,
@@ -111,8 +139,14 @@ async def extrativismo_vegetal(
     uf: str | None = None,
     variavel: str = "quantidade_produzida",
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _extrativismo_vegetal.fetch(
-        produto, ano=ano, nivel=nivel, uf=uf, variavel=variavel, return_meta=return_meta, **kwargs
+    return await _extrativismo_vegetal.fetch(  # type: ignore[call-arg]
+        produto,
+        ano=ano,
+        nivel=nivel,
+        uf=uf,
+        variavel=variavel,
+        return_meta=return_meta,
+        as_polars=as_polars,
     )

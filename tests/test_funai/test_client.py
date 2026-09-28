@@ -1,83 +1,67 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+import copy
 
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
-from agrobr.funai.client import (
-    fetch_terras_indigenas,
-    fetch_terras_indigenas_geo,
+from agrobr.exceptions import ParseError
+from agrobr.funai import client, query
+from tests.helpers import funai_features, install_funai_wfs
+
+
+@pytest.mark.parametrize(
+    "defect", ["property", "signed_zero", "descending", "empty", "only_overlap", "excess", "total"]
 )
+async def test_second_page_invalid_before_local_filter(defect, monkeypatch):
+    features = funai_features()
+    features[1]["properties"]["superficie_perimetro_ha"] = -0.0
+
+    def transform(request, envelope):
+        if request.url.params.get("startIndex") != "1":
+            return
+        if defect == "property":
+            envelope["features"][0]["properties"]["terrai_nome"] = "changed"
+        elif defect == "signed_zero":
+            envelope["features"][0]["properties"]["superficie_perimetro_ha"] = 0.0
+        elif defect == "descending":
+            envelope["features"][1]["properties"]["terrai_codigo"] = 1
+        elif defect == "total":
+            envelope.update(numberMatched=999, totalFeatures=999)
+        else:
+            envelope["features"] = {
+                "empty": [],
+                "only_overlap": [features[1]],
+                "excess": features[1:],
+            }[defect]
+            envelope["numberReturned"] = len(envelope["features"])
+
+    install_funai_wfs(monkeypatch, features, transform)
+    with pytest.raises(ParseError):
+        await client.fetch_acquisition(
+            query.build_query(include_geometry=False, max_registros=None, tamanho_pagina=2, uf="SP")
+        )
 
 
-class TestFetchTerrasIndigenas:
-    @pytest.mark.asyncio
-    async def test_successful_fetch(self):
-        with patch(
-            "agrobr.funai.client.fetch_wfs", new_callable=AsyncMock, return_value=b"x" * 100
-        ):
-            data, url = await fetch_terras_indigenas()
-        assert len(data) >= 100
-        assert "typeNames=" in url
-
-    @pytest.mark.asyncio
-    async def test_404_raises(self):
-        with (
-            patch(
-                "agrobr.funai.client.fetch_wfs",
-                new_callable=AsyncMock,
-                side_effect=SourceUnavailableError(source="funai", url="", last_error="HTTP 404"),
-            ),
-            pytest.raises(SourceUnavailableError),
-        ):
-            await fetch_terras_indigenas()
-
-    @pytest.mark.asyncio
-    async def test_too_small_response_raises(self):
-        with (
-            patch(
-                "agrobr.funai.client.fetch_wfs",
-                new_callable=AsyncMock,
-                side_effect=SourceUnavailableError(
-                    source="funai", url="", last_error="WFS response too small"
-                ),
-            ),
-            pytest.raises(SourceUnavailableError, match="too small"),
-        ):
-            await fetch_terras_indigenas()
+async def test_literal_duplicates_preserved_with_bounded_diagnostics(monkeypatch):
+    features = [copy.deepcopy(funai_features()[0]) for _ in range(25)]
+    for feature in features:
+        feature["properties"]["gid"] = None
+    install_funai_wfs(monkeypatch, features)
+    result = await client.fetch_acquisition(
+        query.build_query(include_geometry=False, max_registros=None, tamanho_pagina=1)
+    )
+    assert len(result.frame) == 25
+    assert result.diagnostics["nullable_sort_key"]["count"] == 49
+    assert result.details["accepted_diagnostics"]["nullable_sort_key"]["count"] == 25
+    assert len(result.diagnostics["nullable_sort_key"]["examples"]) == 10
+    assert result.details["statistics"]["gid"]["null_count"] == 49
+    assert result.details["accepted_statistics"]["gid"]["null_count"] == 25
+    assert result.coverage.ambiguity_count > 0
 
 
-class TestFetchTerrasIndigenasGeo:
-    @pytest.mark.asyncio
-    async def test_output_format_json(self):
-        with patch(
-            "agrobr.funai.client.fetch_wfs", new_callable=AsyncMock, return_value=b"x" * 100
-        ):
-            _, url = await fetch_terras_indigenas_geo()
-        assert "outputFormat=application/json" in url
-
-    @pytest.mark.asyncio
-    async def test_geom_column_in_url(self):
-        with patch(
-            "agrobr.funai.client.fetch_wfs", new_callable=AsyncMock, return_value=b"x" * 100
-        ):
-            _, url = await fetch_terras_indigenas_geo()
-        assert "propertyName=the_geom," in url
-
-    @pytest.mark.asyncio
-    async def test_no_cql_in_geo_url(self):
-        with patch(
-            "agrobr.funai.client.fetch_wfs", new_callable=AsyncMock, return_value=b"x" * 100
-        ):
-            _, url = await fetch_terras_indigenas_geo()
-        assert "CQL_FILTER" not in url
-
-    @pytest.mark.asyncio
-    async def test_bbox_only_no_cql(self):
-        with patch(
-            "agrobr.funai.client.fetch_wfs", new_callable=AsyncMock, return_value=b"x" * 100
-        ):
-            _, url = await fetch_terras_indigenas_geo(bbox=(-60.0, -15.0, -50.0, -10.0))
-        assert "BBOX=" in url
-        assert "CQL_FILTER" not in url
+async def test_bbox_null_geometry_fails(monkeypatch):
+    install_funai_wfs(monkeypatch, funai_features()[:1])
+    with pytest.raises(ParseError):
+        await client.fetch_acquisition(
+            query.build_query(include_geometry=False, max_registros=None, bbox=(0, 0, 1, 1))
+        )

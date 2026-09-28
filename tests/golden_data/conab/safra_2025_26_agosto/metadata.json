@@ -1,0 +1,13 @@
+{
+  "source": "conab",
+  "format": "xlsx",
+  "type": "safra_graos",
+  "captured_at": "2026-09-06",
+  "parser_version": 1,
+  "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/11o-levantamento-safra-2025-26/site_previsao_de_safra-por_produto-ago-2026.xlsx",
+  "levantamento": 11,
+  "safra": "2025/26",
+  "mes_referencia": "ago-2026",
+  "sha256": "11c0cc26d3bb185636ee244deb2a161fa47ed42a82e93b7a7d157c00f262918d",
+  "notes": "XLSX oficial preservado; response.html e a pagina CONAB de descoberta, nao uma resposta CEPEA. URL original e hash tambem preservados em provenance.json. Oraculo independente documentado em README.md."
+}

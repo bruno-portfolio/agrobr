@@ -1,0 +1,165 @@
+{
+  "name": "defensivos.tecnicos",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "nr_registro"
+  ],
+  "required_columns": [
+    "nr_registro",
+    "marca_comercial",
+    "ingrediente_ativo",
+    "titular",
+    "classe",
+    "grupo_quimico",
+    "nome_cientifico",
+    "classe_toxicologica",
+    "classe_ambiental"
+  ],
+  "dtypes": {
+    "nr_registro": "str",
+    "marca_comercial": "str",
+    "ingrediente_ativo": "str",
+    "titular": "str",
+    "classe": "str",
+    "grupo_quimico": "str",
+    "nome_cientifico": "str",
+    "classe_toxicologica": "str",
+    "classe_ambiental": "str",
+    "composicao_texto": "str"
+  },
+  "nullable": {
+    "nr_registro": false,
+    "marca_comercial": true,
+    "ingrediente_ativo": true,
+    "titular": true,
+    "classe": true,
+    "grupo_quimico": true,
+    "nome_cientifico": true,
+    "classe_toxicologica": true,
+    "classe_ambiental": true,
+    "composicao_texto": true
+  },
+  "columns": [
+    {
+      "name": "nr_registro",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "marca_comercial",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ingrediente_ativo",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "titular",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "grupo_quimico",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome_cientifico",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe_toxicologica",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "classe_ambiental",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "composicao_texto",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Célula original de ingrediente/composição",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "nr_registro_pattern": "[A-Za-z0-9][\\w./-]*"
+  },
+  "guarantees": [
+    "Número de registro textual, preservando zeros iniciais e códigos alfanuméricos",
+    "Múltiplos ingredientes e grupos mantêm sua ordem; componentes detalhados ficam em agrofit_composicao",
+    "Campo de situação não é inventado para a exportação técnica que não o publica"
+  ]
+}

@@ -1,0 +1,6 @@
+concessionaria;mes_ano;sentido;praca;tipo_cobranca;categoria_eixo;tipo_de_veiculo;volume_total
+"AUTOPISTA FLUMINENSE";"01/2026";"Crescente";"Casimiro de Abreu";"Automática";"10";"Comercial";1,00
+"AUTOPISTA FLUMINENSE";"01/2026";"Crescente";"Casimiro de Abreu";"Automática";"11";"Comercial";9,00
+"AUTOPISTA FLUMINENSE";"01/2026";"Crescente";"Casimiro de Abreu";"Automática";"12";"Comercial";1,00
+"AUTOPISTA FLUMINENSE";"02/2026";"Crescente";"Casimiro de Abreu";"Automática";"10";"Comercial";7,00
+"ECOVIAS CAPIXABA";"01/2026";"Crescente";"P1 - Pedro Canário ";"Automática";"10";"Comercial";60,00

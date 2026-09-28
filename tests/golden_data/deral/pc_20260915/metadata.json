@@ -1,0 +1,13 @@
+{
+  "source": "deral",
+  "format": "xls",
+  "parser": "agrobr.deral.parser::parse_pc_xls()",
+  "parser_version": 1,
+  "parser_kwargs": {},
+  "needs_real_data": false,
+  "captured_at": "2026-09-15T22:10:39.222653-03:00",
+  "api_url": "https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls",
+  "sha256": "56f742a645221dc609c51a68e36b65323d8eff7b9557b8b175cf8f093ef01022",
+  "size_bytes": 166912,
+  "notes": "PC.xls oficial capturado no C2; datas conferidas diretamente em cada aba, inclui Atual L21 e Feijão 1ª safra C10/E10."
+}

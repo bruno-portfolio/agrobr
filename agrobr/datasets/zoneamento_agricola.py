@@ -1,40 +1,32 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
+from agrobr import constants
+from agrobr.datasets import base, registry
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-
-logger = structlog.get_logger()
+from agrobr.utils import result
 
 
 async def _fetch_zarc(
-    produto: str,  # noqa: ARG001
+    _produto: str,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import zarc
 
-    result = await zarc.zoneamento(
-        cultura=kwargs.get("cultura"),
-        uf=kwargs.get("uf"),
-        municipio=kwargs.get("municipio"),
-        safra=kwargs.get("safra"),
-        solo=kwargs.get("solo"),
-        ciclo=kwargs.get("ciclo"),
-        return_meta=True,
-    )
-    return _unpack_result(result)
+    fetched = await zarc.zoneamento(as_polars=False, return_meta=True, **kwargs)
+    return base._unpack_result(fetched)
 
 
-ZONEAMENTO_AGRICOLA_INFO = DatasetInfo(
+ZONEAMENTO_AGRICOLA_INFO = base.DatasetInfo(
     name="zoneamento_agricola",
-    description="Zoneamento Agrícola de Risco Climático — janelas de plantio por município/cultura/solo (ZARC/MAPA)",
+    description="Tábua ZARC por município, cultura e condições publicadas, com riscos por decêndio",
     sources=[
-        DatasetSource(
+        base.DatasetSource(
             name="zarc",
             priority=1,
             fetch_fn=_fetch_zarc,
@@ -42,21 +34,21 @@ ZONEAMENTO_AGRICOLA_INFO = DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="1.0",
-    update_frequency="yearly",
-    typical_latency="safra+3m",
-    source_url="https://indicadores.agricultura.gov.br/zarc/index.htm",
+    contract_version="2.1",
+    update_frequency="weekly",
+    typical_latency="conforme atualização publicada de cada recurso",
+    source_url="https://dados.agricultura.gov.br/dataset/tabua-de-risco-zoneamento-agricola-de-risco-climatico",
     source_institution="MAPA/Embrapa",
-    unit="risco 0-5 por decêndio",
     license="livre",
 )
 
 
-class ZoneamentoAgricolaDataset(BaseDataset):
+class ZoneamentoAgricolaDataset(base.BaseDataset):
     info = ZONEAMENTO_AGRICOLA_INFO
 
     def _validate_produto(self, produto: str) -> None:
-        pass
+        if not isinstance(produto, str) or produto != "":
+            raise InvalidParameterError("zoneamento_agricola usa cultura e filtros nomeados")
 
     async def fetch(  # type: ignore[override]
         self,
@@ -67,19 +59,31 @@ class ZoneamentoAgricolaDataset(BaseDataset):
         safra: str | None = None,
         solo: int | None = None,
         ciclo: int | None = None,
+        use_cache: bool = True,
+        as_polars: bool = False,
         return_meta: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        logger.info(
-            "dataset_fetch",
-            dataset="zoneamento_agricola",
-            cultura=cultura,
-            uf=uf,
+        from agrobr.zarc import query
+
+        if kwargs:
+            raise TypeError(f"Argumentos desconhecidos em zoneamento_agricola: {sorted(kwargs)}")
+        for name, value in (
+            ("use_cache", use_cache),
+            ("as_polars", as_polars),
+            ("return_meta", return_meta),
+        ):
+            if not isinstance(value, bool):
+                raise InvalidParameterError(f"{name} deve ser booleano")
+        if get_snapshot() is not None:
+            raise InvalidParameterError(
+                "zoneamento_agricola não suporta deterministic: safra e cache não selecionam "
+                "uma revisão histórica da tábua ZARC."
+            )
+        query.build_query(
+            cultura=cultura, uf=uf, municipio=municipio, safra=safra, solo=solo, ciclo=ciclo
         )
-
-        snapshot = get_snapshot()
-
-        df, source_name, source_meta, attempted = await self._try_sources(
+        frame, source_name, source_meta, attempted = await self._try_sources(
             "",
             cultura=cultura,
             uf=uf,
@@ -87,25 +91,58 @@ class ZoneamentoAgricolaDataset(BaseDataset):
             safra=safra,
             solo=solo,
             ciclo=ciclo,
-            **kwargs,
+            use_cache=use_cache,
         )
-
-        df = self._normalize(df)
-        self._validate_contract(df)
-
-        if return_meta:
-            return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-        return df
-
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
-        return df
+        self._validate_contract(frame)
+        meta = (
+            self._build_meta(frame, source_name, source_meta, attempted, None)
+            if return_meta
+            else None
+        )
+        return result.finalize_result(
+            frame,
+            meta,
+            as_polars=as_polars,
+            return_meta=return_meta,
+            string_columns=constants.ZARC_STRING_COLUMNS,
+        )
 
 
 _zoneamento_agricola = ZoneamentoAgricolaDataset()
 
-from agrobr.datasets.registry import register  # noqa: E402
+registry.register(_zoneamento_agricola)
 
-register(_zoneamento_agricola)
+
+@overload
+async def zoneamento_agricola(
+    *,
+    cultura: str | None = None,
+    uf: str | None = None,
+    municipio: int | str | None = None,
+    safra: str | None = None,
+    solo: int | None = None,
+    ciclo: int | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+    **kwargs: Any,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def zoneamento_agricola(
+    *,
+    cultura: str | None = None,
+    uf: str | None = None,
+    municipio: int | str | None = None,
+    safra: str | None = None,
+    solo: int | None = None,
+    ciclo: int | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+    **kwargs: Any,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def zoneamento_agricola(
@@ -116,6 +153,8 @@ async def zoneamento_agricola(
     safra: str | None = None,
     solo: int | None = None,
     ciclo: int | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
@@ -126,6 +165,8 @@ async def zoneamento_agricola(
         safra=safra,
         solo=solo,
         ciclo=ciclo,
+        use_cache=use_cache,
+        as_polars=as_polars,
         return_meta=return_meta,
         **kwargs,
     )

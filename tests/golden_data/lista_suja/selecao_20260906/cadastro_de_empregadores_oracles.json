@@ -1,0 +1,5213 @@
+[
+  {
+    "ID": "1",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "4399-1/03",
+    "Decisão administrativa de procedência": "15/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "2",
+    "Ano da ação fiscal": "2024",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "2391-5/03",
+    "Decisão administrativa de procedência": "08/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "3",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "4520-0/06",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "4",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "3314-7/07",
+    "Decisão administrativa de procedência": "20/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "5",
+    "Ano da ação fiscal": "2024",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4744-0/99",
+    "Decisão administrativa de procedência": "13/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "6",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "02/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "7",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "20",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "20/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "8",
+    "Ano da ação fiscal": "2024",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "30/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "9",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9313-1/00",
+    "Decisão administrativa de procedência": "08/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "10",
+    "Ano da ação fiscal": "2025",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4723-7/00",
+    "Decisão administrativa de procedência": "14/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "11",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "12",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0139-3/99",
+    "Decisão administrativa de procedência": "03/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "13",
+    "Ano da ação fiscal": "",
+    "UF": "",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "",
+    "Decisão administrativa de procedência": "",
+    "Inclusão no Cadastro de Empregadores": "04/11/2025"
+  },
+  {
+    "ID": "14",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "07/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "15",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "55",
+    "CNAE": "6499-9/99",
+    "Decisão administrativa de procedência": "30/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "16",
+    "Ano da ação fiscal": "2024",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "0119-9/04",
+    "Decisão administrativa de procedência": "04/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "17",
+    "Ano da ação fiscal": "2023",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "23",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "31/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "18",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "04/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "19",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "02/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "20",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "36",
+    "CNAE": "0119-9/02",
+    "Decisão administrativa de procedência": "13/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "21",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "0154-7/00",
+    "Decisão administrativa de procedência": "05/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "22",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0220-9/01",
+    "Decisão administrativa de procedência": "29/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "23",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0119-9/99",
+    "Decisão administrativa de procedência": "13/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "24",
+    "Ano da ação fiscal": "2023",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "10/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "25",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "17/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "26",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "20/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "27",
+    "Ano da ação fiscal": "2023",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0159-8/99",
+    "Decisão administrativa de procedência": "26/09/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "28",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0162-8/99",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "29",
+    "Ano da ação fiscal": "2022",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "24",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "30",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "30/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "31",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "4520-0/05",
+    "Decisão administrativa de procedência": "27/06/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "32",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "25/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "33",
+    "Ano da ação fiscal": "2024",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "19",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "18/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "34",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "0119-9/06",
+    "Decisão administrativa de procedência": "03/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "35",
+    "Ano da ação fiscal": "2024",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "4633-8/01",
+    "Decisão administrativa de procedência": "04/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "36",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "13/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "37",
+    "Ano da ação fiscal": "2024",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "02/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "38",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "03/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "39",
+    "Ano da ação fiscal": "2024",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "0111-3/02",
+    "Decisão administrativa de procedência": "01/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "40",
+    "Ano da ação fiscal": "2024",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0111-3/02",
+    "Decisão administrativa de procedência": "03/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "41",
+    "Ano da ação fiscal": "2023",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "24",
+    "CNAE": "1063-5/00",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "05/04/2024 a 10/05/2024, 09/04/2025"
+  },
+  {
+    "ID": "42",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "19/12/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "43",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "19/12/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "44",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "3811-4/00",
+    "Decisão administrativa de procedência": "09/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "45",
+    "Ano da ação fiscal": "2023",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "21/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025 a 12/08/2026, 04/09/2026"
+  },
+  {
+    "ID": "46",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "03/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "47",
+    "Ano da ação fiscal": "2024",
+    "UF": "AL",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "07/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "48",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "49",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "11/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "50",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "41",
+    "CNAE": "0119-9/04",
+    "Decisão administrativa de procedência": "08/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "51",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "19",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "12/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "52",
+    "Ano da ação fiscal": "2025",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "13/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "53",
+    "Ano da ação fiscal": "2023",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "54",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "1412-6/01",
+    "Decisão administrativa de procedência": "18/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "55",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "01/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "56",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "11/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "57",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "04/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "58",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "17/06/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "59",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "16/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "60",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "03/12/2024",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "61",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "13/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "62",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "28/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "63",
+    "Ano da ação fiscal": "2025",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "27",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "16/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "64",
+    "Ano da ação fiscal": "2022",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "65",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "19",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "07/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "66",
+    "Ano da ação fiscal": "2025",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4330-4/99",
+    "Decisão administrativa de procedência": "13/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "67",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "04/06/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "68",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "19",
+    "CNAE": "0119-9/06",
+    "Decisão administrativa de procedência": "03/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "69",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "26/12/2022",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "70",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "23/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "71",
+    "Ano da ação fiscal": "2025",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "0121-1/01",
+    "Decisão administrativa de procedência": "20/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "72",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "1220-4/01",
+    "Decisão administrativa de procedência": "26/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "73",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "1220-4/01",
+    "Decisão administrativa de procedência": "26/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "74",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "16",
+    "CNAE": "1220-4/01",
+    "Decisão administrativa de procedência": "11/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "75",
+    "Ano da ação fiscal": "2025",
+    "UF": "AC",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "20/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "76",
+    "Ano da ação fiscal": "2025",
+    "UF": "AC",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "20/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "77",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "1412-6/01",
+    "Decisão administrativa de procedência": "06/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "78",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "13/12/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "79",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "18/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "80",
+    "Ano da ação fiscal": "2023",
+    "UF": "RO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "26/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "81",
+    "Ano da ação fiscal": "2021",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "4639-7/01",
+    "Decisão administrativa de procedência": "31/10/2022",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "82",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "09/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "83",
+    "Ano da ação fiscal": "2025",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0153-9/01",
+    "Decisão administrativa de procedência": "04/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "84",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "30/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "85",
+    "Ano da ação fiscal": "2022",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "1412-6/01",
+    "Decisão administrativa de procedência": "04/09/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "86",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "22/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "87",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/06",
+    "Decisão administrativa de procedência": "09/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "88",
+    "Ano da ação fiscal": "2023",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "03/04/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "89",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "06/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "90",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0111-3/01",
+    "Decisão administrativa de procedência": "28/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "91",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "29/07/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "92",
+    "Ano da ação fiscal": "2025",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "4292-8/01",
+    "Decisão administrativa de procedência": "04/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "93",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "18/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "94",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "18/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "95",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "36",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "09/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "96",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "03/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "97",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "11/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "98",
+    "Ano da ação fiscal": "2023",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "27/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "99",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "58",
+    "CNAE": "1931-4/00",
+    "Decisão administrativa de procedência": "08/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "100",
+    "Ano da ação fiscal": "2023",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "53",
+    "CNAE": "1931-4/00",
+    "Decisão administrativa de procedência": "28/02/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "101",
+    "Ano da ação fiscal": "2023",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "1931-4/00",
+    "Decisão administrativa de procedência": "28/02/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "102",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "2342-7/02",
+    "Decisão administrativa de procedência": "09/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "103",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "104",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "11/03/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "105",
+    "Ano da ação fiscal": "2024",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "17/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "106",
+    "Ano da ação fiscal": "2023",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "26/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "107",
+    "Ano da ação fiscal": "2023",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "27/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "108",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "15/03/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "109",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0220-9/01",
+    "Decisão administrativa de procedência": "27/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "110",
+    "Ano da ação fiscal": "2022",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "111",
+    "Ano da ação fiscal": "2021",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "15/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "112",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "03/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "113",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "18",
+    "CNAE": "8650-0/03",
+    "Decisão administrativa de procedência": "03/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "114",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "115",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4639-7/01",
+    "Decisão administrativa de procedência": "16/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "116",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "8720-4/99",
+    "Decisão administrativa de procedência": "20/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "117",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "8112-5/00",
+    "Decisão administrativa de procedência": "06/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "118",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "1412-6/02",
+    "Decisão administrativa de procedência": "07/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "119",
+    "Ano da ação fiscal": "2024",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "02/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "120",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "26/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "121",
+    "Ano da ação fiscal": "2025",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "22/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "122",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "20/03/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "123",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "14/02/2024",
+    "Inclusão no Cadastro de Empregadores": "24/03/2026"
+  },
+  {
+    "ID": "124",
+    "Ano da ação fiscal": "2018",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4311-8/02",
+    "Decisão administrativa de procedência": "11/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "125",
+    "Ano da ação fiscal": "2025",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "29/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "126",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "4930-2/02",
+    "Decisão administrativa de procedência": "29/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "127",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "13/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "128",
+    "Ano da ação fiscal": "2025",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "27/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "129",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "28/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "130",
+    "Ano da ação fiscal": "2023",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "20/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "131",
+    "Ano da ação fiscal": "2025",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0311-6/01",
+    "Decisão administrativa de procedência": "09/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "132",
+    "Ano da ação fiscal": "2022",
+    "UF": "RO",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "31/08/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "133",
+    "Ano da ação fiscal": "2021",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "30/11/2022",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "134",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "4789-0/99",
+    "Decisão administrativa de procedência": "15/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "135",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "12/11/2024",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "136",
+    "Ano da ação fiscal": "2021",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "2391-5/01",
+    "Decisão administrativa de procedência": "24/12/2021",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "137",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "138",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "02/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "139",
+    "Ano da ação fiscal": "2024",
+    "UF": "RN",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0892-4/01",
+    "Decisão administrativa de procedência": "27/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "140",
+    "Ano da ação fiscal": "",
+    "UF": "",
+    "Trabalhadores envolvidos": "",
+    "CNAE": "",
+    "Decisão administrativa de procedência": "",
+    "Inclusão no Cadastro de Empregadores": "10/04/2026"
+  },
+  {
+    "ID": "141",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0121-1/01",
+    "Decisão administrativa de procedência": "24/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "142",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0121-1/01",
+    "Decisão administrativa de procedência": "13/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "143",
+    "Ano da ação fiscal": "2024",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "5611-2/03",
+    "Decisão administrativa de procedência": "04/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "144",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/03",
+    "Decisão administrativa de procedência": "08/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "145",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "02/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "146",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/03",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "147",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "05/09/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "148",
+    "Ano da ação fiscal": "2023",
+    "UF": "TO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "10/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "149",
+    "Ano da ação fiscal": "2024",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "07/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025 a 16/01/2026, 22/05/2026"
+  },
+  {
+    "ID": "150",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "16/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025 a 23/12/2025, 30/06/2026"
+  },
+  {
+    "ID": "151",
+    "Ano da ação fiscal": "2024",
+    "UF": "AL",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "28/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "152",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4391-6/00",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "153",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "29/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "154",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "30/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "155",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "11/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "156",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "17/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "157",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "158",
+    "Ano da ação fiscal": "2022",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "11/06/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "159",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "17/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "160",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "06/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "161",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "25/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "162",
+    "Ano da ação fiscal": "2024",
+    "UF": "AL",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "15/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "163",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "09/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "164",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "07/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "165",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "02/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "166",
+    "Ano da ação fiscal": "2023",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "19/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "167",
+    "Ano da ação fiscal": "2023",
+    "UF": "TO",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0115-6/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "168",
+    "Ano da ação fiscal": "2024",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "07/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "169",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0155-5/01",
+    "Decisão administrativa de procedência": "28/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "170",
+    "Ano da ação fiscal": "2022",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "22",
+    "CNAE": "0133-4/03",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "171",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "4321-5/00",
+    "Decisão administrativa de procedência": "12/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "172",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "09/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "173",
+    "Ano da ação fiscal": "2023",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "27/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "174",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "20/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "175",
+    "Ano da ação fiscal": "2023",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "4744-0/02",
+    "Decisão administrativa de procedência": "23/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "176",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0121-1/01",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "177",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "06/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "178",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0111-3/99",
+    "Decisão administrativa de procedência": "05/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "179",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "0230-6/00",
+    "Decisão administrativa de procedência": "04/06/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "180",
+    "Ano da ação fiscal": "2023",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0220-9/01",
+    "Decisão administrativa de procedência": "06/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "181",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0135-1/00",
+    "Decisão administrativa de procedência": "20/12/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "182",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "13/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "183",
+    "Ano da ação fiscal": "2023",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "05/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "184",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "27/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "185",
+    "Ano da ação fiscal": "2024",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "33",
+    "CNAE": "0139-3/04",
+    "Decisão administrativa de procedência": "20/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "186",
+    "Ano da ação fiscal": "2024",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "3101-2/00",
+    "Decisão administrativa de procedência": "13/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "187",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0119-9/06",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "188",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "189",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0133-4/07",
+    "Decisão administrativa de procedência": "23/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "190",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "35",
+    "CNAE": "0119-9/02",
+    "Decisão administrativa de procedência": "12/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "191",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "16/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "192",
+    "Ano da ação fiscal": "2025",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "13/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "193",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "14/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "194",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "195",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "09/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "196",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "7820-5/00",
+    "Decisão administrativa de procedência": "10/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "197",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "198",
+    "Ano da ação fiscal": "2021",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0119-9/09",
+    "Decisão administrativa de procedência": "10/03/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "199",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "29/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "200",
+    "Ano da ação fiscal": "2022",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "01/12/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "201",
+    "Ano da ação fiscal": "2024",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "5223-1/00",
+    "Decisão administrativa de procedência": "08/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "202",
+    "Ano da ação fiscal": "2023",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "0133-4/07",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "203",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "29/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "204",
+    "Ano da ação fiscal": "2024",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "14/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "205",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "09/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "206",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "04/07/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "207",
+    "Ano da ação fiscal": "2023",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "14/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "208",
+    "Ano da ação fiscal": "2023",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0133-4/03",
+    "Decisão administrativa de procedência": "14/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "209",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "210",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "26/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "211",
+    "Ano da ação fiscal": "2020",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "39",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "17/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "212",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4330-4/03",
+    "Decisão administrativa de procedência": "18/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "213",
+    "Ano da ação fiscal": "2025",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9609-2/99",
+    "Decisão administrativa de procedência": "05/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "214",
+    "Ano da ação fiscal": "2023",
+    "UF": "AL",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "04/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "215",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "03/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "216",
+    "Ano da ação fiscal": "2025",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "26/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "217",
+    "Ano da ação fiscal": "2025",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "14/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "218",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "34",
+    "CNAE": "0899-1/02",
+    "Decisão administrativa de procedência": "04/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "219",
+    "Ano da ação fiscal": "2024",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "31/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "220",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "0133-4/07",
+    "Decisão administrativa de procedência": "27/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "221",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "1220-4/01",
+    "Decisão administrativa de procedência": "27/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "222",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "20/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "223",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4520-0/05",
+    "Decisão administrativa de procedência": "14/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "224",
+    "Ano da ação fiscal": "2023",
+    "UF": "AM",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "3101-2/00",
+    "Decisão administrativa de procedência": "04/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "225",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "02/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "226",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "04/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "227",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "24/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "228",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "229",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "42",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "05/08/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "230",
+    "Ano da ação fiscal": "2023",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "01/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "231",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "14/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "232",
+    "Ano da ação fiscal": "2024",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "02/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "233",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "24/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "234",
+    "Ano da ação fiscal": "2025",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "30/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "235",
+    "Ano da ação fiscal": "2024",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "28/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "236",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "25/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "237",
+    "Ano da ação fiscal": "2025",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "16/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "238",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0121-1/01",
+    "Decisão administrativa de procedência": "15/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "239",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "5510-8/01",
+    "Decisão administrativa de procedência": "01/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "240",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "09/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "241",
+    "Ano da ação fiscal": "2022",
+    "UF": "AC",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "29/12/2022",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "242",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "04/06/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "243",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "55",
+    "CNAE": "6499-9/99",
+    "Decisão administrativa de procedência": "15/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "244",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "05/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "245",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "20/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "246",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "20/06/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "247",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "1099-6/05",
+    "Decisão administrativa de procedência": "27/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "248",
+    "Ano da ação fiscal": "2021",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "17/07/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "249",
+    "Ano da ação fiscal": "2023",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "07/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "250",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "4731-8/00",
+    "Decisão administrativa de procedência": "20/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "251",
+    "Ano da ação fiscal": "2023",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/03",
+    "Decisão administrativa de procedência": "29/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "252",
+    "Ano da ação fiscal": "2025",
+    "UF": "SE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "15/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "253",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "2342-7/02",
+    "Decisão administrativa de procedência": "16/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "254",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0132-6/00",
+    "Decisão administrativa de procedência": "05/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "255",
+    "Ano da ação fiscal": "2023",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "9491-0/00",
+    "Decisão administrativa de procedência": "18/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "256",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "5510-8/01",
+    "Decisão administrativa de procedência": "28/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "257",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4213-8/00",
+    "Decisão administrativa de procedência": "26/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "258",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "06/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "259",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "260",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "13/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "261",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "18",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "22/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "262",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "1412-6/03",
+    "Decisão administrativa de procedência": "06/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "263",
+    "Ano da ação fiscal": "2022",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "05/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "264",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0119-9/06",
+    "Decisão administrativa de procedência": "19/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "265",
+    "Ano da ação fiscal": "2024",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9609-2/99",
+    "Decisão administrativa de procedência": "14/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "266",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "21/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "267",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "37",
+    "CNAE": "0119-9/03",
+    "Decisão administrativa de procedência": "22/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "268",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "04/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "269",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "1012-1/01",
+    "Decisão administrativa de procedência": "18/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "270",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "12/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "271",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "04/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "272",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "24/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "273",
+    "Ano da ação fiscal": "2021",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "18/05/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "274",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "275",
+    "Ano da ação fiscal": "2025",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "4399-1/03",
+    "Decisão administrativa de procedência": "06/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "276",
+    "Ano da ação fiscal": "2023",
+    "UF": "AC",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "20/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "277",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "08/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "278",
+    "Ano da ação fiscal": "2023",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "279",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "26/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "280",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "27/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "281",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "25",
+    "CNAE": "0133-4/04",
+    "Decisão administrativa de procedência": "22/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "282",
+    "Ano da ação fiscal": "2024",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "05/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "283",
+    "Ano da ação fiscal": "2023",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9430-8/00",
+    "Decisão administrativa de procedência": "10/12/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "284",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "285",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "17/06/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "286",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "20/02/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "287",
+    "Ano da ação fiscal": "2022",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "25",
+    "CNAE": "1412-6/03",
+    "Decisão administrativa de procedência": "10/11/2023",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "288",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0139-3/99",
+    "Decisão administrativa de procedência": "16/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "289",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "13/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "290",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "11/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "291",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0220-9/01",
+    "Decisão administrativa de procedência": "09/07/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "292",
+    "Ano da ação fiscal": "2024",
+    "UF": "AL",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "02/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "293",
+    "Ano da ação fiscal": "2024",
+    "UF": "RO",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "06/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "294",
+    "Ano da ação fiscal": "2023",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "01/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "295",
+    "Ano da ação fiscal": "2025",
+    "UF": "SC",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0114-8/00",
+    "Decisão administrativa de procedência": "15/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "296",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "297",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "23/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "298",
+    "Ano da ação fiscal": "2023",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "14/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "299",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "04/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "300",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "20/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "301",
+    "Ano da ação fiscal": "2024",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "03/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "302",
+    "Ano da ação fiscal": "2023",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0133-4/04",
+    "Decisão administrativa de procedência": "10/08/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "303",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "02/12/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "304",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "1412-6/01",
+    "Decisão administrativa de procedência": "31/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "305",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0139-3/99",
+    "Decisão administrativa de procedência": "27/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "306",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "07/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "307",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "308",
+    "Ano da ação fiscal": "2024",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "03/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "309",
+    "Ano da ação fiscal": "2024",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "13/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "310",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "311",
+    "Ano da ação fiscal": "2024",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "04/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "312",
+    "Ano da ação fiscal": "2021",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "43",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "313",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "18",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "08/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "314",
+    "Ano da ação fiscal": "2023",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "09/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "315",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "0115-6/00",
+    "Decisão administrativa de procedência": "01/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "316",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "16/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "317",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "29/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "318",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "43",
+    "CNAE": "0119-9/03",
+    "Decisão administrativa de procedência": "21/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "319",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "4781-4/00",
+    "Decisão administrativa de procedência": "08/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "320",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0152-1/02",
+    "Decisão administrativa de procedência": "21/03/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "321",
+    "Ano da ação fiscal": "2023",
+    "UF": "RO",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "29/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "322",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "03/12/2024",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "323",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "5612-1/00",
+    "Decisão administrativa de procedência": "07/08/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "324",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "04/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "325",
+    "Ano da ação fiscal": "2024",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "11/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "326",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "4213-8/00",
+    "Decisão administrativa de procedência": "03/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024 a 20/01/2025, 04/09/2026"
+  },
+  {
+    "ID": "327",
+    "Ano da ação fiscal": "2024",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "0119-9/06",
+    "Decisão administrativa de procedência": "11/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "328",
+    "Ano da ação fiscal": "2024",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "4213-8/00",
+    "Decisão administrativa de procedência": "20/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "329",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "06/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "330",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0139-3/05",
+    "Decisão administrativa de procedência": "22/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "331",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "07/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "332",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "04/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "333",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "27/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "334",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "16",
+    "CNAE": "5212-5/00",
+    "Decisão administrativa de procedência": "30/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "335",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "5211-7/99",
+    "Decisão administrativa de procedência": "08/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "336",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "07/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "337",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "21/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "338",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "16/07/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "339",
+    "Ano da ação fiscal": "2023",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "22/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "340",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "20/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "341",
+    "Ano da ação fiscal": "2025",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4512-9/02",
+    "Decisão administrativa de procedência": "30/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "342",
+    "Ano da ação fiscal": "2024",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "2391-5/02",
+    "Decisão administrativa de procedência": "11/03/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "343",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "11/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "344",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "7729-2/02",
+    "Decisão administrativa de procedência": "29/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "345",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0162-8/99",
+    "Decisão administrativa de procedência": "03/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "346",
+    "Ano da ação fiscal": "2023",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "14/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "347",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "25",
+    "CNAE": "0119-9/02",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "348",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "0113-0/00",
+    "Decisão administrativa de procedência": "05/08/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "349",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "24/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "350",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "351",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "19/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "352",
+    "Ano da ação fiscal": "2025",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "25/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "353",
+    "Ano da ação fiscal": "2025",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "28/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "354",
+    "Ano da ação fiscal": "2025",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4520-0/08",
+    "Decisão administrativa de procedência": "15/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "355",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "06/09/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "356",
+    "Ano da ação fiscal": "2023",
+    "UF": "AL",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "04/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "357",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "31/10/2023",
+    "Inclusão no Cadastro de Empregadores": "05/04/2024 a 10/06/2024, 09/07/2026"
+  },
+  {
+    "ID": "358",
+    "Ano da ação fiscal": "2025",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4712-1/00",
+    "Decisão administrativa de procedência": "30/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "359",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "30/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "360",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "2063-1/00",
+    "Decisão administrativa de procedência": "01/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "361",
+    "Ano da ação fiscal": "2022",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "01/12/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "362",
+    "Ano da ação fiscal": "2025",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0135-1/00",
+    "Decisão administrativa de procedência": "12/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "363",
+    "Ano da ação fiscal": "2024",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0111-3/02",
+    "Decisão administrativa de procedência": "22/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "364",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "24/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "365",
+    "Ano da ação fiscal": "2022",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "22",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "11/05/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "366",
+    "Ano da ação fiscal": "2023",
+    "UF": "AL",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "02/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "367",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "1013-9/01",
+    "Decisão administrativa de procedência": "18/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "368",
+    "Ano da ação fiscal": "2023",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "07/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "369",
+    "Ano da ação fiscal": "2025",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "57",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "05/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "370",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "25/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "371",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "8211-3/00",
+    "Decisão administrativa de procedência": "05/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "372",
+    "Ano da ação fiscal": "2025",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "05/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "373",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "17/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "374",
+    "Ano da ação fiscal": "2024",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "09/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "375",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "25/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "376",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "3101-2/00",
+    "Decisão administrativa de procedência": "07/11/2024",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "377",
+    "Ano da ação fiscal": "2024",
+    "UF": "AM",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0162-8/99",
+    "Decisão administrativa de procedência": "13/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "378",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "19/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "379",
+    "Ano da ação fiscal": "2023",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "4712-1/00",
+    "Decisão administrativa de procedência": "01/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "380",
+    "Ano da ação fiscal": "2023",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "18",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "16/12/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "381",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "4723-7/00",
+    "Decisão administrativa de procedência": "29/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "382",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "04/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "383",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "10/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "384",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "20/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "385",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "23/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "386",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "3831-9/01",
+    "Decisão administrativa de procedência": "03/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "387",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "1412-6/03",
+    "Decisão administrativa de procedência": "24/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "388",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "3832-7/00",
+    "Decisão administrativa de procedência": "11/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "389",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "390",
+    "Ano da ação fiscal": "2022",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "31/05/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "391",
+    "Ano da ação fiscal": "2024",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "30/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "392",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "08/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "393",
+    "Ano da ação fiscal": "2024",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "5611-2/05",
+    "Decisão administrativa de procedência": "17/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "394",
+    "Ano da ação fiscal": "",
+    "UF": "",
+    "Trabalhadores envolvidos": "",
+    "CNAE": "",
+    "Decisão administrativa de procedência": "",
+    "Inclusão no Cadastro de Empregadores": "10/04/2026"
+  },
+  {
+    "ID": "395",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "24/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "396",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "02/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "397",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "24/06/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "398",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "22/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "399",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "10/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "400",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "18",
+    "CNAE": "0133-4/07",
+    "Decisão administrativa de procedência": "18/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "401",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "0119-9/03",
+    "Decisão administrativa de procedência": "25/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "402",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "03/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "403",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "30/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "404",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "30/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "405",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "06/06/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "406",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "30/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "407",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "18",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "16/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "408",
+    "Ano da ação fiscal": "2022",
+    "UF": "RN",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "409",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "23/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "410",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "02/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "411",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "20",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "27/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "412",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "4781-4/00",
+    "Decisão administrativa de procedência": "11/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "413",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "23/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "414",
+    "Ano da ação fiscal": "2023",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "02/04/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "415",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "416",
+    "Ano da ação fiscal": "2023",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9491-0/00",
+    "Decisão administrativa de procedência": "22/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "417",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "08/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "418",
+    "Ano da ação fiscal": "2023",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "31/07/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "419",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0139-3/99",
+    "Decisão administrativa de procedência": "20/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "420",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "30/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "421",
+    "Ano da ação fiscal": "2024",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "11/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "422",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "5212-5/00",
+    "Decisão administrativa de procedência": "20/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "423",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "22/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "424",
+    "Ano da ação fiscal": "2022",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "5011-4/01",
+    "Decisão administrativa de procedência": "24/08/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "425",
+    "Ano da ação fiscal": "2022",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "26/09/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "426",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "25/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "427",
+    "Ano da ação fiscal": "2024",
+    "UF": "RN",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0892-4/01",
+    "Decisão administrativa de procedência": "21/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "428",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "47",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "08/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "429",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "03/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "430",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "22/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "431",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "1412-6/03",
+    "Decisão administrativa de procedência": "10/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "432",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "28/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "433",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "434",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "02/12/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "435",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "11/03/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "436",
+    "Ano da ação fiscal": "2024",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "28/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "437",
+    "Ano da ação fiscal": "2025",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0154-7/00",
+    "Decisão administrativa de procedência": "13/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "438",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "24/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "439",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "02/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "440",
+    "Ano da ação fiscal": "2022",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "20/06/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "441",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "28/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "442",
+    "Ano da ação fiscal": "2023",
+    "UF": "TO",
+    "Trabalhadores envolvidos": "23",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "28/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "443",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "444",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "07/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "445",
+    "Ano da ação fiscal": "2020",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "5611-2/03",
+    "Decisão administrativa de procedência": "05/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "446",
+    "Ano da ação fiscal": "2023",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "10/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "447",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "18/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "448",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0133-4/07",
+    "Decisão administrativa de procedência": "28/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "449",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0154-7/00",
+    "Decisão administrativa de procedência": "09/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "450",
+    "Ano da ação fiscal": "2023",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "09/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "451",
+    "Ano da ação fiscal": "2025",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0135-1/00",
+    "Decisão administrativa de procedência": "20/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "452",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "453",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "26/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "454",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "28",
+    "CNAE": "6499-9/99",
+    "Decisão administrativa de procedência": "10/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "455",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "24/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "456",
+    "Ano da ação fiscal": "2024",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "07/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "457",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "7020-4/00",
+    "Decisão administrativa de procedência": "29/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "458",
+    "Ano da ação fiscal": "2021",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "06/01/2023",
+    "Inclusão no Cadastro de Empregadores": "05/10/2023 a 19/12/2023, 20/05/2025"
+  },
+  {
+    "ID": "459",
+    "Ano da ação fiscal": "2024",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "10/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024 a 15/08/2025, 10/10/2025"
+  },
+  {
+    "ID": "460",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "4731-8/00",
+    "Decisão administrativa de procedência": "15/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "461",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "0230-6/00",
+    "Decisão administrativa de procedência": "25/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "462",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "4781-4/00",
+    "Decisão administrativa de procedência": "04/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "463",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "87",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "15/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "464",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "55",
+    "CNAE": "6499-9/99",
+    "Decisão administrativa de procedência": "15/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "465",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "17",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "28/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "466",
+    "Ano da ação fiscal": "2024",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "4212-0/00",
+    "Decisão administrativa de procedência": "16/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "467",
+    "Ano da ação fiscal": "2025",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "14/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "468",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0139-3/99",
+    "Decisão administrativa de procedência": "29/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "469",
+    "Ano da ação fiscal": "2024",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0139-3/99",
+    "Decisão administrativa de procedência": "21/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "470",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "20/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "471",
+    "Ano da ação fiscal": "2021",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "70",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "472",
+    "Ano da ação fiscal": "2022",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "4724-5/00",
+    "Decisão administrativa de procedência": "10/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "473",
+    "Ano da ação fiscal": "2023",
+    "UF": "TO",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "4681-8/03",
+    "Decisão administrativa de procedência": "28/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "474",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "22/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "475",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "15",
+    "CNAE": "0131-8/00",
+    "Decisão administrativa de procedência": "15/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "476",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "27",
+    "CNAE": "0131-8/00",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "477",
+    "Ano da ação fiscal": "2025",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "57",
+    "CNAE": "1071-6/00",
+    "Decisão administrativa de procedência": "22/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "478",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "22/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "479",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "30/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "480",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "12",
+    "CNAE": "5611-2/01",
+    "Decisão administrativa de procedência": "03/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "481",
+    "Ano da ação fiscal": "2021",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "114",
+    "CNAE": "0119-9/02",
+    "Decisão administrativa de procedência": "30/08/2023",
+    "Inclusão no Cadastro de Empregadores": "30/06/2026"
+  },
+  {
+    "ID": "482",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "30/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "483",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0155-5/01",
+    "Decisão administrativa de procedência": "05/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "484",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "27/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "485",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "20/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "486",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "29/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "487",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "26",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "08/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "488",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0139-3/99",
+    "Decisão administrativa de procedência": "14/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "489",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "1412-6/01",
+    "Decisão administrativa de procedência": "04/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "490",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "21",
+    "CNAE": "1220-4/02",
+    "Decisão administrativa de procedência": "23/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "491",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "27",
+    "CNAE": "0119-9/09",
+    "Decisão administrativa de procedência": "03/01/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "492",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "04/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "493",
+    "Ano da ação fiscal": "2022",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "55",
+    "CNAE": "5611-2/05",
+    "Decisão administrativa de procedência": "09/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "494",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "26/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "495",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0119-9/09",
+    "Decisão administrativa de procedência": "18/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "496",
+    "Ano da ação fiscal": "2022",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4330-4/99",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "497",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "10",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "25/06/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "498",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "0210-1/08",
+    "Decisão administrativa de procedência": "14/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "499",
+    "Ano da ação fiscal": "2023",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0220-9/01",
+    "Decisão administrativa de procedência": "06/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "500",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "13/02/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "501",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "13/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "502",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "23/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "503",
+    "Ano da ação fiscal": "2023",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0810-0/04",
+    "Decisão administrativa de procedência": "29/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "504",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0230-6/00",
+    "Decisão administrativa de procedência": "16/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "505",
+    "Ano da ação fiscal": "2024",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "55",
+    "CNAE": "6499-9/99",
+    "Decisão administrativa de procedência": "10/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "506",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "9491-0/00",
+    "Decisão administrativa de procedência": "30/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "507",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "25",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "14/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "508",
+    "Ano da ação fiscal": "2024",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "08/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "509",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "23",
+    "CNAE": "0155-5/05",
+    "Decisão administrativa de procedência": "11/10/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "510",
+    "Ano da ação fiscal": "2023",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "28/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "511",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "24",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "14/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "512",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "4213-8/00",
+    "Decisão administrativa de procedência": "07/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "513",
+    "Ano da ação fiscal": "2025",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/02",
+    "Decisão administrativa de procedência": "12/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "514",
+    "Ano da ação fiscal": "2023",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "18/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "515",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "23/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "516",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "28/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "517",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "16",
+    "CNAE": "0220-9/01",
+    "Decisão administrativa de procedência": "04/06/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "518",
+    "Ano da ação fiscal": "2025",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "8020-0/01",
+    "Decisão administrativa de procedência": "25/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "519",
+    "Ano da ação fiscal": "2023",
+    "UF": "RO",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4511-1/01",
+    "Decisão administrativa de procedência": "30/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "520",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "20",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "16/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "521",
+    "Ano da ação fiscal": "2023",
+    "UF": "GO",
+    "Trabalhadores envolvidos": "212",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "05/08/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "522",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4110-7/00",
+    "Decisão administrativa de procedência": "28/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "523",
+    "Ano da ação fiscal": "2024",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0154-7/00",
+    "Decisão administrativa de procedência": "01/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "524",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "10/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "525",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "4711-3/02",
+    "Decisão administrativa de procedência": "05/08/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "526",
+    "Ano da ação fiscal": "2024",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "28/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "527",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4520-0/02",
+    "Decisão administrativa de procedência": "24/06/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "528",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "4",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "28/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "529",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "30",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "04/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "530",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "22/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "531",
+    "Ano da ação fiscal": "2025",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9329-8/01",
+    "Decisão administrativa de procedência": "22/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "532",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "07/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "533",
+    "Ano da ação fiscal": "2025",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "22",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "21/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "534",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "37",
+    "CNAE": "1931-4/00",
+    "Decisão administrativa de procedência": "09/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "535",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "09/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "536",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "0161-0/99",
+    "Decisão administrativa de procedência": "30/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "537",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "14",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "16/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "538",
+    "Ano da ação fiscal": "2025",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "29/10/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "539",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "16",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "03/05/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "540",
+    "Ano da ação fiscal": "2023",
+    "UF": "PI",
+    "Trabalhadores envolvidos": "30",
+    "CNAE": "0220-9/99",
+    "Decisão administrativa de procedência": "08/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "541",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "20",
+    "CNAE": "0133-4/99",
+    "Decisão administrativa de procedência": "27/11/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "542",
+    "Ano da ação fiscal": "2025",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0119-9/06",
+    "Decisão administrativa de procedência": "11/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "543",
+    "Ano da ação fiscal": "2023",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "13/03/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "544",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "1412-6/03",
+    "Decisão administrativa de procedência": "11/01/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "545",
+    "Ano da ação fiscal": "2024",
+    "UF": "RO",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "27/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "546",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "29",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "11/03/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "547",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0810-0/99",
+    "Decisão administrativa de procedência": "13/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "548",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "03/09/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "549",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "6",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "30/07/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025 a 07/07/2025, 10/08/2026"
+  },
+  {
+    "ID": "550",
+    "Ano da ação fiscal": "2023",
+    "UF": "BA",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "15/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "551",
+    "Ano da ação fiscal": "2023",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "552",
+    "Ano da ação fiscal": "2022",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "4391-6/00",
+    "Decisão administrativa de procedência": "22/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "553",
+    "Ano da ação fiscal": "2024",
+    "UF": "RJ",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "08/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "554",
+    "Ano da ação fiscal": "2025",
+    "UF": "PB",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "24/09/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "555",
+    "Ano da ação fiscal": "2025",
+    "UF": "PR",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0161-0/03",
+    "Decisão administrativa de procedência": "05/11/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "556",
+    "Ano da ação fiscal": "2025",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0155-5/01",
+    "Decisão administrativa de procedência": "04/04/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "557",
+    "Ano da ação fiscal": "2024",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "9700-5/00",
+    "Decisão administrativa de procedência": "03/02/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "558",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "7",
+    "CNAE": "0115-6/00",
+    "Decisão administrativa de procedência": "25/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "559",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "8711-5/02",
+    "Decisão administrativa de procedência": "16/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "560",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "8711-5/02",
+    "Decisão administrativa de procedência": "16/12/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "561",
+    "Ano da ação fiscal": "2023",
+    "UF": "CE",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0810-0/02",
+    "Decisão administrativa de procedência": "12/12/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "562",
+    "Ano da ação fiscal": "2019",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "13",
+    "CNAE": "4120-4/00",
+    "Decisão administrativa de procedência": "29/07/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "563",
+    "Ano da ação fiscal": "2025",
+    "UF": "RR",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "9329-8/01",
+    "Decisão administrativa de procedência": "22/05/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "564",
+    "Ano da ação fiscal": "2024",
+    "UF": "MS",
+    "Trabalhadores envolvidos": "11",
+    "CNAE": "4744-0/02",
+    "Decisão administrativa de procedência": "27/08/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "565",
+    "Ano da ação fiscal": "2023",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "03/09/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "566",
+    "Ano da ação fiscal": "2024",
+    "UF": "MA",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0220-9/02",
+    "Decisão administrativa de procedência": "07/03/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "567",
+    "Ano da ação fiscal": "2023",
+    "UF": "PE",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "0153-9/01",
+    "Decisão administrativa de procedência": "17/04/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "568",
+    "Ano da ação fiscal": "2024",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "3",
+    "CNAE": "0134-2/00",
+    "Decisão administrativa de procedência": "06/12/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "569",
+    "Ano da ação fiscal": "2025",
+    "UF": "PA",
+    "Trabalhadores envolvidos": "9",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "28/01/2026",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "570",
+    "Ano da ação fiscal": "2023",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "23/11/2023",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "571",
+    "Ano da ação fiscal": "2024",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "4399-1/03",
+    "Decisão administrativa de procedência": "02/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "572",
+    "Ano da ação fiscal": "2024",
+    "UF": "MT",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0151-2/01",
+    "Decisão administrativa de procedência": "01/07/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "573",
+    "Ano da ação fiscal": "2025",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4789-0/99",
+    "Decisão administrativa de procedência": "04/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/04/2026"
+  },
+  {
+    "ID": "574",
+    "Ano da ação fiscal": "2023",
+    "UF": "ES",
+    "Trabalhadores envolvidos": "2",
+    "CNAE": "7112-0/00",
+    "Decisão administrativa de procedência": "09/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "575",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "2815-1/02",
+    "Decisão administrativa de procedência": "19/02/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025"
+  },
+  {
+    "ID": "576",
+    "Ano da ação fiscal": "2023",
+    "UF": "DF",
+    "Trabalhadores envolvidos": "8",
+    "CNAE": "0210-1/07",
+    "Decisão administrativa de procedência": "20/02/2024",
+    "Inclusão no Cadastro de Empregadores": "07/10/2024"
+  },
+  {
+    "ID": "577",
+    "Ano da ação fiscal": "2023",
+    "UF": "MG",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "0893-2/00",
+    "Decisão administrativa de procedência": "25/10/2024",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  },
+  {
+    "ID": "578",
+    "Ano da ação fiscal": "2023",
+    "UF": "SP",
+    "Trabalhadores envolvidos": "5",
+    "CNAE": "8230-0/01",
+    "Decisão administrativa de procedência": "01/08/2025",
+    "Inclusão no Cadastro de Empregadores": "06/10/2025 a 05/02/2026, 19/08/2026"
+  },
+  {
+    "ID": "579",
+    "Ano da ação fiscal": "2024",
+    "UF": "RS",
+    "Trabalhadores envolvidos": "1",
+    "CNAE": "4744-0/05",
+    "Decisão administrativa de procedência": "13/01/2025",
+    "Inclusão no Cadastro de Empregadores": "09/04/2025"
+  }
+]

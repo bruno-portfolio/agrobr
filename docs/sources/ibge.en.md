@@ -17,6 +17,32 @@
 - **Format**: JSON
 - **Access**: Public, no authentication
 
+### Access channel and fallback
+
+Every tabular query (PAM, LSPA, PPM, slaughter, PEVS, milk, agricultural GDP and censuses) goes through
+`agrobr.ibge.client.fetch_sidra`. The SIDRA API (`apisidra.ibge.gov.br`) is the primary channel; since
+September 2026 it answers 403 with a Cloudflare challenge to programmatic clients. When SIDRA fails (403,
+HTML, 5xx or network), the same table is queried on the IBGE aggregates API
+(`servicodados.ibge.gov.br/api/v3/agregados`) with the same selectors translated
+(`t/p/v/n/c` → `agregados/{table}/periodos/{p}/variaveis/{v}?localidades=N{n}[...]&classificacao=c[...]`)
+and the response is converted to the same SIDRA column layout (`NC`, `NN`, `MC`, `MN`, `V`, `D1C`…), so
+parsers and contracts do not change. Known differences of the fallback channel: `MC` (unit code) is empty
+because the aggregates API publishes only the unit name; `allxp` becomes `all`; the period name (`D2N`) comes
+from the table's own `/periodos` endpoint. The channel used is recorded in
+`MetaInfo.source_details["canal"]` (`sidra`, `servicodados` or `misto`), `source_details["consultas"]` lists channel
+and URL per query, `attempted_sources` gains `ibge_servicodados` and `selected_source` becomes `ibge_servicodados`
+when the fallback was used (datasets inherit that provenance); `source_url` points to the URL actually queried; the first fallback emits a single `warnings.warn` per process. Values from both channels were
+checked equal for the July 2026 LSPA (soybeans). The IBGE health probe queries the aggregates API.
+
+Each query also requests `/agregados/{tabela}/periodos` and records the modification date of the returned periods, which
+tells which edition the number came from: `source_details["periodos_modificacao"]` comes as `{table: {period: ISO date}}`
+(PAM 2024 was revised on 2026-09-17), and each `consultas` item has `tabela` and `periodos_modificacao`. The `01/01/0001`
+IBGE publishes for a period without a date comes out null. If the metadata request fails, the query goes on, and the reason
+is in `periodos_modificacao_erro`.
+
+A response without observations (`[]`, for example a period not yet published), on either channel, returns an
+empty DataFrame with the same columns as a response with data and emits a warning (`warnings.warn`, once per table and period).
+
 ## Available Surveys
 
 ### PAM - Municipal Agricultural Production
@@ -30,6 +56,13 @@
 - **SIDRA table**: 6588
 - **Coverage**: National/state
 - **Frequency**: Monthly
+- **Contract**: [LSPA 2.0](../contracts/lspa.md), one row per year/month/locality/product/variable, with an explicit unit; omitting `mes` preserves available months in the year
+
+`ibge.lspa("soja", ano=2025, mes="01", uf="MT")` accepts an integer month or integer string from 1 to 12. `uf=None` queries the Brazil aggregate. An unpublished period may return an empty DataFrame; HTTP 200 does not establish observation availability.
+
+The [`estimativa_safra` 3.1 dataset](../contracts/estimativa_safra.md) can select this source with `fonte="ibge_lspa"` or `mes`, preserving `ano_lspa` and `mes_lspa`. Its `safra="2024/25"` parameter selects the final calendar year, 2025; this crop-year label is not a native LSPA dimension. Without a month, the dataset selects the latest observed period, while the source API preserves the available monthly series.
+
+The dataset combines expected maize and bean crop components, converts hectares/tonnes to thousand ha/thousand tonnes and recalculates yield from totals. Missing components, duplicates or incompatible units/localities are rejected; NA values remain missing. Do not use a CONAB `levantamento` as an LSPA month or sum monthly estimates as production flows.
 
 ### PPM - Municipal Livestock Survey
 
@@ -57,6 +90,8 @@
 - **Periods**: 1995, 2006 and 2017 (by theme)
 - **Themes**: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente, preparo_solo, adubacao, calagem, agrotoxicos, praticas_agricolas, irrigacao, despesa_adubos
 - **Format**: Long format (variable/value per row)
+- **Total row**: published as the source does (`categoria = "Total"`), not added to the other categories;
+  `estabelecimentos` does not add up across categories
 
 ### Agricultural Census — Historical Series (1920-2006)
 
@@ -67,26 +102,44 @@
 - **Themes**: 9 themes with a long historical series
 - **Quirks**: Poultry in thousand head (tab 281), mixed units by category (tabs 282/283/1730/1731), classifications without Total (tabs 281/282/283/1730/1731)
 
-### Agricultural Census 1985 — Municipal Data (OCR PDFs)
+### Agricultural Census 1985 — Municipal Data (IBGE PDFs)
 
-- **Source**: State PDFs from the IBGE Library
-- **Format**: CSVs extracted via hybrid OCR (PyMuPDF coords + OCR correction)
-- **Coverage**: 22 states, down to municipality (mesoregion, microregion, municipality)
+- **Source**: the IBGE Library's 28 state PDFs (27 states; Minas Gerais in 2 volumes). MA, PI, CE and RN use the version the IBGE
+  republished on 2018-09-03, with a text layer.
+- **Format**: agrobr package in Parquet (`agrobr/data/censo_1985/`), 1 row per PDF cell, extracted from the text layer,
+  with RapidOCR as the 2nd reading; the manifest keeps each PDF's SHA-256.
+- **Coverage**: 27 states, down to municipality (mesoregion, microregion, municipality); 85.8% of the cells read have
+  an identified column (the per-volume list is in the contract).
 - **Frequency**: One-off (1985 Census)
-- **Themes**: 53 themes (property, land use, personnel, mechanization, livestock, crops, production)
-- **Excluded states**: MA, PI, CE, RN (PDFs without an OCR layer)
-- **Access**: Data bundled in the package (agrobr/data/censo_1985/)
-- **Quality**: `confianca` field (alta/media/baixa), 77.9% state↔national cross-validation
+- **Themes**: 53 themes, 1 per table (67 to 119), from the printed title
+- **Confidence**: `valor` only in cells confirmed by the printed sums (0 errors against the blind oracles); `valor_lido` and the
+  `status` for the rest, with the precision measured in the [contract](../contracts/censo_agropecuario_municipal_1985.md)
+- **Access**: local, no network
 - **Catalog URL**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768
 
 ### Agricultural Census 1995/96 — Legacy Themes (FTP)
 
 - **Source**: IBGE FTP (`ftp.ibge.gov.br`)
-- **Format**: Legacy XLS (xlrd)
-- **Coverage**: Brazil (mesoregions, microregions, municipalities)
+- **Format**: ZIP archives containing legacy XLS (BIFF5/BIFF8) or HTML
+- **Coverage**: Brazil, actual state totals, and municipalities; `uf` distinguishes municipalities with identical names
+- **Contract**: [Legacy Census 2.0](../contracts/censo_agropecuario_legado.md), with categories, variables, and units from official headers
 - **Frequency**: One-off (1995/96 Census)
 - **Themes**: tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro
 - **Access**: Public, no authentication
+
+Regression fixtures cover all six themes across the 27 states: 161 combinations
+with data and one expected rejection. In the September 2026 capture,
+[Pará/Tab_7Mn.zip](https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Para/Tab_7Mn.zip)
+for machinery contains the same bytes as the personnel table, and none of Pará's 11
+`Tab_*Mn` files carries Table 7 (checked again on 2026-09-27). The machinery query
+with `uf='PA'` raises `SourceUnavailableError`, and the query without `uf` returns
+the other 26 states, with the warning in `MetaInfo` and a `UserWarning`; the theme
+is not replaced with personnel data or a table with a different level of aggregation.
+
+Sergipe's BIFF8 machinery headers distinguish planting, harvesting, trucks and
+utility vehicles even when text boxes overlap. Regressions check official cells,
+units, financial scales and legend-defined zeros; state values are not rebuilt
+by summing municipalities.
 
 ### PEVS — Silviculture
 
@@ -97,7 +150,7 @@
 - **Products**: carvao, lenha, madeira_tora, madeira_celulose, acacia_negra, eucalipto_folha, resina (14 total)
 - **Area species**: eucalipto, pinus, outras
 - **Variables**: quantidade_produzida (var 142), valor_producao (var 143), area (var 6549)
-- **Units**: Tonnes or cubic meters (by product)
+- **Units**: the SIDRA response's `MN` field, according to variable and period; physical production in tonnes or cubic meters, area in hectares, and production value in currency (for example, `Mil Reais` in 2023)
 
 ### PEVS — Plant Extraction
 
@@ -107,7 +160,7 @@
 - **Series**: 1986-present
 - **Products**: acai, castanha_caju, castanha_para, erva_mate, mangaba, palmito, pequi_fruto, pinhao, umbu, hevea_coagulado, hevea_liquido, carnauba_cera, carnauba_po, piacava, carvao, lenha, madeira_tora, babacu, copaiba, cumaru, pequi_amendoa (21 total)
 - **Variables**: quantidade_produzida (var 144), valor_producao (var 145)
-- **Units**: Tonnes (most) or cubic meters (lenha, madeira_tora)
+- **Units**: the SIDRA response's `MN` field; quantity in tonnes or cubic meters and production value in currency (for example, `Mil Reais` in 2023)
 
 ### Quarterly Milk — Quarterly Milk Survey
 
@@ -230,7 +283,7 @@ produtos = await ibge.produtos_lspa()
 # ['soja', 'milho_1', 'milho_2', 'arroz', 'feijao_1', 'feijao_2', ...]
 ```
 
-Note: In LSPA, `milho_1` and `milho_2` refer to the first and second crop years.
+Note: In LSPA, `milho_1` and `milho_2` refer to the first and second maize crops within the same calendar year. The source API's `milho` alias returns the components separately; aggregation takes place in the dataset.
 
 ## Available States
 
@@ -295,8 +348,10 @@ asyncio.run(main())
 | `caprino` | Goat | head |
 | `ovino` | Sheep | head |
 | `galinaceos_total` | Poultry (total) | head |
-| `galinhas_poedeiras` | Laying hens | head |
+| `galinhas` | Hens (laying and breeder hens) | head |
 | `codornas` | Quails | head |
+
+`galinhas_poedeiras`: deprecated alias of `galinhas` (`FutureWarning`).
 
 ### Animal-origin production (table 74)
 
@@ -428,18 +483,7 @@ temas = await ibge.temas_censo_agro()
 
 ## Cache
 
-| Survey | TTL | Maximum stale |
-|----------|-----|--------------|
-| PAM | 7 days | 90 days |
-| LSPA | 24 hours | 30 days |
-| PPM | 7 days | 90 days |
-| Slaughter | 7 days | 90 days |
-| Agricultural Census | 30 days | 90 days |
-| Legacy Agricultural Census | 90 days | 90 days |
-| Silviculture (PEVS) | 7 days | 90 days |
-| Plant Extraction (PEVS) | 7 days | 90 days |
-| Quarterly Milk | 7 days | 90 days |
-| Agricultural GDP | 7 days | 90 days |
+There is no local cache: every call queries IBGE, and `MetaInfo` comes with `from_cache=False` and a null `cache_expires_at`.
 
 ## Update
 
@@ -597,9 +641,27 @@ asyncio.run(main())
 | `setor` | str | Economic sector |
 | `fonte` | str | "ibge_pib" |
 
+## Limits and errors
+
+Bursts of SIDRA queries may trigger a Cloudflare anti-bot check (`challenge`). When a 403 response contains `cf-mitigated: challenge` or the “Just a moment” page, the query raises `SourceUnavailableError` with a `Cloudflare challenge` message and guidance to reduce the request rate. Wait before trying again; this 403 response is not retried automatically.
+
 ## Notes
 
-- PEVS Silviculture: 14 products, annual data since 1986. Planted area (tab 5930) with 3 species. Cache 7 days
-- PEVS Plant Extraction: 21 products, annual data since 1986. Mixed units (Tonnes vs cubic meters). Cache 7 days
-- Quarterly Milk: table 1086, 3 variables pivoted into wide columns. Series since 1997. Cache 7 days
-- Agricultural GDP: tabs 1846/6612, 4 sectors, Brazil level. Series since 1996. No contract (macro view). Cache 7 days
+- PEVS Silviculture: 14 products, annual data since 1986. Planted area (tab 5930) with 3 species
+- PEVS Plant Extraction: 21 products, annual data since 1986. Mixed units (Tonnes vs cubic meters)
+- Quarterly Milk: table 1086, 3 variables pivoted into wide columns. Series since 1997
+- Agricultural GDP: tabs 1846/6612, 4 sectors, Brazil level. Series since 1996. No contract (macro view)
+
+## Periods and historical coverage
+
+PAM before 1988 may omit planted area. `datasets.producao_anual` represents that absence with nullable `Float64`; production value also remains null when not requested. Other measures are not automatically supplied, so source changes remain visible.
+
+PPM rejects future years with `InvalidParameterError`, including through `datasets.pecuaria_municipal`. Slaughter, quarterly milk, and agricultural GDP accept `2025-4`, `2025-T4`, `2025T4`, `2025/4`, and `2025Q4`, normalized to `202504`. Invalid formats are rejected before network access.
+
+## PAM units and historical breaks
+
+Published values are not implicitly converted. `unidade_producao`, `unidade_rendimento`, and `unidade_valor_producao` identify each row's scale. Before 2001, oranges use `mil_frutos` and `frutos/ha`; from 2001 onward, `ton` and `kg/ha`. `condicao_produto` distinguishes coffee `em_coco` through 2001 from `beneficiado` since 2002. Historical currencies remain identified without conversion to BRL or inflation adjustment. See the [IBGE methodology notes](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
+
+`localidade_cod` (`producao_anual` contract 2.1) carries the locality's IBGE code as SIDRA publishes it (D1C): 7 digits for a municipality, 2 for a state and 1 for Brazil. Use it to join municipalities across years, because the published name changes (and the Federal District comes out as "Brasília (DF)", without the " - UF" suffix of the others). In `producao_anual`, only IBGE rows carry the code; the CONAB fallback does not.
+
+SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.1; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.

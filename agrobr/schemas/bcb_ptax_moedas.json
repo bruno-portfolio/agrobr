@@ -1,0 +1,72 @@
+{
+  "name": "bcb.ptax_moedas",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "moeda"
+  ],
+  "required_columns": [
+    "moeda",
+    "nome",
+    "tipo_moeda"
+  ],
+  "dtypes": {
+    "moeda": "str",
+    "nome": "str",
+    "tipo_moeda": "str"
+  },
+  "nullable": {
+    "moeda": false,
+    "nome": false,
+    "tipo_moeda": false
+  },
+  "columns": [
+    {
+      "name": "moeda",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "tipo_moeda",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "currency_pattern": "[A-Z]{3}",
+    "currency_catalog": "current_OData_Moedas; not_a_historical_currency_inventory",
+    "currency_order": "ascending",
+    "currency_type": "published_text"
+  },
+  "guarantees": [
+    "Três colunas textuais estáveis, inclusive em resultado vazio",
+    "Símbolo, nome e tipo preservados sem substituir o catálogo por lista fixa",
+    "Símbolos únicos, ordenados, com contexto da resposta e aquisição UTC",
+    "Catálogo corrente não comprova vigência histórica ou cobertura da tabela geral de moedas"
+  ]
+}

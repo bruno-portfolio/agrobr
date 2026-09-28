@@ -2,17 +2,29 @@
 
 from __future__ import annotations
 
+import asyncio
 import io
 import json
+import os
+import subprocess
 import sys
-from datetime import datetime
+from datetime import date, datetime, timedelta
+from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
+import pytest
+import structlog
+import typer
 from typer.testing import CliRunner
 
-from agrobr import cli
+from agrobr import cli, constants
+from agrobr.cache import duckdb_store
+from agrobr.cepea import api as cepea_api
 from agrobr.cli import app
+from agrobr.models import Indicador
+from agrobr.normalize import regions
+from agrobr.utils import time as time_utils
 
 runner = CliRunner()
 
@@ -22,16 +34,6 @@ class TestMainApp:
         result = runner.invoke(app, ["--version"])
         assert result.exit_code == 0
         assert "agrobr version" in result.output
-
-    def test_version_short_flag(self):
-        result = runner.invoke(app, ["-v"])
-        assert result.exit_code == 0
-        assert "agrobr version" in result.output
-
-    def test_help(self):
-        result = runner.invoke(app, ["--help"])
-        assert result.exit_code == 0
-        assert "agrobr" in result.output
 
 
 class TestHealthCommand:
@@ -47,16 +49,6 @@ class TestHealthCommand:
             details={},
             timestamp=datetime(2024, 1, 1),
         )
-
-    def test_health_default(self):
-        with patch(
-            "agrobr.health.checker.run_all_checks",
-            new_callable=AsyncMock,
-            return_value=[self._mock_check_result()],
-        ):
-            result = runner.invoke(app, ["health"])
-        assert result.exit_code == 0
-        assert "Health Check Results" in result.output
 
     def test_health_json_output(self):
         with patch(
@@ -114,11 +106,11 @@ class TestHealthCommand:
             cli.main(_version=False, verbose=False)
             cli.health(source=None, deep=False, output="text")
             stdout.flush()
-            output = stdout_buffer.getvalue().decode("cp1252")
+            output = stdout_buffer.getvalue().decode("utf-8")
 
-        assert stdout.errors == "replace"
-        assert stderr.errors == "replace"
-        assert "? CEPEA: ok" in output
+        assert (stdout.encoding, stdout.errors) == ("utf-8", "replace")
+        assert (stderr.encoding, stderr.errors) == ("cp1252", "replace")
+        assert "✓ CEPEA: ok" in output
 
 
 class TestDoctorCommand:
@@ -159,119 +151,34 @@ class TestDoctorCommand:
         assert "Erro" in result.output
 
 
-class TestCepeaCommands:
-    def test_cepea_indicador(self):
-        df = pd.DataFrame({"data": ["2025-01-01"], "produto": ["soja"], "valor": [150.0]})
-        with patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["cepea", "indicador", "soja"])
-        assert result.exit_code == 0
-        assert "soja" in result.output
+def _indicador(produto: str, praca: str, dia: date, valor: str) -> Indicador:
+    return Indicador(
+        fonte=constants.Fonte.CEPEA,
+        produto=produto,
+        praca=praca,
+        data=dia,
+        valor=Decimal(valor),
+        unidade="BRL/kg",
+        parser_version=2,
+    )
 
+
+class TestCepeaCommands:
     def test_cepea_indicador_ultimo(self):
-        df = pd.DataFrame(
-            {
-                "data": ["2025-01-01", "2025-01-02"],
-                "produto": ["soja", "soja"],
-                "valor": [150.0, 151.0],
-            }
-        )
-        with patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=df):
+        recente = _indicador("soja", "Paranaguá/PR", date(2025, 1, 2), "151")
+        with patch("agrobr.cepea.ultimo", new_callable=AsyncMock, return_value=recente):
             result = runner.invoke(app, ["cepea", "indicador", "soja", "--ultimo"])
         assert result.exit_code == 0
         assert "151" in result.output
 
-    def test_cepea_indicador_empty(self):
-        df = pd.DataFrame()
-        with patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["cepea", "indicador", "soja"])
-        assert result.exit_code == 0
-        assert "Nenhum dado" in result.output
-
-    def test_cepea_indicador_error(self):
-        with patch("agrobr.cepea.indicador", new_callable=AsyncMock, side_effect=Exception("fail")):
-            result = runner.invoke(app, ["cepea", "indicador", "soja"])
-        assert result.exit_code == 1
-
 
 class TestConabCommands:
-    def test_conab_safras_success(self):
-        df = pd.DataFrame({"safra": ["2025/26"], "produto": ["soja"], "area": [1000]})
-        with patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["conab", "safras", "soja"])
-        assert result.exit_code == 0
-        assert "soja" in result.output
-
-    def test_conab_safras_empty(self):
-        df = pd.DataFrame()
-        with patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["conab", "safras", "quinoa"])
-        assert result.exit_code == 0
-        assert "Nenhum dado" in result.output
-
-    def test_conab_safras_json(self):
-        df = pd.DataFrame({"safra": ["2025/26"], "produto": ["soja"], "area": [1000]})
-        with patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["conab", "safras", "soja", "--formato", "json"])
-        assert result.exit_code == 0
-
-    def test_conab_safras_csv(self):
-        df = pd.DataFrame({"safra": ["2025/26"], "produto": ["soja"], "area": [1000]})
-        with patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["conab", "safras", "soja", "--formato", "csv"])
-        assert result.exit_code == 0
-        assert "safra" in result.output
-
-    def test_conab_safras_error(self):
-        with patch(
-            "agrobr.conab.safras", new_callable=AsyncMock, side_effect=RuntimeError("API down")
-        ):
-            result = runner.invoke(app, ["conab", "safras", "soja"])
-        assert result.exit_code == 1
-
-    def test_conab_balanco_success(self):
-        df = pd.DataFrame({"produto": ["soja"], "oferta": [100], "demanda": [90]})
-        with patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["conab", "balanco", "soja"])
-        assert result.exit_code == 0
-
-    def test_conab_balanco_empty(self):
-        with patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=pd.DataFrame()):
-            result = runner.invoke(app, ["conab", "balanco"])
-        assert result.exit_code == 0
-        assert "Nenhum dado" in result.output
-
-    def test_conab_balanco_json(self):
-        df = pd.DataFrame({"produto": ["soja"], "oferta": [100]})
-        with patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["conab", "balanco", "soja", "--formato", "json"])
-        assert result.exit_code == 0
-
-    def test_conab_balanco_csv(self):
-        df = pd.DataFrame({"produto": ["soja"], "oferta": [100]})
-        with patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["conab", "balanco", "soja", "--formato", "csv"])
-        assert result.exit_code == 0
-
-    def test_conab_balanco_error(self):
-        with patch(
-            "agrobr.conab.balanco", new_callable=AsyncMock, side_effect=RuntimeError("fail")
-        ):
-            result = runner.invoke(app, ["conab", "balanco"])
-        assert result.exit_code == 1
-
     def test_conab_levantamentos_success(self):
         levs = [{"safra": "2025/26", "levantamento": i} for i in range(1, 13)]
         with patch("agrobr.conab.levantamentos", new_callable=AsyncMock, return_value=levs):
             result = runner.invoke(app, ["conab", "levantamentos"])
         assert result.exit_code == 0
         assert "... e mais 2 levantamentos" in result.output
-
-    def test_conab_levantamentos_error(self):
-        with patch(
-            "agrobr.conab.levantamentos", new_callable=AsyncMock, side_effect=RuntimeError("fail")
-        ):
-            result = runner.invoke(app, ["conab", "levantamentos"])
-        assert result.exit_code == 1
 
     def test_conab_produtos(self):
         with patch("agrobr.conab.produtos", new_callable=AsyncMock, return_value=["soja", "milho"]):
@@ -282,70 +189,11 @@ class TestConabCommands:
 
 
 class TestIbgeCommands:
-    def test_ibge_pam_success(self):
-        df = pd.DataFrame({"produto": ["soja"], "ano": [2023], "valor": [1000]})
-        with patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "pam", "soja"])
-        assert result.exit_code == 0
-
-    def test_ibge_pam_with_ano(self):
-        df = pd.DataFrame({"produto": ["soja"], "ano": [2023], "valor": [1000]})
-        with patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "pam", "soja", "--ano", "2023"])
-        assert result.exit_code == 0
-
-    def test_ibge_pam_with_multiple_anos(self):
-        df = pd.DataFrame({"produto": ["soja", "soja"], "ano": [2022, 2023]})
-        with patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "pam", "soja", "--ano", "2022,2023"])
-        assert result.exit_code == 0
-
     def test_ibge_pam_empty(self):
         with patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=pd.DataFrame()):
             result = runner.invoke(app, ["ibge", "pam", "quinoa"])
         assert result.exit_code == 0
         assert "Nenhum dado" in result.output
-
-    def test_ibge_pam_json(self):
-        df = pd.DataFrame({"produto": ["soja"], "ano": [2023]})
-        with patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "pam", "soja", "--formato", "json"])
-        assert result.exit_code == 0
-
-    def test_ibge_pam_csv(self):
-        df = pd.DataFrame({"produto": ["soja"], "ano": [2023]})
-        with patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "pam", "soja", "--formato", "csv"])
-        assert result.exit_code == 0
-        assert "produto" in result.output
-
-    def test_ibge_pam_error(self):
-        with patch("agrobr.ibge.pam", new_callable=AsyncMock, side_effect=RuntimeError("fail")):
-            result = runner.invoke(app, ["ibge", "pam", "soja"])
-        assert result.exit_code == 1
-
-    def test_ibge_lspa_success(self):
-        df = pd.DataFrame({"produto": ["soja"], "mes": [1]})
-        with patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "lspa", "soja"])
-        assert result.exit_code == 0
-
-    def test_ibge_lspa_empty(self):
-        with patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=pd.DataFrame()):
-            result = runner.invoke(app, ["ibge", "lspa", "soja"])
-        assert result.exit_code == 0
-        assert "Nenhum dado" in result.output
-
-    def test_ibge_lspa_json(self):
-        df = pd.DataFrame({"produto": ["soja"], "mes": [1]})
-        with patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "lspa", "soja", "--formato", "json"])
-        assert result.exit_code == 0
-
-    def test_ibge_lspa_error(self):
-        with patch("agrobr.ibge.lspa", new_callable=AsyncMock, side_effect=RuntimeError("fail")):
-            result = runner.invoke(app, ["ibge", "lspa", "soja"])
-        assert result.exit_code == 1
 
     def test_ibge_produtos_pam(self):
         with patch(
@@ -363,63 +211,6 @@ class TestIbgeCommands:
 
 
 class TestIbgeCensoHistoricoCommands:
-    def test_censo_historico_success(self):
-        df = pd.DataFrame(
-            {
-                "ano": pd.array([1985], dtype="Int64"),
-                "localidade": ["São Paulo"],
-                "localidade_cod": pd.array([35], dtype="Int64"),
-                "tema": ["estabelecimentos_area"],
-                "categoria": ["total"],
-                "variavel": ["estabelecimentos"],
-                "valor": [5801809.0],
-                "unidade": ["Unidades"],
-                "fonte": ["ibge_censo_agro_historico"],
-            }
-        )
-        with patch("agrobr.ibge.censo_agro_historico", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "censo-historico", "estabelecimentos_area"])
-        assert result.exit_code == 0
-        assert "estabelecimentos_area" in result.output
-
-    def test_censo_historico_with_ano(self):
-        df = pd.DataFrame(
-            {
-                "ano": pd.array([1985], dtype="Int64"),
-                "localidade": ["Brasil"],
-                "localidade_cod": pd.array([1], dtype="Int64"),
-                "tema": ["uso_terra"],
-                "categoria": ["total"],
-                "variavel": ["area"],
-                "valor": [100000.0],
-                "unidade": ["Hectares"],
-                "fonte": ["ibge_censo_agro_historico"],
-            }
-        )
-        with patch("agrobr.ibge.censo_agro_historico", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(app, ["ibge", "censo-historico", "uso_terra", "--ano", "1985"])
-        assert result.exit_code == 0
-
-    def test_censo_historico_with_multiple_anos(self):
-        df = pd.DataFrame(
-            {
-                "ano": pd.array([1985, 2006], dtype="Int64"),
-                "localidade": ["Brasil", "Brasil"],
-                "localidade_cod": pd.array([1, 1], dtype="Int64"),
-                "tema": ["uso_terra", "uso_terra"],
-                "categoria": ["total", "total"],
-                "variavel": ["area", "area"],
-                "valor": [100000.0, 200000.0],
-                "unidade": ["Hectares", "Hectares"],
-                "fonte": ["ibge_censo_agro_historico", "ibge_censo_agro_historico"],
-            }
-        )
-        with patch("agrobr.ibge.censo_agro_historico", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(
-                app, ["ibge", "censo-historico", "uso_terra", "--ano", "1985,2006"]
-            )
-        assert result.exit_code == 0
-
     def test_censo_historico_empty(self):
         with patch(
             "agrobr.ibge.censo_agro_historico", new_callable=AsyncMock, return_value=pd.DataFrame()
@@ -427,56 +218,6 @@ class TestIbgeCensoHistoricoCommands:
             result = runner.invoke(app, ["ibge", "censo-historico", "uso_terra"])
         assert result.exit_code == 0
         assert "Nenhum dado" in result.output
-
-    def test_censo_historico_json(self):
-        df = pd.DataFrame(
-            {
-                "ano": pd.array([1985], dtype="Int64"),
-                "localidade": ["São Paulo"],
-                "localidade_cod": pd.array([35], dtype="Int64"),
-                "tema": ["pessoal_tratores"],
-                "categoria": ["total"],
-                "variavel": ["pessoal_ocupado"],
-                "valor": [100000.0],
-                "unidade": ["Pessoas"],
-                "fonte": ["ibge_censo_agro_historico"],
-            }
-        )
-        with patch("agrobr.ibge.censo_agro_historico", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(
-                app, ["ibge", "censo-historico", "pessoal_tratores", "--formato", "json"]
-            )
-        assert result.exit_code == 0
-
-    def test_censo_historico_csv(self):
-        df = pd.DataFrame(
-            {
-                "ano": pd.array([1985], dtype="Int64"),
-                "localidade": ["São Paulo"],
-                "localidade_cod": pd.array([35], dtype="Int64"),
-                "tema": ["pessoal_tratores"],
-                "categoria": ["total"],
-                "variavel": ["pessoal_ocupado"],
-                "valor": [100000.0],
-                "unidade": ["Pessoas"],
-                "fonte": ["ibge_censo_agro_historico"],
-            }
-        )
-        with patch("agrobr.ibge.censo_agro_historico", new_callable=AsyncMock, return_value=df):
-            result = runner.invoke(
-                app, ["ibge", "censo-historico", "pessoal_tratores", "--formato", "csv"]
-            )
-        assert result.exit_code == 0
-        assert "ano" in result.output
-
-    def test_censo_historico_error(self):
-        with patch(
-            "agrobr.ibge.censo_agro_historico",
-            new_callable=AsyncMock,
-            side_effect=ValueError("Tema não suportado"),
-        ):
-            result = runner.invoke(app, ["ibge", "censo-historico", "inexistente"])
-        assert result.exit_code == 1
 
     def test_temas_historico(self):
         temas = [
@@ -555,38 +296,6 @@ class TestSnapshotCommands:
         assert result.exit_code == 0
         assert "sucesso" in result.output
 
-    def test_snapshot_create_with_sources(self):
-        mock_info = MagicMock()
-        mock_info.name = "test_snap"
-        mock_info.path = "/tmp/test_snap"
-        mock_info.file_count = 2
-
-        with patch(
-            "agrobr.snapshots.create_snapshot", new_callable=AsyncMock, return_value=mock_info
-        ):
-            result = runner.invoke(
-                app, ["snapshot", "create", "test_snap", "--sources", "cepea,conab"]
-            )
-        assert result.exit_code == 0
-
-    def test_snapshot_create_value_error(self):
-        with patch(
-            "agrobr.snapshots.create_snapshot",
-            new_callable=AsyncMock,
-            side_effect=ValueError("bad name"),
-        ):
-            result = runner.invoke(app, ["snapshot", "create", "bad!"])
-        assert result.exit_code == 1
-
-    def test_snapshot_create_generic_error(self):
-        with patch(
-            "agrobr.snapshots.create_snapshot",
-            new_callable=AsyncMock,
-            side_effect=RuntimeError("disk full"),
-        ):
-            result = runner.invoke(app, ["snapshot", "create", "snap"])
-        assert result.exit_code == 1
-
     def test_snapshot_delete_success(self):
         mock_snap = MagicMock()
         with (
@@ -596,11 +305,6 @@ class TestSnapshotCommands:
             result = runner.invoke(app, ["snapshot", "delete", "old_snap", "--force"])
         assert result.exit_code == 0
         assert "removido" in result.output
-
-    def test_snapshot_delete_not_found(self):
-        with patch("agrobr.snapshots.get_snapshot", return_value=None):
-            result = runner.invoke(app, ["snapshot", "delete", "nope", "--force"])
-        assert result.exit_code == 1
 
     def test_snapshot_delete_cancelled(self):
         mock_snap = MagicMock()
@@ -633,3 +337,367 @@ class TestSnapshotCommands:
             result = runner.invoke(app, ["snapshot", "use", "nope"])
         assert result.exit_code == 1
         assert "nao encontrado" in result.output
+
+
+@pytest.mark.parametrize(
+    ("alvo", "argv", "mensagem"),
+    [
+        ("agrobr.cepea.indicador", ["cepea", "indicador", "soja"], "Erro: falhou"),
+        ("agrobr.conab.safras", ["conab", "safras", "soja"], "Erro: falhou"),
+        ("agrobr.conab.balanco", ["conab", "balanco", "soja"], "Erro: falhou"),
+        ("agrobr.conab.levantamentos", ["conab", "levantamentos"], "Erro: falhou"),
+        ("agrobr.ibge.pam", ["ibge", "pam", "soja"], "Erro: falhou"),
+        ("agrobr.ibge.lspa", ["ibge", "lspa", "soja"], "Erro: falhou"),
+        (
+            "agrobr.ibge.censo_agro_historico",
+            ["ibge", "censo-historico", "uso_terra"],
+            "Erro: falhou",
+        ),
+        (
+            "agrobr.snapshots.create_snapshot",
+            ["snapshot", "create", "teste"],
+            "Erro ao criar snapshot: falhou",
+        ),
+    ],
+)
+def test_erro_da_fonte_vira_mensagem_e_codigo_um(alvo, argv, mensagem):
+    with patch(alvo, new_callable=AsyncMock, side_effect=RuntimeError("falhou")):
+        result = runner.invoke(app, argv)
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert mensagem in result.output
+
+
+def test_snapshot_create_recusa_nome_com_a_mensagem_da_validacao():
+    with patch(
+        "agrobr.snapshots.create_snapshot",
+        new_callable=AsyncMock,
+        side_effect=ValueError("nome inválido"),
+    ):
+        result = runner.invoke(app, ["snapshot", "create", "bad!"])
+    assert result.exit_code == 1
+    assert "Erro: nome inválido" in result.output
+    assert "Erro ao criar snapshot" not in result.output
+
+
+@pytest.mark.parametrize(
+    ("extra", "presentes", "ausentes"),
+    [([], ["150.25", "151.75"], []), (["--ultimo"], ["151.75"], ["150.25"])],
+)
+def test_cepea_ultimo_mostra_so_a_linha_mais_recente(extra, presentes, ausentes):
+    df = pd.DataFrame(
+        {
+            "data": ["2025-01-01", "2025-01-02"],
+            "produto": ["soja", "soja"],
+            "valor": [150.25, 151.75],
+        }
+    )
+    recente = _indicador("soja", "Paranaguá/PR", date(2025, 1, 2), "151.75")
+    with (
+        patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=df),
+        patch("agrobr.cepea.ultimo", new_callable=AsyncMock, return_value=recente),
+    ):
+        result = runner.invoke(app, ["cepea", "indicador", "soja", *extra])
+    assert result.exit_code == 0
+    assert all(valor in result.output for valor in presentes)
+    assert not any(valor in result.output for valor in ausentes)
+
+
+@pytest.mark.parametrize(
+    ("produto", "pracas"),
+    [
+        ("suino", ["MG - posto", "SP - posto"]),
+        ("leite", ["BRASIL", "MG", "SP"]),
+    ],
+)
+def test_cepea_ultimo_da_cli_escolhe_a_praca_do_cepea_ultimo(monkeypatch, produto, pracas):
+    dia = time_utils.hoje().replace(day=1) if produto == "leite" else time_utils.hoje()
+    linhas = [
+        {**cepea_api._indicadores_to_dicts([_indicador(produto, praca, dia, f"{100 + i}")])[0]}
+        for i, praca in enumerate(pracas)
+    ]
+    for linha in linhas:
+        linha["collected_at"] = datetime.now()
+    store = MagicMock()
+    store.indicadores_query.side_effect = lambda **filtro: [
+        linha
+        for linha in linhas
+        if filtro.get("praca") is None
+        or regions.slugificar_praca(linha["praca"]) == regions.slugificar_praca(filtro["praca"])
+    ]
+    store.indicadores_ultima_coleta.return_value = datetime.now()
+    monkeypatch.setattr(cepea_api, "get_store", lambda: store)
+    monkeypatch.setattr(cepea_api, "_vencido", lambda _ultima_coleta: False)
+    monkeypatch.setattr(
+        cepea_api, "_fetch_and_parse", AsyncMock(side_effect=AssertionError("sem rede"))
+    )
+    esperado = asyncio.run(cepea_api.ultimo(produto))
+
+    result = runner.invoke(app, ["cepea", "indicador", produto, "--ultimo", "--formato", "json"])
+
+    assert result.exit_code == 0, result.output
+    linhas_saida = json.loads(result.output[result.output.index("[") :])
+    assert [(linha["praca"], float(linha["valor"])) for linha in linhas_saida] == [
+        (esperado.praca, float(esperado.valor))
+    ]
+    assert esperado.praca != pracas[-1]
+
+
+def test_cepea_ultimo_nao_combina_com_periodo():
+    with patch("agrobr.cepea.ultimo", new_callable=AsyncMock) as ultimo:
+        result = runner.invoke(
+            app, ["cepea", "indicador", "soja", "--ultimo", "--inicio", "2025-01-01"]
+        )
+    assert result.exit_code == 1
+    assert "--ultimo não combina com --inicio/--fim" in result.output
+    ultimo.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    ("argv", "alvo", "ano"),
+    [
+        (["ibge", "pam", "soja", "--ano", "2023"], "agrobr.ibge.pam", 2023),
+        (["ibge", "pam", "soja", "--ano", "2022,2023"], "agrobr.ibge.pam", [2022, 2023]),
+        (
+            ["ibge", "censo-historico", "uso_terra", "--ano", "1985"],
+            "agrobr.ibge.censo_agro_historico",
+            1985,
+        ),
+        (
+            ["ibge", "censo-historico", "uso_terra", "--ano", "1970,1985"],
+            "agrobr.ibge.censo_agro_historico",
+            [1970, 1985],
+        ),
+    ],
+)
+def test_ano_da_linha_de_comando_chega_a_fonte(argv, alvo, ano):
+    with patch(alvo, new_callable=AsyncMock, return_value=pd.DataFrame({"ano": [1]})) as fonte:
+        result = runner.invoke(app, argv)
+    assert result.exit_code == 0
+    assert fonte.await_args.kwargs["ano"] == ano
+
+
+def test_snapshot_list_mostra_tabela_legivel():
+    snap = MagicMock()
+    snap.name = "snap_2024"
+    snap.created_at = datetime(2024, 1, 1, 12, 0)
+    snap.size_bytes = 2 * 1024 * 1024
+    snap.sources = ["cepea", "conab"]
+    snap.file_count = 10
+    with patch("agrobr.snapshots.list_snapshots", return_value=[snap]):
+        result = runner.invoke(app, ["snapshot", "list"])
+    assert result.exit_code == 0
+    linhas = result.output.splitlines()
+    assert "Snapshots disponiveis:" in linhas
+    assert "    Criado em: 2024-01-01 12:00" in linhas
+    assert "    Tamanho: 2.00 MB" in linhas
+    assert "    Fontes: cepea, conab" in linhas
+
+
+def test_snapshot_delete_inexistente_avisa_e_nao_apaga():
+    with (
+        patch("agrobr.snapshots.get_snapshot", return_value=None),
+        patch("agrobr.snapshots.delete_snapshot") as apagar,
+    ):
+        result = runner.invoke(app, ["snapshot", "delete", "nope", "--force"])
+    assert result.exit_code == 1
+    assert "Snapshot 'nope' nao encontrado." in result.output
+    apagar.assert_not_called()
+
+
+@pytest.fixture
+def cache_cepea(tmp_path, monkeypatch):
+    store = duckdb_store.DuckDBStore(constants.CacheSettings(cache_dir=tmp_path / "cache"))
+    hoje = time_utils.hoje()
+    store.indicadores_upsert(
+        cepea_api._indicadores_to_dicts(
+            [
+                _indicador("soja", "Paranaguá/PR", hoje - timedelta(days=1), "150.25"),
+                _indicador("soja", "Paranaguá/PR", hoje, "151.75"),
+                _indicador("soja", "Paraná", hoje, "140.5"),
+            ]
+        )
+    )
+    monkeypatch.setattr(cepea_api, "get_store", lambda: store)
+    monkeypatch.setattr(cepea_api, "_vencido", lambda _ultima_coleta: False)
+    monkeypatch.setattr(
+        cepea_api, "_fetch_and_parse", AsyncMock(side_effect=AssertionError("sem rede"))
+    )
+    yield hoje
+    store.close()
+
+
+@pytest.mark.usefixtures("cache_cepea")
+@pytest.mark.parametrize("formato", ["json", "csv"])
+def test_cepea_ultimo_sai_com_as_colunas_e_os_tipos_do_indicador(formato):
+    tabela = runner.invoke(app, ["cepea", "indicador", "soja", "--formato", formato])
+    recente = runner.invoke(app, ["cepea", "indicador", "soja", "--ultimo", "--formato", formato])
+
+    assert (tabela.exit_code, recente.exit_code) == (0, 0), tabela.output + recente.output
+    if formato == "json":
+        linhas, saida = json.loads(tabela.stdout), json.loads(recente.stdout)
+        assert len(saida) == 1
+        linha = saida[0]
+        assert list(linha) == list(linhas[0])
+        assert isinstance(linha["valor"], float)
+    else:
+        linhas, saida = tabela.stdout.splitlines(), recente.stdout.splitlines()
+        assert saida[0] == linhas[0]
+        assert len(saida) == 2
+        linha = saida[1]
+    assert linha in linhas
+
+
+def test_json_da_cli_sai_com_a_data_em_iso(cache_cepea):
+    result = runner.invoke(app, ["cepea", "indicador", "soja", "--formato", "json"])
+
+    assert result.exit_code == 0, result.output
+    datas = sorted({linha["data"] for linha in json.loads(result.stdout)})
+    assert datas == [
+        f"{(cache_cepea - timedelta(days=dias)).isoformat()}T00:00:00.000" for dias in (1, 0)
+    ]
+
+
+@pytest.mark.parametrize(
+    ("argv", "opcoes", "na_ajuda"),
+    [
+        (["cepea", "indicador", "soja"], "'table', 'csv', 'json'", "<table|csv|json>"),
+        (["conab", "safras", "soja"], "'table', 'csv', 'json'", "<table|csv|json>"),
+        (["ibge", "pam", "soja"], "'table', 'csv', 'json'", "<table|csv|json>"),
+        (["health"], "'text', 'json'", "<text|json>"),
+    ],
+    ids=["cepea", "conab", "ibge", "health"],
+)
+def test_formato_invalido_sai_com_2_e_sem_saida_padrao(argv, opcoes, na_ajuda):
+    resultado = runner.invoke(app, [*argv, "-o", "xml"])
+    ajuda = runner.invoke(app, [*argv, "--help"])
+
+    assert resultado.exit_code == 2
+    assert resultado.stdout == ""
+    assert f"'xml' is not one of {opcoes}" in " ".join(resultado.stderr.replace("│", " ").split())
+    assert na_ajuda in ajuda.stdout
+
+
+def test_snapshot_use_inexistente_escreve_so_no_stderr():
+    with patch("agrobr.snapshots.get_snapshot", return_value=None):
+        resultado = runner.invoke(app, ["snapshot", "use", "nope"])
+
+    assert resultado.exit_code == 1
+    assert resultado.stdout == ""
+    assert "Use 'agrobr snapshot list' para ver snapshots disponiveis." in resultado.stderr
+
+
+def _comandos(grupo, caminho=()):
+    for nome, comando in grupo.commands.items():
+        if hasattr(comando, "commands"):
+            yield from _comandos(comando, (*caminho, nome))
+        else:
+            yield (*caminho, nome), comando
+
+
+def test_todo_formato_da_cli_recusa_valor_fora_da_lista():
+    recusas = []
+    for caminho, comando in _comandos(typer.main.get_command(app)):
+        if not any({"--formato", "--output"} & set(opcao.opts) for opcao in comando.params):
+            continue
+        argumentos = ["x" for p in comando.params if p.param_type_name == "argument" and p.required]
+        resultado = runner.invoke(app, [*caminho, *argumentos, "-o", "xml"])
+        erro = " ".join(resultado.stderr.replace("│", " ").split())
+        recusas.append(
+            (
+                " ".join(caminho),
+                resultado.exit_code,
+                resultado.stdout,
+                "'xml' is not one of" in erro,
+            )
+        )
+
+    assert len(recusas) == 8
+    assert recusas == [(nome, 2, "", True) for nome, *_ in recusas]
+
+
+def test_todo_comando_tem_a_linha_de_descricao_no_help():
+    comandos = list(_comandos(typer.main.get_command(app)))
+    sem_descricao = []
+    for caminho, comando in comandos:
+        ajuda = runner.invoke(app, [*caminho, "--help"])
+        texto = " ".join(ajuda.stdout.replace("│", " ").split())
+        if not comando.help or " ".join(comando.help.split()) not in texto:
+            sem_descricao.append(" ".join(caminho))
+
+    assert len(comandos) == 19
+    assert sem_descricao == []
+
+
+@pytest.mark.usefixtures("cache_cepea")
+def test_csv_da_cli_sai_com_uma_quebra_por_linha(monkeypatch):
+    monkeypatch.setattr(os, "linesep", "\r\n")
+
+    resultado = runner.invoke(app, ["cepea", "indicador", "soja", "-o", "csv"])
+
+    assert resultado.exit_code == 0, resultado.output
+    assert len(resultado.stdout_bytes.splitlines()) == 4
+    assert set(pd.read_csv(io.BytesIO(resultado.stdout_bytes))["praca"]) == {
+        "Paranaguá/PR",
+        "Paraná",
+    }
+
+
+@pytest.mark.usefixtures("cache_cepea")
+def test_csv_redirecionado_em_cp1252_sai_em_utf8(monkeypatch):
+    monkeypatch.setattr(os, "linesep", "\r\n")
+    buffer = io.BytesIO()
+    saida = io.TextIOWrapper(buffer, encoding="cp1252", newline="\r\n")
+
+    configuracao = structlog.get_config()
+    try:
+        with patch.object(sys, "stdout", saida):
+            cli.main(_version=False, verbose=False)
+            cli.cepea_indicador(
+                produto="soja", inicio=None, fim=None, ultimo=False, formato=cli.Formato.CSV
+            )
+            saida.flush()
+    finally:
+        structlog.configure(**configuracao)
+
+    corpo = buffer.getvalue()
+    assert b"\r\r\n" not in corpo
+    assert corpo.count(b"\r\n") == corpo.count(b"\n") == 4
+    assert "Paranaguá/PR".encode() in corpo
+    assert set(pd.read_csv(io.BytesIO(corpo))["praca"]) == {"Paranaguá/PR", "Paraná"}
+
+
+CLI_COM_CEPEA_SERVIDO = """
+from unittest.mock import AsyncMock, patch
+
+import pandas as pd
+
+from agrobr import cli
+
+frame = pd.DataFrame({"data": ["2026-09-25", "2026-09-26"], "praca": ["Paranaguá/PR", "Paraná"]})
+with patch("agrobr.cepea.indicador", AsyncMock(return_value=frame)):
+    cli.app(["cepea", "indicador", "soja", "-o", "csv"])
+"""
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="a saida redirecionada em cp1252 e do Windows")
+def test_csv_da_cli_num_processo_real_do_windows():
+    ambiente = {
+        chave: valor
+        for chave, valor in os.environ.items()
+        if chave not in {"PYTHONIOENCODING", "PYTHONUTF8"}
+    }
+
+    processo = subprocess.run(
+        [sys.executable, "-c", CLI_COM_CEPEA_SERVIDO],
+        capture_output=True,
+        env=ambiente,
+        timeout=120,
+        check=False,
+    )
+
+    assert processo.returncode == 0, processo.stderr.decode("utf-8", "replace")
+    assert (
+        processo.stdout == "data,praca\r\n2026-09-25,Paranaguá/PR\r\n2026-09-26,Paraná\r\n".encode()
+    )
+    assert pd.read_csv(io.BytesIO(processo.stdout))["praca"].tolist() == ["Paranaguá/PR", "Paraná"]

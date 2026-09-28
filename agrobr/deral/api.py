@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import time
-from typing import Any, Literal, overload
+from typing import Literal, overload
 
 import pandas as pd
 import structlog
@@ -37,7 +38,6 @@ async def condicao_lavouras(
     *,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     logger.info("deral_condicao_lavouras", produto=produto)
 
@@ -46,7 +46,7 @@ async def condicao_lavouras(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_pc_xls(data)
+    df, engine = parser.parse_pc_xls_with_engine(data)
 
     if produto:
         df = parser.filter_by_produto(df, produto)
@@ -56,10 +56,12 @@ async def condicao_lavouras(
     meta = build_source_meta(
         "deral",
         f"{client.BASE_URL}/PC.xls",
-        "httpx+openpyxl",
+        f"httpx+{engine}",
         fetch_ms,
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        raw_content_hash=hashlib.sha256(data).hexdigest(),
+        raw_content_size=len(data),
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

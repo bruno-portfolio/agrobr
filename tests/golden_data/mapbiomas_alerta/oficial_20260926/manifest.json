@@ -1,0 +1,212 @@
+{
+ "descricao": "MapBiomas Alerta, alertas detectados de 2025-01-13 a 2025-01-19: as páginas de 30 pela query exata do agrobr (ALERTS_QUERY, ALERT_CODE ASC) e a referência em página única (limit 5000), antes e depois",
+ "recibos": [
+  {
+   "arquivo": "referencia_antes.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery referencia($startDate: BaseDate, $endDate: BaseDate) {\n  alerts(startDate: $startDate, endDate: $endDate, page: 1, limit: 5000,\n         dateType: DetectedAt, sortField: ALERT_CODE, sortDirection: ASC) {\n    metadata { currentPage totalCount totalPages }\n    collection {\n      alertCode areaHa detectedAt publishedAt statusName sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n  }\n}\n",
+   "variables": {
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19"
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 297201,
+   "sha256": "846e540f7ef2603795a418ff0596e772e70932157e132d07d4d692d922fcf43b",
+   "capturado_em": "2026-09-27T02:30:12.783209+00:00"
+  },
+  {
+   "arquivo": "pagina_1.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery alerts(\n  $page: Int, $limit: Int,\n  $startDate: BaseDate, $endDate: BaseDate, $dateType: DateTypes,\n  $sources: [SourceTypes!],\n  $boundingBox: [Float!],\n  $territoryIds: [Int!],\n  $sortField: AlertSortField, $sortDirection: SortDirection\n) {\n  alerts(\n    page: $page, limit: $limit,\n    startDate: $startDate, endDate: $endDate, dateType: $dateType,\n    sources: $sources,\n    boundingBox: $boundingBox,\n    territoryIds: $territoryIds,\n    sortField: $sortField, sortDirection: $sortDirection\n  ) {\n    collection {\n      alertCode\n      areaHa\n      detectedAt\n      publishedAt\n      statusName\n      sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n    metadata {\n      currentPage\n      totalCount\n      totalPages\n    }\n  }\n}\n",
+   "variables": {
+    "limit": 30,
+    "page": 1,
+    "sortField": "ALERT_CODE",
+    "sortDirection": "ASC",
+    "dateType": "DetectedAt",
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19"
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 145862,
+   "sha256": "ba8cdbf05f8a67960fdff0aa0ee2e7d88f02a0e94372e776377a329f994462c7",
+   "capturado_em": "2026-09-27T02:30:12.962540+00:00"
+  },
+  {
+   "arquivo": "pagina_2.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery alerts(\n  $page: Int, $limit: Int,\n  $startDate: BaseDate, $endDate: BaseDate, $dateType: DateTypes,\n  $sources: [SourceTypes!],\n  $boundingBox: [Float!],\n  $territoryIds: [Int!],\n  $sortField: AlertSortField, $sortDirection: SortDirection\n) {\n  alerts(\n    page: $page, limit: $limit,\n    startDate: $startDate, endDate: $endDate, dateType: $dateType,\n    sources: $sources,\n    boundingBox: $boundingBox,\n    territoryIds: $territoryIds,\n    sortField: $sortField, sortDirection: $sortDirection\n  ) {\n    collection {\n      alertCode\n      areaHa\n      detectedAt\n      publishedAt\n      statusName\n      sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n    metadata {\n      currentPage\n      totalCount\n      totalPages\n    }\n  }\n}\n",
+   "variables": {
+    "limit": 30,
+    "page": 2,
+    "sortField": "ALERT_CODE",
+    "sortDirection": "ASC",
+    "dateType": "DetectedAt",
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19"
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 96383,
+   "sha256": "7e02cee8e1867f720a2d58f97deeccaa8e27785d325f7526684a56872d6f4394",
+   "capturado_em": "2026-09-27T02:30:14.272294+00:00"
+  },
+  {
+   "arquivo": "pagina_3.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery alerts(\n  $page: Int, $limit: Int,\n  $startDate: BaseDate, $endDate: BaseDate, $dateType: DateTypes,\n  $sources: [SourceTypes!],\n  $boundingBox: [Float!],\n  $territoryIds: [Int!],\n  $sortField: AlertSortField, $sortDirection: SortDirection\n) {\n  alerts(\n    page: $page, limit: $limit,\n    startDate: $startDate, endDate: $endDate, dateType: $dateType,\n    sources: $sources,\n    boundingBox: $boundingBox,\n    territoryIds: $territoryIds,\n    sortField: $sortField, sortDirection: $sortDirection\n  ) {\n    collection {\n      alertCode\n      areaHa\n      detectedAt\n      publishedAt\n      statusName\n      sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n    metadata {\n      currentPage\n      totalCount\n      totalPages\n    }\n  }\n}\n",
+   "variables": {
+    "limit": 30,
+    "page": 3,
+    "sortField": "ALERT_CODE",
+    "sortDirection": "ASC",
+    "dateType": "DetectedAt",
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19"
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 55148,
+   "sha256": "99adee36dbfdcfd305924f915d7dc0a80e63165a418171e90a1cfa190feca3c5",
+   "capturado_em": "2026-09-27T02:30:15.703746+00:00"
+  },
+  {
+   "arquivo": null,
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery referencia($startDate: BaseDate, $endDate: BaseDate) {\n  alerts(startDate: $startDate, endDate: $endDate, page: 1, limit: 5000,\n         dateType: DetectedAt, sortField: ALERT_CODE, sortDirection: ASC) {\n    metadata { currentPage totalCount totalPages }\n    collection {\n      alertCode areaHa detectedAt publishedAt statusName sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n  }\n}\n",
+   "variables": {
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19"
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 297201,
+   "sha256": "846e540f7ef2603795a418ff0596e772e70932157e132d07d4d692d922fcf43b",
+   "capturado_em": "2026-09-27T02:30:16.163829+00:00",
+   "nota": "mesmo SHA da referencia_antes.json; arquivo não guardado"
+  },
+  {
+   "arquivo": "caixa_pagina_1.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery alerts(\n  $page: Int, $limit: Int,\n  $startDate: BaseDate, $endDate: BaseDate, $dateType: DateTypes,\n  $sources: [SourceTypes!],\n  $boundingBox: [Float!],\n  $territoryIds: [Int!],\n  $sortField: AlertSortField, $sortDirection: SortDirection\n) {\n  alerts(\n    page: $page, limit: $limit,\n    startDate: $startDate, endDate: $endDate, dateType: $dateType,\n    sources: $sources,\n    boundingBox: $boundingBox,\n    territoryIds: $territoryIds,\n    sortField: $sortField, sortDirection: $sortDirection\n  ) {\n    collection {\n      alertCode\n      areaHa\n      detectedAt\n      publishedAt\n      statusName\n      sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n    metadata {\n      currentPage\n      totalCount\n      totalPages\n    }\n  }\n}\n",
+   "variables": {
+    "limit": 30,
+    "page": 1,
+    "sortField": "ALERT_CODE",
+    "sortDirection": "ASC",
+    "dateType": "DetectedAt",
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19",
+    "boundingBox": [
+     -55.0,
+     -8.0,
+     -50.0,
+     -3.0
+    ]
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 9782,
+   "sha256": "fff987a1d4d5e3680c7753cb204680cbb1748e8df8dd4b9a8cc4bccb4ec79d5d",
+   "capturado_em": "2026-09-27T02:30:19.078531+00:00"
+  },
+  {
+   "arquivo": "fontes_sad_pagina_1.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery alerts(\n  $page: Int, $limit: Int,\n  $startDate: BaseDate, $endDate: BaseDate, $dateType: DateTypes,\n  $sources: [SourceTypes!],\n  $boundingBox: [Float!],\n  $territoryIds: [Int!],\n  $sortField: AlertSortField, $sortDirection: SortDirection\n) {\n  alerts(\n    page: $page, limit: $limit,\n    startDate: $startDate, endDate: $endDate, dateType: $dateType,\n    sources: $sources,\n    boundingBox: $boundingBox,\n    territoryIds: $territoryIds,\n    sortField: $sortField, sortDirection: $sortDirection\n  ) {\n    collection {\n      alertCode\n      areaHa\n      detectedAt\n      publishedAt\n      statusName\n      sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n    metadata {\n      currentPage\n      totalCount\n      totalPages\n    }\n  }\n}\n",
+   "variables": {
+    "limit": 30,
+    "page": 1,
+    "sortField": "ALERT_CODE",
+    "sortDirection": "ASC",
+    "dateType": "DetectedAt",
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19",
+    "sources": [
+     "Sad"
+    ]
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 143926,
+   "sha256": "99916523629d1453f721c6882770b4b26d6bcd0c7b8fb945d12ee926347a6961",
+   "capturado_em": "2026-09-27T02:30:22.471486+00:00"
+  },
+  {
+   "arquivo": "publicacao_pagina_1.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\nquery alerts(\n  $page: Int, $limit: Int,\n  $startDate: BaseDate, $endDate: BaseDate, $dateType: DateTypes,\n  $sources: [SourceTypes!],\n  $boundingBox: [Float!],\n  $territoryIds: [Int!],\n  $sortField: AlertSortField, $sortDirection: SortDirection\n) {\n  alerts(\n    page: $page, limit: $limit,\n    startDate: $startDate, endDate: $endDate, dateType: $dateType,\n    sources: $sources,\n    boundingBox: $boundingBox,\n    territoryIds: $territoryIds,\n    sortField: $sortField, sortDirection: $sortDirection\n  ) {\n    collection {\n      alertCode\n      areaHa\n      detectedAt\n      publishedAt\n      statusName\n      sources\n      coordenates { latitude longitude }\n      geometryWkt\n    }\n    metadata {\n      currentPage\n      totalCount\n      totalPages\n    }\n  }\n}\n",
+   "variables": {
+    "limit": 10,
+    "page": 1,
+    "sortField": "ALERT_CODE",
+    "sortDirection": "ASC",
+    "dateType": "PublishedAt",
+    "startDate": "2025-01-13",
+    "endDate": "2025-01-19"
+   },
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 262470,
+   "sha256": "aa7941833fd41431ab5aa9b77a6d0b063c3425de8fc598213ce8e052bc927105",
+   "capturado_em": "2026-09-27T02:30:25.921580+00:00"
+  },
+  {
+   "arquivo": "info_date_range.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\n{\n  alertDateRange {\n    minDetectedAt\n    maxDetectedAt\n    minPublishedAt\n    maxPublishedAt\n  }\n}\n",
+   "variables": {},
+   "token": "ausente (como o agrobr pede)",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 147,
+   "sha256": "ce06deb59f258d5628c5c2e890fbe5ff6d203209157842f62ec7d7679c00f4bf",
+   "capturado_em": "2026-09-27T02:30:28.739968+00:00"
+  },
+  {
+   "arquivo": "info_last_publication.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\n{\n  lastAlertPublication {\n    publishedAt\n    total\n  }\n}\n",
+   "variables": {},
+   "token": "ausente (como o agrobr pede)",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 85,
+   "sha256": "51861908903899fda394061b25ebffe7faa27f70a945f2a82da574fdd847d5fc",
+   "capturado_em": "2026-09-27T02:30:28.889321+00:00"
+  },
+  {
+   "arquivo": "introspeccao.json",
+   "url": "https://plataforma.alerta.mapbiomas.org/api/v2/graphql",
+   "method": "POST",
+   "query": "\n{\n  q: __type(name: \"Query\") { fields { name args { name defaultValue type { kind name ofType { kind name ofType { kind name } } } } } }\n  sort: __type(name: \"AlertSortField\") { enumValues { name } }\n  dir: __type(name: \"SortDirection\") { enumValues { name } }\n  dt: __type(name: \"DateTypes\") { enumValues { name } }\n  src: __type(name: \"SourceTypes\") { enumValues { name } }\n}\n",
+   "variables": {},
+   "token": "presente",
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "bytes": 6066,
+   "sha256": "ba0a133b3466d113d45ed760feed8f8c4498a349eb87d3397d02ff8453f03ca1",
+   "capturado_em": "2026-09-27T02:02:36.279193+00:00"
+  }
+ ]
+}

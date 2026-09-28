@@ -1,0 +1,60 @@
+{
+  "count": 273,
+  "columns": [
+    "produto",
+    "data",
+    "condicao",
+    "pct",
+    "plantio_pct",
+    "colheita_pct"
+  ],
+  "non_null_columns": [
+    "produto",
+    "data",
+    "condicao"
+  ],
+  "produtos_expected": [
+    "cafe",
+    "cevada",
+    "feijao_1",
+    "feijao_2",
+    "milho_1",
+    "milho_2",
+    "soja",
+    "trigo"
+  ],
+  "data_pattern": "^[0-9]{2}/[0-9]{2}/[0-9]{4}$",
+  "datas_expected": [
+    "14/09/2026",
+    "08/09/2026",
+    "15/09/2025",
+    "16/09/2024",
+    "18/09/2023",
+    "19/09/2022",
+    "20/09/2021",
+    "14/09/2020",
+    "16/09/2019",
+    "17/09/2018",
+    "18/09/2017",
+    "19/09/2016",
+    "08/01/2018",
+    "14/09/2015"
+  ],
+  "latest_feijao_1": {
+    "data": "14/09/2026",
+    "condicoes": {
+      "boa": 96.0,
+      "media": 4.0,
+      "ruim": 0.0
+    },
+    "plantio_pct": 7.0,
+    "colheita_pct": 0.0
+  },
+  "engine": "xlrd",
+  "has_condicao": true,
+  "condicoes_expected": [
+    "boa",
+    "media",
+    "ruim"
+  ]
+}

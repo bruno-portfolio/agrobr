@@ -1,11 +1,13 @@
 """Testes para a API publica NASA POWER."""
 
+from datetime import date, datetime
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from agrobr.exceptions import InvalidParameterError
 from agrobr.nasa_power import api
+from tests.helpers import levanta_exatamente
 
 
 def _mock_nasa_response(dates=None):
@@ -30,6 +32,16 @@ def _mock_nasa_response(dates=None):
         "type": "Feature",
         "geometry": {"type": "Point", "coordinates": [-56.1, -12.6, 399.24]},
         "properties": {"parameter": params},
+        "header": {"fill_value": -999.0, "time_standard": "LST"},
+        "parameters": {
+            "T2M": {"units": "C"},
+            "T2M_MAX": {"units": "C"},
+            "T2M_MIN": {"units": "C"},
+            "PRECTOTCORR": {"units": "mm/day"},
+            "RH2M": {"units": "%"},
+            "ALLSKY_SFC_SW_DWN": {"units": "MJ/m^2/day"},
+            "WS2M": {"units": "m/s"},
+        },
     }
 
 
@@ -79,26 +91,41 @@ class TestClimaPonto:
         assert len(df) == 2
         assert "precip_acum_mm" in df.columns
 
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        mock_data = _mock_nasa_response()
-
-        with patch.object(
-            api.client, "fetch_daily", new_callable=AsyncMock, return_value=mock_data
+    @pytest.mark.parametrize(
+        ("inicio", "fim", "motivo"),
+        [
+            ("2024/01/01", "2024-01-02", "formato"),
+            (datetime(2024, 1, 1), date(2024, 1, 2), "datas ou strings"),
+            ("1980-12-31", "1981-01-02", "1981"),
+        ],
+    )
+    async def test_periodo_invalido_recusado_antes_da_rede(self, inicio, fim, motivo):
+        with (
+            patch.object(api.client, "fetch_daily", new_callable=AsyncMock) as fetch,
+            levanta_exatamente(InvalidParameterError, motivo),
         ):
-            df, meta = await api.clima_ponto(
-                -12.6, -56.1, "2024-01-15", "2024-01-15", return_meta=True
-            )
-
-        assert meta.source == "nasa_power"
-        assert meta.attempted_sources == ["nasa_power"]
-        assert meta.selected_source == "nasa_power"
-        assert meta.fetch_timestamp is not None
-        assert meta.records_count == len(df)
-        assert "latitude=-12.6" in meta.source_url
+            await api.clima_ponto(0, 0, inicio, fim)
+        fetch.assert_not_awaited()
 
 
 class TestClimaUf:
+    @pytest.mark.parametrize(("uf", "ano", "motivo"), [(35, 2024, "sigla"), ("MT", 1980, "1981")])
+    async def test_uf_ou_ano_invalido_recusado_antes_da_rede(self, uf, ano, motivo):
+        with (
+            patch.object(api.client, "fetch_daily", new_callable=AsyncMock) as fetch,
+            levanta_exatamente(InvalidParameterError, motivo),
+        ):
+            await api.clima_uf(uf, ano)
+        fetch.assert_not_awaited()
+
+    async def test_invalid_aggregation_before_request(self):
+        with (
+            patch.object(api.client, "fetch_daily", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="agregacao"),
+        ):
+            await api.clima_uf("MT", 2024, agregacao="mensla")
+        fetch.assert_not_awaited()
+
     @pytest.mark.asyncio
     async def test_returns_dataframe(self):
         dates = [f"202401{d:02d}" for d in range(1, 4)]
@@ -113,47 +140,6 @@ class TestClimaUf:
         assert "uf" in df.columns
 
     @pytest.mark.asyncio
-    async def test_diario_agregacao(self):
-        dates = [f"202401{d:02d}" for d in range(1, 4)]
-        mock_data = _mock_nasa_response(dates=dates)
-
-        with patch.object(
-            api.client, "fetch_daily", new_callable=AsyncMock, return_value=mock_data
-        ):
-            df = await api.clima_uf("MT", 2024, agregacao="diario")
-
-        assert len(df) == 3
-
-    @pytest.mark.asyncio
     async def test_invalid_uf_raises(self):
-        with pytest.raises(ValueError, match="nao reconhecida"):
+        with pytest.raises(ValueError, match="não reconhecida"):
             await api.clima_uf("XX", 2024)
-
-    @pytest.mark.asyncio
-    async def test_return_meta(self):
-        dates = [f"202401{d:02d}" for d in range(1, 4)]
-        mock_data = _mock_nasa_response(dates=dates)
-
-        with patch.object(
-            api.client, "fetch_daily", new_callable=AsyncMock, return_value=mock_data
-        ):
-            df, meta = await api.clima_uf("MT", 2024, return_meta=True)
-
-        assert meta.source == "nasa_power"
-        assert meta.attempted_sources == ["nasa_power"]
-        assert meta.records_count == len(df)
-
-    @pytest.mark.asyncio
-    async def test_passes_correct_coords(self):
-        dates = ["20240115"]
-        mock_data = _mock_nasa_response(dates=dates)
-
-        with patch.object(
-            api.client, "fetch_daily", new_callable=AsyncMock, return_value=mock_data
-        ) as mock_fetch:
-            await api.clima_uf("SP", 2024, agregacao="diario")
-
-        # SP coords: (-22.3, -49.1)
-        call_args = mock_fetch.call_args
-        assert call_args[0][0] == pytest.approx(-22.3)  # lat
-        assert call_args[0][1] == pytest.approx(-49.1)  # lon

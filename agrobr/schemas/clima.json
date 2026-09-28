@@ -1,7 +1,7 @@
 {
   "name": "datasets.clima",
-  "schema_version": "1.0",
-  "effective_from": "0.13.0",
+  "schema_version": "3.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "mes",
@@ -14,6 +14,10 @@
     "temp_media",
     "temp_max_media",
     "temp_min_media",
+    "num_estacoes",
+    "umidade_media",
+    "radiacao_media_mj",
+    "vento_medio_ms",
     "fonte"
   ],
   "dtypes": {
@@ -27,20 +31,38 @@
     "umidade_media": "float",
     "radiacao_media_mj": "float",
     "vento_medio_ms": "float",
-    "fonte": "str"
+    "fonte": "str",
+    "lat": "float",
+    "lon": "float",
+    "agregacao_espacial": "str",
+    "base_tempo": "str",
+    "estacoes_chuva": "int",
+    "estacoes_chuva_parciais": "int",
+    "dias": "int",
+    "data_inicio": "date",
+    "data_fim": "date"
   },
   "nullable": {
     "mes": false,
     "uf": false,
-    "precip_acum_mm": false,
-    "temp_media": false,
-    "temp_max_media": false,
-    "temp_min_media": false,
+    "precip_acum_mm": true,
+    "temp_media": true,
+    "temp_max_media": true,
+    "temp_min_media": true,
     "num_estacoes": true,
     "umidade_media": true,
     "radiacao_media_mj": true,
     "vento_medio_ms": true,
-    "fonte": false
+    "fonte": false,
+    "lat": true,
+    "lon": true,
+    "agregacao_espacial": true,
+    "base_tempo": true,
+    "estacoes_chuva": true,
+    "estacoes_chuva_parciais": true,
+    "dias": true,
+    "data_inicio": true,
+    "data_fim": true
   },
   "columns": [
     {
@@ -68,7 +90,7 @@
     {
       "name": "precip_acum_mm",
       "type": "float",
-      "nullable": false,
+      "nullable": true,
       "unit": "mm",
       "stable": true,
       "deprecated": false,
@@ -79,7 +101,7 @@
     {
       "name": "temp_media",
       "type": "float",
-      "nullable": false,
+      "nullable": true,
       "unit": "°C",
       "stable": true,
       "deprecated": false,
@@ -90,7 +112,7 @@
     {
       "name": "temp_max_media",
       "type": "float",
-      "nullable": false,
+      "nullable": true,
       "unit": "°C",
       "stable": true,
       "deprecated": false,
@@ -101,7 +123,7 @@
     {
       "name": "temp_min_media",
       "type": "float",
-      "nullable": false,
+      "nullable": true,
       "unit": "°C",
       "stable": true,
       "deprecated": false,
@@ -163,6 +185,105 @@
       "description": "",
       "min_value": null,
       "max_value": null
+    },
+    {
+      "name": "lat",
+      "type": "float",
+      "nullable": true,
+      "unit": "graus",
+      "stable": false,
+      "deprecated": false,
+      "description": "Latitude do ponto NASA; nula para o agregado de estações INMET",
+      "min_value": -90,
+      "max_value": 90
+    },
+    {
+      "name": "lon",
+      "type": "float",
+      "nullable": true,
+      "unit": "graus",
+      "stable": false,
+      "deprecated": false,
+      "description": "Longitude do ponto NASA; nula para o agregado de estações INMET",
+      "min_value": -180,
+      "max_value": 180
+    },
+    {
+      "name": "agregacao_espacial",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "estacoes ou ponto_grade; fórmulas por variável em MetaInfo.source_details",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "base_tempo",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "UTC no INMET; LST na consulta diária padrão NASA POWER",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "estacoes_chuva",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Estações INMET com chuva válida em todos os dias do mês; só elas entram na média",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "estacoes_chuva_parciais",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Estações INMET com chuva válida em parte dos dias do mês; ficam fora da média",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "dias",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Dias do mês com ao menos um valor diário válido",
+      "min_value": 0,
+      "max_value": 31
+    },
+    {
+      "name": "data_inicio",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Primeiro dia do mês com valor diário válido",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_fim",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Último dia do mês com valor diário válido",
+      "min_value": null,
+      "max_value": null
     }
   ],
   "constraints": {
@@ -172,14 +293,27 @@
     "umidade_media_min": 0,
     "umidade_media_max": 100,
     "radiacao_media_mj_min": 0,
-    "vento_medio_ms_min": 0
+    "vento_medio_ms_min": 0,
+    "lat_min": -90,
+    "lat_max": 90,
+    "lon_min": -180,
+    "lon_max": 180,
+    "estacoes_chuva_min": 0,
+    "estacoes_chuva_parciais_min": 0,
+    "dias_min": 0,
+    "dias_max": 31
   },
   "guarantees": [
     "PK unica por combinacao mes + uf",
     "'uf' sempre uppercase 2 letras",
     "'fonte' sempre 'inmet' ou 'nasa_power'",
-    "'num_estacoes' presente apenas quando fonte='inmet'",
+    "'num_estacoes', 'estacoes_chuva' e 'estacoes_chuva_parciais' presentes apenas quando fonte='inmet'",
     "'umidade_media', 'radiacao_media_mj', 'vento_medio_ms' presentes apenas quando fonte='nasa_power'",
-    "Agregacao mensal: 'mes' sempre primeiro dia do mes"
+    "Agregacao mensal: 'mes' sempre primeiro dia do mes",
+    "Temperaturas ausentes permanecem nulas; ausência não é zero",
+    "Precipitação INMET: média dos acumulados das estações com chuva válida em todos os dias do mês; sem nenhuma, nula e com aviso",
+    "'dias', 'data_inicio' e 'data_fim' dão a cobertura diária do mês; mês parcial não é extrapolado",
+    "Temperatura INMET: média dos registros diários válidos, sem pesos iguais por estação",
+    "Coordenadas NASA identificam um ponto; não representam média territorial da UF"
   ]
 }

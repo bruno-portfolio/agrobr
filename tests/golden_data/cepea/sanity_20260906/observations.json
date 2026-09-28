@@ -1,0 +1,4539 @@
+{
+  "soja": {
+    "file": "soja.html",
+    "url": "https://www.cepea.org.br/br/indicador/soja.aspx",
+    "sha256": "304aa06cccb566b286ea5593015b30751c107cfab97e37e2285dea941fa8498f",
+    "captured_at": "2026-09-06T01:38:54.163351+00:00",
+    "table_index": 0,
+    "unit": "BRL/sc60kg",
+    "title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "150.14",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "150,14",
+          "0,80%",
+          "3,61%",
+          "28,88"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "151.36",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "151,36",
+          "0,81%",
+          "4,45%",
+          "29,00"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "151.65",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "151,65",
+          "0,19%",
+          "4,65%",
+          "29,33"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "154.63",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "154,63",
+          "1,97%",
+          "6,71%",
+          "29,77"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "153.68",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "153,68",
+          "-0,61%",
+          "6,05%",
+          "29,89"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "153.86",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "153,86",
+          "0,12%",
+          "6,18%",
+          "29,85"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "153.70",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "153,70",
+          "-0,10%",
+          "6,07%",
+          "29,86"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "154.57",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "154,57",
+          "0,57%",
+          "6,67%",
+          "29,99"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "155.05",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "155,05",
+          "0,31%",
+          "7,00%",
+          "30,01"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "159.76",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "159,76",
+          "3,04%",
+          "10,25%",
+          "30,71"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "159.44",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "159,44",
+          "-0,20%",
+          "10,03%",
+          "30,77"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "161.14",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "161,14",
+          "1,07%",
+          "1,07%",
+          "31,29"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "160.99",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "160,99",
+          "-0,09%",
+          "0,97%",
+          "31,52"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "160.14",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "160,14",
+          "-0,53%",
+          "0,44%",
+          "31,38"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "160.87",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "160,87",
+          "0,46%",
+          "0,90%",
+          "31,36"
+        ]
+      }
+    ]
+  },
+  "soja_parana": {
+    "file": "soja_parana_2e2f150d.html",
+    "url": "https://www.cepea.org.br/br/indicador/soja.aspx",
+    "sha256": "2e2f150db9dcfeb918e0fa91a409ceb6e9b659a23ee7f6dd14c2419ca5bcb5b2",
+    "captured_at": "2026-09-06T01:38:59.305034+00:00",
+    "table_index": 1,
+    "unit": "BRL/sc60kg",
+    "title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANÁ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "141.69",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "141,69",
+          "0,38%",
+          "3,22%",
+          "27,26"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "143.21",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "143,21",
+          "1,07%",
+          "4,33%",
+          "27,44"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "144.03",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "144,03",
+          "0,57%",
+          "4,92%",
+          "27,85"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "146.24",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "146,24",
+          "1,53%",
+          "6,53%",
+          "28,16"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "146.70",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "146,70",
+          "0,31%",
+          "6,87%",
+          "28,53"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "146.31",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "146,31",
+          "-0,27%",
+          "6,59%",
+          "28,39"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "146.08",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "146,08",
+          "-0,16%",
+          "6,42%",
+          "28,38"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "148.00",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "148,00",
+          "1,31%",
+          "7,82%",
+          "28,71"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "149.21",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "149,21",
+          "0,82%",
+          "8,70%",
+          "28,88"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "151.32",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "151,32",
+          "1,41%",
+          "10,24%",
+          "29,09"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "151.31",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "151,31",
+          "-0,01%",
+          "10,23%",
+          "29,20"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "153.06",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "153,06",
+          "1,16%",
+          "1,16%",
+          "29,72"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "152.61",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "152,61",
+          "-0,29%",
+          "0,86%",
+          "29,88"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "151.68",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "151,68",
+          "-0,61%",
+          "0,24%",
+          "29,72"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "152.10",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "152,10",
+          "0,28%",
+          "0,52%",
+          "29,65"
+        ]
+      }
+    ]
+  },
+  "milho": {
+    "file": "milho.html",
+    "url": "https://www.cepea.org.br/br/indicador/milho.aspx",
+    "sha256": "80e03952b21866fc12ca000e49de0c5a8f5ad671d24b462be5d18247b6a1f450",
+    "captured_at": "2026-09-06T01:39:04.393280+00:00",
+    "table_index": 0,
+    "unit": "BRL/sc60kg",
+    "title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "66.71",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "66,71",
+          "0,54%",
+          "2,24%",
+          "12,83"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "67.20",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "67,20",
+          "0,73%",
+          "2,99%",
+          "12,88"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "67.39",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "67,39",
+          "0,28%",
+          "3,28%",
+          "13,03"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "67.74",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "67,74",
+          "0,52%",
+          "3,82%",
+          "13,04"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "67.90",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "67,90",
+          "0,24%",
+          "4,06%",
+          "13,20"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "68.19",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "68,19",
+          "0,43%",
+          "4,51%",
+          "13,23"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "68.43",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "68,43",
+          "0,35%",
+          "4,87%",
+          "13,29"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "68.79",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "68,79",
+          "0,53%",
+          "5,43%",
+          "13,35"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "69.05",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "69,05",
+          "0,38%",
+          "5,82%",
+          "13,37"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "69.51",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "69,51",
+          "0,67%",
+          "6,53%",
+          "13,36"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "70.23",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "70,23",
+          "1,04%",
+          "7,63%",
+          "13,55"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "70.96",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "70,96",
+          "1,04%",
+          "1,04%",
+          "13,78"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "70.94",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "70,94",
+          "-0,03%",
+          "1,01%",
+          "13,89"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "71.06",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "71,06",
+          "0,17%",
+          "1,18%",
+          "13,92"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "70.93",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "70,93",
+          "-0,18%",
+          "1,00%",
+          "13,83"
+        ]
+      }
+    ]
+  },
+  "bezerro": {
+    "file": "bezerro.html",
+    "url": "https://www.cepea.org.br/br/indicador/bezerro.aspx",
+    "sha256": "9a133908827bc3f590d435c35a3d79e619c507e13da1ae3c36f88c3694679e6d",
+    "captured_at": "2026-09-06T01:39:09.479729+00:00",
+    "table_index": 0,
+    "unit": "BRL/cabeca",
+    "title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "3390.21",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "3.390,21",
+          "0,16%",
+          "0,38%",
+          "652,21"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "3385.31",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "3.385,31",
+          "-0,14%",
+          "0,24%",
+          "648,65"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "3389.33",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "3.389,33",
+          "0,12%",
+          "0,36%",
+          "655,45"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "3396.06",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "3.396,06",
+          "0,20%",
+          "0,56%",
+          "653,84"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "3393.02",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "3.393,02",
+          "-0,09%",
+          "0,47%",
+          "659,86"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "3393.49",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "3.393,49",
+          "0,01%",
+          "0,48%",
+          "658,42"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "3389.51",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "3.389,51",
+          "-0,12%",
+          "0,36%",
+          "658,54"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "3394.43",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "3.394,43",
+          "0,15%",
+          "0,51%",
+          "658,60"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "3399.00",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "3.399,00",
+          "0,13%",
+          "0,64%",
+          "657,96"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "3404.58",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "3.404,58",
+          "0,16%",
+          "0,81%",
+          "654,47"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "3403.28",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "3.403,28",
+          "-0,04%",
+          "0,77%",
+          "656,75"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "3400.50",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "3.400,50",
+          "-0,08%",
+          "-0,08%",
+          "660,29"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "3395.12",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "3.395,12",
+          "-0,16%",
+          "-0,24%",
+          "664,67"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "3397.58",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "3.397,58",
+          "0,07%",
+          "-0,17%",
+          "665,67"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "3397.99",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "3.397,99",
+          "0,01%",
+          "-0,16%",
+          "662,38"
+        ]
+      }
+    ]
+  },
+  "cafe": {
+    "file": "cafe.html",
+    "url": "https://www.cepea.org.br/br/indicador/cafe.aspx",
+    "sha256": "2367b2976e3df7fd8878333c8f5062b08dbe660e835184482c9f4206ea90b4a7",
+    "captured_at": "2026-09-06T01:39:14.563438+00:00",
+    "table_index": 0,
+    "unit": "BRL/sc60kg",
+    "title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "1784.82",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "1.784,82",
+          "-0,52%",
+          "2,33%",
+          "343,37"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "1815.45",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "1.815,45",
+          "1,72%",
+          "4,09%",
+          "347,85"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "1804.65",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "1.804,65",
+          "-0,59%",
+          "3,47%",
+          "348,99"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "1821.66",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "1.821,66",
+          "0,94%",
+          "4,44%",
+          "350,72"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "1803.76",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "1.803,76",
+          "-0,98%",
+          "3,42%",
+          "350,79"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "1826.58",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "1.826,58",
+          "1,27%",
+          "4,72%",
+          "354,40"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "1821.25",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "1.821,25",
+          "-0,29%",
+          "4,42%",
+          "353,85"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "1800.79",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "1.800,79",
+          "-1,12%",
+          "3,25%",
+          "349,40"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "1742.74",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "1.742,74",
+          "-3,22%",
+          "-0,08%",
+          "337,35"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "1728.61",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "1.728,61",
+          "-0,81%",
+          "-0,89%",
+          "332,30"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "1748.44",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "1.748,44",
+          "1,15%",
+          "0,24%",
+          "337,41"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "1730.56",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "1.730,56",
+          "-1,02%",
+          "-1,02%",
+          "336,03"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "1696.62",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "1.696,62",
+          "-1,96%",
+          "-2,96%",
+          "332,15"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "1672.25",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "1.672,25",
+          "-1,44%",
+          "-4,36%",
+          "327,63"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "1659.93",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "1.659,93",
+          "-0,74%",
+          "-5,06%",
+          "323,57"
+        ]
+      }
+    ]
+  },
+  "cafe_arabica": {
+    "file": "cafe_arabica_d84c0de8.html",
+    "url": "https://www.cepea.org.br/br/indicador/cafe.aspx",
+    "sha256": "d84c0de876dede1a69f25d061fea3b57a483086fab0411e60c535208c489b8e9",
+    "captured_at": "2026-09-06T01:39:19.652552+00:00",
+    "table_index": 0,
+    "unit": "BRL/sc60kg",
+    "title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "1784.82",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "1.784,82",
+          "-0,52%",
+          "2,33%",
+          "343,37"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "1815.45",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "1.815,45",
+          "1,72%",
+          "4,09%",
+          "347,85"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "1804.65",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "1.804,65",
+          "-0,59%",
+          "3,47%",
+          "348,99"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "1821.66",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "1.821,66",
+          "0,94%",
+          "4,44%",
+          "350,72"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "1803.76",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "1.803,76",
+          "-0,98%",
+          "3,42%",
+          "350,79"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "1826.58",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "1.826,58",
+          "1,27%",
+          "4,72%",
+          "354,40"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "1821.25",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "1.821,25",
+          "-0,29%",
+          "4,42%",
+          "353,85"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "1800.79",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "1.800,79",
+          "-1,12%",
+          "3,25%",
+          "349,40"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "1742.74",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "1.742,74",
+          "-3,22%",
+          "-0,08%",
+          "337,35"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "1728.61",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "1.728,61",
+          "-0,81%",
+          "-0,89%",
+          "332,30"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "1748.44",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "1.748,44",
+          "1,15%",
+          "0,24%",
+          "337,41"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "1730.56",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "1.730,56",
+          "-1,02%",
+          "-1,02%",
+          "336,03"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "1696.62",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "1.696,62",
+          "-1,96%",
+          "-2,96%",
+          "332,15"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "1672.25",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "1.672,25",
+          "-1,44%",
+          "-4,36%",
+          "327,63"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "1659.93",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "1.659,93",
+          "-0,74%",
+          "-5,06%",
+          "323,57"
+        ]
+      }
+    ]
+  },
+  "cafe_robusta": {
+    "file": "cafe_robusta_fc5fa2c5.html",
+    "url": "https://www.cepea.org.br/br/indicador/cafe.aspx",
+    "sha256": "fc5fa2c5186a68be45b68753035e54cb37fe08bea1aaab385bf0cde65cfeb885",
+    "captured_at": "2026-09-06T01:39:24.740509+00:00",
+    "table_index": 1,
+    "unit": "BRL/sc60kg",
+    "title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "1052.95",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "1.052,95",
+          "0,36%",
+          "-3,63%",
+          "202,57"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "1075.11",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "1.075,11",
+          "2,10%",
+          "-1,60%",
+          "206,00"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "1062.69",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "1.062,69",
+          "-1,16%",
+          "-2,73%",
+          "205,51"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "1066.15",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "1.066,15",
+          "0,33%",
+          "-2,42%",
+          "205,27"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "1051.93",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "1.051,93",
+          "-1,33%",
+          "-3,72%",
+          "204,58"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "1058.71",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "1.058,71",
+          "0,64%",
+          "-3,10%",
+          "205,41"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "1048.71",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "1.048,71",
+          "-0,94%",
+          "-4,01%",
+          "203,75"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "1036.13",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "1.036,13",
+          "-1,20%",
+          "-5,16%",
+          "201,03"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "1021.90",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "1.021,90",
+          "-1,37%",
+          "-6,47%",
+          "197,81"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "1027.55",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "1.027,55",
+          "0,55%",
+          "-5,95%",
+          "197,53"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "1022.13",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "1.022,13",
+          "-0,53%",
+          "-6,45%",
+          "197,25"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "1007.35",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "1.007,35",
+          "-1,45%",
+          "-1,45%",
+          "195,60"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "991.71",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "991,71",
+          "-1,55%",
+          "-2,98%",
+          "194,15"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "980.05",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "980,05",
+          "-1,18%",
+          "-4,12%",
+          "192,02"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "976.71",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "976,71",
+          "-0,34%",
+          "-4,44%",
+          "190,39"
+        ]
+      }
+    ]
+  },
+  "boi": {
+    "file": "boi-gordo.html",
+    "url": "https://www.cepea.org.br/br/indicador/boi-gordo.aspx",
+    "sha256": "0a209df9cfdd1bab93f0eff98f97d1f7c4869c9e4d858ea9125059b04f080fbc",
+    "captured_at": "2026-09-06T01:39:29.815679+00:00",
+    "table_index": 0,
+    "unit": "BRL/@",
+    "title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "345.05",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "345,05",
+          "-0,49%",
+          "-0,43%",
+          "66,38"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "344.80",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "344,80",
+          "-0,07%",
+          "-0,50%",
+          "66,07"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "344.85",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "344,85",
+          "0,01%",
+          "-0,49%",
+          "66,69"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "345.70",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "345,70",
+          "0,25%",
+          "-0,25%",
+          "66,56"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "343.20",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "343,20",
+          "-0,72%",
+          "-0,97%",
+          "66,74"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "343.20",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "343,20",
+          "0,00%",
+          "-0,97%",
+          "66,74"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "343.35",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "343,35",
+          "0,04%",
+          "-0,92%",
+          "66,71"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "342.50",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "342,50",
+          "-0,25%",
+          "-1,17%",
+          "66,45"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "344.50",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "344,50",
+          "0,58%",
+          "-0,59%",
+          "66,69"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "345.35",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "345,35",
+          "0,25%",
+          "-0,35%",
+          "66,39"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "344.40",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "344,40",
+          "-0,28%",
+          "-0,62%",
+          "66,46"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "346.00",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "346,00",
+          "0,46%",
+          "0,46%",
+          "67,18"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "347.40",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "347,40",
+          "0,40%",
+          "0,87%",
+          "68,01"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "347.60",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "347,60",
+          "0,06%",
+          "0,93%",
+          "68,10"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "347.70",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "347,70",
+          "0,03%",
+          "0,96%",
+          "67,78"
+        ]
+      }
+    ]
+  },
+  "boi_gordo": {
+    "file": "boi_gordo_0ba781bf.html",
+    "url": "https://www.cepea.org.br/br/indicador/boi-gordo.aspx",
+    "sha256": "0ba781bf6fccb6d247697ce56c28d9156d907088d8b6c2ea220c01723abab030",
+    "captured_at": "2026-09-06T01:39:34.908301+00:00",
+    "table_index": 0,
+    "unit": "BRL/@",
+    "title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "345.05",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "345,05",
+          "-0,49%",
+          "-0,43%",
+          "66,38"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "344.80",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "344,80",
+          "-0,07%",
+          "-0,50%",
+          "66,07"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "344.85",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "344,85",
+          "0,01%",
+          "-0,49%",
+          "66,69"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "345.70",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "345,70",
+          "0,25%",
+          "-0,25%",
+          "66,56"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "343.20",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "343,20",
+          "-0,72%",
+          "-0,97%",
+          "66,74"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "343.20",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "343,20",
+          "0,00%",
+          "-0,97%",
+          "66,74"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "343.35",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "343,35",
+          "0,04%",
+          "-0,92%",
+          "66,71"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "342.50",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "342,50",
+          "-0,25%",
+          "-1,17%",
+          "66,45"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "344.50",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "344,50",
+          "0,58%",
+          "-0,59%",
+          "66,69"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "345.35",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "345,35",
+          "0,25%",
+          "-0,35%",
+          "66,39"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "344.40",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "344,40",
+          "-0,28%",
+          "-0,62%",
+          "66,46"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "346.00",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "346,00",
+          "0,46%",
+          "0,46%",
+          "67,18"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "347.40",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "347,40",
+          "0,40%",
+          "0,87%",
+          "68,01"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "347.60",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "347,60",
+          "0,06%",
+          "0,93%",
+          "68,10"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "347.70",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "347,70",
+          "0,03%",
+          "0,96%",
+          "67,78"
+        ]
+      }
+    ]
+  },
+  "trigo": {
+    "file": "trigo.html",
+    "url": "https://www.cepea.org.br/br/indicador/trigo.aspx",
+    "sha256": "dd54448d542b81f89b58b4efa9410fcb1d8058a755761cd8582d8bb4098a6206",
+    "captured_at": "2026-09-06T01:39:40.035961+00:00",
+    "table_index": 0,
+    "unit": "BRL/ton",
+    "title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "1419.11",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "1.419,11",
+          "-0,18%",
+          "0,94%",
+          "273,01"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "1419.12",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "1.419,12",
+          "0,00%",
+          "0,94%",
+          "271,91"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "1444.01",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "1.444,01",
+          "1,75%",
+          "2,71%",
+          "279,25"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "1444.03",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "1.444,03",
+          "0,00%",
+          "2,71%",
+          "278,02"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "1446.76",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "1.446,76",
+          "0,19%",
+          "2,90%",
+          "281,36"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "1438.99",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "1.438,99",
+          "-0,54%",
+          "2,35%",
+          "279,20"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "1442.46",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "1.442,46",
+          "0,24%",
+          "2,60%",
+          "280,25"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "1454.12",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "1.454,12",
+          "0,81%",
+          "3,43%",
+          "282,13"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "1449.36",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "1.449,36",
+          "-0,33%",
+          "3,09%",
+          "280,56"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "1452.55",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "1.452,55",
+          "0,22%",
+          "3,32%",
+          "279,23"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "1456.41",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "1.456,41",
+          "0,27%",
+          "3,59%",
+          "281,05"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "1457.92",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "1.457,92",
+          "0,10%",
+          "0,10%",
+          "283,09"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "1453.63",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "1.453,63",
+          "-0,29%",
+          "-0,19%",
+          "284,58"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "1456.52",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "1.456,52",
+          "0,20%",
+          "0,01%",
+          "285,37"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "1457.55",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "1.457,55",
+          "0,07%",
+          "0,08%",
+          "284,12"
+        ]
+      }
+    ]
+  },
+  "algodao": {
+    "file": "algodao.html",
+    "url": "https://www.cepea.org.br/br/indicador/algodao.aspx",
+    "sha256": "2c1ff1877019a1bb65a62e006c45c788fde1ac6029adb622e7c5bf1a2a9e008e",
+    "captured_at": "2026-09-06T01:39:45.120007+00:00",
+    "table_index": 0,
+    "unit": "cBRL/lb",
+    "title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "421.71",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "421,71",
+          "0,65%",
+          "0,31%",
+          "15,66"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "423.93",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "423,93",
+          "0,53%",
+          "0,84%",
+          "18,46"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "420.68",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "420,68",
+          "-0,77%",
+          "0,07%",
+          "18,25"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "421.00",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "421,00",
+          "0,08%",
+          "0,15%",
+          "13,89"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "427.46",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "427,46",
+          "1,53%",
+          "1,68%",
+          "18,22"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "428.50",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "428,50",
+          "0,24%",
+          "1,93%",
+          "17,59"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "428.09",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "428,09",
+          "-0,10%",
+          "1,83%",
+          "12,92"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "428.45",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "428,45",
+          "0,08%",
+          "1,92%",
+          "14,42"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "429.33",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "429,33",
+          "0,21%",
+          "2,13%",
+          "12,73"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "429.05",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "429,05",
+          "-0,07%",
+          "2,06%",
+          "12,68"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "436.48",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "436,48",
+          "1,73%",
+          "3,83%",
+          "11,39"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "444.82",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "444,82",
+          "1,91%",
+          "1,91%",
+          "10,56"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "440.86",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "440,86",
+          "-0,89%",
+          "1,00%",
+          "10,05"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "438.05",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "438,05",
+          "-0,64%",
+          "0,36%",
+          "16,44"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "439.98",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "439,98",
+          "0,44%",
+          "0,80%",
+          "19,22"
+        ]
+      }
+    ]
+  },
+  "arroz": {
+    "file": "arroz.html",
+    "url": "https://www.cepea.org.br/br/indicador/arroz.aspx",
+    "sha256": "e1aafcce5de3a3f80cf099293cf05e8bfae5bac9c71c33db067184ff0299e1fa",
+    "captured_at": "2026-09-06T01:39:50.198206+00:00",
+    "table_index": 0,
+    "unit": "BRL/sc50kg",
+    "title": "INDICADOR DO ARROZ EM CASCA CEPEA/IRGA-RS (58% DE GRÃOS INTEIROS)",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "73.81",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "73,81",
+          "0,24%",
+          "7,55%",
+          "14,20"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "75.96",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "75,96",
+          "2,91%",
+          "10,68%",
+          "14,55"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "76.08",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "76,08",
+          "0,16%",
+          "10,86%",
+          "14,71"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "76.20",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "76,20",
+          "0,16%",
+          "11,03%",
+          "14,67"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "76.17",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "76,17",
+          "-0,04%",
+          "10,99%",
+          "14,81"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "76.14",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "76,14",
+          "-0,04%",
+          "10,94%",
+          "14,77"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "76.84",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "76,84",
+          "0,92%",
+          "11,96%",
+          "14,93"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "76.79",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "76,79",
+          "-0,07%",
+          "11,89%",
+          "14,90"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "77.84",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "77,84",
+          "1,37%",
+          "13,42%",
+          "15,07"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "78.06",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "78,06",
+          "0,28%",
+          "13,74%",
+          "15,01"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "78.37",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "78,37",
+          "0,40%",
+          "14,19%",
+          "15,12"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "78.62",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "78,62",
+          "0,32%",
+          "0,32%",
+          "15,27"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "78.61",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "78,61",
+          "-0,01%",
+          "0,31%",
+          "15,39"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "78.97",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "78,97",
+          "0,46%",
+          "0,77%",
+          "15,47"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "79.07",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "79,07",
+          "0,13%",
+          "0,89%",
+          "15,41"
+        ]
+      }
+    ]
+  },
+  "acucar": {
+    "file": "acucar.html",
+    "url": "https://www.cepea.org.br/br/indicador/acucar.aspx",
+    "sha256": "b9932542b0121acb14ab093a671ef0f5bd239932147042b2c4b77463ea7847ac",
+    "captured_at": "2026-09-06T01:39:55.281912+00:00",
+    "table_index": 0,
+    "unit": "BRL/sc50kg",
+    "title": "INDICADOR DO AÇÚCAR CRISTAL BRANCO CEPEA/ESALQ - SÃO PAULO",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "99.94",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "99,94",
+          "2,08%",
+          "9,22%",
+          "19,23"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "102.27",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "102,27",
+          "2,33%",
+          "11,77%",
+          "19,59"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "102.49",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "102,49",
+          "0,22%",
+          "12,01%",
+          "19,82"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "104.37",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "104,37",
+          "1,83%",
+          "14,07%",
+          "20,10"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "104.37",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "104,37",
+          "0,00%",
+          "14,07%",
+          "20,10"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "105.51",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "105,51",
+          "1,09%",
+          "15,31%",
+          "20,47"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "106.52",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "106,52",
+          "0,96%",
+          "16,42%",
+          "20,70"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "107.98",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "107,98",
+          "1,37%",
+          "18,01%",
+          "20,95"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "110.59",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "110,59",
+          "2,42%",
+          "20,86%",
+          "21,41"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "112.06",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "112,06",
+          "1,33%",
+          "22,47%",
+          "21,54"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "113.75",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "113,75",
+          "1,51%",
+          "24,32%",
+          "21,95"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "114.51",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "114,51",
+          "0,67%",
+          "0,67%",
+          "22,23"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "115.41",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "115,41",
+          "0,79%",
+          "1,46%",
+          "22,59"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "116.11",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "116,11",
+          "0,61%",
+          "2,07%",
+          "22,75"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "116.79",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "116,79",
+          "0,59%",
+          "2,67%",
+          "22,77"
+        ]
+      }
+    ]
+  },
+  "acucar_refinado": {
+    "file": "acucar-refinado-amorfo-sp.html",
+    "url": "https://www.cepea.org.br/br/indicador/acucar-refinado-amorfo-sp.aspx",
+    "sha256": "6036acada5ab8fc4ab1a1d729bbdd83f03376fc44c1d2f6bafd72720a3baa8f1",
+    "captured_at": "2026-09-06T01:40:00.385691+00:00",
+    "table_index": 0,
+    "unit": "BRL/kg",
+    "title": "Indicador do Açúcar Refinado Amorfo CEPEA/ESALQ - São Paulo",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "2.5283",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "2,5283",
+          "0,00%",
+          "-1,96%",
+          "0,4864"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "2.5402",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "2,5402",
+          "0,47%",
+          "-1,50%",
+          "0,4867"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "2.5402",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "2,5402",
+          "0,00%",
+          "-1,50%",
+          "0,4912"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "2.5402",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "2,5402",
+          "0,00%",
+          "-1,50%",
+          "0,4891"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "2.5441",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "2,5441",
+          "0,15%",
+          "-1,35%",
+          "0,4948"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "2.7084",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "2,7084",
+          "6,46%",
+          "5,03%",
+          "0,5255"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "2.7084",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "2,7084",
+          "0,00%",
+          "5,03%",
+          "0,5262"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "2.7084",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "2,7084",
+          "0,00%",
+          "5,03%",
+          "0,5255"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "2.7282",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "2,7282",
+          "0,73%",
+          "5,79%",
+          "0,5281"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "2.7282",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "2,7282",
+          "0,00%",
+          "5,79%",
+          "0,5245"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "2.8787",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "2,8787",
+          "5,52%",
+          "11,63%",
+          "0,5555"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "2.9367",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "2,9367",
+          "2,01%",
+          "2,01%",
+          "0,5702"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "2.9367",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "2,9367",
+          "0,00%",
+          "2,01%",
+          "0,5749"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "2.9367",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "2,9367",
+          "0,00%",
+          "2,01%",
+          "0,5754"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "2.9367",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "2,9367",
+          "0,00%",
+          "2,01%",
+          "0,5725"
+        ]
+      }
+    ]
+  },
+  "frango_congelado": {
+    "file": "frango.html",
+    "url": "https://www.cepea.org.br/br/indicador/frango.aspx",
+    "sha256": "04345566b18ab6e2a23015a1c868855721d55930474f53b5aa08440448ce3a43",
+    "captured_at": "2026-09-06T01:40:05.576567+00:00",
+    "table_index": 0,
+    "unit": "BRL/kg",
+    "title": "PREÇOS DO FRANGO CONGELADO CEPEA/ESALQ - ESTADO SP",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "7.17",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "7,17",
+          "-0,28%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "7.17",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "7,17",
+          "0,00%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "7.17",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "7,17",
+          "0,00%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "7.17",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "7,17",
+          "0,00%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "7.22",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "7,22",
+          "0,70%",
+          "1,12%"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "7.29",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "7,29",
+          "0,97%",
+          "2,10%"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "7.29",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "7,29",
+          "0,00%",
+          "2,10%"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "7.30",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "7,30",
+          "0,14%",
+          "2,24%"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "7.30",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "7,30",
+          "0,00%",
+          "2,24%"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "7.32",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "7,32",
+          "0,27%",
+          "2,52%"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "7.32",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "7,32",
+          "0,00%",
+          "2,52%"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "7.42",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "7,42",
+          "1,37%",
+          "1,37%"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "7.34",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "7,34",
+          "-1,08%",
+          "0,27%"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "7.52",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "7,52",
+          "2,45%",
+          "2,73%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "7.61",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "7,61",
+          "1,20%",
+          "3,96%"
+        ]
+      }
+    ]
+  },
+  "frango_resfriado": {
+    "file": "frango_resfriado_885d2f02.html",
+    "url": "https://www.cepea.org.br/br/indicador/frango.aspx",
+    "sha256": "885d2f027deb3c0e6b1e10976717e174ce569cc8155ed8b39bc0737811590031",
+    "captured_at": "2026-09-06T01:40:10.705095+00:00",
+    "table_index": 1,
+    "unit": "BRL/kg",
+    "title": "PREÇOS DO FRANGO RESFRIADO CEPEA/ESALQ - ESTADO SP",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-08-17",
+        "place": null,
+        "value": "7.18",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "17/08/2026",
+          "7,18",
+          "-0,28%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "7.18",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "18/08/2026",
+          "7,18",
+          "0,00%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "7.18",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "19/08/2026",
+          "7,18",
+          "0,00%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "7.18",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "20/08/2026",
+          "7,18",
+          "0,00%",
+          "0,42%"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "7.24",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "21/08/2026",
+          "7,24",
+          "0,84%",
+          "1,26%"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "7.26",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "24/08/2026",
+          "7,26",
+          "0,28%",
+          "1,54%"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "7.26",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "25/08/2026",
+          "7,26",
+          "0,00%",
+          "1,54%"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "7.27",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "7,27",
+          "0,14%",
+          "1,68%"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "7.27",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "7,27",
+          "0,00%",
+          "1,68%"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "7.29",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "7,29",
+          "0,28%",
+          "1,96%"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "7.29",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "7,29",
+          "0,00%",
+          "1,96%"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "7.39",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "7,39",
+          "1,37%",
+          "1,37%"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "7.35",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "7,35",
+          "-0,54%",
+          "0,82%"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "7.54",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "7,54",
+          "2,59%",
+          "3,43%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "7.61",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "7,61",
+          "0,93%",
+          "4,39%"
+        ]
+      }
+    ]
+  },
+  "suino": {
+    "file": "suino.html",
+    "url": "https://www.cepea.org.br/br/indicador/suino.aspx",
+    "sha256": "369260d2aee9a53d0f934d2ff19d6ebafc76c23f67a8417e67745077ebda3f2b",
+    "captured_at": "2026-09-06T01:40:15.803409+00:00",
+    "table_index": 0,
+    "unit": "BRL/kg",
+    "title": "INDICADOR DO SUÍNO VIVO CEPEA/ESALQ (R$/kg)",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-09-02",
+        "place": "MG - posto",
+        "value": "5.02",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "02/09/2026",
+          "MG - posto",
+          "5,02",
+          "0,00%",
+          "0,00%"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": "PR - a retirar",
+        "value": "4.45",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "02/09/2026",
+          "PR - a retirar",
+          "4,45",
+          "-0,67%",
+          "-0,89%"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": "RS - a retirar",
+        "value": "4.53",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "02/09/2026",
+          "RS - a retirar",
+          "4,53",
+          "-0,22%",
+          "-0,22%"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": "SC - a retirar",
+        "value": "4.52",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "02/09/2026",
+          "SC - a retirar",
+          "4,52",
+          "-0,88%",
+          "-1,09%"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": "SP - posto",
+        "value": "4.83",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "02/09/2026",
+          "SP - posto",
+          "4,83",
+          "0,00%",
+          "0,00%"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": "MG - posto",
+        "value": "5.01",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "03/09/2026",
+          "MG - posto",
+          "5,01",
+          "-0,20%",
+          "-0,20%"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": "PR - a retirar",
+        "value": "4.43",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "03/09/2026",
+          "PR - a retirar",
+          "4,43",
+          "-0,45%",
+          "-1,34%"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": "RS - a retirar",
+        "value": "4.53",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "03/09/2026",
+          "RS - a retirar",
+          "4,53",
+          "0,00%",
+          "-0,22%"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": "SC - a retirar",
+        "value": "4.52",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "03/09/2026",
+          "SC - a retirar",
+          "4,52",
+          "0,00%",
+          "-1,09%"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": "SP - posto",
+        "value": "4.83",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "03/09/2026",
+          "SP - posto",
+          "4,83",
+          "0,00%",
+          "0,00%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": "MG - posto",
+        "value": "5.01",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "MG - posto",
+          "5,01",
+          "0,00%",
+          "-0,20%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": "PR - a retirar",
+        "value": "4.42",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "04/09/2026",
+          "PR - a retirar",
+          "4,42",
+          "-0,23%",
+          "-1,56%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": "RS - a retirar",
+        "value": "4.53",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "04/09/2026",
+          "RS - a retirar",
+          "4,53",
+          "0,00%",
+          "-0,22%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": "SC - a retirar",
+        "value": "4.48",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "04/09/2026",
+          "SC - a retirar",
+          "4,48",
+          "-0,88%",
+          "-1,97%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": "SP - posto",
+        "value": "4.83",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "04/09/2026",
+          "SP - posto",
+          "4,83",
+          "0,00%",
+          "0,00%"
+        ]
+      }
+    ]
+  },
+  "etanol_hidratado": {
+    "file": "etanol.html",
+    "url": "https://www.cepea.org.br/br/indicador/etanol.aspx",
+    "sha256": "48960d0506b49d4f158e9b47862a91af53e16c4759ab0930e1e1f5b22e6f591a",
+    "captured_at": "2026-09-06T01:40:20.899742+00:00",
+    "table_index": 0,
+    "unit": "BRL/L",
+    "title": "INDICADOR SEMANAL DO ETANOL HIDRATADO COMBUSTÍVEL CEPEA/ESALQ - SÃO PAULO",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-05-29",
+        "place": null,
+        "value": "2.2315",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "25 - 29/05/2026",
+          "2,2315",
+          "0,4431",
+          "-0,79%"
+        ]
+      },
+      {
+        "date": "2026-06-05",
+        "place": null,
+        "value": "2.2166",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "01 - 05/06/2026",
+          "2,2166",
+          "0,4377",
+          "-0,67%"
+        ]
+      },
+      {
+        "date": "2026-06-12",
+        "place": null,
+        "value": "2.2247",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "08 - 12/06/2026",
+          "2,2247",
+          "0,4330",
+          "0,37%"
+        ]
+      },
+      {
+        "date": "2026-06-19",
+        "place": null,
+        "value": "2.2429",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "15 - 19/06/2026",
+          "2,2429",
+          "0,4380",
+          "0,82%"
+        ]
+      },
+      {
+        "date": "2026-06-26",
+        "place": null,
+        "value": "2.2618",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "22 - 26/06/2026",
+          "2,2618",
+          "0,4369",
+          "0,84%"
+        ]
+      },
+      {
+        "date": "2026-07-03",
+        "place": null,
+        "value": "2.2427",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "29 - 03/07/2026",
+          "2,2427",
+          "0,4325",
+          "-0,84%"
+        ]
+      },
+      {
+        "date": "2026-07-10",
+        "place": null,
+        "value": "2.1800",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "06 - 10/07/2026",
+          "2,1800",
+          "0,4246",
+          "-2,80%"
+        ]
+      },
+      {
+        "date": "2026-07-17",
+        "place": null,
+        "value": "2.1336",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "13 - 17/07/2026",
+          "2,1336",
+          "0,4184",
+          "-2,13%"
+        ]
+      },
+      {
+        "date": "2026-07-24",
+        "place": null,
+        "value": "2.0764",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "20 - 24/07/2026",
+          "2,0764",
+          "0,4091",
+          "-2,68%"
+        ]
+      },
+      {
+        "date": "2026-07-31",
+        "place": null,
+        "value": "2.0454",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "27 - 31/07/2026",
+          "2,0454",
+          "0,4015",
+          "-1,49%"
+        ]
+      },
+      {
+        "date": "2026-08-07",
+        "place": null,
+        "value": "2.0457",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "03 - 07/08/2026",
+          "2,0457",
+          "0,4004",
+          "0,01%"
+        ]
+      },
+      {
+        "date": "2026-08-14",
+        "place": null,
+        "value": "2.1939",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "10 - 14/08/2026",
+          "2,1939",
+          "0,4241",
+          "7,24%"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "2.2566",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "17 - 21/08/2026",
+          "2,2566",
+          "0,4352",
+          "2,86%"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "2.3116",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "24 - 28/08/2026",
+          "2,3116",
+          "0,4476",
+          "2,44%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "2.3991",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "31 - 04/09/2026",
+          "2,3991",
+          "0,4672",
+          "3,79%"
+        ]
+      }
+    ]
+  },
+  "etanol_anidro": {
+    "file": "etanol_anidro_2c0dd1d2.html",
+    "url": "https://www.cepea.org.br/br/indicador/etanol.aspx",
+    "sha256": "2c0dd1d26ba64d8fad0d7b1919809b4818b1991ed6c251965f45a0853fb86bc2",
+    "captured_at": "2026-09-06T01:40:25.999094+00:00",
+    "table_index": 1,
+    "unit": "BRL/L",
+    "title": "INDICADOR SEMANAL DO ETANOL ANIDRO CEPEA/ESALQ - SÃO PAULO",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-05-29",
+        "place": null,
+        "value": "2.5650",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "25 - 29/05/2026",
+          "2,5650",
+          "0,5093",
+          "0,62%"
+        ]
+      },
+      {
+        "date": "2026-06-05",
+        "place": null,
+        "value": "2.5108",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "01 - 05/06/2026",
+          "2,5108",
+          "0,4958",
+          "-2,11%"
+        ]
+      },
+      {
+        "date": "2026-06-12",
+        "place": null,
+        "value": "2.5284",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "08 - 12/06/2026",
+          "2,5284",
+          "0,4921",
+          "0,70%"
+        ]
+      },
+      {
+        "date": "2026-06-19",
+        "place": null,
+        "value": "2.5311",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "15 - 19/06/2026",
+          "2,5311",
+          "0,4943",
+          "0,11%"
+        ]
+      },
+      {
+        "date": "2026-06-26",
+        "place": null,
+        "value": "2.5509",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "22 - 26/06/2026",
+          "2,5509",
+          "0,4927",
+          "0,78%"
+        ]
+      },
+      {
+        "date": "2026-07-03",
+        "place": null,
+        "value": "2.5808",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "29 - 03/07/2026",
+          "2,5808",
+          "0,4977",
+          "1,17%"
+        ]
+      },
+      {
+        "date": "2026-07-10",
+        "place": null,
+        "value": "2.4662",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "06 - 10/07/2026",
+          "2,4662",
+          "0,4803",
+          "-4,44%"
+        ]
+      },
+      {
+        "date": "2026-07-17",
+        "place": null,
+        "value": "2.4421",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "13 - 17/07/2026",
+          "2,4421",
+          "0,4789",
+          "-0,98%"
+        ]
+      },
+      {
+        "date": "2026-07-24",
+        "place": null,
+        "value": "2.3786",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "20 - 24/07/2026",
+          "2,3786",
+          "0,4686",
+          "-2,60%"
+        ]
+      },
+      {
+        "date": "2026-07-31",
+        "place": null,
+        "value": "2.3141",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "27 - 31/07/2026",
+          "2,3141",
+          "0,4543",
+          "-2,71%"
+        ]
+      },
+      {
+        "date": "2026-08-07",
+        "place": null,
+        "value": "2.3091",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "03 - 07/08/2026",
+          "2,3091",
+          "0,4520",
+          "-0,22%"
+        ]
+      },
+      {
+        "date": "2026-08-14",
+        "place": null,
+        "value": "2.4319",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "10 - 14/08/2026",
+          "2,4319",
+          "0,4701",
+          "5,32%"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "2.5546",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "17 - 21/08/2026",
+          "2,5546",
+          "0,4927",
+          "5,05%"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "2.6046",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "24 - 28/08/2026",
+          "2,6046",
+          "0,5043",
+          "1,96%"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "2.7829",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "31 - 04/09/2026",
+          "2,7829",
+          "0,5420",
+          "6,85%"
+        ]
+      }
+    ]
+  },
+  "leite": {
+    "file": "leite.html",
+    "url": "https://www.cepea.org.br/br/indicador/leite.aspx",
+    "sha256": "382473c12e360ee5dfd7eaa1693041007cdc14a283bccfad4d1e80798b3f4dc3",
+    "captured_at": "2026-09-06T01:40:31.076431+00:00",
+    "table_index": 0,
+    "unit": "BRL/L",
+    "title": "INDICADOR DO PREÇO DO LEITE AO PRODUTOR (R$/LITRO)",
+    "duplicate_source_rows": 0,
+    "records": [
+      {
+        "date": "2026-05-01",
+        "place": "PR",
+        "value": "2.6756",
+        "source_row_one_based": 24,
+        "source_cells": [
+          "mai/26",
+          "PR",
+          "2,6756"
+        ]
+      },
+      {
+        "date": "2026-05-01",
+        "place": "RS",
+        "value": "2.4884",
+        "source_row_one_based": 22,
+        "source_cells": [
+          "mai/26",
+          "RS",
+          "2,4884"
+        ]
+      },
+      {
+        "date": "2026-05-01",
+        "place": "SC",
+        "value": "2.6289",
+        "source_row_one_based": 23,
+        "source_cells": [
+          "mai/26",
+          "SC",
+          "2,6289"
+        ]
+      },
+      {
+        "date": "2026-05-01",
+        "place": "SP",
+        "value": "2.6999",
+        "source_row_one_based": 25,
+        "source_cells": [
+          "mai/26",
+          "SP",
+          "2,6999"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "BA",
+        "value": "2.5818",
+        "source_row_one_based": 18,
+        "source_cells": [
+          "jun/26",
+          "BA",
+          "2,5818"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "BRASIL",
+        "value": "2.7464",
+        "source_row_one_based": 19,
+        "source_cells": [
+          "jun/26",
+          "BRASIL",
+          "2,7464"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "ES",
+        "value": "2.6513",
+        "source_row_one_based": 20,
+        "source_cells": [
+          "jun/26",
+          "ES",
+          "2,6513"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "GO",
+        "value": "2.7723",
+        "source_row_one_based": 17,
+        "source_cells": [
+          "jun/26",
+          "GO",
+          "2,7723"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "MG",
+        "value": "2.8927",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "jun/26",
+          "MG",
+          "2,8927"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "PR",
+        "value": "2.7710",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "jun/26",
+          "PR",
+          "2,7710"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "RJ",
+        "value": "2.8043",
+        "source_row_one_based": 21,
+        "source_cells": [
+          "jun/26",
+          "RJ",
+          "2,8043"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "RS",
+        "value": "2.5365",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "jun/26",
+          "RS",
+          "2,5365"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "SC",
+        "value": "2.7071",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "jun/26",
+          "SC",
+          "2,7071"
+        ]
+      },
+      {
+        "date": "2026-06-01",
+        "place": "SP",
+        "value": "2.8350",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "jun/26",
+          "SP",
+          "2,8350"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "BA",
+        "value": "2.6730",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "jul/26",
+          "BA",
+          "2,6730"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "BRASIL",
+        "value": "2.8761",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "jul/26",
+          "BRASIL",
+          "2,8761"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "ES",
+        "value": "2.7319",
+        "source_row_one_based": 10,
+        "source_cells": [
+          "jul/26",
+          "ES",
+          "2,7319"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "GO",
+        "value": "2.9410",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "jul/26",
+          "GO",
+          "2,9410"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "MG",
+        "value": "3.0231",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "jul/26",
+          "MG",
+          "3,0231"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "PR",
+        "value": "2.8989",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "jul/26",
+          "PR",
+          "2,8989"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "RJ",
+        "value": "2.7240",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "jul/26",
+          "RJ",
+          "2,7240"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "RS",
+        "value": "2.6560",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "jul/26",
+          "RS",
+          "2,6560"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "SC",
+        "value": "2.7887",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "jul/26",
+          "SC",
+          "2,7887"
+        ]
+      },
+      {
+        "date": "2026-07-01",
+        "place": "SP",
+        "value": "2.9695",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "jul/26",
+          "SP",
+          "2,9695"
+        ]
+      }
+    ]
+  },
+  "laranja_industria": {
+    "file": "citros.html",
+    "url": "https://www.cepea.org.br/br/indicador/citros.aspx",
+    "sha256": "1d12ef38b22407cdd95946dce2fe103059cae82c2d41969535b9876b24be973c",
+    "captured_at": "2026-09-06T01:40:36.173569+00:00",
+    "table_index": 0,
+    "unit": "BRL/cx40.8kg",
+    "title": "Laranja Indústria",
+    "duplicate_source_rows": 1,
+    "records": [
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "30.80",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "18/08/2026",
+          "30,80",
+          "0,00%",
+          "0,75%",
+          "30,80"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "30.80",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "19/08/2026",
+          "30,80",
+          "0,00%",
+          "0,75%",
+          "30,80"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "20/08/2026",
+          "31,18",
+          "1,23%",
+          "2,00%",
+          "30,88"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "21/08/2026",
+          "31,18",
+          "0,00%",
+          "2,00%",
+          "30,95"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "24/08/2026",
+          "31,18",
+          "0,00%",
+          "2,00%",
+          "31,03"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "25/08/2026",
+          "31,18",
+          "0,00%",
+          "2,00%",
+          "31,11"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "31,18",
+          "0,00%",
+          "2,00%",
+          "31,18"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "31,18",
+          "0,00%",
+          "2,00%",
+          "31,18"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "31,18",
+          "0,00%",
+          "2,00%",
+          "31,18"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "31,18",
+          "0,00%",
+          "2,00%",
+          "31,18"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "31.18",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "31,18",
+          "0,00%",
+          "0,00%",
+          "31,18"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "31.30",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "31,30",
+          "0,38%",
+          "0,38%",
+          "31,21"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "31.30",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "31,30",
+          "0,00%",
+          "0,38%",
+          "31,23"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "30.73",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "30,73",
+          "-1,82%",
+          "-1,44%",
+          "31,14"
+        ]
+      }
+    ]
+  },
+  "laranja_in_natura": {
+    "file": "laranja_in_natura_bf6afc53.html",
+    "url": "https://www.cepea.org.br/br/indicador/citros.aspx",
+    "sha256": "bf6afc534a38d16b33a716c1a20272dda855af04f51a35dd4a6ebc919ebfa03c",
+    "captured_at": "2026-09-06T01:40:41.259024+00:00",
+    "table_index": 1,
+    "unit": "BRL/cx40.8kg",
+    "title": "LARANJA PERA IN NATURA",
+    "duplicate_source_rows": 1,
+    "records": [
+      {
+        "date": "2026-08-18",
+        "place": null,
+        "value": "31.31",
+        "source_row_one_based": 16,
+        "source_cells": [
+          "18/08/2026",
+          "31,31",
+          "1,20%",
+          "-5,09%",
+          "30,99"
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "place": null,
+        "value": "30.66",
+        "source_row_one_based": 15,
+        "source_cells": [
+          "19/08/2026",
+          "30,66",
+          "-2,08%",
+          "-7,06%",
+          "30,86"
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "place": null,
+        "value": "31.53",
+        "source_row_one_based": 14,
+        "source_cells": [
+          "20/08/2026",
+          "31,53",
+          "2,84%",
+          "-4,43%",
+          "31,06"
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "place": null,
+        "value": "31.53",
+        "source_row_one_based": 13,
+        "source_cells": [
+          "21/08/2026",
+          "31,53",
+          "0,00%",
+          "-4,43%",
+          "31,19"
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "place": null,
+        "value": "31.80",
+        "source_row_one_based": 12,
+        "source_cells": [
+          "24/08/2026",
+          "31,80",
+          "0,86%",
+          "-3,61%",
+          "31,37"
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "place": null,
+        "value": "31.53",
+        "source_row_one_based": 11,
+        "source_cells": [
+          "25/08/2026",
+          "31,53",
+          "-0,85%",
+          "-4,43%",
+          "31,41"
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "place": null,
+        "value": "31.17",
+        "source_row_one_based": 9,
+        "source_cells": [
+          "26/08/2026",
+          "31,17",
+          "-1,14%",
+          "-5,52%",
+          "31,51"
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "place": null,
+        "value": "31.09",
+        "source_row_one_based": 8,
+        "source_cells": [
+          "27/08/2026",
+          "31,09",
+          "-0,26%",
+          "-5,76%",
+          "31,43"
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "place": null,
+        "value": "31.09",
+        "source_row_one_based": 7,
+        "source_cells": [
+          "28/08/2026",
+          "31,09",
+          "0,00%",
+          "-5,76%",
+          "31,34"
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "place": null,
+        "value": "31.43",
+        "source_row_one_based": 6,
+        "source_cells": [
+          "31/08/2026",
+          "31,43",
+          "1,09%",
+          "-4,73%",
+          "31,26"
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "place": null,
+        "value": "31.14",
+        "source_row_one_based": 5,
+        "source_cells": [
+          "01/09/2026",
+          "31,14",
+          "-0,92%",
+          "-0,92%",
+          "31,18"
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "place": null,
+        "value": "31.97",
+        "source_row_one_based": 4,
+        "source_cells": [
+          "02/09/2026",
+          "31,97",
+          "2,67%",
+          "1,72%",
+          "31,34"
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "place": null,
+        "value": "30.97",
+        "source_row_one_based": 3,
+        "source_cells": [
+          "03/09/2026",
+          "30,97",
+          "-3,13%",
+          "-1,46%",
+          "31,32"
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "place": null,
+        "value": "30.97",
+        "source_row_one_based": 2,
+        "source_cells": [
+          "04/09/2026",
+          "30,97",
+          "0,00%",
+          "-1,46%",
+          "31,30"
+        ]
+      }
+    ]
+  }
+}

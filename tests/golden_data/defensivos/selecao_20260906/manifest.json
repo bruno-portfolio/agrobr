@@ -1,0 +1,113 @@
+{
+  "source": "defensivos",
+  "capture_date": "2026-09-06 America/Sao_Paulo",
+  "sampling": "Selected complete CSV records, NOT all authorizations of each selected registration; original bytes and complete headers preserved",
+  "families": {
+    "tecnicos": {
+      "raw_file": "tecnicos.csv",
+      "sample_file": "tecnicos_curated_rows.csv",
+      "sample_sha256": "b0585f53023a353c84cce99f24e45c101a31b9541761e366f8b6613b105cf60e",
+      "sample_bytes": 1501,
+      "sample_records": 6,
+      "source_record_indices_1based": [
+        3,
+        9,
+        57,
+        229,
+        354,
+        1505
+      ],
+      "full_file_unique_products": 2991,
+      "full_file_component_rows_by_product": 2992,
+      "full_file_product_component_counts": {
+        "1": 2990,
+        "2": 1
+      },
+      "full_file_products_with_repeated_ingredient_names": [],
+      "full_file_brands_with_multiple_registers": {},
+      "full_file_sha256": "5475bcf6555a5f5086f571c0c2a9286d5642b98203eb8fa07620bc06716cef88",
+      "full_file_bytes": 712256,
+      "fetched_at": "2026-09-07T01:07:35.176525+00:00",
+      "oracles_file": "tecnicos_curated_oracles.json",
+      "oracles_sha256": "1d84a04b1ec34bbc52593336cf32fcc5774ea699a353c6c0502701e158e64121",
+      "url": "https://dados.agricultura.gov.br/dataset/6c913699-e82e-4da3-a0a1-fb6c431e367f/resource/a200c70b-e025-4a9a-be1b-ec7275d7921f/download/agrofitprodutostecnicos.csv"
+    },
+    "formulados": {
+      "raw_file": "formulados.csv",
+      "sample_file": "formulados_curated_rows.csv",
+      "sample_sha256": "5d4188f51cc415a4fdf96024dab3002a6b93867579f1bb1a11dbe3e092b73381",
+      "sample_bytes": 15942,
+      "sample_records": 21,
+      "source_record_indices_1based": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        430,
+        2230,
+        3058,
+        5617,
+        7326,
+        10974,
+        19439,
+        21992,
+        55313,
+        63364,
+        73624,
+        176753,
+        177634,
+        239914,
+        244467,
+        279579
+      ],
+      "full_file_unique_products": 4398,
+      "full_file_component_rows_by_product": 5669,
+      "full_file_product_component_counts": {
+        "1": 3357,
+        "2": 861,
+        "3": 134,
+        "4": 43,
+        "6": 1,
+        "5": 2
+      },
+      "full_file_products_with_repeated_ingredient_names": [
+        "5017",
+        "12920",
+        "30522",
+        "17016",
+        "12212",
+        "21519",
+        "12312",
+        "08426",
+        "1002",
+        "8907",
+        "08124",
+        "16519",
+        "28926",
+        "10308",
+        "05122",
+        "28319"
+      ],
+      "full_file_brands_with_multiple_registers": {},
+      "full_file_sha256": "8be59a560dba2817ea4e5411755a470eb4eb2a438b03e94919350802e6dc2998",
+      "full_file_bytes": 391233716,
+      "fetched_at": "2026-09-07T01:07:48.408368+00:00",
+      "oracles_file": "formulados_curated_oracles.json",
+      "oracles_sha256": "460b8aae9a8a7ba3a321222700872ce4657507cce3946ecf4020a83ccf7129be",
+      "url": "https://dados.agricultura.gov.br/dataset/6c913699-e82e-4da3-a0a1-fb6c431e367f/resource/d30b30d7-e256-484e-9ab8-cd40974e1238/download/agrofitprodutosformulados.csv"
+    }
+  },
+  "additional_samples": [
+    {
+      "family": "tecnicos",
+      "sample_file": "tecnicos_pre_mistura_row.csv",
+      "sample_sha256": "6af35a685717ee4d1d118e8cce61e43de0dd22a28dc3b6aa04965acbb8439a8a",
+      "oracles_file": "tecnicos_pre_mistura_oracle.json",
+      "oracles_sha256": "47353d218928586658bea8e8f0854c08f83b72f9847ad23eec1666caf86494c5",
+      "source_record_index_1based": 604,
+      "url": "https://dados.agricultura.gov.br/dataset/6c913699-e82e-4da3-a0a1-fb6c431e367f/resource/a200c70b-e025-4a9a-be1b-ec7275d7921f/download/agrofitprodutostecnicos.csv",
+      "full_file_sha256": "5475bcf6555a5f5086f571c0c2a9286d5642b98203eb8fa07620bc06716cef88"
+    }
+  ]
+}

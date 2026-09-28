@@ -1,0 +1,58 @@
+{
+  "name": "comexstat.dicionario.urfs",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [],
+  "required_columns": [
+    "cod_urf",
+    "urf"
+  ],
+  "dtypes": {
+    "cod_urf": "str",
+    "urf": "str"
+  },
+  "nullable": {
+    "cod_urf": false,
+    "urf": false
+  },
+  "columns": [
+    {
+      "name": "cod_urf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "urf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "exact_column_order": true,
+    "integer_dtype": "Int64",
+    "float_dtype": "float64",
+    "string_dtype": "string[python]",
+    "codes": "Literal ASCII codes; leading zeros and special codes are preserved",
+    "urf": "Unidade da Receita Federal; no physical port is inferred",
+    "missing_measures": "Missing contributions propagate to the corresponding aggregate"
+  },
+  "guarantees": [
+    "All published dictionary fields and row order are preserved",
+    "Names, whitespace, special codes and multiplicity remain literal",
+    "MDIC codes are not deduplicated by ISO code or description",
+    "The acquired dictionary does not establish historical validity or a snapshot"
+  ]
+}

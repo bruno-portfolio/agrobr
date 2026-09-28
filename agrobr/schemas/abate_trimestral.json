@@ -10,7 +10,11 @@
   ],
   "required_columns": [
     "trimestre",
+    "localidade",
+    "localidade_cod",
     "especie",
+    "animais_abatidos",
+    "peso_carcacas",
     "fonte"
   ],
   "dtypes": {

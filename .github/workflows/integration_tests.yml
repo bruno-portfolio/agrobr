@@ -14,9 +14,26 @@ env:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: reference
+            selection: >-
+              tests
+              --ignore=tests/integration/test_catalogos_live.py
+              --ignore=tests/integration/test_produtos_live.py
+              --ignore=tests/integration/test_produtos_sicar_live.py
+          - group: catalogs
+            selection: tests/integration/test_catalogos_live.py
+          - group: products
+            selection: >-
+              tests/integration/test_produtos_live.py
+              tests/integration/test_produtos_sicar_live.py
 
     env:
+      PYTEST_SELECTION: ${{ matrix.selection }}
       AGROBR_INMET_TOKEN: ${{ secrets.AGROBR_INMET_TOKEN }}
       AGROBR_USDA_API_KEY: ${{ secrets.AGROBR_USDA_API_KEY }}
 
@@ -39,29 +56,52 @@ jobs:
       - name: Run integration tests
         id: integration
         run: |
-          pytest -m "integration and not integration_br" --tb=short -v --timeout=120 2>&1 | tee integration_results.txt
-          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+          set +e
+          pytest $PYTEST_SELECTION -m "integration and not integration_br" --tb=short -v --timeout=120 --junitxml=integration_results.xml --live-matrix-report=live_matrix.json 2>&1 | tee integration_results.txt
+          result=${PIPESTATUS[0]}
+          echo "exit_code=$result" >> "$GITHUB_OUTPUT"
+          exit "$result"
         continue-on-error: true
 
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: integration-results-${{ github.run_number }}-${{ github.run_attempt }}
-          path: integration_results.txt
+          name: integration-results-${{ matrix.group }}-${{ github.run_number }}-${{ github.run_attempt }}
+          path: |
+            integration_results.txt
+            integration_results.xml
+            live_matrix.json
           retention-days: 30
+
+      - name: Fail if integration tests failed
+        if: always() && steps.integration.outputs.exit_code != '0'
+        run: exit 1
+
+  report:
+    needs: integration
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download results
+        if: always()
+        uses: actions/download-artifact@v8
+        with:
+          pattern: integration-results-*-${{ github.run_number }}-${{ github.run_attempt }}
+          path: results
 
       - name: Manage issue
         if: always()
         uses: actions/github-script@v9
         env:
-          EXIT_CODE: ${{ steps.integration.outputs.exit_code }}
+          INTEGRATION_RESULT: ${{ needs.integration.result }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
         with:
           script: |
             const fs = require('fs');
             const label = 'integration-tests';
-            const failed = process.env.EXIT_CODE !== '0';
+            const failed = process.env.INTEGRATION_RESULT !== 'success';
 
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -94,7 +134,16 @@ jobs:
 
             let results = '';
             try {
-              results = fs.readFileSync('integration_results.txt', 'utf8').slice(-2000);
+              results = fs.readdirSync('results', { withFileTypes: true })
+                .filter(entry => entry.isDirectory())
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(entry => {
+                  const file = `results/${entry.name}/integration_results.txt`;
+                  const output = fs.existsSync(file)
+                    ? fs.readFileSync(file, 'utf8').slice(-2000)
+                    : 'Could not read results file';
+                  return `${entry.name}:\n${output}`;
+                }).join('\n\n');
             } catch (e) {
               results = 'Could not read results file';
             }
@@ -109,7 +158,7 @@ jobs:
               `**Date:** ${new Date().toISOString().slice(0, 10)}`,
               '',
               '<details>',
-              '<summary>Last 2000 chars of output</summary>',
+              '<summary>Last 2000 chars of output per test group</summary>',
               '',
               fence,
               results,
@@ -154,8 +203,22 @@ jobs:
             });
             core.info(`Issue #${newIssue.number} criada`);
 
+      - uses: actions/checkout@v7
+        if: always() && needs.integration.result != 'success' && github.run_attempt == '1'
+
+      - name: Setup Python for alerts
+        if: always() && needs.integration.result != 'success' && github.run_attempt == '1'
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install alert dependencies
+        if: always() && needs.integration.result != 'success' && github.run_attempt == '1'
+        run: pip install -e .
+
       - name: Alert on failure
-        if: always() && steps.integration.outputs.exit_code != '0' && github.run_attempt == '1'
+        if: always() && needs.integration.result != 'success' && github.run_attempt == '1'
         env:
           AGROBR_ALERT_ENABLED: "true"
           AGROBR_ALERT_DISCORD_WEBHOOK: ${{ secrets.AGROBR_DISCORD_WEBHOOK }}
@@ -173,5 +236,5 @@ jobs:
           "
 
       - name: Fail if integration tests failed
-        if: always() && steps.integration.outputs.exit_code != '0'
+        if: always() && needs.integration.result != 'success'
         run: exit 1

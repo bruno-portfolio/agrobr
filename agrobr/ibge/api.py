@@ -1,35 +1,50 @@
 from __future__ import annotations
 
-import asyncio
 import time
 from collections.abc import Sequence
-from datetime import date
 from typing import Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr import constants
 from agrobr.cache.keys import build_cache_key
-from agrobr.cache.policies import calculate_expiry
-from agrobr.exceptions import InvalidParameterError
-from agrobr.ibge import client
-from agrobr.ibge._helpers import SIDRA_BASE, resolve_ibge_code, resolve_period
+from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.ibge import client, lspa_parser, pam_parser
+from agrobr.ibge._helpers import (
+    SIDRA_BASE,
+    registrar_canal,
+    resolve_ibge_code,
+    resolve_period,
+    resolve_quarter_period,
+)
 from agrobr.models import MetaInfo
+from agrobr.utils import tasks
 from agrobr.utils.result import finalize_result
-from agrobr.utils.time import utcnow
+from agrobr.utils.time import hoje, utcnow
+from agrobr.utils.warnings import warn_once
 
 logger = structlog.get_logger()
 
 _LSPA_ALIASES: dict[str, list[str]] = {
+    "cafe": ["cafe_arabica", "cafe_canephora"],
     "milho": ["milho_1", "milho_2"],
     "feijao": ["feijao_1", "feijao_2", "feijao_3"],
     "amendoim": ["amendoim_1", "amendoim_2"],
-    "batata": ["batata_1", "batata_2"],
+    "batata": ["batata_1", "batata_2", "batata_3"],
+}
+
+_PPM_ALIASES: dict[str, tuple[str, str]] = {
+    "galinhas_poedeiras": (
+        "galinhas",
+        "a categoria do IBGE é 'Galináceos - galinhas', que inclui poedeiras e matrizeiras",
+    ),
 }
 
 _PAM_COLUMNS = [
     "ano",
     "localidade",
+    "localidade_cod",
     "produto",
     "area_plantada",
     "area_colhida",
@@ -37,10 +52,24 @@ _PAM_COLUMNS = [
     "rendimento",
     "valor_producao",
     "fonte",
+    "unidade_producao",
+    "unidade_rendimento",
+    "unidade_valor_producao",
+    "condicao_produto",
+]
+
+_ABATE_COLUMNS = [
+    "trimestre",
+    "localidade",
+    "localidade_cod",
+    "especie",
+    "animais_abatidos",
+    "peso_carcacas",
+    "fonte",
 ]
 
 
-def _validate_pam_years(
+def _validate_years(
     ano: int | float | str | Sequence[int | float | str] | None,
 ) -> int | list[int] | None:
     if ano is None:
@@ -51,7 +80,7 @@ def _validate_pam_years(
     else:
         values = [ano]
         is_sequence = False
-    current_year = date.today().year
+    current_year = hoje().year
     years: list[int] = []
     for value in values:
         if isinstance(value, bool) or (isinstance(value, float) and not value.is_integer()):
@@ -65,7 +94,9 @@ def _validate_pam_years(
     return years if is_sequence else years[0]
 
 
-def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
+def _expand_lspa_produto(produto: str, ano: int | str | None = None) -> list[tuple[str, str]]:
+    if produto == "cafe" and ano is not None and int(ano) < client.LSPA_CAFE_ESPECIES_ANO_INICIAL:
+        return [(produto, client.LSPA_CAFE_TOTAL_COD)]
     if produto in client.PRODUTOS_LSPA:
         return [(produto, client.PRODUTOS_LSPA[produto])]
 
@@ -74,6 +105,21 @@ def _expand_lspa_produto(produto: str) -> list[tuple[str, str]]:
 
     all_valid = sorted(set(list(client.PRODUTOS_LSPA.keys()) + list(_LSPA_ALIASES.keys())))
     raise InvalidParameterError(f"Produto não suportado: {produto}. Disponíveis: {all_valid}")
+
+
+def _resolve_lspa_period(ano: int | str, mes: int | str | None) -> str:
+    year = _validate_years(ano)
+    if mes is None:
+        return ",".join(f"{year}{month:02d}" for month in range(1, 13))
+    if isinstance(mes, bool) or not isinstance(mes, (int, str)):
+        raise InvalidParameterError("mes deve ser um inteiro entre 1 e 12")
+    try:
+        month = int(mes)
+    except ValueError as exc:
+        raise InvalidParameterError("mes deve ser um inteiro entre 1 e 12") from exc
+    if not 1 <= month <= 12:
+        raise InvalidParameterError("mes deve ser um inteiro entre 1 e 12")
+    return f"{year}{month:02d}"
 
 
 @overload
@@ -111,15 +157,26 @@ async def pam(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    normalized_ano = _validate_pam_years(ano)
+    """Produção agrícola municipal; área plantada não está disponível antes de 1988.
+
+    O dataset ``producao_anual`` representa essa ausência histórica como NA,
+    assim como o valor de produção quando não solicitado à fonte.
+    Valores mantêm a escala publicada; as colunas ``unidade_*`` identificam
+    as unidades por ano. Laranja anterior a 2001 usa mil frutos/frutos por ha;
+    moedas anteriores a 1994 não são reais. ``condicao_produto`` distingue
+    café em coco (até 2001) de beneficiado (desde 2002), sem conversão implícita.
+    """
+    normalized_ano = _validate_years(ano)
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_pam",
+        parser_version=constants.IBGE_PAM_PARSER_VERSION,
         source_url=SIDRA_BASE,
         source_method="httpx",
         fetched_at=utcnow(),
         attempted_sources=["ibge_pam"],
         selected_source="ibge_pam",
+        schema_version="2.1",
     )
     logger.info(
         "ibge_pam_request",
@@ -158,6 +215,7 @@ async def pam(
         period=period,
         classifications={"782": produto_cod},
     )
+    registrar_canal(meta, df)
 
     df = client.parse_sidra_response(
         df,
@@ -179,28 +237,16 @@ async def pam(
         df["ano"] = pd.to_numeric(df["ano"], errors="coerce").astype("Int64")
 
     if "variavel" in df.columns and "valor" in df.columns:
-        df_pivot = df.pivot_table(
-            index=["localidade", "ano"] if "localidade" in df.columns else ["ano"],
-            columns="variavel",
-            values="valor",
-            aggfunc="first",
-        ).reset_index()
-
-        rename_map = {
-            "Área plantada": "area_plantada",
-            "Área plantada ou destinada à colheita": "area_plantada",
-            "Área colhida": "area_colhida",
-            "Quantidade produzida": "producao",
-            "Rendimento médio da produção": "rendimento",
-            "Valor da produção": "valor_producao",
-        }
-        df_pivot = df_pivot.rename(columns=rename_map)
-        df = df_pivot
+        df = pam_parser.pivot_observations(df)
+    if "localidade_cod" in df.columns:
+        df["localidade_cod"] = pd.to_numeric(df["localidade_cod"], errors="coerce").astype("Int64")
 
     df["produto"] = produto_lower
     df["fonte"] = "ibge_pam"
     if df.empty:
         df = pd.DataFrame(columns=_PAM_COLUMNS)
+    else:
+        df = pam_parser.add_unit_columns(df, produto_lower)
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -210,7 +256,6 @@ async def pam(
         {"produto": produto, "ano": normalized_ano},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_pam")
 
     logger.info(
         "ibge_pam_success",
@@ -271,17 +316,12 @@ async def lspa(
     )
 
     produto_lower = produto.lower()
-    sub_produtos = _expand_lspa_produto(produto_lower)
-
     if ano is None:
-        from datetime import date
+        ano = hoje().year
 
-        ano = date.today().year
-
-    period = f"{ano}{int(mes):02d}" if mes else ",".join(f"{ano}{m:02d}" for m in range(1, 13))
-
-    territorial_level = "3" if uf else "1"
-    ibge_code = client.uf_to_ibge_code(uf) if uf else "all"
+    period = _resolve_lspa_period(ano, mes)
+    sub_produtos = _expand_lspa_produto(produto_lower, ano)
+    territorial_level, ibge_code = resolve_ibge_code(uf, "uf" if uf is not None else "brasil")
 
     async def _fetch_sub(sub_nome: str, sub_cod: str) -> pd.DataFrame:
         sub_df = await client.fetch_sidra(
@@ -291,28 +331,31 @@ async def lspa(
             period=period,
             classifications={"48": sub_cod},
         )
-        sub_df = client.parse_sidra_response(sub_df)
-        sub_df["ano"] = ano
-        if mes:
-            sub_df["mes"] = mes
-        sub_df["produto"] = sub_nome
-        sub_df["fonte"] = "ibge_lspa"
-        return sub_df
+        registrar_canal(meta, sub_df)
+        return lspa_parser.parse_lspa(sub_df, sub_nome)
 
-    results = await asyncio.gather(*[_fetch_sub(n, c) for n, c in sub_produtos])
+    results = await tasks.gather_or_cancel(*[_fetch_sub(n, c) for n, c in sub_produtos])
     frames = [df for df in results if not df.empty]
 
-    df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    df = (
+        pd.concat(frames, ignore_index=True)
+        if frames
+        else lspa_parser.parse_lspa(pd.DataFrame(), produto_lower)
+    )
+
+    meta.parser_version = lspa_parser.PARSER_VERSION
+    meta.dataset = "lspa"
+    meta.contract_version = "2.0"
+    meta.schema_version = "2.0"
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:lspa",
-        {"produto": produto, "ano": ano, "mes": mes},
+        {"produto": produto, "ano": ano, "mes": mes, "uf": uf},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_lspa")
 
     logger.info(
         "ibge_lspa_success",
@@ -328,7 +371,7 @@ async def produtos_pam() -> list[str]:
 
 
 async def produtos_lspa() -> list[str]:
-    return list(client.PRODUTOS_LSPA.keys())
+    return list(client.PRODUTOS_LSPA) + list(_LSPA_ALIASES)
 
 
 @overload
@@ -381,6 +424,14 @@ async def ppm(
     )
 
     especie_lower = especie.lower()
+    if especie_lower in _PPM_ALIASES:
+        canonica, motivo = _PPM_ALIASES[especie_lower]
+        warn_once(
+            f"ibge_ppm_alias:{especie_lower}",
+            f"especie='{especie_lower}' está depreciada: {motivo}. Use especie='{canonica}'",
+            category=FutureWarning,
+        )
+        especie_lower = canonica
     all_valid = sorted(
         list(client.REBANHOS_PPM.keys()) + list(client.PRODUTOS_ORIGEM_ANIMAL.keys())
     )
@@ -394,7 +445,7 @@ async def ppm(
         )
 
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
-    period = resolve_period(ano)
+    period = resolve_period(_validate_years(ano))
 
     classifications: dict[str, str | list[str]] = {}
     if is_rebanho:
@@ -414,6 +465,7 @@ async def ppm(
         period=period,
         classifications=classifications,
     )
+    registrar_canal(meta, df)
 
     df = client.parse_sidra_response(
         df,
@@ -464,7 +516,6 @@ async def ppm(
         {"especie": especie, "ano": ano},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_ppm")
 
     logger.info(
         "ibge_ppm_success",
@@ -502,25 +553,42 @@ def _detect_abate_columns(df: pd.DataFrame) -> dict[str, str]:
     return {k: v for k, v in col_map.items() if k in df.columns}
 
 
+def _erro_layout_abate(motivo: str) -> ParseError:
+    return ParseError(
+        source="ibge_abate",
+        parser_version=constants.IBGE_ABATE_PARSER_VERSION,
+        reason=f"Resposta de abate {motivo}",
+    )
+
+
 def _merge_cabecas_peso(df: pd.DataFrame, especie_lower: str) -> pd.DataFrame:
+    if df.empty:
+        return pd.DataFrame(columns=_ABATE_COLUMNS)
+    if "variavel_cod" not in df.columns:
+        raise _erro_layout_abate("sem coluna de variável reconhecível")
     cabecas = df[df["variavel_cod"].astype(str) == "284"].copy()
     peso = df[df["variavel_cod"].astype(str) == "285"].copy()
 
     merge_keys = [c for c in ["trimestre", "localidade", "localidade_cod"] if c in cabecas.columns]
 
-    if not cabecas.empty and not peso.empty and merge_keys:
-        cabecas = cabecas.rename(columns={"valor": "animais_abatidos"})
-        peso = peso.rename(columns={"valor": "peso_carcacas"})
-        result = cabecas[merge_keys + ["animais_abatidos"]].merge(
-            peso[merge_keys + ["peso_carcacas"]],
-            on=merge_keys,
-            how="outer",
+    if not merge_keys:
+        raise _erro_layout_abate("sem trimestre nem localidade")
+    if cabecas.empty and peso.empty:
+        raise _erro_layout_abate("sem as variáveis 284 e 285")
+    if df.duplicated(merge_keys + ["variavel_cod"]).any():
+        raise ParseError(
+            source="ibge_abate",
+            parser_version=constants.IBGE_ABATE_PARSER_VERSION,
+            reason="Observação duplicada por trimestre, localidade e variável de abate",
         )
-    elif not cabecas.empty:
-        result = cabecas.rename(columns={"valor": "animais_abatidos"})
-        result["peso_carcacas"] = pd.NA
-    else:
-        return pd.DataFrame()
+    cabecas = cabecas.rename(columns={"valor": "animais_abatidos"})
+    peso = peso.rename(columns={"valor": "peso_carcacas"})
+    result = cabecas[merge_keys + ["animais_abatidos"]].merge(
+        peso[merge_keys + ["peso_carcacas"]],
+        on=merge_keys,
+        how="outer",
+        validate="one_to_one",
+    )
 
     if "localidade_cod" in result.columns:
         result["localidade_cod"] = pd.to_numeric(result["localidade_cod"], errors="coerce").astype(
@@ -530,24 +598,12 @@ def _merge_cabecas_peso(df: pd.DataFrame, especie_lower: str) -> pd.DataFrame:
     result["especie"] = especie_lower
     result["fonte"] = "ibge_abate"
 
-    output_cols = [
-        c
-        for c in [
-            "trimestre",
-            "localidade",
-            "localidade_cod",
-            "especie",
-            "animais_abatidos",
-            "peso_carcacas",
-            "fonte",
-        ]
-        if c in result.columns
-    ]
+    output_cols = [c for c in _ABATE_COLUMNS if c in result.columns]
     result = result[output_cols].reset_index(drop=True)
 
     for col in ["animais_abatidos", "peso_carcacas"]:
         if col in result.columns:
-            result[col] = pd.to_numeric(result[col], errors="coerce")
+            result[col] = pd.to_numeric(result[col], errors="coerce").astype("float64")
 
     return result
 
@@ -584,6 +640,7 @@ async def abate(
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_abate",
+        parser_version=constants.IBGE_ABATE_PARSER_VERSION,
         source_url=SIDRA_BASE,
         source_method="httpx",
         fetched_at=utcnow(),
@@ -611,7 +668,7 @@ async def abate(
     if uf:
         ibge_code = client.uf_to_ibge_code(uf)
 
-    period = resolve_period(trimestre)
+    period = resolve_quarter_period(trimestre)
 
     classifications: dict[str, str | list[str]] = {
         "12716": "115236",
@@ -628,12 +685,13 @@ async def abate(
         period=period,
         classifications=classifications,
     )
+    registrar_canal(meta, df)
 
     rename_map = _detect_abate_columns(df)
     df = df.rename(columns=rename_map)
 
     if "valor" in df.columns:
-        df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
+        df["valor"] = pd.to_numeric(df["valor"].replace("-", "0"), errors="coerce")
 
     if "trimestre_cod" in df.columns:
         df["trimestre"] = df["trimestre_cod"].astype(str)
@@ -648,7 +706,6 @@ async def abate(
         {"especie": especie, "trimestre": trimestre},
         schema_version=meta.schema_version,
     )
-    meta.cache_expires_at = calculate_expiry("ibge_abate")
 
     logger.info(
         "ibge_abate_success",

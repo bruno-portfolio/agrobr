@@ -1,0 +1,599 @@
+{
+  "protegidas": {
+    "full_source_records": 5424,
+    "source_url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_protegidas.php?acao=pesquisar&cs=1&postado=1&",
+    "columns": [
+      "cultivar",
+      "nome_cientifico",
+      "nome_comum",
+      "nr_processo",
+      "situacao",
+      "nr_certificado",
+      "inicio_protecao",
+      "termino_protecao",
+      "titular",
+      "representante_legal",
+      "melhoristas"
+    ],
+    "records": [
+      {
+        "source_record_one_based": 1,
+        "source_cells": [
+          "Adalgiza",
+          "Persea americana Mill. (frutífera)",
+          "Abacate",
+          "21806.000202/2014",
+          "PROTEÇÃO DEFINITIVA",
+          "20170031",
+          "08/08/2016",
+          "08/08/2034",
+          "HELIO HILTON REZENDE",
+          "Gabriel de Oliveira Rezende",
+          ""
+        ],
+        "expected": {
+          "cultivar": "Adalgiza",
+          "nome_cientifico": "Persea americana Mill. (frutífera)",
+          "nome_comum": "Abacate",
+          "nr_processo": "21806.000202/2014",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20170031",
+          "inicio_protecao": "2016-08-08",
+          "termino_protecao": "2034-08-08",
+          "titular": "HELIO HILTON REZENDE",
+          "representante_legal": "Gabriel de Oliveira Rezende",
+          "melhoristas": ""
+        }
+      },
+      {
+        "source_record_one_based": 2,
+        "source_cells": [
+          "Bonella",
+          "Persea americana Mill. (frutífera)",
+          "Abacate",
+          "21806.000122/2019",
+          "PROTEÇÃO CANCELADA",
+          "20200133",
+          "30/12/2019",
+          "25/11/2025",
+          "José Alcides Bonella",
+          "José Alcides Bonella ",
+          ""
+        ],
+        "expected": {
+          "cultivar": "Bonella",
+          "nome_cientifico": "Persea americana Mill. (frutífera)",
+          "nome_comum": "Abacate",
+          "nr_processo": "21806.000122/2019",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "20200133",
+          "inicio_protecao": "2019-12-30",
+          "termino_protecao": "2025-11-25",
+          "titular": "José Alcides Bonella",
+          "representante_legal": "José Alcides Bonella",
+          "melhoristas": ""
+        }
+      },
+      {
+        "source_record_one_based": 3,
+        "source_cells": [
+          "BRS Ajubá",
+          "Ananas comosus (L.) Merr.",
+          "ABACAXI",
+          "21806.000011/2010",
+          "PROTEÇÃO DEFINITIVA",
+          "20120062",
+          "22/09/2011",
+          "22/09/2026",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "ISABEL CRISTINA VINHAL FREITAS",
+          "José Renato Santos Cabral"
+        ],
+        "expected": {
+          "cultivar": "BRS Ajubá",
+          "nome_cientifico": "Ananas comosus (L.) Merr.",
+          "nome_comum": "ABACAXI",
+          "nr_processo": "21806.000011/2010",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20120062",
+          "inicio_protecao": "2011-09-22",
+          "termino_protecao": "2026-09-22",
+          "titular": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA",
+          "representante_legal": "ISABEL CRISTINA VINHAL FREITAS",
+          "melhoristas": "José Renato Santos Cabral"
+        }
+      },
+      {
+        "source_record_one_based": 5,
+        "source_cells": [
+          "Dole 14",
+          "Ananas comosus (L.) Merr.",
+          "ABACAXI",
+          "21806.000094/2009",
+          "PROTEÇÃO CANCELADA",
+          "20120152",
+          "31/01/2012",
+          "06/02/2023",
+          "RENAISSANCE CAPITAL CORPORATION; RENAISSANCE CAPITAL CORPORATION",
+          "DI BLASI, PARENTE & ADVOGADOS ASSOCIADOS",
+          "JORGE GONZALES_; ROBERTO YOUNG_"
+        ],
+        "expected": {
+          "cultivar": "Dole 14",
+          "nome_cientifico": "Ananas comosus (L.) Merr.",
+          "nome_comum": "ABACAXI",
+          "nr_processo": "21806.000094/2009",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "20120152",
+          "inicio_protecao": "2012-01-31",
+          "termino_protecao": "2023-02-06",
+          "titular": "RENAISSANCE CAPITAL CORPORATION; RENAISSANCE CAPITAL CORPORATION",
+          "representante_legal": "DI BLASI, PARENTE & ADVOGADOS ASSOCIADOS",
+          "melhoristas": "JORGE GONZALES_; ROBERTO YOUNG_"
+        }
+      },
+      {
+        "source_record_one_based": 30,
+        "source_cells": [
+          "AF9708",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000132/2019",
+          "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "20190277",
+          "23/10/2019",
+          "até a emissão do certificado definitivo",
+          "SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA",
+          "ROMULO FUJITO KOBORI",
+          "Felipe Mikio Arashida; KÁTIA REGIANE BRUNELLI BRAGA; ANIELLO ANTONIO CUTOLO FILHO"
+        ],
+        "expected": {
+          "cultivar": "AF9708",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000132/2019",
+          "situacao": "PROTEÇÃO EXTINTA POR RENÚNCIA",
+          "nr_certificado": "20190277",
+          "inicio_protecao": "2019-10-23",
+          "termino_protecao": null,
+          "titular": "SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA; SAKATA SEED SUDAMERICA LTDA",
+          "representante_legal": "ROMULO FUJITO KOBORI",
+          "melhoristas": "Felipe Mikio Arashida; KÁTIA REGIANE BRUNELLI BRAGA; ANIELLO ANTONIO CUTOLO FILHO"
+        }
+      },
+      {
+        "source_record_one_based": 74,
+        "source_cells": [
+          "Hadar",
+          "Lactuca sativa L.",
+          "ALFACE",
+          "21806.000145/2017",
+          "PROTEÇÃO CANCELADA",
+          "20180120",
+          "23/10/2017",
+          "",
+          "TSV SEMENTES DE VEGETAIS LTDA.",
+          "DIRCEU SCHMAEDECKE_",
+          "Osvânder David de Melo"
+        ],
+        "expected": {
+          "cultivar": "Hadar",
+          "nome_cientifico": "Lactuca sativa L.",
+          "nome_comum": "ALFACE",
+          "nr_processo": "21806.000145/2017",
+          "situacao": "PROTEÇÃO CANCELADA",
+          "nr_certificado": "20180120",
+          "inicio_protecao": "2017-10-23",
+          "termino_protecao": null,
+          "titular": "TSV SEMENTES DE VEGETAIS LTDA.",
+          "representante_legal": "DIRCEU SCHMAEDECKE_",
+          "melhoristas": "Osvânder David de Melo"
+        }
+      },
+      {
+        "source_record_one_based": 231,
+        "source_cells": [
+          "Delta Opal",
+          "Gossypium hirsutum L.",
+          "ALGODÃO",
+          "21806.000024/1999",
+          "PROTEÇÃO NULA",
+          "178",
+          "29/02/2000",
+          "08/10/2013",
+          "DELTA & PINE LAND TECHNOLOGY HOLDING COMPANY, LLC.",
+          "MARIA ARMINDA ORTIZ CIPRANDI GRAZZIOTIN",
+          "RICHARD LESKE"
+        ],
+        "expected": {
+          "cultivar": "Delta Opal",
+          "nome_cientifico": "Gossypium hirsutum L.",
+          "nome_comum": "ALGODÃO",
+          "nr_processo": "21806.000024/1999",
+          "situacao": "PROTEÇÃO NULA",
+          "nr_certificado": "178",
+          "inicio_protecao": "2000-02-29",
+          "termino_protecao": "2013-10-08",
+          "titular": "DELTA & PINE LAND TECHNOLOGY HOLDING COMPANY, LLC.",
+          "representante_legal": "MARIA ARMINDA ORTIZ CIPRANDI GRAZZIOTIN",
+          "melhoristas": "RICHARD LESKE"
+        }
+      },
+      {
+        "source_record_one_based": 2529,
+        "source_cells": [
+          "FCM12045",
+          "Vaccinium L.",
+          "Mirtilo",
+          "21806.000157/2021",
+          "PROTEÇÃO DEFINITIVA",
+          "20250164",
+          "25/03/2025",
+          "25/03/2040",
+          "FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.",
+          "David do Nascimento Advogados Associados",
+          "ADAM L, WAGNER; DAVID M. BRAZELTON; Peter Stefan Boches; Antonio Abad Álamo Bermudo"
+        ],
+        "expected": {
+          "cultivar": "FCM12045",
+          "nome_cientifico": "Vaccinium L.",
+          "nome_comum": "Mirtilo",
+          "nr_processo": "21806.000157/2021",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20250164",
+          "inicio_protecao": "2025-03-25",
+          "termino_protecao": "2040-03-25",
+          "titular": "FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.; FALL CREEK FARM & NURSERY, INC.",
+          "representante_legal": "David do Nascimento Advogados Associados",
+          "melhoristas": "ADAM L, WAGNER; DAVID M. BRAZELTON; Peter Stefan Boches; Antonio Abad Álamo Bermudo"
+        }
+      },
+      {
+        "source_record_one_based": 5423,
+        "source_cells": [
+          "Dark Zamicro",
+          "Zamioculcas zamiifolia (Lodd. et al.) Engl",
+          "ZAMIOCULCAS",
+          "21806.000321/2020",
+          "PROTEÇÃO DEFINITIVA",
+          "20220064",
+          "13/12/2021",
+          "13/12/2036",
+          "AARDAM B.V.",
+          "UNLOCK COMEX IMP. EXP. LTDA",
+          "Adrianus T. Spruit"
+        ],
+        "expected": {
+          "cultivar": "Dark Zamicro",
+          "nome_cientifico": "Zamioculcas zamiifolia (Lodd. et al.) Engl",
+          "nome_comum": "ZAMIOCULCAS",
+          "nr_processo": "21806.000321/2020",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20220064",
+          "inicio_protecao": "2021-12-13",
+          "termino_protecao": "2036-12-13",
+          "titular": "AARDAM B.V.",
+          "representante_legal": "UNLOCK COMEX IMP. EXP. LTDA",
+          "melhoristas": "Adrianus T. Spruit"
+        }
+      },
+      {
+        "source_record_one_based": 5424,
+        "source_cells": [
+          "TVZAMBL1",
+          "Zamioculcas zamiifolia (Lodd. et al.) Engl",
+          "ZAMIOCULCAS",
+          "21806.000268/2020",
+          "PROTEÇÃO DEFINITIVA",
+          "20210110",
+          "10/02/2021",
+          "10/02/2036",
+          "Nicolaas Josef Schoenmaker e Outros",
+          "ANDRÉ GOMES",
+          "Everton Gomes da Costa"
+        ],
+        "expected": {
+          "cultivar": "TVZAMBL1",
+          "nome_cientifico": "Zamioculcas zamiifolia (Lodd. et al.) Engl",
+          "nome_comum": "ZAMIOCULCAS",
+          "nr_processo": "21806.000268/2020",
+          "situacao": "PROTEÇÃO DEFINITIVA",
+          "nr_certificado": "20210110",
+          "inicio_protecao": "2021-02-10",
+          "termino_protecao": "2036-02-10",
+          "titular": "Nicolaas Josef Schoenmaker e Outros",
+          "representante_legal": "ANDRÉ GOMES",
+          "melhoristas": "Everton Gomes da Costa"
+        }
+      }
+    ]
+  },
+  "registradas": {
+    "full_source_records": 38335,
+    "source_url": "https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_registradas.php?postado=1&acao=pesquisar",
+    "columns": [
+      "cultivar",
+      "nome_comum",
+      "nome_cientifico",
+      "grupo",
+      "situacao",
+      "nr_formulario",
+      "nr_registro",
+      "data_registro",
+      "data_validade",
+      "mantenedor"
+    ],
+    "records": [
+      {
+        "source_record_one_based": 1,
+        "source_cells": [
+          "Bonella",
+          "Abacate",
+          "Persea americana Mill.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "201900091",
+          "42039",
+          "27/08/2019",
+          "27/08/2034",
+          "José Alcides Bonella"
+        ],
+        "expected": {
+          "cultivar": "Bonella",
+          "nome_comum": "Abacate",
+          "nome_cientifico": "Persea americana Mill.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "201900091",
+          "nr_registro": "42039",
+          "data_registro": "2019-08-27",
+          "data_validade": "2034-08-27",
+          "mantenedor": "José Alcides Bonella"
+        }
+      },
+      {
+        "source_record_one_based": 2,
+        "source_cells": [
+          "Breda",
+          "Abacate",
+          "Persea americana Mill.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "",
+          "3489",
+          "16/12/1999",
+          "16/12/2029",
+          "INSTITUTO AGRONÔMICO - IAC"
+        ],
+        "expected": {
+          "cultivar": "Breda",
+          "nome_comum": "Abacate",
+          "nome_cientifico": "Persea americana Mill.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "3489",
+          "data_registro": "1999-12-16",
+          "data_validade": "2029-12-16",
+          "mantenedor": "INSTITUTO AGRONÔMICO - IAC"
+        }
+      },
+      {
+        "source_record_one_based": 3,
+        "source_cells": [
+          "Duke 7",
+          "Abacate",
+          "Persea americana Mill.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "202000212",
+          "43958",
+          "18/09/2020",
+          "18/09/2035",
+          "Carla Dias de Abreu Dorizzotto"
+        ],
+        "expected": {
+          "cultivar": "Duke 7",
+          "nome_comum": "Abacate",
+          "nome_cientifico": "Persea americana Mill.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202000212",
+          "nr_registro": "43958",
+          "data_registro": "2020-09-18",
+          "data_validade": "2035-09-18",
+          "mantenedor": "Carla Dias de Abreu Dorizzotto"
+        }
+      },
+      {
+        "source_record_one_based": 19,
+        "source_cells": [
+          "",
+          "Abacate-do-mato",
+          "Tontelea passiflora (Vell.) Lombardi.",
+          "FLORESTAIS",
+          "REGISTRADA",
+          "202200128",
+          "51773",
+          "02/08/2022",
+          "02/08/2037",
+          ""
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Abacate-do-mato",
+          "nome_cientifico": "Tontelea passiflora (Vell.) Lombardi.",
+          "grupo": "FLORESTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202200128",
+          "nr_registro": "51773",
+          "data_registro": "2022-08-02",
+          "data_validade": "2037-08-02",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record_one_based": 33,
+        "source_cells": [
+          "BRS Vitória",
+          "Abacaxi",
+          "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "FRUTÍFERAS",
+          "REGISTRADA",
+          "",
+          "21461",
+          "16/04/2007",
+          "16/04/2037",
+          "INSTITUTO CAPIXABA DE PESQUISA, ASSISTÊNCIA TÉCNICA E EXTENSÃO RURAL - INCAPER_"
+        ],
+        "expected": {
+          "cultivar": "BRS Vitória",
+          "nome_comum": "Abacaxi",
+          "nome_cientifico": "Ananas comosus (L.) Merr. = Ananas lucidus Mill. = Ananas nanus (L. B. Sm.) L. B. Sm.",
+          "grupo": "FRUTÍFERAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "21461",
+          "data_registro": "2007-04-16",
+          "data_validade": "2037-04-16",
+          "mantenedor": "INSTITUTO CAPIXABA DE PESQUISA, ASSISTÊNCIA TÉCNICA E EXTENSÃO RURAL - INCAPER_"
+        }
+      },
+      {
+        "source_record_one_based": 49,
+        "source_cells": [
+          "",
+          "Abeto-alemão, norway spruce, abeto-da-noruega",
+          "Picea abies (L.) H. Karst.",
+          "FLORESTAIS",
+          "REGISTRADA",
+          "",
+          "39925",
+          "05/11/2018",
+          "05/11/2033",
+          ""
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Abeto-alemão, norway spruce, abeto-da-noruega",
+          "nome_cientifico": "Picea abies (L.) H. Karst.",
+          "grupo": "FLORESTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "39925",
+          "data_registro": "2018-11-05",
+          "data_validade": "2033-11-05",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record_one_based": 3279,
+        "source_cells": [
+          "",
+          "Antúrio",
+          "Anthurium marcusianum Theófilo, L. Kollmann & Sakur.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "202600194",
+          "62912",
+          "29/06/2026",
+          "29/06/2041",
+          ""
+        ],
+        "expected": {
+          "cultivar": "",
+          "nome_comum": "Antúrio",
+          "nome_cientifico": "Anthurium marcusianum Theófilo, L. Kollmann & Sakur.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "202600194",
+          "nr_registro": "62912",
+          "data_registro": "2026-06-29",
+          "data_validade": "2041-06-29",
+          "mantenedor": ""
+        }
+      },
+      {
+        "source_record_one_based": 3953,
+        "source_cells": [
+          "Koch, cv. São Carlos",
+          "Aveia, aveia-amarela, aveia-branca",
+          "Avena sativa L.",
+          "GRANDES CULTURAS",
+          "REGISTRADA",
+          "",
+          "5883",
+          "12/07/2000",
+          "12/07/2030",
+          "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        ],
+        "expected": {
+          "cultivar": "Koch, cv. São Carlos",
+          "nome_comum": "Aveia, aveia-amarela, aveia-branca",
+          "nome_cientifico": "Avena sativa L.",
+          "grupo": "GRANDES CULTURAS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "5883",
+          "data_registro": "2000-07-12",
+          "data_validade": "2030-07-12",
+          "mantenedor": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUÁRIA - EMBRAPA"
+        }
+      },
+      {
+        "source_record_one_based": 38334,
+        "source_cells": [
+          "Zinnita White",
+          "Zinia, capitão, moça-e-velha",
+          "Zinnia elegans Jacq.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "",
+          "17188",
+          "11/12/2003",
+          "11/12/2033",
+          "SEMENTES VAN LEEUWEN LTDA"
+        ],
+        "expected": {
+          "cultivar": "Zinnita White",
+          "nome_comum": "Zinia, capitão, moça-e-velha",
+          "nome_cientifico": "Zinnia elegans Jacq.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "17188",
+          "data_registro": "2003-12-11",
+          "data_validade": "2033-12-11",
+          "mantenedor": "SEMENTES VAN LEEUWEN LTDA"
+        }
+      },
+      {
+        "source_record_one_based": 38335,
+        "source_cells": [
+          "Zinnita Yellow",
+          "Zinia, capitão, moça-e-velha",
+          "Zinnia elegans Jacq.",
+          "ORNAMENTAIS",
+          "REGISTRADA",
+          "",
+          "17187",
+          "11/12/2003",
+          "11/12/2033",
+          "SEMENTES VAN LEEUWEN LTDA"
+        ],
+        "expected": {
+          "cultivar": "Zinnita Yellow",
+          "nome_comum": "Zinia, capitão, moça-e-velha",
+          "nome_cientifico": "Zinnia elegans Jacq.",
+          "grupo": "ORNAMENTAIS",
+          "situacao": "REGISTRADA",
+          "nr_formulario": "",
+          "nr_registro": "17187",
+          "data_registro": "2003-12-11",
+          "data_validade": "2033-12-11",
+          "mantenedor": "SEMENTES VAN LEEUWEN LTDA"
+        }
+      }
+    ]
+  }
+}

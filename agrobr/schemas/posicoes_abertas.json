@@ -1,7 +1,7 @@
 {
   "name": "b3.posicoes_abertas",
-  "schema_version": "1.0",
-  "effective_from": "0.11.0",
+  "schema_version": "1.1",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "data",
@@ -10,10 +10,15 @@
   "required_columns": [
     "data",
     "ticker",
+    "descricao",
     "ticker_completo",
     "vencimento_codigo",
+    "vencimento_mes",
+    "vencimento_ano",
     "tipo",
-    "posicoes_abertas"
+    "posicoes_abertas",
+    "variacao_posicoes",
+    "unidade"
   ],
   "dtypes": {
     "data": "date",
@@ -34,8 +39,8 @@
     "descricao": true,
     "ticker_completo": false,
     "vencimento_codigo": false,
-    "vencimento_mes": true,
-    "vencimento_ano": true,
+    "vencimento_mes": false,
+    "vencimento_ano": false,
     "tipo": false,
     "posicoes_abertas": false,
     "variacao_posicoes": true,
@@ -100,7 +105,7 @@
     {
       "name": "vencimento_mes",
       "type": "int",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -111,7 +116,7 @@
     {
       "name": "vencimento_ano",
       "type": "int",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -175,6 +180,7 @@
     "PK unica por combinacao data + ticker_completo",
     "'ticker' sempre em {BGI, CCM, ETH, ICF, SJC, CNL}",
     "'tipo' sempre 'futuro' ou 'opcao'",
+    "'vencimento_mes'/'vencimento_ano' do contrato em futuros e opcoes (a expiracao pode cair no mes anterior)",
     "'posicoes_abertas' sempre >= 0",
     "Dados apenas para dias uteis (sem pregao em weekends/feriados)"
   ]

@@ -17,7 +17,11 @@ Condição das lavouras paranaenses — SEAB/DERAL.
 
 ## Produtos
 
-14 culturas: aveia, cafe, cana, canola, cevada, feijao, feijao_1, feijao_2, mandioca, milho, milho_1, milho_2, soja, trigo.
+8 culturas: cafe, cevada, feijao_1, feijao_2, milho_1, milho_2, soja, trigo.
+
+Aveia, cana, canola, mandioca e os totais milho/feijão têm alias no parser, mas não
+foram observados no relatório semanal nas capturas analisadas (fevereiro e setembro
+de 2026). A disponibilidade de cada cultura varia conforme a edição.
 
 ## Escopo geográfico
 
@@ -25,9 +29,21 @@ Dados cobrem exclusivamente o estado do Paraná (PR).
 
 ## Normalização
 
-O dataset normaliza automaticamente linhas de progresso (plantio/colheita) vindas do parser DERAL:
-- `condicao=""` + `plantio_pct` presente → `condicao="plantio"`
-- `condicao=""` + `colheita_pct` presente → `condicao="colheita"`
+Cada registro traz a condição (`boa`, `media` ou `ruim`) e, na mesma linha, o progresso de
+plantio e colheita da cultura. Nenhum caminho da 2.0.0 produz `plantio` ou `colheita` em
+`condicao`: a única fonte é o PC.xls do DERAL, que publica só boa, média e ruim. O contrato 1.0
+continua a admiti-los, para não recusar quadro externo validado com ele.
+
+A fonte normaliza a data publicada em cada aba para `dd/mm/yyyy`; os nomes
+`Atual` e `Anterior` nunca são usados como datas. Sem referência publicada
+reconhecível, a leitura falha com `ParseError` que identifica a aba.
+O traço `"-"` representa zero absoluto segundo a nota do PC.xls e vira
+`0.0` em `pct`, `plantio_pct` e `colheita_pct`. Células vazias permanecem nulas.
+
+O quadro sai ordenado por `produto`, pela data em ordem cronológica e por `condicao`: a última
+linha de cada produto é a referência mais recente. `data` continua texto `dd/mm/yyyy`, como no
+contrato, e o `max()` ou a ordenação dessa coluna como texto não são cronológicos; converta com
+`pd.to_datetime(df["data"], format="%d/%m/%Y")`.
 
 ## Exemplo
 
@@ -43,3 +59,26 @@ df = await datasets.condicao_lavouras("soja")
 # Com metadados
 df, meta = await datasets.condicao_lavouras(return_meta=True)
 ```
+
+## Reconciliação das planilhas de fevereiro e setembro de 2026
+
+As duas capturas originais de PC.xls são BIFF/XLS: 26 abas, 438 registros de
+condição e 730 células numéricas de condição, plantio e colheita conferidas
+diretamente. A extensão `.xlsx` do arquivo antigo preservado no golden não
+indica o formato real. Não foi localizada uma publicação XLSX original para
+certificar essa variante do parser.
+
+Os percentuais publicados nessas capturas estão em pontos percentuais (0–100),
+sem conversão de frações formatadas como porcentagem. As colunas de fase
+fenológica e comercialização, as linhas de batata e de soja de segunda safra
+ficam fora do contrato atual. Uma aba que informa feriado sem observações não
+produz registros ou zeros. O nome `18-12-2017` contém referência publicada de
+08/01/2018; a data vem da célula, conforme a publicação. Quando o nome de uma aba
+datada (`dd-mm-aa` ou `dd-mm-aaaa`) difere da data da célula, como nesse caso e em
+`19-09-2021`, com 20/09/2021, a leitura segue a célula e avisa em `validation_warnings`
+e em `UserWarning`.
+
+O parser 2 exige os cabeçalhos Ruim, Média, Boa, Plantada e Colhida nas tabelas
+com várias culturas. Se faltar um deles, a fonte levanta `ParseError` e o dataset
+propaga `SourceUnavailableError` com o motivo, evitando sucesso parcial com
+apenas as abas históricas. O contrato permanece na versão 1.0.

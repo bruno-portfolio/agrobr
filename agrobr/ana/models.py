@@ -9,6 +9,7 @@ LAYERS: dict[str, LayerConfig] = {
     "hidrografia": {
         "service_path": "Hidrografia/MapServer/0",
         "max_record_count": 1000,
+        "oid_field": "OBJECTID",
         "fields": "OBJECTID,COCURSODAG,COBACIA,NORIOCOMP,DEDOMINIAL",
         "rename_map": {
             "COCURSODAG": "codigo_curso",
@@ -28,6 +29,7 @@ LAYERS: dict[str, LayerConfig] = {
     "pivos_irrigacao": {
         "service_path": "Pivos_Mapeados/MapServer/0",
         "max_record_count": 1000,
+        "oid_field": "OBJECTID",
         "fields": "OBJECTID,CD_GEOCMU,NM_MUNICIP,NM_ESTADO,REGIAO_HID,HECTARES",
         "rename_map": {
             "CD_GEOCMU": "codigo_municipio",
@@ -49,6 +51,7 @@ LAYERS: dict[str, LayerConfig] = {
     "demanda_irrigacao": {
         "service_path": "Demanda_de_Irrigacao_Vazao_de_Retirada_para_Irrigacao/MapServer/0",
         "max_record_count": 1000,
+        "oid_field": "OBJECTID",
         "fields": "OBJECTID,ID,COBACIA,DSVERSAO,VZMAXMEN,VZMESSEC,VZMESIRR,VZMEDANO",
         "rename_map": {
             "COBACIA": "codigo_bacia",
@@ -73,6 +76,7 @@ LAYERS: dict[str, LayerConfig] = {
     "disponibilidade_hidrica": {
         "service_path": "Disponibilidade_Hidrica_Superficial/MapServer/0",
         "max_record_count": 1000,
+        "oid_field": "OBJECTID",
         "fields": "OBJECTID,ID,NUAREAMONT,DISPQ95,NMRIO,DEDOMINIAL,DSVERSAO",
         "rename_map": {
             "NUAREAMONT": "area_montante_km2",

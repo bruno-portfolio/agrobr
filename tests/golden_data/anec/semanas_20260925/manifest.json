@@ -1,0 +1,45 @@
+{
+ "fonte": "anec",
+ "transcricao_r25": {
+  "origem": "R25 de conferência: transcrição manual das páginas 2 e 3 do PDF baixado à parte, com as imagens conferidas; sem o parser do agrobr",
+  "metodo": "Manual transcription from independently downloaded PDF, pages 2 and 3; rendered PNGs visually inspected. No production parser used.",
+  "boletins": {
+   "36": {
+    "pdf": "../../reconciliacao_r7_20260918/anec/weekly_w36_2026.pdf",
+    "recibo": {
+     "url": "https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf",
+     "final_url": "https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf",
+     "redirects": [],
+     "fetched_at": "2026-09-25T19:58:20.266178+00:00",
+     "status": 200,
+     "bytes": 856209,
+     "sha256": "6b42943d7dfe5637a030411a118d23f7317b753ef355181e5ebee3336497e7ff",
+     "stored_sha256": "6b42943d7dfe5637a030411a118d23f7317b753ef355181e5ebee3336497e7ff",
+     "transformation": null,
+     "headers": {
+      "Date": "Fri, 25 Sep 2026 19:58:20 GMT",
+      "Content-Type": "application/pdf",
+      "Last-Modified": "Wed, 16 Sep 2026 14:38:16 GMT",
+      "ETag": "\"6aaaa9d8-d1091\""
+     }
+    },
+    "periodos": {
+     "last_week": {
+      "rotulo": "(06th to 12th Sep )",
+      "data_inicio": "2026-09-06",
+      "data_fim": "2026-09-12"
+     },
+     "current_week": {
+      "rotulo": "(13th to 19th Sep )",
+      "data_inicio": "2026-09-13",
+      "data_fim": "2026-09-19"
+     }
+    }
+   }
+  }
+ },
+ "calendario_r11": {
+  "origem": "R11 de conferência: a semana da ANEC vai de domingo a sábado, e a semana w de 2026 começa em 26/07 + 7·(w−30); o boletim da semana w traz a semana w em 'Last Week' e a w+1 em 'Current Week'",
+  "inicio_da_semana_30_de_2026": "2026-07-26"
+ }
+}

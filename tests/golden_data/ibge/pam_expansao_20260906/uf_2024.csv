@@ -1,0 +1,325 @@
+NC,NN,MC,MN,V,D1C,D1N,D2C,D2N,D3C,D3N,D4C,D4N
+3,Unidade da Federação,1006,Hectares,591,11,Rondônia,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,17597,11,Rondônia,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,335,11,Rondônia,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,577,11,Rondônia,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,17597,11,Rondônia,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,335,11,Rondônia,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,19095,11,Rondônia,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,361016,11,Rondônia,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,4043,11,Rondônia,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,33094,11,Rondônia,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,20516,11,Rondônia,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,12069,11,Rondônia,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,418,12,Acre,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,21945,12,Acre,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,389,12,Acre,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,401,12,Acre,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,21865,12,Acre,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,375,12,Acre,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,10198,12,Acre,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,495940,12,Acre,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,5144,12,Acre,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,25431,12,Acre,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,22682,12,Acre,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,13717,12,Acre,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,5812,13,Amazonas,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,72870,13,Amazonas,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,2209,13,Amazonas,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,5810,13,Amazonas,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,70653,13,Amazonas,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,2045,13,Amazonas,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,260873,13,Amazonas,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,760516,13,Amazonas,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,40390,13,Amazonas,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,44901,13,Amazonas,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,10764,13,Amazonas,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,19751,13,Amazonas,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,160,14,Roraima,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,5321,14,Roraima,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,837,14,Roraima,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,152,14,Roraima,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,5321,14,Roraima,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,817,14,Roraima,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,2325,14,Roraima,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,71682,14,Roraima,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,8256,14,Roraima,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,15296,14,Roraima,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,13472,14,Roraima,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,10105,14,Roraima,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,17516,15,Pará,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,268896,15,Pará,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,15093,15,Pará,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,17516,15,Pará,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,266576,15,Pará,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,15091,15,Pará,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,1213359,15,Pará,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,3966227,15,Pará,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,261114,15,Pará,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,69271,15,Pará,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,14878,15,Pará,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,17303,15,Pará,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,220,16,Amapá,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,11200,16,Amapá,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,483,16,Amapá,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,213,16,Amapá,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,11143,16,Amapá,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,479,16,Amapá,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,4845,16,Amapá,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,108531,16,Amapá,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,3139,16,Amapá,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,22746,16,Amapá,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,9740,16,Amapá,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,6553,16,Amapá,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,36112,17,Tocantins,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,14737,17,Tocantins,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,80,17,Tocantins,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,36105,17,Tocantins,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,14361,17,Tocantins,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,76,17,Tocantins,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,2948442,17,Tocantins,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,237771,17,Tocantins,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,908,17,Tocantins,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,81663,17,Tocantins,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,16557,17,Tocantins,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,11947,17,Tocantins,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,46022,21,Maranhão,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,48064,21,Maranhão,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,55,21,Maranhão,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,46022,21,Maranhão,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,47698,21,Maranhão,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,55,21,Maranhão,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,2705753,21,Maranhão,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,377827,21,Maranhão,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,266,21,Maranhão,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,58793,21,Maranhão,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,7921,21,Maranhão,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,4836,21,Maranhão,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,18010,22,Piauí,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,46014,22,Piauí,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,147,22,Piauí,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,18010,22,Piauí,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,44825,22,Piauí,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,147,22,Piauí,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,1191702,22,Piauí,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,460157,22,Piauí,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,1317,22,Piauí,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,66169,22,Piauí,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,10266,22,Piauí,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,8959,22,Piauí,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,8838,23,Ceará,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,74423,23,Ceará,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,947,23,Ceará,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,8828,23,Ceará,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,74423,23,Ceará,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,947,23,Ceará,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,556146,23,Ceará,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,817857,23,Ceará,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,9080,23,Ceará,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,62998,23,Ceará,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,10989,23,Ceará,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,9588,23,Ceará,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,64678,24,Rio Grande do Norte,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,27244,24,Rio Grande do Norte,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,39,24,Rio Grande do Norte,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,64398,24,Rio Grande do Norte,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,24832,24,Rio Grande do Norte,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,39,24,Rio Grande do Norte,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,3858316,24,Rio Grande do Norte,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,276245,24,Rio Grande do Norte,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,270,24,Rio Grande do Norte,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,59914,24,Rio Grande do Norte,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,11125,24,Rio Grande do Norte,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,6923,24,Rio Grande do Norte,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,110981,25,Paraíba,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,16121,25,Paraíba,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,643,25,Paraíba,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,110961,25,Paraíba,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,16121,25,Paraíba,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,643,25,Paraíba,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,7181745,25,Paraíba,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,164972,25,Paraíba,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,4562,25,Paraíba,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,64723,25,Paraíba,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,10233,25,Paraíba,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,7095,25,Paraíba,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,270601,26,Pernambuco,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,55911,26,Pernambuco,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,841,26,Pernambuco,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,270594,26,Pernambuco,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,54947,26,Pernambuco,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,801,26,Pernambuco,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,16102174,26,Pernambuco,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,649589,26,Pernambuco,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,8039,26,Pernambuco,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,59507,26,Pernambuco,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,11822,26,Pernambuco,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,10036,26,Pernambuco,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,274550,27,Alagoas,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,37565,27,Alagoas,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,8400,27,Alagoas,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,274550,27,Alagoas,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,37017,27,Alagoas,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,7780,27,Alagoas,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,18707595,27,Alagoas,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,519429,27,Alagoas,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,84442,27,Alagoas,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,68139,27,Alagoas,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,14032,27,Alagoas,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,10854,27,Alagoas,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,51477,28,Sergipe,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,12196,28,Sergipe,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,31633,28,Sergipe,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,49683,28,Sergipe,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,12122,28,Sergipe,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,31279,28,Sergipe,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,2753407,28,Sergipe,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,169142,28,Sergipe,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,443661,28,Sergipe,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,55419,28,Sergipe,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,13953,28,Sergipe,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,14184,28,Sergipe,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,75020,29,Bahia,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,103678,29,Bahia,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,48942,29,Bahia,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,74564,29,Bahia,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,101911,29,Bahia,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,48942,29,Bahia,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,5574992,29,Bahia,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,806471,29,Bahia,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,604534,29,Bahia,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,74768,29,Bahia,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,7913,29,Bahia,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,12352,29,Bahia,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,1118810,31,Minas Gerais,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,40115,31,Minas Gerais,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,40456,31,Minas Gerais,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,1118810,31,Minas Gerais,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,40115,31,Minas Gerais,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,40456,31,Minas Gerais,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,83764720,31,Minas Gerais,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,561735,31,Minas Gerais,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,842705,31,Minas Gerais,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,74869,31,Minas Gerais,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,14003,31,Minas Gerais,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,20830,31,Minas Gerais,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,53411,32,Espírito Santo,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,7530,32,Espírito Santo,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,1690,32,Espírito Santo,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,53411,32,Espírito Santo,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,7530,32,Espírito Santo,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,1690,32,Espírito Santo,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,3346324,32,Espírito Santo,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,127806,32,Espírito Santo,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,19856,32,Espírito Santo,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,62652,32,Espírito Santo,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,16973,32,Espírito Santo,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,11749,32,Espírito Santo,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,54729,33,Rio de Janeiro,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,11460,33,Rio de Janeiro,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,4589,33,Rio de Janeiro,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,54729,33,Rio de Janeiro,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,11315,33,Rio de Janeiro,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,4579,33,Rio de Janeiro,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,2493706,33,Rio de Janeiro,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,153699,33,Rio de Janeiro,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,73953,33,Rio de Janeiro,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,45565,33,Rio de Janeiro,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,13584,33,Rio de Janeiro,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,16150,33,Rio de Janeiro,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,5445273,35,São Paulo,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,76747,35,São Paulo,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,355934,35,São Paulo,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,5398676,35,São Paulo,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,76645,35,São Paulo,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,354562,35,São Paulo,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,418569112,35,São Paulo,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,1666659,35,São Paulo,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,12002362,35,São Paulo,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,77532,35,São Paulo,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,21745,35,São Paulo,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,33851,35,São Paulo,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,501613,41,Paraná,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,138001,41,Paraná,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,22008,41,Paraná,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,501513,41,Paraná,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,137716,41,Paraná,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,21682,41,Paraná,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,34505828,41,Paraná,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,3693862,41,Paraná,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,714678,41,Paraná,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,68803,41,Paraná,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,26822,41,Paraná,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,32962,41,Paraná,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,3785,42,Santa Catarina,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,14636,42,Santa Catarina,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,1688,42,Santa Catarina,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,3780,42,Santa Catarina,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,14292,42,Santa Catarina,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,1688,42,Santa Catarina,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,193818,42,Santa Catarina,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,283088,42,Santa Catarina,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,26180,42,Santa Catarina,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,51275,42,Santa Catarina,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,19807,42,Santa Catarina,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,15509,42,Santa Catarina,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,11605,43,Rio Grande do Sul,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,42893,43,Rio Grande do Sul,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,20101,43,Rio Grande do Sul,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,11485,43,Rio Grande do Sul,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,41235,43,Rio Grande do Sul,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,19874,43,Rio Grande do Sul,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,472299,43,Rio Grande do Sul,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,647393,43,Rio Grande do Sul,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,302679,43,Rio Grande do Sul,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,41123,43,Rio Grande do Sul,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,15700,43,Rio Grande do Sul,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,15230,43,Rio Grande do Sul,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,672530,50,Mato Grosso do Sul,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,55556,50,Mato Grosso do Sul,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,1492,50,Mato Grosso do Sul,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,672523,50,Mato Grosso do Sul,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,55555,50,Mato Grosso do Sul,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,1478,50,Mato Grosso do Sul,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,52499052,50,Mato Grosso do Sul,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,1267782,50,Mato Grosso do Sul,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,31687,50,Mato Grosso do Sul,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,78063,50,Mato Grosso do Sul,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,22820,50,Mato Grosso do Sul,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,21439,50,Mato Grosso do Sul,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,245057,51,Mato Grosso,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,14662,51,Mato Grosso,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,438,51,Mato Grosso,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,241946,51,Mato Grosso,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,14648,51,Mato Grosso,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,438,51,Mato Grosso,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,19713635,51,Mato Grosso,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,212355,51,Mato Grosso,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,5234,51,Mato Grosso,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,81479,51,Mato Grosso,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,14497,51,Mato Grosso,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,11950,51,Mato Grosso,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,1026487,52,Goiás,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,11540,52,Goiás,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,8636,52,Goiás,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,1015810,52,Goiás,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,11536,52,Goiás,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,8606,52,Goiás,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,80995596,52,Goiás,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,189191,52,Goiás,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,187841,52,Goiás,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,79735,52,Goiás,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,16400,52,Goiás,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,21827,52,Goiás,2024,2024,112,Rendimento médio da produção,40151,Laranja
+3,Unidade da Federação,1006,Hectares,205,53,Distrito Federal,2024,2024,8331,Área plantada ou destinada à colheita,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,883,53,Distrito Federal,2024,2024,8331,Área plantada ou destinada à colheita,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,64,53,Distrito Federal,2024,2024,8331,Área plantada ou destinada à colheita,40151,Laranja
+3,Unidade da Federação,1006,Hectares,205,53,Distrito Federal,2024,2024,216,Área colhida,40106,Cana-de-açúcar
+3,Unidade da Federação,1006,Hectares,883,53,Distrito Federal,2024,2024,216,Área colhida,40119,Mandioca
+3,Unidade da Federação,1006,Hectares,64,53,Distrito Federal,2024,2024,216,Área colhida,40151,Laranja
+3,Unidade da Federação,1017,Toneladas,17425,53,Distrito Federal,2024,2024,214,Quantidade produzida,40106,Cana-de-açúcar
+3,Unidade da Federação,1017,Toneladas,19154,53,Distrito Federal,2024,2024,214,Quantidade produzida,40119,Mandioca
+3,Unidade da Federação,1017,Toneladas,2069,53,Distrito Federal,2024,2024,214,Quantidade produzida,40151,Laranja
+3,Unidade da Federação,33,Quilogramas por Hectare,85000,53,Distrito Federal,2024,2024,112,Rendimento médio da produção,40106,Cana-de-açúcar
+3,Unidade da Federação,33,Quilogramas por Hectare,21692,53,Distrito Federal,2024,2024,112,Rendimento médio da produção,40119,Mandioca
+3,Unidade da Federação,33,Quilogramas por Hectare,32328,53,Distrito Federal,2024,2024,112,Rendimento médio da produção,40151,Laranja

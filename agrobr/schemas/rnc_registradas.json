@@ -1,0 +1,174 @@
+{
+  "name": "rnc.registradas",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "nr_registro"
+  ],
+  "required_columns": [
+    "cultivar",
+    "nome_comum",
+    "nome_cientifico",
+    "grupo",
+    "situacao",
+    "nr_formulario",
+    "nr_registro",
+    "data_registro",
+    "data_validade",
+    "mantenedor"
+  ],
+  "dtypes": {
+    "cultivar": "str",
+    "nome_comum": "str",
+    "nome_cientifico": "str",
+    "grupo": "str",
+    "situacao": "str",
+    "nr_formulario": "str",
+    "nr_registro": "str",
+    "data_registro": "date",
+    "data_validade": "date",
+    "mantenedor": "str"
+  },
+  "nullable": {
+    "cultivar": false,
+    "nome_comum": false,
+    "nome_cientifico": false,
+    "grupo": false,
+    "situacao": false,
+    "nr_formulario": false,
+    "nr_registro": false,
+    "data_registro": true,
+    "data_validade": true,
+    "mantenedor": false
+  },
+  "columns": [
+    {
+      "name": "cultivar",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome_comum",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome_cientifico",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "grupo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "situacao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nr_formulario",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nr_registro",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_registro",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_validade",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "mantenedor",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "primary_key_scope": "one_family_and_resource",
+    "non_empty_strings": [
+      "nr_registro"
+    ],
+    "date_dtype": "datetime64[ns]",
+    "date_semantics": "civil_date_without_timezone_or_time",
+    "blank_strings": "preserved"
+  },
+  "guarantees": [
+    "Uma linha por número de registro textual na exportação RNC processada",
+    "Formulários repetidos e vazios publicados são preservados; não constituem chave",
+    "Textos vazios permanecem strings vazias e identificadores não são convertidos em números",
+    "Datas civis usam datetime64[ns], sem timezone ou horário; ausência não é imputada",
+    "Situação e mantenedores permanecem textos publicados, sem inferência jurídica ou divisão"
+  ]
+}

@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import time
-from datetime import date
+import warnings
+from datetime import date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.utils import validation
 from agrobr.utils.result import build_source_meta, finalize_result
 
-from . import client, parser
+from . import client, historical, models, parser
 
 logger = structlog.get_logger()
 
@@ -52,37 +52,34 @@ async def estacoes(
 
     t1 = time.monotonic()
 
-    if not dados:
-        df = pd.DataFrame()
-    else:
-        df = pd.DataFrame(dados)
+    df = pd.DataFrame(dados)
 
-        rename_map = {
-            "CD_ESTACAO": "codigo",
-            "DC_NOME": "nome",
-            "SG_ESTADO": "uf",
-            "CD_SITUACAO": "situacao",
-            "TP_ESTACAO": "tipo",
-            "VL_LATITUDE": "latitude",
-            "VL_LONGITUDE": "longitude",
-            "VL_ALTITUDE": "altitude",
-            "DT_INICIO_OPERACAO": "inicio_operacao",
-        }
+    rename_map = {
+        "CD_ESTACAO": "codigo",
+        "DC_NOME": "nome",
+        "SG_ESTADO": "uf",
+        "CD_SITUACAO": "situacao",
+        "TP_ESTACAO": "tipo",
+        "VL_LATITUDE": "latitude",
+        "VL_LONGITUDE": "longitude",
+        "VL_ALTITUDE": "altitude",
+        "DT_INICIO_OPERACAO": "inicio_operacao",
+    }
 
-        colunas_presentes = {k: v for k, v in rename_map.items() if k in df.columns}
-        df = df.rename(columns=colunas_presentes)
+    colunas_presentes = {k: v for k, v in rename_map.items() if k in df.columns}
+    df = df.rename(columns=colunas_presentes)
 
-        for col in ["latitude", "longitude", "altitude"]:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
+    for col in ["latitude", "longitude", "altitude"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
 
-        if apenas_operantes and "situacao" in df.columns:
-            df = df[df["situacao"] == "Operante"]
+    if apenas_operantes and "situacao" in df.columns:
+        df = df[df["situacao"] == "Operante"]
 
-        if uf and "uf" in df.columns:
-            df = df[df["uf"] == uf.upper()]
+    if uf and "uf" in df.columns:
+        df = df[df["uf"] == uf.upper()]
 
-        df = df.reset_index(drop=True)
+    df = df.reset_index(drop=True)
 
     parse_ms = int((time.monotonic() - t1) * 1000)
 
@@ -98,6 +95,30 @@ async def estacoes(
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
+@overload
+async def estacao(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def estacao(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def estacao(
     codigo: str,
     inicio: str | date,
@@ -105,23 +126,17 @@ async def estacao(
     agregacao: str = "horario",
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    try:
-        if isinstance(inicio, str):
-            inicio = date.fromisoformat(inicio)
-        if isinstance(fim, str):
-            fim = date.fromisoformat(fim)
-    except ValueError as exc:
-        raise InvalidParameterError("inicio e fim devem usar YYYY-MM-DD") from exc
-    if inicio > fim:
-        raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
+    codigo = models.validate_codigo(codigo)
+    inicio, fim = models.validate_periodo(inicio, fim)
+    models.validate_agregacao(agregacao)
 
     t0 = time.monotonic()
     dados = await client.fetch_dados_estacao(codigo, inicio, fim)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
+    parser.validate_observation_scope(dados, inicio, fim, codigo=codigo)
     df = parser.parse_observacoes(dados)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
@@ -136,8 +151,36 @@ async def estacao(
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        source_details={
+            "access": "inmet_api",
+            "time_basis": "UTC",
+            "requested_period": {"inicio": inicio.isoformat(), "fim": fim.isoformat()},
+            "temporal_aggregation": agregacao,
+            "spatial_aggregation": {},
+            "station_selection": {"mode": "codigo", "codigo": codigo},
+        },
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+
+
+@overload
+async def clima_uf(
+    uf: str,
+    ano: int,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def clima_uf(
+    uf: str,
+    ano: int,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def clima_uf(
@@ -145,9 +188,8 @@ async def clima_uf(
     ano: int,
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    validation.validate_uf(uf)
+    uf = models.validate_uf(uf)
     inicio = date(ano, 1, 1)
     fim = date(ano, 12, 31)
 
@@ -156,6 +198,7 @@ async def clima_uf(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
+    parser.validate_observation_scope(dados, inicio, fim, uf=uf)
     df_horario = parser.parse_observacoes(dados)
     df_diario = parser.agregar_diario(df_horario)
     df_mensal = parser.agregar_mensal_uf(df_diario)
@@ -169,8 +212,60 @@ async def clima_uf(
         parse_ms,
         df_mensal,
         parser.PARSER_VERSION,
+        source_details={
+            "access": "inmet_api",
+            "time_basis": "UTC",
+            "requested_period": {"inicio": inicio.isoformat(), "fim": fim.isoformat()},
+            "temporal_aggregation": "mensal",
+            "spatial_aggregation": historical.spatial_aggregation(),
+            "station_selection": {
+                "mode": "catalogo_atual",
+                "tipo": "T",
+                "situacao": "Operante",
+                "uf": uf,
+                "returned_stations": sorted(df_horario["estacao"].unique().tolist()),
+            },
+        },
     )
+    _avisar_chuva_parcial(df_mensal, meta.validation_warnings)
     return finalize_result(df_mensal, meta, as_polars=as_polars, return_meta=return_meta)
+
+
+def _avisar_chuva_parcial(mensal: pd.DataFrame, avisos: list[str]) -> None:
+    if "estacoes_chuva" not in mensal:
+        return
+    sem_completa = mensal[mensal["estacoes_chuva"].eq(0) & mensal["estacoes_chuva_parciais"].gt(0)]
+    if sem_completa.empty:
+        return
+    meses = ", ".join(f"{linha.uf} {linha.mes:%Y-%m}" for linha in sem_completa.itertuples())
+    aviso = (
+        f"Chuva mensal nula em {meses}: nenhuma estação com o mês completo. As estações "
+        "parciais ficam fora da média e são contadas em estacoes_chuva_parciais."
+    )
+    avisos.append(aviso)
+    warnings.warn(aviso, UserWarning, stacklevel=3)
+
+
+@overload
+async def historico(
+    codigo: str,
+    ano: int,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def historico(
+    codigo: str,
+    ano: int,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def historico(
@@ -179,34 +274,118 @@ async def historico(
     agregacao: str = "horario",
     as_polars: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,  # noqa: ARG001
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    """Dados horários de um ano inteiro via dadoshistoricos (sem token).
+    models.validate_ano(ano)
+    df, meta = await historico_periodo(
+        codigo, date(ano, 1, 1), date(ano, 12, 31), agregacao, return_meta=True
+    )
+    if meta.source_details["coverage"]["missing_station_years"]:
+        raise SourceUnavailableError(
+            source="inmet",
+            url=meta.source_url,
+            last_error=f"Estação {codigo} sem dados no ano {ano}",
+        )
+    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
-    Baixa o ZIP anual público do portal (~100 MB, cache de 1 ano por processo)
-    e extrai a estação pedida — alternativa ao apitempo, que exige token para
-    dados observacionais. Mesmo schema de saída de `estacao()`.
-    """
-    if not isinstance(ano, int) or isinstance(ano, bool) or not 2000 <= ano <= date.today().year:
-        raise InvalidParameterError(f"ano deve estar entre 2000 e {date.today().year}")
 
-    t0 = time.monotonic()
-    raw, source_url = await client.fetch_historico_estacao(codigo, ano)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_historico_csv(raw, codigo)
-    if agregacao == "diario":
-        df = parser.agregar_diario(df)
-    parse_ms = int((time.monotonic() - t1) * 1000)
-
+def _historical_meta(
+    df: pd.DataFrame, details: dict[str, Any], fetch_ms: int, parse_ms: int
+) -> MetaInfo:
+    resources = details["resources"]
     meta = build_source_meta(
         "inmet",
-        source_url,
+        resources[0]["url"],
         "httpx+zip+csv",
         fetch_ms,
         parse_ms,
         df,
-        parser.PARSER_VERSION,
+        parser.HISTORICO_PARSER_VERSION,
+        source_details=details,
+        raw_content_hash=resources[0]["sha256"] if len(resources) == 1 else None,
+        raw_content_size=resources[0]["bytes"] if len(resources) == 1 else 0,
     )
+    meta.validation_warnings = details["warnings"]
+    meta.from_cache = all(resource["from_cache"] for resource in resources)
+    meta.fetched_at = max(datetime.fromisoformat(resource["fetched_at"]) for resource in resources)
+    meta.fetch_timestamp = meta.fetched_at
+    return meta
+
+
+@overload
+async def historico_periodo(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def historico_periodo(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def historico_periodo(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    codigo = models.validate_codigo(codigo)
+    inicio, fim = models.validate_periodo(inicio, fim)
+    models.validate_ano(inicio.year)
+    models.validate_ano(fim.year)
+    models.validate_agregacao(agregacao)
+    data, details, fetch_ms, parse_ms = await historical.collect(inicio, fim, codigo=codigo)
+    df = historical.aggregate(data, details, agregacao)
+    meta = _historical_meta(df, details, fetch_ms, parse_ms)
+    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+
+
+@overload
+async def historico_uf(
+    uf: str,
+    ano: int,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def historico_uf(
+    uf: str,
+    ano: int,
+    as_polars: bool = False,
+    *,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def historico_uf(
+    uf: str,
+    ano: int,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    uf = models.validate_uf(uf)
+    models.validate_ano(ano)
+    data, details, fetch_ms, parse_ms = await historical.collect(
+        date(ano, 1, 1), date(ano, 12, 31), uf=uf
+    )
+    df = historical.aggregate(data, details, "mensal")
+    _avisar_chuva_parcial(df, details["warnings"])
+    meta = _historical_meta(df, details, fetch_ms, parse_ms)
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

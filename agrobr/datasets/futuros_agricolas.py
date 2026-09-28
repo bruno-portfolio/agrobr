@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
+from agrobr.b3 import client
 from agrobr.b3.models import B3_CONTRATOS_AGRO
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
@@ -36,13 +37,21 @@ async def _fetch_pregao_recente(
     from agrobr.exceptions import ParseError, SourceUnavailableError
 
     last_error: Exception | None = None
+    empty_result: tuple[pd.DataFrame, MetaInfo] | None = None
     for dia in _dias_uteis_recentes():
         try:
-            return await fetch_fn(data=dia, return_meta=True, **fetch_kwargs)  # type: ignore[no-any-return]
+            df, meta = await fetch_fn(data=dia, return_meta=True, **fetch_kwargs)
+            if not df.empty:
+                return df, meta
+            empty_result = (df, meta)
         except (SourceUnavailableError, ParseError) as e:
             logger.debug("b3_pregao_indisponivel", data=dia, error=str(e))
             last_error = e
-    raise last_error  # type: ignore[misc]
+    if empty_result is not None:
+        return empty_result
+    if last_error is not None:
+        raise last_error
+    raise SourceUnavailableError(source="b3", last_error="Nenhum pregão disponível na janela")
 
 
 async def _fetch_b3(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -53,10 +62,11 @@ async def _fetch_b3(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo
     data: str = kwargs["data"] if "data" in kwargs and kwargs["data"] else ""
     vencimento: str | None = kwargs.get("vencimento")
 
-    if tipo == "historico":
+    if tipo in ("historico", "oi_historico"):
         if not kwargs.get("inicio") or not kwargs.get("fim"):
-            raise InvalidParameterError("tipo='historico' requer inicio e fim (YYYY-MM-DD)")
-        result = await b3.historico(
+            raise InvalidParameterError(f"tipo='{tipo}' requer inicio e fim (YYYY-MM-DD)")
+        fetch_historico = b3.oi_historico if tipo == "oi_historico" else b3.historico
+        result = await fetch_historico(
             contrato=contrato or "",
             inicio=kwargs["inicio"],
             fim=kwargs["fim"],
@@ -101,6 +111,10 @@ FUTUROS_AGRICOLAS_INFO = DatasetInfo(
 class FuturosAgricolasDataset(BaseDataset):
     info = FUTUROS_AGRICOLAS_INFO
 
+    def _contract_name(self, **kwargs: Any) -> str | None:
+        tipo = kwargs.get("tipo", "ajustes")
+        return "ajuste_diario" if tipo in ("ajustes", "historico") else "posicoes_abertas"
+
     def _validate_produto(self, produto: str) -> None:
         if not produto:
             return
@@ -117,12 +131,16 @@ class FuturosAgricolasDataset(BaseDataset):
         inicio: str | None,
         fim: str | None,
     ) -> None:
-        if tipo == "historico":
+        if tipo in ("historico", "oi_historico"):
             if not produto:
-                raise InvalidParameterError("produto é obrigatório para tipo='historico'")
+                raise InvalidParameterError(f"produto é obrigatório para tipo='{tipo}'")
             if not inicio or not fim:
-                raise InvalidParameterError("inicio e fim são obrigatórios para tipo='historico'")
-        if tipo == "posicoes" and produto == "soja_fob":
+                raise InvalidParameterError(f"inicio e fim são obrigatórios para tipo='{tipo}'")
+            if tipo == "oi_historico" and client.validate_oi_date(inicio) > client.validate_oi_date(
+                fim
+            ):
+                raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
+        if tipo in ("posicoes", "oi_historico") and produto == "soja_fob":
             raise InvalidParameterError(
                 "soja_fob não possui dados de posições abertas na B3 (SOY ausente de TICKERS_AGRO_OI)"
             )
@@ -131,17 +149,23 @@ class FuturosAgricolasDataset(BaseDataset):
         self,
         produto: str | None = None,
         *,
-        tipo: Literal["ajustes", "historico", "posicoes"] = "ajustes",
+        tipo: Literal["ajustes", "historico", "posicoes", "oi_historico"] = "ajustes",
         data: str | None = None,
         inicio: str | None = None,
         fim: str | None = None,
         vencimento: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        if tipo not in ("ajustes", "historico", "posicoes"):
+        produto = self._produto_do_dataset(produto)
+        if tipo not in ("ajustes", "historico", "posicoes", "oi_historico"):
             raise InvalidParameterError(
-                f"tipo deve ser 'ajustes', 'historico' ou 'posicoes', recebeu '{tipo}'"
+                f"tipo deve ser 'ajustes', 'historico', 'posicoes' ou 'oi_historico', recebeu '{tipo}'"
+            )
+        if tipo in ("historico", "oi_historico") and data is not None:
+            raise InvalidParameterError(f"tipo='{tipo}' usa inicio e fim; omita data")
+        if tipo in ("ajustes", "posicoes") and (inicio is not None or fim is not None):
+            raise InvalidParameterError(
+                f"tipo='{tipo}' usa data; inicio e fim valem só para 'historico' e 'oi_historico'"
             )
 
         self._validate_params(tipo, produto, inicio, fim)
@@ -159,22 +183,19 @@ class FuturosAgricolasDataset(BaseDataset):
             inicio=inicio,
             fim=fim,
             vencimento=vencimento,
-            **kwargs,
         )
 
-        df = self._normalize(df)
-
-        from agrobr.contracts import has_contract, validate_dataset
-
-        contract_key = "ajuste_diario" if tipo in ("ajustes", "historico") else "posicoes_abertas"
-        if has_contract(contract_key):
-            validate_dataset(df, contract_key)
+        self._validate_contract(df, tipo=tipo)
 
         if return_meta:
-            return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-        return df
-
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
+            return df, self._build_meta(
+                df,
+                source_name,
+                source_meta,
+                attempted,
+                snapshot,
+                contract_name=self._contract_name(tipo=tipo),
+            )
         return df
 
 
@@ -185,18 +206,46 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_futuros_agricolas)
 
 
+@overload
 async def futuros_agricolas(
     produto: str | None = None,
     *,
-    tipo: Literal["ajustes", "historico", "posicoes"] = "ajustes",
+    tipo: Literal["ajustes", "historico", "posicoes", "oi_historico"] = "ajustes",
+    data: str | None = None,
+    inicio: str | None = None,
+    fim: str | None = None,
+    vencimento: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def futuros_agricolas(
+    produto: str | None = None,
+    *,
+    tipo: Literal["ajustes", "historico", "posicoes", "oi_historico"] = "ajustes",
+    data: str | None = None,
+    inicio: str | None = None,
+    fim: str | None = None,
+    vencimento: str | None = None,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+async def futuros_agricolas(
+    produto: str | None = None,
+    *,
+    tipo: Literal["ajustes", "historico", "posicoes", "oi_historico"] = "ajustes",
     data: str | None = None,
     inicio: str | None = None,
     fim: str | None = None,
     vencimento: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _futuros_agricolas.fetch(
+    return await _futuros_agricolas.fetch(  # type: ignore[call-arg]
         produto,
         tipo=tipo,
         data=data,
@@ -204,5 +253,5 @@ async def futuros_agricolas(
         fim=fim,
         vencimento=vencimento,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

@@ -1,7 +1,7 @@
 {
   "name": "mapbiomas.cobertura",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "bioma",
@@ -14,6 +14,7 @@
     "estado",
     "classe_id",
     "classe",
+    "nivel_0",
     "ano",
     "area_ha"
   ],
@@ -30,7 +31,7 @@
     "bioma": false,
     "estado": false,
     "classe_id": false,
-    "classe": false,
+    "classe": true,
     "nivel_0": true,
     "ano": false,
     "area_ha": false
@@ -72,7 +73,7 @@
     {
       "name": "classe",
       "type": "str",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -125,6 +126,7 @@
     "'estado' is always a valid Brazilian state code (UF)",
     "'ano' is always between 1985 and current year",
     "'area_ha' is always >= 0",
-    "'classe_id' maps to MapBiomas LULC legend codes"
+    "'classe_id' maps to MapBiomas LULC legend codes",
+    "'classe' is null only for a published class id outside the known legend, with a warning"
   ]
 }

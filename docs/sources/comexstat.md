@@ -28,43 +28,27 @@ df = await comexstat.exportacao("soja", ano=2024, uf="MT")
 | `ano` | int | Ano |
 | `mes` | int | Mês (1-12) |
 | `ncm` | str | Código NCM (8 dígitos) |
-| `uf` | str | UF de origem |
+| `uf` (exportação) | str | UF produtora da mercadoria, independente da sede do exportador ([FAQ 10 do MDIC](https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/perguntas-frequentes-faq/12-por-que-a)) |
+| `uf` (importação) | str | UF do domicílio fiscal do importador, não o destino da mercadoria no país ([FAQ 10 do MDIC](https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/perguntas-frequentes-faq/12-por-que-a)) |
 | `kg_liquido` | float | Peso líquido (kg) |
 | `valor_fob_usd` | float | Valor FOB (USD) |
 | `volume_ton` | float | Volume em toneladas |
 
 ## Produtos
 
-17 produtos agrícolas mapeados por prefixo NCM (mapeamento completo: 31 chaves, incluindo fertilizantes e defensivos):
+`produto` aceita um alias ou um prefixo NCM de 2 a 8 dígitos. A tabela dos aliases, com
+o que entra e o que não entra em cada um, está na [API ComexStat](../api/comexstat.md).
 
-| Produto | NCM | Tipo |
-|---|---|---|
-| soja | 12019000 | exato |
-| soja_semeadura | 12011000 | exato |
-| oleo_soja | 1507 | prefixo (óleo bruto, refinado e outros) |
-| oleo_soja_bruto | 15071000 | exato |
-| farelo_soja | 23040010 | exato |
-| milho | 10059010 | exato |
-| cafe | 09011110 | exato |
-| cafe_conilon | 09011190 | exato |
-| algodao | 520100 | prefixo (5201.00.20 + 5201.00.90) |
-| algodao_cardado | 520300 | prefixo (5203.00.00) |
-| trigo | 10019900 | exato |
-| arroz | 10063021 | exato |
-| acucar | 17011400 | exato |
-| etanol | 22071000 | exato |
-| carne_bovina | 02023000 | exato |
-| carne_frango | 02071400 | exato |
-| carne_suina | 02032900 | exato |
+> **Nota:** o filtro usa `str.startswith` com os prefixos do alias (um alias pode ter
+> vários, e `defensivos`/`agrotoxicos` excluem os códigos de uso exclusivamente
+> domissanitário). Cada alias soma os códigos vigentes em cada ano: quando a
+> nomenclatura desdobra ou renumera um código (etanol, soja, trigo, açúcar, DAP,
+> frango), a série segue sem buraco, inclusive no ano de transição. `ssp` e `tsp`
+> só têm código equivalente desde 2017 e recusam anos anteriores.
 
-> **Nota:** O filtro NCM usa `str.startswith(prefix)`. Prefixos de 8 digitos
-> equivalem a match exato; prefixos menores (6 digitos) capturam todas as
-> subposicoes. Isso e necessario porque alguns produtos (ex: algodao) nao
-> possuem NCM generico no CSV — o Brasil usa subposicoes detalhadas.
-
-`oleo_soja` usa o prefixo `1507` e a API autônoma preserva uma linha por NCM.
-O dataset semântico `exportacao` consolida esses códigos por ano, mês e UF;
-`oleo_soja_bruto` permanece restrito ao código `15071000`.
+A API autônoma preserva uma linha por NCM. Os datasets `exportacao` e `importacao`
+consolidam os códigos de cada produto por ano, mês e UF; `oleo_soja_bruto` permanece
+restrito ao código `15071000`.
 
 ## MetaInfo
 
@@ -75,9 +59,15 @@ print(meta.source)  # "comexstat"
 
 ## Notas tecnicas
 
-- O site `balanca.economia.gov.br` possui certificado SSL incompleto.
-  O client usa `verify=False` no httpx para contornar o problema.
-- Cada CSV anual tem ~100MB. O download e feito uma vez e filtrado em memoria.
+- O site `balanca.economia.gov.br` não envia a cadeia completa do certificado. O client verifica o TLS
+  por inteiro (hostname incluso), com o certificado intermediário da SERPRO conferido por SHA-256 e
+  acrescentado às autoridades (`certifi`, `SSL_CERT_FILE` ou `SSL_CERT_DIR`).
+- Sem cache: cada chamada baixa o CSV anual do fluxo (~100 MB) e filtra em memória, e várias consultas
+  do mesmo ano baixam o arquivo de novo. `produto` aceita 1 alias ou 1 prefixo NCM por chamada, sem
+  lista; para vários códigos num download só, use o prefixo comum (a API autônoma devolve 1 linha por NCM).
+- Cada CSV anual tem ~100 MB. O download vai para um arquivo temporário e é conferido contra o
+  `Content-Length` do GET ou, sem ele, do HEAD do mesmo arquivo; sem nenhum dos 2, o resultado avisa
+  em `validation_warnings` ("tamanho do arquivo não conferido").
 
 ## Fonte
 

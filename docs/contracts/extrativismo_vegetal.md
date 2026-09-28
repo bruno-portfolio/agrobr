@@ -1,4 +1,4 @@
-# extrativismo_vegetal v1.0
+# extrativismo_vegetal v1.1
 
 Producao extrativista vegetal (acai, castanha-do-para, erva-mate, palmito, etc) por UF ou municipio.
 
@@ -19,8 +19,9 @@ Producao extrativista vegetal (acai, castanha-do-para, erva-mate, palmito, etc) 
 | `ano` | int | ❌ | Ano de referencia |
 | `localidade` | str | ✅ | UF ou municipio |
 | `localidade_cod` | int | ✅ | Codigo IBGE |
+| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `produto` | str | ❌ | Nome do produto |
-| `valor` | float64 | ✅ | Valor (Toneladas ou Metros cubicos) |
+| `valor` | float64 | ✅ | Quantidade produzida (toneladas ou metros cúbicos) ou, com `variavel="valor_producao"`, valor da produção em mil reais; a escala vem em `unidade` |
 | `unidade` | str | ❌ | Unidade de medida |
 | `fonte` | str | ❌ | Origem dos dados |
 

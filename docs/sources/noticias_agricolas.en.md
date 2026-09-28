@@ -22,6 +22,11 @@
 
 ## How it works in agrobr
 
+Milk is excluded from the CEPEA API fallback. The NA page contains a closing
+date and a reference-month note, but the standalone NA parser exposes the
+closing date. That behavior remains available in the NA module and must not
+be combined as if it were the reference month returned by CEPEA.
+
 The Notícias Agrícolas module is **not called directly by the user**. It is
 triggered automatically by the CEPEA module when:
 
@@ -35,7 +40,9 @@ Some NA tables contain weekly averages in the format `09 - 13/02/2026`.
 The parser extracts the end date of the interval and marks these records with
 `anomalies=["media_semanal"]` and `meta["tipo"]="media_semanal"`,
 `meta["periodo"]="09 - 13/02/2026"`. This allows distinguishing daily
-quotes from weekly averages in the returned DataFrame.
+quotes from weekly averages in the returned DataFrame. The `anomalies` marker is stored
+in the cache and comes back on `offline` reads and within the expiry (cache migration
+11); `tipo` and `periodo` stay only in the collected `Indicador`.
 
 ## Content Validation (Soft Block)
 

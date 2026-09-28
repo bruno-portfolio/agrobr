@@ -1,21 +1,16 @@
-from agrobr.zarc.models import COLUNAS_SAIDA, CULTURAS_ZARC, extract_safras, match_safra_resource
+from __future__ import annotations
 
+import csv
+import io
 
-def test_culturas_zarc_all_mapped():
-    for raw, canon in CULTURAS_ZARC.items():
-        assert isinstance(raw, str) and raw
-        assert isinstance(canon, str) and canon
+import pydantic
+import pytest
 
-
-def test_colunas_saida_count():
-    assert len(COLUNAS_SAIDA) == 46
-
-
-def test_colunas_saida_dec_range():
-    dec_cols = [c for c in COLUNAS_SAIDA if c.startswith("dec")]
-    assert len(dec_cols) == 36
-    assert dec_cols[0] == "dec1"
-    assert dec_cols[-1] == "dec36"
+from agrobr import constants
+from agrobr.exceptions import ParseError
+from agrobr.zarc import models
+from agrobr.zarc.models import extract_safras, match_safra_resource
+from tests.helpers import zarc_csv
 
 
 def test_match_safra_resource():
@@ -47,3 +42,60 @@ def test_extract_safras_sorted_perene_last():
     ]
     result = extract_safras(resources)
     assert result == ["2016/2017", "2020/2021", "2025/2026", "perene"]
+
+
+def test_duplicate_resource_selection_is_ambiguous():
+    resources = [
+        {"name": "Safra 2026/2027", "url": "https://x/one.csv", "format": "CSV"},
+        {"name": "Safra 2026/2027", "url": "https://x/two.csv", "format": "CSV"},
+    ]
+    with pytest.raises(ParseError, match="ambígua"):
+        match_safra_resource(resources, "2026/2027")
+
+
+def test_one_resource_two_seasons_is_ambiguous():
+    resources = [
+        {"name": "Safras 2026/2027 e 2025/2026", "url": "https://x/a.csv", "format": "CSV"}
+    ]
+    with pytest.raises(ParseError, match="ambígua"):
+        extract_safras(resources)
+
+
+@pytest.mark.parametrize("name", ["Safra 2026/2028", "Safra ２０２６/２０２７", "Safra 12026/2027"])
+def test_nonconsecutive_or_non_ascii_resource_not_selected(name):
+    assert extract_safras([{"name": name, "url": "https://x/a.csv", "format": "CSV"}]) == []
+
+
+def test_empty_format_requires_csv_url():
+    resources = [{"name": "Safra 2026/2027", "url": "https://x/a.pdf", "format": ""}]
+    assert match_safra_resource(resources, "2026/2027") is None
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("solo_codigo", True),
+        ("solo_codigo", 1),
+        ("ciclo_codigo", 20.0),
+        ("cultura_original", None),
+        ("nm_codigo", 0),
+        ("produtividade_texto", 0.75),
+        ("riscos", tuple([False] * 36)),
+        ("riscos", tuple([0] * 36)),
+        ("riscos", tuple([None] * 36)),
+        ("riscos", tuple(["0"] * 35)),
+        ("riscos", tuple(["0"] * 37)),
+    ],
+)
+def test_external_record_rejects_unpublished_types(field, value):
+    header, row = list(csv.reader(io.StringIO(zarc_csv().decode("utf-8-sig")), delimiter=";"))
+    published = dict(zip(header, row, strict=True))
+    values = {
+        constants.ZARC_CSV_TO_OUTPUT[name]: raw
+        for name, raw in published.items()
+        if name not in constants.ZARC_RISK_COLUMNS
+    }
+    values["riscos"] = tuple(published[name] for name in constants.ZARC_RISK_COLUMNS)
+    values[field] = value
+    with pytest.raises(pydantic.ValidationError):
+        models.ZarcRecord.model_validate(values)

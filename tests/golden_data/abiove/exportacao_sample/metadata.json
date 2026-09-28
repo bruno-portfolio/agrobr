@@ -2,12 +2,13 @@
   "source": "abiove",
   "format": "xlsx",
   "parser": "agrobr.abiove.parser::parse_exportacao_excel()",
-  "parser_version": 1,
+  "parser_version": 2,
   "parser_kwargs": {
     "ano": 2025
   },
   "needs_real_data": false,
   "captured_at": "2026-02-13T11:08:03.370740+00:00",
   "api_url": "https://abiove.org.br/abiove_content/Abiove/exp_202512.xlsx",
-  "notes": "Real data from ABIOVE — export 2025, 72 records, produtos: ['farelo', 'grao', 'milho', 'oleo', 'total']"
+  "notes": "Workbook oficial exp_202512.xlsx intacto. Tabelas 1.1–1.4: 48 linhas mensais de grão/farelo/óleo/milho. Tabelas comparativas 1.5.1 e 1.5.2 não têm volume por produto e são excluídas. Janeiro/2025: G12=1069.166594 mil t; D12=433558.617 mil USD.",
+  "sha256": "2461546e88aa13f3e4f62f69e0f4af26de3dfe52216f7ff4b7a0e230cd32102c"
 }

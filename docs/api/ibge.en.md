@@ -2,6 +2,8 @@
 
 The IBGE module provides access to data from the IBGE Automatic Retrieval System (SIDRA).
 
+SIDRA queries use asynchronous HTTP directly, with a 120-second request deadline per attempt, cancellation, and exponential retries for transient failures. No transport thread remains pending after a timeout. Queries follow the [official SIDRA parameters](https://apisidra.ibge.gov.br/home/ajuda).
+
 ## Functions
 
 ### `pam`
@@ -38,8 +40,8 @@ async def pam(
 |------|----------|
 | `area_plantada` | Planted area (hectares) |
 | `area_colhida` | Harvested area (hectares) |
-| `producao` | Quantity produced (tonnes) |
-| `rendimento` | Average yield (kg/ha) |
+| `producao` | Quantity produced (see `unidade_producao`) |
+| `rendimento` | Average yield (see `unidade_rendimento`) |
 
 **Example:**
 
@@ -82,12 +84,14 @@ async def lspa(
 |-----------|------|-------------|
 | `produto` | `str` | Product code |
 | `ano` | `int \| str \| None` | Year. Default: current |
-| `mes` | `int \| str \| None` | Month (1-12). Default: latest |
+| `mes` | `int \| str \| None` | Month (1-12). Without a filter: available months in the requested year |
 | `uf` | `str \| None` | Filter by state |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | Returns a `(df, MetaInfo)` tuple with provenance |
 
-**LSPA products (19 codes):**
+The [LSPA 2.0 contract](../contracts/lspa.md) returns one row per year, month, locality, product, and variable. `mes` is always present; `variavel`, `variavel_cod`, and `unidade` identify the measure. `datasets.estimativa_safra` continues to consolidate the latest month and convert to its own contract units.
+
+**LSPA products (21 codes, plus aliases):**
 
 | Code | Product |
 |------|---------|
@@ -99,13 +103,15 @@ async def lspa(
 | `feijao_2` | Beans 2nd crop |
 | `feijao_3` | Beans 3rd crop |
 | `trigo` | Wheat |
-| `algodao` | Herbaceous cotton |
-| `cafe` | Coffee |
+| `algodao` | Seed cotton |
+| `cafe_arabica` | Arabica coffee (since 2012) |
+| `cafe_canephora` | Canephora coffee (since 2012) |
 | `amendoim_1` | Peanut 1st crop |
 | `amendoim_2` | Peanut 2nd crop |
 | `aveia` | Oats |
 | `batata_1` | Potato 1st crop |
 | `batata_2` | Potato 2nd crop |
+| `batata_3` | Potato 3rd crop |
 | `cevada` | Barley |
 | `mamona` | Castor bean |
 | `sorgo` | Sorghum |
@@ -120,7 +126,12 @@ Generic names automatically expand into sub-crops and return a concatenated Data
 | `milho` | `milho_1` + `milho_2` |
 | `feijao` | `feijao_1` + `feijao_2` + `feijao_3` |
 | `amendoim` | `amendoim_1` + `amendoim_2` |
-| `batata` | `batata_1` + `batata_2` |
+| `batata` | `batata_1` + `batata_2` + `batata_3` |
+| `cafe` | Official total through 2011; `cafe_arabica` + `cafe_canephora` since 2012 |
+
+Species and crop seasons remain separate in `produto`. Historical coffee totals
+use `produto="cafe"`. Yields are not additive; compute aggregate yield as
+production × 1,000 / harvested area. `produtos_lspa()` includes codes and aliases.
 
 **Example:**
 
@@ -200,8 +211,10 @@ async def ppm(
 | `caprino` | Goat |
 | `ovino` | Sheep |
 | `galinaceos_total` | Chickens (total) |
-| `galinhas_poedeiras` | Laying hens |
+| `galinhas` | Hens (IBGE category "Galináceos - galinhas": includes laying and breeder hens) |
 | `codornas` | Quail |
+
+`galinhas_poedeiras` is still accepted as a deprecated alias of `galinhas`, with a `FutureWarning`; the output carries `especie="galinhas"`.
 
 **Animal-origin products:**
 
@@ -363,12 +376,16 @@ async def censo_agro(
 | `efetivo_rebanho` | `cabecas` | head |
 | `uso_terra` | `estabelecimentos` | units |
 | `uso_terra` | `area` | hectares |
-| `lavoura_temporaria` | `estabelecimentos` | units |
+| `lavoura_temporaria` | `estabelecimentos` (2017) or `informantes` (1995) | units |
 | `lavoura_temporaria` | `producao` | varies |
 | `lavoura_temporaria` | `area_colhida` | hectares |
-| `lavoura_permanente` | `estabelecimentos` | units |
+| `lavoura_permanente` | `estabelecimentos` (2017) or `informantes` (1995) | units |
 | `lavoura_permanente` | `producao` | varies |
 | `lavoura_permanente` | `area_colhida` | hectares |
+
+In 1995, the crop themes publish `informantes`: SIDRA variable 151 (tables 492 and 504), which SIDRA labels
+"Número de informantes" (number of informants). In 2017, `estabelecimentos` is the "Número de estabelecimentos
+agropecuários com lavoura temporária" (10084) and, for permanent crops, "com 50 pés e mais existentes" (9504).
 
 **Categories of the newer themes (examples):**
 
@@ -423,9 +440,9 @@ async def temas_censo_agro() -> list[str]
 
 ### `censo_agro_legado`
 
-Retrieves Agricultural Census 1995/96 data — 6 legacy themes via FTP (XLS).
+Retrieves Agricultural Census 1995/96 data — six themes via FTP, in ZIP archives containing XLS or HTML tables.
 
-> **Note:** `nivel='uf'` returns data by **mesoregion** (not by individual state) — a quirk of the legacy format; `nivel='municipio'` and `nivel='brasil'` work as expected.
+[Contract 2.0](../contracts/censo_agropecuario_legado.md) distinguishes Brazil, actual state totals, and municipalities using the official tables. The default `nivel='uf'` queries all 27 states when `uf` is omitted. `nivel='brasil'` includes national activity categories and does not accept a `uf` filter. The `uf` column distinguishes municipalities with identical names; municipal codes absent from the source remain null. Variables and units come from the actual headers. IBGE does not publish Pará's municipal machinery table (`Para/Tab_7Mn.zip` carries Table 6, personnel): `tema='maquinas'` without `uf` returns the other 26 states, with the warning in `MetaInfo.validation_warnings` and a `UserWarning`, and `uf='PA'` raises `SourceUnavailableError`.
 
 ```python
 async def censo_agro_legado(
@@ -463,14 +480,14 @@ async def censo_agro_legado(
 ```python
 from agrobr import ibge
 
-# Technology by mesoregion
+# Technology by state
 df = await ibge.censo_agro_legado('tecnologia')
 
 # Persons employed in São Paulo
 df = await ibge.censo_agro_legado('pessoal_ocupado', uf='SP')
 
-# Machinery — municipality level
-df = await ibge.censo_agro_legado('maquinas', nivel='municipio')
+# Machinery in Goiás municipalities
+df = await ibge.censo_agro_legado('maquinas', uf='GO', nivel='municipio')
 
 # With metadata
 df, meta = await ibge.censo_agro_legado('tecnologia', return_meta=True)
@@ -582,7 +599,9 @@ agrobr ibge temas-historico
 
 ### `censo_agro_municipal_1985`
 
-Retrieves Agricultural Census 1985 data at municipal level (extracted via OCR from IBGE PDFs).
+Agricultural Census 1985, municipal tables 67 to 119 of the IBGE's 28 state volumes (27 states; Minas Gerais in 2 volumes).
+agrobr extracted the numbers from the IBGE's PDFs and ships them in a local package (`agrobr/data/censo_1985/`): queries do not use
+the network.
 
 ```python
 async def censo_agro_municipal_1985(
@@ -595,56 +614,39 @@ async def censo_agro_municipal_1985(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `tema` | `str` | Theme (53 available — use `temas_censo_agro_municipal_1985()`) |
-| `uf` | `str \| None` | Filter by state (22 states available) |
-| `nivel` | `str \| None` | Filter: total, mesorregiao, microrregiao, municipio |
-| `as_polars` | `bool` | Return as polars.DataFrame |
-| `return_meta` | `bool` | Return MetaInfo |
-
-**Example:**
-
-```python
-from agrobr import ibge
-
-# Land ownership in São Paulo
-df = await ibge.censo_agro_municipal_1985('propriedade_terras', uf='SP')
-
-# Municipalities only
-df = await ibge.censo_agro_municipal_1985('efetivo_bovinos', nivel='municipio')
-
-# With metadata
-df, meta = await ibge.censo_agro_municipal_1985('propriedade_terras', return_meta=True)
-```
-
----
-
-### `temas_censo_agro_municipal_1985`
-
-Lists themes available in the Municipal Agricultural Census 1985.
+- **1 row per PDF cell**, each with its `status`: the cell with the number and also the cells with no reading, with no identified
+  column and outside the grid.
+- **`valor` is filled only in cells confirmed by the printed sums** (municipality → microregion → mesoregion → state). `valor_lido`
+  always carries the reading. Filter by `status` to pick the confidence level; the measured precision of each `status` is in the
+  [contract](../contracts/censo_agropecuario_municipal_1985.md).
+- `tema`: one of the 53 themes (`temas_censo_agro_municipal_1985()`), one per table, from the printed title.
+- `uf`: state code. A state whose volume lacks the table raises `InvalidParameterError` with the reason (the IBGE omits the table
+  that does not apply to the state).
+  A table that is in the volume but of which the extraction read no cell (AM 80, AP 80, RR 80 and RR 119) raises
+  `ParseError` with the pages and the reason.
+- `nivel`: `uf`, `mesorregiao`, `microrregiao` or `municipio`.
+- An invalid theme, state or level raises `InvalidParameterError` before reading the package.
+- `MetaInfo`:
+  - with 1 volume, `source_url` and `raw_content_hash` are the IBGE PDF and its SHA-256;
+  - with more than 1, they are the catalog and the SHA-256 of the PDF list.
+  - `source_method="pacote"`, `from_cache=False`; `source_details` carries the volumes and the query's page coverage.
 
 ```python
-async def temas_censo_agro_municipal_1985() -> list[str]
+df = await ibge.censo_agro_municipal_1985("efetivo_bovinos", uf="ES")
+confirmed = df[df["valor"].notna()]
 ```
 
-#### CLI
+### `temas_censo_agro_municipal_1985` / `cobertura_censo_agro_municipal_1985`
 
-```bash
-# Land ownership data in SP
-agrobr ibge censo-municipal-1985 propriedade_terras --uf SP
+`temas_censo_agro_municipal_1985()` lists the 53 themes. `cobertura_censo_agro_municipal_1985()` gives, per theme, the states with
+cells in the package.
 
-# CSV format
-agrobr ibge censo-municipal-1985 efetivo_bovinos --formato csv
-
-# Filter by level
-agrobr ibge censo-municipal-1985 utilizacao_terras --nivel municipio --uf MG
-
-# List available themes
-agrobr ibge temas-municipal-1985
+```python
+temas = await ibge.temas_censo_agro_municipal_1985()
+cobertura = await ibge.cobertura_censo_agro_municipal_1985()
 ```
+
+The CLI has `agrobr ibge temas-municipal-1985` and `agrobr ibge censo-municipal-1985 <tema> [--uf] [--nivel] [--formato]`.
 
 ---
 
@@ -901,7 +903,7 @@ df, meta = await ibge.pib_agro(return_meta=True)
 | Frequency | Annual | Monthly | Annual | Quarterly | Annual | Quarterly | Quarterly | Decennial | One-off (1995/96) | Decennial | One-off (1985) |
 | Granularity | To municipality | To state | To municipality | Brazil + state | To municipality | State | Brazil | To municipality | To municipality | Brazil/Region/State | To municipality |
 | Type | Consolidated | Estimates | Consolidated | Consolidated | Consolidated | Consolidated | Estimates | Census | Census (FTP) | Census | Census (OCR) |
-| Availability | Y+1 year | Y+1 month | Y+1 year | Q+2 months | Y+1 year | Q+2 months | Q+2 months | Post-census | Static | Static | Static |
+| Availability | Y+1 year | Y+1 month | Y+1 year | Q+2 months | Y+1 year | Q+2 months | Q+2 months | Post-census | Static | Static | Static (local package) |
 | Scope | Crops | Crops | Livestock | Slaughter | Silviculture + Plant extraction | Milk (acquisition, processing) | Sector GDP | Agri structure | 6 legacy themes | 9 themes (1920-2006) | 53 themes (1985) |
 
 ## SIDRA Tables Used
@@ -960,7 +962,7 @@ df = ibge.censo_agro('preparo_solo', ano=2017)
 df = ibge.censo_agro_legado('tecnologia')
 df = ibge.censo_agro_legado('pessoal_ocupado', uf='SP')
 df = ibge.censo_agro_historico('estabelecimentos_area', ano=1985)
-df = ibge.censo_agro_municipal_1985('propriedade_terras', uf='SP')
+temas_1985 = ibge.temas_censo_agro_municipal_1985()
 df = ibge.silvicultura('madeira_tora', ano=2023)
 df = ibge.extracao_vegetal('acai', ano=2023)
 df = ibge.leite_trimestral(trimestre='202303')
@@ -975,8 +977,32 @@ df = ibge.pib_agro(trimestre='202501')
 - PAM is consolidated annually after harvest
 - PPM is consolidated annually (September), series since 1974
 - Quarterly Slaughter available since 1997, updated each quarter (Q+2 months)
-- Agricultural Census: 11 themes, data from 1995, 2006 and/or 2017 depending on availability. 2017 reference: Oct/2016 to Sep/2017. 30-day cache
-- Legacy Agricultural Census: 6 FTP themes (tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro). Fixed year 1995. 90-day cache
-- Historical Series: 9 themes, 1920-2006, up to state (municipal NOT available). Mixed units per category (Poultry=Thousand head, etc). 30-day cache
-- Municipal Census 1985: 53 themes, municipal data for 22 states, extracted via OCR from IBGE state PDFs. Static (bundled) data. The `confianca` field indicates OCR quality
-```
+- Agricultural Census: 11 themes, data from 1995, 2006 and/or 2017 depending on availability. 2017 reference: Oct/2016 to Sep/2017
+- Legacy Agricultural Census: 6 FTP themes (tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro). Fixed year 1995
+- Historical Series: 9 themes, 1920-2006, up to state (municipal NOT available). Mixed units per category (Poultry=Thousand head, etc)
+- Municipal Census 1985: 53 themes (tables 67 to 119), 27 states, cell by cell, in a local package; `valor` only in cells confirmed by the printed sums and `valor_lido` always, with each cell's `status` (contract 2.0)
+
+## PAM units and historical breaks
+
+Published values are not implicitly converted. `unidade_producao`, `unidade_rendimento`, and `unidade_valor_producao` identify each row's scale. Before 2001, oranges use `mil_frutos` and `frutos/ha`; from 2001 onward, `ton` and `kg/ha`. `condicao_produto` distinguishes coffee `em_coco` through 2001 from `beneficiado` since 2002. Historical currencies remain identified without conversion to BRL or inflation adjustment. See the [IBGE methodology notes](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
+
+`localidade_cod` (`producao_anual` contract 2.1) carries the locality's IBGE code as SIDRA publishes it (D1C): 7 digits for a municipality, 2 for a state and 1 for Brazil. Use it to join municipalities across years, because the published name changes (and the Federal District comes out as "Brasília (DF)", without the " - UF" suffix of the others). In `producao_anual`, only IBGE rows carry the code; the CONAB fallback does not.
+
+SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.1; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.
+
+PAM parser 2 also preserves localities and measures whose values are entirely missing or suppressed. Two observations for the same locality, year and measure, including colliding variable aliases, raise `ParseError`; unmapped variables are also rejected. The reader does not silently select the first value. The schema remains 2.0.
+
+In the PEVS APIs, `variavel="valor_producao"` preserves the published monetary unit in `unidade` and returns `valor` as `float64`, even when all values are whole numbers. The parser is version 2; forestry and plant extraction contracts remain 1.0.
+
+The quarterly slaughter, milk and GDP APIs use parser 2. In slaughter data, `-`
+means zero while `X` and `...` remain null; reported carcass weight is preserved
+when the head-count observation is absent. Slaughter and milk reject duplicate
+observations for the same variable, quarter and locality before joining them.
+Milk `preco_medio` and GDP `valor` use `float64`, including all-integer inputs.
+
+The current SIDRA census API uses parser 3, which publishes the source's `Total`
+row, and the historical one uses parser 2. In both, `-` means zero, while
+`X`/`...` remain null. Year/locality/topic/category/variable keys must be unique,
+including across complementary tables. For soil-preparation tables whose
+variables encode categories, a reported year is preserved; the table year is
+used only when the response omits the period dimension.

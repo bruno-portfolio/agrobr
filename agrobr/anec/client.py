@@ -5,22 +5,40 @@ import hashlib
 import json
 import os
 import re
+import threading
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, NamedTuple, cast
+from weakref import WeakValueDictionary
 
 import httpx
 import structlog
 
+from agrobr.anec import models
 from agrobr.anec.models import CATEGORIES_BY_YEAR, MIN_YEAR, ANECArticle
 from agrobr.constants import MIN_PDF_SIZE, URLS, CacheSettings, Fonte
-from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils import atomic
+from agrobr.utils.warnings import warn_once
 
 logger = structlog.get_logger()
+
+
+def _warn_license() -> None:
+    warn_once(
+        "anec_license",
+        (
+            "ANEC publica os dados sem termos de uso explícitos (zona_cinza). "
+            "Uso comercial pode requerer autorização da associação."
+        ),
+        category=UserWarning,
+    )
+
 
 _BASE_URL = URLS[Fonte.ANEC]["base"]
 _SEARCH_URL = URLS[Fonte.ANEC]["search"]
@@ -135,7 +153,7 @@ async def _fetch_html(client: httpx.AsyncClient, url: str) -> str:
     response = await retry_on_status(lambda: client.get(url), source="anec")
     if response.status_code == 404:
         raise SourceUnavailableError(source="anec", url=url, last_error="HTTP 404")
-    response.raise_for_status()
+    responses.raise_for_status(response, source="anec")
     return response.text
 
 
@@ -158,6 +176,17 @@ def _list_cache_clear() -> None:
     _LIST_CACHE.clear()
 
 
+def _boletim_semanal(article: ANECArticle) -> bool:
+    try:
+        return bool(article.week_year)
+    except ValueError:
+        warn_once(
+            f"anec_artigo_fora_do_padrao:{article.cuid}",
+            f"ANEC: artigo '{article.title_en}' fora do padrão 'ANEC - NN.AAAA' ignorado na listagem.",
+        )
+        return False
+
+
 def _dedupe_articles(articles: list[ANECArticle]) -> list[ANECArticle]:
     seen: set[str] = set()
     out: list[ANECArticle] = []
@@ -169,19 +198,50 @@ def _dedupe_articles(articles: list[ANECArticle]) -> list[ANECArticle]:
     return out
 
 
+def _parse_categories(payload: dict[str, Any]) -> dict[int, str]:
+    try:
+        raw = payload["props"]["pageProps"]["homeLayoutData"]["navbarCategories"]
+        categories = [models.ANECCategory.model_validate(item) for item in raw]
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ParseError(
+            source="anec",
+            parser_version=_HTML_PARSER_VERSION,
+            reason="Catálogo de categorias ANEC inválido",
+        ) from exc
+    annual: dict[int, str] = {}
+    for category in categories:
+        if not category.public or category.nameEN.strip().casefold() != "statistics":
+            continue
+        for child in category.children:
+            if not child.public:
+                continue
+            match = re.fullmatch(r"(20\d{2})\s+all\s+products", child.nameEN.strip(), re.I)
+            if match is None:
+                match = re.fullmatch(
+                    r"(20\d{2})\s+todos\s+os\s+produtos", child.nameBR.strip(), re.I
+                )
+            if match is None:
+                continue
+            year = int(match[1])
+            if year in annual and annual[year] != child.cuid:
+                raise ParseError(
+                    source="anec",
+                    parser_version=_HTML_PARSER_VERSION,
+                    reason=f"Categorias anuais ambíguas para {year}",
+                )
+            annual[year] = child.cuid
+    if not annual:
+        raise ParseError(
+            source="anec",
+            parser_version=_HTML_PARSER_VERSION,
+            reason="Categorias anuais ausentes no catálogo ANEC",
+        )
+    return annual
+
+
 async def list_articles(year: int) -> list[ANECArticle]:
-    if year < MIN_YEAR:
-        raise InvalidParameterError(
-            f"Suporte a anos anteriores a {MIN_YEAR} não implementado (recebido: {year}). "
-            f"Layout dos PDFs antigos não foi validado. "
-            f"Para suportar, adicione cuid em CATEGORIES_BY_YEAR e ajuste MIN_YEAR."
-        )
-    if year not in CATEGORIES_BY_YEAR:
-        mapped = sorted(CATEGORIES_BY_YEAR.keys())
-        raise InvalidParameterError(
-            f"Ano {year} não mapeado em CATEGORIES_BY_YEAR (mapeados: {mapped}). "
-            "Atualize agrobr/anec/models.py::CATEGORIES_BY_YEAR com o cuid do ano."
-        )
+    _warn_license()
+    models.validate_year(year)
 
     ttl = _list_ttl_seconds()
     if ttl > 0 and year in _LIST_CACHE:
@@ -191,7 +251,6 @@ async def list_articles(year: int) -> list[ANECArticle]:
             logger.debug("anec_list_memcache_hit", year=year, age_s=age)
             return list(cached_articles)
 
-    cuid = CATEGORIES_BY_YEAR[year]
     all_articles: list[ANECArticle] = []
     page = 1
     total: int | None = None
@@ -201,6 +260,14 @@ async def list_articles(year: int) -> list[ANECArticle]:
         headers=UserAgentRotator.get_headers(source=Fonte.ANEC),
         follow_redirects=True,
     ) as client:
+        cuid = CATEGORIES_BY_YEAR.get(year)
+        if cuid is None:
+            catalog = _parse_categories(_extract_next_data(await _fetch_html(client, _SEARCH_URL)))
+            cuid = catalog.get(year)
+            if cuid is None:
+                if ttl > 0:
+                    _LIST_CACHE[year] = (time.monotonic(), [])
+                return []
         while page <= _MAX_PAGES:
             url = f"{_SEARCH_URL}?category={cuid}&page={page}"
             logger.debug("anec_list_page", year=year, page=page, url=url)
@@ -226,26 +293,44 @@ async def list_articles(year: int) -> list[ANECArticle]:
             duplicates=len(all_articles) - len(deduped),
         )
 
-    logger.info("anec_list_done", year=year, count=len(deduped), total=total)
+    semanais = [article for article in deduped if _boletim_semanal(article)]
+    logger.info("anec_list_done", year=year, count=len(semanais), total=total)
     if _list_ttl_seconds() > 0:
-        _LIST_CACHE[year] = (time.monotonic(), list(deduped))
-    return deduped
+        _LIST_CACHE[year] = (time.monotonic(), list(semanais))
+    return semanais
 
 
-_FETCH_LOCKS: dict[str, asyncio.Lock] = {}
-_LOCKS_GUARD = asyncio.Lock()
+_FETCH_LOCKS: WeakValueDictionary[tuple[asyncio.AbstractEventLoop, str], asyncio.Lock] = (
+    WeakValueDictionary()
+)
+_LOCKS_GUARD = threading.Lock()
 
 
 async def _get_fetch_lock(key: str) -> asyncio.Lock:
-    async with _LOCKS_GUARD:
-        lock = _FETCH_LOCKS.get(key)
+    loop_key = (asyncio.get_running_loop(), key)
+    with _LOCKS_GUARD:
+        lock = _FETCH_LOCKS.get(loop_key)
         if lock is None:
             lock = asyncio.Lock()
-            _FETCH_LOCKS[key] = lock
+            _FETCH_LOCKS[loop_key] = lock
         return lock
 
 
+class Aquisicao(NamedTuple):
+    content: bytes
+    url: str
+    from_cache: bool
+    fetched_at: datetime
+    source_details: dict[str, str]
+
+
 async def fetch_pdf_bytes(article: ANECArticle, *, use_cache: bool = True) -> tuple[bytes, str]:
+    _warn_license()
+    aquisicao = await _acquire_pdf(article, use_cache=use_cache)
+    return aquisicao.content, aquisicao.url
+
+
+async def _acquire_pdf(article: ANECArticle, *, use_cache: bool) -> Aquisicao:
     lock_key = article.cuid
     lock = await _get_fetch_lock(lock_key)
     async with lock:
@@ -258,7 +343,14 @@ async def fetch_pdf_bytes(article: ANECArticle, *, use_cache: bool = True) -> tu
                     week=article.week_year[0],
                     year=article.week_year[1],
                 )
-                return cached, article.pdf_url
+                content, fetched_at = cached
+                return Aquisicao(
+                    content,
+                    article.pdf_url,
+                    True,
+                    fetched_at,
+                    {"media_updated_at": article.media_updated_at.isoformat()},
+                )
 
         async with httpx.AsyncClient(
             timeout=TIMEOUT,
@@ -271,7 +363,7 @@ async def fetch_pdf_bytes(article: ANECArticle, *, use_cache: bool = True) -> tu
                 raise SourceUnavailableError(
                     source="anec", url=article.pdf_url, last_error="HTTP 404"
                 )
-            response.raise_for_status()
+            responses.raise_for_status(response, source="anec")
 
             content = response.content
             if len(content) < MIN_PDF_SIZE:
@@ -289,27 +381,39 @@ async def fetch_pdf_bytes(article: ANECArticle, *, use_cache: bool = True) -> tu
                     last_error=f"Resposta não é PDF (magic bytes: {content[:8]!r})",
                 )
 
+            fetched_at = datetime.now(UTC)
             if use_cache:
-                _save_cache(article, content)
+                _save_cache(article, content, fetched_at)
 
             logger.info("anec_pdf_ok", url=article.pdf_url, size=len(content))
-            return content, article.pdf_url
+            return Aquisicao(
+                content,
+                article.pdf_url,
+                False,
+                fetched_at,
+                {"media_updated_at": article.media_updated_at.isoformat()},
+            )
 
 
 async def fetch_latest_pdf(
     year: int | None = None, *, use_cache: bool = True
 ) -> tuple[bytes, str, ANECArticle]:
+    aquisicao, latest = await _acquire_latest(year, use_cache=use_cache)
+    return aquisicao.content, aquisicao.url, latest
+
+
+async def _acquire_latest(year: int | None, *, use_cache: bool) -> tuple[Aquisicao, ANECArticle]:
+    allow_previous_year = year is None
     if year is None:
         year = datetime.now(UTC).year
 
     articles = await list_articles(year)
-    if not articles:
+    if not articles and allow_previous_year:
         for prev_year in range(year - 1, MIN_YEAR - 1, -1):
-            if prev_year in CATEGORIES_BY_YEAR:
-                logger.warning("anec_year_empty_fallback", year=year, fallback=prev_year)
-                articles = await list_articles(prev_year)
-                if articles:
-                    break
+            logger.warning("anec_year_empty_fallback", year=year, fallback=prev_year)
+            articles = await list_articles(prev_year)
+            if articles:
+                break
 
     if not articles:
         raise SourceUnavailableError(
@@ -319,8 +423,7 @@ async def fetch_latest_pdf(
         )
 
     latest = max(articles, key=lambda a: a.created_at)
-    pdf_bytes, url = await fetch_pdf_bytes(latest, use_cache=use_cache)
-    return pdf_bytes, url, latest
+    return await _acquire_pdf(latest, use_cache=use_cache), latest
 
 
 def _cache_disabled() -> bool:
@@ -352,7 +455,7 @@ def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def _load_cached(article: ANECArticle) -> bytes | None:
+def _load_cached(article: ANECArticle) -> tuple[bytes, datetime] | None:
     if _cache_disabled():
         return None
     try:
@@ -368,6 +471,7 @@ def _load_cached(article: ANECArticle) -> bytes | None:
     try:
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         cached_updated = _parse_iso(str(meta["media_updated_at"]))
+        fetched_at = _parse_iso(str(meta["fetched_at"]))
     except (OSError, json.JSONDecodeError, KeyError, ValueError) as exc:
         logger.warning("anec_cache_meta_invalid", path=str(meta_path), error=str(exc))
         return None
@@ -400,30 +504,20 @@ def _load_cached(article: ANECArticle) -> bytes | None:
                 actual=actual_sha,
             )
             return None
-    return content
+    return content, fetched_at
 
 
 def _atomic_write_bytes(target: Path, data: bytes) -> None:
-    tmp = target.with_suffix(target.suffix + ".tmp")
-    tmp.write_bytes(data)
-    os.replace(tmp, target)
+    with atomic.atomic_output(target) as tmp:
+        tmp.write_bytes(data)
 
 
 def _atomic_write_text(target: Path, text: str) -> None:
-    tmp = target.with_suffix(target.suffix + ".tmp")
-    tmp.write_text(text, encoding="utf-8")
-    os.replace(tmp, target)
+    with atomic.atomic_output(target) as tmp:
+        tmp.write_text(text, encoding="utf-8")
 
 
-def _cleanup_tmp_files(cdir: Path) -> None:
-    for tmp in cdir.glob("*.tmp"):
-        try:
-            tmp.unlink()
-        except OSError as exc:
-            logger.debug("anec_cache_tmp_cleanup_failed", path=str(tmp), error=str(exc))
-
-
-def _save_cache(article: ANECArticle, pdf_bytes: bytes) -> None:
+def _save_cache(article: ANECArticle, pdf_bytes: bytes, fetched_at: datetime | None = None) -> None:
     if _cache_disabled():
         return
     try:
@@ -434,14 +528,13 @@ def _save_cache(article: ANECArticle, pdf_bytes: bytes) -> None:
     cdir = _cache_dir(year, week)
     try:
         cdir.mkdir(parents=True, exist_ok=True)
-        _cleanup_tmp_files(cdir)
         meta = {
             "article_id": article.id,
             "cuid": article.cuid,
             "title_en": article.title_en,
             "pdf_url": article.pdf_url,
             "media_updated_at": article.media_updated_at.isoformat(),
-            "fetched_at": datetime.now(UTC).isoformat(),
+            "fetched_at": (fetched_at or datetime.now(UTC)).isoformat(),
             "size_bytes": len(pdf_bytes),
             "pdf_sha256": _sha256(pdf_bytes),
         }

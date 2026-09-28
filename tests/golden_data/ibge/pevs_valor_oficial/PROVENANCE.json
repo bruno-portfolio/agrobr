@@ -1,0 +1,19 @@
+{
+  "capture_session": "astra_20260905 / bloco10g_20260905",
+  "source": "IBGE",
+  "method": "Official public responses preserved without altering data; LSPA JSON contains request parameters and captured client rows.",
+  "files": [
+    {
+      "file": "extracao_valor.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/289/n3/15/p/2023/v/145/c193/3403",
+      "sha256": "9380d1251f25f115c0502f3532d6f923a4defbba20356051f06808c7eedef0f3",
+      "bytes": 803
+    },
+    {
+      "file": "silvicultura_valor.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/291/n3/41/p/2023/v/143/c194/3457",
+      "sha256": "f5aee1778ae84c24a633d07185915716be3ec27e2c7028a5c7baf2d95bd3dd02",
+      "bytes": 813
+    }
+  ]
+}

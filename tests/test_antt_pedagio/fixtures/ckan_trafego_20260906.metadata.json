@@ -1,0 +1,9 @@
+{
+  "url": "https://dados.antt.gov.br/api/3/action/package_show?id=volume-trafego-praca-pedagio",
+  "capture_date": "2026-09-06",
+  "source_evidence": "ckan_curl.body",
+  "sha256": "234cf52faabf83e5f0793cb51ea9d551043a4a8e5a5db68dc4c00b585a808fc9",
+  "bytes": 49695,
+  "resources": 45,
+  "transformation": "none; exact original CKAN response bytes"
+}

@@ -1,65 +1,122 @@
-# Lista Suja — Cadastro de Empregadores (Trabalho Escravo)
+# Lista Suja — Cadastro de Empregadores do MTE
 
-## Visao Geral
+A tabela da fonte também está disponível em [`datasets.empregadores_lista_suja`](../api/empregadores_lista_suja.md), que reutiliza o contrato 2.0 e conserva a proveniência das rotas CSV/PDF. O cadastro é nacional, sem seleção automática de atividade agropecuária. Os exemplos abaixo chamam a API de fonte; guardas da assinatura e encapsulamento de erros do wrapper estão descritos na página do dataset.
 
-| Item | Detalhe |
-|------|---------|
-| Provedor | Ministerio do Trabalho e Emprego |
-| Dados | Empregadores flagrados com trabalho escravo |
-| Acesso | Download PDF |
-| Formato | PDF |
-| Autenticacao | Nenhuma |
-| Licenca | Livre (Lei de Acesso a Informacao) |
+## Acesso
 
-## Instalação
+A API consulta o cadastro principal publicado pelo Ministério do Trabalho e Emprego na [página oficial](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo), sem autenticação. A descoberta distingue esse cadastro do Cadastro de Empregadores em Ajustamento de Conduta (CEAC), que é outra coleção.
 
-O parser de PDF requer a dependência opcional `pdfplumber`:
+O padrão `formato="auto"` usa CSV e confere o TXT companheiro para obter o contexto da publicação. Esse caminho funciona com a instalação core. PDF é alternativa quando o CSV não está anunciado ou ocorre falha de transporte elegível. Uma resposta bem-sucedida com arquivo inválido gera `ParseError`. `formato="csv"` e `formato="pdf"` são escolhas exclusivas.
 
-```bash
-pip install agrobr[pdf]
-```
+Somente o PDF requer `pip install agrobr[pdf]`. Polars requer `pip install agrobr[polars]`.
 
-## Exemplo de Uso
+## Uso
 
 ```python
-import asyncio
 from agrobr import lista_suja
 
-async def main():
-    # Todos os empregadores
-    df = await lista_suja.empregadores()
-
-    # Filtrar por UF
-    df = await lista_suja.empregadores(uf="PA")
-
-    # Com metadados
-    df, meta = await lista_suja.empregadores(return_meta=True)
-
-    # Polars
-    df = await lista_suja.empregadores(as_polars=True)
-
-asyncio.run(main())
+df, meta = await lista_suja.empregadores(return_meta=True)
+para = await lista_suja.empregadores(uf="PA", formato="csv")
+registro = await lista_suja.empregadores(id_registro="41")
+pdf = await lista_suja.empregadores(formato="pdf")
 ```
 
-## Colunas
+Para uso síncrono:
 
-| Coluna | Tipo | Descricao |
-|--------|------|-----------|
-| empregador | str | Nome do empregador |
-| cpf_cnpj | str | CPF ou CNPJ |
-| estabelecimento | str | Nome do estabelecimento |
-| uf | str | UF |
-| cnae | str | Codigo CNAE |
-| data_inclusao | datetime | Data de inclusao na lista |
-| trabalhadores_resgatados | int | Numero de trabalhadores resgatados |
-| ano_acao_fiscal | int | Ano da acao fiscal |
+```python
+from agrobr.sync import lista_suja
 
-## Particularidades
+df = lista_suja.empregadores(uf="PA")
+```
 
-- **PII warning**: emite aviso automatico na primeira chamada (CPF/CNPJ publicos por Lei de Acesso a Informacao)
-- **Arquivo unico**: download completo sem paginacao
+| Argumento | Padrão | Comportamento |
+|---|---|---|
+| `uf` | `None` | Sigla de UF, normalizada; filtro local após validar o arquivo completo |
+| `id_registro` | `None` | Texto exato do ID nessa exportação; não recebe conversão numérica |
+| `formato` | `"auto"` | `"auto"`, `"csv"` ou `"pdf"` |
+| `as_polars` | `False` | Converte após validar o contrato |
+| `return_meta` | `False` | Retorna `(df, MetaInfo)` |
 
-## Limitacoes
+Filtros podem ser combinados. Ausência de correspondência retorna um quadro vazio com os mesmos tipos. Tipos inválidos, UF inválida, filtro textual vazio e argumentos desconhecidos geram `InvalidParameterError` antes de aviso ou rede. O arquivo completo é baixado a cada chamada, sem paginação ou cache persistente.
 
-- Contem dados pessoais (CPF/CNPJ) — publicos por lei
-- Arquivo unico sem paginacao
+## Contrato 2.0
+
+Disponível como `get_contract("lista_suja_empregadores")` e `LISTA_SUJA_EMPREGADORES_V2`, de `agrobr.contracts.lista_suja`. As doze colunas são estáveis.
+
+| Coluna | Tipo pandas | Anulável | Conteúdo |
+|---|---|---|---|
+| `empregador` | texto | Não | Nome publicado |
+| `cpf_cnpj` | texto | Não | Documento com pontuação e zeros preservados |
+| `estabelecimento` | texto | Sim | Estabelecimento publicado |
+| `uf` | texto | Sim | UF informada |
+| `cnae` | texto | Sim | Código com zeros preservados |
+| `data_inclusao` | `datetime64[ns]` | Sim | Inclusão quando a célula contém uma única data |
+| `trabalhadores_resgatados` | `Int64` | Sim | Campo oficial “Trabalhadores envolvidos”, com nome legado |
+| `ano_acao_fiscal` | `Int64` | Sim | Ano informado |
+| `id_registro` | texto | Não | ID da linha na exportação |
+| `data_decisao` | `datetime64[ns]` | Sim | Data de decisão administrativa informada |
+| `data_atualizacao` | `datetime64[ns]` | Sim | Atualização do cadastro comprovada no corpo da publicação |
+| `data_inclusao_texto` | texto | Não | Célula original, incluindo intervalos e múltiplas datas |
+
+A chave `[id_registro]` vale dentro de uma exportação identificada por `meta.raw_content_hash`. Documentos repetidos não são deduplicados. Não se declara um identificador permanente de empregador.
+
+Há células como `05/04/2024 a 10/05/2024, 09/04/2025`. Nesses casos, `data_inclusao` fica `NaT`, o texto é preservado e `source_details.compound_inclusion_ids` identifica os registros. O parser não escolhe primeira ou última data nem infere o motivo jurídico do intervalo. Datas e números presentes inválidos geram erro.
+
+Ausências textuais são nulas, nunca preenchidas com outros campos. Contagens e anos usam `Int64`, inclusive em resultados vazios. Essas mudanças de tipos e sentinelas justificam o contrato major **2.0**; veja a [migração](../guides/migracao-2.md).
+
+## Publicação e proveniência
+
+`meta.source_details.publication` distingue `periodic_update` de `registry_updated_at`. Na captura de 06/09/2026, eram 06/04/2026 e 04/09/2026, respectivamente. A segunda alimenta `data_atualizacao`; a data da página, o relógio da consulta e `Last-Modified` não a substituem.
+
+O CSV não declara a edição. Para usar a data do TXT, o parser compara os dez campos originais de todas as linhas por ID. TXT divergente ou inválido gera erro. TXT ausente ou indisponível deixa a data nula e registra o diagnóstico. O PDF fornece o contexto no próprio corpo. Datas da publicação são civis; instantes de aquisição têm fuso UTC.
+
+Os metadados incluem:
+
+- Rotas realmente tentadas e selecionada, formato e causa de fallback.
+- URL pedida/final, hash, tamanho, horário e cabeçalhos do arquivo, da página e do TXT recebido.
+- Título, texto de edição e notas da publicação, sem atribuir causa a campos ausentes.
+- Contagens original e final, nulos, assinatura do layout e filtros aplicados.
+
+Um erro na descoberta não autoriza reutilizar um endereço antigo. Fallback automático considera HTTP 403, 404, 408, 410, 429, 5xx ou falhas de transporte, aplicando a política de retry quando elegível; outros erros propagam.
+
+## Escopo e licença
+
+A implementação entrega a exportação corrente. CEAC, seleção por edição histórica e armazenamento de revisões ainda não fazem parte dessa API. Hash e data documentam a coleta, mas não constituem um histórico.
+
+O dataset semântico recusa `deterministic` antes de I/O e retorna `snapshot=None`; nem o arquivo corrente nem seu hash reconstituem outra edição.
+
+A classificação existente é `livre`. O rodapé oficial informa CC BY-ND 3.0; não foi localizada uma licença separada dos arquivos. Acesso público e classificação interna não comprovam permissão irrestrita de reutilização: veja a [verificação da licença](../licenses.md#lista-suja). O aviso existente sobre CPF/CNPJ é emitido na primeira chamada.
+
+## Reconciliação de 18/09/2026
+
+Os corpos integrais CSV/TXT/PDF capturados em 18/09 conservam os mesmos hashes
+da captura anterior: edição periódica de 06/04/2026, cadastro atualizado em
+04/09/2026. A data da recaptura não indica uma nova edição. São 579 registros,
+567 documentos distintos e 4.706 trabalhadores no campo publicado, com dez
+inclusões compostas. Os nulos e documentos repetidos são preservados.
+
+Todas as doze colunas são comparadas em fonte e dataset contra oráculos
+independentes: CSV/TXT lidos com a biblioteca padrão e PDF por caracteres e
+coordenadas das células nas 45 páginas. Os dois formatos têm expectativas
+próprias; duas quebras de linha após hífen no estabelecimento permanecem
+diferentes entre CSV e PDF, sem reparo implícito. A leitura PDF usa pdfminer,
+também dependência do pdfplumber de produção; não se afirma independência
+entre os motores de extração.
+
+O inventário cobre os dez campos de origem, contexto de edição, notas e os
+links do portal, separando o cadastro principal de CEAC e de outros formatos.
+`python -m scripts.reconciliar_lista_suja --output resultado.json` compara
+corpos locais preservados; a etapa PDF requer o extra `[pdf]`. Os replays HTTP
+usam APIs públicas e filtros reais, mas seus horários de execução são novos:
+as aquisições originais continuam nos recibos. CSV/TXT/PDF são representações
+da mesma publicação, sem constituir cruzamento entre fontes independentes.
+
+Nos campos textuais derivados, espaços internos são colapsados como na
+produção. Isso afeta seis células de `estabelecimento` no CSV desta captura:
+IDs 170, 180, 356, 368, 410 e 525. Corpos originais permanecem idênticos byte a
+byte; o manifesto declara a transformação e os valores crus/normalizados.
+`data_inclusao_texto` via PDF preserva as quebras de linha da célula. A comparação
+literal dos oráculos tem 12 diferenças: dez textos de inclusão composta e os
+dois estabelecimentos citados. A comparação dos dez campos de origem após normalizar
+espaços tem duas diferenças; a comparação literal das doze colunas finais
+registra as 12 diferenças descritas acima.

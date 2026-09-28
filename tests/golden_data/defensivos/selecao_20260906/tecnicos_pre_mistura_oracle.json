@@ -1,0 +1,16 @@
+{
+  "record_index_1based": 604,
+  "physical_line_1based": 605,
+  "values": {
+    "NUMERO_REGISTRO": "14017/Pré-Mistura",
+    "PRODUTO_TECNICO_MARCA_COMERCIAL": "Cletodim Pré-Mistura Milenia",
+    "INGREDIENTE_ATIVO(GRUPO_QUIMICI)(CONCENTRACAO)": "cletodim (oxima ciclohexanodiona) (362.6 g/L)",
+    "CLASSE": "Herbicida",
+    "TITULAR_REGISTRO": "Adama Brasil S.A.- Londrina/PR",
+    "EMPRESA_<PAIS>_TIPO": " (Hebei Wanquan Lihua Chemicals Co. Ltd<CHINA, REPUBLICA POPULAR>FABRICANTE) +  (Adama Brasil S.A.- Londrina/PR<BRASIL>FABRICANTE) +  (Adama Brasil S.A. - Taquari<BRASIL>FABRICANTE) +  (Adama Agricultural Solutions Ltd. - Ashdod <ISRAEL>FABRICANTE) +  (Yancheng South Chemical Co, Ltd<CHINA, REPUBLICA POPULAR>FABRICANTE) +  (Hebei Lansheng Biotech Co., Ltd<CHINA, REPUBLICA POPULAR>FABRICANTE) +  (Jiangsu Yunfan Chemicals Co., Ltd.<CHINA, REPUBLICA POPULAR>FABRICANTE) +  (Ningxia Yifan Biotechnology Co. Ltd.<CHINA, REPUBLICA POPULAR>FABRICANTE)",
+    "CLASSIFICACAO_TOXICOLOGICA": "III",
+    "CLASSIFICACAO_AMBIENTAL": "IV"
+  },
+  "sha256": "6af35a685717ee4d1d118e8cce61e43de0dd22a28dc3b6aa04965acbb8439a8a",
+  "source_sha256": "5475bcf6555a5f5086f571c0c2a9286d5642b98203eb8fa07620bc06716cef88"
+}

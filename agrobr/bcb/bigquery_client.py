@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import os
 import re
 from typing import Any
@@ -24,7 +23,7 @@ BQ_COLUMNS_MAP: dict[str, str] = {
     "area_financiada": "area_financiada",
 }
 
-_SAFE_IDENTIFIER = re.compile(r"^[A-Za-zÀ-ÿ0-9 _\-/]+$")
+_SAFE_IDENTIFIER = re.compile(r"^[A-Za-zÀ-ÿ0-9 _\-/(),]+$")
 
 
 def _check_basedosdados() -> None:
@@ -76,8 +75,8 @@ FROM `basedosdados.br_bcb_sicor.microdados_operacao`
     conditions.append(f"nome_finalidade = '{_sanitize_bq_str(nome_finalidade, 'finalidade')}'")
 
     if produto:
-        safe_produto = _sanitize_bq_str(produto.upper(), "produto")
-        conditions.append(f"UPPER(nome_produto) LIKE '%{safe_produto}%'")
+        safe_produto = _sanitize_bq_str(produto.strip('"').upper(), "produto")
+        conditions.append(f"UPPER(nome_produto) = '{safe_produto}'")
 
     if safra_ano:
         from agrobr.normalize.dates import INICIO_SAFRA_MES
@@ -160,10 +159,7 @@ async def fetch_credito_rural_bigquery(
     safra_sicor: str | None = None,
     cd_uf: str | None = None,
 ) -> list[dict[str, Any]]:
-    safra_ano: int | None = None
-    if safra_sicor:
-        with contextlib.suppress(ValueError, IndexError):
-            safra_ano = int(safra_sicor.split("/")[0])
+    safra_ano = int(safra_sicor.split("/")[0]) if safra_sicor else None
 
     uf_sigla: str | None = None
     if cd_uf:

@@ -7,10 +7,10 @@
 | Provedor | FUNAI (Fundacao Nacional dos Povos Indigenas) |
 | Dados | Terras Indigenas poligonais |
 | Acesso | WFS OGC (GeoServer) |
-| Formato | CSV (tabular) / GeoJSON (geo) |
+| Formato | GeoJSON do WFS 2.0 (`application/json`) nos dois modos |
 | Autenticacao | Nenhuma |
-| Licenca | CC BY-ND 3.0 |
-| Features | ~740 TIs |
+| Licenca | Termo da FUNAI: reprodução com citação da fonte ([detalhes](../licenses.md#funai)) |
+| Features | 665 TIs (23/09/2026) |
 
 ## Acesso via WFS
 
@@ -19,7 +19,7 @@
 | Endpoint | `geoserver.funai.gov.br/geoserver/Funai/ows` |
 | WFS Version | 2.0.0 |
 | Layer | `Funai:tis_poligonais` |
-| CRS | EPSG:4674 |
+| CRS | EPSG:4674 na camada; o agrobr pede `srsName=EPSG:4326` e devolve EPSG:4326 (reprojecao do GeoServer) |
 
 ## Exemplo de Uso
 
@@ -54,11 +54,40 @@ asyncio.run(main())
 | nome | str | Nome da TI |
 | etnia | str | Etnia predominante |
 | municipio | str | Municipio sede |
-| uf | str | UF (sigla) |
-| area_ha | float | Area em hectares |
+| uf | str | UF da TI como publicada; 18 TIs trazem mais de uma (ex. "AM, RR") |
+| area_ha | float | Área declarada pela FUNAI em hectares (`superficie_perimetro_ha`), não a do polígono |
 | fase | str | Fase do processo |
 | modalidade | str | Modalidade da TI |
-| data_atualizacao | datetime | Data de atualizacao |
+| data_atualizacao | str | Data de atualizacao: texto dd/mm/aaaa publicado, nulo em 146 das 665 TIs |
+| feature_id | str | Identificador da feicao no WFS (texto; pode variar entre requisicoes) |
+| gid | int | Identificador do registro na camada |
+| reestudo_ti | str | Situacao de reestudo como publicada (vazio, "Reestudo" ou "Principal") |
+| cr | str | Coordenacao Regional da FUNAI |
+| faixa_fronteira | str | "Sim"/"Não", como publicado |
+| undadm_codigo | int | Codigo da unidade administrativa |
+| undadm_nome | str | Nome da unidade administrativa |
+| undadm_sigla | str | Sigla da unidade administrativa |
+| dominio_uniao | str | "t"/"f", como publicado |
+| epsg | int | EPSG da geometria na fonte (4674 em todas as TIs) |
+
+A UF, a data e os indicadores administrativos saem com o texto publicado (contrato `funai.terras_indigenas` 2.0).
+
+`area_ha` é a área declarada pela FUNAI (`superficie_perimetro_ha`), repassada sem recálculo, e pode divergir do
+polígono publicado: na TI Mashco do Rio Chandless (AC), 421 ha declarados contra 543.430 ha no polígono (26/09/2026).
+Em `terras_indigenas_geo`, a terra cuja área declarada difere mais de 5 % da área do polígono (projeção Albers do IBGE)
+sai com aviso em `validation_warnings` e `UserWarning`, e a lista com as 2 áreas fica em `source_details["area_divergente"]`.
+`terras_indigenas`, sem geometria, não faz a comparação. No AC, 3 das 34 terras passam dos 5 %.
+Para uma data, converta na aplicacao: `pd.to_datetime(df["data_atualizacao"], format="%d/%m/%Y")`.
+
+## Parametros
+
+| Parametro | Padrao | Descricao |
+|-----------|--------|-----------|
+| `uf` | `None` | Sigla; casa qualquer UF do campo publicado (TIs em mais de um estado vem como "AM, RR") |
+| `fase` | `None` | Uma das fases abaixo, igualdade exata |
+| `bbox` | `None` | (lon_min, lat_min, lon_max, lat_max) em EPSG:4326 |
+| `max_registros` | 10.000 (1.000 em `_geo`) | Teto de TIs lidas em ordem de codigo; `uf` e `fase` filtram localmente esse prefixo, e o corte que deixa a selecao parcial emite `UserWarning` |
+| `tamanho_pagina` | 250 (10 em `_geo`) | Maximo 1.000 (100 em `_geo`) |
 
 ## Fases
 
@@ -68,4 +97,4 @@ Regularizada, Homologada, Declarada, Delimitada, Em Estudo, Encaminhada RI.
 
 - Apenas TIs poligonais (pontos e linhas excluidos)
 - Dados refletem o estado atual do GeoServer FUNAI
-- CC BY-ND 3.0: uso livre com citacao, sem derivados
+- Licença: reprodução com citação da fonte, pelo termo da FUNAI para geoprocessamento e mapas; o rodapé do portal gov.br declara CC BY-ND 3.0 para o conteúdo do site

@@ -1,0 +1,50 @@
+{
+  "source": "CMR-PUBLICO:lim_quilombolas_a via CMR/FUNAI WFS2.0",
+  "captured_utc_date": "2026-09-08",
+  "source_edition": null,
+  "files": [
+    {
+      "file": "reference.json",
+      "source_path": "getfeature_probe/capturas_v1/request_001.body",
+      "sha256": "34c55ac980827f4a679843cddc9ff7ffb92b4891b08872330861dc2141eb2226",
+      "bytes": 4620
+    },
+    {
+      "file": "geo.json",
+      "source_path": "getfeature_probe/capturas_v1/request_003.body",
+      "sha256": "d0ba0e7467e2a8b3017556ffba429cec79087a05b9c502ec0b4f6d1988dbc1c9",
+      "bytes": 4956
+    },
+    {
+      "file": "geo_default.json",
+      "source_path": "getfeature_probe/capturas_v1/request_002.body",
+      "sha256": "77c66598e70584b647b1fe13aafdf99860a99d7eac7fb874521c2c10cdcb92f6",
+      "bytes": 4738
+    },
+    {
+      "file": "bbox_empty.json",
+      "source_path": "pagination_probe/capturas_v1/request_007.body",
+      "sha256": "a766f5b72b9142bdfbd9fa3405b1e47458e549692fc2ebcb02545c73491a26fe",
+      "bytes": 147
+    },
+    {
+      "file": "bbox_inside.json",
+      "source_path": "pagination_probe/capturas_v1/request_006.body",
+      "sha256": "678664cdcb002504d26a2c3ca23a4706215a038d140880f88f6a1c67b2b8f832",
+      "bytes": 4326
+    },
+    {
+      "file": "schema.xsd",
+      "source_path": "documents_probe/capturas_v1/request_002.body",
+      "sha256": "dee163fbd3f3278ff50714f3938437c4dad2431706e4a0151b42926ab6db0ba1",
+      "bytes": 3100
+    }
+  ],
+  "source_scalar_properties": 21,
+  "semantic_primary_key": [],
+  "code_zero_preserved": true,
+  "reported_population_not_acquired_by_fixture": 444,
+  "default_crs": "EPSG:4674",
+  "explicit_geo_crs": "EPSG:4326",
+  "empty_geo_declared_crs": null
+}

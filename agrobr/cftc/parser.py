@@ -6,6 +6,7 @@ import pandas as pd
 import structlog
 
 from agrobr.exceptions import ParseError
+from agrobr.normalize import dates
 
 from . import models
 
@@ -24,7 +25,7 @@ def parse_cot(records: list[dict[str, Any]]) -> pd.DataFrame:
         )
 
     df = df[list(models.COLUMN_MAP)].rename(columns=models.COLUMN_MAP)
-    df["data"] = pd.to_datetime(df["data"], format="ISO8601", errors="coerce")
+    dates.converter_coluna(df, "data", fonte="cftc", formato="ISO8601")
 
     for col in models.POSITION_COLUMNS:
         df[col] = pd.to_numeric(df[col], errors="coerce")

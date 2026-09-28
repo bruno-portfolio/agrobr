@@ -1,0 +1,40 @@
+{
+  "source": "IBGE SIDRA",
+  "captures": [
+    {
+      "file": "201007.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/201007/c48/all",
+      "captured_on": "2026-09-06",
+      "sha256": "6d92ab99ef19f38edf5f6b7e019cabaf8b799c76f883c6e5f18c905e18131363",
+      "bytes": 56150
+    },
+    {
+      "file": "202307.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202307/c48/all",
+      "captured_on": "2026-09-06",
+      "sha256": "204a42bfb4d6b0f5a840ded4ced34f082ec6bbb00699fdc2217e130cabbe3c7c",
+      "bytes": 56076
+    },
+    {
+      "file": "202607.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/202607/c48/all",
+      "captured_on": "2026-09-06",
+      "sha256": "c831e14c8587d0da26b140c61610028123d32543a1ddc6cda449d497b9010078",
+      "bytes": 56098
+    },
+    {
+      "file": "metadata_6588.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/metadados",
+      "captured_on": "2026-09-06",
+      "sha256": "2ddd834a126f9cbea4dc577606a3094e7f46fd0320f05e0eaebe46ad79c9c93d",
+      "bytes": 3885
+    },
+    {
+      "file": "cafe_201112_201201.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6588/n1/all/h/n/p/201112,201201/c48/40527,39454,39455",
+      "captured_on": "2026-09-06",
+      "sha256": "8adedc87af1b2960d687ee6d87ce08bda01542fd72f471273305bc2a5fca0e8a",
+      "bytes": 7268
+    }
+  ]
+}

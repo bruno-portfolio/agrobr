@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
@@ -40,7 +40,7 @@ POSICIONAMENTO_FUNDOS_INFO = DatasetInfo(
         ),
     ],
     products=_PRODUCTS,
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="weekly",
     typical_latency="D+3",
     source_url="https://publicreporting.cftc.gov",
@@ -62,7 +62,6 @@ class PosicionamentoFundosDataset(BaseDataset):
         end: str | None = None,
         combined: bool = False,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="posicionamento_fundos", produto=produto)
 
@@ -75,17 +74,12 @@ class PosicionamentoFundosDataset(BaseDataset):
             start=start,
             end=end,
             combined=combined,
-            **kwargs,
         )
 
-        df = self._normalize(df)
         self._validate_contract(df)
 
         if return_meta:
             return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-        return df
-
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
@@ -96,6 +90,30 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_posicionamento_fundos)
 
 
+@overload
+async def posicionamento_fundos(
+    produto: str,
+    *,
+    start: str | None = None,
+    end: str | None = None,
+    combined: bool = False,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def posicionamento_fundos(
+    produto: str,
+    *,
+    start: str | None = None,
+    end: str | None = None,
+    combined: bool = False,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def posicionamento_fundos(
     produto: str,
     *,
@@ -103,13 +121,13 @@ async def posicionamento_fundos(
     end: str | None = None,
     combined: bool = False,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _posicionamento_fundos.fetch(
+    return await _posicionamento_fundos.fetch(  # type: ignore[call-arg]
         produto,
         start=start,
         end=end,
         combined=combined,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

@@ -1,4 +1,4 @@
-# censo_agropecuario v1.0
+# censo_agropecuario v1.2
 
 Dados do Censo Agropecuario 1995/2006/2017 por tema, UF e nivel territorial.
 
@@ -35,6 +35,7 @@ Dados do Censo Agropecuario 1995/2006/2017 por tema, UF e nivel territorial.
 | `ano` | int | ❌ | Ano de referencia (1995, 2006 ou 2017) |
 | `localidade` | str | ✅ | UF ou municipio |
 | `localidade_cod` | int | ✅ | Codigo IBGE |
+| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `tema` | str | ❌ | Tema do censo |
 | `categoria` | str | ❌ | Categoria dentro do tema |
 | `variavel` | str | ❌ | Nome da variavel |
@@ -58,12 +59,16 @@ Long format: cada linha tem um par variavel/valor.
 | `efetivo_rebanho` | `cabecas` | cabecas |
 | `uso_terra` | `estabelecimentos` | unidades |
 | `uso_terra` | `area` | hectares |
-| `lavoura_temporaria` | `estabelecimentos` | unidades |
+| `lavoura_temporaria` | `estabelecimentos` (2017) ou `informantes` (1995) | unidades |
 | `lavoura_temporaria` | `producao` | varia |
 | `lavoura_temporaria` | `area_colhida` | hectares |
-| `lavoura_permanente` | `estabelecimentos` | unidades |
+| `lavoura_permanente` | `estabelecimentos` (2017) ou `informantes` (1995) | unidades |
 | `lavoura_permanente` | `producao` | varia |
 | `lavoura_permanente` | `area_colhida` | hectares |
+
+Em 1995, as lavouras publicam `informantes`: a variável 151 da SIDRA (tabelas 492 e 504), que a SIDRA chama de
+"Número de informantes". Em 2017, `estabelecimentos` é o "Número de estabelecimentos agropecuários com lavoura
+temporária" (10084) e, na permanente, "com 50 pés e mais existentes" (9504).
 
 ### Novos temas — categorias
 
@@ -80,8 +85,18 @@ Long format: cada linha tem um par variavel/valor.
 
 - Dados decenais consolidados (Censo Agropecuario 1995, 2006 e 2017)
 - Periodo de referencia 2017: outubro/2016 a setembro/2017
-- Cache com TTL de 30 dias (dados estaveis)
+- Sem cache: cada chamada consulta o IBGE
 - Parametro `ano` filtra por ano censal; `ano=None` retorna todos os anos disponiveis
+- `categoria = "Total"` é a linha que a fonte publica como total da classificação do tema (ex.: todos os métodos de
+  irrigação, todas as espécies do efetivo). Ela não se soma às demais categorias.
+- `estabelecimentos` não soma entre categorias: um estabelecimento pode entrar em mais de uma. Irrigação, Brasília 2017:
+  2.726 estabelecimentos no Total e 3.224 somando os 11 métodos. Medidas aditivas, como a área, fecham com o Total
+  (25.626 ha nos dois) quando nenhuma categoria está em sigilo. Categoria em sigilo sai nula ("X" na fonte), e a soma
+  fica abaixo do Total: no efetivo de AL, faltam 747 cabeças, porque Bubalinos e Avestruzes saem "X".
+- O Censo conta só os estabelecimentos agropecuários e não bate com a PAM e a PPM, mesmo com os mesmos nomes: em 2017,
+  fica cerca de 10% abaixo da PAM em soja e milho (até 20% no PR) e cerca de 20% abaixo da PPM no efetivo bovino. A data de referência também difere: o efetivo do Censo 2017 é o de 30/09/2017, e o da PPM, o de 31/12 de cada ano.
+- O ano de 1995 também está no `censo_agropecuario_historico`, com números diferentes, porque as tabelas do SIDRA são
+  outras ([detalhes](./censo_agropecuario_historico.md#relacao-com-outros-contratos)).
 
 ## Exemplo
 
@@ -105,6 +120,14 @@ df = await ibge.censo_agro('lavoura_temporaria', nivel='municipio', uf='PR')
 
 # Com metadados
 df, meta = await ibge.censo_agro('efetivo_rebanho', return_meta=True)
+```
+
+Pelo dataset, com o `MetaInfo` da camada semântica:
+
+```python
+from agrobr import datasets
+
+df, meta = await datasets.censo_agropecuario("efetivo_rebanho", uf="MT", return_meta=True)
 ```
 
 ## Schema JSON

@@ -4,6 +4,7 @@ import asyncio
 import io
 import zipfile
 from typing import NamedTuple
+from urllib import parse
 
 import requests
 import structlog
@@ -13,10 +14,12 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_async, should_retry_status
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import detect_encoding_chain
+from agrobr.utils import io as io_utils
 
 logger = structlog.get_logger()
 
 BULK_TXT_BASE = URLS[Fonte.ANTAQ]["bulk_txt"]
+MERCADORIA_URL = f"{BULK_TXT_BASE}/Mercadoria.zip"
 
 ANTAQ_TIMEOUT = 180.0
 OUTAGE_NOTICE_SLUG = "painel-estatistico-aquaviario-indisponivel"
@@ -24,6 +27,16 @@ OUTAGE_NOTICE_SLUG = "painel-estatistico-aquaviario-indisponivel"
 
 class _RetriableHTTPError(requests.exceptions.HTTPError):
     pass
+
+
+class OfficialOutageError(SourceUnavailableError):
+    def __init__(self, url: str, notice_url: str) -> None:
+        self.notice_url = notice_url
+        super().__init__(
+            source="antaq",
+            url=url,
+            last_error=f"ANTAQ redirected to the official outage notice: {notice_url}",
+        )
 
 
 class _Download(NamedTuple):
@@ -41,7 +54,7 @@ def _get_sync(url: str) -> _Download:
         allow_redirects=True,
     )
     if should_retry_status(response.status_code):
-        raise _RetriableHTTPError(f"Retriable status: {response.status_code}")
+        raise _RetriableHTTPError(f"Retriable status: {response.status_code}", response=response)
     response.raise_for_status()
     return _Download(
         content=response.content,
@@ -84,6 +97,14 @@ async def _download_zip(url: str) -> bytes:
         ) from e
 
     content = download.content
+    final = parse.urlsplit(download.final_url)
+    if (
+        final.scheme == "https"
+        and final.hostname == "www.gov.br"
+        and final.path.startswith("/antaq/")
+        and final.path.rstrip("/").endswith("/" + OUTAGE_NOTICE_SLUG)
+    ):
+        raise OfficialOutageError(url, download.final_url)
 
     if not content.startswith(b"PK\x03\x04"):
         raise SourceUnavailableError(
@@ -108,9 +129,9 @@ async def _download_zip(url: str) -> bytes:
 
 
 def _extract_txt_from_zip(zip_bytes: bytes, filename: str) -> str:
-    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf, zf.open(filename) as f:
-        content = f.read()
-        return content.decode(detect_encoding_chain(content))
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+        content = io_utils.read_zip_member(zf, filename, source="antaq")
+    return content.decode(detect_encoding_chain(content))
 
 
 async def fetch_ano_zip(ano: int) -> bytes:
@@ -119,8 +140,7 @@ async def fetch_ano_zip(ano: int) -> bytes:
 
 
 async def fetch_mercadoria_zip() -> bytes:
-    url = f"{BULK_TXT_BASE}/Mercadoria.zip"
-    return await _download_zip(url)
+    return await _download_zip(MERCADORIA_URL)
 
 
 def extract_atracacao(zip_bytes: bytes, ano: int) -> str:

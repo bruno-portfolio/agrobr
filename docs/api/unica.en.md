@@ -46,7 +46,7 @@ sugar/ethanol mix and yields by region.
 ```python
 async def safra_resumo(
     *,
-    periodo: Literal["acumulado", "quinzena"] = "acumulado",
+    periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -54,9 +54,14 @@ async def safra_resumo(
 
 **Returns:**
 
-DataFrame with columns: `produto`, `regiao`, `safra`, `periodo`, `valor`,
-`valor_safra_anterior`, `variacao_pct`, `unidade`. Products include `cana`, `acucar`,
+DataFrame with columns: `produto`, `regiao`, `safra`, `periodo`, `data_inicio`, `data_fim`,
+`valor`, `valor_safra_anterior`, `variacao_pct`, `unidade`. Products include `cana`, `acucar`,
 `etanol_*`, `atr`, `atr_por_tonelada`, `kg_acucar_por_tonelada`, `mix_acucar`, `mix_etanol`.
+
+The period and the dates come from the title of Tables 1-2 of the current edition, and the published period changes with
+the edition: the 2026-07-01 edition has the cumulative total and the month (June), and the 2026-05-01 edition, the
+cumulative total and the 2nd half of April. Requesting a period the edition does not publish raises
+`InvalidParameterError` listing the edition's periods.
 
 ### `producao_historica`
 
@@ -97,7 +102,7 @@ from agrobr import unica
 # Cumulative crushing for the current crop year, Center-South
 df = await unica.moagem_quinzenal("cana", regiao="centro_sul")
 
-# Sugar/ethanol mix and ATR for the biweekly period
+# Sugar/ethanol mix and ATR for the biweekly period (biweekly editions only; in a monthly one, periodo="mensal")
 df = await unica.safra_resumo(periodo="quinzena")
 
 # Sugar production history by state

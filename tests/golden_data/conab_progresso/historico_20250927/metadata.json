@@ -1,0 +1,40 @@
+{
+  "source": "conab_progresso",
+  "license": "livre",
+  "format": "xlsx",
+  "capture_scope": "complete official responses, reused byte-for-byte with hashes",
+  "week_url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-22-09-a-28-09-25",
+  "metadata_url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-22-09-a-28-09-25/plantio-e-colheita-21-09-a-27-09/view",
+  "download_url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-22-09-a-28-09-25/plantio-e-colheita-21-09-a-27-09/@@download/file",
+  "captures": [
+    {
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-22-09-a-28-09-25",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "at": "2026-09-16T20:27:55.934878-03:00",
+      "sha256": "4ba2d888abf462f3a8633e6906c0c3770866912cb307db43230f95c427da76c3",
+      "bytes": 127440,
+      "file": "week.html",
+      "reused_from": "historical_response_0.bin"
+    },
+    {
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-22-09-a-28-09-25/plantio-e-colheita-21-09-a-27-09/view",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "at": "2026-09-16T20:28:01.908083-03:00",
+      "sha256": "c143f7ee466f01060a349d356fddbf616d0e9c83ad076e11fe1c1dc5c7addc77",
+      "bytes": 118996,
+      "file": "metadata.html",
+      "reused_from": "historical_response_1.bin"
+    },
+    {
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-22-09-a-28-09-25/plantio-e-colheita-21-09-a-27-09",
+      "at": "2026-09-16T20:07:26.871267-03:00",
+      "sha256": "ae5932cbef54b2b141b8b45adc1e66c6ff091104725989438f6583ff4fa5e050",
+      "bytes": 78617,
+      "status": 200,
+      "file": "response.xlsx",
+      "reused_from": "preflight_t1c_202509.xlsx"
+    }
+  ]
+}

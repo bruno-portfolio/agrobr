@@ -14,8 +14,6 @@ from agrobr.cepea.parsers.detector import get_parser_with_fallback
 from agrobr.cepea.parsers.fingerprint import (
     compare_fingerprints,
     extract_fingerprint,
-    load_baseline_fingerprint,
-    save_baseline_fingerprint,
 )
 from agrobr.cepea.parsers.v1 import CepeaParserV1
 
@@ -25,8 +23,6 @@ __all__ = [
     "compare_fingerprints",
     "extract_fingerprint",
     "get_parser_with_fallback",
-    "load_baseline_fingerprint",
-    "save_baseline_fingerprint",
     "ConsensusResult",
     "ConsensusValidator",
     "parse_with_consensus",

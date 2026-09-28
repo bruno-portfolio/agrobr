@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
-from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource
+from agrobr import constants
+from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
 
@@ -16,18 +16,14 @@ logger = structlog.get_logger()
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
 
-    safra = kwargs.get("safra")
-
-    df = await conab.balanco(produto=produto, safra=safra)
-
-    meta = MetaInfo(
-        source="conab",
-        source_url="https://www.conab.gov.br/info-agro/safras/graos",
-        source_method="httpx",
-        fetched_at=datetime.now(UTC),
+    return _unpack_result(
+        await conab.balanco(
+            produto=produto,
+            safra=kwargs.get("safra"),
+            levantamento=kwargs.get("levantamento"),
+            return_meta=True,
+        )
     )
-
-    return df, meta
 
 
 BALANCO_INFO = DatasetInfo(
@@ -42,7 +38,7 @@ BALANCO_INFO = DatasetInfo(
         ),
     ],
     products=["soja", "milho", "arroz", "feijao", "trigo", "algodao"],
-    contract_version="1.0",
+    contract_version="1.1",
     update_frequency="monthly",
     typical_latency="M+0",
     source_url="https://www.gov.br/conab/",
@@ -61,14 +57,20 @@ class BalancoDataset(BaseDataset):
         produto: str,
         safra: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
+        levantamento: int | None = None,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-        logger.info("dataset_fetch", dataset="balanco", produto=produto, safra=safra)
+        logger.info(
+            "dataset_fetch",
+            dataset="balanco",
+            produto=produto,
+            safra=safra,
+            levantamento=levantamento,
+        )
 
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, safra=safra, **kwargs
+            produto, safra=safra, levantamento=levantamento
         )
 
         df = self._normalize(df, produto)
@@ -81,7 +83,7 @@ class BalancoDataset(BaseDataset):
 
     def _normalize(self, df: pd.DataFrame, produto: str) -> pd.DataFrame:
         if df.empty:
-            return df
+            return df.astype({**constants.CONAB_BALANCO_DTYPES, "fonte": "string"})
 
         if "produto" not in df.columns:
             df["produto"] = produto
@@ -99,10 +101,39 @@ from agrobr.datasets.registry import register  # noqa: E402
 register(_balanco)
 
 
+@overload
+async def balanco(
+    produto: str,
+    safra: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+    levantamento: int | None = None,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def balanco(
+    produto: str,
+    safra: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+    levantamento: int | None = None,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
 async def balanco(
     produto: str,
     safra: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    as_polars: bool = False,
+    levantamento: int | None = None,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _balanco.fetch(produto, safra=safra, return_meta=return_meta, **kwargs)
+    return await _balanco.fetch(  # type: ignore[call-arg]
+        produto,
+        safra=safra,
+        return_meta=return_meta,
+        as_polars=as_polars,
+        levantamento=levantamento,
+    )

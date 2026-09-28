@@ -1,49 +1,30 @@
-# INCRA — Territorios Quilombolas
+# INCRA — Territórios Quilombolas
 
-!!! warning "Mudanca breaking — codigo legado"
-    Versoes anteriores aceitavam fases em formato humanizado (`"Titulada"`,
+!!! warning "Mudança breaking — fases no formato humanizado"
+    Versões anteriores aceitavam fases em formato humanizado (`"Titulada"`,
     `"Em Titulacao"`, `"Decreto Publicado"`, `"RTID em Elaboracao"`,
-    `"RTID Publicado"`). Esses valores **nunca casaram** com os dados reais do
-    servidor CMR/FUNAI (que retorna em CAIXA ALTA), mas o filtro CQL era
-    silenciosamente aplicado pelo servidor e retornava resultado vazio sem
-    erro — bug funcional silencioso.
+    `"RTID Publicado"`). Esses valores **nunca casaram** com os dados do
+    servidor CMR/FUNAI (que publica em CAIXA ALTA) e o filtro devolvia
+    resultado vazio sem erro. Hoje eles levantam `InvalidParameterError`
+    (subclasse de `ValueError`). Veja a [lista canônica](#fases-validas).
 
-    **A partir desta versao, esses valores levantam `ValueError`.** Migracao:
-
-    | Antes | Depois |
-    |-------|--------|
-    | `fase="Titulada"` | `fase="TITULADO"` |
-    | `fase="Em Titulacao"` | `fase="PORTARIA"` |
-    | `fase="Decreto Publicado"` | `fase="DECRETO"` |
-    | `fase="RTID em Elaboracao"` | `fase="RTID"` |
-    | `fase="RTID Publicado"` | `fase="TITULO PARCIAL"` |
-
-    Quem usava fase no formato antigo recebia DataFrame vazio silenciosamente
-    — comportamento incorreto. O novo erro torna a inconsistencia explicita.
-    Veja [Filtros](#filtros) abaixo para a lista canonica.
-
-## Visao Geral
+## Visão Geral
 
 | Item | Detalhe |
 |------|---------|
-| Provedor | INCRA (Instituto Nacional de Colonizacao e Reforma Agraria) |
-| Dados | Territorios quilombolas |
-| Acesso | WFS OGC (CMR/FUNAI GeoServer) |
-| Formato | CSV (tabular) / GeoJSON (geo) |
-| Autenticacao | Nenhuma |
-| Licenca | Dados publicos governo federal |
-| Features | ~426 territorios |
+| Provedor | INCRA (camada publicada no GeoServer do CMR/FUNAI) e página de quilombolas do INCRA |
+| Dados | Perímetros de territórios quilombolas, andamento dos processos (PDF) e vínculos entre os dois |
+| Acesso | WFS 2.0.0 em JSON (`cmr.funai.gov.br/geoserver/ows`) e PDF em `gov.br/incra` |
+| Autenticação | Nenhuma |
+| Licença | Dados públicos do governo federal |
+| Tamanho | 445 perímetros no WFS e 649 processos no PDF (22/09/2026) |
 
-## Acesso via WFS
-
-| Parametro | Valor |
-|-----------|-------|
-| Endpoint | `cmr.funai.gov.br/geoserver/ows` |
-| WFS Version | 1.0.0 |
-| Layer | `CMR-PUBLICO:lim_quilombolas_a` |
-| CRS | EPSG:4674 |
-
-O layer e hospedado no servidor CMR da FUNAI, nao no INCRA.
+| Função | Retorno |
+|--------|---------|
+| `quilombolas()` | `DataFrame` com 22 colunas, uma linha por perímetro publicado |
+| `quilombolas_geo()` | `GeoDataFrame` com as mesmas 22 colunas + `geometry` (EPSG:4326) |
+| `andamento_quilombola()` | `DataFrame` com as 15 colunas do quadro "Andamento dos processos" (requer `agrobr[pdf]`) |
+| `vinculos_quilombolas()` | `DataFrame` com 46 colunas relacionando perímetros e processos pelo NUP (requer `agrobr[pdf]`) |
 
 ## Exemplo de Uso
 
@@ -52,82 +33,139 @@ import asyncio
 from agrobr import incra
 
 async def main():
-    # Todos os territorios quilombolas
     df = await incra.quilombolas()
-
-    # Filtrar por UF
-    df = await incra.quilombolas(uf="BA")
-
-    # Filtrar por fase do processo
-    df = await incra.quilombolas(fase="TITULADO")
-
-    # Combinar filtros
     df = await incra.quilombolas(uf="BA", fase="TITULADO")
-
-    # Com geometria (requer geopandas)
     gdf = await incra.quilombolas_geo(bbox=(-42, -15, -40, -13))
-
-    # Com metadados
-    df, meta = await incra.quilombolas(return_meta=True)
+    andamento, meta = await incra.andamento_quilombola(return_meta=True)
+    vinculos = await incra.vinculos_quilombolas()
 
 asyncio.run(main())
 ```
 
-## Filtros
+## Perímetros (`quilombolas` e `quilombolas_geo`)
 
-Parametros aceitos por `quilombolas()` e `quilombolas_geo()`:
+Camada `CMR-PUBLICO:lim_quilombolas_a`, consultada em WFS 2.0.0/JSON com ordenação
+`cd_quilomb, nu_processo, no_comunidade`, contagem antes e depois da coleta e páginas
+sobrepostas em uma ocorrência para detectar mudança durante a paginação.
 
-| Parametro | Tipo | Descricao |
-|-----------|------|-----------|
-| `uf` | str \| None | Sigla da UF (case-insensitive) |
-| `fase` | str \| None | Fase do processo (ver tabela abaixo) |
-| `bbox` | tuple\[float, float, float, float\] \| None | (minlon, minlat, maxlon, maxlat) em EPSG:4674 |
+| Parâmetro | Tipo | Padrão | Descrição |
+|-----------|------|--------|-----------|
+| `uf` | str \| None | None | Sigla da UF; compara sem diferenciar caixa nem espaços externos |
+| `fase` | str \| None | None | Um dos [7 seletores](#fases-validas), comparação literal |
+| `bbox` | tuple \| None | None | `(minlon, minlat, maxlon, maxlat)` em **EPSG:4326**; o servidor pré-seleciona e o agrobr confirma por interseção |
+| `max_registros` | int \| None | 1500 | Teto de perímetros lidos; `None` retira o teto |
+| `tamanho_pagina` | int \| None | 250 (tabular) / 10 (geo) | Máximo 1000 (tabular) e 100 (geo) |
 
-### Fases validas
+Os filtros `uf` e `fase` são aplicados localmente depois do download: o servidor não
+respeita `CQL_FILTER` nesses campos. Parâmetro inválido levanta `InvalidParameterError`
+antes de qualquer requisição. Quando `max_registros` corta a população, um
+`UserWarning` informa que a seleção veio de um prefixo remoto. `deterministic()` não é
+suportado (o WFS não publica edição imutável).
+
+### Colunas
+
+| Coluna | Atributo da fonte | Tipo | Observação |
+|--------|-------------------|------|------------|
+| `codigo` | `cd_quilomb` | Int64 | Nulo em 64 % dos perímetros e 0 em 9 (22/09/2026); não é chave primária |
+| `nome` | `no_comunidade` | string | |
+| `municipio` | `no_municipio` | string | |
+| `uf` | `sg_uf` | string | Texto publicado, sem normalização |
+| `area_ha` | `nu_area_ha` | float64 | Hectares publicados, sem recálculo |
+| `familias` | `nu_familia` | Int64 | |
+| `fase` | `ds_fase` | string | Ver [fases](#fases-validas) |
+| `titulado` | `st_titulad` | string | `T`/`F` (a fonte também publica `t`/`f`), sem conversão para booleano |
+| `data_publicacao` | `dt_publica` | string | Data XSD literal (`AAAA-MM-DD`) |
+| `data_titulo` | `dt_titulo` | string | Idem |
+| `feature_id` | id da feição | string | Identificador recebido do servidor; estabilidade não comprovada |
+| `regional` | `co_sr` | string | Superintendência regional (`SR-05`, …) |
+| `processo` | `nu_processo` | string | NUP como publicado (pode ter mais de um ou formato atípico) |
+| `data_publicacao_2` | `dt_public1` | string | Data XSD literal |
+| `responsavel` | `no_responsavel` | string | Órgão responsável (INCRA, ITERPA, …) |
+| `esfera` | `no_esfera` | string | Texto publicado (`FEDERAL`, `Federal`, …) |
+| `data_cadastro` | `dt_cadastro` | string | dateTime XSD literal; a fonte grava o mesmo horário de carga em todas as feições e ele muda a cada recarga |
+| `codigo_sipra` | `cd_sipra` | string | |
+| `descricao` | `ds_descricao` | string | |
+| `data_decreto` | `dt_decreto` | string | Data XSD literal |
+| `tipo_levantamento` | `tp_levanta` | string | |
+| `escala` | `nr_escalao` | string | Escala do levantamento (`1:15.000`, …) |
+
+As datas ficam como texto: o agrobr valida o literal contra o XSD e não converte fuso,
+precisão nem calendário. A fonte usa `0001-01-01` como marcador em `data_titulo` (3
+perímetros) e `data_decreto` (2) — trate como ausente na análise. Nulo, zero, texto vazio e
+o texto `NULL` são preservados como publicados.
+
+### Geometria
+
+`quilombolas_geo()` pede `srsName=EPSG:4326` e confere o CRS declarado em cada página. As
+coordenadas saem como recebidas: **sem reprojeção e sem reparo topológico** — polígonos
+inválidos na fonte chegam inválidos. Geometria nula vira `None`; geometria vazia vira
+geometria vazia. Requer `agrobr[geo]`.
+
+### Fases válidas
 
 | Valor | Significado |
 |-------|-------------|
-| `CCDRU` | Concessao de Direito Real de Uso |
-| `DECRETO` | Decreto de desapropriacao publicado |
+| `CCDRU` | Concessão de Direito Real de Uso |
+| `DECRETO` | Decreto de desapropriação publicado |
 | `PORTARIA` | Portaria de reconhecimento publicada |
-| `RTID` | Relatorio Tecnico de Identificacao e Delimitacao |
-| `TITULADO` | Territorio com titulo definitivo emitido |
-| `TITULO ANULADO` | Titulo anulado por decisao judicial |
-| `TITULO PARCIAL` | Titulacao parcial (parte do territorio) |
+| `RTID` | Relatório Técnico de Identificação e Delimitação |
+| `TITULADO` | Território com título emitido |
+| `TITULO ANULADO` | Título anulado |
+| `TITULO PARCIAL` | Titulação parcial |
 
-Valores fora dessa lista levantam `ValueError`.
+Em 22/09/2026 a camada também tinha 15 perímetros com fase nula e 1 com o texto `INCRA`.
+Essas linhas saem em `quilombolas()` sem `fase`, mas nenhum seletor as alcança.
 
-!!! note "Filtros aplicados client-side"
-    Os filtros `uf` e `fase` sao aplicados **depois** do download (o servidor
-    CMR/FUNAI nao respeita `CQL_FILTER` nesses campos). O dataset completo
-    (~426 territorios) e baixado a cada chamada, independente dos filtros.
-    Use `bbox` para reduzir o tamanho da resposta no servidor.
+## Andamento dos processos (`andamento_quilombola`)
 
-## Colunas
+Lê o PDF "Andamento dos processos — Quadro geral" ligado na página de quilombolas do
+INCRA. Cada linha é um registro do quadro, na ordem publicada (um processo pode aparecer em
+mais de uma linha); o número de linhas é conciliado com o total declarado no rodapé ("N
+processos com algum tipo de andamento no INCRA").
 
-| Coluna | Tipo | Descricao |
-|--------|------|-----------|
-| codigo | str | Codigo do territorio |
-| nome | str | Nome da comunidade |
-| municipio | str | Municipio |
-| uf | str | UF (sigla) |
-| area_ha | float | Area em hectares |
-| familias | Int64 | Numero de familias (nullable) |
-| fase | str | Fase do processo |
-| titulado | str | "T" (titulado) ou "F" (nao titulado) |
-| data_publicacao | datetime | Data de publicacao |
-| data_titulo | datetime | Data do titulo (nullable) |
+| Coluna | Tipo | Conteúdo |
+|--------|------|----------|
+| `regional` | string | Rótulo do grupo regional desenhado no PDF (`SR(05)BA`, …) |
+| `numero_publicado` | Int64 | Posição publicada (1…N) |
+| `processo`, `comunidade`, `municipio` | string | Texto da célula; quebras de linha viram `\n` |
+| `area_ha_texto`, `familias_texto` | string | Número no formato publicado (`2.629,0532`), sem conversão |
+| `edital_rtid_1`, `edital_rtid_2`, `retificacao_edital_1`, `retificacao_edital_2`, `portaria`, `retificacao_portaria`, `decreto`, `titulo` | string | Texto publicado: datas, vários atos, anotações (`Não precisa`, `Em Elaboração`, `**`) ou vazio |
 
-## Limitacoes
+Texto parcialmente cortado pela grade do PDF é preservado inteiro.
 
-- Dados hospedados em servidor FUNAI/CMR, nao INCRA
-- Limite de 1500 features por requisicao. Quando atingido, log
-  `incra_quilombolas_truncated` (ou `incra_quilombolas_geo_truncated`) e emitido
-- Filtros `uf`/`fase` sao client-side (nao reduzem trafego de rede)
-- Algumas datas podem estar ausentes (nullable)
-- Campo `familias` e nullable (nem todos os registros tem essa informacao)
-- Campo `codigo` (cd_quilomb) e nullable: ~63% dos registros sao territorios em
-  pre-cadastro identificados pelo CMR/FUNAI que ainda nao receberam codigo INCRA
-  oficial. Use `df["codigo"].notna()` para filtrar apenas territorios cadastrados
-- Geometrias invalidas no GeoJSON sao reparadas via `shapely.validation.make_valid`
-  com log `incra_quilombolas_geo_repaired`
+**Edição.** A edição é a **data interna** do PDF (a data impressa acima de "Fonte:
+INCRA-DQ"). A data do nome do arquivo é só o localizador do download. Quando divergem, um
+`UserWarning` e `meta.validation_warnings` citam as duas datas, e `source_details` guarda
+`publication.file_date` e `publication.internal_edition`. `edicao=` (data ou
+`"AAAA-MM-DD"`) precisa casar a data interna; uma edição que não está mais publicada
+levanta `InvalidParameterError` citando a atual. A página liga um único PDF: em
+22/09/2026 o arquivo chamado `08_06_2026` trazia o conteúdo de 03/09/2026 (649 processos). Um redirecionamento
+(3xx) da página ou do PDF levanta `SourceUnavailableError` ("Redirecionamento administrativo não demonstrado").
+
+## Vínculos (`vinculos_quilombolas`)
+
+Compõe `quilombolas()` (população inteira, sem filtros) e `andamento_quilombola()` pela
+referência NUP literal (`NNNNN.NNNNNN/AAAA-DD`) encontrada em `processo` dos dois lados. Uma
+linha por par de ocorrências (produto cartesiano quando o NUP se repete) mais uma linha para
+cada referência sem par e para cada célula sem NUP reconhecível.
+
+| `estado_vinculo` | Significado |
+|------------------|-------------|
+| `vinculo_exato` | O mesmo NUP aparece no perímetro e no processo |
+| `sem_referencia_administrativa` | NUP do perímetro ausente no PDF |
+| `sem_referencia_geografica` | NUP do PDF ausente na camada |
+| `referencia_nao_reconhecida` | Célula com texto fora do padrão NUP (sem reparo de pontuação) |
+| `referencia_ausente` | Célula vazia ou nula |
+
+As 46 colunas são as 9 da relação (`estado_vinculo`, `referencia_tipo`,
+`referencia_literal`, posições e contagens de ocorrência, `referencia_repetida`) seguidas
+das 22 do perímetro com prefixo `perimetro_` e das 15 do andamento com prefixo
+`administrativo_`. NUP em comum não prova identidade territorial. `max_vinculos` (padrão
+50.000) interrompe com `SourceUnavailableError` se a expansão passar do teto. Em
+22/09/2026: 817 linhas, 286 vínculos exatos.
+
+## Limitações
+
+- Perímetros e PDF são adquiridos em momentos distintos, sem snapshot conjunto.
+- `codigo`, `processo` e `feature_id` não são chaves primárias; ocorrências repetidas são mantidas.
+- A contagem do WFS e o PDF mudam sem aviso; o agrobr registra hashes e datas de cada recurso no `MetaInfo`.

@@ -9,8 +9,8 @@
     em fevereiro/2026. Aguardando resposta. Verifique diretamente com a
     ANDA antes de uso comercial.
 
-Associação Nacional para Difusão de Adubos. Dados de entregas de
-fertilizantes por UF e mês.
+Associação Nacional para Difusão de Adubos. Entregas mensais de
+fertilizantes ao mercado brasileiro (total nacional, `uf="BR"`).
 
 ## Instalação
 
@@ -25,13 +25,10 @@ pip install agrobr[pdf]
 ```python
 from agrobr import anda
 
-# Entregas de fertilizantes por UF/mês
+# Entregas mensais de fertilizantes
 df = await anda.entregas(ano=2024)
 
-# Filtrar por UF
-df = await anda.entregas(ano=2024, uf="MT")
-
-# Agregação mensal (soma todas as UFs)
+# Agregação mensal (sem a coluna uf)
 df = await anda.entregas(ano=2024, agregacao="mensal")
 ```
 
@@ -41,7 +38,7 @@ df = await anda.entregas(ano=2024, agregacao="mensal")
 |---|---|---|
 | `ano` | int | Ano |
 | `mes` | int | Mês (1-12) |
-| `uf` | str | UF |
+| `uf` | str | Sempre `BR` (total nacional) |
 | `produto_fertilizante` | str | Sempre `total`; a fonte não publica entregas separadas por formulação |
 | `volume_ton` | float | Volume entregue (toneladas) |
 
@@ -53,11 +50,10 @@ fertilizantes. Por isso, `produto="total"` é o único valor aceito;
 formulações como `ureia`, `map` ou `kcl` levantam `InvalidParameterError` antes do
 download.
 
-O parser do agrobr detecta automaticamente a orientacao das tabelas
-(UFs nas linhas vs colunas), e tambem suporta o layout "Principais
-Indicadores" (dados nacionais agregados com meses/valores em celulas
-concatenadas com `\n`). Mudancas drasticas de formato podem exigir
-atualizacao do parser.
+O parser do agrobr lê o layout "Principais Indicadores" (dados nacionais
+agregados, com meses e valores às vezes em células concatenadas com `\n`).
+Nenhum PDF publicado tem tabela por UF, e o parser não tenta lê-la.
+Mudanças drásticas de formato podem exigir atualização do parser.
 
 Não há fallback de ano. Se nenhum link de PDF corresponder ao ano solicitado,
 o client levanta `InvalidParameterError` e informa os anos disponíveis no site.
@@ -73,12 +69,26 @@ parecem distorcidos, o peso no SCI e reduzido automaticamente.
 df, meta = await anda.entregas(ano=2024, return_meta=True)
 print(meta.source)  # "anda"
 print(meta.source_method)  # "httpx+pdfplumber"
+print(meta.source_url)  # PDF usado, ex.: .../Principais_Indicadores_2026.pdf
+print(meta.source_details["pdf"])
+# {"url", "rotulo_catalogo" (ex.: "Dados 2026"), "edicao_impressa" (ex.: "Janeiro a Junho"; "Total do Ano"
+#  em ano fechado), "sha256", "bytes", "pagina_de_recursos"}
 ```
+
+`source_url` é o PDF concreto escolhido no catálogo; a edição impressa é o rótulo da linha acumulada da
+seção de entregas (diz até que mês o PDF vai). `raw_content_hash` é o SHA-256 do PDF.
 
 ## Fonte
 
 - URL: `https://anda.org.br/recursos/`
 - Formato: PDF/Excel
 - Atualizacao: mensal
-- Histórico: 2010+
+- Catálogo público conferido em 18/09/2026: 2016–2026
 - Licença: `zona_cinza` — autorização solicitada (fev/2026)
+
+
+## Cobertura e validação da publicação
+
+O catálogo público conferido em 18/09/2026 contém 11 PDFs, de 2016 a 2026, todos com entregas nacionais mensais (`uf="BR"`). O boletim 2026 publica janeiro a junho; meses posteriores vazios não são zero. Como nenhum deles publica recorte estadual, a 2.0.0 tirou o parâmetro `uf` da fonte e do dataset `fertilizante` (guia de migração 2.0, seção 50).
+
+O parser 3 exige a seção `Fertilizantes Entregues ao Mercado (em toneladas de produto)` e procura o ano somente nela. Se o ano ou essa identificação estiver ausente, a fonte levanta `ParseError`; o dataset preserva o motivo em `SourceUnavailableError`. Produção, importação, exportação e relações de troca do mesmo PDF não podem substituir entregas. Valores publicados e o contrato 2.0 permanecem iguais.

@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
+
+import pydantic
+
 from agrobr.normalize.regions import UFS_VALIDAS as UFS_VALIDAS
 
 DATASET_ID = "baefdc68-9bad-4204-83e8-f2888b79ab48"
@@ -8,6 +12,8 @@ _BASE_URL = (
     "https://dados.agricultura.gov.br/dataset"
     f"/{DATASET_ID}/resource/{{resource_id}}/download/{{filename}}"
 )
+
+CATALOGO_URL = f"https://dados.agricultura.gov.br/api/3/action/package_show?id={DATASET_ID}"
 
 CSV_RESOURCES: dict[str, dict[str, str]] = {
     "2006-2015": {
@@ -23,6 +29,8 @@ CSV_RESOURCES: dict[str, dict[str, str]] = {
         "filename": "dados_abertos_psr_2025csv.csv",
     },
 }
+
+ULTIMO_ANO_FIXO = max(int(ano) for periodo in CSV_RESOURCES for ano in periodo.split("-"))
 
 COLUNAS_PII = frozenset({"NM_SEGURADO", "NR_DOCUMENTO_SEGURADO"})
 
@@ -94,6 +102,7 @@ COLUNAS_SINISTROS = [
     "produtividade_segurada",
     "nivel_cobertura",
     "seguradora",
+    "cod_municipio",
 ]
 
 COLUNAS_APOLICES = [
@@ -115,20 +124,28 @@ COLUNAS_APOLICES = [
     "nivel_cobertura",
     "taxa",
     "seguradora",
+    "cod_municipio",
 ]
 
 ANO_INICIO_PSR = 2006
+
+CD_IBGE_PATTERN = r"[0-9]{7}"
+
+
+class AnoApolice(pydantic.BaseModel):
+    ano_apolice: int = pydantic.Field(ge=ANO_INICIO_PSR, le=9999)
 
 
 def _resolve_periodos(
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
+    periodos: Iterable[str] = CSV_RESOURCES,
 ) -> list[str]:
     if ano_inicio is None and ano_fim is None:
-        return list(CSV_RESOURCES.keys())
+        return list(periodos)
 
     resultado: list[str] = []
-    for periodo in CSV_RESOURCES:
+    for periodo in periodos:
         partes = periodo.split("-")
         if len(partes) == 2:
             p_inicio, p_fim = int(partes[0]), int(partes[1])

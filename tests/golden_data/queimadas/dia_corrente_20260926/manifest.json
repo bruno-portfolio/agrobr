@@ -1,0 +1,527 @@
+{
+  "fonte": "INPE Programa Queimadas, CSV diário de focos (Brasil), dia corrente",
+  "origem": "o arquivo diário do dia corrente é atualizado durante o dia",
+  "arquivo_inteiro": {
+    "url": "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/Brasil/focos_diario_br_20260926.csv",
+    "sha256": "00fb03a0e171c9057b8c88c2bf2ff5ba77c040456208a6fd5e6fa78fd94f9223",
+    "bytes": 2056147,
+    "linhas": 13808,
+    "capturado_em": "2026-09-26T23:33:42Z",
+    "cabecalhos_http": {
+      "content-length": "2056147",
+      "last-modified": "Sat, 26 Sep 2026 23:06:03 GMT",
+      "etag": "\"1f5fd3-65c6ae07f6cc0\"",
+      "content-type": "text/csv",
+      "date": "Sat, 26 Sep 2026 23:33:44 GMT"
+    },
+    "ultimo_foco_gmt": "2026-09-26 22:40:00"
+  },
+  "recorte": {
+    "arquivo": "focos_diario_br_20260926_recorte.csv",
+    "sha256": "9c7241da6f0387e7ee8536ce499ae9aea1630ebac6cc104205b96ed2f05aa7d2",
+    "bytes": 10610,
+    "regra": "cabeçalho, as 5 primeiras linhas, as linhas com o maior data_hora_gmt do arquivo e as 10 últimas linhas, na ordem do arquivo; bytes de cada linha como publicados",
+    "linhas": [
+      {
+        "linha": 2,
+        "sha256": "0b4bc8cb80b88422a5c409b41199f7c538ddfa1615369237a47d79ace9071aa7",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 3,
+        "sha256": "74b739dbed80fd7f4cf4c79ec5caa7fdef07627971f9e6580f29b86f2cd88ba2",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 4,
+        "sha256": "ee923d2ff3c59d2d8384a2f8d6152d58e2c355ef24cffbe1dd195d72255620e9",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 5,
+        "sha256": "b02c4e2f9deab67eeab36045de27caea5ae7a9ace428633dbbadfa53d9879772",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 6,
+        "sha256": "0a2a65f913d769e6621df6caa981f7e707b54328d95b5481475f4307ebdefbe7",
+        "motivos": [
+          "inicio_do_arquivo"
+        ]
+      },
+      {
+        "linha": 13744,
+        "sha256": "b0ed3563025105ad8620e95685cd6e3cb752816bce6b56737e60801dbaf8bd7e",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13745,
+        "sha256": "5d48bfa72c49167a3794f0621ce7f2b9a197e6398a5449c7f4cc90f5d3884e54",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13746,
+        "sha256": "b48038a560571dc24fc913dc56514ee8534ebd7e0e816f577fd86b2641dca777",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13747,
+        "sha256": "31d859ad839c4c1ae6afb6b0e8221c50859323cca009e446823fb5e7432c4073",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13748,
+        "sha256": "1293a2b1d8999940aa16dee8c4d0c48ecfbda8edb6f11024003829b7a2e9df29",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13749,
+        "sha256": "fb623f38ab931ea7e13b8ede889276869b3455442807eb5113ed411f30bacda8",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13750,
+        "sha256": "70d55ec78bc237edf7aeddf8561c9416f4499e23ee4b780a24ca3df7b6f2f59d",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13751,
+        "sha256": "c73ce5c282a5ecf8ec31fba2572f45b57cac40192c2122d2bfa4749fd84a1c6c",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13752,
+        "sha256": "dc4f329f957d4b0ab9c1bdd6fda385715c5419d737857a353e9d65511cd2ecfa",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13753,
+        "sha256": "2c1298c8c086807b33031907d120cd6e9dd9808be1af5fce997041b4f8003de0",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13754,
+        "sha256": "c002c429e44832d343ff2b9853aa130d3657a4d66da781b41da31610ba88dcd5",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13755,
+        "sha256": "8eaf340f09a8bf0cf060e20432779f4bd49a64fa279ca4097f9445bd59db7dd7",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13756,
+        "sha256": "cf11e52c040dc1da3bfb335b059efd411ae8f07a670ee9f0553b0d8cc0f32e3c",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13757,
+        "sha256": "5bcc9d152175a4f8a1515142af27d46f00779050cf1a5390d30594f8f9f95e29",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13758,
+        "sha256": "5cc5dc42dd5143f03956fee92db4f8d65f22173b3266df84b948892ff680e655",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13759,
+        "sha256": "056088b823d8dea5644c45ae90f4b05cb09f5d14079cbfda932ad71ce5ab09c4",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13760,
+        "sha256": "dc200573dae8881573723323f08dc79f49e8b287573972636ea22bee85f11cbd",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13761,
+        "sha256": "33c89d1bd3b8569ccfd3449f1053c12424f5ac08e8e760228e52ff2b267142c7",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13762,
+        "sha256": "5b012de05e48cedcb64512f6fab9755dffc9d4e87a5e38992940b4cb8107a6be",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13763,
+        "sha256": "3a4eb15fc74f165351fe2f8b299c9be0566893684997d8a7a702ab38f65e3aac",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13764,
+        "sha256": "2a9b71e6dd60f45218bfa525ddb844d8b4883e6eb4a20c7974dfc795bc213f9d",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13765,
+        "sha256": "56231d1f04819229dddd560dcf621c13801e23308ffec2821297bb72fc8b1e22",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13766,
+        "sha256": "3e66975dfcdd4c853286699ab641d7c7c737fc87ba8a8b2141fee0a36e0db59a",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13767,
+        "sha256": "a322ec5d37ff3d9978b8ab3fc33d70554d9bbf57f0719a6b54bff92e099eb39d",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13768,
+        "sha256": "ad772d3555446ebc973fa313458775928f04d5d680c8ceeff8d4ec742486a5cf",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13769,
+        "sha256": "939dca955a1362e94b03199ffbf95b438885d729a2a0439f140715c4ce62b9b9",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13770,
+        "sha256": "170bddc38be6fad39b89909a1e0c30cb2e09d578cef04bc91d290d71c1faa97e",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13771,
+        "sha256": "a11491790ee4c9c39ca07b770d7496ce4e12bc855f78d695846e4d6048e0f7d1",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13772,
+        "sha256": "fd18b02d5df13a1f11929e3d054a9b038f44d00eb55266719029aa1674b5e550",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13773,
+        "sha256": "ec2c08140a7f90e93a3793ba4b18404794356db9cf0f6bf7834e431a6e8607c2",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13774,
+        "sha256": "a94fabe2b5491eeede48c95c3efb2945bc8579ed5876d78d3db3fd3d87579bd8",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13775,
+        "sha256": "c672633071ed6938489017e9d1ed2ab8da52c5bec35b58e264b3ffa7d8d26482",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13776,
+        "sha256": "ef0d09c8ad25745dc5d9587d7b29d2a1919c508f619b0270fe7f9c8992a22625",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13777,
+        "sha256": "844be390be86955ead7bb40db1d8a9a8c170ff05ab373b23528a56fc90c3b2cb",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13778,
+        "sha256": "43d38a287ca9d95320bb59d8be1624547ae480c65d14cd228d74866cafd568bd",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13779,
+        "sha256": "316f4a8b523edea6941e5c5b91ece862b1ca901324e797437c60e3758da97298",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13780,
+        "sha256": "708535697c3693538347c70963576635288084205be19676dce63541eddbea4c",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13781,
+        "sha256": "f4e2a0f7569b1593918d1f22b036d99692552190a076d7b52727f0668c8dce8d",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13782,
+        "sha256": "00ce859a8fd34d19e7cd70e255744ee75363775f9da1012699e36b0c849e3598",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13783,
+        "sha256": "d32d8be62fa01ba0df9b06d6c8a44365c1577e2866e68d5189cb77be4d39584d",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13784,
+        "sha256": "56603d779db28662686e0009e3de45a432580241068c89c49ad67028ef0008c4",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13785,
+        "sha256": "21ff0e5257bf786915cfecd2774c4fa9e891952c0ed0698b4524f72245cef902",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13786,
+        "sha256": "c48b24ed36955aed5b2f89e1cc7e024a76a2b969bacc5289ccbc1b40e655ec1b",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13787,
+        "sha256": "20fa577e9b3ad93d803bb840204ee653b91d4b0229773fc5bab9a764c07f8623",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13788,
+        "sha256": "013aa276293133a2e5808439197e5691e1e2f1c8fc2bdad359780bd3b3e13ecf",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13789,
+        "sha256": "c501241a0ecd34ee66283aa1fc09735401136a2d29844c009b5df5d1ca082934",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13790,
+        "sha256": "462ed5b05bb0c0ce2424a4b4a93674c2d9f13b25f8742034c10f40995cebcc8f",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13791,
+        "sha256": "e37e2c7227117313e6b2e1a38bd43b23d82220bee31c8341b03c346752bf89df",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13792,
+        "sha256": "e4663d49f58e20abfc62f12c62ef7a80463e4ad2215f8f32411a756bfb1cda76",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13793,
+        "sha256": "c689c9a5394dfde042f104818a35a06b225fc4caa0d60235c98cdb35e90a0db8",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13794,
+        "sha256": "4edb160810695c99f527c65645e4c7b051b0aead3ec847aa41498e3b9b9fdcfb",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13795,
+        "sha256": "6da2228cf3430030418ef08aae5208bbb5cdd10f2b5fe5cef006977d09a67de7",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13796,
+        "sha256": "7937a0f13db59845b6988ddda6f5c2bae64ea81b30889ff98a777bd0667d85ed",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13797,
+        "sha256": "42b10dd3c94b56ad2689e46fb30b60dc0ffd6b33c5c3584cb17b609c85f57bc9",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13798,
+        "sha256": "471ec53044fb0aa5384be66aca7fecdba0b4ccf837828fbebe21dce98a17c321",
+        "motivos": [
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13799,
+        "sha256": "1752f5541f1975982d121ddad58f34dfc2ea705807f189852e9dcfb567e42ba7",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13800,
+        "sha256": "b9a175628032592caa5c9010b851b96a1adc79329f9e3918b95a0632e0d28368",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13801,
+        "sha256": "09880c3910834ae01375f72d6ad144a46e38e5cd5edf41a34d7c2367de570f14",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13802,
+        "sha256": "36ec2925184a26c97f58bd6ee407c31d6d7709182aa43a961fd2744d3a543b66",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13803,
+        "sha256": "2bfe4320cf9cbc6c7df7178b7dc96391653c72178586b34706a080da6981a908",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13804,
+        "sha256": "5d1fb812d126e37ca377c656cf75576303c8a7cb5d302d6cc5fa2ecc5e06e96c",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13805,
+        "sha256": "ba204fb4cf018ea93dbaf40777abd51c1c424d88545681fbccb2372a127448da",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13806,
+        "sha256": "e8a9a2d223ee6158de4bb2dd83d2d17c6e79dd9d2bb7a1477141180b15d744b0",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13807,
+        "sha256": "9895247e75bda7b7272da23f2c0c286c4c52fddb88fbcc867684c80e63fd236b",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      },
+      {
+        "linha": 13808,
+        "sha256": "a406f204468b7b31d7c7b40e46c5a1d9d05918c24a3cb15a4a979805c5d8d005",
+        "motivos": [
+          "final_do_arquivo",
+          "ultimo_foco"
+        ]
+      }
+    ]
+  }
+}

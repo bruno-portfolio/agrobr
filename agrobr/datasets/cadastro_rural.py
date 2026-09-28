@@ -1,13 +1,16 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 import pandas as pd
 import structlog
 
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.datasets.registry import register
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils import result as result_utils
 
 logger = structlog.get_logger()
 
@@ -15,21 +18,16 @@ logger = structlog.get_logger()
 async def _fetch_sicar(uf: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr.alt import sicar
 
-    municipio = kwargs.get("municipio")
-    status = kwargs.get("status")
-    tipo = kwargs.get("tipo")
-    area_min = kwargs.get("area_min")
-    area_max = kwargs.get("area_max")
-    criado_apos = kwargs.get("criado_apos")
-
     result = await sicar.imoveis(
         uf,
-        municipio=municipio,
-        status=status,
-        tipo=tipo,
-        area_min=area_min,
-        area_max=area_max,
-        criado_apos=criado_apos,
+        municipio=kwargs.get("municipio"),
+        cod_municipio=kwargs.get("cod_municipio"),
+        status=kwargs.get("status"),
+        tipo=kwargs.get("tipo"),
+        area_min=kwargs.get("area_min"),
+        area_max=kwargs.get("area_max"),
+        criado_apos=kwargs.get("criado_apos"),
+        atualizado_apos=kwargs.get("atualizado_apos"),
         return_meta=True,
     )
 
@@ -78,7 +76,7 @@ CADASTRO_RURAL_INFO = DatasetInfo(
             "TO",
         ]
     ),
-    contract_version="1.0",
+    contract_version="2.1",
     update_frequency="continuous",
     typical_latency="D+0",
     source_url="https://geoserver.car.gov.br/geoserver/sicar/wfs",
@@ -102,43 +100,88 @@ class CadastroRuralDataset(BaseDataset):
         area_max: float | None = None,
         criado_apos: str | None = None,
         return_meta: bool = False,
-        **kwargs: Any,
+        *,
+        cod_municipio: int | None = None,
+        atualizado_apos: str | None = None,
+        as_polars: bool = False,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+        if not isinstance(produto, str):
+            raise InvalidParameterError("UF deve ser uma string de duas letras")
+        produto = produto.strip().upper()
+        self._validate_produto(produto)
+        if get_snapshot() is not None:
+            raise InvalidParameterError(
+                "cadastro_rural não suporta deterministic: o SICAR entrega o cadastro corrente. "
+                "criado_apos e atualizado_apos são filtros incrementais, não um histórico "
+                "do cadastro na data do snapshot."
+            )
         logger.info(
             "dataset_fetch",
             dataset="cadastro_rural",
             produto=produto,
             municipio=municipio,
+            cod_municipio=cod_municipio,
+            criado_apos=criado_apos,
+            atualizado_apos=atualizado_apos,
         )
-
-        snapshot = get_snapshot()
-        if snapshot and criado_apos is None:
-            criado_apos = snapshot[:10]
 
         df, source_name, source_meta, attempted = await self._try_sources(
             produto,
             municipio=municipio,
+            cod_municipio=cod_municipio,
             status=status,
             tipo=tipo,
             area_min=area_min,
             area_max=area_max,
             criado_apos=criado_apos,
-            **kwargs,
+            atualizado_apos=atualizado_apos,
         )
 
         self._validate_contract(df)
 
-        if return_meta:
-            return df, self._build_meta(df, source_name, source_meta, attempted, snapshot)
-
-        return df
+        meta = (
+            self._build_meta(df, source_name, source_meta, attempted, None) if return_meta else None
+        )
+        return result_utils.finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 _cadastro_rural = CadastroRuralDataset()
 
-from agrobr.datasets.registry import register  # noqa: E402
-
 register(_cadastro_rural)
+
+
+@overload
+async def cadastro_rural(
+    uf: str,
+    municipio: str | None = None,
+    status: str | None = None,
+    tipo: str | None = None,
+    area_min: float | None = None,
+    area_max: float | None = None,
+    criado_apos: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    cod_municipio: int | None = None,
+    atualizado_apos: str | None = None,
+    as_polars: bool = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def cadastro_rural(
+    uf: str,
+    municipio: str | None = None,
+    status: str | None = None,
+    tipo: str | None = None,
+    area_min: float | None = None,
+    area_max: float | None = None,
+    criado_apos: str | None = None,
+    *,
+    return_meta: Literal[True],
+    cod_municipio: int | None = None,
+    atualizado_apos: str | None = None,
+    as_polars: bool = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 async def cadastro_rural(
@@ -150,16 +193,21 @@ async def cadastro_rural(
     area_max: float | None = None,
     criado_apos: str | None = None,
     return_meta: bool = False,
-    **kwargs: Any,
+    *,
+    cod_municipio: int | None = None,
+    atualizado_apos: str | None = None,
+    as_polars: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
     return await _cadastro_rural.fetch(
         uf,
         municipio=municipio,
+        cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
         area_min=area_min,
         area_max=area_max,
         criado_apos=criado_apos,
+        atualizado_apos=atualizado_apos,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

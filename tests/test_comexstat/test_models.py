@@ -1,68 +1,89 @@
-"""Testes para os modelos ComexStat."""
+from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
 
-from agrobr.comexstat.models import NCM_PRODUTOS, ExportRecord, resolve_ncm
+from agrobr.comexstat import models
 
 
-class TestExportRecord:
-    def test_basic_creation(self):
-        rec = ExportRecord(
-            ano=2024,
-            mes=3,
-            ncm="12019000",
-            uf="MT",
-            kg_liquido=9876543.0,
-            valor_fob_usd=1234567.0,
+@pytest.fixture
+def raw() -> dict[str, str]:
+    return dict(
+        zip(
+            (
+                "CO_ANO",
+                "CO_MES",
+                "CO_NCM",
+                "CO_UNID",
+                "CO_PAIS",
+                "SG_UF_NCM",
+                "CO_VIA",
+                "CO_URF",
+                "QT_ESTAT",
+                "KG_LIQUIDO",
+                "VL_FOB",
+            ),
+            (
+                "2026",
+                "01",
+                "12019000",
+                "10",
+                "000",
+                "EX",
+                "00",
+                "0000000",
+                "9007199254740993",
+                "0",
+                "-0",
+            ),
+            strict=True,
         )
-
-        assert rec.ano == 2024
-        assert rec.mes == 3
-        assert rec.ncm == "12019000"
-        assert rec.uf == "MT"
-
-    def test_uf_normalization(self):
-        rec = ExportRecord(
-            ano=2024,
-            mes=1,
-            ncm="12019000",
-            uf="mt",
-            kg_liquido=100.0,
-            valor_fob_usd=50.0,
-        )
-
-        assert rec.uf == "MT"
-
-    def test_validation(self):
-        with pytest.raises(ValueError):
-            ExportRecord(
-                ano=1990,
-                mes=13,
-                ncm="12019000",
-                uf="MT",
-                kg_liquido=-100.0,
-                valor_fob_usd=50.0,
-            )
+    )
 
 
-class TestResolveNcm:
-    def test_known_products(self):
-        assert resolve_ncm("soja") == "12019000"
-        assert resolve_ncm("milho") == "10059010"
-        assert resolve_ncm("cafe") == "09011110"
-        assert resolve_ncm("algodao") == "520100"
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("CO_NCM", "1201900"),
+        ("CO_NCM", "１２019000"),
+        ("CO_PAIS", "0"),
+        ("CO_UNID", "0"),
+        ("CO_VIA", "0"),
+        ("CO_URF", "000000"),
+        ("SG_UF_NCM", "ex"),
+        ("SG_UF_NCM", " EX"),
+        ("CO_MES", "13"),
+        ("CO_ANO", "1996"),
+        ("CO_MES", "1.0"),
+        ("CO_ANO", True),
+        ("KG_LIQUIDO", "-1"),
+        ("KG_LIQUIDO", "1.0"),
+        ("KG_LIQUIDO", " 1"),
+        ("KG_LIQUIDO", "9223372036854775808"),
+        ("QT_ESTAT", None),
+        ("VL_FOB", "-1"),
+        ("VL_FOB", "NaN"),
+        ("VL_FOB", "Infinity"),
+        ("VL_FOB", "1,2"),
+        ("VL_FOB", "1e309"),
+        ("VL_FOB", "1e-400"),
+        ("VL_FOB", "1e" + "9" * 100),
+        ("VL_FOB", " 0"),
+        ("VL_FOB", 1.0),
+    ],
+)
+def test_invalid_external_field_rejected(raw, field, value):
+    raw[field] = value
+    with pytest.raises(ValidationError):
+        models.ExportRecord.model_validate(raw)
 
-    def test_soybean_oil_generic_and_crude_mappings(self):
-        assert resolve_ncm("oleo_soja") == "1507"
-        assert resolve_ncm("oleo_soja_bruto") == "15071000"
 
-    def test_case_insensitive(self):
-        assert resolve_ncm("SOJA") == "12019000"
-        assert resolve_ncm("Soja") == "12019000"
+def test_unknown_external_member_rejected(raw):
+    with pytest.raises(ValidationError):
+        models.ExportRecord.model_validate(raw | {"unknown": "x"})
 
-    def test_unknown_raises(self):
-        with pytest.raises(ValueError, match="sem mapeamento NCM"):
-            resolve_ncm("quinoa")
 
-    def test_ncm_map_completeness(self):
-        assert len(NCM_PRODUTOS) >= 10
+@pytest.mark.parametrize("produto", ["quinoa", 12, None])
+def test_unknown_product_rejected(produto):
+    with pytest.raises(ValueError):
+        models.resolve_ncm(produto)

@@ -1,0 +1,193 @@
+{
+  "name": "destinos_anec",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "edicao_id",
+    "revisado_em",
+    "produto",
+    "destino"
+  ],
+  "required_columns": [
+    "produto",
+    "destino",
+    "share_pct",
+    "ano",
+    "mes_inicio",
+    "mes_fim",
+    "ano_relatorio",
+    "semana_relatorio",
+    "edicao_id",
+    "publicado_em",
+    "revisado_em"
+  ],
+  "dtypes": {
+    "produto": "str",
+    "destino": "str",
+    "share_pct": "float",
+    "ano": "int",
+    "mes_inicio": "int",
+    "mes_fim": "int",
+    "ano_relatorio": "int",
+    "semana_relatorio": "int",
+    "edicao_id": "str",
+    "publicado_em": "datetime",
+    "revisado_em": "datetime"
+  },
+  "nullable": {
+    "produto": false,
+    "destino": false,
+    "share_pct": true,
+    "ano": true,
+    "mes_inicio": true,
+    "mes_fim": true,
+    "ano_relatorio": false,
+    "semana_relatorio": false,
+    "edicao_id": false,
+    "publicado_em": false,
+    "revisado_em": false
+  },
+  "columns": [
+    {
+      "name": "produto",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "destino",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "share_pct",
+      "type": "float",
+      "nullable": true,
+      "unit": "%",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": 100
+    },
+    {
+      "name": "ano",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1900,
+      "max_value": null
+    },
+    {
+      "name": "mes_inicio",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "mes_fim",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 12
+    },
+    {
+      "name": "ano_relatorio",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 2026,
+      "max_value": null
+    },
+    {
+      "name": "semana_relatorio",
+      "type": "int",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 1,
+      "max_value": 53
+    },
+    {
+      "name": "edicao_id",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "publicado_em",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "revisado_em",
+      "type": "datetime",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "share_pct_min": 0,
+    "share_pct_max": 100,
+    "ano_min": 1900,
+    "mes_inicio_min": 1,
+    "mes_inicio_max": 12,
+    "mes_fim_min": 1,
+    "mes_fim_max": 12,
+    "ano_relatorio_min": 2026,
+    "semana_relatorio_min": 1,
+    "semana_relatorio_max": 53
+  },
+  "guarantees": [
+    "Participações percentuais acumuladas no período indicado pelo boletim",
+    "Período ausente no cabeçalho permanece nulo, sem inferência pela semana",
+    "Arredondamentos da fonte não são corrigidos para forçar soma de 100%",
+    "Destino pode incluir agregados como OTHERS"
+  ]
+}

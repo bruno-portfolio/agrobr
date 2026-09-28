@@ -36,7 +36,7 @@ async def clima_ponto(
 
 DataFrame with columns (daily): `data`, `lat`, `lon`, `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
 
-With `agregacao="mensal"`, the aggregated columns are renamed: `mes` (timestamp), `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `umidade_media`, `radiacao_media_mj`, `vento_medio_ms` (plus `lat`/`lon`).
+With `agregacao="mensal"`, the aggregated columns are renamed: `mes` (timestamp), `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `umidade_media`, `radiacao_media_mj`, `vento_medio_ms` (plus `lat`/`lon`). `dias`, `data_inicio` and `data_fim` give the days of the month with any valid parameter. A month cut by the requested period is partial and not extrapolated: from 2025-01-15 to 2025-02-05, February comes with `dias=5` and 17.81 mm, against 28 days and 52.33 mm for the whole month (schema 1.2).
 
 **Example:**
 
@@ -61,7 +61,7 @@ df = await nasa_power.clima_ponto(
 
 ### `clima_uf`
 
-Climate data aggregated by state (uses the state centroid).
+Climate data for a fixed representative point configured for the state.
 
 ```python
 async def clima_uf(
@@ -103,5 +103,11 @@ df = nasa_power.clima_uf("MT", 2024)
 ## Notes
 
 - Data from [NASA POWER](https://power.larc.nasa.gov/) — `livre` license
-- Uses centroid coordinates for `clima_uf()` — for precise analyses, use `clima_ponto()` with specific coordinates
+- Uses fixed representative coordinates for `clima_uf()` — for precise analyses, use `clima_ponto()` with specific coordinates
 - Alternative to INMET for those without a token
+
+## Aggregation and missing measurements
+
+Rainfall is accumulated over time per station. INMET computes each state's monthly value as the arithmetic mean of the totals of stations with valid rainfall on every day of the month, not the sum across stations; `estacoes_chuva` and `estacoes_chuva_parciais` count the stations included and left out. `num_estacoes` counts stations present. NASA POWER uses a fixed representative state point. Its coordinates are retained by the dataset; this is not a territorial mean or a verified centroid, and does not establish one shared spatial cell for all variables. The default NASA day uses [LST](https://power.larc.nasa.gov/docs/services/api/temporal/daily/#time-standards), while INMET uses UTC; the dataset records this distinction in `base_tempo`.
+
+Groups with no measurements remain null: missing data does not mean 0 mm. Totals use available measurements only, without filling or extrapolating missing hours/days; `dias`, `data_inicio` and `data_fim` give each month's coverage; check them against the calendar before comparing totals. INMET daily radiation also preserves entirely missing groups. The monthly `clima` 3.1 contract permits null precipitation and temperatures; daily `clima_estacao` and hourly `clima_estacao_horaria` are both 1.0. Monthly `lat`/`lon` retain the NASA point, and `agregacao_espacial` distinguishes `ponto_grade` from INMET `estacoes`.

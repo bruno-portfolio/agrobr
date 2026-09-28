@@ -1,70 +1,92 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
-from agrobr.embrapa_solos.parser import PARSER_VERSION, parse_mapa_csv, parse_perfis_csv
+from agrobr.embrapa_solos import parser
+from agrobr.exceptions import ParseError
+from tests.helpers import embrapa_solos_features
 
-GOLDEN_DIR = Path(__file__).resolve().parent.parent / "golden_data" / "embrapa_solos"
-
-
-@pytest.fixture
-def perfis_pages():
-    return [(GOLDEN_DIR / "perfis_sample.csv").read_bytes()]
+GOLDEN = Path(__file__).parents[1] / "golden_data/embrapa_solos/official_20260907"
 
 
 @pytest.fixture
-def mapa_pages():
-    return [(GOLDEN_DIR / "mapa_sample.csv").read_bytes()]
+def page():
+    return {"type": "FeatureCollection", "features": embrapa_solos_features()[:1]}
 
 
-class TestParsePerfis:
-    def test_columns(self, perfis_pages):
-        df = parse_perfis_csv(perfis_pages)
-        assert "uf" in df.columns
-        assert "ph_h2o" in df.columns
-        assert "latitude" in df.columns
-
-    def test_row_count(self, perfis_pages):
-        df = parse_perfis_csv(perfis_pages)
-        assert len(df) == 10
-
-    def test_numeric_coercion(self, perfis_pages):
-        df = parse_perfis_csv(perfis_pages)
-        assert pd.api.types.is_numeric_dtype(df["latitude"])
-        assert pd.api.types.is_numeric_dtype(df["ph_h2o"])
-
-    def test_uf_uppercase(self, perfis_pages):
-        df = parse_perfis_csv(perfis_pages)
-        for uf in df["uf"].dropna():
-            assert uf == uf.upper()
-
-    def test_empty_pages(self):
-        df = parse_perfis_csv([])
-        assert df.empty
+@pytest.fixture
+def parse():
+    return lambda value, product="perfis", geo=False: parser.parse_page(
+        json.dumps(value).encode(), product=product, include_geometry=geo
+    )
 
 
-class TestParseMapa:
-    def test_columns(self, mapa_pages):
-        df = parse_mapa_csv(mapa_pages)
-        assert "classe_dom" in df.columns
-        assert "area_km2" in df.columns
-        assert "fid" in df.columns
-
-    def test_row_count(self, mapa_pages):
-        df = parse_mapa_csv(mapa_pages)
-        assert len(df) == 10
-
-    def test_area_numeric(self, mapa_pages):
-        df = parse_mapa_csv(mapa_pages)
-        assert pd.api.types.is_numeric_dtype(df["area_km2"])
-
-    def test_empty_pages(self):
-        df = parse_mapa_csv([])
-        assert df.empty
+@pytest.mark.parametrize("field", ["numberMatched", "numberReturned", "totalFeatures"])
+def test_counts_reject_negative_zero_token(field):
+    content = ('{"type":"FeatureCollection","features":[],"' + field + '":-0}').encode()
+    with pytest.raises(ParseError):
+        parser.parse_page(content, product="perfis", include_geometry=False)
 
 
-def test_parser_version():
-    assert PARSER_VERSION == 1
+@pytest.mark.parametrize("value", [None, "", " ", "\t\n", 1, True])
+def test_feature_id_rejects_unsupported_representation(page, parse, value):
+    page["features"][0]["id"] = value
+    with pytest.raises(ParseError):
+        parse(page)
+
+
+@pytest.mark.parametrize(
+    "value,expected", [(" sc ", "SC"), ("", None), (None, None), ("NULL", None), ("XX", None)]
+)
+def test_uf_original_and_normalized_are_separate(page, parse, value, expected):
+    page["features"][0]["properties"]["uf"] = value
+    result = parse(page)
+    frame = parser.build_frame(result.records, product="perfis")
+    assert (
+        pd.isna(frame.loc[0, "uf_original"])
+        if value is None
+        else frame.loc[0, "uf_original"] == value
+    )
+    assert pd.isna(frame.loc[0, "uf"]) if expected is None else frame.loc[0, "uf"] == expected
+    assert ("unknown_uf" in result.diagnostics) == (expected is None)
+
+
+def test_diagnostic_counts_complete_examples_bounded(page, parse):
+    page["features"][0]["properties"].update(uf="XX", gcs_latitu=91, gcs_longit=-181)
+    page["features"] *= 31
+    result = parse(page)
+    for name in ("unknown_uf", "latitude_outside_range", "longitude_outside_range"):
+        assert result.diagnostics[name] == {
+            "count": 31,
+            "examples": [{"row_index": n} for n in range(10)],
+            "examples_omitted": 21,
+        }
+    assert len(result.records) == 31
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("numberReturned", 2),
+        ("numberMatched", 0),
+        ("numberMatched", "1"),
+        ("totalFeatures", None),
+        ("numberReturned", True),
+    ],
+)
+def test_envelope_invalid_count_rejected(page, parse, field, value):
+    page[field] = value
+    with pytest.raises(ParseError):
+        parse(page)
+
+
+def test_conflicting_next_links_rejected(page, parse):
+    page.update(
+        next="https://example.test/1", links=[{"rel": "next", "href": "https://example.test/2"}]
+    )
+    with pytest.raises(ParseError):
+        parse(page)

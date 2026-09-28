@@ -1,7 +1,7 @@
 {
   "name": "mapbiomas.transicao",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "bioma",
@@ -34,9 +34,9 @@
     "bioma": false,
     "estado": false,
     "classe_de_id": false,
-    "classe_de": false,
+    "classe_de": true,
     "classe_para_id": false,
-    "classe_para": false,
+    "classe_para": true,
     "periodo": false,
     "area_ha": false
   },
@@ -77,7 +77,7 @@
     {
       "name": "classe_de",
       "type": "str",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -99,7 +99,7 @@
     {
       "name": "classe_para",
       "type": "str",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -140,6 +140,7 @@
     "'estado' is always a valid Brazilian state code (UF)",
     "'periodo' always matches pattern YYYY-YYYY",
     "'area_ha' is always >= 0",
-    "'classe_de_id' and 'classe_para_id' map to MapBiomas LULC legend codes"
+    "'classe_de_id' and 'classe_para_id' map to MapBiomas LULC legend codes",
+    "'classe_de' and 'classe_para' are null only for a published class id outside the known legend, with a warning"
   ]
 }

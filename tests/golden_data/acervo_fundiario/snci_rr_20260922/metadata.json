@@ -1,0 +1,27 @@
+{
+  "source": "acervo_fundiario",
+  "format": "shapefile_zip",
+  "parser_module": "agrobr.acervo_fundiario.parser",
+  "parser_function": "parse_snci",
+  "url": "https://certificacao.incra.gov.br/csv_shp/zip/Im%C3%B3vel%20certificado%20SNCI%20Brasil_RR.zip",
+  "captured_at": "2026-09-23T02:54:37.485787+00:00",
+  "last_modified": "Mon, 21 Sep 2026 09:55:19 GMT",
+  "etag": "\"e790824faf49dd1:0\"",
+  "sha256": "1f7e7bfb994e614f5ae4365a06a965a21c875858cede378d942af7f5f3df832b",
+  "bytes": 5132,
+  "original_sha256": "4ef1d00ea55de4cd197a7507a5d5891060b8c3bc26cd86f20a91ba6b6f8484ff",
+  "original_bytes": 12258,
+  "license": "nc",
+  "license_reference": "docs/licenses.md — Acervo Fundiario/INCRA",
+  "needs_real_data": false,
+  "reduction": "Records at source_positions of the official shapefile, in original order. DBF header, field descriptors and record bytes, SHP record contents and PRJ retained byte for byte. Only the DBF record count, SHP record numbers (renumbered 1..n), SHP/SHX file lengths, header bounding boxes (and Z range) and the SHX index were recomputed; ZIP repackaged. No values generated or normalized.",
+  "privacy": "Imóveis com nome de lugar ou religioso; registros cujo nome é prenome de pessoa ficaram fora; sem CPF/CNPJ.",
+  "oracle": "tests/test_acervo_fundiario/oficial.py: DBF descriptors/records and SHP geometry read with struct, Latin-1 decoded; no agrobr parser, GDAL or pyogrio involved.",
+  "source_positions": [
+    0,
+    2,
+    3,
+    5,
+    9
+  ]
+}

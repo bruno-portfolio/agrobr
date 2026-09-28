@@ -4,6 +4,7 @@ import httpx
 import structlog
 
 from agrobr.exceptions import InvalidParameterError
+from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -34,7 +35,7 @@ async def fetch_ensaio_soja(safra: str) -> tuple[bytes, str]:
             lambda: http.get(url),
             source="rio_verde",
         )
-        response.raise_for_status()
+        responses.raise_for_status(response, source="rio_verde")
         content = response.content
 
         io_utils.validate_download(

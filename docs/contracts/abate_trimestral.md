@@ -24,6 +24,8 @@ Abate de animais por especie, trimestre e UF (bovino, suino, frango).
 | `peso_carcacas` | float64 | ✅ | Peso total das carcacas (kg) |
 | `fonte` | str | ❌ | Origem dos dados |
 
+O dataset entrega as UFs e não tem linha do Brasil. O IBGE omite por sigilo (célula `X`) as UFs com poucos informantes, que saem nulas (bovino 2025: AP, DF e PB). Por isso a soma das UFs fica abaixo do total Brasil publicado: no bovino dos dois primeiros trimestres de 2025, 0,4 % abaixo. Para o total nacional, use a tabela 1092 do SIDRA no nível Brasil.
+
 ## Primary Key
 
 `[trimestre, especie, localidade]`

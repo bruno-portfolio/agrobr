@@ -1,6 +1,0 @@
-{
-    "dataset": "terras_indigenas_geo",
-    "format": "geojson",
-    "parser": "parse_terras_indigenas_geojson",
-    "source": "funai"
-}
