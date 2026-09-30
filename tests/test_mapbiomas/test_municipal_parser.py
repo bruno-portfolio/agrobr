@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 import openpyxl
+import pandas as pd
 import pytest
 
 from agrobr.exceptions import ParseError
@@ -120,8 +121,7 @@ def test_all_selectors_preserve_year_major_and_typed_output():
         content,
         colecao=11,
         bioma="Cerrado",
-        estado="MT",
-        municipio="Sorriso",
+        uf="MT",
         geocodigo="5107925",
         classe_id=3,
     )
@@ -136,8 +136,8 @@ def test_all_selectors_preserve_year_major_and_typed_output():
     assert str(frame["id_registro"].dtype) == "Int64"
     assert str(frame["area_ha"].dtype) == "float64"
     assert all(
-        str(frame[column].dtype) == "object"
-        for column in ["bioma", "estado", "municipio", "classe", "nivel_0", "geocodigo"]
+        frame[column].dtype == pd.Series([""]).dtype
+        for column in ["bioma", "uf", "municipio", "classe", "nivel_0", "geocodigo"]
     )
     assert details["coverage"]["validated_rows"] == 2
     assert details["annual_statistics"]["2025"] == {
@@ -158,7 +158,7 @@ def test_invalid_area_outside_selected_year_and_state_aborts(invalid: object):
         _row(ID=2, geocode="5107925", municipality="Sorriso", state="Mato Grosso", y2025=invalid),
     ]
     with pytest.raises(ParseError, match="linha 3"):
-        municipal_parser.parse_cobertura_municipal(_xlsx(rows), colecao=11, estado="DF", ano=1985)
+        municipal_parser.parse_cobertura_municipal(_xlsx(rows), colecao=11, uf="DF", ano=1985)
 
 
 @pytest.mark.parametrize(
@@ -180,13 +180,13 @@ def test_invalid_area_outside_selected_year_and_state_aborts(invalid: object):
 def test_invalid_identity_outside_filter_aborts(field: str, invalid: object):
     content = _xlsx([_row(), _row(ID=2, **{field: invalid})])
     with pytest.raises(ParseError):
-        municipal_parser.parse_cobertura_municipal(content, colecao=11, estado="AC")
+        municipal_parser.parse_cobertura_municipal(content, colecao=11, uf="AC")
 
 
 def test_duplicate_published_id_outside_filter_aborts():
     with pytest.raises(ParseError, match="ID publicado duplicado"):
         municipal_parser.parse_cobertura_municipal(
-            _xlsx([_row(), _row(geocode="5300109")]), colecao=11, estado="AC"
+            _xlsx([_row(), _row(geocode="5300109")]), colecao=11, uf="AC"
         )
 
 

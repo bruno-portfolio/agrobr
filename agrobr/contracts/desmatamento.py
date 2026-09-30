@@ -7,17 +7,10 @@ import pandas as pd
 from agrobr import constants, contracts
 from agrobr.normalize import regions
 
+TEXTO = pd.Series([""]).dtype
+
 
 class DesmatamentoContract(contracts.Contract):
-    def empty_frame(self) -> pd.DataFrame:
-        frame = super().empty_frame()
-        for column in self.columns:
-            if column.type == contracts.ColumnType.STRING:
-                frame[column.name] = pd.Series(dtype=pd.StringDtype(storage="python"))
-            elif column.type == contracts.ColumnType.FLOAT:
-                frame[column.name] = pd.Series(dtype="float64")
-        return frame
-
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         valid, errors = super().validate(df)
         if not df.columns.is_unique:
@@ -27,12 +20,8 @@ class DesmatamentoContract(contracts.Contract):
                 continue
             dtype = df[column.name].dtype
             if column.type == contracts.ColumnType.STRING:
-                if (
-                    not isinstance(dtype, pd.StringDtype)
-                    or dtype.storage != "python"
-                    or str(dtype) != "string"
-                ):
-                    errors.append(f"Column '{column.name}' must use StringDtype python with pd.NA")
+                if dtype != TEXTO:
+                    errors.append(f"Column '{column.name}' must use the default pandas text dtype")
             else:
                 expected = {
                     contracts.ColumnType.INTEGER: "Int64",
@@ -67,7 +56,7 @@ class DesmatamentoContract(contracts.Contract):
     def to_dict(self) -> dict[str, Any]:
         schema = super().to_dict()
         schema["constraints"].update(
-            string_dtype="string[python] with pd.NA",
+            string_dtype="pandas default text dtype",
             integer_dtype="Int64",
             float_dtype="float64",
             date_dtype="datetime64[ns]",
@@ -125,7 +114,7 @@ PRODES_FEICOES_V2 = DesmatamentoContract(
         ),
         contracts.Column("publish_year", contracts.ColumnType.DATE, nullable=True),
         contracts.Column("source", contracts.ColumnType.STRING, nullable=True),
-        contracts.Column("pub_date", contracts.ColumnType.STRING, nullable=True),
+        contracts.Column("pub_date", contracts.ColumnType.DATE, nullable=True),
     ],
     guarantees=[
         "Todas as ocorrências recebidas são preservadas, inclusive identificadores repetidos",

@@ -8,6 +8,7 @@ from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
 from agrobr.utils.validation import validate_bioma
 
 logger = _log.get_logger(__name__)
@@ -114,7 +115,7 @@ async def queimadas(
     bioma: str | None = None,
     satelite: str | None = None,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -128,8 +129,22 @@ async def queimadas(
     bioma: str | None = None,
     satelite: str | None = None,
     return_meta: Literal[True],
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def queimadas(
+    *,
+    ano: int,
+    mes: int,
+    dia: int | None = None,
+    uf: str | None = None,
+    bioma: str | None = None,
+    satelite: str | None = None,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def queimadas(
@@ -142,7 +157,7 @@ async def queimadas(
     satelite: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _queimadas.fetch(  # type: ignore[call-arg]
         ano=ano,
         mes=mes,

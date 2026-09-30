@@ -24,7 +24,8 @@ ALIASES = {
     "areamunkm": "area_km2",
     "uf": "uf_original",
 }
-DATES = {"image_date", "publish_year", "view_date", "publish_month", "created_date"}
+DATES = {"image_date", "publish_year", "view_date", "publish_month", "created_date", "pub_date"}
+PARAMETROS = {"data_inicio": "inicio", "data_fim": "fim"}
 
 
 @pytest.mark.parametrize("case", MANIFEST["cases"], ids=lambda case: case["id"])
@@ -32,7 +33,8 @@ async def test_geo_oficial_preserva_geometria_crs_e_atributos(case, monkeypatch)
     shapely_geometry = pytest.importorskip("shapely.geometry")
     seen = install_replay_http(monkeypatch, case, GOLDEN)
     with sem_excecao():
-        frame, meta = await getattr(api, case["api"])(**case["selection"], return_meta=True)
+        selection = {PARAMETROS.get(nome, nome): valor for nome, valor in case["selection"].items()}
+        frame, meta = await getattr(api, case["api"])(**selection, return_meta=True)
     assert_replay_served(seen)
     raw = json.loads((GOLDEN / case["requests"][1]["file"]).read_bytes())
     oracle = case["oracle"]

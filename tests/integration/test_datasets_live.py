@@ -100,7 +100,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "precos_diesel": ((), {"nivel": "brasil", "inicio": "2026-08-01", "fim": "2026-08-31"}),
     "uso_do_solo": (
         ("cobertura",),
-        {"bioma": "Cerrado", "estado": "DF", "ano": 2022, "classe_id": 39},
+        {"bioma": "Cerrado", "uf": "DF", "ano": 2022, "classe_id": 39},
     ),
     "zoneamento_agricola": (
         ("SOJA",),

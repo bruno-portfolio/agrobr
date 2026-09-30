@@ -92,7 +92,7 @@ PEDIDOS: dict[str, Callable[[], Any]] = {
     "inmet_api": lambda: inmet.estacoes(),
     "lista_suja": lambda: lista_suja.empregadores(),
     "mapa_psr": lambda: alt.mapa_psr.sinistros(ano=2023),
-    "mapbiomas": lambda: mapbiomas.cobertura(estado="DF", ano=2022),
+    "mapbiomas": lambda: mapbiomas.cobertura(uf="DF", ano=2022),
     "nasa_power": lambda: nasa_power.clima_ponto(-12.6, -56.1, "2024-01-01", "2024-01-05"),
     "queimadas": lambda: queimadas.focos(ano=2026, mes=9, dia=20, uf="MT"),
     "rnc": lambda: rnc.protegidas(),

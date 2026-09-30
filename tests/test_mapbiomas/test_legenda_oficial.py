@@ -72,5 +72,5 @@ async def test_colecao_10_estadual_usa_a_legenda_da_propria_colecao(
     ):
         frame = await datasets.uso_do_solo(tipo=tipo, colecao=10, **filtro)
     assert set(frame[coluna_rotulo]) == {legenda_10[50]}
-    assert set(frame["estado"]) == {"MA"} and set(frame["bioma"]) == {publicados["biome"]}
+    assert set(frame["uf"]) == {"MA"} and set(frame["bioma"]) == {publicados["biome"]}
     assert dict(zip(frame[coluna_periodo], frame["area_ha"], strict=True)) == periodos

@@ -14,7 +14,7 @@ def municipal_frame():
     return pd.DataFrame(
         {
             "bioma": ["Mata Atlântica", "Mata Atlântica"],
-            "estado": ["AL", "PE"],
+            "uf": ["AL", "PE"],
             "municipio": ["Ibateguara", "Ibateguara"],
             "classe_id": pd.Series([15, 15], dtype="Int64"),
             "classe": ["Pastagem", "Pastagem"],
@@ -36,7 +36,7 @@ def test_contract_empty_frame_has_identical_physical_types(municipal_frame):
     )
     assert all(
         empty[column].dtype == municipal_frame[column].dtype
-        for column in ["bioma", "estado", "municipio", "classe", "nivel_0", "geocodigo"]
+        for column in ["bioma", "uf", "municipio", "classe", "nivel_0", "geocodigo"]
     )
     assert empty.empty
 
@@ -47,13 +47,11 @@ def test_contract_geocode_does_not_claim_ibge_or_state_prefix(geocodigo, municip
     assert MAPBIOMAS_COBERTURA_MUNICIPAL_V1.validate(municipal_frame) == (True, [])
 
 
-@pytest.mark.parametrize(
-    "field", ["estado", "bioma", "classe_id", "ano", "geocodigo", "id_registro"]
-)
+@pytest.mark.parametrize("field", ["uf", "bioma", "classe_id", "ano", "geocodigo", "id_registro"])
 def test_primary_key_preserves_each_published_dimension(field, municipal_frame):
     municipal_frame.iloc[1] = municipal_frame.iloc[0]
     replacements = {
-        "estado": "PE",
+        "uf": "PE",
         "bioma": "Cerrado",
         "classe_id": 0,
         "ano": 1985,
@@ -68,7 +66,7 @@ def test_primary_key_preserves_each_published_dimension(field, municipal_frame):
     ("field", "value"),
     [
         (field, value)
-        for field in ["bioma", "estado", "municipio", "classe", "nivel_0", "geocodigo"]
+        for field in ["bioma", "uf", "municipio", "classe", "nivel_0", "geocodigo"]
         for value in [None, "", "  ", 123]
         if (field, value) != ("classe", None)
     ],

@@ -101,7 +101,7 @@ def parse_cobertura_xlsx(data: bytes, colecao: int = COLECAO_ATUAL) -> pd.DataFr
     )
 
     melted["bioma"] = melted["biome"]
-    melted["estado"] = melted["state"].apply(estado_para_uf)
+    melted["uf"] = melted["state"].apply(estado_para_uf)
     melted["classe_id"] = pd.to_numeric(melted["class"], errors="coerce").astype("Int64")
     melted["classe"] = melted["classe_id"].apply(lambda x: classe_para_nome(int(x), colecao))
     melted["nivel_0"] = melted["class_level_0"].fillna("")
@@ -161,7 +161,7 @@ def parse_transicao_xlsx(data: bytes, colecao: int = COLECAO_ATUAL) -> pd.DataFr
     )
 
     melted["bioma"] = melted["biome"]
-    melted["estado"] = melted["state"].apply(estado_para_uf)
+    melted["uf"] = melted["state"].apply(estado_para_uf)
     melted["classe_de_id"] = pd.to_numeric(melted["class_from"], errors="coerce").astype("Int64")
     melted["classe_de"] = melted["classe_de_id"].apply(lambda x: classe_para_nome(int(x), colecao))
     melted["classe_para_id"] = pd.to_numeric(melted["class_to"], errors="coerce").astype("Int64")

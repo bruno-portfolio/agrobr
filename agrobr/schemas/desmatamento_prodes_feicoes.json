@@ -46,7 +46,7 @@
     "scene_id": "str",
     "publish_year": "date",
     "source": "str",
-    "pub_date": "str"
+    "pub_date": "date"
   },
   "nullable": {
     "ano": true,
@@ -282,7 +282,7 @@
     },
     {
       "name": "pub_date",
-      "type": "str",
+      "type": "date",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -296,7 +296,7 @@
     "area_km2_min": 0,
     "fid_min": -2147483648,
     "fid_max": 2147483647,
-    "string_dtype": "string[python] with pd.NA",
+    "string_dtype": "pandas default text dtype",
     "integer_dtype": "Int64",
     "float_dtype": "float64",
     "date_dtype": "datetime64[ns]",

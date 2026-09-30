@@ -40,6 +40,9 @@ Desmatamento consolidado (PRODES) e alertas em tempo real (DETER) por bioma.
 
 **PK:** `(data, classe, uf, municipio, municipio_id, bioma)`
 
+O texto sai no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2), e o nulo do texto,
+como `NaN` ou `None`. Nas feições da fonte, `pub_date` (PRODES Cerrado e Pampa) sai em `datetime64[ns]`.
+
 ## Restrições
 
 - DETER só disponível para **Amazônia** e **Cerrado** (fail-fast com `ValueError`)
@@ -71,7 +74,7 @@ df = await datasets.desmatamento("Cerrado", tipo="prodes", ano=2023, uf="DF")
 
 # DETER — alertas de desmatamento no Acre, 1º trimestre de 2024
 df = await datasets.desmatamento(
-    "Amazônia", tipo="deter", uf="AC", data_inicio="2024-01-01", data_fim="2024-03-31"
+    "Amazônia", tipo="deter", uf="AC", inicio="2024-01-01", fim="2024-03-31"
 )
 
 # Com metadados (todos os anos do Cerrado no DF: 3.643 feições)

@@ -31,7 +31,7 @@ async def focos(
 | `dia` | `int \| None` | Specific day (1-31). If None, fetches the whole month |
 | `uf` | `str \| None` | Filter by state (e.g. "MT", "SP"). Case insensitive |
 | `bioma` | `str \| None` | Filter by biome (e.g. "Amazonia", "Cerrado"). Accents are optional; unknown values raise `ValueError` |
-| `satelite` | `str \| None` | Filter by satellite (e.g. "AQUA_M-T", "NOAA-20"); without it, hotspots from every satellite come back |
+| `satelite` | `str \| None` | Filter by satellite (e.g. "AQUA_M-T", "NOAA-20"), case-insensitive; without it, hotspots from every satellite come back. A satellite absent from the period file raises `InvalidParameterError` with the published ones, after download |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
 
@@ -51,6 +51,8 @@ DataFrame with columns:
 - `precipitacao`: Precipitation in mm (float)
 - `risco_fogo`: Fire risk index 0-1 (float)
 - `frp`: Fire Radiative Power in MW (float); a negative value published by the source comes out null, with a warning
+
+The 4 numeric columns are `float64`, with `NaN` where the source publishes -999 or nothing.
 - `uf`: State code (str, 2 characters)
 
 **Example:**

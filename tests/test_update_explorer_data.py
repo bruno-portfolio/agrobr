@@ -49,7 +49,7 @@ def test_lspa_rejeita_duplicacao():
 
 def test_cobertura_soma_biomas_e_estados():
     rows = [
-        {"ano": 2024, "estado": uf, "bioma": biome, "classe_id": code, "area_ha": area}
+        {"ano": 2024, "uf": uf, "bioma": biome, "classe_id": code, "area_ha": area}
         for uf, biome, code, area in [
             ("MT", "Amazonia", 3, 20),
             ("MT", "Cerrado", 3, 10),
@@ -67,7 +67,7 @@ def test_cobertura_soma_biomas_e_estados():
 def test_cobertura_rejeita_classe_agregada():
     with pytest.raises(ValueError, match="dupla contagem"):
         audit.coverage_metrics(
-            [{"ano": 2024, "estado": "MT", "bioma": "Cerrado", "classe_id": 18, "area_ha": 1}]
+            [{"ano": 2024, "uf": "MT", "bioma": "Cerrado", "classe_id": 18, "area_ha": 1}]
         )
 
 
@@ -89,7 +89,7 @@ def test_lspa_rejeita_componente_trocado():
 
 
 def test_cobertura_rejeita_observacao_duplicada():
-    row = {"ano": 2024, "estado": "MT", "bioma": "Cerrado", "classe_id": 3, "area_ha": 1}
+    row = {"ano": 2024, "uf": "MT", "bioma": "Cerrado", "classe_id": 3, "area_ha": 1}
     with pytest.raises(ValueError, match="duplicada"):
         audit.coverage_metrics([row, row])
 

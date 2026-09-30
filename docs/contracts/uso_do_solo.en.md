@@ -15,21 +15,21 @@ Land cover and use (MapBiomas) — annual cover and transitions between classes.
 | Column | Type | Nullable | Unit | Constraints |
 |--------|------|----------|------|-------------|
 | `bioma` | STRING | No | — | valid biome |
-| `estado` | STRING | No | — | valid state |
+| `uf` | STRING | No | — | state code |
 | `classe_id` | INTEGER | No | — | MapBiomas LULC code |
 | `classe` | STRING | Yes | — | Null only for a code outside the legend |
 | `nivel_0` | STRING | Yes | — | — |
 | `ano` | INTEGER | No | — | ≥ 1985 |
 | `area_ha` | FLOAT | No | ha | ≥ 0 |
 
-**PK:** `(bioma, estado, classe_id, ano)`
+**PK:** `(bioma, uf, classe_id, ano)`
 
 ## Schema: Transition
 
 | Column | Type | Nullable | Unit | Constraints |
 |--------|------|----------|------|-------------|
 | `bioma` | STRING | No | — | valid biome |
-| `estado` | STRING | No | — | valid state |
+| `uf` | STRING | No | — | state code |
 | `classe_de_id` | INTEGER | No | — | LULC code |
 | `classe_de` | STRING | Yes | — | Null only for a code outside the legend |
 | `classe_para_id` | INTEGER | No | — | LULC code |
@@ -37,16 +37,16 @@ Land cover and use (MapBiomas) — annual cover and transitions between classes.
 | `periodo` | STRING | No | — | YYYY-YYYY format |
 | `area_ha` | FLOAT | No | ha | ≥ 0 |
 
-**PK:** `(bioma, estado, classe_de_id, classe_para_id, periodo)`
+**PK:** `(bioma, uf, classe_de_id, classe_para_id, periodo)`
 
 ## Municipal level
 
-Coverage with `nivel="municipio"` validates its own `mapbiomas.cobertura_municipal` 1.0 contract. Key validation is no longer skipped in this mode. The state schema remains separate.
+Coverage with `nivel="municipio"` validates its own `mapbiomas.cobertura_municipal` 1.1 contract. Key validation is no longer skipped in this mode. The state schema remains separate.
 
 | Column | Physical pandas type | Nullable | Meaning |
 |--------|----------------------|----------|---------|
 | `bioma` | str | No | Published biome |
-| `estado` | str | No | State of the published intersection |
+| `uf` | str | No | State code of the published intersection |
 | `municipio` | str | No | Published territorial name, without surrounding spaces |
 | `classe_id` | Int64 | No | Class code |
 | `classe` | str | Yes | SDK-normalized label for the collection; not a literal legend transcription; null only for a code outside the legend |
@@ -59,11 +59,11 @@ Coverage with `nivel="municipio"` validates its own `mapbiomas.cobertura_municip
 
 Text uses the installed pandas default dtype: `str` on pandas 3 and `object` on pandas 2.
 
-The key is `(bioma, estado, geocodigo, classe_id, id_registro, ano)` within one collection and resource. A code may identify intersections in multiple states; this does not justify removing the state from the key. `geocodigo` also includes entities such as lakes, without promising membership in the current IBGE municipal catalog. `id_registro` is copied from the original `ID`, including zero; it is not a generated ordinal or a stable identity across publications.
+The key is `(bioma, uf, geocodigo, classe_id, id_registro, ano)` within one collection and resource. A code may identify intersections in multiple states; this does not justify removing the state from the key. `geocodigo` also includes entities such as lakes, without promising membership in the current IBGE municipal catalog. `id_registro` is copied from the original `ID`, including zero; it is not a generated ordinal or a stable identity across publications.
 
 All 41 years from 1985 to 2025 and every identified row in Collection 11 are validated before returning, including data outside the selected filters. Only selected output rows are accumulated. Missing areas, incompatible types, non-finite/negative values or repeated full keys cause an error; there is no imputation or silent deduplication. Selections without matches return an empty DataFrame with the same types.
 
-`municipio` performs literal case-insensitive substring matching; `geocodigo` matches the supplied text exactly. Both require `nivel="municipio"` and may be combined. See [source parameters and provenance](../api/mapbiomas.en.md#municipal-coverage-in-collection-11).
+`municipio` accepts the full name (case- and accent-insensitive, with `uf` to disambiguate) or the seven-digit code, and selects by `geocodigo`; it requires `nivel="municipio"`. A partial name, a name shared by several municipalities without `uf` and a code absent from the resource raise `InvalidParameterError`. A `classe_id` outside the classes published in the collection also raises, with the list. See [source parameters and provenance](../api/mapbiomas.en.md#municipal-coverage-in-collection-11).
 
 Collection 10 uses the same ten-column municipal schema, with 40 years from 1985 to 2024. Its resource contains rows with the same territorial combination and distinct areas, preserved through their original IDs. There is no automatic summation or deduplication; a repeated published ID causes an error before filtering. `source_details["territorial_keys"]` describes territorial repetitions without classifying them as geographic errors.
 
@@ -91,7 +91,7 @@ Each collection revises the full historical series. For reproducibility, pin `co
 
 ## Selection and errors
 
-The dataset uses MapBiomas alone, without fallback to another institution. Coverage accepts `bioma`, `estado`, `ano`, `classe_id`, `nivel`, `municipio`, `geocodigo` and `colecao`. Transition accepts `bioma`, `estado`, `periodo`, `classe_de_id`, `classe_para_id` and `colecao`, at state level only. Filters for the other mode and unknown options are rejected rather than ignored.
+The dataset uses MapBiomas alone, without fallback to another institution. Coverage accepts `bioma`, `uf`, `ano`, `classe_id`, `nivel`, `municipio` and `colecao`. Transition accepts `bioma`, `uf`, `periodo`, `classe_de_id`, `classe_para_id` and `colecao`, at state level only. Filters for the other mode and unknown options are rejected rather than ignored.
 
 `as_polars` and `return_meta` require booleans. Polars conversion takes place after contract validation. There is no `produto` or `use_cache`. The `deterministic` context is rejected before acquisition because arbitrary historical snapshot selection is unavailable. Acquisition or parsing errors may surface through the dataset layer as `SourceUnavailableError`, with details in `errors`; an invalid workbook does not produce a partial result.
 
@@ -105,7 +105,7 @@ df = await datasets.uso_do_solo(tipo="cobertura", bioma="Cerrado", ano=2022)
 
 # Cover by municipality
 df = await datasets.uso_do_solo(
-    tipo="cobertura", nivel="municipio", geocodigo="5107925",
+    tipo="cobertura", nivel="municipio", municipio="Sorriso", uf="MT",
     ano=2025, colecao=11,
 )
 

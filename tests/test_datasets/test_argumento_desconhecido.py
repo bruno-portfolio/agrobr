@@ -63,7 +63,7 @@ SONDA = {
     "series_economicas": {"codigos": [432]},
     "silvicultura": {"ufs": ["PR"]},
     "unidades_conservacao_federais": {"ufs": ["DF"]},
-    "uso_do_solo": {"uf": "DF"},
+    "uso_do_solo": {"estado": "DF"},
     "zoneamento_agricola": {"ufs": ["SP"]},
 }
 POSICIONAL = {"ano": 2026, "mes": 1, "codigo": 432}

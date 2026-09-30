@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from agrobr.contracts import ColumnType, desmatamento
 from agrobr.desmatamento import parser
 from agrobr.exceptions import ParseError
 from tests.helpers import levanta_exatamente
@@ -26,7 +27,7 @@ ALIASES = {
     "areamunkm": "area_km2",
     "uf": "uf_original",
 }
-DATES = {"image_date", "publish_year", "view_date", "publish_month", "created_date"}
+DATES = {"image_date", "publish_year", "view_date", "publish_month", "created_date", "pub_date"}
 
 
 def source_payload(name: str = "prodes_caatinga") -> dict:
@@ -66,8 +67,14 @@ def test_official_page_all_properties_and_typed_frame(case):
     assert frame["area_km2"].dtype == "float64"
     if case["product"] == "PRODES":
         assert str(frame["ano"].dtype) == "Int64"
-    for name in frame.select_dtypes(include="string").columns:
-        assert frame[name].dtype.storage == "python"
+    contract = (
+        desmatamento.PRODES_FEICOES_V2
+        if case["product"] == "PRODES"
+        else desmatamento.DETER_FEICOES_V2
+    )
+    for column in contract.columns:
+        if column.type == ColumnType.STRING:
+            assert frame[column.name].dtype == pd.Series([""]).dtype, column.name
 
 
 @pytest.mark.parametrize("value", [None, "", " ", 1, 1.2, True])

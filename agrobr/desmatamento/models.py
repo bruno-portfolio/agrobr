@@ -84,6 +84,12 @@ def civil_date(value: Any) -> date:
     return parsed
 
 
+def published_date(value: Any) -> date:
+    if type(value) is str and re.fullmatch("[0-9]{8}", value):
+        value = f"{value[:4]}-{value[4:6]}-{value[6:]}"
+    return civil_date(value)
+
+
 def published_text(value: Any) -> str:
     if type(value) is not str:
         raise ValueError("Expected a JSON string")
@@ -95,6 +101,7 @@ Integer = Annotated[int, BeforeValidator(json_numbers.as_int)]
 Int32 = Annotated[Integer, Field(ge=-(2**31), le=2**31 - 1)]
 Area = Annotated[Number, Field(ge=0)]
 CivilDate = Annotated[date, BeforeValidator(civil_date)]
+PublishedDate = Annotated[date, BeforeValidator(published_date)]
 SceneIdentifier = Annotated[str, BeforeValidator(json_numbers.numeric_identifier)]
 Text = Annotated[str, BeforeValidator(published_text)]
 
@@ -133,7 +140,7 @@ class ProdesCerradoProperties(ProdesProperties):
     fid: Int32
     uuid: Text
     year: Int32 | None
-    pub_date: Text | None
+    pub_date: PublishedDate | None
 
 
 class ProdesCaatingaProperties(ProdesProperties):

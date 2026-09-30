@@ -87,7 +87,7 @@ def test_desmatamento_casos_2():
         {"tipo": "deter", "bioma": "Caatinga"},
         {"tipo": "deter", "ano": 2024},
         {"tipo": "prodes", "classe": "DESMATAMENTO_CR"},
-        {"data_inicio": "2024-02-30"},
+        {"inicio": "2024-02-30"},
         {"uf": "ZZ"},
         {"ano": 2024.0},
         {"max_registros": 0},

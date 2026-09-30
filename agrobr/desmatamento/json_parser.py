@@ -10,6 +10,7 @@ import pandas as pd
 from pydantic import ValidationError
 
 from agrobr import constants
+from agrobr.contracts.desmatamento import TEXTO
 from agrobr.desmatamento import json_numbers, models
 from agrobr.exceptions import ParseError
 
@@ -294,7 +295,7 @@ def build_frame(records: Sequence[models.Feature], *, product: str, biome: str) 
             reason="Ano do PRODES não inteiro",
         )
     floats = {"area_km2", "def_cloud", "julian_day", "areauckm", "areatotalkm"}
-    dates = {"data", "image_date", "publish_year", "publish_month", "created_date"}
+    dates = {"data", "image_date", "publish_year", "publish_month", "created_date", "pub_date"}
     return pd.DataFrame(
         {
             name: pd.Series(
@@ -305,7 +306,7 @@ def build_frame(records: Sequence[models.Feature], *, product: str, biome: str) 
                 if name in dates
                 else "Int64"
                 if name in {"fid", "ano"}
-                else pd.StringDtype(storage="python"),
+                else TEXTO,
             )
             for name in columns
         }

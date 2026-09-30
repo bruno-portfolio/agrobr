@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import json
-import re
-from datetime import date
+from datetime import date, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
@@ -10,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from agrobr import constants
 from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize import regions
+from agrobr.utils import time as time_utils
 from agrobr.utils import validation
 
 from . import models
@@ -49,14 +49,15 @@ class DesmatamentoQuery(BaseModel):
             raise ValueError("Filtros DETER não são aplicáveis ao PRODES")
         if self.product == "DETER" and self.year is not None:
             raise ValueError("Ano não é filtro DETER")
-        if self.product == "PRODES" and self.year is not None and self.year > date.today().year:
-            raise ValueError(f"Ano {self.year} posterior ao corrente ({date.today().year})")
+        corrente = time_utils.hoje().year
+        if self.product == "PRODES" and self.year is not None and self.year > corrente:
+            raise ValueError(f"Ano {self.year} posterior ao corrente ({corrente})")
         if (
             self.start_date is not None
             and self.end_date is not None
             and self.start_date > self.end_date
         ):
-            raise ValueError("data_inicio deve ser anterior ou igual a data_fim")
+            raise ValueError("inicio deve ser anterior ou igual a fim")
         maximum = (
             constants.DESMATAMENTO_GEO_MAX_PAGE_SIZE
             if self.include_geometry
@@ -68,20 +69,6 @@ class DesmatamentoQuery(BaseModel):
         return self
 
 
-def _date(value: object, name: str) -> date | None:
-    if value is None:
-        return None
-    if (
-        not isinstance(value, str)
-        or re.fullmatch(constants.DESMATAMENTO_DATE_PATTERN, value) is None
-    ):
-        raise InvalidParameterError(f"{name} deve ser YYYY-MM-DD ou None")
-    try:
-        return date.fromisoformat(value)
-    except ValueError as exc:
-        raise InvalidParameterError(f"{name} não é uma data civil válida") from exc
-
-
 def build_query(
     *,
     product: Literal["PRODES", "DETER"],
@@ -90,8 +77,8 @@ def build_query(
     max_registros: object,
     ano: object = None,
     uf: object = None,
-    data_inicio: object = None,
-    data_fim: object = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: object = None,
     tamanho_pagina: object = None,
 ) -> DesmatamentoQuery:
@@ -101,12 +88,14 @@ def build_query(
         raise InvalidParameterError("uf deve ser string ou None")
     if classe is not None and not isinstance(classe, str):
         raise InvalidParameterError("classe deve ser string ou None")
+    start_date = validation.parse_data(inicio, "inicio")
+    end_date = validation.parse_data(fim, "fim")
     requested = {
         "bioma": bioma,
         "ano": ano,
         "uf": uf,
-        "data_inicio": data_inicio,
-        "data_fim": data_fim,
+        "inicio": start_date.isoformat() if start_date else None,
+        "fim": end_date.isoformat() if end_date else None,
         "classe": classe,
         "max_registros": max_registros,
         "tamanho_pagina": tamanho_pagina,
@@ -125,8 +114,8 @@ def build_query(
                 "include_geometry": include_geometry,
                 "year": ano,
                 "uf": validation.validate_uf(uf),
-                "start_date": _date(data_inicio, "data_inicio"),
-                "end_date": _date(data_fim, "data_fim"),
+                "start_date": start_date,
+                "end_date": end_date,
                 "class_name": classe,
                 "max_records": max_registros,
                 "page_size": tamanho_pagina,

@@ -10,6 +10,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result
+from agrobr.utils.result import DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -21,24 +22,23 @@ async def _fetch_mapbiomas(
     from agrobr import mapbiomas
 
     bioma = kwargs.get("bioma")
-    estado = kwargs.get("estado")
+    uf = kwargs.get("uf")
     colecao = kwargs.get("colecao")
     if kwargs.get("tipo", "cobertura") == "cobertura":
         fetched = await mapbiomas.cobertura(
             bioma=bioma,
-            estado=estado,
+            uf=uf,
             colecao=colecao,
             return_meta=True,
             ano=kwargs.get("ano"),
             classe_id=kwargs.get("classe_id"),
             nivel=kwargs.get("nivel", "estado"),
             municipio=kwargs.get("municipio"),
-            geocodigo=kwargs.get("geocodigo"),
         )
     else:
         fetched = await mapbiomas.transicao(
             bioma=bioma,
-            estado=estado,
+            uf=uf,
             colecao=colecao,
             return_meta=True,
             periodo=kwargs.get("periodo"),
@@ -128,24 +128,22 @@ class UsodoSoloDataset(base.BaseDataset):
         tipo: Literal["cobertura", "transicao"] = "cobertura",
         *,
         bioma: str | None = None,
-        estado: str | None = None,
+        uf: str | None = None,
         ano: int | None = None,
         classe_id: int | None = None,
         nivel: str = "estado",
-        municipio: str | None = None,
-        geocodigo: str | None = None,
+        municipio: str | int | None = None,
         periodo: str | None = None,
         classe_de_id: int | None = None,
         classe_para_id: int | None = None,
         colecao: int | None = None,
         as_polars: bool = False,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         coverage = {
             "ano": ano,
             "classe_id": classe_id,
             "municipio": municipio,
-            "geocodigo": geocodigo,
         }
         transition = {
             "periodo": periodo,
@@ -165,7 +163,7 @@ class UsodoSoloDataset(base.BaseDataset):
             "",
             tipo=tipo,
             bioma=bioma,
-            estado=estado,
+            uf=uf,
             nivel=nivel,
             colecao=colecao,
             **coverage,
@@ -199,17 +197,16 @@ async def uso_do_solo(
     *,
     tipo: Literal["cobertura", "transicao"] = "cobertura",
     bioma: str | None = None,
-    estado: str | None = None,
+    uf: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
     nivel: str = "estado",
-    municipio: str | None = None,
-    geocodigo: str | None = None,
+    municipio: str | int | None = None,
     periodo: str | None = None,
     classe_de_id: int | None = None,
     classe_para_id: int | None = None,
     colecao: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -219,47 +216,63 @@ async def uso_do_solo(
     *,
     tipo: Literal["cobertura", "transicao"] = "cobertura",
     bioma: str | None = None,
-    estado: str | None = None,
+    uf: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
     nivel: str = "estado",
-    municipio: str | None = None,
-    geocodigo: str | None = None,
+    municipio: str | int | None = None,
     periodo: str | None = None,
     classe_de_id: int | None = None,
     classe_para_id: int | None = None,
     colecao: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def uso_do_solo(
     *,
     tipo: Literal["cobertura", "transicao"] = "cobertura",
     bioma: str | None = None,
-    estado: str | None = None,
+    uf: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
     nivel: str = "estado",
-    municipio: str | None = None,
-    geocodigo: str | None = None,
+    municipio: str | int | None = None,
     periodo: str | None = None,
     classe_de_id: int | None = None,
     classe_para_id: int | None = None,
     colecao: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult: ...
+
+
+async def uso_do_solo(
+    *,
+    tipo: Literal["cobertura", "transicao"] = "cobertura",
+    bioma: str | None = None,
+    uf: str | None = None,
+    ano: int | None = None,
+    classe_id: int | None = None,
+    nivel: str = "estado",
+    municipio: str | int | None = None,
+    periodo: str | None = None,
+    classe_de_id: int | None = None,
+    classe_para_id: int | None = None,
+    colecao: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult:
     return await _uso_do_solo.fetch(
         tipo=tipo,
         bioma=bioma,
-        estado=estado,
+        uf=uf,
         ano=ano,
         classe_id=classe_id,
         nivel=nivel,
         municipio=municipio,
-        geocodigo=geocodigo,
         periodo=periodo,
         classe_de_id=classe_de_id,
         classe_para_id=classe_para_id,

@@ -106,8 +106,8 @@ def comparar(cliente: httpx.Client, nome: str, variables: dict[str, Any]) -> dic
     caixa = variables.get("boundingBox")
     df, meta = asyncio.run(
         mapbiomas_alerta.alertas(
-            start_date=variables["startDate"],
-            end_date=variables["endDate"],
+            inicio=variables["startDate"],
+            fim=variables["endDate"],
             bbox=tuple(caixa) if caixa else None,
             max_registros=None,
             return_meta=True,

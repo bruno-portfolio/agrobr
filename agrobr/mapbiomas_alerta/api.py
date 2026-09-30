@@ -14,7 +14,13 @@ from agrobr.models import MetaInfo
 from agrobr.utils import tasks
 from agrobr.utils import time as time_utils
 from agrobr.utils.geo import validate_bbox
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import (
+    DataFrameResult,
+    GeoDataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
+from agrobr.utils.validation import parse_data
 
 from . import client, parser
 from .models import FONTES, JANELA_PUBLICACAO_DIAS, MAX_REGISTROS_PADRAO, TIPOS_DATA
@@ -36,33 +42,25 @@ def _prepare_bbox(
     return [xmin, ymin, xmax, ymax]
 
 
-def _data(valor: str | None, nome: str) -> date | None:
-    if valor is None:
-        return None
-    for formato in ("%Y-%m-%d", "%d/%m/%Y"):
-        try:
-            return datetime.strptime(valor, formato).date()
-        except ValueError:
-            continue
-    raise InvalidParameterError(f"{nome}={valor!r} fora dos formatos AAAA-MM-DD e DD/MM/AAAA")
-
-
 def _validar(
-    start_date: str | None, end_date: str | None, max_registros: int | None, tipo_data: str
+    inicio: str | date | datetime | None,
+    fim: str | date | datetime | None,
+    max_registros: int | None,
+    tipo_data: str,
 ) -> tuple[str | None, str | None]:
-    if tipo_data not in TIPOS_DATA:
+    if not isinstance(tipo_data, str) or tipo_data not in TIPOS_DATA:
         raise InvalidParameterError(f"tipo_data={tipo_data!r} fora de {sorted(TIPOS_DATA)}")
-    inicio = _data(start_date, "start_date")
-    fim = _data(end_date, "end_date")
-    if inicio is not None and fim is not None and inicio > fim:
-        raise InvalidParameterError(f"start_date ({start_date}) posterior a end_date ({end_date})")
+    data_inicio = parse_data(inicio, "inicio")
+    data_fim = parse_data(fim, "fim")
+    if data_inicio is not None and data_fim is not None and data_inicio > data_fim:
+        raise InvalidParameterError(f"inicio ({data_inicio}) posterior a fim ({data_fim})")
     if max_registros is not None and (type(max_registros) is not int or max_registros < 1):
         raise InvalidParameterError(
             f"max_registros deve ser inteiro positivo ou None, recebeu {max_registros!r}"
         )
     return (
-        inicio.isoformat() if inicio is not None else None,
-        fim.isoformat() if fim is not None else None,
+        data_inicio.isoformat() if data_inicio is not None else None,
+        data_fim.isoformat() if data_fim is not None else None,
     )
 
 
@@ -80,8 +78,8 @@ def _deteccao_recente(tipo_data: str, fim: str | None) -> str | None:
 
 async def _coletar(
     token: str | None,
-    start_date: str | None,
-    end_date: str | None,
+    inicio: str | date | datetime | None,
+    fim: str | date | datetime | None,
     sources: list[str] | None,
     bbox: tuple[float, float, float, float] | None,
     max_registros: int | None,
@@ -89,11 +87,15 @@ async def _coletar(
     evento: str,
 ) -> tuple[client.Coleta, str, int]:
     bbox = validate_bbox(bbox)
-    if sources is not None and not set(sources) <= FONTES:
+    if sources is not None and (
+        not isinstance(sources, (list, tuple))
+        or not all(isinstance(fonte, str) for fonte in sources)
+        or not set(sources) <= FONTES
+    ):
         raise InvalidParameterError(
             f"sources={sources!r} fora do enum SourceTypes da API: {sorted(FONTES)}"
         )
-    inicio, fim = _validar(start_date, end_date, max_registros, tipo_data)
+    data_inicio, data_fim = _validar(inicio, fim, max_registros, tipo_data)
     resolved_token = client._get_token(token)
 
     logger.info(evento, bbox=bbox, sources=sources, max_registros=max_registros)
@@ -101,14 +103,14 @@ async def _coletar(
     t0 = time.monotonic()
     coleta, source_url = await client.fetch_alertas(
         token=resolved_token,
-        start_date=inicio,
-        end_date=fim,
-        sources=sources,
+        start_date=data_inicio,
+        end_date=data_fim,
+        sources=list(sources) if sources is not None else None,
         bounding_box=_prepare_bbox(bbox),
         max_registros=max_registros,
         date_type=TIPOS_DATA[tipo_data],
     )
-    recente = _deteccao_recente(tipo_data, fim)
+    recente = _deteccao_recente(tipo_data, data_fim)
     if recente is not None:
         coleta.avisos.insert(0, recente)
     for aviso in coleta.avisos:
@@ -161,13 +163,13 @@ def _meta(
 async def alertas(
     *,
     token: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     sources: list[str] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = MAX_REGISTROS_PADRAO,
     tipo_data: TipoData = "deteccao",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -176,31 +178,46 @@ async def alertas(
 async def alertas(
     *,
     token: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     sources: list[str] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = MAX_REGISTROS_PADRAO,
     tipo_data: TipoData = "deteccao",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def alertas(
     *,
     token: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     sources: list[str] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = MAX_REGISTROS_PADRAO,
     tipo_data: TipoData = "deteccao",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult: ...
+
+
+async def alertas(
+    *,
+    token: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    sources: list[str] | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = MAX_REGISTROS_PADRAO,
+    tipo_data: TipoData = "deteccao",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult:
     coleta, source_url, fetch_ms = await _coletar(
-        token, start_date, end_date, sources, bbox, max_registros, tipo_data, "mapbiomas_alertas"
+        token, inicio, fim, sources, bbox, max_registros, tipo_data, "mapbiomas_alertas"
     )
 
     t1 = time.monotonic()
@@ -224,8 +241,8 @@ async def alertas(
 async def alertas_geo(
     *,
     token: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     sources: list[str] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = MAX_REGISTROS_PADRAO,
@@ -238,8 +255,8 @@ async def alertas_geo(
 async def alertas_geo(
     *,
     token: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     sources: list[str] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = MAX_REGISTROS_PADRAO,
@@ -251,18 +268,18 @@ async def alertas_geo(
 async def alertas_geo(
     *,
     token: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     sources: list[str] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = MAX_REGISTROS_PADRAO,
     tipo_data: TipoData = "deteccao",
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     coleta, source_url, fetch_ms = await _coletar(
         token,
-        start_date,
-        end_date,
+        inicio,
+        fim,
         sources,
         bbox,
         max_registros,

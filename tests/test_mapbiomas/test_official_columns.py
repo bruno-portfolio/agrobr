@@ -30,7 +30,7 @@ def test_official_coverage_preserves_all_year_values():
     assert set(frame["ano"]) == set(range(1985, 2026))
     assert dict(zip(frame["ano"], frame["area_ha"], strict=True)) == pytest.approx(expected)
     assert frame["classe_id"].unique().tolist() == [3]
-    assert frame["estado"].unique().tolist() == ["PA"]
+    assert frame["uf"].unique().tolist() == ["PA"]
     assert frame["bioma"].unique().tolist() == ["Amazônia"]
 
 
@@ -52,7 +52,7 @@ def test_official_transition_preserves_all_period_values():
     assert "2024-2025" in frame["periodo"].tolist()
     assert frame["classe_de_id"].unique().tolist() == [0]
     assert frame["classe_para_id"].unique().tolist() == [3]
-    assert frame["estado"].unique().tolist() == ["PA"]
+    assert frame["uf"].unique().tolist() == ["PA"]
 
 
 @pytest.mark.parametrize("new_header", ["y2026", 1985])

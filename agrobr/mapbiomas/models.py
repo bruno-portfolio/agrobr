@@ -80,7 +80,7 @@ SHEET_TRANSICAO = "TRANSITION_11"
 
 COLUNAS_SAIDA_COBERTURA = [
     "bioma",
-    "estado",
+    "uf",
     "classe_id",
     "classe",
     "nivel_0",
@@ -90,7 +90,7 @@ COLUNAS_SAIDA_COBERTURA = [
 
 COLUNAS_SAIDA_COBERTURA_MUNICIPAL = [
     "bioma",
-    "estado",
+    "uf",
     "municipio",
     "classe_id",
     "classe",
@@ -107,7 +107,7 @@ COLUNAS_SAIDA_COBERTURA_MUNICIPAL_V2 = [
 
 COLUNAS_SAIDA_TRANSICAO = [
     "bioma",
-    "estado",
+    "uf",
     "classe_de_id",
     "classe_de",
     "classe_para_id",

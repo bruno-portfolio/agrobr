@@ -220,13 +220,19 @@ async def fetch_alertas(
     return coleta, GRAPHQL_URL
 
 
+def _objeto(data: dict[str, Any], chave: str, campos: tuple[str, ...]) -> dict[str, Any]:
+    valor = data.get(chave)
+    if not isinstance(valor, dict) or not set(campos) <= set(valor):
+        raise _falha(f"Resposta sem {chave} com {', '.join(campos)}; o layout da API mudou")
+    return valor
+
+
 async def fetch_alert_date_range() -> tuple[dict[str, Any], str]:
     data = await _graphql_request(ALERT_DATE_RANGE_QUERY, {})
-    result: dict[str, Any] = data.get("alertDateRange", {})
-    return result, GRAPHQL_URL
+    campos = ("minDetectedAt", "maxDetectedAt", "minPublishedAt", "maxPublishedAt")
+    return _objeto(data, "alertDateRange", campos), GRAPHQL_URL
 
 
 async def fetch_last_publication() -> tuple[dict[str, Any], str]:
     data = await _graphql_request(LAST_PUBLICATION_QUERY, {})
-    result: dict[str, Any] = data.get("lastAlertPublication", {})
-    return result, GRAPHQL_URL
+    return _objeto(data, "lastAlertPublication", ("publishedAt", "total")), GRAPHQL_URL

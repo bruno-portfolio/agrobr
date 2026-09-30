@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import zipfile
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -11,8 +12,15 @@ import pandas as pd
 import pytest
 
 from agrobr import queimadas
-from agrobr.queimadas import client
-from tests.helpers import assert_replay_samples, conferir_corpo, sem_excecao
+from agrobr.exceptions import InvalidParameterError
+from agrobr.queimadas import api, client
+from agrobr.utils import time as time_utils
+from tests.helpers import (
+    assert_replay_samples,
+    conferir_corpo,
+    levanta_exatamente,
+    sem_excecao,
+)
 
 R12 = Path(__file__).parents[1] / "golden_data/reconciliacao_r12_20260918"
 CASO = next(
@@ -141,3 +149,65 @@ async def test_focos_geo_por_satelite_confere_o_csv_publicado(
                 assert pd.isna(getattr(linha, coluna)), (posicao, coluna)
             else:
                 assert getattr(linha, coluna) == float(bruto), (posicao, coluna)
+
+
+NUMERICAS = ("numero_dias_sem_chuva", "precipitacao", "risco_fogo", "frp")
+
+
+async def test_satelite_casa_sem_caixa_com_o_nome_publicado(monkeypatch: pytest.MonkeyPatch):
+    publicados = sum(
+        linha["satelite"] == "NOAA-21"
+        for linha in csv.DictReader(io.StringIO(RECORTE_ABRIL_2025.decode("utf-8")))
+    )
+    _servir(monkeypatch, {CSV_MENSAL: RECORTE_ABRIL_2025})
+    with sem_excecao():
+        frame = await queimadas.focos(ano=2025, mes=4, satelite=" noaa-21 ")
+    assert len(frame) == publicados == 111
+    assert set(frame["satelite"]) == {"NOAA-21"}
+
+
+async def test_satelite_fora_do_arquivo_levanta_com_os_publicados(monkeypatch: pytest.MonkeyPatch):
+    pedidos = _servir(monkeypatch, {CSV_MENSAL: RECORTE_ABRIL_2025})
+    with levanta_exatamente(InvalidParameterError, "não aparece no arquivo de 2025-04") as erro:
+        await queimadas.focos(ano=2025, mes=4, satelite="XX")
+    assert "AQUA_M-T, GOES-16, GOES-19, NOAA-20, NOAA-21, NPP-375D, TERRA_M-M, TERRA_M-T" in str(
+        erro.value
+    )
+    assert pedidos == [CSV_MENSAL]
+
+
+@pytest.mark.parametrize("satelite", [21, "", "  ", ["NOAA-21"]])
+async def test_satelite_que_nao_e_texto_recusa_antes_da_rede(
+    satelite, monkeypatch: pytest.MonkeyPatch
+):
+    pedidos = _servir(monkeypatch, {CSV_MENSAL: RECORTE_ABRIL_2025})
+    with levanta_exatamente(InvalidParameterError, "satelite deve ser texto não vazio"):
+        await queimadas.focos(ano=2025, mes=4, satelite=satelite)
+    assert pedidos == []
+
+
+async def test_numericas_saem_float64_no_cheio_e_no_recorte_vazio(monkeypatch: pytest.MonkeyPatch):
+    _servir(monkeypatch, {CSV_MENSAL: RECORTE_ABRIL_2025})
+    with sem_excecao():
+        cheio = await queimadas.focos(ano=2025, mes=4)
+        vazio = await queimadas.focos(ano=2025, mes=4, uf="RS", satelite="TERRA_M-M")
+    assert len(cheio) == 902 and vazio.empty
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict()
+    assert {str(cheio[coluna].dtype) for coluna in NUMERICAS} == {"float64"}
+
+
+@pytest.mark.parametrize(
+    ("agora_utc", "ano", "aceito"),
+    [
+        (datetime(2027, 1, 1, 2, 59, tzinfo=UTC), 2027, False),
+        (datetime(2027, 1, 1, 3, 0, tzinfo=UTC), 2027, True),
+    ],
+    ids=["ainda_2026_em_brasilia", "ja_2027_em_brasilia"],
+)
+def test_ano_corrente_e_o_de_brasilia(agora_utc, ano, aceito, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(time_utils, "utcnow_aware", lambda: agora_utc)
+    if aceito:
+        assert api._validate_period(ano, 1, None) == (ano, 1, None)
+    else:
+        with levanta_exatamente(InvalidParameterError, "ano não pode ser posterior a 2026"):
+            api._validate_period(ano, 1, None)

@@ -13,7 +13,7 @@ from tests.helpers import levanta_exatamente
 def _make_cobertura_df(**overrides):
     row = {
         "bioma": "Cerrado",
-        "estado": "MT",
+        "uf": "MT",
         "classe_id": 3,
         "classe": "Formação Florestal",
         "nivel_0": "Floresta",
@@ -28,9 +28,9 @@ def _make_cobertura_df(**overrides):
 @pytest.mark.parametrize(
     "selectors,states",
     [
-        ({"geocodigo": "2703007"}, {"AL", "PE"}),
-        ({"geocodigo": "2703007", "estado": " Pernambuco "}, {"PE"}),
-        ({"geocodigo": "0000001"}, set()),
+        ({"municipio": "2703007"}, {"AL", "PE"}),
+        ({"municipio": 2703007, "uf": " Pernambuco "}, {"PE"}),
+        ({"municipio": "2703007", "uf": "MT"}, set()),
         ({"municipio": " sOrRiSo "}, {"MT"}),
     ],
 )
@@ -45,7 +45,7 @@ async def test_public_municipal_replay_contract_and_selectors(
     except Exception as erro:
         raise AssertionError(f"cobertura municipal publicada falhou: {erro!r}") from erro
     frame = result[0] if return_meta else result
-    assert set(frame["estado"]) == states
+    assert set(frame["uf"]) == states
     contract = contracts.get_contract("mapbiomas_cobertura_municipal")
     assert contract.validate(frame) == (True, [])
     if not states:
@@ -85,22 +85,24 @@ def test_registry_dispatches_existing_state_and_new_municipal_contracts():
     [
         {"tipo": "transicao", "nivel": "municipio"},
         {"tipo": "transicao", "municipio": "Sorriso"},
-        {"tipo": "transicao", "geocodigo": "5107925"},
+        {"tipo": "transicao", "municipio": 5107925},
         {"tipo": "transicao", "ano": 2025},
         {"tipo": "transicao", "classe_id": 3},
         {"tipo": "cobertura", "periodo": "2020-2021"},
         {"tipo": "cobertura", "classe_de_id": 3},
         {"tipo": "cobertura", "classe_para_id": 3},
         {"nivel": "estado", "municipio": "Sorriso"},
-        {"nivel": "estado", "geocodigo": "5107925"},
-        {"estado": 1},
+        {"nivel": "estado", "municipio": 5107925},
+        {"uf": 1},
+        {"uf": "Matogrosso"},
         {"bioma": False},
         {"tipo": []},
         {"nivel": []},
         {"nivel": "municipio", "municipio": 1},
         {"nivel": "municipio", "municipio": " "},
-        {"nivel": "municipio", "geocodigo": 5107925},
-        {"nivel": "municipio", "geocodigo": "5107925 "},
+        {"nivel": "municipio", "municipio": 510792},
+        {"nivel": "municipio", "municipio": "Sorris"},
+        {"nivel": "municipio", "municipio": "Bom Jesus"},
         {"ano": True},
         {"ano": 2026},
         {"colecao": 11.0},
@@ -130,4 +132,12 @@ async def test_deterministic_context_never_labels_an_unselected_revision(
     async with deterministic("2024-12-31"):
         with pytest.raises(InvalidParameterError):
             await datasets.uso_do_solo(**arguments)
+    assert not requests
+
+
+@pytest.mark.parametrize("nome", ["estado", "geocodigo"])
+async def test_estado_e_geocodigo_nao_sao_mais_parametros(nome, replay_mapbiomas):
+    requests = replay_mapbiomas()
+    with levanta_exatamente(TypeError, nome):
+        await datasets.uso_do_solo(**{nome: "MT" if nome == "estado" else "5107925"})
     assert not requests

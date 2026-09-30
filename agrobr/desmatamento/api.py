@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from datetime import date, datetime
 from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import pandas as pd
@@ -35,6 +36,30 @@ def _geoframe(acquired: acquisition.DesmatamentoAcquisition, gpd: Any) -> pd.Dat
     return cast(pd.DataFrame, gpd.GeoDataFrame(acquired.frame, geometry=geometry, crs="EPSG:4326"))
 
 
+@overload
+async def _fetch(
+    *,
+    product: Literal["PRODES", "DETER"],
+    include_geometry: Literal[False],
+    as_polars: bool,
+    return_meta: bool,
+    unknown: dict[str, Any],
+    **selection: Any,
+) -> result.DataFrameResult: ...
+
+
+@overload
+async def _fetch(
+    *,
+    product: Literal["PRODES", "DETER"],
+    include_geometry: Literal[True],
+    as_polars: Literal[False],
+    return_meta: bool,
+    unknown: dict[str, Any],
+    **selection: Any,
+) -> result.GeoDataFrameResult: ...
+
+
 async def _fetch(
     *,
     product: Literal["PRODES", "DETER"],
@@ -43,7 +68,7 @@ async def _fetch(
     return_meta: bool,
     unknown: dict[str, Any],
     **selection: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult | result.GeoDataFrameResult:
     from agrobr.datasets.deterministic import get_snapshot
 
     if unknown:
@@ -105,7 +130,7 @@ async def prodes(
     uf: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -118,9 +143,22 @@ async def prodes(
     uf: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def prodes(
+    *,
+    bioma: str = "Cerrado",
+    ano: int | None = None,
+    uf: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def prodes(
@@ -133,7 +171,7 @@ async def prodes(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         product="PRODES",
         include_geometry=False,
@@ -181,7 +219,7 @@ async def prodes_geo(
     tamanho_pagina: int | None = None,
     return_meta: bool = False,
     **kwargs: Any,
-) -> Any:
+) -> result.GeoDataFrameResult:
     return await _fetch(
         product="PRODES",
         include_geometry=True,
@@ -201,12 +239,12 @@ async def deter(
     *,
     bioma: str = "Amazônia",
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -216,29 +254,44 @@ async def deter(
     *,
     bioma: str = "Amazônia",
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def deter(
+    *,
+    bioma: str = "Amazônia",
+    uf: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
     as_polars: bool = False,
-    return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def deter(
     *,
     bioma: str = "Amazônia",
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         product="DETER",
         include_geometry=False,
@@ -247,8 +300,8 @@ async def deter(
         unknown=kwargs,
         bioma=bioma,
         uf=uf,
-        data_inicio=data_inicio,
-        data_fim=data_fim,
+        inicio=inicio,
+        fim=fim,
         classe=classe,
         max_registros=max_registros,
         tamanho_pagina=tamanho_pagina,
@@ -260,8 +313,8 @@ async def deter_geo(
     *,
     bioma: str = "Amazônia",
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
@@ -274,8 +327,8 @@ async def deter_geo(
     *,
     bioma: str = "Amazônia",
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
@@ -287,14 +340,14 @@ async def deter_geo(
     *,
     bioma: str = "Amazônia",
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_GEO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
     return_meta: bool = False,
     **kwargs: Any,
-) -> Any:
+) -> result.GeoDataFrameResult:
     return await _fetch(
         product="DETER",
         include_geometry=True,
@@ -303,8 +356,8 @@ async def deter_geo(
         unknown=kwargs,
         bioma=bioma,
         uf=uf,
-        data_inicio=data_inicio,
-        data_fim=data_fim,
+        inicio=inicio,
+        fim=fim,
         classe=classe,
         max_registros=max_registros,
         tamanho_pagina=tamanho_pagina,

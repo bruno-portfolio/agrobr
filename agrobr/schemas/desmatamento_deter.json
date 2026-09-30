@@ -161,7 +161,7 @@
   "constraints": {
     "no_duplicates": true,
     "area_km2_min": 0,
-    "string_dtype": "string[python] with pd.NA",
+    "string_dtype": "pandas default text dtype",
     "integer_dtype": "Int64",
     "float_dtype": "float64",
     "date_dtype": "datetime64[ns]",

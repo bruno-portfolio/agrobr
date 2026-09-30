@@ -68,10 +68,10 @@ MAPBIOMAS_COBERTURA_MUNICIPAL_V1 = MapbiomasMunicipalContract(
     name="mapbiomas.cobertura_municipal",
     version="1.1",
     effective_from="2.0.0",
-    primary_key=["bioma", "estado", "geocodigo", "classe_id", "id_registro", "ano"],
+    primary_key=["bioma", "uf", "geocodigo", "classe_id", "id_registro", "ano"],
     columns=[
         contracts.Column(name="bioma", type=contracts.ColumnType.STRING),
-        contracts.Column(name="estado", type=contracts.ColumnType.STRING),
+        contracts.Column(name="uf", type=contracts.ColumnType.STRING),
         contracts.Column(name="municipio", type=contracts.ColumnType.STRING),
         contracts.Column(name="classe_id", type=contracts.ColumnType.INTEGER, min_value=0),
         contracts.Column(name="classe", type=contracts.ColumnType.STRING, nullable=True),

@@ -6,7 +6,7 @@ import time
 import warnings
 from datetime import UTC, date, datetime, timedelta
 from email.utils import parsedate_to_datetime
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 import pandas as pd
 
@@ -14,8 +14,14 @@ from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import check_geopandas
-from agrobr.utils.result import ATRIBUTO_AVISOS, build_source_meta, finalize_result
-from agrobr.utils.time import utcnow
+from agrobr.utils.result import (
+    ATRIBUTO_AVISOS,
+    DataFrameResult,
+    GeoDataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
+from agrobr.utils.time import hoje, utcnow
 from agrobr.utils.validation import validate_bioma, validate_uf
 
 from . import client, parser
@@ -85,8 +91,9 @@ def _validate_period(ano: object, mes: object, dia: object | None) -> tuple[int,
     ano_int = _require_int("ano", ano)
     mes_int = _require_int("mes", mes)
     dia_int = _require_int("dia", dia) if dia is not None else None
-    if ano_int > date.today().year:
-        raise InvalidParameterError(f"ano não pode ser posterior a {date.today().year}")
+    corrente = hoje().year
+    if ano_int > corrente:
+        raise InvalidParameterError(f"ano não pode ser posterior a {corrente}")
     if not 1 <= mes_int <= 12:
         raise InvalidParameterError("mes deve estar entre 1 e 12")
     try:
@@ -98,6 +105,17 @@ def _validate_period(ano: object, mes: object, dia: object | None) -> tuple[int,
     return ano_int, mes_int, dia_int
 
 
+def _satelite_publicado(df: pd.DataFrame, satelite: str, periodo: str) -> str:
+    publicados = {str(nome).casefold(): str(nome) for nome in df["satelite"].dropna().unique()}
+    nome = publicados.get(satelite.strip().casefold())
+    if nome is None:
+        raise InvalidParameterError(
+            f"satelite={satelite!r} não aparece no arquivo de {periodo}; "
+            f"satélites publicados: {', '.join(sorted(publicados.values()))}"
+        )
+    return nome
+
+
 @overload
 async def focos(
     *,
@@ -107,7 +125,7 @@ async def focos(
     uf: str | None = None,
     bioma: str | None = None,
     satelite: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -121,9 +139,23 @@ async def focos(
     uf: str | None = None,
     bioma: str | None = None,
     satelite: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def focos(
+    *,
+    ano: int,
+    mes: int,
+    dia: int | None = None,
+    uf: str | None = None,
+    bioma: str | None = None,
+    satelite: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def focos(
@@ -136,7 +168,7 @@ async def focos(
     satelite: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Focos INPE no período; meses sem arquivo mensal usam o ZIP anual.
 
     O CSV anual pode ocupar centenas de MB após descompactar: em 2020,
@@ -146,6 +178,8 @@ async def focos(
     ano, mes, dia = _validate_period(ano, mes, dia)
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
+    if satelite is not None and (not isinstance(satelite, str) or not satelite.strip()):
+        raise InvalidParameterError(f"satelite deve ser texto não vazio: {satelite!r}")
     logger.info(
         "queimadas_focos",
         ano=ano,
@@ -183,6 +217,10 @@ async def focos(
     parcial = _arquivo_parcial(
         df, inicio, fim + limite, fim + relogio_ate, last_modified, diario=dia is not None
     )
+
+    if satelite is not None:
+        periodo = f"{ano:04d}-{mes:02d}-{dia:02d}" if dia else f"{ano:04d}-{mes:02d}"
+        satelite = _satelite_publicado(df, satelite, periodo)
 
     if uf is not None:
         df = df[df["uf"] == uf].reset_index(drop=True)
@@ -245,7 +283,7 @@ async def focos_geo(
     bioma: str | None = None,
     satelite: str | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     gpd_mod = check_geopandas()
 
     if return_meta:

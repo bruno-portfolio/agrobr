@@ -16,6 +16,25 @@ logger = _log.get_logger(__name__)
 PARSER_VERSION = 2
 
 _REQUIRED_FIELDS = {"alertCode", "areaHa", "detectedAt"}
+_TIPOS = {
+    "alert_code": "Int64",
+    "area_ha": "float64",
+    "data_deteccao": "datetime64[ns]",
+    "data_publicacao": "datetime64[ns]",
+    "lat": "float64",
+    "lon": "float64",
+}
+
+
+def _vazio() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            coluna: pd.Series(dtype=_TIPOS[coluna])
+            if coluna in _TIPOS
+            else pd.Series([""]).iloc[:0]
+            for coluna in COLUNAS_SAIDA
+        }
+    )
 
 
 def _flatten_sources(sources: Any) -> str:
@@ -30,7 +49,7 @@ def _normalize_records(
     records: list[dict[str, object]],
 ) -> tuple[pd.DataFrame, list[Any]]:
     if not records:
-        return pd.DataFrame(columns=COLUNAS_SAIDA), []
+        return _vazio(), []
 
     rows: list[dict[str, object]] = []
     geometries: list[Any] = []
@@ -60,6 +79,14 @@ def _normalize_records(
     df = df.rename(columns=RENAME_MAP)
     dates.converter_coluna(df, "data_deteccao", fonte="mapbiomas_alerta")
     dates.converter_coluna(df, "data_publicacao", fonte="mapbiomas_alerta")
+    try:
+        df["alert_code"] = df["alert_code"].astype("Int64")
+    except (TypeError, ValueError) as exc:
+        raise ParseError(
+            source="mapbiomas_alerta",
+            parser_version=PARSER_VERSION,
+            reason="alertCode publicado sem código inteiro",
+        ) from exc
     df["area_ha"] = pd.to_numeric(df["area_ha"], errors="coerce")
     df["lat"] = pd.to_numeric(df["lat"], errors="coerce")
     df["lon"] = pd.to_numeric(df["lon"], errors="coerce")
@@ -81,9 +108,7 @@ def parse_alertas_geo(records: list[dict[str, object]]) -> Any:
     gpd = check_geopandas()
     df, wkt_strings = _normalize_records(records)
     if df.empty:
-        empty = gpd.GeoDataFrame(columns=COLUNAS_SAIDA_GEO)
-        empty = empty.set_geometry("geometry")
-        return empty
+        return gpd.GeoDataFrame(df, geometry=gpd.GeoSeries([], crs="EPSG:4326"))
 
     from shapely import wkt
     from shapely.errors import GEOSException

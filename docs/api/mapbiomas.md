@@ -9,7 +9,7 @@ Area por classe de cobertura e uso da terra x bioma x estado x ano.
 ```python
 import agrobr
 
-df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
+df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, uf="GO")
 ```
 
 ### Parametros
@@ -17,12 +17,11 @@ df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, estado="GO")
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | `bioma` | `str` | Nao | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pampa", "Pantanal". Se None, todos |
-| `estado` | `str` | Nao | Sigla ou nome completo da UF (ex: `"MT"`, `"Mato Grosso"`). Caixa e acentos são opcionais; valor inválido levanta `ValueError` antes do download |
+| `uf` | `str` | Nao | Sigla ou nome completo da UF (ex: `"MT"`, `"Mato Grosso"`). Caixa e acentos são opcionais; valor inválido levanta `InvalidParameterError` com as siglas válidas, antes do download |
 | `ano` | `int` | Nao | Ano: 1985-2025 na coleção 11; 1985-2024 na coleção 10. Se None, todos os anos |
-| `classe_id` | `int` | Nao | Codigo de classe MapBiomas (ex: 15 para Pastagem) |
+| `classe_id` | `int` | Nao | Codigo de classe MapBiomas (ex: 15 para Pastagem). Código fora das classes publicadas na coleção levanta `InvalidParameterError` com a lista, depois do download |
 | `nivel` | `str` | Nao | `"estado"` (default) ou `"municipio"`. O arquivo municipal é baixado inteiro antes dos filtros |
-| `municipio` | `str` | Nao | Substring literal do nome, sem distinguir caixa e com espaços externos removidos; não é expressão regular. Requer `nivel="municipio"` |
-| `geocodigo` | `str` | Nao | Código territorial publicado, exatamente sete dígitos ASCII como texto. Filtro exato; requer `nivel="municipio"` |
+| `municipio` | `str` ou `int` | Nao | Nome inteiro do município (sem diferenciar caixa e acento; com `uf` para desambiguar) ou código territorial de sete dígitos (`int` ou texto). Pedaço de nome, nome de mais de um município sem `uf` e código fora do recurso levantam `InvalidParameterError`. Requer `nivel="municipio"` |
 | `colecao` | `int` | Nao | `10` ou `11`; `None` usa a coleção atual (11). Outras coleções levantam `ValueError` antes do download |
 | `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
@@ -33,9 +32,9 @@ Cada coleção possui arquivos e revisão histórica próprios. Fixe `colecao` e
 
 ```python
 df, meta = await agrobr.mapbiomas.cobertura(
-    estado="MT", ano=2025, colecao=11, return_meta=True
+    uf="MT", ano=2025, colecao=11, return_meta=True
 )
-anterior = await agrobr.mapbiomas.cobertura(estado="MT", ano=2024, colecao=10)
+anterior = await agrobr.mapbiomas.cobertura(uf="MT", ano=2024, colecao=10)
 print(meta.data_sources, meta.source_url)
 ```
 
@@ -46,7 +45,7 @@ print(meta.data_sources, meta.source_url)
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | `bioma` | str | Nome do bioma |
-| `estado` | str | Codigo UF (ex: "MT") |
+| `uf` | str | Sigla da UF (ex: "MT") |
 | `municipio` | str | Nome do municipio (apenas quando `nivel="municipio"`) |
 | `classe_id` | int | Codigo da classe MapBiomas |
 | `classe` | str | Rótulo normalizado pelo SDK conforme a coleção; não é transcrição literal da aba de legenda |
@@ -58,9 +57,11 @@ print(meta.data_sources, meta.source_url)
 
 ### Cobertura municipal da Coleção 11
 
-O retorno municipal tem dez colunas, na ordem acima, com `geocodigo` e `id_registro` acrescentados após as oito colunas anteriores. `classe_id`, `ano` e `id_registro` usam pandas `Int64`, `area_ha` usa `float64` e os textos usam `object`, inclusive em um recorte vazio. O contrato `mapbiomas.cobertura_municipal` 1.0 verifica a chave `(bioma, estado, geocodigo, classe_id, id_registro, ano)` dentro de uma coleção e recurso. O parser municipal tem versão 2; os contratos e o parser estaduais permanecem próprios.
+O retorno municipal tem dez colunas, na ordem acima, com `geocodigo` e `id_registro` acrescentados após as oito colunas anteriores. `classe_id`, `ano` e `id_registro` usam pandas `Int64`, `area_ha` usa `float64` e os textos usam o dtype de texto padrão do pandas instalado (`str` no pandas 3, `object` no 2), inclusive em um recorte vazio. O contrato `mapbiomas.cobertura_municipal` 1.1 verifica a chave `(bioma, uf, geocodigo, classe_id, id_registro, ano)` dentro de uma coleção e recurso. O parser municipal tem versão 2; os contratos e o parser estaduais permanecem próprios.
 
-`geocodigo` preserva a coluna `geocode`; não garante pertencimento ao catálogo municipal atual do IBGE. O recurso inclui Lagoa Mirim e Lagoa dos Patos, e um mesmo código pode ocorrer em mais de uma UF. Os cruzamentos territoriais publicados permanecem separados, sem corrigir UF ou somar áreas automaticamente. `municipio` e `geocodigo` podem ser combinados e ambos devem corresponder à linha.
+`geocodigo` preserva a coluna `geocode`; não garante pertencimento ao catálogo municipal atual do IBGE. O recurso inclui Lagoa Mirim e Lagoa dos Patos, e um mesmo código pode ocorrer em mais de uma UF. Os cruzamentos territoriais publicados permanecem separados, sem corrigir UF ou somar áreas automaticamente.
+
+O filtro `municipio` sempre seleciona pelo `geocodigo`. Um nome passa por `normalize.resolver_municipio`, que compara o nome inteiro com o cadastro do IBGE e devolve o código: `"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`, e um nome de vários municípios exige a `uf`. Um código de sete dígitos segue direto, porque o recurso também publica geocódigos fora do cadastro (as lagoas); o código que não aparece no recurso da coleção levanta `InvalidParameterError` depois do download. Para achar o nome de um município por pedaço, use `normalize.buscar_municipios`.
 
 O arquivo inteiro é baixado, sem cache integrado. O parser percorre todas as linhas e os 41 anos de 1985–2025 antes de concluir, validando identidade, unicidade e áreas também fora dos filtros. Área ausente, negativa, não finita ou incompatível causa `ParseError`; zero é preservado. Somente linhas inteiramente vazias são ignoradas e contabilizadas. A emissão segue a ordem dos anos e das linhas da planilha, sem materializar um DataFrame nacional largo antes do recorte.
 
@@ -104,10 +105,10 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | `bioma` | `str` | Nao | Filtrar por bioma. Se None, todos |
-| `estado` | `str` | Nao | Sigla ou nome completo da UF. Caixa e acentos são opcionais; valor inválido levanta `ValueError` antes do download |
+| `uf` | `str` | Nao | Sigla ou nome completo da UF. Caixa e acentos são opcionais; valor inválido levanta `InvalidParameterError` com as siglas válidas, antes do download |
 | `periodo` | `str` | Nao | Período da coleção selecionada (ex: `"2019-2020"`, `"1985-2025"` na coleção 11) |
-| `classe_de_id` | `int` | Nao | Codigo da classe de origem |
-| `classe_para_id` | `int` | Nao | Codigo da classe de destino |
+| `classe_de_id` | `int` | Nao | Codigo da classe de origem. Código fora das classes publicadas levanta `InvalidParameterError` com a lista, depois do download |
+| `classe_para_id` | `int` | Nao | Codigo da classe de destino, com a mesma conferência |
 | `colecao` | `int` | Nao | `10` ou `11`; `None` usa a coleção atual (11). O arquivo de transições pertence à coleção selecionada |
 | `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
@@ -117,7 +118,7 @@ df = await agrobr.mapbiomas.transicao(bioma="Cerrado", periodo="2019-2020")
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | `bioma` | str | Nome do bioma |
-| `estado` | str | Codigo UF |
+| `uf` | str | Sigla da UF |
 | `classe_de_id` | int | Codigo da classe de origem |
 | `classe_de` | str | Nome da classe de origem |
 | `classe_para_id` | int | Codigo da classe de destino |
@@ -167,19 +168,19 @@ Os filtros são aplicados após o download do arquivo municipal da coleção sel
 import agrobr
 
 df = await agrobr.mapbiomas.cobertura(
-    nivel="municipio", estado="Pará", municipio="Belém", ano=2020
+    nivel="municipio", uf="PA", municipio="Belém", ano=2020
 )
 print(df[["municipio", "classe", "area_ha"]].head())
 ```
 
-Para selecionar um código territorial exato:
+Pelo código territorial de sete dígitos:
 
 ```python
 df, meta = await agrobr.mapbiomas.cobertura(
-    nivel="municipio", geocodigo="5107925", classe_id=39,
+    nivel="municipio", municipio=5107925, classe_id=39,
     ano=2025, colecao=11, return_meta=True,
 )
-print(df[["bioma", "estado", "municipio", "geocodigo", "area_ha"]])
+print(df[["bioma", "uf", "municipio", "geocodigo", "area_ha"]])
 ```
 
 ### Evolucao da soja no Brasil

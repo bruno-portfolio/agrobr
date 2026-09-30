@@ -90,13 +90,13 @@ async def test_classe_fora_da_legenda_no_municipal_sai_nula_com_aviso():
     )
 
     frame, meta, emitidos = await _consultar(
-        "fetch_biome_state_municipality_bundle", bundle, nivel="municipio", estado="DF", ano=1985
+        "fetch_biome_state_municipality_bundle", bundle, nivel="municipio", uf="DF", ano=1985
     )
 
     rotulos = dict(zip(frame["classe_id"], frame["classe"], strict=True))
     assert set(rotulos) == {3, DESCONHECIDA}
     assert rotulos[3] == "Formação Florestal"
-    assert rotulos[DESCONHECIDA] is None
+    assert frame.loc[frame["classe_id"] == DESCONHECIDA, "classe"].isna().all()
     _conferir_aviso(meta, emitidos, 11)
 
 

@@ -5,14 +5,14 @@
   "breaking_policy": "major",
   "primary_key": [
     "bioma",
-    "estado",
+    "uf",
     "classe_de_id",
     "classe_para_id",
     "periodo"
   ],
   "required_columns": [
     "bioma",
-    "estado",
+    "uf",
     "classe_de_id",
     "classe_de",
     "classe_para_id",
@@ -22,7 +22,7 @@
   ],
   "dtypes": {
     "bioma": "str",
-    "estado": "str",
+    "uf": "str",
     "classe_de_id": "int",
     "classe_de": "str",
     "classe_para_id": "int",
@@ -32,7 +32,7 @@
   },
   "nullable": {
     "bioma": false,
-    "estado": false,
+    "uf": false,
     "classe_de_id": false,
     "classe_de": true,
     "classe_para_id": false,
@@ -53,7 +53,7 @@
       "max_value": null
     },
     {
-      "name": "estado",
+      "name": "uf",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -137,7 +137,7 @@
   "guarantees": [
     "Column names never change (additions only)",
     "'bioma' is always a valid Brazilian biome name",
-    "'estado' is always a valid Brazilian state code (UF)",
+    "'uf' is always a valid Brazilian state code (UF)",
     "'periodo' always matches pattern YYYY-YYYY",
     "'area_ha' is always >= 0",
     "'classe_de_id' and 'classe_para_id' map to MapBiomas LULC legend codes",

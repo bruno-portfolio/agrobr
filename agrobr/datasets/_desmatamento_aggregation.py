@@ -51,7 +51,7 @@ def _validate_keys(frame: pd.DataFrame, tipo: str) -> None:
 
 
 def _agreed_value(values: pd.Series) -> Any:
-    return values.iloc[0] if values.nunique(dropna=False) == 1 else pd.NA
+    return values.iloc[0] if values.nunique(dropna=False) == 1 else None
 
 
 def _complete_sum(values: pd.Series) -> float:
@@ -96,7 +96,7 @@ def aggregate(
     output = output[contract.list_columns()]
     for column in contract.columns:
         if column.type.value == "str":
-            output[column.name] = output[column.name].astype(pd.StringDtype(storage="python"))
+            output[column.name] = output[column.name].astype(contracts.TEXTO)
         elif column.type.value == "int":
             output[column.name] = output[column.name].astype("Int64")
     valid, errors = contract.validate(output)

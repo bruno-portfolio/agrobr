@@ -19,7 +19,7 @@ from lxml import etree
 from openpyxl.worksheet._read_only import ReadOnlyWorksheet
 
 from agrobr import constants
-from agrobr.exceptions import ParseError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.utils import io as io_utils
 
 from . import models
@@ -216,20 +216,11 @@ class MunicipalPopulation:
 def _matches(row: models.MunicipalCoverageRecord, selectors: dict[str, Any]) -> bool:
     actual = {
         "bioma": row.biome,
-        "estado": models.estado_para_uf(row.state),
-        "municipio": row.municipality.strip(),
+        "uf": models.estado_para_uf(row.state),
         "geocodigo": row.geocode,
         "classe_id": row.class_id,
     }
-    for name, value in selectors.items():
-        if value is None:
-            continue
-        if name == "municipio":
-            if value.strip().casefold() not in row.municipality.strip().casefold():
-                return False
-        elif actual[name] != value:
-            return False
-    return True
+    return all(value is None or actual[name] == value for name, value in selectors.items())
 
 
 def _append(
@@ -240,7 +231,7 @@ def _append(
 ) -> None:
     shared = {
         "bioma": row.biome,
-        "estado": models.estado_para_uf(row.state),
+        "uf": models.estado_para_uf(row.state),
         "municipio": row.municipality.strip(),
         "classe_id": row.class_id,
         "classe": models.classe_para_nome(row.class_id, collection),
@@ -266,7 +257,7 @@ def _build_frame(buffers: dict[int, dict[str, list[Any]]]) -> pd.DataFrame:
             if name in {"ano", "classe_id", "id_registro"}
             else "float64"
             if name == "area_ha"
-            else "object"
+            else pd.Series([""]).dtype
         )
         values = list(itertools.chain.from_iterable(year[name] for year in buffers.values()))
         columns[name] = pd.Series(values, dtype=dtype)
@@ -304,6 +295,12 @@ def _consume(
             _append(buffers, row, years, collection)
     if population.validated_rows == 0:
         raise _error(f"{worksheet.title}: população municipal sem linhas identificadas")
+    geocodigo = selectors.get("geocodigo")
+    if geocodigo is not None and geocodigo not in population.geocode_states:
+        raise InvalidParameterError(
+            f"municipio={geocodigo!r}: geocódigo ausente do recurso municipal da coleção "
+            f"{collection}"
+        )
     frame = _build_frame(buffers)
     details = population.details(layout, collection, len(frame))
     details["filters"] = {**selectors, "ano": year_filter}
@@ -315,8 +312,7 @@ def parse_cobertura_municipal(
     *,
     colecao: int,
     bioma: str | None = None,
-    estado: str | None = None,
-    municipio: str | None = None,
+    uf: str | None = None,
     geocodigo: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
@@ -329,8 +325,7 @@ def parse_cobertura_municipal(
         raise _error("coleção municipal não suportada")
     selectors = {
         "bioma": bioma,
-        "estado": estado,
-        "municipio": municipio,
+        "uf": uf,
         "geocodigo": geocodigo,
         "classe_id": classe_id,
     }
@@ -347,6 +342,8 @@ def parse_cobertura_municipal(
         if sheet not in workbook.sheetnames:
             raise _error(f"aba municipal {sheet} ausente")
         return _consume(workbook[sheet], colecao, selectors, ano)
+    except InvalidParameterError:
+        raise
     except (
         zipfile.BadZipFile,
         zlib.error,

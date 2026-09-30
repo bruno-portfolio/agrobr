@@ -5,7 +5,7 @@ from typing import Any
 
 from agrobr import constants
 from agrobr.exceptions import InvalidParameterError
-from agrobr.normalize import regions
+from agrobr.normalize import municipalities, regions
 
 from . import models
 
@@ -24,18 +24,20 @@ def validar_colecao(colecao: int | None) -> int:
     return colecao
 
 
-def normalizar_estado(estado: str | None) -> str | None:
-    if estado is None:
+def normalizar_uf(uf: str | None) -> str | None:
+    if uf is None:
         return None
-    if not isinstance(estado, str):
-        raise InvalidParameterError("estado deve ser uma string")
-    estado_key = regions.remover_acentos(estado.strip().lower())
-    estado_uf = regions.NOMES_PARA_UF.get(estado_key)
-    if estado_uf is None:
+    sigla = (
+        regions.NOMES_PARA_UF.get(regions.remover_acentos(uf.strip().lower()))
+        if isinstance(uf, str)
+        else None
+    )
+    if sigla is None:
         raise InvalidParameterError(
-            f"Estado inválido: {estado!r}. Use a sigla ou o nome completo de uma UF"
+            f"UF inválida: {uf!r}. Use a sigla ou o nome completo; siglas válidas: "
+            f"{', '.join(sorted(regions.UFS_VALIDAS))}"
         )
-    return estado_uf
+    return sigla
 
 
 def normalizar_bioma(bioma: str | None) -> str | None:
@@ -86,15 +88,26 @@ def validar_opcoes(kwargs: dict[str, Any], *, as_polars: bool, return_meta: bool
             raise InvalidParameterError(f"{nome} deve ser booleano")
 
 
-def validar_dimensao(nivel: str, municipio: str | None, geocodigo: str | None) -> None:
+def geocodigo_do_municipio(nivel: str, municipio: str | int | None, uf: str | None) -> str | None:
+    """Geocódigo do MapBiomas para o ``municipio`` dado por nome ou por código de 7 dígitos.
+
+    O nome passa por ``normalize.resolver_municipio`` (nome inteiro, com a ``uf`` para
+    desambiguar). O código segue direto: o recurso municipal também publica geocódigos fora do
+    cadastro de municípios do IBGE (Lagoa Mirim e Lagoa dos Patos), conferidos depois do download.
+    """
     if not isinstance(nivel, str) or nivel not in {"estado", "municipio"}:
         raise InvalidParameterError("nivel deve ser 'estado' ou 'municipio'")
-    if municipio is not None and (not isinstance(municipio, str) or not municipio.strip()):
-        raise InvalidParameterError("municipio deve ser uma string não vazia")
-    if geocodigo is not None and (
-        not isinstance(geocodigo, str)
-        or not re.fullmatch(constants.MAPBIOMAS_GEOCODE_PATTERN, geocodigo)
-    ):
-        raise InvalidParameterError("geocodigo deve ser uma string de sete dígitos ASCII")
-    if nivel != "municipio" and (municipio is not None or geocodigo is not None):
-        raise InvalidParameterError("municipio e geocodigo exigem nivel='municipio'")
+    if municipio is None:
+        return None
+    if nivel != "municipio":
+        raise InvalidParameterError("municipio exige nivel='municipio'")
+    if isinstance(municipio, bool) or not isinstance(municipio, (str, int)):
+        raise InvalidParameterError(
+            f"municipio deve ser o nome ou o código de 7 dígitos: {municipio!r}"
+        )
+    texto = str(municipio).strip()
+    if re.fullmatch(constants.MAPBIOMAS_GEOCODE_PATTERN, texto):
+        return texto
+    if isinstance(municipio, int) or texto.isdigit():
+        raise InvalidParameterError(f"municipio como código deve ter 7 dígitos: {municipio!r}")
+    return f"{municipalities.resolver_municipio(texto, uf)['codigo_ibge']:07d}"

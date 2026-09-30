@@ -33,49 +33,49 @@ async def main():
     # Alerts detected in the period (requires token)
     df = await mapbiomas_alerta.alertas(
         token="your-token",
-        start_date="2025-01-01",
-        end_date="2025-01-31",
+        inicio="2025-01-01",
+        fim="2025-01-31",
     )
 
     # Last month's alerts: filter by publication
     df = await mapbiomas_alerta.alertas(
-        start_date="2026-08-01",
-        end_date="2026-08-31",
+        inicio="2026-08-01",
+        fim="2026-08-31",
         tipo_data="publicacao",
     )
 
     # Filter by detection source (API enum values)
     df = await mapbiomas_alerta.alertas(
         sources=["DeterbAmazonia", "Sad"],
-        start_date="2025-01-01",
-        end_date="2025-01-31",
+        inicio="2025-01-01",
+        fim="2025-01-31",
     )
 
     # Filter by box (minlon, minlat, maxlon, maxlat)
     df = await mapbiomas_alerta.alertas(
         bbox=(-55, -8, -50, -3),
-        start_date="2025-01-01",
-        end_date="2025-01-31",
+        inicio="2025-01-01",
+        fim="2025-01-31",
     )
 
     # Whole collection, without the default cap of 5,000
     df = await mapbiomas_alerta.alertas(
-        start_date="2025-01-01",
-        end_date="2025-12-31",
+        inicio="2025-01-01",
+        fim="2025-12-31",
         max_registros=None,
     )
 
     # With WKT geometry (requires geopandas)
     gdf = await mapbiomas_alerta.alertas_geo(
-        start_date="2025-01-01",
-        end_date="2025-01-31",
+        inicio="2025-01-01",
+        fim="2025-01-31",
     )
 
     # With metadata
-    df, meta = await mapbiomas_alerta.alertas(start_date="2025-01-01", return_meta=True)
+    df, meta = await mapbiomas_alerta.alertas(inicio="2025-01-01", return_meta=True)
 
     # Polars
-    df = await mapbiomas_alerta.alertas(start_date="2025-01-01", as_polars=True)
+    df = await mapbiomas_alerta.alertas(inicio="2025-01-01", as_polars=True)
 
     # Info (date range + last publication)
     info = await mapbiomas_alerta.alerta_info()
@@ -87,7 +87,7 @@ asyncio.run(main())
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `start_date`, `end_date` | str \| None | None | `YYYY-MM-DD` or `DD/MM/YYYY` (agrobr sends ISO). A start after the end, or any other format, raises `InvalidParameterError` before the network. Without `start_date`, the API starts at 2019-01-01 |
+| `inicio`, `fim` | str \| date \| datetime \| None | None | `date`, `datetime` (the time is dropped) or text `YYYY-MM-DD` or `DD/MM/YYYY` (agrobr sends ISO). A start after the end, or any other type or format, raises `InvalidParameterError` before the network. Without `inicio`, the API starts at 2019-01-01 |
 | `tipo_data` | str | `"deteccao"` | `"deteccao"` filters the detection date; `"publicacao"`, the publication date. Anything else raises `InvalidParameterError` |
 | `sources` | list[str] \| None | None | API enum values: `DeterbAmazonia`, `DeterCerrado`, `DeterPantanal`, `Glad`, `IefMg`, `InemaBa`, `ProdesAmazonia`, `ProdesCerrado`, `ProdesMataAtlantica`, `ProdesPampa`, `ProdesPantanal`, `ProdesCaatinga`, `Sad`, `SadCaatinga`, `SadCerrado`, `SadMataAtlantica`, `SadPampa`, `SadPantanal`, `SipamSar`, `SiradX`, `SosAtlas` and `SosInpe`, and `All` (every source). A value outside the enum (including the `fonte` column names, such as `DETERB-AMAZONIA`) raises `InvalidParameterError` before the network |
 | `bbox` | tuple \| None | None | `(minlon, minlat, maxlon, maxlat)` in degrees |
@@ -100,7 +100,7 @@ to February 2025: publication came a median of 152 days after detection; 90% wit
 293 days** (the maximum was 607). That is why a recent period by detection comes back almost empty: August 2026 had 0 alerts by
 detection and 2,118 by publication.
 
-With `tipo_data="deteccao"` and a period ending less than 293 days before today (or without `end_date`), the result carries the
+With `tipo_data="deteccao"` and a period ending less than 293 days before today (or without `fim`), the result carries the
 warning "este período ainda ganha alertas enquanto a publicação chega" (the period still gains alerts as publication arrives),
 in `validation_warnings` and `UserWarning`. For "last month's alerts", use `tipo_data="publicacao"`.
 
@@ -119,7 +119,7 @@ announced `totalCount`:
 
 | Column | Type | Description |
 |--------|------|-------------|
-| alert_code | int | Alert code |
+| alert_code | Int64 | Alert code |
 | area_ha | float | Area in hectares |
 | data_deteccao | datetime | Detection date |
 | data_publicacao | datetime | Publication date |
@@ -128,6 +128,11 @@ announced `totalCount`:
 | lat | float | Latitude |
 | lon | float | Longitude |
 | geometry | Polygon | WKT geometry (alertas_geo only; an invalid WKT becomes a null geometry, and the alert stays) |
+
+A query without alerts returns the same columns and dtypes (`alert_code` as `Int64`, dates as `datetime64[ns]`, `area_ha`,
+`lat` and `lon` as `float64` and text in the default dtype of the installed pandas); `alertas_geo` keeps the `EPSG:4326` CRS.
+`alerta_info()` raises `ParseError` when the response lacks `alertDateRange` or `lastAlertPublication` with their fields,
+instead of returning empty dictionaries.
 
 ## Limitations
 

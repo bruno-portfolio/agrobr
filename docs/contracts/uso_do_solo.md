@@ -15,21 +15,21 @@ Cobertura e uso da terra (MapBiomas) — cobertura anual e transições entre cl
 | Coluna | Tipo | Nullable | Unidade | Restrições |
 |--------|------|----------|---------|------------|
 | `bioma` | STRING | Não | — | Bioma válido |
-| `estado` | STRING | Não | — | UF válida |
+| `uf` | STRING | Não | — | Sigla da UF |
 | `classe_id` | INTEGER | Não | — | Código LULC MapBiomas |
 | `classe` | STRING | Sim | — | Nulo só para código fora da legenda |
 | `nivel_0` | STRING | Sim | — | — |
 | `ano` | INTEGER | Não | — | ≥ 1985 |
 | `area_ha` | FLOAT | Não | ha | ≥ 0 |
 
-**PK:** `(bioma, estado, classe_id, ano)`
+**PK:** `(bioma, uf, classe_id, ano)`
 
 ## Schema: Transição
 
 | Coluna | Tipo | Nullable | Unidade | Restrições |
 |--------|------|----------|---------|------------|
 | `bioma` | STRING | Não | — | Bioma válido |
-| `estado` | STRING | Não | — | UF válida |
+| `uf` | STRING | Não | — | Sigla da UF |
 | `classe_de_id` | INTEGER | Não | — | Código LULC |
 | `classe_de` | STRING | Sim | — | Nulo só para código fora da legenda |
 | `classe_para_id` | INTEGER | Não | — | Código LULC |
@@ -37,16 +37,16 @@ Cobertura e uso da terra (MapBiomas) — cobertura anual e transições entre cl
 | `periodo` | STRING | Não | — | Formato YYYY-YYYY |
 | `area_ha` | FLOAT | Não | ha | ≥ 0 |
 
-**PK:** `(bioma, estado, classe_de_id, classe_para_id, periodo)`
+**PK:** `(bioma, uf, classe_de_id, classe_para_id, periodo)`
 
 ## Nível municipal
 
-Cobertura com `nivel="municipio"` valida o contrato próprio `mapbiomas.cobertura_municipal` 1.0. A validação de chave não é mais ignorada neste modo. O esquema estadual continua separado.
+Cobertura com `nivel="municipio"` valida o contrato próprio `mapbiomas.cobertura_municipal` 1.1. A validação de chave não é mais ignorada neste modo. O esquema estadual continua separado.
 
 | Coluna | Tipo físico pandas | Nulo | Significado |
 |--------|--------------------|------|-------------|
 | `bioma` | str | Não | Bioma publicado |
-| `estado` | str | Não | UF do cruzamento publicado |
+| `uf` | str | Não | Sigla da UF do cruzamento publicado |
 | `municipio` | str | Não | Nome territorial publicado, sem espaços externos |
 | `classe_id` | Int64 | Não | Código da classe |
 | `classe` | str | Sim | Rótulo normalizado pelo SDK conforme a coleção; não é transcrição literal da legenda; nulo só para código fora da legenda |
@@ -59,11 +59,11 @@ Cobertura com `nivel="municipio"` valida o contrato próprio `mapbiomas.cobertur
 
 O texto sai no dtype padrão do pandas instalado: `str` no pandas 3 e `object` no pandas 2.
 
-A chave é `(bioma, estado, geocodigo, classe_id, id_registro, ano)`, dentro de uma coleção e recurso. Um código pode pertencer a cruzamentos em múltiplas UFs; isso não autoriza remover a UF da chave. `geocodigo` também inclui entidades como lagoas, sem promessa de catálogo municipal atual do IBGE. O `id_registro` é copiado do `ID` original, incluindo zero; não é ordinal gerado nem uma identidade estável entre publicações.
+A chave é `(bioma, uf, geocodigo, classe_id, id_registro, ano)`, dentro de uma coleção e recurso. Um código pode pertencer a cruzamentos em múltiplas UFs; isso não autoriza remover a UF da chave. `geocodigo` também inclui entidades como lagoas, sem promessa de catálogo municipal atual do IBGE. O `id_registro` é copiado do `ID` original, incluindo zero; não é ordinal gerado nem uma identidade estável entre publicações.
 
 Todos os 41 anos de 1985–2025 e todas as linhas identificadas da Coleção 11 são validados antes de concluir, inclusive dados fora dos filtros. A consulta só acumula as linhas selecionadas. Ausência de área, tipo incompatível, valor não finito/negativo ou repetição da chave completa causam erro; não há imputação nem deduplicação silenciosa. Recortes sem correspondência retornam um DataFrame vazio com os mesmos tipos.
 
-`municipio` busca substring literal sem distinguir caixa; `geocodigo` seleciona exatamente o texto fornecido. Ambos exigem `nivel="municipio"` e podem ser usados juntos. Veja [parâmetros e proveniência da fonte](../api/mapbiomas.md#cobertura-municipal-da-colecao-11).
+`municipio` aceita o nome inteiro (sem diferenciar caixa e acento, com `uf` para desambiguar) ou o código de sete dígitos, e seleciona pelo `geocodigo`; exige `nivel="municipio"`. Pedaço de nome, nome de mais de um município sem `uf` e código ausente do recurso levantam `InvalidParameterError`. Um `classe_id` fora das classes publicadas na coleção também levanta, com a lista. Veja [parâmetros e proveniência da fonte](../api/mapbiomas.md#cobertura-municipal-da-colecao-11).
 
 A Coleção 10 usa o mesmo esquema municipal de dez colunas, com 40 anos de 1985–2024. Seu recurso contém linhas com a mesma combinação territorial e áreas distintas, preservadas por seus IDs originais. Não há soma ou deduplicação automática; o ID publicado repetido causa erro antes dos filtros. `source_details["territorial_keys"]` descreve as repetições territoriais sem classificá-las como erro geográfico.
 
@@ -91,7 +91,7 @@ Cada coleção revisa o histórico completo. Para reprodução, fixe `colecao` e
 
 ## Seleção e erros
 
-O dataset usa somente MapBiomas, sem fallback para outra instituição. Cobertura aceita os filtros `bioma`, `estado`, `ano`, `classe_id`, `nivel`, `municipio`, `geocodigo` e `colecao`. Transição aceita `bioma`, `estado`, `periodo`, `classe_de_id`, `classe_para_id` e `colecao`, apenas no nível estadual. Filtros do outro modo e opções desconhecidas são rejeitados; não são ignorados.
+O dataset usa somente MapBiomas, sem fallback para outra instituição. Cobertura aceita os filtros `bioma`, `uf`, `ano`, `classe_id`, `nivel`, `municipio` e `colecao`. Transição aceita `bioma`, `uf`, `periodo`, `classe_de_id`, `classe_para_id` e `colecao`, apenas no nível estadual. Filtros do outro modo e opções desconhecidas são rejeitados; não são ignorados.
 
 `as_polars` e `return_meta` exigem booleanos. A conversão para Polars ocorre após a validação do contrato. Não há `produto` nem `use_cache`. O contexto `deterministic` é recusado antes da aquisição, pois não existe seleção de snapshot histórico arbitrário. Erros de aquisição ou parsing podem chegar pela camada de datasets como `SourceUnavailableError`, com detalhes em `errors`; não há retorno parcial de uma planilha inválida.
 
@@ -105,7 +105,7 @@ df = await datasets.uso_do_solo(tipo="cobertura", bioma="Cerrado", ano=2022)
 
 # Cobertura por município
 df = await datasets.uso_do_solo(
-    tipo="cobertura", nivel="municipio", geocodigo="5107925",
+    tipo="cobertura", nivel="municipio", municipio="Sorriso", uf="MT",
     ano=2025, colecao=11,
 )
 

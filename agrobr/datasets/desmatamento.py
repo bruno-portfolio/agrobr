@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
@@ -44,8 +44,8 @@ async def _fetch_desmatamento(bioma: str, **kwargs: Any) -> tuple[pd.DataFrame, 
         fetched = await source.prodes(ano=kwargs.get("ano"), **common)
     else:
         fetched = await source.deter(
-            data_inicio=kwargs.get("data_inicio"),
-            data_fim=kwargs.get("data_fim"),
+            inicio=kwargs.get("inicio"),
+            fim=kwargs.get("fim"),
             classe=kwargs.get("classe"),
             **common,
         )
@@ -113,19 +113,19 @@ class DesmatamentoDataset(base.BaseDataset):
     async def fetch(  # type: ignore[override]
         self,
         bioma: str = "Cerrado",
-        return_meta: bool = False,
         *,
+        return_meta: bool = False,
         tipo: Literal["prodes", "deter"] = "prodes",
         ano: int | None = None,
         uf: str | None = None,
-        data_inicio: str | None = None,
-        data_fim: str | None = None,
+        inicio: str | date | datetime | None = None,
+        fim: str | date | datetime | None = None,
         classe: str | None = None,
         max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
         tamanho_pagina: int | None = None,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         from agrobr.desmatamento import query
 
         if kwargs:
@@ -145,8 +145,8 @@ class DesmatamentoDataset(base.BaseDataset):
             bioma=bioma,
             ano=ano,
             uf=uf,
-            data_inicio=data_inicio,
-            data_fim=data_fim,
+            inicio=inicio,
+            fim=fim,
             classe=classe,
             max_registros=max_registros,
             tamanho_pagina=tamanho_pagina,
@@ -158,8 +158,8 @@ class DesmatamentoDataset(base.BaseDataset):
                 tipo=tipo,
                 ano=ano,
                 uf=uf,
-                data_inicio=data_inicio,
-                data_fim=data_fim,
+                inicio=inicio,
+                fim=fim,
                 classe=classe,
                 max_registros=max_registros,
                 tamanho_pagina=tamanho_pagina,
@@ -183,17 +183,7 @@ class DesmatamentoDataset(base.BaseDataset):
         meta.source_details["aggregation"] = aggregation
         meta.source_details["dataset_query"] = validated.model_dump(mode="json")
         meta.timestamp = datetime.now(UTC)
-        return result.finalize_result(
-            frame,
-            meta,
-            as_polars=as_polars,
-            return_meta=return_meta,
-            string_columns=tuple(
-                str(name)
-                for name, dtype in frame.dtypes.items()
-                if isinstance(dtype, pd.StringDtype)
-            ),
-        )
+        return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
     def _normalize(self, df: pd.DataFrame, tipo: Literal["prodes", "deter"]) -> pd.DataFrame:
         return _desmatamento_aggregation.aggregate(df, tipo)[0]
@@ -210,12 +200,12 @@ async def desmatamento(
     tipo: Literal["prodes", "deter"] = "prodes",
     ano: int | None = None,
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -228,15 +218,33 @@ async def desmatamento(
     tipo: Literal["prodes", "deter"] = "prodes",
     ano: int | None = None,
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    classe: str | None = None,
+    max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+    **kwargs: Any,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def desmatamento(
+    bioma: str = "Cerrado",
+    *,
+    tipo: Literal["prodes", "deter"] = "prodes",
+    ano: int | None = None,
+    uf: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
     as_polars: bool = False,
-    return_meta: Literal[True],
+    return_meta: bool = False,
     **kwargs: Any,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> result.DataFrameResult: ...
 
 
 async def desmatamento(
@@ -245,22 +253,22 @@ async def desmatamento(
     tipo: Literal["prodes", "deter"] = "prodes",
     ano: int | None = None,
     uf: str | None = None,
-    data_inicio: str | None = None,
-    data_fim: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     classe: str | None = None,
     max_registros: int | None = constants.DESMATAMENTO_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _desmatamento.fetch(
         bioma,
         tipo=tipo,
         ano=ano,
         uf=uf,
-        data_inicio=data_inicio,
-        data_fim=data_fim,
+        inicio=inicio,
+        fim=fim,
         classe=classe,
         max_registros=max_registros,
         tamanho_pagina=tamanho_pagina,

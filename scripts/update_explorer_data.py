@@ -145,7 +145,7 @@ def coverage_metrics(
     for row in records:
         if row["ano"] not in YEARS:
             continue
-        identity = (row["ano"], row["estado"], row["bioma"], row["classe_id"])
+        identity = (row["ano"], row["uf"], row["bioma"], row["classe_id"])
         if identity in seen:
             raise ValueError(f"Observação MapBiomas duplicada: {identity}")
         seen.add(identity)
@@ -155,7 +155,7 @@ def coverage_metrics(
         if row["classe_id"] in (1, 10, 14, 18, 19, 22, 26, 36):
             raise ValueError("A captura inclui classes agregadas; risco de dupla contagem")
         year = str(row["ano"])
-        for uf in (row["estado"], "BR"):
+        for uf in (row["uf"], "BR"):
             values = coverage.setdefault(year, {}).setdefault(uf, [0.0] * 4)
             values[groups.get(row["classe_id"], 3)] += area
             leaf = classes.setdefault(year, {}).setdefault(uf, {})

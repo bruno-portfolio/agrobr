@@ -12,12 +12,17 @@ from agrobr.exceptions import InvalidParameterError
 @pytest.mark.parametrize(
     "arguments",
     [
-        {"geocodigo": 2703007},
-        {"geocodigo": "2703007 "},
-        {"geocodigo": "２７０３００７"},
-        {"municipio": 1},
+        {"geocodigo": "2703007"},
+        {"estado": "AL"},
+        {"municipio": 270300},
+        {"municipio": "２７０３００７"},
+        {"municipio": True},
+        {"municipio": 2703007.0},
         {"municipio": " "},
-        {"estado": True},
+        {"municipio": "Sorris"},
+        {"municipio": "Redenção"},
+        {"municipio": "Sorriso", "uf": "PA"},
+        {"uf": True},
         {"bioma": 1},
         {"classe_id": True},
         {"classe_id": 3.1},
@@ -44,7 +49,7 @@ async def test_source_polars_typed_empty_keeps_municipal_contract(return_meta, r
     pl = pytest.importorskip("polars")
     replay_mapbiomas()
     result = await mapbiomas.cobertura(
-        nivel="municipio", geocodigo="0000001", as_polars=True, return_meta=return_meta
+        nivel="municipio", uf="MT", municipio="2703007", as_polars=True, return_meta=return_meta
     )
     frame = result[0] if return_meta else result
     assert frame.shape == (0, 11) and frame["geocodigo"].dtype == pl.Utf8
@@ -78,7 +83,7 @@ async def test_official_municipal_replay_preserves_every_selected_area_and_ident
                 expected[key] = (cells["G"], cells["J"], float(cells[letter]), int(cells["A"]))
     assert len(frame) == len(expected) == 142 * len(years)
     for row in frame.itertuples(index=False):
-        key = (row.bioma, row.estado, row.geocodigo, row.classe_id, row.ano)
+        key = (row.bioma, row.uf, row.geocodigo, row.classe_id, row.ano)
         municipality, level, area, identifier = expected[key]
         assert row.municipio == municipality and row.nivel_0 == level
         assert row.id_registro == identifier
@@ -115,4 +120,29 @@ async def test_official_municipal_replay_preserves_every_selected_area_and_ident
     assert meta.source_details["geocodes_with_multiple_states"] == [
         {"geocodigo": "2703007", "estados": ["AL", "PE"]}
     ]
+    assert len(requests) == 2
+
+
+@pytest.mark.parametrize(
+    "municipio", ["Sorriso", " SORRISO ", "sorriso", 5107925, "5107925"], ids=repr
+)
+async def test_municipio_por_nome_inteiro_ou_codigo_seleciona_o_mesmo_recorte(
+    municipio, replay_mapbiomas
+):
+    replay_mapbiomas()
+    frame = await mapbiomas.cobertura(nivel="municipio", municipio=municipio, ano=2025)
+    assert len(frame) == 32
+    assert set(frame["geocodigo"]) == {"5107925"} and set(frame["municipio"]) == {"Sorriso"}
+
+
+async def test_homonimo_resolve_pela_uf(replay_mapbiomas):
+    replay_mapbiomas()
+    frame = await mapbiomas.cobertura(nivel="municipio", municipio="Redenção", uf="PA", ano=2025)
+    assert frame["geocodigo"].tolist() == ["1506138"] and frame["uf"].tolist() == ["PA"]
+
+
+async def test_geocodigo_fora_do_recurso_levanta_depois_do_download(replay_mapbiomas):
+    requests = replay_mapbiomas()
+    with pytest.raises(InvalidParameterError, match="geocódigo ausente do recurso municipal"):
+        await mapbiomas.cobertura(nivel="municipio", municipio="4300001")
     assert len(requests) == 2

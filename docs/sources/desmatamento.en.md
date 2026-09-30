@@ -94,8 +94,8 @@ df_prodes = await agrobr.desmatamento.prodes(
 df_deter = await agrobr.desmatamento.deter(
     bioma="Amazônia",
     uf="PA",
-    data_inicio="2024-01-01",
-    data_fim="2024-06-30",
+    inicio="2024-01-01",
+    fim="2024-06-30",
 )
 
 # With metadata
@@ -115,8 +115,8 @@ gdf_prodes = await agrobr.desmatamento.prodes_geo(
 gdf = await agrobr.desmatamento.deter_geo(
     bioma="Amazônia",
     uf="PA",
-    data_inicio="2024-01-01",
-    data_fim="2024-06-30",
+    inicio="2024-01-01",
+    fim="2024-06-30",
 )
 ```
 

@@ -1178,10 +1178,11 @@ def test_mapbiomas_golden_parsing(_name: str, path: Path):
     df_cob = parse_cobertura_xlsx(data, colecao=10)
 
     for col in exp_cob["columns"]:
+        col = "uf" if col == "estado" else col
         assert col in df_cob.columns, f"Cobertura missing column: {col}"
     assert len(df_cob) >= exp_cob["min_records"]
     assert sorted(df_cob["bioma"].unique().tolist()) == exp_cob["biomas_expected"]
-    assert sorted(df_cob["estado"].unique().tolist()) == exp_cob["estados_expected"]
+    assert sorted(df_cob["uf"].unique().tolist()) == exp_cob["estados_expected"]
     for a in exp_cob["anos_expected"]:
         assert a in df_cob["ano"].values, f"Year {a} not found in cobertura"
 
@@ -1189,10 +1190,11 @@ def test_mapbiomas_golden_parsing(_name: str, path: Path):
     df_trans = parse_transicao_xlsx(data, colecao=10)
 
     for col in exp_trans["columns"]:
+        col = "uf" if col == "estado" else col
         assert col in df_trans.columns, f"Transicao missing column: {col}"
     assert len(df_trans) >= exp_trans["min_records"]
     assert sorted(df_trans["bioma"].unique().tolist()) == exp_trans["biomas_expected"]
-    assert sorted(df_trans["estado"].unique().tolist()) == exp_trans["estados_expected"]
+    assert sorted(df_trans["uf"].unique().tolist()) == exp_trans["estados_expected"]
     for p in exp_trans["periodos_expected"]:
         assert p in df_trans["periodo"].values, f"Period {p} not found in transicao"
 
@@ -1277,7 +1279,7 @@ def _wfs_golden_expected(features: list[dict[str, Any]], source: str) -> pd.Data
                 if name in integers
                 else "float64"
                 if name == "area_ha"
-                else "string[python]",
+                else pd.Series([""]).dtype,
             )
             for name in columns
         }
@@ -1401,7 +1403,7 @@ def _incra_administrative_expected() -> pd.DataFrame:
         {
             name: pd.Series(
                 [row[name] for row in records],
-                dtype="Int64" if name == "numero_publicado" else "string[python]",
+                dtype="Int64" if name == "numero_publicado" else pd.Series([""]).dtype,
             )
             for name in columns
         }
@@ -1435,6 +1437,7 @@ def test_incra_golden_parsing(_name: str, path: Path):
     from datetime import date
 
     from agrobr.incra import parser
+    from tests.test_incra import replay
 
     metadata = _load_metadata(path)
     if path.name == "andamento_20260608":
@@ -1453,11 +1456,13 @@ def test_incra_golden_parsing(_name: str, path: Path):
         expected_body = (path / "expected.json").read_bytes()
         assert hashlib.sha256(expected_body).hexdigest() == metadata["sha256"]
         raw = json.loads(expected_body)
+        geographic = _wfs_golden_expected(_incra_national_features(), "incra")
+        with pytest.warns(UserWarning, match="viraram NaT"):
+            parser.converter_datas(geographic)
         actual = relation.build_relation(
-            _wfs_golden_expected(_incra_national_features(), "incra"),
-            _incra_administrative_expected(),
-            max_rows=50_000,
+            geographic, _incra_administrative_expected(), max_rows=50_000
         ).frame
+        temporais = relation.temporal_columns()
         integers = {
             "perimetro_posicao",
             "perimetro_referencia_posicao",
@@ -1471,14 +1476,19 @@ def test_incra_golden_parsing(_name: str, path: Path):
         expected = pd.DataFrame(
             {
                 name: pd.Series(
-                    [row[name] for row in raw],
+                    [
+                        replay.publicado(name.removeprefix("perimetro_"), row[name])
+                        if name in temporais
+                        else row[name]
+                        for row in raw
+                    ],
                     dtype="Int64"
                     if name in integers
                     else "float64"
                     if name == "perimetro_area_ha"
                     else "boolean"
                     if name == "referencia_repetida"
-                    else "string[python]",
+                    else temporais.get(name, pd.Series([""]).dtype),
                 )
                 for name in raw[0]
             }

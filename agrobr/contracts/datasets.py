@@ -326,7 +326,7 @@ MAPBIOMAS_COBERTURA_V2 = Contract(
     name="mapbiomas.cobertura",
     version="2.0",
     effective_from="2.0.0",
-    primary_key=["bioma", "estado", "classe_id", "ano"],
+    primary_key=["bioma", "uf", "classe_id", "ano"],
     columns=[
         Column(
             name="bioma",
@@ -335,7 +335,7 @@ MAPBIOMAS_COBERTURA_V2 = Contract(
             stable=True,
         ),
         Column(
-            name="estado",
+            name="uf",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
@@ -377,7 +377,7 @@ MAPBIOMAS_COBERTURA_V2 = Contract(
     guarantees=[
         "Column names never change (additions only)",
         "'bioma' is always a valid Brazilian biome name",
-        "'estado' is always a valid Brazilian state code (UF)",
+        "'uf' is always a valid Brazilian state code (UF)",
         "'ano' is always between 1985 and current year",
         "'area_ha' is always >= 0",
         "'classe_id' maps to MapBiomas LULC legend codes",
@@ -390,7 +390,7 @@ MAPBIOMAS_TRANSICAO_V2 = Contract(
     name="mapbiomas.transicao",
     version="2.0",
     effective_from="2.0.0",
-    primary_key=["bioma", "estado", "classe_de_id", "classe_para_id", "periodo"],
+    primary_key=["bioma", "uf", "classe_de_id", "classe_para_id", "periodo"],
     columns=[
         Column(
             name="bioma",
@@ -399,7 +399,7 @@ MAPBIOMAS_TRANSICAO_V2 = Contract(
             stable=True,
         ),
         Column(
-            name="estado",
+            name="uf",
             type=ColumnType.STRING,
             nullable=False,
             stable=True,
@@ -446,7 +446,7 @@ MAPBIOMAS_TRANSICAO_V2 = Contract(
     guarantees=[
         "Column names never change (additions only)",
         "'bioma' is always a valid Brazilian biome name",
-        "'estado' is always a valid Brazilian state code (UF)",
+        "'uf' is always a valid Brazilian state code (UF)",
         "'periodo' always matches pattern YYYY-YYYY",
         "'area_ha' is always >= 0",
         "'classe_de_id' and 'classe_para_id' map to MapBiomas LULC legend codes",

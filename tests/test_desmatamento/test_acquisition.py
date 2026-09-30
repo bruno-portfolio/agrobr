@@ -198,8 +198,8 @@ async def test_acquisition_deter_literal_filter_and_duplicate_id(deter_records, 
         max_registros=None,
         classe=" D'ÁGUA ",
         uf="PA",
-        data_inicio="2018-01-01",
-        data_fim="2023-01-01",
+        inicio="2018-01-01",
+        fim="2023-01-01",
         tamanho_pagina=1,
     )
     result = await client.fetch_acquisition(selected)
@@ -224,7 +224,7 @@ async def test_acquisition_deter_filter_membership(field, value, deter_records, 
         max_registros=None,
         classe=" D'ÁGUA ",
         uf="PA",
-        data_inicio="2018-01-01",
+        inicio="2018-01-01",
     )
     with pytest.raises(ParseError, match="contradiz filtro"):
         await client.fetch_acquisition(selected)

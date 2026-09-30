@@ -76,8 +76,9 @@ def test_normalized_geography_domain_is_enforced(contract, frame, column, value)
     assert not valid and errors
 
 
-def test_text_requires_nullable_python_string_dtype(contract, frame):
-    frame["bioma"] = frame["bioma"].astype(object)
+def test_text_requires_default_pandas_dtype(contract, frame):
+    assert frame["bioma"].dtype == pd.Series([""]).dtype
+    frame["bioma"] = frame["bioma"].astype("string[python]")
     valid, errors = contract.validate(frame)
     assert not valid and errors
 
@@ -130,12 +131,12 @@ def test_aggregate_year_requires_integral_calendar_year(value, dtype):
     frame = pd.DataFrame(
         {
             "ano": pd.Series([value], dtype=dtype),
-            "uf": pd.Series(["MT"], dtype="string[python]"),
-            "classe": pd.Series(["DESMATAMENTO"], dtype="string[python]"),
+            "uf": pd.Series(["MT"], dtype=desmatamento.TEXTO),
+            "classe": pd.Series(["DESMATAMENTO"], dtype=desmatamento.TEXTO),
             "area_km2": pd.Series([0.0], dtype="float64"),
-            "satelite": pd.Series([None], dtype="string[python]"),
-            "sensor": pd.Series([None], dtype="string[python]"),
-            "bioma": pd.Series(["Amazônia"], dtype="string[python]"),
+            "satelite": pd.Series([None], dtype=desmatamento.TEXTO),
+            "sensor": pd.Series([None], dtype=desmatamento.TEXTO),
+            "bioma": pd.Series(["Amazônia"], dtype=desmatamento.TEXTO),
         }
     )
     valid, errors = contract.validate(frame)

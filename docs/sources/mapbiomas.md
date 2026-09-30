@@ -57,7 +57,7 @@ Em 5 UFs amazônicas de fronteira, a soma dos municípios publicada passa do est
 
 Nas outras 22 UFs, a diferença fica abaixo de 1 ha (no RS, com as lagoas, +0,985 ha). O agrobr repassa as 2 publicações como vêm, e o `READ_ME` delas não trata da diferença. Para o total da UF, use `nivel="estado"`, e não a soma dos municípios.
 
-O filtro `municipio` mantém a busca por substring literal sem distinguir caixa; `geocodigo` é exato. Eles podem ser combinados. Na Coleção 11, o parser valida todas as linhas e todos os 41 anos antes de concluir, mesmo quando a consulta pede apenas um município, classe ou ano. Áreas ausentes, não finitas, negativas ou de tipo incompatível interrompem a leitura; zeros permanecem. Linhas inteiramente vazias são contabilizadas, sem fabricar observações.
+O filtro `municipio` aceita o nome inteiro (sem diferenciar caixa e acento, com `uf` para desambiguar, por `normalize.resolver_municipio`) ou o geocódigo de sete dígitos, e sempre seleciona pelo geocódigo; pedaço de nome é recusado com os candidatos. Na Coleção 11, o parser valida todas as linhas e todos os 41 anos antes de concluir, mesmo quando a consulta pede apenas um município, classe ou ano. Áreas ausentes, não finitas, negativas ou de tipo incompatível interrompem a leitura; zeros permanecem. Linhas inteiramente vazias são contabilizadas, sem fabricar observações.
 
 O parser municipal usa leitura em fluxo e só acumula o retorno selecionado, preservando a ordem ano→linha da fonte. Isso reduz memória de consultas filtradas, mas não o download nem a validação da população. Uma consulta sem filtros ainda materializa todo o resultado longo. Fingerprint e estatísticas descrevem estrutura e valores publicados; não medem acurácia científica dos mapas.
 
@@ -78,7 +78,7 @@ import agrobr
 df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020)
 
 # Pastagem (classe 15) em Goias
-df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", estado="Goiás", classe_id=15)
+df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", uf="Goiás", classe_id=15)
 
 # Transicao floresta→pastagem no Cerrado
 df = await agrobr.mapbiomas.transicao(

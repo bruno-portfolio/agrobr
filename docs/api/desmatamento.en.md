@@ -108,8 +108,8 @@ import agrobr
 df = await agrobr.desmatamento.deter(
     bioma="Amazônia",
     uf="PA",
-    data_inicio="2024-01-01",
-    data_fim="2024-06-30",
+    inicio="2024-01-01",
+    fim="2024-06-30",
 )
 ```
 
@@ -119,8 +119,8 @@ df = await agrobr.desmatamento.deter(
 |-----------|------|----------|-------------|
 | `bioma` | `str` | No | Biome: "Amazonia", "Cerrado". Default: "Amazonia" |
 | `uf` | `str` | No | Filter by state (e.g. "PA") |
-| `data_inicio` | `str` | No | Start date YYYY-MM-DD |
-| `data_fim` | `str` | No | End date YYYY-MM-DD |
+| `inicio` | `str`, `date` or `datetime` | No | Start date: `date`, `datetime` (the time is dropped) or text `YYYY-MM-DD` or `DD/MM/YYYY` |
+| `fim` | `str`, `date` or `datetime` | No | End date, in the same formats; before `inicio` raises `InvalidParameterError` |
 | `classe` | `str` | No | Filter by alert class |
 | `as_polars` | `bool` | No | Return as polars.DataFrame |
 | `return_meta` | `bool` | No | If True, returns `(DataFrame, MetaInfo)` |
@@ -165,8 +165,8 @@ import agrobr
 gdf = await agrobr.desmatamento.deter_geo(
     bioma="Amazônia",
     uf="PA",
-    data_inicio="2024-01-01",
-    data_fim="2024-06-30",
+    inicio="2024-01-01",
+    fim="2024-06-30",
 )
 
 # Geospatial join with CAR/SICAR
@@ -181,8 +181,8 @@ alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
 |-----------|------|----------|-------------|
 | `bioma` | `str` | No | Biome: "Amazonia", "Cerrado". Default: "Amazonia" |
 | `uf` | `str` | No | Filter by state (e.g. "PA") |
-| `data_inicio` | `str` | No | Start date YYYY-MM-DD |
-| `data_fim` | `str` | No | End date YYYY-MM-DD |
+| `inicio` | `str`, `date` or `datetime` | No | Start date: `date`, `datetime` (the time is dropped) or text `YYYY-MM-DD` or `DD/MM/YYYY` |
+| `fim` | `str`, `date` or `datetime` | No | End date, in the same formats; before `inicio` raises `InvalidParameterError` |
 | `classe` | `str` | No | Filter by alert class |
 | `return_meta` | `bool` | No | If True, returns `(GeoDataFrame, MetaInfo)` |
 
@@ -203,7 +203,7 @@ alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
 
 ### Notes
 
-- Default `maxFeatures=10000` — use filters (uf, data_inicio/data_fim, classe) to reduce volume
+- Default `maxFeatures=10000` — use filters (uf, inicio/fim, classe) to reduce volume
 - A warning is logged automatically if the response reaches the feature limit (possible truncation)
 - Approximate volume: ~1.1 KB per feature with geometry
 
@@ -216,8 +216,8 @@ from agrobr import sync
 
 df = sync.desmatamento.prodes(bioma="Cerrado", ano=2022, uf="MT")
 gdf_prodes = sync.desmatamento.prodes_geo(bioma="Cerrado", ano=2022, uf="MT")
-df_deter = sync.desmatamento.deter(bioma="Amazônia", uf="PA", data_inicio="2024-01-01")
-gdf = sync.desmatamento.deter_geo(bioma="Amazônia", uf="PA", data_inicio="2024-01-01")
+df_deter = sync.desmatamento.deter(bioma="Amazônia", uf="PA", inicio="2024-01-01")
+gdf = sync.desmatamento.deter_geo(bioma="Amazônia", uf="PA", inicio="2024-01-01")
 ```
 
 ## Data Source

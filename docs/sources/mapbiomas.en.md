@@ -57,7 +57,7 @@ In 5 Amazonian border states, the published sum of municipalities exceeds the pu
 
 In the other 22 states, the difference stays below 1 ha (in RS, with its lagoons, +0.985 ha). agrobr passes both publications through as published, and their `READ_ME` does not address the difference. For a state total, use `nivel="estado"` rather than summing municipalities.
 
-The `municipio` filter preserves literal case-insensitive substring matching; `geocodigo` matches exactly. They can be combined. In Collection 11, the parser validates every row and all 41 years before returning, even when the request selects one municipality, class or year. Missing, non-finite, negative or incompatible areas abort parsing; zeros remain. Entirely empty rows are counted without fabricating observations.
+The `municipio` filter accepts the full name (case- and accent-insensitive, with `uf` to disambiguate, via `normalize.resolver_municipio`) or the seven-digit geocode, and always selects by geocode; a partial name is refused with the candidates. In Collection 11, the parser validates every row and all 41 years before returning, even when the request selects one municipality, class or year. Missing, non-finite, negative or incompatible areas abort parsing; zeros remain. Entirely empty rows are counted without fabricating observations.
 
 The municipal parser streams the workbook and accumulates only selected output, retaining source year→row order. This reduces memory for filtered requests, but not download size or population validation. An unfiltered query still materializes the full long result. Fingerprints and statistics describe published structure and values, not scientific map accuracy.
 
@@ -78,7 +78,7 @@ import agrobr
 df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020)
 
 # Pasture (class 15) in Goias
-df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", estado="Goiás", classe_id=15)
+df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", uf="Goiás", classe_id=15)
 
 # Forest→pasture transition in Cerrado
 df = await agrobr.mapbiomas.transicao(
