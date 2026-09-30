@@ -99,7 +99,7 @@ async def test_pracas_meta_preserva_url_efetiva(monkeypatch):
     assert meta.data_sources == ["antt_pedagio"]
     assert meta.raw_content_size == len(PRACAS)
     assert meta.dataset == "antt_pedagio_pracas"
-    assert meta.schema_version == meta.contract_version == "1.0.1"
+    assert meta.schema_version == meta.contract_version == "2.0"
 
 
 async def test_fluxo_urls_sem_repeticao_com_nova_tentativa(monkeypatch):

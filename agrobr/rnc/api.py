@@ -8,11 +8,16 @@ import pandas as pd
 
 from agrobr import _log, constants, contracts
 from agrobr.models import MetaInfo
+from agrobr.normalize.regions import remover_acentos
 from agrobr.utils import result
 
 from . import acquisition, loading, parser, query
 
 logger = _log.get_logger(__name__)
+
+
+def _sem_acento(texto: str) -> str:
+    return remover_acentos(texto).casefold()
 
 
 def _select(frame: pd.DataFrame, filters: dict[str, str]) -> pd.DataFrame:
@@ -22,7 +27,9 @@ def _select(frame: pd.DataFrame, filters: dict[str, str]) -> pd.DataFrame:
         mask = (
             series.eq(value)
             if name.startswith("nr_")
-            else series.str.contains(value, case=False, na=False, regex=False)
+            else series.map(_sem_acento, na_action="ignore").str.contains(
+                _sem_acento(value), na=False, regex=False
+            )
         )
         selected = selected[mask]
     return selected.copy().reset_index(drop=True)
@@ -91,7 +98,7 @@ async def _fetch(
     use_cache: bool,
     as_polars: bool,
     return_meta: bool,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     selected = query.validate_filters(
         filters, extras, use_cache=use_cache, as_polars=as_polars, return_meta=return_meta
     )
@@ -116,7 +123,7 @@ async def registradas(
     nr_registro: str | None = None,
     nr_formulario: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -133,10 +140,27 @@ async def registradas(
     nr_registro: str | None = ...,
     nr_formulario: str | None = ...,
     use_cache: bool = ...,
-    as_polars: bool = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[True],
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def registradas(
+    *,
+    cultivar: str | None = ...,
+    especie: str | None = ...,
+    grupo: str | None = ...,
+    situacao: str | None = ...,
+    mantenedor: str | None = ...,
+    nr_registro: str | None = ...,
+    nr_formulario: str | None = ...,
+    use_cache: bool = ...,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> result.DataFrameResult: ...
 
 
 async def registradas(
@@ -152,7 +176,7 @@ async def registradas(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         "registradas",
         {
@@ -181,7 +205,7 @@ async def protegidas(
     nr_processo: str | None = None,
     nr_certificado: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -197,10 +221,26 @@ async def protegidas(
     nr_processo: str | None = ...,
     nr_certificado: str | None = ...,
     use_cache: bool = ...,
-    as_polars: bool = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[True],
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def protegidas(
+    *,
+    cultivar: str | None = ...,
+    especie: str | None = ...,
+    situacao: str | None = ...,
+    titular: str | None = ...,
+    nr_processo: str | None = ...,
+    nr_certificado: str | None = ...,
+    use_cache: bool = ...,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> result.DataFrameResult: ...
 
 
 async def protegidas(
@@ -215,7 +255,7 @@ async def protegidas(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         "protegidas",
         {

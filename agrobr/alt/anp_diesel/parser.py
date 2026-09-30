@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import re
 import unicodedata
 from typing import Any, Literal
 
@@ -170,10 +171,14 @@ def _filter_precos(
             raise ValueError("Filtro municipal exige coluna de municipio")
         selected &= (
             df[cols["municipio"]]
-            .map(lambda value: models.normalize_municipio(value) if isinstance(value, str) else "")
-            .eq(models.normalize_municipio(municipio))
+            .map(lambda value: _chave_municipio(value) if isinstance(value, str) else "")
+            .eq(_chave_municipio(municipio))
         )
     return df[selected]
+
+
+def _chave_municipio(nome: str) -> str:
+    return re.sub(r"[^A-Z0-9]", "", models.normalize_municipio(nome))
 
 
 def _sem_agregados(df: pd.DataFrame, cols: dict[str, str | None]) -> tuple[pd.DataFrame, list[str]]:

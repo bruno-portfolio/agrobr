@@ -79,12 +79,7 @@ def _matches(record: models.ZarcRecord, culture: str, query: ZarcQuery | None) -
         return False
     if query.ciclo is not None and record.ciclo_codigo != query.ciclo:
         return False
-    if query.municipio is not None:
-        value = query.municipio
-        if isinstance(value, int) or value.isascii() and value.isdigit():
-            return record.geocodigo == str(value)
-        return models.normalize_municipio(value) in models.normalize_municipio(record.municipio)
-    return True
+    return query.municipio is None or record.geocodigo == query.municipio
 
 
 def _fingerprint(headers: list[str]) -> dict[str, Any]:

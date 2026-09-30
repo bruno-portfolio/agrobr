@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-import re
 import time
 import warnings
 from contextlib import closing
@@ -13,13 +12,13 @@ import pandas as pd
 from agrobr import _log, contracts
 from agrobr.exceptions import (
     ContractViolationError,
-    InvalidParameterError,
     ParseError,
     SourceUnavailableError,
 )
 from agrobr.models import MetaInfo
+from agrobr.normalize import municipalities
 from agrobr.utils import time as time_utils
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.validation import validate_year_uf
 from agrobr.utils.warnings import warn_once
 
@@ -27,7 +26,6 @@ from . import client, parser
 from .models import (
     ANO_INICIO_PSR,
     CATALOGO_URL,
-    CD_IBGE_PATTERN,
     COLUNAS_APOLICES,
     COLUNAS_SINISTROS,
     CSV_RESOURCES,
@@ -41,56 +39,68 @@ logger = _log.get_logger(__name__)
 
 @overload
 async def sinistros(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
-    cd_ibge: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def sinistros(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
-    cd_ibge: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def sinistros(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
-    cd_ibge: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult: ...
+
+
+async def sinistros(
+    produto: str | None = None,
+    uf: str | None = None,
+    ano: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    municipio: int | str | None = None,
+    evento: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult:
     return await _fetch(
-        cultura=cultura,
+        produto=produto,
         uf=uf,
         ano=ano,
         ano_inicio=ano_inicio,
         ano_fim=ano_fim,
         municipio=municipio,
-        cd_ibge=cd_ibge,
         evento=evento,
         sinistros=True,
         as_polars=as_polars,
@@ -100,53 +110,64 @@ async def sinistros(
 
 @overload
 async def apolices(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
-    as_polars: bool = False,
+    municipio: int | str | None = None,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def apolices(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
-    as_polars: bool = False,
+    municipio: int | str | None = None,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def apolices(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
+    municipio: int | str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult: ...
+
+
+async def apolices(
+    produto: str | None = None,
+    uf: str | None = None,
+    ano: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    municipio: int | str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult:
     return await _fetch(
-        cultura=cultura,
+        produto=produto,
         uf=uf,
         ano=ano,
         ano_inicio=ano_inicio,
         ano_fim=ano_fim,
         municipio=municipio,
-        cd_ibge=cd_ibge,
         evento=None,
         sinistros=False,
         as_polars=as_polars,
@@ -156,26 +177,19 @@ async def apolices(
 
 async def _fetch(
     *,
-    cultura: str | None,
+    produto: str | None,
     uf: str | None,
     ano: int | None,
     ano_inicio: int | None,
     ano_fim: int | None,
-    municipio: str | None,
-    cd_ibge: str | None,
+    municipio: int | str | None,
     evento: str | None,
     sinistros: bool,
     as_polars: bool,
     return_meta: bool,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     validate_year_uf(uf=uf, ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim, ano_min=ANO_INICIO_PSR)
-    if cd_ibge is not None and not (
-        isinstance(cd_ibge, str) and re.fullmatch(CD_IBGE_PATTERN, cd_ibge)
-    ):
-        raise InvalidParameterError(
-            f"cd_ibge deve ser o código IBGE do município, com 7 dígitos em texto "
-            f"(ex.: '4305108'); recebeu {cd_ibge!r}"
-        )
+    alvo = None if municipio is None else municipalities.resolver_municipio(municipio, uf)
 
     effective_inicio, effective_fim = _resolve_range(ano, ano_inicio, ano_fim)
     urls, avisos = await _urls_dos_periodos(effective_inicio, effective_fim)
@@ -184,7 +198,9 @@ async def _fetch(
     parse_ms = 0
     dfs: list[pd.DataFrame] = []
     corpos: list[dict[str, Any]] = []
-    empty = pd.DataFrame(columns=COLUNAS_SINISTROS if sinistros else COLUNAS_APOLICES)
+    contrato = "mapa_psr_sinistros" if sinistros else "mapa_psr_apolices"
+    colunas = COLUNAS_SINISTROS if sinistros else COLUNAS_APOLICES
+    empty = contracts.get_contract(contrato).empty_frame()[colunas]
     for periodo, url in urls.items():
         period_frames: list[pd.DataFrame] = []
         t0 = time.monotonic()
@@ -200,11 +216,10 @@ async def _fetch(
             with closing(
                 parser.iter_apolices(
                     stream,
-                    cultura=cultura,
+                    cultura=produto,
                     uf=uf,
                     ano=ano,
-                    municipio=municipio,
-                    cd_ibge=cd_ibge,
+                    municipio=alvo,
                     evento=evento,
                     sinistros=sinistros,
                     ano_inicio=effective_inicio,
@@ -221,7 +236,6 @@ async def _fetch(
     t1 = time.monotonic()
     df_out = pd.concat(dfs, ignore_index=True) if dfs else empty
     df_out = df_out.sort_values("ano_apolice").reset_index(drop=True)
-    contrato = "mapa_psr_sinistros" if sinistros else "mapa_psr_apolices"
     df_out, colapsadas = _colapsar_reenvios(df_out, contrato)
     parse_ms += int((time.monotonic() - t1) * 1000)
 

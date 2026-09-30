@@ -49,7 +49,7 @@ async def test_chave_de_ate_2023_2024_aponta_a_de_2024_2025(monkeypatch, antiga)
     visto = edicoes.servir(monkeypatch, edicoes.RESOURCES["2024_2025"])
     par = PARES[antiga]
     with levanta_exatamente(InvalidParameterError, f"Cultura '{antiga}' não encontrada") as erro:
-        await api.zoneamento(cultura=antiga, safra="2024/2025", use_cache=False)
+        await api.zoneamento(produto=antiga, safra="2024/2025", use_cache=False)
     mensagem = str(erro.value)
     assert _equivalentes(mensagem) == {CHAVES[par["rotulo_desde_2024_2025"]]}
     grupos = ORACULO["grupos_desde_2024_2025"][par["rotulo_desde_2024_2025"]]
@@ -67,7 +67,7 @@ async def test_chave_de_ate_2023_2024_aponta_a_de_2024_2025(monkeypatch, antiga)
 async def test_chave_de_2024_2025_aponta_as_de_ate_2023_2024(monkeypatch, nova):
     visto = edicoes.servir(monkeypatch, edicoes.RESOURCES["2023_2024"])
     with levanta_exatamente(InvalidParameterError, f"Cultura '{nova}' não encontrada") as erro:
-        await api.zoneamento(cultura=nova, safra="2023/2024", use_cache=False)
+        await api.zoneamento(produto=nova, safra="2023/2024", use_cache=False)
     esperadas = {
         antiga for antiga, par in PARES.items() if CHAVES[par["rotulo_desde_2024_2025"]] == nova
     }

@@ -10,7 +10,7 @@ from agrobr.alt import antt_pedagio
 df = await antt_pedagio.fluxo_pedagio(ano=2023)
 df, meta = await antt_pedagio.fluxo_pedagio(
     ano=2025, frequencia="diaria",
-    data_inicio="2025-08-01", data_fim="2025-08-01",
+    inicio="2025-08-01", fim="2025-08-01",
     enriquecer=False, return_meta=True,
 )
 ```
@@ -32,13 +32,13 @@ df, meta = await antt_pedagio.fluxo_pedagio(
 | `return_meta` | `bool` | `False` |
 | `frequencia` | `Literal['mensal', 'diaria']` | `'mensal'` |
 | `tipo_cobranca` | `str \| None` | `None` |
-| `data_inicio` | `date \| str \| None` | `None` |
-| `data_fim` | `date \| str \| None` | `None` |
+| `inicio` | `str \| date \| datetime \| None` | `None` |
+| `fim` | `str \| date \| datetime \| None` | `None` |
 | `enriquecer` | `bool` | `True` |
 | `max_linhas` | `int` | `500000` |
 | `max_memoria_bytes` | `int` | `268435456` |
 
-Use `ano` or `ano_inicio`/`ano_fim`, without combining them. With no year selection, the default is the previous and current calendar years. Date filters are inclusive civil dates (`date` or YYYY-MM-DD) within the selected years; monthly references must use day 1. `enriquecer=False` skips the plaza registry and cannot be combined with state/highway filters. Text filters are literal, not regular expressions.
+Use `ano` or `ano_inicio`/`ano_fim`, without combining them. With no year selection, the default is the previous and current calendar years. `as_polars`, `return_meta` and everything after them are keyword-only. `inicio` and `fim` are inclusive civil dates (`date`, `datetime`, whose time is dropped, or `YYYY-MM-DD` or `DD/MM/YYYY` text) within the selected years; monthly references must use day 1. `enriquecer=False` skips the plaza registry and cannot be combined with state/highway filters. Text filters are literal, not regular expressions. `tipo_veiculo` accepts `Comercial`, `Moto` or `Passeio`, ignoring case and accents; any other value raises `InvalidParameterError` before the request. `tipo_cobranca` matches the full name, ignoring case and accents; `concessionaria` and `praca` match a fragment, ignoring case. When these filters match no record, the result is empty with a warning in `UserWarning` and in `meta.validation_warnings`.
 
 ### Output — contract 3.0
 
@@ -62,7 +62,7 @@ Use `ano` or `ano_inicio`/`ano_fim`, without combining them. With no year select
 
 All 13 columns are required, including nullable columns. `data` is the published day or the first day of the month. `volume` is an exact integer count; all validated occurrences contribute within the key, except the second copy of an operator × month block published twice with identical rows (one copy is kept, with a warning). A row whose volume is not a count (fractional or negative) is dropped with a warning, and a monthly reference published on a day other than 1 counts for its month, with a warning; the year is not discarded and the affected rows are listed in `source_details`. Manual, automatic and other collection types remain separate through `tipo_cobranca`; `frequencia` also belongs in identity.
 
-Source text and surrounding spaces are retained. `n_eixos` is populated only by an explicit textual axle count. A numeric tariff category, including a standalone number, does not establish a physical count and stays null. `apenas_pesados=True` requires commercial type and an explicit count or range guaranteeing at least three axles. Unknown categories do not acquire an invented count.
+Source text and surrounding spaces are retained. Text comes as `string[python]`, not in the installed pandas default dtype: the memory limit counts each retained text by object identity. `n_eixos` is populated only by an explicit textual axle count. A numeric tariff category, including a standalone number, does not establish a physical count and stays null. `apenas_pesados=True` requires commercial type and an explicit count or range guaranteeing at least three axles. Unknown categories do not acquire an invented count.
 
 ### Acquisition and limits
 
@@ -76,7 +76,7 @@ See the [source and dictionary](../sources/antt_pedagio.md).
 
 ## `pracas_pedagio`
 
-The registry contract is 1.0.1. The official `municipal` header supplies `municipio`, with canonical-column precedence when both exist. The current registry enriches traffic and does not necessarily represent the historical geography of the requested year.
+The registry contract is 2.0. The official `municipal` header supplies `municipio`, with canonical-column precedence when both exist; `municipal` stays in the output, as published. `km_m` comes as `float64` (kilometre), `ano_do_pnv_snv` as `Int64` and `data_da_inativacao` as `datetime64[ns]` (published as `DD/MM/YYYY`; an impossible date, such as `31/02/2024`, becomes null with a warning, and text outside that form raises `ParseError`). Text comes in the installed pandas default dtype (`str` on pandas 3, `object` on 2). `rodovia` matches ignoring case, spaces, hyphens and leading zeros (`"BR 40"`, `"br-040"` and `"BR-40"` are the same highway); `situacao` matches a fragment, ignoring case. A filter that matches no plaza returns empty with a warning listing the published values. `as_polars` and `return_meta` are keyword-only. The current registry enriches traffic and does not necessarily represent the historical geography of the requested year.
 
 ```python
 from agrobr.alt import antt_pedagio
@@ -97,7 +97,7 @@ df = await antt_pedagio.pracas_pedagio(rodovia="BR-163")
 |-----------|------|---------|-------------|
 | `uf` | `str \| None` | `None` | State filter |
 | `rodovia` | `str \| None` | `None` | Highway filter |
-| `situacao` | `str \| None` | `None` | E.g. "Ativa" |
+| `situacao` | `str \| None` | `None` | E.g. "Ativo" |
 | `as_polars` | `bool` | `False` | Return as polars.DataFrame |
 | `return_meta` | `bool` | `False` | Returns MetaInfo |
 

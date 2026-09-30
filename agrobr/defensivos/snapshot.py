@@ -55,7 +55,7 @@ class _TableManifest(pydantic.BaseModel):
             raise ValueError("Colunas ausentes ou duplicadas no snapshot")
         if set(self.dtypes) != set(self.columns):
             raise ValueError("Tipos incompatíveis no snapshot")
-        numeric = {"concentracao_valor": "Float64", "ordem_componente": "Int64"}
+        numeric = {"concentracao_valor": "float64", "ordem_componente": "Int64"}
         for column, dtype in self.dtypes.items():
             expected = {numeric[column]} if column in numeric else {"object", "string", "str"}
             if dtype not in expected:
@@ -215,10 +215,12 @@ def _read_table(content: bytes, table: _TableManifest, null_token: str) -> pd.Da
     if frame.columns.tolist() != table.columns or len(frame) != table.rows:
         raise ValueError("Layout ou contagem de tabela incompatível")
     for column, dtype in table.dtypes.items():
-        series = frame[column].astype(object).mask(frame[column].eq(null_token), pd.NA)
-        if dtype == "str" and int(pd.__version__.split(".")[0]) < 3:
-            dtype = "object"
-        frame[column] = series.astype(pd.api.types.pandas_dtype(dtype))
+        series = frame[column].astype(object).mask(frame[column].eq(null_token))
+        frame[column] = series.astype(
+            parser.TEXTO
+            if dtype in {"object", "string", "str"}
+            else pd.api.types.pandas_dtype(dtype)
+        )
     return frame
 
 

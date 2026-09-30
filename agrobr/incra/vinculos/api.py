@@ -88,7 +88,7 @@ def _finalize(
     *,
     as_polars: bool,
     return_meta: bool,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     retained_base = meta.source_details["budgets"][
         "retained_bytes_estimate"
     ] + budget.retained_size(meta.to_dict())

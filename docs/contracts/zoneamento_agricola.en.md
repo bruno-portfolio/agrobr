@@ -41,7 +41,7 @@ The **59 columns** below follow contract order. The ten-day period row represent
 | `registro_origem` | INTEGER | No | CSV position before filters; only identifiable together with the body hash |
 | `cod_municipio` | INTEGER | Yes | `geocodigo` as an integer, the common key of the municipal datasets |
 
-Every INTEGER column uses the pandas `Int64` dtype; only risk columns allow nulls. Empty text fields remain empty strings without conversion to null.
+Every INTEGER column uses the pandas `Int64` dtype; only risk columns allow nulls. Empty text fields remain empty strings without conversion to null. Text comes in the installed pandas default dtype (`str` on pandas 3, `object` on 2), the same with rows, when empty and from the cache.
 
 ## Meaning and limits
 
@@ -73,7 +73,7 @@ Contract guarantees:
 from agrobr import datasets
 
 df, meta = await datasets.zoneamento_agricola(
-    cultura="soja", municipio=5107925, safra="2025/2026", return_meta=True
+    produto="soja", municipio=5107925, safra="2025/2026", return_meta=True
 )
 print(df.head())
 print(meta.raw_content_hash)

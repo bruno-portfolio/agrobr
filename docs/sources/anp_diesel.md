@@ -51,7 +51,7 @@ df = alt.anp_diesel.vendas_diesel()
 | Parametro | Tipo | Default | Descricao |
 |---|---|---|---|
 | `uf` | str \| None | None | Filtro por UF (ex: SP, MT, PR) |
-| `municipio` | str \| None | None | Filtro municipal exato após normalizar caixa/acentos |
+| `municipio` | int \| str \| None | None | Município pelo código IBGE de 7 dígitos ou pelo nome inteiro, resolvido por `normalize.resolver_municipio` antes da rede e comparado com o nome da planilha sem caixa, acento e pontuação (`"Sant'Ana do Livramento"` casa com `SANTANA DO LIVRAMENTO`); pedaço de nome gera `InvalidParameterError` com os candidatos |
 | `produto` | str | "DIESEL S10" | `DIESEL`, `OLEO DIESEL`, `OLEO DIESEL S10` ou `DIESEL S10` |
 | `inicio` | str \| date \| None | None | Data inicial (YYYY-MM-DD) |
 | `fim` | str \| date \| None | None | Data final (YYYY-MM-DD) |

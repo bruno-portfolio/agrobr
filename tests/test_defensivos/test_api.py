@@ -278,3 +278,21 @@ def test_replay_captures_match_manifest_hashes_and_declared_subsets():
             hashlib.sha256((root / item["oracles_file"]).read_bytes()).hexdigest()
             == item["oracles_sha256"]
         )
+
+
+@pytest.mark.parametrize(
+    ("function", "contrato"),
+    [
+        (defensivos.formulados, "agrofit_formulados"),
+        (defensivos.autorizacoes, "agrofit_autorizacoes"),
+        (defensivos.tecnicos, "agrofit_tecnicos"),
+        (defensivos.composicao, "agrofit_composicao"),
+    ],
+)
+@pytest.mark.usefixtures("replay_captures")
+async def test_cheio_real_vazio_e_contrato_com_os_mesmos_dtypes(function, contrato):
+    cheio = await function()
+    vazio = await function(nr_registro="inexistente")
+    esperado = contracts.get_contract(contrato).empty_frame()
+    assert len(cheio) and vazio.empty
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict() == esperado.dtypes.to_dict()

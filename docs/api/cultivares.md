@@ -20,12 +20,12 @@ Todos os argumentos são nomeados. Filtros combinados usam interseção: cada li
 
 | Parâmetro | Registradas | Protegidas | Semântica |
 |---|---|---|---|
-| `cultivar` | Sim | Sim | Substring literal no nome da cultivar |
-| `especie` | Sim | Sim | Substring literal em `nome_comum`, sem ampliar para nome científico |
-| `grupo` | Sim | Não | Substring literal no grupo da espécie |
-| `situacao` | Sim | Sim | Substring literal na situação publicada |
-| `mantenedor` | Sim | Não | Substring literal no texto de mantenedores |
-| `titular` | Não | Sim | Substring literal no texto de titulares |
+| `cultivar` | Sim | Sim | Substring literal no nome da cultivar, sem caixa e acento |
+| `especie` | Sim | Sim | Substring literal em `nome_comum`, sem caixa e acento e sem ampliar para nome científico |
+| `grupo` | Sim | Não | Substring literal no grupo da espécie, sem caixa e acento |
+| `situacao` | Sim | Sim | Substring literal na situação publicada, sem caixa e acento |
+| `mantenedor` | Sim | Não | Substring literal no texto de mantenedores, sem caixa e acento |
+| `titular` | Não | Sim | Substring literal no texto de titulares, sem caixa e acento |
 | `nr_registro` | Sim | Não | Igualdade textual completa do número de registro |
 | `nr_formulario` | Sim | Não | Igualdade textual completa do número de formulário; não é chave única |
 | `nr_processo` | Não | Sim | Igualdade textual completa do número de processo |

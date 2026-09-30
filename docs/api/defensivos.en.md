@@ -53,7 +53,7 @@ components, meta = await defensivos.composicao(
 | `grupo_quimico` | Parsed chemical group; nullable |
 | `componente_texto` | Original component text |
 | `concentracao_texto` | Published concentration before parsing; nullable |
-| `concentracao_valor` | Nullable `Float64`, without dimensional conversion |
+| `concentracao_valor` | `float64`, null when the concentration is not explicit, without dimensional conversion |
 | `concentracao_unidade` | Published unit when separable; nullable |
 
 Repeated ingredients at different positions retain separate rows. Composition is not multiplied by use authorizations. Explicit scientific notation can be parsed: `.001 x 10^9 UFC/mL` yields `1000000.0` and `UFC/mL`. Ambiguous expressions retain their text and null values, with diagnostics in `meta.source_details`. `Kg` remains `Kg`; `g/kg` is not inferred. Missing values do not become zero.

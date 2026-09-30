@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from unittest.mock import Mock
 
 import pandas as pd
 import pytest
 
 from agrobr import deterministic
-from agrobr.alt.antt_pedagio import api
+from agrobr.alt.antt_pedagio import api, query
 from agrobr.alt.antt_pedagio.api import fluxo_pedagio, pracas_pedagio
 from agrobr.exceptions import InvalidParameterError
 from tests.helpers import install_anttpedagio_source
@@ -20,8 +20,8 @@ DAILY_CSV = (
 ).encode()
 PRACAS_CSV = (
     b"concessionaria;praca_de_pedagio;rodovia;uf;km_m;municipio;lat;lon;situacao\n"
-    b"CCR AutoBAn;Campinas;SP-348;SP;87+500;Campinas;-22.9;-47.0;Ativa\n"
-    b"Arteris;Jacarezinho;BR-153;PR;10+000;Jacarezinho;-23.1;-49.9;Ativa\n"
+    b"CCR AutoBAn;Campinas;SP-348;SP;87.5;Campinas;-22.9;-47.0;Ativa\n"
+    b"Arteris;Jacarezinho;BR-153;PR;10.0;Jacarezinho;-23.1;-49.9;Ativa\n"
 )
 
 
@@ -31,13 +31,41 @@ async def test_fluxo_diario_preserva_dia_e_filtra_intervalo_inclusivo(monkeypatc
         ano=2025,
         frequencia="diaria",
         enriquecer=False,
-        data_inicio="2025-01-15",
-        data_fim="2025-01-15",
-        tipo_cobranca="Manual",
+        inicio="2025-01-15",
+        fim=datetime(2025, 1, 15, 23, 59),
+        tipo_cobranca="manual",
+        tipo_veiculo="COMERCIAL",
     )
     assert frame["data"].tolist() == [pd.Timestamp("2025-01-15")]
     assert frame["volume"].tolist() == [12]
     assert frame["frequencia"].tolist() == ["diaria"]
+
+
+async def test_fluxo_filtro_de_texto_sem_registros_avisa(monkeypatch):
+    install_anttpedagio_source(monkeypatch, {"volume-2025_diario.csv": DAILY_CSV})
+    with pytest.warns(UserWarning, match="Nenhum registro da ANTT casou"):
+        frame, meta = await fluxo_pedagio(
+            ano=2025, frequencia="diaria", enriquecer=False, concessionaria="xx", return_meta=True
+        )
+    assert frame.empty
+    assert any("Nenhum registro da ANTT casou" in aviso for aviso in meta.validation_warnings)
+
+
+def test_fluxo_teto_do_ano_usa_o_dia_de_brasilia(monkeypatch):
+    monkeypatch.setattr(query.time_utils, "hoje", lambda: date(2031, 1, 1))
+    assert query._years(2031, None, None) == (2031,)
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda: fluxo_pedagio(2025, None, None, None, None, None, None, None, False, True),
+        lambda: pracas_pedagio(None, None, None, True),
+    ],
+)
+async def test_flags_somente_nomeadas(call):
+    with pytest.raises(TypeError):
+        await call()
 
 
 @pytest.mark.parametrize(
@@ -58,16 +86,17 @@ async def test_fluxo_diario_preserva_dia_e_filtra_intervalo_inclusivo(monkeypatc
         {"enriquecer": 0},
         {"max_linhas": False},
         {"max_memoria_bytes": 0},
-        {"ano": 2025, "data_inicio": "2025-02-30"},
-        {"ano": 2025, "data_inicio": "2025-01-02"},
-        {"ano": 2025, "data_inicio": datetime(2025, 1, 1)},
-        {"ano": 2025, "data_inicio": "2024-01-01"},
-        {"ano": 2024, "data_inicio": "2025-01-01"},
+        {"ano": 2025, "inicio": "2025-02-30"},
+        {"ano": 2025, "inicio": "2025-01-02"},
+        {"ano": 2025, "inicio": "2025/01/01"},
+        {"ano": 2025, "inicio": "2024-01-01"},
+        {"ano": 2024, "inicio": "2025-01-01"},
+        {"tipo_veiculo": "caminhao"},
         {
             "ano": 2025,
             "frequencia": "diaria",
-            "data_inicio": "2025-01-02",
-            "data_fim": "2025-01-01",
+            "inicio": "2025-01-02",
+            "fim": "2025-01-01",
         },
         {"enriquecer": False, "uf": "SP"},
     ],
@@ -117,6 +146,19 @@ async def test_fluxo_valida_ano_antes_de_consultar_opcional(monkeypatch):
 
 
 class TestPracasPedagio:
+    @pytest.mark.parametrize("rodovia", ["BR 153", "br153", "BR-0153"])
+    async def test_rodovia_sem_espaco_hifen_e_zero_a_esquerda(self, monkeypatch, rodovia):
+        install_anttpedagio_source(monkeypatch, {}, plazas=PRACAS_CSV)
+        frame = await pracas_pedagio(rodovia=rodovia)
+        assert frame["praca_de_pedagio"].tolist() == ["Jacarezinho"]
+
+    async def test_filtro_sem_pracas_avisa_os_valores_publicados(self, monkeypatch):
+        install_anttpedagio_source(monkeypatch, {}, plazas=PRACAS_CSV)
+        with pytest.warns(UserWarning, match="Ativa"):
+            frame, meta = await pracas_pedagio(situacao="xx", return_meta=True)
+        assert frame.empty
+        assert "valores publicados" in meta.validation_warnings[0]
+
     @pytest.mark.parametrize("empty", [False, True])
     async def test_polars_preserva_texto_nulos_e_coordenadas(self, monkeypatch, empty):
         polars = pytest.importorskip("polars")

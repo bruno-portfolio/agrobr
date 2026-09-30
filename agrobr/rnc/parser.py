@@ -22,6 +22,7 @@ from . import models
 logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
+TEXTO = pd.Series([""]).dtype
 
 
 @dataclass(frozen=True)
@@ -199,7 +200,7 @@ def _parse_csv(
         raise _fail(f"CSV {family} sem registros")
     frame = pd.DataFrame(
         {
-            name: pd.Series(values, dtype="datetime64[ns]" if name in dates else "object")
+            name: pd.Series(values, dtype="datetime64[ns]" if name in dates else TEXTO)
             for name, values in buffers.items()
         }
     )

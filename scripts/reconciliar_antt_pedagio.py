@@ -233,6 +233,13 @@ def plaza_rows(body: bytes) -> list[dict[str, Any]]:
         for name in ("lat", "lon"):
             row[name] = float(Decimal(row[name].replace(",", "."))) if row[name] else None
         row.setdefault("municipio", row.get("municipal"))
+        row["km_m"] = float(Decimal(row["km_m"])) if row["km_m"] else None
+        row["ano_do_pnv_snv"] = int(row["ano_do_pnv_snv"]) if row["ano_do_pnv_snv"] else None
+        row["data_da_inativacao"] = (
+            datetime.strptime(row["data_da_inativacao"], "%d/%m/%Y")
+            if row["data_da_inativacao"]
+            else None
+        )
         rows.append(row)
     return rows
 

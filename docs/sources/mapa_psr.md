@@ -23,7 +23,7 @@ from agrobr.alt import mapa_psr
 df = await mapa_psr.sinistros()
 
 # Filtrar por cultura e UF
-df = await mapa_psr.sinistros(cultura="SOJA", uf="MT")
+df = await mapa_psr.sinistros(produto="SOJA", uf="MT")
 
 # Filtrar por ano ou range
 df = await mapa_psr.sinistros(ano=2023)
@@ -32,21 +32,19 @@ df = await mapa_psr.sinistros(ano_inicio=2020, ano_fim=2024)
 # Filtrar por evento preponderante
 df = await mapa_psr.sinistros(evento="seca")
 
-# Filtrar pelo rótulo do município (ver "Município e código IBGE")
-df = await mapa_psr.sinistros(municipio="SORRISO")
-
-# Filtrar pelo código IBGE do município
-df = await mapa_psr.apolices(cd_ibge="4305108")
+# Filtrar pelo município, por nome ou código IBGE (ver "Município e código IBGE")
+df = await mapa_psr.sinistros(municipio="Sorriso", uf="MT")
+df = await mapa_psr.apolices(municipio=4305108)
 
 # Todas as apolices (incluindo sem sinistro)
 df = await mapa_psr.apolices()
 
 # Apolices filtradas
-df = await mapa_psr.apolices(cultura="MILHO", uf="PR", ano=2023)
+df = await mapa_psr.apolices(produto="MILHO", uf="PR", ano=2023)
 
 # API sincrona
 from agrobr.sync import alt
-df = alt.mapa_psr.sinistros(cultura="SOJA")
+df = alt.mapa_psr.sinistros(produto="SOJA")
 df = alt.mapa_psr.apolices(uf="MT")
 ```
 
@@ -54,15 +52,14 @@ df = alt.mapa_psr.apolices(uf="MT")
 
 | Parametro | Tipo | Default | Descricao |
 |---|---|---|---|
-| `cultura` | str \| None | None | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
+| `produto` | str \| None | None | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
 | `uf` | str \| None | None | Filtro por UF (sigla, ex: "MT") |
 | `ano` | int \| None | None | Filtro de ano unico (ex: 2023) |
 | `ano_inicio` | int \| None | None | Ano inicial do range (inclusive) |
 | `ano_fim` | int \| None | None | Ano final do range (inclusive) |
-| `municipio` | str \| None | None | Filtro pelo rótulo publicado do município (busca parcial); ver "Município e código IBGE" |
+| `municipio` | int \| str \| None | None | Código IBGE de 7 dígitos ou nome inteiro do município; ver "Município e código IBGE" |
 | `evento` | str \| None | None | Filtro por evento preponderante (ex: "seca") |
-| `cd_ibge` | str \| None | None | Filtro pelo código IBGE do município, 7 dígitos em texto (ex.: "4305108"); outro formato levanta `InvalidParameterError` antes do download |
-| `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
+| `as_polars` | bool | False | Se True, retorna `polars.DataFrame`; somente nomeado, como `return_meta` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
 
 A `cultura` é filtrada por trecho do nome publicado no CSV (`NM_CULTURA_GLOBAL`). Não há catálogo estático: a lista vem
@@ -95,14 +92,13 @@ depois da descarga.
 
 | Parametro | Tipo | Default | Descricao |
 |---|---|---|---|
-| `cultura` | str \| None | None | Filtro por cultura (busca parcial, accent-insensitive) |
+| `produto` | str \| None | None | Filtro por cultura (busca parcial, accent-insensitive) |
 | `uf` | str \| None | None | Filtro por UF |
 | `ano` | int \| None | None | Filtro de ano unico |
 | `ano_inicio` | int \| None | None | Ano inicial do range |
 | `ano_fim` | int \| None | None | Ano final do range |
-| `municipio` | str \| None | None | Filtro pelo rótulo publicado do município (busca parcial) |
-| `cd_ibge` | str \| None | None | Filtro pelo código IBGE do município (7 dígitos em texto) |
-| `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
+| `municipio` | int \| str \| None | None | Código IBGE de 7 dígitos ou nome inteiro do município; ver "Município e código IBGE" |
+| `as_polars` | bool | False | Se True, retorna `polars.DataFrame`; somente nomeado, como `return_meta` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
 
 ## Colunas — `apolices`
@@ -129,13 +125,16 @@ levanta `ParseError`; apólices sem valor de indenização não viram sinistros.
 
 ## Município e código IBGE
 
-`municipio=` procura o texto no rótulo que o MAPA publica em `NM_MUNICIPIO_PROPRIEDADE`, e parte
-das apólices sai rotulada com o nome do distrito. Em Caxias do Sul (código 4305108), em 2024, 274
-das 693 apólices do código trazem "Caxias do Sul"; as outras 419 saem como Fazenda Souza (241),
-Criúva (78), Vila Oliva (48), Vila Seca (32) e Santa Lúcia do Piaí (20). Para o município inteiro,
-use `cd_ibge=`, que compara o código publicado em `CD_GEOCMU`. O filtro por código não pega as
-apólices publicadas com "-" no lugar do geocódigo (1.516 entre 2006 e 2025, com `cd_ibge` nulo):
-essas só têm o rótulo. Sem a coluna `CD_GEOCMU` no arquivo, `cd_ibge=` levanta `ParseError`.
+`municipio=` aceita o código IBGE de 7 dígitos (`int` ou `str`) ou o nome inteiro do município, sem
+diferenciar caixa e acento, e é resolvido por `normalize.resolver_municipio` antes do download. Pedaço
+de nome, nome de outra UF e nome de mais de um município sem `uf` geram `InvalidParameterError` com os
+candidatos. O filtro compara o código publicado em `CD_GEOCMU`, então pega também as apólices que o
+MAPA rotula com o nome do distrito em `NM_MUNICIPIO_PROPRIEDADE`: em Caxias do Sul (código 4305108),
+em 2024, 274 das 693 apólices do código trazem "Caxias do Sul", e as outras 419 saem como Fazenda
+Souza (241), Criúva (78), Vila Oliva (48), Vila Seca (32) e Santa Lúcia do Piaí (20). As apólices
+publicadas com "-" no lugar do geocódigo (1.516 entre 2006 e 2025, com `cd_ibge` nulo) entram quando
+o rótulo é o nome inteiro do município, na mesma UF. Sem a coluna `CD_GEOCMU` no arquivo, o filtro usa
+só o nome inteiro e a UF.
 
 ## MetaInfo
 

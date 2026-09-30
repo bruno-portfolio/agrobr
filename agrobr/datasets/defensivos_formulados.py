@@ -6,6 +6,7 @@ import pandas as pd
 
 from agrobr.datasets import _agrofit, base, registry
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 
 async def _fetch_defensivos(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -59,7 +60,7 @@ async def defensivos_formulados(
     nr_registro: str | None = None,
     situacao: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -78,9 +79,28 @@ async def defensivos_formulados(
     nr_registro: str | None = None,
     situacao: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def defensivos_formulados(
+    *,
+    ingrediente_ativo: str | None = None,
+    classe_toxicologica: str | None = None,
+    classe_ambiental: str | None = None,
+    titular: str | None = None,
+    organicos: str | None = None,
+    marca: str | None = None,
+    formulacao: str | None = None,
+    classe: str | None = None,
+    nr_registro: str | None = None,
+    situacao: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def defensivos_formulados(
@@ -98,7 +118,7 @@ async def defensivos_formulados(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _defensivos_formulados.fetch(
         ingrediente_ativo=ingrediente_ativo,
         classe_toxicologica=classe_toxicologica,

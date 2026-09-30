@@ -71,7 +71,7 @@ async def test_dataset_rejects_non_boolean_before_source(supplied, flag, value):
     fetch.assert_not_awaited()
 
 
-@pytest.mark.parametrize("keyword", ["uf_typo", "produto", "snapshot", "limite"])
+@pytest.mark.parametrize("keyword", ["uf_typo", "cultura", "snapshot", "limite"])
 async def test_dataset_rejects_unknown_parameter_before_source(supplied, keyword):
     fetch, _, _ = supplied
     with pytest.raises(TypeError, match=keyword):

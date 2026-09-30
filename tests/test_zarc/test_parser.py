@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
-from agrobr import constants
+from agrobr import constants, contracts
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.zarc import parser, query
 from tests.helpers import zarc_csv
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 @pytest.mark.parametrize("content", [b"", b"\xef\xbb\xbf", b"\n", b"<html>Failure</html>"])
@@ -19,7 +23,7 @@ def test_header_only_is_typed_empty():
     result = parser.parse_tabua_risco_bundle(zarc_csv([]))
     assert result.frame.empty
     assert result.frame[list(constants.ZARC_INTEGER_COLUMNS)].dtypes.eq("Int64").all()
-    assert result.frame[list(constants.ZARC_STRING_COLUMNS)].dtypes.eq(object).all()
+    assert result.frame[list(constants.ZARC_STRING_COLUMNS)].dtypes.eq(pd.Series([""]).dtype).all()
     assert result.details["warnings"]
 
 
@@ -199,30 +203,31 @@ def test_multiline_field_preserves_record_position():
     assert frame.registro_origem.tolist() == [1, 2]
 
 
-@pytest.mark.parametrize("municipio", ["orr", "5107925", 5107925])
+@pytest.mark.parametrize("municipio", ["sorriso", "5107925", 5107925])
 def test_municipality_selection_name_or_exact_code(municipio):
     result = parser.parse_tabua_risco_bundle(
-        zarc_csv(), query=query.build_query(municipio=municipio)
+        zarc_csv([{}, {"geocodigo": "5103403", "municipio": "Cuiabá"}]),
+        query=query.build_query(municipio=municipio),
     )
-    assert len(result.frame) == 1
+    assert result.frame["geocodigo"].tolist() == ["5107925"]
 
 
-def test_municipality_selection_is_literal():
+def test_municipality_name_selects_by_geocode_not_by_label():
     result = parser.parse_tabua_risco_bundle(
-        zarc_csv([{"municipio": "Anápolis (GO)"}]), query=query.build_query(municipio="(GO)")
+        zarc_csv([{"municipio": "SORRISO - MT"}]), query=query.build_query(municipio="Sorriso")
     )
     assert len(result.frame) == 1
 
 
 def test_cultura_catalogo_ausente_erro_apos_validar_populacao():
     with pytest.raises(InvalidParameterError, match="não encontrada"):
-        parser.parse_tabua_risco_bundle(zarc_csv(), query=query.build_query(cultura="sisal"))
+        parser.parse_tabua_risco_bundle(zarc_csv(), query=query.build_query(produto="sisal"))
 
 
 def test_cultura_catalogo_ausente_nao_esconde_populacao_invalida():
     with pytest.raises(ParseError, match="dec36"):
         parser.parse_tabua_risco_bundle(
-            zarc_csv([{"dec36": "bad"}]), query=query.build_query(cultura="sisal")
+            zarc_csv([{"dec36": "bad"}]), query=query.build_query(produto="sisal")
         )
 
 
@@ -252,3 +257,13 @@ def test_all_null_risk_polars_remains_nullable_int64():
     converted = pl.from_pandas(frame)
     assert converted.schema["dec1"] == pl.Int64
     assert converted["dec1"].null_count() == 1
+
+
+def test_tabua_real_cheia_vazia_e_contrato_com_os_mesmos_dtypes():
+    content = (ROOT / "tests/golden_data/zarc/selecao_20260907/2026_2027.csv").read_bytes()
+    cheio = parser.parse_tabua_risco_bundle(content).frame
+    seletor = query.build_query(municipio=1600501)
+    vazio = parser.parse_tabua_risco_bundle(content, query=seletor).frame
+    contrato = contracts.get_contract("zoneamento_agricola").empty_frame()[list(cheio.columns)]
+    assert len(cheio) and vazio.empty
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict() == contrato.dtypes.to_dict()

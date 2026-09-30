@@ -50,7 +50,7 @@ O contexto `datasets.deterministic(...)` é recusado antes de qualquer I/O: o CS
 
 ## Identidade e tipos
 
-As colunas textuais, inclusive registros e composição original, mantêm os tipos da fonte. `ordem_componente` é `Int64`; `concentracao_valor` é `Float64` anulável. Resultados vazios conservam todas as colunas e seus tipos, incluindo adições opcionais dos contratos. Veja a [descrição completa das colunas](defensivos.md#composicao).
+As colunas textuais, inclusive registros e composição original, saem no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2). `ordem_componente` é `Int64`; `concentracao_valor` é `float64`. Resultados vazios conservam todas as colunas e seus tipos, incluindo adições opcionais dos contratos. Veja a [descrição completa das colunas](defensivos.md#composicao).
 
 Ingredientes repetidos permanecem em posições distintas. Autorizações não recebem chave artificial ou deduplicação após projeção. Não há join automático entre autorizações e componentes. Unidades literais, texto ambíguo e valores nulos permanecem como na fonte; `TRUE` não é convertido em classificação de vigência ou recomendação de aplicação.
 

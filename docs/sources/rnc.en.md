@@ -39,7 +39,7 @@ A public session follows the search and export forms. A GET obtains a CSRF token
 
 The complete received CSV is validated before filtering: full layout, row widths, Pydantic models, dates, key and contract. A layout/content error or a mismatch between the search total and record count aborts the acquisition. The SHA256 layout fingerprint describes the header structure; the CSV hash identifies the acquired bytes. Neither certifies geographic accuracy or legal status.
 
-Existing text filters use case-insensitive literal substrings. RNC `nr_registro`/`nr_formulario` and SNPC `nr_processo`/`nr_certificado` use textual equality. All remove outer whitespace. Selection does not reduce population validation or the volume transferred for the current acquisition.
+Existing text filters use case- and accent-insensitive literal substrings. RNC `nr_registro`/`nr_formulario` and SNPC `nr_processo`/`nr_certificado` use textual equality. All remove outer whitespace. Selection does not reduce population validation or the volume transferred for the current acquisition.
 
 ## Cache, metadata and coverage
 

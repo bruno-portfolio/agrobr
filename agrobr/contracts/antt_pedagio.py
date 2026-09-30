@@ -143,5 +143,6 @@ ANTT_PEDAGIO_FLUXO_V3 = FluxoContract(
         "Número isolado em categoria_eixo não comprova contagem de eixos",
         "Recursos, revisões literais, hashes, tentativas e cobertura constam na proveniência",
         "Enriquecimento ambíguo ou sem correspondência permanece nulo; não multiplica linhas",
+        "Texto em string[python], e não no dtype padrão do pandas: o limite de memória conta cada texto retido pela identidade do objeto",
     ],
 )

@@ -68,15 +68,7 @@ def _filtered(frame: pd.DataFrame, selected: query.ZarcQuery) -> pd.DataFrame:
         if value is not None:
             mask &= frame[name].eq(value)
     if selected.municipio is not None:
-        municipality = str(selected.municipio)
-        if isinstance(selected.municipio, int) or municipality.isascii() and municipality.isdigit():
-            mask &= frame["geocodigo"].eq(municipality)
-        else:
-            mask &= (
-                frame["municipio"]
-                .map(models.normalize_municipio, na_action="ignore")
-                .str.contains(models.normalize_municipio(municipality), regex=False)
-            )
+        mask &= frame["geocodigo"].eq(selected.municipio)
     return frame.loc[mask].reset_index(drop=True)
 
 
@@ -265,13 +257,13 @@ def _metadata(
 @overload
 async def zoneamento(
     *,
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     municipio: int | str | None = None,
     safra: str | None = None,
     solo: int | None = None,
     ciclo: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     use_cache: bool = True,
     **kwargs: Any,
@@ -281,22 +273,23 @@ async def zoneamento(
 @overload
 async def zoneamento(
     *,
-    cultura: str | None = ...,
-    uf: str | None = ...,
-    municipio: int | str | None = ...,
-    safra: str | None = ...,
-    solo: int | None = ...,
-    ciclo: int | None = ...,
-    as_polars: bool = ...,
+    produto: str | None = None,
+    uf: str | None = None,
+    municipio: int | str | None = None,
+    safra: str | None = None,
+    solo: int | None = None,
+    ciclo: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
-    use_cache: bool = ...,
+    use_cache: bool = True,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def zoneamento(
     *,
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     municipio: int | str | None = None,
     safra: str | None = None,
@@ -306,10 +299,25 @@ async def zoneamento(
     return_meta: bool = False,
     use_cache: bool = True,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult: ...
+
+
+async def zoneamento(
+    *,
+    produto: str | None = None,
+    uf: str | None = None,
+    municipio: int | str | None = None,
+    safra: str | None = None,
+    solo: int | None = None,
+    ciclo: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    use_cache: bool = True,
+    **kwargs: Any,
+) -> result.DataFrameResult:
     _guard(as_polars, return_meta, use_cache, kwargs)
     selected_query = query.build_query(
-        cultura=cultura, uf=uf, municipio=municipio, safra=safra, solo=solo, ciclo=ciclo
+        produto=produto, uf=uf, municipio=municipio, safra=safra, solo=solo, ciclo=ciclo
     )
     started = time.monotonic()
     async with cache.acquisition_lock():

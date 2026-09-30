@@ -100,7 +100,7 @@ PEDIDOS: dict[str, Callable[[], Any]] = {
     "sicar": lambda: alt.sicar.imoveis("DF"),
     "unica": lambda: unica.safra_resumo(),
     "usda": lambda: usda.psd("soja", country="BR", market_year=2024),
-    "zarc": lambda: zarc.zoneamento(cultura="soja", uf="MT"),
+    "zarc": lambda: zarc.zoneamento(produto="soja", uf="MT"),
 }
 SEM_ERRO = {("usda", 404): "o PSD responde 404 para ano sem dado (guia §75)"}
 NA_MENSAGEM = {"ibge_sidra": "SIDRA: HTTP {status}", "producao_anual": "SIDRA: HTTP {status}"}

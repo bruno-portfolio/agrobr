@@ -66,7 +66,9 @@ def test_concentracoes_explicitas_sinteticas(text, value, unit):
     tables, details = parser.parse_formulados_bundle(form_csv(f"A (Grupo) ({text})"))
     component = tables["composicao"].iloc[0]
     assert component.concentracao_valor == pytest.approx(value)
-    assert component.concentracao_unidade == unit
+    assert (
+        None if pd.isna(component.concentracao_unidade) else component.concentracao_unidade
+    ) == unit
     assert component.concentracao_texto == text
     assert details["unparsed_count"] == 0
 
@@ -179,7 +181,11 @@ def test_vazios_tipados_e_colunas_legadas_nullable():
     assert list(tables["formulados"].columns) == models.FORMULADOS_PRODUCT_COLS
     assert list(tables["autorizacoes"].columns) == models.AUTORIZACOES_COLS
     assert str(tables["composicao"].ordem_componente.dtype) == "Int64"
-    assert str(tables["composicao"].concentracao_valor.dtype) == "Float64"
+    assert str(tables["composicao"].concentracao_valor.dtype) == "float64"
+    assert all(
+        tables["formulados"][name].dtype == pd.Series([""]).dtype
+        for name in models.FORMULADOS_PRODUCT_COLS
+    )
     assert all(table.empty for table in tables.values())
     assert details["source_rows"] == 0
     nonempty, _ = parser.parse_formulados_bundle(form_csv())

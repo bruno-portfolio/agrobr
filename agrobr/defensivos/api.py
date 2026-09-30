@@ -133,7 +133,7 @@ async def _query(
     as_polars: bool,
     return_meta: bool,
     use_cache: bool,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     selected = _validate_query(kind, filters, extras, use_cache)
     acquired = await _load_snapshot(kind, use_cache)
     started = time.monotonic()
@@ -166,7 +166,7 @@ async def formulados(
     classe: str | None = None,
     nr_registro: str | None = None,
     situacao: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     use_cache: bool = True,
     **kwargs: Any,
@@ -186,11 +186,31 @@ async def formulados(
     classe: str | None = ...,
     nr_registro: str | None = ...,
     situacao: str | None = ...,
-    as_polars: bool = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[True],
     use_cache: bool = ...,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def formulados(
+    *,
+    ingrediente_ativo: str | None = ...,
+    classe_toxicologica: str | None = ...,
+    classe_ambiental: str | None = ...,
+    titular: str | None = ...,
+    organicos: str | None = ...,
+    marca: str | None = ...,
+    formulacao: str | None = ...,
+    classe: str | None = ...,
+    nr_registro: str | None = ...,
+    situacao: str | None = ...,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    use_cache: bool = ...,
+    **kwargs: Any,
+) -> result_utils.DataFrameResult: ...
 
 
 async def formulados(
@@ -209,7 +229,7 @@ async def formulados(
     return_meta: bool = False,
     use_cache: bool = True,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     return await _query(
         "formulados",
         "formulados",
@@ -240,7 +260,7 @@ async def autorizacoes(
     ingrediente_ativo: str | None = None,
     classe: str | None = None,
     situacao: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     use_cache: bool = True,
     **kwargs: Any,
@@ -255,11 +275,26 @@ async def autorizacoes(
     ingrediente_ativo: str | None = ...,
     classe: str | None = ...,
     situacao: str | None = ...,
-    as_polars: bool = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[True],
     use_cache: bool = ...,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def autorizacoes(
+    *,
+    nr_registro: str | None = ...,
+    cultura: str | None = ...,
+    ingrediente_ativo: str | None = ...,
+    classe: str | None = ...,
+    situacao: str | None = ...,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    use_cache: bool = ...,
+    **kwargs: Any,
+) -> result_utils.DataFrameResult: ...
 
 
 async def autorizacoes(
@@ -273,7 +308,7 @@ async def autorizacoes(
     return_meta: bool = False,
     use_cache: bool = True,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     return await _query(
         "formulados",
         "autorizacoes",
@@ -299,7 +334,7 @@ async def tecnicos(
     classe: str | None = None,
     marca: str | None = None,
     nr_registro: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     use_cache: bool = True,
     **kwargs: Any,
@@ -314,11 +349,26 @@ async def tecnicos(
     classe: str | None = ...,
     marca: str | None = ...,
     nr_registro: str | None = ...,
-    as_polars: bool = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[True],
     use_cache: bool = ...,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def tecnicos(
+    *,
+    ingrediente_ativo: str | None = ...,
+    titular: str | None = ...,
+    classe: str | None = ...,
+    marca: str | None = ...,
+    nr_registro: str | None = ...,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    use_cache: bool = ...,
+    **kwargs: Any,
+) -> result_utils.DataFrameResult: ...
 
 
 async def tecnicos(
@@ -332,7 +382,7 @@ async def tecnicos(
     return_meta: bool = False,
     use_cache: bool = True,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     return await _query(
         "tecnicos",
         "tecnicos",
@@ -356,7 +406,7 @@ async def composicao(
     tipo: str = "formulados",
     nr_registro: str | None = None,
     ingrediente_ativo: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     use_cache: bool = True,
     **kwargs: Any,
@@ -369,11 +419,24 @@ async def composicao(
     tipo: str = ...,
     nr_registro: str | None = ...,
     ingrediente_ativo: str | None = ...,
-    as_polars: bool = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[True],
     use_cache: bool = ...,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def composicao(
+    *,
+    tipo: str = ...,
+    nr_registro: str | None = ...,
+    ingrediente_ativo: str | None = ...,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    use_cache: bool = ...,
+    **kwargs: Any,
+) -> result_utils.DataFrameResult: ...
 
 
 async def composicao(
@@ -385,7 +448,7 @@ async def composicao(
     return_meta: bool = False,
     use_cache: bool = True,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     return await _query(
         tipo,
         "composicao",

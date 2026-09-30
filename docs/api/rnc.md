@@ -24,7 +24,7 @@ async def registradas(
 
 | Filtros | Regra |
 |---|---|
-| `cultivar`, `especie`, `grupo`, `situacao`, `mantenedor` | Substring literal, sem regex e sem distinguir maiúsculas/minúsculas; `especie` consulta `nome_comum` |
+| `cultivar`, `especie`, `grupo`, `situacao`, `mantenedor` | Substring literal, sem regex e sem distinguir maiúsculas/minúsculas nem acento (`"feijao"` acha `"Feijão"`); `especie` consulta `nome_comum` |
 | `nr_registro`, `nr_formulario` | Igualdade textual exata, preservando zeros iniciais |
 
 O resultado tem **dez colunas**, nesta ordem: `cultivar`, `nome_comum`, `nome_cientifico`, `grupo`, `situacao`, `nr_formulario`, `nr_registro`, `data_registro`, `data_validade`, `mantenedor`.
@@ -57,7 +57,7 @@ async def protegidas(
 
 | Filtros | Regra |
 |---|---|
-| `cultivar`, `especie`, `situacao`, `titular` | Substring literal, sem regex e sem distinguir maiúsculas/minúsculas; `especie` consulta `nome_comum` |
+| `cultivar`, `especie`, `situacao`, `titular` | Substring literal, sem regex e sem distinguir maiúsculas/minúsculas nem acento (`"feijao"` acha `"Feijão"`); `especie` consulta `nome_comum` |
 | `nr_processo`, `nr_certificado` | Igualdade textual exata |
 
 O resultado tem **doze colunas**: `cultivar`, `nome_cientifico`, `nome_comum`, `nr_processo`, `situacao`, `nr_certificado`, `inicio_protecao`, `termino_protecao`, `titular`, `representante_legal`, `melhoristas`, `termino_protecao_texto`.
@@ -78,7 +78,7 @@ As quatro colunas de datas usam `datetime64[ns]`, como datas civis à meia-noite
 
 O término da proteção também admite o literal oficial `até a emissão do certificado definitivo`. Nesse caso, `termino_protecao` é `NaT` e `termino_protecao_texto` conserva a condição. A coluna textual contém a célula publicada após remover espaços externos, inclusive quando ela contém uma data ou está vazia. Assim, uma condição não se confunde com ausência. Não se calcula um prazo para essa expressão nem se deduz a situação administrativa a partir dela.
 
-As outras colunas usam texto (`object` no pandas). Espaços externos são removidos; textos vazios, pontuação e conteúdo composto permanecem. Identificadores não são convertidos em números.
+As outras colunas usam texto, no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2). Espaços externos são removidos; textos vazios, pontuação e conteúdo composto permanecem. Identificadores não são convertidos em números.
 
 ## Validação e seleção
 

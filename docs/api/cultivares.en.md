@@ -20,12 +20,12 @@ All arguments are keyword-only. Combined filters use intersection: each row must
 
 | Parameter | Registered | Protected | Meaning |
 |---|---|---|---|
-| `cultivar` | Yes | Yes | Literal substring of cultivar name |
-| `especie` | Yes | Yes | Literal substring of `nome_comum`; it does not search the scientific name |
-| `grupo` | Yes | No | Literal substring of the species group |
-| `situacao` | Yes | Yes | Literal substring of the published status |
-| `mantenedor` | Yes | No | Literal substring of the maintainer text |
-| `titular` | No | Yes | Literal substring of the holder text |
+| `cultivar` | Yes | Yes | Literal substring of cultivar name, ignoring case and accents |
+| `especie` | Yes | Yes | Literal substring of `nome_comum`, ignoring case and accents; it does not search the scientific name |
+| `grupo` | Yes | No | Literal substring of the species group, ignoring case and accents |
+| `situacao` | Yes | Yes | Literal substring of the published status, ignoring case and accents |
+| `mantenedor` | Yes | No | Literal substring of the maintainer text, ignoring case and accents |
+| `titular` | No | Yes | Literal substring of the holder text, ignoring case and accents |
 | `nr_registro` | Yes | No | Full textual equality of the registration number |
 | `nr_formulario` | Yes | No | Full textual equality of the form number; not a unique key |
 | `nr_processo` | No | Yes | Full textual equality of the application/process number |

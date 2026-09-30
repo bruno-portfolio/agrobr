@@ -30,7 +30,7 @@ def test_cultura_ausente_nao_inventa_dica(culture: str, season: str):
     content = zarc_csv([{"Nome_cultura": "Arroz", "SafraIni": years[0], "SafraFin": years[1]}])
     with pytest.raises(InvalidParameterError) as error:
         zarc_parser.parse_tabua_risco_bundle(
-            content, query=query.build_query(cultura=culture, safra=season), expected_safra=season
+            content, query=query.build_query(produto=culture, safra=season), expected_safra=season
         )
     assert "não encontrada na tábua" in str(error.value)
     assert "está na" not in str(error.value)

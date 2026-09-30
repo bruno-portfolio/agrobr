@@ -150,7 +150,9 @@ class TestParseApolices:
         assert len(df_algodao) == 1
         assert "ALGOD" in df_algodao.iloc[0]["cultura"]
 
-    def test_filtro_municipio_literal(self):
+    def test_filtro_municipio_pelo_codigo_e_nao_pelo_rotulo(self):
         csv_bytes = _make_csv().replace(b"SORRISO", b"SORRISO (NORTE)")
-        df = parse_apolices(csv_bytes, municipio="SORRISO (NORTE)")
+        sorriso = {"codigo_ibge": 5107925, "nome": "Sorriso", "uf": "MT"}
+        df = parse_apolices(csv_bytes, municipio=sorriso)
         assert df["municipio"].tolist() == ["SORRISO (NORTE)"]
+        assert df["cd_ibge"].tolist() == ["5107925"]

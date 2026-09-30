@@ -220,7 +220,7 @@ def test_only_selected_rows_reach_numeric_conversion(monkeypatch):
             io.BytesIO(text.encode()),
             cultura="soja",
             uf="mt",
-            municipio="(MT)",
+            municipio={"codigo_ibge": 5107925, "nome": "Sorriso (MT)", "uf": "MT"},
             ano_inicio=2020,
             ano_fim=2023,
             chunk_size=2,
@@ -234,7 +234,7 @@ def test_missing_indemnity_stays_nullable_and_claims_still_require_column():
     content = b"ANO_APOLICE;SG_UF_PROPRIEDADE;NM_CULTURA_GLOBAL\n2023;MT;SOJA\n"
     with sem_excecao():
         actual = parser.parse_apolices(content)
-    assert str(actual["valor_indenizacao"].dtype) == "Float64"
+    assert str(actual["valor_indenizacao"].dtype) == "float64"
     assert actual["valor_indenizacao"].isna().all()
     with levanta_exatamente(ParseError, match="valor_indenizacao"):
         parser.parse_sinistros(content, cultura="absent")

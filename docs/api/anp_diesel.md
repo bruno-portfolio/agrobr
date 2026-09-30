@@ -11,7 +11,7 @@ Precos de revenda de diesel por municipio, UF ou nivel Brasil.
 ```python
 async def precos_diesel(
     uf: str | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     produto: str = "DIESEL S10",
     inicio: str | date | None = None,
     fim: str | date | None = None,
@@ -28,7 +28,7 @@ async def precos_diesel(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `uf` | `str \| None` | Filtro por UF (ex: SP, MT, PR) |
-| `municipio` | `str \| None` | Filtro por municipio (correspondência exata após normalizar caixa/acentos) |
+| `municipio` | `int \| str \| None` | Município pelo código IBGE de 7 dígitos ou pelo nome inteiro, resolvido por `normalize.resolver_municipio` antes da rede e comparado com o nome da planilha sem caixa, acento e pontuação (`"Sant'Ana do Livramento"` casa com `SANTANA DO LIVRAMENTO`); pedaço de nome gera `InvalidParameterError` com os candidatos |
 | `produto` | `str` | "DIESEL" ou "DIESEL S10" (default) |
 | `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD) |
 | `fim` | `str \| date \| None` | Data final (YYYY-MM-DD) |

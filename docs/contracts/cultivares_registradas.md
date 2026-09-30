@@ -4,7 +4,7 @@ O dataset reutiliza o contrato de fonte **`rnc_registradas` 1.0**, constante `RN
 
 ## Schema
 
-As dez colunas mantêm a ordem e os nomes da API RNC. Campos textuais são strings; o parser produz colunas pandas `object`. Datas civis são `datetime64[ns]`, sem timezone ou horário.
+As dez colunas mantêm a ordem e os nomes da API RNC. Campos textuais são strings, no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2). Datas civis são `datetime64[ns]`, sem timezone ou horário.
 
 | Coluna | Tipo pandas | Nulo | Significado |
 |---|---|---|---|

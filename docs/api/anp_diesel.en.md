@@ -11,7 +11,7 @@ Diesel retail prices by municipality, state or Brazil level.
 ```python
 async def precos_diesel(
     uf: str | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     produto: str = "DIESEL S10",
     inicio: str | date | None = None,
     fim: str | date | None = None,
@@ -28,7 +28,7 @@ async def precos_diesel(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `uf` | `str \| None` | Filter by state (e.g. SP, MT, PR) |
-| `municipio` | `str \| None` | Filter by municipality (case-insensitive substring) |
+| `municipio` | `int \| str \| None` | Municipality by its 7-digit IBGE code or full name, resolved by `normalize.resolver_municipio` before the request and compared with the spreadsheet name ignoring case, accents and punctuation (`"Sant'Ana do Livramento"` matches `SANTANA DO LIVRAMENTO`); a fragment of a name raises `InvalidParameterError` listing the candidates |
 | `produto` | `str` | "DIESEL" or "DIESEL S10" (default) |
 | `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD) |
 | `fim` | `str \| date \| None` | End date (YYYY-MM-DD) |

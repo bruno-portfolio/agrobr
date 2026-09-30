@@ -13,7 +13,7 @@ import pydantic
 
 from agrobr import constants
 
-from . import acquisition, cache, models
+from . import _buffers, acquisition, cache
 from . import query as query_models
 
 _lock = threading.RLock()
@@ -161,20 +161,12 @@ def query(revision_key: str, selected: query_models.ZarcQuery) -> pd.DataFrame:
             predicates.append(f'"{name}" = ?')
             values.append(value)
     if selected.municipio is not None:
-        municipality = str(selected.municipio)
-        if isinstance(selected.municipio, int) or municipality.isascii() and municipality.isdigit():
-            predicates.append("geocodigo = ?")
-            values.append(municipality)
-        else:
-            predicates.append("contains(zarc_municipio(municipio), ?)")
-            values.append(models.normalize_municipio(municipality))
+        predicates.append("geocodigo = ?")
+        values.append(selected.municipio)
     projection = ", ".join(f'"{name}"' for name in constants.ZARC_OUTPUT_COLUMNS)
     with _connection() as connection:
         if _entry(connection, revision_key) is None:
             raise KeyError("Revisão ZARC ausente ou expirada")
-        connection.create_function(
-            "zarc_municipio", models.normalize_municipio, ["VARCHAR"], "VARCHAR"
-        )
         frame = connection.execute(
             f"SELECT {projection} FROM tabuas WHERE {' AND '.join(predicates)} "
             "ORDER BY registro_origem",
@@ -182,7 +174,7 @@ def query(revision_key: str, selected: query_models.ZarcQuery) -> pd.DataFrame:
         ).fetchdf()
     for name in constants.ZARC_OUTPUT_COLUMNS:
         frame[name] = frame[name].astype(
-            "Int64" if name in constants.ZARC_INTEGER_COLUMNS else object
+            "Int64" if name in constants.ZARC_INTEGER_COLUMNS else _buffers.TEXTO
         )
     return frame
 

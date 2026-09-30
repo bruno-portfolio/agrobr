@@ -35,13 +35,12 @@ def table():
     "selectors",
     [
         {},
-        {"cultura": "soja"},
+        {"produto": "soja"},
         {"uf": "GO"},
-        {"municipio": "(nova)"},
-        {"municipio": "STRASSE"},
+        {"municipio": "sorriso"},
         {"municipio": 5107925},
         {"solo": 1, "ciclo": 20},
-        {"municipio": "absent"},
+        {"municipio": 5103403},
     ],
 )
 def test_store_query_matches_parser_values_types_and_order(table, selectors):

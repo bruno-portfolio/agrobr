@@ -9,16 +9,16 @@ Query the ZARC Risk Table (Tabua de Risco).
 ```python
 import agrobr
 
-df = await agrobr.zarc.zoneamento(cultura="soja", uf="MT", safra="2025/2026")
+df = await agrobr.zarc.zoneamento(produto="soja", uf="MT", safra="2025/2026")
 ```
 
 ### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|-------------|-----------|
-| cultura | str | No | Canonical crop name (e.g. "soja", "milho_1", "trigo") |
-| uf | str | No | State abbreviation (e.g. "MT", "SP") |
-| municipio | int \| str | No | 7-digit IBGE code (int) or partial name (str), case- and accent-insensitive |
+| produto | str | No | Canonical crop name (e.g. "soja", "milho_1", "trigo"); the output column stays `cultura` |
+| uf | str | No | State abbreviation (e.g. "MT", "SP"); any other raises `InvalidParameterError` listing the valid ones |
+| municipio | int \| str | No | 7-digit IBGE code (`int` or `str`) or full municipality name, ignoring case and accents; the filter compares `geocodigo`. A fragment of a name, an unknown name or a repeated name without `uf` raise `InvalidParameterError` listing the candidates, before the request |
 | safra | str | No | "2025/2026" or "perene" (default: most recent crop year) |
 | solo | int | No | Soil type code (1-3 legacy, 11-16 new 6-AD) |
 | ciclo | int | No | Cultivar cycle code (13, 19, 20, 21, 22, 24, 25, 26) |
@@ -48,22 +48,22 @@ The first query for each revision downloads and parses the complete table. Later
 
 ```python
 # Soybean in Mato Grosso
-df = await agrobr.zarc.zoneamento(cultura="soja", uf="MT")
+df = await agrobr.zarc.zoneamento(produto="soja", uf="MT")
 
 # Specific municipality by geocode
 df = await agrobr.zarc.zoneamento(municipio=5107925, safra="2025/2026")
 
-# Search by partial municipality name
-df = await agrobr.zarc.zoneamento(municipio="Sorriso", cultura="soja")
+# Search by full municipality name
+df = await agrobr.zarc.zoneamento(municipio="Sorriso", produto="soja")
 
 # Filter by soil and cycle
-df = await agrobr.zarc.zoneamento(cultura="milho_1", solo=2, ciclo=20)
+df = await agrobr.zarc.zoneamento(produto="milho_1", solo=2, ciclo=20)
 
 # Perennial crops
-df = await agrobr.zarc.zoneamento(cultura="cafe_arabica", safra="perene")
+df = await agrobr.zarc.zoneamento(produto="cafe_arabica", safra="perene")
 
 # With metadata
-df, meta = await agrobr.zarc.zoneamento(cultura="soja", uf="MT", return_meta=True)
+df, meta = await agrobr.zarc.zoneamento(produto="soja", uf="MT", return_meta=True)
 print(meta.records_count, meta.fetch_duration_ms)
 ```
 
@@ -94,7 +94,7 @@ safras = await agrobr.zarc.safras_disponiveis()
 ```python
 from agrobr import sync
 
-df = sync.zarc.zoneamento(cultura="soja", uf="MT")
+df = sync.zarc.zoneamento(produto="soja", uf="MT")
 culturas = sync.zarc.culturas()
 safras = sync.zarc.safras_disponiveis()
 ```

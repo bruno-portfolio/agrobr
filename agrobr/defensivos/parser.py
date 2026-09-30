@@ -27,6 +27,7 @@ _SCIENTIFIC = re.compile(
 )
 _SCALAR = re.compile(rf"^\s*({_NUMBER})(?:\s+(.+?))?\s*$")
 _Model = TypeVar("_Model", bound=pydantic.BaseModel)
+TEXTO = pd.Series([""]).dtype
 
 
 def _legacy_value(value: str | None) -> str | None:
@@ -229,11 +230,9 @@ def _split_composite_ia(value: str) -> tuple[str, str]:
 
 
 def _frame(records: list[dict[str, Any]], columns: list[str]) -> pd.DataFrame:
+    numericas = {"ordem_componente": "Int64", "concentracao_valor": "float64"}
     frame = pd.DataFrame(records, columns=columns, dtype=object)
-    if "ordem_componente" in columns:
-        frame["ordem_componente"] = frame["ordem_componente"].astype("Int64")
-        frame["concentracao_valor"] = frame["concentracao_valor"].astype("Float64")
-    return frame
+    return frame.astype({name: numericas.get(name, TEXTO) for name in columns})
 
 
 def _details(

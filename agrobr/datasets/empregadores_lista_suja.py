@@ -69,7 +69,7 @@ class EmpregadoresListaSujaDataset(base.BaseDataset):
         *,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         self._validate_produto(produto)
         for name, value in (("as_polars", as_polars), ("return_meta", return_meta)):
             if not isinstance(value, bool):
@@ -107,7 +107,7 @@ async def empregadores_lista_suja(
     uf: str | None = None,
     id_registro: str | None = None,
     formato: str = "auto",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -118,9 +118,20 @@ async def empregadores_lista_suja(
     uf: str | None = None,
     id_registro: str | None = None,
     formato: str = "auto",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def empregadores_lista_suja(
+    *,
+    uf: str | None = None,
+    id_registro: str | None = None,
+    formato: str = "auto",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def empregadores_lista_suja(
@@ -130,7 +141,7 @@ async def empregadores_lista_suja(
     formato: str = "auto",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _empregadores_lista_suja.fetch(
         uf=uf,
         id_registro=id_registro,

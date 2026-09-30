@@ -50,7 +50,7 @@ Raw hash/size, cache key/expiry, and acquisition/parsing durations propagate thr
 
 ## Identity and types
 
-Text columns, including registrations and original composition, retain source types. `ordem_componente` uses `Int64`; `concentracao_valor` uses nullable `Float64`. Empty results retain every column and its type, including optional contract additions. See the [complete column description](defensivos.en.md#composition).
+Text columns, including registrations and original composition, come in the installed pandas default dtype (`str` on pandas 3, `object` on 2). `ordem_componente` uses `Int64`; `concentracao_valor` uses `float64`. Empty results retain every column and its type, including optional contract additions. See the [complete column description](defensivos.en.md#composition).
 
 Repeated ingredients remain at separate positions. Authorizations are not assigned an artificial key or deduplicated after projection. Components and authorizations are not joined automatically. Literal units, ambiguous text, and null values retain source semantics; `TRUE` is not converted into a validity classification or an application recommendation.
 

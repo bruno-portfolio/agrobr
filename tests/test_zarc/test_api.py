@@ -25,7 +25,7 @@ from tests.helpers import zarc_csv
     "kwargs",
     [
         {"uf": "XX"},
-        {"cultura": False},
+        {"produto": False},
         {"municipio": True},
         {"solo": 9},
         {"ciclo": 23},
@@ -67,10 +67,10 @@ async def test_default_uses_latest_annual_resource(zarc_replay):
     "kwargs,column,expected",
     [
         ({"uf": " mt "}, "uf", "MT"),
-        ({"cultura": " Soja "}, "cultura", "soja"),
+        ({"produto": " Soja "}, "cultura", "soja"),
         ({"municipio": 5107925}, "geocodigo", "5107925"),
         ({"municipio": "5107925"}, "geocodigo", "5107925"),
-        ({"municipio": "(Nova)"}, "municipio", "Vila (Nova)"),
+        ({"municipio": "sorriso"}, "geocodigo", "5107925"),
         ({"solo": 1}, "solo_codigo", 1),
         ({"ciclo": 20}, "ciclo_codigo", 20),
     ],
@@ -89,9 +89,9 @@ async def test_literal_selectors_reach_validated_rows(zarc_replay, kwargs, colum
         ("cerqueira césar", "3511409", "SP", "Cerqueira César", [9, 11, 12]),
         ("CERQUEIRA CÉSAR", "3511409", "SP", "Cerqueira César", [9, 11, 12]),
         ("cerqueira cesar", "3511409", "SP", "Cerqueira César", [9, 11, 12]),
-        ("herval", "4316956", "RS", "Santa Maria do Herval", [18, 19]),
+        ("3511409", "3511409", "SP", "Cerqueira César", [9, 11, 12]),
     ],
-    ids=["caixa_baixa", "caixa_alta", "sem_acento", "parcial"],
+    ids=["caixa_baixa", "caixa_alta", "sem_acento", "codigo"],
 )
 async def test_municipio_por_nome_real_nos_tres_caminhos(
     zarc_replay, municipio, geocodigo, uf, nome, posicoes
@@ -111,6 +111,14 @@ async def test_municipio_por_nome_real_nos_tres_caminhos(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("fetch", [api.zoneamento, datasets.zoneamento_agricola])
+async def test_pedaco_de_nome_de_municipio_falha_antes_da_rede_com_candidatos(zarc_replay, fetch):
+    with pytest.raises(InvalidParameterError, match=r"Santa Maria do Herval/RS \(4316956\)"):
+        await fetch(municipio="maria do herval")
+    assert not zarc_replay["requests"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("fetch", [api.zoneamento, datasets.zoneamento_agricola])
 async def test_cultura_fora_catalogo_falha_antes_da_rede(zarc_replay, monkeypatch, fetch):
     catalog = AsyncMock(side_effect=AssertionError("catalog accessed"))
     download = AsyncMock(side_effect=AssertionError("CSV downloaded"))
@@ -119,7 +127,7 @@ async def test_cultura_fora_catalogo_falha_antes_da_rede(zarc_replay, monkeypatc
     monkeypatch.setattr(client, "download_acquisition", download)
     monkeypatch.setattr(cache, "get_catalog", cached)
     with pytest.raises(InvalidParameterError, match="abobrinha"):
-        await fetch(cultura="abobrinha", uf="SP")
+        await fetch(produto="abobrinha", uf="SP")
     catalog.assert_not_awaited()
     download.assert_not_awaited()
     cached.assert_not_called()
@@ -129,7 +137,7 @@ async def test_cultura_fora_catalogo_falha_antes_da_rede(zarc_replay, monkeypatc
 @pytest.mark.asyncio
 async def test_cultura_catalogo_ausente_falha_apos_validar_tabua(zarc_replay):
     with pytest.raises(InvalidParameterError, match="use safra='perene'"):
-        await api.zoneamento(cultura="sisal")
+        await api.zoneamento(produto="sisal")
     assert len(zarc_replay["requests"]) == 2
 
 
@@ -159,14 +167,14 @@ async def test_cache_hit_retains_acquisition_and_independent_outputs(zarc_replay
 
 @pytest.mark.asyncio
 async def test_store_hit_skips_download_and_parser_with_identical_details(zarc_replay, monkeypatch):
-    first, first_meta = await api.zoneamento(cultura="soja", uf="MT", return_meta=True)
+    first, first_meta = await api.zoneamento(produto="soja", uf="MT", return_meta=True)
     monkeypatch.setattr(
         client, "download_acquisition", AsyncMock(side_effect=AssertionError("download"))
     )
     monkeypatch.setattr(
         parser, "parse_tabua_risco_bundle", Mock(side_effect=AssertionError("parse"))
     )
-    second, second_meta = await api.zoneamento(cultura="soja", uf="MT", return_meta=True)
+    second, second_meta = await api.zoneamento(produto="soja", uf="MT", return_meta=True)
     pd.testing.assert_frame_equal(first, second)
     assert first_meta.source_details["cache"]["status"] == "store_miss"
     assert second_meta.source_details["cache"]["status"] == "store_hit"
@@ -179,7 +187,7 @@ async def test_store_hit_skips_download_and_parser_with_identical_details(zarc_r
 async def test_store_hit_rejects_absent_culture_without_another_acquisition(zarc_replay):
     await api.zoneamento()
     with pytest.raises(InvalidParameterError, match="use safra='perene'"):
-        await api.zoneamento(cultura="sisal")
+        await api.zoneamento(produto="sisal")
     assert len(zarc_replay["requests"]) == 2
 
 
@@ -192,7 +200,7 @@ async def test_cache_and_bypass_preserve_filter_and_parser_details(zarc_replay):
             {"Nome_cultura": "Arroz", "UF": "GO"},
         ]
     )
-    selected = {"cultura": "soja", "uf": "MT", "municipio": "(nova)", "solo": 1, "ciclo": 20}
+    selected = {"produto": "soja", "uf": "MT", "municipio": "sorriso", "solo": 1, "ciclo": 20}
     first, initial = await api.zoneamento(**selected, return_meta=True)
     second, hit = await api.zoneamento(**selected, return_meta=True)
     third, bypass = await api.zoneamento(**selected, return_meta=True, use_cache=False)
@@ -352,7 +360,7 @@ async def test_contract_is_mandatory(zarc_replay, monkeypatch, return_meta):
 async def test_polars_schema_is_stable(zarc_replay, empty, return_meta):
     pl = pytest.importorskip("polars")
     response = await api.zoneamento(
-        municipio="absent" if empty else None, as_polars=True, return_meta=return_meta
+        municipio=1600501 if empty else None, as_polars=True, return_meta=return_meta
     )
     frame = response[0] if return_meta else response
     assert frame.width == 59 and frame.schema["cod_municipio"] == pl.Int64
@@ -391,7 +399,7 @@ async def test_culturas_observadas_chegam_ao_dataset_antes_do_filtro(zarc_replay
         [{"Nome_cultura": "Soja"}, {"Nome_cultura": "Arroz"}, {"Nome_cultura": "Trigo"}]
     )
     frame, meta = await datasets.zoneamento_agricola(
-        cultura="soja", uf="MT", safra="2026/2027", return_meta=True
+        produto="soja", uf="MT", safra="2026/2027", return_meta=True
     )
     assert frame["cultura"].tolist() == ["soja"]
     assert meta.source_details["parser"]["culturas_observadas"] == ["arroz", "soja", "trigo"]

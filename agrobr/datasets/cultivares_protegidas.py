@@ -6,6 +6,7 @@ import pandas as pd
 
 from agrobr.datasets import _rnc, base, registry
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 
 async def _fetch_rnc(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -55,7 +56,7 @@ async def cultivares_protegidas(
     nr_processo: str | None = None,
     nr_certificado: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -70,9 +71,24 @@ async def cultivares_protegidas(
     nr_processo: str | None = None,
     nr_certificado: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def cultivares_protegidas(
+    *,
+    cultivar: str | None = None,
+    especie: str | None = None,
+    situacao: str | None = None,
+    titular: str | None = None,
+    nr_processo: str | None = None,
+    nr_certificado: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def cultivares_protegidas(
@@ -86,7 +102,7 @@ async def cultivares_protegidas(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _cultivares_protegidas.fetch(
         cultivar=cultivar,
         especie=especie,

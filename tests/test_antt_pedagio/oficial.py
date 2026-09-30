@@ -6,7 +6,7 @@ import hashlib
 import io
 import json
 import re
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
@@ -107,6 +107,13 @@ def plazas(body: bytes) -> list[dict[str, object]]:
             text = str(row[name])
             row[name] = float(Decimal(text.replace(",", "."))) if text else None
         row.setdefault("municipio", raw.get("municipal"))
+        row["km_m"] = float(Decimal(raw["km_m"])) if raw["km_m"] else None
+        row["ano_do_pnv_snv"] = int(raw["ano_do_pnv_snv"]) if raw["ano_do_pnv_snv"] else None
+        row["data_da_inativacao"] = (
+            datetime.strptime(raw["data_da_inativacao"], "%d/%m/%Y")
+            if raw["data_da_inativacao"]
+            else None
+        )
         result.append(row)
     return result
 

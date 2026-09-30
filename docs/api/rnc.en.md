@@ -24,7 +24,7 @@ async def registradas(
 
 | Filters | Rule |
 |---|---|
-| `cultivar`, `especie`, `grupo`, `situacao`, `mantenedor` | Case-insensitive literal substring, without regex; `especie` searches `nome_comum` |
+| `cultivar`, `especie`, `grupo`, `situacao`, `mantenedor` | Case- and accent-insensitive literal substring, without regex (`"feijao"` finds `"Feijão"`); `especie` searches `nome_comum` |
 | `nr_registro`, `nr_formulario` | Exact textual equality, preserving leading zeros |
 
 The output has **ten columns**, in this order: `cultivar`, `nome_comum`, `nome_cientifico`, `grupo`, `situacao`, `nr_formulario`, `nr_registro`, `data_registro`, `data_validade`, `mantenedor`.
@@ -57,7 +57,7 @@ async def protegidas(
 
 | Filters | Rule |
 |---|---|
-| `cultivar`, `especie`, `situacao`, `titular` | Case-insensitive literal substring, without regex; `especie` searches `nome_comum` |
+| `cultivar`, `especie`, `situacao`, `titular` | Case- and accent-insensitive literal substring, without regex (`"feijao"` finds `"Feijão"`); `especie` searches `nome_comum` |
 | `nr_processo`, `nr_certificado` | Exact textual equality |
 
 The output has **twelve columns**: `cultivar`, `nome_cientifico`, `nome_comum`, `nr_processo`, `situacao`, `nr_certificado`, `inicio_protecao`, `termino_protecao`, `titular`, `representante_legal`, `melhoristas`, `termino_protecao_texto`.
@@ -78,7 +78,7 @@ All four date columns use `datetime64[ns]`: civil dates at midnight, without a t
 
 Protection end also accepts the official literal `até a emissão do certificado definitivo` (“until the definitive certificate is issued”). In that case, `termino_protecao` is `NaT`, while `termino_protecao_texto` preserves the condition. The text column contains the published cell with outer whitespace removed, including dates and blanks. A condition can therefore be distinguished from an absent value. No deadline is calculated from this expression, and no administrative status is inferred from it.
 
-Other columns contain text (`object` in pandas). Outer whitespace is removed; blank strings, punctuation and compound content remain. Identifiers are not converted to numbers.
+Other columns contain text, in the installed pandas default dtype (`str` on pandas 3, `object` on 2). Outer whitespace is removed; blank strings, punctuation and compound content remain. Identifiers are not converted to numbers.
 
 ## Validation and selection
 

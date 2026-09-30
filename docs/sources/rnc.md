@@ -39,7 +39,7 @@ Uma sessão pública segue os formulários de pesquisa e exportação. Um GET ob
 
 O CSV completo recebido é validado antes dos filtros: layout integral, largura das linhas, modelos Pydantic, datas, chave e contrato. Mudança de layout, erro de conteúdo ou divergência entre total da pesquisa e quantidade de registros aborta a coleta. O fingerprint SHA256 descreve a estrutura do cabeçalho; o hash do CSV identifica os bytes da aquisição. Nenhum deles certifica exatidão geográfica ou situação jurídica.
 
-Os filtros existentes são substrings literais sem distinção de caixa. `nr_registro`/`nr_formulario` na família RNC e `nr_processo`/`nr_certificado` no SNPC usam igualdade textual. Todos removem espaços externos. O recorte não reduz a validação da população nem o volume transferido na aquisição corrente.
+Os filtros existentes são substrings literais sem distinção de caixa e acento. `nr_registro`/`nr_formulario` na família RNC e `nr_processo`/`nr_certificado` no SNPC usam igualdade textual. Todos removem espaços externos. O recorte não reduz a validação da população nem o volume transferido na aquisição corrente.
 
 ## Cache, metadados e cobertura
 

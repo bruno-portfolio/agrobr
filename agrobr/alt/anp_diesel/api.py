@@ -15,7 +15,7 @@ import pandas as pd
 from agrobr import _log, constants, contracts
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.normalize.regions import remover_acentos
+from agrobr.normalize import municipalities
 from agrobr.utils import result, tasks
 from agrobr.utils import time as time_utils
 from agrobr.utils.validation import validate_uf, validate_year_uf
@@ -68,7 +68,7 @@ def _normalize_price_date(value: str | date | None) -> date | None:
 
 def normalize_price_query(
     uf: str | None,
-    municipio: str | None,
+    municipio: int | str | None,
     produto: str,
     inicio: str | date | None,
     fim: str | date | None,
@@ -83,9 +83,8 @@ def normalize_price_query(
         raise InvalidParameterError(f"Nivel {nivel!r} invalido: {sorted(NIVEIS_VALIDOS)}")
     if not isinstance(produto, str) or normalize_produto(produto) not in PRODUTOS_DIESEL:
         raise InvalidParameterError(f"Produto {produto!r} invalido: DIESEL ou DIESEL S10")
-    for name, value in (("uf", uf), ("municipio", municipio)):
-        if value is not None and (not isinstance(value, str) or not value.strip()):
-            raise InvalidParameterError(f"{name} deve ser texto não vazio ou None")
+    if uf is not None and (not isinstance(uf, str) or not uf.strip()):
+        raise InvalidParameterError("uf deve ser texto não vazio ou None")
     if nivel == NIVEL_BRASIL and uf is not None:
         raise InvalidParameterError("uf exige nivel='uf' ou nivel='municipio'")
     if nivel != NIVEL_MUNICIPIO and municipio is not None:
@@ -93,9 +92,10 @@ def normalize_price_query(
     start, end = _normalize_price_date(inicio), _normalize_price_date(fim)
     if start is not None and end is not None and start > end:
         raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
+    alvo = None if municipio is None else municipalities.resolver_municipio(municipio, uf)
     return {
-        "uf": validate_uf(uf),
-        "municipio": " ".join(remover_acentos(municipio).upper().split()) if municipio else None,
+        "uf": validate_uf(uf) if alvo is None else alvo["uf"],
+        "municipio": None if alvo is None else alvo["nome"],
         "produto": normalize_produto(produto),
         "inicio": start,
         "fim": end,
@@ -125,7 +125,7 @@ def _normalize_range(
 @overload
 async def precos_diesel(
     uf: str | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     produto: str = "DIESEL S10",
     inicio: str | date | None = None,
     fim: str | date | None = None,
@@ -140,7 +140,7 @@ async def precos_diesel(
 @overload
 async def precos_diesel(
     uf: str | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     produto: str = "DIESEL S10",
     inicio: str | date | None = None,
     fim: str | date | None = None,
@@ -155,7 +155,7 @@ async def precos_diesel(
 @overload
 async def precos_diesel(
     uf: str | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     produto: str = "DIESEL S10",
     inicio: str | date | None = None,
     fim: str | date | None = None,
@@ -169,7 +169,7 @@ async def precos_diesel(
 
 async def precos_diesel(
     uf: str | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     produto: str = "DIESEL S10",
     inicio: str | date | None = None,
     fim: str | date | None = None,
@@ -206,7 +206,7 @@ async def precos_diesel(
 async def acquire_prices(
     *,
     uf: str | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     produto: str = "DIESEL S10",
     inicio: str | date | None = None,
     fim: str | date | None = None,

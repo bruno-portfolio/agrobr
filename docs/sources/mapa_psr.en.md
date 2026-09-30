@@ -24,7 +24,7 @@ from agrobr.alt import mapa_psr
 df = await mapa_psr.sinistros()
 
 # Filter by crop and state
-df = await mapa_psr.sinistros(cultura="SOJA", uf="MT")
+df = await mapa_psr.sinistros(produto="SOJA", uf="MT")
 
 # Filter by year or range
 df = await mapa_psr.sinistros(ano=2023)
@@ -33,21 +33,19 @@ df = await mapa_psr.sinistros(ano_inicio=2020, ano_fim=2024)
 # Filter by predominant event
 df = await mapa_psr.sinistros(evento="seca")
 
-# Filter by the municipality label (see "Municipality and IBGE code")
-df = await mapa_psr.sinistros(municipio="SORRISO")
-
-# Filter by the municipality's IBGE code
-df = await mapa_psr.apolices(cd_ibge="4305108")
+# Filter by municipality, by name or IBGE code (see "Municipality and IBGE code")
+df = await mapa_psr.sinistros(municipio="Sorriso", uf="MT")
+df = await mapa_psr.apolices(municipio=4305108)
 
 # All policies (including those without a claim)
 df = await mapa_psr.apolices()
 
 # Filtered policies
-df = await mapa_psr.apolices(cultura="MILHO", uf="PR", ano=2023)
+df = await mapa_psr.apolices(produto="MILHO", uf="PR", ano=2023)
 
 # Synchronous API
 from agrobr.sync import alt
-df = alt.mapa_psr.sinistros(cultura="SOJA")
+df = alt.mapa_psr.sinistros(produto="SOJA")
 df = alt.mapa_psr.apolices(uf="MT")
 ```
 
@@ -55,15 +53,14 @@ df = alt.mapa_psr.apolices(uf="MT")
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `cultura` | str \| None | None | Filter by crop (partial match, accent-insensitive, e.g. "cafe" matches "CAFE ARABICA") |
+| `produto` | str \| None | None | Filter by crop (partial match, accent-insensitive, e.g. "cafe" matches "CAFE ARABICA") |
 | `uf` | str \| None | None | Filter by state (abbreviation, e.g. "MT") |
 | `ano` | int \| None | None | Single-year filter (e.g. 2023) |
 | `ano_inicio` | int \| None | None | Start year of the range (inclusive) |
 | `ano_fim` | int \| None | None | End year of the range (inclusive) |
-| `municipio` | str \| None | None | Filter by the published municipality label (partial match); see "Municipality and IBGE code" |
+| `municipio` | int \| str \| None | None | 7-digit IBGE code or full municipality name; see "Municipality and IBGE code" |
 | `evento` | str \| None | None | Filter by predominant event (e.g. "seca") |
-| `cd_ibge` | str \| None | None | Filter by the municipality's IBGE code, 7 digits as text (e.g. "4305108"); any other format raises `InvalidParameterError` before the download |
-| `as_polars` | bool | False | If True, returns a `polars.DataFrame` |
+| `as_polars` | bool | False | If True, returns a `polars.DataFrame`; keyword-only, like `return_meta` |
 | `return_meta` | bool | False | Returns a (DataFrame, MetaInfo) tuple |
 
 `cultura` is filtered by a substring of the name published in the CSV (`NM_CULTURA_GLOBAL`). There is no static
@@ -96,14 +93,13 @@ empty result, after the download.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `cultura` | str \| None | None | Filter by crop (partial match, accent-insensitive) |
+| `produto` | str \| None | None | Filter by crop (partial match, accent-insensitive) |
 | `uf` | str \| None | None | Filter by state |
 | `ano` | int \| None | None | Single-year filter |
 | `ano_inicio` | int \| None | None | Start year of the range |
 | `ano_fim` | int \| None | None | End year of the range |
-| `municipio` | str \| None | None | Filter by the published municipality label (partial match) |
-| `cd_ibge` | str \| None | None | Filter by the municipality's IBGE code (7 digits as text) |
-| `as_polars` | bool | False | If True, returns a `polars.DataFrame` |
+| `municipio` | int \| str \| None | None | 7-digit IBGE code or full municipality name; see "Municipality and IBGE code" |
+| `as_polars` | bool | False | If True, returns a `polars.DataFrame`; keyword-only, like `return_meta` |
 | `return_meta` | bool | False | Returns a (DataFrame, MetaInfo) tuple |
 
 ## Columns — `apolices`
@@ -130,14 +126,17 @@ policies without indemnity amounts are not returned as claims.
 
 ## Municipality and IBGE code
 
-`municipio=` searches the text of the label MAPA publishes in `NM_MUNICIPIO_PROPRIEDADE`, and some
-policies are labelled with the district name. In Caxias do Sul (code 4305108), in 2024, 274 of the
-693 policies with that code carry "Caxias do Sul"; the other 419 appear as Fazenda Souza (241),
-Criúva (78), Vila Oliva (48), Vila Seca (32) and Santa Lúcia do Piaí (20). For the whole
-municipality, use `cd_ibge=`, which compares the code published in `CD_GEOCMU`. The code filter does
-not catch policies published with "-" instead of the geocode (1,516 between 2006 and 2025, with a
-null `cd_ibge`): those only have the label. Without the `CD_GEOCMU` column in the file, `cd_ibge=`
-raises `ParseError`.
+`municipio=` accepts the 7-digit IBGE code (`int` or `str`) or the full municipality name, ignoring
+case and accents, and is resolved by `normalize.resolver_municipio` before the download. A fragment of
+a name, a name from another state and a name shared by more than one municipality without `uf` raise
+`InvalidParameterError` listing the candidates. The filter compares the code published in
+`CD_GEOCMU`, so it also catches the policies MAPA labels with the district name in
+`NM_MUNICIPIO_PROPRIEDADE`: in Caxias do Sul (code 4305108), in 2024, 274 of the 693 policies with that
+code carry "Caxias do Sul", and the other 419 appear as Fazenda Souza (241), Criúva (78), Vila Oliva
+(48), Vila Seca (32) and Santa Lúcia do Piaí (20). Policies published with "-" instead of the geocode
+(1,516 between 2006 and 2025, with a null `cd_ibge`) are included when the label is the full
+municipality name, in the same state. Without the `CD_GEOCMU` column in the file, the filter uses only
+the full name and the state.
 
 ## MetaInfo
 

@@ -9,7 +9,7 @@ from agrobr import _log, contracts
 from agrobr.contracts import lista_suja as source_contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.validation import validate_uf
 from agrobr.utils.warnings import warn_once
 
@@ -65,7 +65,7 @@ async def empregadores(
     uf: str | None = None,
     id_registro: str | None = None,
     formato: str = "auto",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -76,9 +76,20 @@ async def empregadores(
     uf: str | None = None,
     id_registro: str | None = None,
     formato: str = "auto",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def empregadores(
+    *,
+    uf: str | None = None,
+    id_registro: str | None = None,
+    formato: str = "auto",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def empregadores(
@@ -89,7 +100,7 @@ async def empregadores(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     uf = _validate_query(uf, id_registro, formato, kwargs)
     warn_once(
         "lista_suja_pii",

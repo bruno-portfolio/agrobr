@@ -88,9 +88,10 @@ def _frame(records: list[list[str]], context: dict[str, Any]) -> tuple[pd.DataFr
             frame[column] = pd.to_datetime(frame[column], errors="raise").astype("datetime64[ns]")
         except (ValueError, OverflowError) as exc:
             raise _parsing.fail(f"Data fora do intervalo suportado em {column}") from exc
-    for column in frame.select_dtypes(include="object").columns:
-        frame.loc[frame[column].isna(), column] = pd.NA
-    return frame, compound_ids
+    texto = pd.Series([""]).dtype
+    return frame.astype(
+        {name: texto for name in frame.columns if frame[name].dtype == object}
+    ), compound_ids
 
 
 def parse_empregadores_bundle(

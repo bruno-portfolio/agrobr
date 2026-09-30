@@ -9,6 +9,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 logger = _log.get_logger(__name__)
 
@@ -23,34 +24,30 @@ async def _fetch_psr(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInf
     ano_inicio = kwargs.get("ano_inicio")
     ano_fim = kwargs.get("ano_fim")
     municipio = kwargs.get("municipio")
-    cd_ibge = kwargs.get("cd_ibge")
-    cultura = produto if produto else None
 
     if tipo == "sinistros":
-        result = await mapa_psr.sinistros(
-            cultura=cultura,
+        fetched = await mapa_psr.sinistros(
+            produto=produto or None,
             evento=evento,
             uf=uf,
             ano=ano,
             ano_inicio=ano_inicio,
             ano_fim=ano_fim,
             municipio=municipio,
-            cd_ibge=cd_ibge,
             return_meta=True,
         )
     else:
-        result = await mapa_psr.apolices(
-            cultura=cultura,
+        fetched = await mapa_psr.apolices(
+            produto=produto or None,
             uf=uf,
             ano=ano,
             ano_inicio=ano_inicio,
             ano_fim=ano_fim,
             municipio=municipio,
-            cd_ibge=cd_ibge,
             return_meta=True,
         )
 
-    return _unpack_result(result)
+    return _unpack_result(fetched)
 
 
 SEGURO_RURAL_INFO = DatasetInfo(
@@ -94,15 +91,16 @@ class SeguroRuralDataset(BaseDataset):
         ano: int | None = None,
         ano_inicio: int | None = None,
         ano_fim: int | None = None,
-        municipio: str | None = None,
-        cd_ibge: str | None = None,
+        municipio: int | str | None = None,
         evento: str | None = None,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         if tipo not in ("apolices", "sinistros"):
             raise InvalidParameterError(
                 f"tipo deve ser 'apolices' ou 'sinistros', recebeu '{tipo}'"
             )
+        if evento is not None and tipo != "sinistros":
+            raise InvalidParameterError("evento só filtra tipo='sinistros'")
 
         logger.info(
             "dataset_fetch",
@@ -122,7 +120,6 @@ class SeguroRuralDataset(BaseDataset):
             ano_inicio=ano_inicio,
             ano_fim=ano_fim,
             municipio=municipio,
-            cd_ibge=cd_ibge,
         )
 
         self._validate_contract(df, tipo=tipo)
@@ -156,11 +153,10 @@ async def seguro_rural(
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -173,12 +169,27 @@ async def seguro_rural(
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
     return_meta: Literal[True],
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def seguro_rural(
+    produto: str | None = None,
+    *,
+    tipo: Literal["apolices", "sinistros"] = "apolices",
+    uf: str | None = None,
+    ano: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    municipio: int | str | None = None,
+    evento: str | None = None,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def seguro_rural(
@@ -189,12 +200,11 @@ async def seguro_rural(
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _seguro_rural.fetch(  # type: ignore[call-arg]
         produto,
         tipo=tipo,
@@ -203,7 +213,6 @@ async def seguro_rural(
         ano_inicio=ano_inicio,
         ano_fim=ano_fim,
         municipio=municipio,
-        cd_ibge=cd_ibge,
         evento=evento,
         return_meta=return_meta,
         as_polars=as_polars,

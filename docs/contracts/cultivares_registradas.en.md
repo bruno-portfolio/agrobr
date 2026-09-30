@@ -4,7 +4,7 @@ The dataset reuses source contract **`rnc_registradas` 1.0**, constant `RNC_REGI
 
 ## Schema
 
-The ten columns retain the RNC API names and order. Text fields contain strings; the parser produces pandas `object` columns. Civil dates use `datetime64[ns]`, without timezone or time of day.
+The ten columns retain the RNC API names and order. Text fields contain strings, in the installed pandas default dtype (`str` on pandas 3, `object` on 2). Civil dates use `datetime64[ns]`, without timezone or time of day.
 
 | Column | pandas type | Nullable | Meaning |
 |---|---|---|---|

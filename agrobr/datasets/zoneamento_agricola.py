@@ -13,12 +13,14 @@ from agrobr.utils import result
 
 
 async def _fetch_zarc(
-    _produto: str,
+    produto: str,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import zarc
 
-    fetched = await zarc.zoneamento(as_polars=False, return_meta=True, **kwargs)
+    fetched = await zarc.zoneamento(
+        produto=produto or None, as_polars=False, return_meta=True, **kwargs
+    )
     return base._unpack_result(fetched)
 
 
@@ -47,12 +49,12 @@ class ZoneamentoAgricolaDataset(base.BaseDataset):
     info = ZONEAMENTO_AGRICOLA_INFO
 
     def _validate_produto(self, produto: str) -> None:
-        if not isinstance(produto, str) or produto != "":
-            raise InvalidParameterError("zoneamento_agricola usa cultura e filtros nomeados")
+        if not isinstance(produto, str):
+            raise InvalidParameterError("produto deve ser texto")
 
     async def fetch(  # type: ignore[override]
         self,
-        cultura: str | None = None,
+        produto: str | None = None,
         *,
         uf: str | None = None,
         municipio: int | str | None = None,
@@ -63,7 +65,7 @@ class ZoneamentoAgricolaDataset(base.BaseDataset):
         as_polars: bool = False,
         return_meta: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         from agrobr.zarc import query
 
         if kwargs:
@@ -81,11 +83,10 @@ class ZoneamentoAgricolaDataset(base.BaseDataset):
                 "uma revisão histórica da tábua ZARC."
             )
         query.build_query(
-            cultura=cultura, uf=uf, municipio=municipio, safra=safra, solo=solo, ciclo=ciclo
+            produto=produto, uf=uf, municipio=municipio, safra=safra, solo=solo, ciclo=ciclo
         )
         frame, source_name, source_meta, attempted = await self._try_sources(
-            "",
-            cultura=cultura,
+            produto or "",
             uf=uf,
             municipio=municipio,
             safra=safra,
@@ -116,14 +117,14 @@ registry.register(_zoneamento_agricola)
 @overload
 async def zoneamento_agricola(
     *,
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     municipio: int | str | None = None,
     safra: str | None = None,
     solo: int | None = None,
     ciclo: int | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -132,22 +133,23 @@ async def zoneamento_agricola(
 @overload
 async def zoneamento_agricola(
     *,
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     municipio: int | str | None = None,
     safra: str | None = None,
     solo: int | None = None,
     ciclo: int | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def zoneamento_agricola(
     *,
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     municipio: int | str | None = None,
     safra: str | None = None,
@@ -157,9 +159,24 @@ async def zoneamento_agricola(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult: ...
+
+
+async def zoneamento_agricola(
+    *,
+    produto: str | None = None,
+    uf: str | None = None,
+    municipio: int | str | None = None,
+    safra: str | None = None,
+    solo: int | None = None,
+    ciclo: int | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> result.DataFrameResult:
     return await _zoneamento_agricola.fetch(
-        cultura=cultura,
+        produto=produto,
         uf=uf,
         municipio=municipio,
         safra=safra,

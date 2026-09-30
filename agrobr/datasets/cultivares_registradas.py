@@ -6,6 +6,7 @@ import pandas as pd
 
 from agrobr.datasets import _rnc, base, registry
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 
 async def _fetch_rnc(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -56,7 +57,7 @@ async def cultivares_registradas(
     nr_registro: str | None = None,
     nr_formulario: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -72,9 +73,25 @@ async def cultivares_registradas(
     nr_registro: str | None = None,
     nr_formulario: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def cultivares_registradas(
+    *,
+    cultivar: str | None = None,
+    especie: str | None = None,
+    grupo: str | None = None,
+    situacao: str | None = None,
+    mantenedor: str | None = None,
+    nr_registro: str | None = None,
+    nr_formulario: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def cultivares_registradas(
@@ -89,7 +106,7 @@ async def cultivares_registradas(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _cultivares_registradas.fetch(
         cultivar=cultivar,
         especie=especie,

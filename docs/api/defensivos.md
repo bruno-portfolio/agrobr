@@ -53,7 +53,7 @@ componentes, meta = await defensivos.composicao(
 | `grupo_quimico` | Grupo interpretado; anulável |
 | `componente_texto` | Trecho original do componente |
 | `concentracao_texto` | Concentração publicada, antes da interpretação; anulável |
-| `concentracao_valor` | `Float64` anulável, sem conversão dimensional |
+| `concentracao_valor` | `float64`, nulo quando a concentração não é explícita, sem conversão dimensional |
 | `concentracao_unidade` | Unidade publicada, quando separável; anulável |
 
 Ingredientes repetidos em posições diferentes continuam como linhas distintas. A composição não é multiplicada pelas autorizações de uso. Notação científica explícita pode ser interpretada; por exemplo, `.001 x 10^9 UFC/mL` produz valor `1000000.0` e unidade `UFC/mL`. Expressões ambíguas conservam o texto e valores nulos, com diagnóstico em `meta.source_details`. `Kg` permanece `Kg`: não se presume `g/kg`. Ausência não recebe zero.

@@ -10,32 +10,31 @@ Sinistros de seguro rural — indenizacoes pagas por cultura/municipio.
 
 ```python
 async def sinistros(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
-    cd_ibge: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parametros:**
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `cultura` | `str \| None` | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
+| `produto` | `str \| None` | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
 | `uf` | `str \| None` | Filtro por UF (sigla, ex: "MT") |
 | `ano` | `int \| None` | Filtro de ano unico (ex: 2023) |
 | `ano_inicio` | `int \| None` | Ano inicial do range (inclusive) |
 | `ano_fim` | `int \| None` | Ano final do range (inclusive) |
-| `municipio` | `str \| None` | Filtro pelo rótulo publicado do município (busca parcial) |
+| `municipio` | `int \| str \| None` | Município pelo código IBGE de 7 dígitos (`int` ou `str`) ou pelo nome inteiro, sem caixa e acento (ex.: `4305108` ou `"Caxias do Sul"`); pedaço de nome, nome de outra UF ou nome repetido sem `uf` geram `InvalidParameterError` com os candidatos |
 | `evento` | `str \| None` | Filtro por evento preponderante (ex: "seca") |
-| `cd_ibge` | `str \| None` | Filtro pelo código IBGE do município, 7 dígitos em texto (ex.: "4305108") |
-| `as_polars` | `bool` | Se True, retorna polars.DataFrame |
+| `as_polars` | `bool` | Se True, retorna polars.DataFrame; somente nomeado, como `return_meta` |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
@@ -54,7 +53,7 @@ from agrobr.alt import mapa_psr
 df = await mapa_psr.sinistros()
 
 # Sinistros de soja em MT
-df = await mapa_psr.sinistros(cultura="SOJA", uf="MT")
+df = await mapa_psr.sinistros(produto="SOJA", uf="MT")
 
 # Sinistros por seca em 2023
 df = await mapa_psr.sinistros(evento="seca", ano=2023)
@@ -69,30 +68,29 @@ Todas as apolices de seguro rural com subvencao federal.
 
 ```python
 async def apolices(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
+    municipio: int | str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parametros:**
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `cultura` | `str \| None` | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
+| `produto` | `str \| None` | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
 | `uf` | `str \| None` | Filtro por UF (sigla, ex: "MT") |
 | `ano` | `int \| None` | Filtro de ano unico (ex: 2023) |
 | `ano_inicio` | `int \| None` | Ano inicial do range (inclusive) |
 | `ano_fim` | `int \| None` | Ano final do range (inclusive) |
-| `municipio` | `str \| None` | Filtro pelo rótulo publicado do município (busca parcial) |
-| `cd_ibge` | `str \| None` | Filtro pelo código IBGE do município (7 dígitos em texto) |
-| `as_polars` | `bool` | Se True, retorna polars.DataFrame |
+| `municipio` | `int \| str \| None` | Município pelo código IBGE de 7 dígitos (`int` ou `str`) ou pelo nome inteiro, sem caixa e acento (ex.: `4305108` ou `"Caxias do Sul"`); pedaço de nome, nome de outra UF ou nome repetido sem `uf` geram `InvalidParameterError` com os candidatos |
+| `as_polars` | `bool` | Se True, retorna polars.DataFrame; somente nomeado, como `return_meta` |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
@@ -111,7 +109,7 @@ from agrobr.alt import mapa_psr
 df = await mapa_psr.apolices()
 
 # Apolices de milho no PR
-df = await mapa_psr.apolices(cultura="MILHO", uf="PR")
+df = await mapa_psr.apolices(produto="MILHO", uf="PR")
 
 # Apolices de 2023
 df = await mapa_psr.apolices(ano=2023)
@@ -122,7 +120,7 @@ df = await mapa_psr.apolices(ano=2023)
 ```python
 from agrobr.sync import alt
 
-df = alt.mapa_psr.sinistros(cultura="SOJA", uf="MT")
+df = alt.mapa_psr.sinistros(produto="SOJA", uf="MT")
 df = alt.mapa_psr.apolices(ano=2023)
 ```
 
@@ -135,11 +133,11 @@ df = alt.mapa_psr.apolices(ano=2023)
 - Download em arquivo temporário e leitura por blocos de 10 mil linhas, com filtros antes das conversões numéricas
 - O download de cada período continua integral; espaço temporário em disco é necessário, e a memória do resultado cresce com as linhas selecionadas
 - Timeout de leitura: 180 segundos
-- `municipio` compara o rótulo publicado, que em parte das apólices é o nome do distrito; para o município inteiro, use `cd_ibge` (ver [MAPA PSR](../sources/mapa_psr.md#municipio-e-codigo-ibge))
+- `municipio` filtra pelo código IBGE publicado em `CD_GEOCMU`, que cobre também as apólices rotuladas com o nome do distrito; a linha sem código entra quando o rótulo é o nome inteiro do município na mesma UF (ver [MAPA PSR](../sources/mapa_psr.md#municipio-e-codigo-ibge))
 
 ## Integridade e período das apólices
 
-O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 4; o contrato de apólices está em 1.1 e o de sinistros permanece em 1.0.
+O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 4; o contrato de apólices está em 1.2 e o de sinistros em 1.1. `ano_apolice` sai em `Int64`, com linhas e vazio.
 
 `ano_apolice` é o ano de contratação da apólice, conforme o dicionário SISSER; não identifica a data do evento ou do pagamento. `sinistros` seleciona indenização positiva com evento não vazio. Zero publicado continua zero em `apolices`; valores ausentes continuam nulos. Não se arredondam valores monetários a centavos. Números de apólice e códigos geográficos conservam seus zeros iniciais. Só o registro publicado em dobro e idêntico em todas as colunas sai uma vez (ver [MAPA PSR](../sources/mapa_psr.md)); nenhuma outra linha é deduplicada.
 

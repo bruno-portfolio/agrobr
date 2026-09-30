@@ -2,13 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
-
 from agrobr import _log
 from agrobr.datasets import base
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
-from agrobr.models import MetaInfo
 from agrobr.utils import result
 
 logger = _log.get_logger(__name__)
@@ -34,7 +31,7 @@ class AgrofitDataset(base.BaseDataset):
         use_cache: bool = True,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         self._validate_produto(produto)
         for name, value in (
             ("use_cache", use_cache),

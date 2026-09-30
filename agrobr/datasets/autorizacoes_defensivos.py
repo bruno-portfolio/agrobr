@@ -6,6 +6,7 @@ import pandas as pd
 
 from agrobr.datasets import _agrofit, base, registry
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 
 async def _fetch_defensivos(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -54,7 +55,7 @@ async def autorizacoes_defensivos(
     classe: str | None = None,
     situacao: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -68,9 +69,23 @@ async def autorizacoes_defensivos(
     classe: str | None = None,
     situacao: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def autorizacoes_defensivos(
+    *,
+    nr_registro: str | None = None,
+    cultura: str | None = None,
+    ingrediente_ativo: str | None = None,
+    classe: str | None = None,
+    situacao: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def autorizacoes_defensivos(
@@ -83,7 +98,7 @@ async def autorizacoes_defensivos(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _autorizacoes_defensivos.fetch(
         nr_registro=nr_registro,
         cultura=cultura,

@@ -60,7 +60,7 @@ needs no conversion:
 from agrobr import datasets
 
 pam = await datasets.producao_anual("soja", ano=2023, nivel="municipio", uf="MT")
-zarc = await datasets.zoneamento_agricola(cultura="soja", uf="MT")
+zarc = await datasets.zoneamento_agricola(produto="soja", uf="MT")
 joined = pam.merge(zarc, on="cod_municipio")
 ```
 

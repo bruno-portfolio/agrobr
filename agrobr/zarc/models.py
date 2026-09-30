@@ -206,10 +206,6 @@ def normalize_cultura(value: object) -> str:
     return _CULTURAS_NORMALIZADAS.get(normalized, normalized.replace(" ", "_"))
 
 
-def normalize_municipio(value: str) -> str:
-    return regions.remover_acentos(value).casefold()
-
-
 def _integer(value: Any) -> int:
     if not isinstance(value, str) or not re.fullmatch(r"[0-9]+", value.strip()):
         raise ValueError("esperado lexema inteiro decimal ASCII")

@@ -23,6 +23,7 @@ from agrobr.exceptions import (
     SourceUnavailableError,
 )
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
 from agrobr.utils.warnings import warn_once
 
 from . import _memory, acquisition, client, models, parser, query
@@ -110,17 +111,19 @@ class Pipeline:
 
 
 def _basic_match(record: models.TrafegoRecord, selected: query.FluxoQuery) -> bool:
-    if selected.data_inicio is not None and record.data < selected.data_inicio:
+    if selected.inicio is not None and record.data < selected.inicio:
         return False
-    if selected.data_fim is not None and record.data > selected.data_fim:
+    if selected.fim is not None and record.data > selected.fim:
         return False
     for name in ("concessionaria", "praca"):
         value = getattr(selected, name)
         if value is not None and value.casefold() not in getattr(record, name).casefold():
             return False
-    return all(
-        getattr(selected, name) is None or getattr(record, name) == getattr(selected, name)
-        for name in ("tipo_veiculo", "tipo_cobranca")
+    if selected.tipo_veiculo is not None and record.tipo_veiculo != selected.tipo_veiculo:
+        return False
+    return selected.tipo_cobranca is None or (
+        record.tipo_cobranca is not None
+        and query.chave_texto(record.tipo_cobranca) == query.chave_texto(selected.tipo_cobranca)
     )
 
 
@@ -286,6 +289,19 @@ async def _traffic_frames(state: Pipeline) -> list[pd.DataFrame]:
             f"concessionária/praça sem vínculo único no cadastro excluídos "
             f"({'; '.join(f'{concession}/{plaza}' for concession, plaza in pairs[:3])}). "
             "O resultado inclui apenas praças comprovadamente na UF/rodovia pelo cadastro."
+        )
+        state.messages.append(message)
+        warnings.warn(message, UserWarning, stacklevel=3)
+    filtros = {
+        name: getattr(state.validated, name)
+        for name in ("concessionaria", "praca", "tipo_cobranca")
+        if getattr(state.validated, name) is not None
+    }
+    if filtros and not rows:
+        message = (
+            f"Nenhum registro da ANTT casou {filtros} nos anos {list(state.validated.anos)}; "
+            "concessionaria e praca comparam por trecho do nome, sem caixa, e tipo_cobranca "
+            "pelo nome inteiro, sem caixa e acento"
         )
         state.messages.append(message)
         warnings.warn(message, UserWarning, stacklevel=3)
@@ -546,7 +562,7 @@ def _meta(frame: pd.DataFrame, result: Any, state: Pipeline) -> MetaInfo:
 
 async def fetch(
     validated: query.FluxoQuery, *, as_polars: bool, return_meta: bool
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     state = Pipeline(validated)
     try:
         await _load_enrichment(state)

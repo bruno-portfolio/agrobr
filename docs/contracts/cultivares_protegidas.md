@@ -4,7 +4,7 @@ O dataset reutiliza o contrato de fonte **`rnc_protegidas` 1.0**, constante `RNC
 
 ## Schema
 
-As onze colunas anteriores permanecem como prefixo. `termino_protecao_texto` é a décima segunda coluna. Textos são strings, emitidas pelo parser em pandas `object`; datas são civis `datetime64[ns]`, sem timezone ou horário.
+As onze colunas anteriores permanecem como prefixo. `termino_protecao_texto` é a décima segunda coluna. Textos são strings, no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2); datas são civis `datetime64[ns]`, sem timezone ou horário.
 
 | Coluna | Tipo pandas | Nulo | Significado |
 |---|---|---|---|

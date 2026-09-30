@@ -21,18 +21,18 @@ def acquisition(tmp_path, monkeypatch):
     tables = {}
     for name in ("tecnicos", "composicao"):
         tables[name] = contracts.get_contract(f"agrofit_{name}").empty_frame().reindex(range(3))
-    tables["tecnicos"]["nr_registro"] = pd.Series(["001", "TC02523", "003"], dtype=object)
-    tables["tecnicos"]["marca_comercial"] = pd.Series(["TRUE", "", pd.NA], dtype=object)
+    texto = parser.TEXTO
+    tables["tecnicos"]["nr_registro"] = pd.Series(["001", "TC02523", "003"], dtype=texto)
+    tables["tecnicos"]["marca_comercial"] = pd.Series(["TRUE", "", float("nan")], dtype=texto)
     component = tables["composicao"]
-    component["tipo"] = pd.Series(["tecnicos"] * 3, dtype=object)
-    component["nr_registro"] = pd.Series(["001", "TC02523", "003"], dtype=object)
+    component["tipo"] = pd.Series(["tecnicos"] * 3, dtype=texto)
+    component["nr_registro"] = pd.Series(["001", "TC02523", "003"], dtype=texto)
     component["ordem_componente"] = pd.Series([1, 1, 1], dtype="Int64")
     component["componente_texto"] = pd.Series(
-        ["A (X) (0 g/kg)", "B", "C (X) (950 Kg)"], dtype=object
+        ["A (X) (0 g/kg)", "B", "C (X) (950 Kg)"], dtype=texto
     )
-    component["concentracao_valor"] = pd.Series([0.0, pd.NA, 950.0], dtype="Float64")
-    component["concentracao_unidade"] = pd.Series(["g/kg", pd.NA, "Kg"], dtype=object)
-    tables = {name: frame.mask(frame.isna(), pd.NA) for name, frame in tables.items()}
+    component["concentracao_valor"] = pd.Series([0.0, float("nan"), 950.0])
+    component["concentracao_unidade"] = pd.Series(["g/kg", float("nan"), "Kg"], dtype=texto)
     meta = MetaInfo(
         source="defensivos",
         source_url="https://dados.agricultura.gov.br/test.csv",

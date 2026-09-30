@@ -10,32 +10,31 @@ Rural insurance claims — indemnities paid by crop/municipality.
 
 ```python
 async def sinistros(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     evento: str | None = None,
-    cd_ibge: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cultura` | `str \| None` | Crop filter (partial, accent-insensitive match, e.g. "cafe" matches "CAFE ARABICA") |
+| `produto` | `str \| None` | Crop filter (partial, accent-insensitive match, e.g. "cafe" matches "CAFE ARABICA") |
 | `uf` | `str \| None` | State filter (abbreviation, e.g. "MT") |
 | `ano` | `int \| None` | Single-year filter (e.g. 2023) |
 | `ano_inicio` | `int \| None` | Start year of the range (inclusive) |
 | `ano_fim` | `int \| None` | End year of the range (inclusive) |
-| `municipio` | `str \| None` | Filter by the published municipality label (partial match) |
+| `municipio` | `int \| str \| None` | Municipality by its 7-digit IBGE code (`int` or `str`) or its full name, ignoring case and accents (e.g. `4305108` or `"Caxias do Sul"`); a fragment of a name, a name from another state or a repeated name without `uf` raise `InvalidParameterError` listing the candidates |
 | `evento` | `str \| None` | Filter by predominant event (e.g. "seca") |
-| `cd_ibge` | `str \| None` | Filter by the municipality's IBGE code, 7 digits as text (e.g. "4305108") |
-| `as_polars` | `bool` | If True, returns a polars.DataFrame |
+| `as_polars` | `bool` | If True, returns a polars.DataFrame; keyword-only, like `return_meta` |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
 
 **Returns:**
@@ -54,7 +53,7 @@ from agrobr.alt import mapa_psr
 df = await mapa_psr.sinistros()
 
 # Soybean claims in MT
-df = await mapa_psr.sinistros(cultura="SOJA", uf="MT")
+df = await mapa_psr.sinistros(produto="SOJA", uf="MT")
 
 # Drought claims in 2023
 df = await mapa_psr.sinistros(evento="seca", ano=2023)
@@ -69,30 +68,29 @@ All rural insurance policies with federal subsidy.
 
 ```python
 async def apolices(
-    cultura: str | None = None,
+    produto: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
-    municipio: str | None = None,
-    cd_ibge: str | None = None,
+    municipio: int | str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cultura` | `str \| None` | Crop filter (partial, accent-insensitive match, e.g. "cafe" matches "CAFE ARABICA") |
+| `produto` | `str \| None` | Crop filter (partial, accent-insensitive match, e.g. "cafe" matches "CAFE ARABICA") |
 | `uf` | `str \| None` | State filter (abbreviation, e.g. "MT") |
 | `ano` | `int \| None` | Single-year filter (e.g. 2023) |
 | `ano_inicio` | `int \| None` | Start year of the range (inclusive) |
 | `ano_fim` | `int \| None` | End year of the range (inclusive) |
-| `municipio` | `str \| None` | Filter by the published municipality label (partial match) |
-| `cd_ibge` | `str \| None` | Filter by the municipality's IBGE code (7 digits as text) |
-| `as_polars` | `bool` | If True, returns a polars.DataFrame |
+| `municipio` | `int \| str \| None` | Municipality by its 7-digit IBGE code (`int` or `str`) or its full name, ignoring case and accents (e.g. `4305108` or `"Caxias do Sul"`); a fragment of a name, a name from another state or a repeated name without `uf` raise `InvalidParameterError` listing the candidates |
+| `as_polars` | `bool` | If True, returns a polars.DataFrame; keyword-only, like `return_meta` |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
 
 **Returns:**
@@ -111,7 +109,7 @@ from agrobr.alt import mapa_psr
 df = await mapa_psr.apolices()
 
 # Corn policies in PR
-df = await mapa_psr.apolices(cultura="MILHO", uf="PR")
+df = await mapa_psr.apolices(produto="MILHO", uf="PR")
 
 # 2023 policies
 df = await mapa_psr.apolices(ano=2023)
@@ -122,7 +120,7 @@ df = await mapa_psr.apolices(ano=2023)
 ```python
 from agrobr.sync import alt
 
-df = alt.mapa_psr.sinistros(cultura="SOJA", uf="MT")
+df = alt.mapa_psr.sinistros(produto="SOJA", uf="MT")
 df = alt.mapa_psr.apolices(ano=2023)
 ```
 
@@ -135,11 +133,11 @@ df = alt.mapa_psr.apolices(ano=2023)
 - Temporary-file downloads and reading in chunks of 10,000 rows, with filters before numeric conversion
 - Each selected period is still downloaded in full; temporary disk space is required, and result memory grows with the selected rows
 - Read timeout: 180 seconds
-- `municipio` compares the published label, which for some policies is the district name; for the whole municipality, use `cd_ibge` (see [MAPA PSR](../sources/mapa_psr.md#municipality-and-ibge-code))
+- `municipio` filters by the IBGE code published in `CD_GEOCMU`, which also covers policies labelled with a district name; a row without a code is included when its label is the full municipality name in the same state (see [MAPA PSR](../sources/mapa_psr.md#municipality-and-ibge-code))
 
 ## Policy integrity and periods
 
-The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.1 and the claims contract remains at 1.0.
+The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.2 and the claims contract at 1.1. `ano_apolice` comes as `Int64`, with rows and when empty.
 
 `ano_apolice` is the year the policy was contracted, according to the SISSER dictionary; it is not the event or payment date. `sinistros` selects positive indemnities with a non-empty event. Published zeros remain zero in `apolices`; missing values remain null. Monetary values are not rounded to cents. Policy numbers and geographic codes retain leading zeros. Only the record published twice and identical in every column is returned once (see [MAPA PSR](../sources/mapa_psr.md)); no other row is deduplicated.
 

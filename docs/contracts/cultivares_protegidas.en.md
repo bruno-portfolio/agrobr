@@ -4,7 +4,7 @@ The dataset reuses source contract **`rnc_protegidas` 1.0**, constant `RNC_PROTE
 
 ## Schema
 
-The previous eleven columns remain as a prefix. `termino_protecao_texto` is the twelfth column. Text fields contain strings emitted by the parser as pandas `object`; civil dates use `datetime64[ns]`, without timezone or time of day.
+The previous eleven columns remain as a prefix. `termino_protecao_texto` is the twelfth column. Text fields contain strings, in the installed pandas default dtype (`str` on pandas 3, `object` on 2); civil dates use `datetime64[ns]`, without timezone or time of day.
 
 | Column | pandas type | Nullable | Meaning |
 |---|---|---|---|

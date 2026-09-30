@@ -19,7 +19,7 @@ The dataset supports two query types via the `tipo` parameter:
 - `tipo="apolices"` (default) — all policies with federal subsidy
 - `tipo="sinistros"` — reported positive indemnities with a non-empty event
 
-Each type has its own contract (`mapa_psr_apolices` and `mapa_psr_sinistros`).
+Each type has its own contract (`mapa_psr_apolices` and `mapa_psr_sinistros`). `evento` only filters `tipo="sinistros"`: with `tipo="apolices"`, it raises `InvalidParameterError` before the request.
 
 ## Schema — Policies
 
@@ -88,8 +88,9 @@ from agrobr import datasets
 df = await datasets.seguro_rural()
 df = await datasets.seguro_rural("soja", uf="MT", ano=2023)
 
-# Whole municipality by IBGE code (municipio= compares the label, which may be the district)
-df = await datasets.seguro_rural(cd_ibge="4305108", ano=2024)
+# Whole municipality, by IBGE code or full name
+df = await datasets.seguro_rural(municipio=4305108, ano=2024)
+df = await datasets.seguro_rural(municipio="Caxias do Sul", ano=2024)
 
 # Claims
 df = await datasets.seguro_rural(tipo="sinistros")
@@ -115,11 +116,11 @@ contract = get_contract("mapa_psr_sinistros")
 
 ## Policy integrity and periods
 
-The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.1 and the claims contract remains at 1.0.
+The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.2 and the claims contract at 1.1. `ano_apolice` comes as `Int64`, with rows and when empty.
 
 **Key and record published twice (`mapa_psr_apolices` contract 1.1).** The policy key is `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` and `seguradora`: the policy number is only unique within the insurer (in 2007, 2008, 2009, 2011 and 2012 MAPA publishes the same number under two insurers, with different area and premium). A record published twice and identical in every column agrobr delivers (in 2009, Mapfre policy 1977000249501, with a resubmitted proposal) is returned once, with a warning (`warn_once`) and the count in `source_details["duplicatas_colapsadas"]`. A repeated key with any different value raises `ContractViolationError` (`SourceUnavailableError` in the dataset).
 
-**Municipality and IBGE code.** `municipio=` searches the published label, and MAPA labels some policies with the district name: in Caxias do Sul (4305108), in 2024, the name filter returns 274 of the 693 policies with that code. `cd_ibge="4305108"` returns all 693. Policies published with "-" instead of the geocode (null `cd_ibge`) only appear through the label. Details in the [MAPA PSR source](../sources/mapa_psr.md#municipality-and-ibge-code).
+**Municipality and IBGE code.** `municipio=` accepts the 7-digit IBGE code or the full municipality name (ignoring case and accents; a fragment of a name raises `InvalidParameterError` listing the candidates) and filters by the published code. MAPA labels some policies with the district name: in Caxias do Sul (4305108), in 2024, 274 of the 693 policies with that code carry the municipality name, and the filter returns all 693. Policies published with "-" instead of the geocode (null `cd_ibge`) are included when the label is the full municipality name, in the same state. Details in the [MAPA PSR source](../sources/mapa_psr.md#municipality-and-ibge-code).
 
 `ano_apolice` is the year the policy was contracted, according to the SISSER dictionary; it is not the event or payment date. `sinistros` selects positive indemnities with a non-empty event. Published zeros remain zero in `apolices`; missing values remain null. Monetary values are not rounded to cents. Policy numbers and geographic codes retain leading zeros. Apart from the identical record published twice, described above, no row is deduplicated.
 

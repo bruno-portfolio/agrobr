@@ -78,7 +78,7 @@ async def test_official_subset_replay_through_dataset_keeps_contract_and_resourc
     assert frame["nr_registro"].map(type).eq(str).all()
     if table == "composicao":
         assert str(frame["ordem_componente"].dtype) == "Int64"
-        assert str(frame["concentracao_valor"].dtype) == "Float64"
+        assert str(frame["concentracao_valor"].dtype) == "float64"
 
 
 @pytest.mark.parametrize("name", sorted({item[0] for item in TABLES}))

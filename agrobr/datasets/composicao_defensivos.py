@@ -6,6 +6,7 @@ import pandas as pd
 
 from agrobr.datasets import _agrofit, base, registry
 from agrobr.models import MetaInfo
+from agrobr.utils import result
 
 
 async def _fetch_defensivos(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -52,7 +53,7 @@ async def composicao_defensivos(
     nr_registro: str | None = None,
     ingrediente_ativo: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -64,9 +65,21 @@ async def composicao_defensivos(
     nr_registro: str | None = None,
     ingrediente_ativo: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def composicao_defensivos(
+    *,
+    tipo: str = "formulados",
+    nr_registro: str | None = None,
+    ingrediente_ativo: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def composicao_defensivos(
@@ -77,7 +90,7 @@ async def composicao_defensivos(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _composicao_defensivos.fetch(
         tipo=tipo,
         nr_registro=nr_registro,

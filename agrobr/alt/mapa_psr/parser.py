@@ -16,6 +16,7 @@ import pydantic
 from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import regions
+from agrobr.normalize.municipalities import MunicipioInfo
 from agrobr.normalize.numeric import parse_numeric_br
 from agrobr.normalize.regions import remover_acentos
 
@@ -235,13 +236,25 @@ def _convert_apolices_numbers(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _chave_municipio(nome: str) -> str:
+    return " ".join(remover_acentos(nome).upper().split())
+
+
+def _mesmo_municipio(df: pd.DataFrame, municipio: MunicipioInfo) -> pd.Series:
+    mesmo_nome = df["municipio"].map(_chave_municipio, na_action="ignore").eq(
+        _chave_municipio(municipio["nome"])
+    ) & df["uf"].eq(municipio["uf"])
+    if "cd_ibge" not in df.columns:
+        return mesmo_nome
+    return df["cd_ibge"].eq(f"{municipio['codigo_ibge']:07d}") | (df["cd_ibge"].isna() & mesmo_nome)
+
+
 def _filter_apolices(
     df: pd.DataFrame,
     cultura: str | None,
     uf: str | None,
     ano: int | None,
-    municipio: str | None,
-    cd_ibge: str | None,
+    municipio: MunicipioInfo | None,
 ) -> pd.DataFrame:
     if uf:
         df = df[df["uf"] == uf.upper()]
@@ -262,18 +275,8 @@ def _filter_apolices(
     if ano and "ano_apolice" in df.columns:
         df = df[df["ano_apolice"] == ano]
 
-    if municipio and "municipio" in df.columns:
-        mask = df["municipio"].str.contains(municipio.upper(), na=False, regex=False)
-        df = df[mask]
-
-    if cd_ibge is not None:
-        if "cd_ibge" not in df.columns:
-            raise ParseError(
-                source="mapa_psr",
-                parser_version=PARSER_VERSION,
-                reason="Coluna CD_GEOCMU ausente: o filtro cd_ibge não pode ser aplicado",
-            )
-        df = df[df["cd_ibge"] == cd_ibge]
+    if municipio is not None:
+        df = df[_mesmo_municipio(df, municipio)]
 
     return df
 
@@ -283,9 +286,8 @@ def iter_apolices(
     cultura: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
-    municipio: str | None = None,
+    municipio: MunicipioInfo | None = None,
     *,
-    cd_ibge: str | None = None,
     sinistros: bool = False,
     evento: str | None = None,
     ano_inicio: int | None = None,
@@ -298,11 +300,9 @@ def iter_apolices(
         for df in chunks:
             df = _normalize_apolices_columns(df)
             df["ano_apolice"] = pd.to_numeric(df["ano_apolice"], errors="raise")
-            df["ano_apolice"] = df["ano_apolice"].astype(int)
+            df["ano_apolice"] = df["ano_apolice"].astype("Int64")
             df = _normalize_apolices_strings(df)
-            df = _filter_apolices(
-                df, cultura=cultura, uf=uf, ano=ano, municipio=municipio, cd_ibge=cd_ibge
-            )
+            df = _filter_apolices(df, cultura=cultura, uf=uf, ano=ano, municipio=municipio)
             if ano_inicio is not None:
                 df = df[df["ano_apolice"] >= ano_inicio]
             if ano_fim is not None:
@@ -311,7 +311,7 @@ def iter_apolices(
             if sinistros:
                 df = _filter_sinistros(df, evento)
             elif "valor_indenizacao" not in df.columns:
-                df["valor_indenizacao"] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+                df["valor_indenizacao"] = pd.Series(float("nan"), index=df.index)
             columns = COLUNAS_SINISTROS if sinistros else COLUNAS_APOLICES
             yield df[[c for c in columns if c in df.columns]]
 
@@ -326,7 +326,7 @@ def parse_apolices(
     cultura: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
-    municipio: str | None = None,
+    municipio: MunicipioInfo | None = None,
 ) -> pd.DataFrame:
     return _collect_frames(
         iter_apolices(io.BytesIO(content), cultura=cultura, uf=uf, ano=ano, municipio=municipio)
@@ -338,7 +338,7 @@ def parse_sinistros(
     cultura: str | None = None,
     uf: str | None = None,
     ano: int | None = None,
-    municipio: str | None = None,
+    municipio: MunicipioInfo | None = None,
     evento: str | None = None,
 ) -> pd.DataFrame:
     return _collect_frames(

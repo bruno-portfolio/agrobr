@@ -193,3 +193,12 @@ async def test_existing_public_data_warning_is_preserved(replay_http):
     replay_http()
     with pytest.warns(UserWarning, match="CPF/CNPJ"):
         await lista_suja.empregadores(id_registro="1")
+
+
+async def test_cheio_real_vazio_e_contrato_com_os_mesmos_dtypes(replay_http):
+    replay_http()
+    cheio = await lista_suja.empregadores()
+    vazio = await lista_suja.empregadores(id_registro="inexistente")
+    esperado = contracts.get_contract("lista_suja_empregadores").empty_frame()
+    assert len(cheio) == 579 and vazio.empty
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict() == esperado.dtypes.to_dict()

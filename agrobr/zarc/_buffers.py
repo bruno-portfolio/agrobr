@@ -8,6 +8,8 @@ from agrobr import constants
 
 from . import models
 
+TEXTO = pd.Series([""]).dtype
+
 
 class ZarcBuffers:
     def __init__(self) -> None:
@@ -44,5 +46,5 @@ class ZarcBuffers:
                     column.loc[column == -1] = None
                 columns[name] = column
             else:
-                columns[name] = pd.Series(self.text.pop(name), dtype=object)
+                columns[name] = pd.Series(self.text.pop(name), dtype=TEXTO)
         return pd.DataFrame(columns, copy=False)

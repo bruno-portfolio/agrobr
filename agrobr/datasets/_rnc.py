@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
-
 from agrobr.datasets import base
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
@@ -39,7 +37,7 @@ class CultivaresDataset(base.BaseDataset):
         use_cache: bool = True,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         self._validate_produto(produto)
         for name, value in (
             ("use_cache", use_cache),

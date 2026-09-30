@@ -51,7 +51,7 @@ df = alt.anp_diesel.vendas_diesel()
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `uf` | str \| None | None | Filter by state (e.g. SP, MT, PR) |
-| `municipio` | str \| None | None | Exact municipality filter after case/accent normalization |
+| `municipio` | int \| str \| None | None | Municipality by its 7-digit IBGE code or full name, resolved by `normalize.resolver_municipio` before the request and compared with the spreadsheet name ignoring case, accents and punctuation (`"Sant'Ana do Livramento"` matches `SANTANA DO LIVRAMENTO`); a fragment of a name raises `InvalidParameterError` listing the candidates |
 | `produto` | str | "DIESEL S10" | `DIESEL`, `OLEO DIESEL`, `OLEO DIESEL S10`, or `DIESEL S10` |
 | `inicio` | str \| date \| None | None | Start date (YYYY-MM-DD) |
 | `fim` | str \| date \| None | None | End date (YYYY-MM-DD) |

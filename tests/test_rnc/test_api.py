@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agrobr import contracts
 from agrobr.rnc import api, snapshot
 from tests.helpers import rnc_csv_acquisition
 
@@ -104,3 +105,29 @@ async def test_registradas_combined_filters():
         assert len(df) > 0
         assert all("Abacate" in v for v in df["nome_comum"].values)
         assert all("Bonella" in v for v in df["cultivar"].values)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("kind", "esperado"),
+    [("registradas", ["Feijão"]), ("protegidas", ["FEIJÃO-CAUPI", "FEIJÃO-CAUPI"])],
+)
+async def test_filtro_de_texto_ignora_acento_e_caixa(kind, esperado):
+    content = (GOLDEN_DIR / "selecao_20260907" / f"{kind}.csv").read_bytes()
+    with patch(f"agrobr.rnc.client.fetch_{kind}_bundle", new_callable=AsyncMock) as mock:
+        mock.return_value = rnc_csv_acquisition(content, kind)
+        df = await getattr(api, kind)(especie="FEIJAO")
+    assert df["nome_comum"].tolist() == esperado
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kind", ["registradas", "protegidas"])
+async def test_cheio_real_vazio_e_contrato_com_os_mesmos_dtypes(kind):
+    content = (GOLDEN_DIR / "selecao_20260907" / f"{kind}.csv").read_bytes()
+    with patch(f"agrobr.rnc.client.fetch_{kind}_bundle", new_callable=AsyncMock) as mock:
+        mock.return_value = rnc_csv_acquisition(content, kind)
+        cheio = await getattr(api, kind)()
+        vazio = await getattr(api, kind)(cultivar="inexistente")
+    contrato = contracts.get_contract(f"rnc_{kind}").empty_frame()
+    assert len(cheio) and vazio.empty
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict() == contrato.dtypes.to_dict()

@@ -12,15 +12,19 @@ from tests.helpers import levanta_exatamente, sem_excecao
 @pytest.mark.parametrize(
     ("kwargs", "motivo"),
     [
-        ({"uf": 1}, "uf deve ser texto não vazio"),
-        ({"uf": "XX"}, "UF invalida"),
-        ({"cultura": False}, "cultura deve ser texto não vazio"),
-        ({"cultura": " "}, "cultura deve ser texto não vazio"),
-        ({"municipio": True}, "municipio deve ser código de sete dígitos ou nome"),
-        ({"municipio": 1.5}, "municipio deve ser código de sete dígitos ou nome"),
-        ({"municipio": 123}, "Código de municipio deve ter sete dígitos ASCII"),
-        ({"municipio": "１２３４５６７"}, "Código de municipio deve ter sete dígitos ASCII"),
-        ({"municipio": " "}, "municipio deve ser texto não vazio"),
+        ({"uf": 1}, "UF inválida: 1. Valores válidos: AC, AL"),
+        ({"uf": "XX"}, "UF inválida: 'XX'. Valores válidos: AC, AL"),
+        ({"produto": False}, "produto deve ser texto não vazio"),
+        ({"produto": " "}, "produto deve ser texto não vazio"),
+        ({"municipio": True}, "Município deve ser o nome ou o código IBGE de 7 dígitos"),
+        ({"municipio": 1.5}, "Município deve ser o nome ou o código IBGE de 7 dígitos"),
+        ({"municipio": 123}, "Código IBGE de município tem 7 dígitos"),
+        ({"municipio": "１２３４５６７"}, "Município não encontrado"),
+        ({"municipio": " "}, "Município deve ser o nome ou o código IBGE de 7 dígitos"),
+        ({"municipio": "abc"}, "Município não encontrado: 'abc'"),
+        ({"municipio": "Santa Rita", "uf": "MG"}, "Santa Rita de Caldas/MG (3159209)"),
+        ({"municipio": "Bom Jesus"}, "informe a uf"),
+        ({"municipio": "5107925", "uf": "GO"}, "não pertence à UF GO"),
         ({"safra": True}, "safra deve ser texto não vazio"),
         ({"safra": "2025/2027"}, "safra deve usar anos consecutivos YYYY/YYYY ou perene"),
         ({"safra": "２０２５/２０２６"}, "safra deve usar anos consecutivos YYYY/YYYY ou perene"),
@@ -41,27 +45,28 @@ def test_invalid_selector(kwargs, motivo):
 def test_normalized_query_keeps_original_values():
     with sem_excecao():
         query = build_query(
-            cultura=" Soja ", uf=" mt ", municipio=" Campo[1] ", safra=" PERENE ", solo=11, ciclo=13
+            produto=" Soja ", uf=" mt ", municipio=" sorriso ", safra=" PERENE ", solo=11, ciclo=13
         )
     assert query.cultura == "soja"
     assert query.uf == "MT"
-    assert query.municipio == "Campo[1]"
+    assert query.municipio == "5107925"
     assert query.safra == "perene"
     assert query.requested["uf"] == " mt "
-    assert query.requested["cultura"] == " Soja "
+    assert query.requested["produto"] == " Soja "
+    assert query.requested["municipio"] == " sorriso "
 
 
-@pytest.mark.parametrize("value", ["0123456", 5103403])
-def test_municipal_identity_is_not_coerced(value):
+@pytest.mark.parametrize("value", ["5103403", 5103403, " 5103403 ", "Cuiabá", "CUIABA"])
+def test_municipio_por_codigo_ou_nome_inteiro_vira_o_geocodigo(value):
     with sem_excecao():
         selecionada = build_query(municipio=value)
-    assert selecionada.municipio == value
+    assert selecionada.municipio == "5103403"
 
 
 @pytest.mark.parametrize("value", [" abobrinha ", "zzzzzzzz"])
 def test_cultura_fora_catalogo_sem_sugestoes(value):
     with pytest.raises(InvalidParameterError) as error:
-        build_query(cultura=value)
+        build_query(produto=value)
     message = str(error.value)
     assert repr(value) in message
     assert "107 culturas" in message
@@ -72,7 +77,7 @@ def test_cultura_fora_catalogo_sem_sugestoes(value):
 
 def test_cultura_fora_catalogo_com_sugestao():
     with pytest.raises(InvalidParameterError, match="Semelhantes: soja"):
-        build_query(cultura="soj")
+        build_query(produto="soj")
 
 
 @pytest.mark.parametrize(
@@ -85,7 +90,7 @@ def test_cultura_fora_catalogo_com_sugestao():
 )
 def test_cultura_catalogo_aceita_alias(value, expected):
     with sem_excecao():
-        selecionada = build_query(cultura=value)
+        selecionada = build_query(produto=value)
     assert selecionada.cultura == expected
 
 

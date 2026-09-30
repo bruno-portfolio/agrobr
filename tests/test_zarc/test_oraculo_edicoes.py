@@ -41,7 +41,7 @@ async def test_edicoes_intermediarias_publicam_o_corpo_oficial(
     resource = RESOURCES[case["resource"]]
     seen = servir(monkeypatch, resource)
     with helpers.sem_excecao():
-        frame, meta = await api.zoneamento(**case["query"], use_cache=False, return_meta=True)
+        frame, meta = await api.zoneamento(**r11.consulta(case), use_cache=False, return_meta=True)
     r11.assert_values(
         frame, [ORACLE[case["resource"]][p - 1] for p in case["expected_derived_positions"]]
     )
@@ -98,5 +98,5 @@ async def test_cultura_ausente_da_edicao_indica_as_safras_publicadas(
     else:
         dica = f"{cultura!r} aparece nas safras {safras[0]} a {safras[-1]}"
     with helpers.levanta_exatamente(InvalidParameterError, match=re.escape(dica)):
-        await api.zoneamento(cultura=cultura, safra=safra, use_cache=False)
+        await api.zoneamento(produto=cultura, safra=safra, use_cache=False)
     helpers.assert_replay_served(seen)
