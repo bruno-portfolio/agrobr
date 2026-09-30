@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field, replace
 from datetime import date
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast, overload
 
 import httpx
 
@@ -89,9 +89,21 @@ class DatasetInfo:
         }
 
 
+@overload
 def _unpack_result(
     result: pd.DataFrame | tuple[pd.DataFrame, Any],
-) -> tuple[pd.DataFrame, MetaInfo | None]:
+) -> tuple[pd.DataFrame, MetaInfo | None]: ...
+
+
+@overload
+def _unpack_result(
+    result: result_utils.DataFrameResult,
+) -> tuple[result_utils.DataFrame, MetaInfo | None]: ...
+
+
+def _unpack_result(
+    result: result_utils.DataFrameResult,
+) -> tuple[result_utils.DataFrame, MetaInfo | None]:
     if isinstance(result, tuple):
         return result[0], result[1]
     return result, None
@@ -164,15 +176,13 @@ def _tipar_pelo_contrato(result: Any, contract_name: str | None) -> Any:
 
 
 def _with_output_format(
-    fetch: Callable[..., Awaitable[pd.DataFrame | tuple[pd.DataFrame, Any]]],
-) -> Callable[..., Awaitable[pd.DataFrame | tuple[pd.DataFrame, Any]]]:
+    fetch: Callable[..., Awaitable[result_utils.DataFrameResult]],
+) -> Callable[..., Awaitable[result_utils.DataFrameResult]]:
     signature = inspect.signature(fetch)
     native = "as_polars" in signature.parameters
 
     @functools.wraps(fetch)
-    async def wrapped(
-        self: BaseDataset, *args: Any, **kwargs: Any
-    ) -> pd.DataFrame | tuple[pd.DataFrame, Any]:
+    async def wrapped(self: BaseDataset, *args: Any, **kwargs: Any) -> result_utils.DataFrameResult:
         options = dict(kwargs)
         if not native:
             options["as_polars"] = kwargs.pop("as_polars", False)
@@ -196,16 +206,22 @@ def _with_output_format(
             if options["as_polars"]:
                 frame, meta = _unpack_result(result)
                 result = result_utils.finalize_result(
-                    frame, meta, as_polars=True, return_meta=isinstance(result, tuple)
+                    cast("pd.DataFrame", frame),
+                    meta,
+                    as_polars=True,
+                    return_meta=isinstance(result, tuple),
                 )
         if not options["as_polars"]:
             frame, meta = _unpack_result(result)
-            em_ns = result_utils.datas_em_ns(frame)
+            em_ns = result_utils.datas_em_ns(cast("pd.DataFrame", frame))
             if em_ns is frame:
                 return result
-            return (em_ns, meta) if isinstance(result, tuple) else em_ns
+            return cast(
+                "result_utils.DataFrameResult",
+                (em_ns, meta) if isinstance(result, tuple) else em_ns,
+            )
         return cast(
-            "pd.DataFrame | tuple[pd.DataFrame, Any]",
+            "result_utils.DataFrameResult",
             _tipar_pelo_contrato(result, self._contract_name(**options)),
         )
 
@@ -309,9 +325,10 @@ class BaseDataset(ABC):
     async def fetch(
         self,
         produto: str,
+        *,
         return_meta: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         pass
 
     def _produto_do_dataset(self, produto: Any) -> Any:
