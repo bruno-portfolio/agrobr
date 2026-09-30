@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http.retry import (
     RETRIABLE_EXCEPTIONS,
     RetriableStatusError,
@@ -117,7 +117,7 @@ class TestRetryOnStatusTransport:
 
         with (
             patch(RETRY_SLEEP, new_callable=AsyncMock),
-            pytest.raises(SourceUnavailableError, match="after 3 retries"),
+            pytest.raises(SourceUnavailableError, match="after 3 attempts"),
         ):
             await retry_on_status(func, source="test", max_attempts=3)
 
@@ -180,3 +180,41 @@ async def test_retry_on_status_espera_retry_after_e_depois_backoff():
         )
     assert resposta.status_code == 200
     assert [chamada.args[0] for chamada in espera.await_args_list] == [0.5, 4.0]
+
+
+@pytest.mark.parametrize("via", ["ambiente", "argumento"])
+async def test_zero_tentativas_faz_um_pedido_sem_retry(monkeypatch, via):
+    kwargs = {"max_attempts": 0} if via == "argumento" else {}
+    if via == "ambiente":
+        monkeypatch.setenv("AGROBR_HTTP_MAX_RETRIES", "0")
+    direto, decorado, transporte = (
+        AsyncMock(side_effect=httpx.TimeoutException("t")) for _ in range(3)
+    )
+    with patch(RETRY_SLEEP, new_callable=AsyncMock) as espera:
+        with levanta_exatamente(httpx.TimeoutException):
+            await retry_async(direto, **kwargs)
+        with levanta_exatamente(httpx.TimeoutException):
+            await with_retry(**kwargs)(decorado)()
+        with levanta_exatamente(SourceUnavailableError, "after 1 attempts"):
+            await retry_on_status(transporte, source="teste", **kwargs)
+    assert [direto.await_count, decorado.await_count, transporte.await_count] == [1, 1, 1]
+    espera.assert_not_awaited()
+
+
+async def test_espera_zero_nao_vira_o_padrao():
+    func = AsyncMock(side_effect=[httpx.TimeoutException("t"), httpx.TimeoutException("t"), "ok"])
+    with patch(RETRY_SLEEP, new_callable=AsyncMock) as espera:
+        assert await retry_async(func, max_attempts=3, base_delay=0, max_delay=0) == "ok"
+    assert [chamada.args[0] for chamada in espera.await_args_list] == [0, 0]
+
+
+@pytest.mark.parametrize(
+    "kwargs", [{"max_attempts": -1}, {"base_delay": -1.0}, {"max_delay": -1.0}]
+)
+async def test_negativo_e_recusado_antes_do_pedido(kwargs):
+    func = AsyncMock(return_value=make_mock_response(200))
+    with levanta_exatamente(InvalidParameterError, "não podem ser negativos"):
+        await retry_async(func, **kwargs)
+    with levanta_exatamente(InvalidParameterError, "não podem ser negativos"):
+        await retry_on_status(func, source="teste", **kwargs)
+    func.assert_not_awaited()

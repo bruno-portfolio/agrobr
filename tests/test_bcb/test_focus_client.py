@@ -97,8 +97,8 @@ async def test_falhas_de_rede_abortam_sem_devolver_pagina_parcial(focus_http, an
             (401, "HTTP 401"),
             (403, "HTTP 403"),
             (404, "HTTP 404"),
-            (429, "HTTP 429 after 3 retries"),
-            (500, "HTTP 500 after 3 retries"),
+            (429, "HTTP 429 after 3 attempts"),
+            (500, "HTTP 500 after 3 attempts"),
             (599, "HTTP 599"),
         ]:
             focus_http(
@@ -117,7 +117,7 @@ async def test_falhas_de_rede_abortam_sem_devolver_pagina_parcial(focus_http, an
         lambda request, _index: httpx.ReadTimeout("synthetic timeout", request=request)
     )
     with levanta_exatamente(
-        SourceUnavailableError, match=re.escape("ReadTimeout: synthetic timeout after 3 retries")
+        SourceUnavailableError, match=re.escape("ReadTimeout: synthetic timeout after 3 attempts")
     ):
         await focus_client.fetch_focus_acquisition(selection())
     assert 1 < len(requests) <= 3

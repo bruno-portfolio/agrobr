@@ -1,9 +1,21 @@
 from __future__ import annotations
 
+import os
+import warnings
 from enum import StrEnum
 from pathlib import Path
 
+from pydantic import (
+    AliasChoices,
+    Field,
+    TypeAdapter,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from agrobr.exceptions import InvalidParameterError
 
 CONAB_SOCIOBIODIVERSIDADE_PRODUTOS = (
     "acai",
@@ -615,20 +627,73 @@ CONAB_UFS = [
 CONAB_REGIOES = ["NORTE", "NORDESTE", "CENTRO-OESTE", "SUDESTE", "SUL"]
 
 
+_CACHE_DIR_PADRAO = Path.home() / ".agrobr" / "cache"
+_BOOLEANO = TypeAdapter(bool)
+
+
+def env_flag(nome: str) -> bool:
+    """Lê a variável de ambiente ``nome`` como booleano, na hora da chamada.
+
+    Aceita os valores do pydantic, sem caixa: ``1``/``true``/``yes``/``on`` ligam e ``0``/``false``/``no``/``off``
+    desligam. Ausente ou vazia é ``False``; outro valor levanta ``InvalidParameterError``.
+    """
+    valor = os.environ.get(nome, "").strip()
+    if not valor:
+        return False
+    try:
+        return _BOOLEANO.validate_python(valor)
+    except ValidationError:
+        raise InvalidParameterError(
+            f"{nome}={valor!r} não é booleano. Valores válidos: 1, true, yes, on (liga); "
+            "0, false, no, off (desliga)"
+        ) from None
+
+
 class CacheSettings(BaseSettings):
-    cache_dir: Path = Path.home() / ".agrobr" / "cache"
+    """``AGROBR_CACHE_DIR`` é o nome da pasta; ``AGROBR_CACHE_CACHE_DIR`` segue como alias e perde para ele.
+
+    Vazia, a variável vale o padrão (``~/.agrobr/cache``), e não a pasta corrente.
+    """
+
+    cache_dir: Path = Field(
+        default=_CACHE_DIR_PADRAO,
+        validation_alias=AliasChoices("AGROBR_CACHE_DIR", "AGROBR_CACHE_CACHE_DIR"),
+    )
     db_name: str = "agrobr.duckdb"
 
-    model_config = SettingsConfigDict(env_prefix="AGROBR_CACHE_")
+    model_config = SettingsConfigDict(env_prefix="AGROBR_CACHE_", populate_by_name=True)
+
+    @field_validator("cache_dir", mode="before")
+    @classmethod
+    def _vazio_vale_o_padrao(cls, valor: object) -> object:
+        return _CACHE_DIR_PADRAO if isinstance(valor, str) and not valor.strip() else valor
+
+    @model_validator(mode="after")
+    def _avisar_pastas_divergentes(self) -> CacheSettings:
+        nova = os.environ.get("AGROBR_CACHE_DIR", "").strip()
+        antiga = os.environ.get("AGROBR_CACHE_CACHE_DIR", "").strip()
+        if nova and antiga and Path(nova) != Path(antiga):
+            warnings.warn(
+                f"agrobr: AGROBR_CACHE_DIR ({nova}) e AGROBR_CACHE_CACHE_DIR ({antiga}) apontam para "
+                "pastas diferentes; vale AGROBR_CACHE_DIR. Deixe só uma das duas.",
+                UserWarning,
+                stacklevel=2,
+            )
+        return self
 
 
 class HTTPSettings(BaseSettings):
+    """``max_retries`` é o total de tentativas por pedido; ``0`` vale como ``1`` (uma tentativa, sem retry).
+
+    Os ``max_concurrent_*`` recusam valor menor que 1 na validação.
+    """
+
     timeout_connect: float = 10.0
     timeout_read: float = 30.0
     timeout_write: float = 10.0
     timeout_pool: float = 10.0
 
-    max_retries: int = 3
+    max_retries: int = Field(default=3, ge=0)
     retry_base_delay: float = 1.0
     retry_max_delay: float = 30.0
     retry_exponential_base: int = 2
@@ -676,13 +741,18 @@ class HTTPSettings(BaseSettings):
     rate_limit_conab_ceasa: float = 2.0
     rate_limit_default: float = 1.0
 
-    max_concurrent_default: int = 1
-    max_concurrent_ana: int = 1
-    max_concurrent_anp_diesel: int = 3
-    max_concurrent_b3: int = 3
-    max_concurrent_ibge: int = 3
+    max_concurrent_default: int = Field(default=1, ge=1)
+    max_concurrent_ana: int = Field(default=1, ge=1)
+    max_concurrent_anp_diesel: int = Field(default=3, ge=1)
+    max_concurrent_b3: int = Field(default=3, ge=1)
+    max_concurrent_ibge: int = Field(default=3, ge=1)
 
     model_config = SettingsConfigDict(env_prefix="AGROBR_HTTP_")
+
+    @field_validator("max_retries")
+    @classmethod
+    def _zero_vale_uma_tentativa(cls, valor: int) -> int:
+        return max(valor, 1)
 
 
 class AlertSettings(BaseSettings):

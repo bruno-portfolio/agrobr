@@ -17,7 +17,7 @@ import httpx
 from agrobr import _log
 from agrobr.anec import models
 from agrobr.anec.models import CATEGORIES_BY_YEAR, MIN_YEAR, ANECArticle
-from agrobr.constants import MIN_PDF_SIZE, URLS, CacheSettings, Fonte
+from agrobr.constants import MIN_PDF_SIZE, URLS, CacheSettings, Fonte, env_flag
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
@@ -427,7 +427,7 @@ async def _acquire_latest(year: int | None, *, use_cache: bool) -> tuple[Aquisic
 
 
 def _cache_disabled() -> bool:
-    return os.environ.get("AGROBR_ANEC_CACHE_DISABLED") == "1"
+    return env_flag("AGROBR_ANEC_CACHE_DISABLED")
 
 
 def _validate_cache_key(year: int, week: int) -> None:

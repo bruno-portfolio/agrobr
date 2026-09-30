@@ -51,6 +51,7 @@ def _isolated_duckdb_cache(_cache_root, monkeypatch, request):
     from agrobr.cache import duckdb_store
 
     key = hashlib.sha256(request.node.nodeid.encode()).hexdigest()[:16]
+    monkeypatch.delenv("AGROBR_CACHE_DIR", raising=False)
     monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(_cache_root / key))
     monkeypatch.setattr(duckdb_store, "_store", None)
     yield

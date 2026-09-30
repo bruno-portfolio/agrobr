@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agrobr.constants import Fonte
+from agrobr.exceptions import InvalidParameterError
 from agrobr.health.checker import CheckResult, CheckStatus
 from agrobr.health.reporter import HealthReport, generate_report
 
@@ -87,8 +88,9 @@ class TestHealthReport:
 
     def test_save_unsupported_format(self, tmp_path):
         report = HealthReport([_make_result()])
-        with pytest.raises(ValueError, match="Formato"):
-            report.save(tmp_path / "report.xml", format="xml")
+        with pytest.raises(InvalidParameterError, match="Valores válidos: json, html, md"):
+            report.save(tmp_path / "nova" / "report.xml", format="xml")
+        assert not (tmp_path / "nova").exists()
 
     def test_print_summary(self, capsys):
         results = [
@@ -140,3 +142,12 @@ class TestGenerateReport:
 
         assert save_path.exists()
         assert isinstance(report, HealthReport)
+
+    @pytest.mark.asyncio
+    async def test_formato_invalido_e_recusado_antes_dos_checks(self, tmp_path):
+        with (
+            patch("agrobr.health.reporter.run_all_checks", new_callable=AsyncMock) as checks,
+            pytest.raises(InvalidParameterError, match="'yaml'. Valores válidos: json, html, md"),
+        ):
+            await generate_report(save_path=tmp_path / "saida.yaml", format="yaml")
+        checks.assert_not_awaited()

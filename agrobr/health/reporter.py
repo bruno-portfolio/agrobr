@@ -8,10 +8,20 @@ from typing import Any
 from agrobr import _log
 
 from ..constants import Fonte
+from ..exceptions import InvalidParameterError
 from ..utils.time import utcnow
 from .checker import CheckResult, CheckStatus, run_all_checks
 
 logger = _log.get_logger(__name__)
+
+_FORMATOS = ("json", "html", "md")
+
+
+def _validar_formato(format: str) -> None:
+    if format not in _FORMATOS:
+        raise InvalidParameterError(
+            f"Formato não suportado: {format!r}. Valores válidos: {', '.join(_FORMATOS)}"
+        )
 
 
 class HealthReport:
@@ -82,6 +92,7 @@ class HealthReport:
         return json.dumps(self.to_dict(), indent=indent, default=str)
 
     def save(self, path: str | Path, format: str = "json") -> None:
+        _validar_formato(format)
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -89,10 +100,8 @@ class HealthReport:
             path.write_text(self.to_json())
         elif format == "html":
             path.write_text(self.to_html())
-        elif format == "md":
-            path.write_text(self.to_markdown())
         else:
-            raise ValueError(f"Formato não suportado: {format}")
+            path.write_text(self.to_markdown())
 
         logger.info("health_report_saved", path=str(path), format=format)
 
@@ -274,6 +283,7 @@ async def generate_report(
     save_path: str | Path | None = None,
     format: str = "json",
 ) -> HealthReport:
+    _validar_formato(format)
     results = await run_all_checks(sources)
 
     report = HealthReport(results)

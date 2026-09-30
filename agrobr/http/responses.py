@@ -1,15 +1,44 @@
 from __future__ import annotations
 
 import json
+import os
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
 from agrobr.exceptions import SourceUnavailableError
 
 _JSON_ERROR_KEY = re.compile(rb'"(?:e|\\u0065)(?:r|\\u0072){2}(?:o|\\u006[fF])(?:r|\\u0072)"\s*:')
+_SEGREDOS_NO_AMBIENTE = (
+    "AGROBR_USDA_API_KEY",
+    "AGROBR_INMET_TOKEN",
+    "AGROBR_COMTRADE_API_KEY",
+    "AGROBR_MAPBIOMAS_ALERTA_TOKEN",
+    "AGROBR_CONAB_CEASA_PASS",
+    "AGROBR_ALERT_SLACK_WEBHOOK",
+    "AGROBR_ALERT_DISCORD_WEBHOOK",
+    "AGROBR_ALERT_SENDGRID_API_KEY",
+)
+
+
+def redact_secrets(text: str, *secrets: str | None) -> str:
+    """Troca por ``[REDACTED]`` as credenciais do ambiente do agrobr e as de ``secrets``.
+
+    Cobre o valor cru, a forma codificada em URL e a escapada em JSON, que é como um eco do servidor costuma voltar.
+    """
+    valores = [os.environ.get(nome) for nome in _SEGREDOS_NO_AMBIENTE]
+    variantes = {
+        forma
+        for valor in (*valores, *secrets)
+        if valor
+        for forma in (valor, quote(valor, safe=""), json.dumps(valor)[1:-1])
+    }
+    for forma in sorted(variantes, key=len, reverse=True):
+        text = text.replace(forma, "[REDACTED]")
+    return text
 
 
 def arcgis_error_message(data: object) -> str | None:
@@ -58,7 +87,9 @@ def parse_json_response(
     source: str,
     url: str,
     object_pairs_hook: Callable[[list[tuple[str, Any]]], Any] | None = None,
+    secrets: Sequence[str | None] = (),
 ) -> Any:
+    """``secrets`` leva a credencial passada por argumento, que não está no ambiente, para a máscara da prévia."""
     try:
         return (
             response.json()
@@ -67,7 +98,8 @@ def parse_json_response(
         )
     except ValueError as exc:
         content_type = response.headers.get("content-type", "desconhecido")
-        preview = response.text[:200].replace("\r", " ").replace("\n", " ")
+        preview = redact_secrets(response.text[:1024], *secrets)[:200]
+        preview = preview.replace("\r", " ").replace("\n", " ")
         raise SourceUnavailableError(
             source=source,
             url=url,

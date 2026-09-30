@@ -58,6 +58,13 @@ async def test_chave_recusada_pelo_gateway(gateway, arquivo, codigo):
     with levanta_exatamente(SourceUnavailableError, f"HTTP 403, {codigo}") as erro:
         await client.fetch_psd_country("2222000", "BR", 2024)
     assert "chave-de-teste" not in str(erro.value)
+
+
+async def test_chave_do_argumento_ecoada_em_corpo_nao_json_sai_mascarada(gateway):
+    gateway.rotas[URL_BR] = (200, b"gateway rejected credential: chave-do-argumento")
+    with levanta_exatamente(SourceUnavailableError, r"credential: \[REDACTED\]") as erro:
+        await client.fetch_psd_country("2222000", "BR", 2024, api_key="chave-do-argumento")
+    assert "chave-do-argumento" not in str(erro.value)
     assert len(gateway.pedidos) == 1
 
 

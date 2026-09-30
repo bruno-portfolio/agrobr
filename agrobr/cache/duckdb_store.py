@@ -196,7 +196,7 @@ class DuckDBStore:
             "cache_degradado",
             f"agrobr: cache indisponível em {self.db_path} ({type(error).__name__}: {error}); "
             "a consulta segue sem cache. Se outro processo estiver gravando, a próxima consulta "
-            "tenta de novo; sem escrita na pasta, aponte a variável AGROBR_CACHE_CACHE_DIR para "
+            "tenta de novo; sem escrita na pasta, aponte a variável AGROBR_CACHE_DIR para "
             "outra.",
         )
 

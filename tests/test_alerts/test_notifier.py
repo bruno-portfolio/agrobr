@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
+import httpx
 import pytest
 
 from agrobr.alerts.notifier import (
@@ -14,8 +16,10 @@ from agrobr.alerts.notifier import (
     _send_slack,
     send_alert,
 )
+from agrobr.exceptions import InvalidParameterError
 from tests.helpers import (
     capturar_logs,
+    levanta_exatamente,
     make_alert_settings,
     make_mock_async_client,
     make_mock_response,
@@ -376,3 +380,39 @@ async def test_discord_recuperacao_fica_verde_e_mostra_detalhes():
     embed = client.post.call_args.kwargs["json"]["embeds"][0]
     assert embed["color"] == 0x36A64F
     assert embed.get("description") == '```json\n{\n  "k": 1\n}\n```'
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("enviar", "webhook"),
+    [
+        (_send_slack, "https://hooks.slack.com/services/T0/B0/credencial-slack"),
+        (_send_discord, "https://discord.com/api/webhooks/1/credencial-discord"),
+    ],
+)
+async def test_url_do_webhook_nao_aparece_no_log_do_httpx(caplog, enviar, webhook):
+    real = httpx.AsyncClient
+    transporte = httpx.MockTransport(lambda request: httpx.Response(500, request=request))
+    caplog.set_level(logging.INFO, logger="httpx")
+    with (
+        patch("agrobr.alerts.notifier.httpx.AsyncClient", lambda: real(transport=transporte)),
+        levanta_exatamente(httpx.HTTPStatusError),
+    ):
+        await enviar(webhook, AlertLevel.WARNING, "t", {}, None)
+    mensagens = [registro.getMessage() for registro in caplog.records if registro.name == "httpx"]
+    assert len(mensagens) == 1
+    assert "credencial" not in mensagens[0]
+    assert "HTTP Request: POST [REDACTED]" in mensagens[0]
+
+
+@pytest.mark.asyncio
+async def test_level_invalido_e_recusado_antes_de_ler_a_configuracao():
+    with (
+        patch("agrobr.alerts.notifier.constants.AlertSettings") as settings,
+        levanta_exatamente(
+            InvalidParameterError,
+            r"level inválido: 'urgente'\. Valores válidos: info, warning, critical",
+        ),
+    ):
+        await send_alert("urgente", "t", {})
+    settings.assert_not_called()

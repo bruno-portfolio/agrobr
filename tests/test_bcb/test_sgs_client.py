@@ -86,8 +86,8 @@ async def test_falha_em_qualquer_bloco_aborta_a_serie_com_o_motivo(sgs_http):
                 (401, "HTTP 401"),
                 (403, "HTTP 403"),
                 (404, "HTTP 404"),
-                (429, "HTTP 429 after 2 retries"),
-                (500, "HTTP 500 after 2 retries"),
+                (429, "HTTP 429 after 2 attempts"),
+                (500, "HTTP 500 after 2 attempts"),
                 (599, "HTTP 599"),
             ]
         ),
@@ -113,7 +113,7 @@ async def test_falha_em_qualquer_bloco_aborta_a_serie_com_o_motivo(sgs_http):
             lambda request, _index: httpx.ReadTimeout("synthetic timeout", request=request),
             {"codigo": 999999999, "data_inicial": "01/01/2024", "data_final": "02/01/2024"},
             SourceUnavailableError,
-            "ReadTimeout: synthetic timeout after 2 retries",
+            "ReadTimeout: synthetic timeout after 2 attempts",
         ),
         (
             lambda _request, _index: httpx.Response(

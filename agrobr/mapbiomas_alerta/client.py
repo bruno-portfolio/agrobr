@@ -77,6 +77,7 @@ async def _graphql_request(
             response,
             source="mapbiomas_alerta",
             url=GRAPHQL_URL,
+            secrets=(token,),
         )
         if "errors" in data:
             errors = data["errors"]
@@ -84,7 +85,7 @@ async def _graphql_request(
             raise SourceUnavailableError(
                 source="mapbiomas_alerta",
                 url=GRAPHQL_URL,
-                last_error=f"GraphQL error: {msg}",
+                last_error=f"GraphQL error: {responses.redact_secrets(str(msg), token)}",
             )
         result: dict[str, Any] = data.get("data", {})
         return result

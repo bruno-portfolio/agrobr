@@ -8,6 +8,7 @@ from typing import Any, TypeVar
 import httpx
 
 from agrobr import _log, constants
+from agrobr.exceptions import InvalidParameterError
 
 logger = _log.get_logger(__name__)
 T = TypeVar("T")
@@ -36,6 +37,24 @@ def _extract_retry_after(response: httpx.Response) -> float | None:
         return None
 
 
+def _politica(
+    settings: constants.HTTPSettings,
+    max_attempts: int | None,
+    base_delay: float | None,
+    max_delay: float | None,
+) -> tuple[int, float, float]:
+    """Resolve tentativas e esperas: ``None`` vale o ``HTTPSettings``, ``0`` tentativas vale 1 e negativo é inválido."""
+    tentativas = settings.max_retries if max_attempts is None else max_attempts
+    base = settings.retry_base_delay if base_delay is None else base_delay
+    teto = settings.retry_max_delay if max_delay is None else max_delay
+    if tentativas < 0 or base < 0 or teto < 0:
+        raise InvalidParameterError(
+            "max_attempts, base_delay e max_delay não podem ser negativos "
+            f"(recebidos: {tentativas}, {base}, {teto})"
+        )
+    return max(tentativas, 1), base, teto
+
+
 async def retry_async(
     func: Callable[[], Awaitable[T]],
     max_attempts: int | None = None,
@@ -44,9 +63,7 @@ async def retry_async(
     retriable_exceptions: Sequence[type[Exception]] = RETRIABLE_EXCEPTIONS,
 ) -> T:
     settings = constants.HTTPSettings()
-    max_attempts = max_attempts or settings.max_retries
-    base_delay = base_delay or settings.retry_base_delay
-    max_delay = max_delay or settings.retry_max_delay
+    max_attempts, base_delay, max_delay = _politica(settings, max_attempts, base_delay, max_delay)
 
     last_exception: Exception | None = None
 
@@ -96,9 +113,7 @@ async def retry_on_status(
     from agrobr.http.rate_limiter import RateLimiter
 
     settings = constants.HTTPSettings()
-    _max = max_attempts or settings.max_retries
-    _base = base_delay or settings.retry_base_delay
-    _cap = max_delay or settings.retry_max_delay
+    _max, _base, _cap = _politica(settings, max_attempts, base_delay, max_delay)
 
     last_response: httpx.Response | None = None
 
@@ -119,7 +134,7 @@ async def retry_on_status(
                 continue
             raise SourceUnavailableError(
                 source=source,
-                last_error=f"{type(exc).__name__}: {exc} after {_max} retries",
+                last_error=f"{type(exc).__name__}: {exc} after {_max} attempts",
             ) from exc
 
         if not should_retry_status(response.status_code):
@@ -148,7 +163,7 @@ async def retry_on_status(
     raise SourceUnavailableError(
         source=source,
         url=str(last_response.url),
-        last_error=f"HTTP {last_response.status_code} after {_max} retries",
+        last_error=f"HTTP {last_response.status_code} after {_max} attempts",
     )
 
 

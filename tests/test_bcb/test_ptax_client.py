@@ -105,8 +105,8 @@ async def test_falhas_de_rede_abortam_sem_devolver_pagina_parcial(ptax_http, quo
             (401, "HTTP 401"),
             (403, "HTTP 403"),
             (404, "HTTP 404"),
-            (429, "HTTP 429 after 4 retries"),
-            (500, "HTTP 500 after 4 retries"),
+            (429, "HTTP 429 after 4 attempts"),
+            (500, "HTTP 500 after 4 attempts"),
             (599, "HTTP 599"),
         ]:
             ptax_http(
@@ -125,7 +125,7 @@ async def test_falhas_de_rede_abortam_sem_devolver_pagina_parcial(ptax_http, quo
         catalog=lambda request, _index: httpx.ReadTimeout("synthetic timeout", request=request)
     )
     with levanta_exatamente(
-        SourceUnavailableError, match=re.escape("ReadTimeout: synthetic timeout after 4 retries")
+        SourceUnavailableError, match=re.escape("ReadTimeout: synthetic timeout after 4 attempts")
     ):
         await ptax_client.fetch_ptax_acquisition(selection())
     assert len(trace["catalog"]) == 4 and trace["quotes"] == []

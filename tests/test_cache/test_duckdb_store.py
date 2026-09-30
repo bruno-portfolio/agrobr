@@ -316,7 +316,7 @@ class TestCacheDegradado:
         assert len(mensagens) == 1
         assert str(store.db_path) in mensagens[0]
         assert re.search(r"\((\w+Error): ", mensagens[0])
-        assert "AGROBR_CACHE_CACHE_DIR" in mensagens[0]
+        assert "AGROBR_CACHE_DIR" in mensagens[0]
 
     @pytest.mark.parametrize(
         "mensagem",

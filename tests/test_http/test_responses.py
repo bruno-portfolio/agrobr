@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from urllib.parse import quote
+
 import httpx
 import pytest
 
@@ -9,7 +12,7 @@ from agrobr.http.responses import (
     parse_json_response,
     raise_for_service_error,
 )
-from tests.helpers import sem_excecao
+from tests.helpers import levanta_exatamente, sem_excecao
 
 
 def _response(content: bytes, content_type: str) -> httpx.Response:
@@ -30,6 +33,47 @@ class TestParseJsonResponse:
 
         assert "\n" not in exc_info.value.last_error
         assert "text/html" in exc_info.value.last_error
+
+
+SEGREDO = 'segredo/dd+1 "x"'
+
+
+@pytest.mark.parametrize(
+    "variavel",
+    [
+        "AGROBR_USDA_API_KEY",
+        "AGROBR_INMET_TOKEN",
+        "AGROBR_COMTRADE_API_KEY",
+        "AGROBR_MAPBIOMAS_ALERTA_TOKEN",
+        "AGROBR_CONAB_CEASA_PASS",
+        "AGROBR_ALERT_SLACK_WEBHOOK",
+        "AGROBR_ALERT_DISCORD_WEBHOOK",
+        "AGROBR_ALERT_SENDGRID_API_KEY",
+    ],
+)
+@pytest.mark.parametrize(
+    "eco", [SEGREDO, quote(SEGREDO, safe=""), json.dumps(SEGREDO)[1:-1]], ids=["cru", "url", "json"]
+)
+def test_previa_nao_json_mascara_a_credencial_do_ambiente(monkeypatch, variavel, eco):
+    monkeypatch.setenv(variavel, SEGREDO)
+    response = _response(f"gateway rejected credential: {eco}".encode(), "text/plain")
+
+    with levanta_exatamente(SourceUnavailableError, r"credential: \[REDACTED\]") as erro:
+        parse_json_response(response, source="test", url=str(response.url))
+
+    assert eco not in str(erro.value)
+
+
+def test_previa_mascara_a_credencial_do_argumento_e_ignora_vazio(monkeypatch):
+    monkeypatch.setenv("AGROBR_USDA_API_KEY", "")
+    response = _response(b"rejected: chave-do-argumento", "text/plain")
+
+    with levanta_exatamente(SourceUnavailableError, r"'rejected: \[REDACTED\]'"):
+        parse_json_response(
+            response, source="test", url="u", secrets=("chave-do-argumento", "", None)
+        )
+    with levanta_exatamente(SourceUnavailableError, r"'rejected: chave-do-argumento'"):
+        parse_json_response(response, source="test", url="u", secrets=("", None))
 
 
 @pytest.mark.parametrize(

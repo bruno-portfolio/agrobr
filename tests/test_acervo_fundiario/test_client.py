@@ -50,3 +50,9 @@ async def test_head_404_raises_source_unavailable():
 
     with pytest.raises(SourceUnavailableError, match="HTTP 404"):
         await client._head(FakeClient(), "https://example.com/missing.zip")  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(("valor", "desligado"), [("true", True), ("YES", True), ("0", False)])
+def test_cache_disabled_aceita_booleanos(monkeypatch, valor, desligado):
+    monkeypatch.setenv("AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED", valor)
+    assert client._cache_disabled() is desligado

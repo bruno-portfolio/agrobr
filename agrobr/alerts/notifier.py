@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 import html
 import json
+import logging
+from contextvars import ContextVar
 from datetime import datetime
 from enum import StrEnum
 from typing import Any
@@ -10,6 +12,8 @@ from typing import Any
 import httpx
 
 from agrobr import _log, constants
+from agrobr.exceptions import InvalidParameterError
+from agrobr.http import responses
 
 logger = _log.get_logger(__name__)
 
@@ -67,6 +71,34 @@ _DISCORD_COLOR: dict[str, int] = {
 _DISCORD_COLOR_RECOVERY = 0x36A64F
 _DISCORD_COLOR_SOFT_BLOCK = 0x7289DA
 
+_WEBHOOK_EM_ENVIO: ContextVar[str | None] = ContextVar("agrobr_alert_webhook", default=None)
+
+
+class _MascararWebhook(logging.Filter):
+    """O log de INFO do httpx traz a URL do pedido, e a URL do webhook é a própria credencial."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        webhook = _WEBHOOK_EM_ENVIO.get()
+        if webhook:
+            mensagem = record.getMessage()
+            mascarada = responses.redact_secrets(mensagem, webhook, str(httpx.URL(webhook)))
+            if mascarada != mensagem:
+                record.msg, record.args = mascarada, ()
+        return True
+
+
+logging.getLogger("httpx").addFilter(_MascararWebhook())
+
+
+async def _post_webhook(webhook: str, payload: dict[str, Any]) -> None:
+    marca = _WEBHOOK_EM_ENVIO.set(webhook)
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(webhook, json=payload, timeout=10.0)
+            response.raise_for_status()
+    finally:
+        _WEBHOOK_EM_ENVIO.reset(marca)
+
 
 async def send_alert(
     level: AlertLevel | str,
@@ -80,14 +112,20 @@ async def send_alert(
     consecutive_failures: int | None = None,
     last_success_at: datetime | None = None,
 ) -> None:
+    if isinstance(level, str):
+        try:
+            level = AlertLevel(level)
+        except ValueError:
+            validos = ", ".join(nivel.value for nivel in AlertLevel)
+            raise InvalidParameterError(
+                f"level inválido: {level!r}. Valores válidos: {validos}"
+            ) from None
+
     settings = constants.AlertSettings()
 
     if not settings.enabled:
         logger.debug("alerts_disabled", title=title)
         return
-
-    if isinstance(level, str):
-        level = AlertLevel(level)
 
     tasks = []
 
@@ -159,9 +197,7 @@ async def _send_slack(
 
     payload = {"attachments": [{"color": color, "blocks": blocks}]}
 
-    async with httpx.AsyncClient() as client:
-        response = await client.post(webhook, json=payload, timeout=10.0)
-        response.raise_for_status()
+    await _post_webhook(webhook, payload)
 
     logger.info("alert_sent", channel="slack", level=level.value, title=title)
 
@@ -239,9 +275,7 @@ async def _send_discord(
 
     payload = {"embeds": [embed]}
 
-    async with httpx.AsyncClient() as client:
-        response = await client.post(webhook, json=payload, timeout=10.0)
-        response.raise_for_status()
+    await _post_webhook(webhook, payload)
 
     logger.info("alert_sent", channel="discord", level=level.value, title=title)
 

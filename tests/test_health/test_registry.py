@@ -28,3 +28,7 @@ class TestHealthRegistry:
 class TestSourceDatasetMap:
     def test_inmet_multiple_fetchers_list_dataset_once(self):
         assert get_affected_datasets(Fonte.INMET) == ["clima"]
+
+    def test_lista_devolvida_e_copia(self):
+        get_affected_datasets(Fonte.INMET).append("alterado")
+        assert get_affected_datasets(Fonte.INMET) == ["clima"]

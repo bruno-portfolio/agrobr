@@ -47,8 +47,7 @@ from tests.helpers import levanta_exatamente
 PACOTE = Path(__file__).resolve().parents[2] / "agrobr"
 FORA_DO_HELPER = {
     ("http/responses.py", "raise_for_status"): "o próprio helper",
-    ("alerts/notifier.py", "_send_slack"): "alerta, não é API de dado",
-    ("alerts/notifier.py", "_send_discord"): "alerta, não é API de dado",
+    ("alerts/notifier.py", "_post_webhook"): "alerta, não é API de dado",
     ("alerts/notifier.py", "_send_email"): "alerta, não é API de dado",
     ("antaq/client.py", "_get_sync"): "requests, convertido no _download_zip",
     ("comexstat/client.py", "_attempt"): "o try grava o recibo e o _open_resource converte",

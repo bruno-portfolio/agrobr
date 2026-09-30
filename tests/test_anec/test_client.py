@@ -463,3 +463,9 @@ class TestCacheFilesystem:
             await client.fetch_pdf_bytes(article)
 
         assert mock_client.get.call_count == 1
+
+
+@pytest.mark.parametrize(("valor", "desligado"), [("true", True), ("YES", True), ("0", False)])
+def test_cache_disabled_aceita_booleanos(monkeypatch, valor, desligado):
+    monkeypatch.setenv("AGROBR_ANEC_CACHE_DISABLED", valor)
+    assert client._cache_disabled() is desligado

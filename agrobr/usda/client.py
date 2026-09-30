@@ -75,7 +75,7 @@ async def _fetch_json(url: str, api_key: str) -> RespostaPSD:
             return RespostaPSD(url, response.content, [], 404)
 
         responses.raise_for_status(response, source="usda")
-        dados = responses.parse_json_response(response, source="usda", url=url)
+        dados = responses.parse_json_response(response, source="usda", url=url, secrets=(api_key,))
         return RespostaPSD(url, response.content, dados)
 
 

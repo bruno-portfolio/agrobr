@@ -40,6 +40,8 @@ SOURCE_POLICY_MAP: dict[Fonte, str] = {
     Fonte.CEPEA: "cepea_diario",
 }
 
+_ENDPOINTS_LEGADOS = {"cepea_semanal": "cepea_diario"}
+
 
 def _sem_cache(source: str) -> InvalidParameterError:
     com_cache = [fonte.value for fonte in SOURCE_POLICY_MAP]
@@ -57,13 +59,21 @@ def get_policy(source: Fonte | str, endpoint: str | None = None) -> CachePolicy:
         except ValueError:
             raise _sem_cache(source) from None
 
-    if endpoint:
-        key = f"{source.value}_{endpoint}"
-        if key in POLICIES:
-            return POLICIES[key]
-
     if source not in SOURCE_POLICY_MAP:
         raise _sem_cache(source.value)
+    if endpoint:
+        key = _ENDPOINTS_LEGADOS.get(f"{source.value}_{endpoint}", f"{source.value}_{endpoint}")
+        if key not in POLICIES:
+            prefixo = f"{source.value}_"
+            validos = sorted(
+                nome.removeprefix(prefixo)
+                for nome in (*POLICIES, *_ENDPOINTS_LEGADOS)
+                if nome.startswith(prefixo)
+            )
+            raise InvalidParameterError(
+                f"endpoint {endpoint!r} não existe para {source.value!r}. Valores válidos: {validos}"
+            )
+        return POLICIES[key]
     return POLICIES[SOURCE_POLICY_MAP[source]]
 
 

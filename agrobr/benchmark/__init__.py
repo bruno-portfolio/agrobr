@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import Any
 
 from agrobr import _log
+from agrobr.exceptions import InvalidParameterError
 
 logger = _log.get_logger(__name__)
 
@@ -76,6 +77,11 @@ class BenchmarkSuite:
         return "\n".join(lines)
 
 
+def _validar_iterations(iterations: int) -> None:
+    if iterations < 1:
+        raise InvalidParameterError(f"iterations deve ser >= 1; recebido {iterations!r}")
+
+
 async def benchmark_async(
     name: str,
     func: Callable[..., Coroutine[Any, Any, Any]],
@@ -83,6 +89,7 @@ async def benchmark_async(
     warmup: int = 1,
     **kwargs: Any,
 ) -> BenchmarkResult:
+    _validar_iterations(iterations)
     for _ in range(warmup):
         await func(**kwargs)
 
@@ -114,6 +121,7 @@ def benchmark_sync(
     warmup: int = 1,
     **kwargs: Any,
 ) -> BenchmarkResult:
+    _validar_iterations(iterations)
     for _ in range(warmup):
         func(**kwargs)
 

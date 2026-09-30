@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -9,6 +10,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from agrobr.constants import Fonte
+from agrobr.exceptions import InvalidParameterError
 from agrobr.health.checker import (
     CheckResult,
     CheckStatus,
@@ -291,3 +293,14 @@ async def test_run_all_checks_devolve_o_resultado_de_cada_fonte():
         (Fonte.CEPEA, {"deep": True}),
         (Fonte.CONAB, {"deep": True}),
     ]
+
+
+@pytest.mark.parametrize("executar", [run_all_checks, run_checks_with_state])
+@pytest.mark.parametrize("concurrency", [0, -1])
+async def test_concurrency_menor_que_um_e_recusada_antes_dos_checks(executar, concurrency):
+    with (
+        patch("agrobr.health.checker.check_source", new_callable=AsyncMock) as check,
+        pytest.raises(InvalidParameterError, match=f"concurrency deve ser .*{concurrency}"),
+    ):
+        await asyncio.wait_for(executar([Fonte.CEPEA], concurrency=concurrency), timeout=5)
+    check.assert_not_awaited()

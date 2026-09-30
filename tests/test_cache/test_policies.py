@@ -48,11 +48,20 @@ def test_get_next_update_info_cepea():
         ("cepea", None),
         (Fonte.CEPEA, None),
         (Fonte.CEPEA, "diario"),
-        (Fonte.CEPEA, "inexistente"),
+        (Fonte.CEPEA, "semanal"),
     ],
 )
 def test_get_policy_cepea(fonte, endpoint):
     assert get_policy(fonte, endpoint) is POLICIES["cepea_diario"]
+
+
+@pytest.mark.parametrize("consulta", [get_policy, calculate_expiry])
+def test_endpoint_desconhecido_e_recusado_com_os_validos(consulta):
+    with pytest.raises(
+        InvalidParameterError,
+        match=r"endpoint 'inexistente' não existe para 'cepea'\. Valores válidos: \['diario', 'semanal'\]",
+    ):
+        consulta(Fonte.CEPEA, "inexistente")
 
 
 @pytest.mark.parametrize(

@@ -39,13 +39,19 @@ All HTTP requests use automatic retry:
 
 ```python
 # Default configuration
-max_retries = 3
+max_retries = 3  # total attempts per request, counting the first one
 base_delay = 1.0  # seconds
 max_delay = 30.0  # seconds
 exponential_base = 2
 
-# Delays: 1s → 2s → 4s (max 30s)
+# 3 attempts, with waits of 1s → 2s (max 30s)
 ```
+
+`max_retries` counts the total number of attempts, not only the new ones: the default 3 makes up to 3 requests, with 2
+waits. `AGROBR_HTTP_MAX_RETRIES=0` (or `1`) makes a single request, with no retry; a negative value is rejected at
+validation, with `ValidationError`. In `retry_async` and `with_retry`, `max_attempts=0` also means one attempt,
+`base_delay=0` and `max_delay=0` mean no wait, and a negative value raises `InvalidParameterError`. When the attempts run
+out, the message says `after N attempts`.
 
 **Status codes that trigger retry:**
 - 408 Request Timeout
@@ -83,7 +89,7 @@ Each source has its own rate limit, configurable via env vars:
 | ZARC | 2 seconds | `AGROBR_HTTP_RATE_LIMIT_ZARC` |
 | Default | 1 second | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` |
 
-The table shows the main sources; each supported source has its own rate limit (default 1 second). Beyond the interval between requests, per-source concurrency is controlled by `max_concurrent_<source>` (default 1; B3 and IBGE use 3), via semaphores that allow parallel requests to different sources. The interval and the concurrency hold for the whole process: across `agrobr.sync` calls (each with its own `asyncio.run`), across loops and across threads. The wait for a slot across threads is capped (`AGROBR_HTTP_TIMEOUT_READ`); at the cap, the request goes ahead with a warning, and the interval still holds.
+The table shows the main sources; each supported source has its own rate limit (default 1 second). Four internal requests have no variable of their own and use `AGROBR_HTTP_RATE_LIMIT_DEFAULT`: CONAB's production cost and historical series, IBGE's legacy Agricultural Census (FTP), and MAPA PSR; `AGROBR_HTTP_RATE_LIMIT_CONAB` and `AGROBR_HTTP_RATE_LIMIT_IBGE` do not apply to them. Beyond the interval between requests, per-source concurrency is controlled by `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` for four sources only: ANA (1), ANP Diesel (3), B3 (3), and IBGE (3); the others use `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` (1), and another source's variable (for example, `AGROBR_HTTP_MAX_CONCURRENT_CFTC`) has no effect. A value below 1 is rejected at validation, with `ValidationError`. Concurrency is enforced via semaphores that allow parallel requests to different sources. The interval and the concurrency hold for the whole process: across `agrobr.sync` calls (each with its own `asyncio.run`), across loops and across threads. The wait for a slot across threads is capped (`AGROBR_HTTP_TIMEOUT_READ`); at the cap, the request goes ahead with a warning, and the interval still holds.
 
 ## Centralized HTTP Configuration
 
@@ -96,7 +102,7 @@ export AGROBR_HTTP_TIMEOUT_READ=30
 export AGROBR_HTTP_TIMEOUT_WRITE=10
 export AGROBR_HTTP_TIMEOUT_POOL=10
 
-# Retry
+# Retry (MAX_RETRIES is the total number of attempts; 0 or 1 = no retry)
 export AGROBR_HTTP_MAX_RETRIES=3
 export AGROBR_HTTP_RETRY_BASE_DELAY=1.0
 export AGROBR_HTTP_RETRY_MAX_DELAY=30.0
@@ -230,7 +236,7 @@ open only during each operation, so another process (a 2nd notebook, a worker)
 uses the same cache; the upsert writes all or nothing. Without access to the file
 (read-only folder, full disk, another process writing), the operation goes on
 without cache, and agrobr warns once (`UserWarning`) with the path, the reason and
-the `AGROBR_CACHE_CACHE_DIR` hint. An unreadable database (incomplete read, checksum or
+the `AGROBR_CACHE_DIR` hint. An unreadable database (incomplete read, checksum or
 invalid file) is moved aside as `agrobr.duckdb.corrompido-<YYYYMMDDHHMM>`, with a warning, and the
 next query creates a new database ([what agrobr writes to disk](disco.md)). Pending migrations
 preserve originals in quarantine and remove active rows only in the same
@@ -401,10 +407,14 @@ export AGROBR_ALERT_SLACK_WEBHOOK=https://hooks.slack.com/...
 # Discord
 export AGROBR_ALERT_DISCORD_WEBHOOK=https://discord.com/api/webhooks/...
 
-# Email (SendGrid)
+# Email (SendGrid); the list goes as JSON, in single quotes in the shell
 export AGROBR_ALERT_SENDGRID_API_KEY=SG...
-export AGROBR_ALERT_EMAIL_TO=["admin@example.com"]
+export AGROBR_ALERT_EMAIL_TO='["admin@example.com"]'
 ```
+
+The Slack and Discord webhook URL is the credential itself. When the application turns on `httpx` `INFO` logging, agrobr
+replaces it with `[REDACTED]` in the `HTTP Request` line of the alert delivery. The error message for a non-JSON response
+also masks agrobr's credentials, whether from the environment or passed as an argument.
 
 ### Alert Levels
 

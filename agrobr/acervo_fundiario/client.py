@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
-import os
 import threading
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
@@ -48,7 +47,7 @@ class Aquisicao(NamedTuple):
 
 
 def _cache_disabled() -> bool:
-    return os.environ.get("AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED") == "1"
+    return constants.env_flag("AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED")
 
 
 async def _get_lock(key: str) -> asyncio.Lock:

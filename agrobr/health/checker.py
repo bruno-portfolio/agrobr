@@ -14,6 +14,7 @@ from typing import Any
 from agrobr import _log
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.constants import AlertSettings, Fonte
+from agrobr.exceptions import InvalidParameterError
 from agrobr.health.registry import HEALTH_REGISTRY, SourceHealthConfig
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils.time import utcnow
@@ -349,6 +350,10 @@ async def run_all_checks(
     concurrency: int = 8,
 ) -> list[CheckResult]:
     """Run health checks for *sources* (default: all registered)."""
+    if concurrency < 1:
+        raise InvalidParameterError(
+            f"concurrency deve ser um inteiro >= 1; recebido {concurrency!r}"
+        )
     targets = sources or list(HEALTH_REGISTRY.keys())
     semaphore = asyncio.Semaphore(concurrency)
 
