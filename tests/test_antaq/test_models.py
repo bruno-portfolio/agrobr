@@ -33,7 +33,7 @@ class TestResolveTipoNavegacao:
         assert resolve_tipo_navegacao(None) is None
 
     def test_invalido(self):
-        with pytest.raises(ValueError, match="Tipo de navegação desconhecido"):
+        with pytest.raises(ValueError, match="tipo_navegacao desconhecido"):
             resolve_tipo_navegacao("invalido")
 
     def test_com_espacos(self):
@@ -60,5 +60,5 @@ class TestResolveNaturezaCarga:
         assert resolve_natureza_carga(None) is None
 
     def test_invalido(self):
-        with pytest.raises(ValueError, match="Natureza da carga desconhecida"):
+        with pytest.raises(ValueError, match="natureza_carga desconhecido"):
             resolve_natureza_carga("invalido")

@@ -36,8 +36,12 @@ def _retornos(funcao: Callable[..., Any], return_meta: str) -> set[str]:
 
 def _conferir(funcao: Callable[..., Any], simples: str, com_meta: str) -> None:
     assert typing.get_overloads(funcao), "sem @overload: o checker vê a união DataFrame | tuple"
-    assert simples in _retornos(funcao, "Literal[False]")
-    assert com_meta in _retornos(funcao, "Literal[True]")
+    assert {simples, "DataFrame", "result_utils.DataFrame"} & _retornos(funcao, "Literal[False]")
+    assert {
+        com_meta,
+        "tuple[DataFrame, MetaInfo]",
+        "tuple[result_utils.DataFrame, MetaInfo]",
+    } & _retornos(funcao, "Literal[True]")
 
 
 @pytest.mark.parametrize("nome", datasets.list_datasets())

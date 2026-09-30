@@ -9,6 +9,7 @@ import pydantic
 
 from agrobr import constants
 from agrobr.exceptions import InvalidParameterError
+from agrobr.utils import time as time_utils
 
 from . import acquisition
 
@@ -21,8 +22,9 @@ def validate_access_options(api_key: str | None, require_complete: bool) -> None
 
 
 def _year(value: str) -> int:
-    if re.fullmatch(r"[0-9]{4}", value) is None or int(value) == 0:
-        raise InvalidParameterError("Ano deve conter quatro dígitos entre 0001 e 9999")
+    corrente = time_utils.hoje().year
+    if re.fullmatch(r"[0-9]{4}", value) is None or not 1962 <= int(value) <= corrente:
+        raise InvalidParameterError(f"Ano deve conter quatro dígitos entre 1962 e {corrente}")
     return int(value)
 
 

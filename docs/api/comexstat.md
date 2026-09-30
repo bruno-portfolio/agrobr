@@ -14,9 +14,10 @@ async def exportacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 ### `importacao`
@@ -29,9 +30,10 @@ async def importacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parametros (ambas):**
@@ -39,7 +41,7 @@ async def importacao(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `produto` | `str` | Alias da tabela abaixo ou prefixo NCM de 2 a 8 dígitos, sem pontos (ex.: `"1507"`, `"22071010"`) |
-| `ano` | `int \| None` | Ano de referencia. Default: ano anterior |
+| `ano` | `int \| None` | Ano de referência (1997 até o corrente em Brasília). Default: ano anterior |
 | `uf` | `str \| None` | Filtrar por UF |
 | `agregacao` | `str` | `"mensal"` (default) ou `"detalhado"` |
 | `as_polars` | `bool` | Se True, retorna polars.DataFrame |
@@ -130,3 +132,9 @@ df = comexstat.importacao("soja", ano=2024)
 - `MetaInfo.source_details["query"]` registra `ncm_prefixos` e `ncm_excluidos`
 - Arquivos CSV anuais de ~100MB cada
 - Dados disponiveis a partir de 1997
+
+### `dicionario`
+
+`await comexstat.dicionario(tabela, *, as_polars=False, return_meta=False)` lê um dicionário oficial. `tabela` aceita `unidades`, `paises`, `vias` ou `urfs`. Os códigos literais conservam zeros à esquerda; linhas preservam ordem e duplicatas da fonte. Aplicam-se os limites padrão de memória e linhas da fonte. Tabela inválida falha antes do download.
+
+`kg_liquido`, valores monetários e `volume_ton` usam `float64`; anos, meses e quantidades estatísticas usam `Int64`. O texto da fonte e dos dicionários mantém `string[python]`: o guarda de memória conta os objetos Python do pool de textos. Essa exceção vale no cheio e no vazio. Os datasets `exportacao` e `importacao` convertem o texto do recorte final para o padrão do pandas instalado. As flags de saída são somente por nome.

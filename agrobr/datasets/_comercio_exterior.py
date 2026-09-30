@@ -88,12 +88,9 @@ def adapt_comexstat(
         "group_by": [name for name in ("ano", "mes", "produto", "uf") if name in output],
         "input_rows": len(frame),
         "output_rows": len(output),
-        "integer_weight_sum": "Python integer before float64 dataset boundary",
+        "weight_sum": "Accurate sum of source float64 kg; missing propagates",
         "monetary_sum": "Accurate sum of the source float64 values; missing propagates",
-        "output_dtypes": {
-            name: "string[python]" if isinstance(dtype, pd.StringDtype) else str(dtype)
-            for name, dtype in output.dtypes.items()
-        },
+        "output_dtypes": {name: str(dtype) for name, dtype in output.dtypes.items()},
     }
     return output, dataclasses.replace(
         meta, records_count=len(output), columns=list(output.columns), source_details=details

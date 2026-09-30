@@ -5,6 +5,8 @@ from functools import cache
 from pathlib import Path
 
 from agrobr.exceptions import InvalidParameterError
+from agrobr.normalize import crops
+from agrobr.utils import time as time_utils
 
 CATALOGOS = Path(__file__).parent / "catalogos"
 MUNDO = "00"
@@ -107,14 +109,15 @@ def attribute_br(commodity_code: str, attribute_id: int) -> str | None:
 
 def resolve_commodity_code(nome: str) -> str:
     if not isinstance(nome, str):
-        raise InvalidParameterError("commodity deve ser uma string")
+        raise InvalidParameterError("produto deve ser uma string")
     key = nome.strip().lower()
+    key = crops.normalizar_cultura(key)
     if key in PSD_COMMODITIES:
         return PSD_COMMODITIES[key]
     if key in nomes_de_produto():
         return key
     raise InvalidParameterError(
-        f"Commodity desconhecida: '{nome}'. Opções: {sorted(set(_COMMODITY_NAMES.values()))} "
+        f"Produto desconhecido: '{nome}'. Opções: {sorted(set(_COMMODITY_NAMES.values()))} "
         "ou um commodityCode do catálogo oficial do PSD"
     )
 
@@ -123,6 +126,8 @@ def resolve_country_code(nome: str) -> str:
     if not isinstance(nome, str):
         raise InvalidParameterError("país deve ser uma string")
     key = nome.strip().lower()
+    if key in {"world", "all"}:
+        return MUNDO if key == "world" else "all"
     if key in PSD_COUNTRIES:
         return PSD_COUNTRIES[key]
     if key.upper() in nomes_de_pais():
@@ -136,7 +141,7 @@ def resolve_country_code(nome: str) -> str:
 def resolve_attributes(attributes: list[str] | None) -> list[str] | None:
     if attributes is None:
         return None
-    if isinstance(attributes, str) or not all(isinstance(a, str) for a in attributes):
+    if not isinstance(attributes, list) or not all(isinstance(a, str) for a in attributes):
         raise InvalidParameterError("attributes deve ser uma lista de strings")
     conhecidos = {nome.lower() for nome in nomes_de_atributo().values()}
     conhecidos |= {*PSD_ATTRIBUTES.values(), "consumo_domestico", "perdas"}
@@ -154,3 +159,13 @@ def resolve_attributes(attributes: list[str] | None) -> list[str] | None:
 
 def commodity_name(code: str) -> str:
     return _COMMODITY_NAMES.get(code) or nomes_de_produto().get(code, code)
+
+
+def validate_market_year(ano: int | None) -> None:
+    corrente = time_utils.hoje().year
+    if ano is not None and (
+        not isinstance(ano, int) or isinstance(ano, bool) or not 1960 <= ano <= corrente
+    ):
+        raise InvalidParameterError(
+            f"market_year deve ser inteiro entre 1960 e {corrente}: {ano!r}"
+        )

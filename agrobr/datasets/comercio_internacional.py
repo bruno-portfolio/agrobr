@@ -6,10 +6,12 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.comtrade import models
+from agrobr.contracts.comtrade import COLUNAS_DATASET
 from agrobr.datasets import base, registry
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
 from agrobr.utils import result
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -35,7 +37,7 @@ COMERCIO_INTERNACIONAL_INFO = base.DatasetInfo(
         ),
     ],
     products=_PRODUCTS,
-    contract_version="2.1",
+    contract_version="3.0",
     update_frequency="monthly",
     typical_latency="M+2",
     source_url="https://comtradeplus.un.org",
@@ -95,16 +97,16 @@ class ComercioInternacionalDataset(base.BaseDataset):
         self,
         produto: str,
         *,
-        reporter: str = "BR",
-        partner: str | None = None,
+        declarante: str = "BR",
+        parceiro: str | None = None,
         fluxo: str = "X",
         periodo: str | int | None = None,
-        freq: str = "A",
+        frequencia: str = "A",
         api_key: str | None = None,
-        require_complete: bool = False,
+        exigir_completo: bool = False,
         as_polars: bool = False,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         from agrobr.comtrade import api
 
         snapshot = get_snapshot()
@@ -112,13 +114,13 @@ class ComercioInternacionalDataset(base.BaseDataset):
             periodo = snapshot[:4]
         selection = api.prepare_query(
             produto,
-            reporter=reporter,
-            partner=partner,
+            reporter=declarante,
+            partner=parceiro,
             fluxo=fluxo,
             periodo=periodo,
-            freq=freq,
+            freq=frequencia,
             api_key=api_key,
-            require_complete=require_complete,
+            require_complete=exigir_completo,
             as_polars=as_polars,
             return_meta=return_meta,
         )
@@ -127,13 +129,13 @@ class ComercioInternacionalDataset(base.BaseDataset):
         )
         frame, source_name, source_meta, attempted = await self._try_sources(
             produto,
-            reporter=reporter,
-            partner=partner,
+            reporter=declarante,
+            partner=parceiro,
             fluxo=selection.flow,
             periodo=selection.requested_period,
             freq=selection.freq,
             api_key=api_key,
-            require_complete=require_complete,
+            require_complete=exigir_completo,
         )
         frame = self._normalize(frame)
         self._validate_contract(frame)
@@ -145,7 +147,7 @@ class ComercioInternacionalDataset(base.BaseDataset):
         return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
     def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
-        return df
+        return df.rename(columns=COLUNAS_DATASET)
 
 
 _comercio_internacional = ComercioInternacionalDataset()
@@ -156,56 +158,72 @@ registry.register(_comercio_internacional)
 async def comercio_internacional(
     produto: str,
     *,
-    reporter: str = "BR",
-    partner: str | None = None,
+    declarante: str = "BR",
+    parceiro: str | None = None,
     fluxo: str = "X",
     periodo: str | int | None = None,
-    freq: str = "A",
+    frequencia: str = "A",
     api_key: str | None = None,
-    require_complete: bool = False,
+    exigir_completo: bool = False,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
 async def comercio_internacional(
     produto: str,
     *,
-    reporter: str = "BR",
-    partner: str | None = None,
+    declarante: str = "BR",
+    parceiro: str | None = None,
     fluxo: str = "X",
     periodo: str | int | None = None,
-    freq: str = "A",
+    frequencia: str = "A",
     api_key: str | None = None,
-    require_complete: bool = False,
+    exigir_completo: bool = False,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def comercio_internacional(
+    produto: str,
+    *,
+    declarante: str = "BR",
+    parceiro: str | None = None,
+    fluxo: str = "X",
+    periodo: str | int | None = None,
+    frequencia: str = "A",
+    api_key: str | None = None,
+    exigir_completo: bool = False,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def comercio_internacional(
     produto: str,
     *,
-    reporter: str = "BR",
-    partner: str | None = None,
+    declarante: str = "BR",
+    parceiro: str | None = None,
     fluxo: str = "X",
     periodo: str | int | None = None,
-    freq: str = "A",
+    frequencia: str = "A",
     api_key: str | None = None,
-    require_complete: bool = False,
+    exigir_completo: bool = False,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _comercio_internacional.fetch(
         produto,
-        reporter=reporter,
-        partner=partner,
+        declarante=declarante,
+        parceiro=parceiro,
         fluxo=fluxo,
         periodo=periodo,
-        freq=freq,
+        frequencia=frequencia,
         api_key=api_key,
-        require_complete=require_complete,
+        exigir_completo=exigir_completo,
         as_polars=as_polars,
         return_meta=return_meta,
     )

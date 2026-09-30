@@ -11,7 +11,13 @@ from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import time as time_utils
-from agrobr.utils.result import ATRIBUTO_AVISOS, build_source_meta, finalize_result
+from agrobr.utils.result import (
+    ATRIBUTO_AVISOS,
+    DataFrame,
+    DataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
 from agrobr.utils.warnings import warn_once
 
 from . import client, models, parser
@@ -40,7 +46,7 @@ async def entregas(
     agregacao: str = "detalhado",
     as_polars: bool = False,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -51,7 +57,18 @@ async def entregas(
     agregacao: str = "detalhado",
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def entregas(
+    ano: int,
+    *,
+    produto: str = "total",
+    agregacao: str = "detalhado",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def entregas(
@@ -61,11 +78,14 @@ async def entregas(
     agregacao: str = "detalhado",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
     corrente = time_utils.hoje().year
-    if not isinstance(ano, int) or isinstance(ano, bool) or ano > corrente:
-        raise InvalidParameterError(f"ano deve ser inteiro e não pode superar {corrente}")
+    if not isinstance(ano, int) or isinstance(ano, bool) or not 2000 <= ano <= corrente:
+        raise InvalidParameterError(f"ano deve ser inteiro entre 2000 e {corrente}")
     produto_normalizado = models.resolve_produto(produto)
+    agregacao = agregacao.strip().lower() if isinstance(agregacao, str) else agregacao
     if agregacao not in ("detalhado", "mensal"):
         raise InvalidParameterError(
             f"agregacao deve ser 'detalhado' ou 'mensal', recebido {agregacao!r}"

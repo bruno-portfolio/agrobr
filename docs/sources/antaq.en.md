@@ -164,3 +164,5 @@ for Carga.txt). The download may take a few seconds. The parser uses
 - Update: annual (consolidated data)
 - History: 2010+
 - License: `livre` (public data, federal government)
+
+`data_atracacao` preserves the published date and time as `datetime64[ns]`; a calendar typo becomes `NaT` with a warning in `MetaInfo.validation_warnings`. Non-date text raises `ParseError`. `ano`, `mes`, and `teu` use `Int64`; `peso_bruto_ton` and `qt_carga` use `float64`. Populated and empty results have the same dtypes. `sentido`, `tipo_navegacao`, and `natureza_carga` accept their documented aliases and complete published labels, ignoring case, accents and surrounding whitespace. Unsupported values raise `InvalidParameterError` before downloading the ZIPs.

@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 import pytest
 
 from agrobr import datasets, usda
+from agrobr.exceptions import InvalidParameterError
 from agrobr.utils import time as time_utils
 from tests.helpers import sem_excecao
 
@@ -73,4 +74,17 @@ async def test_oferta_demanda_global_herda_o_ano_padrao(gateway, monkeypatch):
         df, meta = await datasets.oferta_demanda_global("soja", return_meta=True)
 
     assert not df.empty
+    assert meta.source_details["market_year"] == 2025
+
+
+async def test_virada_do_ano_respeita_calendario_de_brasilia(gateway, monkeypatch):
+    monkeypatch.setattr(time_utils, "utcnow_aware", lambda: datetime(2026, 1, 1, 1, tzinfo=UTC))
+    gateway.servir("soja_BR_2025.json")
+
+    with pytest.raises(InvalidParameterError, match="2025"):
+        await usda.psd("soja", market_year=2026)
+    assert gateway.pedidos == []
+
+    _, meta = await usda.psd("soja", return_meta=True)
+    assert _anos_pedidos(gateway) == [2025]
     assert meta.source_details["market_year"] == 2025

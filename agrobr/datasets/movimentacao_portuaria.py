@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Literal, overload
+from typing import Any, Literal, cast, overload
 
 import pandas as pd
 
 from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -28,7 +30,8 @@ async def _fetch_antaq(
         sentido=kwargs.get("sentido"),
         return_meta=True,
     )
-    return _unpack_result(result)
+    frame, meta = _unpack_result(result)
+    return cast("pd.DataFrame", frame), meta
 
 
 MOVIMENTACAO_PORTUARIA_INFO = DatasetInfo(
@@ -43,7 +46,7 @@ MOVIMENTACAO_PORTUARIA_INFO = DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="1.0",
+    contract_version="2.0",
     update_frequency="yearly",
     typical_latency="ano+6 meses",
     source_url="https://estatistica.antaq.gov.br/ea/sense/",
@@ -70,7 +73,7 @@ class MovimentacaoPortuariaDataset(BaseDataset):
         tipo_navegacao: str | None = None,
         natureza_carga: str | None = None,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         snapshot = get_snapshot()
 
         logger.info(
@@ -154,7 +157,7 @@ async def movimentacao_portuaria(
     natureza_carga: str | None = None,
     return_meta: Literal[False] = False,
     as_polars: bool = False,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -169,7 +172,22 @@ async def movimentacao_portuaria(
     natureza_carga: str | None = None,
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def movimentacao_portuaria(
+    *,
+    ano: int,
+    mercadoria: str | None = None,
+    porto: str | None = None,
+    uf: str | None = None,
+    sentido: str | None = None,
+    tipo_navegacao: str | None = None,
+    natureza_carga: str | None = None,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def movimentacao_portuaria(
@@ -183,7 +201,9 @@ async def movimentacao_portuaria(
     natureza_carga: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
     return await _movimentacao_portuaria.fetch(  # type: ignore[call-arg]
         ano=ano,
         mercadoria=mercadoria,

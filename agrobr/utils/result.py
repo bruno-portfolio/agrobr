@@ -91,7 +91,7 @@ def finalize_result(
 
 
 @overload
-def finalize_result(  # type: ignore[overload-overlap]
+def finalize_result(
     df: pd.DataFrame,
     meta: Any = ...,
     *,
@@ -102,7 +102,7 @@ def finalize_result(  # type: ignore[overload-overlap]
 
 
 @overload
-def finalize_result(  # type: ignore[overload-overlap]
+def finalize_result(
     df: pd.DataFrame,
     meta: Any = ...,
     *,
@@ -120,7 +120,7 @@ def finalize_result(
     as_polars: bool = ...,
     return_meta: Literal[True],
     string_columns: tuple[str, ...] = ...,
-) -> tuple[pd.DataFrame, Any]: ...
+) -> tuple[DataFrame, Any]: ...
 
 
 @overload
@@ -131,7 +131,7 @@ def finalize_result(
     as_polars: bool = ...,
     return_meta: Literal[False] = ...,
     string_columns: tuple[str, ...] = ...,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -142,7 +142,7 @@ def finalize_result(
     as_polars: bool = ...,
     return_meta: bool = ...,
     string_columns: tuple[str, ...] = ...,
-) -> pd.DataFrame | tuple[pd.DataFrame, Any]: ...
+) -> DataFrame | tuple[DataFrame, Any]: ...
 
 
 def finalize_result(

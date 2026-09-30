@@ -324,7 +324,7 @@ async def test_meta_declara_parceiro_omitido_e_url_dos_dados(
 async def test_snapshot_declara_que_so_fixa_o_ano_padrao(replay_http):
     replay_http()
     async with deterministic("2023-12-31"):
-        _, meta = await datasets.comercio_internacional("1201", partner="CN", return_meta=True)
+        _, meta = await datasets.comercio_internacional("1201", parceiro="CN", return_meta=True)
     assert meta.snapshot == "2023-12-31"
     assert meta.source_details.get("snapshot_scope") == (
         "default_year_only; source revisions are not frozen"

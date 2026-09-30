@@ -12,6 +12,22 @@ from tests.test_usda.conftest import Gateway, corpo, simular_gateway
 
 from .conftest import make_source, mock_source_meta
 
+COLUNAS_PT = {
+    "commodity_code": "codigo_produto",
+    "commodity": "produto",
+    "country_code": "codigo_pais",
+    "country": "pais",
+    "market_year": "ano_comercial",
+    "attribute": "atributo",
+    "attribute_br": "atributo_br",
+    "value": "valor",
+    "unit": "unidade",
+    "attribute_id": "codigo_atributo",
+    "unit_id": "codigo_unidade",
+    "last_update_year": "ano_atualizacao",
+    "last_update_month": "mes_atualizacao",
+}
+
 
 def _make_df(**overrides):
     row = {
@@ -46,7 +62,7 @@ class TestOfertaDemandaGlobalFetch:
             await dataset.fetch("soja")
 
         call_kwargs = mock_fn.call_args[1]
-        assert call_kwargs["market_year"] == 2023
+        assert call_kwargs["ano_comercial"] == 2023
 
 
 class TestOfertaDemandaGlobalFetchFunctions:
@@ -63,10 +79,10 @@ class TestOfertaDemandaGlobalFetchFunctions:
 
                     await _fetch_usda_psd(
                         "soja",
-                        country="US",
-                        market_year=2023,
-                        attributes=["Production"],
-                        pivot=True,
+                        pais="US",
+                        ano_comercial=2023,
+                        atributos=["Production"],
+                        pivotar=True,
                         api_key="key123",
                     )
                 mock_fn.assert_called_once_with(
@@ -108,7 +124,7 @@ class TestOfertaDemandaGlobalValidation:
                 dataset.info.sources[0].fetch_fn = make_source(pivot_df)
 
                 with patch.object(dataset, "_validate_contract") as mock_validate:
-                    await dataset.fetch("soja", pivot=True)
+                    await dataset.fetch("soja", pivotar=True)
                     mock_validate.assert_not_called()
             case = "test_contract_called_when_not_pivot"
             with check(case), isolated_dataset_case(case):
@@ -116,7 +132,7 @@ class TestOfertaDemandaGlobalValidation:
                 dataset.info.sources[0].fetch_fn = make_source(_make_df())
 
                 with patch.object(dataset, "_validate_contract") as mock_validate:
-                    await dataset.fetch("soja", pivot=False)
+                    await dataset.fetch("soja", pivotar=False)
                     mock_validate.assert_called_once()
 
 
@@ -127,20 +143,20 @@ async def test_dataset_repassa_consulta_e_saida_da_fonte_sobre_o_golden(monkeypa
     fonte = await usda.psd("soja", market_year=2024, api_key="chave")
     try:
         frame, meta = await datasets.oferta_demanda_global(
-            "soja", market_year=2024, api_key="chave", return_meta=True
+            "soja", ano_comercial=2024, api_key="chave", return_meta=True
         )
-        sem_meta = await datasets.oferta_demanda_global("soja", market_year=2024, api_key="chave")
+        sem_meta = await datasets.oferta_demanda_global("soja", ano_comercial=2024, api_key="chave")
     except Exception as erro:
         raise AssertionError(f"a cola dataset → fonte quebrou: {erro!r}") from erro
     assert [str(p.url) for p in servidor.pedidos] == [capturado] * 3
     assert servidor.pedidos[1].headers.get("X-Api-Key") == "chave"
     assert len(frame) == 13
-    pd.testing.assert_frame_equal(frame, fonte)
+    pd.testing.assert_frame_equal(frame, fonte.rename(columns=COLUNAS_PT))
     assert isinstance(sem_meta, pd.DataFrame)
-    pd.testing.assert_frame_equal(sem_meta, fonte)
+    pd.testing.assert_frame_equal(sem_meta, fonte.rename(columns=COLUNAS_PT))
     assert meta.source_url == capturado
     assert (meta.raw_content_size, meta.contract_version) == (
         len(corpo("soja_BR_2024.json")),
-        "1.1",
+        "2.0",
     )
     assert (meta.selected_source, meta.attempted_sources) == ("usda", ["usda"])

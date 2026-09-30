@@ -16,7 +16,7 @@ Movimentação portuária de cargas — ANTAQ.
 |--------|------|----------|---------|------------|
 | `ano` | INTEGER | Não | — | ≥ 2010 |
 | `mes` | INTEGER | Não | — | 1-12 |
-| `data_atracacao` | STRING | Sim | — | — |
+| `data_atracacao` | DATETIME | Sim | — | — |
 | `tipo_navegacao` | STRING | Sim | — | — |
 | `tipo_operacao` | STRING | Sim | — | — |
 | `natureza_carga` | STRING | Sim | — | — |
@@ -49,9 +49,7 @@ Linhas sem `ano` ou `mes` (carga sem atracacao correspondente) sao descartadas a
 Num recorte de 2024, 10 cargas viram 6 linhas.
 
 `qt_carga` nao tem unidade canonica: a ANTAQ publica `QTCarga` sem unidade e o valor muda de sentido
-por tipo de carga, entao a soma so tem significado dentro de um mesmo grupo homogeneo. O contrato
-declara FLOAT, mas a coluna sai `int64` quando todos os valores publicados sao inteiros - o
-validador aceita qualquer dtype numerico.
+conforme o tipo de carga. A coluna usa `float64`, inclusive no vazio.
 
 ## Parâmetros
 
@@ -79,3 +77,5 @@ df = await datasets.movimentacao_portuaria(
 # Com metadados
 df, meta = await datasets.movimentacao_portuaria(ano=2024, return_meta=True)
 ```
+
+`data_atracacao` preserva a data e a hora publicadas em `datetime64[ns]`; erro de calendário vira `NaT` com aviso em `MetaInfo.validation_warnings`. Texto que não é data levanta `ParseError`. `ano`, `mes` e `teu` usam `Int64`; `peso_bruto_ton` e `qt_carga` usam `float64`. Cheio e vazio têm os mesmos tipos. `sentido`, `tipo_navegacao` e `natureza_carga` aceitam os aliases documentados e os rótulos publicados inteiros, ignorando caixa, acento e espaço nas pontas. Valor não suportado levanta `InvalidParameterError` antes de baixar os ZIPs.

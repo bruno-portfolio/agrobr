@@ -103,7 +103,7 @@ def test_resolve_commodity_code():
         ]
     assert resolvidos == ["2222000", "0813100", "0430000"]
     for invalido in ("9999999", "feijao", "4233"):
-        with levanta_exatamente(InvalidParameterError, "Commodity desconhecida"):
+        with levanta_exatamente(InvalidParameterError, "Produto desconhecido"):
             models.resolve_commodity_code(invalido)
     with levanta_exatamente(InvalidParameterError, "string"):
         models.resolve_commodity_code(2222000)  # type: ignore[arg-type]

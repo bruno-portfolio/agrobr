@@ -11,7 +11,8 @@ from agrobr.contracts import comtrade as source_contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result, warnings
-from agrobr.utils.time import utcnow
+from agrobr.utils import time as time_utils
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 from . import acquisition, client, metadata, models, parser, query
 
@@ -44,7 +45,7 @@ def prepare_query(
         partner=partner_code,
         hs_codes=models.resolve_hs(produto),
         flow=fluxo,
-        period=periodo if periodo is not None else str(utcnow().year - 1),
+        period=periodo if periodo is not None else str(time_utils.hoje().year - 1),
         freq=freq,
     )
     models.validate_hs_periods(produto, selection.periods, selection.reporter)
@@ -103,7 +104,7 @@ async def comercio(
     require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -119,7 +120,24 @@ async def comercio(
     require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def comercio(
+    produto: str,
+    *,
+    reporter: str = "BR",
+    partner: str | None = None,
+    fluxo: str = "X",
+    periodo: str | int | None = None,
+    freq: str = "A",
+    api_key: str | None = None,
+    require_complete: bool = False,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> DataFrameResult: ...
 
 
 async def comercio(
@@ -135,7 +153,7 @@ async def comercio(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     selection = prepare_query(
         produto,
         reporter=reporter,
@@ -150,7 +168,17 @@ async def comercio(
         **kwargs,
     )
     frame, meta = await _acquire(selection, api_key=api_key, require_complete=require_complete)
-    return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
+    return result.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            c.name
+            for c in source_contracts.COMERCIO_BILATERAL_V2.columns
+            if c.type == contracts.ColumnType.STRING
+        ),
+    )
 
 
 @overload
@@ -165,7 +193,7 @@ async def trade_mirror(
     require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -180,7 +208,23 @@ async def trade_mirror(
     require_complete: bool = False,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def trade_mirror(
+    produto: str,
+    *,
+    reporter: str = "BR",
+    partner: str = "CN",
+    periodo: str | int | None = None,
+    freq: str = "A",
+    api_key: str | None = None,
+    require_complete: bool = False,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> DataFrameResult: ...
 
 
 async def trade_mirror(
@@ -195,7 +239,7 @@ async def trade_mirror(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     if kwargs:
         raise InvalidParameterError(f"Parâmetros trade_mirror desconhecidos: {sorted(kwargs)}")
     selection = prepare_query(
@@ -242,7 +286,17 @@ async def trade_mirror(
     meta = metadata.mirror_meta(
         export_meta, import_meta, frame, fetch_ms=fetch_ms, parse_ms=parse_ms
     )
-    return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
+    return result.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            c.name
+            for c in source_contracts.TRADE_MIRROR_V2.columns
+            if c.type == contracts.ColumnType.STRING
+        ),
+    )
 
 
 def paises() -> list[str]:

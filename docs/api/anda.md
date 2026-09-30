@@ -27,7 +27,7 @@ async def entregas(
     agregacao: str = "detalhado",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parametros:**
@@ -83,3 +83,5 @@ df = anda.entregas(2024)
 O catálogo público contém 11 PDFs, de 2016 a 2026, todos com entregas nacionais mensais (`uf="BR"`). O boletim 2026 publica janeiro a junho; meses posteriores vazios não são zero. No ano corrente (data de Brasília), `entregas` e o dataset `fertilizante` avisam que o boletim é parcial, em `validation_warnings` e em `UserWarning`, e registram `ano_em_curso` e `meses_cobertos` (os meses publicados) em `source_details`. Como nenhum deles publica recorte estadual, a 2.0.0 tirou o parâmetro `uf` da fonte e do dataset `fertilizante` (guia de migração 2.0, seção 50).
 
 O parser 3 exige a seção `Fertilizantes Entregues ao Mercado (em toneladas de produto)` e procura o ano somente nela. Se o ano ou essa identificação estiver ausente, a fonte levanta `ParseError`; o dataset preserva o motivo em `SourceUnavailableError`. Produção, importação, exportação e relações de troca do mesmo PDF não podem substituir entregas. Valores publicados e o contrato 2.0 permanecem iguais.
+
+`ano` deve ser inteiro de 2000 até o ano corrente. `ano` e `mes` usam `Int64` anulável; `volume_ton` usa `float64`. Parâmetros inválidos falham antes do download do boletim.

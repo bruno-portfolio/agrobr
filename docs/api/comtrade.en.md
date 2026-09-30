@@ -1,6 +1,6 @@
 # UN Comtrade API
 
-Bilateral merchandise trade by HS and a mirror of exports against reverse imports. Source, mirror and dataset use contract **2.0**, parser **2**.
+Bilateral merchandise trade by HS and a mirror of exports against reverse imports. The source uses contract **2.1**, the mirror **2.0**, and the dataset **3.0**; the parser is **2**.
 
 ## Bilateral query
 
@@ -21,7 +21,7 @@ print(meta.source_details["coverage"])
 | `reporter: str` | `"BR"` | Known alias or positive numeric country code as text |
 | `partner: str \| None` | `None` | None/world/mundo/"0": explicit World aggregate; all/todos: all published partners |
 | `fluxo: str` | `"X"` | Exports X or imports M |
-| `periodo: str \| int \| None` | previous UTC year | Year/month, homogeneous list or inclusive range |
+| `periodo: str \| int \| None` | previous year in Brasília | Year/month, homogeneous list or inclusive range |
 | `freq: str` | `"A"` | Annual A or monthly M |
 | `api_key: str \| None` | `None` | Nonblank key; None reads `AGROBR_COMTRADE_API_KEY` |
 | `require_complete: bool` | `False` | True rejects partial/unknown coverage; False keeps records and emits a warning |
@@ -81,7 +81,7 @@ Without a configured key, the public preview is used. Authenticated transport re
 
 ## Columns and metadata
 
-The previous 22 columns remain, adding `classificacao`, `classificacao_original` and, in contract 2.1, the 3 UN estimation flags (`peso_liquido_estimado`, `peso_bruto_estimado`, and `quantidade_estimada`), for **27** total. Integers use `Int64`, measures `float64`, and nullable flags `boolean`. The reported revision, such as H6, is retained; HS in the URL is an alias. ISO labels and names may be null. See the [complete contract](../contracts/comercio_internacional.md).
+The previous 22 columns remain, adding `classificacao`, `classificacao_original` and, in contract 2.1, the 3 UN estimation flags (`peso_liquido_estimado`, `peso_bruto_estimado`, and `quantidade_estimada`), for **27** total. Integers use `Int64`, measures `float64`, and nullable flags `boolean`. The reported revision, such as H6, is retained; HS in the URL is an alias. ISO labels and names may be null. The [dataset contract](../contracts/comercio_internacional.md) describes the same measures with Portuguese column names; the source retains `reporter_code`, `reporter_iso`, `reporter`, `partner_code`, `partner_iso`, `partner`, `fluxo_code`, `hs_code`, and `produto_desc`.
 
 `MetaInfo` includes schema/contract 2.1 (2.0 for the mirror), the actual guest/authenticated channel, UTC acquisition time and warnings. `source_details` contains query, resources, coverage, fallback and parser/layout diagnostics. Resources retain URLs, SHA256 and sizes. `raw_content_hash` hashes a canonical UTF-8 JSON manifest of query and resources; `raw_content_size` measures that manifest, while `resource_bytes` sums response bodies. Keys are excluded from metadata.
 
@@ -106,7 +106,7 @@ Both acquisitions remain under `source_details["legs"]`, and the cells with a UN
 
 ## Dataset, sync and catalogs
 
-`datasets.comercio_internacional(...)` supports the bilateral selectors, multiple textual HS, completeness and Polars, preserving the contract and provenance. A deterministic snapshot only fills an omitted year; it does not freeze source revisions.
+`datasets.comercio_internacional(...)` uses `declarante`, `parceiro`, `frequencia`, and `exigir_completo` for the bilateral selectors, with multiple textual HS, Polars, and preserved provenance. Its contract 3.0 uses Portuguese column names. A deterministic snapshot only fills an omitted year; it does not freeze source revisions.
 
 ```python
 from agrobr.sync import comtrade
@@ -115,3 +115,5 @@ df = comtrade.comercio("soja", partner="world", periodo=2023, require_complete=T
 ```
 
 `paises()` lists ISO aliases in the local map, not a dynamic worldwide catalog. `produtos()` returns a copy of agricultural aliases and HS selections. The internal license category is `zona_cinza`, with a first-call warning; see [verified terms](../licenses.md#un-comtrade).
+
+Requested years must be between 1962 and the current year. Invalid periods raise `InvalidParameterError` before network access. The source keeps its technical selectors and columns; the [dataset contract](../contracts/comercio_internacional.md) describes the Portuguese dataset names. Text uses the installed pandas default, including empty results.

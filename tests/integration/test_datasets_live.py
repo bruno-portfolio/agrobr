@@ -13,7 +13,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "moedas_cambio": ((), {"top": 3}),
     "expectativas_mercado": (
         (),
-        {"data_inicial": "2026-08-24", "top": 6, "max_registros": 6},
+        {"inicio": "2026-08-24", "top": 6, "max_registros": 6},
     ),
     "abate_trimestral": (("bovino",), {"trimestre": "202303", "uf": "AC"}),
     "autorizacoes_defensivos": ((), {"nr_registro": "08725"}),
@@ -64,7 +64,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "importacao": (("soja",), {"ano": 2023, "uf": "PR"}),
     "leite_industrial": (("leite",), {"trimestre": "202303", "uf": "AC"}),
     "movimentacao_portuaria": (("soja",), {"ano": 2024}),
-    "oferta_demanda_global": (("soja",), {"market_year": 2023}),
+    "oferta_demanda_global": (("soja",), {"ano_comercial": 2023}),
     "pecuaria_municipal": (("bovino",), {"ano": 2023, "uf": "AC"}),
     "pib_agro": (("agropecuaria",), {"trimestre": "202303"}),
     "posicionamento_fundos": (
@@ -93,7 +93,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     ),
     "series_economicas": (
         (),
-        {"codigo": 1, "data_inicial": "01/01/2024", "data_final": "10/01/2024"},
+        {"codigo": 1, "inicio": "01/01/2024", "fim": "10/01/2024"},
     ),
     "silvicultura": (("carvao",), {"ano": 2023, "uf": "AC"}),
     "unidades_conservacao_federais": ((), {"uf": "MT", "grupo": "PI", "bioma": "Cerrado"}),

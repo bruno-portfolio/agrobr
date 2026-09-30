@@ -35,7 +35,7 @@ def psd_404(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     "consulta",
     [
         lambda: usda.psd("soja", country="BR", market_year=2024, return_meta=True),
-        lambda: datasets.oferta_demanda_global("soja", market_year=2024, return_meta=True),
+        lambda: datasets.oferta_demanda_global("soja", ano_comercial=2024, return_meta=True),
     ],
     ids=["fonte", "dataset"],
 )

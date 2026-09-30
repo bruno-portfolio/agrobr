@@ -23,16 +23,16 @@ async def test_comercio_internacional_casos_1(captures):
             replay_http()
             frame, meta = await datasets.comercio_internacional(
                 "1201",
-                reporter="BR",
-                partner="CN",
+                declarante="BR",
+                parceiro="CN",
                 periodo=2023,
-                require_complete=True,
+                exigir_completo=True,
                 return_meta=True,
             )
             assert len(frame) == 1 and len(frame.columns) == 27
             assert frame.iloc[0]["peso_liquido_kg"] == 74471954170.0
             assert meta.dataset == "comercio_internacional"
-            assert meta.schema_version == meta.contract_version == "2.1"
+            assert meta.schema_version == meta.contract_version == "3.0"
             assert meta.selected_source == "comtrade_guest"
             assert meta.attempted_sources == ["comtrade_guest"]
             assert meta.source_details["coverage"]["state"] == "complete"
@@ -50,7 +50,7 @@ async def test_comercio_internacional_casos_1(captures):
         ):
             replay_http()
             frame, meta = await datasets.comercio_internacional(
-                "1201", partner="999", periodo=2023, return_meta=True
+                "1201", parceiro="999", periodo=2023, return_meta=True
             )
             assert frame.empty and len(frame.columns) == 27
             assert str(frame["mes"].dtype) == "Int64"
@@ -75,7 +75,7 @@ async def test_comercio_internacional_casos_2(captures):
             async with deterministic("2023-06-15"):
                 try:
                     frame, meta = await datasets.comercio_internacional(
-                        "1201", partner="CN", return_meta=True
+                        "1201", parceiro="CN", return_meta=True
                     )
                 except Exception as erro:
                     raise AssertionError(f"snapshot não virou o período: {erro!r}") from erro
@@ -94,7 +94,7 @@ async def test_comercio_internacional_casos_2(captures):
             replay_http()
             async with deterministic("2022-01-01"):
                 frame, meta = await datasets.comercio_internacional(
-                    "1201", partner="CN", periodo=2023, return_meta=True
+                    "1201", parceiro="CN", periodo=2023, return_meta=True
                 )
             assert frame["periodo"].tolist() == ["2023"]
             assert meta.source_details["query"]["periods"] == ["2023"]

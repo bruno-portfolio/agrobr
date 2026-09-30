@@ -45,6 +45,7 @@
     "integer_dtype": "Int64",
     "float_dtype": "float64",
     "string_dtype": "string[python]",
+    "string_storage_reason": "Memory guard counts pooled Python string objects once",
     "codes": "Literal ASCII codes; leading zeros and special codes are preserved",
     "urf": "Unidade da Receita Federal; no physical port is inferred",
     "missing_measures": "Missing contributions propagate to the corresponding aggregate"

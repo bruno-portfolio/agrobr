@@ -62,7 +62,7 @@ async def test_monthly_and_detail_preserve_flow_measures(monkeypatch, fluxo):
     assert detail["cod_urf"].tolist() == ["0817800", "0817800", "0917502"]
     assert detail["cod_via"].tolist() == ["04", "04", "07"]
     assert "cod_porto" not in detail
-    assert str(detail["kg_liquido"].dtype) == "Int64"
+    assert str(detail["kg_liquido"].dtype) == "float64"
     assert str(detail["valor_fob_usd"].dtype) == "float64"
     if fluxo == "importacao":
         assert monthly["valor_frete_usd"].tolist() == [10.0, 11.0, 12.0]

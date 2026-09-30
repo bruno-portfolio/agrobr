@@ -14,9 +14,10 @@ async def exportacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 ### `importacao`
@@ -29,9 +30,10 @@ async def importacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parameters (both):**
@@ -39,7 +41,7 @@ async def importacao(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `produto` | `str` | Alias from the table below or an NCM prefix of 2 to 8 digits, without dots (e.g. `"1507"`, `"22071010"`) |
-| `ano` | `int \| None` | Reference year. Default: previous year |
+| `ano` | `int \| None` | Reference year (1997 through the current year in Brasília). Default: previous year |
 | `uf` | `str \| None` | Filter by state |
 | `agregacao` | `str` | `"mensal"` (default) or `"detalhado"` |
 | `as_polars` | `bool` | If True, returns polars.DataFrame |
@@ -130,3 +132,9 @@ df = comexstat.importacao("soja", ano=2024)
 - `MetaInfo.source_details["query"]` records `ncm_prefixos` and `ncm_excluidos`
 - Annual CSV files of ~100MB each
 - Data available from 1997 onward
+
+### `dicionario`
+
+`await comexstat.dicionario(tabela, *, as_polars=False, return_meta=False)` reads an official lookup table. `tabela` accepts `unidades`, `paises`, `vias`, or `urfs`. Literal codes retain leading zeros; rows preserve source order and duplicates. The same default memory and row limits used by the source apply. Invalid tables fail before download.
+
+`kg_liquido`, monetary values and `volume_ton` use `float64`; years, months and statistical quantities use `Int64`. Source and dictionary text deliberately retain `string[python]`: the memory guard counts pooled Python strings. This exception applies to populated and empty results. The `exportacao` and `importacao` datasets convert final selected text columns to the installed pandas default. Output flags are keyword-only.

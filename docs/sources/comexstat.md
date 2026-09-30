@@ -74,3 +74,5 @@ print(meta.source)  # "comexstat"
 - Bulk CSV: `https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm`
 - Atualizacao: semanal/mensal
 - Historico: 1997+
+
+`kg_liquido`, valores monetários e `volume_ton` usam `float64`; anos, meses e quantidades estatísticas usam `Int64`. O texto da fonte e dos dicionários mantém `string[python]`: o guarda de memória conta os objetos Python do pool de textos. Essa exceção vale no cheio e no vazio. Os datasets `exportacao` e `importacao` convertem o texto do recorte final para o padrão do pandas instalado. As flags de saída são somente por nome.

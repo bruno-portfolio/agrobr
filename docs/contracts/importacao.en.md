@@ -87,3 +87,5 @@ from agrobr.contracts import get_contract
 contract = get_contract("importacao")
 print(contract.to_json())
 ```
+
+Output flags are keyword-only. `kg_liquido` and monetary values use `float64`; text uses the installed pandas default in populated and empty outputs.

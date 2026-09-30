@@ -232,7 +232,7 @@ def parse_entregas_pdf(
             reason=f"Nenhum registro válido extraído de {len(tables)} tabelas",
         )
 
-    df = pd.DataFrame(all_records)
+    df = pd.DataFrame(all_records).astype({"ano": "Int64", "mes": "Int64", "volume_ton": "float64"})
 
     df = df.sort_values(["mes", "uf"]).reset_index(drop=True)
 

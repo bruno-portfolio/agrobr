@@ -20,7 +20,7 @@ Dados de producao, oferta e distribuicao por commodity e pais.
 
 ```python
 async def psd(
-    commodity: str,
+    produto: str,
     *,
     country: str = "BR",
     market_year: int | None = None,
@@ -29,14 +29,14 @@ async def psd(
     api_key: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parametros:**
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `commodity` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` ou `commodityCode` do catálogo oficial do PSD |
+| `produto` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` ou `commodityCode` do catálogo oficial do PSD |
 | `country` | `str` | Pais: `"BR"`, `"US"`, `"world"` (agregado), `"all"` (todos) ou `countryCode` do catálogo do PSD (não é ISO: `"CH"` é a China, `"E4"` a UE). Default: `"BR"` |
 | `market_year` | `int \| None` | Ano de comercialização. `None` usa o ano-calendário corrente e, se o PSD ainda não publicou nada dele (de janeiro até o WASDE de maio), o ano anterior; o ano usado vai em `source_details["market_year"]` |
 | `attributes` | `list[str] \| None` | Filtrar atributos pelo nome oficial (ex: `["Production", "Exports"]`) ou pelo rótulo do agrobr (`"producao"`, `"consumo_domestico"`...) |
@@ -82,3 +82,5 @@ df = usda.psd("soja")
 - Fonte: [USDA FAS](https://apps.fas.usda.gov/psdonline/) — licenca livre
 - Dados globais de ~180 paises
 - Atualizado mensalmente (WASDE report)
+
+`produto` aceita nomes normalizados, inclusive caixa e acentos. `market_year` deve ser inteiro de 1960 até o ano corrente em Brasília. Países, atributos, tipos de ano e flags inválidos levantam `InvalidParameterError` antes da rede. As colunas da fonte conservam os nomes técnicos. Colunas inteiras usam `Int64` anulável, `value` usa `float64` e texto usa o padrão do pandas instalado, inclusive no vazio.

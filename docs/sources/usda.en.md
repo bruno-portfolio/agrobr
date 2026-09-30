@@ -145,3 +145,5 @@ print(meta.raw_content_hash, meta.raw_content_size)  # SHA-256 and size of the r
 - Format: JSON (REST), camelCase with IDs only
 - Update: monthly (WASDE); each series keeps the month of its own last update
 - History: 1960+
+
+`produto` accepts normalized crop names, including case and accents. `market_year` must be an integer from 1960 through the current year in Brasília. Invalid countries, attributes, year types and boolean flags raise `InvalidParameterError` before network access. Source columns retain their technical names. Integer columns use nullable `Int64`, `value` uses `float64`, and text uses the installed pandas default, including empty results.

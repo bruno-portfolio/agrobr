@@ -1,6 +1,6 @@
 {
   "name": "antt_pedagio.pracas",
-  "schema_version": "1.0.1",
+  "schema_version": "2.0",
   "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
@@ -23,11 +23,13 @@
     "praca_de_pedagio": "str",
     "rodovia": "str",
     "uf": "str",
-    "km_m": "str",
+    "km_m": "float",
     "municipio": "str",
     "lat": "float",
     "lon": "float",
-    "situacao": "str"
+    "situacao": "str",
+    "ano_do_pnv_snv": "int",
+    "data_da_inativacao": "date"
   },
   "nullable": {
     "concessionaria": false,
@@ -38,7 +40,9 @@
     "municipio": true,
     "lat": true,
     "lon": true,
-    "situacao": true
+    "situacao": true,
+    "ano_do_pnv_snv": true,
+    "data_da_inativacao": true
   },
   "columns": [
     {
@@ -87,12 +91,12 @@
     },
     {
       "name": "km_m",
-      "type": "str",
+      "type": "float",
       "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "",
+      "description": "Quilômetro da praça na rodovia, em km",
       "min_value": null,
       "max_value": null
     },
@@ -137,6 +141,28 @@
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ano_do_pnv_snv",
+      "type": "int",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Ano da edição do PNV/SNV da localização",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_da_inativacao",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Data da inativação da praça; vazio vira nulo",
       "min_value": null,
       "max_value": null
     }

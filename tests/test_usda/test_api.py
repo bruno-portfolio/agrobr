@@ -120,20 +120,18 @@ async def test_todos_os_paises_pela_api(gateway):
     assert set(df["commodity"]) == {"soja"}
 
 
-async def test_ano_sem_dado_devolve_frame_vazio(gateway):
-    gateway.servir("soja_BR_1950.json")
-    with sem_excecao():
-        df, meta = await usda.psd("soja", market_year=1950, return_meta=True)
-    assert df.empty and df.columns.tolist() == parser.COLUNAS
-    assert (meta.raw_content_hash, meta.raw_content_size) == (None, 0)
+async def test_ano_anterior_ao_historico_recusado_antes_da_rede(gateway):
+    with levanta_exatamente(InvalidParameterError):
+        await usda.psd("soja", market_year=1950, return_meta=True)
+    assert gateway.pedidos == []
 
 
 @pytest.mark.parametrize(
     "argumentos",
     [
-        {"commodity": "9999999"},
-        {"commodity": "soja", "country": "AB"},
-        {"commodity": "soja", "attributes": ["produção"]},
+        {"produto": "9999999"},
+        {"produto": "soja", "country": "AB"},
+        {"produto": "soja", "attributes": ["produção"]},
     ],
 )
 async def test_parametro_invalido_para_antes_da_rede(gateway, argumentos):

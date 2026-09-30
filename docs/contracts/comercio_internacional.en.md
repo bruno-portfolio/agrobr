@@ -1,6 +1,6 @@
 # Contract: comercio_internacional
 
-**Version 2.1**, shared with `comtrade.comercio()` and the `comercio_bilateral` registry entry. Implementation: `agrobr.contracts.comtrade.COMERCIO_BILATERAL_V2`. V1 remains historical in `contracts.datasets`.
+**Version 3.0**, with Portuguese dataset columns and parameters. Source `comtrade.comercio()` and the `comercio_bilateral` registry keep version 2.1 and the source names. Implementation: `agrobr.contracts.comtrade.COMERCIO_INTERNACIONAL_V3`.
 
 ## Schema
 
@@ -11,16 +11,16 @@ All **27 columns** are stable, including empty output.
 | `periodo` | `str` | No | — | — |
 | `ano` | `Int64` | No | — | >= 1, <= 9999 |
 | `mes` | `Int64` | Yes | — | >= 1, <= 12 |
-| `reporter_code` | `Int64` | No | — | >= 1 |
-| `reporter_iso` | `str` | Yes | — | — |
-| `reporter` | `str` | Yes | — | — |
-| `partner_code` | `Int64` | No | — | >= 0 |
-| `partner_iso` | `str` | Yes | — | — |
-| `partner` | `str` | Yes | — | — |
-| `fluxo_code` | `str` | No | — | — |
+| `codigo_declarante` | `Int64` | No | — | >= 1 |
+| `iso_declarante` | `str` | Yes | — | — |
+| `declarante` | `str` | Yes | — | — |
+| `codigo_parceiro` | `Int64` | No | — | >= 0 |
+| `iso_parceiro` | `str` | Yes | — | — |
+| `parceiro` | `str` | Yes | — | — |
+| `codigo_fluxo` | `str` | No | — | — |
 | `fluxo` | `str` | Yes | — | — |
-| `hs_code` | `str` | No | — | — |
-| `produto_desc` | `str` | Yes | — | — |
+| `codigo_hs` | `str` | No | — | — |
+| `descricao_produto` | `str` | Yes | — | — |
 | `nivel_hs` | `Int64` | No | — | >= 2, <= 6 |
 | `peso_liquido_kg` | `float64` | Yes | kg | >= 0 |
 | `peso_bruto_kg` | `float64` | Yes | kg | >= 0 |
@@ -36,7 +36,7 @@ All **27 columns** are stable, including empty output.
 | `peso_bruto_estimado` | `boolean` | Yes | — | — |
 | `quantidade_estimada` | `boolean` | Yes | — | — |
 
-**Primary key:** `periodo, reporter_code, partner_code, hs_code, fluxo_code, classificacao`.
+**Primary key:** `periodo, codigo_declarante, codigo_parceiro, codigo_hs, codigo_fluxo, classificacao`.
 
 Period is annual YYYY or monthly YYYYMM, coherent with year/month. HS level equals its 2/4/6 ASCII digit length, preserving leading zeros. Flow is X/M; classification retains the reported Hn revision. ISO labels and names are optional descriptions and are not replaced by fabricated codes. Measures are finite and missing values remain null.
 
@@ -44,9 +44,9 @@ The 3 estimation flags (2.1) come from the UN (`isNetWgtEstimated`, `isGrossWgtE
 
 ## Selection and provenance
 
-`partner=None/world/mundo/"0"` selects the explicit World aggregate. `partner="all"/"todos"` preserves all published partners. Do not add aggregate rows to their components. Product accepts agricultural aliases or textual HS, including comma-separated codes.
+`parceiro=None/world/mundo/"0"` selects the explicit World aggregate. `parceiro="all"/"todos"` preserves all published partners. Do not add aggregate rows to their components. Product accepts agricultural aliases or textual HS, including comma-separated codes.
 
-`require_complete=True` requires independent count and disjoint-union evidence. False permits partial output with a warning; HTTP, layout and identity failures interrupt collection. Complete describes the requested slice, without promising final publication for the reporter.
+`exigir_completo=True` requires independent count and disjoint-union evidence. False permits partial output with a warning; HTTP, layout and identity failures interrupt collection. Complete describes the requested slice, without promising final publication for the declarante.
 
 The dataset preserves actual channel, query, resources, hashes, UTC acquisition, coverage and warnings. The top hash and size identify a resource manifest, not a single response body. Deterministic snapshot only supplies an omitted year and does not freeze revisions. Polars conversion follows validation.
 
@@ -54,8 +54,8 @@ The dataset preserves actual channel, query, resources, hashes, UTC acquisition,
 from agrobr import datasets
 
 df, meta = await datasets.comercio_internacional(
-    "1201,1005,0901,1701,2304", partner="all", periodo=2023,
-    require_complete=True, return_meta=True,
+    "1201,1005,0901,1701,2304", parceiro="all", periodo=2023,
+    exigir_completo=True, return_meta=True,
 )
 ```
 
@@ -75,3 +75,5 @@ The outer 1:1 join compares exports and reverse imports. Incompatible HS revisio
 | Geography | Numeric country codes | Destination/origin country and Brazilian state |
 
 The internal Comtrade license category is `zona_cinza`; see [Licenses](../licenses.md#un-comtrade) and [migration](../guides/migracao-2.md).
+
+`declarante`, `parceiro`, `frequencia`, and `exigir_completo` are dataset parameters. The source retains `reporter`, `partner`, `freq`, and `require_complete`. Requested years must be between 1962 and the current year; annual, monthly, list and range selections are checked before network access. Text uses the installed pandas default in both populated and empty results.

@@ -518,11 +518,11 @@ def test_comexstat_golden_parsing(_name: str, path: Path):
                 )
                 expected = pd.DataFrame.from_records(selected).rename(columns=aliases)
                 for name in names:
-                    if name in {"ano", "mes", "qtd_estatistica", "kg_liquido"}:
+                    if name in {"ano", "mes", "qtd_estatistica"}:
                         expected[name] = pd.Series(
                             [int(v) if v else None for v in expected[name]], dtype="Int64"
                         )
-                    elif name.startswith("valor_"):
+                    elif name.startswith("valor_") or name == "kg_liquido":
                         expected[name] = pd.Series(
                             [float(Decimal(v)) if v else None for v in expected[name]],
                             dtype="float64",
@@ -901,7 +901,7 @@ def test_mapa_psr_golden_parsing(_name: str, path: Path):
         anos = df["ano_apolice"].tolist()
         assert anos == sorted(anos), "Should be sorted by ano_apolice"
     if expected.get("checks", {}).get("ano_apolice_is_int"):
-        assert df["ano_apolice"].dtype in ("int64", "int32"), "ano_apolice should be int"
+        assert df["ano_apolice"].dtype == "Int64", "ano_apolice should be Int64"
     if expected.get("checks", {}).get("area_total_is_float"):
         assert df["area_total"].dtype == "float64", "area_total should be float64"
 

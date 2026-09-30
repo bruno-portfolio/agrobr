@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Literal, overload
+from typing import Any, Literal, cast, overload
 
 import pandas as pd
 
 from agrobr import _log, contracts
 from agrobr.datasets import _comercio_exterior
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 from agrobr.utils.time import utcnow
 
 logger = _log.get_logger(__name__)
@@ -40,7 +41,7 @@ async def _fetch_comexstat(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
 
     df, meta = _unpack_result(result)
     return _comercio_exterior.adapt_comexstat(
-        df, meta, combine_ncms=not models.resolve_ncm(produto).codigo_unico
+        cast("pd.DataFrame", df), meta, combine_ncms=not models.resolve_ncm(produto).codigo_unico
     )
 
 
@@ -117,8 +118,9 @@ class ExportacaoDataset(BaseDataset):
         produto: str,
         ano: int | None = None,
         uf: str | None = None,
+        *,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         logger.info("dataset_fetch", dataset="exportacao", produto=produto, ano=ano)
 
         _comercio_exterior.validate_options(return_meta)
@@ -139,10 +141,17 @@ class ExportacaoDataset(BaseDataset):
 
     def _normalize(self, df: pd.DataFrame, produto: str) -> pd.DataFrame:
         if "produto" not in df.columns:
-            df["produto"] = pd.Series(produto, index=df.index, dtype="string[python]")
+            df["produto"] = pd.Series(produto, index=df.index, dtype=pd.Series([""]).dtype)
 
         colunas = [column.name for column in contracts.get_contract("exportacao").columns]
-        return df[[coluna for coluna in colunas if coluna in df.columns]]
+        saida = df[[coluna for coluna in colunas if coluna in df.columns]]
+        return saida.astype(
+            {
+                coluna.name: pd.Series([""]).dtype
+                for coluna in contracts.get_contract("exportacao").columns
+                if coluna.type == contracts.ColumnType.STRING and coluna.name in saida
+            }
+        )
 
 
 _exportacao = ExportacaoDataset()
@@ -160,7 +169,7 @@ async def exportacao(
     *,
     return_meta: Literal[False] = False,
     as_polars: bool = False,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -171,16 +180,30 @@ async def exportacao(
     *,
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def exportacao(
+    produto: str,
+    ano: int | None = None,
+    uf: str | None = None,
+    *,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def exportacao(
     produto: str,
     ano: int | None = None,
     uf: str | None = None,
+    *,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
     return await _exportacao.fetch(  # type: ignore[call-arg]
         produto, ano=ano, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

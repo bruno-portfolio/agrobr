@@ -4,12 +4,11 @@ import importlib
 import time
 from typing import Literal, overload
 
-import pandas as pd
-
 from agrobr import _log, constants
 from agrobr.comexstat import client, parser, query, result
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -36,7 +35,7 @@ async def _fetch_comexstat(
     *,
     as_polars: bool,
     return_meta: bool,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     _output_guards(as_polars=as_polars, return_meta=return_meta)
     started = time.monotonic()
     async with client.open_csv(fluxo=selected.fluxo, ano=selected.ano) as acquired:
@@ -69,15 +68,15 @@ async def exportacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
-    *,
     pais: str | int | None = None,
     via: str | int | None = None,
     urf: str | int | None = None,
     max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
     max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -86,15 +85,32 @@ async def exportacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     return_meta: Literal[True],
     pais: str | int | None = None,
     via: str | int | None = None,
     urf: str | int | None = None,
     max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
     max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def exportacao(
+    produto: str,
+    ano: int | None = None,
+    uf: str | None = None,
+    agregacao: str = "mensal",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
+) -> DataFrameResult: ...
 
 
 async def exportacao(
@@ -102,15 +118,15 @@ async def exportacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-    *,
     pais: str | int | None = None,
     via: str | int | None = None,
     urf: str | int | None = None,
     max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
     max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     query.validate_flags(as_polars=as_polars, return_meta=return_meta)
     selected = query.build_query(
         fluxo="exportacao",
@@ -133,15 +149,15 @@ async def importacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: Literal[False] = False,
-    *,
     pais: str | int | None = None,
     via: str | int | None = None,
     urf: str | int | None = None,
     max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
     max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -150,15 +166,32 @@ async def importacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     return_meta: Literal[True],
     pais: str | int | None = None,
     via: str | int | None = None,
     urf: str | int | None = None,
     max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
     max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def importacao(
+    produto: str,
+    ano: int | None = None,
+    uf: str | None = None,
+    agregacao: str = "mensal",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
+    max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
+) -> DataFrameResult: ...
 
 
 async def importacao(
@@ -166,15 +199,15 @@ async def importacao(
     ano: int | None = None,
     uf: str | None = None,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-    *,
     pais: str | int | None = None,
     via: str | int | None = None,
     urf: str | int | None = None,
     max_linhas: int | None = constants.COMEXSTAT_DEFAULT_MAX_ROWS,
     max_memoria_bytes: int = constants.COMEXSTAT_DEFAULT_MAX_MEMORY_BYTES,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     query.validate_flags(as_polars=as_polars, return_meta=return_meta)
     selected = query.build_query(
         fluxo="importacao",
@@ -194,26 +227,36 @@ async def importacao(
 @overload
 async def dicionario(
     tabela: str,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
 async def dicionario(
     tabela: str,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def dicionario(
+    tabela: str,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def dicionario(
     tabela: str,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     query.validate_flags(as_polars=as_polars, return_meta=return_meta)
     selected = query.dictionary_table(tabela)
     _output_guards(as_polars=as_polars, return_meta=return_meta)

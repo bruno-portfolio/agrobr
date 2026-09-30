@@ -145,3 +145,5 @@ print(meta.raw_content_hash, meta.raw_content_size)  # SHA-256 e tamanho do corp
 - Formato: JSON (REST), em camelCase e só com IDs
 - Atualização: mensal (WASDE); cada série guarda o mês da própria última atualização
 - Histórico: 1960+
+
+`produto` aceita nomes normalizados, inclusive caixa e acentos. `market_year` deve ser inteiro de 1960 até o ano corrente em Brasília. Países, atributos, tipos de ano e flags inválidos levantam `InvalidParameterError` antes da rede. As colunas da fonte conservam os nomes técnicos. Colunas inteiras usam `Int64` anulável, `value` usa `float64` e texto usa o padrão do pandas instalado, inclusive no vazio.

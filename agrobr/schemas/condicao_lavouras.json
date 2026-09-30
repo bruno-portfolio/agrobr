@@ -1,7 +1,7 @@
 {
   "name": "deral.condicao_lavouras",
-  "schema_version": "1.0",
-  "effective_from": "0.13.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "produto",
@@ -18,7 +18,7 @@
   ],
   "dtypes": {
     "produto": "str",
-    "data": "str",
+    "data": "date",
     "condicao": "str",
     "pct": "float",
     "plantio_pct": "float",
@@ -46,12 +46,12 @@
     },
     {
       "name": "data",
-      "type": "str",
+      "type": "date",
       "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "dd/mm/yyyy",
+      "description": "Data de referência publicada na planilha",
       "min_value": null,
       "max_value": null
     },

@@ -209,12 +209,12 @@ class TestMovimentacao:
 
     @pytest.mark.asyncio
     async def test_invalid_tipo_navegacao_raises(self):
-        with pytest.raises(ValueError, match="Tipo de navegação desconhecido"):
+        with pytest.raises(ValueError, match="tipo_navegacao desconhecido"):
             await api.movimentacao(2024, tipo_navegacao="invalido")
 
     @pytest.mark.asyncio
     async def test_invalid_natureza_carga_raises(self):
-        with pytest.raises(ValueError, match="Natureza da carga desconhecida"):
+        with pytest.raises(ValueError, match="natureza_carga desconhecido"):
             await api.movimentacao(2024, natureza_carga="invalido")
 
     @pytest.mark.asyncio

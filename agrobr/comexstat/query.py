@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import dataclasses
 import re
-from datetime import UTC, datetime
 from typing import Any, Literal, cast
 
 from agrobr import constants
 from agrobr.comexstat import models
 from agrobr.exceptions import InvalidParameterError
+from agrobr.utils import time as time_utils
 from agrobr.utils import validation
 
 Fluxo = Literal["exportacao", "importacao"]
@@ -108,7 +108,7 @@ def build_query(
     if fluxo not in ("exportacao", "importacao"):
         raise InvalidParameterError("fluxo deve ser exportacao ou importacao")
     ncm = models.resolve_ncm(produto)
-    current_year = datetime.now(UTC).year
+    current_year = time_utils.hoje().year
     selected_year = current_year - 1 if ano is None else ano
     if not isinstance(selected_year, int) or isinstance(selected_year, bool):
         raise InvalidParameterError("ano deve ser inteiro")

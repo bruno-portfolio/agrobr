@@ -27,7 +27,7 @@
     "cod_via": "str",
     "cod_urf": "str",
     "qtd_estatistica": "int",
-    "kg_liquido": "int",
+    "kg_liquido": "float",
     "valor_fob_usd": "float"
   },
   "nullable": {
@@ -145,7 +145,7 @@
     },
     {
       "name": "kg_liquido",
-      "type": "int",
+      "type": "float",
       "nullable": true,
       "unit": "kg",
       "stable": true,
@@ -178,6 +178,7 @@
     "integer_dtype": "Int64",
     "float_dtype": "float64",
     "string_dtype": "string[python]",
+    "string_storage_reason": "Memory guard counts pooled Python string objects once",
     "codes": "Literal ASCII codes; leading zeros and special codes are preserved",
     "urf": "Unidade da Receita Federal; no physical port is inferred",
     "missing_measures": "Missing contributions propagate to the corresponding aggregate"

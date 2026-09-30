@@ -16,7 +16,7 @@ Port cargo movement — ANTAQ.
 |--------|------|----------|------|-------------|
 | `ano` | INTEGER | No | — | ≥ 2010 |
 | `mes` | INTEGER | No | — | 1-12 |
-| `data_atracacao` | STRING | Yes | — | — |
+| `data_atracacao` | DATETIME | Yes | — | — |
 | `tipo_navegacao` | STRING | Yes | — | — |
 | `tipo_operacao` | STRING | Yes | — | — |
 | `natureza_carga` | STRING | Yes | — | — |
@@ -49,9 +49,7 @@ come out null. Rows without `ano` or `mes` (a carga with no matching atracacao) 
 aggregation. In a 2024 excerpt, 10 cargas become 6 rows.
 
 `qt_carga` has no canonical unit: ANTAQ publishes `QTCarga` without one and its meaning changes with
-the cargo type, so the sum is only meaningful inside a homogeneous group. The contract declares
-FLOAT, but the column comes out as `int64` when every published value is integral - the validator
-accepts any numeric dtype.
+the cargo type. The column uses `float64`, including empty results.
 
 ## Parameters
 
@@ -79,3 +77,5 @@ df = await datasets.movimentacao_portuaria(
 # With metadata
 df, meta = await datasets.movimentacao_portuaria(ano=2024, return_meta=True)
 ```
+
+`data_atracacao` preserves the published date and time as `datetime64[ns]`; a calendar typo becomes `NaT` with a warning in `MetaInfo.validation_warnings`. Non-date text raises `ParseError`. `ano`, `mes`, and `teu` use `Int64`; `peso_bruto_ton` and `qt_carga` use `float64`. Populated and empty results have the same dtypes. `sentido`, `tipo_navegacao`, and `natureza_carga` accept their documented aliases and complete published labels, ignoring case, accents and surrounding whitespace. Unsupported values raise `InvalidParameterError` before downloading the ZIPs.

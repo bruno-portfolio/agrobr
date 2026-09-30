@@ -12,9 +12,20 @@ from agrobr.antaq.models import (
     PARSER_VERSION,
     RENAME_FINAL,
 )
+from agrobr.exceptions import ParseError
+from agrobr.normalize import dates
 from agrobr.normalize.dates import month_to_number
 
 logger = _log.get_logger(__name__)
+
+COLUNAS_TIPADAS = {
+    "ano": "Int64",
+    "mes": "Int64",
+    "data_atracacao": "datetime64[ns]",
+    "peso_bruto_ton": "float64",
+    "qt_carga": "float64",
+    "teu": "Int64",
+}
 
 
 def _read_txt(content: str, usecols: list[str] | None = None) -> pd.DataFrame:
@@ -129,6 +140,22 @@ def join_movimentacao(
         mes_numerico = pd.to_numeric(df["mes"], errors="coerce")
         mes_por_nome = df["mes"].map(month_to_number, na_action="ignore")
         df["mes"] = mes_numerico.fillna(mes_por_nome).astype("Int64")
+
+    if "data_atracacao" in df.columns:
+        texto = df["data_atracacao"].str.strip()
+        presentes = texto.notna() & texto.ne("")
+        formato = r"[0-9]{2}/[0-9]{2}/[0-9]{4}(?: [0-9]{2}:[0-9]{2}:[0-9]{2})?"
+        invalidas = presentes & ~texto.str.fullmatch(formato, na=False)
+        if invalidas.any():
+            raise ParseError(
+                source="antaq",
+                parser_version=PARSER_VERSION,
+                reason="data_atracacao contém texto fora do formato publicado DD/MM/AAAA HH:MM:SS",
+                errors=[("data_atracacao", "DD/MM/AAAA HH:MM:SS", str(int(invalidas.sum())))],
+            )
+        df["data_atracacao"] = texto.mask(texto.str.len().eq(10), texto + " 00:00:00")
+        dates.converter_coluna(df, "data_atracacao", fonte="antaq", formato="%d/%m/%Y %H:%M:%S")
+    df = df.astype({coluna: dtype for coluna, dtype in COLUNAS_TIPADAS.items() if coluna in df})
 
     final_cols = [
         c

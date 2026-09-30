@@ -20,7 +20,7 @@ def inputs():
             "mes": pd.Series([1], dtype="Int64"),
             "ncm": pd.Series(["12019000"], dtype="string[python]"),
             "uf": pd.Series(["MT"], dtype="string[python]"),
-            "kg_liquido": pd.Series([1000], dtype="Int64"),
+            "kg_liquido": pd.Series([1000], dtype="float64"),
             "valor_fob_usd": pd.Series([100.0], dtype="float64"),
             "volume_ton": pd.Series([1.0], dtype="float64"),
         }
@@ -157,7 +157,7 @@ def test_polars_empty_and_null_output_dtypes(inputs):
     assert output["kg_liquido"].to_list() == [None]
     assert output["volume_ton"].to_list() == [None]
     assert output.schema["ncm"] == polars.Utf8
-    assert output.schema["kg_liquido"] == polars.Int64
+    assert output.schema["kg_liquido"] == polars.Float64
     assert meta.source_details["output_dtypes"] == {
         name: str(dtype) for name, dtype in output.schema.items()
     }

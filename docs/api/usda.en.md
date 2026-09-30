@@ -20,7 +20,7 @@ Production, supply and distribution data by commodity and country.
 
 ```python
 async def psd(
-    commodity: str,
+    produto: str,
     *,
     country: str = "BR",
     market_year: int | None = None,
@@ -29,14 +29,14 @@ async def psd(
     api_key: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `commodity` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` or a `commodityCode` from the official PSD catalog |
+| `produto` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` or a `commodityCode` from the official PSD catalog |
 | `country` | `str` | Country: `"BR"`, `"US"`, `"world"` (aggregate), `"all"` (every country) or a `countryCode` from the PSD catalog (not ISO: `"CH"` is China, `"E4"` the EU). Default: `"BR"` |
 | `market_year` | `int \| None` | Market year. `None` uses the current calendar year and, when the PSD has published nothing for it yet (January until the May WASDE), the previous year; the year used goes to `source_details["market_year"]` |
 | `attributes` | `list[str] \| None` | Filter attributes by official name (e.g. `["Production", "Exports"]`) or by agrobr label (`"producao"`, `"consumo_domestico"`...) |
@@ -82,3 +82,5 @@ df = usda.psd("soja")
 - Source: [USDA FAS](https://apps.fas.usda.gov/psdonline/) — `livre` license
 - Global data for ~180 countries
 - Updated monthly (WASDE report)
+
+`produto` accepts normalized crop names, including case and accents. `market_year` must be an integer from 1960 through the current year in Brasília. Invalid countries, attributes, year types and boolean flags raise `InvalidParameterError` before network access. Source columns retain their technical names. Integer columns use nullable `Int64`, `value` uses `float64`, and text uses the installed pandas default, including empty results.

@@ -16,7 +16,7 @@ def _make_df(**overrides):
     row = {
         "ano": 2024,
         "mes": 6,
-        "data_atracacao": "2024-06-15",
+        "data_atracacao": pd.Timestamp("2024-06-15"),
         "tipo_navegacao": "Longo Curso",
         "tipo_operacao": "Embarque",
         "natureza_carga": "Granel Sólido",

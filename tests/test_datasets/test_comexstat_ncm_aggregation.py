@@ -88,8 +88,7 @@ async def test_dataset_empty_preserves_source_extras(monkeypatch, produto, fluxo
     assert empty.empty
     pd.testing.assert_series_equal(full.dtypes, empty.dtypes)
     assert list(full.columns) == list(empty.columns)
-    assert isinstance(full["produto"].dtype, pd.StringDtype)
-    assert full["produto"].dtype.storage == "python"
+    assert full["produto"].dtype == pd.Series([""]).dtype
     assert "ncm" not in empty
     assert "volume_ton" in empty
     assert meta.source_details["coverage"]["source_rows"] == 1

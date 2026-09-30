@@ -1,11 +1,24 @@
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 from typing import Any
 
 import pandas as pd
 
 from agrobr import constants, contracts
+
+COLUNAS_DATASET = {
+    "reporter_code": "codigo_declarante",
+    "reporter_iso": "iso_declarante",
+    "reporter": "declarante",
+    "partner_code": "codigo_parceiro",
+    "partner_iso": "iso_parceiro",
+    "partner": "parceiro",
+    "fluxo_code": "codigo_fluxo",
+    "hs_code": "codigo_hs",
+    "produto_desc": "descricao_produto",
+}
 
 
 class ComtradeContract(contracts.Contract):
@@ -295,5 +308,24 @@ TRADE_MIRROR_V2 = ComtradeContract(
 )
 
 contracts.register_contract("comercio_bilateral", COMERCIO_BILATERAL_V2)
-contracts.register_contract("comercio_internacional", COMERCIO_BILATERAL_V2)
+
+
+class ComercioInternacionalContract(ComtradeContract):
+    def _validate_dimensions(self, df: pd.DataFrame) -> list[str]:
+        source = df.rename(columns={novo: antigo for antigo, novo in COLUNAS_DATASET.items()})
+        return super()._validate_dimensions(source)
+
+
+COMERCIO_INTERNACIONAL_V3 = ComercioInternacionalContract(
+    name="datasets.comercio_internacional",
+    version="3.0",
+    effective_from="2.0.0",
+    primary_key=[COLUNAS_DATASET.get(c, c) for c in COMERCIO_BILATERAL_V2.primary_key],
+    columns=[
+        replace(c, name=COLUNAS_DATASET.get(c.name, c.name)) for c in COMERCIO_BILATERAL_V2.columns
+    ],
+    guarantees=list(COMERCIO_BILATERAL_V2.guarantees),
+)
+
+contracts.register_contract("comercio_internacional", COMERCIO_INTERNACIONAL_V3)
 contracts.register_contract("trade_mirror", TRADE_MIRROR_V2)

@@ -1,6 +1,6 @@
 # API UN Comtrade
 
-Comércio bilateral de mercadorias por HS e espelho entre exportações e importações inversas. Fonte, espelho e dataset usam contrato **2.0**, parser **2**.
+Comércio bilateral de mercadorias por HS e espelho entre exportações e importações inversas. A fonte usa contrato **2.1**, o espelho **2.0** e o dataset **3.0**; o parser é **2**.
 
 ## Consulta bilateral
 
@@ -26,7 +26,7 @@ print(meta.source_details["coverage"])
 | `reporter: str` | `"BR"` | Alias conhecido ou código numérico textual positivo |
 | `partner: str \| None` | `None` | `None`, `world`, `mundo`, `"0"`: agregado World explícito; `all`/`todos`: todos os parceiros publicados |
 | `fluxo: str` | `"X"` | Exportação X ou importação M |
-| `periodo: str \| int \| None` | ano anterior em UTC | Ano/mês, lista homogênea ou intervalo inclusivo |
+| `periodo: str \| int \| None` | ano anterior em Brasília | Ano/mês, lista homogênea ou intervalo inclusivo |
 | `freq: str` | `"A"` | Anual A ou mensal M |
 | `api_key: str \| None` | `None` | Chave textual não vazia; None consulta `AGROBR_COMTRADE_API_KEY` |
 | `require_complete: bool` | `False` | True rejeita cobertura partial/unknown; False preserva registros e emite aviso |
@@ -86,7 +86,7 @@ Sem chave configurada, usa preview público. O transporte autenticado solicita a
 
 ## Colunas e metadados
 
-As 22 colunas anteriores permanecem, com `classificacao` e `classificacao_original` e, no contrato 2.1, as 3 marcas de estimativa da ONU (`peso_liquido_estimado`, `peso_bruto_estimado` e `quantidade_estimada`), total **27**. Códigos, ano/mês e nível usam `Int64`; medidas usam `float64`; flags usam `boolean` anulável. O código de revisão publicado, como H6, é preservado; HS na URL é um alias. ISO e nomes podem ser nulos. Veja o [contrato completo](../contracts/comercio_internacional.md).
+As 22 colunas anteriores permanecem, com `classificacao` e `classificacao_original` e, no contrato 2.1, as 3 marcas de estimativa da ONU (`peso_liquido_estimado`, `peso_bruto_estimado` e `quantidade_estimada`), total **27**. Códigos, ano/mês e nível usam `Int64`; medidas usam `float64`; flags usam `boolean` anulável. O código de revisão publicado, como H6, é preservado; HS na URL é um alias. ISO e nomes podem ser nulos. O [contrato do dataset](../contracts/comercio_internacional.md) descreve as mesmas medidas com nomes de colunas em português; a fonte conserva `reporter_code`, `reporter_iso`, `reporter`, `partner_code`, `partner_iso`, `partner`, `fluxo_code`, `hs_code` e `produto_desc`.
 
 `MetaInfo` informa schema/contrato 2.1 (2.0 no espelho), canal `comtrade_guest` ou `comtrade_authenticated`, aquisição UTC e avisos. `source_details` contém query, recursos, cobertura, fallback e diagnóstico de parsing/layout. Cada recurso tem URL, SHA256 e tamanho. `raw_content_hash` identifica o manifesto canônico JSON UTF-8 de `query` e `resources`; `raw_content_size` mede esse manifesto, e `resource_bytes` soma os corpos. A chave de acesso não integra os metadados.
 
@@ -111,7 +111,7 @@ Os metadados preservam ambas as aquisições em `source_details["legs"]`, e as c
 
 ## Dataset, sync e catálogos
 
-`datasets.comercio_internacional(...)` aceita os mesmos seletores bilaterais, HS textual múltiplo, completude e Polars, preservando o contrato e a proveniência. Em contexto determinístico, snapshot preenche somente o ano omitido; não congela revisões da fonte.
+`datasets.comercio_internacional(...)` usa `declarante`, `parceiro`, `frequencia` e `exigir_completo` para os seletores bilaterais, com HS textual múltiplo, Polars e proveniência preservada. Seu contrato 3.0 tem colunas em português. Em contexto determinístico, snapshot preenche somente o ano omitido; não congela revisões da fonte.
 
 ```python
 from agrobr.sync import comtrade
@@ -120,3 +120,5 @@ df = comtrade.comercio("soja", partner="world", periodo=2023, require_complete=T
 ```
 
 `paises()` lista os aliases ISO do mapa local, sem declarar catálogo mundial dinâmico. `produtos()` devolve uma cópia dos aliases agrícolas e seus HS. A categoria interna de licença é `zona_cinza`, com aviso na primeira chamada; veja os [termos verificados](../licenses.md#un-comtrade).
+
+Os anos pedidos devem estar entre 1962 e o ano corrente. Período inválido levanta `InvalidParameterError` antes da rede. A fonte mantém seletores e colunas técnicos; o [contrato do dataset](../contracts/comercio_internacional.md) descreve os nomes em português. Texto usa o padrão do pandas instalado, inclusive no vazio.

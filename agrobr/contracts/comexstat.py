@@ -51,6 +51,7 @@ class ComexstatContract(contracts.Contract):
             integer_dtype="Int64",
             float_dtype="float64",
             string_dtype="string[python]",
+            string_storage_reason="Memory guard counts pooled Python string objects once",
             codes="Literal ASCII codes; leading zeros and special codes are preserved",
             urf="Unidade da Receita Federal; no physical port is inferred",
             missing_measures="Missing contributions propagate to the corresponding aggregate",
@@ -78,28 +79,27 @@ def _volume_errors(frame: pd.DataFrame) -> list[str]:
         if pd.isna(kg):
             if not pd.isna(tons):
                 return ["Missing kg_liquido requires missing volume_ton"]
-        elif pd.isna(tons) or int(kg) / 1000 != tons:
+        elif pd.isna(tons) or kg / 1000 != tons:
             return ["volume_ton must equal kg_liquido divided by 1000"]
     return []
 
 
 def _column(name: str) -> contracts.Column:
-    if name in ("ano", "mes", "qtd_estatistica", "kg_liquido"):
+    if name in ("ano", "mes", "qtd_estatistica"):
         return contracts.Column(
             name=name,
             type=contracts.ColumnType.INTEGER,
-            nullable=name in ("qtd_estatistica", "kg_liquido"),
+            nullable=name == "qtd_estatistica",
             min_value=1997 if name == "ano" else 1 if name == "mes" else 0,
             max_value=9999 if name == "ano" else 12 if name == "mes" else None,
-            unit="kg" if name == "kg_liquido" else None,
         )
-    if name.startswith("valor_") or name == "volume_ton":
+    if name.startswith("valor_") or name in ("volume_ton", "kg_liquido"):
         return contracts.Column(
             name=name,
             type=contracts.ColumnType.FLOAT,
             nullable=True,
             min_value=0,
-            unit="t" if name == "volume_ton" else "USD",
+            unit="kg" if name == "kg_liquido" else "t" if name == "volume_ton" else "USD",
         )
     return contracts.Column(name=name, type=contracts.ColumnType.STRING)
 

@@ -9,7 +9,7 @@ import httpx
 import pandas as pd
 import pytest
 
-from agrobr import comtrade
+from agrobr import comtrade, datasets
 from agrobr.comtrade import api
 from agrobr.exceptions import InvalidParameterError
 
@@ -66,6 +66,24 @@ async def test_polars_preserves_complete_and_empty_schema(partner, return_meta, 
     if return_meta:
         assert result[1].columns == frame.columns
         assert result[1].records_count == frame.height
+
+
+@pytest.mark.parametrize("camada", ["fonte", "dataset"])
+@pytest.mark.parametrize("polars", [False, True])
+async def test_replay_oficial_cheio_e_vazio_tem_os_mesmos_dtypes(replay_http, camada, polars):
+    if polars:
+        pytest.importorskip("polars")
+    replay_http()
+    consulta = comtrade.comercio if camada == "fonte" else datasets.comercio_internacional
+    parametro = "partner" if camada == "fonte" else "parceiro"
+    cheio = await consulta("1201", **{parametro: "CN"}, periodo=2023, as_polars=polars)
+    vazio = await consulta("1201", **{parametro: "999"}, periodo=2023, as_polars=polars)
+    assert cheio["peso_liquido_kg"][0] == 74471954170.0
+    if polars:
+        assert vazio.is_empty()
+        assert cheio.schema == vazio.schema
+    else:
+        pd.testing.assert_frame_equal(cheio.iloc[:0], vazio)
 
 
 async def test_replay_mirror_preserves_two_guest_legs_and_classification(replay_http, captures):

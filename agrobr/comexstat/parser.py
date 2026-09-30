@@ -33,9 +33,9 @@ def _columns(query: ComexQuery) -> tuple[tuple[str, ...], dict[str, str]]:
     types = {
         name: (
             "Int64"
-            if name in ("ano", "mes", "kg_liquido", "qtd_estatistica")
+            if name in ("ano", "mes", "qtd_estatistica")
             else "float64"
-            if name.startswith("valor_") or name == "volume_ton"
+            if name.startswith("valor_") or name in ("volume_ton", "kg_liquido")
             else "string"
         )
         for name in names

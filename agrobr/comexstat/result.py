@@ -17,6 +17,7 @@ from agrobr.comexstat import models, transport_models
 from agrobr.contracts import comexstat as source_contracts
 from agrobr.exceptions import ContractViolationError, ResourceLimitError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 
 def _memory_check(estimated: int, limit: int, stage: str) -> None:
@@ -226,7 +227,7 @@ def _finish(
     max_memoria_bytes: int,
     fetch_ms: int,
     parse_started: float,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     frame = parsed.frame
     resident = int(parsed.details["frame_resident_bytes"])
     estimate = resident * 4 + len(frame) * 64 + 65536
@@ -262,7 +263,7 @@ def _finish(
         parse_ms=int((time.monotonic() - parse_started) * 1000),
         output_dtypes=output_dtypes,
     )
-    output = cast(pd.DataFrame, converted)
+    output: DataFrame = converted
     return (output, meta) if return_meta else output
 
 
@@ -277,7 +278,7 @@ def finish(
     max_memoria_bytes: int,
     fetch_ms: int,
     parse_started: float,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     try:
         return _finish(
             parsed,

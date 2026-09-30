@@ -28,7 +28,7 @@ async def movimentacao(
     sentido: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> DataFrameResult
 ```
 
 **Parametros:**
@@ -88,3 +88,5 @@ df = antaq.movimentacao(2024)
 - Dados: ZIP bulk (TXT com `;`, encoding UTF-8-sig)
 - Historico: 2010+
 - ZIPs anuais (~80MB) — download pode levar alguns segundos
+
+`data_atracacao` preserva a data e a hora publicadas em `datetime64[ns]`; erro de calendário vira `NaT` com aviso em `MetaInfo.validation_warnings`. Texto que não é data levanta `ParseError`. `ano`, `mes` e `teu` usam `Int64`; `peso_bruto_ton` e `qt_carga` usam `float64`. Cheio e vazio têm os mesmos tipos. `sentido`, `tipo_navegacao` e `natureza_carga` aceitam os aliases documentados e os rótulos publicados inteiros, ignorando caixa, acento e espaço nas pontas. Valor não suportado levanta `InvalidParameterError` antes de baixar os ZIPs.

@@ -39,7 +39,7 @@ LAYOUTS = {
     "dicionario_vias": ("cod_via", "via"),
     "dicionario_urfs": ("cod_urf", "urf"),
 }
-INTEGER_COLUMNS = {"ano", "mes", "kg_liquido", "qtd_estatistica"}
+INTEGER_COLUMNS = {"ano", "mes", "qtd_estatistica"}
 VALUES = {
     "ano": 2026,
     "mes": 1,
@@ -61,7 +61,11 @@ VALUES = {
 def dtype(name):
     if name in INTEGER_COLUMNS:
         return "Int64"
-    return "float64" if name.startswith("valor_") or name == "volume_ton" else "string[python]"
+    return (
+        "float64"
+        if name.startswith("valor_") or name in ("volume_ton", "kg_liquido")
+        else "string[python]"
+    )
 
 
 def frame_for(layout):
@@ -117,7 +121,7 @@ def test_comexstat_string_objects_are_not_silently_coerced(layout):
 @pytest.mark.parametrize("kg,tons", [(1000, 999.0), (pd.NA, 1.0), (1000, math.nan), (0, 1.0)])
 def test_comexstat_volume_relation_rejects_inconsistency_and_one_sided_null(layout, kg, tons):
     frame = frame_for(layout)
-    frame["kg_liquido"] = pd.Series([kg], dtype="Int64")
+    frame["kg_liquido"] = pd.Series([float("nan") if pd.isna(kg) else kg], dtype="float64")
     frame["volume_ton"] = pd.Series([tons], dtype="float64")
     valid, errors = contract_for(layout).validate(frame)
     assert not valid and any("volume_ton" in error for error in errors)
@@ -127,21 +131,21 @@ def test_comexstat_volume_relation_rejects_inconsistency_and_one_sided_null(layo
 @pytest.mark.parametrize(
     "kg,tons", [(pd.NA, math.nan), (0, 0.0), (0, -0.0), (2**63 - 1, (2**63 - 1) / 1000)]
 )
-def test_comexstat_volume_relation_preserves_null_zero_and_int64_limit(layout, kg, tons):
+def test_comexstat_volume_relation_preserves_null_zero_and_float64_boundary(layout, kg, tons):
     frame = frame_for(layout)
-    frame["kg_liquido"] = pd.Series([kg], dtype="Int64")
+    frame["kg_liquido"] = pd.Series([float("nan") if pd.isna(kg) else kg], dtype="float64")
     frame["volume_ton"] = pd.Series([tons], dtype="float64")
     assert contract_for(layout).validate(frame) == (True, [])
     assert (
         pd.isna(frame["kg_liquido"].iloc[0])
         if pd.isna(kg)
-        else int(frame["kg_liquido"].iloc[0]) == kg
+        else frame["kg_liquido"].iloc[0] == float(kg)
     )
     if tons == 0:
         assert math.copysign(1, frame["volume_ton"].iloc[0]) == math.copysign(1, tons)
 
 
-@pytest.mark.parametrize("name", ["ano", "mes", "kg_liquido", "qtd_estatistica"])
+@pytest.mark.parametrize("name", ["ano", "mes", "qtd_estatistica"])
 @pytest.mark.parametrize("new_dtype", ["int64", "float64", "object"])
 def test_comexstat_integer_dtypes_are_strict_without_float_coercion(name, new_dtype):
     frame = frame_for("exportacao_detalhado")

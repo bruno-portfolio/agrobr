@@ -90,8 +90,7 @@ def _typed_frame(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
         elif column in _NUMERIC_COLS:
             result[column] = result[column].astype("float64")
         else:
-            result[column] = result[column].astype(object)
-            result.loc[result[column].isna(), column] = pd.NA
+            result[column] = result[column].astype(pd.Series([""]).dtype)
     return result
 
 

@@ -125,7 +125,7 @@ def test_empty_selection_is_fully_validated_and_typed(
         encode(raw_rows), replace(selected_query, agregacao=agregacao, uf="AC")
     )
     assert parsed.frame.shape == (0, columns)
-    assert str(parsed.frame["kg_liquido"].dtype) == "Int64"
+    assert str(parsed.frame["kg_liquido"].dtype) == "float64"
     assert str(parsed.frame["valor_fob_usd"].dtype) == "float64"
     assert parsed.frame["ncm"].dtype.storage == "python"
     assert parsed.details["validated_rows"] == 2

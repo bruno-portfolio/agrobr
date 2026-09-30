@@ -162,3 +162,5 @@ para Carga.txt). O download pode levar alguns segundos. O parser usa
 - Atualizacao: anual (dados consolidados)
 - Historico: 2010+
 - Licenca: `livre` (dados publicos governo federal)
+
+`data_atracacao` preserva a data e a hora publicadas em `datetime64[ns]`; erro de calendário vira `NaT` com aviso em `MetaInfo.validation_warnings`. Texto que não é data levanta `ParseError`. `ano`, `mes` e `teu` usam `Int64`; `peso_bruto_ton` e `qt_carga` usam `float64`. Cheio e vazio têm os mesmos tipos. `sentido`, `tipo_navegacao` e `natureza_carga` aceitam os aliases documentados e os rótulos publicados inteiros, ignorando caixa, acento e espaço nas pontas. Valor não suportado levanta `InvalidParameterError` antes de baixar os ZIPs.

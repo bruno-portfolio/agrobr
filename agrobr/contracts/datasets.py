@@ -949,6 +949,157 @@ MOVIMENTACAO_PORTUARIA_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+MOVIMENTACAO_PORTUARIA_V2 = Contract(
+    name="antaq.movimentacao",
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=["ano", "mes", "porto", "cd_mercadoria", "sentido", "tipo_navegacao"],
+    columns=[
+        Column(
+            name="ano",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=2010,
+        ),
+        Column(
+            name="mes",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1,
+            max_value=12,
+        ),
+        Column(
+            name="data_atracacao",
+            type=ColumnType.DATETIME,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="tipo_navegacao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="tipo_operacao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="natureza_carga",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="sentido",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="porto",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="complexo_portuario",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="terminal",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="regiao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="cd_mercadoria",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="mercadoria",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="grupo_mercadoria",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="origem",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="destino",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="peso_bruto_ton",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            unit="ton",
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="qt_carga",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+        Column(
+            name="teu",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=True,
+            min_value=0,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'ano' is always >= 2010",
+        "'mes' is between 1 and 12",
+        "'uf' is always a valid Brazilian state code when present",
+        "'sentido' is always 'Embarcados' or 'Desembarcados' when present",
+        "'peso_bruto_ton' is always >= 0 when present",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V2)
 register_contract("preco_atacado", PRECO_ATACADO_V1)
@@ -960,7 +1111,7 @@ register_contract("queimadas", FOCOS_QUEIMADAS_V1)
 register_contract("mapbiomas_cobertura", MAPBIOMAS_COBERTURA_V2)
 register_contract("mapbiomas_cobertura_municipal", MAPBIOMAS_COBERTURA_MUNICIPAL_V1)
 register_contract("mapbiomas_transicao", MAPBIOMAS_TRANSICAO_V2)
-register_contract("movimentacao_portuaria", MOVIMENTACAO_PORTUARIA_V1)
+register_contract("movimentacao_portuaria", MOVIMENTACAO_PORTUARIA_V2)
 register_contract("posicoes_abertas", POSICOES_ABERTAS_V1)
 
 
@@ -1175,8 +1326,8 @@ register_contract("mapa_psr_apolices", MAPA_PSR_APOLICES_V1)
 
 ANTT_PEDAGIO_PRACAS_V1 = Contract(
     name="antt_pedagio.pracas",
-    version="1.0.1",
-    effective_from="2.0.0",
+    version="1.0",
+    effective_from="0.12.0",
     primary_key=["concessionaria", "praca_de_pedagio"],
     columns=[
         Column(
@@ -1248,8 +1399,98 @@ ANTT_PEDAGIO_PRACAS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+ANTT_PEDAGIO_PRACAS_V2 = Contract(
+    name="antt_pedagio.pracas",
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=["concessionaria", "praca_de_pedagio"],
+    columns=[
+        Column(
+            name="concessionaria",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="praca_de_pedagio",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="rodovia",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="uf",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="km_m",
+            type=ColumnType.FLOAT,
+            description="Quilômetro da praça na rodovia, em km",
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="municipio",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="lat",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=-35.0,
+            max_value=6.0,
+        ),
+        Column(
+            name="lon",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            min_value=-74.0,
+            max_value=-30.0,
+        ),
+        Column(
+            name="situacao",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="ano_do_pnv_snv",
+            type=ColumnType.INTEGER,
+            nullable=True,
+            stable=False,
+            description="Ano da edição do PNV/SNV da localização",
+        ),
+        Column(
+            name="data_da_inativacao",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Data da inativação da praça; vazio vira nulo",
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'uf' is a valid Brazilian state code when present",
+        "'lat' is within Brazil bounding box when present",
+        "'lon' is within Brazil bounding box when present",
+        "200+ toll plazas registered",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("antt_pedagio_fluxo", ANTT_PEDAGIO_FLUXO_V3)
-register_contract("antt_pedagio_pracas", ANTT_PEDAGIO_PRACAS_V1)
+register_contract("antt_pedagio_pracas", ANTT_PEDAGIO_PRACAS_V2)
 
 
 IMPORTACAO_V1_2 = Contract(
@@ -1458,8 +1699,8 @@ CLIMA_ESTACAO_V1 = Contract(
 
 OFERTA_DEMANDA_GLOBAL_V1 = Contract(
     name="usda.psd",
-    version="1.1",
-    effective_from="2.0.0",
+    version="1.0",
+    effective_from="0.13.0",
     primary_key=["commodity_code", "country_code", "market_year", "attribute"],
     columns=[
         Column(
@@ -1517,27 +1758,98 @@ OFERTA_DEMANDA_GLOBAL_V1 = Contract(
             nullable=True,
             stable=True,
         ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'market_year' is always >= 1960",
+        "Long format: one row per commodity/country/year/attribute",
+        "Contract validates long format only; pivot=True skips validation",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+OFERTA_DEMANDA_GLOBAL_V2 = Contract(
+    name="usda.psd",
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=["codigo_produto", "codigo_pais", "ano_comercial", "atributo"],
+    columns=[
         Column(
-            name="attribute_id",
-            type=ColumnType.INTEGER,
+            name="codigo_produto",
+            type=ColumnType.STRING,
             nullable=False,
             stable=True,
         ),
         Column(
-            name="unit_id",
-            type=ColumnType.INTEGER,
+            name="produto",
+            type=ColumnType.STRING,
             nullable=False,
             stable=True,
         ),
         Column(
-            name="last_update_year",
+            name="codigo_pais",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="pais",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="ano_comercial",
             type=ColumnType.INTEGER,
             nullable=False,
             stable=True,
             min_value=1960,
         ),
         Column(
-            name="last_update_month",
+            name="atributo",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="atributo_br",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="valor",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="unidade",
+            type=ColumnType.STRING,
+            nullable=True,
+            stable=True,
+        ),
+        Column(
+            name="codigo_atributo",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="codigo_unidade",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="ano_atualizacao",
+            type=ColumnType.INTEGER,
+            nullable=False,
+            stable=True,
+            min_value=1960,
+        ),
+        Column(
+            name="mes_atualizacao",
             type=ColumnType.INTEGER,
             nullable=True,
             stable=True,
@@ -1547,13 +1859,13 @@ OFERTA_DEMANDA_GLOBAL_V1 = Contract(
     ],
     guarantees=[
         "Column names never change (additions only)",
-        "'market_year' is always >= 1960",
-        "Long format: one row per commodity/country/year/attribute",
-        "Contract validates long format only; pivot=True skips validation",
-        "'attribute', 'unit' and 'country' are the official names of the PSD catalogs "
+        "'ano_comercial' is always >= 1960",
+        "Long format: one row per produto/pais/year/atributo",
+        "Contract validates long format only; pivotar=True skips validation",
+        "'atributo', 'unidade' and 'pais' are the official names of the PSD catalogs "
         "(countryCode '00' is the world aggregate, 'World')",
-        "'last_update_year'/'last_update_month' are the USDA's last update of the series "
-        "(country x market year), not the queried edition; month '00' of old series is null",
+        "'ano_atualizacao'/'mes_atualizacao' are the USDA's last update of the series "
+        "(pais x market year), not the queried edition; month '00' of old series is null",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
@@ -1564,7 +1876,7 @@ register_contract("pib_agro", PIB_AGRO_V1)
 register_contract("progresso_safra", CONAB_PROGRESSO_V2)
 register_contract("serie_historica_safra", SERIE_HISTORICA_SAFRA_V1)
 register_contract("clima_estacao", CLIMA_ESTACAO_V1)
-register_contract("oferta_demanda_global", OFERTA_DEMANDA_GLOBAL_V1)
+register_contract("oferta_demanda_global", OFERTA_DEMANDA_GLOBAL_V2)
 register_contract("zoneamento_agricola", ZONEAMENTO_AGRICOLA_V2)
 
 CONDICAO_LAVOURAS_V1 = Contract(
@@ -1631,7 +1943,71 @@ CONDICAO_LAVOURAS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-register_contract("condicao_lavouras", CONDICAO_LAVOURAS_V1)
+CONDICAO_LAVOURAS_V2 = Contract(
+    name="deral.condicao_lavouras",
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=["produto", "data", "condicao"],
+    columns=[
+        Column(
+            name="produto",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+        ),
+        Column(
+            name="data",
+            type=ColumnType.DATE,
+            nullable=False,
+            stable=True,
+            description="Data de referência publicada na planilha",
+        ),
+        Column(
+            name="condicao",
+            type=ColumnType.STRING,
+            nullable=False,
+            stable=True,
+            description="boa|media|ruim|plantio|colheita",
+        ),
+        Column(
+            name="pct",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            unit="%",
+            min_value=0,
+            max_value=100,
+        ),
+        Column(
+            name="plantio_pct",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            unit="%",
+            min_value=0,
+            max_value=100,
+        ),
+        Column(
+            name="colheita_pct",
+            type=ColumnType.FLOAT,
+            nullable=True,
+            stable=True,
+            unit="%",
+            min_value=0,
+            max_value=100,
+        ),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'produto' is always a normalized DERAL key (lowercase)",
+        "'condicao' is always one of: boa, media, ruim, plantio, colheita",
+        "'pct', 'plantio_pct', 'colheita_pct' are percentages 0-100 when present",
+        "Data covers only Paraná (PR)",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+register_contract("condicao_lavouras", CONDICAO_LAVOURAS_V2)
 
 EMBARQUES_ANEC_V1 = Contract(
     name="anec.embarques",
@@ -1926,11 +2302,13 @@ __all__ = [
     "ANP_DIESEL_VENDAS_V1",
     "ANTT_PEDAGIO_FLUXO_V3",
     "ANTT_PEDAGIO_PRACAS_V1",
+    "ANTT_PEDAGIO_PRACAS_V2",
     "CLIMA_ESTACAO_V1",
     "CONAB_PROGRESSO_V1",
     "CONAB_PROGRESSO_V1_1",
     "CONAB_PROGRESSO_V2",
     "CONDICAO_LAVOURAS_V1",
+    "CONDICAO_LAVOURAS_V2",
     "CREDITO_RURAL_V2",
     "EXPORTACAO_V1_1",
     "FERTILIZANTE_V2",
@@ -1942,7 +2320,9 @@ __all__ = [
     "MAPBIOMAS_COBERTURA_MUNICIPAL_V1",
     "MAPBIOMAS_TRANSICAO_V2",
     "MOVIMENTACAO_PORTUARIA_V1",
+    "MOVIMENTACAO_PORTUARIA_V2",
     "OFERTA_DEMANDA_GLOBAL_V1",
+    "OFERTA_DEMANDA_GLOBAL_V2",
     "PIB_AGRO_V1",
     "POSICIONAMENTO_FUNDOS_V1",
     "POSICIONAMENTO_FUNDOS_V2",

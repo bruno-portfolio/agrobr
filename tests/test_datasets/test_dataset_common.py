@@ -313,7 +313,7 @@ class TestDatasetTemplate:
                 (),
                 {"produto": "banana"},
                 ValueError,
-                {"match": "não suportado"},
+                {"match": "produto inválido: 'banana'. Valores válidos"},
                 id="condicao_lavouras.TestCondicaoLavourasFetch.test_fetch_invalid_produto",
             ),
             pytest.param(
@@ -701,8 +701,8 @@ class TestDatasetTemplate:
                     ),
                     (
                         "assert",
-                        "meta.contract_version == '1.0'",
-                        lambda _df, meta: meta.contract_version == "1.0",
+                        "meta.contract_version == '2.0'",
+                        lambda _df, meta: meta.contract_version == "2.0",
                     ),
                     (
                         "assert",
@@ -1011,8 +1011,8 @@ class TestDatasetTemplate:
                     ),
                     (
                         "assert",
-                        "meta.contract_version == '1.0'",
-                        lambda _df, meta: meta.contract_version == "1.0",
+                        "meta.contract_version == '2.0'",
+                        lambda _df, meta: meta.contract_version == "2.0",
                     ),
                     (
                         "assert",
@@ -1041,8 +1041,8 @@ class TestDatasetTemplate:
                     ),
                     (
                         "assert",
-                        "meta.contract_version == '1.1'",
-                        lambda _df, meta: meta.contract_version == "1.1",
+                        "meta.contract_version == '2.0'",
+                        lambda _df, meta: meta.contract_version == "2.0",
                     ),
                     (
                         "assert",

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from agrobr.exceptions import InvalidParameterError
+from agrobr.normalize import regions
+
 TIPO_NAVEGACAO = {
     "longo_curso": "Longo Curso",
     "cabotagem": "Cabotagem",
@@ -14,6 +17,8 @@ NATUREZA_CARGA = {
     "carga_geral": "Carga Geral",
     "conteiner": "Carga Conteinerizada",
 }
+
+SENTIDO = {"embarque": "Embarcados", "desembarque": "Desembarcados"}
 
 COLUNAS_ATRACACAO = [
     "IDAtracacao",
@@ -84,28 +89,27 @@ MIN_ANO = 2010
 
 
 def resolve_tipo_navegacao(valor: str | None) -> str | None:
-    if valor is None:
-        return None
-    key = valor.strip().lower().replace(" ", "_")
-    if key in TIPO_NAVEGACAO:
-        return TIPO_NAVEGACAO[key]
-    for v in TIPO_NAVEGACAO.values():
-        if v.lower() == valor.strip().lower():
-            return v
-    raise ValueError(
-        f"Tipo de navegação desconhecido: {valor!r}. Valores válidos: {list(TIPO_NAVEGACAO.keys())}"
-    )
+    return _resolve_enum(valor, TIPO_NAVEGACAO, "tipo_navegacao")
 
 
 def resolve_natureza_carga(valor: str | None) -> str | None:
+    return _resolve_enum(valor, NATUREZA_CARGA, "natureza_carga")
+
+
+def resolve_sentido(valor: str | None) -> str | None:
+    return _resolve_enum(valor, SENTIDO, "sentido")
+
+
+def _resolve_enum(valor: str | None, dominio: dict[str, str], nome: str) -> str | None:
     if valor is None:
         return None
-    key = valor.strip().lower().replace(" ", "_")
-    if key in NATUREZA_CARGA:
-        return NATUREZA_CARGA[key]
-    for v in NATUREZA_CARGA.values():
-        if v.lower() == valor.strip().lower():
-            return v
-    raise ValueError(
-        f"Natureza da carga desconhecida: {valor!r}. Valores válidos: {list(NATUREZA_CARGA.keys())}"
+    if isinstance(valor, str):
+        key = regions.remover_acentos(valor).strip().lower().replace(" ", "_")
+        for alias, rotulo in dominio.items():
+            publicado = regions.remover_acentos(rotulo).lower().replace(" ", "_")
+            if key in (alias, publicado):
+                return rotulo
+    raise InvalidParameterError(
+        f"{nome} desconhecido: {valor!r}. Valores válidos: {list(dominio)} "
+        f"ou os rótulos publicados {list(dominio.values())}"
     )
