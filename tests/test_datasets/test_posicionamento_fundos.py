@@ -1,5 +1,8 @@
+from datetime import date
+
 import pandas as pd
 
+from agrobr.contracts.datasets import POSICIONAMENTO_FUNDOS_COLUNAS_V2
 from agrobr.datasets.posicionamento_fundos import (
     PosicionamentoFundosDataset,
 )
@@ -42,7 +45,7 @@ def _make_df(**overrides):
 class TestPosicionamentoFundosFetch:
     async def test_posicionamento_fundos_fetch_casos_1(self):
         with collect_failures() as check:
-            case = "test_snapshot_define_end"
+            case = "test_snapshot_define_fim"
             with check(case), isolated_dataset_case(case):
                 mock_fn = make_source(_make_df())
                 dataset = PosicionamentoFundosDataset()
@@ -54,8 +57,8 @@ class TestPosicionamentoFundosFetch:
                     await dataset.fetch("soja")
 
                 call_kwargs = mock_fn.call_args[1]
-                assert call_kwargs["end"] == "2020-06-15"
-            case = "test_end_explicito_vence_snapshot"
+                assert call_kwargs["fim"] == date(2020, 6, 15)
+            case = "test_fim_explicito_vence_snapshot"
             with check(case), isolated_dataset_case(case):
                 mock_fn = make_source(_make_df())
                 dataset = PosicionamentoFundosDataset()
@@ -64,7 +67,21 @@ class TestPosicionamentoFundosFetch:
                 from agrobr.datasets.deterministic import deterministic
 
                 async with deterministic("2020-06-15"):
-                    await dataset.fetch("soja", end="2019-12-31")
+                    await dataset.fetch("soja", fim="31/12/2019")
 
                 call_kwargs = mock_fn.call_args[1]
-                assert call_kwargs["end"] == "2019-12-31"
+                assert call_kwargs["fim"] == date(2019, 12, 31)
+
+    async def test_colunas_saem_em_portugues_no_contrato_2_0(self):
+        with isolated_dataset_case("colunas_pt"):
+            mock_fn = make_source(_make_df())
+            dataset = PosicionamentoFundosDataset()
+            dataset.info.sources[0].fetch_fn = mock_fn
+            df, meta = await dataset.fetch("soja", combinado=True, return_meta=True)
+        assert list(df.columns) == [
+            POSICIONAMENTO_FUNDOS_COLUNAS_V2.get(coluna, coluna) for coluna in _make_df().columns
+        ]
+        assert df.loc[0, "fundos_saldo"] == 155780
+        assert df.loc[0, "variacao_posicoes"] == 6324
+        assert meta.contract_version == "2.0"
+        assert mock_fn.call_args[1]["combinado"] is True

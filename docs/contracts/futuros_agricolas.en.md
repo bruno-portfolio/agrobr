@@ -36,7 +36,7 @@ df, meta = await datasets.futuros_agricolas(
 )
 ```
 
-Provide a product and inclusive start/end dates in `YYYY-MM-DD`; `data` does
+Provide a product and inclusive start/end dates in `YYYY-MM-DD` or `DD/MM/YYYY` (or `date`); `data` does
 not apply to this mode. `vencimento` takes the contract month code (e.g.
 `V26`), which returns the future and the options of that month, or an option's
 published code (e.g. `VVJK`); any other format is rejected before the network.
@@ -45,6 +45,8 @@ futures and options are returned and identified by the `tipo` column.
 
 `data` with `tipo="historico"` or `"oi_historico"`, and `inicio` or `fim` with `"ajustes"` or `"posicoes"`, raise
 `InvalidParameterError` before the network: the argument that does not apply to the type used to be silently dropped.
+For every type, `data`, `inicio`, and `fim` outside the accepted formats, and `inicio` after `fim`, also raise
+`InvalidParameterError` before the network.
 
 The source retains a recent window without guaranteeing older dates. Use
 recent dates when running the example. Weekdays with no positions matching

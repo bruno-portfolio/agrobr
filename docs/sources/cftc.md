@@ -11,7 +11,7 @@ cita como "posição dos fundos".
 from agrobr import cftc
 
 # Fundos em soja desde maio
-df = await cftc.cot("soja", start="2026-05-01")
+df = await cftc.cot("soja", inicio="2026-05-01")
 
 # Todos os 12 contratos agro mapeados
 df = await cftc.cot()
@@ -27,6 +27,9 @@ from agrobr import datasets
 
 df = await datasets.posicionamento_fundos("soja")
 ```
+
+No dataset, as colunas saem em português (`fundos_compra`, `fundos_saldo`, `posicoes_abertas`…), e as opções entram
+com `combinado=True`; a tabela está em [posicionamento_fundos](../contracts/posicionamento_fundos.md).
 
 ## Colunas — `cot`
 
@@ -50,7 +53,9 @@ df = await datasets.posicionamento_fundos("soja")
 
 `soja`, `farelo_soja`, `oleo_soja`, `milho`, `trigo` (SRW), `acucar` (nº 11),
 `cafe` (C), `algodao` (nº 2), `boi` (live cattle), `suino` (lean hogs),
-`laranja` (FCOJ-A), `arroz` (rough rice). Aceita nome canônico, alias EN ou código CFTC.
+`laranja` (FCOJ-A), `arroz` (rough rice). Aceita nome canônico, alias EN ou código CFTC; outro valor gera
+`InvalidParameterError` com a lista. `inicio` e `fim` aceitam `date`, `datetime` e texto `AAAA-MM-DD` ou
+`DD/MM/AAAA`.
 
 ## MetaInfo
 

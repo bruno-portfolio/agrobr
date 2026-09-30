@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
 
 from agrobr import _log
 from agrobr.cftc.models import CFTC_CONTRACTS
+from agrobr.contracts.datasets import POSICIONAMENTO_FUNDOS_COLUNAS_V2
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
+from agrobr.utils.validation import parse_data
 
 logger = _log.get_logger(__name__)
 
@@ -20,9 +25,9 @@ async def _fetch_cftc_cot(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, Me
 
     result = await cftc.cot(
         produto,
-        start=kwargs.get("start"),
-        end=kwargs.get("end"),
-        combined=kwargs.get("combined", False),
+        inicio=kwargs.get("inicio"),
+        fim=kwargs.get("fim"),
+        combined=kwargs.get("combinado", False),
         return_meta=True,
     )
     return _unpack_result(result)
@@ -40,7 +45,7 @@ POSICIONAMENTO_FUNDOS_INFO = DatasetInfo(
         ),
     ],
     products=_PRODUCTS,
-    contract_version="1.1",
+    contract_version="2.0",
     update_frequency="weekly",
     typical_latency="D+3",
     source_url="https://publicreporting.cftc.gov",
@@ -58,23 +63,27 @@ class PosicionamentoFundosDataset(BaseDataset):
         self,
         produto: str,
         *,
-        start: str | None = None,
-        end: str | None = None,
-        combined: bool = False,
+        inicio: str | date | datetime | None = None,
+        fim: str | date | datetime | None = None,
+        combinado: bool = False,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         logger.info("dataset_fetch", dataset="posicionamento_fundos", produto=produto)
 
+        inicio_dt, fim_dt = parse_data(inicio, "inicio"), parse_data(fim, "fim")
         snapshot = get_snapshot()
-        if snapshot and end is None:
-            end = snapshot
+        if snapshot and fim_dt is None:
+            fim_dt = parse_data(snapshot[:10], "snapshot")
+        if inicio_dt is not None and fim_dt is not None and inicio_dt > fim_dt:
+            raise InvalidParameterError(f"inicio ({inicio_dt}) posterior a fim ({fim_dt})")
 
         df, source_name, source_meta, attempted = await self._try_sources(
             produto,
-            start=start,
-            end=end,
-            combined=combined,
+            inicio=inicio_dt,
+            fim=fim_dt,
+            combinado=combinado,
         )
+        df = df.rename(columns=POSICIONAMENTO_FUNDOS_COLUNAS_V2)
 
         self._validate_contract(df)
 
@@ -94,11 +103,11 @@ register(_posicionamento_fundos)
 async def posicionamento_fundos(
     produto: str,
     *,
-    start: str | None = None,
-    end: str | None = None,
-    combined: bool = False,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    combinado: bool = False,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -106,28 +115,40 @@ async def posicionamento_fundos(
 async def posicionamento_fundos(
     produto: str,
     *,
-    start: str | None = None,
-    end: str | None = None,
-    combined: bool = False,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    combinado: bool = False,
     return_meta: Literal[True],
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def posicionamento_fundos(
+    produto: str,
+    *,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    combinado: bool = False,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def posicionamento_fundos(
     produto: str,
     *,
-    start: str | None = None,
-    end: str | None = None,
-    combined: bool = False,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    combinado: bool = False,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _posicionamento_fundos.fetch(  # type: ignore[call-arg]
         produto,
-        start=start,
-        end=end,
-        combined=combined,
+        inicio=inicio,
+        fim=fim,
+        combinado=combinado,
         return_meta=return_meta,
         as_polars=as_polars,
     )

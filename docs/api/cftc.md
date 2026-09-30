@@ -10,10 +10,10 @@ Posições semanais por categoria de trader: managed money (fundos), producer/me
 
 ```python
 async def cot(
-    commodity: str | None = None,
+    produto: str | None = None,
     *,
-    start: str | date | None = None,
-    end: str | date | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     combined: bool = False,
     as_polars: bool = False,
     return_meta: bool = False,
@@ -24,9 +24,9 @@ async def cot(
 
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `commodity` | `str \| None` | Nome canônico (`"soja"`), alias EN (`"soybeans"`) ou código CFTC (`"005602"`). `None` retorna os 12 contratos agro mapeados |
-| `start` | `str \| date \| None` | Data inicial (`YYYY-MM-DD`). `None` retorna desde 2006 |
-| `end` | `str \| date \| None` | Data final. `None` até o relatório mais recente |
+| `produto` | `str \| None` | Nome canônico (`"soja"`), alias EN (`"soybeans"`) ou código CFTC (`"005602"`). `None` retorna os 12 contratos agro mapeados |
+| `inicio` | `str \| date \| datetime \| None` | Data inicial (`AAAA-MM-DD` ou `DD/MM/AAAA`). `None` retorna desde 2006 |
+| `fim` | `str \| date \| datetime \| None` | Data final. `None` até o relatório mais recente |
 | `combined` | `bool` | `True` inclui opções (futures+options); default só futuros |
 | `as_polars` | `bool` | Se True, retorna `polars.DataFrame` |
 | `return_meta` | `bool` | Se True, retorna tupla `(DataFrame, MetaInfo)` |
@@ -40,7 +40,11 @@ DataFrame com colunas: `data`, `commodity`, `contrato`, `codigo_cftc`, `open_int
 `change_managed_money_short`, `change_open_interest`.
 
 Posições em número de contratos (int64). Colunas `change_*` são nullable (Int64) —
-nulas na primeira semana de cada contrato na série.
+nulas na primeira semana de cada contrato na série. As colunas seguem os nomes do relatório do CFTC; o dataset
+`posicionamento_fundos` as entrega em português.
+
+`produto` sem contrato mapeado, data fora dos formatos aceitos e `inicio` depois de `fim` geram
+`InvalidParameterError` antes da consulta, com os valores válidos na mensagem.
 
 **Exemplo:**
 
@@ -48,7 +52,7 @@ nulas na primeira semana de cada contrato na série.
 from agrobr import cftc
 
 # Posicionamento dos fundos em soja desde maio
-df = await cftc.cot("soja", start="2026-05-01")
+df = await cftc.cot("soja", inicio="2026-05-01")
 
 # Net dos fundos (long - short), já calculado
 df[["data", "managed_money_net", "open_interest"]]
@@ -83,17 +87,19 @@ df = await cftc.cot("005602")
 from agrobr import datasets
 
 df = await datasets.posicionamento_fundos("milho")
-df = await datasets.posicionamento_fundos("soja", start="2026-01-01")
+df = await datasets.posicionamento_fundos("soja", inicio="2026-01-01", combinado=True)
 ```
 
-Contrato `cftc.cot` v1.1 — primary key `data` + `codigo_cftc`, 22 colunas validadas (as 2 de spread, novas na 1.1, são opcionais).
+Contrato `cftc.cot` v2.0 — primary key `data` + `codigo_cftc`, 22 colunas validadas (as 2 de spread, novas na 1.1, são opcionais).
+No dataset, as colunas estão em português (`fundos_compra`, `fundos_saldo`, `posicoes_abertas`…), e `combined` se chama
+`combinado`; o mapa está em `agrobr.contracts.datasets.POSICIONAMENTO_FUNDOS_COLUNAS_V2`.
 
 ## Versão Síncrona
 
 ```python
 from agrobr.sync import cftc
 
-df = cftc.cot("soja", start="2026-05-01")
+df = cftc.cot("soja", inicio="2026-05-01")
 ```
 
 ## Notas

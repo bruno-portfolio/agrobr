@@ -130,11 +130,6 @@ class TestAjustes:
             yield mock
 
     @pytest.mark.asyncio
-    async def test_filter_contrato_unknown_returns_empty(self, mock_fetch_zip):  # noqa: ARG002
-        df = await api.ajustes(data="13/02/2025", contrato="XYZ")
-        assert len(df) == 0
-
-    @pytest.mark.asyncio
     async def test_empty_meta_zero_records(self, mock_fetch_zip_empty):  # noqa: ARG002
         _, meta = await api.ajustes(data="15/02/2025", return_meta=True)
         assert meta.records_count == 0
@@ -162,11 +157,6 @@ class TestPosicoesAbertas:
             return_value=(csv_bytes, "https://arquivos.b3.com.br/test"),
         ) as mock:
             yield mock
-
-    @pytest.mark.asyncio
-    async def test_filter_contrato_unknown_returns_empty(self, mock_fetch_oi):  # noqa: ARG002
-        df = await api.posicoes_abertas(data="2025-12-19", contrato="XYZ")
-        assert len(df) == 0
 
     @pytest.mark.asyncio
     async def test_return_meta(self, mock_fetch_oi):  # noqa: ARG002

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from agrobr.contracts import (
     BreakingChangePolicy,
     Column,
@@ -566,11 +568,11 @@ CONAB_PROGRESSO_V2 = Contract(
     name=CONAB_PROGRESSO_V1.name,
     version="2.0",
     effective_from="2.0.0",
-    primary_key=list(CONAB_PROGRESSO_V1.primary_key),
+    primary_key=["cultura", "safra", "operacao", "uf", "semana_atual"],
     columns=[
         *(
             Column(
-                name="estado",
+                name="uf",
                 type=ColumnType.STRING,
                 nullable=False,
                 stable=True,
@@ -605,10 +607,10 @@ CONAB_PROGRESSO_V2 = Contract(
         ),
     ],
     guarantees=[
-        "PK unica por combinacao cultura + safra + operacao + estado + semana",
+        "PK unica por combinacao cultura + safra + operacao + uf + semana",
         "Valores percentuais entre 0.0 e 1.0 (fracao, nao %)",
         "Dados semanais publicados pela CONAB",
-        "'estado' é a UF de 2 letras; MEDIA_ESTADOS é a média da própria CONAB dos estados "
+        "'uf' é a UF de 2 letras; MEDIA_ESTADOS é a média da própria CONAB dos estados "
         "monitorados (n_estados, cobertura_area_pct), não o Brasil; BR só quando a CONAB publica "
         "Brasil",
         "n_estados e cobertura_area_pct saem da nota publicada, sem recálculo",
@@ -1872,7 +1874,52 @@ POSICIONAMENTO_FUNDOS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-register_contract("posicionamento_fundos", POSICIONAMENTO_FUNDOS_V1)
+POSICIONAMENTO_FUNDOS_COLUNAS_V2: dict[str, str] = {
+    "commodity": "produto",
+    "open_interest": "posicoes_abertas",
+    "managed_money_long": "fundos_compra",
+    "managed_money_short": "fundos_venda",
+    "managed_money_spread": "fundos_spread",
+    "managed_money_net": "fundos_saldo",
+    "producer_long": "produtores_compra",
+    "producer_short": "produtores_venda",
+    "swap_long": "swap_compra",
+    "swap_short": "swap_venda",
+    "swap_spread": "swap_spread",
+    "other_long": "outros_compra",
+    "other_short": "outros_venda",
+    "other_spread": "outros_spread",
+    "nonreportable_long": "nao_reportaveis_compra",
+    "nonreportable_short": "nao_reportaveis_venda",
+    "change_managed_money_long": "variacao_fundos_compra",
+    "change_managed_money_short": "variacao_fundos_venda",
+    "change_open_interest": "variacao_posicoes",
+}
+
+POSICIONAMENTO_FUNDOS_V2 = Contract(
+    name=POSICIONAMENTO_FUNDOS_V1.name,
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=list(POSICIONAMENTO_FUNDOS_V1.primary_key),
+    columns=[
+        replace(column, name=POSICIONAMENTO_FUNDOS_COLUNAS_V2.get(column.name, column.name))
+        for column in POSICIONAMENTO_FUNDOS_V1.columns
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'data' is the weekly report date (Tuesday)",
+        "'produto' is the canonical agrobr crop name",
+        "'codigo_cftc' is the stable CFTC contract market code",
+        "Position columns are always >= 0; fundos_saldo = fundos_compra - fundos_venda",
+        "posicoes_abertas = produtores + swap + fundos + outros + nao_reportaveis compra, plus the swap, fundos and "
+        "outros spreads (exact in futures; the combined report can leave 1 contract)",
+        "'variacao_*' columns are null only on the first observation of a contract",
+        "One row per data x codigo_cftc",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+register_contract("posicionamento_fundos", POSICIONAMENTO_FUNDOS_V2)
 
 __all__ = [
     "AJUSTE_DIARIO_V1",
@@ -1898,6 +1945,7 @@ __all__ = [
     "OFERTA_DEMANDA_GLOBAL_V1",
     "PIB_AGRO_V1",
     "POSICIONAMENTO_FUNDOS_V1",
+    "POSICIONAMENTO_FUNDOS_V2",
     "POSICOES_ABERTAS_V1",
     "PRECO_ATACADO_V1",
     "RNC_PROTEGIDAS_V1",

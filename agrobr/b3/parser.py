@@ -107,9 +107,11 @@ def _resumo(nome: str, stream: IO[bytes]) -> dict[str, object]:
 def _coerce_ajustes_dtypes(df: pd.DataFrame) -> None:
     if df.empty:
         return
-    df["data"] = pd.to_datetime(df["data"])
+    df["data"] = pd.to_datetime(df["data"]).dt.as_unit("ns")
     for col in _NUMERIC_COLS:
         df[col] = pd.to_numeric(df[col], errors="coerce")
+    for col in ("vencimento_mes", "vencimento_ano"):
+        df[col] = df[col].astype("Int64")
 
 
 def _parse_bvmf_xml(xml_stream: IO[bytes]) -> list[dict[str, object]]:
@@ -227,7 +229,7 @@ def parse_posicoes_abertas(csv_bytes: bytes) -> pd.DataFrame:
     if df_agro.empty:
         return pd.DataFrame(columns=COLUNAS_OI_SAIDA)
 
-    df_agro["data"] = pd.to_datetime(df_agro["RptDt"])
+    df_agro["data"] = pd.to_datetime(df_agro["RptDt"]).dt.as_unit("ns")
     df_agro["ticker"] = df_agro["Asst"]
     df_agro["ticker_completo"] = df_agro["TckrSymb"].str.strip()
     df_agro["vencimento_codigo"] = df_agro["XprtnCd"].fillna("").str.strip()

@@ -58,7 +58,7 @@ async def test_cot_traz_a_consulta_com_os_filtros_e_o_corpo_da_resposta(monkeypa
         lambda **kwargs: real(transport=httpx.MockTransport(responder), **kwargs),
     )
     with sem_excecao():
-        _, meta = await cftc.cot("arroz", start="2026-09-15", end="2026-09-15", return_meta=True)
+        _, meta = await cftc.cot("arroz", inicio="2026-09-15", fim="2026-09-15", return_meta=True)
 
     conferir_corpo(meta, conteudo)
     assert meta.source_url == str(pedidos[0])
@@ -83,6 +83,7 @@ async def test_cot_e_dataset_declaram_o_contrato_com_os_spreads(monkeypatch):
     with sem_excecao():
         frame, meta = await cftc.cot("soja", return_meta=True)
         dataset, meta_dataset = await datasets.posicionamento_fundos("soja", return_meta=True)
-    assert {"swap_spread", "other_spread"} <= set(frame.columns) & set(dataset.columns)
+    assert {"swap_spread", "other_spread"} <= set(frame.columns)
+    assert {"swap_spread", "outros_spread"} <= set(dataset.columns)
     assert meta.schema_version == "1.1"
-    assert meta_dataset.contract_version == "1.1"
+    assert meta_dataset.contract_version == "2.0"

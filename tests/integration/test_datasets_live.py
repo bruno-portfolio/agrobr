@@ -69,7 +69,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "pib_agro": (("agropecuaria",), {"trimestre": "202303"}),
     "posicionamento_fundos": (
         ("soja",),
-        {"start": "2025-01-07", "end": "2025-01-14"},
+        {"inicio": "2025-01-07", "fim": "2025-01-14"},
     ),
     "preco_atacado": (("TOMATE",), {"ceasa": "CEAGESP - SAO PAULO"}),
     "preco_diario": (("soja",), {}),
@@ -77,7 +77,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "progresso_safra": (
         ("milho_2",),
         {
-            "estado": "MT",
+            "uf": "MT",
             "semana_url": (
                 "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/"
                 "progresso-de-safra/acompanhamento-das-lavouras-24-08-a-30-08-26/"
@@ -89,7 +89,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "seguro_rural": (("soja",), {"ano": 2023, "uf": "MT"}),
     "serie_historica_safra": (
         ("soja",),
-        {"inicio": 2023, "fim": 2023, "uf": "MT"},
+        {"ano_inicio": 2023, "ano_fim": 2023, "uf": "MT"},
     ),
     "series_economicas": (
         (),

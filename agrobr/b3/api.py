@@ -5,26 +5,22 @@ import hashlib
 import re
 import time
 import warnings
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Literal, overload
 
 import httpx
 import pandas as pd
 
-from agrobr import _log
+from agrobr import _log, constants, contracts
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils import time as time_utils
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
+from agrobr.utils.validation import parse_data
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
-from .models import (
-    B3_CONTRATOS_AGRO,
-    COLUNAS_OI_SAIDA,
-    COLUNAS_SAIDA,
-    parse_vencimento,
-)
+from .models import B3_CONTRATOS_AGRO, TICKERS_AGRO, parse_vencimento
 
 logger = _log.get_logger(__name__)
 
@@ -33,7 +29,7 @@ _RE_VENCIMENTO_OPCAO = re.compile(r"[FGHJKMNQUVXZ][A-Z]{2}[A-Z0-9]")
 
 
 def _codigo_de_vencimento(vencimento: str) -> str:
-    codigo = vencimento.strip().upper()
+    codigo = vencimento.strip().upper() if isinstance(vencimento, str) else ""
     if _RE_VENCIMENTO_MES.fullmatch(codigo) or _RE_VENCIMENTO_OPCAO.fullmatch(codigo):
         return codigo
     raise InvalidParameterError(
@@ -42,12 +38,35 @@ def _codigo_de_vencimento(vencimento: str) -> str:
     )
 
 
+def _ticker(contrato: str) -> str:
+    chave = contrato.strip() if isinstance(contrato, str) else ""
+    ticker = B3_CONTRATOS_AGRO.get(chave.lower(), chave.upper())
+    if ticker not in TICKERS_AGRO:
+        raise InvalidParameterError(
+            f"contrato {contrato!r} inválido. Valores válidos: {', '.join(sorted(B3_CONTRATOS_AGRO))}"
+            f", ou os tickers {', '.join(sorted(TICKERS_AGRO))}"
+        )
+    return ticker
+
+
+def _periodo(inicio: str | date, fim: str | date) -> tuple[date, date]:
+    inicio_dt, fim_dt = parse_data(inicio, "inicio"), parse_data(fim, "fim")
+    if inicio_dt > fim_dt:
+        raise InvalidParameterError(f"inicio ({inicio_dt}) posterior a fim ({fim_dt})")
+    return inicio_dt, fim_dt
+
+
+def _validar_tipo(tipo: object) -> None:
+    if tipo not in (None, "futuro", "opcao"):
+        raise InvalidParameterError(f"tipo {tipo!r} inválido. Valores válidos: futuro, opcao")
+
+
 @overload
 async def ajustes(
     *,
     data: str | date,
     contrato: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -57,9 +76,19 @@ async def ajustes(
     *,
     data: str | date,
     contrato: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ajustes(
+    *,
+    data: str | date,
+    contrato: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def ajustes(
@@ -68,7 +97,7 @@ async def ajustes(
     contrato: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     warn_once(
         "b3_ajustes",
         "agrobr.b3: dados da B3 (empresa privada). Ajustes diarios publicados "
@@ -78,13 +107,9 @@ async def ajustes(
 
     logger.info("b3_ajustes", data=str(data), contrato=contrato)
 
-    if isinstance(data, date):
-        data_str = data.strftime("%d/%m/%Y")
-    else:
-        try:
-            data_str = datetime.strptime(data, "%Y-%m-%d").strftime("%d/%m/%Y")
-        except ValueError:
-            data_str = data
+    dia = parse_data(data, "data")
+    ticker = _ticker(contrato) if contrato is not None else None
+    data_str = dia.strftime("%d/%m/%Y")
 
     t0 = time.monotonic()
     zip_bytes, source_url = await client.fetch_ajustes_zip(data_str)
@@ -93,13 +118,13 @@ async def ajustes(
     t1 = time.monotonic()
     df = parser.parse_ajustes_zip(zip_bytes)
     identidade = df.attrs.pop("identidade")
-    pregao = pd.Timestamp(datetime.strptime(data_str, "%d/%m/%Y"))
-    df = df[df["data"] == pregao].reset_index(drop=True)
+    df = df[df["data"] == pd.Timestamp(dia)].reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    if contrato is not None:
-        ticker = B3_CONTRATOS_AGRO.get(contrato, contrato.upper())
+    if ticker is not None:
         df = df[df["ticker"] == ticker].reset_index(drop=True)
+    if df.empty:
+        df = contracts.get_contract("ajuste_diario").empty_frame()
 
     meta = build_source_meta(
         "b3",
@@ -124,7 +149,7 @@ async def historico(
     inicio: str | date,
     fim: str | date,
     vencimento: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -136,9 +161,21 @@ async def historico(
     inicio: str | date,
     fim: str | date,
     vencimento: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def historico(
+    *,
+    contrato: str,
+    inicio: str | date,
+    fim: str | date,
+    vencimento: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def historico(
@@ -149,11 +186,17 @@ async def historico(
     vencimento: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    """Ajustes diários de um contrato em cada dia útil do período.
+
+    Os pregões são baixados com no máximo ``AGROBR_HTTP_MAX_CONCURRENT_B3`` dias abertos ao mesmo tempo;
+    cada dia é um ZIP de ~11 MB, e o período inteiro soma um download por dia útil.
+    """
     logger.info("b3_historico", contrato=contrato, inicio=str(inicio), fim=str(fim))
 
-    inicio_dt = datetime.strptime(inicio, "%Y-%m-%d").date() if isinstance(inicio, str) else inicio
-    fim_dt = datetime.strptime(fim, "%Y-%m-%d").date() if isinstance(fim, str) else fim
+    ticker = _ticker(contrato)
+    inicio_dt, fim_dt = _periodo(inicio, fim)
+    codigo_vencimento = _codigo_de_vencimento(vencimento) if vencimento is not None else None
 
     t0 = time.monotonic()
 
@@ -162,10 +205,12 @@ async def historico(
         for i in range((fim_dt - inicio_dt).days + 1)
         if (inicio_dt + timedelta(days=i)).weekday() < 5
     ]
+    vagas = asyncio.Semaphore(constants.HTTPSettings().max_concurrent_b3)
 
     async def _fetch_day(d: date) -> tuple[pd.DataFrame, MetaInfo] | Exception:
         try:
-            return await ajustes(data=d, contrato=contrato, return_meta=True)
+            async with vagas:
+                return await ajustes(data=d, contrato=ticker, return_meta=True)
         except (httpx.HTTPError, SourceUnavailableError, ParseError) as exc:
             logger.warning(
                 "b3_historico_skip",
@@ -201,11 +246,14 @@ async def historico(
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
-    df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=COLUNAS_SAIDA)
+    df = (
+        pd.concat(frames, ignore_index=True)
+        if frames
+        else contracts.get_contract("ajuste_diario").empty_frame()
+    )
 
-    if vencimento is not None:
-        vct_upper = vencimento.strip().upper()
-        df = df[df["vencimento_codigo"] == vct_upper].reset_index(drop=True)
+    if codigo_vencimento is not None:
+        df = df[df["vencimento_codigo"] == codigo_vencimento].reset_index(drop=True)
 
     meta = build_source_meta(
         "b3",
@@ -262,7 +310,7 @@ async def posicoes_abertas(
     data: str | date,
     contrato: str | None = None,
     tipo: Literal["futuro", "opcao"] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -273,9 +321,20 @@ async def posicoes_abertas(
     data: str | date,
     contrato: str | None = None,
     tipo: Literal["futuro", "opcao"] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def posicoes_abertas(
+    *,
+    data: str | date,
+    contrato: str | None = None,
+    tipo: Literal["futuro", "opcao"] | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def posicoes_abertas(
@@ -285,7 +344,7 @@ async def posicoes_abertas(
     tipo: Literal["futuro", "opcao"] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Posições em aberto de futuros/opções agro de uma data.
 
     A B3 mantém alguns dias recentes, sem garantir um histórico completo.
@@ -301,7 +360,9 @@ async def posicoes_abertas(
 
     logger.info("b3_posicoes_abertas", data=str(data), contrato=contrato, tipo=tipo)
 
-    data_str = data.strftime("%Y-%m-%d") if isinstance(data, date) else data
+    data_str = parse_data(data, "data").isoformat()
+    ticker = _ticker(contrato) if contrato is not None else None
+    _validar_tipo(tipo)
 
     t0 = time.monotonic()
     csv_bytes, source_url = await client.fetch_posicoes_abertas(data_str)
@@ -311,16 +372,17 @@ async def posicoes_abertas(
     df = (
         parser.parse_posicoes_abertas(csv_bytes)
         if csv_bytes
-        else pd.DataFrame(columns=COLUNAS_OI_SAIDA)
+        else contracts.get_contract("posicoes_abertas").empty_frame()
     )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    if contrato is not None:
-        ticker = B3_CONTRATOS_AGRO.get(contrato, contrato.upper())
+    if ticker is not None:
         df = df[df["ticker"] == ticker].reset_index(drop=True)
 
     if tipo is not None:
         df = df[df["tipo"] == tipo].reset_index(drop=True)
+    if df.empty:
+        df = contracts.get_contract("posicoes_abertas").empty_frame()
 
     meta = build_source_meta(
         "b3",
@@ -345,7 +407,7 @@ async def oi_historico(
     fim: str | date,
     vencimento: str | None = None,
     tipo: Literal["futuro", "opcao"] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -358,9 +420,22 @@ async def oi_historico(
     fim: str | date,
     vencimento: str | None = None,
     tipo: Literal["futuro", "opcao"] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def oi_historico(
+    *,
+    contrato: str,
+    inicio: str | date,
+    fim: str | date,
+    vencimento: str | None = None,
+    tipo: Literal["futuro", "opcao"] | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def oi_historico(
@@ -372,7 +447,7 @@ async def oi_historico(
     tipo: Literal["futuro", "opcao"] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Itera `posicoes_abertas` pelos dias úteis do período.
 
     A fonte mantém alguns dias recentes, sem garantir todo o período.
@@ -387,8 +462,9 @@ async def oi_historico(
     """
     logger.info("b3_oi_historico", contrato=contrato, inicio=str(inicio), fim=str(fim))
 
-    inicio_dt = client.validate_oi_date(inicio.isoformat() if isinstance(inicio, date) else inicio)
-    fim_dt = client.validate_oi_date(fim.isoformat() if isinstance(fim, date) else fim)
+    ticker = _ticker(contrato)
+    inicio_dt, fim_dt = _periodo(inicio, fim)
+    _validar_tipo(tipo)
     codigo_vencimento = _codigo_de_vencimento(vencimento) if vencimento is not None else None
 
     t0 = time.monotonic()
@@ -400,7 +476,7 @@ async def oi_historico(
     ]
 
     results = [
-        await posicoes_abertas(data=d, contrato=contrato, tipo=tipo, return_meta=True)
+        await posicoes_abertas(data=d, contrato=ticker, tipo=tipo, return_meta=True)
         for d in weekdays
     ]
     frames = [df_dia for df_dia, _ in results if not df_dia.empty]
@@ -412,7 +488,11 @@ async def oi_historico(
 
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
-    df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=COLUNAS_OI_SAIDA)
+    df = (
+        pd.concat(frames, ignore_index=True)
+        if frames
+        else contracts.get_contract("posicoes_abertas").empty_frame()
+    )
 
     if codigo_vencimento is not None and len(codigo_vencimento) == 3:
         ano, mes = parse_vencimento(codigo_vencimento)

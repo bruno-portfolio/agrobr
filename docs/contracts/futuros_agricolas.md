@@ -36,7 +36,7 @@ df, meta = await datasets.futuros_agricolas(
 )
 ```
 
-Informe produto, início e fim inclusivos em `AAAA-MM-DD`; `data` não se aplica
+Informe produto, início e fim inclusivos em `AAAA-MM-DD` ou `DD/MM/AAAA` (ou `date`); `data` não se aplica
 a esse modo. `vencimento` aceita o código do mês do contrato (ex.: `V26`), que
 traz o futuro e as opções daquele mês, ou o código publicado de uma opção
 (ex.: `VVJK`); outro formato é recusado antes da rede. As consultas percorrem
@@ -44,7 +44,9 @@ dias úteis sequencialmente e retornam tanto
 futuros quanto opções, identificados pela coluna `tipo`.
 
 `data` com `tipo="historico"` ou `"oi_historico"`, e `inicio` ou `fim` com `"ajustes"` ou `"posicoes"`, levantam
-`InvalidParameterError` antes da rede: o parâmetro que não se aplica ao tipo era descartado em silêncio.
+`InvalidParameterError` antes da rede: o parâmetro que não se aplica ao tipo era descartado em silêncio. Em todos os
+tipos, `data`, `inicio` e `fim` fora dos formatos aceitos, e `inicio` depois de `fim`, também levantam
+`InvalidParameterError` antes da rede.
 
 A fonte mantém uma janela recente, sem garantir a recuperação de datas antigas.
 Use datas recentes ao executar o exemplo. Dias úteis sem posições para o filtro

@@ -57,3 +57,26 @@ async def test_data_e_janela_juntas_sao_recusadas_antes_da_rede(
     with levanta_exatamente(InvalidParameterError, match=mensagem):
         await datasets.futuros_agricolas(PRODUTO, tipo=tipo, **argumentos)
     assert all(espiao.await_count == 0 for espiao in chamadas.values())
+
+
+@pytest.mark.parametrize(
+    ("tipo", "argumentos", "mensagem"),
+    [
+        ("ajustes", {"data": "21-09-2026"}, "data deve ser date, datetime ou texto"),
+        ("posicoes", {"data": "2026/09/21"}, "data deve ser date, datetime ou texto"),
+        ("historico", {"inicio": "21/09/2026", "fim": "2026.09.25"}, "fim deve ser date"),
+        ("historico", {"inicio": "2026-09-25", "fim": "2026-09-01"}, "inicio deve ser anterior"),
+    ],
+    ids=["ajustes_formato", "posicoes_formato", "historico_formato", "historico_invertido"],
+)
+async def test_datas_de_todo_tipo_sao_validadas_antes_da_rede(
+    monkeypatch, tipo, argumentos, mensagem
+):
+    chamadas = {
+        nome: AsyncMock() for nome in ("ajustes", "posicoes_abertas", "historico", "oi_historico")
+    }
+    for nome, espiao in chamadas.items():
+        monkeypatch.setattr(b3, nome, espiao)
+    with levanta_exatamente(InvalidParameterError, match=mensagem):
+        await datasets.futuros_agricolas(PRODUTO, tipo=tipo, **argumentos)
+    assert all(espiao.await_count == 0 for espiao in chamadas.values())

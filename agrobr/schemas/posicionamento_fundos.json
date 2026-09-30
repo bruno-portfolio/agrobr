@@ -1,7 +1,7 @@
 {
   "name": "cftc.cot",
-  "schema_version": "1.1",
-  "effective_from": "1.1.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "data",
@@ -9,73 +9,73 @@
   ],
   "required_columns": [
     "data",
-    "commodity",
+    "produto",
     "contrato",
     "codigo_cftc",
-    "open_interest",
-    "managed_money_long",
-    "managed_money_short",
-    "managed_money_spread",
-    "managed_money_net",
-    "producer_long",
-    "producer_short",
-    "swap_long",
-    "swap_short",
-    "other_long",
-    "other_short",
-    "nonreportable_long",
-    "nonreportable_short",
-    "change_managed_money_long",
-    "change_managed_money_short",
-    "change_open_interest"
+    "posicoes_abertas",
+    "fundos_compra",
+    "fundos_venda",
+    "fundos_spread",
+    "fundos_saldo",
+    "produtores_compra",
+    "produtores_venda",
+    "swap_compra",
+    "swap_venda",
+    "outros_compra",
+    "outros_venda",
+    "nao_reportaveis_compra",
+    "nao_reportaveis_venda",
+    "variacao_fundos_compra",
+    "variacao_fundos_venda",
+    "variacao_posicoes"
   ],
   "dtypes": {
     "data": "date",
-    "commodity": "str",
+    "produto": "str",
     "contrato": "str",
     "codigo_cftc": "str",
-    "open_interest": "int",
-    "managed_money_long": "int",
-    "managed_money_short": "int",
-    "managed_money_spread": "int",
-    "managed_money_net": "int",
-    "producer_long": "int",
-    "producer_short": "int",
-    "swap_long": "int",
-    "swap_short": "int",
+    "posicoes_abertas": "int",
+    "fundos_compra": "int",
+    "fundos_venda": "int",
+    "fundos_spread": "int",
+    "fundos_saldo": "int",
+    "produtores_compra": "int",
+    "produtores_venda": "int",
+    "swap_compra": "int",
+    "swap_venda": "int",
     "swap_spread": "int",
-    "other_long": "int",
-    "other_short": "int",
-    "other_spread": "int",
-    "nonreportable_long": "int",
-    "nonreportable_short": "int",
-    "change_managed_money_long": "int",
-    "change_managed_money_short": "int",
-    "change_open_interest": "int"
+    "outros_compra": "int",
+    "outros_venda": "int",
+    "outros_spread": "int",
+    "nao_reportaveis_compra": "int",
+    "nao_reportaveis_venda": "int",
+    "variacao_fundos_compra": "int",
+    "variacao_fundos_venda": "int",
+    "variacao_posicoes": "int"
   },
   "nullable": {
     "data": false,
-    "commodity": false,
+    "produto": false,
     "contrato": false,
     "codigo_cftc": false,
-    "open_interest": false,
-    "managed_money_long": false,
-    "managed_money_short": false,
-    "managed_money_spread": false,
-    "managed_money_net": false,
-    "producer_long": false,
-    "producer_short": false,
-    "swap_long": false,
-    "swap_short": false,
+    "posicoes_abertas": false,
+    "fundos_compra": false,
+    "fundos_venda": false,
+    "fundos_spread": false,
+    "fundos_saldo": false,
+    "produtores_compra": false,
+    "produtores_venda": false,
+    "swap_compra": false,
+    "swap_venda": false,
     "swap_spread": false,
-    "other_long": false,
-    "other_short": false,
-    "other_spread": false,
-    "nonreportable_long": false,
-    "nonreportable_short": false,
-    "change_managed_money_long": true,
-    "change_managed_money_short": true,
-    "change_open_interest": true
+    "outros_compra": false,
+    "outros_venda": false,
+    "outros_spread": false,
+    "nao_reportaveis_compra": false,
+    "nao_reportaveis_venda": false,
+    "variacao_fundos_compra": true,
+    "variacao_fundos_venda": true,
+    "variacao_posicoes": true
   },
   "columns": [
     {
@@ -90,7 +90,7 @@
       "max_value": null
     },
     {
-      "name": "commodity",
+      "name": "produto",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -123,7 +123,7 @@
       "max_value": null
     },
     {
-      "name": "open_interest",
+      "name": "posicoes_abertas",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -134,7 +134,7 @@
       "max_value": null
     },
     {
-      "name": "managed_money_long",
+      "name": "fundos_compra",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -145,7 +145,7 @@
       "max_value": null
     },
     {
-      "name": "managed_money_short",
+      "name": "fundos_venda",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -156,7 +156,7 @@
       "max_value": null
     },
     {
-      "name": "managed_money_spread",
+      "name": "fundos_spread",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -167,7 +167,7 @@
       "max_value": null
     },
     {
-      "name": "managed_money_net",
+      "name": "fundos_saldo",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -178,7 +178,7 @@
       "max_value": null
     },
     {
-      "name": "producer_long",
+      "name": "produtores_compra",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -189,7 +189,7 @@
       "max_value": null
     },
     {
-      "name": "producer_short",
+      "name": "produtores_venda",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -200,7 +200,7 @@
       "max_value": null
     },
     {
-      "name": "swap_long",
+      "name": "swap_compra",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -211,7 +211,7 @@
       "max_value": null
     },
     {
-      "name": "swap_short",
+      "name": "swap_venda",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -233,7 +233,7 @@
       "max_value": null
     },
     {
-      "name": "other_long",
+      "name": "outros_compra",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -244,7 +244,7 @@
       "max_value": null
     },
     {
-      "name": "other_short",
+      "name": "outros_venda",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -255,7 +255,7 @@
       "max_value": null
     },
     {
-      "name": "other_spread",
+      "name": "outros_spread",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -266,7 +266,7 @@
       "max_value": null
     },
     {
-      "name": "nonreportable_long",
+      "name": "nao_reportaveis_compra",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -277,7 +277,7 @@
       "max_value": null
     },
     {
-      "name": "nonreportable_short",
+      "name": "nao_reportaveis_venda",
       "type": "int",
       "nullable": false,
       "unit": "contratos",
@@ -288,7 +288,7 @@
       "max_value": null
     },
     {
-      "name": "change_managed_money_long",
+      "name": "variacao_fundos_compra",
       "type": "int",
       "nullable": true,
       "unit": "contratos",
@@ -299,7 +299,7 @@
       "max_value": null
     },
     {
-      "name": "change_managed_money_short",
+      "name": "variacao_fundos_venda",
       "type": "int",
       "nullable": true,
       "unit": "contratos",
@@ -310,7 +310,7 @@
       "max_value": null
     },
     {
-      "name": "change_open_interest",
+      "name": "variacao_posicoes",
       "type": "int",
       "nullable": true,
       "unit": "contratos",
@@ -323,29 +323,29 @@
   ],
   "constraints": {
     "no_duplicates": true,
-    "open_interest_min": 0,
-    "managed_money_long_min": 0,
-    "managed_money_short_min": 0,
-    "managed_money_spread_min": 0,
-    "producer_long_min": 0,
-    "producer_short_min": 0,
-    "swap_long_min": 0,
-    "swap_short_min": 0,
+    "posicoes_abertas_min": 0,
+    "fundos_compra_min": 0,
+    "fundos_venda_min": 0,
+    "fundos_spread_min": 0,
+    "produtores_compra_min": 0,
+    "produtores_venda_min": 0,
+    "swap_compra_min": 0,
+    "swap_venda_min": 0,
     "swap_spread_min": 0,
-    "other_long_min": 0,
-    "other_short_min": 0,
-    "other_spread_min": 0,
-    "nonreportable_long_min": 0,
-    "nonreportable_short_min": 0
+    "outros_compra_min": 0,
+    "outros_venda_min": 0,
+    "outros_spread_min": 0,
+    "nao_reportaveis_compra_min": 0,
+    "nao_reportaveis_venda_min": 0
   },
   "guarantees": [
     "Column names never change (additions only)",
     "'data' is the weekly report date (Tuesday)",
-    "'commodity' is the canonical agrobr crop name",
+    "'produto' is the canonical agrobr crop name",
     "'codigo_cftc' is the stable CFTC contract market code",
-    "Position columns are always >= 0; managed_money_net = long - short",
-    "open_interest = producer + swap + managed_money + other + nonreportable longs, plus the swap, managed_money and other spreads (exact in futures; the combined report can leave 1 contract)",
-    "'change_*' columns are null only on the first observation of a contract",
+    "Position columns are always >= 0; fundos_saldo = fundos_compra - fundos_venda",
+    "posicoes_abertas = produtores + swap + fundos + outros + nao_reportaveis compra, plus the swap, fundos and outros spreads (exact in futures; the combined report can leave 1 contract)",
+    "'variacao_*' columns are null only on the first observation of a contract",
     "One row per data x codigo_cftc"
   ]
 }

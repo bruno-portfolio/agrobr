@@ -8,6 +8,7 @@ import pandas as pd
 from agrobr import cftc, datasets
 from agrobr.cftc import models
 from agrobr.constants import URLS, Fonte
+from agrobr.contracts.datasets import POSICIONAMENTO_FUNDOS_COLUNAS_V2
 from tests.helpers import assert_replay_served, install_replay_http, sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/cftc/cot_20260923"
@@ -37,13 +38,15 @@ async def test_cot_combined_confere_o_relatorio_oficial(monkeypatch):
     }
     visto = install_replay_http(monkeypatch, caso, GOLDEN)
     with sem_excecao():
-        frame = await cftc.cot("soja", start="2026-06-01", end="2026-06-30", combined=True)
+        frame = await cftc.cot("soja", inicio="2026-06-01", fim="2026-06-30", combined=True)
         pelo_dataset = await datasets.posicionamento_fundos(
-            "soja", start="2026-06-01", end="2026-06-30", combined=True
+            "soja", inicio="2026-06-01", fim="2026-06-30", combinado=True
         )
     assert_replay_served(visto)
     assert isinstance(pelo_dataset, pd.DataFrame)
-    pd.testing.assert_frame_equal(pelo_dataset, frame)
+    pd.testing.assert_frame_equal(
+        pelo_dataset, frame.rename(columns=POSICIONAMENTO_FUNDOS_COLUNAS_V2)
+    )
     oficial = json.loads((GOLDEN / "cftc_soja_202606_combined.json").read_text(encoding="utf-8"))
     esperado = [
         {

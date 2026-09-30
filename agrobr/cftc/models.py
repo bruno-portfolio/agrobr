@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize.crops import normalizar_cultura
 
 CFTC_CONTRACTS: dict[str, str] = {
@@ -89,6 +90,7 @@ COLUNAS_SAIDA: list[str] = [
 ]
 
 PARSER_VERSION: int = 1
+SCHEMA_VERSION: str = "1.1"
 
 
 def resolve_contract_codes(commodity: str | None) -> list[str]:
@@ -99,15 +101,15 @@ def resolve_contract_codes(commodity: str | None) -> list[str]:
     if commodity is None:
         return list(CFTC_CONTRACTS)
 
-    raw = commodity.strip()
+    raw = commodity.strip() if isinstance(commodity, str) else ""
     if raw in CFTC_CONTRACTS:
         return [raw]
 
-    canonico = normalizar_cultura(raw)
+    canonico = normalizar_cultura(raw) if raw else ""
     codes = [code for code, canon in CFTC_CONTRACTS.items() if canon == canonico]
     if not codes:
-        disponiveis = sorted(set(CFTC_CONTRACTS.values()))
-        raise ValueError(
-            f"Commodity '{commodity}' sem contrato CFTC mapeado. Opções: {disponiveis}"
+        disponiveis = ", ".join(sorted(set(CFTC_CONTRACTS.values())))
+        raise InvalidParameterError(
+            f"produto {commodity!r} sem contrato CFTC mapeado. Valores válidos: {disponiveis}"
         )
     return codes

@@ -5,12 +5,13 @@ from typing import Any, Literal, overload
 import pandas as pd
 
 from agrobr import _log
-from agrobr.b3 import client
 from agrobr.b3.models import B3_CONTRATOS_AGRO
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
+from agrobr.utils.validation import parse_data
 
 logger = _log.get_logger(__name__)
 
@@ -128,17 +129,18 @@ class FuturosAgricolasDataset(BaseDataset):
     def _validate_params(
         tipo: str,
         produto: str | None,
+        data: str | None,
         inicio: str | None,
         fim: str | None,
     ) -> None:
+        parse_data(data, "data")
+        inicio_dt, fim_dt = parse_data(inicio, "inicio"), parse_data(fim, "fim")
         if tipo in ("historico", "oi_historico"):
             if not produto:
                 raise InvalidParameterError(f"produto é obrigatório para tipo='{tipo}'")
-            if not inicio or not fim:
+            if inicio_dt is None or fim_dt is None:
                 raise InvalidParameterError(f"inicio e fim são obrigatórios para tipo='{tipo}'")
-            if tipo == "oi_historico" and client.validate_oi_date(inicio) > client.validate_oi_date(
-                fim
-            ):
+            if inicio_dt > fim_dt:
                 raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
         if tipo in ("posicoes", "oi_historico") and produto == "soja_fob":
             raise InvalidParameterError(
@@ -155,7 +157,7 @@ class FuturosAgricolasDataset(BaseDataset):
         fim: str | None = None,
         vencimento: str | None = None,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         produto = self._produto_do_dataset(produto)
         if tipo not in ("ajustes", "historico", "posicoes", "oi_historico"):
             raise InvalidParameterError(
@@ -168,7 +170,7 @@ class FuturosAgricolasDataset(BaseDataset):
                 f"tipo='{tipo}' usa data; inicio e fim valem só para 'historico' e 'oi_historico'"
             )
 
-        self._validate_params(tipo, produto, inicio, fim)
+        self._validate_params(tipo, produto, data, inicio, fim)
 
         snapshot = get_snapshot()
         if snapshot and tipo in ("ajustes", "posicoes") and data is None:
@@ -216,7 +218,7 @@ async def futuros_agricolas(
     fim: str | None = None,
     vencimento: str | None = None,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -230,8 +232,22 @@ async def futuros_agricolas(
     fim: str | None = None,
     vencimento: str | None = None,
     return_meta: Literal[True],
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def futuros_agricolas(
+    produto: str | None = None,
+    *,
+    tipo: Literal["ajustes", "historico", "posicoes", "oi_historico"] = "ajustes",
+    data: str | None = None,
+    inicio: str | None = None,
+    fim: str | None = None,
+    vencimento: str | None = None,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def futuros_agricolas(
@@ -244,7 +260,7 @@ async def futuros_agricolas(
     vencimento: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _futuros_agricolas.fetch(  # type: ignore[call-arg]
         produto,
         tipo=tipo,

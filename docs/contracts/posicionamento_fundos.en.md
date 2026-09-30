@@ -13,55 +13,64 @@ via the CFTC Commitments of Traders (COT Disaggregated) report.
 
 ```python
 df = await datasets.posicionamento_fundos("soja")
-df = await datasets.posicionamento_fundos("milho", start="2026-01-01")
-df = await datasets.posicionamento_fundos("acucar", combined=True)  # futures + options
+df = await datasets.posicionamento_fundos("milho", inicio="2026-01-01")
+df = await datasets.posicionamento_fundos("acucar", combinado=True)  # futures + options
 ```
 
-## Contract `cftc.cot` v1.1
+`inicio` and `fim` accept `date`, `datetime`, and `YYYY-MM-DD` or `DD/MM/YYYY` text; any other format, or `inicio`
+after `fim`, raises `InvalidParameterError` before the request.
 
-PK: `[data, codigo_cftc]` — effective from 1.1.0
+## Contract `cftc.cot` v2.0
+
+PK: `[data, codigo_cftc]` — effective from 2.0.0
 
 | Column | Type | Nullable | Unit |
 |--------|------|----------|------|
 | `data` | DATE | N | — |
-| `commodity` | STRING | N | — |
+| `produto` | STRING | N | — |
 | `contrato` | STRING | N | — |
 | `codigo_cftc` | STRING | N | — |
-| `open_interest` | INTEGER | N | contracts |
-| `managed_money_long` | INTEGER | N | contracts |
-| `managed_money_short` | INTEGER | N | contracts |
-| `managed_money_spread` | INTEGER | N | contracts |
-| `managed_money_net` | INTEGER | N | contracts |
-| `producer_long` | INTEGER | N | contracts |
-| `producer_short` | INTEGER | N | contracts |
-| `swap_long` | INTEGER | N | contracts |
-| `swap_short` | INTEGER | N | contracts |
+| `posicoes_abertas` | INTEGER | N | contracts |
+| `fundos_compra` | INTEGER | N | contracts |
+| `fundos_venda` | INTEGER | N | contracts |
+| `fundos_spread` | INTEGER | N | contracts |
+| `fundos_saldo` | INTEGER | N | contracts |
+| `produtores_compra` | INTEGER | N | contracts |
+| `produtores_venda` | INTEGER | N | contracts |
+| `swap_compra` | INTEGER | N | contracts |
+| `swap_venda` | INTEGER | N | contracts |
 | `swap_spread` | INTEGER | N | contracts |
-| `other_long` | INTEGER | N | contracts |
-| `other_short` | INTEGER | N | contracts |
-| `other_spread` | INTEGER | N | contracts |
-| `nonreportable_long` | INTEGER | N | contracts |
-| `nonreportable_short` | INTEGER | N | contracts |
-| `change_managed_money_long` | INTEGER | Y | contracts |
-| `change_managed_money_short` | INTEGER | Y | contracts |
-| `change_open_interest` | INTEGER | Y | contracts |
+| `outros_compra` | INTEGER | N | contracts |
+| `outros_venda` | INTEGER | N | contracts |
+| `outros_spread` | INTEGER | N | contracts |
+| `nao_reportaveis_compra` | INTEGER | N | contracts |
+| `nao_reportaveis_venda` | INTEGER | N | contracts |
+| `variacao_fundos_compra` | INTEGER | Y | contracts |
+| `variacao_fundos_venda` | INTEGER | Y | contracts |
+| `variacao_posicoes` | INTEGER | Y | contracts |
 
-The `change_*` columns are null in the first week of each contract in the
+The `variacao_*` columns are null in the first week of each contract in the
 series (no prior week for the delta).
+
+In 2.0, the columns moved to Portuguese. The `cftc.cot` source keeps the report's names (`open_interest`,
+`managed_money_long`…); the map between the two is `agrobr.contracts.datasets.POSICIONAMENTO_FUNDOS_COLUNAS_V2`, and
+the from/to table is in the migration guide.
 
 ## Semantics
 
-- `managed_money_*` — funds (the "fund positioning" cited by the agri market)
-- `producer_*` — commercial hedgers (producers, processors, trading firms)
-- `swap_*` — swap dealers
-- `managed_money_net` = `managed_money_long` − `managed_money_short` (computed)
-- `open_interest` = longs (`producer_long` + `swap_long` + `managed_money_long` + `other_long` +
-  `nonreportable_long`) + spreads (`swap_spread` + `managed_money_spread` + `other_spread`), and likewise for shorts.
-  The identity is exact for futures; in the combined report (`combined=True`) the CFTC itself leaves up to 1 contract
-  of residual. `swap_spread` and `other_spread` were added in version 1.1 (before, the OI did not close with the categories)
+- `fundos_*` — managed money, the funds (the "fund positioning" cited by the agri market)
+- `produtores_*` — producer/merchant, the commercial hedgers (producers, processors, trading firms)
+- `swap_*` — swap dealers; `outros_*` — other reportables; `nao_reportaveis_*` — nonreportable
+- `compra`/`venda` are the long and short positions; `spread`, the spread positions
+- `fundos_saldo` = `fundos_compra` − `fundos_venda` (computed)
+- `posicoes_abertas` = longs (`produtores_compra` + `swap_compra` + `fundos_compra` + `outros_compra` +
+  `nao_reportaveis_compra`) + spreads (`swap_spread` + `fundos_spread` + `outros_spread`), and likewise for shorts.
+  The identity is exact for futures; in the combined report (`combinado=True`) the CFTC itself leaves up to 1 contract
+  of residual. `swap_spread` and `outros_spread` were added in version 1.1 (before, the OI did not close with the
+  categories)
 - Positions in number of contracts; `data` is the report's reference Tuesday
 
 ## Deterministic Mode
 
 In deterministic mode (`datasets.deterministic()`), the snapshot sets the query
-`end` when not provided — an explicit `end` takes precedence.
+`fim` when not provided — an explicit `fim` takes precedence.

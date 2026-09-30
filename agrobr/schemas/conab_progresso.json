@@ -7,14 +7,14 @@
     "cultura",
     "safra",
     "operacao",
-    "estado",
+    "uf",
     "semana_atual"
   ],
   "required_columns": [
     "cultura",
     "safra",
     "operacao",
-    "estado",
+    "uf",
     "semana_atual",
     "pct_ano_anterior",
     "pct_semana_anterior",
@@ -25,7 +25,7 @@
     "cultura": "str",
     "safra": "str",
     "operacao": "str",
-    "estado": "str",
+    "uf": "str",
     "semana_atual": "str",
     "pct_ano_anterior": "float",
     "pct_semana_anterior": "float",
@@ -39,7 +39,7 @@
     "cultura": false,
     "safra": false,
     "operacao": false,
-    "estado": false,
+    "uf": false,
     "semana_atual": false,
     "pct_ano_anterior": true,
     "pct_semana_anterior": true,
@@ -84,7 +84,7 @@
       "max_value": null
     },
     {
-      "name": "estado",
+      "name": "uf",
       "type": "str",
       "nullable": false,
       "unit": null,
@@ -197,10 +197,10 @@
     "cobertura_area_pct_max": 1.0
   },
   "guarantees": [
-    "PK unica por combinacao cultura + safra + operacao + estado + semana",
+    "PK unica por combinacao cultura + safra + operacao + uf + semana",
     "Valores percentuais entre 0.0 e 1.0 (fracao, nao %)",
     "Dados semanais publicados pela CONAB",
-    "'estado' é a UF de 2 letras; MEDIA_ESTADOS é a média da própria CONAB dos estados monitorados (n_estados, cobertura_area_pct), não o Brasil; BR só quando a CONAB publica Brasil",
+    "'uf' é a UF de 2 letras; MEDIA_ESTADOS é a média da própria CONAB dos estados monitorados (n_estados, cobertura_area_pct), não o Brasil; BR só quando a CONAB publica Brasil",
     "n_estados e cobertura_area_pct saem da nota publicada, sem recálculo",
     "Percentuais com sufixo * preservam o valor e a indicação de revisão pela CONAB"
   ]
