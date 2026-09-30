@@ -46,8 +46,8 @@ class PrecosDieselDataset(base.BaseDataset):
     async def fetch(
         self,
         produto: str = "DIESEL S10",
-        return_meta: bool = False,
         *,
+        return_meta: bool = False,
         uf: str | None = None,
         municipio: str | None = None,
         inicio: str | date | None = None,
@@ -56,7 +56,7 @@ class PrecosDieselDataset(base.BaseDataset):
         nivel: str = "municipio",
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         from agrobr.alt.anp_diesel import api
 
         if kwargs:
@@ -95,7 +95,7 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = "semanal",
     nivel: str = "municipio",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -110,9 +110,24 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = "semanal",
     nivel: str = "municipio",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def precos_diesel(
+    produto: str = "DIESEL S10",
+    *,
+    uf: str | None = None,
+    municipio: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    agregacao: str = "semanal",
+    nivel: str = "municipio",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def precos_diesel(
@@ -126,7 +141,7 @@ async def precos_diesel(
     nivel: str = "municipio",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _precos_diesel.fetch(
         produto,
         uf=uf,

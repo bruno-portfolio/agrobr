@@ -24,7 +24,7 @@ Source: **ANP**. Contract registry key: `precos_diesel`.
 | `n_semanas` | int | No | — |
 | `n_postos_media` | float | Yes | — |
 
-**Primary key:** Not defined by the contract. Monthly aggregation rejects duplicate weekly identities before calculating averages.
+**Primary key:** Not defined by the contract. Selection removes entirely identical weekly rows with a warning; a weekly identity with conflicting values is rejected before averages are calculated.
 
 All stable columns must exist, including nullable columns and empty results. Breaking schema changes require a major contract version.
 
@@ -32,9 +32,11 @@ All stable columns must exist, including nullable columns and empty results. Bre
 
 For a state and for Brazil, `preco_venda` is the published value, weighted by distributors' sales since 2004-10-31; for a municipality, it is the simple mean of the stations. `n_postos` is the sample size, not the weight. `DIESEL` is common S500 B diesel oil. Details and an example on the [source page](../sources/anp_diesel.md).
 
-Weeks use their published start date and retain their end, including across month boundaries. `nivel` distinguishes municipality, state and Brazil. Monthly output is derived by agrobr: the simple arithmetic mean of available weekly means, assigned to the month of each week's start, without outlet or day weights. It retains `n_semanas` and `n_postos_media`; it is not an independent ANP monthly survey. Duplicate weeks in the selection raise `ParseError` in both weekly and monthly output, including overlaps between workbooks. Missing values remain null. Valid periods without a published workbook raise `SourceUnavailableError`; malformed or reversed dates raise `InvalidParameterError`. No artificial contractual primary key is imposed.
+Weeks use their published start date and retain their end, including across month boundaries. `nivel` distinguishes municipality, state and Brazil. Monthly output is derived by agrobr: the simple arithmetic mean of available weekly means, assigned to the month of each week's start, without outlet or day weights. It retains `n_semanas` and `n_postos_media`; it is not an independent ANP monthly survey. Entirely identical selected rows are deduplicated with a `UserWarning` and an entry in `MetaInfo.validation_warnings`, including overlaps between workbooks. Conflicting values for the same week raise `ParseError` in both weekly and monthly output. Missing values remain null. Valid periods without a published workbook raise `SourceUnavailableError`; malformed or reversed dates raise `InvalidParameterError`. No artificial contractual primary key is imposed.
 
 `return_meta=True` returns data and `MetaInfo`, including attempted/selected sources, acquisition time, contract version and source diagnostics. These current publications do not support selecting a historical revision through `deterministic`.
+
+Text columns use the installed pandas version's default dtype (`str` in pandas 3 and `object` in pandas 2), including empty results. Dates use `datetime64[ns]`, monetary values use `float64`, and counts use `Int64`. Pass `as_polars` and `return_meta` by name.
 
 ## Parameters
 

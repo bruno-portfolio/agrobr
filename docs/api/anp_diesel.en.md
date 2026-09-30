@@ -17,9 +17,10 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = "semanal",
     nivel: str = "municipio",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
 ```
 
 **Parameters:**
@@ -68,9 +69,10 @@ async def vendas_diesel(
     uf: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
 ```
 
 **Parameters:**
@@ -131,3 +133,14 @@ Metadata retains requested/final resource URLs, acquisition time, hashes, weekly
 In municipal workbooks, a week starting in late December may appear in the following period's file. Selection includes the available adjacent workbook when needed: the week from 2023-12-31 to 2024-01-06 is in `2024–2025`, matches a December 2023 filter and contributes to that month's mean. A query may download two workbooks even when both date bounds are in the same year.
 
 Monthly output from this API is calculated from the selected weeks; it does not use the separate monthly workbooks also published by ANP. Missing distribution prices in municipal files leave `preco_compra` and `margem` null. Acquisition receipts identify every workbook used.
+
+## Repeated rows and output types
+
+Entirely identical weekly rows are removed from the selection before monthly averaging, with
+a `UserWarning` and an entry in `MetaInfo.validation_warnings`. Conflicting values for the same
+week still raise `ParseError`. Receipts and raw file hashes are preserved.
+
+Price text columns use the installed pandas version's default dtype (`str` in pandas 3 and `object`
+in pandas 2), including empty results. Dates use `datetime64[ns]`, monetary values use `float64`,
+and counts use `Int64`. Pass `as_polars` and `return_meta` by name in both functions.
+The municipal catalog's year limit follows the Brasília civil date.

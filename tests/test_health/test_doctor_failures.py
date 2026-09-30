@@ -103,7 +103,7 @@ def test_cli_doctor_error_returns_nonzero():
     result = MagicMock(overall_status="error", sources=[])
     result.to_dict.return_value = {"overall_status": "error"}
     with patch.object(doctor, "run_diagnostics", new_callable=AsyncMock, return_value=result):
-        output = CliRunner().invoke(app, ["doctor", "--json"])
+        output = CliRunner().invoke(app, ["doctor", "--formato", "json"])
     assert output.exit_code == 1
 
 

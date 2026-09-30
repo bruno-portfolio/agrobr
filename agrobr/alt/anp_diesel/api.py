@@ -16,9 +16,8 @@ from agrobr import _log, constants, contracts
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.normalize.regions import remover_acentos
-from agrobr.utils import tasks
+from agrobr.utils import result, tasks
 from agrobr.utils import time as time_utils
-from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_uf, validate_year_uf
 
 from . import client, parser
@@ -132,8 +131,8 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = AGREGACAO_SEMANAL,
     nivel: str = NIVEL_MUNICIPIO,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -147,10 +146,25 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = AGREGACAO_SEMANAL,
     nivel: str = NIVEL_MUNICIPIO,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def precos_diesel(
+    uf: str | None = None,
+    municipio: str | None = None,
+    produto: str = "DIESEL S10",
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    agregacao: str = AGREGACAO_SEMANAL,
+    nivel: str = NIVEL_MUNICIPIO,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def precos_diesel(
@@ -161,9 +175,10 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = AGREGACAO_SEMANAL,
     nivel: str = NIVEL_MUNICIPIO,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     validate_output_options(as_polars=as_polars, return_meta=return_meta)
     df, meta = await acquire_prices(
         uf=uf,
@@ -177,7 +192,15 @@ async def precos_diesel(
     if agregacao == AGREGACAO_MENSAL:
         contracts.validate_dataset(df, "anp_diesel_precos")
     meta.validation_passed = True
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return result.finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            column for column, dtype in constants.ANP_DIESEL_PRECOS_DTYPES.items() if dtype == "str"
+        ),
+    )
 
 
 async def acquire_prices(
@@ -220,9 +243,9 @@ async def acquire_prices(
     df = parser.agregar_mensal(selected) if agregacao == AGREGACAO_MENSAL else selected
     parse_ms = int((time.monotonic() - t1) * 1000)
     meta = _price_meta(df, weekly, query, resources, frames, fetch_ms, parse_ms)
-    for aviso in dict.fromkeys(
-        aviso for parsed in frames for aviso in parsed.attrs.get("avisos", [])
-    ):
+    avisos = [aviso for parsed in frames for aviso in parsed.attrs.get("avisos", [])]
+    avisos.extend(selected.attrs.get("avisos", []))
+    for aviso in dict.fromkeys(avisos):
         meta.validation_warnings.append(aviso)
         warnings.warn(aviso, UserWarning, stacklevel=2)
     meta.validation_passed = agregacao == AGREGACAO_SEMANAL
@@ -234,8 +257,8 @@ async def vendas_diesel(
     uf: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -245,19 +268,32 @@ async def vendas_diesel(
     uf: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def vendas_diesel(
+    uf: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def vendas_diesel(
     uf: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
+    validate_output_options(as_polars=as_polars, return_meta=return_meta)
     validate_year_uf(uf=uf)
     inicio, fim = _normalize_range(inicio, fim)
 
@@ -276,7 +312,7 @@ async def vendas_diesel(
 
     df = df.reset_index(drop=True)
 
-    meta = build_source_meta(
+    meta = result.build_source_meta(
         "anp_diesel",
         VENDAS_DIESEL_CSV_URL,
         "httpx",
@@ -285,7 +321,7 @@ async def vendas_diesel(
         df,
         parser.PARSER_VERSION,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return result.finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
 def _periodos_municipios(
@@ -342,7 +378,7 @@ def _price_urls(query: dict[str, Any], catalog: dict[str, str] | None = None) ->
 async def _resolve_price_urls(query: dict[str, Any]) -> list[str]:
     if query["nivel"] != NIVEL_MUNICIPIO:
         return _price_urls(query)
-    current_year = time_utils.utcnow().year
+    current_year = time_utils.hoje().year
     for boundary in (query["inicio"], query["fim"]):
         if boundary is not None and not 2022 <= boundary.year <= current_year:
             raise SourceUnavailableError(
@@ -364,12 +400,20 @@ def _select_period(frame: pd.DataFrame, query: dict[str, Any]) -> pd.DataFrame:
         frame = frame[frame["data"] >= pd.Timestamp(query["inicio"])]
     if query["fim"] is not None:
         frame = frame[frame["data"] <= pd.Timestamp(query["fim"])]
+    rows_before = len(frame)
+    frame = frame.drop_duplicates()
     if frame.duplicated(["data", "nivel", "uf", "municipio", "produto"]).any():
         raise ParseError(
             source="anp_diesel",
             parser_version=parser.PARSER_VERSION,
             reason="Semanas duplicadas na selecao: publicacoes sobrepostas ou ambiguas",
         )
+    removed = rows_before - len(frame)
+    if removed:
+        frame.attrs["avisos"] = [
+            *frame.attrs.get("avisos", []),
+            f"ANP: linhas semanais idênticas removidas na seleção: {removed}.",
+        ]
     return frame.reset_index(drop=True)
 
 
@@ -404,7 +448,7 @@ def _price_meta(
         if len(receipts) == 1
         else hashlib.sha256(manifest.encode()).hexdigest()
     )
-    meta = build_source_meta(
+    meta = result.build_source_meta(
         "anp_diesel",
         resources[0].url,
         "httpx",

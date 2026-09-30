@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime
+from datetime import date
 from pathlib import Path
 from unittest.mock import AsyncMock
 
@@ -202,7 +202,7 @@ def test_vendas_sem_diesel_diz_o_motivo():
 
 
 async def test_ano_fora_do_catalogo_recusado_sem_baixar_o_catalogo(monkeypatch):
-    monkeypatch.setattr(api.time_utils, "utcnow", lambda: datetime(2027, 2, 1))
+    monkeypatch.setattr(api.time_utils, "hoje", lambda: date(2027, 2, 1))
     monkeypatch.setattr(
         client, "fetch_precos_catalog", AsyncMock(side_effect=AssertionError("catálogo baixado"))
     )

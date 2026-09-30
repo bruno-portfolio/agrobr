@@ -55,16 +55,20 @@ class TestHealthCommand:
             new_callable=AsyncMock,
             return_value=[self._mock_check_result()],
         ):
-            result = runner.invoke(app, ["health", "--output", "json"])
+            result = runner.invoke(app, ["health", "--formato", "json"])
         assert result.exit_code == 0
         data = json.loads(result.output)
         assert "summary" in data
         assert "checks" in data
 
     def test_health_unknown_source(self):
-        result = runner.invoke(app, ["health", "--source", "nonexistent"])
-        assert result.exit_code == 1
-        assert "Fonte desconhecida" in result.output
+        with patch("agrobr.health.checker.run_all_checks", new_callable=AsyncMock) as checks:
+            result = runner.invoke(app, ["health", "--source", "nonexistent"])
+        assert result.exit_code == 2
+        assert result.stdout == ""
+        assert "cepea" in result.stderr
+        assert "bcb" in result.stderr
+        checks.assert_not_awaited()
 
     def test_health_exit_code_1_on_failure(self):
         from agrobr.constants import Fonte
@@ -102,8 +106,8 @@ class TestHealthCommand:
                 return_value=[self._mock_check_result()],
             ),
         ):
-            cli.main(_version=False, verbose=False)
-            cli.health(source=None, deep=False, output="text")
+            cli.main(context=MagicMock(), _version=False, verbose=False)
+            cli.health(source=None, deep=False, formato="text")
             stdout.flush()
             output = stdout_buffer.getvalue().decode("utf-8")
 
@@ -132,7 +136,7 @@ class TestDoctorCommand:
         with patch(
             "agrobr.health.doctor.run_diagnostics", new_callable=AsyncMock, return_value=mock_result
         ):
-            result = runner.invoke(app, ["doctor", "--json"])
+            result = runner.invoke(app, ["doctor", "--formato", "json"])
 
         assert result.exit_code == 0
         data = json.loads(result.output)
@@ -165,10 +169,13 @@ def _indicador(produto: str, praca: str, dia: date, valor: str) -> Indicador:
 class TestCepeaCommands:
     def test_cepea_indicador_ultimo(self):
         recente = _indicador("soja", "Paranaguá/PR", date(2025, 1, 2), "151")
-        with patch("agrobr.cepea.ultimo", new_callable=AsyncMock, return_value=recente):
-            result = runner.invoke(app, ["cepea", "indicador", "soja", "--ultimo"])
+        with patch("agrobr.cepea.ultimo", new_callable=AsyncMock, return_value=recente) as ultimo:
+            result = runner.invoke(
+                app, ["cepea", "indicador", "soja", "--ultimo", "--praca", "Paranaguá/PR"]
+            )
         assert result.exit_code == 0
         assert "151" in result.output
+        ultimo.assert_awaited_once_with("soja", praca="Paranaguá/PR")
 
 
 class TestConabCommands:
@@ -277,7 +284,7 @@ class TestSnapshotCommands:
         mock_snap.file_count = 5
 
         with patch("agrobr.snapshots.list_snapshots", return_value=[mock_snap]):
-            result = runner.invoke(app, ["snapshot", "list", "--json"])
+            result = runner.invoke(app, ["snapshot", "list", "--formato", "json"])
         assert result.exit_code == 0
         data = json.loads(result.output)
         assert data[0]["name"] == "snap_2024"
@@ -321,21 +328,23 @@ class TestSnapshotCommands:
             result = runner.invoke(app, ["snapshot", "delete", "snap", "--force"])
         assert result.exit_code == 1
 
-    def test_snapshot_use_success(self):
+    def test_snapshot_use_recusado_sem_alterar_configuracao(self):
         mock_snap = MagicMock()
         with (
-            patch("agrobr.snapshots.get_snapshot", return_value=mock_snap),
-            patch("agrobr.config.set_mode"),
+            patch("agrobr.snapshots.get_snapshot", return_value=mock_snap) as get,
+            patch("agrobr.config.set_mode") as set_mode,
         ):
             result = runner.invoke(app, ["snapshot", "use", "my_snap"])
-        assert result.exit_code == 0
-        assert "deterministico" in result.output
+        assert result.exit_code == 2
+        get.assert_not_called()
+        set_mode.assert_not_called()
 
-    def test_snapshot_use_not_found(self):
-        with patch("agrobr.snapshots.get_snapshot", return_value=None):
+    def test_snapshot_use_recusado_antes_de_buscar_nome(self):
+        with patch("agrobr.snapshots.get_snapshot", return_value=None) as get:
             result = runner.invoke(app, ["snapshot", "use", "nope"])
-        assert result.exit_code == 1
-        assert "nao encontrado" in result.output
+        assert result.exit_code == 2
+        assert "No such command" in result.stderr
+        get.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -574,16 +583,16 @@ def test_formato_invalido_sai_com_2_e_sem_saida_padrao(argv, opcoes, na_ajuda):
     assert resultado.exit_code == 2
     assert resultado.stdout == ""
     assert f"'xml' is not one of {opcoes}" in " ".join(resultado.stderr.replace("│", " ").split())
-    assert na_ajuda in ajuda.stdout
+    assert na_ajuda in ajuda.stdout.replace("[", "<").replace("]", ">")
 
 
 def test_snapshot_use_inexistente_escreve_so_no_stderr():
     with patch("agrobr.snapshots.get_snapshot", return_value=None):
         resultado = runner.invoke(app, ["snapshot", "use", "nope"])
 
-    assert resultado.exit_code == 1
+    assert resultado.exit_code == 2
     assert resultado.stdout == ""
-    assert "Use 'agrobr snapshot list' para ver snapshots disponiveis." in resultado.stderr
+    assert "No such command" in resultado.stderr
 
 
 def _comandos(grupo, caminho=()):
@@ -597,7 +606,7 @@ def _comandos(grupo, caminho=()):
 def test_todo_formato_da_cli_recusa_valor_fora_da_lista():
     recusas = []
     for caminho, comando in _comandos(typer.main.get_command(app)):
-        if not any({"--formato", "--output"} & set(opcao.opts) for opcao in comando.params):
+        if not any("--formato" in opcao.opts for opcao in comando.params):
             continue
         argumentos = ["x" for p in comando.params if p.param_type_name == "argument" and p.required]
         resultado = runner.invoke(app, [*caminho, *argumentos, "-o", "xml"])
@@ -611,7 +620,7 @@ def test_todo_formato_da_cli_recusa_valor_fora_da_lista():
             )
         )
 
-    assert len(recusas) == 8
+    assert len(recusas) == 10
     assert recusas == [(nome, 2, "", True) for nome, *_ in recusas]
 
 
@@ -624,7 +633,7 @@ def test_todo_comando_tem_a_linha_de_descricao_no_help():
         if not comando.help or " ".join(comando.help.split()) not in texto:
             sem_descricao.append(" ".join(caminho))
 
-    assert len(comandos) == 19
+    assert len(comandos) == 18
     assert sem_descricao == []
 
 
@@ -648,10 +657,13 @@ def test_csv_redirecionado_em_cp1252_sai_em_utf8(monkeypatch):
     buffer = io.BytesIO()
     saida = io.TextIOWrapper(buffer, encoding="cp1252", newline="\r\n")
 
-    with patch.object(sys, "stdout", saida):
-        cli.main(_version=False, verbose=False)
+    with (
+        patch.object(sys, "stdout", saida),
+        typer.Context(typer.main.get_command(app)) as context,
+    ):
+        cli.main(context=context, _version=False, verbose=False)
         cli.cepea_indicador(
-            produto="soja", inicio=None, fim=None, ultimo=False, formato=cli.Formato.CSV
+            produto="soja", inicio=None, fim=None, praca=None, ultimo=False, formato=cli.Formato.CSV
         )
         saida.flush()
 

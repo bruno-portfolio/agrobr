@@ -544,8 +544,6 @@ CONAB_BRASIL_TOTAL_PARTES: tuple[
 CONAB_BALANCO_PRODUTOS = ("soja", "milho", "arroz", "feijao", "trigo", "algodao")
 
 CONAB_BALANCO_DTYPES = {
-    "produto": "string",
-    "safra": "string",
     "estoque_inicial": "float64",
     "producao": "float64",
     "importacao": "float64",
@@ -554,8 +552,6 @@ CONAB_BALANCO_DTYPES = {
     "exportacao": "float64",
     "demanda_total": "float64",
     "estoque_final": "float64",
-    "levantamento": "string",
-    "unidade": "string",
 }
 
 CONAB_BALANCO_IDENTIDADES: tuple[tuple[str, tuple[str, ...], tuple[str, ...]], ...] = (
@@ -1771,18 +1767,18 @@ ANP_DIESEL_PRECOS_COLUMNS = [
 
 ANP_DIESEL_PRECOS_DTYPES = {
     "data": "datetime64[ns]",
-    "uf": "string[python]",
-    "municipio": "string[python]",
-    "produto": "string[python]",
+    "uf": "str",
+    "municipio": "str",
+    "produto": "str",
     "preco_venda": "float64",
     "preco_compra": "float64",
     "n_postos": "Int64",
     "margem": "float64",
     "periodo_inicio": "datetime64[ns]",
     "periodo_fim": "datetime64[ns]",
-    "nivel": "string[python]",
-    "unidade": "string[python]",
-    "agregacao": "string[python]",
+    "nivel": "str",
+    "unidade": "str",
+    "agregacao": "str",
     "n_semanas": "Int64",
     "n_postos_media": "float64",
 }

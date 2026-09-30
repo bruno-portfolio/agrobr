@@ -17,9 +17,10 @@ async def precos_diesel(
     fim: str | date | None = None,
     agregacao: str = "semanal",
     nivel: str = "municipio",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
 ```
 
 **Parametros:**
@@ -68,9 +69,10 @@ async def vendas_diesel(
     uf: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
 ```
 
 **Parametros:**
@@ -131,3 +133,14 @@ Metadados preservam URLs pedida/final dos recursos, aquisição, hashes, popula�
 Nas planilhas municipais, uma semana iniciada no fim de dezembro pode estar no arquivo do período seguinte. A seleção inclui o arquivo adjacente disponível quando necessário: a semana de 31/12/2023 a 06/01/2024 está em `2024–2025`, pertence ao filtro de dezembro de 2023 e entra na média desse mês. A consulta pode baixar dois arquivos mesmo com início e fim no mesmo ano.
 
 O mensal desta API é calculado a partir das semanas selecionadas; não usa as planilhas mensais separadas que a ANP também publica. A ausência de preço de distribuição nos arquivos municipais mantém `preco_compra` e `margem` nulos. Os recibos de aquisição identificam todos os arquivos usados.
+
+## Repetições e tipos de saída
+
+Linhas semanais inteiramente idênticas são removidas da seleção antes da média mensal, com
+`UserWarning` e registro em `MetaInfo.validation_warnings`. Valores conflitantes para a mesma
+semana continuam gerando `ParseError`. Os recibos e o hash dos arquivos brutos são preservados.
+
+Nos preços, texto usa o dtype padrão do pandas instalado (`str` no pandas 3 e `object` no pandas 2),
+inclusive no vazio. Datas usam `datetime64[ns]`, valores monetários `float64` e contagens `Int64`.
+`as_polars` e `return_meta` devem ser passados por nome em ambas as funções.
+O limite anual do catálogo municipal segue a data civil de Brasília.

@@ -7,8 +7,9 @@ from enum import StrEnum
 from typing import Any
 
 import typer
+from structlog import dev
 
-from agrobr import __version__, constants
+from agrobr import __version__, _log, constants
 
 
 class Formato(StrEnum):
@@ -20,6 +21,24 @@ class Formato(StrEnum):
 class SaidaHealth(StrEnum):
     TEXT = "text"
     JSON = "json"
+
+
+class Pesquisa(StrEnum):
+    PAM = "pam"
+    LSPA = "lspa"
+
+
+def _parse_anos(ano: str | None) -> int | list[int] | None:
+    if ano is None:
+        return None
+    try:
+        anos = [int(valor.strip()) for valor in ano.split(",")]
+    except ValueError:
+        raise typer.BadParameter(
+            "ano inválido; use um ano inteiro ou uma lista, como 2020,2021",
+            param_hint="--ano",
+        ) from None
+    return anos if "," in ano else anos[0]
 
 
 def _output_df(df: Any, formato: Formato) -> None:
@@ -46,15 +65,29 @@ def version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-def _configure_cli_logging(verbose: bool) -> None:
-    if verbose:
-        logger = logging.getLogger("agrobr")
-        logger.setLevel(logging.INFO)
-        logger.addHandler(logging.StreamHandler(sys.stderr))
+def _configure_cli_logging(verbose: bool, context: typer.Context) -> None:
+    logger = logging.getLogger("agrobr")
+    handlers, level, propagate = logger.handlers[:], logger.level, logger.propagate
+    processors = _log.PROCESSADORES[:]
+    handler = logging.StreamHandler(sys.stderr)
+
+    def restore() -> None:
+        logger.handlers = handlers
+        logger.setLevel(level)
+        logger.propagate = propagate
+        _log.PROCESSADORES[:] = processors
+        handler.close()
+
+    context.call_on_close(restore)
+    logger.handlers = [handler]
+    logger.setLevel(logging.INFO if verbose else logging.WARNING)
+    logger.propagate = False
+    _log.PROCESSADORES[-1] = dev.ConsoleRenderer(colors=False)
 
 
 @app.callback()  # type: ignore[misc, untyped-decorator]
 def main(
+    context: typer.Context,
     _version: bool = typer.Option(
         None,
         "--version",
@@ -74,7 +107,7 @@ def main(
         if reconfigure is not None:
             reconfigure(encoding=codificacao, errors="replace")
 
-    _configure_cli_logging(verbose)
+    _configure_cli_logging(verbose, context)
 
 
 cepea_app = typer.Typer(help="Indicadores CEPEA")
@@ -89,6 +122,7 @@ def cepea_indicador(
     produto: str = typer.Argument(..., help="Produto (soja, milho, cafe, boi, etc)"),
     inicio: str | None = typer.Option(None, "--inicio", "-i", help="Data inicio (YYYY-MM-DD)"),
     fim: str | None = typer.Option(None, "--fim", "-f", help="Data fim (YYYY-MM-DD)"),
+    praca: str | None = typer.Option(None, "--praca", help="Praça do indicador"),
     ultimo: bool = typer.Option(
         False, "--ultimo", "-u", help="Último indicador, como cepea.ultimo (sem --inicio/--fim)"
     ),
@@ -107,10 +141,10 @@ def cepea_indicador(
                 raise ValueError(
                     "--ultimo não combina com --inicio/--fim: devolve o último indicador publicado"
                 )
-            recente = asyncio.run(cepea.ultimo(produto))
+            recente = asyncio.run(cepea.ultimo(produto, praca=praca))
             df = cepea_api._to_dataframe([recente])
         else:
-            df = asyncio.run(cepea.indicador(produto, inicio=inicio, fim=fim))
+            df = asyncio.run(cepea.indicador(produto, inicio=inicio, fim=fim, praca=praca))
 
         _output_df(df, formato)
 
@@ -123,23 +157,20 @@ def cepea_indicador(
     "health", help="Testa a conexao e a resposta de cada fonte; sai com 1 se alguma falhar"
 )  # type: ignore[misc, untyped-decorator]
 def health(
-    source: str | None = typer.Option(None, "--source", "-s", help="Fonte especifica"),
+    source: constants.Fonte | None = typer.Option(
+        None, "--source", "-s", case_sensitive=False, help="Fonte especifica"
+    ),
     deep: bool = typer.Option(False, "--deep", "-d", help="Deep checks (fingerprint+parse)"),
-    output: SaidaHealth = typer.Option(SaidaHealth.TEXT, "--output", "-o", help="Formato de saida"),
+    formato: SaidaHealth = typer.Option(
+        SaidaHealth.TEXT, "--formato", "-o", help="Formato de saida"
+    ),
 ) -> None:
     import asyncio
 
     from agrobr.health.checker import format_results, run_all_checks
     from agrobr.health.reporter import HealthReport
 
-    sources_list = None
-    if source:
-        try:
-            fonte = constants.Fonte(source.lower())
-        except ValueError:
-            typer.echo(f"Fonte desconhecida: {source}", err=True)
-            raise typer.Exit(1) from None
-        sources_list = [fonte]
+    sources_list = [source] if source is not None else None
 
     try:
         results = asyncio.run(run_all_checks(sources_list, deep=deep))  # type: ignore[call-arg]
@@ -147,7 +178,7 @@ def health(
         typer.echo(f"Erro ao executar health check: {e}", err=True)
         raise typer.Exit(1) from None
 
-    if output == SaidaHealth.JSON:
+    if formato == SaidaHealth.JSON:
         report = HealthReport(results)
         typer.echo(report.to_json(indent=2))
     else:
@@ -163,7 +194,9 @@ def health(
 )  # type: ignore[misc, untyped-decorator]
 def doctor(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Mostra informacoes detalhadas"),
-    json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
+    formato: SaidaHealth = typer.Option(
+        SaidaHealth.TEXT, "--formato", "-o", help="Formato de saida"
+    ),
 ) -> None:
     import asyncio
 
@@ -172,7 +205,7 @@ def doctor(
     try:
         result = asyncio.run(run_diagnostics(verbose=verbose))
 
-        if json_output:
+        if formato == SaidaHealth.JSON:
             typer.echo(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
         else:
             typer.echo(result.to_rich())
@@ -194,6 +227,9 @@ def conab_safras(
     produto: str = typer.Argument(..., help="Produto (soja, milho, arroz, feijao, etc)"),
     safra: str | None = typer.Option(None, "--safra", "-s", help="Safra (ex: 2025/26)"),
     uf: str | None = typer.Option(None, "--uf", "-u", help="Filtrar por UF"),
+    levantamento: int | None = typer.Option(
+        None, "--levantamento", min=1, help="Levantamento da safra"
+    ),
     formato: Formato = typer.Option(Formato.TABLE, "--formato", "-o", help="Formato de saida"),
 ) -> None:
     import asyncio
@@ -203,7 +239,9 @@ def conab_safras(
     typer.echo(f"Consultando safras de {produto}...", err=True)
 
     try:
-        df = asyncio.run(conab.safras(produto=produto, safra=safra, uf=uf))
+        df = asyncio.run(
+            conab.safras(produto=produto, safra=safra, uf=uf, levantamento=levantamento)
+        )
 
         _output_df(df, formato)
 
@@ -217,6 +255,10 @@ def conab_safras(
 )  # type: ignore[misc, untyped-decorator]
 def conab_balanco(
     produto: str | None = typer.Argument(None, help="Produto (opcional)"),
+    safra: str | None = typer.Option(None, "--safra", "-s", help="Safra (ex: 2025/26)"),
+    levantamento: int | None = typer.Option(
+        None, "--levantamento", min=1, help="Levantamento da safra"
+    ),
     formato: Formato = typer.Option(Formato.TABLE, "--formato", "-o", help="Formato de saida"),
 ) -> None:
     import asyncio
@@ -226,7 +268,7 @@ def conab_balanco(
     typer.echo("Consultando balanco oferta/demanda...", err=True)
 
     try:
-        df = asyncio.run(conab.balanco(produto=produto))
+        df = asyncio.run(conab.balanco(produto=produto, safra=safra, levantamento=levantamento))
 
         _output_df(df, formato)
 
@@ -289,13 +331,10 @@ def ibge_pam(
 
     from agrobr import ibge
 
+    ano_param = _parse_anos(ano)
     typer.echo(f"Consultando PAM para {produto}...", err=True)
 
     try:
-        ano_param: int | list[int] | None = None
-        if ano:
-            ano_param = [int(a.strip()) for a in ano.split(",")] if "," in ano else int(ano)
-
         nivel_typed: Any = nivel
         df = asyncio.run(ibge.pam(produto=produto, ano=ano_param, uf=uf, nivel=nivel_typed))
 
@@ -348,13 +387,10 @@ def ibge_censo_historico(
 
     from agrobr import ibge
 
+    ano_param = _parse_anos(ano)
     typer.echo(f"Consultando censo historico: {tema}...", err=True)
 
     try:
-        ano_param: int | list[int] | None = None
-        if ano:
-            ano_param = [int(a.strip()) for a in ano.split(",")] if "," in ano else int(ano)
-
         nivel_typed: Any = nivel
         df = asyncio.run(
             ibge.censo_agro_historico(tema=tema, ano=ano_param, uf=uf, nivel=nivel_typed)
@@ -423,13 +459,15 @@ def ibge_temas_municipal_1985() -> None:
 
 @ibge_app.command("produtos", help="Lista os produtos da PAM ou do LSPA")  # type: ignore[misc, untyped-decorator]
 def ibge_produtos(
-    pesquisa: str = typer.Option("pam", "--pesquisa", "-p", help="Pesquisa: pam ou lspa"),
+    pesquisa: Pesquisa = typer.Option(
+        Pesquisa.PAM, "--pesquisa", "-p", case_sensitive=False, help="Pesquisa: pam ou lspa"
+    ),
 ) -> None:
     import asyncio
 
     from agrobr import ibge
 
-    if pesquisa == "pam":
+    if pesquisa == Pesquisa.PAM:
         prods = asyncio.run(ibge.produtos_pam())
         typer.echo("Produtos disponiveis na PAM:")
     else:
@@ -462,18 +500,20 @@ def config_show() -> None:
 
 @snapshot_app.command("list", help="Lista os snapshots salvos")  # type: ignore[misc, untyped-decorator]
 def snapshot_list(
-    json_output: bool = typer.Option(False, "--json", help="Output em formato JSON"),
+    formato: SaidaHealth = typer.Option(
+        SaidaHealth.TEXT, "--formato", "-o", help="Formato de saida"
+    ),
 ) -> None:
     from agrobr.snapshots import list_snapshots
 
     snapshots = list_snapshots()
 
-    if not snapshots and not json_output:
+    if not snapshots and formato == SaidaHealth.TEXT:
         typer.echo("Nenhum snapshot encontrado.")
         typer.echo("Use 'agrobr snapshot create' para criar um snapshot.")
         return
 
-    if json_output:
+    if formato == SaidaHealth.JSON:
         data = [
             {
                 "name": s.name,
@@ -554,25 +594,6 @@ def snapshot_delete(
     else:
         typer.echo("Erro ao remover snapshot.", err=True)
         raise typer.Exit(1)
-
-
-@snapshot_app.command("use", help="Confere se um snapshot existe e mostra como usa-lo no codigo")  # type: ignore[misc, untyped-decorator]
-def snapshot_use(
-    name: str = typer.Argument(..., help="Nome do snapshot a validar"),
-) -> None:
-    from agrobr.snapshots import get_snapshot
-
-    snapshot = get_snapshot(name)
-    if not snapshot:
-        typer.echo(f"Snapshot '{name}' nao encontrado.", err=True)
-        typer.echo("Use 'agrobr snapshot list' para ver snapshots disponiveis.", err=True)
-        raise typer.Exit(1)
-
-    typer.echo(f"Snapshot '{name}' valido.")
-    typer.echo("O modo deterministico vale por processo Python — ative no seu codigo:")
-    typer.echo('  async with datasets.deterministic("YYYY-MM-DD"):')
-    typer.echo("      df = await datasets.preco_diario('soja')")
-    typer.echo(f'  ou: snapshots.load_from_snapshot(source, dataset, snapshot_name="{name}")')
 
 
 if __name__ == "__main__":

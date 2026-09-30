@@ -3,12 +3,14 @@ from __future__ import annotations
 import csv
 import io
 import json
+import logging
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 import pytest
 from typer.testing import CliRunner
 
+from agrobr import _log
 from agrobr.cli import app
 
 
@@ -43,6 +45,117 @@ def test_machine_output_round_trip(command, target, empty, formato):
 
 def test_empty_snapshot_list_json():
     with patch("agrobr.snapshots.list_snapshots", return_value=[]):
-        result = CliRunner().invoke(app, ["snapshot", "list", "--json"])
+        result = CliRunner().invoke(app, ["snapshot", "list", "--formato", "json"])
     assert result.exit_code == 0
     assert json.loads(result.stdout) == []
+
+
+@pytest.mark.parametrize("verbose", [False, True])
+@pytest.mark.parametrize("falha", [False, True])
+def test_logs_legiveis_no_stderr_e_configuracao_restaurada(verbose, falha):
+    logger = _log.get_logger("agrobr.cli.teste")
+    stdlib = logging.getLogger("agrobr")
+    original = (stdlib.handlers[:], stdlib.level, stdlib.propagate, _log.PROCESSADORES[:])
+
+    async def consultar(*_args, **_kwargs):
+        logger.info("coleta_iniciada", tentativa=1)
+        logger.warning("fonte_indisponivel", tentativa=2)
+        if falha:
+            raise RuntimeError("coleta interrompida")
+        return pd.DataFrame({"produto": ["soja"], "valor": [12.5]})
+
+    argumentos = ["--verbose"] if verbose else []
+    argumentos += ["ibge", "pam", "soja", "--formato", "json"]
+    with patch("agrobr.ibge.pam", side_effect=consultar):
+        resultado = CliRunner().invoke(app, argumentos)
+
+    assert resultado.exit_code == (1 if falha else 0), resultado.output
+    assert "fonte_indisponivel" in resultado.stderr
+    assert ("coleta_iniciada" in resultado.stderr) is verbose
+    assert '"event"' not in resultado.stderr
+    assert "fonte_indisponivel" not in resultado.stdout
+    if falha:
+        assert resultado.stdout == ""
+        assert "Erro: coleta interrompida" in resultado.stderr
+    else:
+        assert json.loads(resultado.stdout) == [{"produto": "soja", "valor": 12.5}]
+    assert (stdlib.handlers, stdlib.level, stdlib.propagate, _log.PROCESSADORES) == original
+
+
+@pytest.mark.parametrize(
+    "argumentos",
+    [["health", "--output", "json"], ["doctor", "--json"], ["snapshot", "list", "--json"]],
+)
+def test_opcoes_antigas_de_formato_sao_recusadas(argumentos):
+    resultado = CliRunner().invoke(app, argumentos)
+    assert resultado.exit_code == 2
+    assert resultado.stdout == ""
+    assert "No such option" in resultado.stderr
+
+
+@pytest.mark.parametrize(
+    ("argumentos", "alvo"),
+    [
+        (["ibge", "pam", "soja"], "agrobr.ibge.pam"),
+        (["ibge", "censo-historico", "uso_terra"], "agrobr.ibge.censo_agro_historico"),
+    ],
+)
+@pytest.mark.parametrize("ano", ["abc", "2020,abc", "2020,", ""])
+def test_ano_invalido_recusado_antes_da_consulta(argumentos, alvo, ano):
+    with patch(alvo, new_callable=AsyncMock) as consulta:
+        resultado = CliRunner().invoke(app, [*argumentos, "--ano", ano])
+    assert resultado.exit_code == 2
+    assert resultado.stdout == ""
+    assert "ano inválido" in resultado.stderr
+    assert "invalid literal" not in resultado.stderr
+    consulta.assert_not_awaited()
+
+
+@pytest.mark.parametrize("pesquisa", ["pam", "PAM", "lspa", "LSPA", "inexistente"])
+def test_pesquisa_escolhe_o_catalogo_sem_fallback_silencioso(pesquisa):
+    with (
+        patch("agrobr.ibge.produtos_pam", new_callable=AsyncMock, return_value=["soja"]) as pam,
+        patch(
+            "agrobr.ibge.produtos_lspa", new_callable=AsyncMock, return_value=["milho_1"]
+        ) as lspa,
+    ):
+        resultado = CliRunner().invoke(app, ["ibge", "produtos", "--pesquisa", pesquisa])
+    if pesquisa == "inexistente":
+        assert resultado.exit_code == 2
+        assert resultado.stdout == ""
+        pam.assert_not_awaited()
+        lspa.assert_not_awaited()
+    else:
+        assert resultado.exit_code == 0
+        esperado, outro = (pam, lspa) if pesquisa.lower() == "pam" else (lspa, pam)
+        esperado.assert_awaited_once()
+        outro.assert_not_awaited()
+        assert ("soja" if pesquisa.lower() == "pam" else "milho_1") in resultado.stdout
+
+
+@pytest.mark.parametrize(
+    ("argumentos", "alvo", "filtros"),
+    [
+        (
+            ["cepea", "indicador", "soja", "--praca", "Paranaguá/PR"],
+            "agrobr.cepea.indicador",
+            {"praca": "Paranaguá/PR"},
+        ),
+        (
+            ["conab", "safras", "soja", "--levantamento", "3"],
+            "agrobr.conab.safras",
+            {"levantamento": 3},
+        ),
+        (
+            ["conab", "balanco", "soja", "--safra", "2024/25", "--levantamento", "3"],
+            "agrobr.conab.balanco",
+            {"safra": "2024/25", "levantamento": 3},
+        ),
+    ],
+)
+def test_filtros_da_cli_chegam_a_api(argumentos, alvo, filtros):
+    with patch(alvo, new_callable=AsyncMock, return_value=pd.DataFrame()) as consulta:
+        resultado = CliRunner().invoke(app, argumentos)
+    assert resultado.exit_code == 0, resultado.output
+    consulta.assert_awaited_once()
+    assert {chave: consulta.await_args.kwargs[chave] for chave in filtros} == filtros

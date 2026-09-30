@@ -12,7 +12,7 @@ class PrecosDieselContract(contracts.Contract):
         frame = super().empty_frame()
         for column in self.columns:
             if column.type == contracts.ColumnType.STRING:
-                frame[column.name] = pd.Series(dtype=pd.StringDtype(storage="python"))
+                frame[column.name] = pd.Series(dtype=str)
             elif column.type == contracts.ColumnType.FLOAT:
                 frame[column.name] = pd.Series(dtype="float64")
         return frame
@@ -136,7 +136,7 @@ ANP_DIESEL_PRECOS_V2 = PrecosDieselContract(
         "Ausência de distribuição preservada; margem é diferença de médias, não lucro líquido",
         "Mensal derivado por média aritmética das médias semanais disponíveis, sem ponderação por postos nem rateio diário",
         "Mensal usa somente as semanas selecionadas e não garante cobertura do mês completo",
-        "Repetições publicadas são preservadas no semanal; mensal com semana territorial repetida é recusado",
+        "Linhas semanais idênticas são deduplicadas com aviso; valores conflitantes na mesma semana são recusados",
         "Arquivos correntes com observações históricas; ano do filtro não seleciona edição de publicação",
         "preco_venda da UF e do Brasil é o publicado, ponderado pelas vendas; não é a média dos níveis de "
         "baixo por n_postos",

@@ -136,3 +136,15 @@ Nas planilhas municipais, uma semana iniciada no fim de dezembro pode estar no a
 O mensal desta API é calculado a partir das semanas selecionadas; não usa as planilhas mensais separadas que a ANP também publica. A ausência de preço de distribuição nos arquivos municipais mantém `preco_compra` e `margem` nulos. Os recibos de aquisição identificam todos os arquivos usados.
 
 A semana entra no mês da sua data de início, mesmo quando termina no mês seguinte: a de 29/03 a 04/04/2026, com 4 dos 7 dias em abril, entra inteira em março. Por isso o mensal pode diferir da planilha mensal da ANP. De jan/2025 a ago/2026 (Brasil, MT e SP, diesel S500 e S10), a diferença média fica entre R$ 0,006 e R$ 0,018/l por série. Num mês de choque de preço, chega a 2%: MT S500, mar/2026, 7,138 R$/l no agrobr × 7,00 R$/l na ANP (7,045 R$/l se a semana contasse pelo mês do fim).
+
+## Repetições publicadas
+
+A ANP pode repetir uma linha semanal inteira em seus arquivos. O agrobr mantém uma ocorrência na
+seleção, registra a quantidade removida em `MetaInfo.validation_warnings` e emite `UserWarning`.
+Isso evita contar a mesma semana duas vezes na média mensal. Uma identidade semanal com valores
+conflitantes continua gerando `ParseError`, inclusive entre arquivos sobrepostos.
+
+Os preços usam texto no dtype padrão do pandas instalado (`str` no pandas 3 e `object` no pandas 2),
+datas em `datetime64[ns]`, valores em `float64` e contagens em `Int64`, inclusive em resultados vazios.
+As flags `as_polars` e `return_meta` são passadas por nome. A virada anual do catálogo municipal
+segue o dia civil de Brasília.

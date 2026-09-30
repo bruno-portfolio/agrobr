@@ -24,7 +24,7 @@ Fonte: **ANP**. Registro do contrato: `precos_diesel`.
 | `n_semanas` | int | Não | — | — |
 | `n_postos_media` | float | Sim | — | Média das contagens semanais; não são postos únicos |
 
-**Chave primária:** Não definida no contrato. A agregação mensal rejeita identidades semanais duplicadas antes de calcular as médias.
+**Chave primária:** Não definida no contrato. A seleção remove linhas semanais inteiramente idênticas com aviso; uma identidade semanal com valores conflitantes é recusada antes de calcular as médias.
 
 Todas as colunas estáveis devem existir, inclusive anuláveis e em resultados vazios. Mudanças incompatíveis exigem versão major do contrato.
 
@@ -32,9 +32,11 @@ Todas as colunas estáveis devem existir, inclusive anuláveis e em resultados v
 
 Na UF e no Brasil, `preco_venda` é o publicado, ponderado pelas vendas das distribuidoras desde 31/10/2004; no município, é a média simples dos postos. `n_postos` é o tamanho da amostra, não o peso. `DIESEL` é o óleo diesel B S500 comum. Detalhes e exemplo na [fonte](../sources/anp_diesel.md).
 
-A semana é identificada pelo início publicado e conserva seu fim, mesmo atravessando meses. `nivel` distingue município, UF e Brasil. O mensal é uma derivação do agrobr: média aritmética simples das médias semanais disponíveis, atribuídas ao mês da data inicial, sem ponderar por postos ou dias. Conserva `n_semanas` e `n_postos_media`; não representa uma pesquisa mensal independente da ANP. Semanas duplicadas na seleção são recusadas com `ParseError`, tanto no semanal quanto no mensal, inclusive quando vêm de arquivos sobrepostos. Nulos permanecem nulos. Período válido sem arquivo no catálogo gera `SourceUnavailableError`; datas malformadas ou invertidas geram `InvalidParameterError`. Não há chave primária contratual artificial.
+A semana é identificada pelo início publicado e conserva seu fim, mesmo atravessando meses. `nivel` distingue município, UF e Brasil. O mensal é uma derivação do agrobr: média aritmética simples das médias semanais disponíveis, atribuídas ao mês da data inicial, sem ponderar por postos ou dias. Conserva `n_semanas` e `n_postos_media`; não representa uma pesquisa mensal independente da ANP. Linhas inteiramente idênticas na seleção são deduplicadas com `UserWarning` e registro em `MetaInfo.validation_warnings`, inclusive entre arquivos sobrepostos. Valores conflitantes para a mesma semana geram `ParseError`, tanto no semanal quanto no mensal. Nulos permanecem nulos. Período válido sem arquivo no catálogo gera `SourceUnavailableError`; datas malformadas ou invertidas geram `InvalidParameterError`. Não há chave primária contratual artificial.
 
 `return_meta=True` retorna dados e `MetaInfo`, com fontes tentadas/selecionada, aquisição, versão contratual e diagnósticos da fonte. Estas publicações correntes não permitem selecionar uma revisão histórica via `deterministic`.
+
+As colunas de texto usam o dtype padrão do pandas instalado (`str` no pandas 3 e `object` no pandas 2), inclusive no vazio. Datas usam `datetime64[ns]`, valores monetários usam `float64` e contagens usam `Int64`. Passe `as_polars` e `return_meta` por nome.
 
 ## Parâmetros
 

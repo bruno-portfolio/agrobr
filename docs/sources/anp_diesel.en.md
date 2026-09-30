@@ -136,3 +136,15 @@ In municipal workbooks, a week starting in late December may appear in the follo
 Monthly output from this API is calculated from the selected weeks; it does not use the separate monthly workbooks also published by ANP. Missing distribution prices in municipal files leave `preco_compra` and `margem` null. Acquisition receipts identify every workbook used.
 
 A week belongs to the month of its start date, even when it ends in the next month: the week of 2026-03-29 to 2026-04-04, with 4 of its 7 days in April, counts entirely in March. Monthly values may therefore differ from ANP's monthly workbook. From Jan/2025 to Aug/2026 (Brazil, MT, and SP, S500 and S10 diesel), the mean difference is between R$ 0.006 and R$ 0.018/l per series. In a month with a price shock it reaches 2%: MT S500, Mar/2026, 7.138 R$/l in agrobr × 7.00 R$/l at ANP (7.045 R$/l if weeks counted by their end month).
+
+## Repeated published rows
+
+ANP may repeat an entire weekly row in its workbooks. agrobr retains one occurrence in the selection,
+records the number removed in `MetaInfo.validation_warnings`, and emits a `UserWarning`. This avoids
+counting the same week twice in monthly means. A weekly identity with conflicting values still raises
+`ParseError`, including overlaps between workbooks.
+
+Price columns use the installed pandas version's default text dtype (`str` in pandas 3 and `object`
+in pandas 2), `datetime64[ns]` dates, `float64` values, and `Int64` counts, including empty results.
+Pass `as_polars` and `return_meta` by name. The municipal catalog's year boundary follows the
+Brasília civil date.

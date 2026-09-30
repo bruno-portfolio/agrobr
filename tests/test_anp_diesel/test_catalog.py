@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from unittest.mock import AsyncMock
 
@@ -24,7 +24,7 @@ def test_official_municipal_catalog_projection():
 
 @pytest.mark.parametrize("bounded", [False, True])
 async def test_new_municipal_year_discovers_actual_link(bounded, monkeypatch):
-    monkeypatch.setattr(api.time_utils, "utcnow", lambda: datetime(2027, 2, 1))
+    monkeypatch.setattr(api.time_utils, "hoje", lambda: date(2027, 2, 1))
     url = f"{models.SHLP_BASE}/semanal/semanal-municipios-2026-2027.xlsx"
     html = _html().replace(models.PRECOS_MUNICIPIOS_URLS["2026"], url)
     catalog = _catalog.parse_municipal_catalog(html)
@@ -40,7 +40,7 @@ async def test_new_municipal_year_discovers_actual_link(bounded, monkeypatch):
 
 
 async def test_absent_municipal_year_does_not_invent_url(monkeypatch):
-    monkeypatch.setattr(api.time_utils, "utcnow", lambda: datetime(2027, 2, 1))
+    monkeypatch.setattr(api.time_utils, "hoje", lambda: date(2027, 2, 1))
     monkeypatch.setattr(
         client, "fetch_precos_catalog", AsyncMock(return_value=models.PRECOS_MUNICIPIOS_URLS)
     )
