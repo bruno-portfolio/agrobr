@@ -17,6 +17,7 @@ from . import acquisition, client, metadata, query
 
 if TYPE_CHECKING:
     import geopandas as gpd
+    import polars as pl
 
 logger = _log.get_logger(__name__)
 
@@ -48,7 +49,7 @@ async def _fetch(
     return_meta: bool,
     unknown: dict[str, Any],
     **selection: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     from agrobr.datasets.deterministic import get_snapshot
 
     if unknown:
@@ -71,13 +72,20 @@ async def _fetch(
             ) from None
     logger.info("embrapa_solos_fetch", product=product, include_geometry=include_geometry)
     acquired = await client.fetch_acquisition(validated)
-    contract = contracts.PERFIS_V2 if product == "perfis" else contracts.MAPA_V2
+    contract = contracts.PERFIS_V3 if product == "perfis" else contracts.MAPA_V2
     valid, errors = contract.validate(acquired.frame)
     if not valid:
         raise ContractViolationError(dataset=contract.name, violation="; ".join(errors))
     frame = _geoframe(acquired, geopandas) if include_geometry else acquired.frame
     meta = metadata.build_meta(acquired, frame)
     remote = acquired.coverage.remote
+    if validated.ordem is not None and not remote.truncated and frame.empty:
+        aviso = (
+            f"EMBRAPA Solos: ordem={validated.ordem!r} não encontrou registros na leitura completa. "
+            f"Valores de ordem1 presentes na leitura: {acquired.local_filters['ordens_observadas']!r}"
+        )
+        meta.validation_warnings.append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=3)
     if remote.truncated:
         warnings.warn(
             f"EMBRAPA Solos: prefixo remoto de {remote.accepted_rows} de {remote.expected_before} ocorrências; "
@@ -104,7 +112,7 @@ async def perfis(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -116,9 +124,45 @@ async def perfis(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def perfis(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def perfis(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def perfis(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def perfis(
@@ -130,7 +174,7 @@ async def perfis(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         product="perfis",
         include_geometry=False,
@@ -151,7 +195,7 @@ async def mapa_solos(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -163,9 +207,45 @@ async def mapa_solos(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def mapa_solos(
+    *,
+    ordem: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def mapa_solos(
+    *,
+    ordem: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def mapa_solos(
+    *,
+    ordem: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def mapa_solos(
@@ -177,7 +257,7 @@ async def mapa_solos(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         product="mapa",
         include_geometry=False,
@@ -213,6 +293,17 @@ async def perfis_geo(
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
 
+@overload
+async def perfis_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["perfis"],
+    tamanho_pagina: int | None = None,
+    return_meta: bool = False,
+) -> result.GeoDataFrameResult: ...
+
+
 async def perfis_geo(
     *,
     uf: str | None = None,
@@ -221,17 +312,20 @@ async def perfis_geo(
     tamanho_pagina: int | None = None,
     return_meta: bool = False,
     **kwargs: Any,
-) -> Any:
-    return await _fetch(
-        product="perfis",
-        include_geometry=True,
-        as_polars=False,
-        return_meta=return_meta,
-        unknown=kwargs,
-        uf=uf,
-        bbox=bbox,
-        max_registros=max_registros,
-        tamanho_pagina=tamanho_pagina,
+) -> result.GeoDataFrameResult:
+    return cast(
+        result.GeoDataFrameResult,
+        await _fetch(
+            product="perfis",
+            include_geometry=True,
+            as_polars=False,
+            return_meta=return_meta,
+            unknown=kwargs,
+            uf=uf,
+            bbox=bbox,
+            max_registros=max_registros,
+            tamanho_pagina=tamanho_pagina,
+        ),
     )
 
 
@@ -257,6 +351,17 @@ async def mapa_solos_geo(
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
 
+@overload
+async def mapa_solos_geo(
+    *,
+    ordem: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.EMBRAPA_SOLOS_GEO_DEFAULT_MAX_RECORDS["mapa"],
+    tamanho_pagina: int | None = None,
+    return_meta: bool = False,
+) -> result.GeoDataFrameResult: ...
+
+
 async def mapa_solos_geo(
     *,
     ordem: str | None = None,
@@ -265,15 +370,18 @@ async def mapa_solos_geo(
     tamanho_pagina: int | None = None,
     return_meta: bool = False,
     **kwargs: Any,
-) -> Any:
-    return await _fetch(
-        product="mapa",
-        include_geometry=True,
-        as_polars=False,
-        return_meta=return_meta,
-        unknown=kwargs,
-        ordem=ordem,
-        bbox=bbox,
-        max_registros=max_registros,
-        tamanho_pagina=tamanho_pagina,
+) -> result.GeoDataFrameResult:
+    return cast(
+        result.GeoDataFrameResult,
+        await _fetch(
+            product="mapa",
+            include_geometry=True,
+            as_polars=False,
+            return_meta=return_meta,
+            unknown=kwargs,
+            ordem=ordem,
+            bbox=bbox,
+            max_registros=max_registros,
+            tamanho_pagina=tamanho_pagina,
+        ),
     )

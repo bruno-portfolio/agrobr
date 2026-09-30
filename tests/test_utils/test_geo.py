@@ -428,8 +428,8 @@ class TestFetchArcgisCount:
 
 class TestFetchArcgisLayerMaxFeatures:
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("max_features", [0, -1, True, 1.5])
-    async def test_max_features_invalido_recusado_antes_da_rede(self, max_features):
+    @pytest.mark.parametrize("max_registros", [0, -1, True, 1.5])
+    async def test_max_registros_invalido_recusado_antes_da_rede(self, max_registros):
         layer = {
             "service_path": "x/FeatureServer/0",
             "max_record_count": 1000,
@@ -440,14 +440,14 @@ class TestFetchArcgisLayerMaxFeatures:
         }
         with (
             patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock) as get,
-            pytest.raises(InvalidParameterError, match="max_features deve ser inteiro positivo"),
+            pytest.raises(InvalidParameterError, match="max_registros deve ser inteiro positivo"),
         ):
             await fetch_arcgis_layer(
                 "http://example.com",
                 layer,
                 source="test",
                 timeout=httpx.Timeout(10),
-                max_features=max_features,
+                max_registros=max_registros,
             )
         get.assert_not_awaited()
 

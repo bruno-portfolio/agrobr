@@ -2,20 +2,26 @@ from __future__ import annotations
 
 import hashlib
 import time
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Literal, cast, overload
 
 import pandas as pd
 
 from agrobr import _log
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import (
+    DataFrameResult,
+    GeoDataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
 from agrobr.utils.validation import validate_uf
 
 from . import client, parser
 
 if TYPE_CHECKING:
     import geopandas as gpd
+    import polars as pl
 
 logger = _log.get_logger(__name__)
 
@@ -62,10 +68,10 @@ async def _fetch_and_parse_tabular(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     where = _build_where(uf=uf)
     logger.info(f"ana_{layer_key}", uf=uf, bbox=bbox)
 
@@ -74,7 +80,7 @@ async def _fetch_and_parse_tabular(
         layer_key,
         where=where,
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         f="json",
     )
     fetch_ms = int((time.monotonic() - t0) * 1000)
@@ -96,7 +102,15 @@ async def _fetch_and_parse_tabular(
         raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
         raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            str(column) for column in df if pd.api.types.is_string_dtype(df[column].dtype)
+        ),
+    )
 
 
 async def _fetch_and_parse_geo(
@@ -104,9 +118,9 @@ async def _fetch_and_parse_geo(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     where = _build_where(uf=uf)
     logger.info(f"ana_{layer_key}_geo", uf=uf, bbox=bbox)
 
@@ -115,13 +129,13 @@ async def _fetch_and_parse_geo(
         layer_key,
         where=where,
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         f="geojson",
     )
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    gdf = parser.parse_layer_geojson(pages, layer_key=layer_key)
+    gdf = cast("gpd.GeoDataFrame", parser.parse_layer_geojson(pages, layer_key=layer_key))
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
@@ -151,8 +165,8 @@ async def _fetch_and_parse_geo(
 async def hidrografia(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -161,24 +175,54 @@ async def hidrografia(
 async def hidrografia(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def hidrografia(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def hidrografia(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def hidrografia(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def hidrografia(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_tabular(
         "hidrografia",
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         as_polars=as_polars,
         return_meta=return_meta,
     )
@@ -188,7 +232,7 @@ async def hidrografia(
 async def hidrografia_geo(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -197,22 +241,31 @@ async def hidrografia_geo(
 async def hidrografia_geo(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
+
+
+@overload
+async def hidrografia_geo(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult: ...
 
 
 async def hidrografia_geo(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_geo(
         "hidrografia",
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         return_meta=return_meta,
     )
 
@@ -227,8 +280,8 @@ async def pivos_irrigacao(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -238,27 +291,60 @@ async def pivos_irrigacao(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def pivos_irrigacao(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def pivos_irrigacao(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def pivos_irrigacao(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def pivos_irrigacao(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_tabular(
         "pivos_irrigacao",
         uf=uf,
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         as_polars=as_polars,
         return_meta=return_meta,
     )
@@ -269,7 +355,7 @@ async def pivos_irrigacao_geo(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -279,25 +365,35 @@ async def pivos_irrigacao_geo(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
+
+
+@overload
+async def pivos_irrigacao_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult: ...
 
 
 async def pivos_irrigacao_geo(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_geo(
         "pivos_irrigacao",
         uf=uf,
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         return_meta=return_meta,
     )
 
@@ -311,8 +407,8 @@ async def pivos_irrigacao_geo(
 async def demanda_irrigacao(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -321,24 +417,54 @@ async def demanda_irrigacao(
 async def demanda_irrigacao(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def demanda_irrigacao(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def demanda_irrigacao(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def demanda_irrigacao(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def demanda_irrigacao(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_tabular(
         "demanda_irrigacao",
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         as_polars=as_polars,
         return_meta=return_meta,
     )
@@ -348,7 +474,7 @@ async def demanda_irrigacao(
 async def demanda_irrigacao_geo(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -357,22 +483,31 @@ async def demanda_irrigacao_geo(
 async def demanda_irrigacao_geo(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
+
+
+@overload
+async def demanda_irrigacao_geo(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult: ...
 
 
 async def demanda_irrigacao_geo(
     *,
     bbox: tuple[float, float, float, float],
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     bbox = validate_bbox(bbox)  # type: ignore[assignment]
     return await _fetch_and_parse_geo(
         "demanda_irrigacao",
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         return_meta=return_meta,
     )
 
@@ -386,8 +521,8 @@ async def demanda_irrigacao_geo(
 async def disponibilidade_hidrica(
     *,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -396,24 +531,54 @@ async def disponibilidade_hidrica(
 async def disponibilidade_hidrica(
     *,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
-    as_polars: bool = False,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def disponibilidade_hidrica(
+    *,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def disponibilidade_hidrica(
+    *,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def disponibilidade_hidrica(
+    *,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def disponibilidade_hidrica(
     *,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_tabular(
         "disponibilidade_hidrica",
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         as_polars=as_polars,
         return_meta=return_meta,
     )
@@ -423,7 +588,7 @@ async def disponibilidade_hidrica(
 async def disponibilidade_hidrica_geo(
     *,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -432,21 +597,30 @@ async def disponibilidade_hidrica_geo(
 async def disponibilidade_hidrica_geo(
     *,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
+
+
+@overload
+async def disponibilidade_hidrica_geo(
+    *,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult: ...
 
 
 async def disponibilidade_hidrica_geo(
     *,
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_geo(
         "disponibilidade_hidrica",
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         return_meta=return_meta,
     )

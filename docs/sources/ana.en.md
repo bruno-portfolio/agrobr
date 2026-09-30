@@ -80,7 +80,7 @@ async def main():
     df = await ana.pivos_irrigacao(as_polars=True)
 
     # Limit features
-    df = await ana.hidrografia(bbox=(-50, -20, -48, -18), max_features=500)
+    df = await ana.hidrografia(bbox=(-50, -20, -48, -18), max_registros=500)
 
 asyncio.run(main())
 ```
@@ -137,7 +137,7 @@ asyncio.run(main())
 
 - **bbox required**: `hidrografia` and `demanda_irrigacao` require bbox (large datasets)
 - **Keyset pagination**: each page asks for up to 1K features ordered by `OBJECTID` and the next one continues from the last `OBJECTID` received, until the official count is reached. The Hidrografia server returns one feature fewer than requested on each page; with offset pagination the boundary feature was lost (1,046 of 1,047 in the test extract). If pagination stops before the official count, or a page does not advance the `OBJECTID`, the query raises `SourceUnavailableError` stating how many features are missing, instead of returning a partial result. An unreadable page (truncated JSON, proxy HTML) or a page without `OBJECTID` raises `ParseError`
-- **max_features**: optional parameter to limit the total number of features returned
+- **max_registros**: positive integer limiting the returned features, or `None` for no cap. Zero, negative values, booleans and non-integers raise `InvalidParameterError` before collection. The previous `max_features` argument is no longer accepted
 - **Required fields**: the tabular parser checks the fields configured in `required_cols` for every feature on every page; a missing field raises `ParseError`
 
 | Layer | Required field in the official response | Normalized column |
@@ -151,11 +151,13 @@ An official count of zero returns a valid empty result with the published column
 in the `_geo` variants the empty result is also in EPSG:4326. A field containing a null
 value differs from a missing field; null values and zeros are preserved.
 
+`OBJECTID` and `ID` retain their source names and use nullable `Int64`. Measurements use `float64`; textual codes retain their published text. Text uses the native pandas dtype (`str` on pandas 3, `object` on pandas 2), and empty results have the same dtypes as populated results.
+
 ## Limitations
 
 - Hidrografia and irrigation demand require bbox (without a filter they would return hundreds of thousands of features)
-- Only pivots support a UF filter; all layers accept bbox and max_features
+- Only pivots support a UF filter; all layers accept bbox and max_registros
 - There is no year or date-range filter; each query uses the configured layer edition
-- Queries count records before downloading pages; even a small max_features can require waiting for the count
+- Queries count records before downloading pages; even a small max_registros can require waiting for the count
 - Pages accumulate in memory before building the result; there is no streaming or persistent ANA cache
 - A 2s pause follows the sixth page and each subsequent page to avoid overloading the server

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl
@@ -156,6 +157,15 @@ def linha(produto: str, feature: dict[str, Any]) -> dict[str, Any]:
             bruto = propriedades["uf"]
             normal = bruto.strip().upper() if isinstance(bruto, str) else None
             saida[coluna] = normal if normal in UFS else None
+        elif produto == "perfis" and coluna in {"ano", "data_colet"}:
+            bruto = propriedades[fonte]
+            saida[coluna] = (
+                None
+                if bruto is None or bruto == "NULL"
+                else int(bruto)
+                if coluna == "ano"
+                else datetime.strptime(bruto, "%Y-%m-%d")
+            )
         else:
             saida[coluna] = texto(propriedades[fonte])
     return saida

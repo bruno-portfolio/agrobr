@@ -224,8 +224,14 @@ def esperado(produto: str, linha: dict[str, str], nomes: list[str]) -> dict[str,
     for nome in nomes:
         bruto = linha[nome]
         coluna = "uf_original" if produto == "perfis" and nome == "uf" else renomes.get(nome, nome)
-        if bruto == "":
+        if bruto == "" or (
+            produto == "perfis" and nome in {"ano", "data_colet"} and bruto == "NULL"
+        ):
             saida[coluna] = None
+        elif produto == "perfis" and nome == "ano":
+            saida[coluna] = int(bruto)
+        elif produto == "perfis" and nome == "data_colet":
+            saida[coluna] = datetime.strptime(bruto, "%Y-%m-%d")
         elif nome in INTEIROS:
             saida[coluna] = int(bruto)
         elif nome in REAIS:

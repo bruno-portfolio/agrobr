@@ -31,7 +31,9 @@ async def perfis(
 | `as_polars` | `bool` | Return a polars DataFrame |
 | `return_meta` | `bool` | Return a (DataFrame, MetaInfo) tuple |
 
-**Returns:** DataFrame with 85 columns (`embrapa_solos.perfis` 2.0 contract), one row per horizon or layer. It starts with `fid`, `uf`, `municipio`, `latitude`, `longitude`, `horizonte`, `profundidade`, `areia_total`, `silte`, `argila`, `ph_h2o`, `carbono_organico`, `ctc`, `saturacao_bases`, `aluminio`, `fosforo`, `classe_textural`, `nivel_levantamento`, `uso_atual`, followed by the other published attributes, `uf_original` and `feature_id`. Laboratory values are the published text (including `NULL`); see the [source page](../sources/embrapa_solos.en.md#columns-profiles)
+The `ano` column uses nullable `Int64`, and `data_colet` uses `datetime64[ns]`. Source nulls and the literal `NULL` become missing values in these two columns. An unrecognized year or date raises `ParseError`; it is not silently converted to a missing value. Text uses the native pandas dtype (`str` on pandas 3, `object` on pandas 2). Empty tables have the same dtypes as populated tables.
+
+**Returns:** DataFrame with 85 columns (`embrapa_solos.perfis` 3.0 contract), one row per horizon or layer. It starts with `fid`, `uf`, `municipio`, `latitude`, `longitude`, `horizonte`, `profundidade`, `areia_total`, `silte`, `argila`, `ph_h2o`, `carbono_organico`, `ctc`, `saturacao_bases`, `aluminio`, `fosforo`, `classe_textural`, `nivel_levantamento`, `uso_atual`, followed by the other published attributes, `uf_original` and `feature_id`. Laboratory values are the published text (including `NULL`); see the [source page](../sources/embrapa_solos.en.md#columns-profiles)
 
 **Example:**
 
@@ -105,7 +107,7 @@ async def mapa_solos(
 
 | Parameter | Type | Description |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read. E.g. "LATOSSOLO" |
+| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read. E.g. "LATOSSOLO". Blank or non-text input raises `InvalidParameterError` before collection. If the filter matches nothing after a complete read, `UserWarning` and `MetaInfo.validation_warnings` report the requested value and the `ordem1` values observed. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 50,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |
@@ -147,7 +149,7 @@ async def mapa_solos_geo(
 
 | Parameter | Type | Description |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read |
+| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read. Blank or non-text input raises `InvalidParameterError` before collection. If the filter matches nothing after a complete read, `UserWarning` and `MetaInfo.validation_warnings` report the requested value and the `ordem1` values observed. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 3,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |

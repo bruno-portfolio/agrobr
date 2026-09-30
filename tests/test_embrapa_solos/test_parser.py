@@ -90,3 +90,14 @@ def test_conflicting_next_links_rejected(page, parse):
     )
     with pytest.raises(ParseError):
         parse(page)
+
+
+@pytest.mark.parametrize(
+    ("column", "value"),
+    [("ano", "1997/1998"), ("ano", ""), ("data_colet", "2024-02-30"), ("data_colet", "08/02/2006")],
+)
+def test_calendario_invalido_nao_vira_ausente(page, parse, column, value):
+    page["features"][0]["properties"][column] = value
+    records = parse(page).records
+    with pytest.raises(ParseError):
+        parser.build_frame(records, product="perfis")

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from unittest.mock import AsyncMock
+
 import pytest
 
-from agrobr.embrapa_solos import query
+from agrobr import embrapa_solos
+from agrobr.embrapa_solos import client, query
 from agrobr.exceptions import InvalidParameterError
 
 
@@ -58,3 +61,13 @@ def test_modo_adulterado_recusado_pela_consulta_canonica(campo, valor):
     adulterada = original.model_copy(update={campo: valor})
     with pytest.raises(InvalidParameterError, match="divergem da consulta canônica"):
         query.validate_query(adulterada)
+
+
+@pytest.mark.parametrize("funcao", [embrapa_solos.mapa_solos, embrapa_solos.mapa_solos_geo])
+@pytest.mark.parametrize("ordem", ["", "  ", 5])
+async def test_ordem_sem_texto_recusada_antes_da_coleta(funcao, ordem, monkeypatch):
+    coleta = AsyncMock(side_effect=AssertionError("Coleta não deveria ser iniciada"))
+    monkeypatch.setattr(client, "fetch_acquisition", coleta)
+    with pytest.raises(InvalidParameterError, match="ordem"):
+        await funcao(ordem=ordem)
+    coleta.assert_not_called()

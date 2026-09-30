@@ -13,7 +13,7 @@ async def fetch_layer(
     *,
     where: str = "1=1",
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     f: str = "geojson",
 ) -> tuple[list[bytes], str]:
     return await fetch_arcgis_layer(
@@ -23,7 +23,7 @@ async def fetch_layer(
         timeout=TIMEOUT,
         where=where,
         bbox=bbox,
-        max_features=max_features,
+        max_registros=max_registros,
         f=f,
         return_geometry=False if f == "json" else None,
     )

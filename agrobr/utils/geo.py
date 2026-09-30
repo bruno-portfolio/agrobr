@@ -461,17 +461,17 @@ async def fetch_arcgis_layer(
     timeout: httpx.Timeout,
     where: str = "1=1",
     bbox: tuple[float, float, float, float] | None = None,
-    max_features: int | None = None,
+    max_registros: int | None = None,
     f: str = "geojson",
     throttle_after_page: int = 5,
     throttle_delay: float = 2.0,
     return_geometry: bool | None = None,
 ) -> tuple[list[bytes], str]:
-    if max_features is not None and (
-        isinstance(max_features, bool) or not isinstance(max_features, int) or max_features < 1
+    if max_registros is not None and (
+        isinstance(max_registros, bool) or not isinstance(max_registros, int) or max_registros < 1
     ):
         raise InvalidParameterError(
-            f"max_features deve ser inteiro positivo ou None, recebeu {max_features!r}"
+            f"max_registros deve ser inteiro positivo ou None, recebeu {max_registros!r}"
         )
     service_url = f"{base_url}/{layer_config['service_path']}"
     max_record_count = layer_config["max_record_count"]
@@ -489,8 +489,8 @@ async def fetch_arcgis_layer(
     if total == 0:
         return [], f"{service_url}/query"
 
-    if max_features is not None and total > max_features:
-        total = max_features
+    if max_registros is not None and total > max_registros:
+        total = max_registros
 
     n_pages = math.ceil(total / max_record_count)
     pages: list[bytes] = []

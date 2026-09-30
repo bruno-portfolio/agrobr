@@ -1,6 +1,6 @@
 {
   "name": "embrapa_solos.perfis",
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [],
@@ -113,14 +113,14 @@
     "uso_atual": "str",
     "sigla": "str",
     "titulo": "str",
-    "ano": "str",
+    "ano": "int",
     "referencia": "str",
     "autor": "str",
     "codigo_pon": "int",
     "sigla_bd": "str",
     "tipo_ponto": "str",
     "responsave": "str",
-    "data_colet": "str",
+    "data_colet": "date",
     "material_o": "str",
     "observacoe": "str",
     "situacao_c": "str",
@@ -499,7 +499,7 @@
     },
     {
       "name": "ano",
-      "type": "str",
+      "type": "int",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -576,7 +576,7 @@
     },
     {
       "name": "data_colet",
-      "type": "str",
+      "type": "date",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -1295,7 +1295,7 @@
       "feature_id"
     ],
     "optional_geometry_column": "geometry_after_all_attributes",
-    "string_dtype": "string[python] with pd.NA",
+    "string_dtype": "native pandas text (str on pandas 3, object on pandas 2)",
     "integer_dtype": "Int64",
     "float_dtype": "float64",
     "source_property_projection": [
@@ -1401,7 +1401,7 @@
     "source_missing_member": "unsupported_projection_raises_ParseError",
     "source_null": "preserved_when_XSD_nillable_not_equivalent_to_missing_member",
     "source_extra_member": "layout_drift_raises_ParseError",
-    "text_semantics": "literal_published_text_without_numeric_date_or_unit_inference",
+    "text_semantics": "literal_published_text_except_typed_calendar_columns",
     "feature_id": "required_nonblank_published_string_not_unique",
     "identifier_semantics": "published_identifiers_are_not_primary_keys",
     "integer_semantics": "exact_signed_XSD_integer_without_float_intermediate",
@@ -1437,15 +1437,21 @@
       "TO"
     ],
     "uf_original": "unaltered_published_text",
-    "uf_normalization": "trim_uppercase_known_UF_else_pd.NA_with_occurrence_preserved",
+    "uf_normalization": "trim_uppercase_known_UF_else_missing_with_occurrence_preserved",
+    "calendar_columns": {
+      "ano": "Int64",
+      "data_colet": "datetime64[ns]"
+    },
+    "calendar_null": "source_null_or_literal_NULL_becomes_missing",
     "coordinates": "finite_published_attributes_out_of_range_preserved_with_diagnostic",
     "positional_accuracy": "may_include_coordinates_assigned_to_municipality",
     "horizon_semantics": "source_occurrence_with_published_point_identifier_not_merged"
   },
   "guarantees": [
-    "Todos os 83 atributos publicados permanecem recuperáveis nas 85 colunas",
-    "Valores laboratoriais, anos e profundidades permanecem textos literais",
-    "Null, texto NULL, string vazia, espaços e zero não são intercambiáveis",
+    "Todos os 83 atributos publicados estão representados nas 85 colunas",
+    "Valores laboratoriais e profundidades permanecem textos literais",
+    "Ano usa Int64 e data_colet usa datetime64[ns]; null e texto NULL viram ausentes",
+    "Nas colunas textuais, null, texto NULL, string vazia, espaços e zero são distintos",
     "Código de ponto e horizonte são preservados sem fundir ocorrências",
     "Feature.id e identificadores publicados não estabelecem chave primária",
     "UF original é preservada, inclusive quando a normalização produz valor ausente",

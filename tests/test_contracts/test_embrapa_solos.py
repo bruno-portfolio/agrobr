@@ -11,7 +11,7 @@ from agrobr.embrapa_solos import parser
 
 GOLDEN = Path(__file__).parents[1] / "golden_data/embrapa_solos/official_20260907"
 CONTRACTS = {
-    "perfis": embrapa_solos.PERFIS_V2,
+    "perfis": embrapa_solos.PERFIS_V3,
     "mapa": embrapa_solos.MAPA_V2,
 }
 
@@ -48,7 +48,7 @@ def frame(contract):
 
 def test_embrapa_contract_registry_version_and_valid_frame(family, contract, frame):
     assert contracts.get_contract(f"embrapa_solos_{family}") == contract
-    assert contract.version == "2.0"
+    assert contract.version == ("3.0" if family == "perfis" else "2.0")
     assert contract.primary_key == []
     assert contract.validate(frame) == (True, [])
 
@@ -65,20 +65,20 @@ def test_embrapa_integer_dtype_rejects_coercible_alternative(contract, frame, dt
     assert not contract.validate(frame)[0]
 
 
-def test_embrapa_text_requires_nullable_python_storage(contract, frame):
-    frame["feature_id"] = frame["feature_id"].astype(object)
+def test_embrapa_text_rejects_forced_nullable_storage(contract, frame):
+    frame["feature_id"] = frame["feature_id"].astype("string[python]")
     assert not contract.validate(frame)[0]
 
 
 @pytest.mark.parametrize("value", ["SP", "sc", "XX", ""])
 def test_embrapa_normalized_uf_must_match_original(value):
-    frame = embrapa_solos.PERFIS_V2.empty_frame()
+    frame = embrapa_solos.PERFIS_V3.empty_frame()
     for column in frame:
         cell = {"fid": 1, "feature_id": "published.1", "uf_original": " sc ", "uf": value}.get(
             column
         )
         frame[column] = pd.Series([cell], dtype=frame[column].dtype)
-    assert not embrapa_solos.PERFIS_V2.validate(frame)[0]
+    assert not embrapa_solos.PERFIS_V3.validate(frame)[0]
 
 
 @pytest.mark.parametrize("mutation", ["missing", "extra", "order", "duplicate"])
@@ -101,14 +101,20 @@ def test_embrapa_official_complete_projection_meets_contract(family, contract, i
     page = parser.parse_page(body, product=family, include_geometry=include_geometry)
     frame = parser.build_frame(page.records, product=family)
     assert contract.validate(frame) == (True, [])
+    assert frame.dtypes.equals(contract.empty_frame().dtypes)
     assert list(frame) == list(
         constants.EMBRAPA_SOLOS_PERFIS_COLUMNS
         if family == "perfis"
         else constants.EMBRAPA_SOLOS_MAPA_COLUMNS
     )
     if family == "perfis":
+        assert str(frame["ano"].dtype) == "Int64"
+        assert str(frame["data_colet"].dtype) == "datetime64[ns]"
+        assert frame.loc[0, "ano"] == 2006
+        assert frame.loc[0, "data_colet"] == pd.Timestamp(2006, 2, 8)
         assert frame.loc[0, "fosforo"] == "8"
         assert frame.loc[0, "codigo_pon"] == 5762
         assert frame.loc[0, "ph_h2o"] == "4.400000095367432"
         if not include_geometry:
+            assert pd.isna(frame.loc[1, "ano"])
             assert frame.loc[5, "fosforo"] == "<1"

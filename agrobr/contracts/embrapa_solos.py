@@ -9,15 +9,6 @@ from agrobr.normalize import regions
 
 
 class SolosContract(contracts.Contract):
-    def empty_frame(self) -> pd.DataFrame:
-        frame = super().empty_frame()
-        for column in self.columns:
-            if column.type == contracts.ColumnType.STRING:
-                frame[column.name] = pd.Series(dtype=pd.StringDtype(storage="python"))
-            elif column.type == contracts.ColumnType.FLOAT:
-                frame[column.name] = pd.Series(dtype="float64")
-        return frame
-
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         _, errors = super().validate(df)
         if not df.columns.is_unique:
@@ -30,14 +21,16 @@ class SolosContract(contracts.Contract):
                 continue
             dtype = df[column.name].dtype
             if column.type == contracts.ColumnType.STRING:
-                if (
-                    not isinstance(dtype, pd.StringDtype)
-                    or dtype.storage != "python"
-                    or str(dtype) != "string"
-                ):
-                    errors.append(f"Column '{column.name}' must use StringDtype python with pd.NA")
+                if dtype != pd.Series([""]).dtype:
+                    errors.append(f"Column '{column.name}' must use native pandas text dtype")
             else:
-                expected = "Int64" if column.type == contracts.ColumnType.INTEGER else "float64"
+                expected = (
+                    "Int64"
+                    if column.type == contracts.ColumnType.INTEGER
+                    else "datetime64[ns]"
+                    if column.type == contracts.ColumnType.DATE
+                    else "float64"
+                )
                 if str(dtype) != expected:
                     errors.append(f"Column '{column.name}' must use {expected} dtype")
         if errors:
@@ -69,7 +62,7 @@ class SolosContract(contracts.Contract):
         schema["constraints"].update(
             attribute_order=self.list_columns(),
             optional_geometry_column="geometry_after_all_attributes",
-            string_dtype="string[python] with pd.NA",
+            string_dtype="native pandas text (str on pandas 3, object on pandas 2)",
             integer_dtype="Int64",
             float_dtype="float64",
             source_property_projection=list(properties),
@@ -77,7 +70,7 @@ class SolosContract(contracts.Contract):
             source_missing_member="unsupported_projection_raises_ParseError",
             source_null="preserved_when_XSD_nillable_not_equivalent_to_missing_member",
             source_extra_member="layout_drift_raises_ParseError",
-            text_semantics="literal_published_text_without_numeric_date_or_unit_inference",
+            text_semantics="literal_published_text_except_typed_calendar_columns",
             feature_id="required_nonblank_published_string_not_unique",
             identifier_semantics="published_identifiers_are_not_primary_keys",
             integer_semantics="exact_signed_XSD_integer_without_float_intermediate",
@@ -88,7 +81,9 @@ class SolosContract(contracts.Contract):
             schema["constraints"].update(
                 uf_domain=sorted(regions.UFS_VALIDAS),
                 uf_original="unaltered_published_text",
-                uf_normalization="trim_uppercase_known_UF_else_pd.NA_with_occurrence_preserved",
+                uf_normalization="trim_uppercase_known_UF_else_missing_with_occurrence_preserved",
+                calendar_columns={"ano": "Int64", "data_colet": "datetime64[ns]"},
+                calendar_null="source_null_or_literal_NULL_becomes_missing",
                 coordinates="finite_published_attributes_out_of_range_preserved_with_diagnostic",
                 positional_accuracy="may_include_coordinates_assigned_to_municipality",
                 horizon_semantics="source_occurrence_with_published_point_identifier_not_merged",
@@ -102,6 +97,10 @@ class SolosContract(contracts.Contract):
 
 
 def _column(name: str) -> contracts.Column:
+    if name == "ano":
+        return contracts.Column(name, contracts.ColumnType.INTEGER, nullable=True)
+    if name == "data_colet":
+        return contracts.Column(name, contracts.ColumnType.DATE, nullable=True)
     if name in ("fid", "codigo_pon"):
         bits = 32 if name == "fid" else 64
         return contracts.Column(
@@ -121,16 +120,17 @@ def _column(name: str) -> contracts.Column:
     return contracts.Column(name, contracts.ColumnType.STRING, nullable=name != "feature_id")
 
 
-PERFIS_V2 = SolosContract(
+PERFIS_V3 = SolosContract(
     name="embrapa_solos.perfis",
-    version="2.0",
+    version="3.0",
     effective_from="2.0.0",
     primary_key=[],
     columns=[_column(name) for name in constants.EMBRAPA_SOLOS_PERFIS_COLUMNS],
     guarantees=[
-        "Todos os 83 atributos publicados permanecem recuperáveis nas 85 colunas",
-        "Valores laboratoriais, anos e profundidades permanecem textos literais",
-        "Null, texto NULL, string vazia, espaços e zero não são intercambiáveis",
+        "Todos os 83 atributos publicados estão representados nas 85 colunas",
+        "Valores laboratoriais e profundidades permanecem textos literais",
+        "Ano usa Int64 e data_colet usa datetime64[ns]; null e texto NULL viram ausentes",
+        "Nas colunas textuais, null, texto NULL, string vazia, espaços e zero são distintos",
         "Código de ponto e horizonte são preservados sem fundir ocorrências",
         "Feature.id e identificadores publicados não estabelecem chave primária",
         "UF original é preservada, inclusive quando a normalização produz valor ausente",
@@ -154,5 +154,5 @@ MAPA_V2 = SolosContract(
     ],
 )
 
-contracts.register_contract("embrapa_solos_perfis", PERFIS_V2)
+contracts.register_contract("embrapa_solos_perfis", PERFIS_V3)
 contracts.register_contract("embrapa_solos_mapa", MAPA_V2)

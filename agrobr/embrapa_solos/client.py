@@ -72,6 +72,7 @@ class _Collection(wfs.PageState[acquisition.SolosPage]):
         self.geometries: list[dict[str, Any] | None] | None = [] if query.include_geometry else None
         self.frame_bytes = self.geometry_bytes = self.retained_bytes = 0
         self.previous_sort: int | None = None
+        self.ordens: set[str] = set()
 
     def _continuity(self, parsed: Any, overlap: int, offset: int) -> str:
         if overlap and parsed.signatures[0] != self.previous_signature:
@@ -117,6 +118,7 @@ class _Collection(wfs.PageState[acquisition.SolosPage]):
             self.ambiguities,
             self.windows,
             self.query,
+            self.ordens,
             self.accepted_statistics,
             self.accepted_diagnostics,
         ]
@@ -153,6 +155,11 @@ class _Collection(wfs.PageState[acquisition.SolosPage]):
             raise _error("Página vazia, excessiva ou sem progresso")
         bbox_selected = self._bbox_selection(parsed)
         sequence = self._continuity(parsed, overlap, offset)
+        if self.query.ordem is not None:
+            for feature in parsed.records[overlap:]:
+                ordem = feature.properties.model_dump().get("ordem1")
+                if isinstance(ordem, str):
+                    self.ordens.add(ordem)
         positions = [
             index
             for index, feature in enumerate(parsed.records[overlap:])
@@ -281,6 +288,7 @@ class _Collection(wfs.PageState[acquisition.SolosPage]):
             local_filters={
                 "uf": self.query.uf,
                 "ordem": self.query.ordem,
+                "ordens_observadas": sorted(self.ordens),
                 "bbox": self.query.bbox,
                 "bbox_predicate": "geometry_intersects" if self.query.bbox else None,
                 "basis": "validated_remote_occurrences_before_output_materialization",

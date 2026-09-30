@@ -85,9 +85,11 @@ asyncio.run(main())
 | uso_atual | str | Uso atual do solo |
 
 A tabela mostra as colunas principais. O resultado tem 85 colunas, na ordem do contrato
-`embrapa_solos.perfis` 2.0: os 83 atributos publicados (com os nomes acima ou o nome original da camada),
+`embrapa_solos.perfis` 3.0: os 83 atributos publicados (com os nomes acima ou o nome original da camada),
 `uf_original` e `feature_id`. Cada linha e um horizonte ou camada; `codigo_pon` identifica o ponto de
 amostragem.
+
+A coluna `ano` usa `Int64` anulável, e `data_colet` usa `datetime64[ns]`. Nulos da fonte e o literal `NULL` viram ausentes nessas duas colunas. Ano ou data fora do formato esperado levanta `ParseError`; não vira ausente silenciosamente. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2). Tabelas vazias têm os mesmos dtypes das tabelas com registros.
 
 Os valores laboratoriais sao o texto publicado pela Embrapa (o WFS declara `xsd:string`), sem conversao:
 numeros com ponto decimal, as vezes com ruido de float32 (`4.400000095367432`), e o texto `NULL` para
@@ -126,6 +128,7 @@ horizontes com as tres medidas; `saturacao_bases` = 100 x S / T e `ctc` = S + H 
 ## Particularidades
 
 - **Funcoes `_geo()` requerem [geo]**: `pip install agrobr[geo]` (geopandas)
+- **Filtro de ordem**: `ordem` casa por trecho de `ordem1`, sem diferenciar caixa. Texto vazio ou não textual é recusado antes da coleta. Uma leitura completa sem correspondência emite `UserWarning` e registra o valor pedido e as classes observadas em `MetaInfo.validation_warnings`; uma leitura parcial continua avisando sobre o prefixo remoto.
 - **Paginacao**: count/startIndex ordenado por `fid`, com 1 registro de sobreposicao entre paginas. `max_registros` (padrao 50.000; 5.000 perfis e 3.000 poligonos nas funcoes `_geo`) corta o prefixo remoto; os filtros `uf` e `ordem` sao aplicados localmente sobre esse prefixo e, quando o corte deixa a selecao parcial, sai um `UserWarning` (`max_registros=None` varre a camada inteira)
 - **CRS**: EPSG:4326, o CRS padrao das duas camadas no WFS; o `bbox` tambem e EPSG:4326
 - **Licenca NC**: uso comercial requer autorizacao da EMBRAPA

@@ -83,6 +83,8 @@ def build_query(
             raise ValueError("uf deve ser string ou None")
         if ordem is not None and type(ordem) is not str:
             raise ValueError("ordem deve ser string ou None")
+        if isinstance(ordem, str) and not ordem.strip():
+            raise ValueError("ordem deve ser texto não vazio")
         requested = copy.deepcopy(
             {
                 "uf": uf,

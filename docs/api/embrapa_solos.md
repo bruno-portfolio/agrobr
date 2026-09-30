@@ -31,7 +31,9 @@ async def perfis(
 | `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Retorna tupla (DataFrame, MetaInfo) |
 
-**Retorno:** DataFrame com 85 colunas (contrato `embrapa_solos.perfis` 2.0), uma linha por horizonte ou camada. Comeca por `fid`, `uf`, `municipio`, `latitude`, `longitude`, `horizonte`, `profundidade`, `areia_total`, `silte`, `argila`, `ph_h2o`, `carbono_organico`, `ctc`, `saturacao_bases`, `aluminio`, `fosforo`, `classe_textural`, `nivel_levantamento`, `uso_atual`, e segue com os demais atributos publicados, `uf_original` e `feature_id`. Os valores laboratoriais sao o texto publicado (inclusive `NULL`); veja a [pagina da fonte](../sources/embrapa_solos.md#colunas-perfis)
+A coluna `ano` usa `Int64` anulável, e `data_colet` usa `datetime64[ns]`. Nulos da fonte e o literal `NULL` viram ausentes nessas duas colunas. Ano ou data fora do formato esperado levanta `ParseError`; não vira ausente silenciosamente. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2). Tabelas vazias têm os mesmos dtypes das tabelas com registros.
+
+**Retorno:** DataFrame com 85 colunas (contrato `embrapa_solos.perfis` 3.0), uma linha por horizonte ou camada. Comeca por `fid`, `uf`, `municipio`, `latitude`, `longitude`, `horizonte`, `profundidade`, `areia_total`, `silte`, `argila`, `ph_h2o`, `carbono_organico`, `ctc`, `saturacao_bases`, `aluminio`, `fosforo`, `classe_textural`, `nivel_levantamento`, `uso_atual`, e segue com os demais atributos publicados, `uf_original` e `feature_id`. Os valores laboratoriais sao o texto publicado (inclusive `NULL`); veja a [pagina da fonte](../sources/embrapa_solos.md#colunas-perfis)
 
 **Exemplo:**
 
@@ -105,7 +107,7 @@ async def mapa_solos(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`; contains, case-insensitive), aplicado localmente ao prefixo lido. Ex: "LATOSSOLO" |
+| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`; contains, case-insensitive), aplicado localmente ao prefixo lido. Ex: "LATOSSOLO". Texto vazio ou não textual levanta `InvalidParameterError` antes da coleta. Se o filtro não casar nada após uma leitura completa, `UserWarning` e `MetaInfo.validation_warnings` informam o valor pedido e os valores de `ordem1` observados. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Teto de ocorrencias lidas em ordem de `fid` (padrao 50.000; `None` le a camada inteira). Os filtros locais atuam so sobre esse prefixo; corte que deixa a selecao parcial emite `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Ocorrencias por pagina: padrao 250 (perfis) / 500 (mapa), maximo 1000; com geometria (`_geo` ou `bbox`), 100 / 25, maximo 100 |
@@ -147,7 +149,7 @@ async def mapa_solos_geo(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`; contains, case-insensitive), aplicado localmente ao prefixo lido |
+| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`; contains, case-insensitive), aplicado localmente ao prefixo lido. Texto vazio ou não textual levanta `InvalidParameterError` antes da coleta. Se o filtro não casar nada após uma leitura completa, `UserWarning` e `MetaInfo.validation_warnings` informam o valor pedido e os valores de `ordem1` observados. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Teto de ocorrencias lidas em ordem de `fid` (padrao 3.000; `None` le a camada inteira). Os filtros locais atuam so sobre esse prefixo; corte que deixa a selecao parcial emite `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Ocorrencias por pagina: padrao 250 (perfis) / 500 (mapa), maximo 1000; com geometria (`_geo` ou `bbox`), 100 / 25, maximo 100 |

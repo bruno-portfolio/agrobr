@@ -80,7 +80,7 @@ async def main():
     df = await ana.pivos_irrigacao(as_polars=True)
 
     # Limitar features
-    df = await ana.hidrografia(bbox=(-50, -20, -48, -18), max_features=500)
+    df = await ana.hidrografia(bbox=(-50, -20, -48, -18), max_registros=500)
 
 asyncio.run(main())
 ```
@@ -137,7 +137,7 @@ asyncio.run(main())
 
 - **bbox obrigatorio**: `hidrografia` e `demanda_irrigacao` requerem bbox (datasets grandes)
 - **Paginacao por chave**: cada pagina pede ate 1K features ordenadas por `OBJECTID` e a seguinte continua do ultimo `OBJECTID` recebido, ate completar a contagem oficial. O servidor da Hidrografia devolve uma feicao a menos que o pedido em cada pagina; com paginacao por offset, a feicao da fronteira se perdia (1.046 de 1.047 no recorte de teste). Se a paginacao parar antes da contagem oficial, ou se uma pagina nao avancar o `OBJECTID`, a consulta levanta `SourceUnavailableError` dizendo quantas feicoes faltam, em vez de devolver resultado parcial. Pagina ilegivel (JSON cortado, HTML de proxy) ou sem `OBJECTID` levanta `ParseError`
-- **max_features**: parametro opcional para limitar o total de features retornadas
+- **max_registros**: inteiro positivo que limita as feições retornadas, ou `None` para não limitar. Zero, negativos, booleanos e valores não inteiros levantam `InvalidParameterError` antes da coleta. O argumento anterior `max_features` não é mais aceito
 - **Campos obrigatorios**: o parser tabular verifica os campos configurados em `required_cols` em cada feicao de cada pagina; ausencia gera `ParseError`
 
 | Layer | Campo obrigatorio na resposta oficial | Coluna normalizada |
@@ -152,11 +152,13 @@ nas variantes `_geo`, o resultado vazio tambem sai em EPSG:4326. A presenca
 de um campo com valor nulo e diferente da ausencia desse campo; valores nulos e
 zeros sao preservados.
 
+`OBJECTID` e `ID` mantêm os nomes da fonte e usam `Int64` anulável. Medidas usam `float64`; códigos textuais preservam o texto publicado. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2), e os resultados vazios têm os mesmos dtypes dos resultados com registros.
+
 ## Limitacoes
 
 - Hidrografia e demanda de irrigacao exigem bbox (sem filtro retornaria centenas de milhares de features)
-- Apenas pivos oferecem filtro por UF; todas as camadas aceitam bbox e max_features
+- Apenas pivos oferecem filtro por UF; todas as camadas aceitam bbox e max_registros
 - Nao ha filtro de ano ou intervalo de datas; a consulta usa a edicao de cada camada configurada
-- A consulta conta os registros antes de baixar as paginas; mesmo um max_features pequeno pode exigir aguardar essa contagem
+- A consulta conta os registros antes de baixar as paginas; mesmo um max_registros pequeno pode exigir aguardar essa contagem
 - As paginas sao acumuladas em memoria antes de construir o resultado; nao ha streaming nem cache persistente ANA
 - Pausa de 2s apos a sexta pagina e as seguintes para nao sobrecarregar o servidor

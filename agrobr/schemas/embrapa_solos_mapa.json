@@ -303,7 +303,7 @@
       "feature_id"
     ],
     "optional_geometry_column": "geometry_after_all_attributes",
-    "string_dtype": "string[python] with pd.NA",
+    "string_dtype": "native pandas text (str on pandas 3, object on pandas 2)",
     "integer_dtype": "Int64",
     "float_dtype": "float64",
     "source_property_projection": [
@@ -334,7 +334,7 @@
     "source_missing_member": "unsupported_projection_raises_ParseError",
     "source_null": "preserved_when_XSD_nillable_not_equivalent_to_missing_member",
     "source_extra_member": "layout_drift_raises_ParseError",
-    "text_semantics": "literal_published_text_without_numeric_date_or_unit_inference",
+    "text_semantics": "literal_published_text_except_typed_calendar_columns",
     "feature_id": "required_nonblank_published_string_not_unique",
     "identifier_semantics": "published_identifiers_are_not_primary_keys",
     "integer_semantics": "exact_signed_XSD_integer_without_float_intermediate",

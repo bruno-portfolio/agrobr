@@ -191,7 +191,9 @@ def _desfazer_dupla_codificacao(texto: str) -> str:
 def reparar_texto(frame: pd.DataFrame) -> tuple[dict[str, int], dict[str, int]]:
     reparos: dict[str, int] = {}
     sem_reparo: dict[str, int] = {}
-    for coluna in [nome for nome in frame.columns if frame[nome].dtype == "string"]:
+    for coluna in [
+        nome for nome in frame.columns if pd.api.types.is_string_dtype(frame[nome].dtype)
+    ]:
         original = frame[coluna]
         reparado = original.map(_desfazer_dupla_codificacao, na_action="ignore").astype(
             original.dtype
@@ -226,17 +228,39 @@ def build_frame(records: list[models.Feature], *, product: models.Product) -> pd
         if product == "perfis":
             values["uf"].append(normalize_uf(source["uf"]))
         values["feature_id"].append(record.id)
+    text_dtype = pd.Series([""]).dtype
     dtypes = {
         rename.get(field, field): "Int64"
         if field in constants.EMBRAPA_SOLOS_INTEGER_BITS
         else "float64"
         if field in constants.EMBRAPA_SOLOS_FLOAT_PROPERTIES
-        else "string[python]"
+        else text_dtype
         for field in fields
     }
-    return pd.DataFrame(
+    frame = pd.DataFrame(
         {
-            name: pd.Series(value, dtype=dtypes.get(name, "string[python]"))
+            name: pd.Series(value, dtype=dtypes.get(name, text_dtype))
             for name, value in values.items()
         }
     )
+    if product == "perfis":
+        for column, pattern in (
+            ("ano", r"[0-9]{4}"),
+            ("data_colet", r"[0-9]{4}-[0-9]{2}-[0-9]{2}"),
+        ):
+            text = frame[column].mask(frame[column] == "NULL")
+            try:
+                if not text.dropna().str.fullmatch(pattern).all():
+                    raise ValueError(f"{column} contém texto fora do formato publicado")
+                frame[column] = (
+                    pd.to_numeric(text, errors="raise").astype("Int64")
+                    if column == "ano"
+                    else pd.to_datetime(text, format="%Y-%m-%d", errors="raise").astype(
+                        "datetime64[ns]"
+                    )
+                )
+            except (TypeError, ValueError, OverflowError) as exc:
+                raise ParseError(
+                    source="embrapa_solos", parser_version=PARSER_VERSION, reason=str(exc)
+                ) from exc
+    return frame

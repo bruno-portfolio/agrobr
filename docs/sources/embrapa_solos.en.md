@@ -84,9 +84,11 @@ asyncio.run(main())
 | nivel_levantamento | str | Survey level |
 | uso_atual | str | Current land use |
 
-The table shows the main columns. The result has 85 columns, in the order of the `embrapa_solos.perfis` 2.0
+The table shows the main columns. The result has 85 columns, in the order of the `embrapa_solos.perfis` 3.0
 contract: the 83 published attributes (under the names above or the layer's original name), `uf_original`
 and `feature_id`. Each row is a horizon or layer; `codigo_pon` identifies the sampling point.
+
+The `ano` column uses nullable `Int64`, and `data_colet` uses `datetime64[ns]`. Source nulls and the literal `NULL` become missing values in these two columns. An unrecognized year or date raises `ParseError`; it is not silently converted to a missing value. Text uses the native pandas dtype (`str` on pandas 3, `object` on pandas 2). Empty tables have the same dtypes as populated tables.
 
 Laboratory values are the text published by Embrapa (the WFS declares `xsd:string`), without conversion:
 numbers with a decimal point, sometimes with float32 noise (`4.400000095367432`), and the text `NULL` for
@@ -125,6 +127,7 @@ the horizons with all three values; `saturacao_bases` = 100 x S / T and `ctc` = 
 ## Specifics
 
 - **`_geo()` functions require [geo]**: `pip install agrobr[geo]` (geopandas)
+- **Order filter**: `ordem` matches part of `ordem1`, ignoring case. A blank or non-text value is rejected before collection. A complete read with no match emits `UserWarning` and records the requested value and observed classes in `MetaInfo.validation_warnings`; a partial read continues to warn about the remote prefix.
 - **Pagination**: count/startIndex ordered by `fid`, with a 1-record overlap between pages. `max_registros` (default 50,000; 5,000 profiles and 3,000 polygons in the `_geo` functions) cuts the remote prefix; the `uf` and `ordem` filters are applied locally to that prefix and, when the cut leaves the selection partial, a `UserWarning` is raised (`max_registros=None` scans the whole layer)
 - **CRS**: EPSG:4326, the default CRS of both layers in the WFS; `bbox` is also EPSG:4326
 - **NC license**: commercial use requires authorization from EMBRAPA

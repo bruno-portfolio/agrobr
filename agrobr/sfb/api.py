@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import time
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Literal, cast, overload
 
 import pandas as pd
 
@@ -10,13 +10,19 @@ from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import (
+    DataFrameResult,
+    GeoDataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
 from agrobr.utils.validation import validate_bioma, validate_uf
 
 from . import client, models, parser
 
 if TYPE_CHECKING:
     import geopandas as gpd
+    import polars as pl
 
 logger = _log.get_logger(__name__)
 
@@ -34,7 +40,7 @@ def _escape_filter_value(value: str) -> str:
 def _validate_categoria(categoria: str | None) -> str | None:
     if categoria is None:
         return None
-    normalized = categoria.strip().upper()
+    normalized = categoria.strip().upper() if isinstance(categoria, str) else ""
     if normalized not in models.CATEGORIAS_CNFP:
         raise InvalidParameterError(
             f"Categoria inválida: {categoria!r}. Valores válidos: {sorted(models.CATEGORIAS_CNFP)}"
@@ -73,7 +79,7 @@ async def _fetch_and_parse_tabular(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     where = _build_where(layer_key, uf=uf, bioma=bioma, categoria=categoria)
     logger.info(f"sfb_{layer_key}", uf=uf, bbox=bbox)
 
@@ -98,7 +104,15 @@ async def _fetch_and_parse_tabular(
         raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
         raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
     )
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            str(column) for column in df if pd.api.types.is_string_dtype(df[column].dtype)
+        ),
+    )
 
 
 async def _fetch_and_parse_geo(
@@ -109,7 +123,7 @@ async def _fetch_and_parse_geo(
     categoria: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     where = _build_where(layer_key, uf=uf, bioma=bioma, categoria=categoria)
     logger.info(f"sfb_{layer_key}_geo", uf=uf, bbox=bbox)
 
@@ -118,7 +132,7 @@ async def _fetch_and_parse_geo(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    gdf = parser.parse_layer_geojson(pages, layer_key=layer_key)
+    gdf = cast("gpd.GeoDataFrame", parser.parse_layer_geojson(pages, layer_key=layer_key))
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
@@ -149,7 +163,7 @@ async def cnfp(
     bioma: str | None = None,
     categoria: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -161,9 +175,45 @@ async def cnfp(
     bioma: str | None = None,
     categoria: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def cnfp(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    categoria: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def cnfp(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    categoria: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def cnfp(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    categoria: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def cnfp(
@@ -174,7 +224,7 @@ async def cnfp(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
     categoria = _validate_categoria(categoria)
@@ -212,6 +262,7 @@ async def cnfp_geo(
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
 
+@overload
 async def cnfp_geo(
     *,
     uf: str | None = None,
@@ -219,7 +270,17 @@ async def cnfp_geo(
     categoria: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult: ...
+
+
+async def cnfp_geo(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    categoria: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
     categoria = _validate_categoria(categoria)
@@ -242,7 +303,7 @@ async def concessoes(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -252,9 +313,39 @@ async def concessoes(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def concessoes(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def concessoes(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def concessoes(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def concessoes(
@@ -263,7 +354,7 @@ async def concessoes(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_tabular(
@@ -293,12 +384,21 @@ async def concessoes_geo(
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
 
+@overload
 async def concessoes_geo(
     *,
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult: ...
+
+
+async def concessoes_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult:
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
     return await _fetch_and_parse_geo(
@@ -318,7 +418,7 @@ async def ifn_conglomerados(
     uf: str | None = None,
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -329,9 +429,42 @@ async def ifn_conglomerados(
     uf: str | None = None,
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ifn_conglomerados(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def ifn_conglomerados(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ifn_conglomerados(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def ifn_conglomerados(
@@ -341,7 +474,7 @@ async def ifn_conglomerados(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
     bbox = validate_bbox(bbox)
@@ -375,13 +508,23 @@ async def ifn_conglomerados_geo(
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
 
+@overload
 async def ifn_conglomerados_geo(
     *,
     uf: str | None = None,
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult: ...
+
+
+async def ifn_conglomerados_geo(
+    *,
+    uf: str | None = None,
+    bioma: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult:
     uf = validate_uf(uf)
     bioma = validate_bioma(bioma)
     bbox = validate_bbox(bbox)

@@ -88,14 +88,14 @@ def build_meta(acquired: acquisition.SolosAcquisition, frame: pd.DataFrame) -> M
         acquired.parse_duration_ms,
         frame,
         acquired.parser_version,
-        schema_version="2.0",
+        schema_version="3.0" if acquired.query.product == "perfis" else "2.0",
         attempted_sources=[selected],
         selected_source=selected,
         raw_content_hash=hashlib.sha256(manifest).hexdigest(),
         source_details=details,
     )
     meta.raw_content_size = len(manifest)
-    meta.contract_version = "2.0"
+    meta.contract_version = meta.schema_version
     meta.fetched_at = max(resource.fetched_at for resource in acquired.resources).astimezone(UTC)
     meta.fetch_timestamp = meta.fetched_at
     meta.timestamp = datetime.now(UTC)

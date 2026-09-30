@@ -114,11 +114,13 @@ asyncio.run(main())
 
 - **CNFP service name**: inclui data de retificacao no path (`CNFP_v19_03_retificado_17072025`)
 - **Paginação por chave**: no CNFP e nas concessões, as páginas seguem `fid` crescente (`fid > último` com `orderByFields=fid`). Se somarem menos feições que a contagem oficial, a consulta levanta `SourceUnavailableError` dizendo quantas faltam, em vez de devolver resultado parcial. Resposta HTML (manutenção ou bloqueio de WAF, mesmo com status 200) também vira `SourceUnavailableError`
-- **Ano de criação no CNFP**: o campo `anocriacao` do serviço é texto com a data inteira (`DD/MM/AAAA`, `DD-MM-AAAA`; raramente `AAAA-MM-DD`, `AAAA/MM/DD` ou só o ano). O agrobr publica o ano quando o texto tem um único ano. Fica nulo quando o campo está em branco ou é `-`, e quando a data é composta com anos diferentes (sobreposição de unidades, por exemplo `22/06/2011 / 10-01-2002` numa "PA / APA"). Neste último caso sai o aviso `sfb_ano_criacao_ambiguo`, com a contagem. Na camada de 23/09/2026: 15.068 de 20.829 registros com ano, 4.718 em branco ou `-` e 1.043 compostos com anos diferentes
+- **Ano de criação no CNFP**: o campo `anocriacao` do serviço é texto com a data inteira (`DD/MM/AAAA`, `DD-MM-AAAA`; raramente `AAAA-MM-DD`, `AAAA/MM/DD` ou só o ano). O agrobr publica o ano quando o texto tem um único ano. Fica nulo quando o campo está em branco ou é `-`, e quando a data é composta com anos diferentes (sobreposição de unidades, por exemplo `22/06/2011 / 10-01-2002` numa "PA / APA"). Neste último caso, um `UserWarning` e `MetaInfo.validation_warnings` informam a contagem e até três exemplos do texto publicado; o log `sfb_ano_criacao_ambiguo` também é mantido. Na camada de 23/09/2026: 15.068 de 20.829 registros com ano, 4.718 em branco ou `-` e 1.043 compostos com anos diferentes
 - **Tabular sem geometria**: `cnfp()`, `concessoes()` e `ifn_conglomerados()` pedem `returnGeometry=false` (a 1ª página do CNFP nacional cai de 378 MB para 0,5 MB); a geometria só vem nas funções `_geo`
 - **Unidades e CRS**: área em hectares como publicada (`area_ha` no CNFP, `hectares` nas concessões), sem recálculo pela geometria. A geometria é pedida em EPSG:4326 (`outSR=4326`) e reprojetada pelo servidor (o CNFP é guardado em 3857 e as concessões em 4674)
 - **Parâmetros**: argumento desconhecido levanta `TypeError` antes da rede; `uf`, `bioma` e `categoria` inválidos levantam `InvalidParameterError`; `bbox` inválido levanta `ValueError`
 - **Filtros compostos**: CNFP e IFN aceitam filtro por bioma alem de uf e bbox
+
+Identificadores, códigos e anos usam `Int64` anulável; áreas usam `float64`. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2), inclusive nos resultados vazios.
 
 ## Limitacoes
 
