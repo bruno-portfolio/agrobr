@@ -3,6 +3,8 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Literal
 
+from agrobr.exceptions import InvalidParameterError
+
 UnidadeOrigem = Literal[
     "sc60kg",
     "sc50kg",
@@ -35,6 +37,8 @@ PESO_BUSHEL_KG: dict[str, Decimal] = {
 }
 
 PESO_ARROBA_KG = Decimal("15")
+
+_UNIDADES_MASSA = "arroba, kg, mil_ton, sc40kg, sc50kg, sc60kg, ton (e bu, com produto)"
 
 FATORES_CONVERSAO: dict[tuple[str, str], Decimal] = {
     ("kg", "ton"): Decimal("0.001"),
@@ -129,7 +133,9 @@ def _para_kg(valor: Decimal, unidade: str) -> Decimal:
     if unidade == "arroba":
         return valor * PESO_ARROBA_KG
 
-    raise ValueError(f"Conversão de '{unidade}' para kg não suportada")
+    raise InvalidParameterError(
+        f"Conversão de '{unidade}' para kg não suportada. Unidades de massa: {_UNIDADES_MASSA}"
+    )
 
 
 def _de_kg(valor_kg: Decimal, unidade: str) -> Decimal:
@@ -146,7 +152,9 @@ def _de_kg(valor_kg: Decimal, unidade: str) -> Decimal:
     if unidade == "arroba":
         return valor_kg / PESO_ARROBA_KG
 
-    raise ValueError(f"Conversão de kg para '{unidade}' não suportada")
+    raise InvalidParameterError(
+        f"Conversão de kg para '{unidade}' não suportada. Unidades de massa: {_UNIDADES_MASSA}"
+    )
 
 
 def _converter_bushel(
@@ -155,12 +163,17 @@ def _converter_bushel(
     para: str,
     produto: str | None,
 ) -> Decimal:
+    produtos = ", ".join(sorted(PESO_BUSHEL_KG))
     if produto is None:
-        raise ValueError("Produto é necessário para conversões com bushel")
+        raise InvalidParameterError(
+            f"Produto é necessário para conversões com bushel. Produtos: {produtos}"
+        )
 
     produto_norm = produto.lower()
     if produto_norm not in PESO_BUSHEL_KG:
-        raise ValueError(f"Peso do bushel para '{produto}' não definido")
+        raise InvalidParameterError(
+            f"Peso do bushel para '{produto}' não definido. Produtos: {produtos}"
+        )
 
     peso_bu = PESO_BUSHEL_KG[produto_norm]
 
@@ -172,27 +185,43 @@ def _converter_bushel(
         return valor_kg / peso_bu
 
 
+def _peso_saca(peso_saca_kg: int) -> Decimal:
+    if (
+        isinstance(peso_saca_kg, bool)
+        or not isinstance(peso_saca_kg, int | float | Decimal)
+        or not peso_saca_kg > 0
+    ):
+        raise InvalidParameterError(
+            f"peso_saca_kg deve ser número positivo, recebeu {peso_saca_kg!r}"
+        )
+    return Decimal(str(peso_saca_kg))
+
+
 def sacas_para_toneladas(sacas: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
+    peso = _peso_saca(peso_saca_kg)
     if not isinstance(sacas, Decimal):
         sacas = Decimal(str(sacas))
-    return sacas * Decimal(str(peso_saca_kg)) / Decimal("1000")
+    return sacas * peso / Decimal("1000")
 
 
 def toneladas_para_sacas(toneladas: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
+    peso = _peso_saca(peso_saca_kg)
     if not isinstance(toneladas, Decimal):
         toneladas = Decimal(str(toneladas))
-    return toneladas * Decimal("1000") / Decimal(str(peso_saca_kg))
+    return toneladas * Decimal("1000") / peso
 
 
 def preco_saca_para_tonelada(preco_saca: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
+    peso = _peso_saca(peso_saca_kg)
     if not isinstance(preco_saca, Decimal):
         preco_saca = Decimal(str(preco_saca))
-    sacas_por_ton = Decimal("1000") / Decimal(str(peso_saca_kg))
+    sacas_por_ton = Decimal("1000") / peso
     return preco_saca * sacas_por_ton
 
 
 def preco_tonelada_para_saca(preco_ton: Decimal | float, peso_saca_kg: int = 60) -> Decimal:
+    peso = _peso_saca(peso_saca_kg)
     if not isinstance(preco_ton, Decimal):
         preco_ton = Decimal(str(preco_ton))
-    sacas_por_ton = Decimal("1000") / Decimal(str(peso_saca_kg))
+    sacas_por_ton = Decimal("1000") / peso
     return preco_ton / sacas_por_ton

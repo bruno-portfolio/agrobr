@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize.units import (
     converter,
     preco_saca_para_tonelada,
@@ -26,11 +27,14 @@ class TestConverterBushel:
 
     def test_produto_invalido_raises(self):
         with collect_failures() as check:
-            with check("test_sem_produto_raises"), pytest.raises(ValueError, match="Produto"):
+            with (
+                check("test_sem_produto_raises"),
+                pytest.raises(InvalidParameterError, match="Produto.*Produtos: milho, soja, trigo"),
+            ):
                 converter(1, "bu", "kg")
             with (
                 check("test_produto_invalido_raises"),
-                pytest.raises(ValueError, match="não definido"),
+                pytest.raises(InvalidParameterError, match="não definido. Produtos: milho"),
             ):
                 converter(1, "bu", "kg", produto="arroz")
 
@@ -74,9 +78,15 @@ class TestConverterInputTypes:
 class TestConverterUnidadeDesconhecida:
     def test_destino_desconhecido_raises(self):
         with collect_failures() as check:
-            with check("test_origem_desconhecida_raises"), pytest.raises(ValueError):
+            with (
+                check("test_origem_desconhecida_raises"),
+                pytest.raises(InvalidParameterError, match="Unidades de massa: arroba, kg"),
+            ):
                 converter(1, "galao", "kg")
-            with check("test_destino_desconhecido_raises"), pytest.raises(ValueError):
+            with (
+                check("test_destino_desconhecido_raises"),
+                pytest.raises(InvalidParameterError, match="Unidades de massa: arroba, kg"),
+            ):
                 converter(1, "kg", "galao")
 
 
@@ -114,3 +124,18 @@ def test_mesma_unidade_de_bushel_dispensa_produto():
     with sem_excecao():
         resultado = converter(10, "bu", "bu")
     assert resultado == Decimal("10")
+
+
+@pytest.mark.parametrize(
+    "funcao",
+    [
+        sacas_para_toneladas,
+        toneladas_para_sacas,
+        preco_saca_para_tonelada,
+        preco_tonelada_para_saca,
+    ],
+)
+@pytest.mark.parametrize("peso", [0, -60, True, "60"])
+def test_peso_saca_nao_positivo_recusado(funcao, peso):
+    with pytest.raises(InvalidParameterError, match="peso_saca_kg deve ser número positivo"):
+        funcao(100, peso_saca_kg=peso)

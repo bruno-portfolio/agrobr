@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from urllib.parse import urljoin, urlsplit
 
 
 def parse_links_from_html(
@@ -27,8 +28,10 @@ def parse_links_from_html(
             seen.add(href)
 
         full_url = href
-        if full_url.startswith("/") and base_url:
-            full_url = f"{base_url}{full_url}"
+        if base_url and href.startswith("/"):
+            full_url = f"{base_url}{href}"
+        elif base_url and not urlsplit(href).scheme:
+            full_url = urljoin(f"{base_url.rstrip('/')}/", href)
 
         text = a_tag.get_text(strip=True)
         if not text:

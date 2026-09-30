@@ -11,11 +11,12 @@ import pytest
 
 from agrobr.acervo_fundiario import parser as acervo_parser
 from agrobr.cftc import parser as cftc_parser
-from agrobr.exceptions import ParseError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.inmet import parser as inmet_parser
 from agrobr.mapbiomas_alerta import parser as alerta_parser
 from agrobr.normalize.dates import (
     MESES_PT,
+    anos_para_safra,
     converter_coluna,
     converter_datas,
     lista_safras,
@@ -83,10 +84,14 @@ class TestNormalizarSafra:
 
     def test_invalido_raises(self):
         with collect_failures() as check:
-            with check("test_invalido_raises"), pytest.raises(ValueError, match="inválido"):
-                normalizar_safra("abc")
-            with check("test_vazio_raises"), pytest.raises(ValueError):
-                normalizar_safra("")
+            for caso, valor in [("texto", "abc"), ("vazio", ""), ("nao_str", 2024)]:
+                with (
+                    check(caso),
+                    pytest.raises(
+                        InvalidParameterError, match="aceitos: 2024/25, 2024/2025, 24/25"
+                    ),
+                ):
+                    normalizar_safra(valor)
 
 
 class TestSafraParaAnos:
@@ -126,6 +131,13 @@ class TestListaSafras:
                 assert result[-1] == "2024/25"
             with check("test_mesma_safra"):
                 assert lista_safras("2024/25", "2024/25") == ["2024/25"]
+
+    def test_nomes_dos_parametros_de_safra(self):
+        assert lista_safras(safra_inicio="2023/24", safra_fim="2024/25") == ["2023/24", "2024/25"]
+
+    def test_intervalo_invertido_recusado(self):
+        with pytest.raises(InvalidParameterError, match="safra_inicio .* posterior a safra_fim"):
+            lista_safras("2025/26", "2024/25")
 
 
 class TestPeriodoSafra:
@@ -382,3 +394,9 @@ class TestConverterDatas:
         assert [w.category for w in emitidos] == [UserWarning]
         assert _no_meta(df) == [aviso]
         assert _no_meta(limpo) == []
+
+
+@pytest.mark.parametrize("ano_fim", [2024, 2023, 2026])
+def test_anos_para_safra_exige_anos_consecutivos(ano_fim):
+    with pytest.raises(InvalidParameterError, match="ano_fim deve ser 2025"):
+        anos_para_safra(2024, ano_fim)

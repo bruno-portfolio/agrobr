@@ -235,7 +235,7 @@ async def test_recusas_antes_da_rede(monkeypatch: pytest.MonkeyPatch):
         for argumentos, motivo in [
             ({"agregacao": "municipio"}, "agregacao inválida: 'municipio'"),
             ({"finalidade": "exportacao"}, "Finalidade inválida: 'exportacao'"),
-            ({"uf": "XX"}, "UF invalida: 'XX'"),
+            ({"uf": "XX"}, "UF inválida: 'XX'"),
             ({"safra": "2022/24"}, "safra inválida: '2022/24'"),
         ]:
             with (

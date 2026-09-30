@@ -7,9 +7,11 @@ from agrobr.exceptions import (
     ContractViolationError,
     InvalidParameterError,
     NetworkError,
+    ParseError,
     ResourceLimitError,
     SourceFallbackWarning,
     SourceUnavailableError,
+    UnknownNameError,
 )
 
 
@@ -93,3 +95,26 @@ def test_cache_migration_error_guarda_versao_e_motivo():
         "arquivo divergente",
     )
     assert str(erro).startswith("Falha na migração 9 do cache: arquivo divergente.")
+
+
+def test_unknown_name_error_e_parametro_invalido_e_key_error_sem_aspas():
+    erro = UnknownNameError("Dataset 'xx' não encontrado. Disponíveis: a, b")
+    assert isinstance(erro, InvalidParameterError)
+    assert isinstance(erro, KeyError)
+    assert str(erro) == "Dataset 'xx' não encontrado. Disponíveis: a, b"
+
+
+def test_parse_error_guarda_errors_e_os_cita_na_mensagem():
+    errors = [("cepea", "ParseError", "tabela ausente"), ("noticias", "ParseError", "layout")]
+    erro = ParseError("preco_diario", 1, "todas as fontes falharam por layout", errors=errors)
+    assert erro.errors == errors
+    assert erro.attempted_sources == ["preco_diario"]
+    assert str(erro) == (
+        f"Parse failed (preco_diario v1): todas as fontes falharam por layout (errors={errors})"
+    )
+
+
+def test_parse_error_sem_errors_mantem_mensagem():
+    erro = ParseError("cepea", 2, "sem tabela", attempted_sources=["cepea", "cache"])
+    assert (erro.errors, erro.attempted_sources) == ([], ["cepea", "cache"])
+    assert str(erro) == "Parse failed (cepea v2): sem tabela"

@@ -13,7 +13,7 @@ async def test_uf_desconhecida_e_recusada_antes_da_descarga(monkeypatch):
     mercadoria_zip = AsyncMock()
     monkeypatch.setattr(client, "fetch_ano_zip", ano_zip)
     monkeypatch.setattr(client, "fetch_mercadoria_zip", mercadoria_zip)
-    with levanta_exatamente(InvalidParameterError, match="UF invalida: 'XX'"):
+    with levanta_exatamente(InvalidParameterError, match="UF inválida: 'XX'"):
         await antaq.movimentacao(2024, uf="XX")
     ano_zip.assert_not_awaited()
     mercadoria_zip.assert_not_awaited()

@@ -8,7 +8,12 @@ from typing import IO, Any, Literal
 import pandas as pd
 
 from agrobr import _log, constants
-from agrobr.exceptions import ParseError, ResourceLimitError, SourceUnavailableError
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    ResourceLimitError,
+    SourceUnavailableError,
+)
 from agrobr.normalize.encoding import detect_encoding_chain
 
 _ExcelEngine = Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"]
@@ -171,6 +176,11 @@ def read_excel_safe(
     label: str = "Excel",
     **kwargs: Any,
 ) -> pd.DataFrame:
+    sheet_name = kwargs.get("sheet_name", 0)
+    if sheet_name is None or isinstance(sheet_name, list | tuple):
+        raise InvalidParameterError(
+            f"read_excel_safe lê uma aba por vez; sheet_name deve ser nome ou índice: {sheet_name!r}"
+        )
     raw = _extract_bytes(data)
     check_xlsx_expansion(raw, source=source)
     try:
@@ -210,6 +220,10 @@ def read_csv_safe(
     label: str = "CSV",
     **kwargs: Any,
 ) -> pd.DataFrame:
+    if kwargs.get("chunksize") is not None or kwargs.get("iterator"):
+        raise InvalidParameterError(
+            "read_csv_safe lê o arquivo inteiro; chunksize e iterator não são aceitos"
+        )
     encoding = detect_encoding_chain(data)
     try:
         df: pd.DataFrame = pd.read_csv(io.BytesIO(data), encoding=encoding, **kwargs)

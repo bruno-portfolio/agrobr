@@ -52,7 +52,7 @@ class TestFocos:
             ({"ano": 2025, "mes": "1"}, "inteiro"),
             ({"ano": 2025, "mes": 2, "dia": 30}, "data inválida"),
             ({"ano": 9999, "mes": 1}, "ano"),
-            ({"ano": 2025, "mes": 1, "uf": "XX"}, "UF invalida"),
+            ({"ano": 2025, "mes": 1, "uf": "XX"}, "UF inválida"),
         ],
     )
     @pytest.mark.asyncio

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from agrobr.exceptions import InvalidParameterError, UnknownNameError
 from agrobr.normalize.regions import (
     REGIOES,
     UFS,
@@ -79,8 +80,15 @@ class TestListarUfs:
             with check("test_filtro_sul"):
                 result = listar_ufs("Sul")
                 assert set(result) == {"PR", "RS", "SC"}
-            with check("test_regiao_inexistente"):
-                assert listar_ufs("Inexistente") == []
+
+    @pytest.mark.parametrize("regiao", ["Inexistente", "", "norte"])
+    def test_regiao_invalida(self, regiao):
+        with pytest.raises(InvalidParameterError, match="Região inválida.*Norte, Nordeste"):
+            listar_ufs(regiao)
+
+    def test_retorno_e_copia(self):
+        listar_ufs("Sul").append("XX")
+        assert listar_ufs("Sul") == ["PR", "RS", "SC"]
 
 
 class TestListarRegioes:
@@ -146,3 +154,11 @@ class TestCompletude:
         for ufs in REGIOES.values():
             ufs_em_regioes.update(ufs)
         assert ufs_em_regioes == set(UFS.keys())
+
+
+@pytest.mark.parametrize("funcao", [uf_para_nome, uf_para_regiao, uf_para_ibge])
+@pytest.mark.parametrize("uf", ["ZZ", 51, None])
+def test_uf_inexistente_levanta_erro_de_parametro_que_segue_key_error(funcao, uf):
+    with pytest.raises(UnknownNameError, match="UF inválida.*Valores válidos: AC, AL, AM") as erro:
+        funcao(uf)
+    assert isinstance(erro.value, KeyError)

@@ -6,7 +6,7 @@ from typing import Literal
 
 import pandas as pd
 
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, UnknownNameError
 
 UF = Literal[
     "AC",
@@ -113,16 +113,23 @@ def normalizar_uf(entrada: str) -> str | None:
     return None
 
 
+def sigla_uf(uf: str) -> str:
+    sigla = uf.strip().upper() if isinstance(uf, str) else ""
+    if sigla not in UFS:
+        raise UnknownNameError(f"UF inválida: {uf!r}. Valores válidos: {', '.join(sorted(UFS))}")
+    return sigla
+
+
 def uf_para_nome(uf: str) -> str:
-    return str(UFS[uf.upper()]["nome"])
+    return str(UFS[sigla_uf(uf)]["nome"])
 
 
 def uf_para_regiao(uf: str) -> str:
-    return str(UFS[uf.upper()]["regiao"])
+    return str(UFS[sigla_uf(uf)]["regiao"])
 
 
 def uf_para_ibge(uf: str) -> int:
-    return int(UFS[uf.upper()]["ibge"])
+    return int(UFS[sigla_uf(uf)]["ibge"])
 
 
 def ibge_para_uf(codigo: int) -> str:
@@ -144,9 +151,13 @@ def cod_municipio(codigos: pd.Series) -> pd.Series:
 
 
 def listar_ufs(regiao: str | None = None) -> list[str]:
-    if regiao:
-        return REGIOES.get(regiao, [])
-    return list(UFS.keys())
+    if regiao is None:
+        return list(UFS.keys())
+    if regiao not in REGIOES:
+        raise InvalidParameterError(
+            f"Região inválida: {regiao!r}. Valores válidos: {', '.join(REGIOES)}"
+        )
+    return list(REGIOES[regiao])
 
 
 def listar_regioes() -> list[str]:

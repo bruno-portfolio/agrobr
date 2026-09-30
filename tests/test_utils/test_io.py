@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.utils.io import open_excel_safe, read_csv_safe, read_excel_safe, validate_download
 from tests.helpers import levanta_exatamente
 
@@ -59,6 +59,11 @@ class TestReadCsvSafe:
         with pytest.raises(ParseError):
             read_csv_safe(b"", source="test", label="CSV bad")
 
+    @pytest.mark.parametrize("kwargs", [{"chunksize": 1}, {"iterator": True}])
+    def test_leitura_preguicosa_recusada(self, kwargs):
+        with levanta_exatamente(InvalidParameterError, match="chunksize e iterator"):
+            read_csv_safe(b"a,b\n1,2\n", source="test", **kwargs)
+
 
 class TestExcelSafeFallback:
     def test_read_excel_calamine_falls_back_to_openpyxl(self):
@@ -72,6 +77,15 @@ class TestExcelSafeFallback:
         assert result is expected
         assert mocked.call_args_list[0].kwargs["engine"] == "calamine"
         assert mocked.call_args_list[1].kwargs["engine"] == "openpyxl"
+
+    @pytest.mark.parametrize("sheet_name", [None, ["a", "b"], ("a",)])
+    def test_varias_abas_recusadas_antes_de_ler(self, sheet_name):
+        with (
+            patch("agrobr.utils.io.pd.read_excel") as mocked,
+            levanta_exatamente(InvalidParameterError, match="uma aba por vez"),
+        ):
+            read_excel_safe(b"xlsx", source="test", sheet_name=sheet_name)
+        mocked.assert_not_called()
 
     def test_open_excel_calamine_falls_back_to_openpyxl(self):
         expected = object()

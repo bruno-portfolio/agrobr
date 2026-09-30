@@ -6,6 +6,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, TypedDict
 
+from agrobr.exceptions import InvalidParameterError
+from agrobr.normalize import regions
+
 _NOMES_ANTERIORES: dict[int, tuple[str, ...]] = {
     1400605: ("São Luiz",),
     2400208: ("Açu",),
@@ -80,12 +83,15 @@ def municipio_para_ibge(nome: str, uf: str | None = None) -> int | None:
 
 
 def ibge_para_municipio(codigo: int) -> MunicipioInfo | None:
-    return _build_codigo_lookup().get(codigo)
+    info = _build_codigo_lookup().get(codigo)
+    return None if info is None else info.copy()
 
 
 def buscar_municipios(termo: str, uf: str | None = None, limite: int = 10) -> list[MunicipioInfo]:
+    if isinstance(limite, bool) or not isinstance(limite, int) or limite < 0:
+        raise InvalidParameterError(f"limite deve ser inteiro não negativo, recebeu {limite!r}")
+    uf_upper = None if uf is None else regions.sigla_uf(uf)
     termo_norm = _remover_acentos(termo.lower().strip())
-    uf_upper = uf.upper().strip() if uf else None
     results: dict[int, MunicipioInfo] = {}
 
     for key, entries in _build_lookup().items():
@@ -95,7 +101,7 @@ def buscar_municipios(termo: str, uf: str | None = None, limite: int = 10) -> li
                     continue
                 results.setdefault(entry["codigo_ibge"], entry)
 
-    return sorted(results.values(), key=lambda m: m["nome"])[:limite]
+    return [m.copy() for m in sorted(results.values(), key=lambda m: m["nome"])[:limite]]
 
 
 def total_municipios() -> int:
@@ -136,7 +142,7 @@ def coordenada_para_municipio(lat: float, lon: float) -> MunicipioInfo | None:
             best = info
     if best is None or min_dist_sq > _MAX_DISTANCE_DEG_SQ:
         return None
-    return best
+    return best.copy()
 
 
 __all__ = [

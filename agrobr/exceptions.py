@@ -15,6 +15,7 @@ __all__ = [
     "SourceFallbackWarning",
     "SourceUnavailableError",
     "StaleDataWarning",
+    "UnknownNameError",
     "ValidationError",
 ]
 
@@ -25,6 +26,17 @@ class AgrobrError(Exception):
 
 class InvalidParameterError(AgrobrError, ValueError):
     pass
+
+
+class UnknownNameError(InvalidParameterError, KeyError):
+    """Nome inexistente num catálogo (dataset, contrato, UF).
+
+    Herda de `KeyError` para que `except KeyError` siga pegando; a mensagem sai sem as aspas que o
+    `KeyError` acrescenta.
+    """
+
+    def __str__(self) -> str:
+        return ValueError.__str__(self)
 
 
 class ResourceLimitError(AgrobrError):
@@ -112,13 +124,18 @@ class ParseError(AgrobrError):
         html_snippet: str = "",
         *,
         attempted_sources: list[str] | None = None,
+        errors: list[tuple[str, str, str]] | None = None,
     ) -> None:
         self.source = source
         self.parser_version = parser_version
         self.reason = reason
         self.html_snippet = html_snippet[:500]
         self.attempted_sources = list(attempted_sources or [source])
-        super().__init__(f"Parse failed ({source} v{parser_version}): {reason}")
+        self.errors = list(errors or [])
+        msg = f"Parse failed ({source} v{parser_version}): {reason}"
+        if self.errors:
+            msg += f" (errors={self.errors})"
+        super().__init__(msg)
 
 
 class ValidationError(AgrobrError):

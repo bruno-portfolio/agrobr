@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 import xlrd
 
+from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize import regions
 from agrobr.normalize.municipalities import (
     buscar_municipios,
@@ -268,3 +269,31 @@ def test_busca_que_casa_nome_atual_e_anterior_devolve_o_municipio_uma_vez(termo,
     ]
     assert regions.uf_para_ibge(uf) == codigo_uf
     assert len({m["codigo_ibge"] for m in resultados}) == len(resultados)
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "motivo"),
+    [
+        ({"uf": "ZZ"}, "UF inválida"),
+        ({"uf": ""}, "UF inválida"),
+        ({"limite": -1}, "limite deve ser inteiro não negativo"),
+        ({"limite": True}, "limite deve ser inteiro não negativo"),
+    ],
+)
+def test_buscar_municipios_recusa_filtro_invalido(kwargs, motivo):
+    with pytest.raises(InvalidParameterError, match=motivo):
+        buscar_municipios("sao", **kwargs)
+
+
+@pytest.mark.parametrize(
+    "consulta",
+    [
+        lambda: buscar_municipios("sorriso", uf="MT")[0],
+        lambda: ibge_para_municipio(5107925),
+        lambda: coordenada_para_municipio(-12.5425, -55.7211),
+    ],
+    ids=["buscar_municipios", "ibge_para_municipio", "coordenada_para_municipio"],
+)
+def test_retorno_nao_compartilha_o_indice(consulta):
+    consulta()["nome"] = "Alterado"
+    assert consulta()["nome"] == "Sorriso"

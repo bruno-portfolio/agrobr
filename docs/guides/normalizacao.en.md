@@ -21,11 +21,16 @@ ibge_para_municipio(5107602)
 # Partial search
 buscar_municipios("sorriso", uf="MT")
 # [{'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}]
+buscar_municipios("sorriso", uf="XX")  # InvalidParameterError, listing the valid codes
+buscar_municipios("santo", limite=-1)  # InvalidParameterError (negative limit)
 
 # Use the full municipality name and the state when available
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
 ```
+
+`ibge_para_municipio`, `buscar_municipios` and `coordenada_para_municipio` return copies: changing the returned
+dict does not affect the next query.
 
 Data from the [IBGE Localities API](https://servicodados.ibge.gov.br/api/docs/localidades) — free to use.
 
@@ -141,13 +146,18 @@ uf_para_nome("MT")             # "Mato Grosso"
 uf_para_regiao("MT")           # "Centro-Oeste"
 uf_para_ibge("MT")             # 51
 ibge_para_uf(51)               # "MT"
+uf_para_nome("XX")             # UnknownNameError, listing the valid codes
 
 validar_uf("SP")               # True
 validar_uf("XX")               # False
 
-listar_ufs()                   # ['AC', 'AL', 'AM', ..., 'TO']
-listar_regioes()               # ['Centro-Oeste', 'Nordeste', 'Norte', 'Sudeste', 'Sul']
+listar_ufs()                   # ['AC', 'AL', 'AP', 'AM', ..., 'TO']
+listar_ufs("Sul")              # ['PR', 'RS', 'SC']
+listar_ufs("sul")              # InvalidParameterError, listing the valid regions
+listar_regioes()               # ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul']
 ```
+
+`UnknownNameError` is an `InvalidParameterError` and also a `KeyError`: an existing `except KeyError` still catches it.
 
 ## Biomes
 
@@ -190,6 +200,11 @@ safra_posterior("2024/25")       # "2025/26"
 periodo_safra("2024/25")         # (date(2024, 7, 1), date(2025, 6, 30))
 lista_safras("2020/21", "2024/25")
 # ['2020/21', '2021/22', '2022/23', '2023/24', '2024/25']
+lista_safras(safra_inicio="2023/24", safra_fim="2024/25")  # ['2023/24', '2024/25']
+
+normalizar_safra("abc")          # InvalidParameterError, listing the accepted formats
+anos_para_safra(2024, 2026)      # InvalidParameterError (a season spans two consecutive years)
+lista_safras("2025/26", "2024/25")  # InvalidParameterError (reversed range)
 ```
 
 ## Source dates
@@ -242,6 +257,11 @@ preco_tonelada_para_saca(2425.0)        # 145.5  (BRL/sc60kg from BRL/ton)
 # Weight to volume
 sacas_para_toneladas(1000)              # 60.0
 toneladas_para_sacas(60)                # 1000.0
+
+# Invalid input
+converter(1, "galao", "kg")             # InvalidParameterError, listing the mass units
+converter(1, "ton", "bu")               # InvalidParameterError: bushel requires a product (milho, soja, trigo)
+sacas_para_toneladas(1000, peso_saca_kg=0)  # InvalidParameterError (bag weight must be positive)
 ```
 
 ## Encoding

@@ -51,7 +51,7 @@ async def test_ucs_argumento_desconhecido():
 @pytest.mark.parametrize(
     ("filtro", "mensagem"),
     [
-        ({"uf": "XX"}, "UF invalida"),
+        ({"uf": "XX"}, "UF inválida"),
         ({"grupo": "ZZ"}, "Grupo invalido"),
         ({"bioma": "Marte"}, "Bioma inválido"),
     ],

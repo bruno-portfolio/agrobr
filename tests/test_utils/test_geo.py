@@ -3,10 +3,17 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, patch
 
 import httpx
+import numpy as np
 import pytest
 
-from agrobr.exceptions import ParseError, SourceUnavailableError
-from agrobr.utils.geo import fetch_arcgis_count, fetch_wfs, parse_wfs_hits
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
+from agrobr.utils.geo import (
+    fetch_arcgis_count,
+    fetch_arcgis_layer,
+    fetch_wfs,
+    parse_wfs_hits,
+    validate_bbox,
+)
 from tests import helpers
 
 
@@ -387,6 +394,91 @@ class TestFetchArcgisCount:
                 source="test",
                 timeout=httpx.Timeout(10),
             )
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("payload", [{}, {"count": "3"}, {"count": None}, {"count": -1}])
+    async def test_resposta_sem_count_inteiro_nao_vira_zero(self, payload):
+        request = httpx.Request("GET", "http://example.com/FeatureServer/0/query")
+        response = httpx.Response(200, json=payload, request=request)
+
+        with (
+            patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock, return_value=response),
+            pytest.raises(ParseError, match="sem 'count' inteiro"),
+        ):
+            await fetch_arcgis_count(
+                "http://example.com/FeatureServer/0",
+                source="test",
+                timeout=httpx.Timeout(10),
+            )
+
+    @pytest.mark.asyncio
+    async def test_count_zero_explicito_e_vazio_valido(self):
+        request = httpx.Request("GET", "http://example.com/FeatureServer/0/query")
+        response = httpx.Response(200, json={"count": 0}, request=request)
+
+        with patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock, return_value=response):
+            count = await fetch_arcgis_count(
+                "http://example.com/FeatureServer/0",
+                source="test",
+                timeout=httpx.Timeout(10),
+            )
+
+        assert count == 0
+
+
+class TestFetchArcgisLayerMaxFeatures:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("max_features", [0, -1, True, 1.5])
+    async def test_max_features_invalido_recusado_antes_da_rede(self, max_features):
+        layer = {
+            "service_path": "x/FeatureServer/0",
+            "max_record_count": 1000,
+            "fields": "*",
+            "rename_map": {},
+            "colunas_saida": [],
+            "required_cols": set(),
+        }
+        with (
+            patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock) as get,
+            pytest.raises(InvalidParameterError, match="max_features deve ser inteiro positivo"),
+        ):
+            await fetch_arcgis_layer(
+                "http://example.com",
+                layer,
+                source="test",
+                timeout=httpx.Timeout(10),
+                max_features=max_features,
+            )
+        get.assert_not_awaited()
+
+
+class TestValidateBbox:
+    @pytest.mark.parametrize(
+        ("bbox", "motivo"),
+        [
+            (("a", 2, 3, 4), "4 números finitos"),
+            ((float("nan"), -15.0, -50.0, -10.0), "4 números finitos"),
+            ((True, -15.0, -50.0, -10.0), "4 números finitos"),
+            (5, "deve ter 4 valores"),
+            ("abcd", "deve ter 4 valores"),
+            ((-200.0, -15.0, -190.0, -10.0), "fora dos limites geográficos"),
+            ((-60.0, -95.0, -50.0, -10.0), "fora dos limites geográficos"),
+        ],
+    )
+    def test_bbox_invalido(self, bbox, motivo):
+        with pytest.raises(InvalidParameterError, match=motivo):
+            validate_bbox(bbox)
+
+    @pytest.mark.parametrize(
+        "bbox",
+        [
+            (-60, -15, -50, -10),
+            [-60.0, -15.0, -50.0, -10.0],
+            np.array([-60.0, -15.0, -50.0, -10.0]),
+        ],
+    )
+    def test_bbox_valido_volta_como_veio(self, bbox):
+        assert validate_bbox(bbox) is bbox
 
 
 class TestCheckGeopandas:

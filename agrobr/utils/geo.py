@@ -4,6 +4,7 @@ import asyncio
 import json
 import math
 import re
+from numbers import Real
 from typing import Any, Literal, NotRequired, TypedDict
 from urllib.parse import quote, urlencode
 
@@ -61,11 +62,26 @@ def validate_bbox(
 ) -> tuple[float, float, float, float] | None:
     if bbox is None:
         return None
-    if len(bbox) != 4:
+    try:
+        valores = () if isinstance(bbox, str | bytes) else tuple(bbox)
+    except TypeError:
+        valores = ()
+    if len(valores) != 4:
         raise InvalidParameterError(
-            f"BBOX deve ter 4 valores (minlon, minlat, maxlon, maxlat), recebeu {len(bbox)}"
+            f"BBOX deve ter 4 valores (minlon, minlat, maxlon, maxlat), recebeu {bbox!r}"
         )
-    minlon, minlat, maxlon, maxlat = bbox
+    if not all(
+        isinstance(v, Real) and not isinstance(v, bool) and math.isfinite(v) for v in valores
+    ):
+        raise InvalidParameterError(f"BBOX deve ter 4 números finitos, recebeu {bbox!r}")
+    minlon, minlat, maxlon, maxlat = valores
+    if not all(-180 <= lon <= 180 for lon in (minlon, maxlon)) or not all(
+        -90 <= lat <= 90 for lat in (minlat, maxlat)
+    ):
+        raise InvalidParameterError(
+            "BBOX fora dos limites geográficos de longitude/latitude "
+            f"(longitude em [-180, 180], latitude em [-90, 90]): {bbox!r}"
+        )
     if minlon >= maxlon:
         raise InvalidParameterError(f"BBOX minlon ({minlon}) deve ser menor que maxlon ({maxlon})")
     if minlat >= maxlat:
@@ -325,7 +341,13 @@ async def fetch_arcgis_count(
             url=url,
             last_error="ArcGIS returned JSON that is not an object",
         )
-    count: int = data.get("count", 0)
+    count = data.get("count")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise ParseError(
+            source=source,
+            parser_version=1,
+            reason=f"Contagem ArcGIS sem 'count' inteiro não negativo: {str(data)[:200]}",
+        )
     logger.info(f"{source}_arcgis_count", count=count, url=url[:120])
     return count
 
@@ -445,6 +467,12 @@ async def fetch_arcgis_layer(
     throttle_delay: float = 2.0,
     return_geometry: bool | None = None,
 ) -> tuple[list[bytes], str]:
+    if max_features is not None and (
+        isinstance(max_features, bool) or not isinstance(max_features, int) or max_features < 1
+    ):
+        raise InvalidParameterError(
+            f"max_features deve ser inteiro positivo ou None, recebeu {max_features!r}"
+        )
     service_url = f"{base_url}/{layer_config['service_path']}"
     max_record_count = layer_config["max_record_count"]
     fields = layer_config["fields"]
@@ -461,7 +489,7 @@ async def fetch_arcgis_layer(
     if total == 0:
         return [], f"{service_url}/query"
 
-    if max_features and total > max_features:
+    if max_features is not None and total > max_features:
         total = max_features
 
     n_pages = math.ceil(total / max_record_count)

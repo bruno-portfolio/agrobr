@@ -8,6 +8,7 @@ from typing import NamedTuple
 import pandas as pd
 
 from agrobr import _log
+from agrobr.exceptions import InvalidParameterError
 from agrobr.utils.result import ATRIBUTO_AVISOS
 from agrobr.utils.time import hoje
 
@@ -119,6 +120,7 @@ REGEX_SAFRA_CURTA = re.compile(r"^(\d{2})/(\d{2})$")
 REGEX_SAFRA_BARRA = re.compile(r"^(\d{4})/(\d{4})$")
 
 INICIO_SAFRA_MES = 7
+_FORMATO_SAFRA_INVALIDO = "Formato de safra inválido (aceitos: 2024/25, 2024/2025, 24/25)"
 
 
 def safra_atual(data: date | None = None) -> str:
@@ -140,6 +142,8 @@ def validar_safra(safra: str) -> bool:
 
 
 def normalizar_safra(safra: str) -> str:
+    if not isinstance(safra, str):
+        raise InvalidParameterError(f"{_FORMATO_SAFRA_INVALIDO}: {safra!r}")
     safra = re.sub(r"\s*/\s*", "/", safra.strip())
 
     match_completa = REGEX_SAFRA_COMPLETA.match(safra)
@@ -159,7 +163,7 @@ def normalizar_safra(safra: str) -> str:
         ano_fim_str = match_barra.group(2)[-2:]
         return f"{ano_inicio_str}/{ano_fim_str}"
 
-    raise ValueError(f"Formato de safra inválido: '{safra}'")
+    raise InvalidParameterError(f"{_FORMATO_SAFRA_INVALIDO}: {safra!r}")
 
 
 def safra_para_anos(safra: str) -> tuple[int, int]:
@@ -167,7 +171,7 @@ def safra_para_anos(safra: str) -> tuple[int, int]:
     match = REGEX_SAFRA_COMPLETA.match(safra_norm)
 
     if match is None:
-        raise ValueError(f"Formato de safra inválido: '{safra}'")
+        raise InvalidParameterError(f"{_FORMATO_SAFRA_INVALIDO}: {safra!r}")
 
     ano_inicio = int(match.group(1))
     ano_fim_curto = int(match.group(2))
@@ -184,6 +188,10 @@ def safra_para_anos(safra: str) -> tuple[int, int]:
 def anos_para_safra(ano_inicio: int, ano_fim: int | None = None) -> str:
     if ano_fim is None:
         ano_fim = ano_inicio + 1
+    if ano_fim != ano_inicio + 1:
+        raise InvalidParameterError(
+            f"Safra cobre dois anos consecutivos: ano_fim deve ser {ano_inicio + 1}, recebeu {ano_fim}"
+        )
 
     return f"{ano_inicio}/{str(ano_fim)[-2:]}"
 
@@ -198,9 +206,13 @@ def safra_posterior(safra: str, n: int = 1) -> str:
     return anos_para_safra(ano_inicio + n)
 
 
-def lista_safras(inicio: str, fim: str) -> list[str]:
-    ano_inicio, _ = safra_para_anos(inicio)
-    ano_fim, _ = safra_para_anos(fim)
+def lista_safras(safra_inicio: str, safra_fim: str) -> list[str]:
+    ano_inicio, _ = safra_para_anos(safra_inicio)
+    ano_fim, _ = safra_para_anos(safra_fim)
+    if ano_inicio > ano_fim:
+        raise InvalidParameterError(
+            f"safra_inicio ({safra_inicio!r}) posterior a safra_fim ({safra_fim!r})"
+        )
 
     return [anos_para_safra(ano) for ano in range(ano_inicio, ano_fim + 1)]
 

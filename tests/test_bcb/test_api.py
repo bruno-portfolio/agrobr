@@ -137,7 +137,7 @@ async def test_recusas_antes_da_fonte(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(api.client, "fetch_credito_rural_with_fallback", fetch)
     with collect_failures() as check:
         for argumentos, erro, motivo in [
-            ({"uf": "XX"}, InvalidParameterError, "UF invalida: 'XX'"),
+            ({"uf": "XX"}, InvalidParameterError, "UF inválida: 'XX'"),
             (
                 {"agregacao": "municipio"},
                 InvalidParameterError,

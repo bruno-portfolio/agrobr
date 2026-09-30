@@ -14,7 +14,7 @@ from tests.helpers import levanta_exatamente
     ("argumentos", "mensagem"),
     [
         ({"inicio": 2020, "fim": 2019}, "inicio \\(2020\\) posterior a fim \\(2019\\)"),
-        ({"uf": "XX"}, "UF invalida: 'XX'"),
+        ({"uf": "XX"}, "UF inválida: 'XX'"),
     ],
     ids=["inicio_depois_do_fim", "uf_inexistente"],
 )

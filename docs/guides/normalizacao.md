@@ -21,11 +21,16 @@ ibge_para_municipio(5107602)
 # Busca parcial
 buscar_municipios("sorriso", uf="MT")
 # [{'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}]
+buscar_municipios("sorriso", uf="XX")  # InvalidParameterError, com as siglas válidas
+buscar_municipios("santo", limite=-1)  # InvalidParameterError (limite negativo)
 
 # Use o nome completo do município e a UF quando disponível
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
 ```
+
+`ibge_para_municipio`, `buscar_municipios` e `coordenada_para_municipio` devolvem cópias: alterar o dicionário
+devolvido não muda a consulta seguinte.
 
 Dados da [API IBGE Localidades](https://servicodados.ibge.gov.br/api/docs/localidades) — livre para uso.
 
@@ -141,13 +146,18 @@ uf_para_nome("MT")             # "Mato Grosso"
 uf_para_regiao("MT")           # "Centro-Oeste"
 uf_para_ibge("MT")             # 51
 ibge_para_uf(51)               # "MT"
+uf_para_nome("XX")             # UnknownNameError, com as siglas válidas
 
 validar_uf("SP")               # True
 validar_uf("XX")               # False
 
-listar_ufs()                   # ['AC', 'AL', 'AM', ..., 'TO']
-listar_regioes()               # ['Centro-Oeste', 'Nordeste', 'Norte', 'Sudeste', 'Sul']
+listar_ufs()                   # ['AC', 'AL', 'AP', 'AM', ..., 'TO']
+listar_ufs("Sul")              # ['PR', 'RS', 'SC']
+listar_ufs("sul")              # InvalidParameterError, com as regiões válidas
+listar_regioes()               # ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul']
 ```
+
+`UnknownNameError` é `InvalidParameterError` e também `KeyError`: o `except KeyError` de antes segue pegando.
 
 ## Biomas
 
@@ -190,6 +200,11 @@ safra_posterior("2024/25")       # "2025/26"
 periodo_safra("2024/25")         # (date(2024, 7, 1), date(2025, 6, 30))
 lista_safras("2020/21", "2024/25")
 # ['2020/21', '2021/22', '2022/23', '2023/24', '2024/25']
+lista_safras(safra_inicio="2023/24", safra_fim="2024/25")  # ['2023/24', '2024/25']
+
+normalizar_safra("abc")          # InvalidParameterError, com os formatos aceitos
+anos_para_safra(2024, 2026)      # InvalidParameterError (safra cobre dois anos consecutivos)
+lista_safras("2025/26", "2024/25")  # InvalidParameterError (intervalo invertido)
 ```
 
 ## Datas das fontes
@@ -241,6 +256,11 @@ preco_tonelada_para_saca(2425.0)        # 145.5  (R$/sc60kg a partir de R$/ton)
 # Peso para volume
 sacas_para_toneladas(1000)              # 60.0
 toneladas_para_sacas(60)                # 1000.0
+
+# Entrada inválida
+converter(1, "galao", "kg")             # InvalidParameterError, com as unidades de massa
+converter(1, "ton", "bu")               # InvalidParameterError: bushel exige produto (milho, soja, trigo)
+sacas_para_toneladas(1000, peso_saca_kg=0)  # InvalidParameterError (peso da saca deve ser positivo)
 ```
 
 ## Encoding
