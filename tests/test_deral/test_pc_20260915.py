@@ -10,8 +10,9 @@ from unittest.mock import AsyncMock
 import pandas as pd
 import pytest
 
+from agrobr import datasets
 from agrobr.deral import api, parser
-from agrobr.exceptions import ParseError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.utils import io as excel_io
 
 GOLDEN = Path(__file__).parents[1] / "golden_data" / "deral" / "pc_20260915"
@@ -77,6 +78,52 @@ async def test_source_method_leitor_xlsx_real(monkeypatch):
     df, meta = await api.condicao_lavouras(return_meta=True)
 
     assert meta.source_method == "httpx+openpyxl"
-    assert df["data"].eq("14/09/2026").all()
+    assert df["data"].eq(pd.Timestamp("2026-09-14")).all()
     assert df.loc[df["condicao"] == "ruim", "pct"].tolist() == [0.0]
     assert df[["plantio_pct", "colheita_pct"]].drop_duplicates().values.tolist() == [[90.0, 0.0]]
+
+
+@pytest.mark.parametrize("consulta", [api.condicao_lavouras, datasets.condicao_lavouras])
+@pytest.mark.parametrize("produto", ["xx", "mandioca", 5, "", 0, []])
+async def test_produto_fora_da_planilha_recusado_antes_da_rede(monkeypatch, consulta, produto):
+    baixar = AsyncMock()
+    monkeypatch.setattr(api.client, "fetch_pc_xls", baixar)
+
+    with pytest.raises(InvalidParameterError, match="Valores válidos: \\['cafe', 'cevada'"):
+        await consulta(produto)
+
+    baixar.assert_not_awaited()
+
+
+@pytest.mark.parametrize("consulta", [api.condicao_lavouras, datasets.condicao_lavouras])
+@pytest.mark.parametrize(
+    ("produto", "publicados"),
+    [
+        ("Soja", {"soja"}),
+        ("soybean", {"soja"}),
+        ("feijão", {"feijao_1", "feijao_2"}),
+        ("milho", {"milho_1", "milho_2"}),
+        ("Milho 2ª safra", {"milho_2"}),
+    ],
+)
+async def test_fonte_e_dataset_aceitam_os_mesmos_nomes(
+    monkeypatch, capture, consulta, produto, publicados
+):
+    monkeypatch.setattr(api.client, "fetch_pc_xls", AsyncMock(return_value=capture))
+
+    with pytest.warns(UserWarning):
+        df = await consulta(produto)
+
+    assert set(df["produto"]) == publicados
+
+
+async def test_produto_sem_linhas_na_planilha_mantem_os_dtypes_do_cheio(monkeypatch):
+    amostra = (GOLDEN.parent / "pc_sample" / "response.xlsx").read_bytes()
+    monkeypatch.setattr(api.client, "fetch_pc_xls", AsyncMock(return_value=amostra))
+
+    cheio = await api.condicao_lavouras()
+    vazio = await api.condicao_lavouras("trigo")
+
+    assert len(cheio) and vazio.empty
+    assert cheio["data"].dtype == "datetime64[ns]"
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict()

@@ -3,7 +3,9 @@ from __future__ import annotations
 import re
 
 from agrobr.exceptions import InvalidParameterError
+from agrobr.normalize import dates
 from agrobr.normalize.crops import normalizar_cultura
+from agrobr.utils import validation
 
 PARSER_VERSION: int = 2
 
@@ -149,6 +151,27 @@ SANIDADE_MAX_HISTORICO: dict[str, float] = {
     "etanol_hidratado": 40_000,
     "etanol_total": 40_000,
 }
+
+
+def validate_safras_historico(safra_inicio: str | None, safra_fim: str | None) -> tuple[str, str]:
+    """Safras do histórico no formato que a fonte pede (`AAAA/AAAA`), aceitando os do
+    `validate_safra`; `None` vale o extremo publicado."""
+    inicio, fim = (
+        dates.safra_para_anos(validation.validate_safra(padrao if safra is None else safra) or "")[
+            0
+        ]
+        for safra, padrao in (
+            (safra_inicio, SAFRA_HISTORICO_MIN),
+            (safra_fim, SAFRA_HISTORICO_MAX),
+        )
+    )
+    if not int(SAFRA_HISTORICO_MIN[:4]) <= inicio <= fim <= int(SAFRA_HISTORICO_MAX[:4]):
+        raise InvalidParameterError(
+            f"O histórico UNICA publica as safras de {SAFRA_HISTORICO_MIN} a "
+            f"{SAFRA_HISTORICO_MAX}, com safra_inicio até safra_fim; recebido "
+            f"{safra_inicio!r} a {safra_fim!r}"
+        )
+    return f"{inicio}/{inicio + 1}", f"{fim}/{fim + 1}"
 
 
 def resolve_produto(nome: str, validos: dict[str, tuple[int, str]] | list[str]) -> str:

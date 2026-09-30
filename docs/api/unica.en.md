@@ -83,8 +83,11 @@ async def producao_historica(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `produto` | `str` | `cana`, `acucar`, `etanol_anidro`, `etanol_hidratado`, `etanol_total` |
-| `safra_inicio` | `str \| None` | Format `"2015/2016"` |
-| `safra_fim` | `str \| None` | Format `"2020/2021"` |
+| `safra_inicio` | `str \| None` | `"2015/2016"`, `"2015/16"` or `"15/16"`; None is 1980/1981 |
+| `safra_fim` | `str \| None` | Same; None is 2020/2021 |
+
+A crop year outside the format, with non-consecutive years, outside 1980/1981–2020/2021 or
+with `safra_inicio` after `safra_fim` raises `InvalidParameterError` before any request.
 
 **Returns:**
 

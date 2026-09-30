@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import io
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import AsyncMock
 
@@ -13,6 +13,7 @@ import pytest
 from agrobr import abiove, datasets
 from agrobr.abiove import client
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.utils import time as time_utils
 from tests import helpers
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/abiove"
@@ -86,7 +87,9 @@ def servidor(monkeypatch, edicoes):
             super().__init__(*args, **kwargs)
 
     monkeypatch.setattr(client.httpx, "AsyncClient", Cliente)
-    monkeypatch.setattr(client, "utcnow", lambda: datetime(2026, 9, 25, 12, 0), raising=False)
+    monkeypatch.setattr(
+        time_utils, "utcnow_aware", lambda: datetime(2026, 9, 25, 12, 0, tzinfo=UTC)
+    )
     return pedidos, corpos
 
 
@@ -169,6 +172,7 @@ async def test_sem_edicao_publicada_levanta(servidor):
     [
         {"mes": 0},
         {"mes": 13},
+        {"mes": "6"},
         {"edicao": "2024-12"},
         {"edicao": "2027-01"},
         {"edicao": "202608"},
@@ -184,6 +188,23 @@ async def test_selecao_invalida_recusada_antes_da_rede(servidor, argumentos):
         await abiove.exportacao(2025, **argumentos)
 
     assert pedidos == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("ano", ["2025", 2025.0, True, 2009, 9999])
+async def test_ano_fora_do_dominio_recusado_antes_da_rede(servidor, ano):
+    pedidos, _ = servidor
+
+    with pytest.raises(InvalidParameterError, match="ano deve ser um inteiro de 2010 a"):
+        await abiove.exportacao(ano)
+
+    assert pedidos == []
+
+
+def test_edicao_candidata_segue_o_mes_de_brasilia(monkeypatch):
+    monkeypatch.setattr(time_utils, "utcnow_aware", lambda: datetime(2026, 10, 1, 2, 0, tzinfo=UTC))
+
+    assert client.edicoes_candidatas(2026)[0] == "2026-09"
 
 
 @pytest.mark.asyncio

@@ -33,8 +33,8 @@ Requer o extra `[pdf]` para o relatório quinzenal: `pip install agrobr[pdf]`.
 | `moagem_quinzenal` | `regiao` | str \| None | None | `sao_paulo`, `centro_sul`, `demais_estados` ou todas |
 | `safra_resumo` | `periodo` | str | `"acumulado"` | `acumulado`, `quinzena` ou `mensal`; período que a edição corrente não publica → `InvalidParameterError` com os períodos da edição |
 | `producao_historica` | `produto` | str | `"cana"` | `cana`, `acucar`, `etanol_anidro`, `etanol_hidratado` ou `etanol_total` |
-| `producao_historica` | `safra_inicio` | str \| None | None | Safra inicial no formato `YYYY/YYYY` |
-| `producao_historica` | `safra_fim` | str \| None | None | Safra final no formato `YYYY/YYYY` |
+| `producao_historica` | `safra_inicio` | str \| None | None | Safra inicial (`YYYY/YYYY`, `YYYY/YY` ou `YY/YY`), de 1980/1981 a 2020/2021 |
+| `producao_historica` | `safra_fim` | str \| None | None | Safra final, nos mesmos formatos e intervalo, não anterior à inicial |
 | Todas | `as_polars` | bool | False | Se True, retorna `polars.DataFrame` |
 | Todas | `return_meta` | bool | False | Se True, retorna `(DataFrame, MetaInfo)` |
 

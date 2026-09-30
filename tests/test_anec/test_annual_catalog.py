@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import AsyncMock, Mock
 
@@ -44,7 +44,9 @@ def test_official_category_projection():
 
 
 def _catalogo_sem_2027(monkeypatch, category_2026_p1_payload):
-    monkeypatch.setattr(models.time_utils, "utcnow", lambda: datetime(2027, 2, 1))
+    monkeypatch.setattr(
+        models.time_utils, "utcnow_aware", lambda: datetime(2027, 2, 1, 12, tzinfo=UTC)
+    )
     payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
     articles = copy.deepcopy(category_2026_p1_payload)
     articles["props"]["pageProps"]["paginatedArticles"]["total"] = 1
@@ -97,7 +99,9 @@ async def test_latest_without_year_falls_back_when_new_year_has_no_publication(
     monkeypatch, category_2026_p1_payload
 ):
     article = client._parse_articles(category_2026_p1_payload)[0]
-    monkeypatch.setattr(client, "datetime", Mock(now=Mock(return_value=datetime(2027, 1, 5))))
+    monkeypatch.setattr(
+        models.time_utils, "utcnow_aware", lambda: datetime(2027, 1, 5, 12, tzinfo=UTC)
+    )
     listing = AsyncMock(side_effect=[[], [article]])
     monkeypatch.setattr(client, "list_articles", listing)
     monkeypatch.setattr(
@@ -113,7 +117,9 @@ async def test_latest_without_year_falls_back_when_new_year_has_no_publication(
 
 
 async def test_explicit_year_without_publication_never_returns_previous_edition(monkeypatch):
-    monkeypatch.setattr(models.time_utils, "utcnow", lambda: datetime(2027, 1, 5))
+    monkeypatch.setattr(
+        models.time_utils, "utcnow_aware", lambda: datetime(2027, 1, 5, 12, tzinfo=UTC)
+    )
     golden = Path(__file__).parents[1] / "golden_data/anec/weekly_w34_2026"
     article = models.ANECArticle.model_validate_json(
         (golden / "article.json").read_text(encoding="utf-8")

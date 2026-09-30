@@ -8,11 +8,11 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
-from .models import resolve_cadeia_id
+from .models import resolve_cadeia_id, validate_safra
 
 logger = _log.get_logger(__name__)
 
@@ -25,7 +25,7 @@ async def cotacoes(
     *,
     safra: str | None = None,
     unidade: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -36,9 +36,20 @@ async def cotacoes(
     *,
     safra: str | None = None,
     unidade: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def cotacoes(
+    cadeia: str = "soja",
+    *,
+    safra: str | None = None,
+    unidade: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def cotacoes(
@@ -48,7 +59,7 @@ async def cotacoes(
     unidade: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     warn_once(
         "imea",
         "IMEA: termos de uso proíbem redistribuição de dados sem "
@@ -57,6 +68,7 @@ async def cotacoes(
     )
 
     cadeia_id = resolve_cadeia_id(cadeia)
+    safra = validate_safra(safra)
 
     logger.info(
         "imea_cotacoes",

@@ -4,8 +4,11 @@ import re
 
 from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize.dates import MESES_PT as MESES_PT
+from agrobr.utils.time import hoje
 
 _EDICAO = re.compile(r"(\d{4})-(0[1-9]|1[0-2])")
+
+ANO_MINIMO = 2010
 
 ABIOVE_PRODUTOS: dict[str, str] = {
     "grao": "grao",
@@ -37,7 +40,14 @@ ABIOVE_PRODUTOS: dict[str, str] = {
 
 
 def validate_selection(ano: int, mes: int | None, edicao: str | None) -> None:
-    if mes is not None and not 1 <= mes <= 12:
+    ano_atual = hoje().year
+    if isinstance(ano, bool) or not isinstance(ano, int) or not ANO_MINIMO <= ano <= ano_atual:
+        raise InvalidParameterError(
+            f"ano deve ser um inteiro de {ANO_MINIMO} a {ano_atual}, recebido {ano!r}"
+        )
+    if mes is not None and (
+        isinstance(mes, bool) or not isinstance(mes, int) or not 1 <= mes <= 12
+    ):
         raise InvalidParameterError(f"mes deve estar entre 1 e 12, recebido {mes!r}")
     if edicao is None:
         return

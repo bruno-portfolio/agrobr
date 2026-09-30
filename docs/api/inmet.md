@@ -10,7 +10,7 @@ O módulo oferece catálogo de estações, API observacional autenticada e arqui
 export AGROBR_INMET_TOKEN=seu_token
 ```
 
-Todas as funções aceitam `as_polars=False` e `return_meta=False`. O padrão é pandas; `as_polars=True` requer o extra Polars. Com `return_meta=True`, o retorno é `(frame, MetaInfo)`.
+Todas as funções aceitam `as_polars=False` e `return_meta=False`, só por nome. O padrão é pandas; `as_polars=True` requer o extra Polars. Com `return_meta=True`, o retorno é `(frame, MetaInfo)`.
 
 ## `historico_periodo`
 
@@ -20,6 +20,7 @@ async def historico_periodo(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
@@ -44,6 +45,7 @@ Anos sem membro da estação são diagnosticados em `meta.source_details["covera
 async def historico_uf(
     uf: str,
     ano: int,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
@@ -64,6 +66,7 @@ async def historico(
     codigo: str,
     ano: int,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
@@ -88,12 +91,13 @@ async def estacoes(
     tipo: str = "T",
     uf: str | None = None,
     apenas_operantes: bool = True,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
 ```
 
-Lista o catálogo atual: `tipo="T"` para automáticas ou `"M"` para convencionais. O padrão mantém somente `Operante`; use `apenas_operantes=False` para incluir outras situações. Retorna `codigo`, `nome`, `uf`, `situacao`, `tipo`, `latitude`, `longitude`, `altitude`, `inicio_operacao`. A situação atual não descreve a situação em cada ano histórico.
+Lista o catálogo atual: `tipo="T"` para automáticas ou `"M"` para convencionais. O padrão mantém somente `Operante`; use `apenas_operantes=False` para incluir outras situações. Retorna `codigo`, `nome`, `uf`, `situacao`, `tipo`, `latitude`, `longitude`, `altitude`, `inicio_operacao`, mais as colunas brutas da fonte (`DT_FIM_OPERACAO`, `CD_OSCAR`, `CD_WSI` e outras). A situação atual não descreve a situação em cada ano histórico. `tipo` fora de `"T"`/`"M"` e `uf` fora das siglas levantam `InvalidParameterError` antes da rede. `inicio_operacao` e `DT_FIM_OPERACAO` saem em `datetime64[ns, UTC]`, porque a fonte publica o instante com fuso: `2026-05-08T21:00:00.000-03:00` é `2026-05-09 00:00 UTC`. Data inexistente vira `NaT`, com aviso em `MetaInfo.validation_warnings`; catálogo vazio, resposta que não é lista JSON ou data fora do formato ISO levantam `ParseError`.
 
 ## `estacao`
 
@@ -103,12 +107,13 @@ async def estacao(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
 ```
 
-Observações autenticadas de uma estação, com intervalo inclusivo e agregação horária ou diária. Períodos longos são divididos em blocos; falha de aquisição em qualquer bloco interrompe a consulta. HTTP 204 autenticado e medições naturalmente ausentes não são convertidos em zero.
+Observações autenticadas de uma estação, com intervalo inclusivo e agregação horária ou diária. Períodos longos são divididos em blocos; falha de aquisição em qualquer bloco interrompe a consulta. HTTP 204 autenticado e medições naturalmente ausentes não são convertidos em zero. Período sem nenhuma observação levanta `SourceUnavailableError`, como o `historico()` de estação sem dados no ano.
 
 ## `clima_uf`
 
@@ -116,12 +121,13 @@ Observações autenticadas de uma estação, com intervalo inclusivo e agregaç�
 async def clima_uf(
     uf: str,
     ano: int,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
 ```
 
-Agrega mensalmente a API observacional das estações automáticas atualmente operantes na UF. Retorna as mesmas doze colunas mensais de `historico_uf()`. A seleção de estações pode diferir entre as duas rotas.
+Agrega mensalmente a API observacional das estações automáticas atualmente operantes na UF. Retorna as mesmas doze colunas mensais de `historico_uf()`. A seleção de estações pode diferir entre as duas rotas. O ano vai de 2000 ao corrente e é conferido antes da rede; ano sem nenhuma observação levanta `SourceUnavailableError`.
 
 ## Agregação e proveniência
 

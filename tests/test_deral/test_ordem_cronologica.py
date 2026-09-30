@@ -29,13 +29,11 @@ def test_quadro_sai_em_ordem_cronologica_por_produto():
         warnings.simplefilter("ignore")
         df = parser.parse_pc_xls(CAPTURA.read_bytes())
 
-    datas = pd.to_datetime(df["data"], format="%d/%m/%Y")
-    assert pd.api.types.is_string_dtype(df["data"])
-    assert datas.groupby(df["produto"]).apply(lambda serie: serie.is_monotonic_increasing).all()
-    assert df.groupby("produto")["data"].last().to_dict() == (
-        datas.groupby(df["produto"]).max().dt.strftime("%d/%m/%Y").to_dict()
-    )
-    assert df.iloc[-1][["produto", "data"]].tolist() == ["trigo", "14/09/2026"]
+    assert df["data"].dtype == "datetime64[ns]"
+    por_produto = df.groupby("produto")["data"]
+    assert por_produto.apply(lambda serie: serie.is_monotonic_increasing).all()
+    assert por_produto.last().to_dict() == por_produto.max().to_dict()
+    assert df.iloc[-1][["produto", "data"]].tolist() == ["trigo", pd.Timestamp("2026-09-14")]
 
 
 def test_aba_com_nome_diferente_da_data_avisa():
@@ -45,7 +43,7 @@ def test_aba_com_nome_diferente_da_data_avisa():
 
     assert df.attrs.get(ATRIBUTO_AVISOS) == ABAS_DIVERGENTES
     assert _avisos_da_fonte(emitidos) == ABAS_DIVERGENTES
-    assert df["data"].isin(["20/09/2021", "08/01/2018"]).any()
+    assert df["data"].isin(pd.to_datetime(["2021-09-20", "2018-01-08"])).any()
 
 
 @pytest.mark.parametrize(

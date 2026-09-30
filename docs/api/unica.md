@@ -81,8 +81,11 @@ async def producao_historica(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | `cana`, `acucar`, `etanol_anidro`, `etanol_hidratado`, `etanol_total` |
-| `safra_inicio` | `str \| None` | Formato `"2015/2016"` |
-| `safra_fim` | `str \| None` | Formato `"2020/2021"` |
+| `safra_inicio` | `str \| None` | `"2015/2016"`, `"2015/16"` ou `"15/16"`; None é 1980/1981 |
+| `safra_fim` | `str \| None` | Idem; None é 2020/2021 |
+
+Safra fora do formato, com anos não consecutivos, fora de 1980/1981–2020/2021 ou com
+`safra_inicio` depois de `safra_fim` levanta `InvalidParameterError` antes da rede.
 
 **Retorno:**
 

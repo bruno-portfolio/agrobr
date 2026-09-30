@@ -49,7 +49,7 @@ Argumento desconhecido (ex.: `municipio=`) levanta `TypeError` antes de qualquer
 | `safra` | str | Safra (ex: "24/25"; nula nos indicadores sem safra) |
 | `unidade` | str | Unidade (R$/sc, R$/t, R$/ha, %...) |
 | `unidade_descricao` | str | Descrição da unidade |
-| `data_publicacao` | str | Data de publicação, texto `AAAA-MM-DD HH:MM:SS` (nula em parte dos registros) |
+| `data_publicacao` | datetime64[ns] | Data e hora de publicação (nula em parte dos registros) |
 
 Uma linha é identificada por `indicador_id` + `localidade` + `data_publicacao` + `safra` + `unidade`. Sem o indicador,
 milhares de linhas da mesma cadeia repetem as outras quatro colunas (ex.: soja, 4.140 de 4.568 em 23/09/2026).
@@ -92,7 +92,8 @@ cadeia pedida. Ao juntar soja e milho, deduplique por `indicador_id` + `data_pub
 | `custo_producao` | Custo de Produção (10): preços de insumos (semente, tratamento de semente) |
 
 O número da cadeia também é aceito (`"5"`, `"10"`). As cadeias inativas na fonte (6 Madeira Nativa, 9 Aves,
-11 Geoprocessamento) levantam `ValueError` antes da rede.
+11 Geoprocessamento), nome desconhecido ou valor que não é texto levantam `InvalidParameterError`, com as
+opções, antes da rede.
 
 ## MetaInfo
 

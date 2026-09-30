@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from agrobr.exceptions import InvalidParameterError
+from agrobr.utils import validation
+
 IMEA_CADEIAS: dict[str, int] = {
     "soja": 4,
     "soybeans": 4,
@@ -46,18 +49,22 @@ IMEA_COLUMNS_MAP: dict[str, str] = {
 
 
 def resolve_cadeia_id(nome: str) -> int:
-    key = nome.strip().lower()
+    key = nome.strip().lower() if isinstance(nome, str) else ""
     if key in IMEA_CADEIAS:
         return IMEA_CADEIAS[key]
-    try:
-        cadeia_id = int(key)
-        if cadeia_id in _CADEIA_NAMES:
-            return cadeia_id
-    except ValueError:
-        pass
-    raise ValueError(
-        f"Cadeia desconhecida: '{nome}'. Opções: {list(dict.fromkeys(IMEA_CADEIAS.keys()))}"
+    if key.isdecimal() and int(key) in _CADEIA_NAMES:
+        return int(key)
+    raise InvalidParameterError(
+        f"Cadeia desconhecida: {nome!r}. Opções: {list(dict.fromkeys(IMEA_CADEIAS.keys()))}"
     )
+
+
+def validate_safra(safra: str | None) -> str | None:
+    """Safra no formato que o IMEA publica (`AA/AA`), aceitando os do `validate_safra`."""
+    normalizada = validation.validate_safra(safra)
+    if normalizada is None:
+        return None
+    return f"{normalizada[2:4]}/{normalizada[-2:]}"
 
 
 def cadeia_name(cadeia_id: int) -> str:

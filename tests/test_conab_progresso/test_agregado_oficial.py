@@ -167,10 +167,10 @@ def test_pr_da_conab_repete_o_levantamento_do_deral():
         linha = pr.loc[(cultura, operacao)]
         assert linha["semana_atual"] == "2026-09-18"
         assert linha["pct_semana_atual"] == pytest.approx(
-            deral.loc[(produto, "14/09/2026"), coluna] / 100
+            deral.loc[(produto, pd.Timestamp("2026-09-14")), coluna] / 100
         )
         assert linha["pct_semana_anterior"] == pytest.approx(
-            deral.loc[(produto, "08/09/2026"), coluna] / 100
+            deral.loc[(produto, pd.Timestamp("2026-09-08")), coluna] / 100
         )
 
 

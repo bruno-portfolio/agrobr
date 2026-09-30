@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal, overload
+from typing import Literal, overload
 
 import pandas as pd
 
@@ -9,6 +9,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.deral import models as deral_models
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -39,7 +40,7 @@ CONDICAO_LAVOURAS_INFO = DatasetInfo(
         ),
     ],
     products=_PRODUCTS,
-    contract_version="1.0",
+    contract_version="2.0",
     update_frequency="weekly",
     typical_latency="D+3",
     source_url="https://www.agricultura.pr.gov.br/deral",
@@ -53,17 +54,17 @@ class CondicaoLavourasDataset(BaseDataset):
     info = CONDICAO_LAVOURAS_INFO
 
     def _validate_produto(self, produto: str) -> None:
-        if not produto:
-            return
-        super()._validate_produto(produto)
+        if produto:
+            deral_models.validate_produto(produto)
 
     async def fetch(  # type: ignore[override]
         self,
         produto: str | None = None,
         *,
         return_meta: bool = False,
-        **kwargs: Any,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+        if produto is not None:
+            deral_models.validate_produto(produto)
         snapshot = get_snapshot()
 
         logger.info(
@@ -72,10 +73,7 @@ class CondicaoLavourasDataset(BaseDataset):
             produto=produto,
         )
 
-        df, source_name, source_meta, attempted = await self._try_sources(
-            produto or "",
-            **kwargs,
-        )
+        df, source_name, source_meta, attempted = await self._try_sources(produto or "")
 
         self._validate_contract(df)
 
@@ -96,7 +94,7 @@ async def condicao_lavouras(
     produto: str | None = None,
     *,
     return_meta: Literal[False] = False,
-    **kwargs: Any,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -105,18 +103,27 @@ async def condicao_lavouras(
     produto: str | None = None,
     *,
     return_meta: Literal[True],
-    **kwargs: Any,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def condicao_lavouras(
+    produto: str | None = None,
+    *,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def condicao_lavouras(
     produto: str | None = None,
     *,
     return_meta: bool = False,
-    **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    return await _condicao_lavouras.fetch(
+    as_polars: bool = False,
+) -> DataFrameResult:
+    return await _condicao_lavouras.fetch(  # type: ignore[call-arg]
         produto,
         return_meta=return_meta,
-        **kwargs,
+        as_polars=as_polars,
     )

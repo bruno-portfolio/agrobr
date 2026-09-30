@@ -9,7 +9,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
@@ -24,7 +24,7 @@ async def ensaio_soja(
     *,
     cultivar: str | None = None,
     empresa: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -33,11 +33,22 @@ async def ensaio_soja(
 async def ensaio_soja(
     safra: str,
     *,
-    cultivar: str | None = ...,
-    empresa: str | None = ...,
-    as_polars: bool = ...,
+    cultivar: str | None = None,
+    empresa: str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ensaio_soja(
+    safra: str,
+    *,
+    cultivar: str | None = None,
+    empresa: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def ensaio_soja(
@@ -47,7 +58,11 @@ async def ensaio_soja(
     empresa: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    if not isinstance(safra, str):
+        raise InvalidParameterError(
+            f"safra deve ser texto, recebido {safra!r}. Opções: {sorted(SAFRAS_URLS)}"
+        )
     if safra in SAFRAS_FORA_DO_LAYOUT:
         raise InvalidParameterError(
             f"Safra {safra!r} publicada pela Fundação Rio Verde num layout que o agrobr não lê "

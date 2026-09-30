@@ -6,6 +6,7 @@ import pandas as pd
 
 from agrobr.datasets import _anec, base, registry
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
 
 
 async def _fetch_anec(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -48,7 +49,7 @@ async def embarques_mensais_anec(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -61,10 +62,23 @@ async def embarques_mensais_anec(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def embarques_mensais_anec(
+    *,
+    ano: int,
+    semana: int | None = None,
+    produto: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> DataFrameResult: ...
 
 
 async def embarques_mensais_anec(
@@ -76,7 +90,7 @@ async def embarques_mensais_anec(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _embarques_mensais_anec.fetch(
         produto=produto,
         ano=ano,

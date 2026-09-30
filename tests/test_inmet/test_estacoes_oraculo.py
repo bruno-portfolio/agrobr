@@ -4,6 +4,7 @@ import json
 import math
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from agrobr import inmet
@@ -51,6 +52,8 @@ async def test_catalogo_de_estacoes_confere_o_inmet(tipo, apenas_operantes, uf, 
     ]
     assert esperado
     assert list(frame.index) == list(range(len(frame)))
+    assert frame["inicio_operacao"].dtype == "datetime64[ns, UTC]"
+    assert frame["DT_FIM_OPERACAO"].dtype == "datetime64[ns, UTC]"
     publicado = frame.to_dict("records")
     assert len(publicado) == len(esperado)
     for linha, registro in zip(publicado, esperado, strict=True):
@@ -67,7 +70,13 @@ async def test_catalogo_de_estacoes_confere_o_inmet(tipo, apenas_operantes, uf, 
             registro["SG_ESTADO"],
             registro["CD_SITUACAO"],
             registro["TP_ESTACAO"],
-            registro["DT_INICIO_OPERACAO"],
+            pd.Timestamp(registro["DT_INICIO_OPERACAO"]).tz_convert("UTC"),
+        )
+        fim = registro["DT_FIM_OPERACAO"]
+        assert (
+            pd.isna(linha["DT_FIM_OPERACAO"])
+            if fim is None
+            else linha["DT_FIM_OPERACAO"] == pd.Timestamp(fim).tz_convert("UTC")
         )
         for coluna, campo in (
             ("latitude", "VL_LATITUDE"),
@@ -76,3 +85,13 @@ async def test_catalogo_de_estacoes_confere_o_inmet(tipo, apenas_operantes, uf, 
         ):
             assert _mesmo(linha[coluna], _numero(registro[campo])), (coluna, registro["CD_ESTACAO"])
     assert meta.source_url == f"{client.BASE_URL}/estacoes/{tipo}"
+
+
+@pytest.mark.parametrize("tipo", ["T", "M"])
+async def test_catalogo_filtrado_sem_estacao_mantem_os_dtypes_do_cheio(tipo, monkeypatch):
+    install_replay_http(monkeypatch, _caso(tipo), GOLDEN)
+    cheio = await inmet.estacoes(tipo)
+    install_replay_http(monkeypatch, _caso(tipo), GOLDEN)
+    vazio = await inmet.estacoes(tipo, uf="SE" if tipo == "T" else "AC")
+    assert len(cheio) and vazio.empty
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict()

@@ -22,7 +22,7 @@ df = await deral.condicao_lavouras("trigo")
 | Column | Type | Description |
 |---|---|---|
 | `produto` | str | Monitored crop; beans and corn preserve the season as `feijao_1`, `feijao_2`, `milho_1`, or `milho_2` |
-| `data` | str | Reference date (dd/mm/yyyy) |
+| `data` | datetime64[ns] | Reference date published in the sheet |
 | `condicao` | str | `boa`, `media` or `ruim`; planting and harvest progress come in the columns below, in the same record |
 | `pct` | float | Percentage of the crop in that condition |
 | `plantio_pct` | float | Planting progress (%) |
@@ -31,16 +31,16 @@ df = await deral.condicao_lavouras("trigo")
 ## Published dates and percentages
 
 `data` comes from the sheet's reference-date cell, including cells outside the
-header, and is normalized to `dd/mm/yyyy`. Excel dates, `dd/mm/yyyy`,
+header, and is returned as `datetime64[ns]`. Excel dates, `dd/mm/yyyy`,
 `dd-mm-yyyy` and `dd-mm-yy` are recognized; two-digit years use 2000+.
 A sheet name never replaces a missing date: the parser raises `ParseError`
 identifying the sheet.
 An unreadable sheet stops parsing with `ParseError`; no partial result is returned.
 
 The table is sorted by `produto`, by date in chronological order and by `condicao`: the last row
-of each product is the most recent reference. `data` stays `dd/mm/yyyy` text, as in the contract,
-so `max()` or a text sort of that column is not chronological; convert with
-`pd.to_datetime(df["data"], format="%d/%m/%Y")`.
+of each product is the most recent reference. `data` is `datetime64[ns]` (up to 1.1.0, `dd/mm/yyyy`
+text); to filter one date, compare with `pd.Timestamp("2026-02-01")`: pandas reads the text
+`"01/02/2026"` month first and matches January 2, with no warning.
 
 The PC.xls footnote defines `"-"` as absolute zero. In percentage columns,
 this dash, including surrounding whitespace, becomes `0.0`; empty cells remain null.
@@ -52,10 +52,11 @@ the September 2026 BIFF file, including any fallback reader.
 8 crops published in the February and September 2026 editions:
 cafe, cevada, feijao_1, feijao_2, milho_1 (summer crop), milho_2 (second crop), soja, trigo.
 
-Oats, sugarcane, canola, cassava and aggregate corn/bean totals have parser aliases,
-but do not appear in these weekly report editions. The source API retains
-these aliases; the `milho` and `feijao` filters select the corresponding published
-crop seasons. The dataset advertises only the eight crops above, whose availability
+Oats, sugarcane, canola and cassava have parser aliases, but do not appear in these weekly
+report editions. The source and the dataset accept the eight crops above, the `milho` and
+`feijao` filters, which select both published seasons, and agrobr synonyms (`"Soja"`,
+`"soybean"`, `"milho 2ª safra"`). Any other name raises `InvalidParameterError` with the list,
+before any request. The dataset advertises only the eight crops above, whose availability
 varies by edition.
 
 ## Risk Note

@@ -49,7 +49,7 @@ An unknown argument (e.g. `municipio=`) raises `TypeError` before any request.
 | `safra` | str | Crop year (e.g. "24/25"; null for indicators without a crop year) |
 | `unidade` | str | Unit (R$/sc, R$/t, R$/ha, %...) |
 | `unidade_descricao` | str | Unit description |
-| `data_publicacao` | str | Publication date, text `YYYY-MM-DD HH:MM:SS` (null in some records) |
+| `data_publicacao` | datetime64[ns] | Publication date and time (null in some records) |
 
 A row is identified by `indicador_id` + `localidade` + `data_publicacao` + `safra` + `unidade`. Without the indicator,
 thousands of rows of the same chain repeat the other four columns (e.g. soybeans, 4,140 of 4,568 on September 23, 2026).
@@ -93,7 +93,8 @@ it with the requested chain. When combining soybeans and corn, deduplicate by `i
 | `custo_producao` | Custo de Produção (10): input prices (seed, seed treatment) |
 
 The chain number is also accepted (`"5"`, `"10"`). Chains inactive at the source (6 Madeira Nativa, 9 Aves,
-11 Geoprocessamento) raise `ValueError` before any request.
+11 Geoprocessamento), an unknown name or a non-text value raise `InvalidParameterError`, with the
+options, before any request.
 
 ## MetaInfo
 

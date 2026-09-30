@@ -8,9 +8,10 @@ from typing import Any, Literal, overload
 import pandas as pd
 
 from agrobr import _log
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils import validation
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 
 from . import client, historical, models, parser
 
@@ -19,36 +20,55 @@ logger = _log.get_logger(__name__)
 
 @overload
 async def estacoes(
-    tipo: str = ...,
-    uf: str | None = ...,
-    apenas_operantes: bool = ...,
-    as_polars: bool = ...,
+    tipo: str = "T",
+    uf: str | None = None,
+    apenas_operantes: bool = True,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def estacoes(
-    tipo: str = ...,
-    uf: str | None = ...,
-    apenas_operantes: bool = ...,
-    as_polars: bool = ...,
+    tipo: str = "T",
+    uf: str | None = None,
+    apenas_operantes: bool = True,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def estacoes(
+    tipo: str = "T",
+    uf: str | None = None,
+    apenas_operantes: bool = True,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def estacoes(
     tipo: str = "T",
     uf: str | None = None,
     apenas_operantes: bool = True,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    uf = validation.validate_uf(uf)
     t0 = time.monotonic()
     dados = await client.fetch_estacoes(tipo)
     fetch_ms = int((time.monotonic() - t0) * 1000)
+    if not dados:
+        raise ParseError(
+            source="inmet",
+            parser_version=parser.PARSER_VERSION,
+            reason=f"Catálogo de estações do INMET vazio (tipo {tipo})",
+        )
 
     t1 = time.monotonic()
 
@@ -76,10 +96,11 @@ async def estacoes(
     if apenas_operantes and "situacao" in df.columns:
         df = df[df["situacao"] == "Operante"]
 
-    if uf and "uf" in df.columns:
-        df = df[df["uf"] == uf.upper()]
+    if uf is not None and "uf" in df.columns:
+        df = df[df["uf"] == uf]
 
     df = df.reset_index(drop=True)
+    parser.converter_datas_catalogo(df)
 
     parse_ms = int((time.monotonic() - t1) * 1000)
 
@@ -101,8 +122,8 @@ async def estacao(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -113,10 +134,22 @@ async def estacao(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def estacao(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def estacao(
@@ -124,9 +157,10 @@ async def estacao(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     codigo = models.validate_codigo(codigo)
     inicio, fim = models.validate_periodo(inicio, fim)
     models.validate_agregacao(agregacao)
@@ -134,6 +168,7 @@ async def estacao(
     t0 = time.monotonic()
     dados = await client.fetch_dados_estacao(codigo, inicio, fim)
     fetch_ms = int((time.monotonic() - t0) * 1000)
+    _exigir_observacoes(dados, f"da estação {codigo}", inicio, fim)
 
     t1 = time.monotonic()
     parser.validate_observation_scope(dados, inicio, fim, codigo=codigo)
@@ -167,8 +202,8 @@ async def estacao(
 async def clima_uf(
     uf: str,
     ano: int,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -177,25 +212,38 @@ async def clima_uf(
 async def clima_uf(
     uf: str,
     ano: int,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def clima_uf(
+    uf: str,
+    ano: int,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def clima_uf(
     uf: str,
     ano: int,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     uf = models.validate_uf(uf)
+    models.validate_ano(ano)
     inicio = date(ano, 1, 1)
     fim = date(ano, 12, 31)
 
     t0 = time.monotonic()
     dados = await client.fetch_dados_estacoes_uf(uf, inicio, fim)
     fetch_ms = int((time.monotonic() - t0) * 1000)
+    _exigir_observacoes(dados, f"das estações de {uf}", inicio, fim)
 
     t1 = time.monotonic()
     parser.validate_observation_scope(dados, inicio, fim, uf=uf)
@@ -231,6 +279,15 @@ async def clima_uf(
     return finalize_result(df_mensal, meta, as_polars=as_polars, return_meta=return_meta)
 
 
+def _exigir_observacoes(dados: list[dict[str, Any]], alvo: str, inicio: date, fim: date) -> None:
+    if not dados:
+        raise SourceUnavailableError(
+            source="inmet",
+            url=client.BASE_URL,
+            last_error=f"INMET sem observações {alvo} entre {inicio} e {fim}",
+        )
+
+
 def _avisar_chuva_parcial(mensal: pd.DataFrame, avisos: list[str]) -> None:
     if "estacoes_chuva" not in mensal:
         return
@@ -251,8 +308,8 @@ async def historico(
     codigo: str,
     ano: int,
     agregacao: str = "horario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -262,19 +319,31 @@ async def historico(
     codigo: str,
     ano: int,
     agregacao: str = "horario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def historico(
+    codigo: str,
+    ano: int,
+    agregacao: str = "horario",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def historico(
     codigo: str,
     ano: int,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     models.validate_ano(ano)
     df, meta = await historico_periodo(
         codigo, date(ano, 1, 1), date(ano, 12, 31), agregacao, return_meta=True
@@ -317,8 +386,8 @@ async def historico_periodo(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -329,10 +398,22 @@ async def historico_periodo(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def historico_periodo(
+    codigo: str,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "horario",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def historico_periodo(
@@ -340,9 +421,10 @@ async def historico_periodo(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     codigo = models.validate_codigo(codigo)
     inicio, fim = models.validate_periodo(inicio, fim)
     models.validate_ano(inicio.year)
@@ -358,8 +440,8 @@ async def historico_periodo(
 async def historico_uf(
     uf: str,
     ano: int,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -368,18 +450,29 @@ async def historico_uf(
 async def historico_uf(
     uf: str,
     ano: int,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def historico_uf(
+    uf: str,
+    ano: int,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def historico_uf(
     uf: str,
     ano: int,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     uf = models.validate_uf(uf)
     models.validate_ano(ano)
     data, details, fetch_ms, parse_ms = await historical.collect(

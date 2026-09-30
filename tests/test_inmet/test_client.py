@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.inmet import client
 from tests.helpers import (
     levanta_exatamente,
@@ -85,21 +85,22 @@ class TestInmetEndpointPath:
 
 class TestInmetEmptyResponse:
     @pytest.mark.asyncio
-    async def test_non_list_response_returns_empty(self):
+    async def test_resposta_fora_de_lista_levanta_parse_error(self):
         resp = make_mock_response(200, json_data={"error": "unexpected"})
         mock_client = make_mock_async_client()
         mock_client.get = AsyncMock(return_value=resp)
 
-        with patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client):
-            result = await client._get_json("/test")
-
-        assert result == []
+        with (
+            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(ParseError, match="esperada lista JSON, veio dict"),
+        ):
+            await client._get_json("/test")
 
 
 class TestInmetValidation:
     @pytest.mark.asyncio
     async def test_invalid_tipo_raises(self):
-        with pytest.raises(ValueError, match="Tipo deve ser"):
+        with pytest.raises(InvalidParameterError, match="tipo inválido: 'X'. Valores válidos"):
             await client.fetch_estacoes("X")
 
     @pytest.mark.asyncio

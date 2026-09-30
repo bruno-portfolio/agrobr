@@ -8,9 +8,9 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 
-from . import client, parser
+from . import client, models, parser
 
 logger = _log.get_logger(__name__)
 
@@ -19,7 +19,7 @@ logger = _log.get_logger(__name__)
 async def condicao_lavouras(
     produto: str | None = None,
     *,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -28,9 +28,18 @@ async def condicao_lavouras(
 async def condicao_lavouras(
     produto: str | None = None,
     *,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def condicao_lavouras(
+    produto: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def condicao_lavouras(
@@ -38,7 +47,8 @@ async def condicao_lavouras(
     *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    produto = models.validate_produto(produto)
     logger.info("deral_condicao_lavouras", produto=produto)
 
     t0 = time.monotonic()
@@ -48,7 +58,7 @@ async def condicao_lavouras(
     t1 = time.monotonic()
     df, engine = parser.parse_pc_xls_with_engine(data)
 
-    if produto:
+    if produto is not None:
         df = parser.filter_by_produto(df, produto)
 
     parse_ms = int((time.monotonic() - t1) * 1000)

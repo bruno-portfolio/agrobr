@@ -54,8 +54,8 @@ def validate_periodo(inicio: str | date, fim: str | date) -> tuple[date, date]:
 
 
 def validate_uf(uf: str) -> str:
-    if not isinstance(uf, str) or not uf.strip():
-        raise InvalidParameterError("UF deve ser uma sigla brasileira")
+    if uf is None:
+        raise InvalidParameterError("uf é obrigatório: sigla de uma UF brasileira")
     return validation.validate_uf(uf) or ""
 
 

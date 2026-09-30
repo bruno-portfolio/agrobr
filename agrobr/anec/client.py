@@ -24,6 +24,7 @@ from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import atomic
+from agrobr.utils.time import hoje
 from agrobr.utils.warnings import warn_once
 
 logger = _log.get_logger(__name__)
@@ -135,6 +136,19 @@ def _parse_articles(payload: dict[str, Any]) -> list[ANECArticle]:
             logger.warning("anec_article_invalid", id=art.get("id"), error=str(exc))
             continue
     return articles
+
+
+def _exigir_paginacao(payload: dict[str, Any]) -> None:
+    try:
+        artigos = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
+    except (KeyError, TypeError):
+        artigos = None
+    if not isinstance(artigos, list):
+        raise ParseError(
+            source="anec",
+            parser_version=_HTML_PARSER_VERSION,
+            reason="Página de artigos ANEC sem paginatedArticles.articles",
+        )
 
 
 def _articles_total(payload: dict[str, Any]) -> int:
@@ -249,7 +263,7 @@ async def list_articles(year: int) -> list[ANECArticle]:
         age = time.monotonic() - ts
         if age < ttl:
             logger.debug("anec_list_memcache_hit", year=year, age_s=age)
-            return list(cached_articles)
+            return [article.model_copy() for article in cached_articles]
 
     all_articles: list[ANECArticle] = []
     page = 1
@@ -273,6 +287,7 @@ async def list_articles(year: int) -> list[ANECArticle]:
             logger.debug("anec_list_page", year=year, page=page, url=url)
             html = await _fetch_html(client, url)
             payload = _extract_next_data(html)
+            _exigir_paginacao(payload)
             articles = _parse_articles(payload)
             raw_count = _raw_article_count(payload)
             if total is None:
@@ -296,8 +311,8 @@ async def list_articles(year: int) -> list[ANECArticle]:
     semanais = [article for article in deduped if _boletim_semanal(article)]
     logger.info("anec_list_done", year=year, count=len(semanais), total=total)
     if _list_ttl_seconds() > 0:
-        _LIST_CACHE[year] = (time.monotonic(), list(semanais))
-    return semanais
+        _LIST_CACHE[year] = (time.monotonic(), semanais)
+    return [article.model_copy() for article in semanais]
 
 
 _FETCH_LOCKS: WeakValueDictionary[tuple[asyncio.AbstractEventLoop, str], asyncio.Lock] = (
@@ -405,7 +420,7 @@ async def fetch_latest_pdf(
 async def _acquire_latest(year: int | None, *, use_cache: bool) -> tuple[Aquisicao, ANECArticle]:
     allow_previous_year = year is None
     if year is None:
-        year = datetime.now(UTC).year
+        year = hoje().year
 
     articles = await list_articles(year)
     if not articles and allow_previous_year:

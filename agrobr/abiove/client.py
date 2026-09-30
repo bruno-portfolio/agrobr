@@ -9,7 +9,7 @@ from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
-from agrobr.utils.time import utcnow
+from agrobr.utils.time import hoje
 
 logger = _log.get_logger(__name__)
 
@@ -48,12 +48,12 @@ async def _fetch_url(url: str) -> bytes:
 
 
 def edicoes_candidatas(ano: int) -> list[str]:
-    hoje = utcnow()
+    corrente = hoje()
     return [
         f"{ano_edicao:04d}-{mes_edicao:02d}"
         for ano_edicao in (ano + 1, ano)
         for mes_edicao in range(12, 0, -1)
-        if (ano_edicao, mes_edicao) <= (hoje.year, hoje.month)
+        if (ano_edicao, mes_edicao) <= (corrente.year, corrente.month)
     ]
 
 

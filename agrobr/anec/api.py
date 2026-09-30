@@ -17,7 +17,7 @@ from agrobr.anec.models import (
 from agrobr.anec.parser import PERIODO_CURRENT_WEEK, PERIODO_LAST_WEEK
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 logger = _log.get_logger(__name__)
@@ -80,7 +80,7 @@ def _with_edition(df: pd.DataFrame, article: ANECArticle) -> pd.DataFrame:
     result = df.reset_index(drop=True).copy()
     result["ano_relatorio"] = pd.Series(year, index=result.index, dtype="Int64")
     result["semana_relatorio"] = pd.Series(week, index=result.index, dtype="Int64")
-    result["edicao_id"] = pd.Series(article.cuid, index=result.index, dtype="object")
+    result["edicao_id"] = pd.Series(article.cuid, index=result.index)
     result["publicado_em"] = pd.Series(
         pd.to_datetime(article.created_at, utc=True),
         index=result.index,
@@ -167,7 +167,7 @@ async def _additional_table(
     use_cache: bool,
     as_polars: bool,
     return_meta: bool,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     canonical = models.validate_filters(
         ano,
         semana,
@@ -212,7 +212,7 @@ async def embarques(
     produto: str | None = None,
     tipo: Literal["efetivado", "programado"] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -226,9 +226,23 @@ async def embarques(
     produto: str | None = None,
     tipo: Literal["efetivado", "programado"] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def embarques(
+    *,
+    ano: int,
+    semana: int | None = None,
+    porto: str | None = None,
+    produto: str | None = None,
+    tipo: Literal["efetivado", "programado"] | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def embarques(
@@ -242,7 +256,7 @@ async def embarques(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     if kwargs:
         raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
     produto_canonico = models.validate_filters(ano, semana, produto)
@@ -293,7 +307,7 @@ async def embarques_mensais(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -305,9 +319,21 @@ async def embarques_mensais(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def embarques_mensais(
+    *,
+    ano: int,
+    semana: int | None = None,
+    produto: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def embarques_mensais(
@@ -319,7 +345,7 @@ async def embarques_mensais(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     if kwargs:
         raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
     return await _additional_table(
@@ -340,7 +366,7 @@ async def comparacao_anual(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -352,9 +378,21 @@ async def comparacao_anual(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def comparacao_anual(
+    *,
+    ano: int,
+    semana: int | None = None,
+    produto: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def comparacao_anual(
@@ -366,7 +404,7 @@ async def comparacao_anual(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     if kwargs:
         raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
     return await _additional_table(
@@ -387,7 +425,7 @@ async def destinos(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -399,9 +437,21 @@ async def destinos(
     semana: int | None = None,
     produto: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def destinos(
+    *,
+    ano: int,
+    semana: int | None = None,
+    produto: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def destinos(
@@ -413,7 +463,7 @@ async def destinos(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     if kwargs:
         raise TypeError(f"Parâmetros ANEC não suportados: {sorted(kwargs)}")
     return await _additional_table(

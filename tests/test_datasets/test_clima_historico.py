@@ -11,7 +11,7 @@ import httpx
 import pandas as pd
 import pytest
 
-from agrobr import datasets, nasa_power
+from agrobr import datasets, inmet, nasa_power
 from agrobr.datasets.deterministic import deterministic
 from agrobr.exceptions import InvalidParameterError, SourceFallbackWarning, SourceUnavailableError
 from agrobr.inmet import client
@@ -177,6 +177,8 @@ async def test_explicit_source_failure_does_not_fall_back(fonte, install_climate
         {"uf": "DF", "ano": True},
         {"uf": "DF", "ano": 2001.5},
         {"uf": "DF", "agregacao": "horario"},
+        {"uf": "DF", "agregacao": "diario"},
+        {"uf": "DF", "fonte": "inmet", "ano": 1999},
         {"uf": "DF", "fonte": "unknown"},
         {"uf": "DF", "inicio": "2001-01-01"},
         {"uf": "DF", "estacao": "A001", "inicio": "2001-01-01", "fim": "2001-01-02"},
@@ -209,4 +211,34 @@ async def test_seletor_incompleto_explica_o_que_falta(arguments, motivo, install
     requests = install_climate_transport()
     with levanta_exatamente(InvalidParameterError, match=motivo):
         await datasets.clima(**arguments)
+    assert requests == []
+
+
+async def test_ano_antes_do_inmet_vai_direto_ao_nasa_no_modo_uf(
+    install_climate_transport, monkeypatch
+):
+    requests = install_climate_transport()
+    inmet_fetch = AsyncMock()
+    monkeypatch.setattr(inmet, "clima_uf", inmet_fetch)
+    nasa_fetch = AsyncMock(
+        return_value=pd.DataFrame(
+            {
+                "mes": pd.to_datetime(["1995-01-01"]),
+                "uf": ["MG"],
+                "precip_acum_mm": [123.0],
+                "temp_media": [22.0],
+                "temp_max_media": [27.0],
+                "temp_min_media": [17.0],
+                "lat": [-18.5],
+                "lon": [-44.6],
+            }
+        )
+    )
+    monkeypatch.setattr(nasa_power, "clima_uf", nasa_fetch)
+
+    frame, meta = await datasets.clima("MG", 1995, agregacao="mensal", return_meta=True)
+
+    assert meta.attempted_sources == ["nasa_power"]
+    assert frame["precip_acum_mm"].tolist() == [123.0]
+    inmet_fetch.assert_not_awaited()
     assert requests == []

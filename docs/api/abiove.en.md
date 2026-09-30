@@ -28,7 +28,7 @@ async def exportacao(
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ano` | `int` | Reference year |
+| `ano` | `int` | Reference year, from 2010 to the current one |
 | `mes` | `int \| None` | Data month (1-12). None returns every published month |
 | `produto` | `str \| None` | Filter: `"grao"`, `"farelo"`, `"oleo"`, `"milho"`, `"total"` (aggregate) |
 | `agregacao` | `str` | `"detalhado"` (by product/month) or `"mensal"` (sum) |
@@ -63,7 +63,7 @@ df = await abiove.exportacao(2025, mes=12, edicao="2025-12")
 ABIOVE publishes one workbook per monthly edition (`exp_YYYYMM.xlsx`), with the edition year and the previous one, and revises months already published. Without `edicao`, agrobr reads the latest edition that carries `ano`: first the following year's editions (which carry `ano` as the comparison year), then the year's own, from newest to oldest, never past the current month. In September 2026, `exportacao(2025)` reads `exp_202608.xlsx`, which revises 19 of the 96 cells of 2025 published in `exp_202512.xlsx` (meal, Dec/2025: 1,990,304.323 t, not 2,020,365.023 t).
 
 - The edition read goes to `MetaInfo.source_details["edicao"]` (`arquivo` and `mes`), and the workbook SHA-256 to `raw_content_hash`.
-- `mes` only filters the data month: a month not yet published returns an empty DataFrame, and `mes` outside 1-12 raises `InvalidParameterError` before the network, as do `edicao` in any other format or from another year, a `produto` outside the list and an `agregacao` other than `"detalhado"` and `"mensal"`.
+- `mes` only filters the data month: a month not yet published returns an empty DataFrame, and an `ano` that is not an integer from 2010 to the current year or a `mes` outside 1-12 raise `InvalidParameterError` before the network, as do `edicao` in any other format or from another year, a `produto` outside the list and an `agregacao` other than `"detalhado"` and `"mensal"`.
 - A failure on the latest edition (timeout, HTTP 5xx) raises `SourceUnavailableError`; agrobr only moves to the previous edition when the latest one does not exist (HTTP 404).
 
 ## Synchronous Version

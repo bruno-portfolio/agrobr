@@ -11,7 +11,7 @@ Monthly climate by state or daily and hourly station observations. State queries
 | `"inmet_historico"` | Public ZIP only | Public ZIP only |
 | `"nasa_power"` | Representative state point | Invalid |
 
-An explicit source never activates another source. Automatic routing skips archives for periods before 2000. A state with no observations in the ZIP can fall back to NASA; rows with null measurements remain valid.
+An explicit source never activates another source. Automatic state routing skips the INMET API and archives for years before 2000, which go straight to NASA; `fonte="inmet"` or `"inmet_historico"` with those years raises `InvalidParameterError`. A state with no observations in the ZIP can fall back to NASA; rows with null measurements remain valid.
 
 ```python
 from agrobr import datasets
@@ -29,7 +29,7 @@ hourly = await datasets.clima(
 
 `uf` and `ano` retain their positional arguments; other arguments are keyword-only. `return_meta=True` returns `(frame, MetaInfo)`. `as_polars=True` converts after contract validation and requires the Polars extra.
 
-In state mode, the legacy default `agregacao="diario"` and explicit `"mensal"` both return months; `"horario"` is invalid. Station mode defaults to daily data, requires inclusive `inicio` and `fim`, and accepts only `"diario"` and `"horario"`. Do not combine a station with state/year selectors.
+In state mode, an omitted `agregacao` or `"mensal"` returns months; `"diario"` and `"horario"` raise `InvalidParameterError` (up to 1.1.0 the default was `"diario"`, which state mode accepted while returning months). Station mode defaults to daily data, requires inclusive `inicio` and `fim`, and accepts only `"diario"` and `"horario"`. Do not combine a station with state/year selectors.
 
 ## Monthly contract `CLIMA_V3` — 3.1
 

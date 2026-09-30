@@ -9,7 +9,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
@@ -40,7 +40,7 @@ async def moagem_quinzenal(
     produto: str = "cana",
     *,
     regiao: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -50,9 +50,19 @@ async def moagem_quinzenal(
     produto: str = "cana",
     *,
     regiao: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def moagem_quinzenal(
+    produto: str = "cana",
+    *,
+    regiao: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def moagem_quinzenal(
@@ -61,7 +71,7 @@ async def moagem_quinzenal(
     regiao: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Série quinzenal acumulada da safra corrente do Centro-Sul (relatório UNICA).
 
     Extraída do PDF quinzenal mais recente: moagem de cana (t) e produção de
@@ -101,7 +111,7 @@ async def moagem_quinzenal(
 async def safra_resumo(
     *,
     periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -110,9 +120,18 @@ async def safra_resumo(
 async def safra_resumo(
     *,
     periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def safra_resumo(
+    *,
+    periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def safra_resumo(
@@ -120,7 +139,7 @@ async def safra_resumo(
     periodo: Literal["acumulado", "quinzena", "mensal"] = "acumulado",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Resumo da posição da safra Centro-Sul (Tabelas 1-2 do relatório UNICA).
 
     Moagem, açúcar, etanol, ATR, mix açúcar/etanol e rendimentos por região,
@@ -167,7 +186,7 @@ async def producao_historica(
     *,
     safra_inicio: str | None = None,
     safra_fim: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -178,9 +197,20 @@ async def producao_historica(
     *,
     safra_inicio: str | None = None,
     safra_fim: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def producao_historica(
+    produto: str = "cana",
+    *,
+    safra_inicio: str | None = None,
+    safra_fim: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def producao_historica(
@@ -190,7 +220,7 @@ async def producao_historica(
     safra_fim: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Produção histórica anual por estado (UNICA, safras 1980/1981 a 2020/2021).
 
     Matriz estado × safra do site clássico unicadata, com agregados

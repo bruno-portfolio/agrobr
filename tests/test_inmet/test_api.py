@@ -1,12 +1,13 @@
 """Testes para a API pública INMET."""
 
+import re
 import warnings
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 import pytest
 
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.inmet import api
 
 
@@ -157,6 +158,98 @@ class TestClimaUf:
             await api.clima_uf("XX", 2024)
 
         fetch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("ano", [0, 1999, 9999, True, "2024"])
+    async def test_clima_uf_recusa_ano_fora_do_dominio_antes_da_rede(self, ano):
+        with (
+            patch.object(api.client, "fetch_dados_estacoes_uf", new_callable=AsyncMock) as fetch,
+            pytest.raises(InvalidParameterError, match="ano deve estar entre 2000 e"),
+        ):
+            await api.clima_uf("SP", ano)
+
+        fetch.assert_not_awaited()
+
+
+class TestSelecaoSemObservacoes:
+    @pytest.mark.asyncio
+    async def test_estacao_sem_observacoes_no_periodo_e_fonte_sem_dado(self):
+        with (
+            patch.object(
+                api.client, "fetch_dados_estacao", new_callable=AsyncMock, return_value=[]
+            ),
+            pytest.raises(SourceUnavailableError, match="sem observações da estação A001"),
+        ):
+            await api.estacao("A001", "2024-01-15", "2024-01-16")
+
+    @pytest.mark.asyncio
+    async def test_clima_uf_sem_observacoes_no_ano_e_fonte_sem_dado(self):
+        with (
+            patch.object(
+                api.client, "fetch_dados_estacoes_uf", new_callable=AsyncMock, return_value=[]
+            ),
+            pytest.raises(SourceUnavailableError, match="sem observações das estações de SP"),
+        ):
+            await api.clima_uf("SP", 2024)
+
+
+class TestEstacoesEntrada:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("argumentos", "mensagem"),
+        [
+            ({"uf": "ZZ"}, "UF inválida: 'ZZ'. Valores válidos: AC"),
+            ({"uf": 51}, "UF inválida: 51. Valores válidos: AC"),
+            ({"tipo": "X"}, "tipo inválido: 'X'. Valores válidos"),
+        ],
+    )
+    async def test_filtro_invalido_recusado_antes_da_rede(self, argumentos, mensagem):
+        with (
+            patch.object(api.client, "_get_json", new_callable=AsyncMock) as rede,
+            pytest.raises(InvalidParameterError, match=re.escape(mensagem)),
+        ):
+            await api.estacoes(**argumentos)
+
+        rede.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_catalogo_vazio_e_layout_e_nao_tabela_vazia(self):
+        with (
+            patch.object(api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=[]),
+            pytest.raises(ParseError, match="Catálogo de estações do INMET vazio"),
+        ):
+            await api.estacoes()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "inicio", ["08/05/2026", "2026-05-08Tlixo", "2026-05-08T21:00:00.000-03:00lixo"]
+    )
+    async def test_data_de_operacao_fora_do_formato_iso_e_layout(self, inicio):
+        estacao = _mock_estacao(inicio=inicio)
+        with (
+            patch.object(
+                api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=[estacao]
+            ),
+            pytest.raises(ParseError, match="inicio_operacao fora do formato ISO"),
+        ):
+            await api.estacoes()
+
+    @pytest.mark.asyncio
+    async def test_data_de_operacao_inexistente_vira_nat_com_aviso_no_meta(self):
+        estacoes = [
+            _mock_estacao(),
+            _mock_estacao(codigo="A002", inicio="2026-02-30T21:00:00.000-03:00"),
+        ]
+        with (
+            patch.object(
+                api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=estacoes
+            ),
+            pytest.warns(UserWarning, match="1 valor"),
+        ):
+            df, meta = await api.estacoes(return_meta=True)
+
+        assert df["inicio_operacao"].isna().tolist() == [False, True]
+        assert any("inicio_operacao viraram NaT" in aviso for aviso in meta.validation_warnings)
 
 
 class TestEstacoesReturnMeta:

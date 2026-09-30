@@ -28,7 +28,7 @@ def preflight(as_polars: bool, return_meta: bool, kwargs: dict[str, Any]) -> Mod
 
 def finalize(
     frame: pd.DataFrame, meta: MetaInfo, polars: ModuleType | None, return_meta: bool
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     frame = result_utils.datas_em_ns(frame)
     result: Any = frame
     if polars is not None:
@@ -45,6 +45,4 @@ def finalize(
                 dtype = polars.Float64
             series.append(polars.Series(column, values, dtype=dtype))
         result = polars.DataFrame(series)
-    return cast(
-        "pd.DataFrame | tuple[pd.DataFrame, MetaInfo]", (result, meta) if return_meta else result
-    )
+    return cast("result_utils.DataFrameResult", (result, meta) if return_meta else result)

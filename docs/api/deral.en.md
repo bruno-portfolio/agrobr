@@ -21,13 +21,13 @@ async def condicao_lavouras(
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `produto` | `str \| None` | Filter by crop (`"soja"`, `"milho"`, `"milho_1"`, `"milho_2"`, `"trigo"`, `"feijao"`, `"cana"`, `"cafe"`, etc.). None returns all |
+| `produto` | `str \| None` | Filter by crop: `"cafe"`, `"cevada"`, `"feijao"`, `"feijao_1"`, `"feijao_2"`, `"milho"`, `"milho_1"`, `"milho_2"`, `"soja"` or `"trigo"`, with agrobr synonyms. None returns all; any other name raises `InvalidParameterError` before any request |
 | `as_polars` | `bool` | Return as polars DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
 
 **Returns:**
 
-DataFrame with columns: `produto`, `data`, `condicao`, `pct`, `plantio_pct`, `colheita_pct`
+DataFrame with columns: `produto`, `data` (`datetime64[ns]`), `condicao`, `pct`, `plantio_pct`, `colheita_pct`
 
 **Example:**
 

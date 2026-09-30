@@ -11,7 +11,7 @@ Clima mensal por UF ou observações diárias e horárias por estação. O modo 
 | `"inmet_historico"` | ZIP público exclusivo | ZIP público exclusivo |
 | `"nasa_power"` | Ponto representativo da UF | Inválido |
 
-Uma fonte explícita nunca aciona outra fonte. O histórico é omitido da rota automática para períodos anteriores a 2000. Ausência de observações da UF no ZIP permite avançar ao NASA; linhas com medições nulas continuam válidas.
+Uma fonte explícita nunca aciona outra fonte. A API e o histórico do INMET são omitidos da rota automática por UF para anos anteriores a 2000, que vão direto ao NASA; `fonte="inmet"` ou `"inmet_historico"` com esses anos levanta `InvalidParameterError`. Ausência de observações da UF no ZIP permite avançar ao NASA; linhas com medições nulas continuam válidas.
 
 ```python
 from agrobr import datasets
@@ -29,7 +29,7 @@ horario = await datasets.clima(
 
 `uf` e `ano` mantêm suas posições; os demais argumentos são nomeados. `return_meta=True` retorna `(frame, MetaInfo)`. `as_polars=True` converte após validação do contrato e requer o extra Polars.
 
-No modo UF, o padrão legado `agregacao="diario"` e a opção `"mensal"` retornam meses; `"horario"` é inválido. No modo estação, o padrão do dataset é diário, com `inicio` e `fim` inclusivos obrigatórios; somente `"diario"` e `"horario"` são aceitos. Não combine estação com UF/ano.
+No modo UF, `agregacao` omitida ou `"mensal"` retornam meses; `"diario"` e `"horario"` levantam `InvalidParameterError` (até a 1.1.0, o padrão era `"diario"`, e o modo UF o aceitava e devolvia meses). No modo estação, o padrão do dataset é diário, com `inicio` e `fim` inclusivos obrigatórios; somente `"diario"` e `"horario"` são aceitos. Não combine estação com UF/ano.
 
 ## Contrato mensal `CLIMA_V3` — 3.1
 

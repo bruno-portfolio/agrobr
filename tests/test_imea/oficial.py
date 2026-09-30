@@ -75,7 +75,9 @@ def esperado(cadeia: int, registro: dict[str, Any]) -> dict[str, Any]:
         "safra": registro["Safra"],
         "unidade": registro["UnidadeSigla"],
         "unidade_descricao": registro["UnidadeDescricao"],
-        "data_publicacao": registro["DataPublicacao"],
+        "data_publicacao": None
+        if registro["DataPublicacao"] is None
+        else pd.Timestamp(registro["DataPublicacao"]),
     }
 
 

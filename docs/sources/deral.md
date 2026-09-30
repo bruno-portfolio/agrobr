@@ -22,7 +22,7 @@ df = await deral.condicao_lavouras("trigo")
 | Coluna | Tipo | Descrição |
 |---|---|---|
 | `produto` | str | Cultura monitorada; feijão e milho preservam a safra em `feijao_1`, `feijao_2`, `milho_1` ou `milho_2` |
-| `data` | str | Data de referência (dd/mm/yyyy) |
+| `data` | datetime64[ns] | Data de referência publicada na aba |
 | `condicao` | str | `boa`, `media` ou `ruim`; o progresso de plantio e colheita vem nas colunas abaixo, no mesmo registro |
 | `pct` | float | Percentual da lavoura nessa condição |
 | `plantio_pct` | float | Progresso do plantio (%) |
@@ -31,16 +31,16 @@ df = await deral.condicao_lavouras("trigo")
 ## Data e percentuais publicados
 
 `data` vem da célula de referência da aba, inclusive quando ela fica fora do
-cabeçalho, e é normalizada para `dd/mm/yyyy`. Datas Excel, `dd/mm/yyyy`,
+cabeçalho, e sai em `datetime64[ns]`. Datas Excel, `dd/mm/yyyy`,
 `dd-mm-yyyy` e `dd-mm-yy` são reconhecidas; anos de dois dígitos usam 2000+.
 O nome da aba nunca substitui uma data ausente: nesse caso, o parser levanta
 `ParseError` com o nome da aba.
 Uma aba que não puder ser lida interrompe a leitura com `ParseError`; não há resultado parcial.
 
 O quadro sai ordenado por `produto`, pela data em ordem cronológica e por `condicao`: a última
-linha de cada produto é a referência mais recente. `data` continua texto `dd/mm/yyyy`, como no
-contrato, e o `max()` ou a ordenação dessa coluna como texto não são cronológicos; converta com
-`pd.to_datetime(df["data"], format="%d/%m/%Y")`.
+linha de cada produto é a referência mais recente. `data` sai em `datetime64[ns]` (até a 1.1.0, texto
+`dd/mm/yyyy`); para filtrar uma data, compare com `pd.Timestamp("2026-02-01")`: o texto `"01/02/2026"` é
+lido pelo pandas com o mês primeiro e casa 2 de janeiro, sem aviso.
 
 A nota do PC.xls define `"-"` como zero absoluto. Nas colunas de percentual,
 esse traço, inclusive com espaços, vira `0.0`; células vazias continuam nulas.
@@ -52,11 +52,12 @@ o arquivo BIFF de setembro de 2026, incluindo eventual leitor alternativo.
 8 culturas publicadas nas edições de fevereiro e setembro de 2026:
 cafe, cevada, feijao_1, feijao_2, milho_1 (verão), milho_2 (safrinha), soja, trigo.
 
-Aveia, cana, canola, mandioca e os totais milho/feijão têm alias no parser, mas não
-aparecem nessas edições do relatório semanal. A API da fonte conserva
-esses aliases; os filtros `milho` e `feijao` selecionam as respectivas safras
-publicadas. O dataset anuncia somente as oito culturas acima, cuja disponibilidade
-varia conforme a edição.
+Aveia, cana, canola e mandioca têm alias no parser, mas não aparecem nessas edições do
+relatório semanal. A fonte e o dataset aceitam as oito culturas acima, os filtros `milho` e
+`feijao`, que selecionam as duas safras publicadas, e os sinônimos do agrobr (`"Soja"`,
+`"soybean"`, `"milho 2ª safra"`). Outro nome levanta `InvalidParameterError` com a lista, antes
+da rede. O dataset anuncia somente as oito culturas acima, cuja disponibilidade varia conforme
+a edição.
 
 ## Nota de Risco
 

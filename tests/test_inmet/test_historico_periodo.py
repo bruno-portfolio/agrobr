@@ -4,9 +4,11 @@ import asyncio
 import hashlib
 import io
 import json
+import time
+import warnings
 import zipfile
 from dataclasses import replace
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from unittest.mock import AsyncMock
 
@@ -14,9 +16,10 @@ import httpx
 import pandas as pd
 import pytest
 
-from agrobr import inmet
+from agrobr import constants, inmet
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.inmet import client, parser
+from agrobr.utils import time as time_utils
 from tests.helpers import conferir_corpo, levanta_exatamente
 
 GOLDEN = Path(__file__).parents[1] / "golden_data" / "inmet" / "selecao_20260906"
@@ -118,12 +121,12 @@ async def test_ausencia_membro_ano_e_explicita(monkeypatch):
 @pytest.mark.parametrize("aggregation", ["horario", "diario"])
 async def test_estacao_ausente_vazio_tipado_periodo(monkeypatch, aggregation):
     install_http(monkeypatch, {2000: (GOLDEN / "2000.zip").read_bytes()})
+    cheio = await inmet.historico_periodo("A001", "2000-01-01", "2000-12-31", aggregation)
     data, meta = await inmet.historico_periodo(
         "Z999", "2000-01-01", "2000-12-31", aggregation, return_meta=True
     )
-    assert data.empty
-    assert pd.api.types.is_datetime64_dtype(data.data)
-    assert pd.api.types.is_float_dtype(data.precipitacao_mm)
+    assert data.empty and len(cheio)
+    assert data.dtypes.to_dict() == cheio.dtypes.to_dict()
     assert meta.source_details["coverage"]["missing_station_years"] == [2000]
 
 
@@ -137,10 +140,12 @@ async def test_estacao_ausente_anual_continua_erro(monkeypatch):
 @pytest.mark.asyncio
 async def test_uf_ausente_vazio_mensal_tipado(monkeypatch):
     install_http(monkeypatch, {2000: (GOLDEN / "2000.zip").read_bytes()})
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        cheio = await inmet.historico_uf("DF", 2000)
     data, meta = await inmet.historico_uf("AC", 2000, return_meta=True)
-    assert data.empty
-    assert pd.api.types.is_datetime64_dtype(data.mes)
-    assert pd.api.types.is_float_dtype(data.precip_acum_mm)
+    assert data.empty and len(cheio)
+    assert data.dtypes.to_dict() == cheio.dtypes.to_dict()
     assert meta.source_details["coverage"]["missing_uf_years"] == [2000]
 
 
@@ -297,6 +302,17 @@ async def test_cache_expirado_revalida_sem_servir_stale(monkeypatch):
     archive = await client.fetch_historico_arquivo(2000)
     assert len(calls) == 2
     assert not archive.from_cache
+
+
+@pytest.mark.asyncio
+async def test_ano_corrente_do_cache_segue_o_relogio_de_brasilia(monkeypatch):
+    install_http(monkeypatch, {2000: (GOLDEN / "2000.zip").read_bytes()})
+    monkeypatch.setattr(time_utils, "utcnow_aware", lambda: datetime(2001, 1, 1, 1, 0, tzinfo=UTC))
+
+    archive = await client.fetch_historico_arquivo(2000)
+
+    restante = archive.expires_at - time.monotonic()
+    assert 0 < restante <= constants.INMET_HISTORICO_CACHE_CURRENT_TTL
 
 
 @pytest.mark.asyncio

@@ -65,7 +65,7 @@ def resolve_produto(nome: str) -> str:
 
 
 def validate_year(ano: int) -> None:
-    current = time_utils.utcnow().year
+    current = time_utils.hoje().year
     if isinstance(ano, bool) or not isinstance(ano, int) or not MIN_YEAR <= ano <= current:
         raise InvalidParameterError(
             f"ano deve ser um ano de edição entre {MIN_YEAR} e {current}; recebido {ano!r}"

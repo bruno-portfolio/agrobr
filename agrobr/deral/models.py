@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from agrobr.exceptions import InvalidParameterError
+from agrobr.normalize import crops
+
 DERAL_PRODUTOS_PUBLICADOS: tuple[str, ...] = (
     "cafe",
     "cevada",
@@ -43,6 +46,23 @@ _PRODUTO_ALIASES: dict[str, str] = {
 }
 
 
+PRODUTOS_ACEITOS: tuple[str, ...] = (*DERAL_PRODUTOS_PUBLICADOS, "feijao", "milho")
+"""`feijao` e `milho` juntam a 1ª e a 2ª safra."""
+
+
 def normalize_produto(nome: str) -> str:
     key = nome.strip().lower()
     return _PRODUTO_ALIASES.get(key, key)
+
+
+def validate_produto(produto: str | None) -> str | None:
+    if produto is None:
+        return None
+    chave = normalize_produto(produto) if isinstance(produto, str) else None
+    if chave not in PRODUTOS_ACEITOS and isinstance(produto, str):
+        chave = crops.normalizar_cultura(produto)
+    if chave not in PRODUTOS_ACEITOS:
+        raise InvalidParameterError(
+            f"produto inválido: {produto!r}. Valores válidos: {sorted(PRODUTOS_ACEITOS)}"
+        )
+    return chave

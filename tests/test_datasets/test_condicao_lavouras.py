@@ -11,7 +11,7 @@ from .conftest import make_source
 def _make_df(**overrides):
     row = {
         "produto": "soja",
-        "data": "01/03/2024",
+        "data": pd.Timestamp("2024-03-01"),
         "condicao": "boa",
         "pct": 70.0,
         "plantio_pct": float("nan"),

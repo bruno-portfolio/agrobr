@@ -15,8 +15,10 @@ async def clima_ponto(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "diario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
+    parameters: list[str] | None = None,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
@@ -31,6 +33,7 @@ async def clima_ponto(
 | `agregacao` | `str` | `"diario"` (default) or `"mensal"` |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
+| `parameters` | `list[str] \| None` | NASA POWER codes to request (1 to 20, no repeats), from the `parametros()` catalog; `None` requests all |
 
 **Returns:**
 
@@ -68,8 +71,10 @@ async def clima_uf(
     uf: str,
     ano: int,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
+    parameters: list[str] | None = None,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
@@ -82,6 +87,7 @@ async def clima_uf(
 | `agregacao` | `str` | `"diario"` or `"mensal"` (default) |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
+| `parameters` | `list[str] \| None` | NASA POWER codes to request (1 to 20, no repeats), from the `parametros()` catalog; `None` requests all |
 
 **Example:**
 
@@ -89,6 +95,28 @@ async def clima_uf(
 from agrobr import nasa_power
 
 df = await nasa_power.clima_uf("MT", 2024)
+```
+
+`as_polars`, `return_meta` and `parameters` are keyword-only.
+
+---
+
+### `parametros`
+
+Catalog of the AG community daily codes that agrobr reads, with no network access.
+
+```python
+def parametros() -> pd.DataFrame
+```
+
+Columns: `codigo` (the NASA POWER parameter name, the value accepted in `parameters`), `coluna` and `unidade` (daily
+output), `coluna_mensal`, `unidade_mensal` and `agregacao_mensal` (monthly output), `comunidade` and `frequencia_origem`.
+
+```python
+from agrobr import nasa_power
+
+nasa_power.parametros()[["codigo", "coluna", "unidade"]]
+df = await nasa_power.clima_ponto(-12.55, -55.72, "2024-01-01", "2024-01-31", parameters=["T2M", "PRECTOTCORR"])
 ```
 
 ## Synchronous Version

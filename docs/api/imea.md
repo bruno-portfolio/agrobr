@@ -27,14 +27,14 @@ async def cotacoes(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `cadeia` | `str` | Cadeia produtiva: `"soja"`, `"milho"`, `"algodao"`, `"bovinocultura"`, `"suinocultura"`, `"leite"` |
-| `safra` | `str \| None` | Filtrar por safra (ex: `"24/25"`). None retorna todas |
+| `safra` | `str \| None` | Filtrar por safra: `"24/25"`, `"2024/25"` ou `"2024/2025"` (o IMEA publica `"24/25"`). None retorna todas; formato inválido levanta `InvalidParameterError` antes da rede |
 | `unidade` | `str \| None` | Filtrar por unidade (ex: `"R$/sc"`, `"R$/t"`, `"%"`) |
 | `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
 
-DataFrame com colunas: `cadeia`, `indicador_id`, `indicador`, `localidade`, `valor`, `variacao`, `safra`, `unidade`, `unidade_descricao`, `data_publicacao`. `indicador_id` é o código do indicador no IMEA, e `indicador`, o nome dele no catálogo da cadeia.
+DataFrame com colunas: `cadeia`, `indicador_id`, `indicador`, `localidade`, `valor`, `variacao`, `safra`, `unidade`, `unidade_descricao`, `data_publicacao`. `indicador_id` é o código do indicador no IMEA, e `indicador`, o nome dele no catálogo da cadeia. `data_publicacao` sai em `datetime64[ns]`. Filtro sem correspondência devolve DataFrame vazio com os mesmos dtypes; lista de cotações ou catálogo vazio na fonte levanta `ParseError`.
 
 **Exemplo:**
 

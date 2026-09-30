@@ -5,6 +5,7 @@ import csv
 import hashlib
 import io
 import json
+import warnings
 from datetime import date
 from typing import Any
 
@@ -15,6 +16,7 @@ from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates, encoding
 from agrobr.normalize.regions import remover_acentos
+from agrobr.utils.result import ATRIBUTO_AVISOS
 
 from . import models
 
@@ -60,6 +62,38 @@ COLUNAS_NUMERICAS = [
 ]
 
 SENTINEL = -9999.0
+
+COLUNAS_DATA_CATALOGO = ("inicio_operacao", "DT_FIM_OPERACAO")
+INSTANTE_ISO = r"\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})?)?"
+
+
+def converter_datas_catalogo(df: pd.DataFrame) -> None:
+    """Converte no lugar as datas do catálogo de estações, instantes ISO com fuso, para UTC.
+
+    Texto fora do formato ISO é mudança de layout (`ParseError`); data ISO inexistente vira
+    `NaT` com aviso em `df.attrs`, de onde o `build_source_meta` a leva ao `MetaInfo`.
+    """
+    for coluna in COLUNAS_DATA_CATALOGO:
+        if coluna not in df:
+            continue
+        texto = df[coluna].astype("string").str.strip()
+        presentes = texto.notna() & texto.ne("")
+        fora = presentes & ~texto.str.fullmatch(INSTANTE_ISO).fillna(False)
+        if fora.any():
+            raise ParseError(
+                source="inmet",
+                parser_version=PARSER_VERSION,
+                reason=f"{coluna} fora do formato ISO no catálogo: {texto[fora].iloc[0]!r}",
+            )
+        instantes = pd.to_datetime(
+            texto.where(presentes), format="ISO8601", utc=True, errors="coerce"
+        )
+        perdidas = int((presentes & instantes.isna()).sum())
+        if perdidas:
+            aviso = f"inmet: {perdidas} valor(es) de {coluna} viraram NaT (data inexistente)."
+            df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+            warnings.warn(aviso, UserWarning, stacklevel=2)
+        df[coluna] = instantes.dt.as_unit("ns")
 
 
 def validate_observation_scope(
@@ -256,9 +290,7 @@ def historico_layout_fingerprint(raw: bytes) -> dict[str, str | int]:
 def empty_historico(agregacao: str = "horario") -> pd.DataFrame:
     if agregacao == "horario":
         types = dict.fromkeys(COLUNAS_NUMERICAS, "float64")
-        types.update(
-            {"data": "datetime64[ns]", "hora_utc": "object", "estacao": "object", "uf": "object"}
-        )
+        types.update({"data": "datetime64[ns]", "hora_utc": "str", "estacao": "str", "uf": "str"})
         return pd.DataFrame(
             {name: pd.Series(dtype=types[name]) for name in COLUNAS_HORARIAS.values()}
         )
@@ -274,11 +306,11 @@ def empty_historico(agregacao: str = "horario") -> pd.DataFrame:
             ),
             "float64",
         )
-        types = {"data": "datetime64[ns]", "estacao": "object", "uf": "object", **types}
+        types = {"data": "datetime64[ns]", "estacao": "str", "uf": "str", **types}
     else:
         types = {
             "mes": "datetime64[ns]",
-            "uf": "object",
+            "uf": "str",
             "precip_acum_mm": "float64",
             "temp_media": "float64",
             "temp_max_media": "float64",

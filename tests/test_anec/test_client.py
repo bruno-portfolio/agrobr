@@ -305,6 +305,95 @@ class TestListMemCache:
         assert len(third) == len(articles_in)
         assert mock_client.get.call_count == 1
 
+    @pytest.mark.asyncio
+    async def test_artigo_alterado_pelo_usuario_nao_muda_o_cache(
+        self, category_2026_p1_payload, html_factory
+    ):
+        from copy import deepcopy
+
+        payload = deepcopy(category_2026_p1_payload)
+        articles_in = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
+        payload["props"]["pageProps"]["paginatedArticles"]["total"] = len(articles_in)
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(
+            return_value=make_mock_response(200, text=html_factory(payload))
+        )
+
+        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
+            primeiro = await client.list_articles(2026)
+            original = primeiro[0].slug_en
+            primeiro[0].slug_en = "alterado"
+            segundo = await client.list_articles(2026)
+            segundo[0].slug_en = "alterado de novo"
+            terceiro = await client.list_articles(2026)
+
+        assert terceiro[0].slug_en == original
+        assert mock_client.get.call_count == 1
+
+
+class TestPaginaSemArtigos:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "payload",
+        [{}, {"props": {"pageProps": {}}}, {"props": {"pageProps": {"paginatedArticles": {}}}}],
+    )
+    async def test_pagina_sem_lista_de_artigos_e_layout(self, payload, html_factory):
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(
+            return_value=make_mock_response(200, text=html_factory(payload))
+        )
+
+        with (
+            patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(ParseError, match="sem paginatedArticles.articles"),
+        ):
+            await client.list_articles(2026)
+
+    @pytest.mark.asyncio
+    async def test_lista_de_artigos_vazia_continua_vazia(self, html_factory):
+        payload = {"props": {"pageProps": {"paginatedArticles": {"articles": [], "total": 0}}}}
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(
+            return_value=make_mock_response(200, text=html_factory(payload))
+        )
+
+        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
+            assert await client.list_articles(2026) == []
+
+
+class TestAnoDeBrasilia:
+    def test_virada_do_ano_segue_brasilia(self, monkeypatch):
+        from agrobr.anec import models
+        from agrobr.exceptions import InvalidParameterError
+        from agrobr.utils import time as time_utils
+
+        monkeypatch.setattr(
+            time_utils, "utcnow_aware", lambda: datetime(2027, 1, 1, 1, 0, tzinfo=UTC)
+        )
+
+        with pytest.raises(InvalidParameterError, match="entre 2026 e 2026"):
+            models.validate_year(2027)
+
+    @pytest.mark.asyncio
+    async def test_ano_padrao_do_ultimo_boletim_segue_brasilia(self, monkeypatch):
+        from agrobr.utils import time as time_utils
+
+        monkeypatch.setattr(
+            time_utils, "utcnow_aware", lambda: datetime(2027, 1, 1, 1, 0, tzinfo=UTC)
+        )
+        artigo = _make_article(week=52, year=2026)
+        listagem = AsyncMock(return_value=[artigo])
+        monkeypatch.setattr(client, "list_articles", listagem)
+        monkeypatch.setattr(
+            client,
+            "_acquire_pdf",
+            AsyncMock(return_value=client.Aquisicao(b"%PDF", artigo.pdf_url, False, None, {})),
+        )
+
+        await client.fetch_latest_pdf()
+
+        listagem.assert_awaited_once_with(2026)
+
 
 @pytest.mark.usefixtures("isolated_cache")
 class TestConcurrentFetch:

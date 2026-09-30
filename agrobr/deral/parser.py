@@ -73,13 +73,8 @@ def _parse_pc_workbook(xls: pd.ExcelFile) -> pd.DataFrame:
         )
 
     result = pd.DataFrame(all_records)
-
-    result = result.sort_values(
-        ["produto", "data", "condicao"],
-        key=lambda coluna: (
-            pd.to_datetime(coluna, format="%d/%m/%Y") if coluna.name == "data" else coluna
-        ),
-    ).reset_index(drop=True)
+    result["data"] = pd.to_datetime(result["data"], format="%d/%m/%Y").dt.as_unit("ns")
+    result = result.sort_values(["produto", "data", "condicao"]).reset_index(drop=True)
     for aviso in avisos:
         result.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
         warnings.warn(aviso, UserWarning, stacklevel=2)

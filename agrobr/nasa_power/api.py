@@ -9,7 +9,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta
+from agrobr.utils.result import DataFrameResult, build_source_meta
 
 from . import client, models, output, parser, provenance
 from .models import UF_COORDS
@@ -63,8 +63,8 @@ async def clima_ponto(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "diario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     parameters: list[str] | None = None,
     **kwargs: Any,
@@ -78,12 +78,27 @@ async def clima_ponto(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "diario",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
     parameters: list[str] | None = None,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def clima_ponto(
+    lat: float,
+    lon: float,
+    inicio: str | date,
+    fim: str | date,
+    agregacao: str = "diario",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    parameters: list[str] | None = None,
+    **kwargs: Any,
+) -> DataFrameResult: ...
 
 
 async def clima_ponto(
@@ -92,11 +107,12 @@ async def clima_ponto(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "diario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
     parameters: list[str] | None = None,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
 
     lat, lon = _validate_point(lat, lon)
 
@@ -152,8 +168,8 @@ async def clima_uf(
     uf: str,
     ano: int,
     agregacao: str = "mensal",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     parameters: list[str] | None = None,
     **kwargs: Any,
@@ -165,28 +181,44 @@ async def clima_uf(
     uf: str,
     ano: int,
     agregacao: str = "mensal",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
     parameters: list[str] | None = None,
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def clima_uf(
     uf: str,
     ano: int,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
     parameters: list[str] | None = None,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult: ...
+
+
+async def clima_uf(
+    uf: str,
+    ano: int,
+    agregacao: str = "mensal",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    parameters: list[str] | None = None,
+    **kwargs: Any,
+) -> DataFrameResult:
 
     _validate_agregacao(agregacao)
 
     if not isinstance(uf, str):
-        raise InvalidParameterError("uf deve ser uma sigla brasileira")
+        raise InvalidParameterError(
+            f"uf deve ser uma sigla brasileira. UFs disponíveis: {sorted(UF_COORDS.keys())}"
+        )
 
     if isinstance(ano, bool) or not isinstance(ano, int) or not 1981 <= ano <= 9999:
         raise InvalidParameterError("ano deve ser inteiro entre 1981 e 9999")

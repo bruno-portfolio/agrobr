@@ -6,7 +6,6 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.datasets import base, deterministic
-from agrobr.models import MetaInfo
 from agrobr.utils import result
 
 logger = _log.get_logger(__name__)
@@ -34,7 +33,7 @@ class ANECDataset(base.BaseDataset):
         use_cache: bool = True,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         snapshot = deterministic.get_snapshot()
         logger.info("dataset_fetch", dataset=self.info.name, ano=ano, semana=semana)
         df, source_name, source_meta, attempted = await self._try_sources(

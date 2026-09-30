@@ -21,13 +21,13 @@ async def condicao_lavouras(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `produto` | `str \| None` | Filtrar por produto (`"soja"`, `"milho"`, `"milho_1"`, `"milho_2"`, `"trigo"`, `"feijao"`, `"cana"`, `"cafe"`, etc.). None retorna todos |
+| `produto` | `str \| None` | Filtrar por produto: `"cafe"`, `"cevada"`, `"feijao"`, `"feijao_1"`, `"feijao_2"`, `"milho"`, `"milho_1"`, `"milho_2"`, `"soja"` ou `"trigo"`, com os sinônimos do agrobr. None retorna todos; outro nome levanta `InvalidParameterError` antes da rede |
 | `as_polars` | `bool` | Retorna polars DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
 
 **Retorno:**
 
-DataFrame com colunas: `produto`, `data`, `condicao`, `pct`, `plantio_pct`, `colheita_pct`
+DataFrame com colunas: `produto`, `data` (`datetime64[ns]`), `condicao`, `pct`, `plantio_pct`, `colheita_pct`
 
 **Exemplo:**
 

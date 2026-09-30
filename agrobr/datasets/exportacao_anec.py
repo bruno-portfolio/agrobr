@@ -8,6 +8,7 @@ from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -117,7 +118,7 @@ async def embarques_anec(
     tipo: str | None = None,
     use_cache: bool = True,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -131,8 +132,22 @@ async def embarques_anec(
     tipo: str | None = None,
     use_cache: bool = True,
     return_meta: Literal[True],
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def embarques_anec(
+    *,
+    ano: int,
+    semana: int | None = None,
+    porto: str | None = None,
+    produto: str | None = None,
+    tipo: str | None = None,
+    use_cache: bool = True,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def embarques_anec(
@@ -145,7 +160,7 @@ async def embarques_anec(
     use_cache: bool = True,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _embarques_anec.fetch(  # type: ignore[call-arg]
         ano=ano,
         semana=semana,

@@ -7,7 +7,7 @@ Paraná crop conditions — SEAB/DERAL.
 | Column | Type | Nullable | Unit | Constraints |
 |--------|------|----------|------|-------------|
 | `produto` | STRING | No | — | normalized DERAL key |
-| `data` | STRING | No | — | dd/mm/yyyy |
+| `data` | DATE | No | — | reference date published in the workbook |
 | `condicao` | STRING | No | — | boa, media, ruim, plantio, colheita |
 | `pct` | FLOAT | Yes | % | 0-100 |
 | `plantio_pct` | FLOAT | Yes | % | 0-100 |
@@ -30,19 +30,19 @@ Data covers exclusively the state of Paraná (PR).
 
 Each record carries the condition (`boa`, `media` or `ruim`) and, in the same row, the crop's
 planting and harvest progress. No 2.0.0 code path produces `plantio` or `colheita` in `condicao`:
-the only source is the DERAL PC.xls, which publishes only good, average and poor. Contract 1.0
+the only source is the DERAL PC.xls, which publishes only good, average and poor. The contract
 still allows them, so that an external frame validated against it is not rejected.
 
-The source normalizes each sheet's published reference date to `dd/mm/yyyy`;
+The source reads each sheet's published reference date and delivers it as `datetime64[ns]`;
 sheet names such as `Atual` and `Anterior` are never used as dates.
 Without a recognizable published reference, parsing raises `ParseError`
 identifying the sheet. The PC.xls footnote defines `"-"` as absolute zero;
 it becomes `0.0` in `pct`, `plantio_pct` and `colheita_pct`. Empty cells remain null.
 
 The table is sorted by `produto`, by date in chronological order and by `condicao`: the last row
-of each product is the most recent reference. `data` stays `dd/mm/yyyy` text, as in the contract,
-so `max()` or a text sort of that column is not chronological; convert with
-`pd.to_datetime(df["data"], format="%d/%m/%Y")`.
+of each product is the most recent reference. `data` is `datetime64[ns]` (up to 1.1.0, `dd/mm/yyyy`
+text); to filter one date, compare with `pd.Timestamp("2026-02-01")`: pandas reads the text
+`"01/02/2026"` month first and matches January 2, with no warning.
 
 ## Example
 
@@ -77,4 +77,5 @@ parsing follows the cell and warns in `validation_warnings` and `UserWarning`.
 Parser 2 requires the Ruim, Média, Boa, Plantada and Colhida headers in tables
 containing several crops. A missing header raises `ParseError` in the source
 and `SourceUnavailableError` with the reason in the dataset, preventing partial
-success containing only historical sheets. The contract remains at version 1.0.
+success containing only historical sheets. The contract is version 2.0: `data` changed from
+`dd/mm/yyyy` text to `datetime64[ns]`.

@@ -10,7 +10,7 @@ The module provides a station catalog, an authenticated observational API and pu
 export AGROBR_INMET_TOKEN=your_token
 ```
 
-All functions accept `as_polars=False` and `return_meta=False`. Pandas is the default; `as_polars=True` requires the Polars extra. With `return_meta=True`, results are `(frame, MetaInfo)`.
+All functions accept `as_polars=False` and `return_meta=False`, keyword-only. Pandas is the default; `as_polars=True` requires the Polars extra. With `return_meta=True`, results are `(frame, MetaInfo)`.
 
 ## `historico_periodo`
 
@@ -20,6 +20,7 @@ async def historico_periodo(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
@@ -44,6 +45,7 @@ Years without a station member are recorded in `meta.source_details["coverage"][
 async def historico_uf(
     uf: str,
     ano: int,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
@@ -64,6 +66,7 @@ async def historico(
     codigo: str,
     ano: int,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
@@ -88,12 +91,13 @@ async def estacoes(
     tipo: str = "T",
     uf: str | None = None,
     apenas_operantes: bool = True,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
 ```
 
-Lists the current catalog: `tipo="T"` for automatic or `"M"` for conventional stations. The default keeps only `Operante`; use `apenas_operantes=False` to include other statuses. Columns are `codigo`, `nome`, `uf`, `situacao`, `tipo`, `latitude`, `longitude`, `altitude`, `inicio_operacao`. Current status does not describe status in each historical year.
+Lists the current catalog: `tipo="T"` for automatic or `"M"` for conventional stations. The default keeps only `Operante`; use `apenas_operantes=False` to include other statuses. Columns are `codigo`, `nome`, `uf`, `situacao`, `tipo`, `latitude`, `longitude`, `altitude`, `inicio_operacao`, plus the raw source columns (`DT_FIM_OPERACAO`, `CD_OSCAR`, `CD_WSI` and others). Current status does not describe status in each historical year. `tipo` other than `"T"`/`"M"` and `uf` outside the state codes raise `InvalidParameterError` before any request. `inicio_operacao` and `DT_FIM_OPERACAO` are `datetime64[ns, UTC]`, because the source publishes the instant with an offset: `2026-05-08T21:00:00.000-03:00` is `2026-05-09 00:00 UTC`. A nonexistent date becomes `NaT`, with a warning in `MetaInfo.validation_warnings`; an empty catalog, a response that is not a JSON list or a date outside the ISO format raise `ParseError`.
 
 ## `estacao`
 
@@ -103,12 +107,13 @@ async def estacao(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "horario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
 ```
 
-Authenticated observations for one station, with an inclusive interval and hourly or daily aggregation. Long intervals are split into chunks; an acquisition failure in any chunk aborts the query. Authenticated HTTP 204 and naturally missing measurements are not converted to zero.
+Authenticated observations for one station, with an inclusive interval and hourly or daily aggregation. Long intervals are split into chunks; an acquisition failure in any chunk aborts the query. Authenticated HTTP 204 and naturally missing measurements are not converted to zero. A period with no observation at all raises `SourceUnavailableError`, like `historico()` for a station without data in the year.
 
 ## `clima_uf`
 
@@ -116,12 +121,13 @@ Authenticated observations for one station, with an inclusive interval and hourl
 async def clima_uf(
     uf: str,
     ano: int,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 )
 ```
 
-Aggregates the observational API monthly for automatic stations currently operating in the state. Returns the same twelve monthly columns as `historico_uf()`. Station selection can differ between these routes.
+Aggregates the observational API monthly for automatic stations currently operating in the state. Returns the same twelve monthly columns as `historico_uf()`. Station selection can differ between these routes. The year goes from 2000 to the current one and is checked before any request; a year with no observation at all raises `SourceUnavailableError`.
 
 ## Aggregation and provenance
 

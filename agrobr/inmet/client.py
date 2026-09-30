@@ -18,11 +18,17 @@ import httpx
 
 from agrobr import _log, constants
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import ParseError, ResourceLimitError, SourceUnavailableError
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    ResourceLimitError,
+    SourceUnavailableError,
+)
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils.time import hoje
 
 from . import models, parser, transport
 
@@ -109,7 +115,11 @@ async def _get_json(
             ) from e
 
         if not isinstance(data, list):
-            return []
+            raise ParseError(
+                source="inmet",
+                parser_version=parser.PARSER_VERSION,
+                reason=f"Resposta INMET fora do formato: esperada lista JSON, veio {type(data).__name__}",
+            )
         return data
 
     if http is not None:
@@ -122,7 +132,9 @@ async def _get_json(
 
 async def fetch_estacoes(tipo: str = "T") -> list[dict[str, Any]]:
     if tipo not in ("T", "M"):
-        raise ValueError(f"Tipo deve ser 'T' (automática) ou 'M' (convencional), got '{tipo}'")
+        raise InvalidParameterError(
+            f"tipo inválido: {tipo!r}. Valores válidos: 'T' (automática) e 'M' (convencional)"
+        )
 
     logger.info("inmet_fetch_estacoes", tipo=tipo)
     return await _get_json(f"/estacoes/{tipo}")
@@ -269,7 +281,7 @@ async def fetch_historico_arquivo(ano: int) -> HistoricoArquivo:
             )
         ttl = (
             constants.INMET_HISTORICO_CACHE_CURRENT_TTL
-            if ano == date.today().year
+            if ano == hoje().year
             else constants.INMET_HISTORICO_CACHE_CLOSED_TTL
         )
         archive = HistoricoArquivo(

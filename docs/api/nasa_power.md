@@ -15,8 +15,10 @@ async def clima_ponto(
     inicio: str | date,
     fim: str | date,
     agregacao: str = "diario",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
+    parameters: list[str] | None = None,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
@@ -31,6 +33,7 @@ async def clima_ponto(
 | `agregacao` | `str` | `"diario"` (default) ou `"mensal"` |
 | `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
+| `parameters` | `list[str] \| None` | Códigos NASA POWER a pedir (1 a 20, sem repetir), do catálogo de `parametros()`; `None` pede todos |
 
 **Retorno:**
 
@@ -68,8 +71,10 @@ async def clima_uf(
     uf: str,
     ano: int,
     agregacao: str = "mensal",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
+    parameters: list[str] | None = None,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
@@ -82,6 +87,7 @@ async def clima_uf(
 | `agregacao` | `str` | `"diario"` ou `"mensal"` (default) |
 | `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
+| `parameters` | `list[str] \| None` | Códigos NASA POWER a pedir (1 a 20, sem repetir), do catálogo de `parametros()`; `None` pede todos |
 
 **Exemplo:**
 
@@ -89,6 +95,28 @@ async def clima_uf(
 from agrobr import nasa_power
 
 df = await nasa_power.clima_uf("MT", 2024)
+```
+
+`as_polars`, `return_meta` e `parameters` só por nome.
+
+---
+
+### `parametros`
+
+Catálogo dos códigos diários da comunidade AG que o agrobr lê, sem rede.
+
+```python
+def parametros() -> pd.DataFrame
+```
+
+Colunas: `codigo` (nome do parâmetro na NASA POWER, o valor aceito em `parameters`), `coluna` e `unidade` (saída diária),
+`coluna_mensal`, `unidade_mensal` e `agregacao_mensal` (saída mensal), `comunidade` e `frequencia_origem`.
+
+```python
+from agrobr import nasa_power
+
+nasa_power.parametros()[["codigo", "coluna", "unidade"]]
+df = await nasa_power.clima_ponto(-12.55, -55.72, "2024-01-01", "2024-01-31", parameters=["T2M", "PRECTOTCORR"])
 ```
 
 ## Versao Sincrona

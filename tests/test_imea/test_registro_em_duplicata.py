@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import httpx
+import pandas as pd
 import pytest
 
 from agrobr import imea
@@ -76,7 +77,9 @@ def _linha(registro: dict[str, Any], nomes: dict[str, str]) -> dict[str, Any]:
         "safra": registro["Safra"],
         "unidade": registro["UnidadeSigla"],
         "unidade_descricao": registro["UnidadeDescricao"],
-        "data_publicacao": registro["DataPublicacao"],
+        "data_publicacao": None
+        if registro["DataPublicacao"] is None
+        else pd.Timestamp(registro["DataPublicacao"]),
     }
 
 
@@ -84,7 +87,9 @@ def _unicas(registros: list[dict[str, Any]]) -> list[dict[str, Any]]:
     catalogo = json.loads((GOLDEN / "indicadores_4.json").read_bytes())
     nomes = {item["Id"]: item["Nome"] for item in catalogo}
     linhas = [_linha(registro, nomes) for registro in registros]
-    return _ordem(list({json.dumps(linha, sort_keys=True): linha for linha in linhas}.values()))
+    return _ordem(
+        list({json.dumps(linha, sort_keys=True, default=str): linha for linha in linhas}.values())
+    )
 
 
 def _ordem(linhas: list[dict[str, Any]]) -> list[dict[str, Any]]:

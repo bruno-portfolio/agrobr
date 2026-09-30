@@ -16,10 +16,8 @@ from agrobr.normalize.encoding import detect_encoding_chain
 from .models import (
     IDTABELA_HISTORICO_PRODUTO,
     PARSER_VERSION,
-    SAFRA_HISTORICO_MAX,
-    SAFRA_HISTORICO_MIN,
-    SAFRA_RE,
     UFS_FORM,
+    validate_safras_historico,
 )
 
 logger = _log.get_logger(__name__)
@@ -86,11 +84,7 @@ async def fetch_historico_xlsx(
     safra_inicio: str | None = None,
     safra_fim: str | None = None,
 ) -> tuple[bytes, str]:
-    safra_inicio = safra_inicio or SAFRA_HISTORICO_MIN
-    safra_fim = safra_fim or SAFRA_HISTORICO_MAX
-    for safra in (safra_inicio, safra_fim):
-        if not SAFRA_RE.match(safra):
-            raise ValueError(f"Safra '{safra}' inválida. Formato esperado: 'YYYY/YYYY'")
+    safra_inicio, safra_fim = validate_safras_historico(safra_inicio, safra_fim)
 
     url = URLS[Fonte.UNICA]["historico_xls"]
     params = {

@@ -156,16 +156,18 @@ class ClimaDataset(BaseDataset):
         return "clima_estacao_horaria" if kwargs.get("agregacao") == "horario" else "clima_estacao"
 
     def _runner(self, fonte: str | None, *, station: bool, start_year: int) -> ClimaDataset:
-        if fonte == "inmet_historico" and start_year < constants.INMET_HISTORICO_MIN_ANO:
-            raise InvalidParameterError("Histórico público INMET disponível a partir de 2000")
+        sem_inmet = {"inmet_historico"} if station else {"inmet", "inmet_historico"}
+        antes_do_inmet = start_year < constants.INMET_HISTORICO_MIN_ANO
+        if antes_do_inmet and fonte in sem_inmet:
+            raise InvalidParameterError(
+                f"Fonte {fonte!r} disponível a partir de {constants.INMET_HISTORICO_MIN_ANO}"
+            )
         selected = [
             source
             for source in self.info.sources
             if (fonte is None or source.name == fonte)
             and not (station and source.name == "nasa_power")
-            and not (
-                source.name == "inmet_historico" and start_year < constants.INMET_HISTORICO_MIN_ANO
-            )
+            and not (antes_do_inmet and source.name in sem_inmet)
         ]
         runner = copy.copy(self)
         runner.info = replace(self.info, sources=selected)
@@ -179,11 +181,11 @@ class ClimaDataset(BaseDataset):
         estacao: str | None = None,
         inicio: str | date | None = None,
         fim: str | date | None = None,
-        agregacao: str = "diario",
+        agregacao: str | None = None,
         return_meta: bool = False,
         fonte: str | None = None,
         as_polars: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         _validate_source(fonte)
         if estacao is not None:
             if uf is not None or ano is not None:
@@ -192,7 +194,7 @@ class ClimaDataset(BaseDataset):
                 estacao,
                 inicio=inicio,
                 fim=fim,
-                agregacao=agregacao,
+                agregacao="diario" if agregacao is None else agregacao,
                 return_meta=return_meta,
                 fonte=fonte,
                 as_polars=as_polars,
@@ -203,8 +205,11 @@ class ClimaDataset(BaseDataset):
             raise InvalidParameterError("uf é obrigatório para modo UF")
         if not isinstance(uf, str):
             raise InvalidParameterError("uf deve ser uma string de duas letras")
-        if agregacao not in ("diario", "mensal"):
-            raise InvalidParameterError("Modo UF retorna agregação mensal")
+        if agregacao not in (None, "mensal"):
+            raise InvalidParameterError(
+                f"agregacao {agregacao!r} inválida no modo UF, que publica só a agregação "
+                "'mensal'; 'diario' e 'horario' valem com estacao"
+            )
         uf = validation.validate_uf(uf)
         assert uf is not None
         snapshot = get_snapshot()
@@ -235,7 +240,7 @@ class ClimaDataset(BaseDataset):
         return_meta: bool,
         fonte: str | None,
         as_polars: bool,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         from agrobr.inmet import models
 
         if inicio is None or fim is None:
@@ -288,7 +293,7 @@ class ClimaDataset(BaseDataset):
         aggregation: str,
         return_meta: bool,
         as_polars: bool,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         contracts.validate_dataset(df, contract_name)
         meta = None
         if return_meta:
@@ -345,10 +350,10 @@ async def clima(
     estacao: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    agregacao: str = "diario",
+    agregacao: str | None = None,
     return_meta: Literal[False] = False,
     fonte: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -360,11 +365,26 @@ async def clima(
     estacao: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    agregacao: str = "diario",
+    agregacao: str | None = None,
     return_meta: Literal[True],
     fonte: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def clima(
+    uf: str | None = None,
+    ano: int | None = None,
+    *,
+    estacao: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    agregacao: str | None = None,
+    return_meta: bool = False,
+    fonte: str | None = None,
+    as_polars: bool = False,
+) -> result_utils.DataFrameResult: ...
 
 
 async def clima(
@@ -374,11 +394,16 @@ async def clima(
     estacao: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    agregacao: str = "diario",
+    agregacao: str | None = None,
     return_meta: bool = False,
     fonte: str | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
+    """Clima mensal por UF (`uf`, `ano`) ou de uma estação INMET (`estacao`, `inicio`, `fim`).
+
+    `agregacao` é `'mensal'` no modo UF, a única que ele publica, e `'diario'` (padrão) ou
+    `'horario'` no modo estação.
+    """
     return await _clima.fetch(
         uf,
         ano,

@@ -33,8 +33,8 @@ Requires the `[pdf]` extra for the biweekly report: `pip install agrobr[pdf]`.
 | `moagem_quinzenal` | `regiao` | str \| None | None | `sao_paulo`, `centro_sul`, `demais_estados`, or all regions |
 | `safra_resumo` | `periodo` | str | `"acumulado"` | `acumulado`, `quinzena` or `mensal`; a period the current edition does not publish → `InvalidParameterError` listing the edition's periods |
 | `producao_historica` | `produto` | str | `"cana"` | `cana`, `acucar`, `etanol_anidro`, `etanol_hidratado`, or `etanol_total` |
-| `producao_historica` | `safra_inicio` | str \| None | None | Initial crop year in `YYYY/YYYY` format |
-| `producao_historica` | `safra_fim` | str \| None | None | Final crop year in `YYYY/YYYY` format |
+| `producao_historica` | `safra_inicio` | str \| None | None | Initial crop year (`YYYY/YYYY`, `YYYY/YY` or `YY/YY`), from 1980/1981 to 2020/2021 |
+| `producao_historica` | `safra_fim` | str \| None | None | Final crop year, same formats and range, not before the initial one |
 | All | `as_polars` | bool | False | If True, returns a `polars.DataFrame` |
 | All | `return_meta` | bool | False | If True, returns `(DataFrame, MetaInfo)` |
 

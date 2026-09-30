@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -61,4 +61,4 @@ def _reset_anec_list_cache():
 
 @pytest.fixture(autouse=True)
 def reference_year(monkeypatch):
-    monkeypatch.setattr(time_utils, "utcnow", lambda: datetime(2026, 9, 8))
+    monkeypatch.setattr(time_utils, "utcnow_aware", lambda: datetime(2026, 9, 8, 12, tzinfo=UTC))

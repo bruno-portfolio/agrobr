@@ -9,7 +9,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
@@ -26,7 +26,7 @@ async def exportacao(
     produto: str | None = None,
     agregacao: str = "detalhado",
     edicao: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -39,9 +39,22 @@ async def exportacao(
     produto: str | None = None,
     agregacao: str = "detalhado",
     edicao: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def exportacao(
+    ano: int,
+    *,
+    mes: int | None = None,
+    produto: str | None = None,
+    agregacao: str = "detalhado",
+    edicao: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def exportacao(
@@ -53,7 +66,7 @@ async def exportacao(
     edicao: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     validate_selection(ano, mes, edicao)
     produto_norm = resolve_produto(produto) if produto else None
     if agregacao not in ("detalhado", "mensal"):

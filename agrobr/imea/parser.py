@@ -6,6 +6,7 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.exceptions import ParseError
+from agrobr.normalize import dates
 
 from .models import IMEA_COLUMNS_MAP, cadeia_name
 
@@ -50,8 +51,13 @@ def parse_cotacoes(
 ) -> pd.DataFrame:
     """`cadeia` é a cadeia pedida: o corpo de uma cadeia pode trazer registro que a fonte
     marca com o `CadeiaId` de outra (o frete de grãos vem no milho com o id da soja)."""
-    if not records:
-        return pd.DataFrame(columns=COLUNAS_SAIDA)
+    for registros, rotulo in ((records, "Cotações"), (indicadores, "Catálogo de indicadores")):
+        if not registros:
+            raise ParseError(
+                source="imea",
+                parser_version=PARSER_VERSION,
+                reason=f"{rotulo} do IMEA vazio para a cadeia {cadeia_name(cadeia_id)}",
+            )
 
     _exigir(records, CHAVES_COTACAO, "Cotações")
     _exigir(indicadores, CHAVES_INDICADOR, "Catálogo de indicadores")
@@ -68,6 +74,7 @@ def parse_cotacoes(
 
     df["valor"] = pd.to_numeric(df["valor"], errors="coerce")
     df["variacao"] = pd.to_numeric(df["variacao"], errors="coerce")
+    dates.converter_coluna(df, "data_publicacao", fonte="imea", formato="%Y-%m-%d %H:%M:%S")
 
     df = df[COLUNAS_SAIDA].sort_values(["cadeia", "localidade", "unidade"]).reset_index(drop=True)
 
