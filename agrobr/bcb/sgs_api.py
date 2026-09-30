@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 import warnings
-from datetime import UTC, datetime
+from datetime import date, datetime
 from typing import Literal, overload
 
 import pandas as pd
@@ -12,6 +12,7 @@ from agrobr.contracts import bcb_sgs as source_contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result
+from agrobr.utils import time as time_utils
 
 from . import sgs_client, sgs_metadata, sgs_parser, sgs_query
 
@@ -22,10 +23,10 @@ logger = _log.get_logger(__name__)
 async def sgs(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -34,31 +35,67 @@ async def sgs(
 async def sgs(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    ultimos: int | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def sgs(
+    codigo: int | str,
+    *,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    ultimos: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def sgs(
+    codigo: int | str,
+    *,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def sgs(
+    codigo: int | str,
+    *,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    ultimos: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def sgs(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
         raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
     selection = sgs_query.build_query(
         codigo,
-        data_inicial=data_inicial,
-        data_final=data_final,
+        data_inicial=inicio,
+        data_final=fim,
         ultimos=ultimos,
-        reference_date=datetime.now(UTC).date(),
+        reference_date=time_utils.hoje(),
     )
     logger.info("bcb_sgs_request", query=selection.model_dump(mode="json"))
     started = time.monotonic()
@@ -68,7 +105,7 @@ async def sgs(
         warnings.warn(message, UserWarning, stacklevel=2)
     started = time.monotonic()
     frame = sgs_parser.build_frame(acquired.records, selection.codigo, selection.nome_serie)
-    contracts.validate_dataset(frame, source_contracts.BCB_SGS_V2)
+    contracts.validate_dataset(frame, source_contracts.BCB_SGS_V3)
     parse_ms = int((time.monotonic() - started) * 1000)
     meta = sgs_metadata.build_meta(acquired, frame, fetch_ms=fetch_ms, parse_ms=parse_ms)
     return result.finalize_result(

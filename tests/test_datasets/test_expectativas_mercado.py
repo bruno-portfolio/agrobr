@@ -13,7 +13,7 @@ from tests.helpers import levanta_exatamente
     "args,kwargs,error",
     [
         (("soja",), {}, InvalidParameterError),
-        ((), {"data_final": "2026-08-28"}, TypeError),
+        ((), {"fim": "2026-08-28"}, TypeError),
         ((), {"indicador": None}, InvalidParameterError),
     ],
 )
@@ -37,7 +37,7 @@ async def test_concurrent_periodicities_and_contexts_do_not_mix(focus_http):
         annual, monthly, _ = await asyncio.gather(
             datasets.expectativas_mercado(
                 "Balança comercial",
-                data_inicial="2026-08-28",
+                inicio="2026-08-28",
                 top=6,
                 max_registros=6,
                 return_meta=True,
@@ -45,7 +45,7 @@ async def test_concurrent_periodicities_and_contexts_do_not_mix(focus_http):
             datasets.expectativas_mercado(
                 "IPCA",
                 periodicidade="mensal",
-                data_inicial="2026-08-28",
+                inicio="2026-08-28",
                 top=6,
                 max_registros=6,
                 return_meta=True,
@@ -68,7 +68,7 @@ async def test_concurrent_periodicities_and_contexts_do_not_mix(focus_http):
         {"indicador": ""},
         {"indicador": "  "},
         {"periodicidade": "trimestral"},
-        {"periodicidade": "Anual"},
+        {"periodicidade": "Anualx"},
         {"periodicidade": 1},
         {"periodicidade": None},
         {"top": None},
@@ -82,9 +82,9 @@ async def test_concurrent_periodicities_and_contexts_do_not_mix(focus_http):
         {"max_registros": True},
         {"max_registros": 1.5},
         {"max_registros": "3"},
-        {"data_inicial": "28/08/2026"},
-        {"data_inicial": "2026-02-30"},
-        {"data_inicial": 20260828},
+        {"inicio": "28/08/26"},
+        {"inicio": "2026-02-30"},
+        {"inicio": 20260828},
         {"as_polars": 1},
         {"as_polars": None},
         {"return_meta": 0},

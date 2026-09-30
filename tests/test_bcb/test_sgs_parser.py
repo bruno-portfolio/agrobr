@@ -7,7 +7,7 @@ from datetime import date
 import pandas as pd
 
 from agrobr.bcb import sgs_parser
-from agrobr.contracts.bcb_sgs import BCB_SGS_V2
+from agrobr.contracts.bcb_sgs import BCB_SGS_V3
 from agrobr.exceptions import ParseError
 from tests.helpers import collect_failures, levanta_exatamente, sem_excecao
 
@@ -102,16 +102,16 @@ def test_data_fim_do_corpo_vira_coluna_opcional_do_contrato():
     assert frame.columns.tolist() == ["data", "valor", "codigo", "nome_serie", "data_fim"]
     assert frame["data_fim"].isna().tolist() == [True, False]
     assert frame["data_fim"].iloc[1] == pd.Timestamp("2026-10-20")
-    assert BCB_SGS_V2.validate(frame) == (True, [])
-    assert BCB_SGS_V2.empty_frame().dtypes.astype(str).to_dict() == {
+    assert BCB_SGS_V3.validate(frame) == (True, [])
+    assert BCB_SGS_V3.empty_frame().dtypes.astype(str).to_dict() == {
         "data": "datetime64[ns]",
         "valor": "float64",
-        "codigo": "int64",
-        "nome_serie": "object",
+        "codigo": "Int64",
+        "nome_serie": str(pd.Series([""]).dtype),
         "data_fim": "datetime64[ns]",
     }
     frame["data_fim"] = frame["data_fim"].astype("datetime64[us]")
-    assert BCB_SGS_V2.validate(frame) == (
+    assert BCB_SGS_V3.validate(frame) == (
         False,
         ["Column 'data_fim' must use datetime64[ns] dtype"],
     )
@@ -141,7 +141,7 @@ def test_corpo_valido_preserva_valor_ordem_tipos_e_layout():
     assert [str(frame[col].dtype) for col in ["data", "valor", "codigo"]] == [
         "datetime64[ns]",
         "float64",
-        "int64",
+        "Int64",
     ]
     anonima = sgs_parser.build_frame(parsed.records, 999999999, None)
     assert anonima["nome_serie"].isna().all()
@@ -150,7 +150,7 @@ def test_corpo_valido_preserva_valor_ordem_tipos_e_layout():
     assert [str(vazio[col].dtype) for col in ["data", "valor", "codigo"]] == [
         "datetime64[ns]",
         "float64",
-        "int64",
+        "Int64",
     ]
     plain = sgs_parser.parse_observations(encode([{"data": "01/01/2024", "valor": "1"}]))
     changed = sgs_parser.parse_observations(encode([{"data": "02/01/2024", "valor": "2"}]))

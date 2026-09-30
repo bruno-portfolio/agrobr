@@ -6,7 +6,7 @@ import time
 import warnings
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Literal, NamedTuple, overload
+from typing import Any, Literal, NamedTuple, overload
 
 import duckdb
 import httpx
@@ -19,6 +19,7 @@ from agrobr.cache.policies import calculate_expiry
 from agrobr.cepea import client, serie
 from agrobr.cepea.parsers import v1
 from agrobr.cepea.parsers.detector import get_parser_with_fallback
+from agrobr.contracts import cepea as source_contracts
 from agrobr.exceptions import (
     InvalidParameterError,
     ParseError,
@@ -28,13 +29,10 @@ from agrobr.exceptions import (
 from agrobr.models import Indicador, MetaInfo
 from agrobr.normalize import regions
 from agrobr.noticias_agricolas import parser as na_parser
-from agrobr.utils.result import finalize_result
+from agrobr.utils.result import DataFrame, DataFrameResult, finalize_result
 from agrobr.utils.time import hoje, utcnow
 from agrobr.utils.warnings import warn_once
 from agrobr.validators.sanity import validate_batch
-
-if TYPE_CHECKING:
-    import polars as pl
 
 logger = _log.get_logger(__name__)
 
@@ -400,11 +398,11 @@ async def indicador(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     _moeda: str = "BRL",
+    *,
     as_polars: Literal[False] = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-    *,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -416,11 +414,11 @@ async def indicador(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     _moeda: str = "BRL",
+    *,
     as_polars: Literal[False] = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-    *,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
@@ -432,13 +430,13 @@ async def indicador(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     _moeda: str = "BRL",
+    *,
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-    *,
     return_meta: Literal[False] = False,
-) -> pd.DataFrame | pl.DataFrame: ...
+) -> DataFrame: ...
 
 
 @overload
@@ -448,13 +446,29 @@ async def indicador(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     _moeda: str = "BRL",
+    *,
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-    *,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame | pl.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def indicador(
+    produto: str,
+    praca: str | None = None,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    _moeda: str = "BRL",
+    *,
+    as_polars: bool = False,
+    validate_sanity: bool = False,
+    force_refresh: bool = False,
+    offline: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def indicador(
@@ -463,12 +477,13 @@ async def indicador(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     _moeda: str = "BRL",
+    *,
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Série histórica de indicadores CEPEA/ESALQ.
 
     Busca dados do cache DuckDB e, se necessário, faz fetch na fonte
@@ -707,6 +722,7 @@ async def indicador(
     )
     if meta.from_cache and indicadores:
         meta.fetched_at = max(ind.parsed_at for ind in indicadores)
+        meta.fetch_timestamp = meta.fetched_at
     meta.from_cache = meta.from_cache and bool(indicadores)
     meta.cache_expires_at = (
         calculate_expiry(constants.Fonte.CEPEA, desde=meta.fetched_at)
@@ -714,7 +730,13 @@ async def indicador(
         else None
     )
 
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=("produto", "praca", "unidade", "fonte", "metodologia", "anomalies"),
+    )
 
 
 _META_COLUMNS = ("valor_usd", "peso_medio_kg")
@@ -863,21 +885,10 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
 
 
 def _to_dataframe(indicadores: list[Indicador]) -> pd.DataFrame:
+    empty = source_contracts.CEPEA_INDICADOR_V1.empty_frame()
+    empty["anomalies"] = pd.Series(dtype=object)
     if not indicadores:
-        return pd.DataFrame(
-            {
-                "data": pd.Series(dtype="datetime64[ns]"),
-                "produto": pd.Series(dtype="object"),
-                "praca": pd.Series(dtype="object"),
-                "valor": pd.Series(dtype="float64"),
-                "unidade": pd.Series(dtype="object"),
-                "fonte": pd.Series(dtype="object"),
-                "metodologia": pd.Series(dtype="object"),
-                "anomalies": pd.Series(dtype="object"),
-                "valor_usd": pd.Series(dtype="float64"),
-                "peso_medio_kg": pd.Series(dtype="float64"),
-            }
-        )
+        return empty
 
     data = [
         {
@@ -896,8 +907,10 @@ def _to_dataframe(indicadores: list[Indicador]) -> pd.DataFrame:
     ]
 
     df = pd.DataFrame(data)
+    df["anomalies"] = pd.Series([row["anomalies"] for row in data], dtype=object)
     df[list(_META_COLUMNS)] = df[list(_META_COLUMNS)].astype("float64")
     df["data"] = pd.to_datetime(df["data"])
+    df = df.astype(empty.dtypes.to_dict())
     df = df.sort_values("data").reset_index(drop=True)
 
     return df

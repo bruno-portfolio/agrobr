@@ -202,9 +202,9 @@ The [official series 1 catalogue](https://dadosabertos.bcb.gov.br/dataset/1-taxa
 from agrobr import bcb
 
 df, meta = await bcb.sgs(
-    1, data_inicial="01/01/2010", data_final="31/12/2024", return_meta=True,
+    1, inicio="01/01/2010", fim="31/12/2024", return_meta=True,
 )
-ipca = await bcb.sgs("ipca", data_inicial="01/01/2024", data_final="31/12/2024")
+ipca = await bcb.sgs("ipca", inicio="01/01/2024", fim="31/12/2024")
 ```
 
 The example query returns 3,767 daily observations for 2010–2024 across two blocks. The source may also return monthly and quarterly references before the requested daily bound, and repeat a monthly reference across disjoint daily windows. The implementation preserves published reference dates, diagnoses bounds, and reconciles only identical values across blocks. It does not infer frequency or fill dates.
@@ -227,7 +227,7 @@ from agrobr import bcb
 moedas = await bcb.ptax_moedas()
 df, meta = await bcb.ptax(
     moeda="EUR", boletim="todos",
-    data_inicial="03/09/2026", data_final="06/09/2026", return_meta=True,
+    inicio="03/09/2026", fim="06/09/2026", return_meta=True,
 )
 ```
 
@@ -256,7 +256,7 @@ The [official Market Expectations dataset](https://dadosabertos.bcb.gov.br/datas
 from agrobr import bcb
 
 df, meta = await bcb.focus(
-    "IPCA", periodicidade="mensal", data_inicial="2026-08-28",
+    "IPCA", periodicidade="mensal", inicio="2026-08-28",
     top=100, max_registros=30, return_meta=True,
 )
 ```
@@ -279,7 +279,7 @@ The catalogue and its [monthly](https://dadosabertos.bcb.gov.br/dataset/expectat
 - Focus API: `https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/`
 - Update frequency: monthly (SICOR), several times a day (PTAX), series-dependent (SGS); Focus: daily calculation and weekly publication
 - History: 2013+ (SICOR), variable (SGS)
-- Contracts: SGS 2.1; Focus, PTAX quotes and rural credit 2.0; PTAX currencies 1.0; see each API
+- Contracts: SGS 3.0; Focus, PTAX quotes and rural credit 2.0; PTAX currencies 1.0; see each API
 
 ## Products and empty responses
 

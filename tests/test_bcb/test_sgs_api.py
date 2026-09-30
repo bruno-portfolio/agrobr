@@ -45,7 +45,7 @@ async def test_polars_concat_serie_sem_alias_preserva_tipo_textual(fetch, empty,
 async def test_replay_public_history_matches_all_3767_independent_values(sgs_http, sgs_captures):
     sgs_http()
     (frame, meta), avisos = await com_avisos(
-        bcb.sgs(1, data_inicial="01/01/2010", data_final="31/12/2024", return_meta=True)
+        bcb.sgs(1, inicio="01/01/2010", fim="31/12/2024", return_meta=True)
     )
     assert avisos == [] and meta.validation_warnings == []
     assert len(frame) == 3767
@@ -58,7 +58,7 @@ async def test_replay_public_history_matches_all_3767_independent_values(sgs_htt
     assert frame["nome_serie"].eq("dolar_ptax_venda").all()
     assert meta.source == meta.selected_source == "bcb_sgs"
     assert meta.attempted_sources == ["bcb_sgs"]
-    assert meta.schema_version == meta.contract_version == "2.1"
+    assert meta.schema_version == meta.contract_version == "3.0"
     assert meta.parser_version == 2
     assert meta.records_count == len(frame) and meta.columns == frame.columns.tolist()
     assert meta.fetched_at.utcoffset().total_seconds() == 0
@@ -82,9 +82,7 @@ async def test_replay_public_history_matches_all_3767_independent_values(sgs_htt
 
 async def test_replay_alias_monthly_keeps_saturday_and_negative_value(sgs_http):
     sgs_http()
-    frame, avisos = await com_avisos(
-        bcb.sgs("ipca", data_inicial="01/01/2024", data_final="31/12/2024")
-    )
+    frame, avisos = await com_avisos(bcb.sgs("ipca", inicio="01/01/2024", fim="31/12/2024"))
     assert avisos == []
     assert len(frame) == 12
     assert frame["codigo"].eq(433).all() and frame["nome_serie"].eq("ipca").all()
@@ -109,10 +107,10 @@ async def test_recusas_publicas_antes_da_rede(sgs_http):
             ),
             (1, {"as_polars": 1}, "as_polars e return_meta devem ser booleanos"),
             (1, {"return_meta": "yes"}, "as_polars e return_meta devem ser booleanos"),
-            (1, {"data_inicial": "31/02/2024"}, "data_inicial contém data inválida"),
+            (1, {"inicio": "31/02/2024"}, "inicio contém data inexistente"),
             (
                 1,
-                {"data_inicial": "02/01/2024", "data_final": "01/01/2024"},
+                {"inicio": "02/01/2024", "fim": "01/01/2024"},
                 "Seleção SGS inválida ou intervalo invertido",
             ),
         ]:
@@ -133,7 +131,7 @@ async def test_recusas_publicas_antes_da_rede(sgs_http):
     with levanta_exatamente(
         ParseError, match=re.escape("Observação SGS inválida na linha 1; campos: ['valor']")
     ):
-        await bcb.sgs(1, data_inicial="01/01/2024", data_final="02/01/2024", ultimos=1)
+        await bcb.sgs(1, inicio="01/01/2024", fim="02/01/2024", ultimos=1)
 
 
 @pytest.mark.parametrize("with_dates", [False, True])
@@ -141,7 +139,7 @@ async def test_replay_ultimos_returns_exact_last_three_dates_not_just_row_count(
     with_dates, sgs_http, sgs_captures
 ):
     requests = sgs_http()
-    arguments = {"data_inicial": "01/01/2024", "data_final": "10/01/2024"} if with_dates else {}
+    arguments = {"inicio": "01/01/2024", "fim": "10/01/2024"} if with_dates else {}
     (frame, meta), avisos = await com_avisos(bcb.sgs(1, ultimos=3, return_meta=True, **arguments))
     assert avisos == []
     name = "dates_last3_sdk" if with_dates else "last3_sdk"
@@ -161,7 +159,7 @@ async def test_replay_ultimos_returns_exact_last_three_dates_not_just_row_count(
 async def test_range_with_large_ultimos_is_not_limited_to_twenty(sgs_http):
     sgs_http()
     frame, avisos = await com_avisos(
-        bcb.sgs(1, data_inicial="01/01/2010", data_final="31/12/2024", ultimos=1300)
+        bcb.sgs(1, inicio="01/01/2010", fim="31/12/2024", ultimos=1300)
     )
     assert avisos == []
     assert len(frame) == 1300
@@ -181,7 +179,7 @@ async def test_replay_period_reference_before_window_is_visible_with_warning(
 ):
     sgs_http()
     resultado, avisos = await com_avisos(
-        bcb.sgs(codigo, data_inicial=start, data_final=end, return_meta=return_meta)
+        bcb.sgs(codigo, inicio=start, fim=end, return_meta=return_meta)
     )
     frame = resultado[0] if return_meta else resultado
     assert frame.iloc[0]["data"] == pd.Timestamp(reference)
@@ -204,9 +202,7 @@ async def test_explicit_json_null_preserves_nullable_float_without_zero(sgs_http
     sgs_http(
         lambda _request, _index: httpx.Response(200, json=[{"data": "01/01/2024", "valor": None}])
     )
-    frame, avisos = await com_avisos(
-        bcb.sgs(999999999, data_inicial="01/01/2024", data_final="01/01/2024")
-    )
+    frame, avisos = await com_avisos(bcb.sgs(999999999, inicio="01/01/2024", fim="01/01/2024"))
     assert avisos == []
     assert pd.isna(frame.iloc[0]["valor"])
     assert pd.isna(frame.iloc[0]["nome_serie"])
@@ -220,7 +216,7 @@ async def test_polars_nonempty_and_declared_empty_preserve_four_column_schema(
 ):
     pl = pytest.importorskip("polars")
     sgs_http()
-    args = {"data_inicial": "06/01/2024", "data_final": "07/01/2024"} if empty else {"ultimos": 3}
+    args = {"inicio": "06/01/2024", "fim": "07/01/2024"} if empty else {"ultimos": 3}
     result = await bcb.sgs(1, as_polars=True, return_meta=return_meta, **args)
     frame = result[0] if return_meta else result
     assert isinstance(frame, pl.DataFrame)
@@ -239,7 +235,7 @@ async def test_concurrent_series_do_not_mix_results_or_nested_metadata(sgs_http)
     (daily, monthly), avisos = await com_avisos(
         asyncio.gather(
             bcb.sgs(1, ultimos=3, return_meta=True),
-            bcb.sgs(433, data_inicial="01/01/2024", data_final="31/12/2024", return_meta=True),
+            bcb.sgs(433, inicio="01/01/2024", fim="31/12/2024", return_meta=True),
         )
     )
     assert avisos == []
@@ -255,11 +251,11 @@ def test_sync_public_sgs_replay_runs_full_pipeline_and_returns_meta(sgs_http):
     requests = sgs_http()
     with sem_excecao():
         frame, meta = sync_bcb.sgs(
-            1, data_inicial="01/01/2010", data_final="31/12/2024", ultimos=3, return_meta=True
+            1, inicio="01/01/2010", fim="31/12/2024", ultimos=3, return_meta=True
         )
     assert len(frame) == 3
     assert frame["data"].iloc[-1] == pd.Timestamp("2024-12-31")
-    assert meta.schema_version == "2.1"
+    assert meta.schema_version == "3.0"
     assert len(requests) == 2
 
 
@@ -270,7 +266,7 @@ def _consulta(url: httpx.URL) -> tuple[str, list[tuple[str, str]]]:
 async def test_source_url_e_a_consulta_inteira_e_nao_o_ultimo_bloco(sgs_http, sgs_captures):
     requests = sgs_http()
     (_, meta), _ = await com_avisos(
-        bcb.sgs(1, data_inicial="01/01/2010", data_final="31/12/2024", return_meta=True)
+        bcb.sgs(1, inicio="01/01/2010", fim="31/12/2024", return_meta=True)
     )
     capturas = {item["case"]: item["url"] for item in sgs_captures["manifest"]["artifacts"]}
     assert len(requests) == 2

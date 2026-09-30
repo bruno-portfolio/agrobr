@@ -62,7 +62,7 @@ def _enriquecer_dimensoes(
     for cd_col, (nome_col, dominio) in mapa.items():
         if cd_col in df.columns:
             fn = resolve_fns[dominio]
-            df[nome_col] = df[cd_col].astype("string").map(fn, na_action="ignore")
+            df[nome_col] = df[cd_col].map(str, na_action="ignore").map(fn, na_action="ignore")
 
     return df
 
@@ -90,7 +90,7 @@ def parse_credito_rural(
 
     for col in ("valor", "area_financiada"):
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
 
     for col in ("ano_emissao", "mes_emissao", "qtd_contratos"):
         if col in df.columns:
@@ -105,7 +105,7 @@ def parse_credito_rural(
         else:
             inicio = ano
         mask = inicio.notna()
-        df["safra"] = pd.NA
+        df["safra"] = pd.Series(None, index=df.index, dtype=pd.Series([""]).dtype)
         df.loc[mask, "safra"] = inicio[mask].astype(int).map(anos_para_safra)
 
     if "produto" in df.columns:
@@ -185,14 +185,7 @@ def parse_credito_rural_total(
         ],
         columns=bcb_sicor.BCB_CREDITO_RURAL_TOTAL_V1.list_columns(),
     )
-    return frame.astype(
-        {
-            "programa": "string",
-            "cd_programa": "string",
-            "qtd_contratos": "Int64",
-            "valor": "float64",
-        }
-    )
+    return frame.astype(bcb_sicor.BCB_CREDITO_RURAL_TOTAL_V1.empty_frame().dtypes.to_dict())
 
 
 def _soma_preservando_nulos(values: pd.Series) -> Any:

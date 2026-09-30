@@ -1,15 +1,15 @@
 # Séries econômicas — SGS
 
-`datasets.series_economicas` consulta uma série do Sistema Gerenciador de Séries Temporais do Banco Central e aplica o contrato [`bcb_sgs` 2.1](../contracts/series_economicas.md). Reutiliza a [API de fonte `bcb.sgs`](bcb.md), sem combinar séries, converter unidades ou inferir frequência pelas datas observadas.
+`datasets.series_economicas` consulta uma série do Sistema Gerenciador de Séries Temporais do Banco Central e aplica o contrato [`bcb_sgs` 3.0](../contracts/series_economicas.md). Reutiliza a [API de fonte `bcb.sgs`](bcb.md), sem combinar séries, converter unidades ou inferir frequência pelas datas observadas.
 
 ```python
 from agrobr import datasets
 
 historico, meta = await datasets.series_economicas(
-    1, data_inicial="01/01/2010", data_final="31/12/2024", return_meta=True,
+    1, inicio="01/01/2010", fim="31/12/2024", return_meta=True,
 )
 ipca = await datasets.series_economicas(
-    "ipca", data_inicial="01/01/2024", data_final="31/12/2024",
+    "ipca", inicio="01/01/2024", fim="31/12/2024",
 )
 ```
 
@@ -19,19 +19,19 @@ ipca = await datasets.series_economicas(
 async def series_economicas(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ): ...
 ```
 
-`codigo` aceita inteiro positivo representável em int64 ou um alias exato já oferecido por `bcb.sgs`, como `"ipca"`. Uma string numérica (`"1"`) não substitui o inteiro `1`. Não há strip, normalização de caixa ou conversão de código no wrapper: a fonte recebe o valor original. Unidade, periodicidade e significado de cada código devem ser conferidos no [catálogo SGS](https://www3.bcb.gov.br/sgspub/).
+`codigo` aceita inteiro positivo representável em Int64 ou um alias já oferecido por `bcb.sgs`, como `"ipca"`. Uma string numérica (`"1"`) não substitui o inteiro `1`. A fonte normaliza caixa e espaços dos aliases; erros listam as opções disponíveis. Unidade, periodicidade e significado de cada código devem ser conferidos no [catálogo SGS](https://www3.bcb.gov.br/sgspub/).
 
 | Seleção | Comportamento da fonte |
 |---|---|
-| Duas datas | Intervalo `DD/MM/AAAA`, inclusivo na solicitação |
+| Duas datas | Intervalo inclusivo; ISO, `DD/MM/AAAA`, `date` ou `datetime` |
 | Apenas início | Final efetivo é a data corrente UTC |
 | Apenas final | Início delegado ao servidor; um limite remoto pode impedir uma consulta extensa |
 | Sem datas nem `ultimos` | Início padrão dez anos antes da data corrente UTC; final corrente |
@@ -54,7 +54,7 @@ A base do dataset encapsula indisponibilidade, erro de layout e violação de co
 
 ## Metadados e reprodução
 
-`meta.source="datasets.series_economicas/bcb_sgs"`, `dataset="series_economicas"`, `source_method="dataset"` e `selected_source="bcb_sgs"`. A versão do contrato e do schema é 2.1. `fetched_at` preserva a coleta da fonte em UTC com fuso; `fetch_timestamp` é o mesmo instante.
+`meta.source="datasets.series_economicas/bcb_sgs"`, `dataset="series_economicas"`, `source_method="dataset"` e `selected_source="bcb_sgs"`. A versão do contrato e do schema é 3.0. `fetched_at` preserva a coleta da fonte em UTC com fuso; `fetch_timestamp` é o mesmo instante.
 
 `source_details` mantém a consulta efetiva, defaults, recursos por bloco, reconciliação, diagnósticos e cobertura. `coverage.completeness="unknown"` expressa ausência de uma contagem global comprovada; todos os blocos solicitados terem sido obtidos não prova completude histórica da série. Os detalhes e listas são copiados independentemente.
 
@@ -69,3 +69,5 @@ ultimas = sync.datasets.series_economicas(1, ultimos=3)
 ```
 
 `as_polars=True` converte após a validação pandas e exige apenas o extra Polars. O core continua independente dos extras. Consulte também as [licenças](../licenses.md).
+
+Datas aceitam ISO, DD/MM/AAAA, `date` e `datetime`, com hora descartada. `01/02/2024` é 1º de fevereiro. `data_inicial`/`data_final` deixam de ser aceitos; use `inicio`/`fim`.

@@ -130,9 +130,7 @@ async def test_default_usd_closing_matches_legacy_values_and_timestamp(
         lambda _request, index: httpx.Response(200, content=body if index == 1 else encode([]))
     )
     kwargs = (
-        {"data": "04/09/2026"}
-        if mode == "day"
-        else {"data_inicial": "03/09/2026", "data_final": "06/09/2026"}
+        {"data": "04/09/2026"} if mode == "day" else {"inicio": "03/09/2026", "fim": "06/09/2026"}
     )
     (frame, meta), avisos = await com_avisos(bcb.ptax(**kwargs, return_meta=True))
     assert avisos == []
@@ -153,16 +151,16 @@ async def test_recusas_publicas_antes_do_catalogo(ptax_http, quote_row):
             ({"moeda": " USD"}, "moeda deve conter três letras ASCII, sem espaços"),
             ({"moeda": True}, "moeda deve conter três letras ASCII, sem espaços"),
             (
-                {"boletim": "Fechamento"},
+                {"boletim": "semanal"},
                 "boletim deve ser todos, fechamento, abertura ou intermediario",
             ),
-            ({"data": "31/02/2026"}, "data contém data inválida"),
+            ({"data": "31/02/2026"}, "data contém data inexistente"),
             (
-                {"data": "04/09/2026", "data_inicial": "03/09/2026"},
+                {"data": "04/09/2026", "inicio": "03/09/2026"},
                 "data não pode ser combinada com limites de período",
             ),
             (
-                {"data_final": "01/01/0001"},
+                {"fim": "01/01/0001"},
                 "Período padrão PTAX excede o calendário representável",
             ),
             *(({"top": top}, "top deve ser inteiro positivo") for top in [0, True, 1.0]),

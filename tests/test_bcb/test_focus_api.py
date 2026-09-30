@@ -39,7 +39,7 @@ async def test_public_exact_replay_preserves_values_identity_and_provenance(
         bcb.focus(
             indicador,
             periodicidade=periodicidade,
-            data_inicial="2026-08-28",
+            inicio="2026-08-28",
             top=6,
             max_registros=6,
             return_meta=True,
@@ -125,7 +125,7 @@ async def test_recusas_publicas_antes_da_rede(focus_http, annual_row):
                 ({"max_registros": valor}, "max_registros deve ser inteiro positivo")
                 for valor in [0, True]
             ),
-            ({"data_inicial": "2026-02-30"}, "data_inicial contém data inválida"),
+            ({"inicio": "2026-02-30"}, "inicio contém data inexistente"),
             ({"as_polars": 1}, "as_polars e return_meta devem ser booleanos"),
             ({"return_meta": "yes"}, "as_polars e return_meta devem ser booleanos"),
         ]:
@@ -191,7 +191,7 @@ async def test_inconsistent_published_statistics_warn_without_metadata(focus_htt
 
 async def test_concurrent_periodicities_and_metadata_are_isolated(focus_http):
     focus_http()
-    selecao = {"data_inicial": "2026-08-28", "top": 6, "max_registros": 6, "return_meta": True}
+    selecao = {"inicio": "2026-08-28", "top": 6, "max_registros": 6, "return_meta": True}
     (annual, monthly), avisos = await com_avisos(
         asyncio.gather(
             bcb.focus("Balança comercial", periodicidade="anual", **selecao),
@@ -214,7 +214,7 @@ def test_sync_public_focus_uses_monthly_source_pipeline(focus_http):
         frame, meta = sync_bcb.focus(
             "IPCA",
             periodicidade="mensal",
-            data_inicial="2026-08-28",
+            inicio="2026-08-28",
             top=6,
             max_registros=6,
             return_meta=True,
@@ -239,7 +239,7 @@ async def test_source_url_e_a_consulta_sem_a_paginacao(focus_http, focus_capture
         bcb.focus(
             "IPCA",
             periodicidade="mensal",
-            data_inicial="2026-08-28",
+            inicio="2026-08-28",
             top=3,
             max_registros=6,
             return_meta=True,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
@@ -54,16 +55,16 @@ class ExpectativasMercadoDataset(base.BaseDataset):
     async def fetch(
         self,
         produto: str = "",
-        return_meta: bool = False,
         *,
+        return_meta: bool = False,
         indicador: str = "PIB Agropecuária",
         periodicidade: Literal["anual", "mensal"] = "anual",
         top: int = 1000,
-        data_inicial: str | None = None,
+        inicio: str | date | datetime | None = None,
         max_registros: int | None = None,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         from agrobr.bcb import focus_query
 
         self._validate_produto(produto)
@@ -80,7 +81,7 @@ class ExpectativasMercadoDataset(base.BaseDataset):
             indicador,
             periodicidade=periodicidade,
             top=top,
-            data_inicial=data_inicial,
+            data_inicial=inicio,
             max_registros=max_registros,
         )
         frame, source_name, source_meta, attempted = await self._try_sources(
@@ -88,7 +89,7 @@ class ExpectativasMercadoDataset(base.BaseDataset):
             indicador=indicador,
             periodicidade=periodicidade,
             top=top,
-            data_inicial=data_inicial,
+            inicio=inicio,
             max_registros=max_registros,
         )
         self._validate_contract(frame)
@@ -118,9 +119,9 @@ async def expectativas_mercado(
     *,
     periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    inicio: str | date | datetime | None = None,
     max_registros: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -131,11 +132,50 @@ async def expectativas_mercado(
     *,
     periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    inicio: str | date | datetime | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def expectativas_mercado(
+    indicador: str = "PIB Agropecuária",
+    *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
+    top: int = 1000,
+    inicio: str | date | datetime | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def expectativas_mercado(
+    indicador: str = "PIB Agropecuária",
+    *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
+    top: int = 1000,
+    inicio: str | date | datetime | None = None,
     max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def expectativas_mercado(
+    indicador: str = "PIB Agropecuária",
+    *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
+    top: int = 1000,
+    inicio: str | date | datetime | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def expectativas_mercado(
@@ -143,16 +183,16 @@ async def expectativas_mercado(
     *,
     periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    inicio: str | date | datetime | None = None,
     max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _expectativas_mercado.fetch(
         indicador=indicador,
         periodicidade=periodicidade,
         top=top,
-        data_inicial=data_inicial,
+        inicio=inicio,
         max_registros=max_registros,
         as_polars=as_polars,
         return_meta=return_meta,

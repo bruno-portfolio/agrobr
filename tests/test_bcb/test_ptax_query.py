@@ -12,10 +12,10 @@ from tests.helpers import collect_failures, levanta_exatamente, sem_excecao
 
 RECUSAS = [
     *(
-        ({"data": valor}, "data deve ter formato DD/MM/YYYY")
-        for valor in ["", "1/09/2026", "０１/09/2026", date(2026, 9, 4)]
+        ({"data": valor}, "data deve ser date, datetime ou texto AAAA-MM-DD ou DD/MM/AAAA")
+        for valor in ["", "1/09/2026", "０１/09/2026", 20260904]
     ),
-    *(({"data": valor}, "data contém data inválida") for valor in ["31/02/2026", "29/02/2025"]),
+    *(({"data": valor}, "data contém data inexistente") for valor in ["31/02/2026", "29/02/2025"]),
     *(
         (
             {"data": "04/09/2026", limite: valor},
@@ -37,7 +37,7 @@ RECUSAS = [
     ),
     *(
         ({"boletim": boletim}, "boletim deve ser todos, fechamento, abertura ou intermediario")
-        for boletim in ["Fechamento", "intermediário", None]
+        for boletim in ["semanal", "inexistente", None]
     ),
     *(({"top": top}, "top deve ser inteiro positivo") for top in [True, 1.0, 0, -1]),
     ({"reference_date": datetime(2026, 9, 7)}, "reference_date deve ser data civil"),
@@ -73,12 +73,12 @@ def test_limites_padrao_e_explicitos_da_selecao():
     assert (padrao.inicio, padrao.fim) == (date(2026, 8, 8), date(2026, 9, 7))
     assert (padrao.fim - padrao.inicio).days == 30
     assert (padrao.mode, padrao.boletim, padrao.moeda) == ("periodo", "fechamento", "USD")
-    assert set(padrao.defaulted_fields) == {"data_inicial", "data_final"}
+    assert set(padrao.defaulted_fields) == {"inicio", "fim"}
     assert (inicio.inicio, inicio.fim) == (date(2026, 9, 1), date(2026, 9, 7))
     assert (inicio.data_inicial, inicio.data_final) == (date(2026, 9, 1), None)
-    assert inicio.defaulted_fields == ["data_final"]
+    assert inicio.defaulted_fields == ["fim"]
     assert (fim.inicio, fim.fim) == (date(2024, 1, 31), date(2024, 3, 1))
-    assert fim.defaulted_fields == ["data_inicial"]
+    assert fim.defaulted_fields == ["inicio"]
     assert futuro.inicio == futuro.fim == date(2099, 9, 4)
     assert (futuro.mode, futuro.defaulted_fields) == ("dia", [])
     assert (futuro.requested_moeda, futuro.moeda) == ("eur", "EUR")

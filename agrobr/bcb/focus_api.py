@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 import warnings
+from datetime import date, datetime
 from typing import Literal, overload
 
 import pandas as pd
@@ -23,9 +24,9 @@ async def focus(
     *,
     periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    inicio: str | date | datetime | None = None,
     max_registros: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -36,11 +37,50 @@ async def focus(
     *,
     periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    inicio: str | date | datetime | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def focus(
+    indicador: str = "PIB Agropecuária",
+    *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
+    top: int = 1000,
+    inicio: str | date | datetime | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def focus(
+    indicador: str = "PIB Agropecuária",
+    *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
+    top: int = 1000,
+    inicio: str | date | datetime | None = None,
     max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def focus(
+    indicador: str = "PIB Agropecuária",
+    *,
+    periodicidade: Literal["anual", "mensal"] = "anual",
+    top: int = 1000,
+    inicio: str | date | datetime | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def focus(
@@ -48,18 +88,18 @@ async def focus(
     *,
     periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    inicio: str | date | datetime | None = None,
     max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
         raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
     query = focus_query.build_query(
         indicador,
         periodicidade=periodicidade,
         top=top,
-        data_inicial=data_inicial,
+        data_inicial=inicio,
         max_registros=max_registros,
     )
     logger.info("bcb_focus_selection", query=query.model_dump(mode="json"))
@@ -78,5 +118,5 @@ async def focus(
         meta,
         as_polars=as_polars,
         return_meta=return_meta,
-        string_columns=("indicador_detalhe",),
+        string_columns=("indicador", "data_referencia", "periodicidade", "indicador_detalhe"),
     )

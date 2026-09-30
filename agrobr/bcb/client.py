@@ -9,10 +9,11 @@ from typing import Any, cast
 from urllib.parse import quote
 
 import httpx
+import pydantic
 
 from agrobr import _log
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -66,6 +67,12 @@ class AquisicaoOData:
 
 
 _AQUISICAO: ContextVar[AquisicaoOData | None] = ContextVar("bcb_sicor_aquisicao", default=None)
+
+
+class _EnvelopeOData(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(strict=True, extra="allow")
+
+    value: list[dict[str, Any]]
 
 
 @contextmanager
@@ -134,7 +141,17 @@ async def _fetch_odata(
                     "fetched_at": utcnow_aware(),
                 }
             )
-        return responses.parse_json_response(response, source="bcb", url=url)  # type: ignore[no-any-return]
+        payload = responses.parse_json_response(response, source="bcb", url=url)
+        try:
+            _EnvelopeOData.model_validate(payload)
+        except pydantic.ValidationError as exc:
+            raise ParseError(
+                source="bcb",
+                parser_version=2,
+                reason="Envelope SICOR inválido: exige objeto com value lista de registros",
+                errors=[("bcb", "parse", str(exc))],
+            ) from exc
+        return cast(dict[str, Any], payload)
 
 
 def _pertence_a_safra(record: dict[str, Any], ano_inicio: int) -> bool:
@@ -186,7 +203,7 @@ async def _fetch_credito_por_mes(
             select=select,
             top=SICOR_RECORD_LIMIT,
         )
-        month_records = cast(list[dict[str, Any]], data.get("value", []))
+        month_records = cast(list[dict[str, Any]], data["value"])
         if len(month_records) == SICOR_RECORD_LIMIT:
             raise SourceUnavailableError(
                 source="bcb",
@@ -209,7 +226,7 @@ async def _fetch_credito_records(
         select=select,
         top=SICOR_RECORD_LIMIT,
     )
-    records = cast(list[dict[str, Any]], data.get("value", []))
+    records = cast(list[dict[str, Any]], data["value"])
     if len(records) != SICOR_RECORD_LIMIT:
         return records
 

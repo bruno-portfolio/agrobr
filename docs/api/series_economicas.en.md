@@ -1,15 +1,15 @@
 # Economic time series — SGS
 
-`datasets.series_economicas` retrieves one Banco Central SGS time series and enforces the existing [`bcb_sgs` 2.1 contract](../contracts/series_economicas.en.md). It delegates acquisition to [`bcb.sgs`](bcb.en.md), without combining series, converting units or inferring frequency from observation dates.
+`datasets.series_economicas` retrieves one Banco Central SGS time series and enforces the existing [`bcb_sgs` 3.0 contract](../contracts/series_economicas.en.md). It delegates acquisition to [`bcb.sgs`](bcb.en.md), without combining series, converting units or inferring frequency from observation dates.
 
 ```python
 from agrobr import datasets
 
 history, meta = await datasets.series_economicas(
-    1, data_inicial="01/01/2010", data_final="31/12/2024", return_meta=True,
+    1, inicio="01/01/2010", fim="31/12/2024", return_meta=True,
 )
 ipca = await datasets.series_economicas(
-    "ipca", data_inicial="01/01/2024", data_final="31/12/2024",
+    "ipca", inicio="01/01/2024", fim="31/12/2024",
 )
 ```
 
@@ -19,19 +19,19 @@ ipca = await datasets.series_economicas(
 async def series_economicas(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
 ): ...
 ```
 
-`codigo` accepts a positive int64 integer or an exact alias already supported by `bcb.sgs`, such as `"ipca"`. Numeric string `"1"` does not replace integer `1`. The wrapper forwards the original code and selectors without trimming or changing case. Consult the [SGS catalogue](https://www3.bcb.gov.br/sgspub/) for the meaning, unit and frequency of each series.
+`codigo` accepts a positive Int64 integer or an alias already supported by `bcb.sgs`, such as `"ipca"`. Numeric string `"1"` does not replace integer `1`. The source normalizes alias case and surrounding whitespace; errors list the available aliases. Consult the [SGS catalogue](https://www3.bcb.gov.br/sgspub/) for the meaning, unit and frequency of each series.
 
 | Selection | Source behavior |
 |---|---|
-| Both dates | Inclusive request interval in `DD/MM/YYYY` format |
+| Both dates | Inclusive request interval; ISO, `DD/MM/YYYY`, `date` or `datetime` |
 | Start only | Effective end is the current UTC date |
 | End only | Start is delegated to the server; remote limits may reject an extensive request |
 | Neither dates nor `ultimos` | Start defaults to ten years before the current UTC date; end defaults to today |
@@ -54,7 +54,7 @@ The dataset base wraps source availability, parsing and contract failures in `So
 
 ## Metadata and reproducibility
 
-Metadata identifies `source="datasets.series_economicas/bcb_sgs"`, `dataset="series_economicas"`, `source_method="dataset"` and `selected_source="bcb_sgs"`. Contract and schema versions are 2.1. `fetched_at` retains the source collection time as aware UTC; the dataset's `fetch_timestamp` is the same instant.
+Metadata identifies `source="datasets.series_economicas/bcb_sgs"`, `dataset="series_economicas"`, `source_method="dataset"` and `selected_source="bcb_sgs"`. Contract and schema versions are 3.0. `fetched_at` retains the source collection time as aware UTC; the dataset's `fetch_timestamp` is the same instant.
 
 `source_details` preserves the effective query, defaults, block resources, reconciliation, diagnostics and coverage. `coverage.completeness="unknown"` means no global expected count has been established; obtaining all requested blocks does not establish historical completeness. Nested details and lists are independently copied.
 
@@ -69,3 +69,5 @@ latest = sync.datasets.series_economicas(1, ultimos=3)
 ```
 
 `as_polars=True` converts after pandas contract validation and requires the Polars extra. Core remains independent of optional packages. See [licenses](../licenses.md).
+
+Dates accept ISO, DD/MM/YYYY, `date` and `datetime`, discarding time. `01/02/2024` means February 1. `data_inicial`/`data_final` are no longer accepted; use `inicio`/`fim`.

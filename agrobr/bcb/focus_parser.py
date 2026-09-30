@@ -215,6 +215,5 @@ def build_frame(records: list[focus_models.FocusObservation]) -> pd.DataFrame:
     for column in ("numero_respondentes", "base_calculo"):
         frame[column] = frame[column].astype("Int64")
     for column in ("indicador", "data_referencia", "periodicidade", "indicador_detalhe"):
-        frame[column] = frame[column].astype(object)
-        frame.loc[frame[column].isna(), column] = pd.NA
+        frame[column] = frame[column].astype(pd.Series([""]).dtype)
     return frame

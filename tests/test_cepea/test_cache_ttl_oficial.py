@@ -64,8 +64,8 @@ async def test_cache_valido_antes_da_virada_publica_a_coleta_real(monkeypatch):
     assert busca.await_count == 0
     assert df["valor"].tolist() == [161.93]
     assert (meta.from_cache, meta.source) == (True, "cache")
-    assert (meta.raw_content_hash, meta.raw_content_size, meta.fetch_timestamp) == (None, 0, None)
-    assert meta.fetched_at == COLETA.replace(tzinfo=UTC)
+    assert (meta.raw_content_hash, meta.raw_content_size) == (None, 0)
+    assert meta.fetch_timestamp == meta.fetched_at == COLETA.replace(tzinfo=UTC)
     assert meta.cache_expires_at == VIRADA_23
 
 
@@ -105,7 +105,7 @@ async def test_cache_vencido_com_fonte_fora_publica_a_coleta_antiga_com_aviso(mo
     assert busca.await_count == 1
     assert df["valor"].tolist() == [161.93]
     assert (meta.from_cache, meta.source) == (True, "cache_fallback")
-    assert meta.fetched_at == COLETA.replace(tzinfo=UTC)
+    assert meta.fetch_timestamp == meta.fetched_at == COLETA.replace(tzinfo=UTC)
     assert meta.cache_expires_at == VIRADA_23
     assert [a for a in avisos if issubclass(a.category, StaleDataWarning)]
 
@@ -134,8 +134,8 @@ async def test_coleta_sem_dado_publica_o_cache_sem_a_proveniencia_da_coleta(monk
     ]
     assert df["valor"].tolist() == [161.93]
     assert (meta.from_cache, meta.source, meta.source_url) == (True, "cache_fallback", "")
-    assert (meta.raw_content_hash, meta.raw_content_size, meta.fetch_timestamp) == (None, 0, None)
-    assert meta.fetched_at == COLETA.replace(tzinfo=UTC)
+    assert (meta.raw_content_hash, meta.raw_content_size) == (None, 0)
+    assert meta.fetch_timestamp == meta.fetched_at == COLETA.replace(tzinfo=UTC)
     assert [a for a in avisos if issubclass(a.category, StaleDataWarning)]
 
 
@@ -175,5 +175,43 @@ async def test_periodo_fechado_sai_do_cache_sem_validade(monkeypatch, consulta):
         df, meta = await consulta()
     assert busca.await_count == 0
     assert df["valor"].tolist() == [161.93]
-    assert (meta.from_cache, meta.fetched_at) == (True, COLETA.replace(tzinfo=UTC))
+    assert meta.from_cache
+    assert meta.fetch_timestamp == meta.fetched_at == COLETA.replace(tzinfo=UTC)
     assert meta.cache_expires_at is None
+
+
+async def test_fallback_do_dataset_preserva_hora_original(cache_real, monkeypatch):
+    fixar_relogio(monkeypatch, datetime(2026, 11, 3, 13))
+    monkeypatch.setattr(duckdb_store, "get_store", lambda: cache_real)
+    monkeypatch.setattr(api, "indicador", AsyncMock(side_effect=SourceUnavailableError("cepea")))
+    df, meta = await datasets.preco_diario(
+        "soja", inicio="2026-09-22", fim="2026-09-22", return_meta=True
+    )
+    assert df["valor"].tolist() == [161.93]
+    assert meta.from_cache and meta.selected_source == "cache"
+    assert meta.fetch_timestamp == meta.fetched_at == COLETA.replace(tzinfo=UTC)
+
+
+@pytest.mark.usefixtures("cache_real")
+async def test_vazio_do_indicador_tem_tipos_da_captura(monkeypatch):
+    fixar_relogio(monkeypatch, datetime(2026, 11, 3, 13))
+    cheio = await api.indicador("soja", inicio="2026-09-22", fim="2026-09-22", offline=True)
+    vazio = await api.indicador("soja", inicio="2000-01-01", fim="2000-01-02", offline=True)
+    assert cheio["valor"].tolist() == [161.93]
+    assert vazio.empty
+    assert cheio.dtypes.equals(vazio.dtypes)
+
+
+@pytest.mark.usefixtures("cache_real")
+async def test_vazio_polars_tem_tipos_da_captura(monkeypatch):
+    pl = pytest.importorskip("polars")
+    fixar_relogio(monkeypatch, datetime(2026, 11, 3, 13))
+    cheio = await api.indicador(
+        "soja", inicio="2026-09-22", fim="2026-09-22", offline=True, as_polars=True
+    )
+    vazio = await api.indicador(
+        "soja", inicio="2000-01-01", fim="2000-01-02", offline=True, as_polars=True
+    )
+    assert cheio["valor"].to_list() == [161.93]
+    assert vazio.is_empty() and cheio.schema == vazio.schema
+    assert pl.Null not in vazio.schema.values()

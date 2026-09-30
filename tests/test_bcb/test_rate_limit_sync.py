@@ -11,7 +11,7 @@ from agrobr import sync
 from agrobr.http.rate_limiter import RateLimiter
 from tests.helpers import sem_excecao
 
-IPCA_2024 = {"data_inicial": "01/01/2024", "data_final": "31/12/2024"}
+IPCA_2024 = {"inicio": "01/01/2024", "fim": "31/12/2024"}
 
 
 @pytest.fixture

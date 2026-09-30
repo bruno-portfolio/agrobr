@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import dataclasses
 from typing import Any
 
 import pandas as pd
@@ -7,14 +9,17 @@ import pandas as pd
 from agrobr import contracts
 
 
+@dataclasses.dataclass
 class SGSContract(contracts.Contract):
+    integer_dtype: str = "int64"
+
     def empty_frame(self) -> pd.DataFrame:
         return pd.DataFrame(
             {
                 "data": pd.Series(dtype="datetime64[ns]"),
                 "valor": pd.Series(dtype="float64"),
-                "codigo": pd.Series(dtype="int64"),
-                "nome_serie": pd.Series(dtype="object"),
+                "codigo": pd.Series(dtype=self.integer_dtype),
+                "nome_serie": pd.Series([""]).iloc[:0],
                 "data_fim": pd.Series(dtype="datetime64[ns]"),
             }
         )
@@ -26,7 +31,7 @@ class SGSContract(contracts.Contract):
         for name, dtype in {
             "data": "datetime64[ns]",
             "valor": "float64",
-            "codigo": "int64",
+            "codigo": self.integer_dtype,
             "data_fim": "datetime64[ns]",
         }.items():
             if name in df and str(df[name].dtype) != dtype:
@@ -47,7 +52,7 @@ class SGSContract(contracts.Contract):
         schema["constraints"].update(
             date_dtype="datetime64[ns]",
             date_semantics="civil_reference_date_without_timezone",
-            integer_dtype="int64",
+            integer_dtype=self.integer_dtype,
             float_dtype="float64",
             sorted_by=["codigo", "data"],
             frequency="not_inferred_from_observation_dates",
@@ -83,4 +88,6 @@ BCB_SGS_V2 = SGSContract(
     ],
 )
 
-contracts.register_contract("bcb_sgs", BCB_SGS_V2)
+BCB_SGS_V3 = dataclasses.replace(copy.deepcopy(BCB_SGS_V2), version="3.0", integer_dtype="Int64")
+
+contracts.register_contract("bcb_sgs", BCB_SGS_V3)

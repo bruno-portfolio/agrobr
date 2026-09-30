@@ -16,13 +16,16 @@ RECUSAS = [
         for codigo in [True, False, 1.0, 0, -1, None, []]
     ),
     *(({"codigo": codigo}, f"Serie '{codigo}' nao encontrada") for codigo in ["1", "", "unknown"]),
-    ({"data_inicial": "31/02/2024"}, "data_inicial contém data inválida"),
-    ({"data_final": "29/02/2023"}, "data_final contém data inválida"),
+    ({"data_inicial": "31/02/2024"}, "inicio contém data inexistente"),
+    ({"data_final": "29/02/2023"}, "fim contém data inexistente"),
     *(
-        ({"data_inicial": valor}, "data_inicial deve ter formato DD/MM/AAAA")
-        for valor in ["", "2024-01-01", "1/01/2024", date(2024, 1, 1)]
+        (
+            {"data_inicial": valor},
+            "inicio deve ser date, datetime ou texto AAAA-MM-DD ou DD/MM/AAAA",
+        )
+        for valor in ["", "2024/01/01", "1/01/2024", 20240101]
     ),
-    ({"data_final": True}, "data_final deve ter formato DD/MM/AAAA"),
+    ({"data_final": True}, "fim deve ser date, datetime ou texto AAAA-MM-DD ou DD/MM/AAAA"),
     *(
         (argumentos, "Seleção SGS inválida ou intervalo invertido")
         for argumentos in [
@@ -81,9 +84,11 @@ def test_modo_e_limites_seguem_os_argumentos_sem_janela_inventada():
         date(2014, 2, 28),
         date(2024, 2, 29),
     )
+    assert padrao.defaulted_fields == ["inicio", "fim"]
     assert (so_fim.mode, so_fim.inicio, so_fim.fim) == ("server_start", None, date(2024, 12, 31))
     assert len(sgs_query.plan_query(so_fim)) == 1
     assert (so_inicio.inicio, so_inicio.fim) == (date(2026, 9, 1), REFERENCE)
+    assert so_inicio.defaulted_fields == ["fim"]
     assert (ultimos.mode, ultimos.ultimos, ultimos.inicio, ultimos.fim) == (
         "latest",
         21,

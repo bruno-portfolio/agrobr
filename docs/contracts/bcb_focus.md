@@ -27,7 +27,7 @@ Cada página é validada integralmente antes de aplicar `max_registros`. Duplica
 from agrobr import bcb, contracts
 
 df, meta = await bcb.focus(
-    "IPCA", periodicidade="mensal", data_inicial="2026-08-28", return_meta=True,
+    "IPCA", periodicidade="mensal", inicio="2026-08-28", return_meta=True,
 )
 contracts.validate_dataset(df, "bcb_focus")
 ```

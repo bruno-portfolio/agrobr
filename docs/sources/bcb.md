@@ -199,14 +199,14 @@ O [catálogo oficial da série 1](https://dadosabertos.bcb.gov.br/dataset/1-taxa
 from agrobr import bcb
 
 df, meta = await bcb.sgs(
-    1, data_inicial="01/01/2010", data_final="31/12/2024", return_meta=True,
+    1, inicio="01/01/2010", fim="31/12/2024", return_meta=True,
 )
-ipca = await bcb.sgs("ipca", data_inicial="01/01/2024", data_final="31/12/2024")
+ipca = await bcb.sgs("ipca", inicio="01/01/2024", fim="31/12/2024")
 ```
 
 A consulta do exemplo devolve 3.767 observações diárias em 2010–2024, em dois blocos. A fonte também pode devolver referências mensais e trimestrais anteriores ao limite diário solicitado e repetir uma referência mensal entre janelas diárias disjuntas. A implementação preserva as referências publicadas, diagnostica os limites e só reconcilia valores iguais entre blocos. Ela não infere frequência nem preenche datas.
 
-O [contrato 2.1](../contracts/bcb_sgs.md) mantém `data`, `valor`, `codigo` e `nome_serie`, inclusive em vazio, e acrescenta `data_fim` quando a série publica `dataFim`. Os 17 aliases continuam disponíveis; outros códigos inteiros podem ser consultados sem receber um nome inventado. O IPCA pode ser negativo. Unidade monetária e frequência devem ser verificadas no cadastro específico; um código de câmbio histórico não implica BRL em toda a série.
+O [contrato 3.0](../contracts/bcb_sgs.md) mantém `data`, `valor`, `codigo` e `nome_serie`, inclusive em vazio, e acrescenta `data_fim` quando a série publica `dataFim`. Os 17 aliases continuam disponíveis; outros códigos inteiros podem ser consultados sem receber um nome inventado. O IPCA pode ser negativo. Unidade monetária e frequência devem ser verificadas no cadastro específico; um código de câmbio histórico não implica BRL em toda a série.
 
 Metadados registram cada resposta, hash, status, aquisição UTC e referências fora da janela. Todos os blocos obtidos não comprovam completude da série, pois o endpoint não informa total independente. O 404 oficial de ausência de valores não comprova existência do código. A [licença verificada](../licenses.md#bcb-sgs) ODbL pertence ao catálogo da série 1; não foi generalizada para qualquer código.
 
@@ -224,7 +224,7 @@ from agrobr import bcb
 moedas = await bcb.ptax_moedas()
 df, meta = await bcb.ptax(
     moeda="EUR", boletim="todos",
-    data_inicial="03/09/2026", data_final="06/09/2026", return_meta=True,
+    inicio="03/09/2026", fim="06/09/2026", return_meta=True,
 )
 ```
 
@@ -253,7 +253,7 @@ O [conjunto oficial Expectativas de Mercado](https://dadosabertos.bcb.gov.br/dat
 from agrobr import bcb
 
 df, meta = await bcb.focus(
-    "IPCA", periodicidade="mensal", data_inicial="2026-08-28",
+    "IPCA", periodicidade="mensal", inicio="2026-08-28",
     top=100, max_registros=30, return_meta=True,
 )
 ```
@@ -276,7 +276,7 @@ O catálogo e os recursos [mensal](https://dadosabertos.bcb.gov.br/dataset/expec
 - API Focus: `https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/`
 - Atualizacao: mensal (SICOR), várias vezes ao dia (PTAX), variável por série (SGS); Focus: cálculo diário e publicação semanal
 - Historico: 2013+ (SICOR), variavel (SGS)
-- Contratos: SGS 2.1; Focus, PTAX cotações e crédito rural 2.0; PTAX moedas 1.0; consulte cada API
+- Contratos: SGS 3.0; Focus, PTAX cotações e crédito rural 2.0; PTAX moedas 1.0; consulte cada API
 
 ## Produtos e respostas vazias
 

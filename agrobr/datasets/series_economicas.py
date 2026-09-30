@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
@@ -10,6 +10,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result
+from agrobr.utils import time as time_utils
 
 
 async def _fetch_bcb_sgs(
@@ -33,7 +34,7 @@ SERIES_ECONOMICAS_INFO = base.DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="2.1",
+    contract_version="3.0",
     update_frequency="varies_by_series",
     typical_latency="conforme a série consultada",
     source_url="https://www3.bcb.gov.br/sgspub/",
@@ -55,15 +56,15 @@ class SeriesEconomicasDataset(base.BaseDataset):
     async def fetch(
         self,
         produto: str = "",
-        return_meta: bool = False,
         *,
+        return_meta: bool = False,
         codigo: int | str | None = None,
-        data_inicial: str | None = None,
-        data_final: str | None = None,
+        inicio: str | date | datetime | None = None,
+        fim: str | date | datetime | None = None,
         ultimos: int | None = None,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         from agrobr.bcb import sgs_query
 
         self._validate_produto(produto)
@@ -82,13 +83,13 @@ class SeriesEconomicasDataset(base.BaseDataset):
             )
         sgs_query.build_query(
             codigo,
-            data_inicial=data_inicial,
-            data_final=data_final,
+            data_inicial=inicio,
+            data_final=fim,
             ultimos=ultimos,
-            reference_date=datetime.now(UTC).date(),
+            reference_date=time_utils.hoje(),
         )
         frame, source_name, source_meta, attempted = await self._try_sources(
-            "", codigo=codigo, data_inicial=data_inicial, data_final=data_final, ultimos=ultimos
+            "", codigo=codigo, inicio=inicio, fim=fim, ultimos=ultimos
         )
         self._validate_contract(frame)
         meta = (
@@ -115,10 +116,10 @@ registry.register(_series_economicas)
 async def series_economicas(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -127,27 +128,63 @@ async def series_economicas(
 async def series_economicas(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    ultimos: int | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def series_economicas(
+    codigo: int | str,
+    *,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    ultimos: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def series_economicas(
+    codigo: int | str,
+    *,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def series_economicas(
+    codigo: int | str,
+    *,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    ultimos: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def series_economicas(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _series_economicas.fetch(
         codigo=codigo,
-        data_inicial=data_inicial,
-        data_final=data_final,
+        inicio=inicio,
+        fim=fim,
         ultimos=ultimos,
         as_polars=as_polars,
         return_meta=return_meta,

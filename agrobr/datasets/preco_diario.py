@@ -10,6 +10,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot, is_deterministic
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -64,6 +65,7 @@ async def _fetch_cache(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
         source_url="",
         source_method="duckdb",
         fetched_at=max(registro.parsed_at for registro in registros),
+        fetch_timestamp=max(registro.parsed_at for registro in registros),
         from_cache=True,
         attempted_sources=["cache"],
         selected_source="cache",
@@ -111,9 +113,10 @@ class PrecoDiarioDataset(BaseDataset):
         produto: str,
         inicio: str | date | None = None,
         fim: str | date | None = None,
+        *,
         return_meta: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         produto = self._produto_do_dataset(produto)
         logger.info("dataset_fetch", dataset="preco_diario", produto=produto)
 
@@ -210,6 +213,7 @@ async def preco_diario(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -221,18 +225,57 @@ async def preco_diario(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     *,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+    **kwargs: Any,
+) -> DataFrame: ...
+
+
+@overload
+async def preco_diario(
+    produto: str,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def preco_diario(
+    produto: str,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+    **kwargs: Any,
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def preco_diario(
+    produto: str,
+    inicio: str | date | None = None,
+    fim: str | date | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+    **kwargs: Any,
+) -> DataFrameResult: ...
 
 
 async def preco_diario(
     produto: str,
     inicio: str | date | None = None,
     fim: str | date | None = None,
+    *,
+    as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _preco_diario.fetch(
-        produto, inicio=inicio, fim=fim, return_meta=return_meta, **kwargs
+        produto, inicio=inicio, fim=fim, as_polars=as_polars, return_meta=return_meta, **kwargs
     )

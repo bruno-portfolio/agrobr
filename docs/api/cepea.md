@@ -20,11 +20,11 @@ async def indicador(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     _moeda: str = "BRL",
+    *,
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-    *,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
 ```
@@ -175,7 +175,7 @@ async def pracas(produto: str) -> list[str]
 
 **Retorno:**
 
-Lista de praças mapeadas pelo parser, como slugs normalizados aceitos por `indicador()` e `ultimo()`. O DataFrame e o modelo `Indicador` preservam o rótulo exibido pela fonte. A lista é vazia para produto válido sem praça mapeada; produto desconhecido levanta `ValueError`.
+Lista de praças mapeadas pelo parser, como slugs normalizados aceitos por `indicador()` e `ultimo()`. O DataFrame e o modelo `Indicador` preservam o rótulo exibido pela fonte. A lista é vazia para produto válido sem praça mapeada; produto desconhecido levanta `InvalidParameterError`.
 
 ```python
 pracas_soja = await cepea.pracas('soja')
@@ -230,7 +230,7 @@ produtos = cepea.produtos()
 2. **Cache stale**: Busca de novo; se a fonte falhar, devolve o cache com `StaleDataWarning` e `source="cache_fallback"`
 3. **Sem cache**: Busca da fonte e salva no cache
 
-Com `return_meta=True`, o `MetaInfo` de uma resposta do cache traz em `fetched_at` a coleta real (a mais recente entre as linhas devolvidas), não o instante da chamada, e `cache_expires_at` é a virada das 18h BRT seguinte a essa coleta. `ultimo()` segue a mesma virada. Com `fim` anterior à janela recente de 25 dias corridos (período fechado, que não volta à fonte), `cache_expires_at` sai nulo: a validade não se aplica.
+Com `return_meta=True`, o `MetaInfo` de uma resposta do cache traz em `fetched_at` e `fetch_timestamp` a coleta real (a mais recente entre as linhas devolvidas), não o instante da chamada, e `cache_expires_at` é a virada das 18h BRT seguinte a essa coleta. `ultimo()` segue a mesma virada. Com `fim` anterior à janela recente de 25 dias corridos (período fechado, que não volta à fonte), `cache_expires_at` sai nulo: a validade não se aplica.
 
 O histórico é acumulado progressivamente no DuckDB local, permitindo consultas a períodos antigos sem novas requisições.
 

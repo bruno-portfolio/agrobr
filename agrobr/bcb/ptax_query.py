@@ -7,19 +7,10 @@ from urllib.parse import parse_qsl, quote, urljoin, urlsplit
 
 from agrobr import constants
 from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.normalize import regions
+from agrobr.utils.validation import parse_data
 
 from . import ptax_acquisition
-
-
-def _parse_date(value: str | None, field: str) -> date | None:
-    if value is None:
-        return None
-    if not isinstance(value, str) or re.fullmatch(constants.BCB_PTAX_DATE_PATTERN, value) is None:
-        raise InvalidParameterError(f"{field} deve ter formato DD/MM/YYYY")
-    try:
-        return datetime.strptime(value, "%d/%m/%Y").date()
-    except ValueError:
-        raise InvalidParameterError(f"{field} contém data inválida") from None
 
 
 def _validate_top(top: int) -> None:
@@ -38,14 +29,16 @@ def _default_start(end: date) -> date:
 
 def build_query(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    data_inicial: str | date | datetime | None = None,
+    data_final: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: str = "fechamento",
     top: int = 1000,
     reference_date: date,
 ) -> ptax_acquisition.PtaxQuery:
+    if isinstance(boletim, str):
+        boletim = regions.remover_acentos(boletim.strip()).casefold()
     _validate_top(top)
     if (
         not isinstance(moeda, str)
@@ -61,9 +54,9 @@ def build_query(
         raise InvalidParameterError("boletim deve ser todos, fechamento, abertura ou intermediario")
     if type(reference_date) is not date:
         raise InvalidParameterError("reference_date deve ser data civil")
-    day = _parse_date(data, "data")
-    start = _parse_date(data_inicial, "data_inicial")
-    end = _parse_date(data_final, "data_final")
+    day = parse_data(data, "data")
+    start = parse_data(data_inicial, "inicio")
+    end = parse_data(data_final, "fim")
     original_start, original_end = start, end
     defaults: list[str] = []
     if day is not None:
@@ -73,10 +66,10 @@ def build_query(
     else:
         if end is None:
             end = reference_date
-            defaults.append("data_final")
+            defaults.append("fim")
         if start is None:
             start = _default_start(end)
-            defaults.append("data_inicial")
+            defaults.append("inicio")
     if start > end:
         raise InvalidParameterError("Intervalo PTAX invertido")
     return ptax_acquisition.PtaxQuery(

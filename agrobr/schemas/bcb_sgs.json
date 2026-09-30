@@ -1,6 +1,6 @@
 {
   "name": "bcb.sgs",
-  "schema_version": "2.1",
+  "schema_version": "3.0",
   "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
@@ -90,7 +90,7 @@
     "codigo_max": 9223372036854775807,
     "date_dtype": "datetime64[ns]",
     "date_semantics": "civil_reference_date_without_timezone",
-    "integer_dtype": "int64",
+    "integer_dtype": "Int64",
     "float_dtype": "float64",
     "sorted_by": [
       "codigo",

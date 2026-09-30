@@ -17,6 +17,7 @@ async def credito_rural(
     agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -102,6 +103,7 @@ async def credito_rural_total(
     finalidade: str | None = None,
     uf: str | None = None,
     agregacao: Literal["uf", "programa"] = "uf",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
@@ -150,8 +152,8 @@ BCB time series, selected by a positive integer code or one of the 17 existing a
 async def sgs(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     ultimos: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
@@ -160,8 +162,8 @@ async def sgs(
 
 | Parameter | Rule |
 |-----------|------|
-| `codigo` | Integer from 1 to 2**63−1 or an exact alias; numeric strings and bool are rejected |
-| `data_inicial`, `data_final` | Inclusive civil dates in DD/MM/YYYY format; inverted ranges are invalid |
+| `codigo` | Integer from 1 to 2**63−1 or a case/whitespace-normalized alias; numeric strings and bool are rejected |
+| `inicio`, `fim` | Inclusive civil dates: `date`, `datetime`, ISO or DD/MM/YYYY; inverted ranges are invalid |
 | `ultimos` | Positive integer; without dates uses `/ultimos/N`; with dates applies a tail after sorted reconciliation |
 | `as_polars` | Boolean; True requires `agrobr[polars]` |
 | `return_meta` | Boolean; True also returns MetaInfo |
@@ -175,7 +177,7 @@ The latest-values route has a documented and verified limit of 20 for series 1. 
 **Aliases:** `selic`, `ipca`, `ipca_alimentacao`, `ipa_agricola`, `pib_agropecuaria`, `credito_rural_concessoes_pf`, `credito_rural_saldo_pf`, `dolar_ptax_venda`, `dolar_ptax_compra`, `cambio_mensal_compra`, `cambio_mensal_venda`, `igpm`, `igpdi`, `inpc`, `cdi`, `tjlp`, `tr`. `ipa_agricola` is series 7460 (IPA-DI by origin, agricultural products, without livestock);
 the old name `ipa_agropecuario` is still accepted with a `FutureWarning` and returns `nome_serie="ipa_agricola"`.
 
-**Output — contract 2.1:** `data` is a civil reference date with timezone-naive `datetime64[ns]` dtype; `valor` uses float64 and permits explicit nulls and negative values; `codigo` uses int64; `nome_serie` contains a known alias or null. Empty output retains all four columns. When the body publishes `dataFim`, the end of the rate period (e.g. TR, code 226), the output gains `data_fim` (`datetime64[ns]`, optional) after them; rows without the field are null. Only fields other than `data`, `valor` and `dataFim` raise a warning. Frequency and unit depend on the series and are not inferred from date spacing.
+**Output — contract 3.0:** `data` is a civil reference date with timezone-naive `datetime64[ns]` dtype; `valor` uses float64 and permits explicit nulls and negative values; `codigo` uses Int64; `nome_serie` contains a known alias or null. Empty output retains all four columns. When the body publishes `dataFim`, the end of the rate period (e.g. TR, code 226), the output gains `data_fim` (`datetime64[ns]`, optional) after them; rows without the field are null. Only fields other than `data`, `valor` and `dataFim` raise a warning. Frequency and unit depend on the series and are not inferred from date spacing.
 
 Published references outside the requested daily bounds are preserved with a warning and per-block diagnostics. Duplicate dates within one body raise `ParseError`. Identical references and values across blocks are reconciled with every origin retained; conflicting values raise an error. The `ultimos` tail follows this union.
 
@@ -187,18 +189,18 @@ An empty JSON list is valid. The official HTTP404 envelope containing `SGSNegoci
 from agrobr import bcb
 
 df, meta = await bcb.sgs(
-    1, data_inicial="01/01/2010", data_final="31/12/2024",
+    1, inicio="01/01/2010", fim="31/12/2024",
     return_meta=True,
 )
 recent = await bcb.sgs(1, ultimos=3)
 subset = await bcb.sgs(
-    1, data_inicial="01/01/2024", data_final="31/12/2024", ultimos=30,
+    1, inicio="01/01/2024", fim="31/12/2024", ultimos=30,
 )
 ```
 
 See the [SGS contract](../contracts/bcb_sgs.en.md), [source](../sources/bcb.en.md#sgs-time-series), and [migration guide](../guides/migracao-2.en.md).
 
-In the semantic layer, [`datasets.series_economicas`](series_economicas.en.md) offers the same selection and reuses contract 2.1, preserving provenance. The dataset rejects `deterministic` context because a current query cannot retrieve earlier revisions.
+In the semantic layer, [`datasets.series_economicas`](series_economicas.en.md) offers the same selection and reuses contract 3.0, preserving provenance. The dataset rejects `deterministic` context because a current query cannot retrieve earlier revisions.
 
 ---
 
@@ -209,9 +211,9 @@ Published PTAX quotes and parities for one currency, with explicit bulletin sele
 ```python
 async def ptax(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
     top: int = 1000,
@@ -222,8 +224,8 @@ async def ptax(
 
 | Parameter | Rule |
 |-----------|------|
-| `data` | Single civil date, DD/MM/YYYY; mutually exclusive with either interval bound |
-| `data_inicial`, `data_final` | Inclusive bounds; start alone fills the end with today UTC, end alone fills the start with end minus 30 days |
+| `data` | Single civil date: `date`, `datetime`, ISO or DD/MM/YYYY; mutually exclusive with either interval bound |
+| `inicio`, `fim` | Inclusive bounds; start alone fills the end with today UTC, end alone fills the start with end minus 30 days |
 | No dates | Today UTC minus 30 days through today UTC, using one reference date |
 | `moeda` | Three ASCII letters; case normalized to uppercase, without whitespace trimming or name/numeric aliases; default USD |
 | `boletim` | `fechamento` (default), `todos`, `abertura`, or `intermediario` |
@@ -253,7 +255,7 @@ from agrobr import bcb
 usd = await bcb.ptax(data="04/09/2026")
 eur, meta = await bcb.ptax(
     moeda="EUR", boletim="todos",
-    data_inicial="03/09/2026", data_final="06/09/2026",
+    inicio="03/09/2026", fim="06/09/2026",
     top=3, return_meta=True,
 )
 jpy = await bcb.ptax(moeda="JPY", boletim="intermediario", data="04/09/2026")
@@ -287,7 +289,7 @@ async def focus(
     *,
     periodicidade: Literal["anual", "mensal"] = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    inicio: str | date | datetime | None = None,
     max_registros: int | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
@@ -299,7 +301,7 @@ async def focus(
 | `indicador` | Exact nonempty text; default `"PIB Agropecuária"`. No case/accent normalization or invented aliases |
 | `periodicidade` | `"anual"` or `"mensal"`; selects the entity and forecast horizon granularity |
 | `top` | Strict positive integer; requested page size, default 1000 |
-| `data_inicial` | Civil date YYYY-MM-DD, inclusive filter on survey date; does not filter forecast horizon |
+| `inicio` | Civil date (`date`, `datetime`, ISO or DD/MM/YYYY), inclusive filter on survey date; does not filter forecast horizon |
 | `max_registros` | Positive integer or None; limits output after the entire received page is validated |
 | `as_polars` | Boolean; True requires `agrobr[polars]` |
 | `return_meta` | Boolean; True also returns MetaInfo |
@@ -328,11 +330,11 @@ Known queries returned no count: `$count=true` added no total and `/$count` was 
 from agrobr import bcb
 
 annual = await bcb.focus(
-    "Balança comercial", data_inicial="2026-08-28", max_registros=6,
+    "Balança comercial", inicio="2026-08-28", max_registros=6,
 )
 monthly, meta = await bcb.focus(
     "IPCA", periodicidade="mensal",
-    data_inicial="2026-08-28", top=100, max_registros=30, return_meta=True,
+    inicio="2026-08-28", top=100, max_registros=30, return_meta=True,
 )
 ```
 
@@ -346,8 +348,8 @@ See [contract and identity](../contracts/bcb_focus.en.md), [source and license](
 from agrobr.sync import bcb
 
 df = bcb.credito_rural("soja", safra="2024/25")
-serie = bcb.sgs("ipca", data_inicial="01/01/2024")
-cambio = bcb.ptax(data_inicial="01/01/2024", data_final="31/01/2024")
+serie = bcb.sgs("ipca", inicio="01/01/2024")
+cambio = bcb.ptax(inicio="01/01/2024", fim="31/01/2024")
 expectativas = bcb.focus("PIB Agropecuária")
 ```
 
@@ -360,3 +362,5 @@ When the SICOR OData API fails, agrobr automatically uses BigQuery (Base dos Dad
 - Source: [BCB/SICOR](https://olinda.bcb.gov.br) — free license
 - Data available from 2013
 - Contract v2.0 — output aligned with the actual SICOR aggregations
+
+`inicio` and `fim` replace the old period names without aliases. They accept ISO, DD/MM/YYYY, `date` and `datetime`; time is discarded and `01/02/2024` means February 1. Focus only uses `inicio`; PTAX keeps `data` for a single day. `as_polars` and `return_meta` require keyword arguments. Focus periodicity and PTAX bulletin selectors normalize case; the bulletin also accepts accents. SICOR envelopes without `value` or with an incorrect type raise `ParseError`; `value=[]` remains a typed empty result.

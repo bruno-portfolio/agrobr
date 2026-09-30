@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 import warnings
+from datetime import date, datetime
 from typing import Literal, overload
 
 import pandas as pd
@@ -26,13 +27,13 @@ def _validate_flags(as_polars: bool, return_meta: bool) -> None:
 @overload
 async def ptax(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
     top: int = 1000,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -40,37 +41,79 @@ async def ptax(
 @overload
 async def ptax(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def ptax(
+    *,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ptax(
+    *,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
     top: int = 1000,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def ptax(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
     top: int = 1000,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult: ...
+
+
+async def ptax(
+    *,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult:
     _validate_flags(as_polars, return_meta)
     query = ptax_query.build_query(
         data=data,
-        data_inicial=data_inicial,
-        data_final=data_final,
+        data_inicial=inicio,
+        data_final=fim,
         moeda=moeda,
         boletim=boletim,
         top=top,
-        reference_date=time_utils.utcnow().date(),
+        reference_date=time_utils.hoje(),
     )
     logger.info("bcb_ptax_selection", query=query.model_dump(mode="json"))
     started = time.monotonic()
@@ -92,7 +135,7 @@ async def ptax(
         meta,
         as_polars=as_polars,
         return_meta=return_meta,
-        string_columns=("tipo_boletim",),
+        string_columns=("moeda", "tipo_boletim"),
     )
 
 
@@ -100,7 +143,7 @@ async def ptax(
 async def ptax_moedas(
     *,
     top: int = 1000,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -110,8 +153,35 @@ async def ptax_moedas(
     *,
     top: int = 1000,
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def ptax_moedas(
+    *,
+    top: int = 1000,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ptax_moedas(
+    *,
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[result.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ptax_moedas(
+    *,
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def ptax_moedas(
@@ -119,7 +189,7 @@ async def ptax_moedas(
     top: int = 1000,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     _validate_flags(as_polars, return_meta)
     query = ptax_query.build_catalog_query(top=top)
     logger.info("bcb_ptax_catalog_selection", query=query.model_dump(mode="json"))
@@ -133,4 +203,10 @@ async def ptax_moedas(
     contracts.validate_dataset(frame, bcb_ptax.BCB_PTAX_MOEDAS_V1)
     parse_ms = int((time.monotonic() - started) * 1000)
     meta = ptax_metadata.build_catalog_meta(acquired, frame, fetch_ms=fetch_ms, parse_ms=parse_ms)
-    return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
+    return result.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=("moeda", "nome", "tipo_moeda"),
+    )

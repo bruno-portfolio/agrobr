@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
@@ -53,17 +54,17 @@ class CotacoesCambioDataset(base.BaseDataset):
     async def fetch(
         self,
         produto: str = "",
-        return_meta: bool = False,
         *,
-        data: str | None = None,
-        data_inicial: str | None = None,
-        data_final: str | None = None,
+        return_meta: bool = False,
+        data: str | date | datetime | None = None,
+        inicio: str | date | datetime | None = None,
+        fim: str | date | datetime | None = None,
         moeda: str = "USD",
         boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
         top: int = 1000,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         from agrobr.bcb import ptax_query
 
         self._validate_produto(produto)
@@ -78,18 +79,18 @@ class CotacoesCambioDataset(base.BaseDataset):
             )
         ptax_query.build_query(
             data=data,
-            data_inicial=data_inicial,
-            data_final=data_final,
+            data_inicial=inicio,
+            data_final=fim,
             moeda=moeda,
             boletim=boletim,
             top=top,
-            reference_date=time_utils.utcnow().date(),
+            reference_date=time_utils.hoje(),
         )
         frame, source_name, source_meta, attempted = await self._try_sources(
             "",
             data=data,
-            data_inicial=data_inicial,
-            data_final=data_final,
+            inicio=inicio,
+            fim=fim,
             moeda=moeda,
             boletim=boletim,
             top=top,
@@ -118,13 +119,13 @@ registry.register(_cotacoes_cambio)
 @overload
 async def cotacoes_cambio(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
     top: int = 1000,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -132,32 +133,74 @@ async def cotacoes_cambio(
 @overload
 async def cotacoes_cambio(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def cotacoes_cambio(
+    *,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def cotacoes_cambio(
+    *,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
     top: int = 1000,
     as_polars: bool = False,
     return_meta: Literal[True],
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def cotacoes_cambio(
     *,
-    data: str | None = None,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
     moeda: str = "USD",
     boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
     top: int = 1000,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult: ...
+
+
+async def cotacoes_cambio(
+    *,
+    data: str | date | datetime | None = None,
+    inicio: str | date | datetime | None = None,
+    fim: str | date | datetime | None = None,
+    moeda: str = "USD",
+    boletim: Literal["todos", "fechamento", "abertura", "intermediario"] = "fechamento",
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult:
     return await _cotacoes_cambio.fetch(
         data=data,
-        data_inicial=data_inicial,
-        data_final=data_final,
+        inicio=inicio,
+        fim=fim,
         moeda=moeda,
         boletim=boletim,
         top=top,

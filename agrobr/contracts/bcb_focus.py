@@ -9,24 +9,6 @@ from agrobr import constants, contracts
 
 
 class FocusContract(contracts.Contract):
-    def empty_frame(self) -> pd.DataFrame:
-        dtypes = {
-            "data": "datetime64[ns]",
-            "numero_respondentes": "Int64",
-            "base_calculo": "Int64",
-        }
-        return pd.DataFrame(
-            {
-                column.name: pd.Series(
-                    dtype=dtypes.get(
-                        column.name,
-                        "float64" if column.type == contracts.ColumnType.FLOAT else "object",
-                    )
-                )
-                for column in self.columns
-            }
-        )
-
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         valid, errors = super().validate(df)
         if not df.columns.is_unique:

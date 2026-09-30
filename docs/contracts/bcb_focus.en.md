@@ -27,7 +27,7 @@ Every page is validated in full before applying `max_registros`. Duplicates, inc
 from agrobr import bcb, contracts
 
 df, meta = await bcb.focus(
-    "IPCA", periodicidade="mensal", data_inicial="2026-08-28", return_meta=True,
+    "IPCA", periodicidade="mensal", inicio="2026-08-28", return_meta=True,
 )
 contracts.validate_dataset(df, "bcb_focus")
 ```

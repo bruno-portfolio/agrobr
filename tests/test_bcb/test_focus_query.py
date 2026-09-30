@@ -16,7 +16,7 @@ RECUSAS = [
     ),
     *(
         ({"periodicidade": valor}, "periodicidade deve ser anual ou mensal")
-        for valor in ["Mensal", "trimestral", None]
+        for valor in ["semanal", "trimestral", None]
     ),
     *(({"top": valor}, "top deve ser inteiro positivo") for valor in [True, 1.0, 0, -1]),
     *(
@@ -24,12 +24,15 @@ RECUSAS = [
         for valor in [False, 0, 3.0]
     ),
     *(
-        ({"data_inicial": valor}, "data_inicial contém data inválida")
+        ({"data_inicial": valor}, "inicio contém data inexistente")
         for valor in ["2026-02-30", "2025-02-29"]
     ),
     *(
-        ({"data_inicial": valor}, "data_inicial deve ter formato YYYY-MM-DD")
-        for valor in ["2026-1-01", "２０２６-01-01", date(2026, 1, 1)]
+        (
+            {"data_inicial": valor},
+            "inicio deve ser date, datetime ou texto AAAA-MM-DD ou DD/MM/AAAA",
+        )
+        for valor in ["2026-1-01", "２０２６-01-01", 20260101]
     ),
 ]
 CONTINUACOES_INVALIDAS = [

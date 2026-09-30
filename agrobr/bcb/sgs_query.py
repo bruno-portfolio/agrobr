@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 from datetime import date, datetime
 from typing import Literal
 
@@ -10,6 +9,7 @@ import pydantic
 
 from agrobr import constants
 from agrobr.exceptions import InvalidParameterError
+from agrobr.utils.validation import parse_data
 from agrobr.utils.warnings import warn_once
 
 from . import sgs_acquisition, sgs_models
@@ -19,19 +19,9 @@ def format_date(value: date) -> str:
     return f"{value.day:02d}/{value.month:02d}/{value.year:04d}"
 
 
-def _parse_date(value: str | None, field: str) -> date | None:
-    if value is None:
-        return None
-    if not isinstance(value, str) or re.fullmatch(constants.BCB_SGS_DATE_PATTERN, value) is None:
-        raise InvalidParameterError(f"{field} deve ter formato DD/MM/AAAA")
-    try:
-        return datetime.strptime(value, "%d/%m/%Y").date()
-    except ValueError:
-        raise InvalidParameterError(f"{field} contém data inválida") from None
-
-
 def _resolve_code(codigo: int | str) -> tuple[int, str | None]:
     if isinstance(codigo, str):
+        codigo = codigo.strip().casefold()
         if codigo in sgs_models.SGS_ALIASES_DEPRECIADOS:
             canonico, motivo = sgs_models.SGS_ALIASES_DEPRECIADOS[codigo]
             warn_once(
@@ -41,7 +31,9 @@ def _resolve_code(codigo: int | str) -> tuple[int, str | None]:
             )
             codigo = canonico
         if codigo not in sgs_models.SGS_SERIES:
-            raise InvalidParameterError(f"Serie '{codigo}' nao encontrada")
+            raise InvalidParameterError(
+                f"Serie '{codigo}' nao encontrada. Opções: {sorted(sgs_models.SGS_SERIES)}"
+            )
         return sgs_models.SGS_SERIES[codigo], codigo
     if isinstance(codigo, bool) or not isinstance(codigo, int) or codigo <= 0:
         raise InvalidParameterError("codigo deve ser inteiro positivo ou alias SGS")
@@ -62,8 +54,8 @@ def default_start(reference_date: date) -> date:
 def build_query(
     codigo: int | str,
     *,
-    data_inicial: str | None = None,
-    data_final: str | None = None,
+    data_inicial: str | date | datetime | None = None,
+    data_final: str | date | datetime | None = None,
     ultimos: int | None = None,
     reference_date: date,
 ) -> sgs_acquisition.SGSQuery:
@@ -74,7 +66,7 @@ def build_query(
         isinstance(ultimos, bool) or not isinstance(ultimos, int) or ultimos <= 0
     ):
         raise InvalidParameterError("ultimos deve ser inteiro positivo")
-    start, end = _parse_date(data_inicial, "data_inicial"), _parse_date(data_final, "data_final")
+    start, end = parse_data(data_inicial, "inicio"), parse_data(data_final, "fim")
     original_start, original_end = start, end
     defaults: list[str] = []
     mode: Literal["range", "latest", "server_start"] = "range"
@@ -85,10 +77,10 @@ def build_query(
     else:
         if start is None:
             start = default_start(reference_date)
-            defaults.append("data_inicial")
+            defaults.append("inicio")
         if end is None:
             end = reference_date
-            defaults.append("data_final")
+            defaults.append("fim")
     try:
         return sgs_acquisition.SGSQuery(
             codigo=code,

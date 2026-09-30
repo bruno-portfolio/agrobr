@@ -12,9 +12,15 @@ from agrobr import _log, contracts
 from agrobr.contracts import bcb_sicor
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.normalize import dates
+from agrobr.normalize import dates, regions
 from agrobr.utils import time as time_utils
-from agrobr.utils.result import ATRIBUTO_AVISOS, build_source_meta, finalize_result
+from agrobr.utils.result import (
+    ATRIBUTO_AVISOS,
+    DataFrame,
+    DataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
 from agrobr.utils.validation import validate_uf
 
 from . import client
@@ -104,11 +110,13 @@ def _aggregate_credito_rural(
 
     df["agregacao"] = agregacao
     if "programa" not in df.columns:
-        df["programa"] = pd.Series(pd.NA, index=df.index, dtype="string")
+        df["programa"] = pd.Series(pd.NA, index=df.index, dtype=pd.Series([""]).dtype)
     if "cd_programa" not in df.columns:
-        df["cd_programa"] = pd.Series(pd.NA, index=df.index, dtype="string")
+        df["cd_programa"] = pd.Series(pd.NA, index=df.index, dtype=pd.Series([""]).dtype)
     df["fonte"] = f"bcb_{source_used}"
-    return df.reindex(columns=_CREDITO_RURAL_COLUMNS)
+    return df.reindex(columns=_CREDITO_RURAL_COLUMNS).astype(
+        contracts.get_contract("credito_rural").empty_frame().dtypes.to_dict()
+    )
 
 
 def _registros_credito_rural(df: pd.DataFrame, source_used: str) -> pd.DataFrame:
@@ -132,8 +140,8 @@ async def credito_rural(
     agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -147,10 +155,55 @@ async def credito_rural(
     agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def credito_rural(
@@ -161,9 +214,10 @@ async def credito_rural(
     agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Crédito rural por produto e finalidade do SICOR.
 
     Custeio usa produtos agrícolas; investimento usa itens de investimento,
@@ -173,7 +227,14 @@ async def credito_rural(
     """
     t0 = time.monotonic()
 
-    if agregacao not in {"uf", "programa", "registro"}:
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
+    if isinstance(finalidade, str):
+        finalidade = regions.remover_acentos(finalidade.strip()).casefold()
+    for nome, filtro in (("programa", programa), ("tipo_seguro", tipo_seguro)):
+        if filtro is not None and (not isinstance(filtro, str) or not filtro.strip()):
+            raise InvalidParameterError(f"{nome} deve ser texto não vazio")
+    if not isinstance(agregacao, str) or agregacao not in {"uf", "programa", "registro"}:
         hint = (
             "Use agregacao='uf', 'programa' ou 'registro'. O SICOR publica município por produto "
             "(CusteioMunicipioProduto e InvestMunicipioProduto), que o agrobr ainda não lê; "
@@ -281,7 +342,18 @@ async def credito_rural(
         meta,
         as_polars=as_polars,
         return_meta=return_meta,
-        string_columns=_TEXTO_DO_REGISTRO if agregacao == "registro" else (),
+        string_columns=_TEXTO_DO_REGISTRO
+        if agregacao == "registro"
+        else (
+            "safra",
+            "produto",
+            "uf",
+            "finalidade",
+            "agregacao",
+            "programa",
+            "cd_programa",
+            "fonte",
+        ),
     )
 
 
@@ -321,8 +393,8 @@ async def credito_rural_total(
     finalidade: str | None = None,
     uf: str | None = None,
     agregacao: Literal["uf", "programa"] = "uf",
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -333,10 +405,46 @@ async def credito_rural_total(
     finalidade: str | None = None,
     uf: str | None = None,
     agregacao: Literal["uf", "programa"] = "uf",
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def credito_rural_total(
+    safra: str | None = None,
+    finalidade: str | None = None,
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa"] = "uf",
+    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def credito_rural_total(
+    safra: str | None = None,
+    finalidade: str | None = None,
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa"] = "uf",
+    *,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def credito_rural_total(
+    safra: str | None = None,
+    finalidade: str | None = None,
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa"] = "uf",
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def credito_rural_total(
@@ -344,13 +452,18 @@ async def credito_rural_total(
     finalidade: str | None = None,
     uf: str | None = None,
     agregacao: Literal["uf", "programa"] = "uf",
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Crédito rural por UF e finalidade, sem produto: a entidade RegiaoUF do SICOR, com as
     quatro finalidades, inclusive a industrialização. O SICOR não publica linha Brasil; o
     total do país é a soma das UFs."""
-    if agregacao not in {"uf", "programa"}:
+    if not isinstance(as_polars, bool) or not isinstance(return_meta, bool):
+        raise InvalidParameterError("as_polars e return_meta devem ser booleanos")
+    if isinstance(finalidade, str):
+        finalidade = regions.remover_acentos(finalidade.strip()).casefold()
+    if not isinstance(agregacao, str) or agregacao not in {"uf", "programa"}:
         raise InvalidParameterError(
             f"agregacao inválida: {agregacao!r}. Use agregacao='uf' ou 'programa'"
         )
@@ -411,4 +524,18 @@ async def credito_rural_total(
     )
     if aquisicao.paginas:
         _carimbar_aquisicao(meta, aquisicao)
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=(
+            "safra",
+            "uf",
+            "finalidade",
+            "agregacao",
+            "programa",
+            "cd_programa",
+            "fonte",
+        ),
+    )

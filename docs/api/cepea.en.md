@@ -21,11 +21,11 @@ async def indicador(
     inicio: str | date | None = None,
     fim: str | date | None = None,
     _moeda: str = "BRL",
+    *,
     as_polars: bool = False,
     validate_sanity: bool = False,
     force_refresh: bool = False,
     offline: bool = False,
-    *,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
 ```
@@ -176,7 +176,7 @@ async def pracas(produto: str) -> list[str]
 
 **Returns:**
 
-List of parser-mapped locations as normalized slugs accepted by `indicador()` and `ultimo()`. The DataFrame and `Indicador` model preserve the label displayed by the source. The list is empty for a valid product without a mapped location; an unknown product raises `ValueError`.
+List of parser-mapped locations as normalized slugs accepted by `indicador()` and `ultimo()`. The DataFrame and `Indicador` model preserve the label displayed by the source. The list is empty for a valid product without a mapped location; an unknown product raises `InvalidParameterError`.
 
 ```python
 soy_locations = await cepea.pracas('soja')
@@ -231,7 +231,7 @@ produtos = cepea.produtos()
 2. **Stale cache**: fetches again; if the source fails, returns the cache with `StaleDataWarning` and `source="cache_fallback"`
 3. **No cache**: fetches from source and saves to cache
 
-With `return_meta=True`, the `MetaInfo` of a cached response carries the actual collection time in `fetched_at` (the most recent among the returned rows), not the call time, and `cache_expires_at` is the 18:00 BRT turnover following that collection. `ultimo()` follows the same turnover. With `fim` before the recent 25-calendar-day window (a closed period, which never goes back to the source), `cache_expires_at` is null: the validity does not apply.
+With `return_meta=True`, the `MetaInfo` of a cached response carries the actual collection time in `fetched_at` and `fetch_timestamp` (the most recent among the returned rows), not the call time, and `cache_expires_at` is the 18:00 BRT turnover following that collection. `ultimo()` follows the same turnover. With `fim` before the recent 25-calendar-day window (a closed period, which never goes back to the source), `cache_expires_at` is null: the validity does not apply.
 
 History accumulates progressively in the local DuckDB, allowing queries over old periods without new requests.
 

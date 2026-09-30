@@ -9,22 +9,6 @@ from agrobr import constants, contracts
 
 
 class PtaxContract(contracts.Contract):
-    def empty_frame(self) -> pd.DataFrame:
-        return pd.DataFrame(
-            {
-                column.name: pd.Series(
-                    dtype=(
-                        "datetime64[ns]"
-                        if column.type in (contracts.ColumnType.DATE, contracts.ColumnType.DATETIME)
-                        else "float64"
-                        if column.type == contracts.ColumnType.FLOAT
-                        else "object"
-                    )
-                )
-                for column in self.columns
-            }
-        )
-
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         valid, errors = super().validate(df)
         if not df.columns.is_unique:

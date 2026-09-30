@@ -37,9 +37,7 @@ async def test_concurrent_singleton_queries_and_contexts_are_independent(sgs_htt
 
     daily, monthly, _ = await asyncio.gather(
         datasets.series_economicas(1, ultimos=3, return_meta=True),
-        datasets.series_economicas(
-            "ipca", data_inicial="01/01/2024", data_final="31/12/2024", return_meta=True
-        ),
+        datasets.series_economicas("ipca", inicio="01/01/2024", fim="31/12/2024", return_meta=True),
         guarded(),
     )
     assert daily[0]["codigo"].eq(1).all() and monthly[0]["codigo"].eq(433).all()
@@ -57,18 +55,18 @@ async def test_concurrent_singleton_queries_and_contexts_are_independent(sgs_htt
         (1.0, {}),
         (2**63, {}),
         ("1", {}),
-        ("IPCA", {}),
-        (" ipca ", {}),
+        ("IPCAX", {}),
+        (" ipcc ", {}),
         ("", {}),
         (1, {"ultimos": 0}),
         (1, {"ultimos": -1}),
         (1, {"ultimos": True}),
         (1, {"ultimos": "3"}),
         (1, {"ultimos": 1.5}),
-        (1, {"data_inicial": "2024-01-01"}),
-        (1, {"data_final": "31/02/2024"}),
-        (1, {"data_inicial": 20240101}),
-        (1, {"data_inicial": "02/01/2024", "data_final": "01/01/2024"}),
+        (1, {"inicio": "2024/01/01"}),
+        (1, {"fim": "31/02/2024"}),
+        (1, {"inicio": 20240101}),
+        (1, {"inicio": "02/01/2024", "fim": "01/01/2024"}),
         (1, {"as_polars": 1}),
         (1, {"as_polars": None}),
         (1, {"return_meta": "yes"}),

@@ -47,3 +47,5 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]
 - Automatic CEPEA fallback — the user does not need to call it directly
 - Warning emitted on first use
 - Fallback active while CEPEA remains protected by Cloudflare
+
+Unknown products or invalid argument types raise `InvalidParameterError` with the accepted product list before any request. Case and surrounding whitespace are normalized.

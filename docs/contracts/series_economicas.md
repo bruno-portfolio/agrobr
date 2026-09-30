@@ -1,12 +1,12 @@
 # Contrato — series_economicas
 
-O dataset [`series_economicas`](../api/series_economicas.md) reutiliza o contrato registrado como **`bcb_sgs`, versão 2.1**, sem alias próprio no registry de contratos. A fonte única é `bcb.sgs`; não há normalização de unidade, frequência ou valor na camada de datasets.
+O dataset [`series_economicas`](../api/series_economicas.md) reutiliza o contrato registrado como **`bcb_sgs`, versão 3.0**, sem alias próprio no registry de contratos. A fonte única é `bcb.sgs`; não há normalização de unidade, frequência ou valor na camada de datasets.
 
 | Coluna | dtype pandas | Nula | Semântica |
 |---|---|---|---|
 | `data` | `datetime64[ns]` | Não | Referência civil publicada, sem horário/fuso |
 | `valor` | `float64` | Sim | Valor finito na unidade da série; negativos são permitidos |
-| `codigo` | `int64` | Não | Código positivo, até `2**63 - 1` |
+| `codigo` | `Int64` | Não | Código positivo, até `2**63 - 1` |
 | `nome_serie` | texto | Sim | Alias conhecido pelo SDK; não é título obtido do catálogo |
 | `data_fim` | `datetime64[ns]` | Sim | Opcional: fim do período publicado em `dataFim` (ex.: TR); só existe quando a fonte publica o campo |
 
@@ -21,8 +21,8 @@ O contrato é obrigatório mesmo sem metadados, antes de converter para Polars e
 ```python
 from agrobr import contracts, datasets
 
-df = await datasets.series_economicas("ipca", data_inicial="01/01/2024", data_final="31/12/2024")
+df = await datasets.series_economicas("ipca", inicio="01/01/2024", fim="31/12/2024")
 contracts.validate_dataset(df, "bcb_sgs")
 ```
 
-`meta.contract_version` e `schema_version` são 2.1. Hash/tamanho brutos identificam um manifesto de consulta e recursos, não os bytes de um único corpo; estes estão em `source_details.resources`. Cobertura desconhecida não é promovida a completude histórica. O período não representa revisão as-of; `deterministic` é recusado antes de I/O.
+`meta.contract_version` e `schema_version` são 3.0. Hash/tamanho brutos identificam um manifesto de consulta e recursos, não os bytes de um único corpo; estes estão em `source_details.resources`. Cobertura desconhecida não é promovida a completude histórica. O período não representa revisão as-of; `deterministic` é recusado antes de I/O.

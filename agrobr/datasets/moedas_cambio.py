@@ -54,12 +54,12 @@ class MoedasCambioDataset(base.BaseDataset):
     async def fetch(
         self,
         produto: str = "",
-        return_meta: bool = False,
         *,
+        return_meta: bool = False,
         top: int = 1000,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result.DataFrameResult:
         from agrobr.bcb import ptax_query
 
         self._validate_produto(produto)
@@ -93,7 +93,7 @@ registry.register(_moedas_cambio)
 async def moedas_cambio(
     *,
     top: int = 1000,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -103,8 +103,35 @@ async def moedas_cambio(
     *,
     top: int = 1000,
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result.DataFrame: ...
+
+
+@overload
+async def moedas_cambio(
+    *,
+    top: int = 1000,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def moedas_cambio(
+    *,
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[result.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def moedas_cambio(
+    *,
+    top: int = 1000,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def moedas_cambio(
@@ -112,5 +139,5 @@ async def moedas_cambio(
     top: int = 1000,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _moedas_cambio.fetch(top=top, as_polars=as_polars, return_meta=return_meta)

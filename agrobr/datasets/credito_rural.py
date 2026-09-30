@@ -9,6 +9,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 from agrobr.utils.validation import validate_uf
 
 logger = _log.get_logger(__name__)
@@ -84,8 +85,9 @@ class CreditoRuralDataset(BaseDataset):
         agregacao: Literal["uf", "programa", "registro"] = "uf",
         programa: str | None = None,
         tipo_seguro: str | None = None,
+        *,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         logger.info(
             "dataset_fetch",
             dataset="credito_rural",
@@ -94,7 +96,7 @@ class CreditoRuralDataset(BaseDataset):
             finalidade=finalidade,
         )
 
-        if agregacao not in {"uf", "programa", "registro"}:
+        if not isinstance(agregacao, str) or agregacao not in {"uf", "programa", "registro"}:
             hint = (
                 "Use agregacao='uf', 'programa' ou 'registro'. O SICOR publica município por produto "
                 "(CusteioMunicipioProduto e InvestMunicipioProduto), que o agrobr ainda não lê; "
@@ -167,8 +169,38 @@ async def credito_rural(
     tipo_seguro: str | None = None,
     *,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
+
+
+@overload
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 @overload
@@ -183,7 +215,22 @@ async def credito_rural(
     *,
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+@overload
+async def credito_rural(
+    produto: str,
+    safra: str | None = None,
+    finalidade: str = "custeio",
+    uf: str | None = None,
+    agregacao: Literal["uf", "programa", "registro"] = "uf",
+    programa: str | None = None,
+    tipo_seguro: str | None = None,
+    *,
+    return_meta: bool = False,
+    as_polars: bool = False,
+) -> DataFrameResult: ...
 
 
 async def credito_rural(
@@ -194,9 +241,10 @@ async def credito_rural(
     agregacao: Literal["uf", "programa", "registro"] = "uf",
     programa: str | None = None,
     tipo_seguro: str | None = None,
+    *,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _credito_rural.fetch(  # type: ignore[call-arg]
         produto,
         safra=safra,

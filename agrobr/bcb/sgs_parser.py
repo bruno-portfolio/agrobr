@@ -134,10 +134,8 @@ def build_frame(
         {
             "data": dates,
             "valor": pd.Series([record.valor for record in ordered], dtype="float64"),
-            "codigo": pd.Series([codigo] * len(ordered), dtype="int64"),
-            "nome_serie": pd.Series(
-                [nome_serie if nome_serie is not None else pd.NA] * len(ordered), dtype=object
-            ),
+            "codigo": pd.Series([codigo] * len(ordered), dtype="Int64"),
+            "nome_serie": pd.Series([nome_serie] * len(ordered), dtype=pd.Series([""]).dtype),
         },
         columns=sgs_models.COLUNAS_SAIDA,
     )

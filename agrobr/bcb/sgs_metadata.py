@@ -48,14 +48,14 @@ def build_meta(
         parse_ms,
         frame,
         sgs_models.PARSER_VERSION,
-        schema_version="2.1",
+        schema_version="3.0",
         attempted_sources=["bcb_sgs"],
         selected_source="bcb_sgs",
         raw_content_hash=hashlib.sha256(raw).hexdigest(),
         source_details=details,
     )
     meta.raw_content_size = len(raw)
-    meta.contract_version = "2.1"
+    meta.contract_version = "3.0"
     meta.fetched_at = max(resource.fetched_at for resource in acquired.resources)
     meta.fetch_timestamp = meta.fetched_at
     meta.timestamp = datetime.now(UTC)

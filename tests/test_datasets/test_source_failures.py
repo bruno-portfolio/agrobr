@@ -184,8 +184,7 @@ async def test_fallback_do_cache_publica_a_coleta_original(isolated_store, monke
             return_meta=True,
         )
     assert (meta.selected_source, meta.from_cache) == ("cache", True)
-    assert meta.fetched_at == coleta.replace(tzinfo=UTC)
-    assert meta.fetch_timestamp is None
+    assert meta.fetch_timestamp == meta.fetched_at == coleta.replace(tzinfo=UTC)
 
 
 async def test_migration_failure_propagates_without_dataset_fallback(isolated_store, monkeypatch):
@@ -216,7 +215,8 @@ async def test_data_sources_matches_rows_after_dataset_normalization(isolated_st
     assert len(isolated_store.indicadores_query("soja")) == 2
     assert len(raw) == 1
     assert source_meta.data_sources == ["cepea"]
-    assert source_meta.fetch_timestamp is None and meta.fetch_timestamp is None
+    assert source_meta.fetch_timestamp == source_meta.fetched_at == meta.fetch_timestamp
+    assert meta.fetch_timestamp == meta.fetched_at
     assert raw["fonte"].tolist() == ["cepea"]
     assert len(frame) == 1
     assert meta.data_sources == sorted(frame["fonte"].unique().tolist())

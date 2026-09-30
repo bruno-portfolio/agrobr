@@ -81,11 +81,10 @@ async def test_olinda_repete_falhas_transitorias_e_recusa_as_definitivas():
 
 
 async def test_resposta_sem_registros_devolve_lista_vazia():
-    for corpo in [{"value": []}, {"odata.metadata": "..."}]:
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=make_mock_response(200, json_data=corpo))
-        with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client), sem_excecao():
-            assert await client.fetch_credito_rural(finalidade="custeio") == []
+    mock_client = make_mock_async_client()
+    mock_client.get = AsyncMock(return_value=make_mock_response(200, json_data={"value": []}))
+    with patch("agrobr.bcb.client.httpx.AsyncClient", return_value=mock_client), sem_excecao():
+        assert await client.fetch_credito_rural(finalidade="custeio") == []
 
 
 async def test_recusas_antes_da_rede():

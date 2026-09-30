@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx
 
 from agrobr import _log, constants
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.retry import RetriableStatusError, retry_async, should_retry_status
@@ -33,9 +33,11 @@ TIMEOUT = get_timeout()
 
 
 def _get_produto_url(produto: str) -> str:
-    produto_key = constants.NOTICIAS_AGRICOLAS_PRODUTOS.get(produto.lower())
+    produto_key = constants.NOTICIAS_AGRICOLAS_PRODUTOS.get(
+        produto.strip().lower() if isinstance(produto, str) else ""
+    )
     if produto_key is None:
-        raise ValueError(
+        raise InvalidParameterError(
             f"Produto '{produto}' não disponível no Notícias Agrícolas. "
             f"Produtos disponíveis: {list(constants.NOTICIAS_AGRICOLAS_PRODUTOS.keys())}"
         )

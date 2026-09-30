@@ -23,7 +23,7 @@ Todas as colunas estáveis devem existir, inclusive anuláveis e em resultados v
 
 ## Semântica e proveniência
 
-USD e fechamento são os padrões. Use `data` ou o par `data_inicial`/`data_final`, em DD/MM/YYYY. O relógio publicado tem precisão de nanossegundos, sem fuso inferido. A unidade monetária depende da referência histórica e da moeda; paridade não é cotação. Rótulos de boletim são literais e não devem ser descartados da chave.
+USD e fechamento são os padrões. Use `data` ou o par `inicio`/`fim`, como `date`, `datetime`, ISO ou DD/MM/AAAA. O relógio publicado tem precisão de nanossegundos, sem fuso inferido. A unidade monetária depende da referência histórica e da moeda; paridade não é cotação. Rótulos de boletim são literais e não devem ser descartados da chave.
 
 `return_meta=True` retorna dados e `MetaInfo`, com fontes tentadas/selecionada, aquisição, versão contratual e diagnósticos da fonte. Estas publicações correntes não permitem selecionar uma revisão histórica via `deterministic`.
 
@@ -31,9 +31,9 @@ USD e fechamento são os padrões. Use `data` ou o par `data_inicial`/`data_fina
 
 | Parâmetro | Tipo | Padrão |
 |---|---|---|
-| `data` | `str \| None` | `None` |
-| `data_inicial` | `str \| None` | `None` |
-| `data_final` | `str \| None` | `None` |
+| `data` | `str \| date \| datetime \| None` | `None` |
+| `inicio` | `str \| date \| datetime \| None` | `None` |
+| `fim` | `str \| date \| datetime \| None` | `None` |
 | `moeda` | `str` | `'USD'` |
 | `boletim` | `Literal['todos', 'fechamento', 'abertura', 'intermediario']` | `'fechamento'` |
 | `top` | `int` | `1000` |

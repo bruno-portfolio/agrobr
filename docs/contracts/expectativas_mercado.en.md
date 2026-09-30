@@ -40,7 +40,7 @@ Survey date differs from the `data_referencia` forecast horizon, which retains Y
 | `indicador` | `str` | `'PIB Agropecuária'` |
 | `periodicidade` | `Literal['anual', 'mensal']` | `'anual'` |
 | `top` | `int` | `1000` |
-| `data_inicial` | `str \| None` | `None` |
+| `inicio` | `str \| date \| datetime \| None` | `None` |
 | `max_registros` | `int \| None` | `None` |
 | `as_polars` | `bool` | `False` |
 | `return_meta` | `bool` | `False` |
@@ -50,7 +50,7 @@ Survey date differs from the `data_referencia` forecast horizon, which retains Y
 ```python
 from agrobr import contracts, datasets
 
-df, meta = await datasets.expectativas_mercado("PIB Agropecuária", data_inicial="2026-08-24", max_registros=6, return_meta=True)
+df, meta = await datasets.expectativas_mercado("PIB Agropecuária", inicio="2026-08-24", max_registros=6, return_meta=True)
 contracts.validate_dataset(df, "bcb_focus")
 ```
 

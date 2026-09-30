@@ -114,3 +114,7 @@ print(meta.records_count)     # 365
 print(meta.from_cache)        # False
 print(meta.snapshot)          # None (ou "2025-12-31" se determinístico)
 ```
+
+`as_polars` e `return_meta` são argumentos por nome. No cache, inclusive no fallback local, `fetched_at` e `fetch_timestamp` preservam a coleta original mais recente das linhas devolvidas. O vazio tem os mesmos dtypes do resultado com dados: datas em `datetime64[ns]`, valores em `float64` e texto no padrão do pandas instalado.
+
+A exceção é `anomalies`, um campo estruturado serializado: mantém `object` no pandas, com texto JSON ou `None`, preservando a ausência sem convertê-la em `NaN`. No Polars, usa `String` com JSON ou `null`; o vazio também usa `String`.

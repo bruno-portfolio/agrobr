@@ -23,7 +23,7 @@ All stable columns must exist, including nullable columns and empty results. Bre
 
 ## Semantics and provenance
 
-USD and closing bulletins are the defaults. Use `data` or the `data_inicial`/`data_final` pair in DD/MM/YYYY. Published timestamps preserve nanoseconds without an inferred timezone. Monetary units depend on the historical reference and currency; parity differs from the exchange-rate quote. Bulletin labels are literal and belong in the key.
+USD and closing bulletins are the defaults. Use `data` or the `inicio`/`fim` pair as `date`, `datetime`, ISO or DD/MM/YYYY. Published timestamps preserve nanoseconds without an inferred timezone. Monetary units depend on the historical reference and currency; parity differs from the exchange-rate quote. Bulletin labels are literal and belong in the key.
 
 `return_meta=True` returns data and `MetaInfo`, including attempted/selected sources, acquisition time, contract version and source diagnostics. These current publications do not support selecting a historical revision through `deterministic`.
 
@@ -31,9 +31,9 @@ USD and closing bulletins are the defaults. Use `data` or the `data_inicial`/`da
 
 | Parameter | Type | Default |
 |---|---|---|
-| `data` | `str \| None` | `None` |
-| `data_inicial` | `str \| None` | `None` |
-| `data_final` | `str \| None` | `None` |
+| `data` | `str \| date \| datetime \| None` | `None` |
+| `inicio` | `str \| date \| datetime \| None` | `None` |
+| `fim` | `str \| date \| datetime \| None` | `None` |
 | `moeda` | `str` | `'USD'` |
 | `boletim` | `Literal['todos', 'fechamento', 'abertura', 'intermediario']` | `'fechamento'` |
 | `top` | `int` | `1000` |

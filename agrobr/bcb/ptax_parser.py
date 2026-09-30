@@ -210,8 +210,7 @@ def build_quotes_frame(records: list[ptax_models.PtaxObservation]) -> pd.DataFra
     for column in ("cotacao_compra", "cotacao_venda", "paridade_compra", "paridade_venda"):
         frame[column] = frame[column].astype("float64")
     for column in ("moeda", "tipo_boletim"):
-        frame[column] = frame[column].astype(object)
-        frame.loc[frame[column].isna(), column] = pd.NA
+        frame[column] = frame[column].astype(pd.Series([""]).dtype)
     return frame
 
 
@@ -219,4 +218,4 @@ def build_currencies_frame(records: list[ptax_models.PtaxCurrency]) -> pd.DataFr
     frame = pd.DataFrame(
         [record.model_dump() for record in records], columns=ptax_models.COLUNAS_MOEDAS
     )
-    return frame.astype(object)
+    return frame.astype(pd.Series([""]).dtype)

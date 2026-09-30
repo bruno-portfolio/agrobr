@@ -82,7 +82,7 @@ class TestClientJsonResponses:
     async def test_bcb_sgs_html(self, html_transport):
         requests = html_transport()
         with pytest.raises(ParseError):
-            await bcb.sgs(1, data_inicial="01/01/2024", data_final="02/01/2024")
+            await bcb.sgs(1, inicio="01/01/2024", fim="02/01/2024")
         assert len(requests) == 1 and requests[0].url.host == "api.bcb.gov.br"
 
     @pytest.mark.asyncio

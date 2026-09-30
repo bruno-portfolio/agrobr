@@ -114,3 +114,7 @@ print(meta.records_count)     # 365
 print(meta.from_cache)        # False
 print(meta.snapshot)          # None (or "2025-12-31" if deterministic)
 ```
+
+`as_polars` and `return_meta` are keyword arguments. Cached responses, including local fallback, preserve the latest original collection time among returned rows in both `fetched_at` and `fetch_timestamp`. Empty results use the same dtypes as populated results: `datetime64[ns]` dates, `float64` values and the installed pandas default for text.
+
+The exception is `anomalies`, a serialized structured field: it keeps the pandas `object` dtype, with JSON text or `None`, preserving absence without converting it to `NaN`. In Polars, it uses `String` with JSON or `null`; empty results also use `String`.

@@ -1,12 +1,12 @@
 # Contract — series_economicas
 
-The [`series_economicas` dataset](../api/series_economicas.en.md) reuses **`bcb_sgs` contract version 2.1**, without a dataset-specific contract alias. Its only source is `bcb.sgs`; the dataset layer does not normalize units, frequency or values.
+The [`series_economicas` dataset](../api/series_economicas.en.md) reuses **`bcb_sgs` contract version 3.0**, without a dataset-specific contract alias. Its only source is `bcb.sgs`; the dataset layer does not normalize units, frequency or values.
 
 | Column | pandas dtype | Nullable | Meaning |
 |---|---|---|---|
 | `data` | `datetime64[ns]` | No | Published civil reference date without time or timezone |
 | `valor` | `float64` | Yes | Finite value in the series unit; negative values are allowed |
-| `codigo` | `int64` | No | Positive code up to `2**63 - 1` |
+| `codigo` | `Int64` | No | Positive code up to `2**63 - 1` |
 | `nome_serie` | text | Yes | Alias known to the SDK, not a title retrieved from the catalogue |
 | `data_fim` | `datetime64[ns]` | Yes | Optional: end of the published period in `dataFim` (e.g. TR); present only when the source publishes the field |
 
@@ -21,8 +21,8 @@ The contract is mandatory without metadata, before Polars conversion and for emp
 ```python
 from agrobr import contracts, datasets
 
-df = await datasets.series_economicas("ipca", data_inicial="01/01/2024", data_final="31/12/2024")
+df = await datasets.series_economicas("ipca", inicio="01/01/2024", fim="31/12/2024")
 contracts.validate_dataset(df, "bcb_sgs")
 ```
 
-`meta.contract_version` and `schema_version` are 2.1. Raw hash/size identify a query/resource manifest, rather than a single response body; individual bodies are described in `source_details.resources`. Unknown coverage is not upgraded to historical completeness. A reference period is not an as-of revision; `deterministic` is rejected before I/O.
+`meta.contract_version` and `schema_version` are 3.0. Raw hash/size identify a query/resource manifest, rather than a single response body; individual bodies are described in `source_details.resources`. Unknown coverage is not upgraded to historical completeness. A reference period is not an as-of revision; `deterministic` is rejected before I/O.

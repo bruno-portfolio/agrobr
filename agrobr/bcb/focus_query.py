@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from datetime import date, datetime
 from typing import Literal, cast
 from urllib.parse import parse_qsl, quote, urljoin, urlsplit
@@ -9,19 +8,9 @@ import pydantic
 
 from agrobr import constants
 from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.utils.validation import parse_data
 
 from . import focus_acquisition
-
-
-def _parse_date(value: str | None) -> date | None:
-    if value is None:
-        return None
-    if not isinstance(value, str) or re.fullmatch(constants.BCB_FOCUS_DATE_PATTERN, value) is None:
-        raise InvalidParameterError("data_inicial deve ter formato YYYY-MM-DD")
-    try:
-        return datetime.strptime(value, "%Y-%m-%d").date()
-    except ValueError:
-        raise InvalidParameterError("data_inicial contém data inválida") from None
 
 
 def build_query(
@@ -29,11 +18,13 @@ def build_query(
     *,
     periodicidade: str = "anual",
     top: int = 1000,
-    data_inicial: str | None = None,
+    data_inicial: str | date | datetime | None = None,
     max_registros: int | None = None,
 ) -> focus_acquisition.FocusQuery:
     if not isinstance(indicador, str) or not indicador.strip():
         raise InvalidParameterError("indicador deve ser texto não vazio")
+    if isinstance(periodicidade, str):
+        periodicidade = periodicidade.strip().casefold()
     if not isinstance(periodicidade, str) or periodicidade not in constants.BCB_FOCUS_ENTITIES:
         raise InvalidParameterError("periodicidade deve ser anual ou mensal")
     for field, value in (("top", top), ("max_registros", max_registros)):
@@ -41,7 +32,7 @@ def build_query(
             continue
         if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
             raise InvalidParameterError(f"{field} deve ser inteiro positivo")
-    start = _parse_date(data_inicial)
+    start = parse_data(data_inicial, "inicio")
     escaped = indicador.replace("'", "''")
     filter_expression = f"Indicador eq '{escaped}'"
     if start is not None:

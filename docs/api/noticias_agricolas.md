@@ -47,3 +47,5 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]
 - Fallback automatico do CEPEA — usuario nao precisa chamar diretamente
 - Warning emitido no primeiro uso
 - Fallback ativo enquanto CEPEA estiver protegido por Cloudflare
+
+Produto desconhecido ou de tipo inválido levanta `InvalidParameterError` com a lista de produtos aceitos, antes de qualquer requisição. Caixa e espaços externos são normalizados.

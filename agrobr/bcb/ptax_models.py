@@ -28,7 +28,7 @@ def timestamp(value: str) -> pd.Timestamp:
     datetime.strptime(value[:19], "%Y-%m-%d %H:%M:%S")
     try:
         result = pd.Timestamp(value).as_unit("ns")
-        result.normalize().as_unit("ns")
+        pd.Timestamp(value[:10]).as_unit("ns")
     except (ValueError, OverflowError) as exc:
         raise ValueError("Horário ou data civil PTAX fora do domínio ns") from exc
     return result
