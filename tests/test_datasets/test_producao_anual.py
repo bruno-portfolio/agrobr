@@ -10,7 +10,7 @@ import openpyxl
 import pandas as pd
 import pytest
 
-from agrobr import constants, datasets
+from agrobr import constants
 from agrobr.contracts import validate_dataset
 from agrobr.datasets.deterministic import deterministic
 from agrobr.datasets.producao_anual import (
@@ -278,7 +278,7 @@ async def test_fallback_conab_sem_ano_entrega_a_ultima_safra_fechada(monkeypatch
     ibge_fora = AsyncMock(
         side_effect=SourceUnavailableError(source="ibge_pam", last_error="fora do ar")
     )
-    fonte_ibge = datasets.get_dataset("producao_anual").info.sources[0]
+    fonte_ibge = ProducaoAnualDataset.info.sources[0]
     monkeypatch.setattr(fonte_ibge, "fetch_fn", ibge_fora)
 
     frame = await producao_anual("trigo", nivel="brasil")
@@ -303,7 +303,7 @@ async def test_fallback_conab_sem_ano_usa_o_ano_civil_anterior_de_hoje(monkeypat
 
 async def test_as_polars_empilha_produtos_com_e_sem_condicao_do_produto(monkeypatch):
     pl = pytest.importorskip("polars")
-    fonte_ibge = datasets.get_dataset("producao_anual").info.sources[0]
+    fonte_ibge = ProducaoAnualDataset.info.sources[0]
     frames = []
     for produto in ("soja", "cafe"):
         fonte = pam_parser.add_unit_columns(_mock_df().assign(produto=produto), produto)

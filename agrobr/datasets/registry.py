@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import copy
 from typing import TYPE_CHECKING, Any
 
-from agrobr import constants
+from agrobr import constants, exceptions
 
 if TYPE_CHECKING:
     from agrobr.datasets.base import BaseDataset, DatasetInfo
@@ -16,9 +17,13 @@ def register(dataset: BaseDataset) -> BaseDataset:
 
 
 def get_dataset(name: str) -> BaseDataset:
-    if name not in _REGISTRY:
-        raise KeyError(f"Dataset '{name}' não encontrado. Disponíveis: {list(_REGISTRY.keys())}")
-    return _REGISTRY[name]
+    if not isinstance(name, str) or name not in _REGISTRY:
+        raise exceptions.UnknownNameError(
+            f"Dataset '{name}' não encontrado. Disponíveis: {list(_REGISTRY.keys())}"
+        )
+    dataset = copy.deepcopy(_REGISTRY[name])
+    dataset.info = copy.deepcopy(dataset.info)
+    return dataset
 
 
 def list_datasets() -> list[str]:

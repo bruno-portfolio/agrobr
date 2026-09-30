@@ -25,7 +25,7 @@ def hourly_frame() -> pd.DataFrame:
 
 def test_hourly_contract_keeps_two_hours_and_nullable_measurements(hourly_frame):
     contract = contracts.get_contract("clima_estacao_horaria")
-    assert contract is clima.CLIMA_ESTACAO_HORARIA_V1
+    assert contract == clima.CLIMA_ESTACAO_HORARIA_V1
     assert contract.primary_key == ["data", "hora_utc", "estacao"]
     assert contract.version == "1.0"
     assert contract.validate(hourly_frame) == (True, [])

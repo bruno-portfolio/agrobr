@@ -58,7 +58,7 @@ def frame():
 
 
 def test_funai_contract_official_cells_and_registry(contract, frame):
-    assert contracts.get_contract("funai_terras_indigenas") is contract
+    assert contracts.get_contract("funai_terras_indigenas") == contract
     assert contract.name == "funai.terras_indigenas"
     assert contract.version == "2.0" and contract.primary_key == []
     assert [column.name for column in contract.columns] == list(ALIASES)

@@ -99,7 +99,7 @@ async def test_argumento_desconhecido_recusado_antes_da_rede(nome):
 @pytest.mark.parametrize("nome", sorted(SONDA))
 async def test_funcao_publica_repassa_as_polars_ao_fetch(nome, monkeypatch):
     fetch = AsyncMock(return_value=pd.DataFrame())
-    monkeypatch.setattr(datasets.get_dataset(nome), "fetch", fetch)
+    monkeypatch.setattr(type(datasets.get_dataset(nome)), "fetch", fetch)
     posicionais, nomeados = obrigatorios(nome)
     with helpers.sem_excecao():
         await getattr(datasets, nome)(*posicionais, **nomeados, as_polars=True)

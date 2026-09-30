@@ -130,11 +130,12 @@ class TestParseWithConsensus:
     async def test_parser_low_confidence_skipped(self):
         low_conf_cls = _make_parser_cls(1, [_make_indicador()], can_parse_result=(True, 0.3))
 
-        with patch("agrobr.cepea.parsers.consensus.CONSENSUS_PARSERS", [low_conf_cls]):
-            result = await parse_with_consensus("<html>test</html>", "soja")
-
-        assert result.all_results == {}
-        assert result.indicadores == []
+        with (
+            patch("agrobr.cepea.parsers.consensus.CONSENSUS_PARSERS", [low_conf_cls]),
+            pytest.raises(ParseError, match="Nenhum parser"),
+        ):
+            await parse_with_consensus("<html>test</html>", "soja")
+        low_conf_cls.return_value.parse.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_require_consensus_raises_on_divergence(self):
@@ -164,15 +165,33 @@ class TestParseWithConsensus:
 
     @pytest.mark.asyncio
     async def test_parser_exception_caught(self):
-        failing_cls = _make_parser_cls(1, raises=ValueError("broken"))
+        error = ValueError("broken")
+        failing_cls = _make_parser_cls(1, raises=error)
 
-        with patch("agrobr.cepea.parsers.consensus.CONSENSUS_PARSERS", [failing_cls]):
+        with (
+            patch("agrobr.cepea.parsers.consensus.CONSENSUS_PARSERS", [failing_cls]),
+            pytest.raises(ParseError, match="Nenhum parser") as caught,
+        ):
+            await parse_with_consensus("<html>test</html>", "soja")
+        assert caught.value.__cause__ is error
+
+    @pytest.mark.parametrize("require_consensus", [False, True])
+    @pytest.mark.parametrize("parsers", [[], [_make_parser_cls(1, [])]])
+    async def test_consenso_sem_resultado_util_recusado(self, parsers, require_consensus):
+        with (
+            patch("agrobr.cepea.parsers.consensus.CONSENSUS_PARSERS", parsers),
+            pytest.raises(ParseError, match="Nenhum parser"),
+        ):
+            await parse_with_consensus("<html>test</html>", "soja", require_consensus)
+
+    async def test_parser_vazio_nao_substitui_resultado_util(self):
+        indicators = [_make_indicador()]
+        parsers = [_make_parser_cls(1, indicators), _make_parser_cls(2, [])]
+        with patch("agrobr.cepea.parsers.consensus.CONSENSUS_PARSERS", parsers):
             result = await parse_with_consensus("<html>test</html>", "soja")
-
-        assert result.indicadores == []
-        assert result.all_results == {}
-        assert result.has_consensus is True
-        assert result.report["errors"] == {1: "broken"}
+        assert result.indicadores == indicators
+        assert result.all_results == {1: indicators}
+        assert result.report["failed"] == [2]
 
     @pytest.mark.asyncio
     async def test_divergence_detected_without_require(self):
@@ -190,6 +209,12 @@ class TestParseWithConsensus:
 
 
 class TestConsensusValidator:
+    async def test_layout_sem_parser_nao_entra_no_historico(self):
+        validator = ConsensusValidator()
+        with pytest.raises(ParseError, match="Nenhum parser"):
+            await validator.validate("<html>manutenção</html>", "soja")
+        assert validator.history == []
+
     @pytest.mark.asyncio
     async def test_divergence_increments_count(self):
         validator = ConsensusValidator()

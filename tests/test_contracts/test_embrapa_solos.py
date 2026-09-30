@@ -47,7 +47,7 @@ def frame(contract):
 
 
 def test_embrapa_contract_registry_version_and_valid_frame(family, contract, frame):
-    assert contracts.get_contract(f"embrapa_solos_{family}") is contract
+    assert contracts.get_contract(f"embrapa_solos_{family}") == contract
     assert contract.version == "2.0"
     assert contract.primary_key == []
     assert contract.validate(frame) == (True, [])

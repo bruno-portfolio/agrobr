@@ -1,7 +1,10 @@
 """Testes para o registry de datasets."""
 
+import copy
+
 import pytest
 
+from agrobr import exceptions
 from agrobr.datasets import registry
 from tests.helpers import collect_failures, isolated_dataset_case
 
@@ -33,6 +36,43 @@ class TestRegistry:
     def test_info_not_found(self):
         with pytest.raises(KeyError, match="'nao_existe' não encontrado"):
             registry.info("nao_existe")
+
+
+@pytest.mark.parametrize(
+    "lookup", [registry.get_dataset, registry.list_products, registry.info, registry.describe]
+)
+def test_lookup_inexistente_preserva_keyerror_e_indica_parametro(lookup):
+    with pytest.raises(exceptions.InvalidParameterError) as caught:
+        lookup("nao_existe")
+    assert isinstance(caught.value, KeyError)
+    assert "nao_existe" in str(caught.value)
+    assert "preco_diario" in str(caught.value)
+
+
+def test_catalogo_devolve_copias_independentes():
+    original = registry.info("preco_diario")
+    original_dataset = registry._REGISTRY["preco_diario"]
+    original_info = copy.deepcopy(original_dataset.info)
+    products = registry.list_products("preco_diario")
+    products.clear()
+    info = registry.info("preco_diario")
+    info["products"].clear()
+    info["sources"].clear()
+    dataset = registry.get_dataset("preco_diario")
+    dataset.info.description = "alterado"
+    dataset.info.products.clear()
+    dataset.info.sources[0].enabled = False
+    dataset.info.sources.clear()
+    assert registry.info("preco_diario") == original
+    assert original_dataset.info == original_info
+    assert registry.get_dataset("preco_diario") is not dataset
+
+
+def test_dataset_info_to_dict_copia_produtos():
+    dataset = registry.get_dataset("preco_diario")
+    original = list(dataset.info.products)
+    dataset.info.to_dict()["products"].clear()
+    assert dataset.info.products == original
 
 
 class TestRegistryDescribe:

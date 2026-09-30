@@ -148,7 +148,7 @@ async def test_anec_additional_casos_1():
                     "embarques_mensais": "valor_ton",
                     "comparacao_anual": "valor_base_ton",
                 }.get(source, "share_pct")
-                assert str(frame[value_column].dtype) == "Float64"
+                assert str(frame[value_column].dtype) == "float64"
                 contracts.validate_dataset(frame, name)
         for name, source in _DATASETS:
             case = f"test_additional_contract_accepts_separate_revisions[{(name, source)!r}]"

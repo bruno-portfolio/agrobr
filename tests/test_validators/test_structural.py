@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
+from unittest import mock
 
 import pytest
 
+from agrobr import exceptions
 from agrobr.constants import Fonte
 from agrobr.models import Fingerprint
 from agrobr.validators.structural import (
@@ -119,8 +121,9 @@ class TestLoadBaseline:
     def test_corrupt_file(self, tmp_path):
         path = tmp_path / "cepea_baseline.json"
         path.write_text("not valid json {{{")
-        result = load_baseline(Fonte.CEPEA, tmp_path)
-        assert result is None
+        with pytest.raises(exceptions.ParseError, match="Baseline inválido") as caught:
+            load_baseline(Fonte.CEPEA, tmp_path)
+        assert isinstance(caught.value.__cause__, json.JSONDecodeError)
 
 
 class TestSaveBaseline:
@@ -212,3 +215,51 @@ def test_validate_against_baseline_compara_com_o_baseline_salvo(tmp_path):
     resultado = validate_against_baseline(_make_fingerprint(**_DIVERGENTE_ATUAL), tmp_path)
     assert (resultado.level, resultado.passed) == ("critical", False)
     assert resultado.baseline_fingerprint == base
+
+
+@pytest.mark.parametrize(
+    "content", [b"{broken", b"{}", b"null", b"[]", b"\xff", b'{"sources": []}']
+)
+def test_baseline_corrompido_nao_aprova_layout(tmp_path, content):
+    (tmp_path / "cepea_baseline.json").write_bytes(content)
+    with pytest.raises(exceptions.ParseError, match="Baseline inválido") as caught:
+        validate_against_baseline(_make_fingerprint(), tmp_path)
+    assert caught.value.source == "cepea"
+    assert caught.value.__cause__ is not None
+
+
+def test_baseline_com_fonte_incorreta_recusado(tmp_path):
+    fingerprint = _make_fingerprint(source=Fonte.CONAB)
+    (tmp_path / "cepea_baseline.json").write_text(fingerprint.model_dump_json(), encoding="utf-8")
+    with pytest.raises(exceptions.ParseError) as caught:
+        load_baseline(Fonte.CEPEA, tmp_path)
+    assert "fonte" in str(caught.value.__cause__)
+
+
+def test_baseline_sem_a_fonte_solicitada_e_ausente(tmp_path):
+    (tmp_path / "baseline.json").write_text('{"sources": {}}', encoding="utf-8")
+    assert load_baseline(Fonte.CEPEA, tmp_path) is None
+
+
+def test_baseline_ilegivel_nao_e_tratado_como_ausente(tmp_path):
+    denied = PermissionError("sem permissão de leitura")
+    with (
+        mock.patch("builtins.open", side_effect=denied),
+        pytest.raises(exceptions.ParseError, match="ilegível") as caught,
+    ):
+        validate_against_baseline(_make_fingerprint(), tmp_path)
+    assert caught.value.__cause__ is denied
+
+
+def test_baseline_padrao_usa_cache_configurado(tmp_path, monkeypatch):
+    cache = tmp_path / "cache"
+    working = tmp_path / "working"
+    working.mkdir()
+    monkeypatch.chdir(working)
+    monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(cache))
+    fingerprint = _make_fingerprint()
+    save_baseline(fingerprint)
+    assert (cache / "structures" / "cepea_baseline.json").exists()
+    assert not (working / ".structures").exists()
+    assert load_baseline(Fonte.CEPEA) == fingerprint
+    assert validate_against_baseline(fingerprint).passed

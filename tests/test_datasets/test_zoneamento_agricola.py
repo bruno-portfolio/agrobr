@@ -49,7 +49,7 @@ def supplied(monkeypatch):
     fetch = AsyncMock(return_value=(frame, meta))
     monkeypatch.setattr(ZoneamentoAgricolaDataset.info.sources[0], "fetch_fn", fetch)
     monkeypatch.setattr(
-        datasets.get_dataset("zoneamento_agricola").info.sources[0], "fetch_fn", fetch
+        datasets.registry._REGISTRY["zoneamento_agricola"].info.sources[0], "fetch_fn", fetch
     )
     return fetch, frame, meta
 

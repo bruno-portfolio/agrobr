@@ -17,7 +17,7 @@ from agrobr.deral.parser import (
     filter_by_produto,
     parse_pc_xls,
 )
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "deral" / "pc_sample"
 
@@ -38,11 +38,14 @@ def unreadable_current_sheet(monkeypatch: pytest.MonkeyPatch) -> tuple[bytes, Va
 
 
 async def test_dataset_aba_ilegivel_propaga_falha(unreadable_current_sheet, monkeypatch):
-    data, _ = unreadable_current_sheet
+    data, original = unreadable_current_sheet
     monkeypatch.setattr(client, "fetch_pc_xls", AsyncMock(return_value=data))
 
-    with pytest.raises(SourceUnavailableError, match="Falha ao ler a aba Atual"):
+    with pytest.raises(ParseError, match="Falha ao ler a aba Atual") as caught:
         await datasets.condicao_lavouras()
+    assert caught.value.errors and all(kind == "parse" for _, kind, _ in caught.value.errors)
+    assert isinstance(caught.value.__cause__, ParseError)
+    assert caught.value.__cause__.__cause__ is original
 
 
 def _make_xls_bytes(sheets: dict[str, list[list]]) -> bytes:

@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from agrobr import datasets
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.icmbio import api
 from tests.helpers import (
     collect_failures,
@@ -93,7 +93,7 @@ async def test_unidades_conservacao_federais_casos_2():
         ):
             _, count = acquisition
             count.return_value = (count_body(348), "https://test/hits")
-            with pytest.raises(SourceUnavailableError, match="Contagem divergente"):
+            with pytest.raises(ParseError, match="Contagem divergente"):
                 await datasets.unidades_conservacao_federais()
         case = "test_limit_fails_before_feature_download"
         with (

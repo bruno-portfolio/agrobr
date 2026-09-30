@@ -78,7 +78,7 @@ async def test_explicit_sources_remain_isolated_during_concurrent_requests(
     archive_started = asyncio.Event()
     release_archive = asyncio.Event()
     install_climate_transport(archive_started=archive_started, release_archive=release_archive)
-    singleton = datasets.get_dataset("clima")
+    singleton = datasets.registry._REGISTRY["clima"]
     original_sources = tuple(source.name for source in singleton.info.sources)
     historical_task = asyncio.create_task(
         datasets.clima("GO", 2001, fonte="inmet_historico", return_meta=True)

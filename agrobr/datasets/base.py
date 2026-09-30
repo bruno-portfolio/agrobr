@@ -76,7 +76,7 @@ class DatasetInfo:
             "name": self.name,
             "description": self.description,
             "sources": [s.name for s in self.sources],
-            "products": self.products,
+            "products": list(self.products),
             "contract_version": self.contract_version,
             "update_frequency": self.update_frequency,
             "typical_latency": self.typical_latency,
@@ -173,9 +173,14 @@ def _with_output_format(
     async def wrapped(
         self: BaseDataset, *args: Any, **kwargs: Any
     ) -> pd.DataFrame | tuple[pd.DataFrame, Any]:
+        options = dict(kwargs)
+        if not native:
+            options["as_polars"] = kwargs.pop("as_polars", False)
+        bound = signature.bind(self, *args, **kwargs)
+        if "produto" in bound.arguments:
+            bound.arguments["produto"] = self._produto_do_dataset(bound.arguments["produto"])
         if native:
-            result = await fetch(self, *args, **kwargs)
-            bound = signature.bind(self, *args, **kwargs)
+            result = await fetch(*bound.args, **bound.kwargs)
             bound.apply_defaults()
             options = dict(bound.arguments)
             for position, (name, parameter) in enumerate(signature.parameters.items()):
@@ -185,10 +190,8 @@ def _with_output_format(
                     options.update(options.pop(name, {}))
             result = _no_contrato(result, self._contract_name(**options))
         else:
-            options = dict(kwargs)
-            options["as_polars"] = kwargs.pop("as_polars", False)
             result = _no_contrato(
-                await fetch(self, *args, **kwargs), self._contract_name(**options)
+                await fetch(*bound.args, **bound.kwargs), self._contract_name(**options)
             )
             if options["as_polars"]:
                 frame, meta = _unpack_result(result)
@@ -317,7 +320,7 @@ class BaseDataset(ABC):
         Sem produto do dataset com o mesmo canônico, a entrada volta como veio, e a validação de
         cada dataset segue igual.
         """
-        if not isinstance(produto, str):
+        if not isinstance(produto, str) or not self.info.products or produto in self.info.products:
             return produto
         from agrobr.normalize import crops
 
@@ -451,16 +454,16 @@ class BaseDataset(ABC):
                 errors.append((source.name, "unavailable", str(e)))
                 ultimo_erro = e
 
-            except Exception as e:
-                logger.warning(
-                    "source_unexpected_error",
-                    dataset=self.info.name,
-                    source=source.name,
-                    error_type="unexpected",
-                    error=str(e),
-                )
-                errors.append((source.name, "unexpected", str(e)))
-                ultimo_erro = e
+        if isinstance(ultimo_erro, ParseError) and all(
+            category == "parse" for _, category, _ in errors
+        ):
+            raise ParseError(
+                source=f"{self.info.name}/{produto}",
+                parser_version=ultimo_erro.parser_version,
+                reason="Todas as fontes falharam por layout",
+                errors=errors,
+                attempted_sources=attempted,
+            ) from ultimo_erro
 
         raise SourceUnavailableError(
             source=f"{self.info.name}/{produto}",

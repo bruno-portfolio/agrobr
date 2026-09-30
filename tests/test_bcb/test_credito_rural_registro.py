@@ -199,9 +199,9 @@ async def test_registro_tem_os_tipos_do_contrato(monkeypatch: pytest.MonkeyPatch
     vazio_dataset = await datasets.credito_rural("soja", safra="2024/25", agregacao="registro")
 
     tipos = {
-        contracts.ColumnType.STRING: "object",
+        contracts.ColumnType.STRING: str(pd.Series(["texto"]).dtype),
         contracts.ColumnType.INTEGER: "Int64",
-        contracts.ColumnType.FLOAT: "Float64",
+        contracts.ColumnType.FLOAT: "float64",
     }
     esperado = {coluna.name: tipos[coluna.type] for coluna in REGISTRO.columns}
     assert (len(cheio), len(vazio), len(vazio_dataset)) == (135, 0, 0)

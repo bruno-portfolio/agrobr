@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agrobr import _log
+from agrobr import _log, constants, exceptions
 
 from ..constants import Fonte
 from ..models import Fingerprint
@@ -176,40 +177,52 @@ def compare_fingerprints(
     return final_score, details
 
 
-def load_baseline(source: Fonte, baselines_dir: str | Path = ".structures") -> Fingerprint | None:
-    import json
+def _baselines_dir(baselines_dir: str | Path | None) -> Path:
+    return (
+        Path(baselines_dir)
+        if baselines_dir is not None
+        else constants.CacheSettings().cache_dir / "structures"
+    )
 
-    path = Path(baselines_dir) / f"{source.value}_baseline.json"
 
-    if not path.exists():
-        path = Path(baselines_dir) / "baseline.json"
-        if not path.exists():
-            return None
+def load_baseline(source: Fonte, baselines_dir: str | Path | None = None) -> Fingerprint | None:
+    directory = _baselines_dir(baselines_dir)
+    for path in (directory / f"{source.value}_baseline.json", directory / "baseline.json"):
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
 
-    try:
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
+            if isinstance(data, dict) and "sources" in data:
+                if not isinstance(data["sources"], dict):
+                    raise ValueError("baseline.sources deve ser um objeto")
+                if source.value not in data["sources"]:
+                    return None
+                data = data["sources"][source.value]
 
-        if "sources" in data and source.value in data["sources"]:
-            source_data = data["sources"][source.value]
-            return Fingerprint.model_validate(source_data)
-
-        return Fingerprint.model_validate(data)
-    except Exception as e:
-        logger.warning("baseline_load_failed", source=source.value, error=str(e))
-        return None
+            fingerprint = Fingerprint.model_validate(data)
+            if fingerprint.source != source:
+                raise ValueError("A fonte do baseline não corresponde à fonte solicitada")
+            return fingerprint
+        except FileNotFoundError:
+            continue
+        except (OSError, ValueError) as e:
+            logger.warning("baseline_load_failed", source=source.value, error=str(e))
+            raise exceptions.ParseError(
+                source=source.value,
+                parser_version=0,
+                reason=f"Baseline inválido ou ilegível: {path.name}",
+            ) from e
+    return None
 
 
 def save_baseline(
     fingerprint: Fingerprint,
-    baselines_dir: str | Path = ".structures",
+    baselines_dir: str | Path | None = None,
 ) -> None:
-    import json
-
-    path = Path(baselines_dir) / f"{fingerprint.source.value}_baseline.json"
+    path = _baselines_dir(baselines_dir) / f"{fingerprint.source.value}_baseline.json"
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(fingerprint.model_dump(mode="json"), f, indent=2, default=str)
 
     logger.info("baseline_saved", source=fingerprint.source.value, path=str(path))
@@ -217,7 +230,7 @@ def save_baseline(
 
 def validate_against_baseline(
     current: Fingerprint,
-    baselines_dir: str | Path = ".structures",
+    baselines_dir: str | Path | None = None,
 ) -> StructuralValidationResult:
     baseline = load_baseline(current.source, baselines_dir)
 

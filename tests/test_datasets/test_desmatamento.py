@@ -10,7 +10,7 @@ from agrobr.datasets import _desmatamento_aggregation
 from agrobr.datasets.desmatamento import (
     DesmatamentoDataset,
 )
-from agrobr.exceptions import ContractViolationError, InvalidParameterError, SourceUnavailableError
+from agrobr.exceptions import ContractViolationError, InvalidParameterError
 from tests.helpers import (
     collect_failures,
     desmatamento_features,
@@ -121,11 +121,11 @@ def test_aggregation_annual_key_requires_integral_year(value, motivo):
         _desmatamento_aggregation.aggregate(frame, "prodes")
 
 
-@pytest.mark.parametrize("meta", [None, object()])
-async def test_fetch_missing_coverage_cannot_be_aggregated(meta):
+@pytest.mark.parametrize("meta,error", [(None, ContractViolationError), (object(), AttributeError)])
+async def test_fetch_missing_coverage_cannot_be_aggregated(meta, error):
     dataset = DesmatamentoDataset()
     dataset.info.sources[0].fetch_fn = AsyncMock(return_value=(desmatamento_frame(), meta))
-    with pytest.raises((ContractViolationError, SourceUnavailableError)):
+    with pytest.raises(error):
         await dataset.fetch()
 
 

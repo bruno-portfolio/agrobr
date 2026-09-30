@@ -7,6 +7,8 @@ from datetime import date
 from functools import wraps
 from typing import Any, TypeVar
 
+from agrobr import exceptions
+
 __all__ = [
     "deterministic",
     "deterministic_decorator",
@@ -29,9 +31,18 @@ def is_deterministic() -> bool:
     return _snapshot_var.get() is not None
 
 
+def _validate_snapshot(snapshot: str) -> None:
+    try:
+        date.fromisoformat(snapshot)
+    except (TypeError, ValueError) as exc:
+        raise exceptions.InvalidParameterError(
+            f"snapshot inválido: {snapshot!r}. Use uma data ISO no formato AAAA-MM-DD."
+        ) from exc
+
+
 @asynccontextmanager
 async def deterministic(snapshot: str) -> AsyncIterator[None]:
-    date.fromisoformat(snapshot)
+    _validate_snapshot(snapshot)
     token = _snapshot_var.set(snapshot)
     try:
         yield
@@ -40,7 +51,7 @@ async def deterministic(snapshot: str) -> AsyncIterator[None]:
 
 
 def deterministic_decorator(snapshot: str) -> Callable[[F], F]:
-    date.fromisoformat(snapshot)
+    _validate_snapshot(snapshot)
 
     def decorator(func: F) -> F:
         @wraps(func)

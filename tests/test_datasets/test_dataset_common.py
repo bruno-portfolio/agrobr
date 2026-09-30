@@ -203,7 +203,7 @@ class TestTrySourcesErrorPaths:
             raises=ContractViolationError("test", "field", "exp", "got"),
         )
         dataset.info.sources[1].fetch_fn = AsyncMock(
-            side_effect=RuntimeError("boom"),
+            side_effect=SourceUnavailableError("cache", last_error="sem cache"),
         )
 
         with pytest.raises(SourceUnavailableError) as exc_info:
@@ -212,7 +212,7 @@ class TestTrySourcesErrorPaths:
         errors = exc_info.value.errors
         assert len(errors) == 2
         assert errors[0][1] == "contract"
-        assert errors[1][1] == "unexpected"
+        assert errors[1][1] == "unavailable"
 
     @pytest.mark.asyncio
     async def test_invalid_parameter_propagates_without_fallback(self):

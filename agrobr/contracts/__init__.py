@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import copy
 import json
 from dataclasses import dataclass, field
 from enum import StrEnum
-from numbers import Number
 from typing import Any
 
 import pandas as pd
+
+from agrobr import exceptions
 
 
 class ColumnType(StrEnum):
@@ -48,13 +50,7 @@ class Column:
 
         if self.type in (ColumnType.DATE, ColumnType.DATETIME):
             if not pd.api.types.is_datetime64_any_dtype(series):
-                try:
-                    if any(isinstance(value, Number) for value in series.dropna()):
-                        raise TypeError("numeric values are not dates")
-                    if pd.to_datetime(series.dropna()).isna().any():
-                        raise ValueError("non-null values became missing dates")
-                except (ValueError, TypeError, OverflowError):
-                    errors.append(f"Column '{self.name}' cannot be converted to {self.type.value}")
+                errors.append(f"Column '{self.name}' must have datetime64 dtype")
 
         elif self.type == ColumnType.INTEGER:
             if not pd.api.types.is_integer_dtype(series):
@@ -137,15 +133,19 @@ class Contract:
     def empty_frame(self) -> pd.DataFrame:
         dtypes = {
             ColumnType.INTEGER: "Int64",
-            ColumnType.FLOAT: "Float64",
-            ColumnType.DECIMAL: "Float64",
-            ColumnType.STRING: "object",
+            ColumnType.FLOAT: "float64",
+            ColumnType.DECIMAL: "float64",
             ColumnType.DATE: "datetime64[ns]",
             ColumnType.DATETIME: "datetime64[ns]",
             ColumnType.BOOLEAN: "boolean",
         }
         return pd.DataFrame(
-            {column.name: pd.Series(dtype=dtypes[column.type]) for column in self.columns}
+            {
+                column.name: pd.Series([""]).iloc[:0]
+                if column.type == ColumnType.STRING
+                else pd.Series(dtype=dtypes[column.type])
+                for column in self.columns
+            }
         )
 
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
@@ -228,7 +228,7 @@ class Contract:
             "schema_version": self.version,
             "effective_from": self.effective_from,
             "breaking_policy": self.breaking_policy.value,
-            "primary_key": self.primary_key,
+            "primary_key": list(self.primary_key),
             "required_columns": [c.name for c in self.columns if c.stable],
             "dtypes": {c.name: c.type.value for c in self.columns},
             "nullable": {c.name: c.nullable for c in self.columns},
@@ -247,7 +247,7 @@ class Contract:
                 for c in self.columns
             ],
             "constraints": self._build_constraints(),
-            "guarantees": self.guarantees,
+            "guarantees": list(self.guarantees),
         }
 
     def _build_constraints(self) -> dict[str, Any]:
@@ -285,7 +285,7 @@ def _auto_discover_contracts() -> None:
 def register_contract(dataset_name: str, contract: Contract) -> None:
     previous = _CONTRACT_REGISTRY.get(dataset_name)
     if previous is not None and previous is not contract:
-        raise ValueError(
+        raise exceptions.InvalidParameterError(
             f"Contract already registered for {dataset_name!r}: "
             f"{previous.name} {previous.version}; received {contract.name} {contract.version}"
         )
@@ -293,12 +293,12 @@ def register_contract(dataset_name: str, contract: Contract) -> None:
 
 
 def get_contract(dataset_name: str) -> Contract:
-    if dataset_name not in _CONTRACT_REGISTRY:
-        raise KeyError(
+    if not isinstance(dataset_name, str) or dataset_name not in _CONTRACT_REGISTRY:
+        raise exceptions.UnknownNameError(
             f"No contract registered for dataset '{dataset_name}'. "
             f"Available: {list(_CONTRACT_REGISTRY.keys())}"
         )
-    return _CONTRACT_REGISTRY[dataset_name]
+    return copy.deepcopy(_CONTRACT_REGISTRY[dataset_name])
 
 
 def list_contracts() -> list[str]:

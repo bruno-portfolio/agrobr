@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, overload
 
 import pandas as pd
 
 if TYPE_CHECKING:
+    import geopandas as gpd
+    import polars as pl
+
     from agrobr.models import MetaInfo
+
+DataFrame: TypeAlias = "pd.DataFrame | pl.DataFrame"
+DataFrameResult: TypeAlias = "DataFrame | tuple[DataFrame, MetaInfo]"
+GeoDataFrameResult: TypeAlias = "gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]"
 
 ATRIBUTO_AVISOS = "agrobr_avisos"
 
@@ -66,6 +73,50 @@ def finalize_result(
     df: pd.DataFrame,
     meta: Any = ...,
     *,
+    as_polars: Literal[False] = ...,
+    return_meta: Literal[True],
+    string_columns: tuple[str, ...] = ...,
+) -> tuple[pd.DataFrame, Any]: ...
+
+
+@overload
+def finalize_result(
+    df: pd.DataFrame,
+    meta: Any = ...,
+    *,
+    as_polars: Literal[False] = ...,
+    return_meta: Literal[False] = ...,
+    string_columns: tuple[str, ...] = ...,
+) -> pd.DataFrame: ...
+
+
+@overload
+def finalize_result(  # type: ignore[overload-overlap]
+    df: pd.DataFrame,
+    meta: Any = ...,
+    *,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+    string_columns: tuple[str, ...] = ...,
+) -> tuple[pl.DataFrame, Any]: ...
+
+
+@overload
+def finalize_result(  # type: ignore[overload-overlap]
+    df: pd.DataFrame,
+    meta: Any = ...,
+    *,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = ...,
+    string_columns: tuple[str, ...] = ...,
+) -> pl.DataFrame: ...
+
+
+@overload
+def finalize_result(
+    df: pd.DataFrame,
+    meta: Any = ...,
+    *,
     as_polars: bool = ...,
     return_meta: Literal[True],
     string_columns: tuple[str, ...] = ...,
@@ -101,7 +152,7 @@ def finalize_result(
     as_polars: bool = False,
     return_meta: bool = False,
     string_columns: tuple[str, ...] = (),
-) -> pd.DataFrame | tuple[pd.DataFrame, Any]:
+) -> DataFrame | tuple[DataFrame, Any]:
     df = datas_em_ns(df)
     if as_polars:
         try:
@@ -114,8 +165,8 @@ def finalize_result(
         schema_overrides = dict.fromkeys(string_columns, pl.Utf8) if string_columns else None
         result_df = pl.from_pandas(df, schema_overrides=schema_overrides)
         if return_meta:
-            return result_df, meta  # type: ignore[return-value]
-        return result_df  # type: ignore[return-value,no-any-return]
+            return result_df, meta
+        return result_df
 
     if return_meta:
         return df, meta

@@ -32,16 +32,28 @@ def test_column_types_validate_values(kind, values, dtype, valid):
     assert (column.validate(pd.Series(values, dtype=dtype)) == []) is valid
 
 
-def test_empty_frame_nullable_dtypes():
+def test_empty_frame_tipos_da_saida():
     contract = contracts.Contract(
         "test", "1.0", [contracts.Column(kind.value, kind) for kind in contracts.ColumnType]
     )
     assert contract.empty_frame().dtypes.astype(str).to_dict() == {
         "int": "Int64",
-        "float": "Float64",
-        "Decimal": "Float64",
-        "str": "object",
+        "float": "float64",
+        "Decimal": "float64",
+        "str": str(pd.Series(["texto"]).dtype),
         "date": "datetime64[ns]",
         "datetime": "datetime64[ns]",
         "bool": "boolean",
     }
+
+
+@pytest.mark.parametrize("name,period", [("ano", "2026"), ("safra", "2024/25"), ("mes", "01/2026")])
+def test_rotulo_de_periodo_permanece_texto(name, period):
+    column = contracts.Column(name, contracts.ColumnType.STRING)
+    assert column.validate(pd.Series([period])) == []
+
+
+@pytest.mark.parametrize("name,values", [("ano", [2026]), ("codigo", [35]), ("contagem", [2])])
+def test_inteiro_por_natureza_aceita_int64_nullable(name, values):
+    column = contracts.Column(name, contracts.ColumnType.INTEGER, nullable=True)
+    assert column.validate(pd.Series([*values, None], dtype="Int64")) == []

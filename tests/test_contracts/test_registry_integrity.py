@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from agrobr import contracts
+from agrobr import contracts, exceptions
 from agrobr.contracts import conab, datasets, ibge
 
 
@@ -11,9 +11,10 @@ def test_duplicate_registration_preserves_original(monkeypatch):
     original = contracts.Contract("original", "1.0", [])
     monkeypatch.setattr(contracts, "_CONTRACT_REGISTRY", {"sample": original})
     contracts.register_contract("sample", original)
-    with pytest.raises(ValueError, match="already registered"):
+    with pytest.raises(exceptions.InvalidParameterError, match="already registered"):
         contracts.register_contract("sample", contracts.Contract("replacement", "2.0", []))
-    assert contracts.get_contract("sample") is original
+    assert contracts.get_contract("sample") == original
+    assert contracts._CONTRACT_REGISTRY["sample"] is original
 
 
 @pytest.mark.parametrize(
@@ -43,7 +44,7 @@ def test_historical_import_preserves_active_contract(module, symbol, key, versio
         historical = getattr(module, symbol)
     assert historical.version == version
     assert historical is not active
-    assert contracts.get_contract(key) is active
+    assert contracts.get_contract(key) == active
     assert symbol not in module.__all__
     assert not set(map(id, historical.columns)) & set(map(id, active.columns))
 
@@ -75,6 +76,37 @@ def test_registry_roundtrip_preserves_sorted_names(monkeypatch):
     alpha = contracts.Contract("alpha", "1.0", [])
     contracts.register_contract("zeta", zeta)
     contracts.register_contract("alpha", alpha)
-    assert contracts.get_contract("alpha") is alpha
-    assert contracts.get_contract("zeta") is zeta
+    assert contracts.get_contract("alpha") == alpha
+    assert contracts.get_contract("zeta") == zeta
     assert contracts.list_contracts() == ["alpha", "zeta"]
+
+
+@pytest.mark.parametrize("validate", [False, True])
+def test_lookup_de_contrato_inexistente_preserva_keyerror(validate):
+    with pytest.raises(exceptions.InvalidParameterError) as caught:
+        if validate:
+            contracts.validate_dataset(pd.DataFrame(), "nao_existe")
+        else:
+            contracts.get_contract("nao_existe")
+    assert isinstance(caught.value, KeyError)
+    assert "nao_existe" in str(caught.value)
+    assert "preco_diario" in str(caught.value)
+
+
+def test_get_contract_copia_colunas_e_listas():
+    before = contracts.get_contract("preco_diario").to_dict()
+    contract = contracts.get_contract("preco_diario")
+    contract.columns[0].name = "alterado"
+    contract.columns.clear()
+    contract.primary_key.clear()
+    contract.guarantees.clear()
+    assert contracts.get_contract("preco_diario").to_dict() == before
+
+
+def test_contract_to_dict_copia_listas():
+    contract = contracts.get_contract("preco_diario")
+    before = contract.to_dict()
+    serialized = contract.to_dict()
+    serialized["primary_key"].clear()
+    serialized["guarantees"].clear()
+    assert contract.to_dict() == before

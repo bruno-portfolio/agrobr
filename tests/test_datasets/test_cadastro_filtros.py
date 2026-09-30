@@ -15,7 +15,7 @@ import pytest
 from agrobr import contracts, datasets
 from agrobr.alt.sicar import client
 from agrobr.datasets.deterministic import deterministic, get_snapshot
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from tests.helpers import (
     collect_failures,
     fixture_instance,
@@ -277,7 +277,7 @@ async def test_repeated_wfs_property_rejects_inconsistent_dataset_collection(ins
     payload["numberReturned"] = payload["numberMatched"] = payload["totalFeatures"] = 11
     requests = install_wfs_transport(total=11, body=json.dumps(payload).encode())
 
-    with pytest.raises(SourceUnavailableError, match="repetido") as error:
+    with pytest.raises(ParseError, match="repetido") as error:
         await datasets.cadastro_rural("MT", cod_municipio=5103403)
 
     assert len(requests) == 2

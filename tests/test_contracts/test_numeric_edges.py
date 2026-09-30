@@ -28,7 +28,21 @@ def test_invalid_values_report_errors_without_crashing(kind, values):
 
 
 @pytest.mark.parametrize(
-    "values", [[date(2025, 1, 1)], ["2025-01-01"], pd.to_datetime(["2025-01-01"])]
+    "values,valid",
+    [
+        ([date(2025, 1, 1)], False),
+        (["2025-01-01"], False),
+        (pd.Series([], dtype=object), False),
+        (pd.Series([None], dtype=object), False),
+        (pd.to_datetime(["2025-01-01"]), True),
+        (pd.to_datetime(["2025-01-01"], utc=True), True),
+        (pd.Series([], dtype="datetime64[ns]"), True),
+        (pd.Series([pd.NaT], dtype="datetime64[ns]"), True),
+    ],
 )
-def test_date_representations_remain_valid(values):
-    assert Column("data", ColumnType.DATE).validate(pd.Series(values)) == []
+@pytest.mark.parametrize("kind", [ColumnType.DATE, ColumnType.DATETIME])
+def test_data_exige_dtype_datetime64(kind, values, valid):
+    errors = Column("data", kind, nullable=True).validate(pd.Series(values))
+    assert (errors == []) is valid
+    if not valid:
+        assert "datetime64" in errors[0]

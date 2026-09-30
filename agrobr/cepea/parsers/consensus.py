@@ -36,6 +36,7 @@ async def parse_with_consensus(
 ) -> ConsensusResult:
     results: dict[int, list[Indicador]] = {}
     errors: dict[int, str] = {}
+    last_error: Exception | None = None
 
     for parser_cls in CONSENSUS_PARSERS:
         parser = parser_cls()
@@ -43,6 +44,9 @@ async def parse_with_consensus(
             can_parse, confidence = parser.can_parse(html)
             if can_parse and confidence > 0.5:
                 parsed = parser.parse(html, produto)
+                if not parsed:
+                    errors[parser.version] = "Parser returned no records"
+                    continue
                 results[parser.version] = parsed
                 logger.debug(
                     "consensus_parser_success",
@@ -50,12 +54,20 @@ async def parse_with_consensus(
                     count=len(parsed),
                 )
         except Exception as e:
+            last_error = e
             errors[parser.version] = str(e)
             logger.warning(
                 "consensus_parser_failed",
                 version=parser.version,
                 error=str(e),
             )
+
+    if not results:
+        raise ParseError(
+            source="cepea",
+            parser_version=0,
+            reason="Nenhum parser produziu indicadores para o consenso",
+        ) from last_error
 
     divergences, report = analyze_consensus(results, errors)
 
@@ -81,8 +93,8 @@ async def parse_with_consensus(
                 reason=f"Parsers diverged: {len(divergences)} differences",
             )
 
-    latest_version = max(results.keys()) if results else 0
-    best_results = results.get(latest_version, [])
+    latest_version = max(results)
+    best_results = results[latest_version]
 
     parser_used: BaseParser = CepeaParserV1()
     for parser_cls in CONSENSUS_PARSERS:

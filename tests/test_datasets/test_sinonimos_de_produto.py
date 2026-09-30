@@ -4,9 +4,11 @@ import inspect
 from typing import Any
 from unittest.mock import patch
 
+import pandas as pd
 import pytest
 
 from agrobr import datasets
+from agrobr.datasets import base
 from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize.crops import normalizar_cultura
 from tests.helpers import isolated_dataset_case
@@ -82,3 +84,26 @@ async def test_dataset_aceita_os_sinonimos_do_produto(
             pass
 
     assert recusa is None or produto not in str(recusa), f"{nome} recusou {produto}: {recusa}"
+
+
+@pytest.mark.parametrize("native", [False, True])
+@pytest.mark.parametrize("positional", [False, True])
+@pytest.mark.parametrize("produto", ["SOJA", "soybean"])
+async def test_wrapper_normaliza_produto_antes_do_fetch(native, positional, produto):
+    dataset = datasets.get_dataset("balanco")
+
+    async def fetch(self, produto):
+        self._validate_produto(produto)
+        return pd.DataFrame({"produto": [produto]})
+
+    async def native_fetch(self, produto, *, as_polars=False):
+        assert as_polars is False
+        return await fetch(self, produto)
+
+    wrapped = base._with_output_format(native_fetch if native else fetch)
+    frame = (
+        await wrapped(dataset, produto, as_polars=False)
+        if positional
+        else await wrapped(dataset, produto=produto, as_polars=False)
+    )
+    assert frame["produto"].tolist() == ["soja"]

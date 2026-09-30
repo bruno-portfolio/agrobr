@@ -35,7 +35,7 @@ def test_contract_empty_frame_has_identical_physical_types(municipal_frame):
         == municipal_frame.dtypes[["classe_id", "ano", "area_ha", "id_registro"]].to_dict()
     )
     assert all(
-        str(empty[column].dtype) == "object"
+        empty[column].dtype == municipal_frame[column].dtype
         for column in ["bioma", "estado", "municipio", "classe", "nivel_0", "geocodigo"]
     )
     assert empty.empty
