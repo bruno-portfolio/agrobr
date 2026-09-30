@@ -26,7 +26,7 @@ class TestSilviculturaValidation:
                 ("banana_inexistente",),
                 {},
                 ValueError,
-                "Produto não suportado",
+                "Produto inválido",
             ),
             (
                 "test_variavel_invalida",
@@ -34,7 +34,7 @@ class TestSilviculturaValidation:
                 ("carvao",),
                 {"variavel": "peso"},
                 ValueError,
-                "Variável não suportada",
+                "Variável inválida",
             ),
             (
                 "test_especie_invalida_para_area",
@@ -42,7 +42,7 @@ class TestSilviculturaValidation:
                 ("carvao",),
                 {"variavel": "area"},
                 ValueError,
-                "Espécie não suportada para área",
+                "Produto inválido",
             ),
         ]
         with helpers.collect_failures() as check:

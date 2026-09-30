@@ -4,6 +4,12 @@ The IBGE module provides access to data from the IBGE Automatic Retrieval System
 
 SIDRA queries use asynchronous HTTP directly, with a 120-second request deadline per attempt, cancellation, and exponential retries for transient failures. No transport thread remains pending after a timeout. Queries follow the [official SIDRA parameters](https://apisidra.ibge.gov.br/home/ajuda).
 
+In API 2.0, territorial filters and flags are passed by keyword. PAM, LSPA, PPM, forestry and plant extraction accept only product/species and year positionally; slaughter accepts species and quarter; census functions accept only the topic. For GDP, only `setor` is positional: use `ibge.pib_agro(trimestre="202401")`. Milk accepts only `trimestre` positionally.
+
+Closed domains normalize case and accents; invalid parameters raise `InvalidParameterError` before any query. `variaveis=[]`, unknown variables and empty year lists are rejected. Forestry and plant extraction validate years from 1974 through the current year. The historical census accepts an integer year or a nonempty list of integer years published for the topic.
+
+Each empty SIDRA query emits a warning and records the same text in `MetaInfo.validation_warnings`, including after another empty query for the same table and period. Empty results preserve columns and dtypes: years/codes use `Int64`, measures use `float64`, quarter labels remain text, and text follows the installed pandas default. `animais_abatidos` uses `Int64` (contract 2.0); fractional head counts raise `ParseError`. PAM preserves its 14 output columns, with unrequested measures set to null.
+
 ## Functions
 
 ### `pam`
@@ -13,9 +19,10 @@ Retrieves Municipal Agricultural Production (PAM) data.
 ```python
 async def pam(
     produto: str,
-    ano: int | str | list[int] | None = None,
+    ano: int | float | str | Sequence[int | float | str] | None = None,
+    *,
     uf: str | None = None,
-    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
@@ -71,6 +78,7 @@ Retrieves Systematic Survey of Agricultural Production (LSPA) data.
 async def lspa(
     produto: str,
     ano: int | str | None = None,
+    *,
     mes: int | str | None = None,
     uf: str | None = None,
     as_polars: bool = False,
@@ -181,8 +189,9 @@ Retrieves Municipal Livestock Survey (PPM) data.
 async def ppm(
     especie: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
-    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -265,6 +274,7 @@ Retrieves Quarterly Animal Slaughter Survey data.
 async def abate(
     especie: str,
     trimestre: str | list[str] | None = None,
+    *,
     uf: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
@@ -333,9 +343,10 @@ Retrieves Agricultural Census data (1995, 2006 and 2017).
 ```python
 async def censo_agro(
     tema: str,
+    *,
     ano: int | str | None = None,
     uf: str | None = None,
-    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -447,8 +458,9 @@ Retrieves Agricultural Census 1995/96 data — six themes via FTP, in ZIP archiv
 ```python
 async def censo_agro_legado(
     tema: str,
+    *,
     uf: str | None = None,
-    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -512,9 +524,10 @@ Retrieves the Agricultural Census historical series (1920-2006, state level maxi
 ```python
 async def censo_agro_historico(
     tema: str,
+    *,
     ano: int | list[int] | None = None,
     uf: str | None = None,
-    nivel: Literal['brasil', 'regiao', 'uf'] = 'uf',
+    nivel: Literal["brasil", "regiao", "uf"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -668,9 +681,10 @@ Retrieves Plant Extraction and Silviculture Production (PEVS) data — silvicult
 async def silvicultura(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
-    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
-    variavel: str = 'quantidade_produzida',
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame
@@ -744,9 +758,10 @@ Retrieves Plant Extraction and Silviculture Production (PEVS) data — plant ext
 async def extracao_vegetal(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
-    nivel: Literal['brasil', 'uf', 'municipio'] = 'uf',
-    variavel: str = 'quantidade_produzida',
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame
@@ -805,6 +820,7 @@ Retrieves Quarterly Milk Survey data — acquisition, processing and average pri
 ```python
 async def leite_trimestral(
     trimestre: str | list[str] | None = None,
+    *,
     uf: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
@@ -858,9 +874,10 @@ Retrieves the quarterly agricultural GDP (Quarterly National Accounts).
 
 ```python
 async def pib_agro(
+    setor: str = "agropecuaria",
+    *,
     trimestre: str | list[str] | None = None,
-    precos: str = 'corrente',
-    setor: str = 'agropecuaria',
+    precos: str = "corrente",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame

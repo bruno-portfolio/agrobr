@@ -2,6 +2,8 @@
 
 Agricultural Census 1995/2006/2017 data by theme, state and territorial level.
 
+In API 2.0, only `tema` accepts positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -32,10 +34,10 @@ Agricultural Census 1995/2006/2017 data by theme, state and territorial level.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
-| `ano` | int | ❌ | Reference year (1995, 2006 or 2017) |
+| `ano` | Int64 | ❌ | Reference year (1995, 2006 or 2017) |
 | `localidade` | str | ✅ | State or municipality |
-| `localidade_cod` | int | ✅ | IBGE code |
-| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
+| `localidade_cod` | Int64 | ✅ | IBGE code |
+| `cod_municipio` | Int64 | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `tema` | str | ❌ | Census theme |
 | `categoria` | str | ❌ | Category within the theme |
 | `variavel` | str | ❌ | Variable name |

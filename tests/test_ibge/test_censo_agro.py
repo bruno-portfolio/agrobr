@@ -44,7 +44,7 @@ class TestCensoAgroValidation:
                 ("tema_inexistente",),
                 {},
                 ValueError,
-                "Tema não suportado",
+                "Tema inválido",
             ),
             (
                 "test_ano_invalido",

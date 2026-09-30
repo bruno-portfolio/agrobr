@@ -30,7 +30,8 @@ class TestPpmValidation:
         with pytest.raises(ValueError) as exc:
             await ibge.ppm("especie_inexistente")
 
-        assert "não suportado" in str(exc.value)
+        assert "Espécie/produto inválido" in str(exc.value)
+        assert "bovino" in str(exc.value)
 
 
 class TestPpmMocked:

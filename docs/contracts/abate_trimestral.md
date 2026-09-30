@@ -1,6 +1,10 @@
-# abate_trimestral v1.0
+# abate_trimestral v2.0
 
 Abate de animais por especie, trimestre e UF (bovino, suino, frango).
+
+Na API 2.0, somente `produto`, `trimestre` aceitam posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
+A versão 2.0 troca `animais_abatidos` de `float64` para `Int64`. O vazio também usa `Int64`; valor fracionário gera `ParseError` sem truncamento. O contrato 1.0 permanece disponível como `IBGE_ABATE_V1`.
 
 ## Fontes
 
@@ -18,9 +22,9 @@ Abate de animais por especie, trimestre e UF (bovino, suino, frango).
 |--------|------|----------|-----------|
 | `trimestre` | str | ❌ | Trimestre no formato YYYYQQ |
 | `localidade` | str | ✅ | UF |
-| `localidade_cod` | int | ✅ | Codigo IBGE |
+| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
 | `especie` | str | ❌ | bovino, suino ou frango |
-| `animais_abatidos` | float64 | ✅ | Quantidade de animais abatidos (cabecas) |
+| `animais_abatidos` | Int64 | ✅ | Quantidade de animais abatidos (cabecas) |
 | `peso_carcacas` | float64 | ✅ | Peso total das carcacas (kg) |
 | `fonte` | str | ❌ | Origem dos dados |
 

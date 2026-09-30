@@ -7,17 +7,20 @@ import pandas as pd
 
 from agrobr import _log, constants
 from agrobr.cache.keys import build_cache_key
-from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.exceptions import ParseError
 from agrobr.ibge import client
 from agrobr.ibge._helpers import (
     SIDRA_BASE,
+    _validate_years,
+    normalizar_opcao,
     registrar_canal,
     resolve_ibge_code,
     resolve_period,
     resolve_quarter_period,
+    tipar_resultado,
 )
 from agrobr.models import MetaInfo
-from agrobr.utils.result import finalize_result
+from agrobr.utils.result import DataFrame, DataFrameResult, finalize_result
 from agrobr.utils.time import utcnow
 
 logger = _log.get_logger(__name__)
@@ -42,11 +45,11 @@ _LEITE_COLUMNS = [
 async def silvicultura(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variavel: str = "quantidade_produzida",
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -55,24 +58,51 @@ async def silvicultura(
 async def silvicultura(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variavel: str = "quantidade_produzida",
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def silvicultura(
+    produto: str,
+    ano: int | str | list[int] | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def silvicultura(
+    produto: str,
+    ano: int | str | list[int] | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def silvicultura(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variavel: str = "quantidade_produzida",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_silvicultura",
@@ -92,37 +122,28 @@ async def silvicultura(
         variavel=variavel,
     )
 
-    produto_lower = produto.lower()
-    variavel_lower = variavel.lower()
+    variavel_lower = normalizar_opcao(
+        variavel, "Variável", [*client.VARIAVEIS_SILVICULTURA, "area"]
+    )
+    produtos = (
+        client.ESPECIES_SILVICULTURA_AREA
+        if variavel_lower == "area"
+        else client.PRODUTOS_SILVICULTURA
+    )
+    produto_lower = normalizar_opcao(produto, "Produto", produtos)
 
     if variavel_lower == "area":
-        if produto_lower not in client.ESPECIES_SILVICULTURA_AREA:
-            raise InvalidParameterError(
-                f"Espécie não suportada para área: {produto}. "
-                f"Disponíveis: {list(client.ESPECIES_SILVICULTURA_AREA.keys())}"
-            )
         table_code = client.TABELAS_PEVS["silvicultura_area"]
         var_code = client.VARIAVEIS_SILVICULTURA_AREA["area_total"]
         classification_key = "734"
         classification_val = client.ESPECIES_SILVICULTURA_AREA[produto_lower]
-    elif variavel_lower in ("quantidade_produzida", "valor_producao"):
-        if produto_lower not in client.PRODUTOS_SILVICULTURA:
-            raise InvalidParameterError(
-                f"Produto não suportado: {produto}. "
-                f"Disponíveis: {list(client.PRODUTOS_SILVICULTURA.keys())}"
-            )
+    else:
         table_code = client.TABELAS_PEVS["silvicultura_producao"]
         var_code = client.VARIAVEIS_SILVICULTURA[variavel_lower]
         classification_key = "194"
         classification_val = client.PRODUTOS_SILVICULTURA[produto_lower]
-    else:
-        raise InvalidParameterError(
-            f"Variável não suportada: {variavel}. "
-            f"Disponíveis: ['quantidade_produzida', 'valor_producao', 'area']"
-        )
-
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
-    period = resolve_period(ano)
+    period = resolve_period(_validate_years(ano))
 
     classifications: dict[str, str | list[str]] = {classification_key: classification_val}
 
@@ -170,6 +191,7 @@ async def silvicultura(
         if c in df.columns
     ]
     df = df[output_cols].reset_index(drop=True)
+    df = tipar_resultado(df, "silvicultura")
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -202,11 +224,11 @@ async def especies_silvicultura_area() -> list[str]:
 async def extracao_vegetal(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variavel: str = "quantidade_produzida",
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -215,24 +237,51 @@ async def extracao_vegetal(
 async def extracao_vegetal(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variavel: str = "quantidade_produzida",
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def extracao_vegetal(
+    produto: str,
+    ano: int | str | list[int] | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def extracao_vegetal(
+    produto: str,
+    ano: int | str | list[int] | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def extracao_vegetal(
     produto: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variavel: str = "quantidade_produzida",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_extracao_vegetal",
@@ -252,27 +301,15 @@ async def extracao_vegetal(
         variavel=variavel,
     )
 
-    produto_lower = produto.lower()
-    variavel_lower = variavel.lower()
-
-    if produto_lower not in client.PRODUTOS_EXTRACAO_VEGETAL:
-        raise InvalidParameterError(
-            f"Produto não suportado: {produto}. "
-            f"Disponíveis: {list(client.PRODUTOS_EXTRACAO_VEGETAL.keys())}"
-        )
-
-    if variavel_lower not in client.VARIAVEIS_EXTRACAO_VEGETAL:
-        raise InvalidParameterError(
-            f"Variável não suportada: {variavel}. "
-            f"Disponíveis: {list(client.VARIAVEIS_EXTRACAO_VEGETAL.keys())}"
-        )
+    produto_lower = normalizar_opcao(produto, "Produto", client.PRODUTOS_EXTRACAO_VEGETAL)
+    variavel_lower = normalizar_opcao(variavel, "Variável", client.VARIAVEIS_EXTRACAO_VEGETAL)
 
     table_code = client.TABELAS_PEVS["extracao_vegetal"]
     var_code = client.VARIAVEIS_EXTRACAO_VEGETAL[variavel_lower]
     produto_cod = client.PRODUTOS_EXTRACAO_VEGETAL[produto_lower]
 
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
-    period = resolve_period(ano)
+    period = resolve_period(_validate_years(ano))
 
     classifications: dict[str, str | list[str]] = {"193": produto_cod}
 
@@ -319,7 +356,7 @@ async def extracao_vegetal(
         for c in ["ano", "localidade", "localidade_cod", "produto", "valor", "unidade", "fonte"]
         if c in df.columns
     ]
-    df = df[output_cols].reset_index(drop=True)
+    df = tipar_resultado(df[output_cols].reset_index(drop=True), "extrativismo_vegetal")
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -347,9 +384,9 @@ async def produtos_extracao_vegetal() -> list[str]:
 @overload
 async def leite_trimestral(
     trimestre: str | list[str] | None = None,
-    uf: str | None = None,
-    as_polars: bool = False,
     *,
+    uf: str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -357,19 +394,40 @@ async def leite_trimestral(
 @overload
 async def leite_trimestral(
     trimestre: str | list[str] | None = None,
+    *,
     uf: str | None = None,
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def leite_trimestral(
+    trimestre: str | list[str] | None = None,
     *,
+    uf: str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def leite_trimestral(
     trimestre: str | list[str] | None = None,
+    *,
+    uf: str | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+async def leite_trimestral(
+    trimestre: str | list[str] | None = None,
+    *,
     uf: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_leite_trimestral",
@@ -389,10 +447,7 @@ async def leite_trimestral(
     table_code = client.TABELAS_LEITE["leite_trimestral"]
     var_codes = list(client.VARIAVEIS_LEITE.values())
 
-    territorial_level = "3"
-    ibge_code = "all"
-    if uf:
-        ibge_code = client.uf_to_ibge_code(uf)
+    territorial_level, ibge_code = resolve_ibge_code(uf, "uf")
 
     period = resolve_quarter_period(trimestre)
 
@@ -463,7 +518,7 @@ async def leite_trimestral(
         output_cols = [c for c in _LEITE_COLUMNS if c in result.columns]
         result = result[output_cols].reset_index(drop=True)
 
-    df = result
+    df = tipar_resultado(result, "leite_industrial", _LEITE_COLUMNS)
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -486,33 +541,56 @@ async def leite_trimestral(
 
 @overload
 async def pib_agro(
+    setor: str = "agropecuaria",
+    *,
     trimestre: str | list[str] | None = None,
     precos: str = "corrente",
-    setor: str = "agropecuaria",
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def pib_agro(
+    setor: str = "agropecuaria",
+    *,
     trimestre: str | list[str] | None = None,
     precos: str = "corrente",
-    setor: str = "agropecuaria",
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def pib_agro(
+    setor: str = "agropecuaria",
     *,
+    trimestre: str | list[str] | None = None,
+    precos: str = "corrente",
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def pib_agro(
+    setor: str = "agropecuaria",
+    *,
     trimestre: str | list[str] | None = None,
     precos: str = "corrente",
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+async def pib_agro(
     setor: str = "agropecuaria",
+    *,
+    trimestre: str | list[str] | None = None,
+    precos: str = "corrente",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_pib",
@@ -530,19 +608,8 @@ async def pib_agro(
         setor=setor,
     )
 
-    precos_lower = precos.lower()
-    setor_lower = setor.lower()
-
-    if precos_lower not in client.VARIAVEIS_PIB:
-        raise InvalidParameterError(
-            f"Tipo de preços não suportado: {precos}. "
-            f"Disponíveis: {list(client.VARIAVEIS_PIB.keys())}"
-        )
-
-    if setor_lower not in client.SETORES_PIB:
-        raise InvalidParameterError(
-            f"Setor não suportado: {setor}. Disponíveis: {list(client.SETORES_PIB.keys())}"
-        )
+    precos_lower = normalizar_opcao(precos, "Tipo de preços", client.VARIAVEIS_PIB)
+    setor_lower = normalizar_opcao(setor, "Setor", client.SETORES_PIB)
 
     if precos_lower == "corrente":
         table_code = client.TABELAS_PIB["pib_corrente"]
@@ -597,7 +664,7 @@ async def pib_agro(
     output_cols = [
         c for c in ["trimestre", "valor", "unidade", "setor", "fonte"] if c in df.columns
     ]
-    df = df[output_cols].reset_index(drop=True)
+    df = tipar_resultado(df[output_cols].reset_index(drop=True), "pib_agro")
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)

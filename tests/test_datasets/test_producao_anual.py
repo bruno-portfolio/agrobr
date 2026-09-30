@@ -234,7 +234,7 @@ class TestProducaoAnualSpecific:
     @pytest.mark.asyncio
     async def test_nivel_invalido_raises(self):
         with pytest.raises(ValueError, match="nível inválido"):
-            await producao_anual("soja", nivel="Brasil")
+            await producao_anual("soja", nivel=51)
         with pytest.raises(ValueError, match="nível inválido"):
             await producao_anual("soja", nivel="estado")
 

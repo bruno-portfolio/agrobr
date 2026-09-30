@@ -26,7 +26,7 @@ class TestExtracaoVegetalValidation:
                 ("banana_inexistente",),
                 {},
                 ValueError,
-                "Produto não suportado",
+                "Produto inválido",
             ),
             (
                 "test_variavel_invalida",
@@ -34,7 +34,7 @@ class TestExtracaoVegetalValidation:
                 ("acai",),
                 {"variavel": "peso"},
                 ValueError,
-                "Variável não suportada",
+                "Variável inválida",
             ),
         ]
         with helpers.collect_failures() as check:

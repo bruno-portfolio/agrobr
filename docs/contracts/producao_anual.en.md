@@ -2,6 +2,10 @@
 
 Consolidated annual agricultural output by state or municipality.
 
+In API 2.0, only `produto`, `ano` accept positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
+If IBGE is unavailable, year lists do not trigger an invalid CONAB request: that fallback reports `SourceUnavailableError` because it does not cover multiple years.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -53,11 +57,11 @@ variable explicitly.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
-| `ano` | int | ❌ | Reference year |
+| `ano` | Int64 | ❌ | Reference year |
 | `produto` | str | ❌ | Product name |
 | `localidade` | str | ✅ | State or municipality |
-| `localidade_cod` | int | ❌ | Locality IBGE code (SIDRA D1C); optional column, IBGE rows only |
-| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows (and in the CONAB fallback, which is by state) |
+| `localidade_cod` | Int64 | ❌ | Locality IBGE code (SIDRA D1C); optional column, IBGE rows only |
+| `cod_municipio` | Int64 | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows (and in the CONAB fallback, which is by state) |
 | `area_plantada` | float64 | ✅ | Planted area (ha) |
 | `area_colhida` | float64 | ✅ | Harvested area (ha) |
 | `producao` | float64 | ✅ | Production (see `unidade_producao`) |

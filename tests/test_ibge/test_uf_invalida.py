@@ -21,7 +21,7 @@ from tests.helpers import levanta_exatamente
 async def test_uf_desconhecida_e_recusada_antes_da_rede(monkeypatch, chamada):
     sidra = AsyncMock()
     monkeypatch.setattr(client, "fetch_sidra", sidra)
-    with levanta_exatamente(InvalidParameterError, match="UF invalida: 'XX'"):
+    with levanta_exatamente(InvalidParameterError, match="UF inválida: 'XX'"):
         await chamada()
     sidra.assert_not_awaited()
 

@@ -2,6 +2,8 @@
 
 PIB agropecuário brasileiro por setor e trimestre.
 
+Na API 2.0, somente `produto` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
 ## Fontes
 
 | Prioridade | Fonte | Descrição |

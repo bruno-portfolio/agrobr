@@ -87,7 +87,7 @@ class TestPamValidation:
                 ("produto_inexistente",),
                 {},
                 ValueError,
-                "Produto não suportado",
+                "Produto inválido",
             ),
             (
                 "test_pam_ano_invalido_antes_da_rede",
@@ -172,7 +172,7 @@ class TestPolarsSupport:
 
 class TestLspaValidation:
     async def test_validacao_lspa(self):
-        cases = [("test_lspa_produto_invalido", {"produto": "xyz"}, "Produto não suportado")]
+        cases = [("test_lspa_produto_invalido", {"produto": "xyz"}, "Produto inválido")]
         cases += [
             ("test_lspa_mes_invalido_nao_consulta_outra_referencia", {"mes": mes}, "mes")
             for mes in [0, 13, -1, "0", "13", "", "abc", "7.9", 7.9, True, False]

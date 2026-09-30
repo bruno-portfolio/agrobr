@@ -21,9 +21,9 @@ async def test_parametros_invalidos_recusam_antes_de_ler_o_pacote(monkeypatch):
     consultar = Mock(side_effect=AssertionError("o pacote não pode ser lido"))
     monkeypatch.setattr(censo, "_consultar", consultar)
     casos = [
-        ({"tema": "nao_existe"}, "Tema 'nao_existe' inválido"),
-        ({"tema": "efetivo_bovinos", "uf": "XX"}, "UF 'XX' inválida"),
-        ({"tema": "efetivo_bovinos", "nivel": "total"}, "Nível 'total' inválido"),
+        ({"tema": "nao_existe"}, "Tema inválido: 'nao_existe'"),
+        ({"tema": "efetivo_bovinos", "uf": "XX"}, "UF inválida: 'XX'"),
+        ({"tema": "efetivo_bovinos", "nivel": "total"}, "Nível inválido: 'total'"),
     ]
     for kwargs, mensagem in casos:
         with pytest.raises(InvalidParameterError, match=mensagem):
@@ -33,8 +33,8 @@ async def test_parametros_invalidos_recusam_antes_de_ler_o_pacote(monkeypatch):
 
 async def test_uf_e_nivel_so_com_espacos_recusam():
     for kwargs, mensagem in (
-        ({"uf": "  "}, "UF '  ' inválida"),
-        ({"nivel": "  "}, "Nível '  ' inválido"),
+        ({"uf": "  "}, "UF inválida: '  '"),
+        ({"nivel": "  "}, "Nível inválido: '  '"),
     ):
         with pytest.raises(InvalidParameterError, match=mensagem):
             await ibge.censo_agro_municipal_1985("efetivo_bovinos", **kwargs)

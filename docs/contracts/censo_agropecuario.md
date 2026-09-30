@@ -2,6 +2,8 @@
 
 Dados do Censo Agropecuario 1995/2006/2017 por tema, UF e nivel territorial.
 
+Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
 ## Fontes
 
 | Prioridade | Fonte | Descricao |
@@ -32,10 +34,10 @@ Dados do Censo Agropecuario 1995/2006/2017 por tema, UF e nivel territorial.
 
 | Coluna | Tipo | Nullable | Descricao |
 |--------|------|----------|-----------|
-| `ano` | int | ❌ | Ano de referencia (1995, 2006 ou 2017) |
+| `ano` | Int64 | ❌ | Ano de referencia (1995, 2006 ou 2017) |
 | `localidade` | str | ✅ | UF ou municipio |
-| `localidade_cod` | int | ✅ | Codigo IBGE |
-| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
+| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `tema` | str | ❌ | Tema do censo |
 | `categoria` | str | ❌ | Categoria dentro do tema |
 | `variavel` | str | ❌ | Nome da variavel |

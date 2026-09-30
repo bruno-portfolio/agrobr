@@ -12,8 +12,10 @@ import pandas as pd
 
 from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.ibge._helpers import normalizar_opcao
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrame, DataFrameResult, build_source_meta, finalize_result
+from agrobr.utils.validation import validate_uf
 
 logger = _log.get_logger(__name__)
 
@@ -215,27 +217,17 @@ def _tipar(df: pd.DataFrame) -> pd.DataFrame:
     for coluna in _INTEIROS_NULOS:
         df[coluna] = df[coluna].astype("Int64")
     for coluna in _INTEIROS:
-        df[coluna] = df[coluna].astype("int64")
+        df[coluna] = df[coluna].astype("Int64")
     for coluna in _TEXTOS:
-        df[coluna] = df[coluna].astype("string")
-    df["reparado"] = df["reparado"].astype(bool)
+        df[coluna] = df[coluna].astype(pd.Series([""]).dtype)
+    df["reparado"] = df["reparado"].astype("boolean")
     return df
 
 
 def _validar(tema: str, uf: str | None, nivel: str | None) -> tuple[int, str | None, str | None]:
-    from agrobr.ibge.client import get_uf_codes
-
-    tema_normalizado = tema.lower().strip() if isinstance(tema, str) else ""
-    if tema_normalizado not in TEMAS_CENSO_MUNICIPAL_1985:
-        raise InvalidParameterError(
-            f"Tema '{tema}' inválido. Temas disponíveis: {TEMAS_DISPONIVEIS}"
-        )
-    uf_normalizada = uf.upper().strip() if uf is not None else None
-    if uf_normalizada is not None and uf_normalizada not in get_uf_codes():
-        raise InvalidParameterError(f"UF '{uf}' inválida.")
-    nivel_normalizado = nivel.lower().strip() if nivel is not None else None
-    if nivel_normalizado is not None and nivel_normalizado not in NIVEIS:
-        raise InvalidParameterError(f"Nível '{nivel}' inválido. Opções: {list(NIVEIS)}")
+    tema_normalizado = normalizar_opcao(tema, "Tema", TEMAS_CENSO_MUNICIPAL_1985)
+    uf_normalizada = validate_uf(uf)
+    nivel_normalizado = normalizar_opcao(nivel, "Nível", NIVEIS) if nivel is not None else None
     return TEMAS_CENSO_MUNICIPAL_1985[tema_normalizado], uf_normalizada, nivel_normalizado
 
 
@@ -296,7 +288,7 @@ async def censo_agro_municipal_1985(
     *,
     uf: str | None = ...,
     nivel: str | None = ...,
-    as_polars: bool = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[False] = ...,
 ) -> pd.DataFrame: ...
 
@@ -308,8 +300,30 @@ async def censo_agro_municipal_1985(
     uf: str | None = ...,
     nivel: str | None = ...,
     as_polars: bool = ...,
+    return_meta: Literal[False] = ...,
+) -> DataFrame: ...
+
+
+@overload
+async def censo_agro_municipal_1985(
+    tema: str,
+    *,
+    uf: str | None = ...,
+    nivel: str | None = ...,
+    as_polars: Literal[False] = ...,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def censo_agro_municipal_1985(
+    tema: str,
+    *,
+    uf: str | None = ...,
+    nivel: str | None = ...,
+    as_polars: bool = ...,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def censo_agro_municipal_1985(
@@ -319,7 +333,7 @@ async def censo_agro_municipal_1985(
     nivel: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Censo Agropecuário 1985 municipal, 1 linha por casa do PDF (a do número e as sem leitura, incertas e
     fora de coluna), com o `status` de cada uma. `valor` só vem na casa confirmada pelas somas impressas;
     `valor_lido` traz a leitura sempre. Lê o pacote do agrobr, sem rede.

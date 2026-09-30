@@ -9,6 +9,8 @@ o seu `status`. **`valor` só vem quando a casa foi confirmada pelas somas impre
 UF); **`valor_lido` traz a leitura sempre**. Filtre por `status` para escolher o nível de confiança. São 2.275.606 casas, das quais
 579.456 (25,5 %) confirmadas.
 
+Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
 ## Fontes
 
 | Prioridade | Fonte | Descrição |
@@ -63,15 +65,15 @@ Contra a cópia de 2008 só em imagem, a versão de hoje confirma 22,6 % casas a
 
 | Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
-| `ano` | int | ❌ | Sempre 1985 |
+| `ano` | Int64 | ❌ | Sempre 1985 |
 | `uf` | str | ❌ | Sigla da UF |
 | `volume` | str | ❌ | Volume do IBGE (`n18_p1_mg` e `n18_p2_mg` para Minas Gerais) |
-| `tabela` | int | ❌ | Número da tabela (67 a 119), o mesmo tema em todos os volumes |
+| `tabela` | Int64 | ❌ | Número da tabela (67 a 119), o mesmo tema em todos os volumes |
 | `tema` | str | ❌ | Tema da tabela, pelo título impresso |
-| `pagina_pdf` | int | ❌ | Página do PDF (contada a partir de 1) |
-| `pagina_impressa` | int | ✅ | Número impresso no rodapé |
-| `linha` | int | ❌ | Linha da localidade no bloco de páginas |
-| `coluna` | int | ❌ | Coluna física na página (0 à esquerda); negativa quando a casa não tem coluna identificada |
+| `pagina_pdf` | Int64 | ❌ | Página do PDF (contada a partir de 1) |
+| `pagina_impressa` | Int64 | ✅ | Número impresso no rodapé |
+| `linha` | Int64 | ❌ | Linha da localidade no bloco de páginas |
+| `coluna` | Int64 | ❌ | Coluna física na página (0 à esquerda); negativa quando a casa não tem coluna identificada |
 | `nivel` | str | ❌ | `uf`, `mesorregiao`, `microrregiao` ou `municipio` |
 | `localidade` | str | ❌ | Nome como lido, com o ruído da leitura: "SERTÓES OE SENADOR POMPEU" (CE), "!NHAP!" (AL) |
 | `coluna_nome` | str | ✅ | Nome da coluna, só quando confirmado (ver acima) |
@@ -80,8 +82,8 @@ Contra a cópia de 2008 só em imagem, a versão de hoje confirma 22,6 % casas a
 | `variavel` | str | ✅ | A folha da coluna, só quando confirmada |
 | `unidade` | str | ✅ | Unidade, só quando a folha é confirmada |
 | `unidade_lida` | str | ✅ | Unidade pela marca da nota do volume ou pelo rótulo da coluna |
-| `valor` | int | ✅ | Número confirmado |
-| `valor_lido` | int | ✅ | Número lido |
+| `valor` | Int64 | ✅ | Número confirmado |
+| `valor_lido` | Int64 | ✅ | Número lido |
 | `marcador` | str | ✅ | "-", "...", "x" quando a casa traz um sinal |
 | `status` | str | ❌ | Ver a tabela acima |
 | `reparado` | bool | ❌ | O grupo de milhar da esquerda foi recuperado por releitura do recorte; `False` em todas as casas desta versão |

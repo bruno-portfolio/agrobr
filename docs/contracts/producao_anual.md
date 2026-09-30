@@ -2,6 +2,10 @@
 
 Produção agrícola anual consolidada por UF ou município.
 
+Na API 2.0, somente `produto`, `ano` aceitam posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
+Se o IBGE estiver indisponível, listas de anos não acionam uma chamada inválida à CONAB: esse fallback informa `SourceUnavailableError` porque não cobre múltiplos anos.
+
 ## Fontes
 
 | Prioridade | Fonte | Descrição |
@@ -51,11 +55,11 @@ variável explicitamente.
 
 | Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
-| `ano` | int | ❌ | Ano de referência |
+| `ano` | Int64 | ❌ | Ano de referência |
 | `produto` | str | ❌ | Nome do produto |
 | `localidade` | str | ✅ | UF ou município |
-| `localidade_cod` | int | ❌ | Código IBGE da localidade (D1C do SIDRA); coluna opcional, só nas linhas do IBGE |
-| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município (e no fallback da CONAB, que é por UF) |
+| `localidade_cod` | Int64 | ❌ | Código IBGE da localidade (D1C do SIDRA); coluna opcional, só nas linhas do IBGE |
+| `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município (e no fallback da CONAB, que é por UF) |
 | `area_plantada` | float64 | ✅ | Área plantada (ha) |
 | `area_colhida` | float64 | ✅ | Área colhida (ha) |
 | `producao` | float64 | ✅ | Produção (ver `unidade_producao`) |

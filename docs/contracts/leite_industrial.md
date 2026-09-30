@@ -2,6 +2,10 @@
 
 Aquisicao e industrializacao trimestral de leite por UF.
 
+Na API 2.0, somente `trimestre` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
+O parâmetro `produto="leite"` é opcional e somente por nome.
+
 ## Fontes
 
 | Prioridade | Fonte | Descricao |
@@ -18,7 +22,7 @@ Aquisicao e industrializacao trimestral de leite por UF.
 |--------|------|----------|-----------|
 | `trimestre` | str | ❌ | Trimestre YYYYQQ |
 | `localidade` | str | ✅ | UF |
-| `localidade_cod` | int | ✅ | Codigo IBGE |
+| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
 | `leite_adquirido` | float64 | ✅ | Leite cru adquirido (mil litros) |
 | `leite_industrializado` | float64 | ✅ | Leite cru industrializado (mil litros) |
 | `preco_medio` | float64 | ✅ | Preco medio pago ao produtor (R$/litro) |

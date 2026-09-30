@@ -35,8 +35,8 @@ def test_layout_sem_cabecalhos_rejeitado():
 @pytest.mark.parametrize(
     "kwargs,message",
     [
-        ({"nivel": "outro"}, "Nível 'outro' inválido"),
-        ({"uf": "ZZ"}, "UF 'ZZ' inválida"),
+        ({"nivel": "outro"}, "Nível inválido: 'outro'"),
+        ({"uf": "ZZ"}, "UF inválida: 'ZZ'"),
         ({"uf": "GO", "nivel": "brasil"}, "O filtro uf exige"),
     ],
 )

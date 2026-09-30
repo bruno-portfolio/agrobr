@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import math
 import re
+import warnings
 from urllib.parse import quote
 
 import httpx
@@ -22,6 +23,8 @@ from agrobr.http.retry import (
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.ibge import agregados
+from agrobr.utils.result import ATRIBUTO_AVISOS
+from agrobr.utils.validation import validate_uf
 from agrobr.utils.warnings import warn_once
 
 logger = _log.get_logger(__name__)
@@ -730,12 +733,13 @@ async def fetch_sidra(
     }
     if df.empty:
         periodo = ",".join(period) if isinstance(period, list) else period or "mais recente"
-        warn_once(
-            f"ibge_sem_dado:{table_code}:{periodo}",
+        aviso = (
             f"IBGE sem dado na tabela {table_code} para o período {periodo} (ainda não "
-            "publicado ou sem observação no recorte); o resultado vem vazio",
+            "publicado ou sem observação no recorte); o resultado vem vazio"
         )
+        warnings.warn(aviso, UserWarning, stacklevel=2)
         df = agregados.to_sidra_frame([], variable=variable, classifications=classifications)
+        df.attrs[ATRIBUTO_AVISOS] = [aviso]
     else:
         identidade.update(await _periodos_modificacao(table_code, df))
     df.attrs.update(identidade, canal=canal, url=url_used)
@@ -1045,9 +1049,9 @@ def get_uf_codes() -> dict[str, str]:
 
 
 def uf_to_ibge_code(uf: str) -> str:
-    texto = uf.strip().upper()
-    if texto in _UF_CODES.values():
-        return texto
-    if texto not in _UF_CODES:
-        raise InvalidParameterError(f"UF invalida: {uf!r}")
-    return _UF_CODES[texto]
+    texto = uf.strip().upper() if isinstance(uf, str) else uf
+    texto = next((sigla for sigla, codigo in _UF_CODES.items() if codigo == texto), texto)
+    normalizada = validate_uf(texto)
+    if normalizada is None:
+        raise InvalidParameterError(f"UF inválida: {uf!r}. Disponíveis: {list(_UF_CODES)}")
+    return _UF_CODES[normalizada]

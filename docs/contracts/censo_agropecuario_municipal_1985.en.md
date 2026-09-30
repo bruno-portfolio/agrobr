@@ -9,6 +9,8 @@ outside the grid, each with its `status`. **`valor` is filled only when the cell
 microregion → mesoregion → state); **`valor_lido` always carries the reading**. Filter by `status` to choose the confidence level.
 There are 2,275,606 cells, of which 579,456 (25.5%) are confirmed.
 
+In API 2.0, only `tema` accepts positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -65,15 +67,15 @@ Against the 2008 image-only copy, today's version confirms 22.6% more cells.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-----------|
-| `ano` | int | ❌ | Always 1985 |
+| `ano` | Int64 | ❌ | Always 1985 |
 | `uf` | str | ❌ | State code |
 | `volume` | str | ❌ | IBGE volume (`n18_p1_mg` and `n18_p2_mg` for Minas Gerais) |
-| `tabela` | int | ❌ | Table number (67 to 119), the same theme in every volume |
+| `tabela` | Int64 | ❌ | Table number (67 to 119), the same theme in every volume |
 | `tema` | str | ❌ | Table theme, from the printed title |
-| `pagina_pdf` | int | ❌ | PDF page (counted from 1) |
-| `pagina_impressa` | int | ✅ | Number printed in the footer |
-| `linha` | int | ❌ | Row of the place in the page block |
-| `coluna` | int | ❌ | Physical column on the page (0 on the left); negative when the cell has no identified column |
+| `pagina_pdf` | Int64 | ❌ | PDF page (counted from 1) |
+| `pagina_impressa` | Int64 | ✅ | Number printed in the footer |
+| `linha` | Int64 | ❌ | Row of the place in the page block |
+| `coluna` | Int64 | ❌ | Physical column on the page (0 on the left); negative when the cell has no identified column |
 | `nivel` | str | ❌ | `uf`, `mesorregiao`, `microrregiao` or `municipio` |
 | `localidade` | str | ❌ | Name as read, with the reading noise: "SERTÓES OE SENADOR POMPEU" (CE), "!NHAP!" (AL) |
 | `coluna_nome` | str | ✅ | Column name, only when confirmed (see above) |
@@ -82,8 +84,8 @@ Against the 2008 image-only copy, today's version confirms 22.6% more cells.
 | `variavel` | str | ✅ | The column's leaf, only when confirmed |
 | `unidade` | str | ✅ | Unit, only when the leaf is confirmed |
 | `unidade_lida` | str | ✅ | Unit from the volume's note mark or from the column label |
-| `valor` | int | ✅ | Confirmed number |
-| `valor_lido` | int | ✅ | Number read |
+| `valor` | Int64 | ✅ | Confirmed number |
+| `valor_lido` | Int64 | ✅ | Number read |
 | `marcador` | str | ✅ | "-", "...", "x" when the cell carries a sign |
 | `status` | str | ❌ | See the table above |
 | `reparado` | bool | ❌ | The leftmost thousands group was recovered by re-reading the crop; `False` in every cell of this version |

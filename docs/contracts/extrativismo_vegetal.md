@@ -2,6 +2,8 @@
 
 Producao extrativista vegetal (acai, castanha-do-para, erva-mate, palmito, etc) por UF ou municipio.
 
+Na API 2.0, somente `produto`, `ano` aceitam posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
 ## Fontes
 
 | Prioridade | Fonte | Descricao |
@@ -16,10 +18,10 @@ Producao extrativista vegetal (acai, castanha-do-para, erva-mate, palmito, etc) 
 
 | Coluna | Tipo | Nullable | Descricao |
 |--------|------|----------|-----------|
-| `ano` | int | ❌ | Ano de referencia |
+| `ano` | Int64 | ❌ | Ano de referencia |
 | `localidade` | str | ✅ | UF ou municipio |
-| `localidade_cod` | int | ✅ | Codigo IBGE |
-| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
+| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `produto` | str | ❌ | Nome do produto |
 | `valor` | float64 | ✅ | Quantidade produzida (toneladas ou metros cúbicos) ou, com `variavel="valor_producao"`, valor da produção em mil reais; a escala vem em `unidade` |
 | `unidade` | str | ❌ | Unidade de medida |

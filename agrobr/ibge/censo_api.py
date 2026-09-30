@@ -9,7 +9,14 @@ from agrobr import _log, constants
 from agrobr.cache.keys import build_cache_key
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client
-from agrobr.ibge._helpers import NIVEL_MAP_HISTORICO, SIDRA_BASE, registrar_canal, resolve_ibge_code
+from agrobr.ibge._helpers import (
+    NIVEL_MAP_HISTORICO,
+    SIDRA_BASE,
+    normalizar_opcao,
+    registrar_canal,
+    resolve_ibge_code,
+    tipar_resultado,
+)
 from agrobr.ibge.censo_tables import (
     _CENSO_ALL_VAR_IDS,
     _CENSO_CATEGORIA_COL_INDEX,
@@ -21,7 +28,7 @@ from agrobr.ibge.censo_tables import (
 )
 from agrobr.models import MetaInfo
 from agrobr.utils import tasks
-from agrobr.utils.result import finalize_result
+from agrobr.utils.result import DataFrame, DataFrameResult, finalize_result
 from agrobr.utils.time import utcnow
 
 logger = _log.get_logger(__name__)
@@ -315,11 +322,11 @@ def _process_var_as_categoria(
 @overload
 async def censo_agro(
     tema: str,
+    *,
     ano: int | str | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -327,23 +334,48 @@ async def censo_agro(
 @overload
 async def censo_agro(
     tema: str,
+    *,
     ano: int | str | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def censo_agro(
+    tema: str,
     *,
+    ano: int | str | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def censo_agro(
     tema: str,
+    *,
+    ano: int | str | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+async def censo_agro(
+    tema: str,
+    *,
     ano: int | str | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_censo_agro",
@@ -362,11 +394,7 @@ async def censo_agro(
         nivel=nivel,
     )
 
-    tema_lower = tema.lower()
-    if tema_lower not in client.TABELAS_CENSO_AGRO:
-        raise InvalidParameterError(
-            f"Tema não suportado: {tema}. Disponíveis: {client.TEMAS_CENSO_AGRO}"
-        )
+    tema_lower = normalizar_opcao(tema, "Tema", client.TABELAS_CENSO_AGRO)
 
     anos_disponiveis = list(client.TABELAS_CENSO_AGRO[tema_lower].keys())
 
@@ -391,6 +419,7 @@ async def censo_agro(
     frames = [df for df in results if not df.empty]
 
     df = pd.concat(frames, ignore_index=True) if frames else _empty_censo_df()
+    df = tipar_resultado(df, "censo_agropecuario")
     _validate_censo_keys(df, "ibge_censo_agro", constants.IBGE_CENSO_PARSER_VERSION)
 
     if not df.empty and "ano" in df.columns and "localidade" in df.columns:
@@ -499,11 +528,11 @@ def _parse_censo_historico_raw(df: pd.DataFrame, tema: str) -> pd.DataFrame:
 @overload
 async def censo_agro_historico(
     tema: str,
+    *,
     ano: int | list[int] | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "regiao", "uf"] = "uf",
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -511,23 +540,48 @@ async def censo_agro_historico(
 @overload
 async def censo_agro_historico(
     tema: str,
+    *,
     ano: int | list[int] | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "regiao", "uf"] = "uf",
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def censo_agro_historico(
+    tema: str,
     *,
+    ano: int | list[int] | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "regiao", "uf"] = "uf",
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def censo_agro_historico(
     tema: str,
+    *,
+    ano: int | list[int] | None = None,
+    uf: str | None = None,
+    nivel: Literal["brasil", "regiao", "uf"] = "uf",
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+async def censo_agro_historico(
+    tema: str,
+    *,
     ano: int | list[int] | None = None,
     uf: str | None = None,
     nivel: Literal["brasil", "regiao", "uf"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_censo_agro_historico",
@@ -546,37 +600,31 @@ async def censo_agro_historico(
         nivel=nivel,
     )
 
-    tema_lower = tema.lower()
-    if tema_lower not in client.TABELAS_CENSO_HISTORICO:
-        raise InvalidParameterError(
-            f"Tema não suportado: {tema}. Disponíveis: {client.TEMAS_CENSO_HISTORICO}"
-        )
+    tema_lower = normalizar_opcao(tema, "Tema", client.TABELAS_CENSO_HISTORICO)
 
     niveis_validos = client.NIVEIS_CENSO_HISTORICO[tema_lower]
-    if nivel not in niveis_validos:
-        raise InvalidParameterError(
-            f"Nível '{nivel}' não disponível para tema '{tema_lower}'. "
-            f"Disponíveis: {niveis_validos}"
-        )
+    nivel_normalizado = normalizar_opcao(nivel, "Nível", niveis_validos)
 
     periodos = client.PERIODOS_CENSO_HISTORICO[tema_lower]
     if ano is None:
         anos = periodos
-    elif isinstance(ano, int):
-        if ano not in periodos:
-            raise InvalidParameterError(
-                f"Ano {ano} não disponível para tema '{tema_lower}'. Disponíveis: {periodos}"
-            )
+    elif isinstance(ano, int) and not isinstance(ano, bool):
         anos = [ano]
-    else:
-        for a in ano:
-            if a not in periodos:
-                raise InvalidParameterError(
-                    f"Ano {a} não disponível para tema '{tema_lower}'. Disponíveis: {periodos}"
-                )
+    elif isinstance(ano, list) and ano:
         anos = ano
+    else:
+        raise InvalidParameterError(
+            f"ano deve ser inteiro ou lista não vazia de inteiros. Disponíveis: {periodos}"
+        )
+    for a in anos:
+        if not isinstance(a, int) or isinstance(a, bool) or a not in periodos:
+            raise InvalidParameterError(
+                f"Ano {a!r} não disponível para tema '{tema_lower}'. Disponíveis: {periodos}"
+            )
 
-    territorial_level, ibge_code = resolve_ibge_code(uf, nivel, nivel_map=NIVEL_MAP_HISTORICO)
+    territorial_level, ibge_code = resolve_ibge_code(
+        uf, nivel_normalizado, nivel_map=NIVEL_MAP_HISTORICO
+    )
 
     period = ",".join(str(a) for a in anos)
     variable = ",".join(client.VARIAVEIS_CENSO_HISTORICO[tema_lower].values())
@@ -595,6 +643,7 @@ async def censo_agro_historico(
     registrar_canal(meta, df)
 
     df = _empty_censo_df() if df.empty else _parse_censo_historico_raw(df, tema_lower)
+    df = tipar_resultado(df, "censo_agropecuario_historico")
     _validate_censo_keys(
         df, "ibge_censo_agro_historico", constants.IBGE_CENSO_HISTORICO_PARSER_VERSION
     )

@@ -26,7 +26,7 @@ class TestPibValidation:
                 (),
                 {"setor": "energia"},
                 ValueError,
-                "Setor não suportado",
+                "Setor inválido",
             ),
             (
                 "test_precos_invalido",
@@ -34,7 +34,7 @@ class TestPibValidation:
                 (),
                 {"precos": "constante_2020"},
                 ValueError,
-                "Tipo de preços não suportado",
+                "Tipo de preços inválido",
             ),
         ]
         with helpers.collect_failures() as check:

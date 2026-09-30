@@ -496,8 +496,8 @@ class TestDatasetTemplate:
                     ),
                     (
                         "assert",
-                        "meta.contract_version == '1.0'",
-                        lambda _df, meta: meta.contract_version == "1.0",
+                        "meta.contract_version == '2.0'",
+                        lambda _df, meta: meta.contract_version == "2.0",
                     ),
                     (
                         "assert",

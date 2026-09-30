@@ -2,6 +2,8 @@
 
 Efetivo de rebanhos e producao de origem animal por UF ou municipio.
 
+Na API 2.0, somente `produto`, `ano` aceitam posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
 ## Fontes
 
 | Prioridade | Fonte | Descricao |
@@ -26,10 +28,10 @@ O `bovino` da PPM não é o rebanho do USDA (`usda.psd`, código `0011000`): a P
 
 | Coluna | Tipo | Nullable | Descricao |
 |--------|------|----------|-----------|
-| `ano` | int | ❌ | Ano de referencia |
+| `ano` | Int64 | ❌ | Ano de referencia |
 | `localidade` | str | ✅ | UF ou municipio |
-| `localidade_cod` | int | ✅ | Codigo IBGE |
-| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
+| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `especie` | str | ❌ | Nome da especie/produto |
 | `valor` | float64 | ✅ | Valor (unidade varia por especie) |
 | `unidade` | str | ❌ | Unidade de medida |

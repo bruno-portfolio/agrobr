@@ -2,6 +2,10 @@
 
 Quarterly milk acquisition and processing by state.
 
+In API 2.0, only `trimestre` accepts positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
+The optional `produto="leite"` parameter is keyword-only.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -18,7 +22,7 @@ Quarterly milk acquisition and processing by state.
 |--------|------|----------|-------------|
 | `trimestre` | str | ❌ | Quarter YYYYQQ |
 | `localidade` | str | ✅ | State |
-| `localidade_cod` | int | ✅ | IBGE code |
+| `localidade_cod` | Int64 | ✅ | IBGE code |
 | `leite_adquirido` | float64 | ✅ | Raw milk acquired (thousand liters) |
 | `leite_industrializado` | float64 | ✅ | Raw milk processed (thousand liters) |
 | `preco_medio` | float64 | ✅ | Average price paid to producer (BRL/liter) |

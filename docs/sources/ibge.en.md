@@ -41,7 +41,13 @@ IBGE publishes for a period without a date comes out null. If the metadata reque
 is in `periodos_modificacao_erro`.
 
 A response without observations (`[]`, for example a period not yet published), on either channel, returns an
-empty DataFrame with the same columns as a response with data and emits a warning (`warnings.warn`, once per table and period).
+empty DataFrame with the same columns as a response with data and emits a warning (`warnings.warn`, on every query, also recorded in `MetaInfo.validation_warnings`).
+
+In API 2.0, territorial filters and flags are passed by keyword. PAM, LSPA, PPM, forestry and plant extraction accept only product/species and year positionally; slaughter accepts species and quarter; census functions accept only the topic. For GDP, only `setor` is positional: use `ibge.pib_agro(trimestre="202401")`. Milk accepts only `trimestre` positionally.
+
+Closed domains normalize case and accents; invalid parameters raise `InvalidParameterError` before any query. `variaveis=[]`, unknown variables and empty year lists are rejected. Forestry and plant extraction validate years from 1974 through the current year. The historical census accepts an integer year or a nonempty list of integer years published for the topic.
+
+Each empty SIDRA query emits a warning and records the same text in `MetaInfo.validation_warnings`, including after another empty query for the same table and period. Empty results preserve columns and dtypes: years/codes use `Int64`, measures use `float64`, quarter labels remain text, and text follows the installed pandas default. `animais_abatidos` uses `Int64` (contract 2.0); fractional head counts raise `ParseError`. PAM preserves its 14 output columns, with unrequested measures set to null.
 
 ## Available Surveys
 
@@ -400,7 +406,7 @@ asyncio.run(main())
 | `localidade` | str | State |
 | `localidade_cod` | int | IBGE code of the locality |
 | `especie` | str | bovino, suino or frango |
-| `animais_abatidos` | float | Quantity slaughtered (head) |
+| `animais_abatidos` | Int64 | Quantity slaughtered (head) |
 | `peso_carcacas` | float | Total carcass weight (kg) |
 | `fonte` | str | "ibge_abate" |
 

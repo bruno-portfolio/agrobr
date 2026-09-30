@@ -2,6 +2,8 @@
 
 Serie historica do Censo Agropecuario (1920-2006) por tema e UF via SIDRA.
 
+Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
 ## Fontes
 
 | Prioridade | Fonte | Descricao |
@@ -30,10 +32,10 @@ Serie historica do Censo Agropecuario (1920-2006) por tema e UF via SIDRA.
 
 | Coluna | Tipo | Nullable | Descricao |
 |--------|------|----------|-----------|
-| `ano` | int | ❌ | Ano censitario (1920-2006) |
+| `ano` | Int64 | ❌ | Ano censitario (1920-2006) |
 | `localidade` | str | ✅ | UF ou regiao |
-| `localidade_cod` | int | ✅ | Codigo IBGE |
-| `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
+| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `tema` | str | ❌ | Tema da serie historica |
 | `categoria` | str | ❌ | Categoria dentro do tema (ou "total") |
 | `variavel` | str | ❌ | Nome da variavel |

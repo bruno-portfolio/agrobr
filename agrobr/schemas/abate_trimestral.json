@@ -1,7 +1,7 @@
 {
   "name": "ibge.abate",
-  "schema_version": "1.0",
-  "effective_from": "0.10.0",
+  "schema_version": "2.0",
+  "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "trimestre",
@@ -22,7 +22,7 @@
     "localidade": "str",
     "localidade_cod": "int",
     "especie": "str",
-    "animais_abatidos": "float",
+    "animais_abatidos": "int",
     "peso_carcacas": "float",
     "fonte": "str"
   },
@@ -82,7 +82,7 @@
     },
     {
       "name": "animais_abatidos",
-      "type": "float",
+      "type": "int",
       "nullable": true,
       "unit": "cabeças",
       "stable": true,

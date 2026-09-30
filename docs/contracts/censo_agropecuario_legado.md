@@ -2,6 +2,8 @@
 
 Dados do Censo Agropecuário 1995/96 — seis temas publicados em ZIPs com tabelas XLS ou HTML.
 
+Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
+
 ## Fontes
 
 | Prioridade | Fonte | Descricao |
@@ -22,10 +24,10 @@ O tema `maquinas` não tem o Pará: o IBGE publicou a Tabela 6 (pessoal ocupado)
 
 | Coluna | Tipo | Nullable | Descricao |
 |--------|------|----------|-----------|
-| `ano` | int | N | Sempre 1995 |
+| `ano` | Int64 | N | Sempre 1995 |
 | `localidade` | str | S | Brasil, nome da UF ou nome histórico do município |
-| `localidade_cod` | int | S | Código de Brasil/UF; nulo para municípios sem código na tabela |
-| `cod_municipio` | int | S | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município (e nos municípios sem código na tabela) |
+| `localidade_cod` | Int64 | S | Código de Brasil/UF; nulo para municípios sem código na tabela |
+| `cod_municipio` | Int64 | S | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município (e nos municípios sem código na tabela) |
 | `uf` | str | S | Sigla do diretório/cabeçalho oficial; nula para Brasil |
 | `tema` | str | N | Tema do censo |
 | `categoria` | str | N | Categoria dentro do tema |

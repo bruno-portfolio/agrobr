@@ -8,12 +8,13 @@ import pandas as pd
 from agrobr import _log, constants
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
-from agrobr.ibge._helpers import SIDRA_BASE
+from agrobr.exceptions import SourceUnavailableError
+from agrobr.ibge._helpers import SIDRA_BASE, normalizar_opcao, tipar_resultado
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
 from agrobr.normalize.dates import anos_para_safra, safra_para_anos
 from agrobr.normalize.regions import uf_para_nome
+from agrobr.utils.result import DataFrame, DataFrameResult
 from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
 
@@ -48,7 +49,7 @@ async def _fetch_ibge_pam(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, Me
     df, meta = _unpack_result(result)
     for column in ("area_plantada", "valor_producao"):
         if column not in df.columns:
-            df[column] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+            df[column] = pd.Series(float("nan"), index=df.index, dtype="float64")
             logger.info("ibge_pam_coluna_historica_ausente", coluna=column, ano=ano)
     return df, meta
 
@@ -77,15 +78,12 @@ def _aggregate_conab_brasil(df: pd.DataFrame, produto: str) -> pd.DataFrame:
             }
         ]
     )
-    result[["area_colhida", "valor_producao"]] = result[["area_colhida", "valor_producao"]].astype(
-        "Float64"
-    )
-    return result[_PRODUCAO_ANUAL_COLS]
+    return tipar_resultado(result, "producao_anual", _PRODUCAO_ANUAL_COLS)
 
 
 def _normalize_conab(df: pd.DataFrame, produto: str, nivel: str) -> pd.DataFrame:
     if df.empty:
-        return pd.DataFrame(columns=_PRODUCAO_ANUAL_COLS)
+        return tipar_resultado(df, "producao_anual", _PRODUCAO_ANUAL_COLS)
 
     result = pd.DataFrame(index=df.index)
     result["ano"] = df["safra"].map(lambda value: safra_para_anos(str(value))[1]).astype("Int64")
@@ -101,15 +99,15 @@ def _normalize_conab(df: pd.DataFrame, produto: str, nivel: str) -> pd.DataFrame
         if source in df.columns:
             result[target] = pd.to_numeric(df[source], errors="coerce") * multiplier
         else:
-            result[target] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+            result[target] = pd.Series(float("nan"), index=df.index, dtype="float64")
 
     for column in ("area_colhida", "valor_producao"):
-        result[column] = pd.Series(pd.NA, index=df.index, dtype="Float64")
+        result[column] = pd.Series(float("nan"), index=df.index, dtype="float64")
     result["fonte"] = "conab"
 
     if nivel == "brasil":
         return _aggregate_conab_brasil(result, produto)
-    return result[_PRODUCAO_ANUAL_COLS].reset_index(drop=True)
+    return tipar_resultado(result.reset_index(drop=True), "producao_anual", _PRODUCAO_ANUAL_COLS)
 
 
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -129,6 +127,10 @@ async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
         raise SourceUnavailableError(
             source="conab",
             last_error="CONAB Safras nao oferece granularidade municipal",
+        )
+    if isinstance(ano, (list, tuple)):
+        raise SourceUnavailableError(
+            source="conab", last_error="CONAB Safras não cobre lista de anos no fallback"
         )
 
     ano = int(ano) if ano is not None else _hoje().year - 1
@@ -198,16 +200,14 @@ class ProducaoAnualDataset(BaseDataset):
         self,
         produto: str,
         ano: int | list[int] | None = None,
-        nivel: Literal["brasil", "uf", "municipio"] = "uf",
+        *,
         uf: str | None = None,
+        nivel: Literal["brasil", "uf", "municipio"] = "uf",
         return_meta: bool = False,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="producao_anual", produto=produto, ano=ano)
 
-        if nivel not in ("brasil", "uf", "municipio"):
-            raise InvalidParameterError(
-                f"nível inválido: {nivel!r}. Use: 'brasil', 'uf' ou 'municipio'"
-            )
+        nivel_normalizado = normalizar_opcao(nivel, "nível", ["brasil", "uf", "municipio"])
 
         uf = validate_uf(uf)
 
@@ -216,7 +216,7 @@ class ProducaoAnualDataset(BaseDataset):
             ano = int(snapshot[:4]) - 1
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, ano=ano, nivel=nivel, uf=uf
+            produto, ano=ano, nivel=nivel_normalizado, uf=uf
         )
 
         df = self._normalize(df, produto)
@@ -253,11 +253,11 @@ register(_producao_anual)
 async def producao_anual(
     produto: str,
     ano: int | list[int] | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    uf: str | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -265,22 +265,47 @@ async def producao_anual(
 async def producao_anual(
     produto: str,
     ano: int | list[int] | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    uf: str | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def producao_anual(
+    produto: str,
+    ano: int | list[int] | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def producao_anual(
+    produto: str,
+    ano: int | list[int] | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def producao_anual(
     produto: str,
     ano: int | list[int] | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    *,
     uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _producao_anual.fetch(  # type: ignore[call-arg]
         produto, ano=ano, nivel=nivel, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

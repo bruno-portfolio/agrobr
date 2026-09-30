@@ -40,7 +40,7 @@ class TestCensoHistoricoValidation:
                 ("tema_inexistente",),
                 {},
                 ValueError,
-                "Tema não suportado",
+                "Tema inválido",
             ),
             (
                 "test_ano_invalido",
@@ -64,7 +64,7 @@ class TestCensoHistoricoValidation:
                 ("estabelecimentos_area",),
                 {"nivel": "meso"},
                 ValueError,
-                "Nível 'meso' não disponível",
+                "Nível inválido: 'meso'",
             ),
         ]
         with helpers.collect_failures() as check:

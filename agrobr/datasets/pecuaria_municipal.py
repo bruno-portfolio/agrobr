@@ -10,6 +10,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -74,8 +75,9 @@ class PecuariaMunicipalDataset(BaseDataset):
         self,
         produto: str,
         ano: int | None = None,
-        nivel: Literal["brasil", "uf", "municipio"] = "uf",
+        *,
         uf: str | None = None,
+        nivel: Literal["brasil", "uf", "municipio"] = "uf",
         return_meta: bool = False,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info("dataset_fetch", dataset="pecuaria_municipal", produto=produto, ano=ano)
@@ -108,11 +110,11 @@ register(_pecuaria_municipal)
 async def pecuaria_municipal(
     produto: str,
     ano: int | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    uf: str | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -120,22 +122,47 @@ async def pecuaria_municipal(
 async def pecuaria_municipal(
     produto: str,
     ano: int | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    uf: str | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def pecuaria_municipal(
+    produto: str,
+    ano: int | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def pecuaria_municipal(
+    produto: str,
+    ano: int | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def pecuaria_municipal(
     produto: str,
     ano: int | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    *,
     uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _pecuaria_municipal.fetch(  # type: ignore[call-arg]
         produto, ano=ano, nivel=nivel, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import copy
+import dataclasses
+
 from agrobr.contracts import (
     BreakingChangePolicy,
     Column,
@@ -296,6 +299,18 @@ IBGE_ABATE_V1 = Contract(
         "'fonte' is always 'ibge_abate'",
     ],
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
+IBGE_ABATE_V2 = dataclasses.replace(
+    copy.deepcopy(IBGE_ABATE_V1),
+    version="2.0",
+    effective_from="2.0.0",
+    columns=[
+        dataclasses.replace(column, type=ColumnType.INTEGER)
+        if column.name == "animais_abatidos"
+        else copy.deepcopy(column)
+        for column in IBGE_ABATE_V1.columns
+    ],
 )
 
 IBGE_CENSO_AGRO_V1 = Contract(
@@ -835,7 +850,7 @@ register_contract("extrativismo_vegetal", IBGE_EXTRACAO_VEGETAL_V1)
 register_contract("leite_industrial", IBGE_LEITE_TRIMESTRAL_V1)
 register_contract("producao_anual", IBGE_PAM_V2)
 register_contract("pecuaria_municipal", IBGE_PPM_V1)
-register_contract("abate_trimestral", IBGE_ABATE_V1)
+register_contract("abate_trimestral", IBGE_ABATE_V2)
 register_contract("censo_agropecuario", IBGE_CENSO_AGRO_V1)
 register_contract("censo_agropecuario_legado", IBGE_CENSO_AGRO_LEGADO_V2)
 register_contract("censo_agropecuario_historico", IBGE_CENSO_AGRO_HISTORICO_V1)
@@ -843,6 +858,7 @@ register_contract("censo_agropecuario_municipal_1985", IBGE_CENSO_AGRO_MUNICIPAL
 
 __all__ = [
     "IBGE_ABATE_V1",
+    "IBGE_ABATE_V2",
     "IBGE_CENSO_AGRO_HISTORICO_V1",
     "IBGE_CENSO_AGRO_LEGADO_V2",
     "IBGE_CENSO_AGRO_MUNICIPAL_V2",

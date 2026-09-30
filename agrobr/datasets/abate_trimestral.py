@@ -9,6 +9,7 @@ from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpac
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -40,7 +41,7 @@ ABATE_TRIMESTRAL_INFO = DatasetInfo(
         "suino",
         "frango",
     ],
-    contract_version="1.0",
+    contract_version="2.0",
     update_frequency="quarterly",
     typical_latency="T+2 meses",
     source_url=SIDRA_BASE,
@@ -58,6 +59,7 @@ class AbateTrimestralDataset(BaseDataset):
         self,
         produto: str,
         trimestre: str | list[str] | None = None,
+        *,
         uf: str | None = None,
         return_meta: bool = False,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
@@ -90,10 +92,10 @@ register(_abate_trimestral)
 async def abate_trimestral(
     produto: str,
     trimestre: str | list[str] | None = None,
-    uf: str | None = None,
     *,
+    uf: str | None = None,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -101,20 +103,43 @@ async def abate_trimestral(
 async def abate_trimestral(
     produto: str,
     trimestre: str | list[str] | None = None,
-    uf: str | None = None,
     *,
+    uf: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def abate_trimestral(
+    produto: str,
+    trimestre: str | list[str] | None = None,
+    *,
+    uf: str | None = None,
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def abate_trimestral(
+    produto: str,
+    trimestre: str | list[str] | None = None,
+    *,
+    uf: str | None = None,
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def abate_trimestral(
     produto: str,
     trimestre: str | list[str] | None = None,
+    *,
     uf: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _abate_trimestral.fetch(  # type: ignore[call-arg]
         produto, trimestre=trimestre, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

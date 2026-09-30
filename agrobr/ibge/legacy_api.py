@@ -9,8 +9,16 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.ibge import ftp_client, legacy_parser
+from agrobr.ibge._helpers import normalizar_opcao, tipar_resultado
 from agrobr.models import MetaInfo
-from agrobr.utils.result import ATRIBUTO_AVISOS, build_source_meta, finalize_result
+from agrobr.utils.result import (
+    ATRIBUTO_AVISOS,
+    DataFrame,
+    DataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
+from agrobr.utils.validation import validate_uf
 
 if TYPE_CHECKING:
     from agrobr.models import MetaInfo
@@ -59,10 +67,10 @@ async def _fetch_tables(tema: str, uf: str | None) -> tuple[list[pd.DataFrame], 
 @overload
 async def censo_agro_legado(
     tema: str,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -70,32 +78,48 @@ async def censo_agro_legado(
 @overload
 async def censo_agro_legado(
     tema: str,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def censo_agro_legado(
+    tema: str,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def censo_agro_legado(
     tema: str,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+async def censo_agro_legado(
+    tema: str,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    if tema not in TEMAS_LEGADO:
-        raise InvalidParameterError(f"Tema '{tema}' não suportado. Disponíveis: {TEMAS_LEGADO}")
-
-    if nivel not in {"brasil", "uf", "municipio"}:
-        raise InvalidParameterError(f"Nível '{nivel}' inválido. Use brasil, uf ou municipio.")
-    uf = uf.upper() if uf else None
-    if uf and uf not in ftp_client.UF_DIRS:
-        raise InvalidParameterError(
-            f"UF '{uf}' inválida. Disponíveis: {sorted(ftp_client.UF_DIRS)}"
-        )
-    if uf and nivel == "brasil":
+) -> DataFrameResult:
+    tema = normalizar_opcao(tema, "Tema", TEMAS_LEGADO)
+    nivel_normalizado = normalizar_opcao(nivel, "Nível", ["brasil", "uf", "municipio"])
+    uf = validate_uf(uf)
+    if uf and nivel_normalizado == "brasil":
         raise InvalidParameterError("O filtro uf exige nivel='uf' ou nivel='municipio'.")
 
     t0 = time.monotonic()
@@ -104,7 +128,7 @@ async def censo_agro_legado(
     source_urls: list[str] = []
     avisos: list[str] = []
     locations: list[str | None] = (
-        [None] if nivel == "brasil" else [uf] if uf else list(ftp_client.UF_DIRS)
+        [None] if nivel_normalizado == "brasil" else [uf] if uf else list(ftp_client.UF_DIRS)
     )
     for location in locations:
         try:
@@ -128,10 +152,11 @@ async def censo_agro_legado(
         df = pd.concat(frames, ignore_index=True)
 
     if "nivel_geo" in df.columns:
-        df = df[df["nivel_geo"] == nivel].reset_index(drop=True)
+        df = df[df["nivel_geo"] == nivel_normalizado].reset_index(drop=True)
 
     if "nivel_geo" in df.columns:
         df = df.drop(columns=["nivel_geo"])
+    df = tipar_resultado(df, "censo_agropecuario_legado", list(df.columns))
 
     if not df.empty:
         sort_cols = [c for c in ["localidade", "categoria"] if c in df.columns]

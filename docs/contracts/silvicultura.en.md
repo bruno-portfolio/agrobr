@@ -2,6 +2,8 @@
 
 Silvicultural output (eucalyptus, pine, charcoal, timber) by state or municipality.
 
+In API 2.0, only `produto`, `ano` accept positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -16,10 +18,10 @@ Silvicultural output (eucalyptus, pine, charcoal, timber) by state or municipali
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
-| `ano` | int | ❌ | Reference year |
+| `ano` | Int64 | ❌ | Reference year |
 | `localidade` | str | ✅ | State or municipality |
-| `localidade_cod` | int | ✅ | IBGE code |
-| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
+| `localidade_cod` | Int64 | ✅ | IBGE code |
+| `cod_municipio` | Int64 | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `produto` | str | ❌ | Product name |
 | `valor` | float64 | ✅ | Quantity produced (tons or cubic meters) or, with `variavel="valor_producao"`, production value in thousand reais; the scale is in `unidade` |
 | `unidade` | str | ❌ | Unit of measure |

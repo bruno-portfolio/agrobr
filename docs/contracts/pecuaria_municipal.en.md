@@ -2,6 +2,8 @@
 
 Herd inventory and animal-origin output by state or municipality.
 
+In API 2.0, only `produto`, `ano` accept positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -26,10 +28,10 @@ PPM's `bovino` is not USDA's cattle herd (`usda.psd`, code `0011000`): the PPM i
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
-| `ano` | int | ❌ | Reference year |
+| `ano` | Int64 | ❌ | Reference year |
 | `localidade` | str | ✅ | State or municipality |
-| `localidade_cod` | int | ✅ | IBGE code |
-| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
+| `localidade_cod` | Int64 | ✅ | IBGE code |
+| `cod_municipio` | Int64 | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `especie` | str | ❌ | Species/product name |
 | `valor` | float64 | ✅ | Value (unit varies by species) |
 | `unidade` | str | ❌ | Unit of measure |

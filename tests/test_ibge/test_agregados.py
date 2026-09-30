@@ -215,7 +215,11 @@ async def test_public_values_match_raw_aggregates_oracle(
     assert_replay_served(seen)
     case = ORACLE_CASES[call]
     assert len(frame) == case["rows"]
-    assert list(frame.columns) == case["columns"]
+    if call.startswith("pam_"):
+        assert set(frame.columns) == {*case["columns"], "valor_producao"}
+        assert frame["valor_producao"].isna().all()
+    else:
+        assert list(frame.columns) == case["columns"]
     assert_replay_samples(frame, case)
 
 

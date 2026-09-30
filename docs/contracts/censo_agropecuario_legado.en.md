@@ -2,6 +2,8 @@
 
 Agricultural Census 1995/96 data — six themes published in ZIP archives containing XLS or HTML tables.
 
+In API 2.0, only `tema` accepts positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -22,10 +24,10 @@ The `maquinas` theme has no Pará: IBGE published Table 6 (personnel) in place o
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
-| `ano` | int | ❌ | Always 1995 |
+| `ano` | Int64 | ❌ | Always 1995 |
 | `localidade` | str | ✅ | Brazil, state name, or historical municipality name |
-| `localidade_cod` | int | ✅ | Brazil/state code; null for municipalities without a code in the table |
-| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows (and for municipalities without a code in the table) |
+| `localidade_cod` | Int64 | ✅ | Brazil/state code; null for municipalities without a code in the table |
+| `cod_municipio` | Int64 | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows (and for municipalities without a code in the table) |
 | `uf` | str | ✅ | State abbreviation from the official directory/header; null for Brazil |
 | `tema` | str | ❌ | Census theme |
 | `categoria` | str | ❌ | Category within the theme |

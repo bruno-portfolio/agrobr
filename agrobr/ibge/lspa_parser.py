@@ -55,7 +55,7 @@ def _validate_dimensions(frame: pd.DataFrame) -> None:
 
 def parse_lspa(df: pd.DataFrame, produto: str) -> pd.DataFrame:
     if df.empty:
-        result = pd.DataFrame(columns=OUTPUT_COLUMNS)
+        result = pd.DataFrame({column: pd.Series([""]).iloc[:0] for column in OUTPUT_COLUMNS})
     else:
         required = set(_RENAME) - {"D3N"}
         missing = required - set(df.columns)

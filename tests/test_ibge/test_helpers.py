@@ -12,7 +12,6 @@ class TestResolveIbgeCode:
         assert code.startswith("in N3")
 
     def test_invalid_nivel_raises(self):
-        with pytest.raises(ValueError, match="nível inválido"):
-            resolve_ibge_code(None, "Brasil")
+        assert resolve_ibge_code(None, "Brasil") == ("1", "all")
         with pytest.raises(ValueError, match="nível inválido"):
             resolve_ibge_code(None, "estado")

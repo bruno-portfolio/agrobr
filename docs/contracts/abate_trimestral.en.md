@@ -1,6 +1,10 @@
-# abate_trimestral v1.0
+# abate_trimestral v2.0
 
 Animal slaughter by species, quarter and state (cattle, hogs, poultry).
+
+In API 2.0, only `produto`, `trimestre` accept positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
+Version 2.0 changes `animais_abatidos` from `float64` to `Int64`. Empty results also use `Int64`; fractional values raise `ParseError` without truncation. Contract 1.0 remains available as `IBGE_ABATE_V1`.
 
 ## Sources
 
@@ -18,9 +22,9 @@ Animal slaughter by species, quarter and state (cattle, hogs, poultry).
 |--------|------|----------|-------------|
 | `trimestre` | str | ❌ | Quarter in YYYYQQ format |
 | `localidade` | str | ✅ | State |
-| `localidade_cod` | int | ✅ | IBGE code |
+| `localidade_cod` | Int64 | ✅ | IBGE code |
 | `especie` | str | ❌ | bovino, suino or frango |
-| `animais_abatidos` | float64 | ✅ | Number of animals slaughtered (head) |
+| `animais_abatidos` | Int64 | ✅ | Number of animals slaughtered (head) |
 | `peso_carcacas` | float64 | ✅ | Total carcass weight (kg) |
 | `fonte` | str | ❌ | Data origin |
 

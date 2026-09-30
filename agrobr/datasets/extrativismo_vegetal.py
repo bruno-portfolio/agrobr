@@ -10,6 +10,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -74,8 +75,9 @@ class ExtrativsmoVegetalDataset(BaseDataset):
         self,
         produto: str,
         ano: int | None = None,
-        nivel: Literal["brasil", "uf", "municipio"] = "uf",
+        *,
         uf: str | None = None,
+        nivel: Literal["brasil", "uf", "municipio"] = "uf",
         variavel: str = "quantidade_produzida",
         return_meta: bool = False,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
@@ -110,12 +112,12 @@ register(_extrativismo_vegetal)
 async def extrativismo_vegetal(
     produto: str,
     ano: int | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    uf: str | None = None,
-    variavel: str = "quantidade_produzida",
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -123,24 +125,51 @@ async def extrativismo_vegetal(
 async def extrativismo_vegetal(
     produto: str,
     ano: int | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    uf: str | None = None,
-    variavel: str = "quantidade_produzida",
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def extrativismo_vegetal(
+    produto: str,
+    ano: int | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def extrativismo_vegetal(
+    produto: str,
+    ano: int | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variavel: str = "quantidade_produzida",
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def extrativismo_vegetal(
     produto: str,
     ano: int | None = None,
-    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    *,
     uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variavel: str = "quantidade_produzida",
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _extrativismo_vegetal.fetch(  # type: ignore[call-arg]
         produto,
         ano=ano,

@@ -2,6 +2,8 @@
 
 Brazilian agricultural GDP by sector and quarter.
 
+In API 2.0, only `produto` accepts positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
 ## Sources
 
 | Priority | Source | Description |

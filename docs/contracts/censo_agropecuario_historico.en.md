@@ -2,6 +2,8 @@
 
 Agricultural Census historical series (1920-2006) by theme and state via SIDRA.
 
+In API 2.0, only `tema` accepts positional arguments; all other filters and flags are passed by keyword. Empty results preserve contract dtypes: integers use `Int64`, measures use `float64`, and text follows the installed pandas default.
+
 ## Sources
 
 | Priority | Source | Description |
@@ -30,10 +32,10 @@ Agricultural Census historical series (1920-2006) by theme and state via SIDRA.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
-| `ano` | int | ❌ | Census year (1920-2006) |
+| `ano` | Int64 | ❌ | Census year (1920-2006) |
 | `localidade` | str | ✅ | State or region |
-| `localidade_cod` | int | ✅ | IBGE code |
-| `cod_municipio` | int | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
+| `localidade_cod` | Int64 | ✅ | IBGE code |
+| `cod_municipio` | Int64 | ✅ | IBGE municipality code (7 digits), the common key of the municipal datasets; null outside municipality rows |
 | `tema` | str | ❌ | Historical-series theme |
 | `categoria` | str | ❌ | Category within the theme (or "total") |
 | `variavel` | str | ❌ | Variable name |

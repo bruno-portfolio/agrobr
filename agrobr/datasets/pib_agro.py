@@ -8,6 +8,8 @@ from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -56,10 +58,16 @@ class PibAgroDataset(BaseDataset):
     async def fetch(  # type: ignore[override]
         self,
         produto: str = "agropecuaria",
+        *,
         trimestre: str | list[str] | None = None,
         precos: str = "corrente",
         return_meta: bool = False,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+        from agrobr.ibge import _helpers, client
+
+        if isinstance(produto, str):
+            produto = regions.remover_acentos(produto.strip().lower())
+        precos = _helpers.normalizar_opcao(precos, "Tipo de preços", client.VARIAVEIS_PIB)
         logger.info("dataset_fetch", dataset="pib_agro", produto=produto, precos=precos)
 
         snapshot = get_snapshot()
@@ -96,32 +104,55 @@ register(_pib_agro)
 @overload
 async def pib_agro(
     produto: str = "agropecuaria",
+    *,
     trimestre: str | list[str] | None = None,
     precos: str = "corrente",
-    *,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def pib_agro(
     produto: str = "agropecuaria",
+    *,
     trimestre: str | list[str] | None = None,
     precos: str = "corrente",
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def pib_agro(
+    produto: str = "agropecuaria",
     *,
+    trimestre: str | list[str] | None = None,
+    precos: str = "corrente",
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def pib_agro(
+    produto: str = "agropecuaria",
+    *,
+    trimestre: str | list[str] | None = None,
+    precos: str = "corrente",
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def pib_agro(
     produto: str = "agropecuaria",
+    *,
     trimestre: str | list[str] | None = None,
     precos: str = "corrente",
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _pib_agro.fetch(  # type: ignore[call-arg]
         produto, trimestre=trimestre, precos=precos, return_meta=return_meta, as_polars=as_polars
     )

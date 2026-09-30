@@ -12,14 +12,17 @@ from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client, lspa_parser, pam_parser
 from agrobr.ibge._helpers import (
     SIDRA_BASE,
+    _validate_years,
+    normalizar_opcao,
     registrar_canal,
     resolve_ibge_code,
     resolve_period,
     resolve_quarter_period,
+    tipar_resultado,
 )
 from agrobr.models import MetaInfo
 from agrobr.utils import tasks
-from agrobr.utils.result import finalize_result
+from agrobr.utils.result import DataFrame, DataFrameResult, finalize_result
 from agrobr.utils.time import hoje, utcnow
 from agrobr.utils.warnings import warn_once
 
@@ -68,31 +71,6 @@ _ABATE_COLUMNS = [
 ]
 
 
-def _validate_years(
-    ano: int | float | str | Sequence[int | float | str] | None,
-) -> int | list[int] | None:
-    if ano is None:
-        return None
-    if isinstance(ano, Sequence) and not isinstance(ano, str):
-        values = ano
-        is_sequence = True
-    else:
-        values = [ano]
-        is_sequence = False
-    current_year = hoje().year
-    years: list[int] = []
-    for value in values:
-        if isinstance(value, bool) or (isinstance(value, float) and not value.is_integer()):
-            raise InvalidParameterError("ano deve conter anos inteiros")
-        try:
-            years.append(int(value))
-        except (TypeError, ValueError, OverflowError) as exc:
-            raise InvalidParameterError("ano deve conter anos inteiros") from exc
-    if any(year < 1974 or year > current_year for year in years):
-        raise InvalidParameterError(f"ano deve estar entre 1974 e {current_year}")
-    return years if is_sequence else years[0]
-
-
 def _expand_lspa_produto(produto: str, ano: int | str | None = None) -> list[tuple[str, str]]:
     if produto == "cafe" and ano is not None and int(ano) < client.LSPA_CAFE_ESPECIES_ANO_INICIAL:
         return [(produto, client.LSPA_CAFE_TOTAL_COD)]
@@ -108,6 +86,8 @@ def _expand_lspa_produto(produto: str, ano: int | str | None = None) -> list[tup
 
 def _resolve_lspa_period(ano: int | str, mes: int | str | None) -> str:
     year = _validate_years(ano)
+    if not isinstance(year, int):
+        raise InvalidParameterError("ano deve ser um único ano inteiro")
     if mes is None:
         return ",".join(f"{year}{month:02d}" for month in range(1, 13))
     if isinstance(mes, bool) or not isinstance(mes, (int, str)):
@@ -125,11 +105,11 @@ def _resolve_lspa_period(ano: int | str, mes: int | str | None) -> str:
 async def pam(
     produto: str,
     ano: int | float | str | Sequence[int | float | str] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -138,24 +118,51 @@ async def pam(
 async def pam(
     produto: str,
     ano: int | float | str | Sequence[int | float | str] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def pam(
+    produto: str,
+    ano: int | float | str | Sequence[int | float | str] | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variaveis: list[str] | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def pam(
+    produto: str,
+    ano: int | float | str | Sequence[int | float | str] | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    variaveis: list[str] | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def pam(
     produto: str,
     ano: int | float | str | Sequence[int | float | str] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     variaveis: list[str] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     """Produção agrícola municipal; área plantada não está disponível antes de 1988.
 
     O dataset ``producao_anual`` representa essa ausência histórica como NA,
@@ -185,23 +192,19 @@ async def pam(
         nivel=nivel,
     )
 
-    produto_lower = produto.lower()
-    if produto_lower not in client.PRODUTOS_PAM:
-        raise InvalidParameterError(
-            f"Produto não suportado: {produto}. Disponíveis: {list(client.PRODUTOS_PAM.keys())}"
-        )
+    produto_lower = normalizar_opcao(produto, "Produto", client.PRODUTOS_PAM)
 
     produto_cod = client.PRODUTOS_PAM[produto_lower]
 
     if variaveis is None:
         variaveis = ["area_plantada", "area_colhida", "producao", "rendimento"]
-
-    var_codes = []
-    for var in variaveis:
-        if var in client.VARIAVEIS:
-            var_codes.append(client.VARIAVEIS[var])
-        else:
-            logger.warning(f"Variável desconhecida: {var}")
+    if not isinstance(variaveis, list) or not variaveis:
+        raise InvalidParameterError(
+            f"variaveis deve ser uma lista não vazia. Disponíveis: {list(client.VARIAVEIS)}"
+        )
+    var_codes = [
+        client.VARIAVEIS[normalizar_opcao(var, "Variável", client.VARIAVEIS)] for var in variaveis
+    ]
 
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
     period = resolve_period(normalized_ano)
@@ -246,6 +249,7 @@ async def pam(
         df = pd.DataFrame(columns=_PAM_COLUMNS)
     else:
         df = pam_parser.add_unit_columns(df, produto_lower)
+    df = tipar_resultado(df, "producao_anual", _PAM_COLUMNS)
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -269,10 +273,10 @@ async def pam(
 async def lspa(
     produto: str,
     ano: int | str | None = None,
+    *,
     mes: int | str | None = None,
     uf: str | None = None,
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -281,22 +285,47 @@ async def lspa(
 async def lspa(
     produto: str,
     ano: int | str | None = None,
+    *,
     mes: int | str | None = None,
     uf: str | None = None,
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def lspa(
+    produto: str,
+    ano: int | str | None = None,
     *,
+    mes: int | str | None = None,
+    uf: str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def lspa(
+    produto: str,
+    ano: int | str | None = None,
+    *,
+    mes: int | str | None = None,
+    uf: str | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def lspa(
     produto: str,
     ano: int | str | None = None,
+    *,
     mes: int | str | None = None,
     uf: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_lspa",
@@ -314,7 +343,7 @@ async def lspa(
         uf=uf,
     )
 
-    produto_lower = produto.lower()
+    produto_lower = normalizar_opcao(produto, "Produto", [*client.PRODUTOS_LSPA, *_LSPA_ALIASES])
     if ano is None:
         ano = hoje().year
 
@@ -377,10 +406,10 @@ async def produtos_lspa() -> list[str]:
 async def ppm(
     especie: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
-    as_polars: bool = False,
-    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -389,22 +418,47 @@ async def ppm(
 async def ppm(
     especie: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def ppm(
+    especie: str,
+    ano: int | str | list[int] | None = None,
     *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ppm(
+    especie: str,
+    ano: int | str | list[int] | None = None,
+    *,
+    uf: str | None = None,
+    nivel: Literal["brasil", "uf", "municipio"] = "uf",
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def ppm(
     especie: str,
     ano: int | str | list[int] | None = None,
+    *,
     uf: str | None = None,
     nivel: Literal["brasil", "uf", "municipio"] = "uf",
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_ppm",
@@ -422,7 +476,8 @@ async def ppm(
         nivel=nivel,
     )
 
-    especie_lower = especie.lower()
+    all_valid = sorted([*client.REBANHOS_PPM, *client.PRODUTOS_ORIGEM_ANIMAL, *_PPM_ALIASES])
+    especie_lower = normalizar_opcao(especie, "Espécie/produto", all_valid)
     if especie_lower in _PPM_ALIASES:
         canonica, motivo = _PPM_ALIASES[especie_lower]
         warn_once(
@@ -431,17 +486,7 @@ async def ppm(
             category=FutureWarning,
         )
         especie_lower = canonica
-    all_valid = sorted(
-        list(client.REBANHOS_PPM.keys()) + list(client.PRODUTOS_ORIGEM_ANIMAL.keys())
-    )
-
     is_rebanho = especie_lower in client.REBANHOS_PPM
-    is_producao = especie_lower in client.PRODUTOS_ORIGEM_ANIMAL
-
-    if not is_rebanho and not is_producao:
-        raise InvalidParameterError(
-            f"Espécie/produto não suportado: {especie}. Disponíveis: {all_valid}"
-        )
 
     territorial_level, ibge_code = resolve_ibge_code(uf, nivel)
     period = resolve_period(_validate_years(ano))
@@ -506,6 +551,7 @@ async def ppm(
         if c in df.columns
     ]
     df = df[output_cols].reset_index(drop=True)
+    df = tipar_resultado(df, "pecuaria_municipal")
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
     meta.records_count = len(df)
@@ -562,7 +608,7 @@ def _erro_layout_abate(motivo: str) -> ParseError:
 
 def _merge_cabecas_peso(df: pd.DataFrame, especie_lower: str) -> pd.DataFrame:
     if df.empty:
-        return pd.DataFrame(columns=_ABATE_COLUMNS)
+        return tipar_resultado(df, "abate_trimestral", _ABATE_COLUMNS)
     if "variavel_cod" not in df.columns:
         raise _erro_layout_abate("sem coluna de variável reconhecível")
     cabecas = df[df["variavel_cod"].astype(str) == "284"].copy()
@@ -603,17 +649,19 @@ def _merge_cabecas_peso(df: pd.DataFrame, especie_lower: str) -> pd.DataFrame:
     for col in ["animais_abatidos", "peso_carcacas"]:
         if col in result.columns:
             result[col] = pd.to_numeric(result[col], errors="coerce").astype("float64")
+    if result["animais_abatidos"].dropna().mod(1).ne(0).any():
+        raise _erro_layout_abate("com quantidade fracionária de animais abatidos")
 
-    return result
+    return tipar_resultado(result, "abate_trimestral", _ABATE_COLUMNS)
 
 
 @overload
 async def abate(
     especie: str,
     trimestre: str | list[str] | None = None,
-    uf: str | None = None,
-    as_polars: bool = False,
     *,
+    uf: str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -622,20 +670,43 @@ async def abate(
 async def abate(
     especie: str,
     trimestre: str | list[str] | None = None,
+    *,
     uf: str | None = None,
     as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> DataFrame: ...
+
+
+@overload
+async def abate(
+    especie: str,
+    trimestre: str | list[str] | None = None,
     *,
+    uf: str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def abate(
+    especie: str,
+    trimestre: str | list[str] | None = None,
+    *,
+    uf: str | None = None,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def abate(
     especie: str,
     trimestre: str | list[str] | None = None,
+    *,
     uf: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     fetch_start = time.perf_counter()
     meta = MetaInfo(
         source="ibge_abate",
@@ -645,6 +716,8 @@ async def abate(
         fetched_at=utcnow(),
         attempted_sources=["ibge_abate"],
         selected_source="ibge_abate",
+        schema_version="2.0",
+        contract_version="2.0",
     )
     logger.info(
         "ibge_abate_request",
@@ -653,19 +726,12 @@ async def abate(
         uf=uf,
     )
 
-    especie_lower = especie.lower()
-    if especie_lower not in client.ESPECIES_ABATE:
-        raise InvalidParameterError(
-            f"Espécie não suportada: {especie}. Disponíveis: {client.ESPECIES_ABATE}"
-        )
+    especie_lower = normalizar_opcao(especie, "Espécie", client.ESPECIES_ABATE)
 
     table_code = client.TABELAS_ABATE[especie_lower]
     var_codes = ",".join(client.VARIAVEIS_ABATE.values())
 
-    territorial_level = "3"
-    ibge_code = "all"
-    if uf:
-        ibge_code = client.uf_to_ibge_code(uf)
+    territorial_level, ibge_code = resolve_ibge_code(uf, "uf")
 
     period = resolve_quarter_period(trimestre)
 

@@ -10,6 +10,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -67,10 +68,11 @@ class CensoAgropecuarioHistoricoDataset(BaseDataset):
     async def fetch(  # type: ignore[override]
         self,
         produto: str,
+        *,
+        ano: int | list[int] | None = None,
         uf: str | None = None,
         nivel: str = "uf",
         return_meta: bool = False,
-        ano: int | list[int] | None = None,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info(
             "dataset_fetch",
@@ -104,35 +106,60 @@ register(_censo_agropecuario_historico)
 @overload
 async def censo_agropecuario_historico(
     tema: str,
+    *,
+    ano: int | list[int] | None = None,
     uf: str | None = None,
     nivel: str = "uf",
-    *,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
-    ano: int | list[int] | None = None,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def censo_agropecuario_historico(
     tema: str,
+    *,
+    ano: int | list[int] | None = None,
     uf: str | None = None,
     nivel: str = "uf",
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def censo_agropecuario_historico(
+    tema: str,
     *,
+    ano: int | list[int] | None = None,
+    uf: str | None = None,
+    nivel: str = "uf",
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def censo_agropecuario_historico(
+    tema: str,
+    *,
+    ano: int | list[int] | None = None,
+    uf: str | None = None,
+    nivel: str = "uf",
     return_meta: Literal[True],
     as_polars: bool = False,
-    ano: int | list[int] | None = None,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def censo_agropecuario_historico(
     tema: str,
+    *,
+    ano: int | list[int] | None = None,
     uf: str | None = None,
     nivel: str = "uf",
     return_meta: bool = False,
     as_polars: bool = False,
-    ano: int | list[int] | None = None,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _censo_agropecuario_historico.fetch(  # type: ignore[call-arg]
         tema, uf=uf, nivel=nivel, return_meta=return_meta, as_polars=as_polars, ano=ano
     )

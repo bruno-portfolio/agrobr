@@ -10,6 +10,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -64,6 +65,7 @@ class LeiteIndustrialDataset(BaseDataset):
     async def fetch(  # type: ignore[override]
         self,
         produto: str,
+        *,
         trimestre: str | list[str] | None = None,
         uf: str | None = None,
         return_meta: bool = False,
@@ -98,33 +100,56 @@ register(_leite_industrial)
 
 @overload
 async def leite_industrial(
-    produto: str = "leite",
     trimestre: str | list[str] | None = None,
-    uf: str | None = None,
     *,
+    produto: str = "leite",
+    uf: str | None = None,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def leite_industrial(
-    produto: str = "leite",
     trimestre: str | list[str] | None = None,
-    uf: str | None = None,
     *,
-    return_meta: Literal[True],
+    produto: str = "leite",
+    uf: str | None = None,
+    return_meta: Literal[False] = False,
     as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def leite_industrial(
+    trimestre: str | list[str] | None = None,
+    *,
+    produto: str = "leite",
+    uf: str | None = None,
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def leite_industrial(
-    produto: str = "leite",
     trimestre: str | list[str] | None = None,
+    *,
+    produto: str = "leite",
+    uf: str | None = None,
+    return_meta: Literal[True],
+    as_polars: bool = False,
+) -> tuple[DataFrame, MetaInfo]: ...
+
+
+async def leite_industrial(
+    trimestre: str | list[str] | None = None,
+    *,
+    produto: str = "leite",
     uf: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _leite_industrial.fetch(  # type: ignore[call-arg]
         produto, trimestre=trimestre, uf=uf, return_meta=return_meta, as_polars=as_polars
     )

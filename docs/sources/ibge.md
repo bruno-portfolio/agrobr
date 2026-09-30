@@ -42,7 +42,13 @@ o IBGE publica para período sem data sai nulo. Se o pedido de metadado falhar, 
 `periodos_modificacao_erro`.
 
 Resposta sem observações (`[]`, por exemplo período ainda não publicado), em qualquer um dos dois canais, devolve
-DataFrame vazio com as mesmas colunas de uma resposta com dados e emite um aviso (`warnings.warn`, uma vez por tabela e período).
+DataFrame vazio com as mesmas colunas de uma resposta com dados e emite um aviso (`warnings.warn`, a cada consulta, também registrado em `MetaInfo.validation_warnings`).
+
+Na API 2.0, os filtros territoriais e as flags são passados por nome. PAM, LSPA, PPM, silvicultura e extração vegetal aceitam apenas produto/espécie e ano por posição; abate aceita espécie e trimestre; censos aceitam apenas tema. No PIB, apenas `setor` é posicional: use `ibge.pib_agro(trimestre="202401")`. Leite aceita apenas `trimestre` por posição.
+
+Domínios fechados normalizam caixa e acentos; parâmetros inválidos levantam `InvalidParameterError` antes da consulta. `variaveis=[]`, variáveis desconhecidas e listas de anos vazias são recusadas. Silvicultura e extração vegetal validam o ano entre 1974 e o ano corrente. O censo histórico aceita ano inteiro ou lista não vazia de inteiros publicados para o tema.
+
+Cada consulta SIDRA vazia emite um aviso e registra o mesmo texto em `MetaInfo.validation_warnings`, inclusive quando outra consulta da mesma tabela e período já veio vazia. Colunas e dtypes são preservados no vazio: anos/códigos em `Int64`, medidas em `float64`, rótulos de trimestre em texto e texto no padrão do pandas instalado. `animais_abatidos` usa `Int64` (contrato 2.0); quantidade fracionária gera `ParseError`. A PAM preserva suas 14 colunas de saída, com medidas não solicitadas nulas.
 
 ## Pesquisas Disponiveis
 
@@ -400,7 +406,7 @@ asyncio.run(main())
 | `localidade` | str | UF |
 | `localidade_cod` | int | Codigo IBGE da localidade |
 | `especie` | str | bovino, suino ou frango |
-| `animais_abatidos` | float | Quantidade abatida (cabecas) |
+| `animais_abatidos` | Int64 | Quantidade abatida (cabecas) |
 | `peso_carcacas` | float | Peso total das carcacas (kg) |
 | `fonte` | str | "ibge_abate" |
 
