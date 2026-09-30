@@ -4,12 +4,11 @@ from dataclasses import dataclass, replace
 from decimal import Decimal
 from typing import Any
 
-import structlog
-
+from agrobr import _log
 from agrobr.exceptions import ValidationError
 from agrobr.models import Indicador
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @dataclass

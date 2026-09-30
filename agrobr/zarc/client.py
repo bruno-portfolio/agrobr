@@ -4,9 +4,8 @@ import io
 import re
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.constants import MIN_CSV_SIZE
 from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
 from agrobr.http import responses
@@ -17,7 +16,7 @@ from agrobr.utils import io as io_utils
 
 from . import acquisition, catalog, models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=180.0)
 _FAIXA_INTEIRA = re.compile(r"bytes 0-(\d+)/(\d+)")

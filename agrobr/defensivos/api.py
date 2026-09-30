@@ -6,9 +6,8 @@ from datetime import UTC, timedelta
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants, contracts
+from agrobr import _log, constants, contracts
 from agrobr.exceptions import ContractViolationError, InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result as result_utils
@@ -16,7 +15,7 @@ from agrobr.utils.time import utcnow
 
 from . import client, parser, snapshot
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _validate_query(

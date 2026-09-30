@@ -5,9 +5,8 @@ import warnings
 from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.contracts import funai as contracts
 from agrobr.exceptions import ContractViolationError, InvalidParameterError, ParseError
 from agrobr.models import MetaInfo
@@ -18,7 +17,7 @@ from . import acquisition, client, metadata, query
 if TYPE_CHECKING:
     import geopandas as gpd
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _geoframe(acquired: acquisition.FunaiAcquisition, geopandas: Any) -> pd.DataFrame:

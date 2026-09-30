@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
@@ -23,7 +23,7 @@ from .models import (
 )
 from .parser import PARSER_VERSION
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=60.0)
 

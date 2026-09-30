@@ -5,12 +5,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import structlog
+from agrobr import _log
 
 from ..constants import Fonte
 from ..models import Fingerprint
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 THRESHOLD_HIGH = 0.85
 THRESHOLD_MEDIUM = 0.70

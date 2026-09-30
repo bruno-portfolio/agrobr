@@ -5,13 +5,13 @@ import re
 from typing import Any
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize.dates import month_to_number
 from agrobr.normalize.numeric import safe_float
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 3
 

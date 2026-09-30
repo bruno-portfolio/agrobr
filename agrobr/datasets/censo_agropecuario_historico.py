@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge._helpers import SIDRA_BASE
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 async def _fetch_ibge_censo_agro_historico(

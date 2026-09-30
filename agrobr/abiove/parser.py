@@ -4,8 +4,8 @@ from datetime import date, datetime
 from typing import Any
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize.dates import month_to_number
 from agrobr.normalize.numeric import safe_float
@@ -13,7 +13,7 @@ from agrobr.utils.io import open_excel_safe
 
 from .models import normalize_produto
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 

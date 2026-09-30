@@ -7,10 +7,9 @@ from io import BytesIO
 from urllib.parse import parse_qs, urlencode
 
 import httpx
-import structlog
 from bs4 import BeautifulSoup
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
@@ -20,7 +19,7 @@ from agrobr.utils import io as io_utils
 
 from . import models, resources
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 DATAVERSE_BASE = constants.URLS[constants.Fonte.MAPBIOMAS]["dataverse"]
 BIOME_STATE_FILE_ID = constants.URLS[constants.Fonte.MAPBIOMAS]["biome_state_file_id"]

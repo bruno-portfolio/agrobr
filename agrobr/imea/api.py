@@ -5,8 +5,8 @@ import time
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
@@ -14,7 +14,7 @@ from agrobr.utils.warnings import warn_once
 from . import client, parser
 from .models import resolve_cadeia_id
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 CHAVE = ["indicador_id", "localidade", "data_publicacao", "safra", "unidade"]
 

@@ -8,10 +8,9 @@ from typing import Any, Literal
 
 import pandas as pd
 import pydantic
-import structlog
 from xlrd import biffh, compdoc
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError
 from agrobr.normalize import regions
 from agrobr.normalize.numeric import safe_float
@@ -21,7 +20,7 @@ from agrobr.utils.warnings import warn_once
 from . import models
 from .models import REGIOES_BRASIL, UFS_BRASIL, SafraHistorica, normalize_produto
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 3
 

@@ -6,15 +6,14 @@ import zlib
 from typing import IO, Any, Literal
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError, ResourceLimitError, SourceUnavailableError
 from agrobr.normalize.encoding import detect_encoding_chain
 
 _ExcelEngine = Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"]
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _DOWNLOAD_SIGNATURES = {
     "zip": b"PK\x03\x04",

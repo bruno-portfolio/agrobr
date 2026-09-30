@@ -5,8 +5,8 @@ from datetime import UTC, date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta
@@ -14,7 +14,7 @@ from agrobr.utils.result import build_source_meta
 from . import client, models, output, parser, provenance
 from .models import UF_COORDS
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _validate_point(lat: object, lon: object) -> tuple[float, float]:

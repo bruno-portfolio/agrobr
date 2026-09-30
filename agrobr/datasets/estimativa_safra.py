@@ -5,9 +5,8 @@ from dataclasses import replace
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.contracts import estimativa_safra as safra_contract
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
@@ -19,7 +18,7 @@ from agrobr.utils import result as result_utils
 from agrobr.utils import validation
 from agrobr.utils.time import hoje
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _SAFRA_OUTPUT_COLS = safra_contract.ESTIMATIVA_SAFRA_V3_1.list_columns()
 

@@ -11,15 +11,14 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-import structlog
-
+from agrobr import _log
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.constants import AlertSettings, Fonte
 from agrobr.health.registry import HEALTH_REGISTRY, SourceHealthConfig
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils.time import utcnow
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 CEPEA_BASELINES = Path(__file__).resolve().parent / "baselines"
 

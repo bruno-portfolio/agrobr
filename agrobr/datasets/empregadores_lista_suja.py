@@ -3,16 +3,15 @@ from __future__ import annotations
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.datasets import base, registry
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 async def _fetch_lista_suja(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:

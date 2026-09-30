@@ -6,8 +6,8 @@ import warnings
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import time as time_utils
@@ -16,7 +16,7 @@ from agrobr.utils.warnings import warn_once
 
 from . import client, models, parser
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _marcar_ano_em_curso(df: pd.DataFrame, ano: int) -> dict[str, object]:

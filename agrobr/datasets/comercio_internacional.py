@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.comtrade import models
 from agrobr.datasets import base, registry
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
 from agrobr.utils import result
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _PRODUCTS = sorted(models.HS_PRODUTOS_AGRO)
 

@@ -5,9 +5,8 @@ import warnings
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.contracts import bcb_focus
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
@@ -15,7 +14,7 @@ from agrobr.utils import result
 
 from . import focus_client, focus_metadata, focus_parser, focus_query
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @overload

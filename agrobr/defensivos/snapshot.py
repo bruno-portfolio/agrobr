@@ -14,15 +14,14 @@ from weakref import WeakKeyDictionary, WeakValueDictionary
 
 import pandas as pd
 import pydantic
-import structlog
 
-from agrobr import constants, models
+from agrobr import _log, constants, models
 from agrobr.utils.atomic import atomic_output
 
 from . import cache, parser
 from . import models as source_models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _TABLES = {
     "formulados": ("formulados", "autorizacoes", "composicao"),

@@ -9,15 +9,15 @@ from urllib.parse import quote, urlencode
 
 import httpx
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_WFS_SIZE
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.user_agents import UserAgentRotator
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 class LayerConfig(TypedDict):

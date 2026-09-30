@@ -6,9 +6,8 @@ from datetime import UTC, datetime
 from typing import Any, Literal
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
@@ -17,7 +16,7 @@ from agrobr.http.user_agents import UserAgentRotator
 
 from . import discovery, models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 TIMEOUT = get_timeout(read=60.0)
 
 

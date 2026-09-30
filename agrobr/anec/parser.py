@@ -8,14 +8,14 @@ from typing import Any, NamedTuple
 
 import pandas as pd
 import pydantic
-import structlog
 
+from agrobr import _log
 from agrobr.anec import models
 from agrobr.exceptions import ParseError
 from agrobr.normalize.numeric import safe_float
 from agrobr.normalize.regions import remover_acentos
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 6
 

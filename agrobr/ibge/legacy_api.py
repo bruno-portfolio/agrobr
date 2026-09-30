@@ -5,8 +5,8 @@ import warnings
 from typing import TYPE_CHECKING, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.ibge import ftp_client, legacy_parser
 from agrobr.models import MetaInfo
@@ -15,7 +15,7 @@ from agrobr.utils.result import ATRIBUTO_AVISOS, build_source_meta, finalize_res
 if TYPE_CHECKING:
     from agrobr.models import MetaInfo
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TEMAS_LEGADO: list[str] = legacy_parser.TEMAS_LEGADO
 

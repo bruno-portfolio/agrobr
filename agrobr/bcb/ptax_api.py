@@ -5,9 +5,8 @@ import warnings
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.contracts import bcb_ptax
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
@@ -16,7 +15,7 @@ from agrobr.utils import time as time_utils
 
 from . import ptax_client, ptax_metadata, ptax_parser, ptax_query
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _validate_flags(as_polars: bool, return_meta: bool) -> None:

@@ -6,8 +6,8 @@ from hashlib import sha256
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.anec import client, models, parser
 from agrobr.anec.models import (
     TIPO_EFETIVADO,
@@ -20,7 +20,7 @@ from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 _PARSE_CACHE: dict[tuple[str, str, str, str], tuple[parser.ParsedReport, str, ANECArticle]] = {}

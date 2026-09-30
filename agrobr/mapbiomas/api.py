@@ -4,9 +4,8 @@ import time
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
 from agrobr.utils import result
@@ -14,7 +13,7 @@ from agrobr.utils.warnings import warn_once
 
 from . import client, municipal_parser, parser, queries, resources
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _ROTULOS_DE_CLASSE = (
     ("classe", "classe_id"),

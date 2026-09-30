@@ -7,9 +7,9 @@ import unicodedata
 from typing import Any, Literal
 
 import pandas as pd
-import structlog
 from pydantic import ValidationError
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize.encoding import detect_encoding_chain
 from agrobr.normalize.regions import normalizar_uf
@@ -18,7 +18,7 @@ from agrobr.utils.io import read_excel_safe
 from . import models
 from .models import normalize_produto
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 4
 _AGREGADO = r"(SUB)?TOTAL\b"

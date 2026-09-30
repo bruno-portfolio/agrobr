@@ -8,12 +8,10 @@ from asyncio import sleep as _async_sleep
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-import structlog
-
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _VAGA_POLL_SECONDS = 0.05
 

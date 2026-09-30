@@ -3,11 +3,11 @@ from __future__ import annotations
 import contextlib
 
 import duckdb
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import CacheMigrationError
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 SCHEMA_VERSION = 11
 

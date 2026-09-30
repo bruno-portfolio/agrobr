@@ -6,8 +6,8 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http.responses import parse_json_response
@@ -16,7 +16,7 @@ from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.nasa_power import models, parser, provenance
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 BASE_URL = URLS[Fonte.NASA_POWER]["daily"]

@@ -8,7 +8,6 @@ from typing import Any
 
 import pandas as pd
 import pytest
-import structlog
 
 from agrobr.acervo_fundiario import parser as acervo_parser
 from agrobr.cftc import parser as cftc_parser
@@ -31,7 +30,7 @@ from agrobr.normalize.dates import (
 )
 from agrobr.queimadas import parser as queimadas_parser
 from agrobr.utils.result import build_source_meta
-from tests.helpers import collect_failures, levanta_exatamente
+from tests.helpers import capturar_logs, collect_failures, levanta_exatamente
 
 GOLDEN = Path(__file__).parents[1] / "golden_data"
 FORA = "data ilegível ou com ano fora de 1900–2099"
@@ -232,7 +231,7 @@ class TestConverterDatas:
         )
         with collect_failures() as check:
             with check("intervalo"):
-                with structlog.testing.capture_logs() as logs:
+                with capturar_logs() as logs:
                     datas, descartadas = converter_datas(
                         valores, fonte="teste", formato="%Y-%m-%d %H:%M:%S"
                     )
@@ -247,7 +246,7 @@ class TestConverterDatas:
                 assert [e["intervalo"] for e in logs] == ["1900-2099"]
                 assert _avisos(logs) == [("teste", "data_teste", 5)]
             with check("sem_descarte_sem_aviso"):
-                with structlog.testing.capture_logs() as logs:
+                with capturar_logs() as logs:
                     datas, descartadas = converter_datas(
                         pd.Series(["2024-01-02", "", None]), fonte="teste"
                     )
@@ -273,7 +272,7 @@ class TestConverterDatas:
 
     def test_fontes_descartam_data_fora_do_intervalo(self, monkeypatch):
         with collect_failures() as check:
-            with check("inmet"), structlog.testing.capture_logs() as logs:
+            with check("inmet"), capturar_logs() as logs:
                 dados = json.loads((GOLDEN / "inmet/observacoes_sample/response.json").read_bytes())
                 dados[0]["DT_MEDICAO"] = "1667-01-01"
                 df = inmet_parser.parse_observacoes(dados)
@@ -284,7 +283,7 @@ class TestConverterDatas:
                     f"inmet: 1 valor(es) de data viraram NaT ({FORA}). "
                     "As observações sem data saíram do resultado."
                 ]
-            with check("mapbiomas_alerta"), structlog.testing.capture_logs() as logs:
+            with check("mapbiomas_alerta"), capturar_logs() as logs:
                 bruto = (GOLDEN / "mapbiomas_alerta/alertas_sample/response.json").read_bytes()
                 registros = json.loads(bruto)
                 registros[0]["detectedAt"] = "1667-06-15"
@@ -304,7 +303,7 @@ class TestConverterDatas:
                     f"mapbiomas_alerta: 1 valor(es) de data_deteccao viraram NaT ({FORA}).",
                     f"mapbiomas_alerta: 1 valor(es) de data_publicacao viraram NaT ({FORA}).",
                 ]
-            with check("queimadas"), structlog.testing.capture_logs() as logs:
+            with check("queimadas"), capturar_logs() as logs:
                 corpo = (GOLDEN / "queimadas/focos_sample/response.csv").read_bytes()
                 assert corpo.count(b",2025-01-01 00:00:00,") > 1
                 df = queimadas_parser.parse_focos_csv(
@@ -315,7 +314,7 @@ class TestConverterDatas:
                 assert _no_meta(df) == [
                     f"queimadas: 1 valor(es) de data_hora_gmt viraram NaT ({FORA})."
                 ]
-            with check("cftc"), structlog.testing.capture_logs() as logs:
+            with check("cftc"), capturar_logs() as logs:
                 registros = json.loads(
                     (GOLDEN / "cftc/spreads_20260925/soja_recent.json").read_bytes()
                 )
@@ -324,7 +323,7 @@ class TestConverterDatas:
                 with levanta_exatamente(ParseError, match="Datas inválidas"):
                     cftc_parser.parse_cot(registros)
                 assert _avisos(logs) == [("cftc", "data", 1)]
-            with check("acervo_fundiario"), structlog.testing.capture_logs() as logs:
+            with check("acervo_fundiario"), capturar_logs() as logs:
                 zip_path = GOLDEN / "acervo_fundiario/assentamentos_20260922/response.zip"
                 tabela = acervo_parser._read_tabular(zip_path)
                 tabela.loc[0, "data_de_cr"] = "31/05/1667"

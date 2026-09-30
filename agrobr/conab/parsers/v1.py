@@ -9,9 +9,8 @@ from typing import Any, cast
 
 import pandas as pd
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.conab import structure
 from agrobr.exceptions import ParseError
 from agrobr.models import Safra
@@ -20,7 +19,7 @@ from agrobr.normalize.dates import anos_para_safra
 from agrobr.normalize.numeric import safe_float
 from agrobr.utils.io import read_excel_safe
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _SECTION_RE = re.compile(r"^\d+\.\s+\S")
 

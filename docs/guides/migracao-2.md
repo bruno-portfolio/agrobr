@@ -32,20 +32,19 @@ Em ordem de risco. Cada linha aponta a seção com o detalhe.
    original, passe `levantamento` ([§27](#27-conab-safra-passada-vem-da-revisao-mais-recente)).
 7. `ibge.censo_agro_municipal_1985` devolve 1 linha por casa do PDF, com `valor` só na casa confirmada: use `valor_lido` e filtre
    pelo `status` ([§81](#81-censo-municipal-1985-casa-a-casa-com-o-status-de-cada-uma-contrato-20)).
+8. Os logs do agrobr não seguem mais a configuração do structlog da aplicação: saem pelo `logging` da biblioteca padrão, em
+   JSON, e se controlam por `logging.getLogger("agrobr")` ([§73](#73-logs-fora-da-saida-padrao)).
 
 **Passa a levantar erro**
 
-8. Status HTTP de erro sai como `SourceUnavailableError`, e não como `httpx.HTTPStatusError`: troque o `except`
+9. Status HTTP de erro sai como `SourceUnavailableError`, e não como `httpx.HTTPStatusError`: troque o `except`
    ([§75](#75-status-http-de-erro-sourceunavailableerror-nao-httpxhttpstatuserror)).
-9. Argumento fora da assinatura levanta `TypeError` (76 funções aceitavam `**kwargs` e descartavam o nome errado): corrija o
-   nome ([§78](#78-argumento-fora-da-assinatura-levanta-typeerror)).
-10. Parâmetro impossível (UF inexistente, período invertido) levanta `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia
+10. Argumento fora da assinatura levanta `TypeError` (76 funções aceitavam `**kwargs` e descartavam o nome errado): corrija o
+    nome ([§78](#78-argumento-fora-da-assinatura-levanta-typeerror)).
+11. Parâmetro impossível (UF inexistente, período invertido) levanta `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia
     vazio ou erro de fonte ([§66](#66-parametro-impossivel-recusado-antes-da-rede)).
-11. `as_polars=True` sem o Polars levanta `ImportError`, e não devolve mais pandas: instale `agrobr[polars]`
+12. `as_polars=True` sem o Polars levanta `ImportError`, e não devolve mais pandas: instale `agrobr[polars]`
     ([§8](#8-as_polarstrue-exige-polars)).
-12. Configurar o structlog depois do `import agrobr` só com `logger_factory` quebra todo log, da aplicação e do agrobr, com
-    `AttributeError: 'PrintLogger' object has no attribute 'disabled'`: chame `structlog.reset_defaults()` antes do
-    `structlog.configure(...)` ([§73](#73-logs-fora-da-saida-padrao)).
 
 **API removida**
 
@@ -1409,21 +1408,17 @@ informantes". Em 2017, `estabelecimentos` segue vindo do número de estabelecime
 ## 73. Logs fora da saída padrão
 
 Na 1.1.0, usado como biblioteca, o agrobr imprimia os logs do structlog (debug e info) na saída padrão, e o
-`logging.basicConfig` não os controlava: `python exporta.py > dados.csv` saía com log no topo do CSV. Na 2.0, os logs passam
-pelo `logging` da biblioteca padrão, em JSON. Sem configuração, só avisos e erros saem, na saída de erro;
-`logging.basicConfig(level=logging.DEBUG)` liga todos, e `logging.getLogger("agrobr")` controla só o agrobr. Se a sua
-aplicação configura o structlog antes de importar o agrobr, a configuração dela vale. A CLI segue igual: `--verbose` mostra
-os logs na saída de erro.
+`logging.basicConfig` não os controlava: `python exporta.py > dados.csv` saía com log no topo do CSV. Na 2.0, os logs do agrobr
+passam pelo `logging` da biblioteca padrão, em JSON, no logger do módulo que os emite (`agrobr.cepea.parsers.v1`, por exemplo).
+Sem configuração, só avisos e erros saem, na saída de erro; `logging.basicConfig(level=logging.DEBUG)` liga todos, e
+`logging.getLogger("agrobr")` controla só o agrobr. O `import agrobr` não configura o structlog nem o `logging`.
 
-**Structlog configurado depois do import.** Sem configuração prévia, o `import agrobr` configura o structlog global com o
-`structlog.stdlib.filter_by_level` e a `structlog.stdlib.LoggerFactory`; a 1.1.0 não configurava nada. Um
-`structlog.configure(logger_factory=structlog.PrintLoggerFactory())` feito depois do import troca só a fábrica e herda o
-filtro, e toda chamada de log, da aplicação e do agrobr, levanta
-`AttributeError: 'PrintLogger' object has no attribute 'disabled'`. Há 3 saídas:
+**Aplicação que usa o structlog.** A configuração do structlog da aplicação, feita antes ou depois do import, vale só para os
+logs dela; os do agrobr seguem no `logging`, em JSON. Na 1.1.0, ela valia também para os do agrobr: para vê-los, configure o
+`logging` (`logging.basicConfig` ou um handler no logger `"agrobr"`).
 
-- configurar o structlog antes do `import agrobr`;
-- chamar `structlog.reset_defaults()` antes do `structlog.configure(...)`, como faz a CLI do agrobr;
-- passar `processors` no `configure`, sem o `filter_by_level`.
+**CLI.** `--verbose` mostra os logs INFO na saída de erro; sem ele, só avisos e erros. Os logs saem em JSON, um por linha; na
+1.1.0, saíam no formato de console do structlog.
 
 ## 74. Datasets: colunas na ordem do contrato e data em `datetime64`
 

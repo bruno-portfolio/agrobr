@@ -7,13 +7,13 @@ from typing import Any
 
 import pandas as pd
 import pydantic
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 
 from . import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 PARSER_VERSION = 2
 
 COLUNAS_MAP: dict[str, str] = {

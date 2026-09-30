@@ -5,7 +5,6 @@ from typing import Any
 
 import pandas as pd
 import pytest
-import structlog
 import xlrd
 
 from agrobr.conab.serie_historica import parser
@@ -76,7 +75,7 @@ def test_selected_sheet_without_state_rows_fails_before_filters(
 
 
 def test_unknown_sheet_warns_without_mapping():
-    with structlog.testing.capture_logs() as logs:
+    with helpers.capturar_logs() as logs:
         decisions = parser.resolve_sheets("soja", ["Área", "Produção", "Produtividade", "Notas"])
     assert decisions["Notas"].estado == "desconhecida"
     assert decisions["Notas"].campo is None

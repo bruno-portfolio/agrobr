@@ -11,9 +11,8 @@ from typing import TYPE_CHECKING, Any, Literal, NamedTuple, overload
 import duckdb
 import httpx
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.cache.duckdb_store import get_store
 from agrobr.cache.keys import build_cache_key
 from agrobr.cache.policies import calculate_expiry
@@ -37,7 +36,7 @@ from agrobr.validators.sanity import validate_batch
 if TYPE_CHECKING:
     import polars as pl
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 SOURCE_WINDOW_DAYS = 25
 

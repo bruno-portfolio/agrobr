@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_CSV_SIZE
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http import responses
@@ -13,7 +13,7 @@ from agrobr.utils import io as io_utils
 
 from .models import CSV_URL, MIN_CSV_BYTES
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=300.0)
 

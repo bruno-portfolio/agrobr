@@ -5,9 +5,9 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-import structlog
 from bs4 import BeautifulSoup
 
+from agrobr import _log
 from agrobr.constants import CEPEA_PARSER_VERSION, CEPEA_TABELAS_POR_PRACA, CEPEA_TITULOS, Fonte
 from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
@@ -16,7 +16,7 @@ from agrobr.normalize import dates
 from .base import BaseParser
 from .fingerprint import extract_fingerprint
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PRACAS: dict[str, str] = {
     "soja": "Paranaguá/PR",

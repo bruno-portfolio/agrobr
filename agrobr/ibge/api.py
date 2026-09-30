@@ -5,9 +5,8 @@ from collections.abc import Sequence
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.cache.keys import build_cache_key
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client, lspa_parser, pam_parser
@@ -24,7 +23,7 @@ from agrobr.utils.result import finalize_result
 from agrobr.utils.time import hoje, utcnow
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _LSPA_ALIASES: dict[str, list[str]] = {
     "cafe": ["cafe_arabica", "cafe_canephora"],

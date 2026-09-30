@@ -12,12 +12,12 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.config import get_config
 from agrobr.exceptions import SnapshotError
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _SAFE_NAME_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_\-\.]*$")
 _WINDOWS_RESERVED = frozenset(

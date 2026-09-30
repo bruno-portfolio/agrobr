@@ -8,11 +8,9 @@ from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
 
-import structlog
+from agrobr import _log, constants
 
-from agrobr import constants
-
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _replace_attempts(source: Path, target: Path) -> Iterator[float]:

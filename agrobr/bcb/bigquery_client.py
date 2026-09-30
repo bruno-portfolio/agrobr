@@ -5,11 +5,10 @@ import os
 import re
 from typing import Any
 
-import structlog
-
+from agrobr import _log
 from agrobr.exceptions import SourceUnavailableError
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BQ_TIMEOUT = 120.0
 BQ_COLUMNS_MAP: dict[str, str] = {

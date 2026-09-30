@@ -7,9 +7,8 @@ from decimal import Decimal
 from typing import Any
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
 from agrobr.normalize import dates
@@ -17,7 +16,7 @@ from agrobr.utils import io as io_utils
 
 from .parsers import v1
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = constants.CEPEA_SERIE_PARSER_VERSION
 _LINHA_DO_CABECALHO = 3

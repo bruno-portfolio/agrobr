@@ -8,11 +8,10 @@ from enum import StrEnum
 from typing import Any
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 class AlertLevel(StrEnum):

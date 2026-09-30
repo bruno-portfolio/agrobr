@@ -8,9 +8,8 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 
 import httpx
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -25,7 +24,7 @@ from .models import (
 if TYPE_CHECKING:
     import geopandas as gpd
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _corpo(pages: list[bytes], consulta: str) -> dict[str, Any]:

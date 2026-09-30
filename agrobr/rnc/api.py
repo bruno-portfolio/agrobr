@@ -5,15 +5,14 @@ from datetime import timedelta
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants, contracts
+from agrobr import _log, constants, contracts
 from agrobr.models import MetaInfo
 from agrobr.utils import result
 
 from . import acquisition, loading, parser, query
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _select(frame: pd.DataFrame, filters: dict[str, str]) -> pd.DataFrame:

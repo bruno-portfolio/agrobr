@@ -12,7 +12,8 @@ from datetime import date
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import httpx
-import structlog
+
+from agrobr import _log
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -32,7 +33,7 @@ from agrobr.exceptions import (
 )
 from agrobr.utils import result as result_utils
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 _TIPOS_POLARS = {
     "int": "Int64",
     "float": "Float64",

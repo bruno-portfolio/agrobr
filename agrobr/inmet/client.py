@@ -15,9 +15,8 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import ParseError, ResourceLimitError, SourceUnavailableError
 from agrobr.http import responses
@@ -27,7 +26,7 @@ from agrobr.http.user_agents import UserAgentRotator
 
 from . import models, parser, transport
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL = URLS[Fonte.INMET]["base"]
 

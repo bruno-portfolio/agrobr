@@ -3,14 +3,12 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-import structlog
-
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.exceptions import ContractViolationError, ParseError
 
 from . import acquisition, client, parser, snapshot
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @dataclass(frozen=True)

@@ -5,8 +5,8 @@ import time
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -22,7 +22,7 @@ from .models import (
     resolve_produto,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _LICENSE_WARNING = (
     "Dados da UNICA (unicadata.com.br) sem termos de uso públicos — classificação "

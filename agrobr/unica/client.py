@@ -3,8 +3,8 @@ from __future__ import annotations
 import re
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_PDF_SIZE, URLS, Fonte
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses
@@ -22,7 +22,7 @@ from .models import (
     UFS_FORM,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=90.0)
 

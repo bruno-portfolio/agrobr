@@ -10,8 +10,8 @@ from typing import Literal, overload
 
 import httpx
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils import time as time_utils
@@ -26,7 +26,7 @@ from .models import (
     parse_vencimento,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _RE_VENCIMENTO_MES = re.compile(r"[FGHJKMNQUVXZ]\d{2}")
 _RE_VENCIMENTO_OPCAO = re.compile(r"[FGHJKMNQUVXZ][A-Z]{2}[A-Z0-9]")

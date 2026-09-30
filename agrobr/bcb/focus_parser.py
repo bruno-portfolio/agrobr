@@ -9,14 +9,13 @@ from typing import Any, Literal
 
 import pandas as pd
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError
 
 from . import focus_models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 PARSER_VERSION = focus_models.PARSER_VERSION
 
 

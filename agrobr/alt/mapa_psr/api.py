@@ -9,9 +9,8 @@ from contextlib import closing
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.exceptions import (
     ContractViolationError,
     InvalidParameterError,
@@ -37,7 +36,7 @@ from .models import (
     get_csv_url,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @overload

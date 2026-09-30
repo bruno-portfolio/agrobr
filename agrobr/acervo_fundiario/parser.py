@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Any, cast
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
 from agrobr.normalize.regions import UFS_VALIDAS, ibge_para_uf
@@ -32,7 +32,7 @@ from .models import (
     SNCI_REQUIRED_COLS,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 

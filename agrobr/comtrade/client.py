@@ -8,9 +8,8 @@ from urllib.parse import unquote
 
 import httpx
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -19,7 +18,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from . import acquisition, models
 from . import query as query_utils
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 BASE_URL_AUTH = constants.URLS[constants.Fonte.COMTRADE]["auth"]
 BASE_URL_GUEST = constants.URLS[constants.Fonte.COMTRADE]["guest"]
 TIMEOUT = get_timeout(read=120.0)

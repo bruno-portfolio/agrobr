@@ -6,9 +6,8 @@ from contextlib import asynccontextmanager
 from typing import IO
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.constants import MIN_CSV_SIZE
 from agrobr.exceptions import ResourceLimitError
 from agrobr.http import responses
@@ -17,7 +16,7 @@ from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import io as io_utils
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=180.0)
 

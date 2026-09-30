@@ -4,9 +4,8 @@ from datetime import date
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
@@ -18,7 +17,7 @@ from agrobr.normalize.regions import uf_para_nome
 from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _PRODUCAO_ANUAL_COLS = [
     "ano",

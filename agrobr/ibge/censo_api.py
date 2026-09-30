@@ -4,9 +4,8 @@ import time
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.cache.keys import build_cache_key
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client
@@ -25,7 +24,7 @@ from agrobr.utils import tasks
 from agrobr.utils.result import finalize_result
 from agrobr.utils.time import utcnow
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _empty_censo_df() -> pd.DataFrame:

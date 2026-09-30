@@ -4,7 +4,6 @@ import json
 from datetime import datetime
 
 import pytest
-from structlog import testing
 
 from agrobr.constants import Fonte
 from agrobr.models import Fingerprint
@@ -15,6 +14,7 @@ from agrobr.validators.structural import (
     validate_against_baseline,
     validate_structure,
 )
+from tests import helpers
 
 
 def _make_fingerprint(
@@ -201,7 +201,7 @@ def test_compare_fingerprints_detalha_cada_diferenca():
 
 
 def test_load_baseline_sem_arquivo_nao_avisa(tmp_path):
-    with testing.capture_logs() as registros:
+    with helpers.capturar_logs() as registros:
         assert load_baseline(Fonte.CEPEA, tmp_path) is None
     assert [r["event"] for r in registros if r["log_level"] == "warning"] == []
 

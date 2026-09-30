@@ -6,16 +6,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import structlog
-
-from agrobr import __version__
+from agrobr import __version__, _log
 from agrobr.cache.duckdb_store import get_store
 from agrobr.cache.policies import SOURCE_POLICY_MAP, get_next_update_info
 from agrobr.health import checker
 from agrobr.health.registry import HEALTH_REGISTRY, SourceHealthConfig
 from agrobr.utils.time import utcnow
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @dataclass

@@ -8,8 +8,8 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import (
     InvalidParameterError,
     ParseError,
@@ -27,7 +27,7 @@ from .models import GRUPOS_VALIDOS
 if TYPE_CHECKING:
     import geopandas as gpd
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _validate_grupo(grupo: str | None) -> str | None:

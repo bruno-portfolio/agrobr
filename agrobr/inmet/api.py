@@ -6,15 +6,15 @@ from datetime import date, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 
 from . import client, historical, models, parser
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @overload

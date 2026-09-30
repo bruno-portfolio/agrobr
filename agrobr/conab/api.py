@@ -9,9 +9,8 @@ from io import BytesIO
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.cache.keys import build_cache_key
 from agrobr.conab import client, models
 from agrobr.conab.parsers.v1 import ConabParserV1
@@ -26,7 +25,7 @@ from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _SAFRAS_URL = "https://www.conab.gov.br/info-agro/safras/graos"
 

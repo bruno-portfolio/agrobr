@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.models import MetaInfo
 from agrobr.utils.time import utcnow_aware
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     Frame: TypeAlias = pd.DataFrame | pl.DataFrame
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:

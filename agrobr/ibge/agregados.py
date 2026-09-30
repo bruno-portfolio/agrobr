@@ -9,9 +9,8 @@ from typing import Any
 import httpx
 import pandas as pd
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
@@ -24,7 +23,7 @@ from agrobr.http.retry import (
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL = constants.URLS[constants.Fonte.IBGE]["agregados"]
 FETCH_TIMEOUT = 120.0

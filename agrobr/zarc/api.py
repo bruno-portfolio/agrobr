@@ -8,9 +8,8 @@ from typing import Any, Literal, overload
 
 import duckdb
 import pandas as pd
-import structlog
 
-from agrobr import constants, contracts
+from agrobr import _log, constants, contracts
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import ContractViolationError, InvalidParameterError
 from agrobr.models import MetaInfo
@@ -19,7 +18,7 @@ from agrobr.utils import result
 
 from . import acquisition, cache, catalog, client, models, parser, query, store
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @dataclass(frozen=True)

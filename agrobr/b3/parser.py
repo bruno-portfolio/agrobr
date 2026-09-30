@@ -7,9 +7,9 @@ from io import BytesIO
 from typing import IO
 
 import pandas as pd
-import structlog
 from lxml import etree
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.utils import io as io_utils
 
@@ -23,7 +23,7 @@ from .models import (
     parse_vencimento,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION_ZIP = 1
 PARSER_VERSION_OI = 2

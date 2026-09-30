@@ -4,8 +4,8 @@ import re
 from io import BytesIO
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
@@ -14,7 +14,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.regions import UFS_VALIDAS
 from agrobr.utils.html import parse_links_from_html as _parse_links
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL = URLS[Fonte.CONAB]["base"]
 

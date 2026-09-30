@@ -12,8 +12,8 @@ from urllib.parse import urlsplit
 
 import pandas as pd
 import pydantic
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import regions
 from agrobr.normalize.numeric import parse_numeric_br
@@ -21,7 +21,7 @@ from agrobr.normalize.regions import remover_acentos
 
 from . import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 4
 

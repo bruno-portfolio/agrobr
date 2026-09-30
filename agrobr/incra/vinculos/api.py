@@ -8,9 +8,8 @@ from typing import Any, Literal, cast, overload
 
 import httpx
 import pandas as pd
-import structlog
 
-from agrobr import constants, contracts
+from agrobr import _log, constants, contracts
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import AgrobrError, ContractViolationError, InvalidParameterError
 from agrobr.incra import api as geographical_api
@@ -22,7 +21,7 @@ from agrobr.utils import result
 
 from . import budget, metadata, relation
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _validate_contract(frame: pd.DataFrame, name: str) -> None:

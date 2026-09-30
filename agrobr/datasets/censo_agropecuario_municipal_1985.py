@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.ibge.censo_municipal_1985 import TEMAS_DISPONIVEIS
 from agrobr.models import MetaInfo
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 async def _fetch_ibge_censo_municipal_1985(

@@ -9,14 +9,13 @@ from pathlib import Path
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _DATA_DIR = Path(__file__).parent.parent / "data" / "censo_1985"
 _PACOTE = _DATA_DIR / "censo_agro_municipal_1985.parquet"

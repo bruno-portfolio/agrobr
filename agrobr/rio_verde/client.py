@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
@@ -12,7 +12,7 @@ from agrobr.utils import io as io_utils
 
 from .models import MIN_PDF_SIZE, SAFRAS_URLS
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=60.0)
 

@@ -5,8 +5,8 @@ import time
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
@@ -18,7 +18,7 @@ from . import client, models, parser
 if TYPE_CHECKING:
     import geopandas as gpd
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _WHERE_FIELDS: dict[str, dict[str, str]] = {
     "cnfp": {"uf": "uf", "bioma": "bioma", "categoria": "categoria"},

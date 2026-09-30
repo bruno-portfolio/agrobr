@@ -9,10 +9,9 @@ from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast, overload
 
 import httpx
 import pandas as pd
-import structlog
 from pydantic import ValidationError
 
-from agrobr import constants, contracts
+from agrobr import _log, constants, contracts
 from agrobr.contracts import conab_custos
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import (
@@ -34,7 +33,7 @@ if TYPE_CHECKING:
 
     Frame: TypeAlias = pd.DataFrame | pl.DataFrame
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def prepare_query(

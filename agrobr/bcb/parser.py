@@ -4,14 +4,13 @@ import math
 from typing import Any
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.contracts import bcb_sicor
 from agrobr.exceptions import ParseError
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 

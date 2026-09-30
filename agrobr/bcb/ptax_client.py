@@ -9,9 +9,8 @@ from typing import Any, cast
 import httpx
 import pandas as pd
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -19,7 +18,7 @@ from agrobr.http.user_agents import UserAgentRotator
 
 from . import ptax_acquisition, ptax_models, ptax_parser, ptax_query
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 PTAX_BASE = constants.URLS[constants.Fonte.BCB]["ptax"]
 TIMEOUT = get_timeout(read=30.0)
 PTAX_MAX_RETRIES = 4

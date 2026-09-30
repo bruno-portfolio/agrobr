@@ -10,14 +10,13 @@ from pathlib import Path
 from weakref import WeakKeyDictionary, WeakValueDictionary
 
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.utils.atomic import atomic_output
 
 from . import acquisition, parser
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _LOCKS: WeakKeyDictionary[asyncio.AbstractEventLoop, WeakValueDictionary[str, asyncio.Lock]] = (
     WeakKeyDictionary()

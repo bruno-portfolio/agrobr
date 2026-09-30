@@ -3,8 +3,8 @@ from __future__ import annotations
 import re
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_HTML_SIZE, MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
@@ -14,7 +14,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import io as io_utils
 from agrobr.utils.html import parse_links_from_html as _parse_links
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL = URLS[Fonte.ANDA]["base"]
 ESTATISTICAS_URL = URLS[Fonte.ANDA]["estatisticas"]

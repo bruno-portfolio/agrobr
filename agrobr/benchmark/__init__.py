@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-import structlog
+from agrobr import _log
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @dataclass

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from enum import StrEnum
 from typing import Any
@@ -46,17 +47,10 @@ def version_callback(value: bool) -> None:
 
 
 def _configure_cli_logging(verbose: bool) -> None:
-    import logging
-    import sys
-
-    import structlog
-
-    level = logging.INFO if verbose else logging.WARNING
-    structlog.reset_defaults()
-    structlog.configure(
-        wrapper_class=structlog.make_filtering_bound_logger(level),
-        logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
-    )
+    if verbose:
+        logger = logging.getLogger("agrobr")
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.StreamHandler(sys.stderr))
 
 
 @app.callback()  # type: ignore[misc, untyped-decorator]

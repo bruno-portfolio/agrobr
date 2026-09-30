@@ -8,9 +8,8 @@ from urllib.parse import quote
 
 import httpx
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
@@ -25,7 +24,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.ibge import agregados
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 SIDRA_FETCH_TIMEOUT = 120.0
 SIDRA_URL_MAX = 2500

@@ -4,8 +4,8 @@ from io import BytesIO
 from typing import Any
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http.settings import get_timeout
@@ -13,7 +13,7 @@ from agrobr.http.user_agents import UserAgentRotator
 
 from . import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL = URLS[Fonte.CONAB]["base"]
 

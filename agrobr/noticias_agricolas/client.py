@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
@@ -13,7 +12,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import decode_content
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _SOFT_BLOCK_SIZE_THRESHOLD = 20_000
 

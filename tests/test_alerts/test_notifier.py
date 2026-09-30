@@ -6,7 +6,6 @@ from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from structlog import testing
 
 from agrobr.alerts.notifier import (
     AlertLevel,
@@ -15,7 +14,12 @@ from agrobr.alerts.notifier import (
     _send_slack,
     send_alert,
 )
-from tests.helpers import make_alert_settings, make_mock_async_client, make_mock_response
+from tests.helpers import (
+    capturar_logs,
+    make_alert_settings,
+    make_mock_async_client,
+    make_mock_response,
+)
 
 
 class TestSendAlert:
@@ -308,7 +312,7 @@ async def test_envio_registra_so_as_falhas_de_canal(configuracao, efeito, evento
         patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=settings),
         patch("agrobr.alerts.notifier._send_slack", new_callable=AsyncMock, side_effect=efeito),
         patch("agrobr.alerts.notifier._send_email", new_callable=AsyncMock) as email,
-        testing.capture_logs() as registros,
+        capturar_logs() as registros,
     ):
         await send_alert(AlertLevel.WARNING, "Teste", {})
     obtidos = [

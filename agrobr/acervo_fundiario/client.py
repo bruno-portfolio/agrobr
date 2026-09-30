@@ -13,9 +13,8 @@ from urllib.parse import quote
 from weakref import WeakValueDictionary
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.constants import MIN_ZIP_SIZE, CacheSettings
 from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
 from agrobr.http import responses
@@ -27,7 +26,7 @@ from agrobr.utils.warnings import warn_once
 
 from .models import BASE_URL, FILENAME_PATTERNS
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _CHUNK_SIZE = 64 * 1024
 

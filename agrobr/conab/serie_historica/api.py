@@ -5,8 +5,8 @@ from datetime import date
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -23,7 +23,7 @@ from .parser import (
     records_to_dataframe,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _hoje() -> date:

@@ -5,8 +5,8 @@ import threading
 from datetime import date, datetime
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_CSV_SIZE, MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
@@ -15,7 +15,7 @@ from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import io as io_utils
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL_ZIP = URLS[Fonte.B3]["ajustes_zip"]
 BASE_URL_ARQUIVOS = URLS[Fonte.B3]["arquivos"]

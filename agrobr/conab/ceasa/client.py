@@ -4,8 +4,8 @@ from typing import Any
 from urllib.parse import urlencode
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
@@ -20,7 +20,7 @@ from .models import (
     QUERY_PRECOS,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout()
 

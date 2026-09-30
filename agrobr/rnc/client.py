@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import httpx
 import pydantic
-import structlog
 from bs4 import BeautifulSoup
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses, retry
 from agrobr.http.settings import get_timeout
@@ -13,7 +12,7 @@ from agrobr.http.user_agents import UserAgentRotator
 
 from . import acquisition, parser
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _REGISTRADAS_URL = constants.RNC_PUBLIC_URLS["registradas"]
 _PROTEGIDAS_URL = constants.RNC_PUBLIC_URLS["protegidas"]

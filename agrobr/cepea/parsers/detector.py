@@ -3,16 +3,14 @@ from __future__ import annotations
 from datetime import date
 from typing import TYPE_CHECKING
 
-import structlog
-
-from agrobr import constants, exceptions
+from agrobr import _log, constants, exceptions
 from agrobr.cepea.parsers import base
 from agrobr.cepea.parsers.v1 import CepeaParserV1
 
 if TYPE_CHECKING:
     from agrobr import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSERS: list[type[base.BaseParser]] = [
     CepeaParserV1,

@@ -14,7 +14,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
 import pytest
-import structlog
 import typer
 from typer.testing import CliRunner
 
@@ -649,16 +648,12 @@ def test_csv_redirecionado_em_cp1252_sai_em_utf8(monkeypatch):
     buffer = io.BytesIO()
     saida = io.TextIOWrapper(buffer, encoding="cp1252", newline="\r\n")
 
-    configuracao = structlog.get_config()
-    try:
-        with patch.object(sys, "stdout", saida):
-            cli.main(_version=False, verbose=False)
-            cli.cepea_indicador(
-                produto="soja", inicio=None, fim=None, ultimo=False, formato=cli.Formato.CSV
-            )
-            saida.flush()
-    finally:
-        structlog.configure(**configuracao)
+    with patch.object(sys, "stdout", saida):
+        cli.main(_version=False, verbose=False)
+        cli.cepea_indicador(
+            produto="soja", inicio=None, fim=None, ultimo=False, formato=cli.Formato.CSV
+        )
+        saida.flush()
 
     corpo = buffer.getvalue()
     assert b"\r\r\n" not in corpo

@@ -32,20 +32,19 @@ In order of risk. Each line points to the section with the details.
    the original figure, pass `levantamento` ([§27](#27-conab-past-crop-years-come-from-the-most-recent-revision)).
 7. `ibge.censo_agro_municipal_1985` returns one row per PDF cell, with `valor` only in confirmed cells: use `valor_lido` and
    filter by `status` ([§81](#81-municipal-1985-census-cell-by-cell-each-with-its-status-contract-20)).
+8. agrobr's logs no longer follow the application's structlog configuration: they go through the standard library's
+   `logging`, as JSON, and are controlled with `logging.getLogger("agrobr")` ([§73](#73-logs-off-standard-output)).
 
 **Now raises**
 
-8. HTTP error statuses raise `SourceUnavailableError`, not `httpx.HTTPStatusError`: change the `except`
+9. HTTP error statuses raise `SourceUnavailableError`, not `httpx.HTTPStatusError`: change the `except`
    ([§75](#75-http-error-statuses-sourceunavailableerror-not-httpxhttpstatuserror)).
-9. An argument outside the signature raises `TypeError` (76 functions accepted `**kwargs` and dropped the misspelled name):
-   fix the name ([§78](#78-argument-outside-the-signature-raises-typeerror)).
-10. An impossible argument (unknown state, inverted period) raises `InvalidParameterError` before the network, where 1.1.0
+10. An argument outside the signature raises `TypeError` (76 functions accepted `**kwargs` and dropped the misspelled name):
+    fix the name ([§78](#78-argument-outside-the-signature-raises-typeerror)).
+11. An impossible argument (unknown state, inverted period) raises `InvalidParameterError` before the network, where 1.1.0
     returned empty data or a source error ([§66](#66-impossible-arguments-rejected-before-the-network)).
-11. `as_polars=True` without Polars raises `ImportError` instead of returning pandas: install `agrobr[polars]`
+12. `as_polars=True` without Polars raises `ImportError` instead of returning pandas: install `agrobr[polars]`
     ([§8](#8-as_polarstrue-requires-polars)).
-12. Configuring structlog after `import agrobr` with only `logger_factory` breaks every log call, the application's and
-    agrobr's, with `AttributeError: 'PrintLogger' object has no attribute 'disabled'`: call `structlog.reset_defaults()`
-    before `structlog.configure(...)` ([§73](#73-logs-off-standard-output)).
 
 **Removed API**
 
@@ -1425,21 +1424,18 @@ that filtered `variavel == "estabelecimentos"` in the 1995 crop themes filters `
 ## 73. Logs off standard output
 
 In 1.1.0, used as a library, agrobr printed structlog's logs (debug and info) to standard output, and `logging.basicConfig`
-did not control them: `python export.py > data.csv` came out with logs at the top of the CSV. In 2.0, logs go through the
-standard library's `logging`, as JSON. Without configuration, only warnings and errors come out, on standard error;
-`logging.basicConfig(level=logging.DEBUG)` turns them all on, and `logging.getLogger("agrobr")` controls agrobr only. If your
-application configures structlog before importing agrobr, its configuration wins. The CLI is unchanged: `--verbose` shows
-logs on standard error.
+did not control them: `python export.py > data.csv` came out with logs at the top of the CSV. In 2.0, agrobr's logs go through
+the standard library's `logging`, as JSON, in the logger of the module that emits them (`agrobr.cepea.parsers.v1`, for
+example). Without configuration, only warnings and errors come out, on standard error; `logging.basicConfig(level=logging.DEBUG)`
+turns them all on, and `logging.getLogger("agrobr")` controls agrobr only. `import agrobr` configures neither structlog nor
+`logging`.
 
-**Structlog configured after the import.** Without prior configuration, `import agrobr` configures the global structlog with
-`structlog.stdlib.filter_by_level` and `structlog.stdlib.LoggerFactory`; 1.1.0 configured nothing. A
-`structlog.configure(logger_factory=structlog.PrintLoggerFactory())` made after the import replaces only the factory and
-inherits the filter, and every log call, the application's and agrobr's, raises
-`AttributeError: 'PrintLogger' object has no attribute 'disabled'`. There are 3 ways out:
+**Applications that use structlog.** The application's structlog configuration, made before or after the import, applies only
+to its own logs; agrobr's stay in `logging`, as JSON. In 1.1.0, it applied to agrobr's logs too: to see them, configure
+`logging` (`logging.basicConfig` or a handler on the `"agrobr"` logger).
 
-- configure structlog before `import agrobr`;
-- call `structlog.reset_defaults()` before `structlog.configure(...)`, as agrobr's CLI does;
-- pass `processors` to `configure`, without `filter_by_level`.
+**CLI.** `--verbose` shows INFO logs on standard error; without it, only warnings and errors. Logs come out as JSON, one per
+line; in 1.1.0 they used structlog's console format.
 
 ## 74. Datasets: columns in contract order and dates as `datetime64`
 

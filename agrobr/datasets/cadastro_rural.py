@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.datasets.registry import register
@@ -12,7 +12,7 @@ from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result as result_utils
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 async def _fetch_sicar(uf: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:

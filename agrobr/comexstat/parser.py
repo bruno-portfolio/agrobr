@@ -2,17 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, BinaryIO
 
-import structlog
 from pydantic import ValidationError
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.comexstat import _csv, _retention, _scan, models
 from agrobr.exceptions import ResourceLimitError
 
 if TYPE_CHECKING:
     from agrobr.comexstat.query import ComexQuery
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 ParsedResource = models.ParsedResource

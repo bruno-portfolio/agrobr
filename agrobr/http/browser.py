@@ -4,13 +4,11 @@ import asyncio
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-import structlog
-
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.user_agents import UserAgentRotator
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 try:
     from playwright.async_api import Browser, Page, Playwright, async_playwright

@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
 import pytest
-from structlog import testing
 
 from agrobr.snapshots import (
     SnapshotManifest,
@@ -25,7 +24,7 @@ from agrobr.snapshots import (
     list_snapshots,
     load_from_snapshot,
 )
-from tests.helpers import levanta_exatamente, make_snapshot_source, sem_excecao
+from tests.helpers import capturar_logs, levanta_exatamente, make_snapshot_source, sem_excecao
 
 try:
     import pyarrow  # noqa: F401
@@ -493,7 +492,7 @@ def test_list_snapshots_ignora_diretorio_oculto_e_nao_avisa(tmp_path):
     (tmp_path / "sem-manifesto").mkdir()
     with (
         patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-        testing.capture_logs() as registros,
+        capturar_logs() as registros,
     ):
         assert list_snapshots() == []
     assert [r["event"] for r in registros if r["log_level"] == "warning"] == []

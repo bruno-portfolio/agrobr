@@ -3,16 +3,15 @@ from __future__ import annotations
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.datasets import _comercio_exterior
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.time import utcnow
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _produto_para_abiove(produto: str) -> str:

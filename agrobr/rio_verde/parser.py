@@ -4,15 +4,15 @@ import io
 from typing import Any
 
 import pandas as pd
-import structlog
 from pydantic import ValidationError
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize.regions import remover_acentos
 
 from . import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 

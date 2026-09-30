@@ -5,8 +5,8 @@ import time
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import build_source_meta, finalize_result
@@ -17,7 +17,7 @@ from . import client, parser
 if TYPE_CHECKING:
     import geopandas as gpd
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _UF_TO_ESTADO: dict[str, str] = {
     "AC": "Acre",

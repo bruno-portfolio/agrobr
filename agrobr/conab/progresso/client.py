@@ -5,9 +5,9 @@ from functools import partial
 from urllib.parse import urljoin, urlsplit
 
 import httpx
-import structlog
 from bs4 import BeautifulSoup
 
+from agrobr import _log
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
@@ -19,7 +19,7 @@ from .models import BASE_URL
 
 _CONAB_BASE = URLS[Fonte.CONAB]["base"]
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=60.0)
 

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from urllib import parse
 
-import structlog
-
+from agrobr import _log
 from agrobr.http.settings import get_timeout
 from agrobr.utils.geo import build_wfs_url, fetch_wfs
 
@@ -19,7 +18,7 @@ from .models import (
     WFS_VERSION,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=120.0)
 

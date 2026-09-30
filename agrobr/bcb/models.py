@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import re
 
-import structlog
-
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize import regions
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 SICOR_PROGRAMAS: dict[str, str] = {
     "0001": "PRONAF",

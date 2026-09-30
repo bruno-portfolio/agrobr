@@ -7,8 +7,8 @@ from datetime import date, datetime, timedelta
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import tasks
@@ -24,7 +24,7 @@ TipoData = Literal["deteccao", "publicacao"]
 if TYPE_CHECKING:
     import geopandas as gpd
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _prepare_bbox(

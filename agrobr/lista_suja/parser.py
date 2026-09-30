@@ -6,11 +6,12 @@ from typing import Any
 
 import pandas as pd
 import pydantic
-import structlog
+
+from agrobr import _log
 
 from . import _parsing, _pdf, models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 PARSER_VERSION = models.PARSER_VERSION
 
 

@@ -11,9 +11,8 @@ from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.normalize.encoding import detect_encoding_chain
 
@@ -23,7 +22,7 @@ from ._buffers import ZarcBuffers
 if TYPE_CHECKING:
     from .query import ZarcQuery
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 PARSER_VERSION = 2
 
 

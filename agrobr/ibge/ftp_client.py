@@ -4,8 +4,8 @@ import io
 import zipfile
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_on_status
@@ -13,7 +13,7 @@ from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import io as io_utils
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 FTP_BASE = URLS[Fonte.IBGE]["ftp_censo_agro_1996"]
 

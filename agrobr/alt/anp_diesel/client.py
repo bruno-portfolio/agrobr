@@ -6,9 +6,8 @@ from datetime import UTC, datetime
 from typing import Any
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.constants import MIN_CSV_SIZE, MIN_XLSX_SIZE
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
@@ -18,7 +17,7 @@ from agrobr.utils import io as io_utils
 
 from . import _catalog
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=180.0)
 

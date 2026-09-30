@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 
 from . import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 

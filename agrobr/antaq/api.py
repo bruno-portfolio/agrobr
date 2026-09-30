@@ -5,8 +5,8 @@ import time
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.antaq import client, parser
 from agrobr.antaq.models import (
     MIN_ANO,
@@ -20,7 +20,7 @@ from agrobr.utils import time as time_utils
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.validation import validate_uf
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @overload

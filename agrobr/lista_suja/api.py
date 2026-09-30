@@ -4,9 +4,8 @@ import time
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.contracts import lista_suja as source_contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
@@ -16,7 +15,7 @@ from agrobr.utils.warnings import warn_once
 
 from . import client, models, parser
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _validate_query(

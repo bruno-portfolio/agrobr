@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import structlog
-
+from agrobr import _log
 from agrobr.constants import CacheSettings
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _cache_dir() -> Path:

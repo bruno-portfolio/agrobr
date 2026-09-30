@@ -252,8 +252,8 @@ logging.basicConfig(level=logging.DEBUG)             # todos os logs, na saída 
 logging.getLogger("agrobr").setLevel(logging.INFO)   # ou só o nível do agrobr
 ```
 
-Se a sua aplicação configura o structlog antes de importar o agrobr, a configuração dela vale: o agrobr só configura o
-structlog quando ninguém o fez.
+O agrobr não configura o structlog: a configuração do structlog da sua aplicação vale só para os logs dela, e os do agrobr
+seguem no `logging`.
 
 ### Ver Configuração Atual
 

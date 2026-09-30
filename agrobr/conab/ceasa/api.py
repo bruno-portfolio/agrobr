@@ -4,8 +4,8 @@ import time
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import tasks
@@ -15,7 +15,7 @@ from agrobr.utils.warnings import warn_once
 from . import client, parser
 from .models import CATEGORIAS, CEASA_UF_MAP, PRODUTOS_PROHORT
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @overload

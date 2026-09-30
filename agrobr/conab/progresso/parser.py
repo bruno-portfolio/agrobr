@@ -5,8 +5,8 @@ from datetime import datetime
 from typing import cast
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize.numeric import safe_float
 from agrobr.utils.io import open_excel_safe
@@ -22,7 +22,7 @@ from .models import (
     parse_operacao_header,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 3
 

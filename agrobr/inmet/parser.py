@@ -10,15 +10,15 @@ from typing import Any
 
 import pandas as pd
 import pydantic
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates, encoding
 from agrobr.normalize.regions import remover_acentos
 
 from . import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 1
 HISTORICO_PARSER_VERSION = 2

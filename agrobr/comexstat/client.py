@@ -11,9 +11,8 @@ from typing import BinaryIO, cast
 from urllib.parse import urljoin, urlsplit
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
 from agrobr.http import retry
 from agrobr.http.settings import get_timeout
@@ -22,7 +21,7 @@ from agrobr.utils import io
 
 from . import _tls, transport_models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 TIMEOUT = get_timeout(read=120.0)
 
 

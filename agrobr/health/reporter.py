@@ -5,13 +5,13 @@ import json
 from pathlib import Path
 from typing import Any
 
-import structlog
+from agrobr import _log
 
 from ..constants import Fonte
 from ..utils.time import utcnow
 from .checker import CheckResult, CheckStatus, run_all_checks
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 class HealthReport:

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_WFS_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http import responses
@@ -11,7 +11,7 @@ from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils.io import extract_csv_from_zip
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL = URLS[Fonte.QUEIMADAS]["dados_abertos"]
 

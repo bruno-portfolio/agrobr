@@ -13,8 +13,8 @@ from typing import Any, NamedTuple, cast
 from weakref import WeakValueDictionary
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.anec import models
 from agrobr.anec.models import CATEGORIES_BY_YEAR, MIN_YEAR, ANECArticle
 from agrobr.constants import MIN_PDF_SIZE, URLS, CacheSettings, Fonte
@@ -26,7 +26,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import atomic
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _warn_license() -> None:

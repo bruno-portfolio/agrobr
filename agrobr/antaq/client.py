@@ -7,8 +7,8 @@ from typing import NamedTuple
 from urllib import parse
 
 import requests
-import structlog
 
+from agrobr import _log
 from agrobr.constants import MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_async, should_retry_status
@@ -16,7 +16,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import detect_encoding_chain
 from agrobr.utils import io as io_utils
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BULK_TXT_BASE = URLS[Fonte.ANTAQ]["bulk_txt"]
 MERCADORIA_URL = f"{BULK_TXT_BASE}/Mercadoria.zip"

@@ -9,15 +9,14 @@ from pathlib import Path
 from typing import Any
 
 import duckdb
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import CacheMigrationError
 from agrobr.normalize import regions
 from agrobr.utils.time import utcnow
 from agrobr.utils.warnings import warn_once
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 SCHEMA_CACHE = """

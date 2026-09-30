@@ -4,14 +4,14 @@ import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
-import structlog
 from bs4 import BeautifulSoup, Tag
 
+from agrobr import _log
 from agrobr.constants import NOTICIAS_AGRICOLAS_PARSER_VERSION, Fonte
 from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = NOTICIAS_AGRICOLAS_PARSER_VERSION
 

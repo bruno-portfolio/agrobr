@@ -4,9 +4,10 @@ import codecs
 from collections.abc import Sequence
 
 import chardet
-import structlog
 
-logger = structlog.get_logger()
+from agrobr import _log
+
+logger = _log.get_logger(__name__)
 
 ENCODING_CHAIN: Sequence[str] = ("utf-8", "windows-1252", "iso-8859-1")
 

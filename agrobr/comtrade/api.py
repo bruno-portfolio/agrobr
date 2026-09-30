@@ -5,9 +5,8 @@ import warnings as python_warnings
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.contracts import comtrade as source_contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
@@ -16,7 +15,7 @@ from agrobr.utils.time import utcnow
 
 from . import acquisition, client, metadata, models, parser, query
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def prepare_query(

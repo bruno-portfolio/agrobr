@@ -6,8 +6,8 @@ from typing import Any, cast
 
 import pandas as pd
 import pydantic
-import structlog
 
+from agrobr import _log
 from agrobr.constants import SICAR_MAX_VERSOES_DESCARTADAS
 from agrobr.exceptions import ParseError
 from agrobr.normalize import regions
@@ -16,7 +16,7 @@ from agrobr.utils.geo import check_geopandas, parse_geojson_base
 from . import models
 from .models import COLUNAS_IMOVEIS, COLUNAS_IMOVEIS_GEO, MAX_FEATURES_GEO, RENAME_MAP
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = models.PARSER_VERSION
 

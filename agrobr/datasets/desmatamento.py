@@ -4,9 +4,8 @@ from datetime import UTC, datetime
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.datasets import _desmatamento_aggregation, base, registry
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import ContractViolationError, InvalidParameterError, ResourceLimitError
@@ -14,7 +13,7 @@ from agrobr.models import MetaInfo
 from agrobr.normalize import regions
 from agrobr.utils import result
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 PRODUCTS = sorted(regions.BIOMAS_VALIDOS)
 
 

@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import date
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.http import responses
@@ -12,7 +12,7 @@ from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=60.0)
 

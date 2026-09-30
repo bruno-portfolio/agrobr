@@ -3,8 +3,8 @@ from __future__ import annotations
 import io
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.antaq.models import (
     COLUNAS_ATRACACAO,
     COLUNAS_CARGA,
@@ -14,7 +14,7 @@ from agrobr.antaq.models import (
 )
 from agrobr.normalize.dates import month_to_number
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _read_txt(content: str, usecols: list[str] | None = None) -> pd.DataFrame:

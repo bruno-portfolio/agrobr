@@ -9,8 +9,8 @@ from typing import Any, cast
 from urllib.parse import quote
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http import responses
@@ -22,7 +22,7 @@ from agrobr.utils.time import utcnow_aware
 
 from . import models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 BASE_URL = URLS[Fonte.BCB]["base"]
 

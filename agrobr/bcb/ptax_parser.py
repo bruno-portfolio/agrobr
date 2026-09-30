@@ -7,14 +7,13 @@ from typing import Any
 
 import pandas as pd
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError
 
 from . import ptax_models
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 PARSER_VERSION = ptax_models.PARSER_VERSION
 
 

@@ -3,8 +3,8 @@ from __future__ import annotations
 import re
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.utils.io import read_excel_safe
 
@@ -18,7 +18,7 @@ from .models import (
     estado_para_uf,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 1
 

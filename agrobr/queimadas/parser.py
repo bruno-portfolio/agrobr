@@ -4,8 +4,8 @@ import warnings
 from typing import Any
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates, regions
 from agrobr.utils.io import read_csv_safe
@@ -13,7 +13,7 @@ from agrobr.utils.result import ATRIBUTO_AVISOS
 
 from .models import CHAVE, COLUNAS_SAIDA, estado_para_uf, normalizar_bioma
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 

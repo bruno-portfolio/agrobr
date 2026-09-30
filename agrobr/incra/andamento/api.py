@@ -9,9 +9,8 @@ from datetime import UTC, date, datetime
 from typing import Any, Literal, cast, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants, contracts
+from agrobr import _log, constants, contracts
 from agrobr.exceptions import ContractViolationError, InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result
@@ -19,7 +18,7 @@ from agrobr.utils.warnings import warn_once
 
 from . import client, models, parser
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def validate_edition(value: date | str | None) -> date | None:

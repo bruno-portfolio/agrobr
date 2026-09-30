@@ -5,9 +5,8 @@ from datetime import UTC, date, datetime
 
 import httpx
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -15,7 +14,7 @@ from agrobr.http.user_agents import UserAgentRotator
 
 from . import sgs_acquisition, sgs_models, sgs_parser, sgs_query
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 SGS_BASE = constants.URLS[constants.Fonte.BCB]["sgs"]
 TIMEOUT = get_timeout(read=30.0)

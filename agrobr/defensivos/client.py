@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import httpx
-import structlog
 
+from agrobr import _log
 from agrobr.constants import URLS, Fonte
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 FORMULADOS_URL = URLS[Fonte.DEFENSIVOS]["formulados"]
 TECNICOS_URL = URLS[Fonte.DEFENSIVOS]["tecnicos"]

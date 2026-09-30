@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from datetime import datetime
 
-import structlog
-
+from agrobr import _log
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.cache.duckdb_store import get_store
 from agrobr.constants import AlertSettings, Fonte
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def close_store() -> None:

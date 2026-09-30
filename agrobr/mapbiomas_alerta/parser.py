@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
 from agrobr.utils.geo import check_geopandas
 
 from .models import COLUNAS_SAIDA, COLUNAS_SAIDA_GEO, RENAME_MAP
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
 

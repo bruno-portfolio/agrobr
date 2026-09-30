@@ -12,9 +12,8 @@ from urllib.parse import urldefrag, urljoin, urlsplit
 import bs4
 import httpx
 import pydantic
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.conab import models
 from agrobr.constants import MIN_HTML_PAGE_SIZE, MIN_XLSX_SIZE
 from agrobr.exceptions import ParseError, SourceUnavailableError
@@ -32,7 +31,7 @@ try:
 except ImportError:  # pragma: no cover
     async_playwright = None  # type: ignore[assignment,misc]
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 async def _fetch_http(url: str) -> bytes:

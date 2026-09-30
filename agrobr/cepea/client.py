@@ -5,9 +5,8 @@ from datetime import datetime
 from typing import NamedTuple
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.constants import _CEPEA_ENDPOINTS
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http import responses
@@ -19,7 +18,7 @@ from agrobr.normalize.encoding import decode_content
 from agrobr.utils.io import validate_download
 from agrobr.utils.time import utcnow
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 class FetchResult(NamedTuple):

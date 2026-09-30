@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-import structlog
+from agrobr import _log
 
 from ...exceptions import ParseError
 from ...models import Indicador
 from .base import BaseParser
 from .v1 import CepeaParserV1
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 CONSENSUS_PARSERS: list[type[BaseParser]] = [
     CepeaParserV1,

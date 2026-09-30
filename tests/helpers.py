@@ -35,7 +35,7 @@ import pandas as pd
 import pytest
 import structlog
 
-from agrobr import config, constants, contracts, datasets
+from agrobr import _log, config, constants, contracts, datasets
 from agrobr.alt.anp_diesel import client as anp_client
 from agrobr.alt.antt_pedagio import client as antt_client
 from agrobr.cache import duckdb_store
@@ -109,6 +109,18 @@ def sem_excecao() -> Iterator[None]:
         yield
     except Exception as erro:
         raise AssertionError(f"caminho válido levantou {type(erro).__name__}: {erro}") from erro
+
+
+@contextmanager
+def capturar_logs() -> Iterator[list[structlog.typing.EventDict]]:
+    """``structlog.testing.capture_logs`` dos loggers do agrobr, que não usam os processadores globais."""
+    captura = structlog.testing.LogCapture()
+    originais = list(_log.PROCESSADORES)
+    _log.PROCESSADORES[:] = [captura]
+    try:
+        yield captura.entries
+    finally:
+        _log.PROCESSADORES[:] = originais
 
 
 def conferir_corpo(meta: MetaInfo, corpo: bytes) -> None:

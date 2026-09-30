@@ -6,9 +6,8 @@ from datetime import date
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants, contracts
+from agrobr import _log, constants, contracts
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.datasets.registry import register
@@ -18,7 +17,7 @@ from agrobr.utils import result as result_utils
 from agrobr.utils import validation
 from agrobr.utils.time import hoje
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _normalize_uf_source(df: pd.DataFrame, source: str) -> pd.DataFrame:

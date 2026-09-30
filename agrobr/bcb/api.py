@@ -7,9 +7,8 @@ import warnings
 from typing import Any, Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.contracts import bcb_sicor
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
@@ -35,7 +34,7 @@ from .parser import (
     parse_credito_rural_total,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 _CREDITO_RURAL_COLUMNS = [
     "safra",

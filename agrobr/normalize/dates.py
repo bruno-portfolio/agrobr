@@ -6,12 +6,12 @@ from datetime import date
 from typing import NamedTuple
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.utils.result import ATRIBUTO_AVISOS
 from agrobr.utils.time import hoje
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 DATA_ANO_MINIMO = 1900
 DATA_ANO_MAXIMO = 2099

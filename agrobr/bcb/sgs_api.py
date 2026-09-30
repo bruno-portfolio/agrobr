@@ -6,9 +6,8 @@ from datetime import UTC, datetime
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import contracts
+from agrobr import _log, contracts
 from agrobr.contracts import bcb_sgs as source_contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
@@ -16,7 +15,7 @@ from agrobr.utils import result
 
 from . import sgs_client, sgs_metadata, sgs_parser, sgs_query
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 @overload

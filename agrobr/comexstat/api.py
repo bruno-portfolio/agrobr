@@ -5,14 +5,13 @@ import time
 from typing import Literal, overload
 
 import pandas as pd
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 from agrobr.comexstat import client, parser, query, result
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 def _output_guards(*, as_polars: bool, return_meta: bool) -> None:

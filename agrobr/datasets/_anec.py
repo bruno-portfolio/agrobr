@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
-import structlog
 
+from agrobr import _log
 from agrobr.datasets import base, deterministic
 from agrobr.models import MetaInfo
 from agrobr.utils import result
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 
 class ANECDataset(base.BaseDataset):

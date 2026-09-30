@@ -6,11 +6,10 @@ from functools import wraps
 from typing import Any, TypeVar
 
 import httpx
-import structlog
 
-from agrobr import constants
+from agrobr import _log, constants
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 T = TypeVar("T")
 
 

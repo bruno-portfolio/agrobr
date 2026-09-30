@@ -13,8 +13,8 @@ from urllib.parse import quote
 import certifi
 import httpx
 import pydantic
-import structlog
 
+from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -29,7 +29,7 @@ from .models import (
     layer_name,
 )
 
-logger = structlog.get_logger()
+logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=180.0)
 
