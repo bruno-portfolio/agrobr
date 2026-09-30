@@ -45,17 +45,19 @@ Coverage with `nivel="municipio"` validates its own `mapbiomas.cobertura_municip
 
 | Column | Physical pandas type | Nullable | Meaning |
 |--------|----------------------|----------|---------|
-| `bioma` | object | No | Published biome |
-| `estado` | object | No | State of the published intersection |
-| `municipio` | object | No | Published territorial name, without surrounding spaces |
+| `bioma` | str | No | Published biome |
+| `estado` | str | No | State of the published intersection |
+| `municipio` | str | No | Published territorial name, without surrounding spaces |
 | `classe_id` | Int64 | No | Class code |
-| `classe` | object | Yes | SDK-normalized label for the collection; not a literal legend transcription; null only for a code outside the legend |
-| `nivel_0` | object | No | Published text category, including `Undefined` |
+| `classe` | str | Yes | SDK-normalized label for the collection; not a literal legend transcription; null only for a code outside the legend |
+| `nivel_0` | str | No | Published text category, including `Undefined` |
 | `ano` | Int64 | No | Reference year |
 | `area_ha` | float64 | No | Finite non-negative area in hectares; zero is preserved |
-| `geocodigo` | object | No | Published `geocode`, seven ASCII digits as text |
+| `geocodigo` | str | No | Published `geocode`, seven ASCII digits as text |
 | `cod_municipio` | Int64 | Yes | IBGE municipality code taken from `geocodigo`; null when the code has no state prefix |
 | `id_registro` | Int64 | No | Non-negative original `ID`, scoped to its collection and resource |
+
+Text uses the installed pandas default dtype: `str` on pandas 3 and `object` on pandas 2.
 
 The key is `(bioma, estado, geocodigo, classe_id, id_registro, ano)` within one collection and resource. A code may identify intersections in multiple states; this does not justify removing the state from the key. `geocodigo` also includes entities such as lakes, without promising membership in the current IBGE municipal catalog. `id_registro` is copied from the original `ID`, including zero; it is not a generated ordinal or a stable identity across publications.
 

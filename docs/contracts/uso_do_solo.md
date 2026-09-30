@@ -45,17 +45,19 @@ Cobertura com `nivel="municipio"` valida o contrato próprio `mapbiomas.cobertur
 
 | Coluna | Tipo físico pandas | Nulo | Significado |
 |--------|--------------------|------|-------------|
-| `bioma` | object | Não | Bioma publicado |
-| `estado` | object | Não | UF do cruzamento publicado |
-| `municipio` | object | Não | Nome territorial publicado, sem espaços externos |
+| `bioma` | str | Não | Bioma publicado |
+| `estado` | str | Não | UF do cruzamento publicado |
+| `municipio` | str | Não | Nome territorial publicado, sem espaços externos |
 | `classe_id` | Int64 | Não | Código da classe |
-| `classe` | object | Sim | Rótulo normalizado pelo SDK conforme a coleção; não é transcrição literal da legenda; nulo só para código fora da legenda |
-| `nivel_0` | object | Não | Categoria textual publicada, incluindo `Undefined` |
+| `classe` | str | Sim | Rótulo normalizado pelo SDK conforme a coleção; não é transcrição literal da legenda; nulo só para código fora da legenda |
+| `nivel_0` | str | Não | Categoria textual publicada, incluindo `Undefined` |
 | `ano` | Int64 | Não | Ano de referência |
 | `area_ha` | float64 | Não | Área finita e não negativa em hectares; zero preservado |
-| `geocodigo` | object | Não | `geocode` publicado, sete dígitos ASCII como texto |
+| `geocodigo` | str | Não | `geocode` publicado, sete dígitos ASCII como texto |
 | `cod_municipio` | Int64 | Sim | Código IBGE do município tirado do `geocodigo`; nulo quando o código não tem o prefixo de uma UF |
 | `id_registro` | Int64 | Não | `ID` original não negativo, local à coleção e recurso |
+
+O texto sai no dtype padrão do pandas instalado: `str` no pandas 3 e `object` no pandas 2.
 
 A chave é `(bioma, estado, geocodigo, classe_id, id_registro, ano)`, dentro de uma coleção e recurso. Um código pode pertencer a cruzamentos em múltiplas UFs; isso não autoriza remover a UF da chave. `geocodigo` também inclui entidades como lagoas, sem promessa de catálogo municipal atual do IBGE. O `id_registro` é copiado do `ID` original, incluindo zero; não é ordinal gerado nem uma identidade estável entre publicações.
 
