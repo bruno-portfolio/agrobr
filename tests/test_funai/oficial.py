@@ -71,10 +71,15 @@ def feicoes(data: dict[str, Any], caso: str) -> list[dict[str, Any]]:
 
 def linha(feature: dict[str, Any]) -> dict[str, Any]:
     propriedades = feature["properties"]
-    return {
+    saida = {
         coluna: feature["id"] if fonte is None else propriedades[fonte]
         for coluna, fonte in colunas()
     }
+    data = saida["data_atualizacao"]
+    if data is not None:
+        dia, mes, ano = (int(parte) for parte in data.split("/"))
+        saida["data_atualizacao"] = pd.Timestamp(ano, mes, dia)
+    return saida
 
 
 def ufs(texto: str | None) -> set[str]:

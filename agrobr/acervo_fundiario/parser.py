@@ -75,7 +75,7 @@ def _resolve_uf_from_ibge(df: pd.DataFrame) -> pd.DataFrame:
 
 def _normalize_uf_column(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    df["uf"] = df["uf"].astype("string").str.strip().str.upper()
+    df["uf"] = df["uf"].astype(pd.Series([""]).dtype).str.strip().str.upper()
     return df
 
 

@@ -37,18 +37,18 @@
     "familias": "int",
     "fase": "str",
     "titulado": "str",
-    "data_publicacao": "str",
-    "data_titulo": "str",
+    "data_publicacao": "date",
+    "data_titulo": "date",
     "feature_id": "str",
     "regional": "str",
     "processo": "str",
-    "data_publicacao_2": "str",
+    "data_publicacao_2": "date",
     "responsavel": "str",
     "esfera": "str",
-    "data_cadastro": "str",
+    "data_cadastro": "datetime",
     "codigo_sipra": "str",
     "descricao": "str",
-    "data_decreto": "str",
+    "data_decreto": "date",
     "tipo_levantamento": "str",
     "escala": "str"
   },
@@ -167,7 +167,7 @@
     },
     {
       "name": "data_publicacao",
-      "type": "str",
+      "type": "date",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -178,7 +178,7 @@
     },
     {
       "name": "data_titulo",
-      "type": "str",
+      "type": "date",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -222,7 +222,7 @@
     },
     {
       "name": "data_publicacao_2",
-      "type": "str",
+      "type": "date",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -255,7 +255,7 @@
     },
     {
       "name": "data_cadastro",
-      "type": "str",
+      "type": "datetime",
       "nullable": false,
       "unit": null,
       "stable": true,
@@ -288,7 +288,7 @@
     },
     {
       "name": "data_decreto",
-      "type": "str",
+      "type": "date",
       "nullable": true,
       "unit": null,
       "stable": true,
@@ -396,7 +396,9 @@
       "tp_levanta": "tipo_levantamento",
       "nr_escalao": "escala"
     },
-    "string_dtype": "string[python] with pd.NA",
+    "string_dtype": "default pandas text dtype (str on pandas 3, object on pandas 2)",
+    "date_dtype": "datetime64[ns]",
+    "datetime_dtype": "datetime64[ns, UTC]",
     "integer_dtype": "Int64",
     "float_dtype": "float64",
     "integer_source_bits": {
@@ -416,9 +418,9 @@
     "datetime_source_fields": [
       "dt_cadastro"
     ],
-    "temporal_semantics": "XSD_1_0_date_and_dateTime_validated_locally_without_lexical_timezone_or_precision_conversion",
+    "temporal_semantics": "XSD_1_0_date_and_dateTime_validated_locally_then_date_as_datetime64_ns_and_dateTime_as_UTC_offsetless_read_as_UTC_unreadable_date_becomes_NaT_with_warning",
     "temporal_protocol_restriction": "external_whitespace_rejected_before_local_XMLSchema_validation_without_stripping_output",
-    "registration_date": "required_published_datetime_literal_not_an_immutable_edition",
+    "registration_date": "required_published_datetime_as_UTC_instant_not_an_immutable_edition",
     "feature_id": "required_nonblank_received_string_by_acquisition_policy_not_XSD_primary_key",
     "identifier_semantics": "zero_repeated_and_null_codes_preserved_without_primary_key",
     "continuity_basis": "all_published_properties_and_acquired_geometry_with_ID_changes_reported_separately",
@@ -429,7 +431,7 @@
   },
   "guarantees": [
     "Todos os 21 atributos publicados e Feature.id permanecem recuperáveis nas 22 colunas",
-    "Datas e cadastro preservam os literais temporais validados, sem perda de fuso ou precisão",
+    "Datas publicadas saem em datetime64[ns] e o cadastro em datetime64[ns, UTC], validados como XSD na entrada",
     "Null, zero, string vazia e texto NULL não são intercambiáveis",
     "Código, processo e Feature.id não constituem chaves primárias",
     "Ocorrências repetidas não são eliminadas por identificador"

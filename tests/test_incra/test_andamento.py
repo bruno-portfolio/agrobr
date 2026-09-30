@@ -74,7 +74,7 @@ def test_andamento_real_dtypes_and_empty_strings(june_publication):
     assert str(june_publication.frame.numero_publicado.dtype) == "Int64"
     for name in models.columns():
         if name != "numero_publicado":
-            assert june_publication.frame[name].dtype == pd.StringDtype(storage="python")
+            assert june_publication.frame[name].dtype == pd.Series([""]).dtype
     assert not june_publication.frame.isna().any().any()
     assert june_publication.frame.area_ha_texto.eq("").sum() == 237
 

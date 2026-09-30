@@ -9,9 +9,12 @@ from typing import Any
 import pandas as pd
 import pytest
 
-from agrobr import contracts
+from agrobr import constants, contracts
 from agrobr.exceptions import ContractViolationError
 from tests.helpers import levanta_exatamente
+from tests.test_incra import replay
+
+TEMPORAIS = {f"perimetro_{name}": dtype for name, dtype in constants.INCRA_DTYPES_TEMPORAIS.items()}
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/incra/vinculos_20260908/expected.json"
 INTEGER_COLUMNS = {
@@ -32,14 +35,19 @@ def _frame(rows: list[dict[str, Any]], columns: list[str]) -> pd.DataFrame:
     return pd.DataFrame(
         {
             name: pd.Series(
-                [row[name] for row in rows],
+                [
+                    replay.publicado(name.removeprefix("perimetro_"), row[name])
+                    if name in TEMPORAIS
+                    else row[name]
+                    for row in rows
+                ],
                 dtype="Int64"
                 if name in INTEGER_COLUMNS
                 else "float64"
                 if name == "perimetro_area_ha"
                 else "boolean"
                 if name == "referencia_repetida"
-                else pd.StringDtype(storage="python"),
+                else TEMPORAIS.get(name, pd.Series([""]).dtype),
             )
             for name in columns
         }
@@ -199,8 +207,8 @@ def test_incra_vinculos_reversed_column_order(contract, national):
     assert not contract.validate(national[list(reversed(national.columns))])[0]
 
 
-def test_incra_vinculos_invalid_parent_datetime(contract, national):
-    national.loc[0, "perimetro_data_cadastro"] = "2026-02-30T00:00:00Z"
+def test_incra_vinculos_parent_datetime_without_utc_rejected(contract, national):
+    national["perimetro_data_cadastro"] = national["perimetro_data_cadastro"].dt.tz_localize(None)
     assert not contract.validate(national)[0]
 
 
@@ -223,7 +231,7 @@ def test_incra_vinculos_two_distinct_tokens_same_parents(contract, rows, omit_se
 @pytest.mark.parametrize(
     "column,dtype",
     [
-        ("estado_vinculo", "object"),
+        ("perimetro_data_titulo", "object"),
         ("referencia_repetida", "object"),
         ("perimetro_codigo", "float64"),
         ("perimetro_area_ha", "Float64"),

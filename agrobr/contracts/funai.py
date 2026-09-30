@@ -12,16 +12,14 @@ def _source_name(name: str) -> str:
     return next((raw for raw, alias in constants.FUNAI_RENAME_MAP.items() if alias == name), name)
 
 
-class FunaiContract(contracts.Contract):
-    def empty_frame(self) -> pd.DataFrame:
-        frame = super().empty_frame()
-        for column in self.columns:
-            if column.type == contracts.ColumnType.STRING:
-                frame[column.name] = pd.Series(dtype=pd.StringDtype(storage="python"))
-            elif column.type == contracts.ColumnType.FLOAT:
-                frame[column.name] = pd.Series(dtype="float64")
-        return frame
+_DTYPES = {
+    contracts.ColumnType.INTEGER: "Int64",
+    contracts.ColumnType.FLOAT: "float64",
+    contracts.ColumnType.DATE: "datetime64[ns]",
+}
 
+
+class FunaiContract(contracts.Contract):
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         _, errors = super().validate(df)
         if not df.columns.is_unique:
@@ -32,18 +30,9 @@ class FunaiContract(contracts.Contract):
         for column in self.columns:
             if column.name not in df:
                 continue
-            dtype = df[column.name].dtype
-            if column.type == contracts.ColumnType.STRING:
-                if (
-                    not isinstance(dtype, pd.StringDtype)
-                    or dtype.storage != "python"
-                    or str(dtype) != "string"
-                ):
-                    errors.append(f"Column '{column.name}' must use StringDtype python with pd.NA")
-            else:
-                wanted = "Int64" if column.type == contracts.ColumnType.INTEGER else "float64"
-                if str(dtype) != wanted:
-                    errors.append(f"Column '{column.name}' must use {wanted} dtype")
+            wanted = _DTYPES.get(column.type)
+            if wanted is not None and str(df[column.name].dtype) != wanted:
+                errors.append(f"Column '{column.name}' must use {wanted} dtype")
         if errors:
             return False, errors
         if any(not value.strip() for value in df["feature_id"]):
@@ -66,15 +55,16 @@ class FunaiContract(contracts.Contract):
             optional_geometry_column="geometry_after_all_attributes",
             source_property_projection=list(constants.FUNAI_PROPERTIES),
             column_aliases=dict(constants.FUNAI_RENAME_MAP),
-            string_dtype="string[python] with pd.NA",
+            string_dtype="default pandas text dtype (str on pandas 3, object on pandas 2)",
+            date_dtype="datetime64[ns]",
             integer_dtype="Int64",
             float_dtype="float64",
             integer_source_bits=dict(constants.FUNAI_INTEGER_BITS),
             source_missing_member="unsupported_projection_raises_ParseError",
             source_null="preserved_when_XSD_nillable_not_equivalent_to_missing_member",
             source_extra_member="layout_drift_raises_ParseError",
-            text_semantics="literal_published_text_without_date_boolean_or_UF_coercion",
-            update_date_semantics="literal_text_not_an_immutable_edition_identifier",
+            text_semantics="literal_published_text_without_boolean_or_UF_coercion",
+            update_date_semantics="published_DD_MM_YYYY_parsed_to_datetime64_unreadable_becomes_NaT_with_warning_not_an_immutable_edition_identifier",
             feature_id="required_nonblank_received_string_observed_volatile_between_requests",
             identifier_semantics="published_identifiers_are_not_primary_keys",
             continuity_basis="all_published_properties_and_acquired_geometry_with_id_drift_reported_separately",
@@ -98,6 +88,8 @@ def _column(name: str) -> contracts.Column:
         )
     if name == "area_ha":
         return contracts.Column(name, contracts.ColumnType.FLOAT, nullable=True, unit="ha")
+    if name == "data_atualizacao":
+        return contracts.Column(name, contracts.ColumnType.DATE, nullable=True)
     return contracts.Column(name, contracts.ColumnType.STRING, nullable=name != "feature_id")
 
 
@@ -109,7 +101,8 @@ TERRAS_INDIGENAS_V2 = FunaiContract(
     columns=[_column(name) for name in constants.FUNAI_COLUMNS],
     guarantees=[
         "Todos os 18 atributos publicados permanecem recuperáveis nas 19 colunas",
-        "UF, data e indicadores administrativos mantêm o texto literal publicado",
+        "UF e indicadores administrativos mantêm o texto literal publicado",
+        "Data de atualização publicada em DD/MM/AAAA sai em datetime64[ns]; ilegível vira NaT com aviso",
         "Null, string vazia, espaços e texto NULL não são intercambiáveis",
         "Identificadores inteiros são preservados sem conversão intermediária para float",
         "Feature.id é preservado como recebido, inclusive quando varia entre requisições",

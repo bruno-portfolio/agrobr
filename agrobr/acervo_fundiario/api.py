@@ -6,11 +6,16 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import pandas as pd
 
 from agrobr import _log
-from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
 from agrobr.utils.geo import check_pyogrio, validate_bbox
-from agrobr.utils.result import build_source_meta, finalize_result
-from agrobr.utils.validation import validate_uf as _validate_uf_optional
+from agrobr.utils.result import (
+    DataFrameResult,
+    GeoDataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
+from agrobr.utils.validation import validate_uf
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
@@ -26,13 +31,6 @@ _NC_WARNING = (
 )
 
 _SOURCE_METHOD = "httpx+pyogrio+shapefile_zip"
-
-
-def _validate_uf(uf: str) -> str:
-    result = _validate_uf_optional(uf)
-    if result is None:
-        raise InvalidParameterError(f"UF invalida: {uf!r}")
-    return result
 
 
 def _build_meta(
@@ -70,7 +68,7 @@ async def sigef(
     *,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -81,9 +79,20 @@ async def sigef(
     *,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def sigef(
+    uf: str,
+    *,
+    bbox: tuple[float, float, float, float] | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def sigef(
@@ -93,20 +102,19 @@ async def sigef(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     warn_once("acervo_fundiario_license", _NC_WARNING)
-    uf = _validate_uf(uf)
+    uf = regions.sigla_uf(uf)
     bbox = validate_bbox(bbox)
     check_pyogrio()
     logger.info("acervo_fundiario_sigef", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    aquisicao = await client.download_and_cache("sigef", uf, use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_sigef(aquisicao.zip_path, bbox=bbox)
-    parse_ms = int((time.monotonic() - t1) * 1000)
+    async with client.adquirir("sigef", uf, use_cache=use_cache) as aquisicao:
+        fetch_ms = int((time.monotonic() - t0) * 1000)
+        t1 = time.monotonic()
+        df = parser.parse_sigef(aquisicao.zip_path, bbox=bbox)
+        parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = _build_meta(
         tema="sigef", uf=uf, fetch_ms=fetch_ms, parse_ms=parse_ms, df=df, aquisicao=aquisicao
@@ -140,20 +148,19 @@ async def sigef_geo(
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     warn_once("acervo_fundiario_license", _NC_WARNING)
-    uf = _validate_uf(uf)
+    uf = regions.sigla_uf(uf)
     bbox = validate_bbox(bbox)
     check_pyogrio()
     logger.info("acervo_fundiario_sigef_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    aquisicao = await client.download_and_cache("sigef", uf, use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    gdf = parser.parse_sigef_geo(aquisicao.zip_path, bbox=bbox)
-    parse_ms = int((time.monotonic() - t1) * 1000)
+    async with client.adquirir("sigef", uf, use_cache=use_cache) as aquisicao:
+        fetch_ms = int((time.monotonic() - t0) * 1000)
+        t1 = time.monotonic()
+        gdf = parser.parse_sigef_geo(aquisicao.zip_path, bbox=bbox)
+        parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
         meta = _build_meta(
@@ -169,7 +176,7 @@ async def snci(
     *,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -180,9 +187,20 @@ async def snci(
     *,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def snci(
+    uf: str,
+    *,
+    bbox: tuple[float, float, float, float] | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def snci(
@@ -192,20 +210,19 @@ async def snci(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     warn_once("acervo_fundiario_license", _NC_WARNING)
-    uf = _validate_uf(uf)
+    uf = regions.sigla_uf(uf)
     bbox = validate_bbox(bbox)
     check_pyogrio()
     logger.info("acervo_fundiario_snci", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    aquisicao = await client.download_and_cache("snci", uf, use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_snci(aquisicao.zip_path, bbox=bbox)
-    parse_ms = int((time.monotonic() - t1) * 1000)
+    async with client.adquirir("snci", uf, use_cache=use_cache) as aquisicao:
+        fetch_ms = int((time.monotonic() - t0) * 1000)
+        t1 = time.monotonic()
+        df = parser.parse_snci(aquisicao.zip_path, bbox=bbox)
+        parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = _build_meta(
         tema="snci", uf=uf, fetch_ms=fetch_ms, parse_ms=parse_ms, df=df, aquisicao=aquisicao
@@ -239,20 +256,19 @@ async def snci_geo(
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     warn_once("acervo_fundiario_license", _NC_WARNING)
-    uf = _validate_uf(uf)
+    uf = regions.sigla_uf(uf)
     bbox = validate_bbox(bbox)
     check_pyogrio()
     logger.info("acervo_fundiario_snci_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    aquisicao = await client.download_and_cache("snci", uf, use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    gdf = parser.parse_snci_geo(aquisicao.zip_path, bbox=bbox)
-    parse_ms = int((time.monotonic() - t1) * 1000)
+    async with client.adquirir("snci", uf, use_cache=use_cache) as aquisicao:
+        fetch_ms = int((time.monotonic() - t0) * 1000)
+        t1 = time.monotonic()
+        gdf = parser.parse_snci_geo(aquisicao.zip_path, bbox=bbox)
+        parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
         meta = _build_meta(
@@ -268,7 +284,7 @@ async def assentamentos(
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -279,9 +295,20 @@ async def assentamentos(
     uf: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def assentamentos(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def assentamentos(
@@ -291,20 +318,19 @@ async def assentamentos(
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     warn_once("acervo_fundiario_license", _NC_WARNING)
-    uf_norm = _validate_uf(uf) if uf is not None else None
+    uf_norm = validate_uf(uf)
     bbox = validate_bbox(bbox)
     check_pyogrio()
     logger.info("acervo_fundiario_assentamentos", uf=uf_norm, bbox=bbox)
 
     t0 = time.monotonic()
-    aquisicao = await client.download_and_cache("assentamentos", use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    df = parser.parse_assentamentos(aquisicao.zip_path, uf=uf_norm, bbox=bbox)
-    parse_ms = int((time.monotonic() - t1) * 1000)
+    async with client.adquirir("assentamentos", use_cache=use_cache) as aquisicao:
+        fetch_ms = int((time.monotonic() - t0) * 1000)
+        t1 = time.monotonic()
+        df = parser.parse_assentamentos(aquisicao.zip_path, uf=uf_norm, bbox=bbox)
+        parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = _build_meta(
         tema="assentamentos",
@@ -343,20 +369,19 @@ async def assentamentos_geo(
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     warn_once("acervo_fundiario_license", _NC_WARNING)
-    uf_norm = _validate_uf(uf) if uf is not None else None
+    uf_norm = validate_uf(uf)
     bbox = validate_bbox(bbox)
     check_pyogrio()
     logger.info("acervo_fundiario_assentamentos_geo", uf=uf_norm, bbox=bbox)
 
     t0 = time.monotonic()
-    aquisicao = await client.download_and_cache("assentamentos", use_cache=use_cache)
-    fetch_ms = int((time.monotonic() - t0) * 1000)
-
-    t1 = time.monotonic()
-    gdf = parser.parse_assentamentos_geo(aquisicao.zip_path, uf=uf_norm, bbox=bbox)
-    parse_ms = int((time.monotonic() - t1) * 1000)
+    async with client.adquirir("assentamentos", use_cache=use_cache) as aquisicao:
+        fetch_ms = int((time.monotonic() - t0) * 1000)
+        t1 = time.monotonic()
+        gdf = parser.parse_assentamentos_geo(aquisicao.zip_path, uf=uf_norm, bbox=bbox)
+        parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
         meta = _build_meta(

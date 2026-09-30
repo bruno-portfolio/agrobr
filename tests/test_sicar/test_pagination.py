@@ -54,7 +54,7 @@ async def test_paginacao_crescente_busca_ultima_pagina_e_propaga_aviso(
 ):
     fetch = pagination_server(4, [(4, [0, 1]), (5, [2, 3]), (5, [4])])
 
-    frame, meta = await api.imoveis("DF", cod_municipio=5300108, return_meta=True)
+    frame, meta = await api.imoveis("DF", municipio=5300108, return_meta=True)
 
     assert len(frame) == meta.records_count == 5
     assert official_features[4]["properties"]["cod_imovel"] in set(frame["cod_imovel"])
@@ -151,7 +151,7 @@ async def test_paginacao_geo_envia_ordenacao(
 async def test_dataset_preserva_aviso_da_fonte(pagination_server: PaginationServer):
     pagination_server(4, [(4, [0, 1]), (5, [2, 3]), (5, [4])])
 
-    frame, meta = await datasets.cadastro_rural("DF", cod_municipio=5300108, return_meta=True)
+    frame, meta = await datasets.cadastro_rural("DF", municipio=5300108, return_meta=True)
 
     assert len(frame) == meta.records_count == 5
     assert len(meta.validation_warnings) == 1
@@ -161,7 +161,7 @@ async def test_dataset_preserva_aviso_da_fonte(pagination_server: PaginationServ
 async def test_resumo_preserva_aviso_da_varredura(pagination_server: PaginationServer):
     pagination_server(4, [(4, [0, 1]), (5, [2, 3]), (5, [4])])
 
-    frame, meta = await api.resumo("DF", cod_municipio=5300108, return_meta=True)
+    frame, meta = await api.resumo("DF", municipio=5300108, return_meta=True)
 
     assert frame["total"].iloc[0] == 5
     assert len(meta.validation_warnings) == 1
@@ -194,7 +194,7 @@ async def test_varias_paginas_carimbam_o_manifesto_no_meta(
 
     monkeypatch.setattr(parser, "parse_imoveis_json", espiar)
 
-    _, meta = await api.imoveis("DF", cod_municipio=5300108, return_meta=True)
+    _, meta = await api.imoveis("DF", municipio=5300108, return_meta=True)
 
     detalhes = meta.source_details
     recursos = [

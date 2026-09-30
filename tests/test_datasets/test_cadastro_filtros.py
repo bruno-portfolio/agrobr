@@ -116,7 +116,7 @@ async def test_cadastro_filtros_casos_3():
                     boundary=True,
                 )
                 frame = await datasets.cadastro_rural(
-                    "DF", cod_municipio=5300108, area_min=12.5846, area_max=12.5846
+                    "DF", municipio=5300108, area_min=12.5846, area_max=12.5846
                 )
                 timestamp = frame.iloc[0]["data_atualizacao"]
                 assert timestamp == pd.Timestamp("2026-09-01T16:44:58.004Z")
@@ -125,7 +125,7 @@ async def test_cadastro_filtros_casos_3():
 
                 after = await datasets.cadastro_rural(
                     "DF",
-                    cod_municipio=5300108,
+                    municipio=5300108,
                     area_min=12.5846,
                     area_max=12.5846,
                     atualizado_apos=effective_cutoff,
@@ -162,7 +162,7 @@ async def test_cadastro_filtros_casos_3():
                 requests = install_wfs_transport(uf="DF", total=0)
 
                 frame = await datasets.cadastro_rural(
-                    "DF", cod_municipio=5300108, atualizado_apos=cutoff
+                    "DF", municipio=5300108, atualizado_apos=cutoff
                 )
 
                 assert frame.empty
@@ -186,7 +186,7 @@ async def test_cadastro_filtros_casos_1():
 
             await datasets.cadastro_rural(
                 "DF",
-                cod_municipio=5300108,
+                municipio=5300108,
                 atualizado_apos="2026-09-03T14:27:12.000000000+00:00",
             )
 
@@ -206,7 +206,7 @@ async def test_cadastro_filtros_casos_1():
 
             frame = await datasets.cadastro_rural(
                 "MT",
-                cod_municipio=5103403,
+                municipio=5103403,
                 status="at",
                 tipo="iru",
                 area_min=0.0,
@@ -224,7 +224,7 @@ async def test_cadastro_filtros_casos_1():
                     "area<=1000.0",
                     "dat_criacao>='2014-01-01'",
                 }
-        case = "test_eight_original_positional_arguments_keep_meaning"
+        case = "test_seven_positional_filters_keep_meaning"
         with (
             check(case),
             isolated_dataset_case(case) as monkeypatch,
@@ -235,14 +235,18 @@ async def test_cadastro_filtros_casos_1():
             requests = install_wfs_transport()
 
             frame, meta = await datasets.cadastro_rural(
-                "MT", "Cuiabá", "AT", "IRU", 0.0, 1000.0, "2014-01-01", True
+                "MT", "Cuiabá", "AT", "IRU", 0.0, 1000.0, "2014-01-01", return_meta=True
             )
+            with pytest.raises(TypeError, match="positional"):
+                await datasets.cadastro_rural(
+                    "MT", "Cuiabá", "AT", "IRU", 0.0, 1000.0, "2014-01-01", True
+                )
 
             assert len(frame) == 10
             assert meta.contract_version == "2.1"
             for request in requests:
                 assert set(request.url.params["CQL_FILTER"].split(" AND ")) == {
-                    "municipio ILIKE '%Cuiabá%'",
+                    "cod_municipio_ibge=5103403",
                     "status_imovel='AT'",
                     "tipo_imovel='IRU'",
                     "area>=0.0",
@@ -260,7 +264,7 @@ async def test_official_json_pages_accumulate_all_twenty_records(
     }
     requests = install_wfs_transport(uf="DF", total=20, pages=pages)
 
-    frame = await datasets.cadastro_rural("DF", cod_municipio=5300108, atualizado_apos="2026-09-01")
+    frame = await datasets.cadastro_rural("DF", municipio=5300108, atualizado_apos="2026-09-01")
 
     expected = json.loads((CAPTURE_DIR / "df_tabular.json").read_bytes())
     assert set(frame["cod_imovel"]) == {f["properties"]["cod_imovel"] for f in expected["features"]}
@@ -278,7 +282,7 @@ async def test_repeated_wfs_property_rejects_inconsistent_dataset_collection(ins
     requests = install_wfs_transport(total=11, body=json.dumps(payload).encode())
 
     with pytest.raises(ParseError, match="repetido") as error:
-        await datasets.cadastro_rural("MT", cod_municipio=5103403)
+        await datasets.cadastro_rural("MT", municipio=5103403)
 
     assert len(requests) == 2
     assert error.value.source == "cadastro_rural/MT"
@@ -296,7 +300,7 @@ async def test_deterministic_rejected_before_any_wfs_request(
 
     async with deterministic(snapshot):
         with pytest.raises(InvalidParameterError, match="deterministic|snapshot"):
-            await datasets.cadastro_rural("MT", cod_municipio=5103403, **filters)
+            await datasets.cadastro_rural("MT", municipio=5103403, **filters)
 
     assert requests == []
     assert get_snapshot() is None
@@ -314,16 +318,14 @@ async def test_deterministic_rejection_isolated_from_concurrent_current_query(
             context_active.set()
             await current_query_done.wait()
             with pytest.raises(InvalidParameterError, match="deterministic|snapshot"):
-                await datasets.cadastro_rural("MT", cod_municipio=5103403)
+                await datasets.cadastro_rural("MT", municipio=5103403)
             assert get_snapshot() == "2024-01-01"
         assert get_snapshot() is None
 
     async def current_query():
         await context_active.wait()
         try:
-            frame, meta = await datasets.cadastro_rural(
-                "MT", cod_municipio=5103403, return_meta=True
-            )
+            frame, meta = await datasets.cadastro_rural("MT", municipio=5103403, return_meta=True)
             assert len(frame) == 10
             assert meta.snapshot is None
             assert get_snapshot() is None
@@ -340,12 +342,11 @@ async def test_deterministic_rejection_isolated_from_concurrent_current_query(
     [
         {"uf": "XX"},
         {"uf": None},
-        {"municipio": "Cuiabá", "cod_municipio": 5103403},
         {"municipio": "   "},
-        {"cod_municipio": "5103403"},
-        {"cod_municipio": True},
-        {"cod_municipio": 3550308},
-        {"cod_municipio": 510792},
+        {"municipio": "Cuiab"},
+        {"municipio": True},
+        {"municipio": 3550308},
+        {"municipio": 510792},
         {"status": 1},
         {"tipo": False},
         {"area_min": -1},
@@ -375,6 +376,6 @@ async def test_unknown_filter_rejected_before_transport(unknown_filter, install_
     requests = install_wfs_transport()
 
     with pytest.raises(TypeError, match="unexpected keyword argument"):
-        await datasets.cadastro_rural("MT", cod_municipio=5103403, **unknown_filter)
+        await datasets.cadastro_rural("MT", municipio=5103403, **unknown_filter)
 
     assert requests == []

@@ -51,7 +51,7 @@ def test_incra_contract_signed32_domain(contract, frame, name, value, valid):
     [
         ("codigo", "float64"),
         ("familias", "int32"),
-        ("nome", "object"),
+        ("data_titulo", "object"),
         ("area_ha", "float32"),
         ("area_ha", "Float64"),
     ],
@@ -119,7 +119,7 @@ def administrative():
     ]
     for name in frame:
         frame[name] = frame[name].astype(
-            "Int64" if name == "numero_publicado" else pd.StringDtype(storage="python")
+            "Int64" if name == "numero_publicado" else pd.Series([""]).dtype
         )
     return contract, frame
 

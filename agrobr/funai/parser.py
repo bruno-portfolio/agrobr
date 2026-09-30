@@ -15,6 +15,8 @@ from . import _geometry, _json, models
 
 PARSER_VERSION = 3
 
+TEXTO = pd.Series([""]).dtype
+
 
 def _diagnostic(values: dict[str, Any], category: str, row: int) -> None:
     entry = values.setdefault(category, {"count": 0, "examples": [], "examples_omitted": 0})
@@ -186,7 +188,7 @@ def build_frame(records: list[models.Feature]) -> pd.DataFrame:
                 if name in integer_names
                 else "float64"
                 if name == "area_ha"
-                else "string[python]",
+                else TEXTO,
             )
             for name, items in values.items()
         }

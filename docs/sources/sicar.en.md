@@ -54,10 +54,10 @@ with server-side filters (CQL_FILTER) and transparent pagination.
   that filter. This coverage comes from the `DescribeFeatureType` of all 27 layers on 2026-09-06
 - **Current state:** creation (`>=`) and update (`>`) filters select records available at query
   time. They do not retrieve previous revisions or deletions. The `cadastro_rural` dataset also
-  accepts municipality-code and update filters, and rejects `deterministic`
+  accepts municipality (name or code) and update filters, and rejects `deterministic`
 - **Geometry available:** `imoveis_geo()` returns a `GeoDataFrame` with MultiPolygon polygons
   (EPSG:4326) via WFS GeoJSON. Requires `pip install agrobr[geo]`. The default result limit is
-  5,000 features; `max_features` above 10,000 or `None` uses pagination. A cut result warns
+  5,000 features; `max_registros` above 10,000 or `None` uses pagination. A cut result warns
   (`validation_warnings`, `UserWarning` and `source_details["sicar"]["truncado"]`). All 27 layers declare
   SIRGAS 2000 (`DefaultCRS` EPSG:4674); agrobr requests `srsName=EPSG:4326`
   and rejects with `ParseError` any page with features that declares another CRS

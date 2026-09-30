@@ -1,13 +1,18 @@
 # Normalization
 
-The `agrobr.normalize` module standardizes Brazilian agricultural data to enable cross-referencing across different sources. It has 39 functions organized into 7 sub-modules.
+The `agrobr.normalize` module standardizes Brazilian agricultural data to enable cross-referencing across different sources. It has 40 functions organized into 7 sub-modules.
 
 ## IBGE Municipalities
 
 5,571 municipalities with 7-digit IBGE codes. Accent/case-insensitive lookup.
 
 ```python
-from agrobr.normalize import municipio_para_ibge, ibge_para_municipio, buscar_municipios
+from agrobr.normalize import (
+    buscar_municipios,
+    ibge_para_municipio,
+    municipio_para_ibge,
+    resolver_municipio,
+)
 
 # Name to IBGE code
 municipio_para_ibge("Rondonópolis")        # 5107602
@@ -27,9 +32,21 @@ buscar_municipios("santo", limite=-1)  # InvalidParameterError (negative limit)
 # Use the full municipality name and the state when available
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
+
+# Full name or IBGE code, raising instead of guessing
+resolver_municipio("sorriso")           # {'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}
+resolver_municipio("5107925")           # the same (code as int or str)
+resolver_municipio("Bom Jesus", "PI")   # {'codigo_ibge': 2201903, 'nome': 'Bom Jesus', 'uf': 'PI'}
+resolver_municipio("Bom Jesus")         # InvalidParameterError: ambiguous, lists the 5 and asks for uf
+resolver_municipio("Santa Rita", "MG")  # InvalidParameterError: not found, lists the candidates
 ```
 
-`ibge_para_municipio`, `buscar_municipios` and `coordenada_para_municipio` return copies: changing the returned
+`resolver_municipio` is the rule behind the `municipio` parameter of the functions that filter by municipality:
+the name matches in full, ignoring case, accents and repeated spaces, and never by fragment (`"Santa Rita"` is
+not `"Santa Rita do Sapucaí"`). A name shared by several municipalities, an unknown name, a code outside the
+registry or a municipality from another state raise `InvalidParameterError` listing the candidates.
+
+`ibge_para_municipio`, `buscar_municipios`, `coordenada_para_municipio` and `resolver_municipio` return copies: changing the returned
 dict does not affect the next query.
 
 Data from the [IBGE Localities API](https://servicodados.ibge.gov.br/api/docs/localidades) — free to use.

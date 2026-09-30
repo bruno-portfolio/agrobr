@@ -118,7 +118,7 @@ def _meta(
 async def andamento_quilombola(
     *,
     edicao: date | str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -128,10 +128,19 @@ async def andamento_quilombola(
 async def andamento_quilombola(
     *,
     edicao: date | str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def andamento_quilombola(
+    *,
+    edicao: date | str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def andamento_quilombola(
@@ -140,7 +149,7 @@ async def andamento_quilombola(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     from agrobr.datasets.deterministic import get_snapshot
 
     if kwargs:

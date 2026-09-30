@@ -241,7 +241,7 @@
       "decreto",
       "titulo"
     ],
-    "string_dtype": "string[python] with pd.NA",
+    "string_dtype": "default pandas text dtype (str on pandas 3, object on pandas 2)",
     "integer_dtype": "Int64",
     "source_null": "not_inferred_from_empty_PDF_cells",
     "text_semantics": "published_cell_text_with_line_breaks_empty_strings_and_partially_clipped_visible_text_preserved",

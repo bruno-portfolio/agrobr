@@ -9,11 +9,13 @@ from pydantic import ValidationError
 
 from agrobr import constants
 from agrobr.exceptions import ParseError
-from agrobr.normalize import regions
+from agrobr.normalize import dates, regions
 
 from . import _geometry, _json, models
 
 PARSER_VERSION = 2
+
+TEXTO = pd.Series([""]).dtype
 
 
 def _diagnostic(values: dict[str, Any], category: str, row: int) -> None:
@@ -189,8 +191,23 @@ def build_frame(records: list[models.Feature]) -> pd.DataFrame:
                 if name in integer_names
                 else "float64"
                 if name == "area_ha"
-                else "string[python]",
+                else TEXTO,
             )
             for name, items in values.items()
         }
     )
+
+
+def converter_datas(frame: pd.DataFrame) -> None:
+    """Converte no lugar as datas XSD (`datetime64[ns]`) e o cadastro XSD dateTime (UTC).
+
+    `0001-01-01` é o marcador de "sem data" da fonte e vira `NaT` sem aviso; outra data fora de
+    1900–2099 vira `NaT` com aviso em `frame.attrs`. O cadastro sem fuso é lido como UTC.
+    """
+    for coluna, dtype in constants.INCRA_DTYPES_TEMPORAIS.items():
+        if dtype == "datetime64[ns]":
+            frame[coluna] = frame[coluna].mask(frame[coluna] == constants.INCRA_DATA_SEM_DATA)
+            dates.converter_coluna(frame, coluna, fonte="incra", formato="%Y-%m-%d")
+        else:
+            instantes = pd.to_datetime(frame[coluna], format="ISO8601", utc=True, errors="coerce")
+            frame[coluna] = instantes.dt.as_unit("ns")

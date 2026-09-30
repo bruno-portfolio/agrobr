@@ -95,6 +95,10 @@ df = await acervo_fundiario.sigef("GO", use_cache=False)
 export AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1
 ```
 
+Com o cache desligado, o ZIP vai para uma pasta temporária do sistema e é apagado ao fim da consulta, com
+sucesso, erro ou cancelamento; nada é gravado em `~/.agrobr/cache/acervo_fundiario/`. Os booleanos da variável
+aceitam `1`/`true`/`yes`.
+
 ## Schemas
 
 ### SIGEF

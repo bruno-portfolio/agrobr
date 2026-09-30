@@ -34,9 +34,8 @@ Rural property records from the Rural Environmental Registry (CAR) by state.
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `uf` | str | State abbreviation (required) |
-| `municipio` | str | Partial municipality filter (case-insensitive) |
+| `municipio` | int \| str | 7-digit IBGE code or the full name of a municipality of the state, ignoring case and accents; an ambiguous or unknown name, or a fragment, raises `InvalidParameterError` listing the candidates |
 | `status` | str | AT (Active), PE (Pending), SU (Suspended), CA (Cancelled) |
-| `cod_municipio` | int | Seven-digit IBGE code matching the state; mutually exclusive with `municipio` |
 | `tipo` | str | IRU, AST or PCT, following SICAR classification |
 | `area_min` | float | Minimum area in hectares |
 | `area_max` | float | Maximum area in hectares |
@@ -45,7 +44,7 @@ Rural property records from the Rural Environmental Registry (CAR) by state.
 | `as_polars` | bool | Returns Polars after contract validation; requires the `[polars]` extra |
 | `return_meta` | bool | Also returns `MetaInfo`, including the URL with the effective filters |
 
-`cod_municipio`, `atualizado_apos` and `as_polars` are keyword-only arguments. The eight previous positional arguments remain valid. State codes accept lowercase letters and surrounding whitespace. Municipality codes require integers; strings, floats and booleans are not coerced. Format and state-prefix validation do not establish that a municipality exists.
+`return_meta`, `atualizado_apos` and `as_polars` are keyword-only; the first seven (`uf` to `criado_apos`) may be positional. State codes accept lowercase letters and surrounding whitespace. The municipality is checked against the IBGE municipality registry before any request.
 
 Dates must be valid calendar dates. Areas must be finite, nonnegative and ordered with minimum no greater than maximum. Unknown parameters raise an error instead of being discarded. The update field does not exist in the **PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP and TO** WFS layers: `atualizado_apos` raises `InvalidParameterError` before network access. In the other 15 layers, the column is requested and preserves the values supplied by the service; nulls are possible.
 
@@ -115,7 +114,7 @@ guarantee a consistent snapshot across pages. Contract 2.0 and primary key `[cod
 from agrobr import datasets
 
 df, meta = await datasets.cadastro_rural(
-    "DF", cod_municipio=5300108,
+    "DF", municipio=5300108,
     atualizado_apos="2026-09-01", return_meta=True,
 )
 

@@ -39,10 +39,55 @@ async def test_incra_national_replay_all_cells_and_selection(monkeypatch, select
     assert list(frame) == list(ALIASES) and len(frame) == len(expected) > 0
     for column, raw in ALIASES.items():
         published = [
-            feature["id"] if raw is None else feature["properties"][raw] for feature in expected
+            feature["id"] if raw is None else replay.publicado(column, feature["properties"][raw])
+            for feature in expected
         ]
         observed = [None if pd.isna(value) else value for value in frame[column]]
         assert observed == published, column
+
+
+async def test_incra_sem_data_vira_nat_calado_e_data_fora_do_intervalo_avisa(monkeypatch):
+    replay.install_national_wfs(monkeypatch)
+    with warnings.catch_warnings(record=True) as emitidos:
+        warnings.simplefilter("always")
+        frame, meta = await api.quilombolas(return_meta=True)
+
+    features = replay.national_features()
+    colunas = {"data_titulo": "dt_titulo", "data_decreto": "dt_decreto"}
+    colunas |= {"data_publicacao_2": "dt_public1", "data_publicacao": "dt_publica"}
+    brutos = {coluna: [f["properties"][raw] for f in features] for coluna, raw in colunas.items()}
+    sem_data = {coluna: valores.count("0001-01-01") for coluna, valores in brutos.items()}
+    fora = {
+        coluna: sorted(v for v in valores if v and v != "0001-01-01" and not "1900" <= v <= "2099")
+        for coluna, valores in brutos.items()
+    }
+    assert sem_data == {
+        "data_titulo": 3,
+        "data_decreto": 2,
+        "data_publicacao_2": 0,
+        "data_publicacao": 0,
+    }
+    assert fora == {
+        "data_titulo": ["0222-11-11"],
+        "data_decreto": [],
+        "data_publicacao_2": ["0205-01-28", "2201-02-15"],
+        "data_publicacao": [],
+    }
+    for coluna, valores in brutos.items():
+        assert str(frame[coluna].dtype) == "datetime64[ns]"
+        assert int(frame[coluna].isna().sum()) == valores.count(None) + sem_data[coluna] + len(
+            fora[coluna]
+        )
+        tipadas = [pd.Timestamp(v) for v in valores if v and "1900" <= v <= "2099"]
+        assert frame[coluna].dropna().tolist() == tipadas
+    avisos = [
+        "incra: 1 valor(es) de data_titulo viraram NaT",
+        "incra: 2 valor(es) de data_publicacao_2 viraram NaT",
+    ]
+    no_meta = [a.split(" (")[0] for a in meta.validation_warnings if "viraram NaT" in a]
+    emitidos_nat = [str(w.message).split(" (")[0] for w in emitidos]
+    assert sorted(no_meta) == avisos
+    assert sorted(a for a in emitidos_nat if "viraram NaT" in a) == avisos
 
 
 async def test_incra_manifest_origin_and_full_coverage(monkeypatch):
@@ -177,7 +222,9 @@ async def test_incra_geo_attributes_geometry_crs_preserved(monkeypatch):
     for feature in features:
         row = frame[frame["feature_id"] == feature["id"]]
         assert row.geometry.iloc[0].equals_exact(shapes.shape(feature["geometry"]), 0)
-        assert row["data_cadastro"].iloc[0] == feature["properties"]["dt_cadastro"]
+        assert row["data_cadastro"].iloc[0] == replay.publicado(
+            "data_cadastro", feature["properties"]["dt_cadastro"]
+        )
     assert meta.records_count == 2 and meta.selected_source == "incra_geoserver_geo"
     assert meta.source_details["geometry"]["declared_crs_verified"]
 

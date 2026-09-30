@@ -1363,6 +1363,7 @@ FUNAI_MAX_DIAGNOSTIC_EXAMPLES = 10
 FUNAI_CRS = "EPSG:4326"
 FUNAI_CRS_NAMES = frozenset({"EPSG:4326", "urn:ogc:def:crs:EPSG::4326"})
 FUNAI_TOLERANCIA_AREA = 0.05
+FUNAI_DATA_FORMATO = "%d/%m/%Y"
 ALBERS_BRASIL = "+proj=aea +lat_0=-12 +lon_0=-54 +lat_1=-2 +lat_2=-22 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs"
 
 
@@ -1575,6 +1576,10 @@ INCRA_COLUMNS = (
 INCRA_FASES_VALIDAS = frozenset(
     {"CCDRU", "DECRETO", "PORTARIA", "RTID", "TITULADO", "TITULO ANULADO", "TITULO PARCIAL"}
 )
+INCRA_DTYPES_TEMPORAIS = {
+    INCRA_RENAME_MAP[raw]: "datetime64[ns]" for raw in sorted(INCRA_DATE_PROPERTIES)
+} | {INCRA_RENAME_MAP[raw]: "datetime64[ns, UTC]" for raw in sorted(INCRA_DATETIME_PROPERTIES)}
+INCRA_DATA_SEM_DATA = "0001-01-01"
 
 INCRA_ANDAMENTO_PAGE_URL = (
     "https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas"

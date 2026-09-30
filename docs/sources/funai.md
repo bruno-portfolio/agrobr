@@ -58,7 +58,7 @@ asyncio.run(main())
 | area_ha | float | Área declarada pela FUNAI em hectares (`superficie_perimetro_ha`), não a do polígono |
 | fase | str | Fase do processo |
 | modalidade | str | Modalidade da TI |
-| data_atualizacao | str | Data de atualizacao: texto dd/mm/aaaa publicado, nulo em 146 das 665 TIs |
+| data_atualizacao | datetime64[ns] | Data de atualização publicada em dd/mm/aaaa; nula em 146 das 665 TIs |
 | feature_id | str | Identificador da feicao no WFS (texto; pode variar entre requisicoes) |
 | gid | int | Identificador do registro na camada |
 | reestudo_ti | str | Situacao de reestudo como publicada (vazio, "Reestudo" ou "Principal") |
@@ -70,14 +70,15 @@ asyncio.run(main())
 | dominio_uniao | str | "t"/"f", como publicado |
 | epsg | int | EPSG da geometria na fonte (4674 em todas as TIs) |
 
-A UF, a data e os indicadores administrativos saem com o texto publicado (contrato `funai.terras_indigenas` 2.0).
+A UF e os indicadores administrativos saem com o texto publicado, no dtype padrão do pandas instalado (`str` no
+pandas 3, `object` no 2); a data de atualização sai em `datetime64[ns]`, e a data ilegível vira `NaT` com
+`UserWarning` e aviso em `meta.validation_warnings` (contrato `funai.terras_indigenas` 2.0).
 
 `area_ha` é a área declarada pela FUNAI (`superficie_perimetro_ha`), repassada sem recálculo, e pode divergir do
 polígono publicado: na TI Mashco do Rio Chandless (AC), 421 ha declarados contra 543.430 ha no polígono (26/09/2026).
 Em `terras_indigenas_geo`, a terra cuja área declarada difere mais de 5 % da área do polígono (projeção Albers do IBGE)
 sai com aviso em `validation_warnings` e `UserWarning`, e a lista com as 2 áreas fica em `source_details["area_divergente"]`.
 `terras_indigenas`, sem geometria, não faz a comparação. No AC, 3 das 34 terras passam dos 5 %.
-Para uma data, converta na aplicacao: `pd.to_datetime(df["data_atualizacao"], format="%d/%m/%Y")`.
 
 ## Parametros
 

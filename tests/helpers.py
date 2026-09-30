@@ -1065,20 +1065,40 @@ def incra_features(*, include_geometry: bool = False) -> list[dict[str, Any]]:
     return json.loads(path.read_bytes())["features"]
 
 
+def _incra_expected_column(name: str, values: list[Any]) -> pd.Series:
+    if name == "data_cadastro":
+        return pd.Series(
+            [pd.Timestamp(value).tz_convert("UTC") for value in values],
+            dtype="datetime64[ns, UTC]",
+        )
+    if name.startswith("data_"):
+        return pd.Series(
+            [
+                pd.Timestamp(value) if value and 1900 <= int(value[:4]) <= 2099 else None
+                for value in values
+            ],
+            dtype="datetime64[ns]",
+        )
+    dtype = (
+        "Int64"
+        if name in {"codigo", "familias"}
+        else "float64"
+        if name == "area_ha"
+        else pd.Series([""]).dtype
+    )
+    return pd.Series(values, dtype=dtype)
+
+
 def incra_expected_frame(*, include_geometry: bool = False) -> pd.DataFrame:
     features = incra_features(include_geometry=include_geometry)
     return pd.DataFrame(
         {
-            name: pd.Series(
+            name: _incra_expected_column(
+                name,
                 [
                     feature["id"] if raw is None else feature["properties"][raw]
                     for feature in features
                 ],
-                dtype="Int64"
-                if name in {"codigo", "familias"}
-                else "float64"
-                if name == "area_ha"
-                else pd.StringDtype(storage="python"),
             )
             for name, raw in INCRA_EXPECTED_ALIASES.items()
         }

@@ -9,6 +9,7 @@ from agrobr.datasets import base, registry
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrameResult
 
 
 async def _fetch_icmbio(_produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
@@ -52,15 +53,15 @@ class UnidadesConservacaoFederaisDataset(base.BaseDataset):
     async def fetch(
         self,
         produto: str = "",
-        return_meta: bool = False,
         *,
+        return_meta: bool = False,
         uf: str | None = None,
         grupo: str | None = None,
         bioma: str | None = None,
         bbox: tuple[float, float, float, float] | None = None,
         as_polars: bool = False,
         **kwargs: Any,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> DataFrameResult:
         from agrobr.icmbio import api
 
         self._validate_produto(produto)
@@ -99,7 +100,7 @@ async def unidades_conservacao_federais(
     grupo: str | None = None,
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -111,9 +112,21 @@ async def unidades_conservacao_federais(
     grupo: str | None = None,
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def unidades_conservacao_federais(
+    *,
+    uf: str | None = None,
+    grupo: str | None = None,
+    bioma: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def unidades_conservacao_federais(
@@ -124,7 +137,7 @@ async def unidades_conservacao_federais(
     bbox: tuple[float, float, float, float] | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _unidades_conservacao_federais.fetch(
         uf=uf, grupo=grupo, bioma=bioma, bbox=bbox, as_polars=as_polars, return_meta=return_meta
     )

@@ -1,22 +1,8 @@
 from __future__ import annotations
 
-import pandas as pd
-
 from agrobr import contracts
 
-
-class UnidadesConservacaoFederaisContract(contracts.Contract):
-    def empty_frame(self) -> pd.DataFrame:
-        frame = super().empty_frame()
-        for column in self.columns:
-            if column.type == contracts.ColumnType.STRING:
-                frame[column.name] = pd.Series(dtype=pd.StringDtype(storage="python"))
-            elif column.type == contracts.ColumnType.FLOAT:
-                frame[column.name] = pd.Series(dtype="float64")
-        return frame
-
-
-UNIDADES_CONSERVACAO_FEDERAIS_V1 = UnidadesConservacaoFederaisContract(
+UNIDADES_CONSERVACAO_FEDERAIS_V1 = contracts.Contract(
     name="unidades_conservacao_federais",
     version="1.0",
     effective_from="2.0.0",

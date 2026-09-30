@@ -3,8 +3,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import httpx
+import pandas as pd
 
 from agrobr.http import wfs_transport
 from agrobr.incra.andamento import client
@@ -15,6 +17,16 @@ JUNE = GOLDEN / "andamento_20260608"
 SEPTEMBER = GOLDEN / "andamento_20260903"
 PAGE_URL = "https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas"
 PDF_URL = PAGE_URL + "/andamento_dos_processos_quilombolas-08_06_2026.pdf/@@display-file/file"
+
+
+def publicado(coluna: str, bruto: Any) -> Any:
+    """Valor que a saída pública traz para o literal da fonte: datas tipadas (fora de 1900–2099
+    viram ausente) e o cadastro em UTC."""
+    if bruto is None or not coluna.startswith("data_"):
+        return bruto
+    if coluna == "data_cadastro":
+        return pd.Timestamp(bruto).tz_convert("UTC")
+    return pd.Timestamp(bruto) if 1900 <= int(bruto[:4]) <= 2099 else None
 
 
 def national_features() -> list[dict]:

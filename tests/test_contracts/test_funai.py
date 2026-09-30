@@ -42,7 +42,7 @@ def contract():
 @pytest.fixture
 def frame():
     features = json.loads(GOLDEN.read_bytes())["features"]
-    return pd.DataFrame(
+    frame = pd.DataFrame(
         {
             column: pd.Series(
                 [row["id"] if source is None else row["properties"][source] for row in features],
@@ -50,11 +50,13 @@ def frame():
                 if column in INTEGERS
                 else "float64"
                 if column == "area_ha"
-                else pd.StringDtype(storage="python"),
+                else pd.Series([""]).dtype,
             )
             for column, source in ALIASES.items()
         }
     )
+    frame["data_atualizacao"] = pd.to_datetime(frame["data_atualizacao"], format="%d/%m/%Y")
+    return frame.astype({"data_atualizacao": "datetime64[ns]"})
 
 
 def test_funai_contract_official_cells_and_registry(contract, frame):
@@ -88,7 +90,7 @@ def test_funai_contract_feature_id_requires_nonblank_text(contract, frame, value
         ("gid", "int32"),
         ("undadm_codigo", "object"),
         ("epsg", "int64"),
-        ("nome", "object"),
+        ("data_atualizacao", "object"),
         ("area_ha", "float32"),
         ("area_ha", "Float64"),
     ],

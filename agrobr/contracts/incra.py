@@ -5,17 +5,21 @@ from typing import Any
 import pandas as pd
 
 from agrobr import constants, contracts
-from agrobr.incra import _temporal
+
+_DTYPES = {
+    contracts.ColumnType.INTEGER: "Int64",
+    contracts.ColumnType.FLOAT: "float64",
+    contracts.ColumnType.DATE: "datetime64[ns]",
+    contracts.ColumnType.DATETIME: "datetime64[ns, UTC]",
+}
 
 
 class IncraContract(contracts.Contract):
     def empty_frame(self) -> pd.DataFrame:
         frame = super().empty_frame()
         for column in self.columns:
-            if column.type == contracts.ColumnType.STRING:
-                frame[column.name] = pd.Series(dtype=pd.StringDtype(storage="python"))
-            elif column.type == contracts.ColumnType.FLOAT:
-                frame[column.name] = pd.Series(dtype="float64")
+            if column.type == contracts.ColumnType.DATETIME:
+                frame[column.name] = pd.Series(dtype=_DTYPES[column.type])
         return frame
 
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
@@ -26,38 +30,13 @@ class IncraContract(contracts.Contract):
         if list(df) not in (expected, [*expected, "geometry"]):
             errors.append("Columns must follow the complete declared attribute order")
         for column in self.columns:
-            if column.name not in df:
-                continue
-            dtype = df[column.name].dtype
-            if column.type == contracts.ColumnType.STRING:
-                if (
-                    not isinstance(dtype, pd.StringDtype)
-                    or dtype.storage != "python"
-                    or str(dtype) != "string"
-                ):
-                    errors.append(f"Column '{column.name}' must use StringDtype python with pd.NA")
-            else:
-                wanted = "Int64" if column.type == contracts.ColumnType.INTEGER else "float64"
-                if str(dtype) != wanted:
-                    errors.append(f"Column '{column.name}' must use {wanted} dtype")
+            wanted = _DTYPES.get(column.type)
+            if column.name in df and wanted is not None and str(df[column.name].dtype) != wanted:
+                errors.append(f"Column '{column.name}' must use {wanted} dtype")
         if errors:
             return False, errors
         if any(not value.strip() for value in df["feature_id"]):
             errors.append("Feature.id requires nonblank received text without a uniqueness claim")
-        for raw in constants.INCRA_DATE_PROPERTIES | constants.INCRA_DATETIME_PROPERTIES:
-            validator = (
-                _temporal.validate_date
-                if raw in constants.INCRA_DATE_PROPERTIES
-                else _temporal.validate_datetime
-            )
-            for value in df[constants.INCRA_RENAME_MAP[raw]].dropna():
-                try:
-                    validator(value)
-                except ValueError:
-                    errors.append(
-                        f"Column '{constants.INCRA_RENAME_MAP[raw]}' contains an invalid XSD temporal literal"
-                    )
-                    break
         return not errors, errors
 
     def to_dict(self) -> dict[str, Any]:
@@ -67,7 +46,9 @@ class IncraContract(contracts.Contract):
             optional_geometry_column="geometry_after_all_attributes",
             source_property_projection=list(constants.INCRA_PROPERTIES),
             column_aliases=dict(constants.INCRA_RENAME_MAP),
-            string_dtype="string[python] with pd.NA",
+            string_dtype="default pandas text dtype (str on pandas 3, object on pandas 2)",
+            date_dtype="datetime64[ns]",
+            datetime_dtype="datetime64[ns, UTC]",
             integer_dtype="Int64",
             float_dtype="float64",
             integer_source_bits=dict(constants.INCRA_INTEGER_BITS),
@@ -77,9 +58,9 @@ class IncraContract(contracts.Contract):
             text_semantics="literal_published_text_without_boolean_or_UF_coercion",
             date_source_fields=sorted(constants.INCRA_DATE_PROPERTIES),
             datetime_source_fields=sorted(constants.INCRA_DATETIME_PROPERTIES),
-            temporal_semantics="XSD_1_0_date_and_dateTime_validated_locally_without_lexical_timezone_or_precision_conversion",
+            temporal_semantics="XSD_1_0_date_and_dateTime_validated_locally_then_date_as_datetime64_ns_and_dateTime_as_UTC_offsetless_read_as_UTC_unreadable_date_becomes_NaT_with_warning",
             temporal_protocol_restriction="external_whitespace_rejected_before_local_XMLSchema_validation_without_stripping_output",
-            registration_date="required_published_datetime_literal_not_an_immutable_edition",
+            registration_date="required_published_datetime_as_UTC_instant_not_an_immutable_edition",
             feature_id="required_nonblank_received_string_by_acquisition_policy_not_XSD_primary_key",
             identifier_semantics="zero_repeated_and_null_codes_preserved_without_primary_key",
             continuity_basis="all_published_properties_and_acquired_geometry_with_ID_changes_reported_separately",
@@ -92,37 +73,14 @@ class IncraContract(contracts.Contract):
 
 
 class AndamentoContract(contracts.Contract):
-    def empty_frame(self) -> pd.DataFrame:
-        return pd.DataFrame(
-            {
-                name: pd.Series(
-                    dtype="Int64"
-                    if name == "numero_publicado"
-                    else pd.StringDtype(storage="python")
-                )
-                for name in self.list_columns()
-            }
-        )
-
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         _, errors = super().validate(df)
         if not df.columns.is_unique:
             return False, errors
         if list(df) != self.list_columns():
             errors.append("Administrative columns must follow the complete publication order")
-        for column in self.columns:
-            if column.name not in df:
-                continue
-            dtype = df[column.name].dtype
-            if column.name == "numero_publicado":
-                if str(dtype) != "Int64":
-                    errors.append("Published ordinal must use Int64 dtype")
-            elif (
-                not isinstance(dtype, pd.StringDtype)
-                or dtype.storage != "python"
-                or str(dtype) != "string"
-            ):
-                errors.append(f"Column '{column.name}' must use StringDtype python with pd.NA")
+        if "numero_publicado" in df and str(df["numero_publicado"].dtype) != "Int64":
+            errors.append("Published ordinal must use Int64 dtype")
         if errors:
             return False, errors
         if any(int(value) != expected for expected, value in enumerate(df["numero_publicado"], 1)):
@@ -135,7 +93,7 @@ class AndamentoContract(contracts.Contract):
         schema = super().to_dict()
         schema["constraints"].update(
             attribute_order=self.list_columns(),
-            string_dtype="string[python] with pd.NA",
+            string_dtype="default pandas text dtype (str on pandas 3, object on pandas 2)",
             integer_dtype="Int64",
             source_null="not_inferred_from_empty_PDF_cells",
             text_semantics="published_cell_text_with_line_breaks_empty_strings_and_partially_clipped_visible_text_preserved",
@@ -161,9 +119,11 @@ def _geographic_column(name: str) -> contracts.Column:
         )
     if name == "area_ha":
         return contracts.Column(name, contracts.ColumnType.FLOAT, nullable=True, unit="ha")
-    return contracts.Column(
-        name, contracts.ColumnType.STRING, nullable=name not in {"feature_id", "data_cadastro"}
-    )
+    if name == "data_cadastro":
+        return contracts.Column(name, contracts.ColumnType.DATETIME)
+    if name in constants.INCRA_DTYPES_TEMPORAIS:
+        return contracts.Column(name, contracts.ColumnType.DATE, nullable=True)
+    return contracts.Column(name, contracts.ColumnType.STRING, nullable=name != "feature_id")
 
 
 QUILOMBOLAS_V2 = IncraContract(
@@ -174,7 +134,7 @@ QUILOMBOLAS_V2 = IncraContract(
     columns=[_geographic_column(name) for name in constants.INCRA_COLUMNS],
     guarantees=[
         "Todos os 21 atributos publicados e Feature.id permanecem recuperáveis nas 22 colunas",
-        "Datas e cadastro preservam os literais temporais validados, sem perda de fuso ou precisão",
+        "Datas publicadas saem em datetime64[ns] e o cadastro em datetime64[ns, UTC], validados como XSD na entrada",
         "Null, zero, string vazia e texto NULL não são intercambiáveis",
         "Código, processo e Feature.id não constituem chaves primárias",
         "Ocorrências repetidas não são eliminadas por identificador",

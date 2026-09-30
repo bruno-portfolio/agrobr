@@ -67,32 +67,36 @@ no immutable edition).
 | Column | Source attribute | Type | Note |
 |--------|------------------|------|------|
 | `codigo` | `cd_quilomb` | Int64 | Null for 64% of the perimeters and 0 for 9 (2026-09-22); not a primary key |
-| `nome` | `no_comunidade` | string | |
-| `municipio` | `no_municipio` | string | |
-| `uf` | `sg_uf` | string | Published text, not normalized |
+| `nome` | `no_comunidade` | text | |
+| `municipio` | `no_municipio` | text | |
+| `uf` | `sg_uf` | text | Published text, not normalized |
 | `area_ha` | `nu_area_ha` | float64 | Published hectares, not recomputed |
 | `familias` | `nu_familia` | Int64 | |
-| `fase` | `ds_fase` | string | See [phases](#valid-phases) |
-| `titulado` | `st_titulad` | string | `T`/`F` (the source also publishes `t`/`f`), not converted to boolean |
-| `data_publicacao` | `dt_publica` | string | Literal XSD date (`YYYY-MM-DD`) |
-| `data_titulo` | `dt_titulo` | string | Same |
-| `feature_id` | feature id | string | Identifier received from the server; stability not proven |
-| `regional` | `co_sr` | string | Regional superintendency (`SR-05`, …) |
-| `processo` | `nu_processo` | string | NUP as published (may hold more than one or an atypical format) |
-| `data_publicacao_2` | `dt_public1` | string | Literal XSD date |
-| `responsavel` | `no_responsavel` | string | Responsible agency (INCRA, ITERPA, …) |
-| `esfera` | `no_esfera` | string | Published text (`FEDERAL`, `Federal`, …) |
-| `data_cadastro` | `dt_cadastro` | string | Literal XSD dateTime; the source writes the same load time on every feature and it changes on each reload |
-| `codigo_sipra` | `cd_sipra` | string | |
-| `descricao` | `ds_descricao` | string | |
-| `data_decreto` | `dt_decreto` | string | Literal XSD date |
-| `tipo_levantamento` | `tp_levanta` | string | |
-| `escala` | `nr_escalao` | string | Survey scale (`1:15.000`, …) |
+| `fase` | `ds_fase` | text | See [phases](#valid-phases) |
+| `titulado` | `st_titulad` | text | `T`/`F` (the source also publishes `t`/`f`), not converted to boolean |
+| `data_publicacao` | `dt_publica` | datetime64[ns] | XSD date (`YYYY-MM-DD`) |
+| `data_titulo` | `dt_titulo` | datetime64[ns] | Same |
+| `feature_id` | feature id | text | Identifier received from the server; stability not proven |
+| `regional` | `co_sr` | text | Regional superintendency (`SR-05`, …) |
+| `processo` | `nu_processo` | text | NUP as published (may hold more than one or an atypical format) |
+| `data_publicacao_2` | `dt_public1` | datetime64[ns] | XSD date |
+| `responsavel` | `no_responsavel` | text | Responsible agency (INCRA, ITERPA, …) |
+| `esfera` | `no_esfera` | text | Published text (`FEDERAL`, `Federal`, …) |
+| `data_cadastro` | `dt_cadastro` | datetime64[ns, UTC] | XSD dateTime, in UTC (read as UTC when it has no offset); the source writes the same load time on every feature and it changes on each reload |
+| `codigo_sipra` | `cd_sipra` | text | |
+| `descricao` | `ds_descricao` | text | |
+| `data_decreto` | `dt_decreto` | datetime64[ns] | XSD date |
+| `tipo_levantamento` | `tp_levanta` | text | |
+| `escala` | `nr_escalao` | text | Survey scale (`1:15.000`, …) |
 
-Dates stay as text: agrobr validates the literal against the XSD and does not convert time
-zone, precision or calendar. The source uses `0001-01-01` as a placeholder in `data_titulo`
-(3 perimeters) and `data_decreto` (2) — treat it as missing in analysis. Null, zero, empty
-text and the text `NULL` are kept as published.
+agrobr validates each date against the XSD and returns it as `datetime64[ns]`; the registration
+time comes as `datetime64[ns, UTC]`. The source uses `0001-01-01` as a "no date" placeholder in
+`data_titulo` (3 perimeters) and `data_decreto` (2): it becomes `NaT` with no warning. Any other date
+outside 1900–2099 (on 2026-09-08, `0205-01-28` and `2201-02-15` in `data_publicacao_2` and
+`0222-11-11` in `data_titulo`, typos at the source) becomes `NaT` with a `UserWarning` and a warning in
+`meta.validation_warnings`, with the column and the count. Text comes in the installed pandas default
+dtype (`str` on pandas 3, `object` on 2); null, zero, empty text and the text `NULL` are kept as
+published.
 
 ### Geometry
 
@@ -125,11 +129,11 @@ tipo de andamento no INCRA").
 
 | Column | Type | Content |
 |--------|------|---------|
-| `regional` | string | Label of the regional group drawn in the PDF (`SR(05)BA`, …) |
+| `regional` | text | Label of the regional group drawn in the PDF (`SR(05)BA`, …) |
 | `numero_publicado` | Int64 | Published position (1…N) |
-| `processo`, `comunidade`, `municipio` | string | Cell text; line breaks become `\n` |
-| `area_ha_texto`, `familias_texto` | string | Number in the published format (`2.629,0532`), not converted |
-| `edital_rtid_1`, `edital_rtid_2`, `retificacao_edital_1`, `retificacao_edital_2`, `portaria`, `retificacao_portaria`, `decreto`, `titulo` | string | Published text: dates, several acts, notes (`Não precisa`, `Em Elaboração`, `**`) or empty |
+| `processo`, `comunidade`, `municipio` | text | Cell text; line breaks become `\n` |
+| `area_ha_texto`, `familias_texto` | text | Number in the published format (`2.629,0532`), not converted |
+| `edital_rtid_1`, `edital_rtid_2`, `retificacao_edital_1`, `retificacao_edital_2`, `portaria`, `retificacao_portaria`, `decreto`, `titulo` | text | Published text: dates, several acts, notes (`Não precisa`, `Em Elaboração`, `**`) or empty |
 
 Text partially clipped by the PDF grid is kept whole.
 

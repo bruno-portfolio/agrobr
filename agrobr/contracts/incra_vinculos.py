@@ -200,14 +200,21 @@ def _validate_relation(
     return [] if emitted == expected else ["Relation omits one or more exact occurrence pairs"]
 
 
+_DTYPES = {
+    contracts.ColumnType.INTEGER: "Int64",
+    contracts.ColumnType.FLOAT: "float64",
+    contracts.ColumnType.BOOLEAN: "boolean",
+    contracts.ColumnType.DATE: "datetime64[ns]",
+    contracts.ColumnType.DATETIME: "datetime64[ns, UTC]",
+}
+
+
 class VinculosContract(contracts.Contract):
     def empty_frame(self) -> pd.DataFrame:
         frame = super().empty_frame()
         for column in self.columns:
-            if column.type == contracts.ColumnType.STRING:
-                frame[column.name] = pd.Series(dtype=pd.StringDtype(storage="python"))
-            elif column.type == contracts.ColumnType.FLOAT:
-                frame[column.name] = pd.Series(dtype="float64")
+            if column.type == contracts.ColumnType.DATETIME:
+                frame[column.name] = pd.Series(dtype=_DTYPES[column.type])
         return frame
 
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
@@ -217,24 +224,9 @@ class VinculosContract(contracts.Contract):
         if list(df) != self.list_columns():
             errors.append("Relation columns must follow the complete declared order")
         for column in self.columns:
-            if column.name not in df:
-                continue
-            dtype = df[column.name].dtype
-            if column.type == contracts.ColumnType.STRING:
-                if (
-                    not isinstance(dtype, pd.StringDtype)
-                    or dtype.storage != "python"
-                    or str(dtype) != "string"
-                ):
-                    errors.append(f"Column '{column.name}' must use StringDtype python with pd.NA")
-            else:
-                expected = {
-                    contracts.ColumnType.INTEGER: "Int64",
-                    contracts.ColumnType.FLOAT: "float64",
-                    contracts.ColumnType.BOOLEAN: "boolean",
-                }[column.type]
-                if str(dtype) != expected:
-                    errors.append(f"Column '{column.name}' must use {expected} dtype")
+            wanted = _DTYPES.get(column.type)
+            if column.name in df and wanted is not None and str(df[column.name].dtype) != wanted:
+                errors.append(f"Column '{column.name}' must use {wanted} dtype")
         if errors:
             return False, errors
         geographical, geo_errors = _source_frame(
@@ -252,10 +244,12 @@ class VinculosContract(contracts.Contract):
         schema = super().to_dict()
         schema["constraints"].update(
             attribute_order=self.list_columns(),
-            string_dtype="string[python] with pd.NA",
+            string_dtype="default pandas text dtype (str on pandas 3, object on pandas 2)",
             integer_dtype="Int64",
             float_dtype="float64",
             boolean_dtype="boolean",
+            date_dtype="datetime64[ns]",
+            datetime_dtype="datetime64[ns, UTC]",
             parent_contracts={"incra_quilombolas": "2.0", "incra_andamento_quilombola": "1.0"},
             reference_pattern=constants.INCRA_VINCULOS_REFERENCE_PATTERN,
             reference_semantics="exact_published_NUP_lexemes_without_punctuation_repair_or_check_digit_validation",

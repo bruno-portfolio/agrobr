@@ -49,6 +49,9 @@ async def main():
     # Polars
     df = await ibama.embargos(as_polars=True)
 
+    # Ignorar o cache e baixar de novo
+    df = await ibama.embargos(use_cache=False)
+
 asyncio.run(main())
 ```
 
@@ -92,11 +95,16 @@ transformação SIRGAS 2000 → WGS 84 da EPSG é nula).
   dentro e o polígono fora, e 4 têm o polígono dentro e o ponto fora ou ausente.
 - **Geometrias**: 1 WKT ilegível (anel aberto) é descartado com aviso no log; 129 polígonos com topologia inválida
   saem como publicados.
+- **Cache de 1 hora**: o CSV (~208 MB) fica em `ibama/termo_embargo.csv` na pasta de cache, com um
+  manifesto (SHA-256 e hora da coleta), e é reusado por 1 hora a partir da coleta. Chamadas seguidas, com
+  filtros diferentes, baixam o arquivo uma vez só, inclusive quando rodam juntas. O `MetaInfo` traz
+  `from_cache=True` e, em `fetched_at`, a hora da coleta, e não a da chamada. `use_cache=False` baixa de
+  novo sem ler nem gravar o cache. Arquivo corrompido ou vencido é baixado outra vez.
 - **Geo sem filtro**: `embargos_geo()` sem `uf`/`bbox` parseia WKT do Brasil
   inteiro (~4 s); um warning e emitido. Com `bbox`, o WKT de toda a seleção é lido.
 
 ## Limitacoes
 
 - Geometria presente em parte dos registros (embargos sem poligono ficam fora do geo)
-- Download completo (~208 MB) a cada chamada — filtros sao client-side
+- O arquivo inteiro (~208 MB) é baixado, e os filtros são locais; o cache de 1 hora evita repetir o download
 - Licença: ver [Licenças](../licenses.md#ibama)

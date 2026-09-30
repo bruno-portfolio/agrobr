@@ -25,6 +25,11 @@ logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 3
 
+DTYPES = dict.fromkeys(COLUNAS_SAIDA, pd.Series([""]).dtype) | {
+    "area_ha": "float64",
+    "ano_criacao": "Int64",
+}
+
 _REQUIRED_COLS_RAW = {"cnuc", "nomeuc", "grupouc", "areahaalb"}
 
 
@@ -56,9 +61,7 @@ def parse_ucs_csv(data: bytes) -> pd.DataFrame:
             source="icmbio", parser_version=PARSER_VERSION, reason=f"UC invalida: {exc}"
         ) from exc
     df = pd.DataFrame(rows, columns=PROPERTY_NAMES, dtype=object).rename(columns=RENAME_MAP)
-    dtypes = dict.fromkeys(COLUNAS_SAIDA, "string[python]")
-    dtypes.update(area_ha="float64", ano_criacao="Int64")
-    df = df[COLUNAS_SAIDA].astype(dtypes)
+    df = df[COLUNAS_SAIDA].astype(DTYPES)
 
     logger.info("icmbio_ucs_parse_ok", records=len(df))
     return df
@@ -96,7 +99,7 @@ def parse_ucs_geojson(data: bytes) -> Any:
         truncation_event="icmbio_ucs_geo_truncated",
     )
     if gdf.empty:
-        return gdf
+        return gdf.astype({name: DTYPES[name] for name in gdf.columns if name in DTYPES})
 
     gdf = gdf.rename(columns=RENAME_MAP)
     gdf["area_ha"] = pd.to_numeric(gdf["area_ha"], errors="coerce")

@@ -15,16 +15,18 @@ GEOGRAFICOS: list[tuple[Any, dict[str, Any]]] = [
     ("", {}),
     (" ", {}),
     ("XX", {}),
-    ("MT", {"cod_municipio": True}),
-    ("MT", {"cod_municipio": 5107925.0}),
-    ("MT", {"cod_municipio": "5107925"}),
-    ("MT", {"cod_municipio": 510792}),
-    ("MT", {"cod_municipio": 51079250}),
-    ("MT", {"cod_municipio": -5107925}),
-    ("MT", {"cod_municipio": 5300108}),
+    ("MT", {"municipio": True}),
+    ("MT", {"municipio": 5107925.0}),
+    ("MT", {"municipio": 510792}),
+    ("MT", {"municipio": 51079250}),
+    ("MT", {"municipio": -5107925}),
+    ("MT", {"municipio": 5300108}),
+    ("MT", {"municipio": "5300108"}),
     ("MT", {"municipio": 123}),
     ("MT", {"municipio": " "}),
-    ("MT", {"municipio": "Sorriso", "cod_municipio": 5107925}),
+    ("MT", {"municipio": "Sorris"}),
+    ("MT", {"municipio": "Brasília"}),
+    ("PB", {"municipio": "Bom Jesus dos Perdões"}),
 ]
 FILTROS: list[tuple[str, dict[str, Any]]] = [
     ("MT", {"status": True}),
@@ -87,7 +89,7 @@ async def test_filtros_invalidos_recusados_antes_da_rede(monkeypatch: pytest.Mon
             for name in ("imoveis", "imoveis_geo", "imoveis_geo_stream")
             for uf, filters in FILTROS
         ),
-        *(("imoveis_geo", "MT", {"max_features": limite}, "max_features") for limite in LIMITES),
+        *(("imoveis_geo", "MT", {"max_registros": limite}, "max_registros") for limite in LIMITES),
     ]
     with collect_failures() as check:
         for name, uf, filters, mensagem in casos:

@@ -130,8 +130,6 @@ def resumo_esperado(features: list[dict[str, Any]]) -> dict[str, Any]:
 def test_cql_exato_por_filtro():
     casos: list[tuple[dict[str, Any], str | None]] = [
         ({}, None),
-        ({"municipio": "Sorriso"}, "municipio ILIKE '%Sorriso%'"),
-        ({"municipio": "D'Oeste 50%_x"}, "municipio ILIKE '%D''Oeste 50\\%\\_x%'"),
         (
             {
                 "cod_municipio": 5107925,
@@ -162,7 +160,7 @@ async def test_imoveis_traz_o_hash_e_o_tamanho_do_corpo_wfs(monkeypatch: pytest.
     monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([corpo], URL)))
 
     with helpers.sem_excecao():
-        _, meta = await api.imoveis("df", cod_municipio=5300108, return_meta=True)
+        _, meta = await api.imoveis("df", municipio=5300108, return_meta=True)
 
     helpers.conferir_corpo(meta, corpo)
     assert meta.source_url == URL
@@ -175,9 +173,22 @@ async def test_imoveis_ordena_a_saida_por_cod_imovel(monkeypatch: pytest.MonkeyP
     fetch = AsyncMock(return_value=([json.dumps(documento).encode()], URL))
     monkeypatch.setattr(client, "fetch_imoveis", fetch)
 
-    frame = await api.imoveis("df", cod_municipio=5300108)
+    frame = await api.imoveis("df", municipio=5300108)
 
     assert frame["cod_imovel"].tolist() == codigos
+    assert fetch.await_args.args == ("DF", "cod_municipio_ibge=5300108")
+
+
+@pytest.mark.parametrize("municipio", ["Brasília", " BRASILIA ", 5300108, "5300108"])
+async def test_municipio_por_nome_ou_codigo_filtra_pelo_codigo(
+    monkeypatch: pytest.MonkeyPatch, municipio: int | str
+):
+    corpo = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    fetch = AsyncMock(return_value=([corpo], URL))
+    monkeypatch.setattr(client, "fetch_imoveis", fetch)
+
+    await api.imoveis("df", municipio=municipio)
+
     assert fetch.await_args.args == ("DF", "cod_municipio_ibge=5300108")
 
 
@@ -188,7 +199,7 @@ async def test_geo_publica_propriedades_e_geometria_do_corpo(monkeypatch: pytest
     monkeypatch.setattr(client, "fetch_imoveis_geo", fetch)
     monkeypatch.setattr(client, "fetch_hits", AsyncMock(return_value=len(features)))
 
-    frame, meta = await api.imoveis_geo("df", max_features=None, return_meta=True)
+    frame, meta = await api.imoveis_geo("df", max_registros=None, return_meta=True)
 
     assert geo_rows(frame) == [geo_linha(feature) for feature in features]
     assert fetch.await_args.args == ("DF", None)
@@ -199,7 +210,7 @@ async def test_geo_publica_propriedades_e_geometria_do_corpo(monkeypatch: pytest
     invertido = json.loads(body)
     invertido["features"].reverse()
     fetch.return_value = ([json.dumps(invertido).encode()], URL)
-    ordenado = await api.imoveis_geo("df", max_features=None)
+    ordenado = await api.imoveis_geo("df", max_registros=None)
     assert geo_rows(ordenado) == [geo_linha(feature) for feature in features]
 
 
@@ -242,7 +253,7 @@ async def test_geo_real_seleciona_a_versao_mais_recente_como_o_tabular(
     monkeypatch.setattr(client, "fetch_imoveis_geo", fetch)
 
     frame, meta = await api.imoveis_geo(
-        uf, cod_municipio=cod_municipio, criado_apos="2026-09-22", return_meta=True
+        uf, municipio=cod_municipio, criado_apos="2026-09-22", return_meta=True
     )
 
     descartadas = {descartada for descartada, _mantida, _criterio in descartes}
@@ -296,9 +307,7 @@ async def test_stream_real_seleciona_a_versao_mesmo_dividida_entre_paginas(
     monkeypatch.setattr(client, "stream_imoveis_geo", stream)
     lotes = [
         lote
-        async for lote in api.imoveis_geo_stream(
-            "MS", cod_municipio=5007901, criado_apos="2026-09-22"
-        )
+        async for lote in api.imoveis_geo_stream("MS", municipio=5007901, criado_apos="2026-09-22")
     ]
 
     mantidas = [
@@ -344,7 +353,7 @@ async def test_geo_recusa_feature_repetida_como_o_tabular(monkeypatch: pytest.Mo
         ):
             parser.parse_imoveis_geojson([pagina, pagina])
         with check("stream"), pytest.raises(ParseError, match="id de feature repetido"):
-            _lotes = [lote async for lote in api.imoveis_geo_stream("MS", cod_municipio=5007901)]
+            _lotes = [lote async for lote in api.imoveis_geo_stream("MS", municipio=5007901)]
 
 
 async def test_geo_rotula_o_srid_declarado_pela_fonte(monkeypatch: pytest.MonkeyPatch):
@@ -358,8 +367,12 @@ async def test_geo_rotula_o_srid_declarado_pela_fonte(monkeypatch: pytest.Monkey
         for pedido in caso["requests"]
     }
     seen = helpers.install_replay_http(monkeypatch, caso, GEO)
+    consulta = {
+        ("max_registros" if chave == "max_features" else chave): valor
+        for chave, valor in caso["query"].items()
+    }
     try:
-        resultado = await api.imoveis_geo(**caso["query"], return_meta=True)
+        resultado = await api.imoveis_geo(**consulta, return_meta=True)
     except ParseError as erro:
         resultado = erro
     finally:
@@ -414,7 +427,7 @@ async def test_geo_vazio_preserva_colunas_tipos_e_crs(monkeypatch: pytest.Monkey
     )
 
     frame, meta = await api.imoveis_geo(
-        "DF", cod_municipio=5300108, criado_apos="2099-01-01", return_meta=True
+        "DF", municipio=5300108, criado_apos="2099-01-01", return_meta=True
     )
 
     with collect_failures() as check:
@@ -453,7 +466,7 @@ async def test_condicao_nula_na_fonte_continua_nula(monkeypatch: pytest.MonkeyPa
 
     resultados = {
         "geo": (await api.imoveis_geo("DF", municipio="Brasília"), geo),
-        "tabular": (await api.imoveis("DF", cod_municipio=5300108), tabular),
+        "tabular": (await api.imoveis("DF", municipio=5300108), tabular),
     }
 
     with collect_failures() as check:
@@ -524,7 +537,7 @@ async def test_resumo_municipal_agrega_as_linhas_publicadas(monkeypatch: pytest.
     monkeypatch.setattr(client, "fetch_imoveis", fetch)
 
     frame = await api.resumo("DF", municipio="Brasília")
-    vazio = await api.resumo("DF", cod_municipio=5300108)
+    vazio = await api.resumo("DF", municipio="5300108")
 
     assert frame.to_dict("records") == [pytest.approx(resumo_esperado(features), rel=1e-12)]
     assert vazio.to_dict("records") == [
@@ -532,7 +545,7 @@ async def test_resumo_municipal_agrega_as_linhas_publicadas(monkeypatch: pytest.
         | dict.fromkeys(("area_total_ha", "area_media_ha", "modulos_fiscais_medio"), 0.0)
     ]
     assert [call.args[:2] for call in fetch.await_args_list] == [
-        ("DF", "municipio ILIKE '%Brasília%'"),
+        ("DF", "cod_municipio_ibge=5300108"),
         ("DF", "cod_municipio_ibge=5300108"),
     ]
 
@@ -566,23 +579,23 @@ async def test_sondagem_de_volume_avisa_e_nao_derruba_a_consulta(monkeypatch: py
     casos: list[tuple[str, dict[str, Any], int | Exception, int, str | None]] = [
         ("imoveis", {}, 200_000, 1, "sicar_large_query"),
         ("imoveis", {}, 100_000, 1, None),
-        ("imoveis", {"cod_municipio": 5300108}, 0, 0, None),
+        ("imoveis", {"municipio": 5300108}, 0, 0, None),
         ("imoveis", {}, indisponivel, 1, "sicar_hit_count_check_failed"),
-        ("imoveis_geo", {"max_features": None}, 200_000, 1, "sicar_geo_large_query"),
-        ("imoveis_geo", {"max_features": 5_000}, 200_000, 1, None),
-        ("imoveis_geo", {"max_features": 150_000}, 500_000, 1, "sicar_geo_large_query"),
-        ("imoveis_geo", {"max_features": None}, 100_000, 1, None),
-        ("imoveis_geo", {"municipio": "Brasília", "max_features": None}, 0, 0, None),
+        ("imoveis_geo", {"max_registros": None}, 200_000, 1, "sicar_geo_large_query"),
+        ("imoveis_geo", {"max_registros": 5_000}, 200_000, 1, None),
+        ("imoveis_geo", {"max_registros": 150_000}, 500_000, 1, "sicar_geo_large_query"),
+        ("imoveis_geo", {"max_registros": None}, 100_000, 1, None),
+        ("imoveis_geo", {"municipio": "Brasília", "max_registros": None}, 0, 0, None),
         (
             "imoveis_geo",
-            {"max_features": None},
+            {"max_registros": None},
             httpx.ConnectError("boom"),
             1,
             "sicar_geo_hit_count_check_failed",
         ),
         (
             "imoveis_geo",
-            {"max_features": None},
+            {"max_registros": None},
             indisponivel,
             1,
             "sicar_geo_hit_count_check_failed",

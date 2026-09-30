@@ -23,6 +23,7 @@ def payload():
 def test_official_tabular_all_cells_and_dtypes():
     page = parser.parse_page((GOLDEN / "reference.json").read_bytes(), include_geometry=False)
     frame = parser.build_frame(page.records)
+    parser.converter_datas(frame)
     pd.testing.assert_frame_equal(frame, incra_expected_frame())
     assert page.parser_version == parser.PARSER_VERSION
     assert page.source_rows == page.returned_count == 6

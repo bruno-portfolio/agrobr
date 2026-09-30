@@ -13,6 +13,8 @@ from agrobr.exceptions import SourceUnavailableError
 
 from . import budget, models
 
+_TEXTO = pd.Series([""]).dtype
+
 
 def integer_columns() -> tuple[str, ...]:
     return (
@@ -27,8 +29,17 @@ def integer_columns() -> tuple[str, ...]:
     )
 
 
+def temporal_columns() -> dict[str, str]:
+    return {f"perimetro_{name}": dtype for name, dtype in constants.INCRA_DTYPES_TEMPORAIS.items()}
+
+
 def string_columns() -> tuple[str, ...]:
-    excluded = {*integer_columns(), "perimetro_area_ha", "referencia_repetida"}
+    excluded = {
+        *integer_columns(),
+        *temporal_columns(),
+        "perimetro_area_ha",
+        "referencia_repetida",
+    }
     return tuple(name for name in constants.INCRA_VINCULOS_COLUMNS if name not in excluded)
 
 
@@ -148,6 +159,7 @@ def _edges(
 
 def _typed_frame(columns: dict[str, list[Any]]) -> pd.DataFrame:
     frame = pd.DataFrame(columns, columns=constants.INCRA_VINCULOS_COLUMNS)
+    temporais = temporal_columns()
     for name in frame.columns:
         dtype = (
             "Int64"
@@ -156,7 +168,7 @@ def _typed_frame(columns: dict[str, list[Any]]) -> pd.DataFrame:
             if name == "perimetro_area_ha"
             else "boolean"
             if name == "referencia_repetida"
-            else pd.StringDtype(storage="python")
+            else temporais.get(name, _TEXTO)
         )
         frame[name] = pd.Series(columns[name], dtype=dtype)
     return frame

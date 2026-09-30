@@ -1,8 +1,12 @@
+from datetime import timedelta
+
 from agrobr.constants import URLS, Fonte
 
 CSV_URL: str = URLS[Fonte.IBAMA]["termo_embargo_csv"]
 
 MIN_CSV_BYTES = 10_000_000
+
+CACHE_TTL = timedelta(hours=1)
 
 CSV_COLUMN_MAP: dict[str, str] = {
     "SEQ_TAD": "seq_tad",

@@ -19,8 +19,7 @@ df = await agrobr.alt.sicar.imoveis("DF")
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
-| municipio | str | Nao | Filtro parcial de municipio (case-insensitive). Mutuamente exclusivo com `cod_municipio` |
-| cod_municipio | int | Nao | Código IBGE de sete dígitos com prefixo coerente com a UF (ex: 5107925). Mutuamente exclusivo com `municipio`; não aceita string, float ou bool |
+| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
 | status | str | Nao | AT, PE, SU ou CA |
 | tipo | str | Nao | IRU, AST ou PCT |
 | area_min | float | Nao | Area minima em hectares |
@@ -66,7 +65,7 @@ df = await agrobr.alt.sicar.imoveis(
 )
 
 # Filtro por codigo IBGE (evita problemas com acentos)
-df = await agrobr.alt.sicar.imoveis("PA", cod_municipio=1508159)  # Uruara
+df = await agrobr.alt.sicar.imoveis("PA", municipio="Uruará")  # ou municipio=1508159
 
 # Imoveis grandes (>1000 ha) no DF
 df = await agrobr.alt.sicar.imoveis("DF", area_min=1000)
@@ -99,8 +98,7 @@ df = await agrobr.alt.sicar.resumo("MT")
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF |
-| municipio | str | Nao | Filtro parcial de municipio (case-insensitive). Mutuamente exclusivo com `cod_municipio` |
-| cod_municipio | int | Nao | Codigo IBGE do municipio. Mutuamente exclusivo com `municipio` |
+| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
 | as_polars | bool | Nao | Se True, retorna polars.DataFrame |
 | return_meta | bool | Nao | Se True, retorna (DataFrame, MetaInfo) |
 
@@ -159,15 +157,14 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
-| municipio | str | Nao | Filtro parcial de municipio (case-insensitive). Mutuamente exclusivo com `cod_municipio` |
-| cod_municipio | int | Nao | Codigo IBGE do municipio (ex: 5107925). Mutuamente exclusivo com `municipio` |
+| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
 | status | str | Nao | AT, PE, SU ou CA |
 | tipo | str | Nao | IRU, AST ou PCT |
 | area_min | float | Nao | Area minima em hectares |
 | area_max | float | Nao | Area maxima em hectares |
 | criado_apos | str | Nao | Data minima de criacao (ISO, ex: "2020-01-01") |
 | atualizado_apos | str | Nao | Atualização estritamente posterior (`>`), em data/datetime ISO, com fração e `Z`/offset opcionais; sem fuso, interpreta UTC. O campo é solicitado onde existe. Indisponível em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO |
-| max_features | int \| None | Nao | Limite de features retornadas. Default: 5000. `None` desativa o limite |
+| max_registros | int \| None | Nao | Limite de feições retornadas. Default: 5000. `None` desativa o limite |
 | return_meta | bool | Nao | Se True, retorna (GeoDataFrame, MetaInfo) |
 
 ### Colunas de retorno
@@ -200,7 +197,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo(
 )
 
 # Filtrar por codigo IBGE (evita problemas com acentos)
-gdf = await agrobr.alt.sicar.imoveis_geo("PA", cod_municipio=1508159)
+gdf = await agrobr.alt.sicar.imoveis_geo("PA", municipio=1508159)
 
 # Com metadados
 gdf, meta = await agrobr.alt.sicar.imoveis_geo("DF", return_meta=True)
@@ -208,8 +205,8 @@ gdf, meta = await agrobr.alt.sicar.imoveis_geo("DF", return_meta=True)
 
 ### Notas
 
-- `max_features=5000` é o limite padrão do resultado; aceita inteiro positivo ou `None`
-- Resultado que para em `max_features` sai com aviso em `validation_warnings` e `UserWarning`, e `source_details["sicar"]` traz `truncado=True`, o `max_features` e `total_fonte`, o total da consulta na fonte (o `numberMatched` do WFS); sem esse total, o aviso diz que pode haver mais. No DF, o padrão traz 5.000 dos 21.011 imóveis (captura de 22/09/2026)
+- `max_registros=5000` é o limite padrão do resultado; aceita inteiro positivo ou `None`
+- Resultado que para em `max_registros` sai com aviso em `validation_warnings` e `UserWarning`, e `source_details["sicar"]` traz `truncado=True`, o `max_registros` e `total_fonte`, o total da consulta na fonte (o `numberMatched` do WFS); sem esse total, o aviso diz que pode haver mais. No DF, o padrão traz 5.000 dos 21.011 imóveis (captura de 22/09/2026)
 - Até 10.000 features, usa uma requisição; limites maiores e `None` usam paginação de até 10.000 por página
 - CRS: EPSG:4326 (WGS84). As camadas do SICAR são publicadas em SIRGAS 2000 (EPSG:4674); o agrobr pede `srsName=EPSG:4326` e confere o CRS declarado em cada página com feições (outra declaração gera `ParseError`). A reprojeção é do GeoServer: nas capturas de 22/09/2026 as coordenadas diferem no máximo 1e-8 grau das publicadas em SIRGAS 2000. Resultado vazio também sai com o CRS
 - Ocorrências repetidas do mesmo `cod_imovel` seguem a regra de [`imoveis()`](#imoveis); com `return_meta=True`, `validation_warnings` e `source_details["sicar"]` registram os descartes. Id de feature repetido gera `ParseError`, como na paginação tabular
@@ -232,8 +229,7 @@ async for gdf in agrobr.alt.sicar.imoveis_geo_stream("MT"):
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
-| municipio | str | Nao | Filtro parcial de municipio (case-insensitive). Mutuamente exclusivo com `cod_municipio` |
-| cod_municipio | int | Nao | Codigo IBGE do municipio (ex: 5107925). Mutuamente exclusivo com `municipio` |
+| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
 | status | str | Nao | AT, PE, SU ou CA |
 | tipo | str | Nao | IRU, AST ou PCT |
 | area_min | float | Nao | Area minima em hectares |
@@ -255,7 +251,7 @@ print(total)
 
 ### Notas
 
-- Sem limite de `max_features`: pagina ate esgotar todos os registros da UF
+- Sem limite de `max_registros`: pagina ate esgotar todos os registros da UF
 - Cada yield corresponde a uma pagina WFS (ate 10.000 features), baixadas sequencialmente com throttle. As ocorrências do último `cod_imovel` de cada página passam para o lote seguinte, porque as páginas vêm ordenadas por `cod_imovel` e uma versão repetida pode cair na página seguinte; o último lote traz só esse código
 - Uma ocorrência por `cod_imovel`, pela regra de [`imoveis()`](#imoveis); id de feature repetido entre páginas gera `ParseError`
 - CRS: EPSG:4326 (WGS84), com a mesma conferência de [`imoveis_geo`](#imoveis_geo)

@@ -11,9 +11,9 @@ from agrobr.alt.sicar import api, client
 
 from .test_api import URL, geo_capture
 
-AVISO = "sicar: o resultado parou em max_features="
+AVISO = "sicar: o resultado parou em max_registros="
 DF = {"uf": "DF", "municipio": "Brasília"}
-MS = {"uf": "MS", "cod_municipio": 5007901}
+MS = {"uf": "MS", "municipio": 5007901}
 
 
 def _sem_total(nome: str) -> bytes:
@@ -31,7 +31,9 @@ async def _consultar(
     monkeypatch.setattr(client, "fetch_imoveis_geo", AsyncMock(return_value=([pagina], URL)))
     with warnings.catch_warnings(record=True) as emitidos:
         warnings.simplefilter("always")
-        frame, meta = await api.imoveis_geo(**consulta, max_features=max_features, return_meta=True)
+        frame, meta = await api.imoveis_geo(
+            **consulta, max_registros=max_features, return_meta=True
+        )
     return (
         frame,
         meta,
@@ -59,11 +61,11 @@ async def test_corte_em_max_features_avisa_e_marca_o_meta(monkeypatch, pagina, t
     frame, meta, emitidos = await _consultar(monkeypatch, pagina(), DF, 3)
 
     esperado = (
-        f"{AVISO}3; {trecho}. Use max_features=None ou filtre por município para trazer todos."
+        f"{AVISO}3; {trecho}. Use max_registros=None ou filtre por município para trazer todos."
     )
     detalhes = meta.source_details["sicar"]
     assert len(frame) == 3
-    assert [detalhes.get(chave) for chave in ("truncado", "max_features", "total_fonte")] == [
+    assert [detalhes.get(chave) for chave in ("truncado", "max_registros", "total_fonte")] == [
         True,
         3,
         total,

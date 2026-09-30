@@ -12,7 +12,7 @@ from agrobr.exceptions import ContractViolationError, InvalidParameterError, Par
 from agrobr.models import MetaInfo
 from agrobr.utils import geo, result
 
-from . import acquisition, client, metadata, query
+from . import acquisition, client, metadata, parser, query
 
 if TYPE_CHECKING:
     import geopandas as gpd
@@ -46,7 +46,7 @@ async def _fetch(
     return_meta: bool,
     unknown: dict[str, Any],
     **selection: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     from agrobr.datasets.deterministic import get_snapshot
 
     if unknown:
@@ -66,12 +66,14 @@ async def _fetch(
             ) from None
     logger.info("incra_quilombolas", include_geometry=include_geometry)
     acquired = await client.fetch_acquisition(validated)
+    parser.converter_datas(acquired.frame)
     contract = contracts.QUILOMBOLAS_V2
     valid, errors = contract.validate(acquired.frame)
     if not valid:
         raise ContractViolationError(dataset=contract.name, violation="; ".join(errors))
     frame = _geoframe(acquired, geopandas) if include_geometry else acquired.frame
     meta = metadata.build_meta(acquired, frame)
+    meta.validation_warnings.extend(acquired.frame.attrs.get(result.ATRIBUTO_AVISOS, []))
     remote = acquired.coverage.remote
     if remote.truncated:
         warnings.warn(
@@ -106,7 +108,7 @@ async def quilombolas(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.INCRA_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -119,9 +121,22 @@ async def quilombolas(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.INCRA_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def quilombolas(
+    *,
+    uf: str | None = None,
+    fase: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.INCRA_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def quilombolas(
@@ -134,7 +149,7 @@ async def quilombolas(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         include_geometry=False,
         uf=uf,
@@ -181,7 +196,7 @@ async def quilombolas_geo(
     tamanho_pagina: int | None = None,
     return_meta: bool = False,
     **kwargs: Any,
-) -> Any:
+) -> result.GeoDataFrameResult:
     return await _fetch(
         include_geometry=True,
         uf=uf,

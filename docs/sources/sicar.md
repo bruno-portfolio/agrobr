@@ -54,10 +54,10 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
   vem do `DescribeFeatureType` das 27 camadas em 06/09/2026
 - **Estado corrente:** criação (`>=`) e atualização (`>`) são filtros do cadastro disponível
   no momento da consulta. Não recuperam revisões anteriores nem exclusões. O dataset
-  `cadastro_rural` também aceita código municipal e atualização, e rejeita `deterministic`
+  `cadastro_rural` também aceita município (nome ou código) e atualização, e rejeita `deterministic`
 - **Geometria disponivel:** `imoveis_geo()` retorna `GeoDataFrame` com poligonos MultiPolygon
   (EPSG:4326) via WFS GeoJSON. Requer `pip install agrobr[geo]`. Limite padrão de 5.000 features
-  no resultado; `max_features` maior que 10.000 ou `None` usa paginação. O corte avisa
+  no resultado; `max_registros` maior que 10.000 ou `None` usa paginação. O corte avisa
   (`validation_warnings`, `UserWarning` e `source_details["sicar"]["truncado"]`). As 27 camadas declaram
   SIRGAS 2000 (`DefaultCRS` EPSG:4674); o agrobr pede `srsName=EPSG:4326`
   e recusa com `ParseError` a página com feições que declare outro CRS

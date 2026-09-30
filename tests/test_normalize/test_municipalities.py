@@ -14,6 +14,7 @@ from agrobr.normalize.municipalities import (
     coordenada_para_municipio,
     ibge_para_municipio,
     municipio_para_ibge,
+    resolver_municipio,
     total_municipios,
 )
 from tests.helpers import collect_failures
@@ -291,9 +292,75 @@ def test_buscar_municipios_recusa_filtro_invalido(kwargs, motivo):
         lambda: buscar_municipios("sorriso", uf="MT")[0],
         lambda: ibge_para_municipio(5107925),
         lambda: coordenada_para_municipio(-12.5425, -55.7211),
+        lambda: resolver_municipio("Sorriso"),
     ],
-    ids=["buscar_municipios", "ibge_para_municipio", "coordenada_para_municipio"],
+    ids=[
+        "buscar_municipios",
+        "ibge_para_municipio",
+        "coordenada_para_municipio",
+        "resolver_municipio",
+    ],
 )
 def test_retorno_nao_compartilha_o_indice(consulta):
     consulta()["nome"] = "Alterado"
     assert consulta()["nome"] == "Sorriso"
+
+
+SORRISO = {"codigo_ibge": 5107925, "nome": "Sorriso", "uf": "MT"}
+
+
+@pytest.mark.parametrize(
+    ("valor", "uf"),
+    [
+        (5107925, None),
+        ("5107925", None),
+        (" 5107925 ", "mt"),
+        ("Sorriso", None),
+        ("  SORRISO ", "MT"),
+    ],
+)
+def test_resolver_municipio_por_codigo_ou_nome(valor, uf):
+    assert resolver_municipio(valor, uf) == SORRISO
+
+
+@pytest.mark.parametrize(
+    ("valor", "uf", "codigo"),
+    [
+        ("sao  paulo", None, 3550308),
+        ("GOIÂNIA", None, 5208707),
+        ("Bom Jesus", "pi", 2201903),
+        ("Açu", None, 2400208),
+    ],
+)
+def test_resolver_municipio_normaliza_nome_inteiro(valor, uf, codigo):
+    assert resolver_municipio(valor, uf)["codigo_ibge"] == codigo
+
+
+@pytest.mark.parametrize(
+    ("valor", "uf", "mensagem"),
+    [
+        (
+            "Bom Jesus",
+            None,
+            r"ambíguo.*Bom Jesus/PB \(2502201\).*Bom Jesus/SC \(4202537\)\); informe a uf",
+        ),
+        ("Santa Rita", "MG", r"não encontrado na UF MG.*Santa Rita do Sapucaí/MG \(3159605\)"),
+        ("São Paulo", "RS", r"não encontrado na UF RS.*São Paulo das Missões/RS \(4319307\)"),
+        (
+            "xyzzy",
+            None,
+            r"não encontrado: 'xyzzy'\. Procure o nome com normalize\.buscar_municipios",
+        ),
+        (5107925, "GO", r"Sorriso/MT \(5107925\) não pertence à UF GO"),
+        ("Sorriso", "XX", r"UF inválida: 'XX'\. Valores válidos: AC, AL"),
+        (510792, None, r"tem 7 dígitos: 510792"),
+        ("0510792", None, r"inexistente: '0510792'"),
+        (9999999, None, r"inexistente: 9999999"),
+        (True, None, r"nome ou o código IBGE de 7 dígitos: True"),
+        (5107925.0, None, r"nome ou o código IBGE de 7 dígitos: 5107925\.0"),
+        (" ", None, r"nome ou o código IBGE de 7 dígitos: ' '"),
+    ],
+)
+def test_resolver_municipio_recusa_com_os_candidatos(valor, uf, mensagem):
+    with pytest.raises(InvalidParameterError, match=mensagem):
+        resolver_municipio(valor, uf)

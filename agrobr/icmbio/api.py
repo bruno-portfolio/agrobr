@@ -18,7 +18,7 @@ from agrobr.exceptions import (
 )
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import check_geopandas, validate_bbox
-from agrobr.utils.result import build_source_meta
+from agrobr.utils.result import DataFrameResult, GeoDataFrameResult, build_source_meta
 from agrobr.utils.validation import validate_bioma, validate_uf
 
 from . import client, models, parser
@@ -175,7 +175,7 @@ async def ucs(
     grupo: str | None = None,
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -187,9 +187,21 @@ async def ucs(
     grupo: str | None = None,
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def ucs(
+    *,
+    uf: str | None = None,
+    grupo: str | None = None,
+    bioma: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def ucs(
@@ -201,7 +213,7 @@ async def ucs(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     if kwargs:
         raise TypeError(f"Argumentos desconhecidos em icmbio.ucs: {sorted(kwargs)}")
     _validate_output(as_polars=as_polars, return_meta=return_meta)
@@ -241,7 +253,7 @@ async def ucs_geo(
     bioma: str | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     return_meta: bool = False,
-) -> Any:
+) -> GeoDataFrameResult:
     uf = validate_uf(uf)
     grupo = _validate_grupo(grupo)
     bioma = validate_bioma(bioma)

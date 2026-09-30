@@ -230,7 +230,7 @@ async def stream_imoveis_geo(
     sequencialmente com o throttle pos-pagina. Isso evita acumular todo o
     estado bruto em memoria.
     """
-    models.validate_max_features(max_features)
+    models.validate_max_registros(max_features)
     if max_features is not None and max_features <= PAGE_SIZE:
         url = _build_wfs_url(
             uf,

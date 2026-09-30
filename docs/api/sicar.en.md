@@ -19,8 +19,7 @@ df = await agrobr.alt.sicar.imoveis("DF")
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation (e.g. "MT", "DF", "BA") |
-| municipio | str | No | Partial municipality filter (case-insensitive). Mutually exclusive with `cod_municipio` |
-| cod_municipio | int | No | Seven-digit IBGE code with a prefix matching the state (e.g. 5107925). Mutually exclusive with `municipio`; strings, floats and booleans are rejected |
+| municipio | int \| str | No | 7-digit IBGE code (int or str) or the full municipality name, ignoring case and accents (`normalize.resolver_municipio`); it must belong to the state. An ambiguous or unknown name, or a fragment of a name (`"Santa Rita"` does not match `"Santa Rita do Sapucaí"`), raises `InvalidParameterError` listing the candidates. Filters by the code on the layer |
 | status | str | No | AT, PE, SU or CA |
 | tipo | str | No | IRU, AST or PCT |
 | area_min | float | No | Minimum area in hectares |
@@ -66,7 +65,7 @@ df = await agrobr.alt.sicar.imoveis(
 )
 
 # Filter by IBGE code (avoids accent issues)
-df = await agrobr.alt.sicar.imoveis("PA", cod_municipio=1508159)  # Uruara
+df = await agrobr.alt.sicar.imoveis("PA", municipio="Uruará")  # or municipio=1508159
 
 # Large properties (>1000 ha) in DF
 df = await agrobr.alt.sicar.imoveis("DF", area_min=1000)
@@ -99,8 +98,7 @@ df = await agrobr.alt.sicar.resumo("MT")
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation |
-| municipio | str | No | Partial municipality filter (case-insensitive). Mutually exclusive with `cod_municipio` |
-| cod_municipio | int | No | Municipality IBGE code. Mutually exclusive with `municipio` |
+| municipio | int \| str | No | 7-digit IBGE code (int or str) or the full municipality name, ignoring case and accents (`normalize.resolver_municipio`); it must belong to the state. An ambiguous or unknown name, or a fragment of a name (`"Santa Rita"` does not match `"Santa Rita do Sapucaí"`), raises `InvalidParameterError` listing the candidates. Filters by the code on the layer |
 | as_polars | bool | No | If True, returns a polars.DataFrame |
 | return_meta | bool | No | If True, returns (DataFrame, MetaInfo) |
 
@@ -159,15 +157,14 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation (e.g. "MT", "DF", "BA") |
-| municipio | str | No | Partial municipality filter (case-insensitive). Mutually exclusive with `cod_municipio` |
-| cod_municipio | int | No | Municipality IBGE code (e.g. 5107925). Mutually exclusive with `municipio` |
+| municipio | int \| str | No | 7-digit IBGE code (int or str) or the full municipality name, ignoring case and accents (`normalize.resolver_municipio`); it must belong to the state. An ambiguous or unknown name, or a fragment of a name (`"Santa Rita"` does not match `"Santa Rita do Sapucaí"`), raises `InvalidParameterError` listing the candidates. Filters by the code on the layer |
 | status | str | No | AT, PE, SU or CA |
 | tipo | str | No | IRU, AST or PCT |
 | area_min | float | No | Minimum area in hectares |
 | area_max | float | No | Maximum area in hectares |
 | criado_apos | str | No | Minimum creation date (ISO, e.g. "2020-01-01") |
 | atualizado_apos | str | No | Update strictly after the cutoff (`>`), as an ISO date/datetime with optional fraction and `Z`/offset; without a timezone, interpreted as UTC. The field is requested where available. Unavailable in PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP and TO |
-| max_features | int \| None | No | Limit on returned features. Default: 5000. `None` disables the limit |
+| max_registros | int \| None | No | Limit on returned features. Default: 5000. `None` disables the limit |
 | return_meta | bool | No | If True, returns (GeoDataFrame, MetaInfo) |
 
 ### Returned columns
@@ -200,7 +197,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo(
 )
 
 # Filter by IBGE code (avoids accent issues)
-gdf = await agrobr.alt.sicar.imoveis_geo("PA", cod_municipio=1508159)
+gdf = await agrobr.alt.sicar.imoveis_geo("PA", municipio=1508159)
 
 # With metadata
 gdf, meta = await agrobr.alt.sicar.imoveis_geo("DF", return_meta=True)
@@ -208,8 +205,8 @@ gdf, meta = await agrobr.alt.sicar.imoveis_geo("DF", return_meta=True)
 
 ### Notes
 
-- `max_features=5000` is the default result limit; accepts a positive integer or `None`
-- A result that stops at `max_features` comes with a warning in `validation_warnings` and `UserWarning`, and `source_details["sicar"]` carries `truncado=True`, `max_features` and `total_fonte`, the query total at the source (the WFS `numberMatched`); without that total, the warning says there may be more. In DF, the default returns 5,000 of 21,011 properties (2026-09-22 capture)
+- `max_registros=5000` is the default result limit; accepts a positive integer or `None`
+- A result that stops at `max_registros` comes with a warning in `validation_warnings` and `UserWarning`, and `source_details["sicar"]` carries `truncado=True`, `max_registros` and `total_fonte`, the query total at the source (the WFS `numberMatched`); without that total, the warning says there may be more. In DF, the default returns 5,000 of 21,011 properties (2026-09-22 capture)
 - Up to 10,000 features use one request; larger limits and `None` use pages of up to 10,000 features
 - CRS: EPSG:4326 (WGS84). SICAR layers are published in SIRGAS 2000 (EPSG:4674); agrobr requests `srsName=EPSG:4326` and checks the CRS declared by every page with features (any other declaration raises `ParseError`). GeoServer performs the reprojection: in the 2026-09-22 captures, coordinates differ from the SIRGAS 2000 ones by at most 1e-8 degree. Empty results also carry the CRS
 - Repeated occurrences of the same `cod_imovel` follow the [`imoveis()`](#imoveis) rule; with `return_meta=True`, `validation_warnings` and `source_details["sicar"]` record the discards. A repeated feature ID raises `ParseError`, as in tabular pagination
@@ -232,8 +229,7 @@ async for gdf in agrobr.alt.sicar.imoveis_geo_stream("MT"):
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation (e.g. "MT", "DF", "BA") |
-| municipio | str | No | Partial municipality filter (case-insensitive). Mutually exclusive with `cod_municipio` |
-| cod_municipio | int | No | Municipality IBGE code (e.g. 5107925). Mutually exclusive with `municipio` |
+| municipio | int \| str | No | 7-digit IBGE code (int or str) or the full municipality name, ignoring case and accents (`normalize.resolver_municipio`); it must belong to the state. An ambiguous or unknown name, or a fragment of a name (`"Santa Rita"` does not match `"Santa Rita do Sapucaí"`), raises `InvalidParameterError` listing the candidates. Filters by the code on the layer |
 | status | str | No | AT, PE, SU or CA |
 | tipo | str | No | IRU, AST or PCT |
 | area_min | float | No | Minimum area in hectares |
@@ -255,7 +251,7 @@ print(total)
 
 ### Notes
 
-- No `max_features` limit: pages until all the state's records are exhausted
+- No `max_registros` limit: pages until all the state's records are exhausted
 - Each yield corresponds to one WFS page (up to 10,000 features), downloaded sequentially with throttle. Occurrences of each page's last `cod_imovel` move to the next batch, because pages are sorted by `cod_imovel` and a repeated version may fall on the next page; the last batch holds only that code
 - One occurrence per `cod_imovel`, by the [`imoveis()`](#imoveis) rule; a feature ID repeated across pages raises `ParseError`
 - CRS: EPSG:4326 (WGS84), with the same check as [`imoveis_geo`](#imoveis_geo)

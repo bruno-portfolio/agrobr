@@ -54,7 +54,9 @@ async def test_censo_e_cadastro_cruzam_pelo_cod_municipio_sem_conversao(monkeypa
     caso = next(c for c in SICAR_MANIFEST["cases"] if c["id"] == "sicar_df")
     seen = helpers.install_replay_http(monkeypatch, caso, SICAR)
     with helpers.sem_excecao():
-        cadastro = await datasets.cadastro_rural(**caso["query"])
+        cadastro = await datasets.cadastro_rural(
+            **{("municipio" if k == "cod_municipio" else k): v for k, v in caso["query"].items()}
+        )
     helpers.assert_replay_served(seen)
 
     assert str(censo["cod_municipio"].dtype) == str(cadastro["cod_municipio"].dtype) == "Int64"

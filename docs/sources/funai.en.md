@@ -58,7 +58,7 @@ asyncio.run(main())
 | area_ha | float | Area declared by FUNAI in hectares (`superficie_perimetro_ha`), not the polygon's |
 | fase | str | Process phase |
 | modalidade | str | Indigenous land type |
-| data_atualizacao | str | Update date: published dd/mm/yyyy text, null in 146 of the 665 lands |
+| data_atualizacao | datetime64[ns] | Update date published as dd/mm/yyyy; null in 146 of the 665 lands |
 | feature_id | str | WFS feature identifier (text; may vary between requests) |
 | gid | int | Record identifier in the layer |
 | reestudo_ti | str | Re-study status as published (empty, "Reestudo" or "Principal") |
@@ -70,7 +70,9 @@ asyncio.run(main())
 | dominio_uniao | str | "t"/"f", as published |
 | epsg | int | EPSG of the source geometry (4674 for every land) |
 
-State, date and administrative flags keep the published text (`funai.terras_indigenas` 2.0 contract).
+State and administrative flags keep the published text, in the installed pandas default dtype (`str` on
+pandas 3, `object` on 2); the update date comes as `datetime64[ns]`, and an unreadable date becomes `NaT`
+with a `UserWarning` and a warning in `meta.validation_warnings` (`funai.terras_indigenas` 2.0 contract).
 
 `area_ha` is the area declared by FUNAI (`superficie_perimetro_ha`), passed through without recalculation, and it may
 differ from the published polygon: for the Mashco do Rio Chandless land (AC), 421 ha declared against 543,430 ha in the
@@ -78,7 +80,6 @@ polygon (2026-09-26). In `terras_indigenas_geo`, a land whose declared area diff
 area (IBGE Albers projection) comes with a warning in `validation_warnings` and `UserWarning`, and the list with both
 areas goes to `source_details["area_divergente"]`. `terras_indigenas`, without geometry, does not compare. In AC, 3 of
 the 34 lands exceed 5%.
-To get a date, convert in your application: `pd.to_datetime(df["data_atualizacao"], format="%d/%m/%Y")`.
 
 ## Parameters
 

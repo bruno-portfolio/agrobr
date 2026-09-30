@@ -12,7 +12,12 @@ import pandas as pd
 from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import (
+    DataFrameResult,
+    GeoDataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
 
 from . import client, models, parser
 from .models import (
@@ -62,7 +67,6 @@ def _corpo(pages: list[bytes], consulta: str) -> dict[str, Any]:
 
 def _build_cql_filter(
     *,
-    municipio: str | None = None,
     cod_municipio: int | None = None,
     status: str | None = None,
     tipo: str | None = None,
@@ -72,8 +76,6 @@ def _build_cql_filter(
     atualizado_apos: str | None = None,
 ) -> str | None:
     models.validate_cql_filters(
-        municipio=municipio,
-        cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
         area_min=area_min,
@@ -85,9 +87,6 @@ def _build_cql_filter(
 
     if cod_municipio is not None:
         parts.append(f"cod_municipio_ibge={cod_municipio}")
-    elif municipio:
-        escaped = municipio.replace("'", "''").replace("%", r"\%").replace("_", r"\_")
-        parts.append(f"municipio ILIKE '%{escaped}%'")
 
     if status:
         parts.append(f"status_imovel='{status.upper()}'")
@@ -118,31 +117,19 @@ def _check_atualizado_apos_uf(uf: str, atualizado_apos: str | None) -> None:
         )
 
 
-def _validar_filtros_imoveis(
-    uf: str,
-    municipio: str | None,
-    cod_municipio: int | None,
-    status: str | None,
-    tipo: str | None,
-) -> str:
-    return models.validate_filters(
-        uf, municipio=municipio, cod_municipio=cod_municipio, status=status, tipo=tipo
-    )
-
-
-async def _warn_consulta_grande(uf_upper: str, cql: str | None, max_features: int | None) -> None:
+async def _warn_consulta_grande(uf_upper: str, cql: str | None, max_registros: int | None) -> None:
     try:
         async with client.make_session() as http:
             total = await client.fetch_hits(uf_upper, cql, client=http)
-        effective = total if max_features is None else min(total, max_features)
+        effective = total if max_registros is None else min(total, max_registros)
         if effective > MAX_FEATURES_WARNING:
             logger.warning(
                 "sicar_geo_large_query",
                 uf=uf_upper,
                 total=total,
-                max_features=max_features,
+                max_registros=max_registros,
                 threshold=MAX_FEATURES_WARNING,
-                hint="Considere definir max_features ou filtrar por municipio para reduzir volume",
+                hint="Considere definir max_registros ou filtrar por municipio para reduzir volume",
             )
     except (httpx.HTTPError, SourceUnavailableError):
         logger.warning("sicar_geo_hit_count_check_failed", uf=uf_upper, exc_info=True)
@@ -152,15 +139,14 @@ async def _warn_consulta_grande(uf_upper: str, cql: str | None, max_features: in
 async def imoveis(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
     atualizado_apos: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -169,24 +155,23 @@ async def imoveis(
 async def imoveis(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
     atualizado_apos: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def imoveis(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
@@ -195,15 +180,31 @@ async def imoveis(
     atualizado_apos: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    uf_upper = _validar_filtros_imoveis(uf, municipio, cod_municipio, status, tipo)
+) -> DataFrameResult: ...
+
+
+async def imoveis(
+    uf: str,
+    *,
+    municipio: int | str | None = None,
+    status: str | None = None,
+    tipo: str | None = None,
+    area_min: float | None = None,
+    area_max: float | None = None,
+    criado_apos: str | None = None,
+    atualizado_apos: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult:
+    uf_upper, cod_municipio = models.validate_filters(
+        uf, municipio=municipio, status=status, tipo=tipo
+    )
 
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
 
     logger.info(
         "sicar_imoveis",
         uf=uf_upper,
-        municipio=municipio,
         cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
@@ -212,7 +213,6 @@ async def imoveis(
     )
 
     cql = _build_cql_filter(
-        municipio=municipio,
         cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
@@ -222,7 +222,7 @@ async def imoveis(
         atualizado_apos=atualizado_apos,
     )
 
-    if municipio is None and cod_municipio is None:
+    if cod_municipio is None:
         try:
             async with client.make_session() as http:
                 total = await client.fetch_hits(uf_upper, cql, client=http)
@@ -277,15 +277,14 @@ async def imoveis(
 async def imoveis_geo(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
     atualizado_apos: str | None = None,
-    max_features: int | None = 5000,
+    max_registros: int | None = 5000,
     return_meta: Literal[False] = False,
 ) -> gpd.GeoDataFrame: ...
 
@@ -294,15 +293,14 @@ async def imoveis_geo(
 async def imoveis_geo(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
     atualizado_apos: str | None = None,
-    max_features: int | None = 5000,
+    max_registros: int | None = 5000,
     return_meta: Literal[True],
 ) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
 
@@ -310,26 +308,26 @@ async def imoveis_geo(
 async def imoveis_geo(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
     atualizado_apos: str | None = None,
-    max_features: int | None = 5000,
+    max_registros: int | None = 5000,
     return_meta: bool = False,
-) -> Any:
-    models.validate_max_features(max_features)
-    uf_upper = _validar_filtros_imoveis(uf, municipio, cod_municipio, status, tipo)
+) -> GeoDataFrameResult:
+    models.validate_max_registros(max_registros)
+    uf_upper, cod_municipio = models.validate_filters(
+        uf, municipio=municipio, status=status, tipo=tipo
+    )
 
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
 
     logger.info(
         "sicar_imoveis_geo",
         uf=uf_upper,
-        municipio=municipio,
         cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
@@ -338,7 +336,6 @@ async def imoveis_geo(
     )
 
     cql = _build_cql_filter(
-        municipio=municipio,
         cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
@@ -348,11 +345,11 @@ async def imoveis_geo(
         atualizado_apos=atualizado_apos,
     )
 
-    if municipio is None and cod_municipio is None:
-        await _warn_consulta_grande(uf_upper, cql, max_features)
+    if cod_municipio is None:
+        await _warn_consulta_grande(uf_upper, cql, max_registros)
 
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_imoveis_geo(uf_upper, cql, max_features=max_features)
+    pages, source_url = await client.fetch_imoveis_geo(uf_upper, cql, max_features=max_registros)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
@@ -360,7 +357,7 @@ async def imoveis_geo(
     sicar_details: dict[str, Any] = {}
     gdf = parser.parse_imoveis_geojson(
         pages,
-        max_features=max_features,
+        max_features=max_registros,
         source_details=sicar_details,
         validation_warnings=validation_warnings,
     )
@@ -391,8 +388,7 @@ async def imoveis_geo(
 async def imoveis_geo_stream(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
@@ -406,14 +402,15 @@ async def imoveis_geo_stream(
     ocorrencias do ultimo cod_imovel de cada pagina seguem para o lote seguinte, porque
     as paginas vem ordenadas por cod_imovel e uma versao repetida pode cair na pagina
     seguinte; a versao mantida segue a regra de imoveis(). Ideal para processar volumes
-    grandes (max_features=None implicito) sem acumular tudo em memoria antes de comecar
+    grandes (max_registros=None implicito) sem acumular tudo em memoria antes de comecar
     a usar os dados. Async-only: sem suporte em agrobr.sync.
     """
-    uf_upper = _validar_filtros_imoveis(uf, municipio, cod_municipio, status, tipo)
+    uf_upper, cod_municipio = models.validate_filters(
+        uf, municipio=municipio, status=status, tipo=tipo
+    )
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
 
     cql = _build_cql_filter(
-        municipio=municipio,
         cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
@@ -450,9 +447,8 @@ async def imoveis_geo_stream(
 async def resumo(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
-    as_polars: bool = False,
+    municipio: int | str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -461,31 +457,39 @@ async def resumo(
 async def resumo(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
-    as_polars: bool = False,
+    municipio: int | str | None = None,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def resumo(
+    uf: str,
+    *,
+    municipio: int | str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def resumo(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
-    uf_upper = models.validate_filters(uf, municipio=municipio, cod_municipio=cod_municipio)
+) -> DataFrameResult:
+    uf_upper, cod_municipio = models.validate_filters(uf, municipio=municipio)
 
-    logger.info("sicar_resumo", uf=uf_upper, municipio=municipio, cod_municipio=cod_municipio)
+    logger.info("sicar_resumo", uf=uf_upper, cod_municipio=cod_municipio)
 
     t0 = time.monotonic()
     validation_warnings: list[str] = []
     sicar_details: dict[str, Any] = {}
     pages: list[bytes] = []
 
-    if municipio is None and cod_municipio is None:
+    if cod_municipio is None:
         async with client.make_session() as http:
             total = await client.fetch_hits(uf_upper, client=http)
             ativos = await client.fetch_hits(uf_upper, "status_imovel='AT'", client=http)
@@ -510,7 +514,7 @@ async def resumo(
         source_url = WFS_BASE
         parse_ms = 0
     else:
-        cql = _build_cql_filter(municipio=municipio, cod_municipio=cod_municipio)
+        cql = _build_cql_filter(cod_municipio=cod_municipio)
 
         pages, source_url = await client.fetch_imoveis(
             uf_upper, cql, validation_warnings=validation_warnings, source_details=sicar_details
@@ -527,7 +531,7 @@ async def resumo(
     meta = build_source_meta(
         "sicar",
         source_url,
-        "httpx+wfs+geojson" if municipio is not None or cod_municipio is not None else "httpx+wfs",
+        "httpx+wfs+geojson" if cod_municipio is not None else "httpx+wfs",
         fetch_ms,
         parse_ms,
         df,

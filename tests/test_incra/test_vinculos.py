@@ -60,7 +60,9 @@ def _frame(rows: list[dict[str, Any]], *, administrative: bool = False) -> pd.Da
             if name in {"codigo", "familias", "numero_publicado"}
             else "float64"
             if name == "area_ha"
-            else pd.StringDtype(storage="python")
+            else pd.Series([""]).dtype
+            if administrative
+            else constants.INCRA_DTYPES_TEMPORAIS.get(name, pd.Series([""]).dtype)
         )
         frame[name] = pd.Series([row[name] for row in rows], dtype=dtype)
     return frame
@@ -96,7 +98,10 @@ def _national() -> tuple[pd.DataFrame, pd.DataFrame]:
     assert first[-1] == second[0]
     geographic = [
         {
-            **{ALIASES[key]: value for key, value in item["properties"].items()},
+            **{
+                ALIASES[key]: replay.publicado(ALIASES[key], value)
+                for key, value in item["properties"].items()
+            },
             "feature_id": item["id"],
         }
         for item in first + second[1:]
@@ -212,12 +217,17 @@ def test_relation_national_all_origin_cells_and_occurrences():
         parsed.frame.itertuples(index=False, name=None), oracle, strict=True
     ):
         for name, value in zip(parsed.frame.columns, values, strict=True):
-            if expected[name] is None:
+            esperado = (
+                replay.publicado(name.removeprefix("perimetro_"), expected[name])
+                if name.startswith("perimetro_")
+                else expected[name]
+            )
+            if esperado is None:
                 assert pd.isna(value)
             elif name == "perimetro_area_ha":
-                assert float(value).hex() == float(expected[name]).hex()
+                assert float(value).hex() == float(esperado).hex()
             else:
-                assert value == expected[name]
+                assert value == esperado
     for _, actual in parsed.frame.iterrows():
         for prefix, source, position in (
             ("perimetro_", left, actual["perimetro_posicao"]),
@@ -258,7 +268,13 @@ async def test_vinculos_public_chain_national_replay_matches_oracle(monkeypatch,
     frame, meta = await api.vinculos_quilombolas(return_meta=True)
     oracle = json.loads((GOLDEN / "vinculos_20260908/expected.json").read_bytes())
     assert frame.shape == (len(oracle), 46) == (781, 46)
-    for values, expected in zip(frame.itertuples(index=False, name=None), oracle, strict=True):
+    for values, literal in zip(frame.itertuples(index=False, name=None), oracle, strict=True):
+        expected = {
+            name: replay.publicado(name.removeprefix("perimetro_"), value)
+            if name.startswith("perimetro_")
+            else value
+            for name, value in literal.items()
+        }
         observed = {
             name: None if pd.isna(value) else value
             for name, value in zip(frame.columns, values, strict=True)

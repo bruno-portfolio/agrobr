@@ -3,8 +3,10 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import tempfile
 import threading
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, NamedTuple, TypeVar
@@ -230,16 +232,31 @@ def _warn_download_size_once() -> None:
     )
 
 
-async def download_and_cache(
+@asynccontextmanager
+async def adquirir(
     tema: str, uf: str | None = None, *, use_cache: bool = True
+) -> AsyncIterator[Aquisicao]:
+    """Entrega o ZIP do tema; com o cache desligado, ele vive numa pasta temporária apagada na
+    saída, com sucesso, erro ou cancelamento, e nada é gravado no cache."""
+    if use_cache and not _cache_disabled():
+        yield await download_and_cache(tema, uf)
+        return
+    with tempfile.TemporaryDirectory(prefix="agrobr_acervo_") as pasta:
+        yield await download_and_cache(
+            tema, uf, use_cache=False, destino=Path(pasta) / "acervo.zip"
+        )
+
+
+async def download_and_cache(
+    tema: str, uf: str | None = None, *, use_cache: bool = True, destino: Path | None = None
 ) -> Aquisicao:
     if tema not in FILENAME_PATTERNS:
         raise ValueError(f"tema invalido: {tema!r}. Validos: {sorted(FILENAME_PATTERNS)}")
 
     url = _build_url(tema, uf)
-    zip_path = _zip_path(tema, uf)
+    zip_path = _zip_path(tema, uf) if destino is None else destino
     meta_path = _meta_path(tema, uf)
-    cache_active = use_cache and not _cache_disabled()
+    cache_active = destino is None and use_cache and not _cache_disabled()
 
     from agrobr.http.rate_limiter import RateLimiter
 
@@ -296,19 +313,20 @@ async def download_and_cache(
                 head_info = await _head(client, url)
 
         fetched_at = datetime.now(UTC)
-        _save_meta(
-            meta_path,
-            {
-                "tema": tema,
-                "uf": uf,
-                "source_url": url,
-                "last_modified": head_info["last_modified"],
-                "etag": head_info["etag"],
-                "size_bytes": size_bytes,
-                "sha256": sha256,
-                "fetched_at": fetched_at.isoformat(),
-            },
-        )
+        if destino is None:
+            _save_meta(
+                meta_path,
+                {
+                    "tema": tema,
+                    "uf": uf,
+                    "source_url": url,
+                    "last_modified": head_info["last_modified"],
+                    "etag": head_info["etag"],
+                    "size_bytes": size_bytes,
+                    "sha256": sha256,
+                    "fetched_at": fetched_at.isoformat(),
+                },
+            )
         logger.info(
             "acervo_fundiario_download_ok",
             tema=tema,

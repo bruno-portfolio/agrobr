@@ -117,7 +117,7 @@ async def vinculos_quilombolas(
     edicao: date | str | None = None,
     tamanho_pagina: int | None = None,
     max_vinculos: int | None = constants.INCRA_VINCULOS_MAX_ROWS,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
     **kwargs: Any,
 ) -> pd.DataFrame: ...
@@ -129,10 +129,21 @@ async def vinculos_quilombolas(
     edicao: date | str | None = None,
     tamanho_pagina: int | None = None,
     max_vinculos: int | None = constants.INCRA_VINCULOS_MAX_ROWS,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
     **kwargs: Any,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def vinculos_quilombolas(
+    *,
+    edicao: date | str | None = None,
+    tamanho_pagina: int | None = None,
+    max_vinculos: int | None = constants.INCRA_VINCULOS_MAX_ROWS,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def vinculos_quilombolas(
@@ -143,7 +154,7 @@ async def vinculos_quilombolas(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     _guards(edicao, tamanho_pagina, max_vinculos, as_polars, return_meta, kwargs)
     started = time.monotonic()
     parents: dict[str, dict[str, Any]] = {}

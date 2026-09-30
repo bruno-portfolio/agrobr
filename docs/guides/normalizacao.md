@@ -1,13 +1,18 @@
 # Normalização
 
-O módulo `agrobr.normalize` padroniza dados agrícolas brasileiros para garantir cruzamento entre fontes diferentes. São 39 funções organizadas em 7 sub-módulos.
+O módulo `agrobr.normalize` padroniza dados agrícolas brasileiros para garantir cruzamento entre fontes diferentes. São 40 funções organizadas em 7 sub-módulos.
 
 ## Municípios IBGE
 
 5571 municípios com código IBGE de 7 dígitos. Busca accent/case insensitive.
 
 ```python
-from agrobr.normalize import municipio_para_ibge, ibge_para_municipio, buscar_municipios
+from agrobr.normalize import (
+    buscar_municipios,
+    ibge_para_municipio,
+    municipio_para_ibge,
+    resolver_municipio,
+)
 
 # Nome para código IBGE
 municipio_para_ibge("Rondonópolis")        # 5107602
@@ -27,9 +32,21 @@ buscar_municipios("santo", limite=-1)  # InvalidParameterError (limite negativo)
 # Use o nome completo do município e a UF quando disponível
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
+
+# Nome inteiro ou código IBGE, com erro em vez de palpite
+resolver_municipio("sorriso")           # {'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}
+resolver_municipio("5107925")           # o mesmo (código em int ou str)
+resolver_municipio("Bom Jesus", "PI")   # {'codigo_ibge': 2201903, 'nome': 'Bom Jesus', 'uf': 'PI'}
+resolver_municipio("Bom Jesus")         # InvalidParameterError: ambíguo, lista os 5 e pede a uf
+resolver_municipio("Santa Rita", "MG")  # InvalidParameterError: não encontrado, lista os candidatos
 ```
 
-`ibge_para_municipio`, `buscar_municipios` e `coordenada_para_municipio` devolvem cópias: alterar o dicionário
+`resolver_municipio` é a regra do parâmetro `municipio` das funções que filtram por município: o nome casa
+por inteiro, sem caixa, acento e espaços repetidos, e nunca por pedaço (`"Santa Rita"` não é `"Santa Rita do
+Sapucaí"`). Nome de mais de um município, nome inexistente, código fora do cadastro ou município de outra UF
+levantam `InvalidParameterError` com os candidatos.
+
+`ibge_para_municipio`, `buscar_municipios`, `coordenada_para_municipio` e `resolver_municipio` devolvem cópias: alterar o dicionário
 devolvido não muda a consulta seguinte.
 
 Dados da [API IBGE Localidades](https://servicodados.ibge.gov.br/api/docs/localidades) — livre para uso.

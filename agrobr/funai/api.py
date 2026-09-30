@@ -10,6 +10,7 @@ from agrobr import _log, constants
 from agrobr.contracts import funai as contracts
 from agrobr.exceptions import ContractViolationError, InvalidParameterError, ParseError
 from agrobr.models import MetaInfo
+from agrobr.normalize import dates
 from agrobr.utils import geo, result
 
 from . import acquisition, client, metadata, query
@@ -82,7 +83,7 @@ async def _fetch(
     return_meta: bool,
     unknown: dict[str, Any],
     **selection: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     from agrobr.datasets.deterministic import get_snapshot
 
     if unknown:
@@ -102,12 +103,16 @@ async def _fetch(
             ) from None
     logger.info("funai_terras_indigenas", include_geometry=include_geometry)
     acquired = await client.fetch_acquisition(validated)
+    dates.converter_coluna(
+        acquired.frame, "data_atualizacao", fonte="funai", formato=constants.FUNAI_DATA_FORMATO
+    )
     contract = contracts.TERRAS_INDIGENAS_V2
     valid, errors = contract.validate(acquired.frame)
     if not valid:
         raise ContractViolationError(dataset=contract.name, violation="; ".join(errors))
     frame = _geoframe(acquired, geopandas) if include_geometry else acquired.frame
     meta = metadata.build_meta(acquired, frame)
+    meta.validation_warnings.extend(acquired.frame.attrs.get(result.ATRIBUTO_AVISOS, []))
     if include_geometry:
         _avisar_area_divergente(frame, meta)
     remote = acquired.coverage.remote
@@ -144,7 +149,7 @@ async def terras_indigenas(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.FUNAI_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -157,9 +162,22 @@ async def terras_indigenas(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = constants.FUNAI_DEFAULT_MAX_RECORDS,
     tamanho_pagina: int | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def terras_indigenas(
+    *,
+    uf: str | None = None,
+    fase: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = constants.FUNAI_DEFAULT_MAX_RECORDS,
+    tamanho_pagina: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result.DataFrameResult: ...
 
 
 async def terras_indigenas(
@@ -172,7 +190,7 @@ async def terras_indigenas(
     as_polars: bool = False,
     return_meta: bool = False,
     **kwargs: Any,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result.DataFrameResult:
     return await _fetch(
         include_geometry=False,
         uf=uf,
@@ -219,7 +237,7 @@ async def terras_indigenas_geo(
     tamanho_pagina: int | None = None,
     return_meta: bool = False,
     **kwargs: Any,
-) -> Any:
+) -> result.GeoDataFrameResult:
     return await _fetch(
         include_geometry=True,
         uf=uf,

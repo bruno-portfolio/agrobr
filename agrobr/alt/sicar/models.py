@@ -9,8 +9,9 @@ import pydantic
 
 from agrobr.constants import SICAR_STATUS_VALIDOS, SICAR_TIPO_VALIDOS, URLS, Fonte
 from agrobr.exceptions import InvalidParameterError, ParseError
-from agrobr.normalize import regions
+from agrobr.normalize import municipalities, regions
 from agrobr.normalize.regions import UFS_VALIDAS as UFS_VALIDAS
+from agrobr.utils.validation import validate_uf
 
 WFS_BASE = URLS[Fonte.SICAR]["geoserver"]
 WFS_VERSION = "2.0.0"
@@ -118,8 +119,6 @@ def normalize_updated_after(value: str) -> str:
 
 def validate_cql_filters(
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
@@ -127,16 +126,6 @@ def validate_cql_filters(
     criado_apos: str | None = None,
     atualizado_apos: str | None = None,
 ) -> None:
-    if municipio is not None and cod_municipio is not None:
-        raise InvalidParameterError("Use 'municipio' ou 'cod_municipio', nao ambos")
-    if municipio is not None and (not isinstance(municipio, str) or not municipio.strip()):
-        raise InvalidParameterError("municipio deve ser uma string nao vazia")
-    if cod_municipio is not None and (
-        isinstance(cod_municipio, bool)
-        or not isinstance(cod_municipio, int)
-        or not 1_000_000 <= cod_municipio <= 9_999_999
-    ):
-        raise InvalidParameterError("cod_municipio deve ser inteiro IBGE de 7 digitos")
     for name, value, allowed in (("Status", status, STATUS_VALIDOS), ("Tipo", tipo, TIPO_VALIDOS)):
         if value is not None and (not isinstance(value, str) or value.upper() not in allowed):
             raise InvalidParameterError(f"{name} '{value}' invalido. Opcoes: {sorted(allowed)}")
@@ -163,25 +152,23 @@ def validate_cql_filters(
 def validate_filters(
     uf: str,
     *,
-    municipio: str | None = None,
-    cod_municipio: int | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
-) -> str:
-    if not isinstance(uf, str) or uf.strip().upper() not in UFS_VALIDAS:
-        raise InvalidParameterError(f"UF invalida: {uf!r}")
-    uf_upper = uf.strip().upper()
-    validate_cql_filters(municipio=municipio, cod_municipio=cod_municipio, status=status, tipo=tipo)
-    if cod_municipio is not None and cod_municipio // 100_000 != regions.uf_para_ibge(uf_upper):
-        raise InvalidParameterError(f"cod_municipio incompativel com UF '{uf_upper}'")
-    return uf_upper
+) -> tuple[str, int | None]:
+    """Devolve a UF e o código IBGE do município, que é o filtro enviado à camada."""
+    uf_upper = regions.sigla_uf(uf)
+    validate_cql_filters(status=status, tipo=tipo)
+    if municipio is None:
+        return uf_upper, None
+    return uf_upper, municipalities.resolver_municipio(municipio, uf_upper)["codigo_ibge"]
 
 
-def validate_max_features(max_features: int | None) -> None:
-    if max_features is not None and (
-        isinstance(max_features, bool) or not isinstance(max_features, int) or max_features <= 0
+def validate_max_registros(max_registros: int | None) -> None:
+    if max_registros is not None and (
+        isinstance(max_registros, bool) or not isinstance(max_registros, int) or max_registros <= 0
     ):
-        raise InvalidParameterError("max_features deve ser inteiro positivo ou None")
+        raise InvalidParameterError("max_registros deve ser inteiro positivo ou None")
 
 
 class SicarImovel(pydantic.BaseModel):
@@ -234,8 +221,8 @@ class SicarImovel(pydantic.BaseModel):
 
     @pydantic.model_validator(mode="after")
     def validate_dimensions(self) -> Self:
-        if self.uf and self.uf not in UFS_VALIDAS:
-            raise ValueError("UF invalida")
+        if self.uf:
+            validate_uf(self.uf)
         if self.status_imovel and self.status_imovel not in STATUS_VALIDOS:
             raise ValueError("Status invalido")
         if self.tipo_imovel and self.tipo_imovel not in TIPO_VALIDOS:

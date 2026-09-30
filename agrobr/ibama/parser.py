@@ -12,7 +12,6 @@ from agrobr.utils.io import read_csv_safe
 
 from .models import (
     COLUNAS_SAIDA,
-    COLUNAS_SAIDA_GEO,
     CSV_COLUMN_MAP,
     EDICAO_COLUMN_CSV,
     GEOM_COLUMN_CSV,
@@ -121,12 +120,6 @@ def parse_embargos_geo(
         logger.warning("ibama_embargos_geo_wkt_invalido", descartados=invalid)
     if bbox is not None:
         mask &= shapely.intersects(geoms, shapely.box(*bbox))
-
-    if not mask.any():
-        vazio = gpd.GeoDataFrame(columns=COLUNAS_SAIDA_GEO, geometry="geometry", crs="EPSG:4326")
-        vazio.attrs.update(df.attrs)
-        vazio.attrs[EDICAO_COLUMN_CSV] = edicao
-        return vazio
 
     gdf = gpd.GeoDataFrame(
         df.loc[mask, COLUNAS_SAIDA].reset_index(drop=True),

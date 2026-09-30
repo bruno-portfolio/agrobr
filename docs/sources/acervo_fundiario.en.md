@@ -95,6 +95,10 @@ df = await acervo_fundiario.sigef("GO", use_cache=False)
 export AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1
 ```
 
+With the cache off, the ZIP goes to a system temporary folder and is deleted when the query ends, on success,
+error or cancellation; nothing is written to `~/.agrobr/cache/acervo_fundiario/`. The variable accepts
+`1`/`true`/`yes`.
+
 ## Schemas
 
 ### SIGEF

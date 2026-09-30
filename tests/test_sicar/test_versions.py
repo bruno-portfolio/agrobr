@@ -74,7 +74,7 @@ async def test_versoes_reais_selecionadas_e_auditadas(
     monkeypatch.setattr(client, "fetch_wfs", fetch)
 
     frame, meta = await entrypoint(
-        uf, cod_municipio=features[0]["properties"]["cod_municipio_ibge"], return_meta=True
+        uf, municipio=features[0]["properties"]["cod_municipio_ibge"], return_meta=True
     )
 
     assert len(frame) == meta.records_count == 1
@@ -239,7 +239,7 @@ async def test_consulta_vazia_preserva_contrato_e_informa_zeros(monkeypatch: pyt
         client, "fetch_wfs", AsyncMock(side_effect=[b'<FeatureCollection numberMatched="0"/>'])
     )
 
-    frame, meta = await api.imoveis("GO", cod_municipio=5205802, return_meta=True)
+    frame, meta = await api.imoveis("GO", municipio=5205802, return_meta=True)
 
     assert frame.empty
     assert meta.source_details.get("sicar") == {
@@ -270,7 +270,7 @@ async def test_resumo_municipal_agrega_ocorrencias_selecionadas(
         ),
     )
 
-    frame, meta = await api.resumo("GO", cod_municipio=5205802, return_meta=True)
+    frame, meta = await api.resumo("GO", municipio=5205802, return_meta=True)
 
     assert frame.iloc[0]["total"] == 1
     assert frame.iloc[0]["area_total_ha"] == 164.4076
@@ -296,7 +296,7 @@ async def test_codigo_entre_paginas_com_drift_confere_features_antes_da_selecao(
     monkeypatch.setattr(client, "PAGE_SIZE", 1)
     monkeypatch.setattr(client, "fetch_wfs", fetch)
 
-    frame, meta = await datasets.cadastro_rural("GO", cod_municipio=5205802, return_meta=True)
+    frame, meta = await datasets.cadastro_rural("GO", municipio=5205802, return_meta=True)
 
     assert len(frame) == 2 and fetch.await_count == 4
     assert meta.source_details["sicar"]["anunciados"] == 3

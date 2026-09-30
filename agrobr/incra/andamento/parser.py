@@ -324,7 +324,7 @@ def _read(content: bytes, pdfplumber: Any, backend: Any) -> models.ParsedPublica
     frame = pd.DataFrame([row.model_dump() for row in grouped.rows], columns=models.columns())
     for name in models.columns():
         frame[name] = frame[name].astype(
-            "Int64" if name == "numero_publicado" else pd.StringDtype(storage="python")
+            "Int64" if name == "numero_publicado" else pd.Series([""]).dtype
         )
     fingerprint = {
         "kind": "incra_andamento_pdf_rectangular_clipping_and_painted_regional_groups",

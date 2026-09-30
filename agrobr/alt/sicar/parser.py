@@ -314,10 +314,10 @@ def _marcar_corte(
         else "a fonte não informou o total, e pode haver mais imóveis"
     )
     mensagem = (
-        f"sicar: o resultado parou em max_features={max_features}; {fonte}. "
-        "Use max_features=None ou filtre por município para trazer todos."
+        f"sicar: o resultado parou em max_registros={max_features}; {fonte}. "
+        "Use max_registros=None ou filtre por município para trazer todos."
     )
-    details.update(truncado=True, max_features=max_features, total_fonte=total)
+    details.update(truncado=True, max_registros=max_features, total_fonte=total)
     if validation_warnings is not None:
         validation_warnings.append(mensagem)
     warnings.warn(mensagem, UserWarning, stacklevel=4)

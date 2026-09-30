@@ -67,32 +67,35 @@ suportado (o WFS não publica edição imutável).
 | Coluna | Atributo da fonte | Tipo | Observação |
 |--------|-------------------|------|------------|
 | `codigo` | `cd_quilomb` | Int64 | Nulo em 64 % dos perímetros e 0 em 9 (22/09/2026); não é chave primária |
-| `nome` | `no_comunidade` | string | |
-| `municipio` | `no_municipio` | string | |
-| `uf` | `sg_uf` | string | Texto publicado, sem normalização |
+| `nome` | `no_comunidade` | texto | |
+| `municipio` | `no_municipio` | texto | |
+| `uf` | `sg_uf` | texto | Texto publicado, sem normalização |
 | `area_ha` | `nu_area_ha` | float64 | Hectares publicados, sem recálculo |
 | `familias` | `nu_familia` | Int64 | |
-| `fase` | `ds_fase` | string | Ver [fases](#fases-validas) |
-| `titulado` | `st_titulad` | string | `T`/`F` (a fonte também publica `t`/`f`), sem conversão para booleano |
-| `data_publicacao` | `dt_publica` | string | Data XSD literal (`AAAA-MM-DD`) |
-| `data_titulo` | `dt_titulo` | string | Idem |
-| `feature_id` | id da feição | string | Identificador recebido do servidor; estabilidade não comprovada |
-| `regional` | `co_sr` | string | Superintendência regional (`SR-05`, …) |
-| `processo` | `nu_processo` | string | NUP como publicado (pode ter mais de um ou formato atípico) |
-| `data_publicacao_2` | `dt_public1` | string | Data XSD literal |
-| `responsavel` | `no_responsavel` | string | Órgão responsável (INCRA, ITERPA, …) |
-| `esfera` | `no_esfera` | string | Texto publicado (`FEDERAL`, `Federal`, …) |
-| `data_cadastro` | `dt_cadastro` | string | dateTime XSD literal; a fonte grava o mesmo horário de carga em todas as feições e ele muda a cada recarga |
-| `codigo_sipra` | `cd_sipra` | string | |
-| `descricao` | `ds_descricao` | string | |
-| `data_decreto` | `dt_decreto` | string | Data XSD literal |
-| `tipo_levantamento` | `tp_levanta` | string | |
-| `escala` | `nr_escalao` | string | Escala do levantamento (`1:15.000`, …) |
+| `fase` | `ds_fase` | texto | Ver [fases](#fases-validas) |
+| `titulado` | `st_titulad` | texto | `T`/`F` (a fonte também publica `t`/`f`), sem conversão para booleano |
+| `data_publicacao` | `dt_publica` | datetime64[ns] | Data XSD (`AAAA-MM-DD`) |
+| `data_titulo` | `dt_titulo` | datetime64[ns] | Idem |
+| `feature_id` | id da feição | texto | Identificador recebido do servidor; estabilidade não comprovada |
+| `regional` | `co_sr` | texto | Superintendência regional (`SR-05`, …) |
+| `processo` | `nu_processo` | texto | NUP como publicado (pode ter mais de um ou formato atípico) |
+| `data_publicacao_2` | `dt_public1` | datetime64[ns] | Data XSD |
+| `responsavel` | `no_responsavel` | texto | Órgão responsável (INCRA, ITERPA, …) |
+| `esfera` | `no_esfera` | texto | Texto publicado (`FEDERAL`, `Federal`, …) |
+| `data_cadastro` | `dt_cadastro` | datetime64[ns, UTC] | dateTime XSD, em UTC (sem fuso, lido como UTC); a fonte grava o mesmo horário de carga em todas as feições e ele muda a cada recarga |
+| `codigo_sipra` | `cd_sipra` | texto | |
+| `descricao` | `ds_descricao` | texto | |
+| `data_decreto` | `dt_decreto` | datetime64[ns] | Data XSD |
+| `tipo_levantamento` | `tp_levanta` | texto | |
+| `escala` | `nr_escalao` | texto | Escala do levantamento (`1:15.000`, …) |
 
-As datas ficam como texto: o agrobr valida o literal contra o XSD e não converte fuso,
-precisão nem calendário. A fonte usa `0001-01-01` como marcador em `data_titulo` (3
-perímetros) e `data_decreto` (2) — trate como ausente na análise. Nulo, zero, texto vazio e
-o texto `NULL` são preservados como publicados.
+O agrobr valida cada data contra o XSD e a entrega em `datetime64[ns]`; o cadastro sai em
+`datetime64[ns, UTC]`. A fonte usa `0001-01-01` como marcador de "sem data" em `data_titulo` (3
+perímetros) e `data_decreto` (2): ele vira `NaT` sem aviso. Outra data fora de 1900–2099 (em
+08/09/2026, `0205-01-28` e `2201-02-15` em `data_publicacao_2` e `0222-11-11` em `data_titulo`,
+erros de digitação da fonte) vira `NaT` com `UserWarning` e aviso em `meta.validation_warnings`, com
+a coluna e a quantidade. O texto sai no dtype padrão do pandas instalado (`str` no pandas 3,
+`object` no 2); nulo, zero, texto vazio e o texto `NULL` são preservados como publicados.
 
 ### Geometria
 
@@ -125,11 +128,11 @@ processos com algum tipo de andamento no INCRA").
 
 | Coluna | Tipo | Conteúdo |
 |--------|------|----------|
-| `regional` | string | Rótulo do grupo regional desenhado no PDF (`SR(05)BA`, …) |
+| `regional` | texto | Rótulo do grupo regional desenhado no PDF (`SR(05)BA`, …) |
 | `numero_publicado` | Int64 | Posição publicada (1…N) |
-| `processo`, `comunidade`, `municipio` | string | Texto da célula; quebras de linha viram `\n` |
-| `area_ha_texto`, `familias_texto` | string | Número no formato publicado (`2.629,0532`), sem conversão |
-| `edital_rtid_1`, `edital_rtid_2`, `retificacao_edital_1`, `retificacao_edital_2`, `portaria`, `retificacao_portaria`, `decreto`, `titulo` | string | Texto publicado: datas, vários atos, anotações (`Não precisa`, `Em Elaboração`, `**`) ou vazio |
+| `processo`, `comunidade`, `municipio` | texto | Texto da célula; quebras de linha viram `\n` |
+| `area_ha_texto`, `familias_texto` | texto | Número no formato publicado (`2.629,0532`), sem conversão |
+| `edital_rtid_1`, `edital_rtid_2`, `retificacao_edital_1`, `retificacao_edital_2`, `portaria`, `retificacao_portaria`, `decreto`, `titulo` | texto | Texto publicado: datas, vários atos, anotações (`Não precisa`, `Em Elaboração`, `**`) ou vazio |
 
 Texto parcialmente cortado pela grade do PDF é preservado inteiro.
 

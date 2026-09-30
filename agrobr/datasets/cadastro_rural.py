@@ -21,7 +21,6 @@ async def _fetch_sicar(uf: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo |
     result = await sicar.imoveis(
         uf,
         municipio=kwargs.get("municipio"),
-        cod_municipio=kwargs.get("cod_municipio"),
         status=kwargs.get("status"),
         tipo=kwargs.get("tipo"),
         area_min=kwargs.get("area_min"),
@@ -93,18 +92,17 @@ class CadastroRuralDataset(BaseDataset):
     async def fetch(  # type: ignore[override]
         self,
         produto: str,
-        municipio: str | None = None,
+        municipio: int | str | None = None,
         status: str | None = None,
         tipo: str | None = None,
         area_min: float | None = None,
         area_max: float | None = None,
         criado_apos: str | None = None,
-        return_meta: bool = False,
         *,
-        cod_municipio: int | None = None,
+        return_meta: bool = False,
         atualizado_apos: str | None = None,
         as_polars: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         if not isinstance(produto, str):
             raise InvalidParameterError("UF deve ser uma string de duas letras")
         produto = produto.strip().upper()
@@ -120,7 +118,6 @@ class CadastroRuralDataset(BaseDataset):
             dataset="cadastro_rural",
             produto=produto,
             municipio=municipio,
-            cod_municipio=cod_municipio,
             criado_apos=criado_apos,
             atualizado_apos=atualizado_apos,
         )
@@ -128,7 +125,6 @@ class CadastroRuralDataset(BaseDataset):
         df, source_name, source_meta, attempted = await self._try_sources(
             produto,
             municipio=municipio,
-            cod_municipio=cod_municipio,
             status=status,
             tipo=tipo,
             area_min=area_min,
@@ -153,7 +149,7 @@ register(_cadastro_rural)
 @overload
 async def cadastro_rural(
     uf: str,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
@@ -161,16 +157,15 @@ async def cadastro_rural(
     criado_apos: str | None = None,
     *,
     return_meta: Literal[False] = False,
-    cod_municipio: int | None = None,
     atualizado_apos: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
 @overload
 async def cadastro_rural(
     uf: str,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
@@ -178,30 +173,43 @@ async def cadastro_rural(
     criado_apos: str | None = None,
     *,
     return_meta: Literal[True],
-    cod_municipio: int | None = None,
     atualizado_apos: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def cadastro_rural(
     uf: str,
-    municipio: str | None = None,
+    municipio: int | str | None = None,
     status: str | None = None,
     tipo: str | None = None,
     area_min: float | None = None,
     area_max: float | None = None,
     criado_apos: str | None = None,
-    return_meta: bool = False,
     *,
-    cod_municipio: int | None = None,
+    return_meta: bool = False,
     atualizado_apos: str | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult: ...
+
+
+async def cadastro_rural(
+    uf: str,
+    municipio: int | str | None = None,
+    status: str | None = None,
+    tipo: str | None = None,
+    area_min: float | None = None,
+    area_max: float | None = None,
+    criado_apos: str | None = None,
+    *,
+    return_meta: bool = False,
+    atualizado_apos: str | None = None,
+    as_polars: bool = False,
+) -> result_utils.DataFrameResult:
     return await _cadastro_rural.fetch(
         uf,
         municipio=municipio,
-        cod_municipio=cod_municipio,
         status=status,
         tipo=tipo,
         area_min=area_min,

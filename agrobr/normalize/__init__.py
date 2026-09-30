@@ -24,6 +24,7 @@ from .municipalities import (
     coordenada_para_municipio,
     ibge_para_municipio,
     municipio_para_ibge,
+    resolver_municipio,
     total_municipios,
 )
 from .numeric import parse_numeric_br, safe_float
@@ -82,6 +83,7 @@ __all__: list[str] = [
     "periodo_safra",
     "preco_saca_para_tonelada",
     "preco_tonelada_para_saca",
+    "resolver_municipio",
     "sacas_para_toneladas",
     "safra_anterior",
     "safra_atual",

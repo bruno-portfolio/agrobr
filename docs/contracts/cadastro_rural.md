@@ -34,9 +34,8 @@ Registros de imoveis rurais do Cadastro Ambiental Rural (CAR) por UF.
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `uf` | str | Sigla da UF (obrigatorio) |
-| `municipio` | str | Filtro parcial de municipio (case-insensitive) |
+| `municipio` | int \| str | Código IBGE de 7 dígitos ou nome inteiro do município da UF, sem diferenciar caixa e acento; ambíguo, inexistente ou pedaço de nome gera `InvalidParameterError` com os candidatos |
 | `status` | str | AT (Ativo), PE (Pendente), SU (Suspenso), CA (Cancelado) |
-| `cod_municipio` | int | Código IBGE de sete dígitos, coerente com a UF; exclusivo com `municipio` |
 | `tipo` | str | IRU, AST ou PCT, conforme a classificação SICAR |
 | `area_min` | float | Area minima em hectares |
 | `area_max` | float | Area maxima em hectares |
@@ -45,7 +44,7 @@ Registros de imoveis rurais do Cadastro Ambiental Rural (CAR) por UF.
 | `as_polars` | bool | Retorna Polars após validar o contrato; exige o extra `[polars]` |
 | `return_meta` | bool | Retorna também `MetaInfo`, incluindo o URL com os filtros efetivos |
 
-`cod_municipio`, `atualizado_apos` e `as_polars` são argumentos somente nomeados. Os oito argumentos posicionais anteriores continuam válidos. UF aceita letras minúsculas e espaços externos. Código municipal aceita inteiro, sem coerção de strings, floats ou booleanos; a validação de formato e prefixo não comprova a existência do município.
+`return_meta`, `atualizado_apos` e `as_polars` são argumentos somente nomeados; os sete primeiros (`uf` a `criado_apos`) podem ser posicionais. UF aceita letras minúsculas e espaços externos. O município é conferido no cadastro de municípios do IBGE antes da rede.
 
 Datas precisam existir no calendário. Áreas devem ser finitas, não negativas e ter mínimo menor ou igual ao máximo. Parâmetros desconhecidos geram erro, em vez de serem descartados. Em **PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO** o campo de atualização não existe na camada WFS: `atualizado_apos` gera `InvalidParameterError` antes da rede. Nas outras 15 camadas, a coluna é solicitada e preserva os valores fornecidos pelo serviço; pode conter nulos.
 
@@ -116,7 +115,7 @@ contagem não garante uma fotografia consistente entre páginas. O contrato 2.0 
 from agrobr import datasets
 
 df, meta = await datasets.cadastro_rural(
-    "DF", cod_municipio=5300108,
+    "DF", municipio=5300108,
     atualizado_apos="2026-09-01", return_meta=True,
 )
 
