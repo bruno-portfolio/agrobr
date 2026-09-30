@@ -144,6 +144,8 @@ async def _download_spreadsheet(client: httpx.AsyncClient, url: str) -> tuple[by
 
 
 async def list_semanas(max_pages: int = 4) -> list[tuple[str, str]]:
+    if isinstance(max_pages, bool) or not isinstance(max_pages, int) or max_pages < 1:
+        raise InvalidParameterError(f"max_pages deve ser inteiro positivo, recebeu {max_pages!r}")
     all_weeks: list[tuple[str, str]] = []
     async with httpx.AsyncClient(
         timeout=TIMEOUT,

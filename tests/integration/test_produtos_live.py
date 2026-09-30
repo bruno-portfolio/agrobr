@@ -309,7 +309,7 @@ async def test_progresso_safra_calendario_live(record_property: RecordProperty):
     await asyncio.sleep(0.5)
     started = time.perf_counter()
     try:
-        frame, meta = await progresso_api.progresso_safra(cultura=None, return_meta=True)
+        frame, meta = await progresso_api.progresso_safra(produto=None, return_meta=True)
     finally:
         record_property("seconds", round(time.perf_counter() - started, 3))
     record_property("records_count", len(frame))

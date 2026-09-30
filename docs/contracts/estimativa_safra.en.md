@@ -29,25 +29,27 @@ The discovered catalog determines survey availability; this interface does not g
 
 ## Parameters
 
-The existing four positional arguments remain valid; the selectors are keyword-only:
+`produto`, `safra` and `uf` accept positional arguments; flags and remaining selectors are keyword-only:
 
 ```python
 async def estimativa_safra(
     produto: str,
     safra: str | None = None,
     uf: str | None = None,
-    return_meta: bool = False,
     *,
+    return_meta: bool = False,
     fonte: Literal["conab", "ibge_lspa"] | None = None,
     levantamento: int | None = None,
     mes: int | str | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]: ...
+) -> DataFrameResult: ...
 ```
 
 Products: `soja`, `milho`, `arroz`, `feijao`, `trigo`, `algodao`. `levantamento` must be an integer from 1 to 12. `mes` accepts an integer or integer string from 1 to 12, including `"01"`; it does not accept a period such as `"202501"` or a list of months.
 
 `as_polars=True` returns a Polars DataFrame after contract validation and requires `pip install agrobr[polars]`.
+
+`DataFrameResult` includes pandas or Polars DataFrames and a tuple with `MetaInfo` when `return_meta=True`. In pandas, `data_publicacao` uses `datetime64[ns]`; years, months and survey numbers use `Int64`, measurements use `float64`, and text follows the installed pandas version's default dtype. Empty frames retain these types.
 
 Crop years are normalized to consecutive `YYYY/YY` years. For LSPA, `safra="2024/25"` selects calendar year **2025**. The two-year crop label is a dataset compatibility convention, not a native LSPA field or a query for the following year's forecast.
 

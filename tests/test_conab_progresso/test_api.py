@@ -46,7 +46,7 @@ def mock_fetch_semanal(golden_xlsx: bytes):
 @pytest.mark.asyncio()
 class TestProgressoSafra:
     async def test_combined_filters(self, mock_fetch_latest: AsyncMock) -> None:  # noqa: ARG002
-        df = await progresso_safra(cultura="Soja", estado="MT", operacao="Colheita")
+        df = await progresso_safra(produto="Soja", uf="MT", operacao="Colheita")
         assert len(df) == 1
         assert df.iloc[0]["pct_semana_atual"] == pytest.approx(0.468)
 

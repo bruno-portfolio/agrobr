@@ -45,6 +45,8 @@ All numeric columns use float64, including empty results. Contract 1.1 adds opti
 
 ## Guarantees
 
+Pass `as_polars`, `return_meta` and `levantamento` by name. Text follows the installed pandas version's default dtype without an explicit `StringDtype` conversion; empty results retain contract columns and types.
+
 - Complete supply/demand balance
 - Updated monthly along with CONAB surveys
 

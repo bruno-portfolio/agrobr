@@ -1,6 +1,7 @@
 from importlib import import_module
 from unittest.mock import AsyncMock
 
+import pandas as pd
 import pytest
 
 from agrobr import contracts, datasets
@@ -22,8 +23,7 @@ async def test_consulta_por_ano_resolve_safras_publicadas(monkeypatch, product, 
     assert not frame.empty
     assert frame.ano.eq(year).all()
     contracts.validate_dataset(frame, "custo_sociobiodiversidade")
-    assert str(frame.safra_publicada.dtype) == "string"
-    assert frame.safra_publicada.dtype.storage == "python"
+    assert frame.safra_publicada.dtype == pd.Series(["2018/19"]).dtype
     assert meta.contract_version == "1.0"
     if product == "babacu":
         row = frame.loc[frame.aba.eq("Imperatriz-MA-2018")].iloc[0]

@@ -1,4 +1,4 @@
-from agrobr.conab.serie_historica.models import SafraHistorica
+from agrobr.conab._serie_historica.models import SafraHistorica
 
 
 class TestSafraHistorica:

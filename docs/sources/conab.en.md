@@ -129,6 +129,10 @@ df = await conab.balanco(produto='soja')
 df = await conab.brasil_total()
 ```
 
+`produto` contains normalized identifiers (`soja`, `algodao_caroco`, `brasil`), while `rotulo` preserves the original text, including footnotes. `grupo` retains the hierarchy of details and subtotals. Area, production and yield use `float64`; their units are `mil_ha`, `mil_ton` and `kg/ha`. Brazil totals schema 2.0 keeps all nine columns in empty results; an unrecognized header raises `ParseError`.
+
+The `as_polars` and `return_meta` flags are keyword-only. Empty `safras`, `balanco` and `serie_historica` results also retain columns and types. Actual dates use `datetime64[ns]`, survey numbers use `Int64`, measurements use `float64`, and text follows the installed pandas version's default dtype.
+
 ## Schema - Crops
 
 | Column | Type | Description |
@@ -192,11 +196,13 @@ The parser automatically detects the format (OLE2/BIFF → xlrd, OOXML → openp
 
 ```python
 # Soybean historical series
-df = await conab.serie_historica("soja", inicio=2020, fim=2025)
+df = await conab.serie_historica("soja", ano_inicio=2020, ano_fim=2025)
 
 # Filter by state
-df = await conab.serie_historica("soja", inicio=2020, uf="MT")
+df = await conab.serie_historica("soja", ano_inicio=2020, uf="MT")
 ```
+
+`conab.produtos_serie_historica()` lists the product, category and URL of each series. Use the functions through `agrobr.conab`; the former public `custo_producao` and `serie_historica` subpackages have been removed.
 
 ### Schema - serie_historica
 
@@ -213,13 +219,22 @@ df = await conab.serie_historica("soja", inicio=2020, uf="MT")
 | `area_formacao_mil_ha` | float, optional | Coffee: developing area, in thousand hectares |
 | `area_colhida_mil_ha` | float, optional | Sugarcane: harvested area, in thousand hectares |
 
+Names containing units remain in contract 1.1. Use this correspondence to compare metrics with `safras` and `estimativa_safra`; publication and period must also match:
+
+| Historical series | Safras / estimate | Unit |
+|---|---|---|
+| `area_plantada_mil_ha` | `area_plantada` | thousand ha |
+| `producao_mil_ton` | `producao` | thousand t |
+| `produtividade_kg_ha` | `produtividade` | kg/ha |
+| `area_colhida_mil_ha` | `area_colhida` | thousand ha; coverage may differ across products/sources |
+
 `regiao` is the macro-region under which the spreadsheet lists the state, recognized only by the exact label (NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL). Sub-regions, such as the coffee ones in Bahia and Minas Gerais ("Sul e Centro-Oeste", "Norte, Jequitinhonha e Mucuri"), and aggregates ("NORTE/NORDESTE", "CENTRO-SUL", "OUTROS") do not change the region and are not published.
 
 For coffee, planted area is the sum of producing and developing areas when both are available. Thousand 60 kg bags of processed coffee are converted to thousand tonnes (× 0.06), and bags/ha to kg/ha (× 60). Yield refers to producing area; see [contract 1.1](../contracts/serie_historica_safra.md).
 
 Each product is a CONAB series: a crop, a season (`milho_1` through `milho_3`, bean seasons), or a selection (`cana_area_total`, `algodao`, `algodao_pluma`, `algodao_caroco`).
 
-The `safra` period follows the publication: calendar year `YYYY` for `cafe`, `cafe_arabica`, `cafe_conilon`, `trigo`, `aveia`, `cevada`, `canola`, `centeio`, `triticale`; other products use `YYYY/YY`. The `inicio`/`fim` filters still use the starting year.
+The `safra` period follows the publication: calendar year `YYYY` for `cafe`, `cafe_arabica`, `cafe_conilon`, `trigo`, `aveia`, `cevada`, `canola`, `centeio`, `triticale`; other products use `YYYY/YY`. Inclusive `ano_inicio`/`ano_fim` filters use the starting year and require integers; reversed intervals raise `InvalidParameterError` before network access.
 
 The forecast column (labels such as `Previsão` or `(¹)`) is excluded from the historical series; the exclusion is logged with its product, sheet and label. For the current crop year, use `estimativa_safra` for products available in that dataset.
 
@@ -269,4 +284,4 @@ Agricultural costs use parser 4: merged headers, coffee identified by official
 resource, literal annual or two-year crop tokens, and exchange-rate notes kept
 outside cost items. Excel percentage scaling applies only to numeric cells.
 Sociobiodiversity costs use parser 2 and preserve explicit archived-revision
-selection. Contracts remain 3.0 and 1.0; a third monetary measure is rejected.
+selection. Contracts remain 3.0 and 1.0, with text in the installed pandas default dtype; a third monetary measure is rejected.

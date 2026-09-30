@@ -4,10 +4,11 @@ from typing import Any, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log, constants
+from agrobr import _log, contracts
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils import result as result_utils
 
 logger = _log.get_logger(__name__)
 
@@ -55,9 +56,10 @@ class BalancoDataset(BaseDataset):
         self,
         produto: str,
         safra: str | None = None,
+        *,
         return_meta: bool = False,
         levantamento: int | None = None,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         logger.info(
             "dataset_fetch",
             dataset="balanco",
@@ -82,7 +84,7 @@ class BalancoDataset(BaseDataset):
 
     def _normalize(self, df: pd.DataFrame, produto: str) -> pd.DataFrame:
         if df.empty:
-            return df.astype({**constants.CONAB_BALANCO_DTYPES, "fonte": "string"})
+            return contracts.get_contract(self.info.name).empty_frame()
 
         if "produto" not in df.columns:
             df["produto"] = produto
@@ -106,9 +108,31 @@ async def balanco(
     safra: str | None = None,
     *,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     levantamento: int | None = None,
 ) -> pd.DataFrame: ...
+
+
+@overload
+async def balanco(
+    produto: str,
+    safra: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+    levantamento: int | None = None,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def balanco(
+    produto: str,
+    safra: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+    levantamento: int | None = None,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 @overload
@@ -119,16 +143,17 @@ async def balanco(
     return_meta: Literal[True],
     as_polars: bool = False,
     levantamento: int | None = None,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
 
 
 async def balanco(
     produto: str,
     safra: str | None = None,
+    *,
     return_meta: bool = False,
     as_polars: bool = False,
     levantamento: int | None = None,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     return await _balanco.fetch(  # type: ignore[call-arg]
         produto,
         safra=safra,

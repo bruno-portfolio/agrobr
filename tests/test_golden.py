@@ -1141,17 +1141,16 @@ def test_conab_progresso_golden_parsing(_name: str, path: Path):
     df = parse_progresso_xlsx(data)
 
     for col in expected["columns"]:
+        col = "uf" if col == "estado" else col
         assert col in df.columns, f"Missing column: {col}"
 
     assert len(df) == expected["total_records"]
     assert sorted(df["cultura"].unique().tolist()) == expected["culturas"]
     assert sorted(df["operacao"].unique().tolist()) == expected["operacoes"]
-    assert sorted(df["estado"].unique().tolist()) == expected["estados"]
+    assert sorted(df["uf"].unique().tolist()) == expected["estados"]
 
     if "mt_soja_colheita_pct_atual" in expected:
-        row = df[
-            (df["estado"] == "MT") & (df["cultura"] == "Soja") & (df["operacao"] == "Colheita")
-        ]
+        row = df[(df["uf"] == "MT") & (df["cultura"] == "Soja") & (df["operacao"] == "Colheita")]
         assert len(row) == 1
         assert row.iloc[0]["pct_semana_atual"] == pytest.approx(
             expected["mt_soja_colheita_pct_atual"], rel=1e-2

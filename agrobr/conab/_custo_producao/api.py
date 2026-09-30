@@ -12,7 +12,7 @@ import pandas as pd
 from pydantic import ValidationError
 
 from agrobr import constants, contracts
-from agrobr.contracts.conab_custos import CONAB_CUSTOS_V3
+from agrobr.contracts.conab_custos import CONAB_CUSTOS_V3, TEXTO
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import (
     ContractViolationError,
@@ -61,7 +61,7 @@ def _resource(resources: list[models.RecursoCusto], requested: str | None) -> mo
         raise InvalidParameterError(
             f"Selecione planilha= explicitamente; {len(selected)} candidatas: "
             f"{[r.planilha for r in selected[:15]]}. "
-            "Use catalogo_custos(cultura, planilha=...) para selecionar a aba e o contexto."
+            "Use catalogo_custos(produto, planilha=...) para selecionar a aba e o contexto."
         )
     return selected[0]
 
@@ -195,19 +195,22 @@ def finalize_output(
     return (typed_output, meta) if return_meta else typed_output
 
 
+def _sem_planilha(cultura: str | None, acquired: Acquisition) -> InvalidParameterError:
+    prefix = key(models.normalize_cultura(cultura or ""))
+    matches = [c for c in acquired.culturas_catalogo if key(c).startswith(prefix)]
+    label = "culturas no catálogo com esse prefixo" if matches else "culturas disponíveis"
+    return InvalidParameterError(
+        f"Nenhuma planilha para '{cultura}'; {label}: {matches or acquired.culturas_catalogo}"
+    )
+
+
 async def _load(
     query: models.ConsultaCusto, acquired: Acquisition, *, use_cache: bool = True
 ) -> tuple[models.ResultadoCusto, dict[str, Any], int, int]:
     start = time.perf_counter()
     resources = await acquired.catalog(query.cultura, use_cache=use_cache)
     if not resources:
-        prefix = key(models.normalize_cultura(query.cultura or ""))
-        matches = [c for c in acquired.culturas_catalogo if key(c).startswith(prefix)]
-        label = "culturas no catálogo com esse prefixo" if matches else "culturas disponíveis"
-        raise InvalidParameterError(
-            f"Nenhuma planilha para '{query.cultura}'; "
-            f"{label}: {matches or acquired.culturas_catalogo}"
-        )
+        raise _sem_planilha(query.cultura, acquired)
     resource = _resource(resources, query.planilha)
     raw = await acquired.workbook(resource)
     fetch_ms = round((time.perf_counter() - start) * 1000)
@@ -254,7 +257,7 @@ async def _load(
 
 @overload
 async def custo_producao(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
     *,
@@ -270,7 +273,7 @@ async def custo_producao(
 
 @overload
 async def custo_producao(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
     *,
@@ -286,7 +289,7 @@ async def custo_producao(
 
 @overload
 async def custo_producao(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
     *,
@@ -302,7 +305,7 @@ async def custo_producao(
 
 @overload
 async def custo_producao(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
     *,
@@ -318,12 +321,12 @@ async def custo_producao(
 
 @overload
 async def custo_producao(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-    *,
     use_cache: bool = True,
     local: str | None = None,
     ano: int | None = None,
@@ -333,12 +336,12 @@ async def custo_producao(
 
 
 async def custo_producao(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-    *,
     use_cache: bool = True,
     local: str | None = None,
     ano: int | None = None,
@@ -349,7 +352,7 @@ async def custo_producao(
         as_polars,
         return_meta,
         use_cache=use_cache,
-        cultura=cultura,
+        cultura=produto,
         uf=uf,
         safra=safra,
         local=local,
@@ -358,7 +361,7 @@ async def custo_producao(
         aba=aba,
     )
     if query.cultura is None:
-        raise InvalidParameterError("cultura é obrigatória")
+        raise InvalidParameterError("produto é obrigatório")
     acquired = Acquisition()
     try:
         result, details, fetch_ms, parse_ms = await _load(query, acquired, use_cache=use_cache)
@@ -381,7 +384,7 @@ async def custo_producao(
 
 @overload
 async def custo_producao_total(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
     *,
@@ -395,7 +398,7 @@ async def custo_producao_total(
 
 @overload
 async def custo_producao_total(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
     *,
@@ -409,11 +412,11 @@ async def custo_producao_total(
 
 @overload
 async def custo_producao_total(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
-    return_meta: bool = False,
     *,
+    return_meta: bool = False,
     local: str | None = None,
     ano: int | None = None,
     planilha: str | None = None,
@@ -422,11 +425,11 @@ async def custo_producao_total(
 
 
 async def custo_producao_total(
-    cultura: str,
+    produto: str,
     uf: str | None = None,
     safra: str | None = None,
-    return_meta: bool = False,
     *,
+    return_meta: bool = False,
     local: str | None = None,
     ano: int | None = None,
     planilha: str | None = None,
@@ -435,7 +438,7 @@ async def custo_producao_total(
     query = prepare_query(
         False,
         return_meta,
-        cultura=cultura,
+        cultura=produto,
         uf=uf,
         safra=safra,
         local=local,
@@ -444,7 +447,7 @@ async def custo_producao_total(
         aba=aba,
     )
     if query.cultura is None:
-        raise InvalidParameterError("cultura é obrigatória")
+        raise InvalidParameterError("produto é obrigatório")
     acquired = Acquisition()
     try:
         result, details, fetch_ms, parse_ms = await _load(query, acquired)
@@ -473,7 +476,7 @@ async def custo_producao_total(
 
 @overload
 async def catalogo_custos(
-    cultura: str | None = None,
+    produto: str | None = None,
     *,
     use_cache: bool = True,
     as_polars: Literal[False] = False,
@@ -484,7 +487,7 @@ async def catalogo_custos(
 
 @overload
 async def catalogo_custos(
-    cultura: str | None = None,
+    produto: str | None = None,
     *,
     use_cache: bool = True,
     as_polars: Literal[False] = False,
@@ -495,7 +498,7 @@ async def catalogo_custos(
 
 @overload
 async def catalogo_custos(
-    cultura: str | None = None,
+    produto: str | None = None,
     *,
     use_cache: bool = True,
     as_polars: Literal[True],
@@ -506,7 +509,7 @@ async def catalogo_custos(
 
 @overload
 async def catalogo_custos(
-    cultura: str | None = None,
+    produto: str | None = None,
     *,
     use_cache: bool = True,
     as_polars: Literal[True],
@@ -517,7 +520,7 @@ async def catalogo_custos(
 
 @overload
 async def catalogo_custos(
-    cultura: str | None = None,
+    produto: str | None = None,
     *,
     use_cache: bool = True,
     planilha: str | None = None,
@@ -527,7 +530,7 @@ async def catalogo_custos(
 
 
 async def catalogo_custos(
-    cultura: str | None = None,
+    produto: str | None = None,
     *,
     use_cache: bool = True,
     planilha: str | None = None,
@@ -535,12 +538,14 @@ async def catalogo_custos(
     return_meta: bool = False,
 ) -> Frame | tuple[Frame, MetaInfo]:
     query = prepare_query(
-        as_polars, return_meta, use_cache=use_cache, cultura=cultura, planilha=planilha
+        as_polars, return_meta, use_cache=use_cache, cultura=produto, planilha=planilha
     )
     acquired = Acquisition()
     start = time.perf_counter()
     try:
-        resources = await acquired.catalog(cultura, use_cache=use_cache)
+        resources = await acquired.catalog(produto, use_cache=use_cache)
+        if produto is not None and not resources:
+            raise _sem_planilha(produto, acquired)
         details: dict[str, Any] = {
             "catalog_level": "resources",
             "catalog_resources": len(resources),
@@ -578,6 +583,8 @@ async def catalogo_custos(
         for name in df:
             if name in {"ano_referencia", "indice_aba"}:
                 df[name] = df[name].astype("Int64")
+            elif name == "data_referencia":
+                df[name] = pd.to_datetime(df[name], format="%Y-%m-%d").astype("datetime64[ns]")
             else:
                 df[name] = (
                     df[name]
@@ -588,7 +595,7 @@ async def catalogo_custos(
                             else value
                         )
                     )
-                    .astype("string[python]")
+                    .astype(TEXTO)
                 )
         meta = _meta(acquired, query, df, details, round((time.perf_counter() - start) * 1000), 0)
         return finalize_output(df, meta, as_polars, return_meta)

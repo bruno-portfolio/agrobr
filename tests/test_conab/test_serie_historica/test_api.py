@@ -7,8 +7,8 @@ import openpyxl
 import pytest
 
 from agrobr import datasets
-from agrobr.conab.serie_historica import api
-from agrobr.conab.serie_historica.api import produtos_disponiveis
+from agrobr.conab._serie_historica import api
+from agrobr.conab._serie_historica.api import produtos_disponiveis
 from agrobr.exceptions import InvalidParameterError
 from tests import helpers
 

@@ -35,11 +35,11 @@ class TestSerieHistoricaSafraFetch:
                 mock_fn = make_source(_mock_df())
                 dataset.info.sources[0].fetch_fn = mock_fn
 
-                await dataset.fetch("soja", inicio=2020, fim=2024, uf="MT")
+                await dataset.fetch("soja", ano_inicio=2020, ano_fim=2024, uf="MT")
 
                 _, kwargs = mock_fn.call_args
-                assert kwargs["inicio"] == 2020
-                assert kwargs["fim"] == 2024
+                assert kwargs["ano_inicio"] == 2020
+                assert kwargs["ano_fim"] == 2024
                 assert kwargs["uf"] == "MT"
             case = "test_normalize_noop"
             with check(case), isolated_dataset_case(case):
@@ -71,7 +71,7 @@ class TestSerieHistoricaSafraFetch:
                     await dataset.fetch("soja")
 
                 _, kwargs = mock_fn.call_args
-                assert kwargs["inicio"] == 2019
+                assert kwargs["ano_inicio"] == 2019
 
 
 async def test_dataset_confere_o_oraculo_da_serie_historica_por_uf(monkeypatch):

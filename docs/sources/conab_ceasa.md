@@ -52,7 +52,7 @@ O parser unpivota a matriz para formato long-form com 7 colunas.
 
 ## Limitacoes
 
-- A CEASA de cada coluna de precos vem do cabecalho da propria coluna (`colName`), conferido contra o catalogo `MDXceasa`; um cabecalho fora do catalogo ou duplicado levanta `ParseError` em vez de atribuir o preco a outra praca.
+- A CEASA de cada coluna de precos vem do cabecalho da propria coluna (`colName`), conferido contra o catalogo `MDXceasa`; um cabecalho fora do catalogo ou duplicado levanta `ParseError` em vez de atribuir o preco a outra praca. Resposta de precos sem a lista `resultset` tambem levanta `ParseError`; so `resultset` vazio vira tabela vazia.
 
 - Apenas precos mais recentes (snapshot diario, sem serie temporal nesta versao)
 - Datas variam por CEASA (algumas inativas desde 2023)

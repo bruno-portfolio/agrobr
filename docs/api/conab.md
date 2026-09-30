@@ -25,6 +25,7 @@ async def safras(
     safra: str | None = None,
     uf: str | None = None,
     levantamento: int | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
@@ -96,8 +97,8 @@ Sem `levantamento`, `safra` escolhe a publicação mais recente cuja aba Suprime
 async def balanco(
     produto: str | None = None,
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     levantamento: int | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
@@ -152,8 +153,8 @@ Obtém totais nacionais de produção.
 ```python
 async def brasil_total(
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     levantamento: int | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
@@ -169,7 +170,31 @@ Nesse caminho, as partes são conferidas com o total publicado: Cores + Preto + 
 
 Na safra que acabou de sair do boletim (duas atrás da edição mais recente, a mais nova servida pela série), `safras` e `brasil_total` também baixam a última edição do boletim que a publicou e conferem o BRASIL de cada linha com o da série: a legenda da série pode ser posterior sem que a coluna tenha sido revista. O dado continua saindo da série; divergência além de 0,1 gera aviso com os dois valores, e `MetaInfo.source_details["publicacao"]["conferencia"]` registra a edição conferida e as `divergencias` (lista vazia quando bate). Exemplo, com a série de setembro/2026 e o 12º levantamento de 2025/26: gergelim 2024/25 com 399,4 mil t na série e 610,9 no boletim.
 
-`produto` é o rótulo publicado na coluna A; `grupo` é o título do bloco a que a linha pertence: a época do feijão (`FEIJÃO 1ª SAFRA`, `FEIJÃO 2ª SAFRA`, `FEIJÃO 3ª SAFRA`) para `Cores`, `Preto` e `Caupi`, o produto pai para detalhes como `Milho 1ª Safra` e `CULTURAS DE INVERNO` para as culturas de inverno e o `SUBTOTAL` delas; nulo nas demais linhas, inclusive no `SUBTOTAL` das culturas de verão e em `BRASIL (2)`. `produto`, `grupo` e `safra` identificam a linha.
+`produto` é o identificador normalizado, sem notas de rodapé (`soja`, `algodao_caroco`, `feijao_cores_1`, `subtotal`, `brasil`). `rotulo` preserva o texto original da coluna A, como `ALGODÃO - CAROÇO (1)` e `BRASIL (2)`. `grupo` mantém o título do bloco publicado: a época do feijão para `Cores`, `Preto` e `Caupi`, o produto pai para detalhes como `Milho 1ª Safra` e `CULTURAS DE INVERNO` para culturas e subtotal de inverno; é nulo nas demais linhas. `produto`, `grupo` e `safra` identificam a linha.
+
+**Tipos e vazio:** `area_plantada`, `produtividade` e `producao` usam `float64`, nas unidades `mil_ha`, `kg/ha` e `mil_ton`. Valores ausentes continuam nulos. O schema 2.0, também descrito por `CONAB_BRASIL_TOTAL_V2`, inclui as mesmas nove colunas em resultados vazios. Cabeçalho ausente ou alterado gera `ParseError`.
+
+### `serie_historica`
+
+```python
+async def serie_historica(
+    produto: str,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
+```
+
+Os limites são anos inteiros inclusivos, aplicados ao ano inicial de `safra`. Substitua `inicio=`/`fim=` por `ano_inicio=`/`ano_fim=`. Os nomes das métricas e suas unidades permanecem no [contrato 1.1](../contracts/serie_historica_safra.md).
+
+### `produtos_serie_historica`
+
+`conab.produtos_serie_historica()` devolve uma lista de dicionários com `produto`, `categoria` e `url`, sem requisição. É o catálogo da série histórica; `conab.produtos()` lista os produtos dos levantamentos mensais.
+
+Use as funções em `agrobr.conab`, inclusive `custo_producao` e `serie_historica`. Os antigos subpacotes homônimos foram removidos. As funções CEASA canônicas são `ceasa_precos`, `ceasa_produtos`, `ceasa_categorias` e `lista_ceasas`; os atributos equivalentes em `conab.ceasa` continuam acessíveis, fora de `__all__`.
 
 ---
 
@@ -211,7 +236,7 @@ async def ufs() -> list[str]
 
 O módulo CONAB também expõe (documentadas em páginas próprias ou nos contratos):
 
-- `custo_producao(cultura, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — custos de produção por hectare. `catalogo_custos(cultura)` lista as planilhas agrícolas; com `planilha=...`, lista abas e contextos reconhecidos ou pendentes. Milho, arroz e feijão têm duas planilhas cada e exigem seleção explícita; escolha também uma aba/contexto único. Café usa `cafe_arabica` ou `cafe_conilon`. Subtotal ou total de fórmula que não fecha com os itens publicados gera aviso em `meta.validation_warnings`. Ver os oito produtos do dataset e sua semântica no contrato [custo_producao](../contracts/custo_producao.md)
+- `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — custos de produção por hectare; `as_polars` e `return_meta` só por nome. `catalogo_custos(produto)` lista as planilhas agrícolas, e produto sem planilha no catálogo levanta `InvalidParameterError` com as culturas publicadas; com `planilha=...`, lista abas e contextos reconhecidos ou pendentes, com `data_referencia` em `datetime64[ns]`. Milho, arroz e feijão têm duas planilhas cada e exigem seleção explícita; escolha também uma aba/contexto único. Café usa `cafe_arabica` ou `cafe_conilon`. Subtotal ou total de fórmula que não fecha com os itens publicados gera aviso em `meta.validation_warnings`. Ver os oito produtos do dataset e sua semântica no contrato [custo_producao](../contracts/custo_producao.md)
 - `serie_historica(produto, ...)` — série histórica de safras (45 produtos, com início conforme produto). Café inclui áreas em produção/formação e conversões explícitas para mil ha, mil toneladas e kg/ha; cana publica a área colhida em `area_colhida_mil_ha`. Avisa quando a soma das UFs não fecha com o BRASIL publicado, na regra de `safras`. Ver contrato [serie_historica_safra](../contracts/serie_historica_safra.md)
 - `progresso_safra(...)` / `semanas_disponiveis()` — progresso semanal de plantio/colheita. Ver [API CONAB Progresso](conab_progresso.md)
 - `ceasa_precos(...)` / `ceasa_produtos()` / `ceasa_categorias()` / `lista_ceasas()` — preços de atacado hortifrúti. Ver [API CONAB CEASA](conab_ceasa.md)
@@ -294,7 +319,7 @@ Custos agrícolas usam parser 4: cabeçalhos mesclados, café por recurso oficia
 safra anual ou bienal literal e notas cambiais separadas dos itens. Percentuais
 só recebem escala Excel quando a célula é numérica. Custos da sociobiodiversidade
 usam parser 2 e preservam a seleção explícita de revisões arquivadas. Contratos
-3.0 e 1.0 permanecem inalterados; terceira medida monetária continua recusada.
+3.0 e 1.0, com o texto no dtype padrão do pandas instalado; terceira medida monetária continua recusada.
 
 O parser de levantamento 3 reconhece o trigo histórico em abas como `Trigo 2021`,
 selecionadas pelo ano de encerramento da safra solicitada. Se duas abas correspondem

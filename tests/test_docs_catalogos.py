@@ -5,7 +5,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from agrobr import contracts, ibge, zarc
-from agrobr.conab.serie_historica import client
+from agrobr.conab._serie_historica import client
 from agrobr.contracts import _legacy
 from agrobr.datasets import registry
 from tests.helpers import collect_failures

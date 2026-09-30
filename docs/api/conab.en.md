@@ -25,6 +25,7 @@ async def safras(
     safra: str | None = None,
     uf: str | None = None,
     levantamento: int | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -96,8 +97,8 @@ Without `levantamento`, `safra` selects the most recent publication whose Suprim
 async def balanco(
     produto: str | None = None,
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     levantamento: int | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -152,8 +153,8 @@ Retrieves national production totals.
 ```python
 async def brasil_total(
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
     levantamento: int | None = None,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -169,7 +170,31 @@ On this path, the parts are checked against the published total: Cores + Preto +
 
 For the crop year that has just left the bulletin (two behind the most recent edition, the newest one served by the series), `safras` and `brasil_total` also download the last bulletin edition that published it and check each row's BRASIL against the series: the series legend may be later without the column having been revised. The data still comes from the series; a divergence beyond 0.1 raises a warning with both values, and `MetaInfo.source_details["publicacao"]["conferencia"]` records the edition checked and the `divergencias` (an empty list when they match). Example, with the September 2026 series and the 12th survey of 2025/26: sesame 2024/25 with 399.4 thousand t in the series and 610.9 in the bulletin.
 
-`produto` is the label published in column A; `grupo` is the title of the block the row belongs to: the bean season (`FEIJÃO 1ª SAFRA`, `FEIJÃO 2ª SAFRA`, `FEIJÃO 3ª SAFRA`) for `Cores`, `Preto` and `Caupi`, the parent product for details such as `Milho 1ª Safra`, and `CULTURAS DE INVERNO` for winter crops and their `SUBTOTAL`; null on the other rows, including the summer crops' `SUBTOTAL` and `BRASIL (2)`. `produto`, `grupo` and `safra` identify the row.
+`produto` is the normalized identifier without footnotes (`soja`, `algodao_caroco`, `feijao_cores_1`, `subtotal`, `brasil`). `rotulo` preserves the original text from column A, such as `ALGODÃO - CAROÇO (1)` and `BRASIL (2)`. `grupo` retains the published block title: the bean season for `Cores`, `Preto` and `Caupi`, the parent product for details such as `Milho 1ª Safra`, and `CULTURAS DE INVERNO` for winter crops and their subtotal; it is null on other rows. `produto`, `grupo` and `safra` identify the row.
+
+**Types and empty results:** `area_plantada`, `produtividade` and `producao` use `float64`, in `mil_ha`, `kg/ha` and `mil_ton`. Missing values remain null. Schema 2.0, also described by `CONAB_BRASIL_TOTAL_V2`, retains the same nine columns in empty results. A missing or changed header raises `ParseError`.
+
+### `serie_historica`
+
+```python
+async def serie_historica(
+    produto: str,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
+```
+
+Bounds are inclusive integer years, applied to the starting year of `safra`. Replace `inicio=`/`fim=` with `ano_inicio=`/`ano_fim=`. Metric names and units remain as defined in [contract 1.1](../contracts/serie_historica_safra.md).
+
+### `produtos_serie_historica`
+
+`conab.produtos_serie_historica()` returns a list of dictionaries containing `produto`, `categoria` and `url`, without a request. It lists historical series; `conab.produtos()` lists the products in monthly surveys.
+
+Use the functions in `agrobr.conab`, including `custo_producao` and `serie_historica`. Their former namesake subpackages have been removed. Canonical CEASA functions are `ceasa_precos`, `ceasa_produtos`, `ceasa_categorias` and `lista_ceasas`; the equivalent attributes in `conab.ceasa` remain accessible outside `__all__`.
 
 ---
 
@@ -211,7 +236,7 @@ async def ufs() -> list[str]
 
 The CONAB module also exposes (documented in their own pages or in the contracts):
 
-- `custo_producao(cultura, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — production costs per hectare. `catalogo_custos(cultura)` lists agricultural workbooks; with `planilha=...`, it lists sheets and identified or unresolved contexts. Corn, rice and beans each have two workbooks and require explicit selection; also choose a single sheet/context. Coffee uses `cafe_arabica` or `cafe_conilon`. A subtotal or formula total that does not close with the published items issues a warning in `meta.validation_warnings`. See the dataset's eight products and their semantics in the [custo_producao](../contracts/custo_producao.md) contract
+- `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — production costs per hectare; `as_polars` and `return_meta` are keyword-only. `catalogo_custos(produto)` lists agricultural workbooks, and a product with no workbook in the catalog raises `InvalidParameterError` listing the published crops; with `planilha=...`, it lists sheets and identified or unresolved contexts, with `data_referencia` as `datetime64[ns]`. Corn, rice and beans each have two workbooks and require explicit selection; also choose a single sheet/context. Coffee uses `cafe_arabica` or `cafe_conilon`. A subtotal or formula total that does not close with the published items issues a warning in `meta.validation_warnings`. See the dataset's eight products and their semantics in the [custo_producao](../contracts/custo_producao.md) contract
 - `serie_historica(produto, ...)` — crop historical series (45 products, with coverage depending on the product). Coffee includes producing/developing areas and explicit conversions to thousand ha, thousand tonnes and kg/ha; sugarcane publishes harvested area in `area_colhida_mil_ha`. Warns when the sum of the states does not match the published BRASIL, under the `safras` rule. See the [serie_historica_safra](../contracts/serie_historica_safra.md) contract
 - `progresso_safra(...)` / `semanas_disponiveis()` — weekly planting/harvest progress. See the [CONAB Progress API](conab_progresso.md)
 - `ceasa_precos(...)` / `ceasa_produtos()` / `ceasa_categorias()` / `lista_ceasas()` — wholesale produce prices. See the [CONAB CEASA API](conab_ceasa.md)
@@ -294,7 +319,7 @@ Agricultural costs use parser 4: merged headers, coffee identified by official
 resource, literal annual or two-year crop tokens, and exchange-rate notes kept
 outside cost items. Excel percentage scaling applies only to numeric cells.
 Sociobiodiversity costs use parser 2 and preserve explicit archived-revision
-selection. Contracts remain 3.0 and 1.0; a third monetary measure is rejected.
+selection. Contracts remain 3.0 and 1.0, with text in the installed pandas default dtype; a third monetary measure is rejected.
 
 Survey parser 3 recognizes historical wheat sheets such as `Trigo 2021`, selected
 by the requested harvest ending year. Two matching sheets raise `ParseError`;

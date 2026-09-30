@@ -16,7 +16,7 @@ Crop historical series by product, crop year, region and state.
 
 Each product is a CONAB series: a crop, a season (`milho_1` through `milho_3`, bean seasons), or a selection (`cana_area_total`, `algodao`, `algodao_pluma`, `algodao_caroco`).
 
-The `safra` period follows the publication: calendar year `YYYY` for `cafe`, `cafe_arabica`, `cafe_conilon`, `trigo`, `aveia`, `cevada`, `canola`, `centeio`, `triticale`; other products use `YYYY/YY`. The `inicio`/`fim` filters still use the starting year.
+The `safra` period follows the publication: calendar year `YYYY` for `cafe`, `cafe_arabica`, `cafe_conilon`, `trigo`, `aveia`, `cevada`, `canola`, `centeio`, `triticale`; other products use `YYYY/YY`. Inclusive `ano_inicio`/`ano_fim` filters use the starting year and require integers. The former `inicio`/`fim` names are no longer accepted.
 
 The forecast column (labels such as `Previsão` or `(¹)`) is excluded from the historical series; the exclusion is logged with its product, sheet and label. For the current crop year, use `estimativa_safra` for products available in that dataset.
 
@@ -75,12 +75,23 @@ sugar, ethanol and ATR metrics require their own contract.
 
 ## Example
 
+Names containing units remain in contract 1.1. Also check publication, period and selection when comparing with `safras`/`estimativa_safra`:
+
+| Historical series | Safras / estimate | Unit |
+|---|---|---|
+| `area_plantada_mil_ha` | `area_plantada` | thousand ha |
+| `producao_mil_ton` | `producao` | thousand t |
+| `produtividade_kg_ha` | `produtividade` | kg/ha |
+| `area_colhida_mil_ha` | `area_colhida` | thousand ha; coverage may differ across products/sources |
+
+Measurements use `float64`, including empty results; text follows the pandas default dtype. Crop-year labels remain text. `as_polars` and `return_meta` are keyword-only, and `conab.produtos_serie_historica()` lists the products in this series.
+
 ```python
 from agrobr import datasets
 
 # Async
 df = await datasets.serie_historica_safra("soja")
-df = await datasets.serie_historica_safra("soja", inicio=2020, fim=2024, uf="MT")
+df = await datasets.serie_historica_safra("soja", ano_inicio=2020, ano_fim=2024, uf="MT")
 
 # With metadata
 df, meta = await datasets.serie_historica_safra("soja", return_meta=True)

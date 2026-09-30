@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
-    from agrobr.conab.custo_producao import _sociobio_api
+    from agrobr.conab._custo_producao import _sociobio_api
 
     return _unpack_result(
         await _sociobio_api.custo_sociobiodiversidade(produto, **kwargs, return_meta=True)
@@ -55,18 +55,18 @@ class CustoSociobiodiversidadeDataset(BaseDataset):
         produto: str,
         uf: str | None = None,
         ano: int | None = None,
+        *,
         return_meta: bool = False,
         local: str | None = None,
         planilha: str | None = None,
         aba: str | None = None,
         as_polars: bool = False,
-        *,
         use_cache: bool = True,
         **kwargs: Any,
     ) -> Frame | tuple[Frame, MetaInfo]:
         produto = self._produto_do_dataset(produto)
         from agrobr import contracts
-        from agrobr.conab.custo_producao import _sociobio_api
+        from agrobr.conab._custo_producao import _sociobio_api
 
         if kwargs:
             raise TypeError(f"Parâmetros não suportados: {sorted(kwargs)}")

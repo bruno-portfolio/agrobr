@@ -82,7 +82,7 @@ açaí, os layouts antigos e novos têm duas colunas monetárias; nenhum publica
 | `planilha` | str | Não | Identificador exato do recurso selecionado no catálogo. |
 | `aba` | str | Não | Nome literal da aba de origem. |
 
-Pandas usa `string[python]`, `Int64` nulável, `float64` e `datetime64[ns]`, na ordem acima. Percentuais Excel viram pontos percentuais somente quando a célula tem formato percentual. Zeros, negativos e nulos são preservados. Seções e totais não são recalculados.
+Pandas usa o dtype de texto padrão da versão instalada (`object` no pandas 2, `str` no 3), `Int64` nulável, `float64` e `datetime64[ns]`, na ordem acima. Percentuais Excel viram pontos percentuais somente quando a célula tem formato percentual. Zeros, negativos e nulos são preservados. Seções e totais não são recalculados.
 
 ## Bases observadas
 

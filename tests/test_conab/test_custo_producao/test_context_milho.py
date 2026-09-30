@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from agrobr.conab.custo_producao import _acquisition, _context, _parse, _workbook, models
+from agrobr.conab._custo_producao import _acquisition, _context, _parse, _workbook, models
 from agrobr.exceptions import ParseError
 
 PLANILHA = "milho_1a_safra_serie_historica_1997-2025.xls"

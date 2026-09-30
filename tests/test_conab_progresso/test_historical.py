@@ -34,10 +34,12 @@ async def test_boletim_real_via_ficha_preserva_registros_e_contexto(
     pages[client.BASE_URL] = f'<a href="{week_url}">Acompanhamento das Lavouras</a>'.encode()
     calls = helpers.mock_progresso_http(monkeypatch, pages)
     frame, meta = await api.progresso_safra(
-        cultura=None, semana_url=week_url if explicit_week else None, return_meta=True
+        produto=None, semana_url=week_url if explicit_week else None, return_meta=True
     )
     assert len(frame) == EXPECTED["total_records"]
-    assert frame.columns.tolist() == EXPECTED["columns"]
+    assert frame.columns.tolist() == [
+        "uf" if coluna == "estado" else coluna for coluna in EXPECTED["columns"]
+    ]
     assert set(frame.cultura) == set(EXPECTED["cultures"])
     assert frame.semana_atual.eq(EXPECTED["week"]).all()
     assert meta.source_url == METADATA["download_url"]
@@ -49,7 +51,7 @@ async def test_boletim_real_via_ficha_preserva_registros_e_contexto(
     for sample in EXPECTED["samples"]:
         value = frame.loc[
             frame.cultura.eq(sample["culture"])
-            & frame.estado.eq(sample["state"])
+            & frame.uf.eq(sample["state"])
             & frame.operacao.eq(sample["operation"]),
             "pct_semana_atual",
         ].item()
@@ -63,8 +65,8 @@ async def test_percentual_revisado_real_preserva_valor_e_marca_no_dataset(monkey
     frame, meta = await datasets.progresso_safra(
         "trigo", semana_url=METADATA["week_url"], return_meta=True
     )
-    revised = frame.loc[frame.estado.eq("BA")].iloc[0]
-    unchanged = frame.loc[frame.estado.eq("GO")].iloc[0]
+    revised = frame.loc[frame.uf.eq("BA")].iloc[0]
+    unchanged = frame.loc[frame.uf.eq("GO")].iloc[0]
     assert revised.pct_semana_anterior == EXPECTED["revision_cell"]["value"]
     assert bool(revised.revisado) is True
     assert bool(unchanged.revisado) is False
@@ -82,7 +84,7 @@ async def test_percentual_revisado_real_preserva_valor_e_marca_no_dataset(monkey
 def test_revisado_distingue_valor_com_sem_nota_e_linha_sem_numero(value, expected, revised):
     raw = helpers.progresso_xlsx_cells({"C113": None, "D113": value, "E113": None, "F113": None})
     frame = parser.parse_progresso_xlsx(raw)
-    row = frame.loc[frame.cultura.eq("Trigo") & frame.estado.eq("BA")].iloc[0]
+    row = frame.loc[frame.cultura.eq("Trigo") & frame.uf.eq("BA")].iloc[0]
     if expected is None:
         assert pd.isna(row.pct_semana_anterior) and pd.isna(row.revisado)
     else:

@@ -227,9 +227,33 @@ CONAB_BALANCO_V1_1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+CONAB_BRASIL_TOTAL_V2 = Contract(
+    name="conab.brasil_total",
+    version="2.0",
+    effective_from="2.0.0",
+    primary_key=["produto", "grupo", "safra"],
+    columns=[
+        Column("produto", ColumnType.STRING, nullable=False),
+        Column("rotulo", ColumnType.STRING, nullable=False),
+        Column("grupo", ColumnType.STRING, nullable=True),
+        Column("safra", ColumnType.STRING, nullable=False),
+        Column("area_plantada", ColumnType.FLOAT, nullable=True, unit="mil_ha", min_value=0),
+        Column("produtividade", ColumnType.FLOAT, nullable=True, unit="kg/ha", min_value=0),
+        Column("producao", ColumnType.FLOAT, nullable=True, unit="mil_ton", min_value=0),
+        Column("unidade_area", ColumnType.STRING, nullable=False),
+        Column("unidade_producao", ColumnType.STRING, nullable=False),
+    ],
+    guarantees=[
+        "Produto normalizado sem notas de rodapé; rotulo preserva o texto de origem",
+        "Grupo preserva a hierarquia da tabela e distingue os subtotais",
+        "Métricas em float64, com ausentes preservados",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 register_contract("balanco", CONAB_BALANCO_V1_1)
 
-__all__ = ["CONAB_BALANCO_V1", "CONAB_BALANCO_V1_1", "CONAB_SAFRA_V2"]
+__all__ = ["CONAB_BALANCO_V1", "CONAB_BALANCO_V1_1", "CONAB_BRASIL_TOTAL_V2", "CONAB_SAFRA_V2"]
 
 
 def __getattr__(name: str) -> Contract:

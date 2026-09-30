@@ -2,6 +2,15 @@
 
 from __future__ import annotations
 
+from agrobr.conab._custo_producao import (
+    catalogo_custos,
+    catalogo_sociobiodiversidade,
+    custo_producao,
+    custo_producao_total,
+    custo_sociobiodiversidade,
+)
+from agrobr.conab._serie_historica import produtos_disponiveis as produtos_serie_historica
+from agrobr.conab._serie_historica import serie_historica
 from agrobr.conab.api import (
     balanco,
     brasil_total,
@@ -14,15 +23,7 @@ from agrobr.conab.ceasa import categorias as ceasa_categorias
 from agrobr.conab.ceasa import lista_ceasas
 from agrobr.conab.ceasa import precos as ceasa_precos
 from agrobr.conab.ceasa import produtos as ceasa_produtos
-from agrobr.conab.custo_producao import (
-    catalogo_custos,
-    catalogo_sociobiodiversidade,
-    custo_producao,
-    custo_producao_total,
-    custo_sociobiodiversidade,
-)
 from agrobr.conab.progresso import progresso_safra, semanas_disponiveis
-from agrobr.conab.serie_historica import serie_historica
 
 __all__ = [
     "safras",
@@ -37,6 +38,7 @@ __all__ = [
     "catalogo_sociobiodiversidade",
     "custo_sociobiodiversidade",
     "serie_historica",
+    "produtos_serie_historica",
     "progresso_safra",
     "semanas_disponiveis",
     "ceasa_precos",

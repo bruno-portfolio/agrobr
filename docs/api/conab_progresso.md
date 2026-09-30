@@ -9,16 +9,16 @@ Percentuais de semeadura e colheita por cultura x estado x semana.
 ```python
 import agrobr
 
-df = await agrobr.conab.progresso_safra(cultura="Soja", estado="MT")
+df = await agrobr.conab.progresso_safra(produto="Soja", uf="MT")
 ```
 
 ### Parametros
 
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
-| `cultura` | `str` | Nao | Cultura: "Soja", "Milho 1a", "Milho 2a", "Arroz", "Algodao", "Feijao 1a", "Trigo". Outro texto traz as culturas que o contêm (milho traz a 1ª e a 2ª safra). Se None, todas |
-| `estado` | `str` | Nao | UF (ex: "MT", "GO", "PR"), ou "MEDIA_ESTADOS" para a média da CONAB dos estados monitorados, que não é a média simples das UFs ([contrato](../contracts/progresso_safra.md)). "BR" é recusado com `InvalidParameterError`, porque a CONAB não publica Brasil. Se None, todos |
-| `operacao` | `str` | Nao | "Semeadura" ou "Colheita". Se None, ambas |
+| `produto` | `str` | Nao | Cultura publicada, sem diferenciar caixa e acento: "Soja", "Milho 1a", "Milho 2a", "Arroz", "Algodao", "Feijao 1a", "Trigo". Também aceita os nomes do dataset (`milho_1`, `milho_2`, `feijao_1`), `feijao` para a 1ª safra e `milho` para a 1ª e a 2ª. Outro valor, inclusive um pedaço do nome, levanta `InvalidParameterError` com as culturas publicadas, antes do pedido. Se None, todas |
+| `uf` | `str` | Nao | Sigla da UF (ex: "MT", "GO", "PR"), ou "MEDIA_ESTADOS" para a média da CONAB dos estados monitorados, que não é a média simples das UFs ([contrato](../contracts/progresso_safra.md)). Nome por extenso ou sigla inexistente levanta `InvalidParameterError` antes do pedido. "BR" é recusado com `InvalidParameterError`, porque a CONAB não publica Brasil. Se None, todos |
+| `operacao` | `str` | Nao | "Semeadura" ou "Colheita" (outro valor levanta `InvalidParameterError` antes do pedido). Se None, ambas |
 | `semana_url` | `str` | Nao | URL de uma semana especifica, em `https://www.gov.br/conab/` (outra URL levanta `InvalidParameterError` antes do pedido). Se None, busca a mais recente |
 | `as_polars` | `bool` | Nao | Se True, retorna `polars.DataFrame` |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
@@ -30,7 +30,7 @@ df = await agrobr.conab.progresso_safra(cultura="Soja", estado="MT")
 | `cultura` | str | Nome da cultura (ex: "Soja", "Milho 2a") |
 | `safra` | str | Safra no formato "YYYY/YY" (ex: "2025/26") |
 | `operacao` | str | "Semeadura" ou "Colheita" |
-| `estado` | str | UF (ex: "MT", "GO"); "MEDIA_ESTADOS" na linha "N estados" da planilha (média da própria CONAB dos estados monitorados, não a média simples das UFs nem o Brasil); "BR" só se a planilha publicar "Brasil" |
+| `uf` | str | UF (ex: "MT", "GO"); "MEDIA_ESTADOS" na linha "N estados" da planilha (média da própria CONAB dos estados monitorados, não a média simples das UFs nem o Brasil); "BR" só se a planilha publicar "Brasil" |
 | `semana_atual` | str | Data de referencia da semana (YYYY-MM-DD) |
 | `pct_ano_anterior` | float | % mesma semana do ano anterior (0.0-1.0) |
 | `pct_semana_anterior` | float | % semana anterior (0.0-1.0) |
@@ -81,7 +81,7 @@ for s in semanas[:3]:
 
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
-| `max_pages` | `int` | Nao | Maximo de paginas a buscar (default 4 = ~80 semanas) |
+| `max_pages` | `int` | Nao | Maximo de paginas a buscar (default 4 = ~80 semanas). Precisa ser inteiro positivo: 0 ou negativo levanta `InvalidParameterError` |
 
 ### Retorno
 
@@ -94,7 +94,7 @@ Lista de dicts com `descricao` e `url` para cada semana disponivel.
 ```python
 from agrobr import sync
 
-df = sync.conab.progresso_safra(cultura="Soja")
+df = sync.conab.progresso_safra(produto="Soja")
 semanas = sync.conab.semanas_disponiveis()
 ```
 
@@ -106,8 +106,8 @@ semanas = sync.conab.semanas_disponiveis()
 import agrobr
 
 df = await agrobr.conab.progresso_safra(
-    cultura="Soja",
-    estado="MT",
+    produto="Soja",
+    uf="MT",
     operacao="Colheita",
 )
 print(f"Colheita soja MT: {df.iloc[0]['pct_semana_atual']:.1%}")
@@ -130,10 +130,10 @@ df = await agrobr.conab.progresso_safra(semana_url=url_semana)
 import agrobr
 
 df = await agrobr.conab.progresso_safra(
-    cultura="Soja",
+    produto="Soja",
     operacao="Colheita",
 )
-pivot = df[["estado", "pct_semana_atual"]].sort_values(
+pivot = df[["uf", "pct_semana_atual"]].sort_values(
     "pct_semana_atual", ascending=False
 )
 print(pivot.to_string(index=False))

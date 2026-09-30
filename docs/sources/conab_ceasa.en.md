@@ -52,7 +52,7 @@ The parser unpivots the matrix into long-form format with 7 columns.
 
 ## Limitations
 
-- The CEASA of each price column comes from the column header itself (`colName`), checked against the `MDXceasa` catalog; a header missing from the catalog or duplicated raises `ParseError` instead of assigning the price to another market.
+- The CEASA of each price column comes from the column header itself (`colName`), checked against the `MDXceasa` catalog; a header missing from the catalog or duplicated raises `ParseError` instead of assigning the price to another market. A price response without the `resultset` list also raises `ParseError`; only an empty `resultset` becomes an empty table.
 
 - Only the most recent prices (daily snapshot, no time series in this version)
 - Dates vary by CEASA (some inactive since 2023)

@@ -242,7 +242,7 @@ def test_supply_without_product_refuses_ambiguous_or_missing_long_sheet(soy_book
 def test_progress_explicit_percent_unit_always_divides_by_100(raw, expected):
     content = progresso_xlsx_cells({"D113": raw})
     frame = progress_parser.parse_progresso_xlsx(content)
-    row = frame.loc[frame.cultura.eq("Trigo") & frame.estado.eq("BA")].iloc[0]
+    row = frame.loc[frame.cultura.eq("Trigo") & frame.uf.eq("BA")].iloc[0]
     assert row.pct_semana_anterior == pytest.approx(expected)
     assert bool(row.revisado) == (isinstance(raw, str) and raw.strip().endswith("*"))
 

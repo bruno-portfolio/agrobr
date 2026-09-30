@@ -56,7 +56,7 @@ SONDA = {
     "preco_diario": {"produtos": ["soja"]},
     "precos_diesel": {"ufs": ["SP"]},
     "producao_anual": {"ufs": ["DF"]},
-    "progresso_safra": {"uf": "MT"},
+    "progresso_safra": {"estado": "MT"},
     "queimadas": {"ufs": ["MT"]},
     "seguro_rural": {"ufs": ["RS"]},
     "serie_historica_safra": {"ufs": ["GO"]},

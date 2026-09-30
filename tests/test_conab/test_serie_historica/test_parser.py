@@ -5,9 +5,9 @@ from typing import Any
 import pandas as pd
 import pytest
 
-from agrobr.conab.serie_historica import client as serie_client
-from agrobr.conab.serie_historica import parser as serie_parser
-from agrobr.conab.serie_historica.parser import (
+from agrobr.conab._serie_historica import client as serie_client
+from agrobr.conab._serie_historica import parser as serie_parser
+from agrobr.conab._serie_historica.parser import (
     _classify_row,
     _find_header_row,
     _normalize_safra_header,

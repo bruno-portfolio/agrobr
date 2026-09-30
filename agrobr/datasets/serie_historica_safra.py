@@ -5,10 +5,11 @@ from typing import Any, Literal, overload
 import pandas as pd
 
 from agrobr import _log
-from agrobr.conab.serie_historica.client import _PRODUCT_REGISTRY
+from agrobr.conab._serie_historica.client import _PRODUCT_REGISTRY
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils import result as result_utils
 
 logger = _log.get_logger(__name__)
 
@@ -18,11 +19,13 @@ _PRODUCTS = sorted(_PRODUCT_REGISTRY.keys())
 async def _fetch_conab_serie(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
 
-    inicio = kwargs.get("inicio")
-    fim = kwargs.get("fim")
+    ano_inicio = kwargs.get("ano_inicio")
+    ano_fim = kwargs.get("ano_fim")
     uf = kwargs.get("uf")
 
-    result = await conab.serie_historica(produto, inicio=inicio, fim=fim, uf=uf, return_meta=True)
+    result = await conab.serie_historica(
+        produto, ano_inicio=ano_inicio, ano_fim=ano_fim, uf=uf, return_meta=True
+    )
 
     return _unpack_result(result)
 
@@ -57,26 +60,26 @@ class SerieHistoricaSafraDataset(BaseDataset):
         self,
         produto: str,
         *,
-        inicio: int | None = None,
-        fim: int | None = None,
+        ano_inicio: int | None = None,
+        ano_fim: int | None = None,
         uf: str | None = None,
         return_meta: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         produto = self._produto_do_dataset(produto)
         logger.info(
             "dataset_fetch",
             dataset="serie_historica_safra",
             produto=produto,
-            inicio=inicio,
-            fim=fim,
+            ano_inicio=ano_inicio,
+            ano_fim=ano_fim,
         )
 
         snapshot = get_snapshot()
-        if snapshot and inicio is None:
-            inicio = int(snapshot[:4]) - 5
+        if snapshot and ano_inicio is None:
+            ano_inicio = int(snapshot[:4]) - 5
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, inicio=inicio, fim=fim, uf=uf
+            produto, ano_inicio=ano_inicio, ano_fim=ano_fim, uf=uf
         )
 
         df = self._normalize(df, produto)
@@ -102,11 +105,11 @@ register(_serie_historica_safra)
 async def serie_historica_safra(
     produto: str,
     *,
-    inicio: int | None = None,
-    fim: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
     uf: str | None = None,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
 
@@ -114,23 +117,52 @@ async def serie_historica_safra(
 async def serie_historica_safra(
     produto: str,
     *,
-    inicio: int | None = None,
-    fim: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def serie_historica_safra(
+    produto: str,
+    *,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def serie_historica_safra(
+    produto: str,
+    *,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
     uf: str | None = None,
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
 
 
 async def serie_historica_safra(
     produto: str,
     *,
-    inicio: int | None = None,
-    fim: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
     uf: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     return await _serie_historica_safra.fetch(  # type: ignore[call-arg]
-        produto, inicio=inicio, fim=fim, uf=uf, return_meta=return_meta, as_polars=as_polars
+        produto,
+        ano_inicio=ano_inicio,
+        ano_fim=ano_fim,
+        uf=uf,
+        return_meta=return_meta,
+        as_polars=as_polars,
     )

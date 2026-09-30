@@ -4,7 +4,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from agrobr.conab.custo_producao import _acquisition
+from agrobr.conab._custo_producao import _acquisition
 
 
 @pytest.fixture(autouse=True)

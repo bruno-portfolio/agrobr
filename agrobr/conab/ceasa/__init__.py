@@ -7,6 +7,9 @@ Fonte: https://portaldeinformacoes.conab.gov.br/mercado-atacadista-hortigranjeir
 LICENCA: zona_cinza (credenciais publicas, API nao documentada oficialmente).
 """
 
-from agrobr.conab.ceasa.api import categorias, lista_ceasas, precos, produtos
+from agrobr.conab.ceasa.api import categorias as categorias
+from agrobr.conab.ceasa.api import lista_ceasas as lista_ceasas
+from agrobr.conab.ceasa.api import precos as precos
+from agrobr.conab.ceasa.api import produtos as produtos
 
-__all__ = ["categorias", "lista_ceasas", "precos", "produtos"]
+__all__: list[str] = []

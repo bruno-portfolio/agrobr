@@ -46,20 +46,31 @@ async def test_brasil_total_reads_product_table_and_preserves_null_rows(
 
     conferir_corpo(meta, content)
     assert len(frame) == meta.records_count == 78
-    assert frame["produto"].tolist() == [label for label in expected_labels for _ in range(2)]
+    assert frame["rotulo"].tolist() == [label for label in expected_labels for _ in range(2)]
     assert frame["safra"].tolist() == ["2024/25", "2025/26"] * 39
-    assert len(frame[frame["produto"] == "SUBTOTAL"]) == 4
-    assert len(frame[frame["produto"] == "BRASIL (2)"]) == 2
+    assert len(frame[frame["produto"] == "subtotal"]) == 4
+    assert len(frame[frame["produto"] == "brasil"]) == 2
+    assert frame.loc[frame["rotulo"] == "ALGODÃO - CAROÇO (1)", "produto"].tolist() == [
+        "algodao_caroco",
+        "algodao_caroco",
+    ]
+    assert not frame["produto"].str.contains(r"[()]").any()
+    assert meta.schema_version == "2.0"
+    assert frame[["area_plantada", "produtividade", "producao"]].dtypes.eq("float64").all()
     if missing_metrics:
-        arroz = frame[frame["produto"] == "ARROZ"]
+        arroz = frame[frame["produto"] == "arroz"]
         assert len(arroz) == 2
         assert arroz[["area_plantada", "produtividade", "producao"]].isna().all().all()
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("as_polars", [False, True])
 async def test_brasil_total_identifica_a_epoca_do_feijao_e_o_bloco_do_subtotal(
     monkeypatch: pytest.MonkeyPatch,
+    as_polars: bool,
 ):
+    if as_polars:
+        polars = pytest.importorskip("polars")
     content = SET_2026.read_bytes()
     workbook = openpyxl.load_workbook(BytesIO(content), read_only=True, data_only=True)
     try:
@@ -91,14 +102,24 @@ async def test_brasil_total_identifica_a_epoca_do_feijao_e_o_bloco_do_subtotal(
         AsyncMock(return_value=(BytesIO(content), {"source_method": "httpx"})),
     )
 
-    frame = await api.brasil_total()
+    frame = await api.brasil_total(as_polars=as_polars)
+    if as_polars:
+        assert isinstance(frame, polars.DataFrame)
+        assert frame.schema["producao"] == polars.Float64
+        assert frame.schema["produto"] == polars.String
+        frame = frame.to_pandas()
 
     current = frame[frame["safra"] == "2025/26"]
     observed = [
         (group if isinstance(group, str) else None, label, float(value))
-        for group, label, value in current[["grupo", "produto", "producao"]].itertuples(index=False)
+        for group, label, value in current[["grupo", "rotulo", "producao"]].itertuples(index=False)
         if label in {"Cores", "Preto", "Caupi", "SUBTOTAL"}
     ]
     assert Counter(observed) == Counter(expected)
     assert not frame.duplicated(["produto", "grupo", "safra"]).any()
-    assert frame.loc[frame["produto"] == "BRASIL (2)", "grupo"].isna().all()
+    assert frame.loc[frame["produto"] == "brasil", "grupo"].isna().all()
+    cores = current.loc[current["rotulo"] == "Cores", ["produto", "producao"]]
+    assert cores["produto"].tolist() == ["feijao_cores_1", "feijao_cores_2", "feijao_cores_3"]
+    assert cores["producao"].tolist() == pytest.approx([601.7, 456.9, 623.4])
+    assert current["unidade_area"].eq("mil_ha").all()
+    assert current["unidade_producao"].eq("mil_ton").all()

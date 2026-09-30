@@ -8,14 +8,14 @@ import pytest
 from bs4 import BeautifulSoup
 
 from agrobr import conab, constants, datasets
-from agrobr.conab.custo_producao import (
+from agrobr.conab._custo_producao import (
     _acquisition,
     _sociobio_api,
     _sociobio_context,
     _sociobio_parse,
     models,
 )
-from agrobr.conab.custo_producao._sociobio_workbook import WorkbookSociobio
+from agrobr.conab._custo_producao._sociobio_workbook import WorkbookSociobio
 from agrobr.contracts import conab_custos
 from agrobr.datasets.deterministic import deterministic
 from agrobr.exceptions import InvalidParameterError, ParseError

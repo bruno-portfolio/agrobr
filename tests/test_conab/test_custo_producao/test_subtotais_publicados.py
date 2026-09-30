@@ -10,7 +10,7 @@ import openpyxl
 import pytest
 import xlrd
 
-from agrobr.conab.custo_producao import _context, _parse, _workbook, api, models
+from agrobr.conab._custo_producao import _context, _parse, _workbook, api, models
 from agrobr.utils.warnings import warn_once_reset
 from tests import helpers
 from tests.helpers import sem_excecao

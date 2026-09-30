@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agrobr.conab.serie_historica import client
+from agrobr.conab._serie_historica import client
 from agrobr.exceptions import SourceUnavailableError
 from tests.helpers import make_mock_async_client, make_mock_response
 
@@ -22,7 +22,7 @@ def _resp(status_code: int = 200, *, content: bytes = b"xls-data", text: str = "
     )
 
 
-"""Testes de resiliência HTTP para agrobr.conab.serie_historica.client."""
+"""Testes de resiliência HTTP para agrobr.conab._serie_historica.client."""
 
 
 class TestConabSerieHTTPErrors:
@@ -34,7 +34,7 @@ class TestConabSerieHTTPErrors:
 
         with (
             patch(
-                "agrobr.conab.serie_historica.client.httpx.AsyncClient", return_value=mock_client
+                "agrobr.conab._serie_historica.client.httpx.AsyncClient", return_value=mock_client
             ),
             pytest.raises(SourceUnavailableError, match="conab_serie_historica unavailable: .*404"),
         ):

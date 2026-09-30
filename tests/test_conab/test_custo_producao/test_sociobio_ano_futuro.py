@@ -3,7 +3,7 @@ from __future__ import annotations
 from unittest.mock import AsyncMock
 
 from agrobr import conab
-from agrobr.conab.custo_producao import _acquisition
+from agrobr.conab._custo_producao import _acquisition
 from agrobr.exceptions import InvalidParameterError
 from agrobr.utils import time as time_utils
 from tests.helpers import levanta_exatamente

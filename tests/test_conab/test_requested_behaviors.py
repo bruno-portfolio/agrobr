@@ -13,10 +13,10 @@ import pandas as pd
 import pytest
 
 from agrobr.conab import api
-from agrobr.conab.custo_producao import _acquisition, _sociobio_api
-from agrobr.conab.custo_producao import api as cost_api
-from agrobr.conab.serie_historica import api as history_api
-from agrobr.conab.serie_historica import client as history_client
+from agrobr.conab._custo_producao import _acquisition, _sociobio_api
+from agrobr.conab._custo_producao import api as cost_api
+from agrobr.conab._serie_historica import api as history_api
+from agrobr.conab._serie_historica import client as history_client
 from agrobr.exceptions import InvalidParameterError
 from tests import helpers
 

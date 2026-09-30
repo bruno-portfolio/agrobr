@@ -117,7 +117,9 @@ async def test_selection_routes_to_matching_source(
             return_value=(_lspa_frame(meses=(1, 3)), _meta("ibge_lspa")),
         ) as lspa_api,
     ):
-        frame, meta = await datasets.estimativa_safra("soja", "2024/25", "MT", True, **selectors)
+        frame, meta = await datasets.estimativa_safra(
+            "soja", "2024/25", "MT", return_meta=True, **selectors
+        )
 
     assert tuple(singleton.info.sources) == original_sources
     selected, other = (conab_api, lspa_api) if expected_source == "conab" else (lspa_api, conab_api)

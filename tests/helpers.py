@@ -40,12 +40,12 @@ from agrobr.alt.anp_diesel import client as anp_client
 from agrobr.alt.antt_pedagio import client as antt_client
 from agrobr.cache import duckdb_store
 from agrobr.comexstat import client as comexstat_client
-from agrobr.conab.custo_producao import _acquisition as custos_acquisition
-from agrobr.conab.custo_producao import _context as custos_context
-from agrobr.conab.custo_producao import _workbook as custos_workbook
-from agrobr.conab.custo_producao import models as custos_models
+from agrobr.conab._custo_producao import _acquisition as custos_acquisition
+from agrobr.conab._custo_producao import _context as custos_context
+from agrobr.conab._custo_producao import _workbook as custos_workbook
+from agrobr.conab._custo_producao import models as custos_models
+from agrobr.conab._serie_historica import client as serie_historica_client
 from agrobr.conab.progresso import client as progresso_client
-from agrobr.conab.serie_historica import client as serie_historica_client
 from agrobr.contracts import desmatamento as desmatamento_contracts
 from agrobr.http import wfs_transport
 from agrobr.http.rate_limiter import RateLimiter
@@ -187,7 +187,7 @@ def assert_balance_dtypes(frame: pd.DataFrame, *, dataset: bool) -> None:
     for name in numeric:
         assert str(frame[name].dtype) == "float64", (name, frame[name].dtype)
     for name in textual:
-        assert pd.api.types.is_string_dtype(frame[name]), (name, frame[name].dtype)
+        assert pd.api.types.is_string_dtype(frame[name].dtype), (name, frame[name].dtype)
         assert all(isinstance(value, str) for value in frame[name].dropna())
 
 

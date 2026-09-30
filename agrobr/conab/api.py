@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import re
 import time
 from datetime import date
 from decimal import Decimal
@@ -13,13 +14,15 @@ import pandas as pd
 from agrobr import _log, constants
 from agrobr.cache.keys import build_cache_key
 from agrobr.conab import client, models
+from agrobr.conab._serie_historica import client as serie_client
+from agrobr.conab._serie_historica import parser as serie_parser
 from agrobr.conab.parsers.v1 import ConabParserV1
-from agrobr.conab.serie_historica import client as serie_client
-from agrobr.conab.serie_historica import parser as serie_parser
+from agrobr.contracts import conab as conab_contract
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
-from agrobr.normalize import regions
+from agrobr.normalize import crops, regions
 from agrobr.normalize.dates import safra_para_anos
+from agrobr.utils import result as result_utils
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
@@ -41,14 +44,50 @@ def _publicacao(metadata: dict[str, Any]) -> dict[str, Any]:
 
 
 def _balanco_frame(records: list[dict[str, Any]]) -> pd.DataFrame:
+    vazio = conab_contract.CONAB_BALANCO_V1_1.empty_frame().drop(columns="fonte")
+    if not records:
+        return vazio
     frame = pd.DataFrame(records).rename(columns={"suprimento_total": "suprimento"})
-    for name, dtype in constants.CONAB_BALANCO_DTYPES.items():
+    for name in vazio.columns:
         if name not in frame.columns:
-            frame[name] = pd.Series(index=frame.index, dtype=dtype)
-        elif dtype == "float64":
+            frame[name] = pd.Series(index=frame.index, dtype=vazio[name].dtype)
+    for name, dtype in constants.CONAB_BALANCO_DTYPES.items():
+        if dtype == "float64":
             frame[name] = pd.to_numeric(frame[name], errors="coerce").astype("float64")
-        else:
-            frame[name] = frame[name].astype("string")
+    return frame[vazio.columns]
+
+
+def _safra_frame(records: list[dict[str, Any]]) -> pd.DataFrame:
+    if not records:
+        return conab_contract.CONAB_SAFRA_V2.empty_frame()
+    frame = pd.DataFrame(records, columns=conab_contract.CONAB_SAFRA_V2.list_columns())
+    for coluna in ("area_plantada", "area_colhida", "produtividade", "producao"):
+        frame[coluna] = pd.to_numeric(frame[coluna], errors="coerce").astype("float64")
+    frame["levantamento"] = frame["levantamento"].astype("Int64")
+    frame["data_publicacao"] = pd.to_datetime(frame["data_publicacao"])
+    return frame
+
+
+def _nome_total(rotulo: str) -> str:
+    return crops.normalizar_cultura(re.sub(r"\s*\(\d+\)", "", rotulo).replace(" - ", " "))
+
+
+def _brasil_total_frame(records: list[dict[str, Any]]) -> pd.DataFrame:
+    if not records:
+        return conab_contract.CONAB_BRASIL_TOTAL_V2.empty_frame()
+    produtos = {
+        (_nome_total(rotulo), _nome_total(grupo) if grupo else None): produto
+        for rotulo, grupo, produto, _ in constants.CONAB_BRASIL_TOTAL_SERIES
+    }
+    linhas = []
+    for registro in records:
+        rotulo = registro["produto"]
+        grupo = registro["grupo"]
+        chave = (_nome_total(rotulo), _nome_total(grupo) if grupo else None)
+        linhas.append({**registro, "produto": produtos.get(chave, chave[0]), "rotulo": rotulo})
+    frame = pd.DataFrame(linhas, columns=conab_contract.CONAB_BRASIL_TOTAL_V2.list_columns())
+    for coluna in ("area_plantada", "produtividade", "producao"):
+        frame[coluna] = pd.to_numeric(frame[coluna], errors="coerce").astype("float64")
     return frame
 
 
@@ -228,7 +267,7 @@ async def _safras_da_serie(
         )
         if registro.uf and registro.safra in _periodos(safra)
     ]
-    df = pd.DataFrame(
+    df = _safra_frame(
         [
             {
                 "fonte": constants.Fonte.CONAB,
@@ -246,16 +285,6 @@ async def _safras_da_serie(
         ]
     )
     if not df.empty:
-        df = df.astype(
-            {
-                "area_plantada": "float64",
-                "area_colhida": "float64",
-                "produtividade": "float64",
-                "producao": "float64",
-                "levantamento": "Int64",
-            }
-        )
-        df["data_publicacao"] = pd.to_datetime(df["data_publicacao"])
         brasil = serie_parser.linhas_brasil(raw, produto)
         publicado = {
             coluna: brasil[(periodo, campo)]
@@ -446,7 +475,7 @@ async def _brasil_total_das_series(safra: str) -> tuple[pd.DataFrame, MetaInfo] 
         inverno,
         _subtotal("BRASIL (2)", None, safra, [verao, inverno]),
     ]
-    df = pd.DataFrame(totais)
+    df = _brasil_total_frame(totais)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = build_source_meta(
@@ -457,6 +486,7 @@ async def _brasil_total_das_series(safra: str) -> tuple[pd.DataFrame, MetaInfo] 
         parse_ms,
         df,
         serie_parser.PARSER_VERSION,
+        schema_version=conab_contract.CONAB_BRASIL_TOTAL_V2.version,
         source_details={
             "publicacao": {
                 "origem": "serie_historica",
@@ -498,8 +528,8 @@ async def safras(
     safra: str | None = None,
     uf: str | None = None,
     levantamento: int | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -510,10 +540,34 @@ async def safras(
     safra: str | None = None,
     uf: str | None = None,
     levantamento: int | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def safras(
+    produto: str,
+    safra: str | None = None,
+    uf: str | None = None,
+    levantamento: int | None = None,
+    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def safras(
+    produto: str,
+    safra: str | None = None,
+    uf: str | None = None,
+    levantamento: int | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
 
 
 async def safras(
@@ -521,9 +575,10 @@ async def safras(
     safra: str | None = None,
     uf: str | None = None,
     levantamento: int | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     safra = models.validate_selection(safra, levantamento)
     uf = validate_uf(uf)
     if not isinstance(produto, str) or produto.lower() not in constants.CONAB_PRODUTOS:
@@ -581,31 +636,9 @@ async def safras(
             safra=safra,
             uf=uf,
         )
-        df = pd.DataFrame()
+        df = _safra_frame([])
     else:
-        df = pd.DataFrame([s.model_dump() for s in safra_list])
-        df["data_publicacao"] = pd.to_datetime(df["data_publicacao"])
-
-        for col in ("area_plantada", "produtividade", "producao"):
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-
-        if "area_colhida" not in df.columns:
-            df["area_colhida"] = pd.Series(float("nan"), index=df.index, dtype="float64")
-
-        contract_cols = [
-            "fonte",
-            "produto",
-            "safra",
-            "uf",
-            "area_plantada",
-            "area_colhida",
-            "produtividade",
-            "producao",
-            "levantamento",
-            "data_publicacao",
-        ]
-        df = df[[c for c in contract_cols if c in df.columns]]
+        df = _safra_frame([s.model_dump() for s in safra_list])
         serie_parser.avisar_soma_das_ufs(produto, _edicao(metadata), df, brasil)
 
         logger.info(
@@ -648,8 +681,8 @@ async def safras(
 async def balanco(
     produto: str | None = None,
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     levantamento: int | None = None,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -659,20 +692,43 @@ async def balanco(
 async def balanco(
     produto: str | None = None,
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
+    levantamento: int | None = None,
+    return_meta: Literal[False] = False,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def balanco(
+    produto: str | None = None,
+    safra: str | None = None,
+    *,
+    as_polars: Literal[False] = False,
     levantamento: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def balanco(
     produto: str | None = None,
     safra: str | None = None,
+    *,
+    as_polars: bool = False,
+    levantamento: int | None = None,
+    return_meta: Literal[True],
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
+
+
+async def balanco(
+    produto: str | None = None,
+    safra: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
     levantamento: int | None = None,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     safra = models.validate_selection(safra, levantamento)
     if produto is not None and (
         not isinstance(produto, str)
@@ -738,8 +794,8 @@ async def balanco(
 @overload
 async def brasil_total(
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     levantamento: int | None = None,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -748,19 +804,40 @@ async def brasil_total(
 @overload
 async def brasil_total(
     safra: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
+    levantamento: int | None = None,
+    return_meta: Literal[False] = False,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def brasil_total(
+    safra: str | None = None,
+    *,
+    as_polars: Literal[False] = False,
     levantamento: int | None = None,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def brasil_total(
     safra: str | None = None,
+    *,
+    as_polars: bool = False,
+    levantamento: int | None = None,
+    return_meta: Literal[True],
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
+
+
+async def brasil_total(
+    safra: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
     levantamento: int | None = None,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     safra = models.validate_selection(safra, levantamento)
     logger.info(
         "conab_brasil_total_request",
@@ -783,9 +860,9 @@ async def brasil_total(
 
     if not totais:
         logger.warning("conab_brasil_total_empty", safra=safra)
-        df = pd.DataFrame()
+        df = _brasil_total_frame([])
     else:
-        df = pd.DataFrame(totais)
+        df = _brasil_total_frame(totais)
         logger.info(
             "conab_brasil_total_success",
             records=len(df),
@@ -802,6 +879,7 @@ async def brasil_total(
         parse_ms,
         df,
         parser.version,
+        schema_version=conab_contract.CONAB_BRASIL_TOTAL_V2.version,
         raw_content_hash=hashlib.sha256(xlsx.getvalue()).hexdigest(),
         raw_content_size=len(xlsx.getvalue()),
         source_details={"publicacao": _publicacao(metadata)},

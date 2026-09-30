@@ -129,6 +129,10 @@ df = await conab.balanco(produto='soja')
 df = await conab.brasil_total()
 ```
 
+`produto` contém identificadores normalizados (`soja`, `algodao_caroco`, `brasil`), e `rotulo` preserva o texto original, inclusive notas de rodapé. `grupo` mantém a hierarquia dos detalhes e subtotais. Área, produção e produtividade são `float64`; a área usa `mil_ha`, a produção `mil_ton` e a produtividade `kg/ha`. O schema 2.0 de totais Brasil mantém as nove colunas também no vazio; cabeçalho irreconhecível gera `ParseError`.
+
+As flags `as_polars` e `return_meta` são somente nomeadas. As saídas vazias de `safras`, `balanco` e `serie_historica` também preservam colunas e tipos. Datas reais usam `datetime64[ns]`, números de levantamento usam `Int64`, medidas usam `float64` e o texto segue o dtype padrão do pandas.
+
 ## Schema - Safras
 
 | Coluna | Tipo | Descricao |
@@ -192,11 +196,13 @@ O parser detecta automaticamente o formato (OLE2/BIFF → xlrd, OOXML → openpy
 
 ```python
 # Serie historica de soja
-df = await conab.serie_historica("soja", inicio=2020, fim=2025)
+df = await conab.serie_historica("soja", ano_inicio=2020, ano_fim=2025)
 
 # Filtrar por UF
-df = await conab.serie_historica("soja", inicio=2020, uf="MT")
+df = await conab.serie_historica("soja", ano_inicio=2020, uf="MT")
 ```
+
+`conab.produtos_serie_historica()` lista produto, categoria e URL de cada série. Use as funções pela fachada `agrobr.conab`; os antigos subpacotes públicos `custo_producao` e `serie_historica` foram removidos.
 
 ### Schema - serie_historica
 
@@ -213,13 +219,22 @@ df = await conab.serie_historica("soja", inicio=2020, uf="MT")
 | `area_formacao_mil_ha` | float, opcional | Café: área em formação, em mil hectares |
 | `area_colhida_mil_ha` | float, opcional | Cana: área colhida, em mil hectares |
 
+Os nomes com unidade permanecem no contrato 1.1. Para comparar as métricas com `safras` e `estimativa_safra`, use esta correspondência; a publicação e o período também precisam coincidir:
+
+| Série histórica | Safras / estimativa | Unidade |
+|---|---|---|
+| `area_plantada_mil_ha` | `area_plantada` | mil ha |
+| `producao_mil_ton` | `producao` | mil t |
+| `produtividade_kg_ha` | `produtividade` | kg/ha |
+| `area_colhida_mil_ha` | `area_colhida` | mil ha; não implica equivalência de cobertura entre produtos/fontes |
+
 `regiao` é a macrorregião sob a qual a planilha lista a UF, reconhecida só pelo rótulo exato (NORTE, NORDESTE, CENTRO-OESTE, SUDESTE, SUL). Sub-regiões, como as do café na Bahia e em Minas Gerais ("Sul e Centro-Oeste", "Norte, Jequitinhonha e Mucuri"), e agregados ("NORTE/NORDESTE", "CENTRO-SUL", "OUTROS") não mudam a região e não são publicados.
 
 Para café, a área plantada é a soma das áreas em produção e formação quando ambas estão disponíveis. Mil sacas beneficiadas de 60 kg são convertidas para mil toneladas (× 0,06), e sacas/ha para kg/ha (× 60). A produtividade se refere à área em produção; veja o [contrato 1.1](../contracts/serie_historica_safra.md).
 
 Cada produto é uma série da CONAB: cultura, safra (`milho_1` a `milho_3`, feijões) ou recorte (`cana_area_total`, `algodao`, `algodao_pluma`, `algodao_caroco`).
 
-O período `safra` segue o publicado: ano civil `YYYY` para `cafe`, `cafe_arabica`, `cafe_conilon`, `trigo`, `aveia`, `cevada`, `canola`, `centeio`, `triticale`; os demais produtos usam `YYYY/YY`. Os filtros `inicio`/`fim` continuam usando o ano inicial.
+O período `safra` segue o publicado: ano civil `YYYY` para `cafe`, `cafe_arabica`, `cafe_conilon`, `trigo`, `aveia`, `cevada`, `canola`, `centeio`, `triticale`; os demais produtos usam `YYYY/YY`. Os filtros inclusivos `ano_inicio`/`ano_fim` usam o ano inicial e exigem inteiros; intervalos invertidos geram `InvalidParameterError` antes da rede.
 
 A coluna de previsão (rótulos como `Previsão` ou `(¹)`) não entra na série histórica; sua exclusão fica registrada por produto, aba e rótulo. Para a safra em curso, use `estimativa_safra` nos produtos disponíveis nesse dataset.
 
@@ -269,4 +284,4 @@ Custos agrícolas usam parser 4: cabeçalhos mesclados, café por recurso oficia
 safra anual ou bienal literal e notas cambiais separadas dos itens. Percentuais
 só recebem escala Excel quando a célula é numérica. Custos da sociobiodiversidade
 usam parser 2 e preservam a seleção explícita de revisões arquivadas. Contratos
-3.0 e 1.0 permanecem inalterados; terceira medida monetária continua recusada.
+3.0 e 1.0, com o texto no dtype padrão do pandas instalado; terceira medida monetária continua recusada.

@@ -32,7 +32,7 @@ async def test_empty_source_preserves_dataset_contract(name, as_polars, monkeypa
     forbidden_http = None
     if name in {"custo_producao", "custo_sociobiodiversidade"}:
         module_name = "api" if name == "custo_producao" else "_sociobio_api"
-        source = import_module(f"agrobr.conab.custo_producao.{module_name}")
+        source = import_module(f"agrobr.conab._custo_producao.{module_name}")
         fetch = AsyncMock(return_value=(get_contract(name).empty_frame(), None))
         monkeypatch.setattr(source, name, fetch)
         forbidden_http = AsyncMock(side_effect=AssertionError("Unexpected HTTP in empty test"))

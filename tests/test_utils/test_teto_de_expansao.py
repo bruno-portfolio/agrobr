@@ -31,7 +31,7 @@ EXPANSAO = 8 * 1024**2
 FORA_DO_HELPER = {
     ("utils/io.py", "open_zip_member"): "o próprio helper",
     ("inmet/client.py", "historico_membros"): "teto próprio (INMET_HISTORICO_MAX_*)",
-    ("conab/custo_producao/_merged.py", "xlsx_header_merges"): (
+    ("conab/_custo_producao/_merged.py", "xlsx_header_merges"): (
         "roda depois do _workbook, que confere a soma e o CRC do XLSX"
     ),
     ("defensivos/snapshot.py", "_read_bundle"): "cache local gravado pelo próprio agrobr",

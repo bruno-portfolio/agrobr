@@ -82,7 +82,7 @@ a single column. For the other 16 catalogued archived revisions, the reading is 
 | `planilha` | str | No | Exact resource identifier in the catalogue. |
 | `aba` | str | No | Literal source worksheet name. |
 
-Pandas uses `string[python]`, nullable `Int64`, `float64` and `datetime64[ns]`, in the order above. Excel percentages are converted to percentage points only when the cell format is a percentage. Zeros, negative values and nulls are retained. Sections and totals are not recomputed.
+Pandas uses the installed version's default text dtype (`object` in pandas 2, `str` in 3), nullable `Int64`, `float64` and `datetime64[ns]`, in the order above. Excel percentages are converted to percentage points only when the cell format is a percentage. Zeros, negative values and nulls are retained. Sections and totals are not recomputed.
 
 ## Observed units
 

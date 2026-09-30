@@ -256,13 +256,13 @@ class EstimativaSafraDataset(BaseDataset):
         produto: str,
         safra: str | None = None,
         uf: str | None = None,
-        return_meta: bool = False,
         *,
+        return_meta: bool = False,
         fonte: Literal["conab", "ibge_lspa"] | None = None,
         levantamento: int | None = None,
         mes: int | str | None = None,
         as_polars: bool = False,
-    ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+    ) -> result_utils.DataFrameResult:
         self._validate_produto(produto)
         selected, month = _resolve_selection(fonte, levantamento, mes)
         safra = validation.validate_safra(safra)
@@ -325,8 +325,36 @@ async def estimativa_safra(
     fonte: Literal["conab", "ibge_lspa"] | None = None,
     levantamento: int | None = None,
     mes: int | str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
+
+
+@overload
+async def estimativa_safra(
+    produto: str,
+    safra: str | None = None,
+    uf: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    fonte: Literal["conab", "ibge_lspa"] | None = None,
+    levantamento: int | None = None,
+    mes: int | str | None = None,
+    as_polars: bool = False,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def estimativa_safra(
+    produto: str,
+    safra: str | None = None,
+    uf: str | None = None,
+    *,
+    return_meta: Literal[True],
+    fonte: Literal["conab", "ibge_lspa"] | None = None,
+    levantamento: int | None = None,
+    mes: int | str | None = None,
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 @overload
@@ -340,20 +368,20 @@ async def estimativa_safra(
     levantamento: int | None = None,
     mes: int | str | None = None,
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
 
 
 async def estimativa_safra(
     produto: str,
     safra: str | None = None,
     uf: str | None = None,
-    return_meta: bool = False,
     *,
+    return_meta: bool = False,
     fonte: Literal["conab", "ibge_lspa"] | None = None,
     levantamento: int | None = None,
     mes: int | str | None = None,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     return await _estimativa_safra.fetch(
         produto,
         safra=safra,

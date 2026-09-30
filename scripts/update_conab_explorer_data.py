@@ -33,7 +33,7 @@ async def collect_history(
     target = cache / f"history-{crop}-{year}.json"
     request = {
         "call": "conab.serie_historica",
-        "params": {"produto": crop, "inicio": 2017, "fim": year, "return_meta": True},
+        "params": {"produto": crop, "ano_inicio": 2017, "ano_fim": year, "return_meta": True},
     }
     if resume and target.exists():
         capture: dict[str, Any] = json.loads(target.read_text(encoding="utf-8"))
@@ -43,7 +43,7 @@ async def collect_history(
         ):
             raise ValueError(f"Captura inválida: {target}")
         return capture
-    frame, meta = await conab.serie_historica(crop, inicio=2017, fim=year, return_meta=True)
+    frame, meta = await conab.serie_historica(crop, ano_inicio=2017, ano_fim=year, return_meta=True)
     records = json.loads(frame.to_json(orient="records", force_ascii=False, double_precision=15))
     capture = {
         "request": request,

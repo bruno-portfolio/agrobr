@@ -14,7 +14,7 @@ import xlrd
 from openpyxl.utils import cell
 from xlrd import biffh, compdoc
 
-from agrobr.conab.serie_historica import client, parser
+from agrobr.conab._serie_historica import client, parser
 from agrobr.exceptions import ParseError, SourceUnavailableError
 
 

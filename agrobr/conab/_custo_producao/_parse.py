@@ -8,6 +8,7 @@ from typing import Any, Literal
 import pandas as pd
 
 from agrobr import constants
+from agrobr.contracts import conab_custos
 from agrobr.normalize import numeric
 
 from . import models
@@ -548,7 +549,7 @@ def frame(observations: list[models.ObservacaoCusto]) -> pd.DataFrame:
         elif name == "data_referencia":
             result[name] = pd.to_datetime(result[name]).astype("datetime64[ns]")
         else:
-            result[name] = pd.Series(result[name], dtype="string[python]")
+            result[name] = pd.Series(result[name], dtype=conab_custos.TEXTO)
     return result
 
 

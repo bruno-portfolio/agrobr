@@ -80,7 +80,7 @@ def test_agregado_de_estados_sai_como_media_com_a_nota_publicada(planilha):
 
     frame = parser.parse_progresso_xlsx(planilha.read_bytes())
 
-    media = frame[frame["estado"] == "MEDIA_ESTADOS"]
+    media = frame[frame["uf"] == "MEDIA_ESTADOS"]
     obtido = {
         (linha.cultura, linha.operacao, linha.semana_atual): linha for linha in media.itertuples()
     }
@@ -96,8 +96,8 @@ def test_agregado_de_estados_sai_como_media_com_a_nota_publicada(planilha):
             linha.pct_media_5_anos,
         ]
         assert publicados == pytest.approx(celulas["valores"], rel=1e-12), chave
-    assert "BR" not in set(frame["estado"])
-    ufs = frame[frame["estado"] != "MEDIA_ESTADOS"]
+    assert "BR" not in set(frame["uf"])
+    ufs = frame[frame["uf"] != "MEDIA_ESTADOS"]
     assert ufs["n_estados"].isna().all() and ufs["cobertura_area_pct"].isna().all()
 
 
@@ -115,7 +115,7 @@ def test_linha_brasil_publicada_sai_como_br_sem_nota():
 
     frame = parser.parse_progresso_xlsx(buffer.getvalue())
 
-    brasil = frame[frame["estado"] == "BR"]
+    brasil = frame[frame["uf"] == "BR"]
     assert brasil[["cultura", "operacao"]].values.tolist() == [["Soja", "Semeadura"]]
     assert brasil["n_estados"].isna().all() and brasil["cobertura_area_pct"].isna().all()
 
@@ -133,17 +133,17 @@ async def test_estado_br_recusado_com_a_cobertura_publicada(monkeypatch):
     url, _ = _servir_boletim_de_20260920(monkeypatch)
 
     with levanta_exatamente(InvalidParameterError, match="não publica Brasil") as recusa:
-        await api.progresso_safra(cultura="soja", estado="BR", semana_url=url)
+        await api.progresso_safra(produto="soja", uf="BR", semana_url=url)
     assert "12 estados, 96.0% da área" in str(recusa.value)
     assert "MEDIA_ESTADOS" in str(recusa.value)
 
     with levanta_exatamente(InvalidParameterError, match="não publica Brasil"):
-        await datasets.progresso_safra("soja", estado="BR", semana_url=url)
+        await datasets.progresso_safra("soja", uf="BR", semana_url=url)
 
     media, meta = await datasets.progresso_safra(
-        "soja", estado="MEDIA_ESTADOS", semana_url=url, return_meta=True
+        "soja", uf="MEDIA_ESTADOS", semana_url=url, return_meta=True
     )
-    assert media[["estado", "n_estados", "cobertura_area_pct"]].values.tolist() == [
+    assert media[["uf", "n_estados", "cobertura_area_pct"]].values.tolist() == [
         ["MEDIA_ESTADOS", 12, 0.96]
     ]
     assert meta.contract_version == meta.schema_version == "2.0"
@@ -162,7 +162,7 @@ def test_pr_da_conab_repete_o_levantamento_do_deral():
         ("Soja", "Semeadura"): ("soja", "plantio_pct"),
         ("Trigo", "Colheita"): ("trigo", "colheita_pct"),
     }
-    pr = conab[conab["estado"] == "PR"].set_index(["cultura", "operacao"])
+    pr = conab[conab["uf"] == "PR"].set_index(["cultura", "operacao"])
     for (cultura, operacao), (produto, coluna) in pares.items():
         linha = pr.loc[(cultura, operacao)]
         assert linha["semana_atual"] == "2026-09-18"
@@ -220,14 +220,14 @@ async def test_culturas_da_doc_filtram_a_cultura_publicada(monkeypatch):
     parametro = next(
         linha
         for linha in DOC.read_text(encoding="utf-8").splitlines()
-        if linha.startswith("| `cultura` |")
+        if linha.startswith("| `produto` |")
     )
     documentadas = re.findall(r'"([^"]+)"', parametro)
     publicado = parser.parse_progresso_xlsx(bruto)
     assert sorted(documentadas) == sorted(set(publicado["cultura"].map(_sem_acento)))
 
     for nome in documentadas:
-        frame = await api.progresso_safra(cultura=nome, semana_url=url)
+        frame = await api.progresso_safra(produto=nome, semana_url=url)
         esperado = publicado[publicado["cultura"].map(_sem_acento) == nome]
         assert not esperado.empty and frame.equals(esperado.reset_index(drop=True)), nome
 
@@ -277,7 +277,23 @@ async def test_trecho_do_nome_traz_as_culturas_que_o_contem(monkeypatch):
     url, bruto = _servir_boletim_de_20260920(monkeypatch)
     publicado = parser.parse_progresso_xlsx(bruto)
 
-    frame = await api.progresso_safra(cultura="milho", semana_url=url)
+    frame = await api.progresso_safra(produto="milho", semana_url=url)
 
     milho = publicado[publicado["cultura"].isin(["Milho 1ª", "Milho 2ª"])]
     assert not milho.empty and frame.equals(milho.reset_index(drop=True))
+
+
+@pytest.mark.parametrize(
+    ("produto", "culturas", "linhas"),
+    [
+        ("milho", {"Milho 1ª", "Milho 2ª"}, 20),
+        ("Milho 1ª", {"Milho 1ª"}, 10),
+        ("milho_1", {"Milho 1ª"}, 10),
+        ("MILHO 1A", {"Milho 1ª"}, 10),
+    ],
+)
+async def test_produto_casa_nome_publicado_ou_alias_da_doc(monkeypatch, produto, culturas, linhas):
+    url, _ = _servir_boletim_de_20260920(monkeypatch)
+    frame = await api.progresso_safra(produto=produto, semana_url=url)
+    assert set(frame["cultura"]) == culturas
+    assert len(frame) == linhas

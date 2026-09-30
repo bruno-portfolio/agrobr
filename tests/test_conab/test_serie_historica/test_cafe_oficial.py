@@ -1,6 +1,6 @@
 import pytest
 
-from agrobr.conab.serie_historica import client
+from agrobr.conab._serie_historica import client
 from agrobr.exceptions import InvalidParameterError
 
 

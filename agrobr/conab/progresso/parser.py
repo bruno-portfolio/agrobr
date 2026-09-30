@@ -93,7 +93,7 @@ def _build_record(
         "cultura": cultura,
         "safra": safra,
         "operacao": operacao,
-        "estado": uf,
+        "uf": uf,
         "semana_atual": semana,
         "pct_ano_anterior": percentages[0],
         "pct_semana_anterior": percentages[1],
@@ -239,7 +239,7 @@ def parse_progresso_xlsx(data: bytes) -> pd.DataFrame:
         )
 
     result = pd.DataFrame(records, columns=COLUNAS_SAIDA)
-    if result.duplicated(["cultura", "safra", "operacao", "estado", "semana_atual"]).any():
+    if result.duplicated(["cultura", "safra", "operacao", "uf", "semana_atual"]).any():
         raise ParseError(
             source="conab_progresso",
             parser_version=PARSER_VERSION,

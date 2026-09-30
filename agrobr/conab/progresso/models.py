@@ -62,7 +62,7 @@ COLUNAS_SAIDA = [
     "cultura",
     "safra",
     "operacao",
-    "estado",
+    "uf",
     "semana_atual",
     "pct_ano_anterior",
     "pct_semana_anterior",

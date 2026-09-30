@@ -5,6 +5,8 @@ import pandas as pd
 from agrobr import contracts
 from agrobr.contracts import Column, ColumnType, Contract
 
+TEXTO = pd.Series([""]).dtype
+
 COLUNAS = (
     "cultura",
     "uf",
@@ -106,12 +108,10 @@ def _strict(df: pd.DataFrame) -> list[str]:
             if name in {"linha", "ano_referencia"}
             else "datetime64[ns]"
             if name == "data_referencia"
-            else "string"
+            else str(TEXTO)
         )
         if str(df[name].dtype) != expected:
             errors.append(f"dtype inválido: {name}")
-        if expected == "string" and getattr(df[name].dtype, "storage", None) != "python":
-            errors.append(f"string storage inválido: {name}")
     if "tipo_linha" in df and not df["tipo_linha"].isin(["item", "subtotal", "total"]).all():
         errors.append("Tipo de linha não reconhecido")
     if "unidade" in df:
@@ -137,7 +137,7 @@ class CustosContract(Contract):
                     if name in {"linha", "ano_referencia"}
                     else "datetime64[ns]"
                     if name == "data_referencia"
-                    else "string[python]"
+                    else TEXTO
                 )
                 for name in COLUNAS
             }
@@ -233,7 +233,7 @@ def _sociobio_dtype(name: str) -> str:
         return "float64"
     if name in {"ano", "linha"}:
         return "Int64"
-    return "datetime64[ns]" if name == "data_precos" else "string[python]"
+    return "datetime64[ns]" if name == "data_precos" else str(TEXTO)
 
 
 class SociobioContract(Contract):
@@ -244,12 +244,7 @@ class SociobioContract(Contract):
         for name in SOCIOBIO_COLUMNS:
             if name not in df:
                 continue
-            expected = _sociobio_dtype(name)
-            actual = str(df[name].dtype)
-            if expected == "string[python]":
-                if actual != "string" or getattr(df[name].dtype, "storage", None) != "python":
-                    errors.append(f"dtype inválido: {name}")
-            elif actual != expected:
+            if str(df[name].dtype) != _sociobio_dtype(name):
                 errors.append(f"dtype inválido: {name}")
         if "tipo_linha" in df and not df["tipo_linha"].isin(["item", "total", "secao"]).all():
             errors.append("Tipo de linha não reconhecido")

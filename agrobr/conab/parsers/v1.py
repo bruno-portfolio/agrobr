@@ -449,7 +449,11 @@ class ConabParserV1:
 
         header_row = self._find_header_row(df)
         if header_row is None:
-            return totais
+            raise ParseError(
+                source="conab",
+                parser_version=self.version,
+                reason="Não encontrou header na aba Brasil - Total por Produto",
+            )
 
         safra_cols = self._extract_safra_columns(df, header_row)
         data_row = header_row + 3

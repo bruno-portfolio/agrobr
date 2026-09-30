@@ -19,10 +19,10 @@ import xlrd
 
 from agrobr import constants, datasets
 from agrobr.conab import api, client
+from agrobr.conab._serie_historica import api as serie_api
+from agrobr.conab._serie_historica import client as serie_client
+from agrobr.conab._serie_historica import parser as serie_parser
 from agrobr.conab.parsers import v1
-from agrobr.conab.serie_historica import api as serie_api
-from agrobr.conab.serie_historica import client as serie_client
-from agrobr.conab.serie_historica import parser as serie_parser
 from agrobr.datasets.producao_anual import _fetch_conab
 from agrobr.exceptions import SourceUnavailableError
 from tests import helpers
@@ -250,10 +250,10 @@ async def test_brasil_total_de_safra_antiga_vem_das_series(monkeypatch: pytest.M
     for rotulo, grupo, produto, _ in constants.CONAB_BRASIL_TOTAL_SERIES:
         periodo = "2023" if grupo == constants.CONAB_INVERNO else "2022/23"
         esperado.append((rotulo, grupo, _serie(produto, periodo, "BRASIL")))
-    produtos = frame[~frame["produto"].isin(["SUBTOTAL", "BRASIL (2)"])]
+    produtos = frame[~frame["rotulo"].isin(["SUBTOTAL", "BRASIL (2)"])]
     assert [
         (
-            linha.produto,
+            linha.rotulo,
             None if pd.isna(linha.grupo) else linha.grupo,
             {
                 "area_plantada": float(linha.area_plantada),
@@ -271,7 +271,7 @@ async def test_brasil_total_de_safra_antiga_vem_das_series(monkeypatch: pytest.M
     )
     producao = next(v for v in linhas if str(v[0]).strip().endswith("Produção"))[coluna]
     assert producao == 159154.3
-    assert float(frame.loc[frame["produto"] == "SOJA", "producao"].iloc[0]) == producao
+    assert float(frame.loc[frame["rotulo"] == "SOJA", "producao"].iloc[0]) == producao
 
     def soma(linhas: pd.DataFrame, campo: str) -> float:
         return float(sum(linhas[campo]))
@@ -279,11 +279,11 @@ async def test_brasil_total_de_safra_antiga_vem_das_series(monkeypatch: pytest.M
     verao = [
         rotulo for rotulo, _, _, secao in constants.CONAB_BRASIL_TOTAL_SERIES if secao == "verao"
     ]
-    subtotais = frame[frame["produto"].isin(["SUBTOTAL", "BRASIL (2)"])]
-    assert subtotais["produto"].tolist() == ["SUBTOTAL", "SUBTOTAL", "BRASIL (2)"]
-    assert frame.index[frame["produto"] == "SUBTOTAL"].tolist() == [30, 37]
+    subtotais = frame[frame["rotulo"].isin(["SUBTOTAL", "BRASIL (2)"])]
+    assert subtotais["rotulo"].tolist() == ["SUBTOTAL", "SUBTOTAL", "BRASIL (2)"]
+    assert frame.index[frame["rotulo"] == "SUBTOTAL"].tolist() == [30, 37]
     for campo in ("area_plantada", "producao"):
-        verao_frame = produtos[produtos["produto"].isin(verao) & produtos["grupo"].isna()]
+        verao_frame = produtos[produtos["rotulo"].isin(verao) & produtos["grupo"].isna()]
         inverno_frame = produtos[produtos["grupo"] == constants.CONAB_INVERNO]
         assert float(subtotais[campo].iloc[0]) == pytest.approx(soma(verao_frame, campo))
         assert float(subtotais[campo].iloc[1]) == pytest.approx(soma(inverno_frame, campo))
@@ -463,7 +463,7 @@ async def test_brasil_total_com_serie_defasada_fica_no_boletim(monkeypatch: pyte
     )
     soja = float(aba.loc[aba[0].astype(str).str.strip() == "SOJA", 7].iloc[0])
     assert soja != _serie("soja", "2020/21", "BRASIL")["producao"]
-    assert float(frame.loc[frame["produto"] == "SOJA", "producao"].iloc[0]) == soja
+    assert float(frame.loc[frame["rotulo"] == "SOJA", "producao"].iloc[0]) == soja
     assert any("não é posterior ao 12º levantamento de 2021/22" in str(a.message) for a in avisos)
 
 
@@ -804,7 +804,7 @@ async def test_brasil_total_pela_serie_avisa_partes_que_nao_fecham_com_o_total(
         [700.6, 9.7, 37.7],
         707.2,
     )
-    cores = frame[(frame["produto"] == "Cores") & (frame["grupo"] == "FEIJÃO 3ª SAFRA")]
+    cores = frame[(frame["rotulo"] == "Cores") & (frame["grupo"] == "FEIJÃO 3ª SAFRA")]
     assert float(cores["producao"].iloc[0]) == 700.6
     assert [str(a.message) for a in avisos if "brasil_total de" in str(a.message)] == esperados
 

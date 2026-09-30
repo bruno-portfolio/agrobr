@@ -9,7 +9,7 @@ import pytest
 import xlrd
 
 from agrobr import datasets
-from agrobr.conab.serie_historica import parser
+from agrobr.conab._serie_historica import parser
 from agrobr.exceptions import ParseError
 from tests import helpers
 

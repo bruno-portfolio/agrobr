@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agrobr.conab.ceasa import api, client
+from agrobr.exceptions import InvalidParameterError
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "conab_ceasa" / "precos_sample"
 
@@ -53,3 +54,13 @@ class TestCategorias:
         assert isinstance(result, dict)
         assert "FRUTAS" in result
         assert "HORTALICAS" in result
+
+
+@pytest.mark.parametrize("filtro", [{"produto": 5}, {"produto": " "}, {"ceasa": ["SP"]}])
+async def test_filtro_que_nao_e_texto_recusado_antes_da_rede(filtro):
+    with (
+        patch.object(client, "fetch_precos", new_callable=AsyncMock) as precos,
+        pytest.raises(InvalidParameterError, match="deve ser texto não vazio"),
+    ):
+        await api.precos(**filtro)
+    precos.assert_not_awaited()

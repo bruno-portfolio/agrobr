@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from typing import Literal, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 import pandas as pd
 
@@ -9,11 +9,14 @@ from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import tasks
-from agrobr.utils.result import build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
 from .models import CATEGORIAS, CEASA_UF_MAP, PRODUTOS_PROHORT
+
+if TYPE_CHECKING:
+    import polars as pl
 
 logger = _log.get_logger(__name__)
 
@@ -23,7 +26,7 @@ async def precos(
     *,
     produto: str | None = None,
     ceasa: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -33,9 +36,39 @@ async def precos(
     *,
     produto: str | None = None,
     ceasa: str | None = None,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def precos(
+    *,
+    produto: str | None = None,
+    ceasa: str | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def precos(
+    *,
+    produto: str | None = None,
+    ceasa: str | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def precos(
+    *,
+    produto: str | None = None,
+    ceasa: str | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
 
 
 async def precos(
@@ -44,7 +77,10 @@ async def precos(
     ceasa: str | None = None,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
+    for nome, valor in (("produto", produto), ("ceasa", ceasa)):
+        if valor is not None and (not isinstance(valor, str) or not valor.strip()):
+            raise InvalidParameterError(f"{nome} deve ser texto não vazio, recebeu {valor!r}")
     warn_once(
         "conab_ceasa",
         "agrobr.conab.ceasa: dados CONAB/PROHORT via Pentaho CDA. "

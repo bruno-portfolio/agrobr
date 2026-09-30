@@ -5,6 +5,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any
 
+import openpyxl
 import pytest
 
 from agrobr.conab.parsers.v1 import ConabParserV1
@@ -50,18 +51,17 @@ class TestConabParserEdgeCases:
             elif scenario == "test_parse_decimal_traco":
                 assert parser._parse_decimal("-") is None
 
-    def test_parse_brasil_total_no_header(self, parser):
-        from openpyxl import Workbook
-
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "Brasil - Total por Produto"
-        ws.append(["random", "data", "here"])
+    def test_parse_brasil_total_no_header(self, parser, sample_xlsx):
+        wb = openpyxl.load_workbook(sample_xlsx)
+        ws = wb["Brasil - Total por Produto"]
+        assert ws["A5"].value == "PRODUTO"
+        ws["A5"] = "CABEÇALHO ALTERADO"
         buf = BytesIO()
         wb.save(buf)
+        wb.close()
         buf.seek(0)
-        result = parser.parse_brasil_total(buf)
-        assert result == []
+        with pytest.raises(ParseError, match="header.*Brasil - Total por Produto"):
+            parser.parse_brasil_total(buf)
 
 
 class TestConabParserV1:

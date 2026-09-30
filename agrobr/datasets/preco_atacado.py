@@ -8,6 +8,7 @@ from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -92,8 +93,28 @@ async def preco_atacado(
     *,
     ceasa: str | None = None,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
+
+
+@overload
+async def preco_atacado(
+    produto: str | None = None,
+    *,
+    ceasa: str | None = None,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+) -> DataFrame: ...
+
+
+@overload
+async def preco_atacado(
+    produto: str | None = None,
+    *,
+    ceasa: str | None = None,
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
 @overload
@@ -103,7 +124,7 @@ async def preco_atacado(
     ceasa: str | None = None,
     return_meta: Literal[True],
     as_polars: bool = False,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def preco_atacado(
@@ -112,7 +133,7 @@ async def preco_atacado(
     ceasa: str | None = None,
     return_meta: bool = False,
     as_polars: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _preco_atacado.fetch(  # type: ignore[call-arg]
         produto, ceasa=ceasa, return_meta=return_meta, as_polars=as_polars
     )

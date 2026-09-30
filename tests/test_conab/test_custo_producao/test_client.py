@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from agrobr.conab.custo_producao import client
+from agrobr.conab._custo_producao import client
 from agrobr.exceptions import SourceUnavailableError
 from tests.helpers import make_mock_async_client, make_mock_response
 
@@ -43,7 +43,7 @@ class TestConabCustoEmptyResponse:
         mock_client.get = AsyncMock(side_effect=side_effect)
 
         with patch(
-            "agrobr.conab.custo_producao.client.httpx.AsyncClient", return_value=mock_client
+            "agrobr.conab._custo_producao.client.httpx.AsyncClient", return_value=mock_client
         ):
             result = await client.fetch_custos_page()
 
@@ -62,7 +62,7 @@ class TestCrawlFolder:
         mock_client.get = AsyncMock(return_value=resp)
 
         with patch(
-            "agrobr.conab.custo_producao.client.httpx.AsyncClient",
+            "agrobr.conab._custo_producao.client.httpx.AsyncClient",
             return_value=mock_client,
         ):
             links = await client._crawl_folder(f"{_BASE}/milho")
@@ -78,7 +78,7 @@ class TestCrawlFolder:
         mock_client.get.side_effect = httpx.TimeoutException("timeout")
 
         with patch(
-            "agrobr.conab.custo_producao.client.httpx.AsyncClient",
+            "agrobr.conab._custo_producao.client.httpx.AsyncClient",
             return_value=mock_client,
         ):
             links = await client._crawl_folder(f"{_BASE}/milho")
@@ -116,7 +116,7 @@ class TestConabCustoDownloadXlsx:
         mock_client.get = AsyncMock(return_value=resp)
 
         with patch(
-            "agrobr.conab.custo_producao.client.httpx.AsyncClient", return_value=mock_client
+            "agrobr.conab._custo_producao.client.httpx.AsyncClient", return_value=mock_client
         ):
             await client.download_xlsx("/conab/test.xlsx")
 
@@ -140,7 +140,9 @@ class TestConabCustoHTTPErrors:
         mock_client.get = AsyncMock(return_value=resp_403)
 
         with (
-            patch("agrobr.conab.custo_producao.client.httpx.AsyncClient", return_value=mock_client),
+            patch(
+                "agrobr.conab._custo_producao.client.httpx.AsyncClient", return_value=mock_client
+            ),
             pytest.raises(SourceUnavailableError, match="conab_custo"),
         ):
             await client.download_xlsx("https://www.gov.br/test.xlsx")
@@ -152,7 +154,9 @@ class TestConabCustoHTTPErrors:
         mock_client.get = AsyncMock(return_value=resp_500)
 
         with (
-            patch("agrobr.conab.custo_producao.client.httpx.AsyncClient", return_value=mock_client),
+            patch(
+                "agrobr.conab._custo_producao.client.httpx.AsyncClient", return_value=mock_client
+            ),
             pytest.raises(SourceUnavailableError, match="^conab_custo unavailable: .*500"),
         ):
             await client.fetch_custos_page()

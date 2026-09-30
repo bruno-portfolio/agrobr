@@ -267,7 +267,8 @@ async def test_safra_anterior_sem_levantamento_vem_da_revisao_mais_recente(monke
     assert meta.source_details["publicacao"] == publicacao
     assert meta_corrente.source_details["publicacao"] == publicacao
     assert meta.cache_key != meta_corrente.cache_key
-    gergelim = total[total["produto"] == "GERGELIM"]
+    gergelim = total[total["produto"] == "gergelim"]
+    assert gergelim["rotulo"].tolist() == ["GERGELIM"]
     assert gergelim["safra"].tolist() == ["2024/25"]
     assert [float(valor) for valor in gergelim["area_plantada"]] == [
         _oficial(revisao, "Brasil - Total por Produto", "GERGELIM", "2024/25")[0]

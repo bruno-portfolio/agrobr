@@ -224,5 +224,5 @@ def frame(observations: list[models.ObservacaoSociobio]) -> pd.DataFrame:
         elif name == "data_precos":
             result[name] = pd.to_datetime(result[name]).astype("datetime64[ns]")
         else:
-            result[name] = result[name].astype("string[python]")
+            result[name] = result[name].astype(conab_custos.TEXTO)
     return result

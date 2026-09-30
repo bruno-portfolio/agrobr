@@ -18,7 +18,7 @@ logger = _log.get_logger(__name__)
 
 
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
-    from agrobr.conab.custo_producao.api import custo_producao as _custo_producao
+    from agrobr.conab._custo_producao.api import custo_producao as _custo_producao
 
     result = await _custo_producao(produto, **kwargs, return_meta=True)
 
@@ -65,19 +65,19 @@ class CustoProducaoDataset(BaseDataset):
         produto: str,
         uf: str | None = None,
         safra: str | None = None,
+        *,
         return_meta: bool = False,
         local: str | None = None,
         ano: int | None = None,
         planilha: str | None = None,
         aba: str | None = None,
         as_polars: bool = False,
-        *,
         use_cache: bool = True,
         **kwargs: Any,
     ) -> Frame | tuple[Frame, MetaInfo]:
         produto = self._produto_do_dataset(produto)
-        from agrobr.conab.custo_producao.api import finalize_output, prepare_query
-        from agrobr.conab.custo_producao.models import normalize_cultura
+        from agrobr.conab._custo_producao.api import finalize_output, prepare_query
+        from agrobr.conab._custo_producao.models import normalize_cultura
         from agrobr.contracts import validate_dataset
         from agrobr.contracts.conab_custos import CONAB_CUSTOS_V3
 
@@ -205,8 +205,8 @@ async def custo_producao(
     produto: str,
     uf: str | None = None,
     safra: str | None = None,
-    return_meta: bool = False,
     *,
+    return_meta: bool = False,
     use_cache: bool = True,
     local: str | None = None,
     ano: int | None = None,
@@ -221,8 +221,8 @@ async def custo_producao(
     produto: str,
     uf: str | None = None,
     safra: str | None = None,
-    return_meta: bool = False,
     *,
+    return_meta: bool = False,
     use_cache: bool = True,
     local: str | None = None,
     ano: int | None = None,

@@ -366,7 +366,7 @@ def _catalog_frame(rows: list[dict[str, Any]], names: list[str]) -> pd.DataFrame
                         else value
                     )
                 )
-                .astype("string[python]")
+                .astype(conab_custos.TEXTO)
             )
     return frame
 

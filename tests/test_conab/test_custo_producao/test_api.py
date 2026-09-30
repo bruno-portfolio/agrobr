@@ -1,6 +1,6 @@
 import pytest
 
-from agrobr.conab.custo_producao import api
+from agrobr.conab._custo_producao import api
 from agrobr.exceptions import InvalidParameterError
 
 

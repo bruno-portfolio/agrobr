@@ -58,7 +58,7 @@ async def coletar_custo_producao() -> tuple[pd.DataFrame, dict[str, object]] | N
         mt = contextos[contextos["uf"].eq("MT") & contextos["status"].eq("identified")]
         aba = mt.sort_values("ano_referencia")["aba"].iloc[-1]
         df, meta = await conab.custo_producao(  # type: ignore[misc]
-            cultura="soja",
+            produto="soja",
             uf="MT",
             planilha=planilha,
             aba=aba,

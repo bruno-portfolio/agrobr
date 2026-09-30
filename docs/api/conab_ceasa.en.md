@@ -16,8 +16,8 @@ df = await agrobr.conab.ceasa_precos(produto="tomate")
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `produto` | `str` | No | Filter by product (e.g. "tomate", "ABACAXI"). Case-insensitive |
-| `ceasa` | `str` | No | Filter by CEASA (e.g. "CEAGESP - SAO PAULO", "SAO PAULO"). Case-insensitive, partial match |
+| `produto` | `str` | No | Filter by product (e.g. "tomate", "ABACAXI"). Case-insensitive. A product outside the published list raises `InvalidParameterError` with the list; a non-text value, before any request |
+| `ceasa` | `str` | No | Filter by CEASA (e.g. "CEAGESP - SAO PAULO", "SAO PAULO"). Case-insensitive, partial match; it must match at least 1 published CEASA |
 | `as_polars` | `bool` | No | If True, returns a `polars.DataFrame` |
 | `return_meta` | `bool` | No | If True, returns `(DataFrame, MetaInfo)` |
 

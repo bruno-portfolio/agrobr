@@ -8,6 +8,7 @@ from agrobr import _log
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
+from agrobr.utils.result import DataFrame, DataFrameResult
 
 logger = _log.get_logger(__name__)
 
@@ -18,14 +19,10 @@ async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
     from agrobr.conab.progresso import api as progresso_api
     from agrobr.conab.progresso.models import normalizar_cultura
 
-    cultura = normalizar_cultura(produto)
-    estado = kwargs.get("estado")
-    operacao = kwargs.get("operacao")
-
     result = await progresso_api.progresso_safra(
-        cultura=cultura,
-        estado=estado,
-        operacao=operacao,
+        produto=normalizar_cultura(produto),
+        uf=kwargs.get("uf"),
+        operacao=kwargs.get("operacao"),
         semana_url=kwargs.get("semana_url"),
         return_meta=True,
     )
@@ -61,8 +58,9 @@ class ProgressoSafraDataset(BaseDataset):
     async def fetch(  # type: ignore[override]
         self,
         produto: str,
-        estado: str | None = None,
+        uf: str | None = None,
         operacao: str | None = None,
+        *,
         return_meta: bool = False,
         semana_url: str | None = None,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
@@ -71,7 +69,7 @@ class ProgressoSafraDataset(BaseDataset):
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, estado=estado, operacao=operacao, semana_url=semana_url
+            produto, uf=uf, operacao=operacao, semana_url=semana_url
         )
 
         df = self._normalize(df)
@@ -96,11 +94,11 @@ register(_progresso_safra)
 @overload
 async def progresso_safra(
     produto: str,
-    estado: str | None = None,
+    uf: str | None = None,
     operacao: str | None = None,
     *,
     return_meta: Literal[False] = False,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     semana_url: str | None = None,
 ) -> pd.DataFrame: ...
 
@@ -108,26 +106,51 @@ async def progresso_safra(
 @overload
 async def progresso_safra(
     produto: str,
-    estado: str | None = None,
+    uf: str | None = None,
+    operacao: str | None = None,
+    *,
+    return_meta: Literal[False] = False,
+    as_polars: bool = False,
+    semana_url: str | None = None,
+) -> DataFrame: ...
+
+
+@overload
+async def progresso_safra(
+    produto: str,
+    uf: str | None = None,
+    operacao: str | None = None,
+    *,
+    return_meta: Literal[True],
+    as_polars: Literal[False] = False,
+    semana_url: str | None = None,
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def progresso_safra(
+    produto: str,
+    uf: str | None = None,
     operacao: str | None = None,
     *,
     return_meta: Literal[True],
     as_polars: bool = False,
     semana_url: str | None = None,
-) -> tuple[pd.DataFrame, MetaInfo]: ...
+) -> tuple[DataFrame, MetaInfo]: ...
 
 
 async def progresso_safra(
     produto: str,
-    estado: str | None = None,
+    uf: str | None = None,
     operacao: str | None = None,
+    *,
     return_meta: bool = False,
     as_polars: bool = False,
     semana_url: str | None = None,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> DataFrameResult:
     return await _progresso_safra.fetch(  # type: ignore[call-arg]
         produto,
-        estado=estado,
+        uf=uf,
         operacao=operacao,
         return_meta=return_meta,
         as_polars=as_polars,

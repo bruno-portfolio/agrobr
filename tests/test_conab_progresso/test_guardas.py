@@ -4,12 +4,14 @@ import io
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 import openpyxl
 import pytest
 
+from agrobr import datasets
 from agrobr.conab.progresso import api, client, parser
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from tests import helpers
 from tests.helpers import levanta_exatamente, sem_excecao
 
@@ -139,3 +141,43 @@ async def test_semana_so_com_pdf_levanta_sem_baixar(monkeypatch):
     with levanta_exatamente(SourceUnavailableError, match="Link plantio/colheita nao encontrado"):
         await api.progresso_safra(semana_url=url)
     assert chamadas == [url]
+
+
+@pytest.mark.parametrize(
+    ("filtro", "motivo"),
+    [
+        ({"produto": "sojaa"}, "Produto inválido.*Valores válidos: Algodão, Arroz"),
+        ({"produto": " "}, "Produto inválido"),
+        ({"produto": "1"}, "Produto inválido"),
+        ({"produto": "o"}, "Produto inválido"),
+        ({"uf": "XX"}, "UF inválida.*MEDIA_ESTADOS"),
+        ({"uf": "Mato Grosso"}, "UF inválida"),
+        ({"uf": 51}, "UF inválida"),
+        ({"operacao": "plantio"}, "Operação inválida.*Semeadura, Colheita"),
+    ],
+)
+async def test_filtro_fora_do_publicado_recusado_antes_da_rede(monkeypatch, filtro, motivo):
+    baixar = AsyncMock()
+    monkeypatch.setattr(client, "fetch_latest", baixar)
+    with levanta_exatamente(InvalidParameterError, match=motivo):
+        await api.progresso_safra(**filtro)
+    baixar.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    ("filtro", "motivo"),
+    [({"uf": "XX"}, "UF inválida"), ({"operacao": "plantio"}, "Operação inválida")],
+)
+async def test_dataset_recusa_filtro_fora_do_publicado_antes_da_rede(monkeypatch, filtro, motivo):
+    baixar = AsyncMock()
+    monkeypatch.setattr(client, "fetch_latest", baixar)
+    with levanta_exatamente(InvalidParameterError, match=motivo):
+        await datasets.progresso_safra("soja", **filtro)
+    baixar.assert_not_awaited()
+
+
+@pytest.mark.parametrize("max_pages", [0, -1, True])
+async def test_max_pages_nao_positivo_recusado_sem_requisicao(monkeypatch, max_pages):
+    monkeypatch.setattr(client, "httpx", None)
+    with levanta_exatamente(InvalidParameterError, match="max_pages deve ser inteiro positivo"):
+        await api.semanas_disponiveis(max_pages=max_pages)

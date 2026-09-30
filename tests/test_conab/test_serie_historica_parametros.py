@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from agrobr import conab
-from agrobr.conab.serie_historica import client
+from agrobr.conab._serie_historica import client
 from agrobr.exceptions import InvalidParameterError
 from tests.helpers import levanta_exatamente
 
@@ -13,7 +13,10 @@ from tests.helpers import levanta_exatamente
 @pytest.mark.parametrize(
     ("argumentos", "mensagem"),
     [
-        ({"inicio": 2020, "fim": 2019}, "inicio \\(2020\\) posterior a fim \\(2019\\)"),
+        (
+            {"ano_inicio": 2020, "ano_fim": 2019},
+            "ano_inicio \\(2020\\) posterior a ano_fim \\(2019\\)",
+        ),
         ({"uf": "XX"}, "UF inválida: 'XX'"),
     ],
     ids=["inicio_depois_do_fim", "uf_inexistente"],

@@ -16,8 +16,8 @@ df = await agrobr.conab.ceasa_precos(produto="tomate")
 
 | Parametro | Tipo | Obrigatorio | Descricao |
 |-----------|------|-------------|-----------|
-| `produto` | `str` | Nao | Filtrar por produto (ex: "tomate", "ABACAXI"). Case-insensitive |
-| `ceasa` | `str` | Nao | Filtrar por CEASA (ex: "CEAGESP - SAO PAULO", "SAO PAULO"). Case-insensitive, busca parcial |
+| `produto` | `str` | Nao | Filtrar por produto (ex: "tomate", "ABACAXI"). Case-insensitive. Produto fora do publicado levanta `InvalidParameterError` com a lista; valor que não é texto, antes do pedido |
+| `ceasa` | `str` | Nao | Filtrar por CEASA (ex: "CEAGESP - SAO PAULO", "SAO PAULO"). Case-insensitive, busca parcial; precisa casar ao menos 1 CEASA publicada |
 | `as_polars` | `bool` | Nao | Se True, retorna `polars.DataFrame` |
 | `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
 

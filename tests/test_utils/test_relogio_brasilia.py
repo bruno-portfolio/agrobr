@@ -34,7 +34,7 @@ modulos = {
     for nome, caminho in (
         ("cepea", "agrobr.cepea.api"),
         ("conab", "agrobr.conab.api"),
-        ("conab_serie_historica", "agrobr.conab.serie_historica.api"),
+        ("conab_serie_historica", "agrobr.conab._serie_historica.api"),
         ("producao_anual", "agrobr.datasets.producao_anual"),
     )
 }
@@ -180,7 +180,7 @@ def test_padrao_do_cepea_conab_e_pam_segue_o_relogio_do_agrobr(monkeypatch: pyte
         for nome, caminho in (
             ("cepea", "agrobr.cepea.api"),
             ("conab", "agrobr.conab.api"),
-            ("conab_serie_historica", "agrobr.conab.serie_historica.api"),
+            ("conab_serie_historica", "agrobr.conab._serie_historica.api"),
             ("producao_anual", "agrobr.datasets.producao_anual"),
         )
     }

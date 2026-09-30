@@ -10,7 +10,7 @@ import pandas as pd
 import pydantic
 from xlrd import biffh, compdoc
 
-from agrobr import _log, constants
+from agrobr import _log, constants, contracts
 from agrobr.exceptions import ParseError
 from agrobr.normalize import regions
 from agrobr.normalize.numeric import safe_float
@@ -532,6 +532,8 @@ def parse_serie_historica(
 
 
 def records_to_dataframe(records: list[SafraHistorica]) -> pd.DataFrame:
+    if not records:
+        return contracts.get_contract("serie_historica_safra").empty_frame()
     data = [rec.model_dump() for rec in records]
     df = pd.DataFrame(data, columns=list(SafraHistorica.model_fields))
 

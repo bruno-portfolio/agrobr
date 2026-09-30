@@ -45,6 +45,8 @@ Todas as colunas numéricas usam float64, inclusive em resultados vazios. O cont
 
 ## Garantias
 
+`as_polars`, `return_meta` e `levantamento` devem ser passados por nome. O texto segue o dtype padrão da versão instalada do pandas, sem conversão explícita para `StringDtype`; os resultados vazios mantêm as colunas e os tipos do contrato.
+
 - Balanço completo de oferta/demanda
 - Atualizado mensalmente junto com levantamentos CONAB
 

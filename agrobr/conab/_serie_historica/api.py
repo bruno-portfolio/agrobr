@@ -9,6 +9,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.utils import result as result_utils
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
@@ -41,11 +42,11 @@ def _safras_em_revisao(hoje: date) -> set[str]:
 @overload
 async def serie_historica(
     produto: str,
-    inicio: int | None = None,
-    fim: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
     uf: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -53,34 +54,62 @@ async def serie_historica(
 @overload
 async def serie_historica(
     produto: str,
-    inicio: int | None = None,
-    fim: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
     uf: str | None = None,
-    as_polars: bool = False,
     *,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def serie_historica(
+    produto: str,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
 
 
+@overload
 async def serie_historica(
     produto: str,
-    inicio: int | None = None,
-    fim: int | None = None,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
     uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
+
+
+async def serie_historica(
+    produto: str,
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
     as_polars: bool = False,
     return_meta: bool = False,
-) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
+) -> result_utils.DataFrameResult:
     client.get_xls_url(produto)
-    if inicio is not None and fim is not None and inicio > fim:
-        raise InvalidParameterError(f"inicio ({inicio}) posterior a fim ({fim})")
+    for nome, ano in (("ano_inicio", ano_inicio), ("ano_fim", ano_fim)):
+        if ano is not None and (isinstance(ano, bool) or not isinstance(ano, int)):
+            raise InvalidParameterError(f"{nome} deve ser um ano inteiro ou None: {ano!r}")
+    if ano_inicio is not None and ano_fim is not None and ano_inicio > ano_fim:
+        raise InvalidParameterError(f"ano_inicio ({ano_inicio}) posterior a ano_fim ({ano_fim})")
     uf = validate_uf(uf)
     t0 = time.monotonic()
 
     logger.info(
         "conab_serie_historica_request",
         produto=produto,
-        inicio=inicio,
-        fim=fim,
+        ano_inicio=ano_inicio,
+        ano_fim=ano_fim,
         uf=uf,
     )
 
@@ -90,8 +119,8 @@ async def serie_historica(
     records = parse_serie_historica(
         xls=xls,
         produto=produto,
-        inicio=inicio,
-        fim=fim,
+        inicio=ano_inicio,
+        fim=ano_fim,
         uf=uf,
     )
     parse_ms = int((time.monotonic() - t1) * 1000)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 import zipfile
 from datetime import timedelta
@@ -15,11 +16,12 @@ import pytest
 from bs4 import BeautifulSoup
 from openpyxl import Workbook as ExcelWorkbook
 
-from agrobr.conab.custo_producao import _acquisition as acquisition
-from agrobr.conab.custo_producao import api, models
-from agrobr.conab.custo_producao._context import context, select
-from agrobr.conab.custo_producao._parse import number, parse_selected
-from agrobr.conab.custo_producao._workbook import Aba, Workbook
+from agrobr import datasets
+from agrobr.conab._custo_producao import _acquisition as acquisition
+from agrobr.conab._custo_producao import api, models
+from agrobr.conab._custo_producao._context import context, select
+from agrobr.conab._custo_producao._parse import number, parse_selected
+from agrobr.conab._custo_producao._workbook import Aba, Workbook
 from agrobr.contracts.conab_custos import CONAB_CUSTOS_V3
 from agrobr.datasets.deterministic import deterministic
 from agrobr.exceptions import InvalidParameterError, ParseError
@@ -96,7 +98,7 @@ def mock_http(monkeypatch, *, workbook: bytes | None = None, pages: dict[str, by
         ("test_catalog_reads_all_root_pages_before_tab", {}),
         ("test_catalog_duplicate_keeps_first_metadata", {}),
         ("test_catalog_real_conflict", {}),
-        ("test_catalog_unknown_crop_preserves_typed_empty", {}),
+        ("test_catalog_unknown_crop_is_refused", {}),
         ("test_catalog_cycle_fails_before_repeating_request", {}),
     ],
     ids=[
@@ -167,13 +169,13 @@ async def test_catalogo_navegacao_e_consistencia(scenario: str, parameters: dict
             mock_http(monkeypatch, pages={acquisition.CATALOG_URL + "/milho": page})
             with pytest.raises(ParseError, match="Identificador de recurso ambíguo"):
                 await api.catalogo_custos()
-        elif scenario == "test_catalog_unknown_crop_preserves_typed_empty":
+        elif scenario == "test_catalog_unknown_crop_is_refused":
             mock_http(monkeypatch)
-            df, meta = await api.catalogo_custos("inexistente", return_meta=True)
-            assert df.empty
-            assert list(df.columns) == ["planilha", "cultura", "titulo", "pagina_url"]
-            assert all(str(dtype) == "string" for dtype in df.dtypes)
-            assert meta.records_count == 0
+            with pytest.raises(
+                InvalidParameterError,
+                match="Nenhuma planilha para 'inexistente'; culturas disponíveis: .*'soja'",
+            ):
+                await api.catalogo_custos("inexistente")
         elif scenario == "test_catalog_cycle_fails_before_repeating_request":
             soup = BeautifulSoup((GOLDEN / "catalog.html").read_bytes(), "lxml")
             for anchor in soup.select("a.proximo"):
@@ -538,3 +540,24 @@ def test_contract_rejects_changed_projection_and_empty_is_typed():
     empty = CONAB_CUSTOS_V3.empty_frame()
     assert CONAB_CUSTOS_V3.validate(empty) == (True, [])
     assert not CONAB_CUSTOS_V3.validate(empty[list(reversed(empty.columns))])[0]
+
+
+@pytest.mark.parametrize(
+    "funcao",
+    [api.custo_producao, api.custo_producao_total, api.catalogo_custos, datasets.custo_producao],
+)
+def test_assinatura_usa_produto_e_flags_nomeadas(funcao):
+    parametros = inspect.signature(funcao).parameters
+    assert next(iter(parametros)) == "produto"
+    flags = [nome for nome in ("as_polars", "return_meta") if nome in parametros]
+    assert flags
+    assert all(parametros[nome].kind is inspect.Parameter.KEYWORD_ONLY for nome in flags)
+
+
+@pytest.mark.asyncio
+async def test_catalogo_de_contextos_tem_data_em_datetime_e_texto_no_padrao(monkeypatch):
+    mock_http(monkeypatch)
+    df = await api.catalogo_custos("algodao", planilha=resource("algodao").planilha)
+    assert str(df["data_referencia"].dtype) == "datetime64[ns]"
+    assert df["data_referencia"].notna().any()
+    assert df["aba"].dtype == pd.Series(["Barreiras-BA-2025"]).dtype

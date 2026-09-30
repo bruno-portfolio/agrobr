@@ -43,7 +43,13 @@ def _validar_identidade_ceasas(ceasas_por_coluna: list[str], ceasas_list: list[s
 
 
 def parse_precos(precos_json: dict[str, Any], ceasas_json: dict[str, Any]) -> pd.DataFrame:
-    resultset = precos_json.get("resultset", [])
+    resultset = precos_json.get("resultset") if isinstance(precos_json, dict) else None
+    if not isinstance(resultset, list):
+        raise ParseError(
+            source="conab_ceasa",
+            parser_version=PARSER_VERSION,
+            reason="Resposta de preços sem a lista 'resultset'",
+        )
     if not resultset:
         return pd.DataFrame(columns=COLUNAS_SAIDA)
 
