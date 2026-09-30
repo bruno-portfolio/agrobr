@@ -99,7 +99,7 @@ async def test_matriz_usa_fetcher_dos_recortes(name: str, monkeypatch: pytest.Mo
             SimpleNamespace(selected_source="anec", attempted_sources=["anec"]),
         )
     )
-    monkeypatch.setattr(datasets.get_dataset(name), "fetch", fetcher)
+    monkeypatch.setattr(type(datasets.get_dataset(name)), "fetch", fetcher)
     monkeypatch.setattr(helpers.asyncio, "sleep", AsyncMock())
     await matrix.test_produto_live(name, "soybean", lambda *_: None, lambda *_: None)
     fetcher.assert_awaited_once_with(
@@ -138,7 +138,7 @@ async def test_sociobio_escolhe_ano_observado_e_ordem_estavel(monkeypatch, empty
             SimpleNamespace(selected_source="conab_sociobio", attempted_sources=["conab_sociobio"]),
         )
     )
-    monkeypatch.setattr(datasets.get_dataset("custo_sociobiodiversidade"), "fetch", fetcher)
+    monkeypatch.setattr(type(datasets.get_dataset("custo_sociobiodiversidade")), "fetch", fetcher)
     monkeypatch.setattr(helpers.asyncio, "sleep", AsyncMock())
     properties = {}
     if empty:
@@ -207,7 +207,7 @@ async def test_desmatamento_consulta_e_registra_uf_do_bioma(
             SimpleNamespace(selected_source="desmatamento", attempted_sources=["desmatamento"]),
         )
     )
-    monkeypatch.setattr(datasets.get_dataset("desmatamento"), "fetch", fetcher)
+    monkeypatch.setattr(type(datasets.get_dataset("desmatamento")), "fetch", fetcher)
     monkeypatch.setattr(helpers.asyncio, "sleep", AsyncMock())
     original_args, original_kwargs = matrix.test_datasets_live.LIVE_CASES["desmatamento"]
     before = dict(original_kwargs)
@@ -233,7 +233,7 @@ async def test_censo_consulta_a_primeira_uf_da_cobertura(monkeypatch: pytest.Mon
             SimpleNamespace(selected_source="ibge", attempted_sources=["ibge"]),
         )
     )
-    monkeypatch.setattr(datasets.get_dataset(name), "fetch", fetcher)
+    monkeypatch.setattr(type(datasets.get_dataset(name)), "fetch", fetcher)
     monkeypatch.setattr(helpers.asyncio, "sleep", AsyncMock())
     properties = {}
     await matrix.test_produto_live(name, product, properties.__setitem__, lambda *_: None)
@@ -263,7 +263,7 @@ async def test_sicar_consulta_e_registra_janela_recente(monkeypatch: pytest.Monk
             SimpleNamespace(selected_source="sicar", attempted_sources=["sicar"]),
         )
     )
-    monkeypatch.setattr(datasets.get_dataset("cadastro_rural"), "fetch", fetcher)
+    monkeypatch.setattr(type(datasets.get_dataset("cadastro_rural")), "fetch", fetcher)
     monkeypatch.setattr(helpers.asyncio, "sleep", AsyncMock())
     monkeypatch.setattr(sicar_matrix, "CREATED_AFTER", "2026-08-01")
     properties = {}
