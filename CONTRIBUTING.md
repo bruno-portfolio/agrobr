@@ -127,7 +127,8 @@ from agrobr.cepea.api import indicador
 
 ### Exceções
 
-Use exceções específicas — nunca `except Exception` genérico:
+Use exceções específicas. O `except Exception` genérico fica só como última barreira, como na cascata de fallback do
+`BaseDataset`, que registra o erro e passa para a próxima fonte:
 
 - `httpx.HTTPError` / `httpx.TimeoutException` → erros de rede
 - `ParseError` → layout da fonte mudou
@@ -177,7 +178,7 @@ agrobr/
 │   │   ├── base.py            #    BaseDataset (fallback, contrato, meta)
 │   │   ├── registry.py        #    Auto-descoberta de datasets
 │   │   ├── deterministic.py   #    Modo determinístico (contextvars)
-│   │   └── *.py               #    36 datasets
+│   │   └── *.py               #    53 datasets
 │   │
 │   ├── contracts/             # Schema contracts + validação
 │   ├── schemas/               # JSON schemas gerados
@@ -187,7 +188,7 @@ agrobr/
 │   ├── utils/                 # Helpers compartilhados
 │   └── validators/            # Validação sanity/semântica/estrutural
 │
-├── tests/                     # 5100+ testes
+├── tests/                     # Suíte de testes
 │   ├── conftest.py            # Fixtures globais
 │   ├── helpers.py             # Factories compartilhadas
 │   ├── test_golden.py         # Golden data (non-regression)
@@ -277,7 +278,7 @@ Verifique e documente em `docs/licenses.md` antes do merge:
 | `livre` | Uso irrestrito |
 | `nc` | `warnings.warn()` na primeira chamada |
 | `zona_cinza` | `warnings.warn()` na primeira chamada |
-| `restrito` | Nunca entra em fallback automático |
+| `restrito` | Não entra em fallback automático, salvo exceção declarada em `docs/licenses.md` |
 
 ### 7. Documentação
 
