@@ -140,8 +140,10 @@ def _geographic_match(record: models.TrafegoRecord, state: Pipeline) -> bool:
             continue
         if actual is None or not actual.strip():
             unknown = True
-        elif actual.upper() != expected.upper():
-            return False
+        else:
+            normalizar = query._rodovia if name == "rodovia" else str.upper
+            if normalizar(actual) != normalizar(expected):
+                return False
     if unknown:
         state.geographic_unknown_rows += 1
         state.geographic_unknown_volume += record.volume

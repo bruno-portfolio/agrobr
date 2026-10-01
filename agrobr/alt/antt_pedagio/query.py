@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from typing import Any, Literal, cast
@@ -52,6 +53,10 @@ def _text(name: str, value: str | None) -> str | None:
 
 def chave_texto(value: str) -> str:
     return " ".join(remover_acentos(value).casefold().split())
+
+
+def _rodovia(valor: str) -> str:
+    return re.sub(r"^([A-Z]+)0*(?=[0-9])", r"\1", re.sub(r"[\s-]", "", valor.upper()))
 
 
 def _tipo_veiculo(value: str | None) -> str | None:

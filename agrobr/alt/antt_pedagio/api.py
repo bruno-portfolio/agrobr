@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import importlib
-import re
 import time
 import warnings
 from datetime import date, datetime
@@ -169,10 +168,6 @@ def _pracas_polars(frame: pd.DataFrame) -> Any:
     )
 
 
-def _rodovia(valor: str) -> str:
-    return re.sub(r"^([A-Z]+)0*(?=[0-9])", r"\1", re.sub(r"[\s-]", "", valor.upper()))
-
-
 def _avisar(frame: pd.DataFrame, aviso: str) -> None:
     frame.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
     warnings.warn(aviso, UserWarning, stacklevel=3)
@@ -233,7 +228,9 @@ def _filtrar_pracas(
     if uf is not None:
         mascara &= frame["uf"].eq(uf)
     if rodovia is not None:
-        mascara &= frame["rodovia"].map(_rodovia, na_action="ignore").eq(_rodovia(rodovia))
+        mascara &= (
+            frame["rodovia"].map(query._rodovia, na_action="ignore").eq(query._rodovia(rodovia))
+        )
     if situacao is not None:
         mascara &= frame["situacao"].str.contains(situacao, case=False, na=False, regex=False)
     selecionado = frame[mascara].reset_index(drop=True)
