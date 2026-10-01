@@ -26,7 +26,7 @@ async def _intervalo_entre_consultas() -> None:
 async def test_serie_historica_produto_publicado(
     produto: str, record_property: RecordProperty, apply_live_policy: LivePolicy
 ):
-    kwargs = {"produto": produto, "inicio": 2023, "fim": 2024}
+    kwargs = {"produto": produto, "ano_inicio": 2023, "ano_fim": 2024}
     apply_live_policy("serie_historica_safra", kwargs)
     frame = await datasets.get_dataset("serie_historica_safra").fetch(**kwargs)
     record_property("records_count", len(frame))
@@ -76,7 +76,7 @@ async def _culturas_zarc_observadas(
     record_property: RecordProperty,
     apply_live_policy: LivePolicy,
 ) -> set[str]:
-    kwargs = {"cultura": cultura, "uf": uf, "safra": safra, "use_cache": False}
+    kwargs = {"produto": cultura, "uf": uf, "safra": safra, "use_cache": False}
     apply_live_policy("zoneamento_agricola", kwargs)
     start = time.perf_counter()
     try:
