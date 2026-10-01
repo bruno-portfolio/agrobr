@@ -4,6 +4,7 @@ import os
 import warnings
 from enum import StrEnum
 from pathlib import Path
+from typing import Any
 
 from pydantic import (
     AliasChoices,
@@ -645,19 +646,40 @@ def env_flag(nome: str) -> bool:
         ) from None
 
 
+_NOMES_DA_PASTA_DO_CACHE = ("AGROBR_CACHE_DIR", "AGROBR_CACHE_CACHE_DIR")
+
+
 class CacheSettings(BaseSettings):
     """``AGROBR_CACHE_DIR`` é o nome da pasta; ``AGROBR_CACHE_CACHE_DIR`` segue como alias e perde para ele.
 
-    Vazia, a variável vale o padrão (``~/.agrobr/cache``), e não a pasta corrente.
+    Vazia, a variável vale o padrão (``~/.agrobr/cache``), e não a pasta corrente. O argumento
+    ``cache_dir`` vence as 2 variáveis.
     """
 
     cache_dir: Path = Field(
         default=_CACHE_DIR_PADRAO,
-        validation_alias=AliasChoices("AGROBR_CACHE_DIR", "AGROBR_CACHE_CACHE_DIR"),
+        validation_alias=AliasChoices(*_NOMES_DA_PASTA_DO_CACHE),
     )
     db_name: str = "agrobr.duckdb"
 
     model_config = SettingsConfigDict(env_prefix="AGROBR_CACHE_", populate_by_name=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _argumento_vence_o_ambiente(cls, dados: Any) -> Any:
+        """Descarta as chaves do alias quando o argumento ``cache_dir`` veio.
+
+        Até a 2.11, o pydantic-settings entrega o argumento pelo nome do campo junto das chaves do
+        alias lidas do ambiente, e o par daria ``extra_forbidden``. A partir da 2.12, o argumento já
+        chega sozinho, e nada muda.
+        """
+        if isinstance(dados, dict) and "cache_dir" in dados:
+            return {
+                chave: valor
+                for chave, valor in dados.items()
+                if str(chave).upper() not in _NOMES_DA_PASTA_DO_CACHE
+            }
+        return dados
 
     @field_validator("cache_dir", mode="before")
     @classmethod

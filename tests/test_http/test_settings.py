@@ -79,9 +79,52 @@ class TestCacheDir:
         monkeypatch.setenv(variavel, valor)
         assert constants.CacheSettings().cache_dir == Path.home() / ".agrobr" / "cache"
 
-    def test_argumento_python_prevalece(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("AGROBR_CACHE_DIR", str(tmp_path / "ambiente"))
-        assert constants.CacheSettings(cache_dir=tmp_path / "arg").cache_dir == tmp_path / "arg"
+    @pytest.mark.parametrize(
+        "variaveis",
+        [
+            ("AGROBR_CACHE_DIR",),
+            ("AGROBR_CACHE_CACHE_DIR",),
+            ("AGROBR_CACHE_DIR", "AGROBR_CACHE_CACHE_DIR"),
+        ],
+    )
+    def test_argumento_python_prevalece(self, monkeypatch, tmp_path, variaveis):
+        for variavel in variaveis:
+            monkeypatch.setenv(variavel, str(tmp_path / variavel))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            assert constants.CacheSettings(cache_dir=tmp_path / "arg").cache_dir == tmp_path / "arg"
+
+    @pytest.mark.parametrize("valor", ["", "   "])
+    def test_nova_vazia_com_a_antiga_definida_vale_o_padrao(self, monkeypatch, tmp_path, valor):
+        monkeypatch.setenv("AGROBR_CACHE_DIR", valor)
+        monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "antigo"))
+        assert constants.CacheSettings().cache_dir == Path.home() / ".agrobr" / "cache"
+
+    @pytest.mark.parametrize("nome", ["agrobr_cache_dir", "Agrobr_Cache_Dir"])
+    def test_nome_novo_sem_diferenciar_caixa(self, monkeypatch, tmp_path, nome):
+        monkeypatch.setenv(nome, str(tmp_path / "novo"))
+        assert constants.CacheSettings().cache_dir == tmp_path / "novo"
+
+    def test_nome_novo_em_minusculas_vence_o_antigo(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("agrobr_cache_dir", str(tmp_path / "novo"))
+        monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "antigo"))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            assert constants.CacheSettings().cache_dir == tmp_path / "novo"
+
+    def test_nome_novo_em_minusculas_vazio_com_o_antigo_vale_o_padrao(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("agrobr_cache_dir", "")
+        monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "antigo"))
+        assert constants.CacheSettings().cache_dir == Path.home() / ".agrobr" / "cache"
+
+    def test_nome_novo_no_env_file(self, tmp_path):
+        arquivo = tmp_path / ".env"
+        arquivo.write_text(f"AGROBR_CACHE_DIR={tmp_path / 'dotenv'}\n", encoding="utf-8")
+        assert constants.CacheSettings(_env_file=arquivo).cache_dir == tmp_path / "dotenv"
+
+    def test_nome_novo_no_secrets_dir(self, tmp_path):
+        (tmp_path / "AGROBR_CACHE_DIR").write_text(str(tmp_path / "segredo"), encoding="utf-8")
+        assert constants.CacheSettings(_secrets_dir=tmp_path).cache_dir == tmp_path / "segredo"
 
 
 @pytest.mark.parametrize(

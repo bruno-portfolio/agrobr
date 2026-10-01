@@ -42,7 +42,7 @@ pip install agrobr[all]       # All optional runtime integrations
 |---|---|---|
 | `[pdf]` | `pdfplumber>=0.11.10` | PDF parsing |
 | `[browser]` | `playwright>=1.55.1` | Sites that require JS |
-| `[polars]` | `polars>=0.19.0`, `pyarrow>=14.0.1` | Polars DataFrames |
+| `[polars]` | `polars>=0.20.3`, `pyarrow>=14.0.1` | Polars DataFrames |
 | `[bigquery]` | `basedosdados>=2.0.0` | BigQuery fallback (BCB/SICOR) |
 | `[geo]` | `geopandas>=1.1.4`, `pyogrio>=0.8.0` | GeoDataFrames (SICAR, deforestation, etc) |
 

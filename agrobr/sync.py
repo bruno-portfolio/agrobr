@@ -35,7 +35,7 @@ def run_sync(coro: Awaitable[T]) -> T:
 
     def target() -> None:
         try:
-            outcome.append((True, context.run(asyncio.run, coro)))
+            outcome.append((True, context.run(asyncio.run, coro)))  # type: ignore[arg-type]
         except BaseException as exc:
             outcome.append((False, exc))
 

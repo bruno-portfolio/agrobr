@@ -159,7 +159,7 @@ def _edges(
 
 def _typed_frame(columns: dict[str, list[Any]]) -> pd.DataFrame:
     frame = pd.DataFrame(columns, columns=constants.INCRA_VINCULOS_COLUMNS)
-    temporais = temporal_columns()
+    temporais: dict[str, Any] = temporal_columns()
     for name in frame.columns:
         dtype = (
             "Int64"

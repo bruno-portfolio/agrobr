@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import copy
 import json
 from pathlib import Path
 
 import pytest
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from scripts import reconciliar_preco_diario as reconciliation
 
@@ -16,6 +15,13 @@ CASES = {case["id"]: case for case in MANIFEST["cases"]}
 
 def _html(case: dict) -> str:
     return (GOLDEN / case["file"]).resolve().read_text(encoding="utf-8")
+
+
+def _copia(tag: Tag) -> Tag:
+    """Copia por um novo parse: no bs4 4.12.0, o piso, ``copy.deepcopy`` de um tag da página estoura a recursão."""
+    copia = BeautifulSoup(str(tag), "lxml").find(tag.name)
+    assert isinstance(copia, Tag)
+    return copia
 
 
 @pytest.mark.parametrize("case_id", sorted(cid for cid in CASES if cid.startswith("cepea_")))
@@ -56,7 +62,7 @@ def test_na_unknown_header_is_reported(mutation: str):
     soup = BeautifulSoup(_html(case), "lxml")
     table = soup.select("table.cot-fisicas")[0]
     if mutation == "extra_table":
-        table = copy.deepcopy(table)
+        table = _copia(table)
         soup.select("div.cotacao")[0].append(table)
     table.find_all("tr")[0].find_all(["th", "td"])[1].string = "Valor EUR"
     result = reconciliation.compare_na(case, reconciliation.inventory_na(str(soup)))
@@ -68,8 +74,8 @@ def test_cepea_repeated_title_is_ambiguous():
     case = CASES["cepea_soja"]
     soup = BeautifulSoup(_html(case), "lxml")
     title = soup.select("div.imagenet-table-titulo")[0]
-    title.parent.append(copy.deepcopy(title))
-    title.parent.append(copy.deepcopy(title.find_next("table")))
+    title.parent.append(_copia(title))
+    title.parent.append(_copia(title.find_next("table")))
     result = reconciliation.compare_cepea(case, reconciliation.inventory_cepea(str(soup)))
     assert result["status"] == "mismatch"
     assert "título repetido" in result["problems"][0]
