@@ -309,6 +309,12 @@ async def n2_sicor(http: httpx.AsyncClient, base: str, hoje: date) -> list[dict[
         )
     }
     todos = [registro for registros in regiao_uf.values() for registro in registros]
+    mensal = compare_sicor_totais(
+        somar_sicor(regiao_uf[(ano, mes)]), somar_sicor(municipios), ("RegiaoUF", "SemFiltros")
+    )
+    if not regiao_uf[(ano, mes)] and not municipios:
+        mensal["status"] = "pendente"
+        mensal["problems"] = [f"Nenhum dado publicado em {ano}-{mes:02d} nas duas entidades"]
     return [
         {
             "case": casos[0],
@@ -319,11 +325,7 @@ async def n2_sicor(http: httpx.AsyncClient, base: str, hoje: date) -> list[dict[
         {
             "case": casos[1],
             "mes": f"{ano}-{mes:02d}",
-            **compare_sicor_totais(
-                somar_sicor(regiao_uf[(ano, mes)]),
-                somar_sicor(municipios),
-                ("RegiaoUF", "SemFiltros"),
-            ),
+            **mensal,
         },
     ]
 
@@ -402,11 +404,13 @@ async def run(output: Path) -> int:
     output.write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     mismatches = [entry for entry in report["structure"] if entry["status"] == "mismatch"]
     unavailable = [entry for entry in report["structure"] if entry["status"] == "indisponivel"]
+    pending = [entry for entry in report["structure"] if entry["status"] == "pendente"]
     for entry in report["structure"]:
         print(entry["status"], entry["case"], "; ".join(entry["problems"]))
     print(
-        f"{len(report['structure']) - len(mismatches) - len(unavailable)} ok / "
-        f"{len(mismatches)} mismatch / {len(unavailable)} indisponível -> {output}"
+        f"{len(report['structure']) - len(mismatches) - len(unavailable) - len(pending)} ok / "
+        f"{len(mismatches)} mismatch / {len(unavailable)} indisponível / "
+        f"{len(pending)} pendente -> {output}"
     )
     return 1 if mismatches else 0
 

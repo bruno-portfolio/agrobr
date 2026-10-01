@@ -197,6 +197,32 @@ def compare_json_csv(features: list[dict[str, Any]], body: bytes) -> dict[str, A
     return {"status": "mismatch" if problems else "ok", "cells": cells, "problems": problems}
 
 
+def source_date(value: str | None, *, timestamp: bool = False) -> pd.Timestamp | None:
+    if not value or value == "0001-01-01":
+        return None
+    formats = (
+        (
+            "%Y-%m-%dT%H:%M:%S%z",
+            "%Y-%m-%dT%H:%M:%S.%f%z",
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%dT%H:%M:%S.%f",
+        )
+        if timestamp
+        else ("%Y-%m-%d",)
+    )
+    for date_format in formats:
+        try:
+            parsed = datetime.strptime(value, date_format)
+        except ValueError:
+            continue
+        if timestamp:
+            return pd.Timestamp(
+                parsed.astimezone(UTC) if parsed.tzinfo else parsed.replace(tzinfo=UTC)
+            )
+        return pd.Timestamp(parsed) if 1900 <= parsed.year <= 2099 else None
+    return None
+
+
 def compare_quilombolas(frame: pd.DataFrame, features: list[dict[str, Any]]) -> dict[str, Any]:
     by_id = {feature["id"]: feature for feature in features}
     problems = []
@@ -209,10 +235,12 @@ def compare_quilombolas(frame: pd.DataFrame, features: list[dict[str, Any]]) -> 
             continue
         for raw, column in ALIASES.items():
             expected = feature["properties"][raw]
+            if raw in {"dt_publica", "dt_public1", "dt_titulo", "dt_decreto", "dt_cadastro"}:
+                expected = source_date(expected, timestamp=raw == "dt_cadastro")
             value = record[column]
             observed = None if pd.isna(value) else value
             cells += 1
-            if observed != expected and raw != "dt_cadastro" and len(problems) < 20:
+            if observed != expected and len(problems) < 20:
                 problems.append(f"{record['feature_id']} {column}: {observed!r} × {expected!r}")
     return {"status": "mismatch" if problems else "ok", "cells": cells, "problems": problems}
 
@@ -449,7 +477,7 @@ async def agrobr_outputs() -> tuple[pd.DataFrame, pd.DataFrame, str, pd.DataFram
     administrative, meta = cast(
         "tuple[pd.DataFrame, Any]", await incra.andamento_quilombola(return_meta=True)
     )
-    relation_frame = cast("pd.DataFrame", await incra.vinculos_quilombolas())
+    relation_frame = await incra.vinculos_quilombolas()
     return (
         geographical,
         administrative,

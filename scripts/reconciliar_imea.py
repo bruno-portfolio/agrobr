@@ -99,6 +99,7 @@ def comparar(cliente: httpx.Client, cadeia: int, filtro: dict[str, str]) -> dict
     oficiais = sorted(unicas.values(), key=ordem)
     observadas = publicado(frame)
     problemas: list[str] = []
+    pendencias: list[str] = []
     if len(observadas) != len(oficiais):
         problemas.append(f"linhas: agrobr {len(observadas)} × oficiais {len(oficiais)}")
     divergentes = sum(1 for a, b in zip(observadas, oficiais, strict=False) if a != b)
@@ -112,7 +113,15 @@ def comparar(cliente: httpx.Client, cadeia: int, filtro: dict[str, str]) -> dict
     contagem = collections.Counter(map(chave, distintas.values()))
     repetidas = sum(n - 1 for n in contagem.values() if n > 1)
     if repetidas:
-        problemas.append(f"{repetidas} linhas repetem a chave com valores diferentes")
+        linhas_repetidas = sum(n for n in contagem.values() if n > 1)
+        avisadas = meta.source_details.get("chaves_repetidas", {}).get("linhas")
+        if avisadas == linhas_repetidas:
+            pendencias.append(
+                f"{linhas_repetidas} linhas com chaves repetidas e valores diferentes, "
+                "avisadas no MetaInfo"
+            )
+        else:
+            problemas.append(f"{repetidas} linhas repetem a chave com valores diferentes")
     colapsadas = len(todas) - len(unicas)
     informado = meta.source_details.get("duplicatas_colapsadas", {}).get("linhas")
     if informado != colapsadas:
@@ -125,8 +134,9 @@ def comparar(cliente: httpx.Client, cadeia: int, filtro: dict[str, str]) -> dict
     if meta.source_details.get("indicadores_url") != f"{BASE}/{cadeia}/indicadores":
         problemas.append(f"indicadores_url {meta.source_details}")
     return {
-        "status": "ok" if not problemas else "mismatch",
+        "status": "mismatch" if problemas else "pendente" if pendencias else "ok",
         "problems": problemas,
+        "pendencias": pendencias,
         "linhas_oficiais": len(oficiais),
         "duplicatas_oficiais": colapsadas,
         "linhas_publicadas": len(observadas),
@@ -174,8 +184,9 @@ def run(saida: Path) -> int:
     saida.write_text(
         json.dumps(relatorio, indent=2, ensure_ascii=False, default=str), encoding="utf-8"
     )
-    falhas = sum(check["status"] != "ok" for check in resultados.values())
-    print(f"{len(resultados) - falhas} ok / {falhas} mismatch")
+    falhas = sum(check["status"] == "mismatch" for check in resultados.values())
+    pendentes = sum(check["status"] == "pendente" for check in resultados.values())
+    print(f"{len(resultados) - falhas - pendentes} ok / {falhas} mismatch / {pendentes} pendente")
     return int(falhas > 0)
 
 

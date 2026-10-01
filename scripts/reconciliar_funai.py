@@ -117,6 +117,13 @@ def esperado(linha: dict[str, str], nomes: list[str]) -> dict[str, Any]:
         coluna = PRINCIPAIS.get(nome, nome)
         if bruto == "":
             saida[coluna] = None
+        elif nome == "data_atualizacao":
+            try:
+                data = datetime.strptime(bruto, "%d/%m/%Y")
+            except ValueError:
+                saida[coluna] = None
+            else:
+                saida[coluna] = pd.Timestamp(data) if 1900 <= data.year <= 2099 else None
         elif nome in INTEIROS:
             saida[coluna] = int(bruto)
         elif nome in REAIS:

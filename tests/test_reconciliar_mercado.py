@@ -9,6 +9,7 @@ from typing import Any
 from unittest.mock import AsyncMock
 
 import httpx
+import pandas as pd
 import pytest
 
 from agrobr.bcb import client as sicor_client
@@ -210,6 +211,28 @@ async def test_n2_sicor_ponta_a_ponta_e_indisponibilidade(monkeypatch: pytest.Mo
         ("sicor_total_agrobr_x_regiaouf", "indisponivel"),
         ("sicor_regiaouf_x_semfiltros", "indisponivel"),
     ]
+
+
+@pytest.mark.parametrize("entidade_com_dados", [None, "RegiaoUF", reconciliation.SICOR_MUNICIPIOS])
+async def test_n2_sicor_mes_sem_publicacao_pendente(monkeypatch, entidade_com_dados):
+    async def sicor_mes(_http, _base, entidade, ano, mes):
+        if entidade == entidade_com_dados and (ano, mes) == (2023, 1):
+            return _sicor(f"{entidade}_2023_01.json.gz")
+        return []
+
+    monkeypatch.setattr(reconciliation, "_sicor_mes", sicor_mes)
+    monkeypatch.setattr(
+        reconciliation.sicor_api,
+        "credito_rural_total",
+        AsyncMock(
+            return_value=pd.DataFrame(columns=["uf", "finalidade", "qtd_contratos", "valor"])
+        ),
+    )
+    casos = await reconciliation.n2_sicor(None, "base", date(2023, 2, 1))
+    mensal = casos[1]
+    assert mensal["mes"] == "2023-01"
+    assert mensal["status"] == ("pendente" if entidade_com_dados is None else "mismatch")
+    assert mensal["problems"]
 
 
 async def test_n2_sicor_le_o_mes_pelo_filtro_e_recusa_o_teto(monkeypatch: pytest.MonkeyPatch):

@@ -10,7 +10,7 @@ import tempfile
 import warnings
 import zipfile
 from collections.abc import Callable
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from io import BytesIO
 from pathlib import Path
@@ -19,6 +19,8 @@ from urllib.parse import quote
 
 import httpx
 import pandas as pd
+
+from agrobr import exceptions
 
 BASE = "https://certificacao.incra.gov.br/csv_shp/zip/"
 FILES = {
@@ -95,19 +97,26 @@ def text(value: str) -> str | None:
     return value.strip(" ") or None
 
 
-def dbf_date(value: str) -> date | None:
+def dbf_date(value: str) -> pd.Timestamp | None:
     value = value.strip()
     if value in ("", "00000000"):
         return None
-    return date(int(value[:4]), int(value[4:6]), int(value[6:]))
+    try:
+        parsed = datetime.strptime(value, "%Y%m%d")
+    except ValueError:
+        return None
+    return pd.Timestamp(parsed) if 1900 <= parsed.year <= 2099 else None
 
 
-def day_month_year(value: str) -> date | None:
+def day_month_year(value: str) -> pd.Timestamp | None:
     value = value.strip()
     if not value:
         return None
-    day, month, year = (int(piece) for piece in value.split("/"))
-    return date(year, month, day)
+    try:
+        parsed = datetime.strptime(value, "%d/%m/%Y")
+    except ValueError:
+        return None
+    return pd.Timestamp(parsed) if 1900 <= parsed.year <= 2099 else None
 
 
 def integer(value: str) -> int | None:
@@ -185,9 +194,6 @@ def published(frame: pd.DataFrame) -> list[dict[str, Any]]:
         for column, value in row.items():
             if pd.isna(value):
                 cells[str(column)] = None
-            elif isinstance(value, pd.Timestamp):
-                moment = value.to_pydatetime()
-                cells[str(column)] = moment.date() if moment.time() == moment.min.time() else moment
             else:
                 cells[str(column)] = value.item() if hasattr(value, "item") else value
         rows.append(cells)
@@ -294,14 +300,18 @@ def compare(
 
 def coverage(client: httpx.Client) -> dict[str, Any]:
     missing = []
+    unavailable = []
     for tema in ("sigef", "snci"):
         for uf in UFS:
             response = client.head(url_of(tema, uf))
-            if response.status_code != 200:
+            if tema == "snci" and response.status_code == 404:
+                unavailable.append(f"{tema} {uf}: HTTP 404")
+            elif response.status_code != 200:
                 missing.append(f"{tema} {uf}: HTTP {response.status_code}")
     return {
-        "status": "ok" if not missing else "mismatch",
+        "status": "mismatch" if missing else "indisponivel" if unavailable else "ok",
         "problems": missing,
+        "indisponiveis": unavailable,
         "ufs": len(UFS),
     }
 
@@ -323,8 +333,19 @@ def run(directory: Path, output: Path, sigef_ufs: list[str], snci_ufs: list[str]
         checks["cobertura"] = coverage(client)
         for tema, uf in targets:
             name = f"{tema}_{uf}" if uf else tema
-            outputs = asyncio.run(agrobr_outputs(tema, uf))
+            try:
+                outputs = asyncio.run(agrobr_outputs(tema, uf))
+            except exceptions.SourceUnavailableError as exc:
+                if tema != "snci" or not exc.last_error.startswith("HTTP 404"):
+                    raise
+                checks[name] = {"status": "indisponivel", "problems": [str(exc)]}
+                print(name, checks[name]["status"], checks[name]["problems"], flush=True)
+                continue
             receipts[name] = fetch(client, url_of(tema, uf), directory / f"{name}.zip")
+            if tema == "snci" and receipts[name]["status"] == 404:
+                checks[name] = {"status": "indisponivel", "problems": [f"{name}: HTTP 404"]}
+                print(name, checks[name]["status"], checks[name]["problems"], flush=True)
+                continue
             archive = (directory / f"{name}.zip").read_bytes()
             checks[name] = compare(tema, uf, archive, outputs)
             if cached_sha(tema, uf) != receipts[name]["sha256"]:
@@ -341,8 +362,11 @@ def run(directory: Path, output: Path, sigef_ufs: list[str], snci_ufs: list[str]
     output.write_text(
         json.dumps(result, indent=2, ensure_ascii=False, default=str), encoding="utf-8"
     )
-    failed = sum(check["status"] != "ok" for check in checks.values())
-    print(f"{len(checks) - failed} ok / {failed} mismatch")
+    failed = sum(check["status"] == "mismatch" for check in checks.values())
+    unavailable = sum(check["status"] == "indisponivel" for check in checks.values())
+    print(
+        f"{len(checks) - failed - unavailable} ok / {failed} mismatch / {unavailable} indisponíveis"
+    )
     return int(failed > 0)
 
 

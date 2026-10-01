@@ -48,11 +48,17 @@ CASOS: list[tuple[str, bool, dict[str, Any]]] = [
 ]
 
 
-def valor(bruto: str, tipo: str) -> Any:
+def valor(bruto: str, tipo: str, *, ate: datetime | None = None) -> Any:
     if bruto == "":
         return False if tipo == "sim_nao" else None
     if tipo == "data":
-        return datetime.strptime(bruto, "%Y-%m-%d %H:%M:%S")
+        try:
+            data = datetime.strptime(bruto, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return None
+        if not 1900 <= data.year <= 2099 or (ate is not None and data.date() > ate.date()):
+            return None
+        return pd.Timestamp(data)
     if tipo == "area":
         inteiro, _, fracao = bruto.partition(",")
         return float(Decimal(f"{inteiro}.{fracao or '0'}"))
@@ -64,7 +70,9 @@ def valor(bruto: str, tipo: str) -> Any:
 
 
 def esperado(linha: dict[str, str]) -> dict[str, Any]:
-    return {saida: valor(linha[origem], tipo) for saida, origem, tipo in COLUNAS}
+    edicao = linha.get("ULTIMA_ATUALIZACAO_RELATORIO")
+    ate = datetime.strptime(edicao, "%Y-%m-%d %H:%M:%S") if edicao else None
+    return {saida: valor(linha[origem], tipo, ate=ate) for saida, origem, tipo in COLUNAS}
 
 
 def publicado(frame: pd.DataFrame) -> list[dict[str, Any]]:
@@ -74,8 +82,6 @@ def publicado(frame: pd.DataFrame) -> list[dict[str, Any]]:
         for coluna, bruto in registro.items():
             if bruto is None or bruto is pd.NaT or (not isinstance(bruto, str) and pd.isna(bruto)):
                 linha[str(coluna)] = None
-            elif isinstance(bruto, pd.Timestamp):
-                linha[str(coluna)] = bruto.to_pydatetime()
             else:
                 linha[str(coluna)] = bruto.item() if hasattr(bruto, "item") else bruto
         linhas.append(linha)
@@ -121,8 +127,10 @@ async def saida_agrobr(geo: bool, opcoes: dict[str, Any]) -> tuple[Any, Any]:
     from agrobr import ibama
 
     if geo:
-        return await ibama.embargos_geo(return_meta=True, **opcoes)
-    return await ibama.embargos(return_meta=True, **opcoes)
+        frame, meta = await ibama.embargos_geo(return_meta=True, **opcoes)
+    else:
+        frame, meta = await ibama.embargos(return_meta=True, **opcoes)
+    return frame, meta
 
 
 def comparar(linhas: list[dict[str, str]], geo: bool, opcoes: dict[str, Any]) -> dict[str, Any]:
