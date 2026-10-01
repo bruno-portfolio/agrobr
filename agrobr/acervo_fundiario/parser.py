@@ -40,8 +40,16 @@ BBox = tuple[float, float, float, float]
 
 
 def _read_tabular(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
+    """Com ``bbox``, lê com a geometria e a descarta.
+
+    No GDAL 3.8 (pyogrio < 0.10), o filtro espacial com ``read_geometry=False`` não casa nenhuma
+    feição, e o recorte voltava vazio sem aviso.
+    """
+    if bbox is not None:
+        geo = _read_geo(zip_path, bbox=bbox)
+        return pd.DataFrame(geo.drop(columns=geo.geometry.name))
     pyogrio = check_pyogrio()
-    df = pyogrio.read_dataframe(zip_path, encoding=DBF_ENCODING, read_geometry=False, bbox=bbox)
+    df = pyogrio.read_dataframe(zip_path, encoding=DBF_ENCODING, read_geometry=False)
     return cast(pd.DataFrame, df)
 
 
