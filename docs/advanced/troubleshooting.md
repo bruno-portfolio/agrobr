@@ -265,7 +265,7 @@ agrobr config show
 
 ```bash
 agrobr health           # todas as fontes
-agrobr health --deep    # checagem profunda (faz parsing real)
+agrobr health --deep    # CEPEA: fingerprint contra a baseline do pacote + parse
 ```
 
 ### Inspecionar Cache

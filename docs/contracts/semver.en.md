@@ -6,7 +6,8 @@ granularity. Each dataset has its own `schema_version` (independent of `lib_vers
 ## Rules
 
 The library version also follows SemVer and bumps major when behavior changes
-broadly, even when not every dataset contract changes.
+broadly, even when not every dataset contract changes. The guarantee covers the
+[public API](../api/index.md); the rest of the package is internal and may change in any release.
 
 | Change type | Bump | Example |
 |---|---|---|
@@ -75,7 +76,7 @@ Source-layer modules (`agrobr.cepea`, `agrobr.conab`, etc.) return
 DataFrames with documented columns, but with a **weaker** guarantee than the
 datasets layer. The datasets layer normalizes and validates.
 
-#### `comexstat.exportacao` (v1.0)
+#### `comexstat.exportacao` (v1.1)
 
 | Column | Type | Guarantee |
 |---|---|---|
@@ -85,6 +86,7 @@ datasets layer. The datasets layer normalizes and validates.
 | `uf` | `str` | optional |
 | `kg_liquido` | `float` | optional, >= 0 |
 | `valor_fob_usd` | `float` | optional, >= 0 |
+| `volume_ton` | `float` | optional, >= 0 |
 
 #### `bcb.credito_rural` (v2.0)
 
@@ -102,16 +104,16 @@ datasets layer. The datasets layer normalizes and validates.
 | `area_financiada` | `float` | optional, >= 0 |
 | `fonte` | `str` | required |
 
-#### `inmet.clima_uf` (v1.0)
+#### `inmet.clima_uf` (`clima` contract v3.1)
 
 | Column | Type | Guarantee |
 |---|---|---|
 | `mes` | `date` | required |
 | `uf` | `str` | required |
-| `precip_acum_mm` | `float` | required, >= 0 |
-| `temp_media` | `float` | required |
-| `temp_max_media` | `float` | required |
-| `temp_min_media` | `float` | required |
+| `precip_acum_mm` | `float` | optional, >= 0 |
+| `temp_media` | `float` | optional |
+| `temp_max_media` | `float` | optional |
+| `temp_min_media` | `float` | optional |
 | `num_estacoes` | `int` | optional, >= 0 |
 | `umidade_media` | `float` | optional, 0-100 |
 | `radiacao_media_mj` | `float` | optional, >= 0 |

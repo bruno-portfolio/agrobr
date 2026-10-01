@@ -6,7 +6,8 @@ por dataset. Cada dataset tem `schema_version` proprio (independente de `lib_ver
 ## Regras
 
 A versão da biblioteca também segue SemVer e sobe major quando o comportamento
-muda de forma ampla, mesmo quando nem todo contrato de dataset muda.
+muda de forma ampla, mesmo quando nem todo contrato de dataset muda. A garantia vale para a
+[API pública](../api/index.md); o resto do pacote é interno e pode mudar em qualquer versão.
 
 | Tipo de mudanca | Bump | Exemplo |
 |---|---|---|
@@ -75,7 +76,7 @@ Módulos da source layer (`agrobr.cepea`, `agrobr.conab`, etc.) retornam
 DataFrames com colunas documentadas, mas com garantia **menor** que a
 camada de datasets. A camada de datasets normaliza e valida.
 
-#### `comexstat.exportacao` (v1.0)
+#### `comexstat.exportacao` (v1.1)
 
 | Coluna | Tipo | Garantia |
 |---|---|---|
@@ -85,6 +86,7 @@ camada de datasets. A camada de datasets normaliza e valida.
 | `uf` | `str` | opcional |
 | `kg_liquido` | `float` | opcional, >= 0 |
 | `valor_fob_usd` | `float` | opcional, >= 0 |
+| `volume_ton` | `float` | opcional, >= 0 |
 
 #### `bcb.credito_rural` (v2.0)
 
@@ -102,16 +104,16 @@ camada de datasets. A camada de datasets normaliza e valida.
 | `area_financiada` | `float` | opcional, >= 0 |
 | `fonte` | `str` | obrigatória |
 
-#### `inmet.clima_uf` (v1.0)
+#### `inmet.clima_uf` (contrato `clima` v3.1)
 
 | Coluna | Tipo | Garantia |
 |---|---|---|
 | `mes` | `date` | obrigatória |
 | `uf` | `str` | obrigatória |
-| `precip_acum_mm` | `float` | obrigatória, >= 0 |
-| `temp_media` | `float` | obrigatória |
-| `temp_max_media` | `float` | obrigatória |
-| `temp_min_media` | `float` | obrigatória |
+| `precip_acum_mm` | `float` | opcional, >= 0 |
+| `temp_media` | `float` | opcional |
+| `temp_max_media` | `float` | opcional |
+| `temp_min_media` | `float` | opcional |
 | `num_estacoes` | `int` | opcional, >= 0 |
 | `umidade_media` | `float` | opcional, 0-100 |
 | `radiacao_media_mj` | `float` | opcional, >= 0 |

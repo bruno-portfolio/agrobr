@@ -88,7 +88,7 @@ Todas as configuracoes sao customizaveis via env vars:
 
 ```bash
 docker run -it --rm \
-  -e AGROBR_CACHE_CACHE_DIR=/data/cache \
+  -e AGROBR_CACHE_DIR=/data/cache \
   -e AGROBR_HTTP_TIMEOUT_READ=60 \
   -e AGROBR_HTTP_MAX_RETRIES=5 \
   -v agrobr-data:/data \
@@ -100,6 +100,8 @@ docker run -it --rm \
 | `AGROBR_CACHE_` | Diretorio de cache, nome do banco DuckDB |
 | `AGROBR_HTTP_` | Timeouts, retries, rate limits por fonte |
 | `AGROBR_ALERT_` | Webhooks Slack/Discord, SendGrid |
+
+A lista completa está em [Variáveis de ambiente](../advanced/ambiente.md).
 
 ## Limitações
 

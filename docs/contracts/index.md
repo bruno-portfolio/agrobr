@@ -26,11 +26,11 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 
 Os quatro nomes de datasets Agrofit reutilizam os contratos `agrofit_*` existentes via `_contract_name`; não registram aliases de contrato. São 53 datasets e 88 contratos registrados. `bcb_credito_rural_total` é o contrato de fonte da função `bcb.credito_rural_total`, sem dataset, e `bcb_credito_rural_registro`, o do `agregacao="registro"` do `bcb.credito_rural` e do dataset `credito_rural`. `autorizacoes_defensivos` preserva linhas repetidas publicadas e não possui chave primária artificial.
 
-`series_economicas` reutiliza `bcb_sgs` 2.1 sem alias de contrato. A seleção é por código ou alias SGS, com unidade e frequência dependentes da série. O dataset conserva a proveniência da consulta e não reconstitui revisões históricas.
+`series_economicas` reutiliza `bcb_sgs` 3.0 sem alias de contrato. A seleção é por código ou alias SGS, com unidade e frequência dependentes da série. O dataset conserva a proveniência da consulta e não reconstitui revisões históricas.
 
 Os dois [datasets de cultivares](../api/cultivares.md) reutilizam os novos contratos de fonte `rnc_registradas` e `rnc_protegidas` 1.0. As chaves são o número do registro RNC e o processo SNPC; certificados compartilhados por processos distintos são preservados. A consulta usa o cadastro corrente, com cache de aquisição de 24 horas e sem reconstrução histórica.
 
-[`uso_do_solo`](uso_do_solo.md) valida a cobertura municipal das coleções 10 e 11 com `mapbiomas_cobertura_municipal` 1.0. As dez colunas incluem `geocodigo` e `id_registro` da publicação; registros distintos com a mesma classificação territorial são preservados. A cobertura e as transições estaduais continuam nos seus contratos 1.0.
+[`uso_do_solo`](uso_do_solo.md) valida a cobertura municipal das coleções 10 e 11 com `mapbiomas_cobertura_municipal` 1.1. As onze colunas incluem `geocodigo` e `id_registro` da publicação e o `cod_municipio` tirado do `geocodigo`; registros distintos com a mesma classificação territorial são preservados. A cobertura e as transições estaduais ficam nos seus contratos 2.0.
 
 `empregadores_lista_suja` também reutiliza contrato de fonte existente, `lista_suja_empregadores` 2.0, sem alias. Sua chave de ID vale dentro do hash de uma publicação; documentos repetidos são preservados.
 
@@ -130,12 +130,23 @@ print(datasets.list_datasets())
 
 # Listar produtos de um dataset
 datasets.list_products("preco_diario")
-# ['soja', 'milho', 'boi', 'cafe', 'cafe_robusta', 'trigo', 'algodao']
+# ['soja', 'milho', 'boi', 'bezerro', 'cafe', 'cafe_robusta', 'trigo', 'algodao']
 
 # Info de um dataset
 datasets.info("preco_diario")
 # {'name': 'preco_diario', 'sources': ['cepea', 'cache'], ...}
+
+# Ficha em texto de um dataset e de todos
+print(datasets.describe("preco_diario"))
+print(datasets.describe_all())
+
+# O objeto do dataset (uma cópia): info e fetch com os argumentos de datasets.preco_diario
+ds = datasets.get_dataset("preco_diario")
+df = await ds.fetch("soja", inicio="2024-01-01")
 ```
+
+Nome desconhecido em `get_dataset`, `info`, `list_products` ou `describe` levanta `UnknownNameError`, que herda de
+`InvalidParameterError` e de `KeyError`, com os nomes válidos na mensagem.
 
 ## Fallback Automático
 

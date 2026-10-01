@@ -1,7 +1,7 @@
 # What agrobr writes to disk
 
 Almost everything lives in the cache folder: `~/.agrobr/cache` by default, or the folder in the
-`AGROBR_CACHE_CACHE_DIR` variable. The exception is snapshots, in `~/.agrobr/snapshots` (or the
+`AGROBR_CACHE_DIR` variable ([environment variables](ambiente.md)). The exception is snapshots, in `~/.agrobr/snapshots` (or the
 `snapshot_path` of `agrobr.config.set_mode`).
 
 Deleting any file in the table below is safe: on the next query, agrobr downloads again what it needs.

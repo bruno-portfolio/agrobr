@@ -93,7 +93,8 @@ The table shows the main sources; each supported source has its own rate limit (
 
 ## Centralized HTTP Configuration
 
-All clients use `HTTPSettings` (env prefix `AGROBR_HTTP_`):
+All clients use `HTTPSettings` (env prefix `AGROBR_HTTP_`). The full list, with defaults, is in
+[Environment variables](ambiente.md).
 
 ```bash
 # Timeouts (seconds)
@@ -400,7 +401,7 @@ from the local run.
 
 ### Supported Channels
 
-```python
+```bash
 # Slack
 export AGROBR_ALERT_SLACK_WEBHOOK=https://hooks.slack.com/...
 
@@ -476,7 +477,7 @@ Configuration
 For integration with monitoring systems:
 
 ```bash
-agrobr doctor --json
+agrobr doctor --formato json
 ```
 
 ### Verbose

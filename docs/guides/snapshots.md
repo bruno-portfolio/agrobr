@@ -63,7 +63,7 @@ for snapshot in list_snapshots():
 
 ```bash
 agrobr snapshot list
-agrobr snapshot list --json
+agrobr snapshot list --formato json
 ```
 
 ## Modo determinístico em `preco_diario`
@@ -111,7 +111,7 @@ set_mode("normal")
 
 O argumento `snapshot` define o nome padrão usado por `load_from_snapshot()`. `snapshot_path` define o diretório base usado tanto na criação quanto na leitura. `set_mode()` não ativa o context manager de `datasets`, e o campo `network_enabled` da configuração não bloqueia requests HTTP.
 
-O comando `agrobr snapshot use <nome>` apenas valida a existência do snapshot e mostra como configurar o processo Python; ele não altera execuções futuras.
+A CLI não tem comando para ativar um snapshot: o `snapshot use` da 1.x saiu na 2.0, porque não alterava execuções futuras. Para ler um snapshot, use `load_from_snapshot()` ou o modo determinístico.
 
 ## Carregando dados de um snapshot
 

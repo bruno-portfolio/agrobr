@@ -26,11 +26,11 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 
 The four Agrofit dataset names reuse the existing `agrofit_*` contracts through `_contract_name`; they do not register contract aliases. There are 53 datasets and 88 registered contracts. `bcb_credito_rural_total` is the source contract of the `bcb.credito_rural_total` function, without a dataset, and `bcb_credito_rural_registro` that of `agregacao="registro"` in `bcb.credito_rural` and in the `credito_rural` dataset. `autorizacoes_defensivos` preserves published duplicate rows and has no artificial primary key.
 
-`series_economicas` reuses `bcb_sgs` 2.1 without a contract alias. Selection uses an SGS code or alias, with units and frequency depending on the series. The dataset preserves query provenance and does not reconstruct historical revisions.
+`series_economicas` reuses `bcb_sgs` 3.0 without a contract alias. Selection uses an SGS code or alias, with units and frequency depending on the series. The dataset preserves query provenance and does not reconstruct historical revisions.
 
 The two [cultivar datasets](../api/cultivares.en.md) reuse the new `rnc_registradas` and `rnc_protegidas` 1.0 source contracts. Keys are the RNC registration number and the SNPC application number; certificates shared by distinct applications are preserved. Queries use the current registry, with a 24-hour acquisition cache and no historical reconstruction.
 
-[`uso_do_solo`](uso_do_solo.en.md) validates municipal coverage from collections 10 and 11 with `mapbiomas_cobertura_municipal` 1.0. Its ten columns include the published `geocodigo` and `id_registro`; distinct records sharing a territorial classification are preserved. State coverage and transitions retain their existing 1.0 contracts.
+[`uso_do_solo`](uso_do_solo.en.md) validates municipal coverage from collections 10 and 11 with `mapbiomas_cobertura_municipal` 1.1. Its eleven columns include the published `geocodigo` and `id_registro` and the `cod_municipio` taken from `geocodigo`; distinct records sharing a territorial classification are preserved. State coverage and transitions keep their 2.0 contracts.
 
 `empregadores_lista_suja` also reuses an existing source contract, `lista_suja_empregadores` 2.0, without an alias. Its ID key applies within one publication content hash; repeated documents are preserved.
 
@@ -130,12 +130,23 @@ print(datasets.list_datasets())
 
 # List a dataset's products
 datasets.list_products("preco_diario")
-# ['soja', 'milho', 'boi', 'cafe', 'cafe_robusta', 'trigo', 'algodao']
+# ['soja', 'milho', 'boi', 'bezerro', 'cafe', 'cafe_robusta', 'trigo', 'algodao']
 
 # Dataset info
 datasets.info("preco_diario")
 # {'name': 'preco_diario', 'sources': ['cepea', 'cache'], ...}
+
+# Text sheet of one dataset and of all of them
+print(datasets.describe("preco_diario"))
+print(datasets.describe_all())
+
+# The dataset object (a copy): info and fetch with the arguments of datasets.preco_diario
+ds = datasets.get_dataset("preco_diario")
+df = await ds.fetch("soja", inicio="2024-01-01")
 ```
+
+An unknown name in `get_dataset`, `info`, `list_products` or `describe` raises `UnknownNameError`, which inherits from
+`InvalidParameterError` and `KeyError`, with the valid names in the message.
 
 ## Automatic Fallback
 

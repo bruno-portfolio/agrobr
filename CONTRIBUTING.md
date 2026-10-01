@@ -206,7 +206,7 @@ agrobr/
 
 ```
 agrobr/<fonte>/
-    __init__.py         # Re-exports da API pública
+    __init__.py         # __all__ = a API pública da fonte (docs/api/index.md)
     client.py           # httpx.AsyncClient com retry/timeout
     parser.py           # Parsing do response → DataFrame
     models.py           # Modelos Pydantic v2 (se necessário)
@@ -286,6 +286,8 @@ Verifique e documente em `docs/licenses.md` antes do merge:
 - Contract doc em `docs/contracts/<dataset>.md`
 - Source doc em `docs/sources/<fonte>.md`
 - Atualizar `mkdocs.yml`, `README.md`, `docs/index.md` e `CHANGELOG.md`
+- Acrescentar o módulo à tabela de fontes da [API pública](docs/api/index.md): o que está no `__all__` dele passa a
+  ter garantia de SemVer
 
 ## Gates de publicação
 

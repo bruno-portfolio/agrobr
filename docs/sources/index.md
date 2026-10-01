@@ -2,6 +2,7 @@
 
 O agrobr integra dados de 40 fontes de dados agricolas.
 Todas as fontes suportam `return_meta=True` para rastreabilidade completa.
+O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.md).
 
 ## Visao Geral
 

@@ -79,6 +79,9 @@ plugins:
             IBAMA Embargos: IBAMA Environmental Embargoes
             Embarques ANEC: ANEC Shipments
             Séries econômicas: Economic time series
+            API pública: Public API
+            Variáveis de ambiente: Environment variables
+            Linha de comando: Command line
   - mkdocstrings:
       handlers:
         python:
@@ -165,6 +168,7 @@ nav:
     - zoneamento_agricola: contracts/zoneamento_agricola.md
     - lspa: contracts/lspa.md
   - API Reference:
+    - API pública: api/index.md
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md
     - CONAB Progresso: api/conab_progresso.md
@@ -264,6 +268,8 @@ nav:
     - Resiliência: advanced/resilience.md
     - Troubleshooting: advanced/troubleshooting.md
     - Disco local: advanced/disco.md
+    - Variáveis de ambiente: advanced/ambiente.md
+    - Linha de comando: advanced/cli.md
   - Contratos:
     - SemVer: contracts/semver.md
     - BCB Focus: contracts/bcb_focus.md

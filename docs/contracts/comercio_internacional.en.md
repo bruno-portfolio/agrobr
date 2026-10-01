@@ -46,7 +46,7 @@ The 3 estimation flags (2.1) come from the UN (`isNetWgtEstimated`, `isGrossWgtE
 
 `parceiro=None/world/mundo/"0"` selects the explicit World aggregate. `parceiro="all"/"todos"` preserves all published partners. Do not add aggregate rows to their components. Product accepts agricultural aliases or textual HS, including comma-separated codes.
 
-`exigir_completo=True` requires independent count and disjoint-union evidence. False permits partial output with a warning; HTTP, layout and identity failures interrupt collection. Complete describes the requested slice, without promising final publication for the declarante.
+`exigir_completo=True` requires independent count and disjoint-union evidence. False permits partial output with a warning; HTTP, layout and identity failures interrupt collection. Complete describes the requested slice, without promising final publication for the reporter.
 
 The dataset preserves actual channel, query, resources, hashes, UTC acquisition, coverage and warnings. The top hash and size identify a resource manifest, not a single response body. Deterministic snapshot only supplies an omitted year and does not freeze revisions. Polars conversion follows validation.
 

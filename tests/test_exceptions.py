@@ -104,6 +104,11 @@ def test_unknown_name_error_e_parametro_invalido_e_key_error_sem_aspas():
     assert str(erro) == "Dataset 'xx' não encontrado. Disponíveis: a, b"
 
 
+def test_unknown_name_error_exportado_na_raiz():
+    assert agrobr.UnknownNameError is UnknownNameError
+    assert "UnknownNameError" in agrobr.__all__
+
+
 def test_parse_error_guarda_errors_e_os_cita_na_mensagem():
     errors = [("cepea", "ParseError", "tabela ausente"), ("noticias", "ParseError", "layout")]
     erro = ParseError("preco_diario", 1, "todas as fontes falharam por layout", errors=errors)

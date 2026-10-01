@@ -81,6 +81,19 @@ df = await cftc.cot("005602")
 | `laranja` | FCOJ-A (ICE) | 040701 |
 | `arroz` | ROUGH RICE (CBOT) | 039601 |
 
+A tabela está em `cftc.CFTC_CONTRACTS` (código → nome canônico). `cftc.resolve_contract_codes` devolve os códigos de um
+produto, com a mesma regra do `produto` do `cot`: nome canônico, alias EN ou código; `None` devolve os 12.
+
+```python
+from agrobr import cftc
+
+cftc.CFTC_CONTRACTS["005602"]            # 'soja'
+cftc.resolve_contract_codes("soybeans")  # ['005602']
+cftc.resolve_contract_codes(None)        # os 12 códigos
+```
+
+Produto sem contrato mapeado levanta `InvalidParameterError`, com os valores válidos na mensagem.
+
 ## Dataset semântico
 
 ```python

@@ -2,6 +2,7 @@
 
 agrobr integrates data from 40 agricultural data sources.
 All sources support `return_meta=True` for full traceability.
+What has a SemVer guarantee in each source is in the [public API](../api/index.md).
 
 ## Overview
 

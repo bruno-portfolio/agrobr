@@ -8,13 +8,13 @@ Global supply and demand of agricultural commodities — USDA PSD, through the `
 |--------|------|----------|------|-------------|
 | `codigo_produto` | STRING | No | — | 7-digit PSD code |
 | `produto` | STRING | No | — | agrobr name (`soja`...); outside the registry, official catalog name |
-| `codigo_pais` | STRING | No | — | PSD pais code, not ISO (`CH` China, `E4` EU, `00` world) |
+| `codigo_pais` | STRING | No | — | PSD country code, not ISO (`CH` China, `E4` EU, `00` world) |
 | `pais` | STRING | Yes | — | official name from the countries catalog; `World` for the aggregate |
 | `ano_comercial` | INTEGER | No | — | >= 1960; USDA marketing year, literal (`2024` = 2024/25) |
 | `atributo` | STRING | No | — | official name from the `commodityAttributes` catalog |
-| `atributo_br` | STRING | Yes | — | agrobr label for the balance-sheet atributos; null for the others |
+| `atributo_br` | STRING | Yes | — | agrobr label for the balance-sheet attributes; null for the others |
 | `valor` | FLOAT | Yes | `unidade` column | — |
-| `unidade` | STRING | Yes | — | official unidade from the `unitsOfMeasure` catalog |
+| `unidade` | STRING | Yes | — | official unit from the `unitsOfMeasure` catalog |
 | `codigo_atributo` | INTEGER | No | — | PSD `attributeId` (1.1) |
 | `codigo_unidade` | INTEGER | No | — | PSD `unitId` (1.1) |
 | `ano_atualizacao` | INTEGER | No | — | >= 1960; year of the series' last update (1.1) |
@@ -22,15 +22,15 @@ Global supply and demand of agricultural commodities — USDA PSD, through the `
 
 **PK:** `(codigo_produto, codigo_pais, ano_comercial, atributo)`
 
-Unit per row: `(1000 MT)` for most atributos, `(1000 HA)` for area, `(MT/HA)` for yield; cotton in
+Unit per row: `(1000 MT)` for most attributes, `(1000 HA)` for area, `(MT/HA)` for yield; cotton in
 `1000 480 lb. Bales` (yield in `(KG/HA)`) and coffee in `(1000 60 KG BAGS)`.
 
-`ano_atualizacao`/`mes_atualizacao` is the month in which the USDA last updated the series (pais × marketing
+`ano_atualizacao`/`mes_atualizacao` is the month in which the USDA last updated the series (country × marketing
 year), the same as the gateway's `dataReleaseDates`. It is not the queried WASDE edition: series the month's report did
 not revise keep the old month.
 
 `atributo_br` and the balance identity (beginning stocks + production + imports = supply = exports + consumption +
-losses + ending stocks) are on the [source page](../sources/usda.md#balance-sheet-atributos). Consumption is atributo
+losses + ending stocks) are on the [source page](../sources/usda.md#balance-sheet-attributes). Consumption is attribute
 125 for most products, 126 for sugar and 142 for cotton, which also has losses (150).
 
 Without `ano_comercial`, the source default applies: the current calendar year or, while the PSD has published nothing
@@ -49,8 +49,8 @@ for it (January until the May WASDE), the previous one, with the year used in `s
 
 ## Pivot mode
 
-When `pivotar=True`, each atributo becomes a column: its `atributo_br` when there is one, otherwise the official name.
-Two atributos with the same label in the same series raise `ParseError`. Contract validation is skipped in that case.
+When `pivotar=True`, each attribute becomes a column: its `atributo_br` when there is one, otherwise the official name.
+Two attributes with the same label in the same series raise `ParseError`. Contract validation is skipped in that case.
 
 ## Example
 
@@ -60,10 +60,10 @@ from agrobr import datasets
 # Brazil soybeans — long format
 df = await datasets.oferta_demanda_global("soja")
 
-# Pivot (atributos as columns)
+# Pivot (attributes as columns)
 df = await datasets.oferta_demanda_global("soja", pivotar=True)
 
-# Another pais + specific year
+# Another country + specific year
 df = await datasets.oferta_demanda_global("milho", pais="US", ano_comercial=2023)
 
 # With metadata

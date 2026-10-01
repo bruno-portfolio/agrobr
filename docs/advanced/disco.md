@@ -1,7 +1,7 @@
 # O que o agrobr grava no disco
 
 Quase tudo fica na pasta de cache: `~/.agrobr/cache` por padrão, ou a pasta da variável
-`AGROBR_CACHE_CACHE_DIR`. A exceção são os snapshots, em `~/.agrobr/snapshots` (ou no
+`AGROBR_CACHE_DIR` ([variáveis de ambiente](ambiente.md)). A exceção são os snapshots, em `~/.agrobr/snapshots` (ou no
 `snapshot_path` do `agrobr.config.set_mode`).
 
 Apagar qualquer arquivo da tabela abaixo é seguro: na próxima consulta, o agrobr baixa de novo o que

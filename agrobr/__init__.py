@@ -56,6 +56,7 @@ from agrobr.exceptions import (
     ResourceLimitError,
     SnapshotError,
     SourceUnavailableError,
+    UnknownNameError,
 )
 from agrobr.models import MetaInfo
 
@@ -108,6 +109,7 @@ __all__ = [
     "ResourceLimitError",
     "SnapshotError",
     "SourceUnavailableError",
+    "UnknownNameError",
     "MetaInfo",
     "__version__",
 ]

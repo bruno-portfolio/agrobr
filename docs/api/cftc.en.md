@@ -81,6 +81,19 @@ df = await cftc.cot("005602")
 | `laranja` | FCOJ-A (ICE) | 040701 |
 | `arroz` | ROUGH RICE (CBOT) | 039601 |
 
+The table is `cftc.CFTC_CONTRACTS` (code → canonical name). `cftc.resolve_contract_codes` returns the codes of a product,
+with the same rule as the `produto` of `cot`: canonical name, EN alias or code; `None` returns all 12.
+
+```python
+from agrobr import cftc
+
+cftc.CFTC_CONTRACTS["005602"]            # 'soja'
+cftc.resolve_contract_codes("soybeans")  # ['005602']
+cftc.resolve_contract_codes(None)        # the 12 codes
+```
+
+A product without a mapped contract raises `InvalidParameterError`, with the valid values in the message.
+
 ## Semantic Dataset
 
 ```python

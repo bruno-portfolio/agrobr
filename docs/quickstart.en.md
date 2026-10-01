@@ -139,8 +139,8 @@ async def main():
     # Progress for all crops (latest week)
     df = await conab.progresso_safra()
 
-    # Filter by crop and state
-    df = await conab.progresso_safra(cultura="Soja", estado="MT")
+    # Filter by product and state
+    df = await conab.progresso_safra(produto="soja", uf="MT")
 
     # Harvest only
     df = await conab.progresso_safra(operacao="Colheita")
@@ -154,7 +154,7 @@ asyncio.run(main())
 
 ### Progress Crops
 
-Soybean, Corn 1st, Corn 2nd, Rice, Cotton, Beans 1st, Beans 3rd.
+Soybean, Corn 1st, Corn 2nd, Rice, Cotton, Beans 1st and Wheat.
 
 ## IBGE - PAM and LSPA
 
@@ -428,15 +428,17 @@ rm ~/.agrobr/cache/agrobr.duckdb
 columns and types as the table without it.
 
 `--formato` accepts `table`, `csv` and `json` (any other value exits with code 2), and the output is UTF-8, also when
-redirected on Windows.
+redirected on Windows. Every command and option is in the [CLI reference](advanced/cli.md).
 
 ## Configuration
 
 ### Environment Variables
 
+The full list, with defaults and when each one takes effect, is in [Environment variables](advanced/ambiente.md).
+
 ```bash
 # Cache
-export AGROBR_CACHE_CACHE_DIR=~/.agrobr/cache
+export AGROBR_CACHE_DIR=~/.agrobr/cache
 export AGROBR_CACHE_DB_NAME=agrobr.duckdb
 
 # HTTP
@@ -455,7 +457,7 @@ Set the variables before importing the package. `offline=True` reads data alread
 ```python
 import os
 
-os.environ["AGROBR_CACHE_CACHE_DIR"] = "./my_cache"
+os.environ["AGROBR_CACHE_DIR"] = "./my_cache"
 os.environ["AGROBR_HTTP_TIMEOUT_READ"] = "60"
 os.environ["AGROBR_HTTP_MAX_RETRIES"] = "5"
 

@@ -97,7 +97,8 @@ A tabela mostra as principais fontes; cada uma das fontes suportadas tem seu pr�
 
 ## Configuração HTTP Centralizada
 
-Todos os clients usam `HTTPSettings` (env prefix `AGROBR_HTTP_`):
+Todos os clients usam `HTTPSettings` (env prefix `AGROBR_HTTP_`). A lista completa, com os padrões, está em
+[Variáveis de ambiente](ambiente.md).
 
 ```bash
 # Timeouts (segundos)
@@ -402,7 +403,7 @@ execução local.
 
 ### Canais Suportados
 
-```python
+```bash
 # Slack
 export AGROBR_ALERT_SLACK_WEBHOOK=https://hooks.slack.com/...
 
@@ -478,7 +479,7 @@ Configuration
 Para integração com sistemas de monitoramento:
 
 ```bash
-agrobr doctor --json
+agrobr doctor --formato json
 ```
 
 ### Verbose
