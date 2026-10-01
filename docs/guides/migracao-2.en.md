@@ -40,7 +40,8 @@ In order of risk. Each line points to the section with the details.
     `posicionamento_fundos`, `oferta_demanda_global` and `comercio_internacional`; a normalized `produto` in
     `conab.brasil_total`. Code that only exports the frame gets another schema, without an error ([§87](#87-renamed-output-columns)).
 11. Date columns that were text come as `datetime64` (DERAL, IMEA, the INMET catalogue, ANTAQ and ANTT plazas): a text
-    filter in `dd/mm/yyyy` with a day of 12 or less matches another date, with no warning ([§89](#89-output-dtypes)).
+    filter in `dd/mm/yyyy` with a day of 12 or less matches another date, and DERAL's filter by sheet name (`"Atual"`,
+    `"02-10-23"`) can come back empty, with no warning ([§89](#89-output-dtypes)).
 12. Integers by nature come as `Int64`, text in the pandas default dtype and the empty result with the full result's
     dtypes; 6 contracts from 1.1.0 move to 2.0 because of it ([§89](#89-output-dtypes)).
 13. `AGROBR_CACHE_DIR` now works, and `true`/`yes` now disable the ANEC and Acervo Fundiário caches
@@ -50,35 +51,43 @@ In order of risk. Each line points to the section with the details.
 15. `ibge produtos --pesquisa PAM` queries PAM, no longer LSPA ([§92](#92-cli-formato-in-every-command-and-snapshot-use-removed)).
 16. The dataset and contract catalog, `normalize` and ANEC return copies: mutating the returned object no longer changes
     the next call ([§95](#95-returns-are-copies)).
+17. `mapbiomas.cobertura`, `mapbiomas.transicao` and `datasets.uso_do_solo` without `colecao` read collection 11, no longer
+    10: the same call returns other figures. For the 1.1.0 cut, pass `colecao=10`
+    ([§63](#63-mapbiomas-a-class-outside-the-legend-comes-out-null-with-a-warning)).
+18. From CONAB, `area_colhida` comes out null in `conab.safras` and `estimativa_safra`, and `data_publicacao` is the bulletin
+    date, no longer the day of the query ([§3](#3-conabsafras-moves-to-contract-20)).
 
 **Now raises**
 
-17. HTTP error statuses raise `SourceUnavailableError`, not `httpx.HTTPStatusError`: change the `except`
+19. HTTP error statuses raise `SourceUnavailableError`, not `httpx.HTTPStatusError`: change the `except`
    ([§75](#75-http-error-statuses-sourceunavailableerror-not-httpxhttpstatuserror)).
-18. An argument outside the signature raises `TypeError` (76 functions accepted `**kwargs` and dropped the misspelled name):
+20. An argument outside the signature raises `TypeError` (76 functions accepted `**kwargs` and dropped the misspelled name):
     fix the name ([§78](#78-argument-outside-the-signature-raises-typeerror)).
-19. An impossible argument (unknown state, inverted period) raises `InvalidParameterError` before the network, where 1.1.0
+21. An impossible argument (unknown state, inverted period) raises `InvalidParameterError` before the network, where 1.1.0
     returned empty data or a source error; in 2.0, the rule applies to every source
     ([§66](#66-impossible-arguments-rejected-before-the-network), [§90](#90-errors-the-class-tells-the-cause)).
-20. `as_polars=True` without Polars raises `ImportError` instead of returning pandas: install `agrobr[polars]`
-    ([§8](#8-as_polarstrue-requires-polars)).
-21. The old parameter names (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
-    `max_features` and others) raise `TypeError`: use the new name ([§85](#85-parameter-names-one-vocabulary-across-the-api)).
-22. `as_polars`, `return_meta` and the options after them become keyword-only; in IBGE, the secondary filters too
+22. `as_polars=True` without Polars raises `ImportError` instead of returning pandas: install `agrobr[polars]`
+    ([§8](#8-as_polarstrue-requires-polars)). The extra now requires `polars>=0.20.3`: with an older Polars pinned, the
+    install reports a conflict ([§19](#19-dependencies-failures-and-structured-output)).
+23. The old parameter names (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
+    `max_features` and others) raise `TypeError` (`InvalidParameterError` in functions that accept `**kwargs`, such as
+    `zarc.zoneamento` and `mapbiomas.cobertura`): use the new name
+    ([§85](#85-parameter-names-one-vocabulary-across-the-api)).
+24. `as_polars`, `return_meta` and the options after them become keyword-only; in IBGE, the secondary filters too
     ([§88](#88-flags-and-secondary-filters-by-keyword-only)).
-23. A layout failure in every source of a dataset raises `ParseError`, no longer `SourceUnavailableError`
+25. A layout failure in every source of a dataset raises `ParseError`, no longer `SourceUnavailableError`
     ([§90](#90-errors-the-class-tells-the-cause)).
-24. In the CLI, `--output`, `--json` and `snapshot use` exit with code 2: use `--formato` ([§92](#92-cli-formato-in-every-command-and-snapshot-use-removed)).
+26. In the CLI, `--output`, `--json` and `snapshot use` exit with code 2: use `--formato` ([§92](#92-cli-formato-in-every-command-and-snapshot-use-removed)).
 
 **Removed API**
 
-25. `agrobr.configure()`, the `quality`, `sla`, `export`, `plugins` and `validators.semantic` modules and
+27. `agrobr.configure()`, the `quality`, `sla`, `export`, `plugins` and `validators.semantic` modules and
     `load_baseline_fingerprint` are gone, and `cache.get_policy` now applies to CEPEA only: remove the uses
     ([§9](#9-experimental-modules-were-removed), [§10](#10-agrobrconfigure-was-removed), [§50](#50-dead-code-cleanup),
     [§83](#83-cache-the-cepea-policy-only-and-load_baseline_fingerprint-is-gone)).
     The `uf=` argument of `anda.entregas` and `datasets.fertilizante` is also gone: it was an explicit parameter in 1.1.0,
     and passing it raises `TypeError`, because the PDFs only carry the national total ([§50](#50-dead-code-cleanup)).
-26. The `agrobr.conab.custo_producao` and `agrobr.conab.serie_historica` subpackages are gone: import the functions
+28. The `agrobr.conab.custo_producao` and `agrobr.conab.serie_historica` subpackages are gone: import the functions
     from `agrobr.conab` ([§93](#93-conab-one-path-per-function)).
 
 To stay on the 1.x series while you migrate: `pip install "agrobr<2"`.
@@ -223,7 +232,7 @@ The dataset now uses `ESTIMATIVA_SAFRA_V3_1`, in `agrobr.contracts.estimativa_sa
 
 The previous ten columns remain, with two nullable additions, `ano_lspa` and `mes_lspa`, and two unit columns, `unidade_producao` (`mil_ton`) and `unidade_area` (`mil_ha`), the same from both sources. The key changes from `[safra, produto, uf, levantamento]` to `[fonte, safra, produto, uf, levantamento, ano_lspa, mes_lspa]`. Update database keys, deduplication and schema checks: this identity change requires a major version. Old LSPA rows do not contain enough information to reconstruct the month from the crop year alone; recover it from archived provenance or issue a new explicit query.
 
-The four positional arguments `produto, safra, uf, return_meta` remain valid. New arguments `fonte`, `levantamento`, `mes` and `as_polars` are keyword-only. Use `levantamento` for CONAB and `mes` for LSPA; incompatible combinations fail before network access, and unavailable explicit references are not replaced with another source or period.
+The 3 positional arguments `produto, safra, uf` remain valid; `return_meta` becomes keyword-only ([§88](#88-flags-and-secondary-filters-by-keyword-only)), like the new `fonte`, `levantamento`, `mes` and `as_polars`. Use `levantamento` for CONAB and `mes` for LSPA; incompatible combinations fail before network access, and unavailable explicit references are not replaced with another source or period.
 
 ```python
 from agrobr import datasets
@@ -303,6 +312,10 @@ lspa_rows = df[df["fonte"] == "ibge_lspa"]
 ```
 
 What to do: treat both fields as optional and use nullable pandas dtypes.
+
+`area_colhida` comes out null from CONAB: the bulletin publishes a single area, which 1.x
+copied into both columns. Use `area_plantada`. `data_publicacao` is now the bulletin
+date; in 1.x it was the day of the query.
 
 ## 4. `bcb.credito_rural` moves to contract 2.0
 
@@ -454,7 +467,7 @@ df = await cepea.indicador("soja", as_polars=True)
 # df is polars.DataFrame; without the extra, the call raises ImportError
 ```
 
-What to do: install `agrobr[polars]` or keep `as_polars=False` and use pandas.
+What to do: install `agrobr[polars]` or keep `as_polars=False` and use pandas. The extra requires `polars>=0.20.3`.
 
 ## 9. Experimental modules were removed
 
@@ -728,7 +741,7 @@ another process and a full disk move nothing. See [what agrobr writes to disk](.
 
 Security floors also move to HTTPX 0.28.1, httpcore 1.0.9, lxml 6.1.0, requests 2.33.0, and GeoPandas 1.1.4 in the geo extra. See the rationale in the [dependency policy](dependencies.md).
 
-Upgrade dependencies with the package: minimum pandas 2.2.2, Typer 0.26.0, pdfplumber 0.11.10 for PDF, and pyogrio 0.8.0 for geo. These floors exclude combinations that failed during import, CLI execution, or numeric PDF extraction. SIDRA now uses asynchronous HTTP directly; sidrapy is no longer a dependency.
+Upgrade dependencies with the package: minimum pandas 2.2.2, Typer 0.26.0, pdfplumber 0.11.10 for PDF, pyogrio 0.8.0 for geo, and polars 0.20.3 for polars (the datasets' `as_polars=True` uses the `String` type, which Polars only has from that version on). These floors exclude combinations that failed during import, CLI execution, or numeric PDF extraction. SIDRA now uses asynchronous HTTP directly; sidrapy is no longer a dependency.
 
 Chunked NASA queries fail entirely when any chunk cannot be fetched. Invalid aggregation is rejected before network access. Missing measurements must not be interpreted as complete coverage.
 
@@ -829,7 +842,7 @@ To reproduce an old selection, pass the NCM code or prefix as `produto` (e.g. `c
 
 ## 29. Land Registry: SIGEF and SNCI in all 27 states
 
-`acervo_fundiario.sigef` and `snci` (and the `_geo` variants) no longer refuse states through a fixed list: INCRA publishes both themes for all 27 states, and a state without a file on the server raises `SourceUnavailableError` (HTTP 404). The constants `acervo_fundiario.models.SIGEF_UFS_DISPONIVEIS` and `SNCI_UFS_DISPONIVEIS` were removed. `MetaInfo.source_url` now carries the encoded URL (`Sigef%20Brasil_GO.zip`).
+`acervo_fundiario.sigef` and `snci` (and the `_geo` variants) no longer refuse states through a fixed list: INCRA publishes both themes for all 27 states, and a state without a file on the server raises `SourceUnavailableError` (HTTP 404). The constants `acervo_fundiario.models.SIGEF_UFS_DISPONIVEIS` and `SNCI_UFS_DISPONIVEIS` were removed. `MetaInfo.source_url` now carries the encoded URL (`Sigef%20Brasil_GO.zip`). With `bbox`, `sigef` and `snci` (table) filter by geometry with any pyogrio and GDAL version: in 1.1.0, with pyogrio before 0.10 (GDAL 3.8), they came back empty, with no warning.
 
 ## 30. Rural credit (SICOR): program and insurance type from the official BCB table
 
@@ -1269,7 +1282,8 @@ fallback failed on `uf`.
 
 In 2.0, the 53 datasets type by [contract](../contracts/index.md#global-guarantees): `int` → `Int64`, `float` → `Float64`,
 `str` → `String`, and `bool` → `Boolean`, even when the column is all null; an all-null date column is `Datetime("ns")`. A
-column outside the contract keeps the type of its data.
+column outside the contract keeps the type of its data. That is why the extra requires `polars>=0.20.3`, the first version
+with the `String` type.
 
 ## 56. Embrapa Solos: double-encoded text repaired
 
@@ -1354,6 +1368,10 @@ null, the published `classe_id` stays, and the query emits a `UserWarning` and p
 `mapbiomas_transicao` contracts therefore move to 2.0 (`MAPBIOMAS_COBERTURA_V2` and `MAPBIOMAS_TRANSICAO_V2`): a
 required column that becomes nullable is a major change. Code that filtered `classe.str.startswith("Classe ")` now
 filters `classe.isna()`.
+
+**Collection 11 by default.** Without `colecao`, `mapbiomas.cobertura`, `mapbiomas.transicao` and `datasets.uso_do_solo`
+read collection 11 (1985–2025), no longer 10: the same call returns other figures, and new classes appear, such as
+"Savana Alagada (beta)". For the 1.1.0 cut, pass `colecao=10`.
 
 ## 64. CEPEA: no network and no cache raise an error instead of an empty table
 
@@ -1468,8 +1486,8 @@ turns them all on, and `logging.getLogger("agrobr")` controls agrobr only. `impo
 to its own logs; agrobr's stay in `logging`, as JSON. In 1.1.0, it applied to agrobr's logs too: to see them, configure
 `logging` (`logging.basicConfig` or a handler on the `"agrobr"` logger).
 
-**CLI.** `--verbose` shows INFO logs on standard error; without it, only warnings and errors. Logs come out as JSON, one per
-line; in 1.1.0 they used structlog's console format.
+**CLI.** `--verbose` shows INFO logs on standard error; without it, only warnings and errors. CLI logs come out readable,
+in structlog's console format, without colour and one per line, as in 1.1.0; JSON applies to library use.
 
 ## 74. Datasets: columns in contract order and dates as `datetime64`
 
@@ -1790,7 +1808,8 @@ the published text: filtering `produto == "SOJA"` returns nothing, and the right
 
 `as_polars`, `return_meta` and the options after them become keyword-only in every source and dataset: by position,
 `TypeError`, before any download. Examples: `bcb.credito_rural`, `cepea.indicador` (also `validate_sanity`, `force_refresh`
-and `offline`), `comexstat.exportacao`/`importacao`, `conab.safras`, `balanco` and `brasil_total` (also `levantamento`),
+and `offline`), `comexstat.exportacao`/`importacao`, `conab.safras` (`levantamento` stays in 4th position), `balanco` and
+`brasil_total` (also `levantamento`),
 `conab.custo_producao`, `inmet.*`, `nasa_power.*` (also `parameters`), `alt.anp_diesel.*`, `alt.antt_pedagio.*`,
 `alt.mapa_psr.*` and the matching datasets. In `datasets.cadastro_rural`, the first 7 arguments (`uf` to `criado_apos`) stay
 positional.
@@ -1821,7 +1840,7 @@ labels (crop year, `YYYY-MM`, quarter) stay as text.
 
 | Function | Column | 1.1.0 | 2.0 |
 |---|---|---|---|
-| `deral.condicao_lavouras`, `datasets.condicao_lavouras` | `data` | `dd/mm/yyyy` text | `datetime64[ns]` (contract 2.0) |
+| `deral.condicao_lavouras`, `datasets.condicao_lavouras` | `data` | text with the sheet name: `dd-mm-yyyy`, `dd-mm-yy`, `"Atual"` and `"Anterior"` | `datetime64[ns]` with the cell date (contract 2.0) |
 | `imea.cotacoes` | `data_publicacao` | `YYYY-MM-DD HH:MM:SS` text | `datetime64[ns]` |
 | `inmet.estacoes` | `inicio_operacao`, `DT_FIM_OPERACAO` | ISO text with offset | `datetime64[ns, UTC]`, the same instant |
 | `antaq.movimentacao`, `datasets.movimentacao_portuaria` | `data_atracacao` | text | `datetime64[ns]`, with the time (contract 2.0) |
@@ -1830,12 +1849,18 @@ labels (crop year, `YYYY-MM`, quarter) stay as text.
 A date that does not exist in the source (such as `31/02/2024`) becomes `NaT`, with a warning in `meta.validation_warnings`;
 text that is not a date raises `ParseError`. In FUNAI and INCRA, dates were already `datetime64` in 1.1.0 and stay so: FUNAI's
 `data_atualizacao`, which 1.1.0 read month first, is now read day first (section 34), and INCRA's `0001-01-01` placeholder
-becomes `NaT` (section 25).
+becomes `NaT` (section 25). In INMET, the same instant in UTC can fall on the next day: for the published local date, use
+`.dt.tz_convert("America/Sao_Paulo").dt.date`.
 
 **The text-filter trap.** Comparing a `datetime64` column with `dd/mm/yyyy` text does not raise: pandas reads the text month
 first when the day is 12 or less. `df[df.data == "01/02/2026"]` returns 2 January, with no warning. Compare with
 `pd.Timestamp("2026-02-01")` or `date(2026, 2, 1)`. For the old text, `df["data"].dt.strftime("%d/%m/%Y")`. Exported, the
 text changes too: `to_csv` and `astype(str)` give `2026-09-14`, not `14/09/2026`.
+
+In DERAL, the filter for the current week (`data == "Atual"`) comes back empty, and the filter by sheet name (`"02-10-23"`)
+can come back empty or match another date, with no warning: use `df[df.data == df.data.max()]` or `pd.Timestamp`. A published `-` in `pct`, `plantio_pct` and
+`colheita_pct` becomes 0 (null in 1.1.0), and a sheet whose name differs from the cell date follows the cell, with a
+warning.
 
 **Silent change: integers and measures.**
 
