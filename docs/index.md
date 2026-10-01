@@ -203,7 +203,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 - [Guia Rápido](quickstart.md) — Tutorial completo
 - [Datasets](contracts/index.md) — Contratos e garantias
-- [API Reference](api/cepea.md) — Documentação detalhada
+- [API pública](api/index.md) — Módulos públicos e referência detalhada
 - [Fontes](sources/index.md) — Proveniência e rastreabilidade
 - [Exemplos](https://github.com/bruno-portfolio/agrobr/tree/main/examples) — Scripts de exemplo
 - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb) — Notebook interativo com todas as fontes

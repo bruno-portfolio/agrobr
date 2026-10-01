@@ -82,7 +82,8 @@ BaseDataset._try_sources(produto)
        ├─ Priority 1 source → success? → returns (df, source, meta, attempted)
        ├─ Priority 2 source → success? → returns
        ├─ Priority N source → success? → returns
-       └─ All failed → SourceUnavailableError(errors=[...])
+       ├─ All failed due to layout → ParseError(errors=[...])
+       └─ Other failures exhausted the sources → SourceUnavailableError(errors=[...])
 ```
 
 Each `DatasetSource` encapsulates:
@@ -91,9 +92,21 @@ Each `DatasetSource` encapsulates:
 - `priority` — attempt order (lower = first)
 - `fetch_fn` — async callable that returns `(DataFrame, metadata)`
 
-The `_try_sources()` method tries sources by priority, captures errors
-by category (network, parsing, contract, unexpected) and returns full
-provenance.
+The `_try_sources()` method tries only enabled sources, by priority, and returns
+the first result with full provenance. An empty result is also accepted; when a
+contract is registered, it receives that contract's columns and types.
+
+Network failures (`httpx.HTTPError`, `httpx.TimeoutException`, and `OSError`),
+`ParseError`, `ContractViolationError` raised by the fetcher, and
+`SourceUnavailableError` are recorded and allow the next source to be tried. If
+every attempt fails due to layout, the cascade raises an aggregated `ParseError`.
+Other exhausted cascades, including mixed or contract failures, raise
+`SourceUnavailableError`. Both errors include `errors`, `attempted_sources`,
+and the last cause in `__cause__`.
+
+`InvalidParameterError`, `TypeError`, `CacheMigrationError`, and `ResourceLimitError`
+stop the cascade. `SourceFallbackWarning` also propagates when configured as an
+error. Other programming errors are not caught and do not trigger fallback.
 
 **MetaInfo** includes:
 
@@ -125,9 +138,9 @@ handling.
 |---------|--------|
 | `AgrobrError` | Base of all exceptions |
 | `InvalidParameterError` | Invalid user parameter; also a `ValueError` and stops the cascade |
-| `SourceUnavailableError` | The source did not deliver the data: timeout, connection failure or HTTP error status (after the retries, for the statuses that are retried), with the source, the URL and the status, and the httpx exception as `__cause__`. In a dataset, every source failed: `attempted_sources` and `errors` say which and why |
+| `SourceUnavailableError` | The source did not deliver the data: timeout, connection failure or HTTP error status (after the retries, for the statuses that are retried), with the source, the URL and the status, and the httpx exception as `__cause__`. In a dataset, the sources were exhausted without all failures being layout errors: `attempted_sources` and `errors` say which and why |
 | `NetworkError` | Reserved: still exported, but not raised in 2.0; HTTP error statuses come out as `SourceUnavailableError` |
-| `ParseError` | Layout changed, unexpected HTML/JSON |
+| `ParseError` | Layout changed, unexpected HTML/JSON; in a dataset, aggregates `errors` and `attempted_sources` when all sources fail due to layout |
 | `ContractViolationError` | DataFrame doesn't match contract (columns, types) |
 | `ValidationError` | Pydantic or statistical validation failed |
 | `FingerprintMismatchError` | Page structure changed significantly |
@@ -238,7 +251,11 @@ Some sources require configuration via environment variables:
 | Variable | Source | Required? | Consequence without it |
 |----------|-------|:------------:|----------------------|
 | `AGROBR_USDA_API_KEY` | USDA PSD | Yes | `SourceUnavailableError` before the network |
-| `AGROBR_INMET_TOKEN` | INMET | Yes | HTTP 204 — returns empty without error |
+| `AGROBR_INMET_TOKEN` | INMET | Yes, for the observational API | `SourceUnavailableError`, with instructions to set the token. The station catalog and historical ZIP archives are public |
+
+In `clima_uf`, a missing token is rejected before listing stations. When accessing
+`estacao`, HTTP 204 without a token and HTTP 403 are converted into
+`SourceUnavailableError` with instructions to set `AGROBR_INMET_TOKEN`.
 
 Rate limits and timeouts are also configurable via env vars with the
 `AGROBR_HTTP_` prefix (e.g. `AGROBR_HTTP_RATE_LIMIT_CEPEA=5.0`).

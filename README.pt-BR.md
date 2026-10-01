@@ -107,7 +107,7 @@ print(await cepea.pracas('soja'))   # praças de comercialização por produto
 | Fonte | Função carro-chefe | Doc |
 |-------|--------------------|-----|
 | **B3** futuros agro | `b3.ajustes(data="13/02/2025")`, `b3.posicoes_abertas(data=...)`, `b3.historico(contrato="boi", inicio=..., fim=...)` | [docs/sources/b3.md](https://www.agrobr.dev/docs/sources/b3/) |
-| **CFTC COT** posicionamento de fundos (Chicago/NY) | `cftc.cot("soja", start="2026-05-01")` | [docs/sources/cftc.md](https://www.agrobr.dev/docs/sources/cftc/) |
+| **CFTC COT** posicionamento de fundos (Chicago/NY) | `cftc.cot("soja", inicio="2026-05-01")` | [docs/sources/cftc.md](https://www.agrobr.dev/docs/sources/cftc/) |
 | **IMEA** Mato Grosso | `imea.cotacoes("soja", safra="24/25")` | [docs/sources/imea.md](https://www.agrobr.dev/docs/sources/imea/) |
 | **CONAB CEASA** | `conab.ceasa_precos(produto="tomate", ceasa="SAO PAULO")` | [docs/sources/conab_ceasa.md](https://www.agrobr.dev/docs/sources/conab_ceasa/) |
 | **ANP Diesel** | `alt.anp_diesel.precos_diesel(uf="MT")`, `alt.anp_diesel.vendas_diesel(uf="MT")` | [docs/sources/anp_diesel.md](https://www.agrobr.dev/docs/sources/anp_diesel/) |
@@ -122,8 +122,8 @@ from agrobr import conab, ibge
 # CONAB — safra atual + balanço oferta/demanda
 df = await conab.safras('soja', safra='2024/25')
 df = await conab.balanco('soja')
-df = await conab.serie_historica('soja', inicio=2010, fim=2024)
-df = await conab.progresso_safra(cultura='Soja', estado='MT', operacao='Colheita')
+df = await conab.serie_historica('soja', ano_inicio=2010, ano_fim=2024)
+df = await conab.progresso_safra(produto='Soja', uf='MT', operacao='Colheita')
 catalogo = await conab.catalogo_custos("soja")
 planilha = catalogo["planilha"].max()
 contextos = await conab.catalogo_custos("soja", planilha=planilha)
@@ -192,18 +192,18 @@ df = await bcb.credito_rural('soja', safra='2024/25', programa='Pronamp')
 
 # BCB SGS — séries temporais (Selic, IPCA, IPA agro, câmbio, etc.)
 df = await bcb.sgs('selic', ultimos=12)
-df = await bcb.sgs('ipa_agricola', data_inicial='01/01/2020')
+df = await bcb.sgs('ipa_agricola', inicio='01/01/2020')
 df = await bcb.sgs('pib_agropecuaria')                    # também: ipca, igpm, cdi, tjlp, dolar_ptax_venda...
 
 # BCB PTAX — cotação dólar
-df = await bcb.ptax(data_inicial='01/01/2024', data_final='31/12/2024')
+df = await bcb.ptax(inicio='01/01/2024', fim='31/12/2024')
 
 # BCB Focus — expectativas de mercado
 df = await bcb.focus('PIB Agropecuária')
 
 # MAPA PSR — apólices e sinistros do seguro rural
-df = await alt.mapa_psr.apolices(cultura='soja', ano=2023)
-df = await alt.mapa_psr.sinistros(cultura='soja', uf='MT')
+df = await alt.mapa_psr.apolices(produto='soja', ano=2023)
+df = await alt.mapa_psr.sinistros(produto='soja', uf='MT')
 ```
 
 ### Clima e água
@@ -226,7 +226,7 @@ df = await ana.pivos_irrigacao(uf='MT')
 gdf = await ana.pivos_irrigacao_geo(uf='MT')   # requer agrobr[geo]
 ```
 
-> INMET retorna `SourceUnavailableError` (HTTP 403) sem token. Configure: `export AGROBR_INMET_TOKEN=seu_token`. Para clima sem token, use NASA POWER.
+> A API observacional do INMET levanta `SourceUnavailableError` sem token. Configure: `export AGROBR_INMET_TOKEN=seu_token`. Para clima sem token, use NASA POWER.
 
 ### Ambiental
 
@@ -242,13 +242,13 @@ df = await queimadas.focos(ano=2024, mes=9, uf='MT', bioma='Amazonia')
 df = await desmatamento.prodes(bioma='Cerrado', ano=2022, uf='MT')
 df = await desmatamento.deter(
     bioma='Amazônia', uf='PA',
-    data_inicio='2024-01-01', data_fim='2024-06-30',
+    inicio='2024-01-01', fim='2024-06-30',
 )
 
 # MapBiomas — uso e cobertura da terra (1985-presente)
-df = await mapbiomas.cobertura(estado='MT', ano=2022)
-df = await mapbiomas.transicao(estado='PA')
-df = await mapbiomas.cobertura(nivel='municipio', geocodigo='5107925', ano=2025)
+df = await mapbiomas.cobertura(uf='MT', ano=2022)
+df = await mapbiomas.transicao(uf='PA')
+df = await mapbiomas.cobertura(nivel='municipio', municipio='5107925', ano=2025)
 
 # Variantes geo (requerem agrobr[geo])
 gdf = await desmatamento.prodes_geo(bioma='Cerrado', ano=2022, uf='MT')
@@ -257,7 +257,7 @@ gdf = await queimadas.focos_geo(ano=2024, mes=9, uf='MT')
 
 | Fonte | Função carro-chefe | Doc |
 |-------|--------------------|-----|
-| **MapBiomas Alerta** | `mapbiomas_alerta.alertas(start_date='2024-01-01')` (requer `AGROBR_MAPBIOMAS_ALERTA_TOKEN`) | [docs/sources/mapbiomas_alerta.md](https://www.agrobr.dev/docs/sources/mapbiomas_alerta/) |
+| **MapBiomas Alerta** | `mapbiomas_alerta.alertas(inicio='2024-01-01')` (requer `AGROBR_MAPBIOMAS_ALERTA_TOKEN`) | [docs/sources/mapbiomas_alerta.md](https://www.agrobr.dev/docs/sources/mapbiomas_alerta/) |
 | **IBAMA** embargos | `ibama.embargos(uf='PA')` | [docs/sources/ibama.md](https://www.agrobr.dev/docs/sources/ibama/) |
 | **ICMBio** UCs federais | `icmbio.ucs(uf='AM', grupo='PI')` | [docs/sources/icmbio.md](https://www.agrobr.dev/docs/sources/icmbio/) |
 | **SFB** florestas públicas | `sfb.cnfp(uf='AM')`, `sfb.concessoes(uf='AM')`, `sfb.ifn_conglomerados(uf='MT')` | [docs/sources/sfb.md](https://www.agrobr.dev/docs/sources/sfb/) |
@@ -318,7 +318,7 @@ df = await rnc.protegidas(titular='Embrapa')
 df = await lista_suja.empregadores(uf='PA')
 
 # ZARC — Zoneamento Agrícola de Risco Climático
-df = await zarc.zoneamento(cultura='soja', uf='MT')
+df = await zarc.zoneamento(produto='soja', uf='MT')
 print(zarc.culturas())   # 107 culturas (tábuas anual, perene e rótulos legados)
 ```
 
@@ -386,7 +386,6 @@ Via CLI:
 ```bash
 agrobr snapshot create 2025-Q4 --sources cepea,conab,ibge
 agrobr snapshot list
-agrobr snapshot use 2025-Q4   # valida o snapshot e mostra como ativa-lo no codigo
 agrobr snapshot delete 2025-Q4
 ```
 
@@ -435,7 +434,6 @@ agrobr config show
 # Snapshots
 agrobr snapshot create 2025-Q4 --sources cepea,conab,ibge
 agrobr snapshot list
-agrobr snapshot use 2025-Q4   # valida o snapshot e mostra como ativa-lo no codigo
 ```
 
 ## Datasets disponíveis
@@ -649,7 +647,7 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
 - [Fontes](https://www.agrobr.dev/docs/sources/) — 40 fontes documentadas
-- [API Reference](https://www.agrobr.dev/docs/api/cepea/)
+- [API pública e referência](https://www.agrobr.dev/docs/api/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 - [Portabilidade](https://www.agrobr.dev/docs/porting/) — Guia para portar o agrobr para R, Julia ou outras linguagens
 

@@ -82,7 +82,8 @@ BaseDataset._try_sources(produto)
        ├─ Fonte prioridade 1 → sucesso? → retorna (df, source, meta, attempted)
        ├─ Fonte prioridade 2 → sucesso? → retorna
        ├─ Fonte prioridade N → sucesso? → retorna
-       └─ Todas falharam → SourceUnavailableError(errors=[...])
+       ├─ Todas falharam por layout → ParseError(errors=[...])
+       └─ Outras falhas esgotaram as fontes → SourceUnavailableError(errors=[...])
 ```
 
 Cada `DatasetSource` encapsula:
@@ -91,9 +92,20 @@ Cada `DatasetSource` encapsula:
 - `priority` — ordem de tentativa (menor = primeiro)
 - `fetch_fn` — callable async que retorna `(DataFrame, metadata)`
 
-O método `_try_sources()` tenta fontes por prioridade, captura erros
-por categoria (rede, parsing, contrato, inesperado) e retorna proveniência
-completa.
+O método `_try_sources()` tenta apenas fontes habilitadas, por prioridade, e retorna
+o primeiro resultado obtido com proveniência completa. Um resultado vazio também é
+aceito; quando há contrato registrado, recebe as colunas e os tipos desse contrato.
+
+Falhas de rede (`httpx.HTTPError`, `httpx.TimeoutException` e `OSError`), `ParseError`,
+`ContractViolationError` levantado pelo fetcher e `SourceUnavailableError` são
+registrados e permitem tentar a próxima fonte. Se todas as tentativas falham por
+layout, a cascata levanta `ParseError` agregado. Nos demais casos de esgotamento,
+inclusive falhas mistas ou de contrato, levanta `SourceUnavailableError`. Os dois
+erros incluem `errors`, `attempted_sources` e a última causa em `__cause__`.
+
+`InvalidParameterError`, `TypeError`, `CacheMigrationError` e `ResourceLimitError`
+interrompem a cascata. `SourceFallbackWarning` também propaga quando configurado
+como erro. Outros erros de programação não são capturados nem acionam fallback.
 
 **MetaInfo** inclui:
 
@@ -125,9 +137,9 @@ consistente.
 |---------|--------|
 | `AgrobrError` | Base de todas as exceções |
 | `InvalidParameterError` | Parâmetro do usuário inválido; também é `ValueError` e interrompe a cascata |
-| `SourceUnavailableError` | A fonte não entregou o dado: timeout, falha de conexão ou status HTTP de erro (depois dos retries, nos status que se repetem), com a fonte, a URL e o status, e a exceção do httpx em `__cause__`. No dataset, todas as fontes falharam: `attempted_sources` e `errors` dizem quais e por quê |
+| `SourceUnavailableError` | A fonte não entregou o dado: timeout, falha de conexão ou status HTTP de erro (depois dos retries, nos status que se repetem), com a fonte, a URL e o status, e a exceção do httpx em `__cause__`. No dataset, as fontes se esgotaram sem que todas as falhas fossem de layout: `attempted_sources` e `errors` dizem quais e por quê |
 | `NetworkError` | Reservado: segue exportado, mas não é levantado na 2.0; o status HTTP de erro sai como `SourceUnavailableError` |
-| `ParseError` | Layout mudou, HTML/JSON inesperado |
+| `ParseError` | Layout mudou, HTML/JSON inesperado; no dataset, agrega `errors` e `attempted_sources` quando todas as fontes falham por layout |
 | `ContractViolationError` | DataFrame não bate com contrato (colunas, tipos) |
 | `ValidationError` | Pydantic ou validação estatística falhou |
 | `FingerprintMismatchError` | Estrutura da página mudou significativamente |
@@ -238,7 +250,11 @@ Algumas fontes exigem configuração via variáveis de ambiente:
 | Variável | Fonte | Obrigatória? | Consequência sem ela |
 |----------|-------|:------------:|----------------------|
 | `AGROBR_USDA_API_KEY` | USDA PSD | Sim | `SourceUnavailableError` antes da rede |
-| `AGROBR_INMET_TOKEN` | INMET | Sim | HTTP 204 — retorna vazio sem erro |
+| `AGROBR_INMET_TOKEN` | INMET | Sim, na API observacional | `SourceUnavailableError`, com orientação para definir o token. O catálogo de estações e os ZIPs históricos são públicos |
+
+Em `clima_uf`, a ausência de token é recusada antes de listar estações. No acesso de
+`estacao`, HTTP 204 sem token e HTTP 403 são convertidos em `SourceUnavailableError`
+com orientação para configurar `AGROBR_INMET_TOKEN`.
 
 Rate limits e timeouts também são configuráveis via env vars com prefixo
 `AGROBR_HTTP_` (ex: `AGROBR_HTTP_RATE_LIMIT_CEPEA=5.0`).
