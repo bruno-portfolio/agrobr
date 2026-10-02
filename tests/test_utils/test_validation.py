@@ -86,6 +86,16 @@ class TestValidateUf:
         with pytest.raises(InvalidParameterError, match="UF inválida.*Valores válidos: AC, AL"):
             validate_uf(uf)
 
+    @pytest.mark.parametrize("uf", ["Mato Grosso", " SÃO PAULO ", "Sao Paulo", "Distrito Federal"])
+    def test_nome_completo_segue_recusado(self, uf):
+        with pytest.raises(InvalidParameterError, match="UF inválida.*Valores válidos: AC, AL"):
+            validate_uf(uf)
+
+    @pytest.mark.parametrize("uf", ["Mato", "Grosso", "Estado de São Paulo", "São Paulo/SP"])
+    def test_trecho_do_nome_segue_recusado(self, uf):
+        with pytest.raises(InvalidParameterError, match="UF inválida.*Valores válidos: AC, AL"):
+            validate_uf(uf)
+
 
 class TestValidateYearUf:
     def test_ano_above_current(self):

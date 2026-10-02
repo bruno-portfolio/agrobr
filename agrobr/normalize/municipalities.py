@@ -66,7 +66,8 @@ def _build_codigo_lookup() -> dict[int, MunicipioInfo]:
 
 
 def municipio_para_ibge(nome: str, uf: str | None = None) -> int | None:
-    key = _remover_acentos(nome.lower().strip())
+    key = _remover_acentos(regions._texto(nome, "nome").lower().strip())
+    uf_upper = None if uf is None else regions._texto(uf, "uf").upper().strip()
     lookup = _build_lookup()
 
     matches = lookup.get(key)
@@ -74,7 +75,6 @@ def municipio_para_ibge(nome: str, uf: str | None = None) -> int | None:
         return None
 
     if uf:
-        uf_upper = uf.upper().strip()
         for m in matches:
             if m["uf"] == uf_upper:
                 return m["codigo_ibge"]

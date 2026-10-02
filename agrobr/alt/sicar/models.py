@@ -222,7 +222,7 @@ class SicarImovel(pydantic.BaseModel):
     @pydantic.model_validator(mode="after")
     def validate_dimensions(self) -> Self:
         if self.uf:
-            validate_uf(self.uf)
+            self.uf = validate_uf(self.uf)
         if self.status_imovel and self.status_imovel not in STATUS_VALIDOS:
             raise ValueError("Status invalido")
         if self.tipo_imovel and self.tipo_imovel not in TIPO_VALIDOS:

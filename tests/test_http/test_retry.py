@@ -195,7 +195,7 @@ async def test_zero_tentativas_faz_um_pedido_sem_retry(monkeypatch, via):
             await retry_async(direto, **kwargs)
         with levanta_exatamente(httpx.TimeoutException):
             await with_retry(**kwargs)(decorado)()
-        with levanta_exatamente(SourceUnavailableError, "after 1 attempts"):
+        with levanta_exatamente(SourceUnavailableError, r"after 1 attempt$"):
             await retry_on_status(transporte, source="teste", **kwargs)
     assert [direto.await_count, decorado.await_count, transporte.await_count] == [1, 1, 1]
     espera.assert_not_awaited()
@@ -218,3 +218,20 @@ async def test_negativo_e_recusado_antes_do_pedido(kwargs):
     with levanta_exatamente(InvalidParameterError, "não podem ser negativos"):
         await retry_on_status(func, source="teste", **kwargs)
     func.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    ("tentativas", "sufixo"), [(1, "after 1 attempt"), (2, "after 2 attempts")]
+)
+async def test_mensagem_final_concorda_com_o_numero_de_tentativas(tentativas, sufixo):
+    transporte = AsyncMock(side_effect=httpx.ConnectError("recusada"))
+    status = AsyncMock(return_value=make_mock_response(status_code=503))
+    with patch(RETRY_SLEEP, new_callable=AsyncMock):
+        with levanta_exatamente(SourceUnavailableError) as erro_transporte:
+            await retry_on_status(transporte, source="teste", max_attempts=tentativas)
+        with levanta_exatamente(SourceUnavailableError) as erro_status:
+            await retry_on_status(status, source="teste", max_attempts=tentativas)
+    assert erro_transporte.value.last_error == f"ConnectError: recusada {sufixo}"
+    assert isinstance(erro_transporte.value.__cause__, httpx.ConnectError)
+    assert erro_status.value.last_error == f"HTTP 503 {sufixo}"
+    assert transporte.await_count == status.await_count == tentativas

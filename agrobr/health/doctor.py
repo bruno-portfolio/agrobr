@@ -46,6 +46,7 @@ class DiagnosticsResult:
     cache_expiry: dict[str, dict[str, str]]
     config: dict[str, Any]
     overall_status: str
+    verbose: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -103,6 +104,8 @@ class DiagnosticsResult:
             if s.error:
                 line += f"  ({s.error})"
             lines.append(line)
+            if self.verbose:
+                lines.append(f"      {s.url}" + (f"  [{s.category}]" if s.category else ""))
 
         lines.extend(
             [
@@ -123,6 +126,11 @@ class DiagnosticsResult:
             oldest = stats.get("oldest", "-")
             newest = stats.get("newest", "-")
             lines.append(f"    {fonte.upper()}: {count:,} records ({oldest} to {newest})")
+
+        if self.verbose:
+            lines.extend(["", "Last Collections"])
+            for fonte, coleta in self.last_collections.items():
+                lines.append(f"  {fonte.upper()}: {coleta.isoformat() if coleta else '-'}")
 
         lines.extend(
             [
@@ -230,7 +238,7 @@ def _get_last_collections() -> dict[str, datetime | None]:
     return dict(rows)
 
 
-async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: ARG001
+async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:
     semaphore = asyncio.Semaphore(8)
 
     async def probe(config: SourceHealthConfig) -> SourceStatus:
@@ -274,4 +282,5 @@ async def run_diagnostics(verbose: bool = False) -> DiagnosticsResult:  # noqa: 
             "alternative_source": True,
         },
         overall_status=overall_status,
+        verbose=verbose,
     )

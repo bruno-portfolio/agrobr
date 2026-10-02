@@ -22,6 +22,7 @@ from agrobr import cli, constants
 from agrobr.cache import duckdb_store
 from agrobr.cepea import api as cepea_api
 from agrobr.cli import app
+from agrobr.health.doctor import CacheStats, SourceStatus
 from agrobr.models import Indicador
 from agrobr.normalize import regions
 from agrobr.utils import time as time_utils
@@ -159,6 +160,22 @@ class TestDoctorCommand:
         assert result.exit_code == 1
         assert "Erro" in result.output
 
+    def test_doctor_verbose_mostra_a_url_sondada(self):
+        sonda = SourceStatus("CEPEA", "https://fonte/cepea", "ok", 5)
+        with (
+            patch("agrobr.health.doctor._check_source", AsyncMock(return_value=sonda)),
+            patch(
+                "agrobr.health.doctor._get_cache_stats", return_value=CacheStats("/tmp", 0, 0, {})
+            ),
+            patch("agrobr.health.doctor._get_last_collections", return_value={}),
+        ):
+            normal = runner.invoke(app, ["doctor"])
+            detalhado = runner.invoke(app, ["doctor", "-v"])
+
+        assert (normal.exit_code, detalhado.exit_code) == (0, 0), normal.output
+        assert "https://fonte/cepea" not in normal.stdout
+        assert "https://fonte/cepea" in detalhado.stdout
+
 
 def _indicador(produto: str, praca: str, dia: date, valor: str) -> Indicador:
     return Indicador(
@@ -190,7 +207,7 @@ class TestConabCommands:
         with patch("agrobr.conab.levantamentos", new_callable=AsyncMock, return_value=levs):
             result = runner.invoke(app, ["conab", "levantamentos"])
         assert result.exit_code == 0
-        assert "... e mais 2 levantamentos" in result.output
+        assert result.stdout.count("2025/26") == 12
 
     def test_conab_produtos(self):
         with patch("agrobr.conab.produtos", new_callable=AsyncMock, return_value=["soja", "milho"]):
@@ -626,7 +643,7 @@ def test_todo_formato_da_cli_recusa_valor_fora_da_lista():
             )
         )
 
-    assert len(recusas) == 10
+    assert len(recusas) == 11
     assert recusas == [(nome, 2, "", True) for nome, *_ in recusas]
 
 

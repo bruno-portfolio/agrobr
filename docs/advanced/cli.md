@@ -12,12 +12,12 @@ agrobr health --formato json
 
 - **Opções globais**, antes do comando: `--version` (`-v`) mostra a versão e sai; `--verbose` manda os logs `INFO` para a
   saída de erro.
-- **Formato:** `--formato` (`-o`) é a única opção de formato. Nos comandos de dados, aceita `table` (padrão), `csv` e `json`;
-  no `health`, no `doctor` e no `snapshot list`, aceita `text` (padrão) e `json`.
+- **Formato:** `--formato` (`-o`) é a única opção de formato. Nos comandos de dados e no `conab levantamentos`, aceita
+  `table` (padrão), `csv` e `json`; no `health`, no `doctor` e no `snapshot list`, aceita `text` (padrão) e `json`.
 - **Saída:** os dados vão para a saída padrão, em UTF-8, também redirecionada no Windows. O aviso de progresso
-  (`Consultando ...`) e as mensagens de erro vão para a saída de erro. O `json` sai como lista de registros, com as datas em
-  ISO 8601; o `csv` sai sem índice. Sem dados, só a `table` imprime `Nenhum dado encontrado`: o `csv` sai só com o
-  cabeçalho, e o `json`, com a lista vazia (`[]`).
+  (`Consultando ...`, `Listando levantamentos...`) e as mensagens de erro vão para a saída de erro. O `json` sai como
+  lista de registros, com as datas em ISO 8601; o `csv` sai sem índice. Sem dados, só a `table` imprime
+  `Nenhum dado encontrado`: o `csv` sai só com o cabeçalho, e o `json`, com a lista vazia (`[]`).
 - **Código de saída:**
   - `0`: deu certo;
   - `1`: a consulta falhou, ou a função recusou um valor que a CLI repassou sem conferir, com a mensagem `Erro: ...` na
@@ -46,7 +46,7 @@ tem as mesmas colunas e os mesmos tipos da série.
 | Comando | Lista | Opções |
 |---|---|---|
 | `agrobr conab produtos` | os produtos aceitos pelos comandos da CONAB (`conab.produtos`) | — |
-| `agrobr conab levantamentos` | os 10 primeiros levantamentos de `conab.levantamentos` e quantos faltam | — |
+| `agrobr conab levantamentos` | todos os levantamentos de `conab.levantamentos`, do mais recente ao mais antigo, com `url`, `levantamento`, `safra`, `ano_inicio`, `ano_fim` e `data_publicacao` | `--formato` |
 | `agrobr ibge produtos` | os produtos da PAM (`ibge.produtos_pam`) ou do LSPA (`ibge.produtos_lspa`) | `--pesquisa`/`-p` (`pam` ou `lspa`; padrão `pam`) |
 | `agrobr ibge temas-historico` | os temas do `censo-historico` (`ibge.temas_censo_agro_historico`) | — |
 | `agrobr ibge temas-municipal-1985` | os temas do `censo-municipal-1985` (`ibge.temas_censo_agro_municipal_1985`) | — |
@@ -60,7 +60,9 @@ tem as mesmas colunas e os mesmos tipos da série.
 | `agrobr config show` | pasta do cache, nome do banco, timeout de leitura e total de tentativas em vigor ([variáveis de ambiente](ambiente.md)) | — |
 
 `--deep` só muda o CEPEA: compara o fingerprint da página com a baseline do pacote e faz o parse. No `doctor`, `-v` é o
-`--verbose`; antes do comando, `-v` é o `--version`.
+`--verbose`; antes do comando, `-v` é o `--version`. O `--verbose` do `doctor` acrescenta ao texto a URL sondada de cada
+fonte, com a categoria do resultado quando há uma (`slow`, `soft_block`, `api_key_missing`...), e a última coleta de
+cada fonte no cache. O `json` já traz esses campos e não muda com a opção.
 
 ## Snapshots
 
@@ -72,8 +74,9 @@ tem as mesmas colunas e os mesmos tipos da série.
 
 O `json` do `snapshot list` é uma lista com `name`, `created_at` (ISO 8601), `size_mb`, `sources` e `files`.
 
-A CLI não ativa snapshot para execuções futuras. Para ler um snapshot, use o Python: `load_from_snapshot` ou o modo
-determinístico (`datasets.deterministic("AAAA-MM-DD")`), no [guia de snapshots](../guides/snapshots.md).
+A CLI não ativa snapshot para execuções futuras. Para ler um snapshot, use o Python:
+`load_from_snapshot(..., snapshot_name=<nome>)`, no [guia de snapshots](../guides/snapshots.md). O modo determinístico
+(`datasets.deterministic("AAAA-MM-DD")`) é outro recurso: não lê os arquivos do snapshot.
 
 ## Mudanças da 2.0
 
@@ -82,6 +85,7 @@ determinístico (`datasets.deterministic("AAAA-MM-DD")`), no [guia de snapshots]
 | `agrobr health --output json` | `agrobr health --formato json` |
 | `agrobr doctor --json` | `agrobr doctor --formato json` |
 | `agrobr snapshot list --json` | `agrobr snapshot list --formato json` |
+| `agrobr conab levantamentos`: os 10 primeiros, em texto, com o aviso na saída padrão | todos, em `table`, `csv` ou `json` (`--formato`), com o aviso na saída de erro |
 | `agrobr snapshot use <nome>` | removido: não ativava nada. Use `load_from_snapshot(..., snapshot_name=<nome>)` |
 
 As opções antigas saem com código `2`. O resto da migração está no [guia da 2.0](../guides/migracao-2.md).

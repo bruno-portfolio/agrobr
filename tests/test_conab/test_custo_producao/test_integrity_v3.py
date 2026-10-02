@@ -220,6 +220,17 @@ async def test_public_total_uses_published_values(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_manifesto_registra_a_uf_validada(monkeypatch):
+    mock_http(monkeypatch)
+    selecao = {"planilha": resource("algodao").planilha, "aba": "Barreiras-BA-2025"}
+    sigla = await api.custo_producao("algodao", uf="BA", **selecao)
+    caixa, meta = await api.custo_producao("algodao", uf=" ba ", return_meta=True, **selecao)
+    assert not sigla.empty
+    pd.testing.assert_frame_equal(caixa, sigla)
+    assert meta.source_details["manifest"]["query"]["uf"] == "BA"
+
+
+@pytest.mark.asyncio
 async def test_meta_separa_o_manifesto_dos_bytes_recebidos(monkeypatch):
     calls = mock_http(monkeypatch)
     _, meta = await api.custo_producao_total(

@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import logging
+from datetime import date
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
@@ -159,3 +160,46 @@ def test_filtros_da_cli_chegam_a_api(argumentos, alvo, filtros):
     assert resultado.exit_code == 0, resultado.output
     consulta.assert_awaited_once()
     assert {chave: consulta.await_args.kwargs[chave] for chave in filtros} == filtros
+
+
+LEVANTAMENTOS = [
+    {
+        "url": f"https://www.gov.br/conab/{n}o-levantamento-safra-2025-26/tabela.xlsx",
+        "levantamento": n,
+        "safra": "2025/26",
+        "ano_inicio": 2025,
+        "ano_fim": 26,
+        "data_publicacao": date(2026, n % 12 + 1, 10) if n > 1 else None,
+    }
+    for n in range(12, 0, -1)
+]
+
+
+@pytest.mark.parametrize("formato", ["table", "csv", "json"])
+def test_levantamentos_saem_inteiros_no_formato_pedido(formato):
+    with patch("agrobr.conab.levantamentos", new_callable=AsyncMock, return_value=LEVANTAMENTOS):
+        resultado = CliRunner().invoke(app, ["conab", "levantamentos", "--formato", formato])
+
+    assert resultado.exit_code == 0, resultado.output
+    assert "Listando levantamentos" in resultado.stderr
+    assert "Listando" not in resultado.stdout
+    if formato == "json":
+        esperado = [
+            {
+                **lev,
+                "data_publicacao": lev["data_publicacao"]
+                and f"{lev['data_publicacao']}T00:00:00.000",
+            }
+            for lev in LEVANTAMENTOS
+        ]
+        assert json.loads(resultado.stdout) == esperado
+    elif formato == "csv":
+        linhas = list(csv.DictReader(io.StringIO(resultado.stdout)))
+        assert [int(linha["levantamento"]) for linha in linhas] == list(range(12, 0, -1))
+        assert list(linhas[0]) == list(LEVANTAMENTOS[0])
+        assert (linhas[0]["data_publicacao"], linhas[-1]["data_publicacao"]) == ("2026-01-10", "")
+    else:
+        linhas = resultado.stdout.splitlines()
+        assert len(linhas) == 13
+        assert all(lev["url"] in resultado.stdout for lev in LEVANTAMENTOS)
+        assert "e mais" not in resultado.stdout

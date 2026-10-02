@@ -8,8 +8,9 @@ exigem cadastro (USDA, MapBiomas Alerta e a rota observacional do INMET).
 Defina as variáveis antes de importar o agrobr. Em detalhe:
 
 - os timeouts (`AGROBR_HTTP_TIMEOUT_*`) e o usuário e a senha da CEASA são lidos na importação de cada cliente;
-- a pasta e o nome do banco do CEPEA são lidos no primeiro uso do cache, e o banco fica aberto até o fim do processo.
-  Os outros caches (ZARC, ANEC, Acervo Fundiário, IBAMA, RNC e Agrofit) leem a pasta a cada consulta;
+- a pasta e o nome do banco do CEPEA são lidos no primeiro uso do cache e valem até o fim do processo; a conexão com o
+  banco abre e fecha a cada operação. Os outros caches (ZARC, ANEC, Acervo Fundiário, IBAMA, RNC e Agrofit) leem a
+  pasta a cada consulta;
 - o limite de concorrência de uma fonte (`AGROBR_HTTP_MAX_CONCURRENT_*`) é lido no primeiro pedido a ela no processo;
 - as demais são lidas a cada chamada.
 
@@ -18,11 +19,11 @@ Defina as variáveis antes de importar o agrobr. Em detalhe:
 | Variável | Padrão | O que faz |
 |---|---|---|
 | `AGROBR_CACHE_DIR` | `~/.agrobr/cache` | Pasta de todos os caches ([o que vai para o disco](disco.md)). Vazia vale o padrão |
-| `AGROBR_CACHE_CACHE_DIR` | — | Nome antigo de `AGROBR_CACHE_DIR`, aceito como alias. Com as duas definidas, vale `AGROBR_CACHE_DIR`; se apontarem para pastas diferentes, sai um `UserWarning` |
+| `AGROBR_CACHE_CACHE_DIR` | — | Nome antigo de `AGROBR_CACHE_DIR`, aceito como alias. Com as duas definidas, vale `AGROBR_CACHE_DIR`; se apontarem para pastas diferentes, sai um `UserWarning` com a pasta usada. O argumento `cache_dir` do `CacheSettings` vence as duas, e o aviso diz isso |
 | `AGROBR_CACHE_DB_NAME` | `agrobr.duckdb` | Nome do banco DuckDB do CEPEA, dentro da pasta de cache |
 | `AGROBR_ANEC_CACHE_DISABLED` | desligada | Booleano. Ligada, a ANEC não lê nem grava os PDFs no cache |
 | `AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED` | desligada | Booleano. Ligada, o Acervo Fundiário não lê nem grava os ZIPs no cache, como `use_cache=False` |
-| `AGROBR_ANEC_LIST_TTL` | `300` | Segundos em que a lista de boletins da ANEC fica em memória. Valor que não é número vale `300`; negativo vale `0` |
+| `AGROBR_ANEC_LIST_TTL` | `300` | Segundos em que a lista de boletins da ANEC fica em memória; `0` desliga. Valor que não é número, negativo ou infinito vale `300`, com aviso |
 
 `CacheSettings(cache_dir=...)` no código vence as variáveis.
 
@@ -31,20 +32,20 @@ Defina as variáveis antes de importar o agrobr. Em detalhe:
 | Variável | Padrão | O que faz |
 |---|---|---|
 | `AGROBR_HTTP_TIMEOUT_CONNECT` | `10` | Segundos para abrir a conexão |
-| `AGROBR_HTTP_TIMEOUT_READ` | `30` | Segundos de leitura. Vale como mínimo: o cliente da fonte que fixa um tempo maior fica com o dele ([resiliência](resilience.md#configuracao-http-centralizada)) |
+| `AGROBR_HTTP_TIMEOUT_READ` | `30` | Segundos de leitura. Vale como mínimo: o cliente da fonte que fixa um tempo maior fica com o dele ([resiliência](resilience.md#configuracao-http-centralizada)). Vale também no download da ANTAQ, que usa o requests (os timeouts de escrita e de pool não se aplicam a ele) |
 | `AGROBR_HTTP_TIMEOUT_WRITE` | `10` | Segundos de escrita |
 | `AGROBR_HTTP_TIMEOUT_POOL` | `10` | Segundos de espera por uma conexão livre |
 | `AGROBR_HTTP_MAX_RETRIES` | `3` | **Total** de tentativas por pedido, contando a primeira. `0` vale `1` (sem retry); negativo é recusado com `ValidationError` |
 | `AGROBR_HTTP_RETRY_BASE_DELAY` | `1.0` | Primeira espera entre tentativas, em segundos |
 | `AGROBR_HTTP_RETRY_MAX_DELAY` | `30.0` | Teto da espera entre tentativas, em segundos |
 | `AGROBR_HTTP_RETRY_EXPONENTIAL_BASE` | `2` | Fator da espera a cada nova tentativa |
-| `AGROBR_HTTP_RATE_LIMIT_<FONTE>` | por fonte | Intervalo mínimo, em segundos, entre pedidos à fonte, no processo inteiro |
-| `AGROBR_HTTP_RATE_LIMIT_DEFAULT` | `1.0` | Intervalo das fontes sem variável própria |
+| `AGROBR_HTTP_RATE_LIMIT_<FONTE>` | por fonte | Intervalo mínimo, em segundos, entre pedidos à fonte, no processo inteiro. Número finito maior ou igual a `0` (`0` não espera); negativo, `inf` ou `nan` é recusado com `ValidationError` |
+| `AGROBR_HTTP_RATE_LIMIT_DEFAULT` | `1.0` | Intervalo das fontes sem variável própria, com a mesma validação |
 | `AGROBR_HTTP_MAX_CONCURRENT_<FONTE>` | por fonte | Pedidos simultâneos à fonte. Só existe para `ANA` (1), `ANP_DIESEL` (3), `B3` (3) e `IBGE` (3); valor menor que 1 é recusado com `ValidationError` |
 | `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` | `1` | Pedidos simultâneos das demais fontes; menor que 1 é recusado com `ValidationError` |
 
 `<FONTE>` do intervalo, com o padrão em segundos: `ABIOVE` (3), `ACERVO_FUNDIARIO` (3), `ANA` (2), `ANDA` (3), `ANEC` (3),
-`ANP_DIESEL` (2), `ANTAQ` (1), `ANTT_PEDAGIO` (2), `B3` (1), `B3_ARQUIVOS` (5), `BCB` (1), `CEPEA` (5), `CFTC` (2),
+`ANP_DIESEL` (2), `ANTT_PEDAGIO` (2), `B3` (1), `B3_ARQUIVOS` (5), `BCB` (1), `CEPEA` (5), `CFTC` (2), `CNUC` (2),
 `COMEXSTAT` (2), `COMTRADE` (2), `CONAB` (3), `CONAB_CEASA` (2), `DEFENSIVOS` (2), `DERAL` (3), `DESMATAMENTO` (2),
 `EMBRAPA_SOLOS` (2), `FUNAI` (2), `IBAMA` (2), `IBGE` (1), `ICMBIO` (2), `IMEA` (1), `INCRA` (2), `INMET` (0.5),
 `LISTA_SUJA` (2), `MAPBIOMAS` (2), `MAPBIOMAS_ALERTA` (3), `NASA_POWER` (1), `NOTICIAS_AGRICOLAS` (2), `QUEIMADAS` (1),

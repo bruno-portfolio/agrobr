@@ -47,7 +47,7 @@ def prepare_query(
     except ValidationError as error:
         raise InvalidParameterError(str(error)) from error
     if query.uf is not None:
-        validate_uf(query.uf)
+        query = query.model_copy(update={"uf": validate_uf(query.uf)})
     if get_snapshot() is not None:
         raise InvalidParameterError("Custos CONAB não oferece snapshot imutável para deterministic")
     if as_polars:

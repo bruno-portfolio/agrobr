@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -364,3 +365,36 @@ def test_resolver_municipio_normaliza_nome_inteiro(valor, uf, codigo):
 def test_resolver_municipio_recusa_com_os_candidatos(valor, uf, mensagem):
     with pytest.raises(InvalidParameterError, match=mensagem):
         resolver_municipio(valor, uf)
+
+
+@pytest.mark.parametrize(
+    ("argumentos", "parametro", "valor"),
+    [
+        ((51,), "nome", 51),
+        ((["Cuiabá"],), "nome", ["Cuiabá"]),
+        ((None,), "nome", None),
+        (("Cuiabá", 51), "uf", 51),
+        (("Cuiabá", 0), "uf", 0),
+        (("Cuiabá", False), "uf", False),
+        (("Cuiabá", []), "uf", []),
+        (("Nenhures", 51), "uf", 51),
+    ],
+    ids=[
+        "nome-int",
+        "nome-lista",
+        "nome-none",
+        "uf-int",
+        "uf-zero",
+        "uf-bool",
+        "uf-lista-vazia",
+        "uf-sem-nome",
+    ],
+)
+def test_municipio_para_ibge_recusa_valor_que_nao_e_texto(argumentos, parametro, valor):
+    with pytest.raises(
+        InvalidParameterError, match=re.escape(f"{parametro} deve ser texto, recebeu {valor!r}")
+    ):
+        municipio_para_ibge(*argumentos)
+
+    assert municipio_para_ibge(" cuiaba ", "mt ") == 5103403
+    assert (municipio_para_ibge("Cuiabá", ""), municipio_para_ibge("Nenhures")) == (5103403, None)

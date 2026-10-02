@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -21,7 +21,7 @@ async def fetch_all_structures(output_path: str) -> None:
     from agrobr.constants import Fonte
 
     structures: dict[str, Any] = {
-        "collected_at": datetime.utcnow().isoformat() + "Z",
+        "collected_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "sources": {},
     }
 

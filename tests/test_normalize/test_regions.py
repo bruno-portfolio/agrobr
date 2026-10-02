@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from agrobr.exceptions import InvalidParameterError, UnknownNameError
@@ -9,6 +11,7 @@ from agrobr.normalize.regions import (
     ibge_para_uf,
     listar_regioes,
     listar_ufs,
+    normalizar_bioma,
     normalizar_municipio,
     normalizar_praca,
     normalizar_uf,
@@ -162,3 +165,22 @@ def test_uf_inexistente_levanta_erro_de_parametro_que_segue_key_error(funcao, uf
     with pytest.raises(UnknownNameError, match="UF inválida.*Valores válidos: AC, AL, AM") as erro:
         funcao(uf)
     assert isinstance(erro.value, KeyError)
+
+
+@pytest.mark.parametrize("valor", [51, ["MT"], None], ids=["int", "lista", "none"])
+@pytest.mark.parametrize(
+    ("funcao", "parametro"),
+    [(normalizar_uf, "entrada"), (normalizar_municipio, "nome"), (normalizar_bioma, "bioma")],
+    ids=["uf", "municipio", "bioma"],
+)
+def test_normalizador_recusa_valor_que_nao_e_texto(funcao, parametro, valor):
+    with pytest.raises(
+        InvalidParameterError, match=re.escape(f"{parametro} deve ser texto, recebeu {valor!r}")
+    ):
+        funcao(valor)
+
+
+def test_normalizadores_mantem_o_retorno_do_texto():
+    assert (normalizar_uf(" mato grosso "), normalizar_uf("Atlântida")) == ("MT", None)
+    assert normalizar_municipio("  são   josé dos campos ") == "São José dos Campos"
+    assert (normalizar_bioma(" CERRADO "), normalizar_bioma(" Outro ")) == ("Cerrado", "Outro")

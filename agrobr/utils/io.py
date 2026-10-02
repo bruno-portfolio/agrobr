@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import inspect
 import io
+import struct
 import zipfile
 import zlib
+from collections.abc import Callable
 from typing import IO, Any, Literal
 
 import pandas as pd
@@ -26,6 +29,7 @@ _DOWNLOAD_SIGNATURES = {
     "xls": b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",
     "pdf": b"%PDF",
 }
+_INFLATE_CHUNK = 16 * 1024
 
 
 def validate_download(
@@ -98,35 +102,73 @@ def read_zip_member(
         return stream.read()
 
 
+def _real_expansion(raw: bytes, info: zipfile.ZipInfo, budget: int) -> int:
+    """Bytes que um leitor tira do membro; no deflate, a conta para em ``budget + 1``.
+
+    O deflate vai do cabeçalho local até o fim do stream, sem parar no tamanho comprimido nem no expandido declarados.
+    """
+    signature, name_size, extra_size = struct.unpack_from("<4s22xHH", raw, info.header_offset)
+    if signature != _DOWNLOAD_SIGNATURES["zip"]:
+        raise zipfile.BadZipFile(f"o membro {info.filename} não tem cabeçalho local")
+    start: int = info.header_offset + 30 + name_size + extra_size
+    if info.compress_type == zipfile.ZIP_STORED:
+        return max(0, min(info.compress_size, len(raw) - start))
+    inflater = zlib.decompressobj(-15)
+    total = 0
+    for offset in range(start, len(raw), _INFLATE_CHUNK):
+        total += len(inflater.decompress(raw[offset : offset + _INFLATE_CHUNK], budget - total + 1))
+        if inflater.eof or total > budget:
+            break
+    return total
+
+
 def check_xlsx_expansion(raw: bytes, *, source: str, url: str = "") -> None:
     """Recusa, antes do leitor de planilha, o XLSX que expande além do teto da fonte.
 
-    Soma o tamanho declarado dos membros e confere o CRC de cada um em stream. O calamine não respeita o tamanho
-    declarado: um membro que expande além dele só aparece no CRC. Arquivo que não abre como ZIP segue para o leitor,
-    que dá o erro dele.
+    Soma primeiro o tamanho declarado dos membros e depois mede a expansão real de cada um, com orçamento cumulativo:
+    descomprime o deflate a partir do cabeçalho local até o fim do stream e para assim que o total passa do teto.
+    O calamine não respeita o tamanho declarado e o CRC é escolhido por quem gera o arquivo; por isso nenhum dos dois
+    serve de prova. Membro guardado conta o que cabe no arquivo; outro método de compressão é recusado. Decide pelo
+    diretório central, não pelo início: o ``zipfile`` e o calamine abrem ZIP com dado antes do ``PK``. Arquivo sem
+    diretório central segue para o leitor, que dá o erro dele; ZIP ou deflate ilegível é recusado, porque a expansão
+    real não é conhecida.
     """
-    if not raw.startswith(b"PK"):
+    if not zipfile.is_zipfile(io.BytesIO(raw)):
         return
     limit = _expansion_limit(source)
     try:
         with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-            total = sum(info.file_size for info in archive.infolist())
+            members = archive.infolist()
+        declared = sum(info.file_size for info in members)
+        if declared > limit:
+            raise ResourceLimitError(
+                source,
+                f"o XLSX expande para {declared} bytes, acima do teto de {limit}",
+                url=url,
+            )
+        total = 0
+        for info in members:
+            if info.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
+                raise ResourceLimitError(
+                    source,
+                    f"o membro {info.filename} do XLSX usa a compressão {info.compress_type}; "
+                    "a expansão real não é conhecida",
+                    url=url,
+                )
+            total += _real_expansion(raw, info, limit - total)
             if total > limit:
                 raise ResourceLimitError(
                     source,
-                    f"o XLSX expande para {total} bytes, acima do teto de {limit}",
+                    f"o XLSX expande de fato para mais de {limit} bytes, acima do teto de {limit}",
                     url=url,
                 )
-            wrong = archive.testzip()
-    except (zipfile.BadZipFile, zlib.error, EOFError):
-        return
-    if wrong is not None:
+    except (zipfile.BadZipFile, zlib.error, struct.error, NotImplementedError) as exc:
         raise ResourceLimitError(
             source,
-            f"o membro {wrong} do XLSX não confere com o tamanho e o CRC declarados; "
+            f"o ZIP do XLSX está ilegível ({type(exc).__name__}: {exc}); "
             "a expansão real não é conhecida",
             url=url,
-        )
+        ) from exc
 
 
 def _extract_bytes(data: bytes | io.BytesIO) -> bytes:
@@ -168,6 +210,12 @@ def open_excel_safe(
             ) from fallback_err
 
 
+def _conferir_argumentos(leitor: Callable[..., Any], **kwargs: Any) -> None:
+    """Levanta o ``TypeError`` da chamada (argumento que o pandas não aceita) antes de ler, para não
+    virar ``ParseError`` nem abrir o motor alternativo."""
+    inspect.signature(leitor).bind(None, **kwargs)
+
+
 def read_excel_safe(
     data: bytes | io.BytesIO,
     *,
@@ -181,6 +229,7 @@ def read_excel_safe(
         raise InvalidParameterError(
             f"read_excel_safe lê uma aba por vez; sheet_name deve ser nome ou índice: {sheet_name!r}"
         )
+    _conferir_argumentos(pd.read_excel, **kwargs)
     raw = _extract_bytes(data)
     check_xlsx_expansion(raw, source=source)
     try:
@@ -225,6 +274,7 @@ def read_csv_safe(
             "read_csv_safe lê o arquivo inteiro; chunksize e iterator não são aceitos"
         )
     encoding = detect_encoding_chain(data)
+    _conferir_argumentos(pd.read_csv, encoding=encoding, **kwargs)
     try:
         df: pd.DataFrame = pd.read_csv(io.BytesIO(data), encoding=encoding, **kwargs)
         return df

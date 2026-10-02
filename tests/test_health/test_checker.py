@@ -7,8 +7,10 @@ import json
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx
 import pytest
 
+from agrobr import constants
 from agrobr.constants import Fonte
 from agrobr.exceptions import InvalidParameterError
 from agrobr.health.checker import (
@@ -304,3 +306,64 @@ async def test_concurrency_menor_que_um_e_recusada_antes_dos_checks(executar, co
     ):
         await asyncio.wait_for(executar([Fonte.CEPEA], concurrency=concurrency), timeout=5)
     check.assert_not_awaited()
+
+
+class TestSondaRnc:
+    def test_sonda_usa_a_pagina_que_o_cliente_consulta_por_head(self):
+        config = HEALTH_REGISTRY[Fonte.RNC]
+        assert config.url == constants.RNC_PUBLIC_URLS["registradas"]
+        assert config.method == "HEAD"
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("resposta", "esperado"),
+        [(200, CheckStatus.OK), (httpx.ReadError("conexão encerrada"), CheckStatus.FAILED)],
+        ids=["pagina_no_ar", "read_error"],
+    )
+    async def test_read_error_continua_falha(self, resposta, esperado):
+        cliente = AsyncMock()
+        if isinstance(resposta, Exception):
+            cliente.head.side_effect = resposta
+        else:
+            cliente.head.return_value = MagicMock(status_code=resposta, content=b"", headers={})
+        with patch("httpx.AsyncClient") as fabrica:
+            fabrica.return_value.__aenter__ = AsyncMock(return_value=cliente)
+            fabrica.return_value.__aexit__ = AsyncMock(return_value=None)
+            resultado = await _check_http(HEALTH_REGISTRY[Fonte.RNC])
+        cliente.get.assert_not_awaited()
+        assert resultado.status == esperado
+
+
+@pytest.mark.parametrize(
+    ("destino", "chave_no_destino"),
+    [
+        ("https://outro-host.example/coleta", None),
+        ("http://api.fas.usda.gov/api/psd/commodities", None),
+        ("https://api.fas.usda.gov/api/psd/commodities/", "secreta"),
+    ],
+    ids=["outro_host", "mesmo_host_sem_tls", "mesmo_host"],
+)
+async def test_sonda_com_chave_so_leva_a_chave_na_origem(monkeypatch, destino, chave_no_destino):
+    config = HEALTH_REGISTRY[Fonte.USDA]
+    monkeypatch.setenv("AGROBR_USDA_API_KEY", "secreta")
+    pedidos: list[httpx.Request] = []
+
+    def responder(request: httpx.Request) -> httpx.Response:
+        pedidos.append(request)
+        if len(pedidos) == 1:
+            return httpx.Response(302, headers={"Location": destino})
+        return httpx.Response(200, json=[])
+
+    cliente_real = httpx.AsyncClient
+    monkeypatch.setattr(
+        httpx,
+        "AsyncClient",
+        lambda **kwargs: cliente_real(transport=httpx.MockTransport(responder), **kwargs),
+    )
+    resultado = await _check_http(config)
+
+    assert [(str(p.url), p.headers.get("X-Api-Key")) for p in pedidos] == [
+        (config.url, "secreta"),
+        (destino, chave_no_destino),
+    ]
+    assert resultado.status == CheckStatus.OK

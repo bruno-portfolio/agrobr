@@ -37,6 +37,10 @@ def _extract_retry_after(response: httpx.Response) -> float | None:
         return None
 
 
+def _apos(tentativas: int) -> str:
+    return f"after {tentativas} attempt" if tentativas == 1 else f"after {tentativas} attempts"
+
+
 def _politica(
     settings: constants.HTTPSettings,
     max_attempts: int | None,
@@ -134,7 +138,7 @@ async def retry_on_status(
                 continue
             raise SourceUnavailableError(
                 source=source,
-                last_error=f"{type(exc).__name__}: {exc} after {_max} attempts",
+                last_error=f"{type(exc).__name__}: {exc} {_apos(_max)}",
             ) from exc
 
         if not should_retry_status(response.status_code):
@@ -163,7 +167,7 @@ async def retry_on_status(
     raise SourceUnavailableError(
         source=source,
         url=str(last_response.url),
-        last_error=f"HTTP {last_response.status_code} after {_max} attempts",
+        last_error=f"HTTP {last_response.status_code} {_apos(_max)}",
     )
 
 

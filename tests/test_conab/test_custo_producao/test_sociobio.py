@@ -161,6 +161,15 @@ async def test_api_publica_aceite_sem_escolher_ano_do_arquivo(monkeypatch, year)
         assert frame.unidade_valor.eq("R$/safra").all()
 
 
+async def test_manifesto_registra_a_uf_validada(monkeypatch):
+    helpers.mock_sociobio_http(monkeypatch)
+    sigla = await conab.custo_sociobiodiversidade("Açaí", uf="AM", ano=2024)
+    caixa, meta = await conab.custo_sociobiodiversidade("Açaí", uf="am", ano=2024, return_meta=True)
+    assert not sigla.empty
+    pd.testing.assert_frame_equal(caixa, sigla)
+    assert meta.source_details["manifest"]["query"]["uf"] == "AM"
+
+
 async def test_recursos_ativos_ambiguos_nao_escolhem_maior_ano(monkeypatch):
     original = (helpers.SOCIOBIO_GOLDEN / "catalog_tab.html").read_bytes()
     extra = (

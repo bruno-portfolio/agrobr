@@ -72,6 +72,10 @@ def _uf_valida(uf: object, validas: frozenset[str]) -> str:
     return uf.strip().upper()
 
 
+@overload
+def validate_uf(uf: None) -> None: ...
+@overload
+def validate_uf(uf: str) -> str: ...
 def validate_uf(uf: str | None) -> str | None:
     if uf is None:
         return None

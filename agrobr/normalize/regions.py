@@ -81,6 +81,12 @@ REGIOES: dict[str, list[str]] = {
 }
 
 
+def _texto(valor: object, parametro: str) -> str:
+    if not isinstance(valor, str):
+        raise InvalidParameterError(f"{parametro} deve ser texto, recebeu {valor!r}")
+    return valor
+
+
 def remover_acentos(texto: str) -> str:
     nfkd = unicodedata.normalize("NFKD", texto)
     return "".join(c for c in nfkd if not unicodedata.combining(c))
@@ -98,7 +104,7 @@ NOMES_PARA_UF: dict[str, str] = {
 
 
 def normalizar_uf(entrada: str) -> str | None:
-    entrada_norm = remover_acentos(entrada.strip().lower())
+    entrada_norm = remover_acentos(_texto(entrada, "entrada").strip().lower())
 
     if entrada_norm.upper() in UFS:
         return entrada_norm.upper()
@@ -165,7 +171,7 @@ def listar_regioes() -> list[str]:
 
 
 def normalizar_municipio(nome: str) -> str:
-    nome = nome.strip()
+    nome = _texto(nome, "nome").strip()
 
     nome = re.sub(r"\s+", " ", nome)
 
@@ -226,7 +232,7 @@ BIOMAS_VALIDOS: frozenset[str] = frozenset(BIOMAS.values())
 
 
 def normalizar_bioma(bioma: str) -> str:
-    key = bioma.strip().lower()
+    key = _texto(bioma, "bioma").strip().lower()
     return BIOMAS.get(key, bioma.strip())
 
 

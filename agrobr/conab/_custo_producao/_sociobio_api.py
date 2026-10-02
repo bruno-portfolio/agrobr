@@ -57,7 +57,7 @@ def prepare_query(
             f"ano {query.ano} posterior ao corrente ({time_utils.utcnow().year})"
         )
     if query.uf is not None:
-        validation.validate_uf(query.uf)
+        query = query.model_copy(update={"uf": validation.validate_uf(query.uf)})
     if get_snapshot() is not None:
         raise InvalidParameterError("Custos de sociobiodiversidade não oferecem snapshot imutável")
     if as_polars:

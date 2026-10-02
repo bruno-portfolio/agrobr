@@ -47,6 +47,33 @@ def test_max_concurrent_menor_que_um_e_recusado_na_validacao(monkeypatch, fonte,
         constants.HTTPSettings()
 
 
+RATE_LIMITS = sorted(
+    nome for nome in constants.HTTPSettings.model_fields if nome.startswith("rate_limit_")
+)
+
+
+@pytest.mark.parametrize("nome", RATE_LIMITS)
+@pytest.mark.parametrize(
+    "valor", [-1.0, float("inf"), float("nan")], ids=["negativo", "inf", "nan"]
+)
+def test_rate_limit_negativo_ou_nao_finito_e_recusado_no_argumento(nome, valor):
+    with pytest.raises(pydantic.ValidationError, match=nome):
+        constants.HTTPSettings(**{nome: valor})
+
+
+@pytest.mark.parametrize("valor", ["-0.5", "inf", "-inf", "nan"])
+def test_rate_limit_invalido_no_ambiente_e_recusado(monkeypatch, valor):
+    monkeypatch.setenv("AGROBR_HTTP_RATE_LIMIT_IBGE", valor)
+    with pytest.raises(pydantic.ValidationError, match="rate_limit_ibge"):
+        constants.HTTPSettings()
+
+
+def test_rate_limit_zero_segue_permitido(monkeypatch):
+    monkeypatch.setenv("AGROBR_HTTP_RATE_LIMIT_DEFAULT", "0")
+    assert constants.HTTPSettings().rate_limit_default == 0
+    assert constants.HTTPSettings(rate_limit_cnuc=0).rate_limit_cnuc == 0
+
+
 class TestCacheDir:
     @pytest.fixture(autouse=True)
     def _sem_variaveis(self, monkeypatch):
@@ -65,6 +92,26 @@ class TestCacheDir:
         monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "antigo"))
         with pytest.warns(UserWarning, match="vale AGROBR_CACHE_DIR"):
             assert constants.CacheSettings().cache_dir == tmp_path / "novo"
+
+    def test_aviso_das_variaveis_aponta_o_chamador_e_a_pasta_usada(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("AGROBR_CACHE_DIR", str(tmp_path / "novo"))
+        monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "antigo"))
+        with pytest.warns(UserWarning) as avisos:
+            constants.CacheSettings()
+        (aviso,) = avisos
+        assert f"vale AGROBR_CACHE_DIR ({tmp_path / 'novo'})" in str(aviso.message)
+        assert aviso.filename == __file__
+
+    def test_com_argumento_o_aviso_diz_que_vale_o_argumento(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("AGROBR_CACHE_DIR", str(tmp_path / "novo"))
+        monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "antigo"))
+        with pytest.warns(UserWarning) as avisos:
+            settings = constants.CacheSettings(cache_dir=tmp_path / "arg")
+        (aviso,) = avisos
+        assert settings.cache_dir == tmp_path / "arg"
+        assert f"vale o argumento cache_dir ({tmp_path / 'arg'})" in str(aviso.message)
+        assert "vale AGROBR_CACHE_DIR" not in str(aviso.message)
+        assert aviso.filename == __file__
 
     def test_as_duas_iguais_nao_avisam(self, monkeypatch, tmp_path):
         monkeypatch.setenv("AGROBR_CACHE_DIR", str(tmp_path))

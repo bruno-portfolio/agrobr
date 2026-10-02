@@ -32,6 +32,7 @@ buscar_municipios("santo", limite=-1)  # InvalidParameterError (negative limit)
 # Use the full municipality name and the state when available
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
+municipio_para_ibge(5107602)                    # InvalidParameterError: nome is not text
 
 # Full name or IBGE code, raising instead of guessing
 resolver_municipio("sorriso")           # {'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}
@@ -158,6 +159,7 @@ normalizar_uf("São Paulo")     # "SP"
 normalizar_uf("sp")            # "SP"
 normalizar_uf("SAO PAULO")     # "SP"
 normalizar_uf("mato grosso")   # "MT"
+normalizar_uf(51)              # InvalidParameterError: entrada is not text
 
 uf_para_nome("MT")             # "Mato Grosso"
 uf_para_regiao("MT")           # "Centro-Oeste"
@@ -176,6 +178,11 @@ listar_regioes()               # ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste'
 
 `UnknownNameError` is an `InvalidParameterError` and also a `KeyError`: an existing `except KeyError` still catches it.
 
+`normalizar_uf`, `normalizar_municipio`, `normalizar_bioma` and `municipio_para_ibge` reject anything that is not text
+(a number, a list, `None`) with `InvalidParameterError`, which names the parameter and the value received. With text,
+the return does not change: in `normalizar_uf` and `municipio_para_ibge`, a name that does not match still returns
+`None`; in `normalizar_bioma`, the text itself.
+
 ## Biomes
 
 6 Brazilian biomes. Accepts with/without accents, case-insensitive. Used automatically in `desmatamento`, `queimadas` and `mapbiomas`.
@@ -188,6 +195,7 @@ normalizar_bioma("cerrado")         # "Cerrado"
 normalizar_bioma("mata atlantica")  # "Mata Atlântica"
 normalizar_bioma("  Caatinga  ")    # "Caatinga"
 normalizar_bioma("desconhecido")    # "desconhecido" (passthrough)
+normalizar_bioma(None)              # InvalidParameterError: bioma is not text
 
 BIOMAS_VALIDOS
 # {'Amazônia', 'Caatinga', 'Cerrado', 'Mata Atlântica', 'Pampa', 'Pantanal'}
@@ -228,7 +236,8 @@ lista_safras("2025/26", "2024/25")  # InvalidParameterError (reversed range)
 
 Dates that arrive from outside as text go through `dates.converter_coluna`, with the same rule on pandas 2 and 3: IBAMA
 (`data_embargo`, `data_desembargo`), Acervo Fundiário (SIGEF, SNCI and settlement dates), CFTC (`data`), INMET (`data` of
-the observations), MapBiomas Alerta (`data_deteccao`, `data_publicacao`) and Queimadas (`data_hora_gmt`).
+the observations), MapBiomas Alerta (`data_deteccao`, `data_publicacao`), Queimadas (`data_hora_gmt`), ANA
+(`data_construcao`), ANTAQ (`data_atracacao`), ANTT Toll, FUNAI, IMEA (`data_publicacao`) and INCRA.
 
 - An unreadable value, or one with a year outside 1900–2099 (`DATA_ANO_MINIMO` and `DATA_ANO_MAXIMO`), becomes `NaT`. For
   IBAMA, so does an act date on a day after the file's own edition (`ULTIMA_ATUALIZACAO_RELATORIO`).
@@ -255,6 +264,8 @@ dates.converter_datas(pd.Series(["2024-01-02", "1667-05-31"]), fonte="exemplo")
 
 Conversion between Brazilian agricultural units: bags, tonnes, bushels, arrobas, hectares.
 
+The unit functions return `Decimal`; use `float(...)` before mixing with `float`.
+
 ```python
 from agrobr.normalize import (
     converter, sacas_para_toneladas, toneladas_para_sacas,
@@ -262,18 +273,18 @@ from agrobr.normalize import (
 )
 
 # Generic conversion
-converter(1, "ton", "sc60kg")           # 16.6667 (60kg bags)
-converter(100, "sc60kg", "ton")         # 6.0
-converter(1, "ton", "bu", produto="soja")  # 36.7437 (bushels)
-converter(1, "arroba", "kg")            # 15.0
+converter(1, "ton", "sc60kg")           # Decimal('16.666…') (60kg bags)
+converter(100, "sc60kg", "ton")         # Decimal('6.00')
+converter(1, "ton", "bu", produto="soja")  # Decimal('36.7437…') (bushels)
+converter(1, "arroba", "kg")            # Decimal('15')
 
 # Price shortcuts
-preco_saca_para_tonelada(145.50)        # 2425.0 (BRL/ton from BRL/sc60kg)
-preco_tonelada_para_saca(2425.0)        # 145.5  (BRL/sc60kg from BRL/ton)
+preco_saca_para_tonelada(145.50)        # Decimal('2425.000…') (BRL/ton from BRL/sc60kg)
+preco_tonelada_para_saca(2425.0)        # Decimal('145.500…') (BRL/sc60kg from BRL/ton)
 
 # Weight to volume
-sacas_para_toneladas(1000)              # 60.0
-toneladas_para_sacas(60)                # 1000.0
+sacas_para_toneladas(1000)              # Decimal('60')
+toneladas_para_sacas(60)                # Decimal('1000')
 
 # Invalid input
 converter(1, "galao", "kg")             # InvalidParameterError, listing the mass units

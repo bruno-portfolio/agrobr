@@ -35,7 +35,7 @@ def _place(value: str, sheet: str) -> tuple[str, str, dict[str, str]]:
         local = match[1].strip()
         uf = (match[2] or match[3]).upper()
     try:
-        validation.validate_uf(uf)
+        uf = validation.validate_uf(uf)
     except InvalidParameterError as error:
         raise fail(sheet, str(error)) from error
     return local, uf, evidence

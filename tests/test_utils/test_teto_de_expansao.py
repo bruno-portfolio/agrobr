@@ -32,7 +32,7 @@ FORA_DO_HELPER = {
     ("utils/io.py", "open_zip_member"): "o próprio helper",
     ("inmet/client.py", "historico_membros"): "teto próprio (INMET_HISTORICO_MAX_*)",
     ("conab/_custo_producao/_merged.py", "xlsx_header_merges"): (
-        "roda depois do _workbook, que confere a soma e o CRC do XLSX"
+        "roda depois do _workbook, que confere a soma declarada e a expansão real do XLSX"
     ),
     ("defensivos/snapshot.py", "_read_bundle"): "cache local gravado pelo próprio agrobr",
     ("rnc/snapshot.py", "_read_bundle"): "cache local gravado pelo próprio agrobr",
@@ -224,11 +224,18 @@ def test_bomba_recusada_antes_de_expandir(monkeypatch, leitor):
 
 
 def test_xlsx_com_tamanho_declarado_forjado_e_recusado(monkeypatch):
-    monkeypatch.setitem(constants.MAX_EXPANDED_BYTES, "anp_diesel", 2 * EXPANSAO)
+    monkeypatch.setitem(constants.MAX_EXPANDED_BYTES, "anp_diesel", TETO)
     forjado = _forjar(BOMBA_XLSX, "xl/worksheets/sheet1.xml", 1024)
 
-    with levanta_exatamente(ResourceLimitError, "não confere com o tamanho e o CRC declarados"):
-        anp_parser._read_precos_xlsx(forjado)
+    tracemalloc.start()
+    try:
+        with levanta_exatamente(ResourceLimitError, f"expande de fato para mais de {TETO} bytes"):
+            anp_parser._read_precos_xlsx(forjado)
+        _atual, pico = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+
+    assert pico < EXPANSAO // 2
 
 
 def test_zip_com_tamanho_declarado_forjado_para_no_crc():

@@ -278,21 +278,22 @@ def conab_balanco(
 
 
 @conab_app.command("levantamentos", help="Lista os levantamentos de safra publicados pela CONAB")  # type: ignore[misc, untyped-decorator]
-def conab_levantamentos() -> None:
+def conab_levantamentos(
+    formato: Formato = typer.Option(Formato.TABLE, "--formato", "-o", help="Formato de saida"),
+) -> None:
     import asyncio
 
-    from agrobr import conab
+    import pandas as pd
 
-    typer.echo("Listando levantamentos...")
+    from agrobr import conab
+    from agrobr.conab.models import ConabLevantamento
+
+    typer.echo("Listando levantamentos...", err=True)
 
     try:
         levs = asyncio.run(conab.levantamentos())
 
-        for lev in levs[:10]:
-            typer.echo(f"  {lev['safra']} - {lev['levantamento']}o levantamento")
-
-        if len(levs) > 10:
-            typer.echo(f"  ... e mais {len(levs) - 10} levantamentos")
+        _output_df(pd.DataFrame(levs, columns=list(ConabLevantamento.model_fields)), formato)
 
     except Exception as e:
         typer.echo(f"Erro: {e}", err=True)

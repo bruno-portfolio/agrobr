@@ -6,7 +6,9 @@ from agrobr.exceptions import InvalidParameterError
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("name", ["custo_producao", "custo_producao_total"])
-@pytest.mark.parametrize("selectors", [{"uf": "XX"}, {"ano": True}, {"local": ""}])
+@pytest.mark.parametrize(
+    "selectors", [{"uf": "XX"}, {"uf": "Estado da Bahia"}, {"ano": True}, {"local": ""}]
+)
 async def test_public_invalid_selector_before_acquisition(monkeypatch, name, selectors):
     async def forbidden(*_args, **_kwargs):
         raise AssertionError("Acquisition reached")

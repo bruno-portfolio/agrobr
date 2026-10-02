@@ -117,3 +117,36 @@ async def test_run_diagnostics_expiracao_so_de_fonte_com_cache():
         }
     }
     assert "TTL" not in result.to_rich()
+
+
+async def test_verbose_mostra_a_url_a_categoria_e_a_ultima_coleta_de_cada_fonte():
+    fontes = list(HEALTH_REGISTRY)
+    sondas = [SourceStatus(str(nome).upper(), f"https://fonte/{nome}", "ok", 5) for nome in fontes]
+    sondas[0].status, sondas[0].category = "slow", "slow"
+    coletas = {"cepea": datetime(2026, 9, 30, 18, 5), "conab": None}
+
+    async def diagnosticar(verbose):
+        with (
+            patch("agrobr.health.doctor._check_source", AsyncMock(side_effect=list(sondas))),
+            patch(
+                "agrobr.health.doctor._get_cache_stats", return_value=CacheStats("/tmp", 0, 0, {})
+            ),
+            patch("agrobr.health.doctor._get_last_collections", return_value=coletas),
+            patch("agrobr.health.doctor.get_next_update_info", return_value={}),
+            patch("agrobr.health.doctor.utcnow", return_value=datetime(2026, 10, 1, 12, 0)),
+        ):
+            return await run_diagnostics(verbose=verbose)
+
+    normal, detalhado = await diagnosticar(False), await diagnosticar(True)
+
+    assert normal.to_dict() == detalhado.to_dict()
+    linhas_normais, linhas = normal.to_rich().split("\n"), detalhado.to_rich().split("\n")
+    restantes = iter(linhas)
+    assert all(linha in restantes for linha in linhas_normais)
+    assert not any("https://fonte" in linha for linha in linhas_normais)
+    assert f"      https://fonte/{fontes[0]}  [slow]" in linhas
+    assert f"      https://fonte/{fontes[1]}" in linhas
+    assert linhas[linhas.index("Last Collections") :][1:3] == [
+        "  CEPEA: 2026-09-30T18:05:00",
+        "  CONAB: -",
+    ]

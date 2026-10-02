@@ -32,6 +32,7 @@ buscar_municipios("santo", limite=-1)  # InvalidParameterError (limite negativo)
 # Use o nome completo do município e a UF quando disponível
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
+municipio_para_ibge(5107602)                    # InvalidParameterError: nome deve ser texto, recebeu 5107602
 
 # Nome inteiro ou código IBGE, com erro em vez de palpite
 resolver_municipio("sorriso")           # {'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}
@@ -158,6 +159,7 @@ normalizar_uf("São Paulo")     # "SP"
 normalizar_uf("sp")            # "SP"
 normalizar_uf("SAO PAULO")     # "SP"
 normalizar_uf("mato grosso")   # "MT"
+normalizar_uf(51)              # InvalidParameterError: entrada deve ser texto, recebeu 51
 
 uf_para_nome("MT")             # "Mato Grosso"
 uf_para_regiao("MT")           # "Centro-Oeste"
@@ -176,6 +178,11 @@ listar_regioes()               # ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste'
 
 `UnknownNameError` é `InvalidParameterError` e também `KeyError`: o `except KeyError` de antes segue pegando.
 
+`normalizar_uf`, `normalizar_municipio`, `normalizar_bioma` e `municipio_para_ibge` recusam o que não é texto (número,
+lista, `None`) com `InvalidParameterError`, que diz o parâmetro e o valor recebido. Com texto, o retorno não muda: no
+`normalizar_uf` e no `municipio_para_ibge`, nome que não casa segue devolvendo `None`; no `normalizar_bioma`, o próprio
+texto.
+
 ## Biomas
 
 6 biomas brasileiros. Aceita com/sem acento, case insensitive. Usada automaticamente em `desmatamento`, `queimadas` e `mapbiomas`.
@@ -188,6 +195,7 @@ normalizar_bioma("cerrado")         # "Cerrado"
 normalizar_bioma("mata atlantica")  # "Mata Atlântica"
 normalizar_bioma("  Caatinga  ")    # "Caatinga"
 normalizar_bioma("desconhecido")    # "desconhecido" (passthrough)
+normalizar_bioma(None)              # InvalidParameterError: bioma deve ser texto, recebeu None
 
 BIOMAS_VALIDOS
 # {'Amazônia', 'Caatinga', 'Cerrado', 'Mata Atlântica', 'Pampa', 'Pantanal'}
@@ -228,7 +236,8 @@ lista_safras("2025/26", "2024/25")  # InvalidParameterError (intervalo invertido
 
 As datas que chegam de fora como texto passam por `dates.converter_coluna`, com a mesma regra no pandas 2 e no 3: IBAMA
 (`data_embargo`, `data_desembargo`), Acervo Fundiário (datas do SIGEF, do SNCI e dos assentamentos), CFTC (`data`), INMET
-(`data` das observações), MapBiomas Alerta (`data_deteccao`, `data_publicacao`) e Queimadas (`data_hora_gmt`).
+(`data` das observações), MapBiomas Alerta (`data_deteccao`, `data_publicacao`), Queimadas (`data_hora_gmt`), ANA
+(`data_construcao`), ANTAQ (`data_atracacao`), ANTT Pedágio, FUNAI, IMEA (`data_publicacao`) e INCRA.
 
 - Valor ilegível, ou com ano fora de 1900–2099 (`DATA_ANO_MINIMO` e `DATA_ANO_MAXIMO`), vira `NaT`. No IBAMA, também a data
   de ato de dia posterior à edição do próprio arquivo (`ULTIMA_ATUALIZACAO_RELATORIO`).
@@ -254,6 +263,8 @@ dates.converter_datas(pd.Series(["2024-01-02", "1667-05-31"]), fonte="exemplo")
 
 Conversão entre unidades agrícolas brasileiras: sacas, toneladas, bushels, arrobas, hectares.
 
+As funções de unidades devolvem `Decimal`; use `float(...)` antes de operar com `float`.
+
 ```python
 from agrobr.normalize import (
     converter, sacas_para_toneladas, toneladas_para_sacas,
@@ -261,18 +272,18 @@ from agrobr.normalize import (
 )
 
 # Conversão genérica
-converter(1, "ton", "sc60kg")           # 16.6667 (sacas de 60kg)
-converter(100, "sc60kg", "ton")         # 6.0
-converter(1, "ton", "bu", produto="soja")  # 36.7437 (bushels)
-converter(1, "arroba", "kg")            # 15.0
+converter(1, "ton", "sc60kg")           # Decimal('16.666…') (sacas de 60kg)
+converter(100, "sc60kg", "ton")         # Decimal('6.00')
+converter(1, "ton", "bu", produto="soja")  # Decimal('36.7437…') (bushels)
+converter(1, "arroba", "kg")            # Decimal('15')
 
 # Atalhos para preços
-preco_saca_para_tonelada(145.50)        # 2425.0 (R$/ton a partir de R$/sc60kg)
-preco_tonelada_para_saca(2425.0)        # 145.5  (R$/sc60kg a partir de R$/ton)
+preco_saca_para_tonelada(145.50)        # Decimal('2425.000…') (R$/ton a partir de R$/sc60kg)
+preco_tonelada_para_saca(2425.0)        # Decimal('145.500…') (R$/sc60kg a partir de R$/ton)
 
 # Peso para volume
-sacas_para_toneladas(1000)              # 60.0
-toneladas_para_sacas(60)                # 1000.0
+sacas_para_toneladas(1000)              # Decimal('60')
+toneladas_para_sacas(60)                # Decimal('1000')
 
 # Entrada inválida
 converter(1, "galao", "kg")             # InvalidParameterError, com as unidades de massa
