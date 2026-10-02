@@ -27,8 +27,8 @@ df = await agrobr.conab.progresso_safra(produto="Soja", uf="MT")
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `cultura` | str | Crop name (e.g. "Soja", "Milho 2a") |
-| `safra` | str | Crop year in "YYYY/YY" format (e.g. "2025/26") |
+| `cultura` | str | Crop name as published (e.g. "Soja", "Milho 2ª") |
+| `safra` | str | Crop year as published: "YYYY/YY" (e.g. "2025/26"), or calendar year "YYYY" for wheat (e.g. "2026") |
 | `operacao` | str | "Semeadura" or "Colheita" |
 | `uf` | str | State code (e.g. "MT", "GO"); "MEDIA_ESTADOS" on the spreadsheet's "N estados" row (CONAB's own average of the monitored states, neither the simple mean of the states nor Brazil); "BR" only if the spreadsheet publishes "Brasil" |
 | `semana_atual` | str | Week reference date (YYYY-MM-DD) |

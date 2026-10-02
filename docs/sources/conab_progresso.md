@@ -42,7 +42,7 @@ O XLSX semanal contem uma sheet "Progresso de safra" com blocos repetidos por cu
 2. **Nota de cobertura**: "(Esses N estados correspondem a X% da área cultivada)", lida em `n_estados` e `cobertura_area_pct`
 3. **Semeadura**: tabela com Estado, ano anterior, semana anterior, semana atual, media 5 anos
 4. **Colheita**: mesma estrutura (quando aplicavel); o percentual dos blocos marcados com `*` é calculado sobre o semeado acumulado
-5. **Linha "N estados"** no fim de cada bloco: média da própria CONAB dos estados monitorados, publicada como `estado =
+5. **Linha "N estados"** no fim de cada bloco: média da própria CONAB dos estados monitorados, publicada como `uf =
    "MEDIA_ESTADOS"`, não como Brasil
 
 Valores sao fracoes (0.0-1.0), nao percentuais.

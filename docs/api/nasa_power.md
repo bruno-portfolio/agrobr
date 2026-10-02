@@ -33,11 +33,11 @@ async def clima_ponto(
 | `agregacao` | `str` | `"diario"` (default) ou `"mensal"` |
 | `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
-| `parameters` | `list[str] \| None` | Códigos NASA POWER a pedir (1 a 20, sem repetir), do catálogo de `parametros()`; `None` pede todos |
+| `parameters` | `list[str] \| None` | Códigos NASA POWER a pedir (1 a 20, sem repetir), do catálogo de `parametros()`; `None` pede os 7 padrão (`T2M`, `T2M_MAX`, `T2M_MIN`, `PRECTOTCORR`, `RH2M`, `ALLSKY_SFC_SW_DWN`, `WS2M`); os outros códigos do catálogo só vêm quando listados |
 
 **Retorno:**
 
-DataFrame com colunas (diario): `data`, `lat`, `lon`, `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
+DataFrame com colunas (diario): `data`, `lat`, `lon`, `uf` (vazia em `clima_ponto`), `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
 
 Com `agregacao="mensal"`, as colunas agregadas sao renomeadas: `mes` (timestamp), `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `umidade_media`, `radiacao_media_mj`, `vento_medio_ms` (mais `lat`/`lon`). `dias`, `data_inicio` e `data_fim` dão os dias do mês com algum parâmetro válido. O mês cortado pelo período pedido sai parcial e não é extrapolado: de 15/01 a 05/02/2025, fevereiro sai com `dias=5` e 17,81 mm, contra 28 dias e 52,33 mm do mês inteiro (schema 1.2).
 
@@ -87,7 +87,7 @@ async def clima_uf(
 | `agregacao` | `str` | `"diario"` ou `"mensal"` (default) |
 | `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
-| `parameters` | `list[str] \| None` | Códigos NASA POWER a pedir (1 a 20, sem repetir), do catálogo de `parametros()`; `None` pede todos |
+| `parameters` | `list[str] \| None` | Códigos NASA POWER a pedir (1 a 20, sem repetir), do catálogo de `parametros()`; `None` pede os 7 padrão (`T2M`, `T2M_MAX`, `T2M_MIN`, `PRECTOTCORR`, `RH2M`, `ALLSKY_SFC_SW_DWN`, `WS2M`); os outros códigos do catálogo só vêm quando listados |
 
 **Exemplo:**
 

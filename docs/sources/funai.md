@@ -88,7 +88,7 @@ sai com aviso em `validation_warnings` e `UserWarning`, e a lista com as 2 área
 | `fase` | `None` | Uma das fases abaixo, igualdade exata |
 | `bbox` | `None` | (lon_min, lat_min, lon_max, lat_max) em EPSG:4326 |
 | `max_registros` | 10.000 (1.000 em `_geo`) | Teto de TIs lidas em ordem de codigo; `uf` e `fase` filtram localmente esse prefixo, e o corte que deixa a selecao parcial emite `UserWarning` |
-| `tamanho_pagina` | 250 (10 em `_geo`) | Maximo 1.000 (100 em `_geo`) |
+| `tamanho_pagina` | 250 (10 em `_geo` ou com `bbox`) | Máximo 1.000 (100 em `_geo` ou com `bbox`) |
 
 ## Fases
 

@@ -17,6 +17,11 @@ async def exportacao(
     *,
     as_polars: bool = False,
     return_meta: bool = False,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = 500_000,
+    max_memoria_bytes: int = 268_435_456,
 ) -> DataFrameResult
 ```
 
@@ -33,6 +38,11 @@ async def importacao(
     *,
     as_polars: bool = False,
     return_meta: bool = False,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = 500_000,
+    max_memoria_bytes: int = 268_435_456,
 ) -> DataFrameResult
 ```
 
@@ -46,6 +56,8 @@ async def importacao(
 | `agregacao` | `str` | `"mensal"` (default) or `"detalhado"` |
 | `as_polars` | `bool` | If True, returns polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
+| `pais`/`via`/`urf` | `str \| int \| None` | MDIC country (3 digits), transport mode (2) or customs unit (7) code, with or without leading zeros |
+| `max_linhas`/`max_memoria_bytes` | `int` | Caps on selected rows and estimated memory; above them, `ResourceLimitError` |
 
 **Product aliases:**
 
@@ -90,6 +102,8 @@ species (`09011110` is green coffee of both species), and the call raises
 - `agregacao="detalhado"`: `ano`, `mes`, `ncm`, `cod_unidade`, `cod_pais`,
   `uf`, `cod_via`, `cod_urf`, `qtd_estatistica`, `kg_liquido`,
   `valor_fob_usd`.
+
+For imports, both formats add `valor_frete_usd` and `valor_seguro_usd` at the end.
 
 **Example:**
 

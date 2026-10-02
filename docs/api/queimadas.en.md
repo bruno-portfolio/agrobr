@@ -54,6 +54,7 @@ DataFrame with columns:
 
 The 4 numeric columns are `float64`, with `NaN` where the source publishes -999 or nothing.
 - `uf`: State code (str, 2 characters)
+- `cod_municipio`: 7-digit IBGE code, from `municipio_id` (Int64, null outside a municipality)
 
 **Example:**
 

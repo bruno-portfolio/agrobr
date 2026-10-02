@@ -46,7 +46,11 @@ are summed; `complexo_portuario`, `municipio`, `uf`, `regiao`, `mercadoria` and 
 take the first non-null value in the group; `data_atracacao`, `tipo_operacao`, `natureza_carga`,
 `terminal`, `origem` and `destino` survive only when the group holds a single value - otherwise they
 come out null. Rows without `ano` or `mes` (a carga with no matching atracacao) are dropped before
-aggregation. In a 2024 excerpt, 10 cargas become 6 rows.
+aggregation. In a 2024 excerpt, 10 cargas become 6 rows. A null `peso_bruto_ton`, `qt_carga` or `teu`
+in any row of the group makes the sum null: missing is not zero.
+
+If an ANTAQ TXT member lacks a column used by the join, the filters or the PK, the dataset raises
+`ParseError` naming the column (list on the source page).
 
 `qt_carga` has no canonical unit: ANTAQ publishes `QTCarga` without one and its meaning changes with
 the cargo type. The column uses `float64`, including empty results.

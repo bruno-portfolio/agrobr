@@ -46,7 +46,11 @@ somados; `complexo_portuario`, `municipio`, `uf`, `regiao`, `mercadoria` e `grup
 primeiro valor nao nulo do grupo; `data_atracacao`, `tipo_operacao`, `natureza_carga`, `terminal`,
 `origem` e `destino` so sobrevivem quando o grupo tem um unico valor - caso contrario saem nulos.
 Linhas sem `ano` ou `mes` (carga sem atracacao correspondente) sao descartadas antes da agregacao.
-Num recorte de 2024, 10 cargas viram 6 linhas.
+Num recorte de 2024, 10 cargas viram 6 linhas. Nulo em `peso_bruto_ton`, `qt_carga` ou `teu` em
+qualquer linha do grupo deixa a soma nula: ausência não é zero.
+
+Se o TXT da ANTAQ vier sem uma coluna que o join, os filtros ou a PK usam, o dataset levanta
+`ParseError` com o nome da coluna (lista na página da fonte).
 
 `qt_carga` nao tem unidade canonica: a ANTAQ publica `QTCarga` sem unidade e o valor muda de sentido
 conforme o tipo de carga. A coluna usa `float64`, inclusive no vazio.

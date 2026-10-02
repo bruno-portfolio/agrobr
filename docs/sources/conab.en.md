@@ -57,7 +57,7 @@ CONAB publishes monthly crop surveys:
 
 ### Dataset edition selection
 
-`datasets.estimativa_safra("soja", safra="2024/25", uf="MT", levantamento=1)` selects the first CONAB survey; `levantamento=11` selects the eleventh. `fonte="conab"` without a survey selects the most recent publication carrying the crop year: for a past crop year, the latest survey of the next crop year, which revises it. `levantamento` and `data_publicacao` belong to the CONAB bulletin that published the number, not to the crop year: without `levantamento`, a past crop year comes from the most recent publication carrying it, revised. Crop year 2024/25 served by the 12th survey of 2025/26 comes with `levantamento=12` and `data_publicacao=2026-09-15`; the 12th survey of 2024/25 is another bulletin, with another number. The bulletin crop year is in `meta.source_details["publicacao"]["safra"]`.
+`datasets.estimativa_safra("soja", safra="2024/25", uf="MT", levantamento=1)` selects the first CONAB survey; `levantamento=11` selects the eleventh. `fonte="conab"` without a survey selects the most recent publication carrying the crop year: for a past crop year, the latest survey of the next crop year, which revises it. `levantamento` and `data_publicacao` belong to the CONAB bulletin that published the number, not to the crop year: without `levantamento`, a past crop year comes from the most recent publication carrying it, revised. Crop year 2024/25 served by the 12th survey of 2025/26 comes with `levantamento=12` and `data_publicacao=2026-09-15`; the 12th survey of 2024/25 is another bulletin, with another number. The bulletin crop year is in `meta.source_details["publicacao"]["safra"]`. Two or more crop years behind the latest edition, without `levantamento`, the number comes from the historical series, and `levantamento` and `data_publicacao` are null (see `conab.safras`).
 
 The LSPA calendar month is a separate selector: `mes` routes the dataset to IBGE LSPA and does not represent a CONAB survey number. Incompatible selectors are rejected before network access. Without `uf`, CONAB returns state rows; specify the same state in both queries when comparing with LSPA.
 
@@ -250,8 +250,8 @@ Unreadable, missing or ambiguous selected sheets raise `ParseError`; filters wit
 
 ## Cache
 
-CONAB queries keep no local copy: each call downloads the publication. `meta.cache_expires_at` is null, and `meta.cache_key`
-identifies the query (product, crop year, publication, survey and state).
+CONAB queries keep no local copy: each call downloads the publication. `meta.cache_expires_at` is null; in `conab.safras`, `meta.cache_key`
+identifies the query (product, crop year, publication, survey and state), and in the other functions it is null.
 
 ## Update
 
@@ -280,7 +280,7 @@ Publication date is null when download metadata does not provide it. The fetch d
 
 `conab.custo_sociobiodiversidade(produto, uf=None, ano=None, *, local=None, planilha=None, aba=None, use_cache=True, as_polars=False, return_meta=False)` returns the published extraction costs. The dataset has the same selectors. `conab.catalogo_sociobiodiversidade()` lists all resource revisions with an active flag; with a product it inventories the active workbook, including unresolved contexts. Select an exact historical resource with `planilha=`. The 20 captured products, literal units, selection rules and nominal limitations are documented in the [1.0 contract](../contracts/custo_sociobiodiversidade.md). No hectare/crop conversion or revision merging. Catalogue cache: 1 hour, separate from agricultural costs; workbooks are always downloaded. `use_cache=False` bypasses the catalogue cache.
 
-Agricultural costs use parser 4: merged headers, coffee identified by official
+Agricultural costs use parser 5: merged headers, coffee identified by official
 resource, literal annual or two-year crop tokens, and exchange-rate notes kept
 outside cost items. Excel percentage scaling applies only to numeric cells.
 Sociobiodiversity costs use parser 2 and preserve explicit archived-revision

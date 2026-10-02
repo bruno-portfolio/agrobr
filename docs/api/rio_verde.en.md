@@ -79,6 +79,6 @@ safras = rio_verde.safras_disponiveis()
 
 - Source: [Fundacao Rio Verde](https://fundacaorioverde.com.br) — `zona_cinza` license
 - Requires `pip install agrobr[pdf]` (pdfplumber)
-- ~97 cultivars x 4 sowing windows per crop year
+- 76 to 107 rows per crop year (2023/24: 76; 2024/25: 94; 2025/26: 107), up to 4 sowing windows; the same cultivar can repeat
 - Yield in bags/hectare (sc/ha)
 - Text-based PDF (no OCR required)

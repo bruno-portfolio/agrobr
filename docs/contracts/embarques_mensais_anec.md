@@ -88,4 +88,4 @@ print(meta.source_url)
 
 ## Leitura dos boletins
 
-O cabeçalho deve conter os seis produtos e Total Products; a ausência de uma coluna interrompe a leitura. Total Products e totais anuais não viram observações por produto. Todos os meses são preservados, inclusive dezembro vazio, e também as faixas, como a da soja de abril na edição 13. Diferenças entre este quadro e o comparativo anual permanecem como publicadas.
+O cabeçalho deve conter os seis produtos (ou os quatro das edições até a W2/2026) e Total Products; a ausência de uma coluna interrompe a leitura. Total Products e totais anuais não viram observações por produto. Todos os meses são preservados, inclusive dezembro vazio, e também as faixas, como a da soja de abril na edição 13. Diferenças entre este quadro e o comparativo anual permanecem como publicadas.

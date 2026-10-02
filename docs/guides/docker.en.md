@@ -52,7 +52,7 @@ docker run --rm -v "$(pwd)":/work agrobr python /work/my_script.py
 
 ## Extras
 
-The default image already includes the `browser` (Playwright + Chromium) and `pdf` (pdfplumber) extras, required by CONAB, ANDA, Lista Suja and Rio Verde respectively.
+The default image already includes the `browser` (Playwright + Chromium) and `pdf` (pdfplumber) extras, required by CONAB and by ANDA, ANEC, UNICA, Lista Suja (PDF route), Rio Verde and the INCRA case status, respectively.
 
 `--build-arg EXTRAS` **replaces** the default. To add extras, include the defaults:
 
@@ -65,7 +65,7 @@ docker build --build-arg EXTRAS="browser,pdf,polars" -t agrobr:extras .
 | Extra | Docker | Notes |
 |---|---|---|
 | `browser` | yes (default) | Playwright + Chromium. Required for CONAB |
-| `pdf` | yes (default) | pdfplumber, pure Python. Required for ANDA, Lista Suja, Rio Verde |
+| `pdf` | yes (default) | pdfplumber, pure Python. Required for ANDA, ANEC, UNICA, Lista Suja (PDF route), Rio Verde and the INCRA case status |
 | `polars` | yes | Pre-built manylinux wheels |
 | `bigquery` | yes | Google Cloud client |
 | `geo` | **uncertain** | geopandas/pyogrio may work (GDAL bundled in the wheel). Not verified |

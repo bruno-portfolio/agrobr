@@ -27,7 +27,7 @@ async def credito_rural(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `produto` | `str` | Chave do produto (soja, milho, arroz, feijao, trigo, algodao, cafe, cana, mandioca, sorgo) ou item de investimento do SICOR (ex.: "BOVINOS"); acento, caixa e espaços nas pontas não importam |
+| `produto` | `str` | Chave do produto (soja, milho, arroz, feijao, trigo, algodao, cafe, cana, mandioca, sorgo) ou item de investimento do SICOR (ex.: "BOVINOS"); nas chaves, acento, caixa e espaços nas pontas não importam; em outro item, caixa e espaços nas pontas não importam, e o acento tem de ser o do SICOR |
 | `safra` | `str \| None` | Safra `"AAAA/AA"`, `"AAAA/AAAA"` (anos consecutivos) ou `"AAAA"` (ano final: `"2025"` = 2024/2025); outro formato levanta `InvalidParameterError` antes da rede. `None` (padrão) não filtra safra |
 | `finalidade` | `str` | `"custeio"`, `"investimento"` ou `"comercializacao"`; a industrialização não sai por produto e levanta `InvalidParameterError` apontando o `credito_rural_total` |
 | `uf` | `str \| None` | Sigla da UF (ex: "MT", "PR"); espaços/caixa são normalizados e valores inválidos levantam `ValueError` |
@@ -168,7 +168,7 @@ async def sgs(
 | `as_polars` | Booleano; exige `agrobr[polars]` quando True |
 | `return_meta` | Booleano; True retorna também MetaInfo |
 
-Sem datas e sem `ultimos`, a janela padrão vai da data UTC da consulta menos dez anos até essa mesma data, com ajuste de 29/02 para 28/02 quando necessário. Informando apenas o início, o fim usa a data UTC da consulta. Informando apenas o fim, o início continua omitido na requisição: a fonte pode recusar essa seleção. Não há seleção de uma revisão histórica congelada.
+Sem datas e sem `ultimos`, a janela padrão vai da data civil de Brasília (UTC−3) da consulta menos dez anos até essa mesma data, com ajuste de 29/02 para 28/02 quando necessário. Informando apenas o início, o fim usa a data civil de Brasília (UTC−3) da consulta. Informando apenas o fim, o início continua omitido na requisição: a fonte pode recusar essa seleção. Não há seleção de uma revisão histórica congelada.
 
 O planejamento encerra cada bloco em 31/12 do ano inicial + 9, ou no fim pedido se anterior; o próximo começa em 01/01. Isso respeita o limite de dez anos por chamada das consultas diárias, sem pressupor que todo código seja diário. Blocos fecham em anos civis e uma janela de dez anos pode usar duas chamadas. Falha em qualquer bloco interrompe a consulta, sem resultado parcial.
 
@@ -225,8 +225,8 @@ async def ptax(
 | Parâmetro | Regra |
 |-----------|-------|
 | `data` | Data civil única: `date`, `datetime`, ISO ou DD/MM/AAAA; exclusiva de qualquer limite de intervalo |
-| `inicio`, `fim` | Limites inclusivos; apenas início preenche fim com hoje UTC, apenas fim preenche início com fim menos 30 dias |
-| Sem datas | Hoje UTC menos 30 dias até hoje UTC, usando uma única referência |
+| `inicio`, `fim` | Limites inclusivos; apenas início preenche fim com hoje (data civil de Brasília, UTC−3), apenas fim preenche início com fim menos 30 dias |
+| Sem datas | Hoje (data civil de Brasília, UTC−3) menos 30 dias até hoje, usando uma única referência |
 | `moeda` | Três letras ASCII; normaliza caixa para maiúsculas, sem remover espaços, aliases por nome ou códigos numéricos; padrão USD |
 | `boletim` | `fechamento` (padrão), `todos`, `abertura` ou `intermediario` |
 | `top` | Inteiro positivo estrito; tamanho pedido por página de cotações, padrão 1000 |

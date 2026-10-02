@@ -32,8 +32,8 @@ Without `levantamento`, `safra` selects the most recent publication whose Suprim
 | `estoque_inicial` | float64 | ✅ | Opening stock (thousand tons) |
 | `producao` | float64 | ✅ | Production (thousand tons) |
 | `importacao` | float64 | ✅ | Imports (thousand tons) |
-| `suprimento` | float64 | ✅ | Total supply (thousand tons): opening stock + production + imports, added up by agrobr; null if a term is missing |
-| `consumo` | float64 | ✅ | Domestic consumption (thousand tons): seeds/other + crushing, added up by agrobr (soybean 2025/26, Sep/26: 3,766 + 62,137.7 = 65,903.7); null if a term is missing |
+| `suprimento` | float64 | ✅ | Total supply (thousand tons), as published in the Suprimento sheet; in soybean's own sheet, opening stock + production + imports added up by agrobr, null if a term is missing |
+| `consumo` | float64 | ✅ | Domestic consumption (thousand tons), as published; in the soybean sheet, seeds/other + crushing added up by agrobr (soybean 2025/26, Sep/26: 3,766 + 62,137.7 = 65,903.7), null if a term is missing |
 | `exportacao` | float64 | ✅ | Exports (thousand tons) |
 | `estoque_final` | float64 | ✅ | Ending stock (thousand tons) |
 | `demanda_total` | float64 | ✅ | Published demand (thousand tons); null in wide/legacy layouts |

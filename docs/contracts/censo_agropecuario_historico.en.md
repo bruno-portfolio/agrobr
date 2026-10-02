@@ -80,7 +80,7 @@ Long format: each row holds one variable/value pair.
 - **Poultry**: unit "Mil cabeças" (table 281), other animals in "Cabeças"
 - **Mixed units**: animal/plant production and crops have units that vary by category (liters, dozens, tons, fruits, bunches, etc.)
 - **Classifications without Total**: tables 281/282/283/1730/1731 have no "Total" category
-- **Missing values**: `".."` = unavailable, `"..."` = suppressed, `"-"` = not applicable → all converted to NaN
+- **Missing values**: `".."` = unavailable, `"..."` and `"X"` = suppressed → converted to NaN; `"-"` = absolute zero → 0
 
 ## Guarantees
 

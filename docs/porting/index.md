@@ -160,15 +160,13 @@ primeiro**, antes de qualquer client HTTP.
 
 ### Culturas (`normalize/crops.py`)
 
-**144 variantes → 41 nomes canônicos**, com busca case-insensitive e
+**158 variantes → 43 nomes canônicos**, com busca case-insensitive e
 accent-insensitive.
 
 ```
 CEPEA:     "soja"
 CONAB:     "Soja"
-IBGE:      "Soja (em grão)"
 USDA:      "Soybeans"
-ComexStat: "SOJA MESMO TRITURADA"
      ↓ normalizar_cultura()
      → "soja"
 ```
@@ -251,6 +249,7 @@ Algumas fontes exigem configuração via variáveis de ambiente:
 |----------|-------|:------------:|----------------------|
 | `AGROBR_USDA_API_KEY` | USDA PSD | Sim | `SourceUnavailableError` antes da rede |
 | `AGROBR_INMET_TOKEN` | INMET | Sim, na API observacional | `SourceUnavailableError`, com orientação para definir o token. O catálogo de estações e os ZIPs históricos são públicos |
+| `AGROBR_MAPBIOMAS_ALERTA_TOKEN` | MapBiomas Alerta | Sim | `SourceUnavailableError` antes da rede |
 
 Em `clima_uf`, a ausência de token é recusada antes de listar estações. No acesso de
 `estacao`, HTTP 204 sem token e HTTP 403 são convertidos em `SourceUnavailableError`
@@ -286,7 +285,7 @@ para validar parsers em qualquer linguagem:
 | ComexStat | `exportacao_soja_sample` | response.csv, expected.json |
 | CONAB | `safra_2025_26_agosto` | response.xlsx, expected.json |
 | CONAB CEASA | `precos_sample` | ceasas_response.json, precos_response.json, expected.json |
-| CONAB Progresso | `progresso_sample` | progresso_sample.xlsx, expected.json |
+| CONAB Progresso | `progresso_sample` | response.xlsx, expected.json |
 | DERAL | `pc_sample` | response.xlsx, expected.json |
 | Desmatamento | `selecao_20260907` | 8 corpos JSON oficiais (PRODES em 6 biomas, DETER Amazônia e Cerrado), manifest.json |
 | Desmatamento | `geo_20260923` | hits (XML) e página GeoJSON de 3 seleções (PRODES Pantanal, DETER Amazônia e Cerrado), manifest.json |
@@ -298,19 +297,19 @@ para validar parsers em qualquer linguagem:
 | IBGE | `pib_agro_sample` | response.csv, expected.json |
 | IMEA | `oficial_20260923` | cadeias.json, cotacoes_{id}.json e indicadores_{id}.json (8 cadeias), manifest.json |
 | INMET | `observacoes_sample` | response.json, expected.json |
-| MapBiomas | `biome_state_sample` | biome_state_sample.xlsx, expected.json |
+| MapBiomas | `biome_state_sample` | response.xlsx, expected.json |
 | Notícias Agrícolas | `soja_sample` | response.html, expected.json |
 | NASA POWER | `daily_sample` | response.json, expected.json |
 | Queimadas | `focos_sample` | response.csv, expected.json |
 | USDA | `psd_gateway_20260926` | 34 corpos de duas capturas independentes, capturas do gateway (404, 403, `[]`, série antiga), oráculos de 72 e 48 valores, manifest.json |
-| RNC | `registradas_sample` | registradas_sample.csv (25 rows), expected.json |
+| RNC | `registradas_sample` | registradas_sample.csv (25 rows) |
 | Rio Verde | `oraculo_20260923` | ensaio_soja_2023_2024.pdf, ensaio_soja_2024_2025.pdf, ensaio_soja_2025_2026.pdf, oraculo_20260923.json |
-| BCB SGS | `sgs_sample` | sgs_sample.json (10 rows), expected.json |
-| BCB PTAX | `ptax_sample` | ptax_sample.json (5 rows), expected.json |
-| BCB Focus | `focus_sample` | focus_sample.json (5 rows), expected.json |
-| ZARC | `tabua_risco_sample` | response.csv, expected.json |
+| BCB SGS | `sgs_sample` | sgs_sample.json (10 rows) |
+| BCB PTAX | `ptax_sample` | ptax_sample.json (5 rows) |
+| BCB Focus | `focus_sample` | focus_sample.json (5 rows) |
+| ZARC | `edicoes_20260923` | 9 CSVs (safras 2017/2018 a 2025/2026), catalogo.json, manifest.json, oracle.json |
 
-A tabela acima é uma amostra; o diretório `tests/golden_data/` contém 41 fontes e 60 casos no total. Cada diretório também contém `metadata.json` com contexto do teste.
+A tabela acima é uma amostra; o diretório `tests/golden_data/` tem 45 diretórios de fonte, além dos casos de reconciliação (`reconciliacao_*`); os goldens antigos trazem `metadata.json` com o contexto do teste.
 
 ---
 
@@ -321,9 +320,9 @@ A tabela acima é uma amostra; o diretório `tests/golden_data/` contém 41 font
 | 1 | CEPEA | CC BY-NC | Headless browser | Preços diários, alta demanda |
 | 2 | IBGE/SIDRA | Livre | API REST | API limpa, dados públicos oficiais |
 | 3 | CONAB Série Histórica | Livre | HTTP direto | Safras desde 1976, sem browser |
-| 4 | CONAB CEASA | Livre | HTTP direto | 48 hortifrutis, 43 CEASAs, sem browser |
+| 4 | CONAB CEASA | Zona cinza | HTTP direto | 48 hortifrutis, 43 CEASAs, sem browser |
 | 5 | CONAB Progresso | Livre | HTTP direto | Plantio/colheita semanal, sem browser |
-| 6 | CONAB Boletim | Livre | Headless browser | Safra corrente, requer JS |
+| 6 | CONAB Boletim | Livre | HTTP direto (browser só como fallback) | Safra corrente |
 | 7 | NASA POWER | CC BY 4.0 | API REST | Clima, API limpa |
 | 8 | BCB/SICOR | Livre | API OData | Crédito rural |
 | 9 | ComexStat | Livre | HTTP direto | Exportações, CSV bulk |
@@ -332,7 +331,7 @@ A tabela acima é uma amostra; o diretório `tests/golden_data/` contém 41 font
 
 !!! warning "Fontes com restrição"
     IMEA e Notícias Agrícolas possuem licença **restrita** (redistribuição
-    proibida). B3, ANDA e ABIOVE estão em **zona cinza** (sem termos claros
+    proibida). B3, ANDA, ABIOVE e CONAB CEASA estão em **zona cinza** (sem termos claros
     para acesso programático). Consulte a [página de licenças](../licenses.md)
     antes de implementar acesso a essas fontes.
 

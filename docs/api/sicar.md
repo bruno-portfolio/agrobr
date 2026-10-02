@@ -4,7 +4,7 @@ Dados tabulares de imoveis rurais do CAR via WFS do GeoServer SICAR.
 
 ## imoveis
 
-Registros individuais de imóveis rurais, via GeoJSON projetado somente nos atributos. A consulta tabular não requer GeoPandas. Contrato 2.0, com criação e atualização em UTC, inclusive colunas nulas e retornos vazios.
+Registros individuais de imóveis rurais, via GeoJSON projetado somente nos atributos. A consulta tabular não requer GeoPandas. Contrato 2.1, com criação e atualização em UTC, inclusive colunas nulas e retornos vazios.
 
 O filtro `atualizado_apos` aceita precisão de milissegundos. Zeros adicionais são aceitos sem alterar o instante: `.212000` é enviado como `.212`. Frações submilissegundo, como `.212001`, geram `InvalidParameterError` antes da rede; o GeoServer não comparou essas representações com a semântica ISO esperada. A regra vale também para as duas APIs de geometria.
 
@@ -29,7 +29,7 @@ df = await agrobr.alt.sicar.imoveis("DF")
 | as_polars | bool | Nao | Se True, retorna polars.DataFrame |
 | return_meta | bool | Nao | Se True, retorna (DataFrame, MetaInfo) |
 
-Datas impossíveis, áreas negativas/não finitas, intervalos invertidos e tipos inválidos são rejeitados antes da rede. A validação de um código municipal verifica formato e prefixo, sem consultar um catálogo de municípios.
+Datas impossíveis, áreas negativas/não finitas, intervalos invertidos e tipos inválidos são rejeitados antes da rede. O código municipal é conferido no cadastro de municípios do IBGE antes da rede: código inexistente ou de outra UF gera `InvalidParameterError`.
 
 Os filtros consultam registros correntes e não reconstituem versões passadas. O dataset [`cadastro_rural`](../contracts/cadastro_rural.md) expõe os mesmos filtros tabulares e rejeita um contexto `deterministic` ativo.
 
@@ -55,6 +55,7 @@ Veja a [regra completa](../contracts/cadastro_rural.md#ocorrencias-do-mesmo-imov
 | cod_municipio_ibge | int | Codigo IBGE |
 | modulos_fiscais | float | Modulos fiscais |
 | tipo | str | IRU/AST/PCT |
+| cod_municipio | int | Código IBGE de 7 dígitos (igual a `cod_municipio_ibge`); anulável |
 
 ### Exemplos
 
@@ -182,6 +183,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 | cod_municipio_ibge | int | Codigo IBGE |
 | modulos_fiscais | float | Modulos fiscais |
 | tipo | str | IRU/AST/PCT |
+| cod_municipio | int | Código IBGE de 7 dígitos (igual a `cod_municipio_ibge`); anulável |
 | geometry | MultiPolygon | Poligono do imovel (EPSG:4326) |
 
 ### Exemplos

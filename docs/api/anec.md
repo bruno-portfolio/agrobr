@@ -39,7 +39,7 @@ async def embarques(
 `ano`, `semana` fora de 1–53, `produto` e `tipo` inválidos levantam `InvalidParameterError` antes de consultar o
 catálogo ou baixar o PDF.
 
-Colunas: `porto`, `produto`, `periodo`, `valor_ton`. `valor_ton` usa dtype
+Colunas: `porto`, `produto`, `periodo`, `valor_ton`, `ano`, `semana`, `data_inicio` e `data_fim` (veja a [fonte](../sources/anec.md)). `valor_ton` usa dtype
 `Float64` e recebe `pd.NA` quando o PDF não informa o volume.
 
 ## Tabelas agregadas do relatório

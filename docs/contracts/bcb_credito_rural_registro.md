@@ -54,7 +54,7 @@ Sem fallback: a tabela da Base dos Dados agrega por município e não traz progr
 - **Área:** pelo OData, `area_financiada` sai nula. O custeio publica `AreaCusteio` vazio, e investimento e comercialização não têm área.
 - **Soma:** somado por safra, UF, produto e finalidade, o registro é igual à `agregacao="uf"` da mesma chamada.
 - **Safra em curso:** o mesmo aviso das outras agregações, em `MetaInfo.validation_warnings` e em `source_details["safra_em_curso"]`.
-- **Tipos no pandas:** os do contrato vazio (`str` → `object`, `int` → `Int64`, `float` → `Float64`), inclusive no resultado vazio. Com `as_polars=True`: `Utf8`, `Int64` e `Float64`.
+- **Tipos no pandas:** os do contrato vazio (`str` → texto padrão do pandas instalado, `str` no pandas 3 e `object` no 2; `int` → `Int64`; `float` → `float64`), inclusive no resultado vazio. Com `as_polars=True`: `Utf8`, `Int64` e `Float64`.
 - **`MetaInfo`:** `schema_version` e `contract_version` são `1.0`, e `source_details["contract"]` é `bcb.credito_rural_registro`.
 
 ## Histórico de versões

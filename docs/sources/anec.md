@@ -185,8 +185,8 @@ O parser aceita os dois cabeçalhos publicados: os seis produtos nos dois perío
 do quadro semanal (e mais Total Products no mensal), da W3/2026 em diante, e os
 quatro das edições até a W2/2026, lidos pelo nome. Coluna sem nome de produto, como
 a da soja na semana corrente da W14/2026, gera `ParseError`: o agrobr não adivinha
-o produto. Cabeçalho incompleto também gera `ParseError`; o dataset preserva a
-causa em `SourceUnavailableError`. A soma dos portos de cada coluna do quadro
+o produto. Cabeçalho incompleto também gera `ParseError`, e o dataset o repassa como
+`ParseError`, com a causa em `errors`. A soma dos portos de cada coluna do quadro
 semanal é conferida com a linha TOTAL do boletim: divergência acima do
 arredondamento (0,5 t por porto) sai em aviso (`UserWarning` e
 `meta.validation_warnings`), com os valores por porto repassados sem ajuste. O

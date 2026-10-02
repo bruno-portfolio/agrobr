@@ -111,6 +111,7 @@ df = await queimadas.focos(
 | `precipitacao` | float | Precipitation (mm) |
 | `risco_fogo` | float | Risk index (0-1) |
 | `frp` | float | Fire Radiative Power (MW) |
+| `cod_municipio` | Int64 | 7-digit IBGE code, from `municipio_id`; null outside a municipality |
 
 In some months the source publishes hotspots outside the contract: an equal copy comes out once; a repeated key that differs
 only in FRP comes out as 1 row with a null `frp`; one that differs in another column is dropped from the result; and a negative

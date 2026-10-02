@@ -63,7 +63,7 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `as_polars` | bool | False | If True, returns a `polars.DataFrame`; keyword-only, like `return_meta` |
 | `return_meta` | bool | False | Returns a (DataFrame, MetaInfo) tuple |
 
-`cultura` is filtered by a substring of the name published in the CSV (`NM_CULTURA_GLOBAL`). There is no static
+`produto` is filtered by a substring of the name published in the CSV (`NM_CULTURA_GLOBAL`). There is no static
 catalog: the list comes in the CSV itself (311 MB in the most recent period), so a crop outside it only shows up as an
 empty result, after the download.
 
@@ -88,6 +88,7 @@ empty result, after the download.
 | `produtividade_segurada` | float | Yes | Insured yield; MAPA does not publish the unit |
 | `nivel_cobertura` | float | Yes | Coverage level as a fraction (0.65 = 65%): insured ÷ estimated yield, as published by MAPA |
 | `seguradora` | str | Yes | Insurer legal name |
+| `cod_municipio` | int | Yes | IBGE municipality code (`Int64`) taken from `cd_ibge`; null when `cd_ibge` is null |
 
 ## Parameters — `apolices`
 
@@ -177,9 +178,9 @@ guaranteed; sort explicitly by the columns relevant to your analysis.
 
 ## Policy integrity and periods
 
-The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.1 and the claims contract remains at 1.0.
+The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.2 and the claims contract at 1.1.
 
-**Key and record published twice (`mapa_psr_apolices` contract 1.1).** The policy key is `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` and `seguradora`: the policy number is only unique within the insurer (in 2007, 2008, 2009, 2011 and 2012 MAPA publishes the same number under two insurers, with different area and premium). A record published twice and identical in every column agrobr delivers (in 2009, Mapfre policy 1977000249501, with a resubmitted proposal) is returned once, with a warning (`warn_once`) and the count in `source_details["duplicatas_colapsadas"]`. A repeated key with any different value raises `ContractViolationError` (`SourceUnavailableError` in the dataset).
+**Key and record published twice (`mapa_psr_apolices` contract 1.2).** The policy key is `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` and `seguradora`: the policy number is only unique within the insurer (in 2007, 2008, 2009, 2011 and 2012 MAPA publishes the same number under two insurers, with different area and premium). A record published twice and identical in every column agrobr delivers (in 2009, Mapfre policy 1977000249501, with a resubmitted proposal) is returned once, with a warning (`warn_once`) and the count in `source_details["duplicatas_colapsadas"]`. A repeated key with any different value raises `ContractViolationError` (`SourceUnavailableError` in the dataset).
 
 `ano_apolice` is the year the policy was contracted, according to the SISSER dictionary; it is not the event or payment date. `sinistros` selects positive indemnities with a non-empty event. Published zeros remain zero in `apolices`; missing values remain null. Monetary values are not rounded to cents. Policy numbers and geographic codes retain leading zeros. Apart from the identical record published twice, described above, no row is deduplicated.
 

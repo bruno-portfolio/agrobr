@@ -49,7 +49,7 @@ Sem `market_year`, a consulta pede o ano-calendário corrente e, se o PSD ainda 
 anterior: de janeiro até o WASDE de maio, que abre o ano-safra novo, o ano corrente vem vazio. O `MetaInfo` registra
 em `source_details` o ano usado (`market_year`), os pedidos (`market_year_tentados`) e se o padrão valeu
 (`market_year_padrao`). Com `market_year` explícito, não há recuo: ano sem publicação devolve a tabela vazia.
-O gateway responde HTTP 404 para um ano sem dado (soja do Brasil em 1950, por exemplo): a tabela vazia vem com aviso
+O gateway responde HTTP 404 para um ano sem dado, dentro do intervalo aceito (1960 em diante): a tabela vazia vem com aviso
 em `validation_warnings` e `UserWarning`, porque o mesmo 404 sai se a URL da API mudar.
 
 ## Colunas — `psd`
@@ -146,4 +146,4 @@ print(meta.raw_content_hash, meta.raw_content_size)  # SHA-256 e tamanho do corp
 - Atualização: mensal (WASDE); cada série guarda o mês da própria última atualização
 - Histórico: 1960+
 
-`produto` aceita nomes normalizados, inclusive caixa e acentos. `market_year` deve ser inteiro de 1960 até o ano corrente em Brasília. Países, atributos, tipos de ano e flags inválidos levantam `InvalidParameterError` antes da rede. As colunas da fonte conservam os nomes técnicos. Colunas inteiras usam `Int64` anulável, `value` usa `float64` e texto usa o padrão do pandas instalado, inclusive no vazio.
+`produto` aceita nomes normalizados, inclusive caixa e acentos; `"arroz em casca"` é recusado, porque o arroz do PSD é o beneficiado (Rice, Milled). `market_year` deve ser inteiro de 1960 até o ano corrente em Brasília. Países, atributos, tipos de ano e flags inválidos levantam `InvalidParameterError` antes da rede. As colunas da fonte conservam os nomes técnicos. Colunas inteiras usam `Int64` anulável, `value` usa `float64` e texto usa o padrão do pandas instalado, inclusive no vazio.

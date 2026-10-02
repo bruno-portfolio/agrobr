@@ -72,7 +72,7 @@ The outer 1:1 join compares exports and reverse imports. Incompatible HS revisio
 | Source | UN Comtrade | ComexStat/MDIC |
 | Scope | Bilateral, subject to reporter availability | Brazil |
 | Classification | HS | NCM |
-| Geography | Numeric country codes | Destination/origin country and Brazilian state |
+| Geography | Numeric country codes | Brazilian state (destination/origin country only in the `agrobr.comexstat` API with `agregacao="detalhado"`) |
 
 The internal Comtrade license category is `zona_cinza`; see [Licenses](../licenses.md#un-comtrade) and [migration](../guides/migracao-2.md).
 

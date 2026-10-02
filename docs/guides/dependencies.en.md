@@ -10,6 +10,7 @@ Installed with `pip install agrobr`:
 |---|---|---|
 | `httpx` | Async HTTP client | `>=0.28.1` |
 | `httpcore` | HTTP transport security floor | `>=1.0.9` |
+| `certifi` | TLS certificate authorities | `>=2026.7.22` |
 | `beautifulsoup4` | HTML parsing | `>=4.12.0` |
 | `soupsieve` | BeautifulSoup CSS selectors | `>=2.9.0` |
 | `lxml` | HTML/XML parser | `>=6.1.0` |
@@ -52,7 +53,7 @@ pip install agrobr[all]       # All optional runtime integrations
 pip install agrobr[dev]
 ```
 
-Includes: pytest (+asyncio, cov, recording, timeout), ruff, mypy, pre-commit, pandas-stubs, types-requests, xlwt.
+Includes: pytest (+asyncio, cov, recording, timeout, socket), ruff, mypy, pre-commit, pandas-stubs, types-requests, xlwt.
 
 ## Pinning Rules
 

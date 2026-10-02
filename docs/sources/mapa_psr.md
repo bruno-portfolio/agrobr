@@ -62,7 +62,7 @@ df = alt.mapa_psr.apolices(uf="MT")
 | `as_polars` | bool | False | Se True, retorna `polars.DataFrame`; somente nomeado, como `return_meta` |
 | `return_meta` | bool | False | Retorna tupla (DataFrame, MetaInfo) |
 
-A `cultura` é filtrada por trecho do nome publicado no CSV (`NM_CULTURA_GLOBAL`). Não há catálogo estático: a lista vem
+O `produto` é filtrado por trecho do nome publicado no CSV (`NM_CULTURA_GLOBAL`). Não há catálogo estático: a lista vem
 no próprio CSV (311 MB no período mais recente), então uma cultura fora do publicado só aparece como resultado vazio,
 depois da descarga.
 
@@ -87,6 +87,7 @@ depois da descarga.
 | `produtividade_segurada` | float | Sim | Produtividade segurada; o MAPA não publica a unidade |
 | `nivel_cobertura` | float | Sim | Nível de cobertura em fração (0,65 = 65%): produtividade segurada ÷ estimada, como o MAPA publica |
 | `seguradora` | str | Sim | Razao social da seguradora |
+| `cod_municipio` | int | Sim | Código IBGE do município (`Int64`) tirado de `cd_ibge`; nulo quando `cd_ibge` é nulo |
 
 ## Parametros — `apolices`
 
@@ -176,9 +177,9 @@ não é garantida; use uma ordenação explícita por suas colunas de interesse.
 
 ## Integridade e período das apólices
 
-O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 4; o contrato de apólices está em 1.1 e o de sinistros permanece em 1.0.
+O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 4; o contrato de apólices está em 1.2 e o de sinistros em 1.1.
 
-**Chave e registro publicado em dobro (contrato `mapa_psr_apolices` 1.1).** A chave das apólices é `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` e `seguradora`: o número da apólice só é único dentro da seguradora (em 2007, 2008, 2009, 2011 e 2012 o MAPA publica o mesmo número em duas seguradoras, com área e prêmio diferentes). Um registro publicado duas vezes e igual em todas as colunas que o agrobr entrega (em 2009, a apólice 1977000249501 da Mapfre, com a proposta reenviada) sai uma vez só, com aviso (`warn_once`) e a contagem em `source_details["duplicatas_colapsadas"]`. Repetição da chave com qualquer valor diferente levanta `ContractViolationError` (no dataset, `SourceUnavailableError`).
+**Chave e registro publicado em dobro (contrato `mapa_psr_apolices` 1.2).** A chave das apólices é `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` e `seguradora`: o número da apólice só é único dentro da seguradora (em 2007, 2008, 2009, 2011 e 2012 o MAPA publica o mesmo número em duas seguradoras, com área e prêmio diferentes). Um registro publicado duas vezes e igual em todas as colunas que o agrobr entrega (em 2009, a apólice 1977000249501 da Mapfre, com a proposta reenviada) sai uma vez só, com aviso (`warn_once`) e a contagem em `source_details["duplicatas_colapsadas"]`. Repetição da chave com qualquer valor diferente levanta `ContractViolationError` (no dataset, `SourceUnavailableError`).
 
 `ano_apolice` é o ano de contratação da apólice, conforme o dicionário SISSER; não identifica a data do evento ou do pagamento. `sinistros` seleciona indenização positiva com evento não vazio. Zero publicado continua zero em `apolices`; valores ausentes continuam nulos. Não se arredondam valores monetários a centavos. Números de apólice e códigos geográficos conservam seus zeros iniciais. Fora o registro publicado em dobro e idêntico, descrito acima, nenhuma linha é deduplicada.
 

@@ -105,7 +105,7 @@ temporária" (10084) e, na permanente, "com 50 pés e mais existentes" (9504).
 ```python
 from agrobr import ibge
 
-# Efetivo de rebanho por UF (2017)
+# Efetivo de rebanho por UF (1995 e 2017)
 df = await ibge.censo_agro('efetivo_rebanho')
 
 # Uso da terra em Mato Grosso

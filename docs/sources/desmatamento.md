@@ -7,7 +7,7 @@
 | **Provedor** | INPE — Instituto Nacional de Pesquisas Espaciais |
 | **Programas** | PRODES (anual) e DETER (alertas diarios) |
 | **Acesso** | API WFS publica (TerraBrasilis GeoServer) |
-| **Formato** | CSV via WFS outputFormat + GeoJSON para geometria |
+| **Formato** | GeoJSON do WFS 2.0 (`application/json`) nos dois modos |
 | **Autenticacao** | Nenhuma |
 | **Licenca** | Dados publicos governo federal |
 | **Serie Historica** | PRODES: 2000+, DETER: 2016+ (Amazonia), 2020+ (Cerrado) |
@@ -22,7 +22,7 @@ O INPE opera dois sistemas complementares de monitoramento do desmatamento:
 
 ## Acesso via TerraBrasilis
 
-Os dados sao acessados via GeoServer WFS do TerraBrasilis com `outputFormat=csv` e filtros via `CQL_FILTER`.
+Os dados são acessados via GeoServer WFS 2.0.0 do TerraBrasilis em JSON (`outputFormat=application/json`), paginados por `startIndex`/`count`, com filtros via `CQL_FILTER`.
 
 ### PRODES — Workspaces por Bioma
 
@@ -50,7 +50,7 @@ A funcao `prodes_geo()` retorna desmatamento PRODES consolidado com poligonos de
 |-------|-------|
 | **Coluna de geometria** | `geom` (uniforme em todos os 6 biomas) |
 | **Formato** | MultiPolygon EPSG:4326 |
-| **maxFeatures default** | 10.000 (tabular: 50.000) |
+| **max_registros (padrão)** | 10.000 (tabular: 50.000) |
 | **outputFormat** | `application/json` (GeoJSON) |
 
 ## Geometria (deter_geo)
@@ -63,7 +63,7 @@ A funcao `deter_geo()` retorna alertas DETER com poligonos de geometria como Geo
 | **Coluna de geometria (Cerrado)** | `st_multi` |
 | **Formato** | MultiPolygon EPSG:4326 |
 | **Volume por feature** | ~1.1 KB com geometria |
-| **maxFeatures default** | 10.000 (tabular: 50.000) |
+| **max_registros (padrão)** | 10.000 (tabular: 50.000) |
 | **outputFormat** | `application/json` (GeoJSON) |
 
 A coluna de geometria e bioma-especifica no GeoServer. O parser normaliza ambas para `geometry` no GeoDataFrame de saida.
@@ -125,7 +125,7 @@ gdf = await agrobr.desmatamento.deter_geo(
 - DETER so disponivel para Amazonia e Cerrado
 - Na Amazônia, o PRODES do agrobr é o recorte do bioma (`yearly_deforestation_biome`), não o da Amazônia Legal, onde o INPE publica a taxa de destaque. Em 2024, a nota técnica do INPE dá cerca de 6.288 km² para a Amazônia Legal, e a soma das UFs do bioma no agrobr dá 6.068,9 km²
 - O agrobr pagina o WFS: `tamanho_pagina` feições por página (500; 100 nas `_geo`; até 2.000 e 500), com 2 s entre as requisições, até `max_registros` (50.000; 10.000 nas `_geo`). Além do limite, sai o prefixo em ordem de `fid` (PRODES) ou `gid` (DETER), com `UserWarning`. Filtre por `ano`, `uf` ou datas, que vão ao servidor, ou use `max_registros=None` ([guia de migração, §84](../guides/migracao-2.md#84-desmatamento-paginacao-corte-e-custo-da-chamada-padrao))
-- Source API (`agrobr.desmatamento.*`) retorna poligonos individuais (granularidade fina); o dataset `datasets.desmatamento` entrega o agregado anual por uf/classe/bioma conforme o contrato
+- Source API (`agrobr.desmatamento.*`) retorna poligonos individuais (granularidade fina); o dataset `datasets.desmatamento` entrega agregados conforme o contrato: anual por uf/classe/bioma no PRODES e diário por uf/município/classe/bioma no DETER
 - Pos-migracao BiomasBR (03/2026), os layers PRODES de Amazonia, Pantanal, Caatinga e Mata Atlantica estao temporariamente quebrados no GeoServer do INPE (ServiceException para qualquer cliente); Cerrado e Pampa operacionais
 - DETER e sistema de alerta, nao de consolidacao — pode haver sobreposicao
 - No DETER Cerrado, `municipio_id` é sempre nulo porque a camada da fonte não fornece esse identificador.
@@ -146,4 +146,4 @@ gdf = await agrobr.desmatamento.deter_geo(
 
 ## Intervalo PRODES
 
-`prodes()` e `prodes_geo()` aceitam `ano` somente como inteiro ou `None`. O intervalo é consultado na camada do bioma, com cache de 24 horas por processo; anos fora dele levantam `InvalidParameterError`. A cobertura dos polígonos não deve ser confundida com o início das séries históricas de taxas de desmatamento.
+`prodes()` e `prodes_geo()` aceitam `ano` somente como inteiro ou `None`; ano posterior ao corrente levanta `InvalidParameterError` antes da rede. Ano sem feição no WFS (ainda não publicado ou fora da cobertura da camada) devolve resultado vazio, com `UserWarning` e aviso em `meta.validation_warnings`. A cobertura dos polígonos não deve ser confundida com o início das séries históricas de taxas de desmatamento.

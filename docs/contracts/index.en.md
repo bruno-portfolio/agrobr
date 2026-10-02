@@ -224,11 +224,12 @@ Agrícolas fallback comes out `restrito`) or, without them, the selected source'
   records, not the body. `fetched_at` is the time of the original collection.
 - When `source_details` has `hash_kind` or `raw_content_hash_kind` equal to
   `resource_manifest_sha256` (BCB, Comtrade, Embrapa Solos, FUNAI, PRODES/DETER,
-  and INCRA), `raw_content_hash` is the SHA-256 of the query manifest, not of an
-  HTTP body, and `raw_content_size` is the size of that manifest. The manifest
-  carries the time of each resource (`fetched_at`) in all of these sources, and
-  also in ANP with more than one file (`raw_hash_kind`): the hash identifies the
-  acquisition and changes on every call, even with the same content. To know
+  INCRA, and SICAR), `raw_content_hash` is the SHA-256 of the query manifest, not
+  of an HTTP body, and `raw_content_size` is the size of that manifest. The
+  manifest carries the time of each resource (`fetched_at`) in these sources
+  except SICAR, and also in ANP with more than one file (`raw_hash_kind`): the
+  hash identifies the acquisition and changes on every call, even with the same
+  content. To know
   whether the content changed, compare the `sha256` of each item of
   `source_details["resources"]`.
 - For ANTT (`fluxo_pedagio`) and CONAB costs (`custo_producao`), `hash_kind` is their own

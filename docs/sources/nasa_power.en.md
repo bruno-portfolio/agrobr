@@ -19,7 +19,7 @@
 - **Coverage**: Global, point queries, since 1981
 - **Community**: AG (Agroclimatology)
 
-## Available Parameters
+## Default parameters
 
 | NASA parameter | agrobr name | Unit | Description |
 |----------------|-------------|---------|-----------|
@@ -30,6 +30,8 @@
 | `RH2M` | `umidade_rel` | % | Relative humidity at 2m |
 | `ALLSKY_SFC_SW_DWN` | `radiacao_mj` | MJ/m2/day | Incident solar radiation |
 | `WS2M` | `vento_ms` | m/s | Wind speed at 2m |
+
+Also accepted in `parameters=`: `PS` (`ps_kpa`, kPa), `WS10M` (`vento_10m_ms`, m/s), `T2MDEW` (`ponto_orvalho`, C), `GWETROOT` (`umidade_solo_raiz`, 1) and `GWETTOP` (`umidade_solo_superficie`, 1). The full list comes from `nasa_power.parametros()`.
 
 ## Usage
 
@@ -102,7 +104,7 @@ df, meta = await nasa_power.clima_uf("MT", ano=2024, return_meta=True)
 | Column | Type | Description |
 |--------|------|-----------|
 | `mes` | datetime | First day of the month |
-| `uf` | str | State abbreviation |
+| `uf` | str | State abbreviation (only in `clima_uf`; absent from monthly `clima_ponto`) |
 | `precip_acum_mm` | float | Accumulated precipitation (mm) |
 | `temp_media` | float | Mean temperature (C) |
 | `temp_max_media` | float | Mean of the maximums (C) |

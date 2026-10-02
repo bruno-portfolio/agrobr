@@ -51,7 +51,7 @@ chave primária; a coluna `ncm` não sai no dataset (o detalhe por NCM está em
 `agrobr.comexstat`). `oleo_soja_bruto` continua disponível na API autônoma do ComexStat
 como o código específico `15071000`, mas não integra o vocabulário deste dataset. O
 fallback ABIOVE usa as categorias genéricas `farelo` e `oleo`, com o mesmo escopo de
-`farelo_soja` e `oleo_soja` (farelo 2025: ABIOVE 23,30 mi t × posição `2304` 23,27 mi t),
+`farelo_soja` e `oleo_soja` (farelo 2025: ABIOVE 23,27 mi t na edição de ago/2026, 23,30 mi t na de dez/2025, × posição `2304` 23,27 mi t),
 e devolve o nome canônico do dataset.
 
 ## Garantias

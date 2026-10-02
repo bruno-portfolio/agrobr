@@ -42,7 +42,7 @@ The weekly XLSX contains a "Progresso de safra" sheet with repeated blocks per c
 2. **Coverage note**: "(Esses N estados correspondem a X% da área cultivada)", read into `n_estados` and `cobertura_area_pct`
 3. **Seeding**: table with State, previous year, previous week, current week, 5-year average
 4. **Harvest**: same structure (when applicable); the percentage of blocks marked with `*` is computed over the cumulative sown area
-5. **"N estados" row** at the end of each block: CONAB's own average of the monitored states, returned as `estado =
+5. **"N estados" row** at the end of each block: CONAB's own average of the monitored states, returned as `uf =
    "MEDIA_ESTADOS"`, not as Brazil
 
 Values are fractions (0.0-1.0), not percentages.

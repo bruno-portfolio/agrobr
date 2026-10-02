@@ -54,10 +54,11 @@ print(meta.data_sources, meta.source_url)
 | `area_ha` | float | Area em hectares |
 | `geocodigo` | str | Apenas cobertura municipal: identificador territorial publicado pelo MapBiomas |
 | `id_registro` | Int64 | Apenas cobertura municipal: `ID` numérico original da linha, local à coleção e recurso |
+| `cod_municipio` | Int64 | Apenas cobertura municipal: código IBGE tirado do `geocodigo`; nulo sem prefixo de UF |
 
 ### Cobertura municipal da Coleção 11
 
-O retorno municipal tem dez colunas, na ordem acima, com `geocodigo` e `id_registro` acrescentados após as oito colunas anteriores. `classe_id`, `ano` e `id_registro` usam pandas `Int64`, `area_ha` usa `float64` e os textos usam o dtype de texto padrão do pandas instalado (`str` no pandas 3, `object` no 2), inclusive em um recorte vazio. O contrato `mapbiomas.cobertura_municipal` 1.1 verifica a chave `(bioma, uf, geocodigo, classe_id, id_registro, ano)` dentro de uma coleção e recurso. O parser municipal tem versão 2; os contratos e o parser estaduais permanecem próprios.
+O retorno municipal tem onze colunas, na ordem acima: as oito anteriores, `geocodigo`, `id_registro` e `cod_municipio` (`Int64`, código IBGE tirado do `geocodigo`, nulo sem prefixo de UF). `classe_id`, `ano` e `id_registro` usam pandas `Int64`, `area_ha` usa `float64` e os textos usam o dtype de texto padrão do pandas instalado (`str` no pandas 3, `object` no 2), inclusive em um recorte vazio. O contrato `mapbiomas.cobertura_municipal` 1.1 verifica a chave `(bioma, uf, geocodigo, classe_id, id_registro, ano)` dentro de uma coleção e recurso. O parser municipal tem versão 2; os contratos e o parser estaduais permanecem próprios.
 
 `geocodigo` preserva a coluna `geocode`; não garante pertencimento ao catálogo municipal atual do IBGE. O recurso inclui Lagoa Mirim e Lagoa dos Patos, e um mesmo código pode ocorrer em mais de uma UF. Os cruzamentos territoriais publicados permanecem separados, sem corrigir UF ou somar áreas automaticamente.
 

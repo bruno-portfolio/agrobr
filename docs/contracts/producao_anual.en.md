@@ -129,9 +129,9 @@ print(contract.to_json())
 
 Published values are not implicitly converted. `unidade_producao`, `unidade_rendimento`, and `unidade_valor_producao` identify each row's scale. Before 2001, oranges use `mil_frutos` and `frutos/ha`; from 2001 onward, `ton` and `kg/ha`. `condicao_produto` distinguishes coffee `em_coco` through 2001 from `beneficiado` since 2002. Historical currencies remain identified without conversion to BRL or inflation adjustment. See the [IBGE methodology notes](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
 
-SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.1; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.
+SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.2; the four descriptive columns, `localidade_cod` and `cod_municipio` (derived from `localidade_cod`) are optional in the contract and supplied by the PAM API.
 
-PAM parser 2 also preserves localities and measures whose values are entirely missing or suppressed. Two observations for the same locality, year and measure, including colliding variable aliases, raise `ParseError`; unmapped variables are also rejected. The reader does not silently select the first value. The schema is 2.1 (2.0 plus `localidade_cod`).
+PAM parser 2 also preserves localities and measures whose values are entirely missing or suppressed. Two observations for the same locality, year and measure, including colliding variable aliases, raise `ParseError`; unmapped variables are also rejected. The reader does not silently select the first value. The schema is 2.2 (2.0 plus `localidade_cod` in 2.1 and `cod_municipio` in 2.2).
 
 In the CONAB fallback, Brazil totals are the sum of states and yield is
 recalculated as production in tonnes × 1,000 / area in hectares. CONAB's

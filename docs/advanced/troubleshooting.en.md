@@ -121,21 +121,13 @@ unavailability.
 
 ### `ValidationError`
 
-**Cause:** Data did not pass Pydantic or statistical validation.
-
-**Solutions:**
-
-1. Make sure you are using a valid product
-2. Disable statistical validation if needed:
-   ```python
-   df = await cepea.indicador('soja', validate_sanity=False)
-   ```
+**Cause:** `agrobr.exceptions.ValidationError` is raised only by `validate_batch(..., strict=True)` called from your code, on a critical anomaly. `cepea.indicador` does not raise it, with or without `validate_sanity`.
 
 ### Statistical Anomalies
 
 **Cause:** Values outside the expected historical range.
 
-With `validate_sanity=True`, anomalies are flagged in the DataFrame's `anomalies` column (they do not block the return) and logged. There is no specific exception or warning for anomalies.
+With `validate_sanity=True`, anomalies are flagged in the DataFrame's `anomalies` column (they do not block the return), logged, and summarized (how many rows and which rules) in a `UserWarning` and in `meta.validation_warnings`. There is no exception.
 
 **This is normal when:**
 - Prices had atypical variation (market events)
@@ -286,11 +278,11 @@ If the problem persists:
    agrobr doctor
    ```
 3. Open an issue with:
-   - Python and agrobr versions
-   - Operating system
-   - Code that triggers the error
-   - Full error message
-   - Debug logs (if possible)
+    - Python and agrobr versions
+    - Operating system
+    - Code that triggers the error
+    - Full error message
+    - Debug logs (if possible)
 
 ## FAQ
 

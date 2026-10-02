@@ -22,6 +22,9 @@ df = await datasets.futuros_agricolas("boi", data="2025-03-05")
 df = await datasets.futuros_agricolas("boi", tipo="historico", inicio="2025-01-01", fim="2025-03-05")
 ```
 
+`vencimento` takes only the contract month code (e.g. `V26`): settlements carry only futures, and any other format,
+an option code included, is rejected before the network.
+
 ### Open interest
 
 ```python
@@ -43,8 +46,10 @@ published code (e.g. `VVJK`); any other format is rejected before the network.
 Weekdays are queried sequentially; both
 futures and options are returned and identified by the `tipo` column.
 
-`data` with `tipo="historico"` or `"oi_historico"`, and `inicio` or `fim` with `"ajustes"` or `"posicoes"`, raise
-`InvalidParameterError` before the network: the argument that does not apply to the type used to be silently dropped.
+`data` with `tipo="historico"` or `"oi_historico"`, and `inicio`, `fim`, or `vencimento` with `"ajustes"` or
+`"posicoes"`, raise `InvalidParameterError` before the network: the argument that does not apply to the type used to
+be silently dropped. These two types return every expiry of the session; for a single one, filter the
+`vencimento_codigo` column.
 For every type, `data`, `inicio`, and `fim` outside the accepted formats, and `inicio` after `fim`, also raise
 `InvalidParameterError` before the network.
 

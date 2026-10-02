@@ -110,7 +110,7 @@ df, meta = await datasets.preco_diario("soja", return_meta=True)
 print(meta.source)            # "datasets.preco_diario/cepea"
 print(meta.dataset)           # "preco_diario"
 print(meta.contract_version)  # "1.1"
-print(meta.records_count)     # 365
+print(meta.records_count)     # ~250 (one per business day in the last 365 days)
 print(meta.from_cache)        # False
 print(meta.snapshot)          # None (or "2025-12-31" if deterministic)
 ```

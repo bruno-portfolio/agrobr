@@ -27,8 +27,8 @@ df = await agrobr.conab.progresso_safra(produto="Soja", uf="MT")
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| `cultura` | str | Nome da cultura (ex: "Soja", "Milho 2a") |
-| `safra` | str | Safra no formato "YYYY/YY" (ex: "2025/26") |
+| `cultura` | str | Nome da cultura como publicado (ex: "Soja", "Milho 2ª") |
+| `safra` | str | Safra como publicada: "YYYY/YY" (ex: "2025/26"), ou ano civil "YYYY" no trigo (ex: "2026") |
 | `operacao` | str | "Semeadura" ou "Colheita" |
 | `uf` | str | UF (ex: "MT", "GO"); "MEDIA_ESTADOS" na linha "N estados" da planilha (média da própria CONAB dos estados monitorados, não a média simples das UFs nem o Brasil); "BR" só se a planilha publicar "Brasil" |
 | `semana_atual` | str | Data de referencia da semana (YYYY-MM-DD) |

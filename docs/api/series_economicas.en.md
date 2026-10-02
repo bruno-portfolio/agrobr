@@ -32,9 +32,9 @@ async def series_economicas(
 | Selection | Source behavior |
 |---|---|
 | Both dates | Inclusive request interval; ISO, `DD/MM/YYYY`, `date` or `datetime` |
-| Start only | Effective end is the current UTC date |
+| Start only | Effective end is the current Brasília civil date (UTC−3) |
 | End only | Start is delegated to the server; remote limits may reject an extensive request |
-| Neither dates nor `ultimos` | Start defaults to ten years before the current UTC date; end defaults to today |
+| Neither dates nor `ultimos` | Start defaults to ten years before the current Brasília civil date (UTC−3); end defaults to today |
 | `ultimos` without dates | Remote endpoint for the latest observations |
 | Dates and `ultimos` | Acquire every block, reconcile, sort, then apply a local tail |
 
@@ -50,7 +50,7 @@ Dates are published reference dates. A monthly series may return `2024-01-01` wh
 
 A duplicate within one response is an error. Repeated dates across blocks are reconciled only when their values agree, with origins retained; conflicts fail. A valid `[]` or the recognized no-values envelope can yield a typed empty frame. A recognized HTTP 404 emits a warning and does not establish that the series code exists.
 
-The dataset base wraps source availability, parsing and contract failures in `SourceUnavailableError`, retaining their classification in `errors`. Invalid parameters retain `InvalidParameterError`. `bcb_sgs` is the only source; there is no fallback. Contract validation also runs on empty results and without metadata.
+The dataset base wraps source availability and contract failures in `SourceUnavailableError`, retaining their classification in `errors`; a layout failure raises `ParseError` ("Todas as fontes falharam por layout"), with the errors in `errors`. Invalid parameters retain `InvalidParameterError`. `bcb_sgs` is the only source; there is no fallback. Contract validation also runs on empty results and without metadata.
 
 ## Metadata and reproducibility
 

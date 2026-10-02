@@ -222,12 +222,12 @@ o fallback da Notícias Agrícolas sai `restrito`) ou, sem elas, a da fonte sele
   `fetch_timestamp` nulo, porque o cache guarda registros, não o corpo. O
   `fetched_at` é o da coleta original.
 - Quando `source_details` traz `hash_kind` ou `raw_content_hash_kind` igual a
-  `resource_manifest_sha256` (BCB, Comtrade, Embrapa Solos, FUNAI, PRODES/DETER
-  e INCRA), `raw_content_hash` é o SHA-256 do manifesto das consultas, não de
-  um corpo HTTP, e `raw_content_size` é o tamanho desse manifesto. O manifesto
-  leva a hora de cada recurso (`fetched_at`) em todas essas fontes, e também na
-  ANP com mais de um arquivo (`raw_hash_kind`): o hash identifica a aquisição e
-  muda a cada chamada, mesmo com o conteúdo igual. Para saber se o conteúdo
+  `resource_manifest_sha256` (BCB, Comtrade, Embrapa Solos, FUNAI, PRODES/DETER,
+  INCRA e SICAR), `raw_content_hash` é o SHA-256 do manifesto das consultas, não
+  de um corpo HTTP, e `raw_content_size` é o tamanho desse manifesto. O manifesto
+  leva a hora de cada recurso (`fetched_at`) nessas fontes, menos no SICAR, e
+  também na ANP com mais de um arquivo (`raw_hash_kind`): o hash identifica a
+  aquisição e muda a cada chamada, mesmo com o conteúdo igual. Para saber se o conteúdo
   mudou, compare o `sha256` de cada item de `source_details["resources"]`.
 - Na ANTT (`fluxo_pedagio`) e nos custos da CONAB (`custo_producao`), o `hash_kind` é
   próprio (`sha256_canonical_utf8_query_and_acquisition_manifest` e

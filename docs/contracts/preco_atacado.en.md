@@ -10,8 +10,10 @@ Wholesale prices at Brazilian CEASAs (CONAB/PROHORT).
 
 ## Products
 
-48+ dynamic products from PROHORT. The source checks the product and the CEASA against what the body itself
-publishes and rejects a name outside it with `InvalidParameterError`, listing the valid ones.
+48 PROHORT products in agrobr's table; without a product filter, a newly published product comes out with a
+null `categoria` and a warning. A `produto` outside the 48 in `conab.ceasa_produtos()` raises
+`InvalidParameterError` before network access, and the requested product and CEASA are checked against what
+the body publishes, listing the valid ones.
 
 ## Schema
 

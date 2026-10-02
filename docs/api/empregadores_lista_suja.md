@@ -31,7 +31,7 @@ Cada chamada consulta a página oficial e baixa o arquivo completo, mesmo com fi
 
 `formato="auto"` prioriza CSV. A fonte pode escolher PDF quando CSV não é anunciado ou ocorre indisponibilidade elegível, preservando a causa nos metadados. `formato="csv"` e `formato="pdf"` são exclusivos. Um CSV malformado com resposta HTTP bem-sucedida ou um TXT divergente gera erro; não provoca troca silenciosa para PDF. Somente a rota PDF exige `agrobr[pdf]`.
 
-A validação cobre a publicação integral antes dos filtros. Falhas de aquisição, parsing ou contrato da fonte são encapsuladas pela base em `SourceUnavailableError`, com a classificação em `errors`; ausência da dependência PDF também permanece identificável nesse diagnóstico. Não há outra instituição como fallback do dataset. A causa e a rota do fallback de formato continuam sendo responsabilidade da fonte.
+A validação cobre a publicação integral antes dos filtros. Falhas de aquisição e de contrato da fonte são encapsuladas pela base em `SourceUnavailableError`, com a classificação em `errors`; falha de layout chega como `ParseError` (também com `errors`). Sem `agrobr[pdf]`, a rota PDF levanta `ImportError`. Não há outra instituição como fallback do dataset. A causa e a rota do fallback de formato continuam sendo responsabilidade da fonte.
 
 ## Contrato e identidade
 

@@ -8,7 +8,11 @@ biblioteca, conforme a [política SemVer](../contracts/semver.md).
 **Como testar a migração:** um mock solto (`patch(...)`, `AsyncMock()`) aceita qualquer argumento e esconde a chamada que a
 2.0 recusa ([§78](#78-argumento-fora-da-assinatura-levanta-typeerror)). Crie os mocks com `patch(..., autospec=True)`, ou
 confira cada chamada com `inspect.signature(funcao).bind(*args, **kwargs)`: os 2 levantam `TypeError` para argumento fora
-da assinatura, como a 2.0.
+da assinatura, como a 2.0. Nas funções que mantêm `**kwargs` (como as da
+[§78](#78-argumento-fora-da-assinatura-levanta-typeerror)), a assinatura aceita qualquer nome, e só a execução recusa o
+desconhecido: nelas, nem o `autospec` nem o `bind` acusam `zarc.zoneamento(cultura=...)`, `mapbiomas.cobertura(estado=...)`
+ou `desmatamento.deter(data_inicio=...)`. Confira essas chamadas contra a tabela da
+[§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api).
 
 ## Resumo: o que quebra
 
@@ -18,9 +22,10 @@ Em ordem de risco. Cada linha aponta a seção com o detalhe.
 
 1. `bcb.credito_rural` sem `agregacao` devolve o agregado por UF (11 colunas), e não mais os registros do SICOR (21 colunas):
    para o recorte da 1.1.0, passe `agregacao="registro"` ([§4](#4-bcbcredito_rural-passa-ao-contrato-20)).
-2. `comtrade.comercio` e `trade_mirror` com `partner=None`, e `datasets.comercio_internacional` com `parceiro=None`,
-   devolvem o agregado World, e não mais todos os parceiros publicados: para o recorte da 1.1.0, passe `"all"` ou
-   `"todos"` ([Comtrade](#comtrade-world-cobertura-e-contratos-20)).
+2. `comtrade.comercio` com `partner=None` e `datasets.comercio_internacional` com `parceiro=None` devolvem o
+   agregado World, e não mais todos os parceiros publicados: para o recorte da 1.1.0, passe `"all"` ou `"todos"`
+   ([Comtrade](#comtrade-world-cobertura-e-contratos-20)). O `trade_mirror` exige um parceiro explícito: `None`,
+   World, `"all"` e `"todos"` levantam `InvalidParameterError`.
 3. A `safra` do crédito rural sai "2023/24", e não "2023/2024": converta o que foi gravado com
    `agrobr.normalize.dates.normalizar_safra` ([§76](#76-credito-rural-a-safra-sai-aaaaaa)).
 4. Os datasets devolvem as colunas na ordem do contrato, e a `data` do `queimadas` sai em `datetime64`: leia as colunas pelo
@@ -59,40 +64,66 @@ Em ordem de risco. Cada linha aponta a seção com o detalhe.
     ([§63](#63-mapbiomas-classe-fora-da-legenda-sai-nula-com-aviso)).
 18. Pela CONAB, `area_colhida` sai nula em `conab.safras` e no `estimativa_safra`, e `data_publicacao` é a data do boletim, e
     não mais o dia da consulta ([§3](#3-conabsafras-passa-ao-contrato-20)).
+19. `acervo_fundiario.sigef(uf)` devolve as mesmas parcelas em outra ordem (públicas, depois privadas) e com a coluna nova
+    `natureza`; o `source_details` passa a ser por arquivo ([§29](#29-acervo-fundiario-sigef-publico-e-privado-snci-por-uf)).
+20. `antt_pedagio.fluxo_pedagio` sai com `sentido` em maiúsculas (`CRESCENTE`, `DECRESCENTE`): o filtro e o `groupby` pelo
+    texto publicado mudam, e o volume não ([§24](#24-antt-preserva-cobranca-e-frequencia)).
+21. `anp_diesel.vendas_diesel` sai com `produto` `DIESEL S10` (era `DIESEL S-10`) e `regiao` pelo nome canônico
+    (`Centro-Oeste`, era `REGIÃO CENTRO-OESTE`): o filtro pelo texto antigo volta vazio ([§97](#97-outras-mudancas-por-fonte)).
+22. `agrobr conab levantamentos` lista todos os levantamentos, e não só os 10 primeiros ([§92](#92-cli-formato-em-todos-os-comandos-e-snapshot-use-retirado)).
 
 **Passa a levantar erro**
 
-19. Status HTTP de erro sai como `SourceUnavailableError`, e não como `httpx.HTTPStatusError`: troque o `except`
+23. Status HTTP de erro sai como `SourceUnavailableError`, e não como `httpx.HTTPStatusError`: troque o `except`
    ([§75](#75-status-http-de-erro-sourceunavailableerror-nao-httpxhttpstatuserror)).
-20. Argumento fora da assinatura levanta `TypeError` (76 funções aceitavam `**kwargs` e descartavam o nome errado): corrija o
-    nome ([§78](#78-argumento-fora-da-assinatura-levanta-typeerror)).
-21. Parâmetro impossível (UF inexistente, período invertido) levanta `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia
+24. Argumento desconhecido ou com nome errado, que a 1.1.0 descartava em silêncio, levanta erro antes da rede: `TypeError`
+    nas 77 funções que perderam o `**kwargs`, e `TypeError` ou `InvalidParameterError` nas 32 que o mantêm: corrija o nome
+    ([§78](#78-argumento-fora-da-assinatura-levanta-typeerror)).
+25. Parâmetro impossível (UF inexistente, período invertido) levanta `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia
     vazio ou erro de fonte; na 2.0, a regra vale em todas as fontes ([§66](#66-parametro-impossivel-recusado-antes-da-rede),
     [§90](#90-erros-a-classe-diz-a-causa)).
-22. `as_polars=True` sem o Polars levanta `ImportError`, e não devolve mais pandas: instale `agrobr[polars]`
+26. `as_polars=True` sem o Polars levanta `ImportError`, e não devolve mais pandas: instale `agrobr[polars]`
     ([§8](#8-as_polarstrue-exige-polars)). O extra passa a exigir `polars>=0.20.3`: com um Polars mais antigo fixado, a
     instalação acusa conflito ([§19](#19-dependencias-falhas-e-saidas-estruturadas)).
-23. Os nomes antigos de parâmetro (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
-    `max_features` e outros) levantam `TypeError` (`InvalidParameterError` nas funções que aceitam `**kwargs`, como
-    `zarc.zoneamento` e `mapbiomas.cobertura`): troque pelo nome novo
-    ([§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api)).
-24. `as_polars`, `return_meta` e as opções depois deles passam a ser só por nome; no IBGE, também os filtros secundários
+27. Os nomes antigos de parâmetro (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
+    `max_features` e outros) levantam `TypeError` (`InvalidParameterError` em `zarc.zoneamento`, `mapbiomas.cobertura` e
+    `mapbiomas.transicao`): troque pelo nome novo ([§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api)).
+28. `as_polars`, `return_meta` e as opções depois deles passam a ser só por nome; no IBGE, também os filtros secundários
     ([§88](#88-flags-e-filtros-secundarios-so-por-nome)).
-25. Falha de layout em todas as fontes de um dataset levanta `ParseError`, e não mais `SourceUnavailableError`
+29. Falha de layout em todas as fontes de um dataset levanta `ParseError`, e não mais `SourceUnavailableError`
     ([§90](#90-erros-a-classe-diz-a-causa)).
-26. Na CLI, `--output`, `--json` e `snapshot use` saem com código 2: use `--formato`
+30. Na CLI, `--output`, `--json` e `snapshot use` saem com código 2: use `--formato`
     ([§92](#92-cli-formato-em-todos-os-comandos-e-snapshot-use-retirado)).
+31. `precos_diesel` com período que começa depois de hoje levanta `InvalidParameterError` antes da rede, onde a 1.1.0
+    devolvia vazio na UF e no Brasil ([§97](#97-outras-mudancas-por-fonte)).
+32. `embrapa_solos.mapa_solos(ordem=...)` casa a classe inteira: um trecho do nome (`"latos"`) levanta
+    `InvalidParameterError` com a lista das classes ([§97](#97-outras-mudancas-por-fonte)).
+33. `AGROBR_HTTP_RATE_LIMIT_<FONTE>` e o `rate_limit_*` por argumento recusam negativo, `inf` e `nan` com `ValidationError`
+    ([§91](#91-variaveis-de-ambiente)).
+34. `cadastro_rural`, `desmatamento`, `exportacao`, `importacao`, `uso_do_solo` e `zoneamento_agricola` dentro de
+    `datasets.deterministic(...)` levantam `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia o dado corrente: tire
+    essas chamadas do bloco ([§71](#71-modo-deterministico-aviso-onde-o-modo-nao-se-aplica)).
+
+**Deixa de levantar erro**
+
+35. `datasets.estimativa_safra` sem observações em todas as fontes devolve o vazio do contrato com `UserWarning`, e não
+    mais `SourceUnavailableError`: confira `df.empty` ([estimativa_safra](#estimativa_safra-contrato-31-e-selecao-temporal)).
+36. `cftc.cot` sem relatório no recorte devolve vazio tipado, e não mais `SourceUnavailableError`; as contagens saem em
+    `Int64` ([§99](#99-cftc-recorte-sem-relatorio-devolve-vazio-tipado)).
 
 **API removida**
 
-27. Saem `agrobr.configure()`, os módulos `quality`, `sla`, `export`, `plugins` e `validators.semantic` e o
+37. Saem `agrobr.configure()`, os módulos `quality`, `sla`, `export`, `plugins` e `validators.semantic` e o
     `load_baseline_fingerprint`, e o `cache.get_policy` passa a valer só para o CEPEA: remova os usos
     ([§9](#9-modulos-experimentais-foram-removidos), [§10](#10-agrobrconfigure-foi-removida),
     [§50](#50-limpeza-de-codigo-morto), [§83](#83-cache-a-politica-so-do-cepea-e-sai-o-load_baseline_fingerprint)).
     O `uf=` de `anda.entregas` e de `datasets.fertilizante` também sai: era parâmetro explícito na 1.1.0, e passá-lo levanta
     `TypeError`, porque os PDFs só trazem o total nacional ([§50](#50-limpeza-de-codigo-morto)).
-28. Os subpacotes `agrobr.conab.custo_producao` e `agrobr.conab.serie_historica` saem: importe as funções de
+38. Os subpacotes `agrobr.conab.custo_producao` e `agrobr.conab.serie_historica` saem: importe as funções de
     `agrobr.conab` ([§93](#93-conab-um-caminho-por-funcao)).
+39. `b3.oi_historico` passa a se chamar `b3.posicoes_abertas_historico`, também em `sync.b3`; o `tipo="oi_historico"`
+    do `futuros_agricolas` fica ([§98](#98-b3-oi_historico-passa-a-se-chamar-posicoes_abertas_historico)).
+40. O parâmetro `_moeda` de `cepea.indicador` sai: passá-lo levanta `TypeError` ([§6](#6-cepea-rejeita-parametros-invalidos)).
 
 Para ficar na série 1.x enquanto migra: `pip install "agrobr<2"`.
 
@@ -104,7 +135,7 @@ Cotações passam ao contrato **2.0**, parser **2**, mantendo como prefixo `cota
 
 As rotas por dia/período podem chamar o mesmo fechamento de `Fechamento PTAX` e `Fechamento`. O seletor reconhece ambos; a saída preserva a diferença para não inventar texto publicado. Em todos, tipo novo, vazio ou null permanece com diagnóstico; seletores específicos geram erro quando não conseguem classificar a linha. Considere a variação de rótulo ao juntar resultados de rotas distintas. Não some os boletins nem use a última linha como média diária.
 
-Datas passam a validação estrita. Data única junto de intervalo gera erro; apenas início completa fim com hoje UTC, apenas fim completa início com fim−30 dias. Os filtros parciais antes ignorados agora são respeitados. Moeda aceita três letras ASCII e normaliza apenas caixa; símbolos ausentes no catálogo atual geram erro antes do GET de cotações. Vazio, erro HTTP e envelope sem value são situações distintas.
+Datas passam a validação estrita. Data única junto de intervalo gera erro; apenas início completa fim com a data de hoje no calendário de Brasília, apenas fim completa início com fim−30 dias. Os filtros parciais antes ignorados agora são respeitados. Moeda aceita três letras ASCII e normaliza apenas caixa; símbolos ausentes no catálogo atual geram erro antes do GET de cotações. Vazio, erro HTTP e envelope sem value são situações distintas.
 
 `top` controla páginas, sem cortar a saída. A coleta valida todas as páginas antes de filtrar boletins. Preserve metadados: cobertura das cotações e do catálogo é separada, e sem total independente fica unknown mesmo após página vazia. Hash/tamanho superiores representam manifesto de recursos. A cotação histórica usa a unidade monetária corrente daquela data; não rotule toda a série como BRL nem atribua UTC ao relógio publicado.
 
@@ -125,7 +156,7 @@ Indicadores exigem o nome exato, sem aliases ou ajuste de caixa. Quantidades boo
 `bcb.sgs` mantém os 17 aliases e as quatro colunas, mas passa ao schema **3.0** e parser **2**; o período passa a
 `inicio`/`fim` ([§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api)). Séries que publicam `dataFim` (ex.: TR) ganham a coluna opcional `data_fim` depois das quatro; a 1.1 descartava esse campo. Datas civis usam sempre `datetime64[ns]`, inclusive no pandas 3, que antes podia inferir us. Valores usam float64, códigos `Int64` e nomes desconhecidos são nulos. Use `.isna()` para ausências. O novo contrato registrado é `bcb_sgs`, constante `BCB_SGS_V3`; o `BCB_SGS_V2` conserva o schema 2.1, e não existia contrato SGS V1 registrado.
 
-Intervalos longos são divididos por anos civis, unidos e ordenados antes de aplicar `ultimos`. Sem datas, a janela padrão usa uma única referência UTC; apenas início preenche o fim, mas apenas fim conserva o início omitido. Para mais de 20 observações na série 1, informe as duas datas com `ultimos`, pois a rota nativa de últimos valores recusa 21.
+Intervalos longos são divididos por anos civis, unidos e ordenados antes de aplicar `ultimos`. Sem datas, a janela padrão usa uma única data de referência, a de hoje no calendário de Brasília; apenas início preenche o fim, mas apenas fim conserva o início omitido. Para mais de 20 observações na série 1, informe as duas datas com `ultimos`, pois a rota nativa de últimos valores recusa 21.
 
 Parâmetros booleanos usados como código/quantidade, strings numéricas como código, datas malformadas e intervalos invertidos agora falham antes da rede. Dados inválidos deixam de virar nulos silenciosamente. Duplicatas no mesmo corpo e valores conflitantes entre blocos geram erro. Referências mensais/trimestrais anteriores ao dia inicial continuam presentes, com aviso e origem; não as trate automaticamente como observações diárias.
 
@@ -133,7 +164,7 @@ O 404 oficial de ausência de valores passa a vazio tipado com aviso, sem compro
 
 ## Comtrade: World, cobertura e contratos 2.0
 
-`comtrade.comercio`, `trade_mirror` e `datasets.comercio_internacional` passam ao contrato **2.0**. `partner=None`, `world`, `mundo` e `"0"` agora enviam o agregado World explicitamente. Para conservar a antiga consulta que omitia o parâmetro e retornava todos os parceiros publicados, use `partner="all"` ou `"todos"`. Não some o agregado com seus componentes. No `datasets.comercio_internacional`, os filtros e as colunas saem em português, e o contrato passa a **3.0**: `parceiro=None` envia o World ([§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api), [§87](#87-colunas-renomeadas-na-saida)).
+`comtrade.comercio` passa ao contrato **2.1** (`comercio_bilateral`), `trade_mirror` ao **2.0** e `datasets.comercio_internacional` ao **3.0**. `partner=None`, `world`, `mundo` e `"0"` agora enviam o agregado World explicitamente. Para conservar a antiga consulta que omitia o parâmetro e retornava todos os parceiros publicados, use `partner="all"` ou `"todos"`. Não some o agregado com seus componentes. No `datasets.comercio_internacional`, os filtros e as colunas saem em português: `parceiro=None` envia o World ([§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api), [§87](#87-colunas-renomeadas-na-saida)).
 
 O bilateral mantém 22 colunas e acrescenta `classificacao` e `classificacao_original`; o dataset também preserva as 24 em vazio. No contrato 2.1, as 3 marcas de estimativa da ONU entram como flags anuláveis (27 colunas): veja a [seção 58](#58-comtrade-marcas-de-estimativa-da-onu). Sua chave usa `periodo, reporter_code, partner_code, hs_code, fluxo_code, classificacao`. O espelho passa de 18 a 24 colunas, com revisão/flag de cada perna e dois códigos numéricos. ISO descritivo pode ser nulo. Inteiros usam `Int64`, medidas `float64` e flags `boolean` anulável. Use `.isna()` para ausências.
 
@@ -163,7 +194,7 @@ O cache passa a ZIPs versionados por família, incluindo composição, tipos e p
 
 ## cadastro_rural: filtros SICAR e contexto temporal
 
-O dataset agora encaminha `atualizado_apos` ao SICAR e aceita `as_polars`; `municipio` aceita o nome inteiro ou o código IBGE ([§86](#86-municipio-nome-inteiro-ou-codigo-ibge)). Esses argumentos são somente nomeados, como o `return_meta`; os 7 primeiros posicionais (`uf` a `criado_apos`) continuam válidos. Fonte tabular e dataset passam ao contrato **2.0**, com as mesmas onze colunas e chave `[cod_imovel]`, mas datas `datetime64[ns, UTC]`, inclusive nulos e vazios. No dataset `cadastro_rural`, filtros desconhecidos passam a gerar erro antes da rede.
+O dataset agora encaminha `atualizado_apos` ao SICAR e aceita `as_polars`, os 2 só por nome, como o `return_meta`. `municipio` aceita o nome inteiro ou o código IBGE ([§86](#86-municipio-nome-inteiro-ou-codigo-ibge)) e segue na 2ª posição: os 7 primeiros posicionais (`uf` a `criado_apos`) continuam válidos. Fonte tabular e dataset passam ao contrato **2.1**, com as mesmas onze colunas mais a opcional `cod_municipio` e chave `[cod_imovel]`, mas datas `datetime64[ns, UTC]`, inclusive nulos e vazios. No dataset `cadastro_rural`, filtros desconhecidos passam a gerar erro antes da rede.
 
 ```python
 from agrobr import datasets
@@ -182,7 +213,7 @@ Use `get_contract("cadastro_rural")` ou `SICAR_IMOVEIS_V2`, de `agrobr.contracts
 
 Remova `cadastro_rural` de blocos `datasets.deterministic(...)`: o dataset passa a rejeitar esse contexto com `InvalidParameterError`, inclusive com filtros explícitos. Antes, a data de snapshot virava filtro de criação posterior, selecionando outro conjunto de registros. Uma consulta incremental ao cadastro corrente não recupera o estado do cadastro em uma data passada. Veja [filtros e limites](../contracts/cadastro_rural.md).
 
-## clima: histórico público e contrato mensal 3.0
+## clima: histórico público e contrato mensal 3.1
 
 `datasets.clima` passa a consultar a API observacional INMET, os ZIPs públicos e, no modo UF, o NASA POWER, nessa ordem. Use `fonte="inmet_historico"` para escolher os arquivos, `fonte="inmet"` para a API com token ou `fonte="nasa_power"` para o ponto representativo da UF. Uma fonte explícita não aciona outra rota. O ZIP cobre 2000 em diante; anos anteriores não o incluem no fallback.
 
@@ -194,7 +225,7 @@ df, meta = await datasets.clima(
 mensal = await datasets.clima("GO", 2001, fonte="inmet_historico")
 ```
 
-O contrato mensal **3.0** mantém a chave `[mes, uf]` e as fórmulas de agregação. As três temperaturas passam a aceitar nulos, assim como a precipitação: períodos sem medições não recebem zero. Há quatro colunas opcionais novas: `lat`, `lon`, `agregacao_espacial` e `base_tempo`. Coordenadas NASA são preservadas; no agregado INMET, ficam nulas. As bases diárias são UTC no INMET e LST no NASA; um ponto solicitado à NASA não equivale à média das estações estaduais.
+O contrato mensal **3.1** mantém a chave `[mes, uf]` e as fórmulas de agregação. As três temperaturas passam a aceitar nulos, assim como a precipitação: períodos sem medições não recebem zero. Há quatro colunas opcionais novas de localização e base, `lat`, `lon`, `agregacao_espacial` e `base_tempo`; as de cobertura (`estacoes_chuva`, `estacoes_chuva_parciais`, `dias`, `data_inicio` e `data_fim`) estão na [seção 17](#17-unidades-historicas-cache-e-medicoes-ausentes). Coordenadas NASA são preservadas; no agregado INMET, ficam nulas. As bases diárias são UTC no INMET e LST no NASA; um ponto solicitado à NASA não equivale à média das estações estaduais.
 
 O modo estação valida `clima_estacao` **1.0** para diário e o novo `clima_estacao_horaria` **1.0**, com chave `[data, hora_utc, estacao]`, para horário. `agregacao="mensal"` em estação passa a gerar erro; antes podia devolver horas sem agregá-las. Combinações de UF/ano com estação, datas ignoradas no modo UF e argumentos desconhecidos também falham antes da rede. `as_polars=True` converte após validar o contrato.
 
@@ -214,20 +245,23 @@ Os imports nomeados históricos continuam disponíveis com `DeprecationWarning`.
 | `ibge` | `IBGE_PAM_V1` | `IBGE_PAM_V2` |
 | `datasets` → `antt_pedagio` | `ANTT_PEDAGIO_FLUXO_V1` / `ANTT_PEDAGIO_FLUXO_V2` | `ANTT_PEDAGIO_FLUXO_V3` |
 | `conab` → `conab_custos` | `CONAB_CUSTO_PRODUCAO_V1` / `CONAB_CUSTO_PRODUCAO_V2` | `CONAB_CUSTOS_V3` |
-| `datasets` → `exportacao` | `EXPORTACAO_V1` | `EXPORTACAO_V1_1` |
-| `datasets` → `importacao` | `IMPORTACAO_V1` | `IMPORTACAO_V1_2` |
-| `datasets` → `mapbiomas_cobertura` | `MAPBIOMAS_COBERTURA_V1` | `MAPBIOMAS_COBERTURA_V2` |
-| `datasets` → `mapbiomas_transicao` | `MAPBIOMAS_TRANSICAO_V1` | `MAPBIOMAS_TRANSICAO_V2` |
+| `datasets` | `CREDITO_RURAL_V1_1` | `CREDITO_RURAL_V2` |
+| `datasets` | `EXPORTACAO_V1` | `EXPORTACAO_V1_1` |
+| `datasets` | `IMPORTACAO_V1` | `IMPORTACAO_V1_2` |
+| `datasets` | `MAPBIOMAS_COBERTURA_V1` | `MAPBIOMAS_COBERTURA_V2` |
+| `datasets` | `MAPBIOMAS_TRANSICAO_V1` | `MAPBIOMAS_TRANSICAO_V2` |
 
 Os nomes canônicos `IBGE_LSPA_V2`, `IBGE_CENSO_AGRO_LEGADO_V2` e
-`CONAB_SAFRA_V2` também identificam contratos 2.0. Seus três nomes antigos
+`CONAB_SAFRA_V2` também identificam os contratos atuais (`ibge.lspa` 2.0, `ibge.censo_agro_legado` 2.1, `conab.safras` 2.0). Seus três nomes antigos
 terminados em `_V1` permanecem aliases para compatibilidade de import e
 apontam ao mesmo contrato atual; não disponibilizam o schema antigo. Para
 consultas por dataset, prefira `get_contract(nome)` e leia `contract.version`.
 
 Os contratos que mudam de versão pelas regras de nome e de tipo da 2.0 (`abate_trimestral`, `antt_pedagio_pracas`,
 `condicao_lavouras`, `movimentacao_portuaria`, `oferta_demanda_global`, `posicionamento_fundos`, `comercio_internacional`
-e `bcb_sgs`) ganham constante nova, e a antiga fica com o schema anterior, sem aviso: veja a
+e `bcb_sgs`) ganham constante nova, e a antiga segue importável, sem aviso, com o schema anterior (2 exceções:
+`POSICIONAMENTO_FUNDOS_V1` passou à 1.1, com as colunas opcionais `swap_spread` e `other_spread`, e
+`COMERCIO_BILATERAL_V1`, a antiga de `comercio_internacional`, é histórica e emite `DeprecationWarning`): veja a
 [seção 89](#89-tipos-da-saida).
 
 ## estimativa_safra: contrato 3.1 e seleção temporal
@@ -250,6 +284,8 @@ lspa_mt = await datasets.estimativa_safra(
 ```
 
 A segunda chamada consulta janeiro do ano civil 2025. O levantamento 1 CONAB é outra referência; não representa janeiro LSPA. Informe a mesma UF ao comparar fontes, pois `uf=None` retorna UFs na CONAB e Brasil no LSPA. Consulte o [contrato completo](../contracts/estimativa_safra.md).
+
+**Recorte sem observações.** Quando todas as fontes consultadas respondem sem dados para o recorte (por exemplo, a safra que a aba da CONAB ainda não publica), o dataset devolve o vazio do contrato, com `UserWarning` e o aviso em `meta.validation_warnings`, e não mais `SourceUnavailableError`. Quem usava a exceção para detectar "sem dado" passa a conferir `df.empty`. Com uma fonte vazia e a outra fora do ar, segue `SourceUnavailableError`; com a outra falhando por layout, `ParseError`.
 
 ## 1. ANDA aceita somente o produto total
 
@@ -277,7 +313,7 @@ nulos:
 ```python
 df = pd.DataFrame(
     {
-        "data": [date(2026, 9, 4)],
+        "data": pd.to_datetime(["2026-09-04"]),
         "produto": ["soja"],
         "valor": [135.0],
         "unidade": ["BRL/sc60kg"],
@@ -309,12 +345,13 @@ levantamentos = df["levantamento"].astype("int64")
 datas = pd.to_datetime(df["data_publicacao"])
 ```
 
-No contrato 2.0, os dois campos são nulos quando o fallback é o IBGE LSPA:
+No contrato 2.0, os dois campos são nulos nas linhas da série histórica (§27); no dataset `estimativa_safra`
+(contrato 3.1), também nas linhas do fallback IBGE LSPA:
 
 ```python
 levantamentos = df["levantamento"].astype("Int64")
 datas = pd.to_datetime(df["data_publicacao"], errors="coerce")
-linhas_lspa = df[df["fonte"] == "ibge_lspa"]
+sem_levantamento = df[df["levantamento"].isna()]
 ```
 
 O que fazer: trate os dois campos como opcionais e use dtypes pandas que
@@ -423,6 +460,8 @@ except InvalidParameterError as exc:
 
 O que fazer: valide ou normalize entradas do usuário e trate
 `InvalidParameterError` separadamente de ausência de dados e falhas da fonte.
+
+**Sai o `_moeda`.** O parâmetro reservado `_moeda` de `indicador()` não convertia nada e sai. Passá-lo, por nome ou como 5º argumento posicional, levanta `TypeError`: remova o argumento. As unidades publicadas seguem na coluna `unidade`.
 
 ## 7. Erros de parâmetros interrompem a cascata dos datasets
 
@@ -575,7 +614,7 @@ Os quatro campos temporais de `MetaInfo` (`fetched_at`, `timestamp`, `cache_expi
 
 ### MetaInfo: duas convenções de identidade da fonte
 
-`selected_source` e `attempted_sources` podem identificar o adaptador do dataset ou a rota informada pela fonte. `comercio_internacional`, `desmatamento`, `empregadores_lista_suja`, `unidades_conservacao_federais`, `uso_do_solo`, `cultivares_registradas` e `cultivares_protegidas` preservam a proveniência interna quando informada, inclusive com uma única tentativa. Os demais datasets usam o nome do adaptador (`DatasetSource.name`): numa consulta simples de `cadastro_rural`, os campos são `"sicar"` e `["sicar"]`, embora a API da fonte identifique `sicar_wfs`.
+`selected_source` e `attempted_sources` podem identificar o adaptador do dataset ou a rota informada pela fonte. `comercio_internacional`, `desmatamento`, `empregadores_lista_suja`, `unidades_conservacao`, `unidades_conservacao_federais`, `uso_do_solo`, `cultivares_registradas` e `cultivares_protegidas` preservam a proveniência interna quando informada, inclusive com uma única tentativa. Os demais datasets usam o nome do adaptador (`DatasetSource.name`): numa consulta simples de `cadastro_rural`, os campos são `"sicar"` e `["sicar"]`, embora a API da fonte identifique `sicar_wfs`.
 
 Na regra da base, mais de uma tentativa interna ou `selected_source="cache"` faz o dataset incorporar a proveniência da fonte. As tentativas combinam adaptadores anteriores e rotas internas em ordem, sem duplicatas; a seleção usa a rota informada ou o adaptador se ela estiver ausente. `from_cache` continua indicando reutilização da aquisição e é propagado separadamente: seu valor `True`, sozinho, não muda os nomes publicados. Essas convenções permanecem distintas na 2.0; confira os identificadores do dataset consumido ao persistir ou comparar proveniência.
 
@@ -593,7 +632,7 @@ PPM rejeita anos futuros; PRODES exige ano inteiro dentro do intervalo da camada
 
 ## 17. Unidades históricas, cache e medições ausentes
 
-`ibge.pam` e o contrato `producao_anual` 2.0 mantêm os números publicados e acrescentam `unidade_producao`, `unidade_rendimento`, `unidade_valor_producao` e `condicao_produto`. Agrupe ou converta explicitamente antes de comparar períodos. Laranja muda de mil frutos para toneladas em 2001; café muda de em coco para beneficiado em 2002; moedas anteriores a 1994 não são reais.
+`ibge.pam` e o contrato `producao_anual` 2.2 mantêm os números publicados e acrescentam `unidade_producao`, `unidade_rendimento`, `unidade_valor_producao` e `condicao_produto`. Agrupe ou converta explicitamente antes de comparar períodos. Laranja muda de mil frutos para toneladas em 2001; café muda de em coco para beneficiado em 2002; moedas anteriores a 1994 não são reais.
 
 O contrato mensal `clima` 3.1 preserva precipitação e temperaturas ausentes. Na 1.1.0, a chuva da UF no INMET era a soma das estações; agora é a média dos totais das estações com chuva válida em todos os dias do mês. A estação com o mês incompleto fica fora e é contada em `estacoes_chuva_parciais` (`estacoes_chuva` conta as que entraram); sem nenhuma completa, como no mês corrente, `precip_acum_mm` sai nulo, com `UserWarning` e a mesma mensagem em `MetaInfo.validation_warnings`. Em MT, fevereiro de 2026, 12 das 34 estações com chuva tinham só 6 a 25 dos 28 dias: com elas na média, o mensal seria 254,1 mm; só com as 22 completas, é 305,7 mm. Somatórios parciais não são extrapolados: `dias`, `data_inicio` e `data_fim` dão a cobertura diária de cada mês, no INMET e no mensal do NASA POWER (schema 1.2). O modo diário por estação permanece no contrato `clima_estacao` 1.0; o horário usa `clima_estacao_horaria` 1.0.
 
@@ -761,7 +800,7 @@ O contrato `lspa` passa a 2.0. Use a chave `[ano, mes, produto, localidade, vari
 
 ## 21. Censo legado usa a geografia e os cabeçalhos oficiais
 
-O contrato `censo_agropecuario_legado` passa a 2.0. `nivel="uf"` retorna totais estaduais; sem `uf`, consulta os 27 diretórios. Para categorias nacionais de atividade, use `nivel="brasil"` sem filtro estadual. Nos municípios, inclua `uf` na chave para distinguir homônimos; códigos históricos ausentes permanecem nulos.
+O contrato `censo_agropecuario_legado` passa a 2.1. `nivel="uf"` retorna totais estaduais; sem `uf`, consulta os 27 diretórios. Para categorias nacionais de atividade, use `nivel="brasil"` sem filtro estadual. Nos municípios, inclua `uf` na chave para distinguir homônimos; códigos históricos ausentes permanecem nulos.
 
 Atualize filtros de `categoria` e `variavel` conforme o [contrato](../contracts/censo_agropecuario_legado.md): eles refletem os rótulos reais, incluindo a hierarquia dos cabeçalhos. Leia `unidade` por linha; contagens, áreas, produção e valores monetários são medidas distintas, com a escala da célula oficial aplicada e precisão decimal preservada.
 
@@ -789,10 +828,12 @@ Somente contagens textuais explícitas alimentam `n_eixos`; números isolados e 
 
 Escolha `frequencia="mensal"` ou `"diaria"`; nenhuma substitui a outra silenciosamente. O recorte de datas ainda valida o CSV anual inteiro baixado. Tetos de CSV/spool/transferência: 512 MiB / 1 GiB / 3 GiB. O limite padrão do parser é de 500 mil linhas selecionadas; exceder orçamento gera erro.
 
-O contrato do cadastro de praças passa a 2.0 (`ANTT_PEDAGIO_PRACAS_V2`), com `km_m`, `ano_do_pnv_snv` e `data_da_inativacao` tipados ([§89](#89-tipos-da-saida)); o período do fluxo é `inicio`/`fim`. Metadados do tráfego preservam todos os recursos, hashes, frequência, estatísticas de EOF e cobertura. `raw_content_size` inclui bytes de catálogos e CSVs em todas as tentativas; `raw_content_hash` identifica o manifesto de consulta/aquisição. Veja a [referência da API](../api/antt_pedagio.md).
+O contrato do cadastro de praças passa a 2.0 (`ANTT_PEDAGIO_PRACAS_V2`), com `km_m`, `ano_do_pnv_snv` e `data_da_inativacao` tipados ([§89](#89-tipos-da-saida)); o período do fluxo é `inicio`/`fim`. Metadados do tráfego preservam todos os recursos, hashes, frequência, estatísticas de EOF e cobertura. `raw_content_size` é o tamanho do manifesto, o mesmo objeto do `raw_content_hash`, que identifica a consulta e a aquisição; os bytes de catálogos e CSVs recebidos em todas as tentativas vão em `source_details["received_bytes"]` ([§57](#57-metainfo-source_url-manifestos-e-cache)). Veja a [referência da API](../api/antt_pedagio.md).
 
 Com `uf`/`rodovia`, praça sem vínculo único no cadastro sai do resultado com aviso (antes a consulta inteira falhava). CSV sem cabeçalho passa a `ParseError`. As funções legadas `parser.parse_trafego`, `parse_trafego_v1`, `parse_trafego_v2`, `join_fluxo_pracas`, `heavy_vehicle_mask`, `client.download_csv` e as constantes `CATEGORIA_MAP`, `EIXOS_TIPO_MAP`, `COLUNAS_FLUXO`, `COLUNAS_V2` e `ANO_INICIO_V2` foram removidas: use `fluxo_pedagio()` ou, para um arquivo local, `parser.parse_trafego_file()`.
 
+
+**Texto do fluxo e coluna `municipal`.** `sentido` sai em maiúsculas: `Crescente` e `CRESCENTE` viram `CRESCENTE` (idem `DECRESCENTE`), e os rótulos de `fluxo_pedagio` saem sem os espaços externos que a ANTT publica. Quem filtrava ou agrupava pelo texto publicado troca o valor; o volume não muda (no CSV mensal oficial de 2023, o total, o volume por sentido e o enriquecido conferem). Concessionária e praça do cadastro também saem sem espaço externo, e o vínculo com UF, rodovia e município se mantém. Em `pracas_pedagio`, a coluna `municipal` continua nesta versão, como cópia de `municipio`, mas emite `FutureWarning` e aviso no `MetaInfo` e sai na próxima versão major: use `municipio`.
 
 ## 25. INCRA: WFS 2.0, 22 colunas e o marcador de data vazia
 
@@ -844,9 +885,16 @@ Os aliases de `comexstat.exportacao`/`importacao` (e os produtos de `datasets.ex
 
 Para reproduzir um recorte antigo, passe o código ou prefixo NCM em `produto` (ex.: `comexstat.exportacao("10059010")` para o milho em grão, `"3105"` para a posição inteira dos adubos compostos). Os datasets consolidam os códigos de cada produto e não devolvem mais a coluna `ncm`. Em `MetaInfo.source_details["query"]`, `ncm_prefixo` (texto) virou `ncm_prefixos` (lista), mais `ncm_excluidos`.
 
-## 29. Acervo Fundiário: SIGEF e SNCI nas 27 UFs
+## 29. Acervo Fundiário: SIGEF público e privado, SNCI por UF
 
-`acervo_fundiario.sigef` e `snci` (e as variantes `_geo`) deixam de recusar UFs por uma lista fixa: o INCRA publica os dois temas nas 27 UFs, e UF sem arquivo no servidor levanta `SourceUnavailableError` (HTTP 404). As constantes `acervo_fundiario.models.SIGEF_UFS_DISPONIVEIS` e `SNCI_UFS_DISPONIVEIS` foram removidas. `MetaInfo.source_url` passa a trazer a URL codificada (`Sigef%20Brasil_GO.zip`). Com `bbox`, `sigef` e `snci` (tabela) filtram pela geometria em qualquer versão do pyogrio e do GDAL: na 1.1.0, com o pyogrio anterior ao 0.10 (GDAL 3.8), voltavam vazios, sem aviso.
+`acervo_fundiario.sigef` e `snci` (e as variantes `_geo`) deixam de recusar UFs por uma lista fixa: UF sem arquivo no servidor levanta `SourceUnavailableError` (HTTP 404). As constantes `acervo_fundiario.models.SIGEF_UFS_DISPONIVEIS` e `SNCI_UFS_DISPONIVEIS` foram removidas. O SNCI sai por UF, e a lista muda com o tempo: em 01/10/2026, AC, DF e RR estavam sem arquivo (o de RR existia em 22/09/2026). Com `bbox`, `sigef` e `snci` (tabela) filtram pela geometria em qualquer versão do pyogrio e do GDAL: na 1.1.0, com o pyogrio anterior ao 0.10 (GDAL 3.8), voltavam vazios, sem aviso.
+
+O SIGEF deixa de ler o `Sigef Brasil_{UF}.zip` e lê os 2 arquivos em que o INCRA o publica, `Sigef Público_{UF}.zip` e `Sigef Privado_{UF}.zip`, que particionam a UF. O que muda para quem chama `sigef(uf)` como na 1.1.0:
+
+- as mesmas parcelas saem com a coluna nova `natureza` (`"publico"` ou `"privado"`), primeiro as públicas e depois as privadas, cada parte na ordem do arquivo: quem dependia da ordem do arquivo único precisa ordenar (por `codigo_parcela`, por exemplo);
+- `natureza="publico"` ou `"privado"` baixa só aquele arquivo;
+- `MetaInfo.source_url` é a URL codificada do 1º arquivo lido (`Sigef%20P%C3%BAblico_GO.zip`); `source_details` passa a `source_details["arquivos"]["publico"|"privado"]` (com `url`, `etag`, `last_modified`, `sha256`…); `attempted_sources` lista os arquivos lidos; `schema_version` é `1.1`;
+- o cache passa a `acervo_fundiario/sigef_publico/` e `sigef_privado/`; a pasta `acervo_fundiario/sigef/` da 1.1.0 não é mais lida e pode ser apagada.
 
 ## 30. Crédito rural (SICOR): programa e tipo de seguro pela tabela oficial do BCB
 
@@ -968,17 +1016,18 @@ a publica. A 1.x descartava essa linha em todos os temas. Número de estabelecim
 total oficial não se recompunha: irrigação, Brasília 2017, 2.726 estabelecimentos no Total e 3.224 somando os métodos.
 
 - Para somar categorias, filtre `categoria != "Total"`; para o total oficial, use a linha `Total`.
-- Contrato `censo_agropecuario` 1.1 e parser 3 do censo SIDRA atual. Veja o
+- Contrato `censo_agropecuario` 1.2 e parser 3 do censo SIDRA atual. Veja o
   [contrato](../contracts/censo_agropecuario.md).
 
 ## 38. B3: mês do contrato nas opções e filtro `vencimento`
 
-`b3.oi_historico(vencimento="V26")` e `datasets.futuros_agricolas(..., tipo="oi_historico", vencimento=...)` passam a
+`b3.posicoes_abertas_historico(..., vencimento="V26")` e `datasets.futuros_agricolas(..., tipo="oi_historico", vencimento=...)` passam a
 trazer o futuro **e as opções** do mês do contrato. A 1.x comparava o código bruto e devolvia só o futuro: quem soma
 `posicoes_abertas` por vencimento passa a somar também as opções.
 
-- Para manter o comportamento da 1.x, use `tipo="futuro"`. O código publicado de uma opção (MYOA, ex.: `VVJK`) casa só
-  aquela série.
+- Para manter o comportamento da 1.x, passe `tipo="futuro"` em `b3.posicoes_abertas_historico`; no
+  `datasets.futuros_agricolas`, em que `tipo` escolhe a consulta, filtre a coluna `tipo` do resultado
+  (`df[df["tipo"] == "futuro"]`). O código publicado de uma opção (MYOA, ex.: `VVJK`) casa só aquela série.
 - `vencimento_mes` e `vencimento_ano` das opções deixam de ser nulos. São o mês e o ano **do contrato**, não os da expiração, que
   pode cair no mês anterior: opções de café arábica e conillon e de soja cross e FOB (ex.: `ICFH27C035000` expira em
   12/02/2027). Contrato `b3.posicoes_abertas` 1.1, com os dois campos não nulos.
@@ -1021,7 +1070,7 @@ devolve o mapa novo. `celulose` (`4703`) e `tabaco` (`2401`) não mudam; a doc p
 
 ## 41. PSR: `seguradora` na chave das apólices e registro publicado em dobro
 
-`mapa_psr.apolices` e `datasets.seguro_rural(tipo="apolices")` passam a usar o contrato `mapa_psr_apolices` 1.1, com
+`mapa_psr.apolices` e `datasets.seguro_rural(tipo="apolices")` passam a usar o contrato `mapa_psr_apolices` 1.2 (a `seguradora` entra na chave desde a 1.1), com
 `seguradora` na chave primária (não nula). Na 1.1.0, o dataset levantava `ContractViolationError` em 2007, 2008, 2009, 2011 e
 2012, porque o MAPA publica o mesmo número de apólice em duas seguradoras; agora esses anos saem inteiros. Quem junta apólices
 pela chave antiga precisa incluir a `seguradora`.
@@ -1054,7 +1103,7 @@ levantamento. As colunas novas `n_estados` e `cobertura_area_pct` trazem o núme
 
 O filtro `uf="BR"` levanta `InvalidParameterError` com a cobertura publicada quando a planilha não traz a linha "Brasil"
 (nenhum boletim conferido traz). Troque por `uf="MEDIA_ESTADOS"` e leve em conta a cobertura. O `parser_version` do
-progresso passa de 2 para 3.
+progresso passa de 1 para 3.
 
 ## 45. CEPEA: trigo nas duas praças e variação do dia no `meta`
 
@@ -1122,7 +1171,7 @@ O `MetaInfo` das fontes passa a identificar o corpo adquirido, pela regra dos
 ## 49. USDA PSD: gateway novo e rótulos pelos catálogos oficiais
 
 Na 1.1.0, `usda.psd` e o `oferta_demanda_global` consultavam a OpenData antiga da FAS, que responde 500, e rotulavam
-errado 6 dos 9 atributos, o farelo de soja e a UE. Na 2.0.0 (parser 2, contrato 1.1):
+errado 6 dos 9 atributos, o farelo de soja e a UE. Na 2.0.0 (parser 2; contrato `oferta_demanda_global` 2.0, seção 87):
 
 - o host é o gateway `https://api.fas.usda.gov/api/psd`, com a chave no cabeçalho `X-Api-Key` (a mesma
   `AGROBR_USDA_API_KEY` do api.data.gov);
@@ -1151,7 +1200,7 @@ errado 6 dos 9 atributos, o farelo de soja e a UE. Na 2.0.0 (parser 2, contrato 
   `0430000` → `Barley`); código fora do catálogo continua voltando igual em `models.commodity_name`;
 - nomes públicos de `agrobr.usda`: `models.PSD_COLUMNS_MAP` sai, porque mapeava o PascalCase da OpenData antiga, que o
   gateway não usa; `client.fetch_psd_country`, `fetch_psd_world` e `fetch_psd_all_countries` passam a devolver
-  `RespostaPSD(url, corpo, dados)` em vez da lista de registros, que agora está em `.dados`.
+  `RespostaPSD(url, corpo, dados, status)` em vez da lista de registros, que agora está em `.dados`.
 
 Quem filtrava por `attribute_br` recebe agora o atributo certo. Quem usava os IDs do `PSD_ATTRIBUTES` ou o código
 `4233000` como farelo precisa trocar pelos da tabela. Detalhes na [fonte](../sources/usda.md) e no
@@ -1254,7 +1303,7 @@ Quem media o frescor pelo `fetch_timestamp` do dataset passa a ler a aquisição
 O `fetched_at` da fonte `cache` do `datasets.preco_diario`, que entra quando o CEPEA falha, também passa a ser a coleta
 original dos registros; antes, era a hora da chamada.
 
-## 54. B3: proveniência de `ajustes`, `historico` e `oi_historico`
+## 54. B3: proveniência de `ajustes`, `historico` e `posicoes_abertas_historico`
 
 Na 1.1.0, `b3.ajustes` saía com `raw_content_hash` nulo e `raw_content_size` zero, e `b3.historico`, sem os corpos de cada
 dia. Na 2.0:
@@ -1264,7 +1313,7 @@ dia. Na 2.0:
   A identidade estável fica em `source_details["zip_interno"]` e `source_details["xml"]` (nome, SHA-256 e bytes);
 - `b3.historico`: `source_details["corpos"]` traz cada dia recebido. Com um dia só, o topo é o desse corpo; com vários, o
   topo fica nulo e zero, e `fetched_at`/`fetch_timestamp` são a aquisição mais recente, pela regra da seção 53.
-- `b3.oi_historico`: `source_details["corpos"]` traz cada dia com arquivo, com a URL do download (token como
+- `b3.posicoes_abertas_historico`: `source_details["corpos"]` traz cada dia com arquivo, com a URL do download (token como
   `[REDACTED]`) e o `ticket_url`, pela mesma regra do `historico`. Dia sem arquivo não entra.
 
 Quem comparava o hash de 2 downloads do mesmo pregão deve comparar o do XML.
@@ -1276,7 +1325,7 @@ polars, e a mesma coluna saía `String` numa consulta e `Null` noutra: o `pl.con
 `producao_anual("cafe")` quebrava no `condicao_produto`, e o da `exportacao` pela ComexStat com o do fallback ABIOVE, no
 `uf`.
 
-Na 2.0, os 53 datasets tipam pelo [contrato](../contracts/index.md#garantias-globais): `int` → `Int64`, `float` → `Float64`,
+Na 2.0, todos os datasets tipam pelo [contrato](../contracts/index.md#garantias-globais): `int` → `Int64`, `float` → `Float64`,
 `str` → `String` e `bool` → `Boolean`, mesmo com a coluna toda nula; a coluna de data toda nula sai `Datetime("ns")`. A coluna
 fora do contrato segue o tipo do dado. Por isso o extra exige `polars>=0.20.3`, a primeira versão com o tipo `String`.
 
@@ -1371,7 +1420,7 @@ o `MetaInfo` dizia `from_cache=True`; `cepea.ultimo` levantava `ParseError` (err
 `SourceUnavailableError`, com `attempted_sources` (as fontes tentadas e o cache). Erro de layout da página continua
 `ParseError`. Com cache, a resposta sai dele com `StaleDataWarning`, como antes. Com `offline=True` e o cache vazio,
 `indicador` segue devolvendo a tabela vazia, agora com `from_cache=False` e `cache_expires_at` nulo. Quem tratava a
-tabela vazia como falta de rede passa a capturar `SourceUnavailableError`. `cepea.ultimo(offline=True)` sem dado no cache levanta o mesmo `SourceUnavailableError`, com o motivo "offline sem dado no cache" (antes, `ParseError`).
+tabela vazia como falta de rede passa a capturar `SourceUnavailableError`. `cepea.ultimo(produto, offline=True)` sem dado no cache levanta o mesmo `SourceUnavailableError`, com o motivo "offline sem dado no cache" (antes, `ParseError`).
 
 ## 65. IBGE: `uf` com nível sem filtro é recusada
 
@@ -1391,7 +1440,8 @@ indisponibilidade depois da rede. Na 2.0, levantam `InvalidParameterError`:
 - `ibge.abate` e `ibge.leite_trimestral` com UF desconhecida (antes, `SourceUnavailableError`), antes da rede;
 - `cftc.cot` com `inicio > fim`, `conab.custo_sociobiodiversidade` com ano posterior ao corrente e `antaq.movimentacao`
   com UF inexistente, antes da rede ou da descarga;
-- `datasets.futuros_agricolas` com `data` e `tipo="historico"`, ou com `inicio`/`fim` e `tipo="ajustes"`/`"posicoes"`;
+- `datasets.futuros_agricolas` com `data` e `tipo="historico"`, ou com `inicio`, `fim` ou `vencimento` e `tipo="ajustes"`/`"posicoes"`;
+- `b3.historico` e `futuros_agricolas(tipo="historico")` com o código de uma opção no `vencimento` (ex.: `VVJK`): os ajustes só trazem futuros, e a 1.1.0 devolvia vazio. Use o código do mês do contrato (ex.: `V26`);
 - UF inexistente (ex.: `uf="XX"`), antes da rede:
   - `bcb.credito_rural` e `datasets.credito_rural`: a 1.1.0 filtrava a UF depois da consulta e devolvia vazio;
   - `conab.safras` e os datasets `estimativa_safra` e `producao_anual`: vazio pelo filtro local da CONAB (no
@@ -1449,8 +1499,10 @@ indicador) e grava no cache; o padrão sem `inicio` (365 dias) também passa por
 
 Na 1.1.0, todo dataset aceitava `datasets.deterministic(...)`, mas só o `preco_diario` o honrava (cache local, sem rede,
 corte na data). Os que vão à rede consultavam a fonte corrente calados, com `meta.snapshot` preenchido, como se o dado
-fosse o da data. Na 2.0, esses datasets avisam em `validation_warnings` e com `UserWarning` que o dado é o corrente; os
-que já recusavam o contexto seguem recusando antes da rede. O `preco_diario` determinístico sem o produto no cache local
+fosse o da data. Na 2.0, esses datasets avisam em `validation_warnings` e com `UserWarning` que o dado é o corrente. Seis
+deles passam a recusar o contexto com `InvalidParameterError`, antes da rede, porque a fonte não tem como devolver o dado
+como estava na data: `cadastro_rural`, `desmatamento`, `exportacao`, `importacao`, `uso_do_solo` e `zoneamento_agricola`.
+Na 1.1.0, eles devolviam o dado corrente: tire essas chamadas do bloco `deterministic(...)`. O `preco_diario` determinístico sem o produto no cache local
 levanta `SourceUnavailableError`, em vez de devolver vazio: popule o cache (ou copie `~/.agrobr/cache/`) antes de
 reproduzir noutra máquina. Um período sem dado, com o produto no cache, segue vazio.
 
@@ -1524,13 +1576,15 @@ continua aceitando "2023/24", "2023/2024" e "2024". Para converter o que foi gra
 
 ## 78. Argumento fora da assinatura levanta `TypeError`
 
-Na 1.1.0, 76 funções públicas aceitavam `**kwargs`: argumento desconhecido ou com nome errado era descartado em silêncio,
+Na 1.1.0, as 109 funções públicas abaixo aceitavam `**kwargs`: argumento desconhecido ou com nome errado era descartado em silêncio,
 ou repassado ao fetcher, que lia só as chaves que conhecia. O recorte saía mais largo que o pedido, sem erro:
-`ibama.embargos(municipio="X")` devolvia o Brasil inteiro, e `datasets.progresso_safra("soja", uf="MT")` também. Na 2.0, a
-assinatura é explícita, e o argumento fora dela levanta `TypeError` antes da rede.
+`ibama.embargos(municipio="X")` devolvia o Brasil inteiro, e `datasets.progresso_safra("soja", uf="MT")` também. Na 2.0, 77
+delas passam à assinatura explícita, e o argumento fora dela levanta `TypeError` antes da rede; as outras 32 mantêm o
+`**kwargs` e recusam o nome desconhecido.
 
-- **Datasets (31):** `abate_trimestral`, `balanco`, `cadastro_rural`, `censo_agropecuario`, `censo_agropecuario_historico`, `censo_agropecuario_legado`, `censo_agropecuario_municipal_1985`, `clima`, `comercio_internacional`, `credito_rural`, `embarques_anec`, `estimativa_safra`, `exportacao`, `extrativismo_vegetal`, `fertilizante`, `futuros_agricolas`, `importacao`, `leite_industrial`, `movimentacao_portuaria`, `oferta_demanda_global`, `pecuaria_municipal`, `pib_agro`, `posicionamento_fundos`, `preco_atacado`, `producao_anual`, `progresso_safra`, `queimadas`, `seguro_rural`, `serie_historica_safra`, `silvicultura`, `uso_do_solo`.
-- **Funções de fonte (45):** `abiove.exportacao`, `acervo_fundiario.assentamentos`, `acervo_fundiario.assentamentos_geo`, `acervo_fundiario.sigef`, `acervo_fundiario.sigef_geo`, `acervo_fundiario.snci`, `acervo_fundiario.snci_geo`, `alt.sicar.imoveis`, `alt.sicar.imoveis_geo`, `alt.sicar.resumo`, `ana.demanda_irrigacao`, `ana.demanda_irrigacao_geo`, `ana.disponibilidade_hidrica`, `ana.disponibilidade_hidrica_geo`, `ana.hidrografia`, `ana.hidrografia_geo`, `ana.pivos_irrigacao`, `ana.pivos_irrigacao_geo`, `anda.entregas`, `b3.ajustes`, `b3.historico`, `b3.oi_historico`, `b3.posicoes_abertas`, `conab.ceasa_precos`, `conab.progresso_safra`, `deral.condicao_lavouras`, `ibama.embargos`, `ibama.embargos_geo`, `icmbio.ucs_geo`, `imea.cotacoes`, `inmet.clima_uf`, `inmet.estacao`, `inmet.historico`, `mapbiomas_alerta.alertas`, `mapbiomas_alerta.alertas_geo`, `queimadas.focos`, `queimadas.focos_geo`, `rio_verde.ensaio_soja`, `sfb.cnfp`, `sfb.cnfp_geo`, `sfb.concessoes`, `sfb.concessoes_geo`, `sfb.ifn_conglomerados`, `sfb.ifn_conglomerados_geo`, `usda.psd`.
+- **Datasets (32):** `abate_trimestral`, `balanco`, `cadastro_rural`, `censo_agropecuario`, `censo_agropecuario_historico`, `censo_agropecuario_legado`, `censo_agropecuario_municipal_1985`, `clima`, `comercio_internacional`, `condicao_lavouras`, `credito_rural`, `embarques_anec`, `estimativa_safra`, `exportacao`, `extrativismo_vegetal`, `fertilizante`, `futuros_agricolas`, `importacao`, `leite_industrial`, `movimentacao_portuaria`, `oferta_demanda_global`, `pecuaria_municipal`, `pib_agro`, `posicionamento_fundos`, `preco_atacado`, `producao_anual`, `progresso_safra`, `queimadas`, `seguro_rural`, `serie_historica_safra`, `silvicultura`, `uso_do_solo`.
+- **Funções de fonte (45):** `abiove.exportacao`, `acervo_fundiario.assentamentos`, `acervo_fundiario.assentamentos_geo`, `acervo_fundiario.sigef`, `acervo_fundiario.sigef_geo`, `acervo_fundiario.snci`, `acervo_fundiario.snci_geo`, `alt.sicar.imoveis`, `alt.sicar.imoveis_geo`, `alt.sicar.resumo`, `ana.demanda_irrigacao`, `ana.demanda_irrigacao_geo`, `ana.disponibilidade_hidrica`, `ana.disponibilidade_hidrica_geo`, `ana.hidrografia`, `ana.hidrografia_geo`, `ana.pivos_irrigacao`, `ana.pivos_irrigacao_geo`, `anda.entregas`, `b3.ajustes`, `b3.historico`, `b3.posicoes_abertas`, `b3.posicoes_abertas_historico`, `conab.ceasa_precos`, `conab.progresso_safra`, `deral.condicao_lavouras`, `ibama.embargos`, `ibama.embargos_geo`, `icmbio.ucs_geo`, `imea.cotacoes`, `inmet.clima_uf`, `inmet.estacao`, `inmet.historico`, `mapbiomas_alerta.alertas`, `mapbiomas_alerta.alertas_geo`, `queimadas.focos`, `queimadas.focos_geo`, `rio_verde.ensaio_soja`, `sfb.cnfp`, `sfb.cnfp_geo`, `sfb.concessoes`, `sfb.concessoes_geo`, `sfb.ifn_conglomerados`, `sfb.ifn_conglomerados_geo`, `usda.psd`.
+- **Funções que mantêm `**kwargs` (32):** na 1.1.0, também descartavam o nome desconhecido; na 2.0, recusam antes da rede. Levantam `TypeError`: `anec.comparacao_anual`, `anec.destinos`, `anec.embarques`, `anec.embarques_mensais`, `desmatamento.prodes`, `prodes_geo`, `deter`, `deter_geo`, `embrapa_solos.perfis`, `perfis_geo`, `mapa_solos`, `mapa_solos_geo`, `funai.terras_indigenas`, `terras_indigenas_geo`, `icmbio.ucs`, `incra.quilombolas`, `quilombolas_geo` e os datasets `desmatamento` e `zoneamento_agricola`. Levantam `InvalidParameterError`: `comtrade.comercio`, `comtrade.trade_mirror`, `defensivos.formulados`, `autorizacoes`, `tecnicos`, `lista_suja.empregadores`, `mapbiomas.cobertura`, `mapbiomas.transicao`, `nasa_power.clima_ponto`, `clima_uf`, `rnc.registradas`, `protegidas` e `zarc.zoneamento`.
 - **Argumentos que só chegavam ao fallback:** `datasets.exportacao(mes=...)` ia à ABIOVE (seção 39), e
   `datasets.producao_anual(safra=...)`, à CONAB. Na 2.0, os 2 levantam `TypeError`. Use `abiove.exportacao(ano, mes=...)`
   ou filtre o `mes` do resultado, e `conab.safras(produto, safra=...)` ou o `ano` do `producao_anual`.
@@ -1593,7 +1647,8 @@ do IBGE.
 | `fonte` | sai; a proveniência está no `MetaInfo` (o PDF do IBGE e o SHA-256 dele) |
 | — | entram `volume`, `tabela`, `pagina_pdf`, `pagina_impressa`, `linha`, `coluna`, `marcador` e `reparado` |
 
-O contrato 1.0 fica em `contracts._legacy` (`IBGE_CENSO_AGRO_MUNICIPAL_V1`, com `DeprecationWarning`).
+O contrato 1.0 segue em `agrobr.contracts.ibge.IBGE_CENSO_AGRO_MUNICIPAL_V1`, o mesmo import da 1.1.0, agora com
+`DeprecationWarning`.
 
 **Quem lia os CSVs do pacote direto** (`agrobr/data/censo_1985/tab_067.csv` a `tab_119.csv` e o `_index.csv`): eles saem. O
 pacote passa a ser um Parquet com 1 linha por casa, a `cobertura.parquet` e o `manifesto.json`, que são internos: leia pela API
@@ -1604,7 +1659,7 @@ Veja o [contrato 2.0](../contracts/censo_agropecuario_municipal_1985.md).
 ## 82. CLI: `--formato` inválido sai com erro, e o CSV do Windows sai em UTF-8
 
 Na 1.1.0, `-o`/`--formato` com um valor fora da lista (`-o xml`) saía com código 0 e a tabela, e `health --output` fazia o
-mesmo com o texto. Na 2.0, os 7 comandos de dados aceitam só `table`, `csv` e `json` em `--formato`, e `health`, `doctor` e `snapshot list`, só
+mesmo com o texto. Na 2.0, os 8 comandos de dados (os 7 da 1.1.0 e `conab levantamentos`, que ganha `--formato`) aceitam só `table`, `csv` e `json` em `--formato`, e `health`, `doctor` e `snapshot list`, só
 `text` e `json` ([§92](#92-cli-formato-em-todos-os-comandos-e-snapshot-use-retirado)): outro valor sai com código 2, a mensagem na saída de erro e a saída padrão vazia. Quem testava o código de
 saída de um script passa a ver o erro.
 
@@ -1651,8 +1706,9 @@ páginas: filtre antes de subir o limite. Suba `tamanho_pagina` até o máximo e
 
 Na 2.0, o mesmo conceito tem o mesmo nome em todas as funções: `inicio`/`fim` para período por data, `ano_inicio`/`ano_fim`
 para período por ano, `uf` para a unidade da federação, `produto` para o produto e `municipio` para o município (seção 86).
-Os nomes antigos levantam `TypeError`, ou `InvalidParameterError` com o nome recusado nas funções que aceitam
-`**kwargs`, como `zarc.zoneamento` e `mapbiomas.cobertura`. Por posição, nada muda, salvo onde a seção 88 diz.
+Os nomes antigos levantam `TypeError`, com o nome recusado também em `desmatamento.*`, `datasets.desmatamento` e
+`datasets.zoneamento_agricola`, que aceitam `**kwargs`. Em `zarc.zoneamento`, `mapbiomas.cobertura` e
+`mapbiomas.transicao`, levantam `InvalidParameterError` com o nome recusado. Por posição, nada muda, salvo onde a seção 88 diz.
 
 | Função | 1.1.0 | 2.0 |
 |---|---|---|
@@ -1678,14 +1734,17 @@ Os nomes antigos levantam `TypeError`, ou `InvalidParameterError` com o nome rec
 | `datasets.oferta_demanda_global` | `country`, `market_year`, `attributes`, `pivot` | `pais`, `ano_comercial`, `atributos`, `pivotar` |
 | `datasets.comercio_internacional` | `reporter`, `partner`, `freq` | `declarante`, `parceiro`, `frequencia` |
 
-`inicio` e `fim` aceitam `date`, `datetime` (a hora é descartada) e texto `AAAA-MM-DD` ou `DD/MM/AAAA`: `"01/02/2024"` é
-1º de fevereiro. Antes, cada fonte aceitava um formato. O filtro `ano_inicio`/`ano_fim` da série histórica recusa tipo
+`inicio` e `fim` aceitam `date`, `datetime` (a hora é descartada) e texto `AAAA-MM-DD`. O texto `DD/MM/AAAA`
+(`"01/02/2024"` é 1º de fevereiro) vale no BCB, na B3, no CFTC, no Desmatamento, no MapBiomas Alerta, no fluxo da ANTT e
+nos datasets deles; em `cepea.indicador`, `datasets.preco_diario`, `alt.anp_diesel.*`, `datasets.precos_diesel`,
+`inmet.estacao`, `inmet.historico_periodo`, `datasets.clima` no modo estação e `nasa_power.clima_ponto`, ele levanta
+`InvalidParameterError`. Antes, cada fonte aceitava um formato. O filtro `ano_inicio`/`ano_fim` da série histórica recusa tipo
 inválido e intervalo invertido antes da rede.
 
 Ficam os nomes que são termo técnico da fonte ou que não têm par na 2.0: na fonte Comtrade, `reporter`, `partner`, `freq` e
 `require_complete`; na fonte USDA, `country`, `market_year`, `attributes` e `pivot`, e as colunas em inglês; `parameters`
 na NASA POWER; `year` na ANEC; `lat`/`lon`; `sources` no MapBiomas Alerta; `especie` em `ibge.ppm` e `ibge.abate`; `setor`
-em `ibge.pib_agro`; `data` (um dia) no `bcb.ptax`; `nivel="estado"` no MapBiomas; e `cultura` nos defensivos (AGROFIT),
+em `ibge.pib_agro`; `data` (um dia) no `bcb.ptax`; `nivel="estado"` no MapBiomas; `combined` no `cftc.cot`, termo do relatório COT Disaggregated Combined (no dataset, `posicionamento_fundos(..., combinado=True)`); e `cultura` nos defensivos (AGROFIT),
 em que o produto é o defensivo e a cultura é o alvo. A coluna de saída `cultura` do ZARC, do PSR e dos custos também fica.
 
 **Proveniência.** No SGS e na PTAX, `source_details["query"]["defaulted_fields"]` traz `inicio`/`fim` no lugar de
@@ -1888,10 +1947,11 @@ MapBiomas Alerta (com o CRS `EPSG:4326` no `_geo`), `ibama.embargos_geo`, `icmbi
 | `bcb_sgs` | — | 3.0 |
 | `embrapa_solos_perfis` | — | 3.0 |
 
-Nos contratos que já existiam na 1.1.0, a constante antiga segue com o schema anterior, e a nova tem outro nome:
+Nos contratos que já existiam na 1.1.0, a constante antiga segue com o schema anterior (menos `POSICIONAMENTO_FUNDOS_V1`,
+que passa a 1.1, com `swap_spread` e `other_spread`), e a nova tem outro nome:
 `IBGE_ABATE_V2` (`agrobr.contracts.ibge`), `ANTT_PEDAGIO_PRACAS_V2`, `CONDICAO_LAVOURAS_V2`, `MOVIMENTACAO_PORTUARIA_V2`,
 `OFERTA_DEMANDA_GLOBAL_V2` e `POSICIONAMENTO_FUNDOS_V2` (`agrobr.contracts.datasets`), `COMERCIO_INTERNACIONAL_V3`
-(`agrobr.contracts.comtrade`) e `BCB_SGS_V3` (`agrobr.contracts.bcb_sgs`; o `BCB_SGS_V2` fica com o 2.1). O registro
+(`agrobr.contracts.comtrade`). O `bcb_sgs`, sem contrato na 1.1.0, está em `BCB_SGS_V3` (`agrobr.contracts.bcb_sgs`). O registro
 (`get_contract(nome)`) devolve sempre o atual.
 
 ## 90. Erros: a classe diz a causa
@@ -1948,6 +2008,7 @@ precisa acomodá-los.
   `0` passa a fazer 1 pedido, sem repetição (na 1.1.0, quebrava toda requisição), e negativo é recusado com
   `ValidationError` ao carregar as configurações.
 - **`AGROBR_HTTP_MAX_CONCURRENT_<FONTE>`** menor que 1 é recusado com `ValidationError` (na 1.1.0, `0` travava a chamada).
+- **`AGROBR_HTTP_RATE_LIMIT_<FONTE>`** e o `rate_limit_*` passado ao `HTTPSettings` recusam negativo, `inf` e `nan` com `ValidationError` (na 1.1.0, eram aceitos); `0` segue permitido.
 
 No código, o mesmo vale para `retry_async` e `with_retry`: `max_attempts=0` faz 1 tentativa, e espera `0` é espera zero
 (antes, os dois viravam os padrões); para o padrão, passe `None` ou omita. `run_all_checks` com `concurrency` menor que 1,
@@ -1969,6 +2030,7 @@ A [referência da CLI](../advanced/cli.md) traz todos os comandos e opções.
 - Ano inválido, pesquisa e fonte desconhecidas saem com código 2 antes da consulta; falha de coleta segue com código 1. Os
   logs saem legíveis na saída de erro (`WARNING`; `INFO` com `--verbose`), e o JSON e o CSV ficam sozinhos na saída padrão.
 - Opções novas: `cepea indicador --praca`, `conab safras --levantamento` e `conab balanco --safra/--levantamento`.
+- **Muda calado:** `agrobr conab levantamentos` lista todos os levantamentos, e não só os 10 primeiros, e o aviso `Listando levantamentos...` sai na saída de erro. Para ler a lista num script, use `--formato csv` ou `--formato json`.
 
 ## 93. CONAB: um caminho por função
 
@@ -2022,6 +2084,16 @@ o `normalize`, o `agrobr.sync` e os comandos da CLI. A lista nominal está na [p
 - `datasets.preco_diario` declara `as_polars`.
 - ANP: linhas semanais idênticas são removidas, com aviso e a quantidade em `meta.validation_warnings`; valores conflitantes
   seguem levantando `ParseError`.
+- ANP, `vendas_diesel`: **muda calado.** `produto` usa o rótulo de `precos_diesel` (`DIESEL S-10` sai `DIESEL S10`), e o
+  join por produto entre vendas e preços casa; os outros combustíveis (`DIESEL S-500`, `DIESEL S-1800`, `DIESEL MARÍTIMO`,
+  `DIESEL (OUTROS )`) seguem como publicados. `regiao` sai com o nome canônico: `REGIÃO CENTRO-OESTE` vira `Centro-Oeste`
+  (idem `Norte`, `Nordeste`, `Sudeste` e `Sul`). Quem filtrava pelo texto publicado troca o valor; os volumes não mudam.
+- ANP, `precos_diesel`: período que começa depois de hoje levanta `InvalidParameterError` antes da rede, em todos os níveis
+  (na 1.1.0, vazio sem aviso na UF e no Brasil); no município, limite fora de 2022 até o ano corrente também. Ano dentro
+  do intervalo cujo arquivo a ANP ainda não publicou segue `SourceUnavailableError`.
+- Embrapa Solos: `mapa_solos` e `mapa_solos_geo` casam `ordem` com a classe inteira de `ordem1` (uma das 15 publicadas),
+  aceitando caixa, acento e singular (`"latossolo"`). Um trecho do nome (`"latos"`) deixa de casar e levanta
+  `InvalidParameterError` com a lista das classes: troque pelo nome da classe (`"latossolos"`).
 - ANTT: `rodovia` compara sem caixa, espaço, hífen e zero à esquerda (`"BR 40"`, `"br-040"`); `tipo_veiculo` e
   `tipo_cobranca`, sem caixa e acento.
 - RNC e cultivares: os filtros de texto ignoram caixa e acento (`especie="feijao"` acha `"Feijão"`).
@@ -2030,3 +2102,23 @@ o `normalize`, o `agrobr.sync` e os comandos da CLI. A lista nominal está na [p
   no PRODES, no USDA, no Comtrade, na ComexStat, na ANEC, na ANTT e na ANP. Num servidor em UTC, das 21h às 24h de 31/12, o
   ano seguinte deixa de ser aceito.
 - `defensivos`: o formato do cache sobe para 2; a primeira consulta baixa de novo.
+
+## 98. B3: `oi_historico` passa a se chamar `posicoes_abertas_historico`
+
+`b3.oi_historico`, da 1.1.0, passa a se chamar `b3.posicoes_abertas_historico`, também em `sync.b3`. As opções não mudam;
+só sai o `**kwargs` (seção 78), e o nome antigo deixa de existir (`AttributeError`):
+
+```python
+df = await b3.posicoes_abertas_historico(contrato="boi", inicio="2026-09-01", fim="2026-09-04")
+```
+
+O dataset continua com `datasets.futuros_agricolas(..., tipo="oi_historico")`: os valores de `tipo` não mudam. Colunas,
+unidades e a política para dia sem arquivo também ficam.
+
+## 99. CFTC: recorte sem relatório devolve vazio tipado
+
+`cftc.cot` com um recorte sem relatório devolve o DataFrame vazio, com as colunas e os tipos do preenchido, e não mais
+`SourceUnavailableError`. Quem usava a exceção para detectar "sem observação" passa a conferir `df.empty` (`is_empty()` no
+Polars); falha de transporte segue `SourceUnavailableError`, e resposta fora do formato, `ParseError`. As 18 contagens e
+variações saem em `Int64`, no vazio e no cheio (na 1.1.0, as 13 contagens saíam em `int64` e as 3 variações já em `Int64`; `swap_spread` e `other_spread` são novas). Acima de 50.000 registros, a consulta avisa que a completude
+não foi comprovada (`UserWarning` e `meta.validation_warnings`): reduza o período.

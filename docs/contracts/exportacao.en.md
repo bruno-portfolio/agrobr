@@ -51,7 +51,7 @@ the primary key; the `ncm` column is not part of the dataset output (per-NCM det
 `agrobr.comexstat`). `oleo_soja_bruto` remains available in the standalone ComexStat API
 as the specific code `15071000`, but it is not part of this dataset's vocabulary. The
 ABIOVE fallback uses the generic `farelo` and `oleo` categories, with the same scope as
-`farelo_soja` and `oleo_soja` (2025 meal: ABIOVE 23.30 Mt × heading `2304` 23.27 Mt),
+`farelo_soja` and `oleo_soja` (2025 meal: ABIOVE 23.27 Mt in the Aug/2026 edition, 23.30 Mt in the Dec/2025 one, × heading `2304` 23.27 Mt),
 and returns the dataset's canonical product name.
 
 ## Guarantees

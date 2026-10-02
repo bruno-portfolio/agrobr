@@ -152,14 +152,13 @@ Base: `https://www.cepea.org.br/br/indicador/{slug}.aspx`
 | `algodao` | algodao |
 | `trigo` | trigo |
 | `arroz` | arroz |
-| `acucar` / `acucar_refinado` | acucar |
+| `acucar` | acucar |
 | `frango_congelado` / `frango_resfriado` | frango |
 | `suino` | suino |
 | `etanol_hidratado` / `etanol_anidro` | etanol |
 | `leite` | leite |
-| `laranja_industria` / `laranja_in_natura` | laranja |
 
-Total: 20 mapeamentos → 13 páginas de indicador.
+Lista parcial: o mapeamento completo (22 chaves → 15 páginas de indicador) está em `CEPEA_PRODUTOS`, em `agrobr/constants.py`.
 
 **Fingerprinting de layout:**
 
@@ -182,16 +181,16 @@ Thresholds: > 85% OK, 70-85% warning, < 70% layout mudou.
 
 !!! info "Licença: Dados públicos"
 
-!!! warning "Requer headless browser"
-    A página do boletim é renderizada com JavaScript.
-    Dos 5 módulos CONAB, **apenas este** precisa de browser.
+!!! tip "HTTP primeiro, browser opcional"
+    A página do boletim e o XLSX saem por HTTP direto (httpx).
+    O Playwright só entra como fallback, quando o HTTP falha.
 
 **Fluxo:**
 
-1. Navegar até `gov.br/conab/.../boletim-da-safra-de-graos`
-2. Esperar ~3s pro JavaScript renderizar
+1. GET da página `gov.br/conab/.../boletim-da-safra-de-graos` (httpx)
+2. Página curta ou sem a palavra "levantamento" conta como falha e cai no browser
 3. Extrair links XLSX via regex: `{N}o-levantamento-safra-{YYYY}-{YY}/...\.xlsx`
-4. Baixar o arquivo Excel (também via browser — simula clique)
+4. Baixar o XLSX por HTTP; Playwright só se o HTTP falhar
 
 **Parsing do Excel — posição dinâmica:**
 
@@ -234,7 +233,7 @@ Thresholds: > 85% OK, 70-85% warning, < 70% layout mudou.
 
 ## CONAB — CEASA/PROHORT (Preços Atacado Hortifruti)
 
-!!! info "Licença: Dados públicos (API pública)"
+!!! warning "Licença: zona cinza (API não documentada, credenciais públicas do frontend)"
 
 !!! tip "HTTP puro"
     Acesso direto via API REST do Pentaho — **não precisa de headless browser**.
@@ -283,7 +282,7 @@ Thresholds: > 85% OK, 70-85% warning, < 70% layout mudou.
     Download direto de XLS via URLs pré-mapeadas — sem browser.
 
 - Dados desde ~1976 até safra corrente
-- ~60 produtos com mapeamento produto → URL
+- 45 produtos com mapeamento produto → URL
 - Área plantada, produção e produtividade por UF e região
 - Formato XLS (Excel 97-2003) ou XLSX (com fallback calamine)
 
@@ -306,8 +305,8 @@ A API SIDRA é a fonte mais estável, mas tem particularidades:
 | PAM | 5457 | N1, N2, N3, N6 |
 | LSPA | 6588 | N1, N2, N3 |
 | PPM | 3939 | N1, N2, N3, N6 |
-| Abate | 1093 | N1, N3 |
-| Censo Agro | 6780 | N1, N2, N3, N6 |
+| Abate | 1092 (bovinos), 1093 (suínos), 1094 (frangos) | N1, N3 |
+| Censo Agro | uma tabela por tema e ano (ex.: 6907 efetivo 2017, 323 efetivo 1995) | N1, N2, N3, N6 |
 | PEVS Silvicultura | 291 | N1, N2, N3, N6 |
 | PEVS Silvicultura Area | 5930 | N1, N2, N3, N6 |
 | PEVS Extracao Vegetal | 289 | N1, N2, N3, N6 |
@@ -382,13 +381,13 @@ API REST limpa, sem autenticação. A fonte mais fácil.
 
 **Acesso:** download de CSV bulk anual.
 
-**URL:** `https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/EXP_{YYYY}.csv`
+**URL:** `https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_{YYYY}.csv`
 
 - **Separador:** ponto e vírgula (`;`), não vírgula
 - **Timeout estendido:** 120s (arquivos podem ser grandes)
 - **User-Agent obrigatório:** Mozilla (site filtra agentes genéricos)
 - **Filtro por NCM:** código de 8 dígitos para produto específico
-- Retorna lista vazia em 404 (trata anos inexistentes graciosamente)
+- HTTP 404 (ano ainda não publicado) sai como `SourceUnavailableError`; ano fora de 1997–9999 é recusado antes da rede
 
 **Produtos mapeados via NCM:** soja (grão, óleo, farelo), milho, arroz,
 trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
@@ -481,7 +480,7 @@ trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
 - Endpoint: `api1.imea.com.br/api/v2/mobile/cadeias`
 - Descoberto por engenharia reversa — sem documentação pública
 - Retorna JSON
-- 6 cadeias: soja, milho, algodão, boi, madeira, arroz
+- 8 cadeias: algodão, bovinocultura, milho, soja, conjuntura, suinocultura, leite, custo de produção
 - Rate limit: 1s
 
 ---
@@ -544,7 +543,7 @@ Mapeamento de URLs (não padronizado, precisa ser hardcoded):
 | `laranja_industria` | `laranja/laranja-industria` |
 | `laranja_in_natura` | `laranja/laranja-pera-in-natura` |
 
-Total: 20 mapeamentos (incluindo aliases), 18 URLs únicas.
+A tabela mostra 18 dos 22 mapeamentos (incluindo aliases; 20 URLs únicas); a lista completa está em `NOTICIAS_AGRICOLAS_PRODUTOS`, em `agrobr/constants.py`.
 
 Base: `https://www.noticiasagricolas.com.br/cotacoes/{path}`
 
@@ -557,7 +556,7 @@ Base: `https://www.noticiasagricolas.com.br/cotacoes/{path}`
 - Fonte: TerraBrasilis/INPE via GeoServer (WFS)
 - **PRODES** = consolidado anual
 - **DETER** = alertas near-real-time
-- Respostas CSV podem ser grandes
+- Respostas GeoJSON/JSON do WFS podem ser grandes
 - Rate limit: 2s
 
 ---
@@ -566,7 +565,7 @@ Base: `https://www.noticiasagricolas.com.br/cotacoes/{path}`
 
 !!! info "Licença: Dados públicos"
 
-- CSVs diários por satélite, bioma, UF
+- CSV/ZIP do Brasil inteiro por dia, mês ou ano; satélite, bioma e UF são filtrados depois
 - Arquivos podem ser grandes (centenas de MB em meses secos)
 - Rate limit: 1s
 
@@ -576,8 +575,7 @@ Base: `https://www.noticiasagricolas.com.br/cotacoes/{path}`
 
 !!! info "Licença: Livre com citação"
 
-- Dados de cobertura da terra via Google Cloud Storage (GCS)
-- CSVs/XLSX estáticos organizados por coleção/ano
+- XLSX de cobertura da terra: coleção 10 no Dataverse do MapBiomas (`data.mapbiomas.org`); coleção 11 no site e no Google Drive
 - Fonte mais estável do ecossistema
 - Rate limit: 2s
 
@@ -593,12 +591,10 @@ Cada fonte usa nomes diferentes para a mesma cultura.
 ```
 CEPEA:     "soja"
 CONAB:     "Soja"
-IBGE:      "Soja (em grão)"
 USDA:      "Soybeans"
-ComexStat: "SOJA MESMO TRITURADA"
 ```
 
-O agrobr normaliza **144 variantes → 41 nomes canônicos**,
+O agrobr normaliza **158 variantes → 43 nomes canônicos**,
 com busca case-insensitive e accent-insensitive.
 
 Mapeamento completo em `agrobr/normalize/crops.py`.
@@ -609,7 +605,7 @@ Mapeamento completo em `agrobr/normalize/crops.py`.
 |-------|---------|---------|
 | CONAB | ano-safra | `"2024/25"` |
 | IBGE | ano-calendário | `2024` |
-| USDA | marketing year | `"2024/25"` |
+| USDA | marketing year (ano inicial) | `2024` (safra 2024/25) |
 
 Ano-safra BR começa em julho. Conversão depende da cultura e região.
 Lógica em `agrobr/normalize/dates.py`.

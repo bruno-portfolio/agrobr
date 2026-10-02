@@ -54,6 +54,7 @@ DataFrame com colunas:
 
 As 4 colunas numéricas saem em `float64`, com `NaN` onde a fonte publica -999 ou nada.
 - `uf`: Sigla da UF (str, 2 caracteres)
+- `cod_municipio`: Código IBGE de 7 dígitos, do `municipio_id` (Int64, nulo fora de município)
 
 **Exemplo:**
 

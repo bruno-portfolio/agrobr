@@ -40,7 +40,7 @@ pip install agrobr
 
 With optional extras:
 ```bash
-pip install agrobr[pdf]             # pdfplumber for ANDA, Rio Verde and the Lista Suja PDF route
+pip install agrobr[pdf]             # pdfplumber for ANDA, ANEC, UNICA (biweekly report), Rio Verde and the Lista Suja PDF route
 pip install agrobr[polars]          # Polars support
 pip install agrobr[browser]         # Playwright (optional, for JS-heavy sources)
 pip install agrobr[bigquery]        # Base dos Dados (BCB/SICOR fallback)
@@ -86,9 +86,9 @@ docker run --rm -v "$(pwd)":/work agrobr python /work/analysis.py
 
 ## Usage by category
 
-The examples below use the `async` form. For the equivalent without `async/await`, see [Sync mode](#sync-mode). Functions returning DataFrames accept `as_polars=True` and `return_meta=True` (provenance).
+The examples below use the `async` form. For the equivalent without `async/await`, see [Sync mode](#sync-mode). Functions returning DataFrames accept `as_polars=True` and `return_meta=True` (provenance); `_geo` variants return GeoDataFrames and accept only `return_meta`.
 
-> **Note on naming:** function and parameter names follow Brazilian Portuguese domain terms (`indicador` = indicator, `safra` = crop season, `cultura` = crop, `inicio`/`fim` = start/end, `ano` = year, `mes` = month, `uf` = state code). They are part of the public API and stay stable.
+> **Note on naming:** function and parameter names follow Brazilian Portuguese domain terms (`indicador` = indicator, `safra` = crop season, `produto` = product, `inicio`/`fim` = start/end, `ano` = year, `mes` = month, `uf` = state code). They are part of the public API and stay stable.
 
 ### Prices and markets
 
@@ -416,7 +416,7 @@ df = await datasets.preco_diario('soja', as_polars=True)
 df = await ibge.pam('soja', ano=2023, as_polars=True)
 ```
 
-Supported across all source APIs and datasets.
+Supported across the source APIs and datasets, except the `_geo` variants (GeoDataFrame).
 
 ## CLI
 
@@ -548,7 +548,7 @@ Availability is monitored automatically. Run `agrobr health` to check locally (o
 | INCRA | Quilombola territories (WFS) — ~426 territories | ✅ | Working |
 | INCRA land registry | SIGEF certified parcels (27 states) + SNCI (27 states) + settlements — shapefile ZIP | ✅ | Working |
 | RNC/CultivarWeb | Current registered and protected cultivars; exact IDs and published end-date text — MAPA/SNPC | ✅ | Working |
-| EMBRAPA Soils | PronaSolos soil profiles (34K+) + SiBCS soil map (2.8K polygons) | ✅ | Working |
+| EMBRAPA Soils | PronaSolos soil profiles (34K+ horizons from ~9K points) + SiBCS soil map (2.8K polygons) | ✅ | Working |
 | Fundação Rio Verde | Soybean cultivar trials in MT — 2023/24 to 2025/26 seasons, up to 4 planting dates (PDF) | ✅ | Working |
 | CFTC COT | Weekly trader positioning — managed money, producers, swaps (12 agri contracts, 2006+) | ✅ | Working |
 | UNICA | Center-South sugarcane crush, sugar/ethanol production, mix and ATR (biweekly PDF + historical XLSX) | ✅ | Working |
@@ -602,7 +602,7 @@ normalizar_uf("São Paulo")                # "SP"
 normalizar_safra("24/25")                 # "2024/25"
 ```
 
-5,571 IBGE municipalities with centroids (offline reverse geocoding), 42 canonical crops, 27 states. Data from the IBGE Localities and Meshes APIs (free to use).
+5,571 IBGE municipalities with centroids (offline reverse geocoding), 43 canonical crops, 27 states. Data from the IBGE Localities and Meshes APIs (free to use).
 
 ## Highlights
 
@@ -615,7 +615,7 @@ normalizar_safra("24/25")                 # "2024/25"
 - **Deterministic mode + snapshots** — reproducibility for papers and audits (deterministic mode in `preco_diario`; CEPEA/CONAB/IBGE snapshots)
 - **Cross-source normalization** — IBGE municipalities, crops, states, crop seasons standardized
 - **Async-first** with a sync wrapper for pipelines (Airflow, Prefect, Dagster)
-- **pandas + polars support** in every API and dataset
+- **pandas + polars support** across the APIs and datasets (except the `_geo` variants, which return GeoDataFrames)
 - **Validation** — Pydantic v2 + statistical sanity checks + layout fingerprinting
 - **CEPEA cache with smart TTL** (local DuckDB, expires at 6pm official CEPEA time)
 - **Multi-channel alerts** (Slack, Discord, Email)

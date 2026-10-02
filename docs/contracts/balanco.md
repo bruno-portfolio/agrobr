@@ -32,8 +32,8 @@ Sem `levantamento`, `safra` escolhe a publicação mais recente cuja aba Suprime
 | `estoque_inicial` | float64 | ✅ | Estoque inicial (mil ton) |
 | `producao` | float64 | ✅ | Produção (mil ton) |
 | `importacao` | float64 | ✅ | Importação (mil ton) |
-| `suprimento` | float64 | ✅ | Suprimento total (mil ton): estoque inicial + produção + importação, somados pelo agrobr; nulo se faltar uma parcela |
-| `consumo` | float64 | ✅ | Consumo interno (mil ton): sementes/outros + processamento, somados pelo agrobr (soja 2025/26, set/26: 3.766 + 62.137,7 = 65.903,7); nulo se faltar uma parcela |
+| `suprimento` | float64 | ✅ | Suprimento total (mil ton), como publicado na aba Suprimento; na aba própria da soja, estoque inicial + produção + importação somados pelo agrobr, nulo se faltar uma parcela |
+| `consumo` | float64 | ✅ | Consumo interno (mil ton), como publicado; na aba da soja, sementes/outros + processamento somados pelo agrobr (soja 2025/26, set/26: 3.766 + 62.137,7 = 65.903,7), nulo se faltar uma parcela |
 | `exportacao` | float64 | ✅ | Exportação (mil ton) |
 | `estoque_final` | float64 | ✅ | Estoque final (mil ton) |
 | `demanda_total` | float64 | ✅ | Demanda publicada (mil ton); nula no wide e no long antigo |

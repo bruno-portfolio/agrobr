@@ -31,7 +31,7 @@ Todos os argumentos são nomeados. Filtros combinados usam interseção: cada li
 | `nr_processo` | Não | Sim | Igualdade textual completa do número de processo |
 | `nr_certificado` | Não | Sim | Igualdade textual completa do certificado; pode selecionar vários processos |
 
-Os filtros têm padrão `None`. Exigem strings não vazias após remoção de espaços externos; não aceitam números ou booleanos em lugar de texto. O strip também se aplica aos IDs, seguido de igualdade exata: `" 42039 "` consulta `"42039"`, enquanto `"042039"` continua distinto. Pontuação, zeros e caixa dos identificadores são preservados. Os demais filtros ignoram caixa e tratam ponto, parênteses e outros caracteres literalmente, sem regex ou normalização de acentos.
+Os filtros têm padrão `None`. Exigem strings não vazias após remoção de espaços externos; não aceitam números ou booleanos em lugar de texto. O strip também se aplica aos IDs, seguido de igualdade exata: `" 42039 "` consulta `"42039"`, enquanto `"042039"` continua distinto. Pontuação, zeros e caixa dos identificadores são preservados. Os demais filtros ignoram caixa e acento (`"feijao"` acha `"Feijão"`) e tratam ponto, parênteses e outros caracteres literalmente, sem regex.
 
 | Flag | Padrão | Comportamento |
 |---|---|---|
@@ -61,7 +61,7 @@ O cache de cada família guarda o CSV bruto e um manifesto de aquisição, com h
 
 `source_details` contém `acquisition.resource/search`, diagnósticos do `parser`, filtros e linhas em `selection`, estado do cache e `coverage`. Se houver total comprovado na busca pública, ele deve coincidir com as linhas do CSV (`count_matched`); divergência falha. Sem total verificável, a cobertura é `unknown`. Essa conferência não transforma busca e exportação em um snapshot transacional. As contagens da população e do recorte são separadas; os metadados são copiados de forma independente.
 
-Falhas de transporte, parsing ou contrato da fonte são encapsuladas pela base em `SourceUnavailableError`, com sua classificação em `errors`. Não há fallback para a outra família. Consulte a [descrição da fonte](../sources/rnc.md) e as [licenças](../licenses.md); acesso ao CSV não é uma declaração de direitos sobre a cultivar.
+Falhas de transporte ou de contrato da fonte são encapsuladas pela base em `SourceUnavailableError`, com sua classificação em `errors`; falha de layout ou de conteúdo do CSV sai como `ParseError`. Não há fallback para a outra família. Consulte a [descrição da fonte](../sources/rnc.md) e as [licenças](../licenses.md); acesso ao CSV não é uma declaração de direitos sobre a cultivar.
 
 ## Determinismo, sync e Polars
 

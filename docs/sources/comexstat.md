@@ -33,6 +33,8 @@ df = await comexstat.exportacao("soja", ano=2024, uf="MT")
 | `kg_liquido` | float | Peso líquido (kg) |
 | `valor_fob_usd` | float | Valor FOB (USD) |
 | `volume_ton` | float | Volume em toneladas |
+| `valor_frete_usd` (só importação) | float | Frete (USD) |
+| `valor_seguro_usd` (só importação) | float | Seguro (USD) |
 
 ## Produtos
 
@@ -59,7 +61,7 @@ print(meta.source)  # "comexstat"
 
 ## Notas tecnicas
 
-- O site `balanca.economia.gov.br` não envia a cadeia completa do certificado. O client verifica o TLS
+- O site `balanca.mdic.gov.br` não envia a cadeia completa do certificado. O client verifica o TLS
   por inteiro (hostname incluso), com o certificado intermediário da SERPRO conferido por SHA-256 e
   acrescentado às autoridades (`certifi`, `SSL_CERT_FILE` ou `SSL_CERT_DIR`).
 - Sem cache: cada chamada baixa o CSV anual do fluxo (~100 MB) e filtra em memória, e várias consultas
@@ -71,7 +73,7 @@ print(meta.source)  # "comexstat"
 
 ## Fonte
 
-- Bulk CSV: `https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm`
+- Bulk CSV: `https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm`
 - Atualizacao: semanal/mensal
 - Historico: 1997+
 

@@ -91,6 +91,6 @@ seção de entregas (diz até que mês o PDF vai). `raw_content_hash` é o SHA-2
 
 O catálogo público contém 11 PDFs, de 2016 a 2026, todos com entregas nacionais mensais (`uf="BR"`). O boletim 2026 publica janeiro a junho; meses posteriores vazios não são zero. Como nenhum deles publica recorte estadual, a 2.0.0 tirou o parâmetro `uf` da fonte e do dataset `fertilizante` (guia de migração 2.0, seção 50).
 
-O parser 3 exige a seção `Fertilizantes Entregues ao Mercado (em toneladas de produto)` e procura o ano somente nela. Se o ano ou essa identificação estiver ausente, a fonte levanta `ParseError`; o dataset preserva o motivo em `SourceUnavailableError`. Produção, importação, exportação e relações de troca do mesmo PDF não podem substituir entregas. Valores publicados e o contrato 2.0 permanecem iguais.
+O parser 3 exige a seção `Fertilizantes Entregues ao Mercado (em toneladas de produto)` e procura o ano somente nela. Se o ano ou essa identificação estiver ausente, a fonte levanta `ParseError`, e o dataset também (`"Todas as fontes falharam por layout"`), com o motivo da fonte em `errors`. Produção, importação, exportação e relações de troca do mesmo PDF não podem substituir entregas. Valores publicados e o contrato 2.0 permanecem iguais.
 
 `ano` deve ser inteiro de 2000 até o ano corrente. `ano` e `mes` usam `Int64` anulável; `volume_ton` usa `float64`. Parâmetros inválidos falham antes do download do boletim.

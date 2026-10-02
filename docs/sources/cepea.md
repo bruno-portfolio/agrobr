@@ -42,7 +42,7 @@ O bezerro traz também `valor_usd` (coluna Valor US$) e `peso_medio_kg` (tabela 
 | Cafe Robusta | Espirito Santo | BRL/sc 60kg | Diaria |
 | Trigo | Parana + RS | BRL/ton | Diaria |
 | Algodao | Sao Paulo/SP | cBRL/lb | Diaria |
-| Arroz em casca | ESALQ/BBM | BRL/sc 50kg | Diaria |
+| Arroz em casca | Rio Grande do Sul | BRL/sc 50kg | Diaria |
 | Acucar cristal | Sao Paulo/SP | BRL/sc 50kg | Diaria |
 | Açúcar refinado | São Paulo/SP | BRL/kg | Diária |
 | Etanol hidratado | Sao Paulo/SP | BRL/L | Semanal |
@@ -129,7 +129,7 @@ O CEPEA usa Smart TTL - o cache expira automaticamente as 18:00:
 18:01 - Busca soja -> Cache expirou -> Busca fonte -> Válido até 18:00 do próximo dia útil
 ```
 
-Coleta depois das 18:00, no sábado ou no domingo vale até as 18:00 do próximo dia útil (segunda a sexta; feriados não entram no cálculo). Um período fechado (`fim` anterior aos últimos 25 dias corridos) não volta à fonte: sai do cache com `cache_expires_at` nulo.
+Coleta depois das 18:00, no sábado ou no domingo vale até as 18:00 do próximo dia útil (segunda a sexta; feriados não entram no cálculo). Um período fechado (`fim` anterior aos últimos 25 dias corridos) não consulta a página: sai do cache, ou da série histórica baixada quando ela ainda não cobre o período, com `cache_expires_at` nulo.
 
 ## Funcoes Auxiliares
 
@@ -164,7 +164,7 @@ fechamento e referência separadamente, mas seu parser autônomo expõe o
 fechamento. A migração 9 preserva essas linhas legadas em quarentena, sem
 presumir uma defasagem fixa para convertê-las em mês de referência.
 
-O açúcar refinado usa a [página própria do indicador](https://cepea.org.br/br/indicador/acucar-refinado-amorfo-sp.aspx), em `BRL/kg`, e não a tabela do cristal. HTTP 200 sem tabela reconhecida também aciona o fallback Notícias Agrícolas, quando habilitado e disponível para o produto, com o aviso de licença habitual. A tabela sem a coluna de valor em reais reconhecida pelo cabeçalho ("Valor R$", "R$/litro", "Preço médio" no leite, "A Prazo" na laranja) também: o parser levanta `ParseError` e não usa outro número da linha, e uma coluna em US$ nunca vira preço em BRL.
+O açúcar refinado usa a [página própria do indicador](https://www.cepea.org.br/br/indicador/acucar-refinado-amorfo-sp.aspx), em `BRL/kg`, e não a tabela do cristal. HTTP 200 sem tabela reconhecida também aciona o fallback Notícias Agrícolas, quando habilitado e disponível para o produto, com o aviso de licença habitual. A tabela sem a coluna de valor em reais reconhecida pelo cabeçalho ("Valor R$", "R$/litro", "Preço médio" no leite, "A Prazo" na laranja) também: o parser levanta `ParseError` e não usa outro número da linha, e uma coluna em US$ nunca vira preço em BRL.
 
 ## Validação de preços
 

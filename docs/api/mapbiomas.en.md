@@ -54,10 +54,11 @@ print(meta.data_sources, meta.source_url)
 | `area_ha` | float | Area in hectares |
 | `geocodigo` | str | Municipal coverage only: territorial identifier published by MapBiomas |
 | `id_registro` | Int64 | Municipal coverage only: the original numeric row `ID`, scoped to its collection and resource |
+| `cod_municipio` | Int64 | Municipal coverage only: IBGE code taken from `geocodigo`; null without a state prefix |
 
 ### Municipal coverage in Collection 11
 
-Municipal output contains ten columns in the order above, with `geocodigo` and `id_registro` appended after the previous eight columns. `classe_id`, `ano` and `id_registro` use pandas `Int64`, `area_ha` uses `float64` and text uses the default text dtype of the installed pandas (`str` in pandas 3, `object` in 2), including an empty selection. The `mapbiomas.cobertura_municipal` 1.1 contract validates `(bioma, uf, geocodigo, classe_id, id_registro, ano)` within one collection and resource. The municipal parser has version 2; state contracts and parsing retain their separate versions.
+Municipal output contains eleven columns in the order above: the previous eight, `geocodigo`, `id_registro` and `cod_municipio` (`Int64`, IBGE code taken from `geocodigo`, null without a state prefix). `classe_id`, `ano` and `id_registro` use pandas `Int64`, `area_ha` uses `float64` and text uses the default text dtype of the installed pandas (`str` in pandas 3, `object` in 2), including an empty selection. The `mapbiomas.cobertura_municipal` 1.1 contract validates `(bioma, uf, geocodigo, classe_id, id_registro, ano)` within one collection and resource. The municipal parser has version 2; state contracts and parsing retain their separate versions.
 
 `geocodigo` preserves the published `geocode` column; membership in the current IBGE municipal catalog is not guaranteed. The resource includes Lagoa Mirim and Lagoa dos Patos, and a code may appear in more than one state. Published territorial intersections remain separate, without correcting the state or automatically summing areas.
 

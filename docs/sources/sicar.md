@@ -39,6 +39,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
 | cod_municipio_ibge | int | Codigo IBGE do municipio |
 | modulos_fiscais | float | Numero de modulos fiscais |
 | tipo | string | IRU (Rural), AST (Assentamento), PCT (Terra Indigena) |
+| cod_municipio | int | Código IBGE de 7 dígitos (igual a `cod_municipio_ibge`); anulável |
 
 ## Notas
 
@@ -73,11 +74,17 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
   contagem anunciada. Repetição do mesmo id ou divergência final geram `ParseError` com orientação para
   repetir a consulta. Não há reexecução automática nem garantia de completude de um snapshot;
   os avisos também são preservados em `cadastro_rural` e no resumo por município
+- **Contagem durante a varredura geoespacial:** `imoveis_geo()` paginado (`max_registros=None` ou acima
+  de 10.000) e `imoveis_geo_stream()` seguem a mesma regra: as páginas seguem a contagem inicial, e a
+  quantidade final de ids únicos tem de coincidir com a última contagem anunciada (ou com `max_registros`,
+  se menor); senão, `ParseError` com orientação para repetir a consulta. A mudança de `numberMatched` vai
+  ao log e, em `imoveis_geo(return_meta=True)`, a `MetaInfo.validation_warnings`. No stream, a conferência
+  vem depois da última página, então o erro chega depois dos lotes já entregues
 - **Ocorrências repetidas:** após a varredura, `imoveis()`, o resumo municipal, `imoveis_geo()`
   e `imoveis_geo_stream()` selecionam uma ocorrência por `cod_imovel`. A base é escolhida por grupo: atualização se presente em todas;
   senão criação se presente em todas; senão maior sufixo numérico do id. Empates na data usam
   esse mesmo desempate por id. As 12 UFs sem atualização estão listadas acima. `cadastro_rural`
-  mantém a chave e as onze colunas do contrato 2.0. Avisos e `source_details["sicar"]` registram
+  mantém a chave e as doze colunas do contrato 2.1. Avisos e `source_details["sicar"]` registram
   contagens de features, códigos colapsados, descartes e critérios; a lista de descartes tem
   até 1.000 itens e sinaliza truncagem. Veja a [regra e os campos de proveniência](../contracts/cadastro_rural.md#ocorrencias-do-mesmo-imovel-e-proveniencia)
 - **Sem cache:** cada chamada consulta o GeoServer do CAR; repetir a consulta baixa tudo de novo

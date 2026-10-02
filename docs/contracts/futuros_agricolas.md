@@ -22,6 +22,9 @@ df = await datasets.futuros_agricolas("boi", data="2025-03-05")
 df = await datasets.futuros_agricolas("boi", tipo="historico", inicio="2025-01-01", fim="2025-03-05")
 ```
 
+`vencimento` aceita só o código do mês do contrato (ex.: `V26`): os ajustes trazem só futuros, e outro formato,
+inclusive o código de uma opção, é recusado antes da rede.
+
 ### Posições abertas
 
 ```python
@@ -43,8 +46,9 @@ traz o futuro e as opções daquele mês, ou o código publicado de uma opção
 dias úteis sequencialmente e retornam tanto
 futuros quanto opções, identificados pela coluna `tipo`.
 
-`data` com `tipo="historico"` ou `"oi_historico"`, e `inicio` ou `fim` com `"ajustes"` ou `"posicoes"`, levantam
-`InvalidParameterError` antes da rede: o parâmetro que não se aplica ao tipo era descartado em silêncio. Em todos os
+`data` com `tipo="historico"` ou `"oi_historico"`, e `inicio`, `fim` ou `vencimento` com `"ajustes"` ou `"posicoes"`,
+levantam `InvalidParameterError` antes da rede: o parâmetro que não se aplica ao tipo era descartado em silêncio. Esses
+dois tipos trazem todos os vencimentos do pregão; para um só, filtre a coluna `vencimento_codigo`. Em todos os
 tipos, `data`, `inicio` e `fim` fora dos formatos aceitos, e `inicio` depois de `fim`, também levantam
 `InvalidParameterError` antes da rede.
 

@@ -88,4 +88,4 @@ print(meta.source_url)
 
 ## Reading the bulletins
 
-The header must contain six products plus Total Products; a missing column interrupts extraction. Total Products and annual totals do not become product observations. Every month is preserved, including empty December cells, and so are intervals such as edition 13's April soybean interval. Differences between this table and the annual comparison remain as published.
+The header must contain the six products (or the four of the editions up to W2/2026) plus Total Products; a missing column interrupts extraction. Total Products and annual totals do not become product observations. Every month is preserved, including empty December cells, and so are intervals such as edition 13's April soybean interval. Differences between this table and the annual comparison remain as published.

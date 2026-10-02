@@ -21,7 +21,7 @@ pip install agrobr[pdf]
 | `porto` | str | ❌ | — | Canonical port name |
 | `produto` | str | ❌ | — | Canonical ANEC product |
 | `periodo` | str | ❌ | — | `last_week` or `current_week` |
-| `valor_ton` | float64 | ✅ | ton | >= 0 when present |
+| `valor_ton` | Float64 (nullable) | ✅ | ton | >= 0 when present |
 | `ano` | int | ❌ | — | Optional column; edition year printed on the bulletin |
 | `semana` | int | ❌ | — | Optional column; edition week, 1 to 53 |
 | `data_inicio` | date | ✅ | — | Optional column; first day of the period, read from the label |
@@ -84,4 +84,4 @@ Commercial use may require authorization from the association.
 
 ## Reading the bulletins
 
-Headers must contain all six products in both periods. A missing column interrupts extraction, with the ParseError cause preserved by SourceUnavailableError. Totals are not ports and blank cells in the final published port remain null. Periods are bulletin labels, without deriving dates from ISO week numbers.
+Both periods' headers carry the same named products: the six from W3/2026 on, or the four (soybean, meal, maize and wheat) of the editions up to W2/2026. A missing or unnamed column stops extraction with `ParseError`, which the dataset passes on as `ParseError`. Totals are not ports and blank cells in the final published port remain null. Periods are bulletin labels, without deriving dates from ISO week numbers.

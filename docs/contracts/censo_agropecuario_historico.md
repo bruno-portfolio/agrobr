@@ -80,7 +80,7 @@ Long format: cada linha tem um par variavel/valor.
 - **Aves**: unidade "Mil cabecas" (tabela 281), demais animais em "Cabecas"
 - **Unidades mistas**: producao animal/vegetal e lavouras tem unidades que variam por categoria (litros, duzias, toneladas, frutos, cachos, etc)
 - **Classificacoes sem Total**: tabelas 281/282/283/1730/1731 nao tem categoria "Total"
-- **Missing values**: `".."` = indisponivel, `"..."` = suprimido, `"-"` = nao aplicavel → todos convertidos para NaN
+- **Missing values**: `".."` = indisponivel, `"..."` e `"X"` = suprimido → convertidos para NaN; `"-"` = zero absoluto → 0
 
 ## Garantias
 

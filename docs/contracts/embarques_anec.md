@@ -21,7 +21,7 @@ pip install agrobr[pdf]
 | `porto` | str | ❌ | — | Nome canônico do porto |
 | `produto` | str | ❌ | — | Produto canônico da ANEC |
 | `periodo` | str | ❌ | — | `last_week` ou `current_week` |
-| `valor_ton` | float64 | ✅ | ton | >= 0 quando presente |
+| `valor_ton` | Float64 (anulável) | ✅ | ton | >= 0 quando presente |
 | `ano` | int | ❌ | — | Coluna opcional; ano da edição impresso no boletim |
 | `semana` | int | ❌ | — | Coluna opcional; semana da edição, de 1 a 53 |
 | `data_inicio` | date | ✅ | — | Coluna opcional; primeiro dia do período, lido do rótulo |
@@ -84,4 +84,4 @@ comercial pode exigir autorização da associação.
 
 ## Leitura dos boletins
 
-Os seis produtos devem estar presentes nos cabeçalhos dos dois períodos. Uma coluna ausente interrompe a leitura, com causa ParseError preservada em SourceUnavailableError. Totais não são portos e células vazias do último porto publicado permanecem nulas. Os períodos são os rótulos do boletim, sem inferir datas pela semana ISO.
+Os cabeçalhos dos dois períodos trazem os mesmos produtos nomeados: os seis, da W3/2026 em diante, ou os quatro (soja, farelo, milho e trigo) das edições até a W2/2026. Coluna ausente ou sem nome interrompe a leitura com `ParseError`, que o dataset repassa como `ParseError`. Totais não são portos e células vazias do último porto publicado permanecem nulas. Os períodos são os rótulos do boletim, sem inferir datas pela semana ISO.

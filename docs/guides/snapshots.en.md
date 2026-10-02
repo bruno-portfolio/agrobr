@@ -111,7 +111,7 @@ set_mode("normal")
 
 The `snapshot` argument defines the default name used by `load_from_snapshot()`. `snapshot_path` defines the base directory used for both creation and loading. `set_mode()` does not activate the `datasets` context manager, and the configuration's `network_enabled` field does not block HTTP requests.
 
-The CLI has no command to activate a snapshot: the 1.x `snapshot use` was removed in 2.0, because it did not alter future executions. To read a snapshot, use `load_from_snapshot()` or the deterministic mode.
+The CLI has no command to activate a snapshot: the 1.x `snapshot use` was removed in 2.0, because it did not alter future executions. To read a snapshot, use `load_from_snapshot()`; deterministic mode does not read snapshot files.
 
 ## Loading data from a snapshot
 

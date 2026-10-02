@@ -28,7 +28,7 @@ No fallback to the Base dos Dados table.
 
 **Constraints:** `qtd_contratos >= 0`, `valor >= 0`
 
-- `safra` in `YYYY/YYYY` format, from July to June.
+- `safra` in `YYYY/YY` format (e.g. `2022/23`), from July to June.
 - `finalidade`: `custeio`, `investimento`, `comercializacao` or `industrializacao`.
 - With `uf` aggregation, `programa` and `cd_programa` are null. With `programa` aggregation, they identify the programme, with the current name from the official table.
 - `valor` is the sum in BRL, to the cent; `qtd_contratos` is the sum of contracts.

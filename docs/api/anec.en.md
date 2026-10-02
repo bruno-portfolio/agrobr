@@ -39,7 +39,7 @@ async def embarques(
 Invalid `ano`, `semana` outside 1–53, `produto` and `tipo` raise `InvalidParameterError` before the catalog is
 queried or the PDF is downloaded.
 
-Columns: `porto`, `produto`, `periodo`, `valor_ton`. `valor_ton` uses the
+Columns: `porto`, `produto`, `periodo`, `valor_ton`, `ano`, `semana`, `data_inicio` and `data_fim` (see the [source](../sources/anec.md)). `valor_ton` uses the
 `Float64` dtype and receives `pd.NA` when the PDF does not report a volume.
 
 ## Aggregated report tables

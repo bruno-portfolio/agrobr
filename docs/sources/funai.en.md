@@ -89,7 +89,7 @@ the 34 lands exceed 5%.
 | `fase` | `None` | One of the phases below, exact match |
 | `bbox` | `None` | (lon_min, lat_min, lon_max, lat_max) in EPSG:4326 |
 | `max_registros` | 10,000 (1,000 in `_geo`) | Cap on lands read in code order; `uf` and `fase` filter that prefix locally, and a cut that leaves the selection partial raises a `UserWarning` |
-| `tamanho_pagina` | 250 (10 in `_geo`) | Maximum 1,000 (100 in `_geo`) |
+| `tamanho_pagina` | 250 (10 in `_geo` or with `bbox`) | Maximum 1,000 (100 in `_geo` or with `bbox`) |
 
 ## Phases
 

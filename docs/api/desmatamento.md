@@ -92,8 +92,8 @@ desmatamento_em_car = gpd.sjoin(gdf, car)
 
 ### Notas
 
-- Default `maxFeatures=10000` — use filtros (uf, ano) para reduzir volume
-- Warning logado automaticamente se a resposta atingir o limite de features (possivel truncamento)
+- Padrão `max_registros=10000`, em páginas de `tamanho_pagina=100`; use filtros (uf, ano) ou `max_registros=None`
+- Se `max_registros` cortar a seleção, sai `UserWarning` com o total do WFS e o número retornado
 - Coluna de geometria no GeoServer e `geom` para todos os 6 biomas (uniforme)
 
 ---
@@ -133,7 +133,7 @@ df = await agrobr.desmatamento.deter(
 | `classe` | str | Tipo de alerta (DESMATAMENTO_CR, DEGRADACAO, MINERACAO, etc.) |
 | `uf` | str | Codigo UF |
 | `municipio` | str | Nome do municipio |
-| `municipio_id` | int | Codigo IBGE do municipio |
+| `municipio_id` | str | Código IBGE do município como publicado (texto; nulo no DETER Cerrado) |
 | `area_km2` | float | Area em km2 |
 | `satelite` | str | Satelite utilizado |
 | `sensor` | str | Sensor do satelite |
@@ -194,7 +194,7 @@ alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
 | `classe` | str | Tipo de alerta (DESMATAMENTO_CR, DEGRADACAO, MINERACAO, etc.) |
 | `uf` | str | Codigo UF |
 | `municipio` | str | Nome do municipio |
-| `municipio_id` | int | Codigo IBGE do municipio |
+| `municipio_id` | str | Código IBGE do município como publicado (texto; nulo no DETER Cerrado) |
 | `area_km2` | float | Area em km2 |
 | `satelite` | str | Satelite utilizado |
 | `sensor` | str | Sensor do satelite |
@@ -203,8 +203,8 @@ alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
 
 ### Notas
 
-- Default `maxFeatures=10000` — use filtros (uf, inicio/fim, classe) para reduzir volume
-- Warning logado automaticamente se a resposta atingir o limite de features (possivel truncamento)
+- Padrão `max_registros=10000`, em páginas de `tamanho_pagina=100`; use filtros (uf, inicio/fim, classe) ou `max_registros=None`
+- Se `max_registros` cortar a seleção, sai `UserWarning` com o total do WFS e o número retornado
 - Volume aproximado: ~1.1 KB por feature com geometria
 
 ---

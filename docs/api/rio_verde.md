@@ -79,6 +79,6 @@ safras = rio_verde.safras_disponiveis()
 
 - Fonte: [Fundacao Rio Verde](https://fundacaorioverde.com.br) — licenca `zona_cinza`
 - Requer `pip install agrobr[pdf]` (pdfplumber)
-- ~97 cultivares x 4 epocas de semeio por safra
+- 76 a 107 linhas por safra (2023/24: 76; 2024/25: 94; 2025/26: 107), ate 4 epocas de semeio; a mesma cultivar pode repetir
 - Produtividade em sacas/hectare (sc/ha)
 - PDF text-based (nao requer OCR)

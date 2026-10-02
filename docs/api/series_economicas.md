@@ -32,9 +32,9 @@ async def series_economicas(
 | Seleção | Comportamento da fonte |
 |---|---|
 | Duas datas | Intervalo inclusivo; ISO, `DD/MM/AAAA`, `date` ou `datetime` |
-| Apenas início | Final efetivo é a data corrente UTC |
+| Apenas início | Final efetivo é a data civil corrente de Brasília (UTC−3) |
 | Apenas final | Início delegado ao servidor; um limite remoto pode impedir uma consulta extensa |
-| Sem datas nem `ultimos` | Início padrão dez anos antes da data corrente UTC; final corrente |
+| Sem datas nem `ultimos` | Início padrão dez anos antes da data civil corrente de Brasília (UTC−3); final corrente |
 | `ultimos` sem datas | Endpoint remoto de últimas observações |
 | Datas e `ultimos` | Aquisição de todos os blocos do período, reconciliação, ordenação e recorte final local |
 
@@ -50,7 +50,7 @@ As datas são referências publicadas. Uma série mensal pode retornar a referê
 
 Duplicata dentro de um corpo é erro. Referências repetidas entre blocos somente são reconciliadas quando o valor coincide, preservando as origens; conflito falha. `[]` válido ou o envelope específico de ausência de valores pode produzir o esquema vazio tipado. O HTTP 404 reconhecido emite aviso e não comprova que o código exista.
 
-A base do dataset encapsula indisponibilidade, erro de layout e violação de contrato da fonte em `SourceUnavailableError`, com classificação em `errors`. Parâmetros inválidos mantêm `InvalidParameterError`. Existe somente a fonte `bcb_sgs`, sem fallback. O contrato é validado também sem `return_meta` e no resultado vazio.
+A base do dataset encapsula indisponibilidade e violação de contrato da fonte em `SourceUnavailableError`, com classificação em `errors`; erro de layout sai como `ParseError` ("Todas as fontes falharam por layout"), com os erros em `errors`. Parâmetros inválidos mantêm `InvalidParameterError`. Existe somente a fonte `bcb_sgs`, sem fallback. O contrato é validado também sem `return_meta` e no resultado vazio.
 
 ## Metadados e reprodução
 

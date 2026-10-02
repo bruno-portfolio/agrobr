@@ -161,7 +161,7 @@ agrobr/
 │   ├── constants.py           # Fonte (enum), URLs, Settings
 │   ├── exceptions.py          # Hierarquia de exceções
 │   ├── models.py              # Indicador, Safra, MetaInfo
-│   ├── config.py              # configure(), AgrobrConfig
+│   ├── config.py              # set_mode(), get_config(), AgrobrConfig
 │   ├── sync.py                # Wrapper sync sobre APIs async
 │   ├── cli.py                 # CLI Typer
 │   │
@@ -186,7 +186,7 @@ agrobr/
 │   ├── cache/                 # DuckDB cache (CEPEA indicadores)
 │   ├── normalize/             # Encoding, numérico, datas, regiões
 │   ├── utils/                 # Helpers compartilhados
-│   └── validators/            # Validação sanity/semântica/estrutural
+│   └── validators/            # Validação sanity/estrutural
 │
 ├── tests/                     # Suíte de testes
 │   ├── conftest.py            # Fixtures globais
@@ -242,7 +242,7 @@ Defina colunas, PK e garantias:
 MEU_CONTRATO = Contract(
     name="meu_dataset",
     version="1.0",
-    columns=[Column("produto", ColumnType.STR), ...],
+    columns=[Column("produto", ColumnType.STRING), ...],
     primary_key=["produto", "data"],
     guarantees=["Column names never change"],
 )
@@ -261,7 +261,7 @@ register_contract("meu_dataset", MEU_CONTRATO)
 
 - Import em `agrobr/datasets/__init__.py`
 - Adicionar ao `__all__`
-- Gerar JSON schema via `contracts.generate_json_schemas()`
+- Gerar os JSON schemas com `contracts.generate_json_schemas("agrobr/schemas")`
 
 ### 5. Testes
 

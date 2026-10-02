@@ -54,7 +54,7 @@ pages overlapping by one occurrence to detect changes during pagination.
 | `fase` | str \| None | None | One of the [7 selectors](#valid-phases), literal comparison |
 | `bbox` | tuple \| None | None | `(minlon, minlat, maxlon, maxlat)` in **EPSG:4326**; the server preselects and agrobr confirms by intersection |
 | `max_registros` | int \| None | 1500 | Cap on perimeters read; `None` removes the cap |
-| `tamanho_pagina` | int \| None | 250 (tabular) / 10 (geo) | At most 1000 (tabular) and 100 (geo) |
+| `tamanho_pagina` | int \| None | 250 (tabular) / 10 (geo or with `bbox`) | At most 1000 (tabular) and 100 (geo or with `bbox`) |
 
 The `uf` and `fase` filters are applied locally after the download: the server does not
 honor `CQL_FILTER` on those fields. An invalid parameter raises `InvalidParameterError`

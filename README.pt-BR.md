@@ -40,7 +40,7 @@ pip install agrobr
 
 Com extras opcionais:
 ```bash
-pip install agrobr[pdf]             # pdfplumber para ANDA, Lista Suja, Rio Verde
+pip install agrobr[pdf]             # pdfplumber para ANDA, ANEC, UNICA (relatório quinzenal), Lista Suja (rota PDF) e Rio Verde
 pip install agrobr[polars]          # Suporte a Polars
 pip install agrobr[browser]         # Playwright (opcional, para fontes com JS)
 pip install agrobr[bigquery]        # Base dos Dados (fallback BCB/SICOR)
@@ -86,7 +86,7 @@ docker run --rm -v "$(pwd)":/work agrobr python /work/analise.py
 
 ## Uso por categoria
 
-Os exemplos abaixo usam a forma `async`. Para a equivalente sem `async/await`, veja [Modo síncrono](#modo-síncrono). Funções que retornam DataFrame aceitam `as_polars=True` e `return_meta=True` (proveniência).
+Os exemplos abaixo usam a forma `async`. Para a equivalente sem `async/await`, veja [Modo síncrono](#modo-síncrono). Funções que retornam DataFrame aceitam `as_polars=True` e `return_meta=True` (proveniência); as variantes `_geo` retornam GeoDataFrame e aceitam só `return_meta`.
 
 ### Preços e mercado
 
@@ -413,7 +413,7 @@ df = await datasets.preco_diario('soja', as_polars=True)
 df = await ibge.pam('soja', ano=2023, as_polars=True)
 ```
 
-Suportado em todas as source APIs e datasets.
+Suportado nas source APIs e datasets, exceto nas variantes `_geo` (GeoDataFrame).
 
 ## CLI
 
@@ -545,7 +545,7 @@ Disponibilidade monitorada automaticamente. Use `agrobr health` para verificar l
 | INCRA | Territórios quilombolas (WFS cmr.funai.gov.br) — ~426 territórios | ✅ | Funcional |
 | Acervo Fundiário/INCRA | Parcelas certificadas SIGEF (27 UFs) + SNCI (27 UFs) + assentamentos Brasil — shapefile ZIP | ✅ | Funcional |
 | RNC/CultivarWeb | Cadastros correntes de registradas e protegidas; IDs exatos e término textual — MAPA/SNPC | ✅ | Funcional |
-| EMBRAPA Solos | Perfis de solo PronaSolos (34K+) + mapa pedológico SiBCS (2,8K polígonos) | ✅ | Funcional |
+| EMBRAPA Solos | Perfis de solo PronaSolos (34 mil+ horizontes de ~9 mil pontos) + mapa pedológico SiBCS (2,8K polígonos) | ✅ | Funcional |
 | Fundação Rio Verde | Ensaios cultivares soja MT — safras 2023/24 a 2025/26, até 4 épocas (PDF) | ✅ | Funcional |
 | CFTC COT | Posicionamento semanal de traders — managed money, produtores, swaps (12 contratos agro, 2006+) | ✅ | Funcional |
 | UNICA | Moagem Centro-Sul, produção açúcar/etanol, mix e ATR (PDF quinzenal + XLSX histórico) | ✅ | Funcional |
@@ -599,7 +599,7 @@ normalizar_uf("São Paulo")                # "SP"
 normalizar_safra("24/25")                 # "2024/25"
 ```
 
-5571 municípios IBGE com centroides (geocodificação reversa offline), 42 culturas canônicas, 27 UFs. Dados via API IBGE Localidades e Malhas (livre para uso).
+5571 municípios IBGE com centroides (geocodificação reversa offline), 43 culturas canônicas, 27 UFs. Dados via API IBGE Localidades e Malhas (livre para uso).
 
 ## Diferenciais
 
@@ -612,7 +612,7 @@ normalizar_safra("24/25")                 # "2024/25"
 - **Modo determinístico + snapshots** — reprodutibilidade para papers e auditorias (modo determinístico no `preco_diario`; snapshots CEPEA/CONAB/IBGE)
 - **Normalização transversal** — municípios IBGE, culturas, UFs, safras padronizados
 - **Async-first** com wrapper síncrono pra pipelines (Airflow, Prefect, Dagster)
-- **Suporte pandas + polars** em todas as APIs e datasets
+- **Suporte pandas + polars** nas APIs e datasets (exceto as variantes `_geo`, que retornam GeoDataFrame)
 - **Validação** — Pydantic v2 + sanity checks estatísticos + fingerprinting de layout
 - **Cache CEPEA com smart TTL** (DuckDB local, expira às 18h hora oficial CEPEA)
 - **Alertas multi-canal** (Slack, Discord, Email)

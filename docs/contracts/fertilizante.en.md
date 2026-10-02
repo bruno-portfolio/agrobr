@@ -81,6 +81,6 @@ pip install agrobr[pdf]
 
 The public catalog contains 11 PDFs covering 2016–2026, all with monthly national deliveries (`uf="BR"`). The 2026 bulletin publishes January through June; blank later months are not zero. Since none of them publishes a state breakdown, 2.0.0 removed the `uf` argument from the source and from the dataset (2.0 migration guide, section 50).
 
-Parser 3 requires the `Fertilizantes Entregues ao Mercado (em toneladas de produto)` section and searches for the year only within it. If that year or section identity is missing, the source raises `ParseError`; the dataset retains the reason in `SourceUnavailableError`. Production, imports, exports and exchange ratios from the same PDF cannot substitute for deliveries. Published values and contract 2.0 are unchanged.
+Parser 3 requires the `Fertilizantes Entregues ao Mercado (em toneladas de produto)` section and searches for the year only within it. If that year or section identity is missing, the source raises `ParseError`, and so does the dataset (`"Todas as fontes falharam por layout"`), with the source's reason in `errors`. Production, imports, exports and exchange ratios from the same PDF cannot substitute for deliveries. Published values and contract 2.0 are unchanged.
 
 Output flags are keyword-only; years and months use nullable `Int64`, and `volume_ton` uses `float64`.

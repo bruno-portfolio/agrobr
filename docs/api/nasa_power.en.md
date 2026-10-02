@@ -33,11 +33,11 @@ async def clima_ponto(
 | `agregacao` | `str` | `"diario"` (default) or `"mensal"` |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
-| `parameters` | `list[str] \| None` | NASA POWER codes to request (1 to 20, no repeats), from the `parametros()` catalog; `None` requests all |
+| `parameters` | `list[str] \| None` | NASA POWER codes to request (1 to 20, no repeats), from the `parametros()` catalog; `None` requests the 7 defaults (`T2M`, `T2M_MAX`, `T2M_MIN`, `PRECTOTCORR`, `RH2M`, `ALLSKY_SFC_SW_DWN`, `WS2M`); the other catalog codes come only when listed |
 
 **Returns:**
 
-DataFrame with columns (daily): `data`, `lat`, `lon`, `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
+DataFrame with columns (daily): `data`, `lat`, `lon`, `uf` (empty in `clima_ponto`), `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
 
 With `agregacao="mensal"`, the aggregated columns are renamed: `mes` (timestamp), `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `umidade_media`, `radiacao_media_mj`, `vento_medio_ms` (plus `lat`/`lon`). `dias`, `data_inicio` and `data_fim` give the days of the month with any valid parameter. A month cut by the requested period is partial and not extrapolated: from 2025-01-15 to 2025-02-05, February comes with `dias=5` and 17.81 mm, against 28 days and 52.33 mm for the whole month (schema 1.2).
 
@@ -87,7 +87,7 @@ async def clima_uf(
 | `agregacao` | `str` | `"diario"` or `"mensal"` (default) |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
-| `parameters` | `list[str] \| None` | NASA POWER codes to request (1 to 20, no repeats), from the `parametros()` catalog; `None` requests all |
+| `parameters` | `list[str] \| None` | NASA POWER codes to request (1 to 20, no repeats), from the `parametros()` catalog; `None` requests the 7 defaults (`T2M`, `T2M_MAX`, `T2M_MIN`, `PRECTOTCORR`, `RH2M`, `ALLSKY_SFC_SW_DWN`, `WS2M`); the other catalog codes come only when listed |
 
 **Example:**
 

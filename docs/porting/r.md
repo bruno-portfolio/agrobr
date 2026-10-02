@@ -7,7 +7,7 @@ usando o agrobr como referência de implementação.
     Antes de implementar acesso a qualquer fonte, consulte a
     [página de licenças](../licenses.md). Este guia inclui exemplos
     apenas para fontes com licença `livre` ou `CC BY-NC` (não-comercial
-    com atribuição). Para armadilhas técnicas de todas as fontes
+    com atribuição) e para a CONAB CEASA (`zona_cinza`; veja a página de licenças). Para armadilhas técnicas de todas as fontes
     (incluindo as restritas), veja [Armadilhas por Fonte](gotchas.md).
 
 ---
@@ -71,8 +71,7 @@ buscar_cepea <- function(produto) {
     soja = "soja", milho = "milho", boi = "boi-gordo",
     cafe = "cafe", algodao = "algodao", trigo = "trigo",
     arroz = "arroz", acucar = "acucar", frango = "frango",
-    suino = "suino", etanol = "etanol", leite = "leite",
-    laranja = "laranja"
+    suino = "suino", etanol = "etanol", leite = "leite"
   )
   slug <- slugs[[produto]]
   if (is.null(slug)) stop(paste("Produto nao suportado:", produto))
@@ -96,7 +95,7 @@ df_soja <- buscar_cepea("soja")
 
 ### CONAB CEASA (HTTP puro)
 
-!!! info "Licença: Dados públicos"
+!!! warning "Licença: zona cinza (API não documentada, credenciais públicas do frontend)"
 !!! tip "Sem browser"
     API REST do Pentaho acessível com `httr2` direto.
 
@@ -112,8 +111,8 @@ buscar_ceasa <- function(produto = NULL) {
 
   req <- request(url) |>
     req_url_query(
-      path = "/public/Prohort/Precos.cda",
-      dataAccessId = "precos"
+      path = "/home/PROHORT/precoDia.cda",
+      dataAccessId = "MDXProdutoPreco"
     ) |>
     req_auth_basic("pentaho", "password") |>
     req_headers(
@@ -126,11 +125,16 @@ buscar_ceasa <- function(produto = NULL) {
   resp <- req |> req_perform()
 
   dados <- resp |> resp_body_json()
-  rows <- dados$resultset
+  cabecalhos <- vapply(dados$metadata[-1], function(m) m$colName, character(1))
+  ceasas <- sub("\\s*\\(\\d{2}/\\d{2}/\\d{4}\\).*$", "", cabecalhos)
+  ceasas <- trimws(gsub("\\s*\r\\s*", " - ", ceasas))
 
-  df <- do.call(rbind, lapply(rows, function(r) {
+  df <- do.call(rbind, lapply(dados$resultset, function(r) {
+    precos <- r[-1]
+    ok <- !vapply(precos, is.null, logical(1))
+    if (!any(ok)) return(NULL)
     data.frame(
-      produto = r[[1]], ceasa = r[[2]], preco = r[[3]],
+      produto = r[[1]], ceasa = ceasas[ok], preco = unlist(precos[ok]),
       stringsAsFactors = FALSE
     )
   }))
@@ -214,7 +218,7 @@ library(httr2)
 
 buscar_exportacao <- function(ano) {
   url <- paste0(
-    "https://balanca.economia.gov.br/balanca/bd/",
+    "https://balanca.mdic.gov.br/balanca/bd/",
     "comexstat-bd/ncm/EXP_", ano, ".csv"
   )
 
@@ -243,7 +247,7 @@ df <- buscar_exportacao(2024)
 
 ### Culturas
 
-Porte essencial do `agrobr/normalize/crops.py` (144 variantes → 41 canônicos):
+Porte essencial do `agrobr/normalize/crops.py` (158 variantes → 43 canônicos):
 
 ```r
 CULTURAS <- c(
@@ -260,7 +264,7 @@ CULTURAS <- c(
   "boi" = "boi", "boi gordo" = "boi", "cattle" = "boi",
   "acucar" = "acucar", "sugar" = "acucar",
   "cana" = "cana", "sugarcane" = "cana"
-  # Mapeamento completo (144 variantes) em agrobr/normalize/crops.py
+  # Mapeamento completo (158 variantes) em agrobr/normalize/crops.py
 )
 
 normalizar_cultura <- function(nome) {
@@ -454,7 +458,7 @@ agrobr.r/
 |   +-- conab_serie.R        # HTTP puro (httr2)
 |   +-- conab_progresso.R    # HTTP puro (httr2)
 |   +-- conab_custo.R        # HTTP puro (httr2)
-|   +-- conab_safras.R       # Via chromote
+|   +-- conab_safras.R       # HTTP puro (httr2); chromote opcional
 |   +-- ibge.R               # Via sidrar ou direto
 |   +-- nasa_power.R         # Via nasapower ou direto
 |   +-- bcb.R
@@ -477,10 +481,10 @@ agrobr.r/
 +-- man/
 ```
 
-!!! tip "4 dos 5 módulos CONAB funcionam sem browser"
+!!! tip "Os módulos CONAB funcionam sem browser"
     CEASA, custo de produção, progresso e série histórica usam HTTP puro.
-    Apenas o boletim de safras correntes precisa de `chromote`. Isso
-    simplifica significativamente um port em R.
+    O boletim de safras correntes também sai por HTTP; `chromote` fica só
+    como fallback opcional. Isso simplifica significativamente um port em R.
 
 ---
 
@@ -495,7 +499,7 @@ agrobr.r/
 | **5** | NASA POWER | Nenhum | `nasapower` |
 | **6** | ComexStat (HTTP puro) | Nenhum | -- |
 | **7** | CEPEA (headless) | `chromote` | -- |
-| **8** | CONAB Boletim (headless) | `chromote` | -- |
+| **8** | CONAB Boletim (HTTP; `chromote` opcional) | Nenhum | -- |
 | **9** | Cache DuckDB | Nenhum | -- |
 | **10** | Demais fontes livres | Varia | -- |
 

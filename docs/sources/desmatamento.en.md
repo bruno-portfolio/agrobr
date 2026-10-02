@@ -7,7 +7,7 @@
 | **Provider** | INPE — Instituto Nacional de Pesquisas Espaciais |
 | **Programs** | PRODES (annual) and DETER (daily alerts) |
 | **Access** | Public WFS API (TerraBrasilis GeoServer) |
-| **Format** | CSV via WFS outputFormat + GeoJSON for geometry |
+| **Format** | WFS 2.0 GeoJSON (`application/json`) in both modes |
 | **Authentication** | None |
 | **License** | Federal government public data |
 | **Time Series** | PRODES: 2000+, DETER: 2016+ (Amazonia), 2020+ (Cerrado) |
@@ -22,7 +22,7 @@ INPE operates two complementary deforestation monitoring systems:
 
 ## Access via TerraBrasilis
 
-Data is accessed via the TerraBrasilis GeoServer WFS with `outputFormat=csv` and filters via `CQL_FILTER`.
+Data is accessed via the TerraBrasilis GeoServer WFS 2.0.0 as JSON (`outputFormat=application/json`), paginated with `startIndex`/`count`, with filters via `CQL_FILTER`.
 
 ### PRODES — Workspaces by Biome
 
@@ -50,7 +50,7 @@ The `prodes_geo()` function returns consolidated PRODES deforestation with geome
 |-------|-------|
 | **Geometry column** | `geom` (uniform across all 6 biomes) |
 | **Format** | MultiPolygon EPSG:4326 |
-| **maxFeatures default** | 10,000 (tabular: 50,000) |
+| **max_registros (default)** | 10,000 (tabular: 50,000) |
 | **outputFormat** | `application/json` (GeoJSON) |
 
 ## Geometry (deter_geo)
@@ -63,7 +63,7 @@ The `deter_geo()` function returns DETER alerts with geometry polygons as a GeoD
 | **Geometry column (Cerrado)** | `st_multi` |
 | **Format** | MultiPolygon EPSG:4326 |
 | **Volume per feature** | ~1.1 KB with geometry |
-| **maxFeatures default** | 10,000 (tabular: 50,000) |
+| **max_registros (default)** | 10,000 (tabular: 50,000) |
 | **outputFormat** | `application/json` (GeoJSON) |
 
 The geometry column is biome-specific in the GeoServer. The parser normalizes both to `geometry` in the output GeoDataFrame.
@@ -125,7 +125,7 @@ gdf = await agrobr.desmatamento.deter_geo(
 - DETER only available for Amazonia and Cerrado
 - For the Amazon, agrobr's PRODES is the biome cut (`yearly_deforestation_biome`), not the Legal Amazon, where INPE publishes its headline rate. In 2024, INPE's technical note gives about 6,288 km² for the Legal Amazon, and agrobr's sum of the biome's states gives 6,068.9 km²
 - agrobr paginates the WFS: `tamanho_pagina` features per page (500; 100 in the `_geo` functions; up to 2,000 and 500), with 2 s between requests, up to `max_registros` (50,000; 10,000 in the `_geo` functions). Beyond the limit, the prefix comes out in `fid` (PRODES) or `gid` (DETER) order, with a `UserWarning`. Filter by `ano`, `uf` or dates, which go to the server, or use `max_registros=None` ([migration guide, §84](../guides/migracao-2.en.md#84-desmatamento-pagination-cut-and-cost-of-the-default-call))
-- The Source API (`agrobr.desmatamento.*`) returns individual polygons (fine granularity); the `datasets.desmatamento` dataset delivers the annual aggregate by uf/class/biome according to the contract
+- The Source API (`agrobr.desmatamento.*`) returns individual polygons (fine granularity); the `datasets.desmatamento` dataset delivers aggregates according to the contract: annual by uf/class/biome for PRODES and daily by uf/municipality/class/biome for DETER
 - After the BiomasBR migration (03/2026), the PRODES layers for Amazonia, Pantanal, Caatinga and Mata Atlantica are temporarily broken in the INPE GeoServer (ServiceException for any client); Cerrado and Pampa operational
 - DETER is an alert system, not a consolidation one — there may be overlap
 - In DETER Cerrado, `municipio_id` is always null because the source layer does not provide this identifier.
@@ -146,4 +146,4 @@ gdf = await agrobr.desmatamento.deter_geo(
 
 ## PRODES year range
 
-`prodes()` and `prodes_geo()` accept `ano` only as an integer or `None`. The range is queried from the biome layer and cached for 24 hours per process; years outside it raise `InvalidParameterError`. Polygon coverage should not be confused with the starting year of historical deforestation-rate series.
+`prodes()` and `prodes_geo()` accept `ano` only as an integer or `None`; a year after the current one raises `InvalidParameterError` before any request. A year with no feature in the WFS (not yet published or outside the layer's coverage) returns an empty result, with a `UserWarning` and a warning in `meta.validation_warnings`. Polygon coverage should not be confused with the starting year of historical deforestation-rate series.

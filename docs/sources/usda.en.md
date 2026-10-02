@@ -50,7 +50,7 @@ yet, the previous year: from January until the May WASDE, which opens the new ma
 back empty. `MetaInfo.source_details` records the year used (`market_year`), the years requested
 (`market_year_tentados`) and whether the default applied (`market_year_padrao`). An explicit `market_year` never
 falls back: a year without publication returns the empty table. The gateway answers HTTP 404 for a year without
-data (Brazilian soybeans in 1950, for example): the empty table comes with a warning in `validation_warnings` and a
+data within the accepted range (1960 onwards): the empty table comes with a warning in `validation_warnings` and a
 `UserWarning`, because the same 404 comes out if the API URL changes.
 
 ## Columns — `psd`
@@ -146,4 +146,4 @@ print(meta.raw_content_hash, meta.raw_content_size)  # SHA-256 and size of the r
 - Update: monthly (WASDE); each series keeps the month of its own last update
 - History: 1960+
 
-`produto` accepts normalized crop names, including case and accents. `market_year` must be an integer from 1960 through the current year in Brasília. Invalid countries, attributes, year types and boolean flags raise `InvalidParameterError` before network access. Source columns retain their technical names. Integer columns use nullable `Int64`, `value` uses `float64`, and text uses the installed pandas default, including empty results.
+`produto` accepts normalized crop names, including case and accents; `"arroz em casca"` (paddy rice) is rejected, because PSD rice is milled (Rice, Milled). `market_year` must be an integer from 1960 through the current year in Brasília. Invalid countries, attributes, year types and boolean flags raise `InvalidParameterError` before network access. Source columns retain their technical names. Integer columns use nullable `Int64`, `value` uses `float64`, and text uses the installed pandas default, including empty results.

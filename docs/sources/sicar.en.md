@@ -39,6 +39,7 @@ with server-side filters (CQL_FILTER) and transparent pagination.
 | cod_municipio_ibge | int | Municipality IBGE code |
 | modulos_fiscais | float | Number of fiscal modules |
 | tipo | string | IRU (Rural), AST (Settlement), PCT (Indigenous Land) |
+| cod_municipio | int | 7-digit IBGE code (same as `cod_municipio_ibge`); nullable |
 
 ## Notes
 
@@ -73,11 +74,17 @@ with server-side filters (CQL_FILTER) and transparent pagination.
   announced count. Repeated feature IDs or a final mismatch raise `ParseError` with instructions to
   repeat the query. There is no automatic retry or guarantee of snapshot completeness;
   warnings are also preserved in `cadastro_rural` and municipality summaries
+- **Counts during geospatial pagination:** paginated `imoveis_geo()` (`max_registros=None` or above
+  10,000) and `imoveis_geo_stream()` follow the same rule: pages follow the initial count, and the final
+  number of unique feature IDs must match the last announced count (or `max_registros`, if smaller);
+  otherwise `ParseError` with instructions to repeat the query. A change in `numberMatched` goes to the log
+  and, in `imoveis_geo(return_meta=True)`, to `MetaInfo.validation_warnings`. In the stream, the check runs
+  after the last page, so the error arrives after the batches already delivered
 - **Repeated occurrences:** after the scan, `imoveis()`, municipality summaries, `imoveis_geo()`
   and `imoveis_geo_stream()` select one occurrence per `cod_imovel`. The comparison field is chosen for the whole group: update if
   available for every occurrence; otherwise creation if available for every occurrence; otherwise
   the highest numeric feature-ID suffix. Date ties use the same ID rule. The 12 states without
-  updates are listed above. `cadastro_rural` keeps contract 2.0, its key and eleven columns.
+  updates are listed above. `cadastro_rural` keeps contract 2.1, its key and twelve columns.
   Warnings and `source_details["sicar"]` record feature counts, collapsed codes, discarded
   occurrences and criteria. The discard list contains up to 1,000 items and flags truncation.
   See the [selection rule and provenance fields](../contracts/cadastro_rural.en.md#multiple-occurrences-and-provenance)

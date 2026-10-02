@@ -17,6 +17,11 @@ async def exportacao(
     *,
     as_polars: bool = False,
     return_meta: bool = False,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = 500_000,
+    max_memoria_bytes: int = 268_435_456,
 ) -> DataFrameResult
 ```
 
@@ -33,6 +38,11 @@ async def importacao(
     *,
     as_polars: bool = False,
     return_meta: bool = False,
+    pais: str | int | None = None,
+    via: str | int | None = None,
+    urf: str | int | None = None,
+    max_linhas: int | None = 500_000,
+    max_memoria_bytes: int = 268_435_456,
 ) -> DataFrameResult
 ```
 
@@ -46,6 +56,8 @@ async def importacao(
 | `agregacao` | `str` | `"mensal"` (default) ou `"detalhado"` |
 | `as_polars` | `bool` | Se True, retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
+| `pais`/`via`/`urf` | `str \| int \| None` | Código MDIC do país (3 dígitos), da via (2) ou da URF (7), com ou sem zeros à esquerda |
+| `max_linhas`/`max_memoria_bytes` | `int` | Tetos de linhas selecionadas e de memória estimada; acima deles, `ResourceLimitError` |
 
 **Aliases de produto:**
 
@@ -90,6 +102,8 @@ async def importacao(
 - `agregacao="detalhado"`: `ano`, `mes`, `ncm`, `cod_unidade`, `cod_pais`,
   `uf`, `cod_via`, `cod_urf`, `qtd_estatistica`, `kg_liquido`,
   `valor_fob_usd`.
+
+Na importação, os dois formatos acrescentam `valor_frete_usd` e `valor_seguro_usd` no fim.
 
 **Exemplo:**
 

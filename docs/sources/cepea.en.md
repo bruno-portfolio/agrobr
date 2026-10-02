@@ -42,7 +42,7 @@ Calf also carries `valor_usd` (Valor US$ column) and `peso_medio_kg` (the page's
 | Robusta Coffee | Espirito Santo | BRL/sc 60kg | Daily |
 | Wheat | Parana + RS | BRL/ton | Daily |
 | Cotton | Sao Paulo/SP | cBRL/lb | Daily |
-| Rough rice | ESALQ/BBM | BRL/sc 50kg | Daily |
+| Rough rice | Rio Grande do Sul | BRL/sc 50kg | Daily |
 | Crystal sugar | Sao Paulo/SP | BRL/sc 50kg | Daily |
 | Refined sugar | São Paulo/SP | BRL/kg | Daily |
 | Hydrous ethanol | Sao Paulo/SP | BRL/L | Weekly |
@@ -129,7 +129,7 @@ CEPEA uses Smart TTL - the cache expires automatically at 18:00:
 18:01 - Fetch soybean -> Cache expired -> Fetch source -> Valid until 18:00 next business day
 ```
 
-A collection after 18:00, on Saturday or on Sunday is valid until 18:00 of the next business day (Monday to Friday; holidays are not taken into account). A closed period (`fim` before the last 25 calendar days) never goes back to the source: it comes from the cache with a null `cache_expires_at`.
+A collection after 18:00, on Saturday or on Sunday is valid until 18:00 of the next business day (Monday to Friday; holidays are not taken into account). A closed period (`fim` before the last 25 calendar days) does not query the page: it comes from the cache, or from the historical series downloaded when it does not yet cover the period, with a null `cache_expires_at`.
 
 ## Helper Functions
 
@@ -164,7 +164,7 @@ page supplies closing and reference dates separately, but its standalone
 parser exposes the closing date. Migration 9 preserves these legacy rows in
 quarantine without assuming a fixed lag to convert them to reference months.
 
-Refined sugar uses its [dedicated indicator page](https://cepea.org.br/br/indicador/acucar-refinado-amorfo-sp.aspx), in `BRL/kg`, not the crystal-sugar table. HTTP 200 without a recognized table also triggers the Notícias Agrícolas fallback when enabled and available for the product, with the usual license warning. So does a table without the value column in reais recognized by its header ("Valor R$", "R$/litro", "Preço médio" for milk, "A Prazo" for oranges): the parser raises `ParseError` instead of using another number from the row, and a US$ column never becomes a BRL price.
+Refined sugar uses its [dedicated indicator page](https://www.cepea.org.br/br/indicador/acucar-refinado-amorfo-sp.aspx), in `BRL/kg`, not the crystal-sugar table. HTTP 200 without a recognized table also triggers the Notícias Agrícolas fallback when enabled and available for the product, with the usual license warning. So does a table without the value column in reais recognized by its header ("Valor R$", "R$/litro", "Preço médio" for milk, "A Prazo" for oranges): the parser raises `ParseError` instead of using another number from the row, and a US$ column never becomes a BRL price.
 
 ## Price validation
 

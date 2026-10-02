@@ -10,6 +10,7 @@ Instaladas com `pip install agrobr`:
 |---|---|---|
 | `httpx` | HTTP client async | `>=0.28.1` |
 | `httpcore` | Mínimo de segurança do transporte HTTP | `>=1.0.9` |
+| `certifi` | Autoridades certificadoras do TLS | `>=2026.7.22` |
 | `beautifulsoup4` | HTML parsing | `>=4.12.0` |
 | `soupsieve` | Seletores CSS do BeautifulSoup | `>=2.9.0` |
 | `lxml` | Parser HTML/XML | `>=6.1.0` |
@@ -52,7 +53,7 @@ pip install agrobr[all]       # Todas as integrações opcionais de runtime
 pip install agrobr[dev]
 ```
 
-Inclui: pytest (+asyncio, cov, recording, timeout), ruff, mypy, pre-commit, pandas-stubs, types-requests, xlwt.
+Inclui: pytest (+asyncio, cov, recording, timeout, socket), ruff, mypy, pre-commit, pandas-stubs, types-requests, xlwt.
 
 ## Regras de Pin
 

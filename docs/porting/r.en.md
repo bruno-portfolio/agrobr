@@ -7,7 +7,7 @@ using agrobr as the reference implementation.
     Before implementing access to any source, check the
     [licenses page](../licenses.md). This guide includes examples
     only for sources with a `livre` or `CC BY-NC` license (non-commercial
-    with attribution). For technical pitfalls of all sources
+    with attribution) and for CONAB CEASA (`zona_cinza`; see the licenses page). For technical pitfalls of all sources
     (including restricted ones), see [Pitfalls by Source](gotchas.md).
 
 ---
@@ -71,8 +71,7 @@ buscar_cepea <- function(produto) {
     soja = "soja", milho = "milho", boi = "boi-gordo",
     cafe = "cafe", algodao = "algodao", trigo = "trigo",
     arroz = "arroz", acucar = "acucar", frango = "frango",
-    suino = "suino", etanol = "etanol", leite = "leite",
-    laranja = "laranja"
+    suino = "suino", etanol = "etanol", leite = "leite"
   )
   slug <- slugs[[produto]]
   if (is.null(slug)) stop(paste("Unsupported product:", produto))
@@ -96,7 +95,7 @@ df_soja <- buscar_cepea("soja")
 
 ### CONAB CEASA (pure HTTP)
 
-!!! info "License: Public data"
+!!! warning "License: gray area (undocumented API, public frontend credentials)"
 !!! tip "No browser"
     Pentaho REST API accessible with `httr2` directly.
 
@@ -112,8 +111,8 @@ buscar_ceasa <- function(produto = NULL) {
 
   req <- request(url) |>
     req_url_query(
-      path = "/public/Prohort/Precos.cda",
-      dataAccessId = "precos"
+      path = "/home/PROHORT/precoDia.cda",
+      dataAccessId = "MDXProdutoPreco"
     ) |>
     req_auth_basic("pentaho", "password") |>
     req_headers(
@@ -126,11 +125,16 @@ buscar_ceasa <- function(produto = NULL) {
   resp <- req |> req_perform()
 
   dados <- resp |> resp_body_json()
-  rows <- dados$resultset
+  cabecalhos <- vapply(dados$metadata[-1], function(m) m$colName, character(1))
+  ceasas <- sub("\\s*\\(\\d{2}/\\d{2}/\\d{4}\\).*$", "", cabecalhos)
+  ceasas <- trimws(gsub("\\s*\r\\s*", " - ", ceasas))
 
-  df <- do.call(rbind, lapply(rows, function(r) {
+  df <- do.call(rbind, lapply(dados$resultset, function(r) {
+    precos <- r[-1]
+    ok <- !vapply(precos, is.null, logical(1))
+    if (!any(ok)) return(NULL)
     data.frame(
-      produto = r[[1]], ceasa = r[[2]], preco = r[[3]],
+      produto = r[[1]], ceasa = ceasas[ok], preco = unlist(precos[ok]),
       stringsAsFactors = FALSE
     )
   }))
@@ -214,7 +218,7 @@ library(httr2)
 
 buscar_exportacao <- function(ano) {
   url <- paste0(
-    "https://balanca.economia.gov.br/balanca/bd/",
+    "https://balanca.mdic.gov.br/balanca/bd/",
     "comexstat-bd/ncm/EXP_", ano, ".csv"
   )
 
@@ -243,7 +247,7 @@ df <- buscar_exportacao(2024)
 
 ### Crops
 
-Essential port of `agrobr/normalize/crops.py` (144 variants → 41 canonical):
+Essential port of `agrobr/normalize/crops.py` (158 variants → 43 canonical):
 
 ```r
 CULTURAS <- c(
@@ -260,7 +264,7 @@ CULTURAS <- c(
   "boi" = "boi", "boi gordo" = "boi", "cattle" = "boi",
   "acucar" = "acucar", "sugar" = "acucar",
   "cana" = "cana", "sugarcane" = "cana"
-  # Full mapping (144 variants) in agrobr/normalize/crops.py
+  # Full mapping (158 variants) in agrobr/normalize/crops.py
 )
 
 normalizar_cultura <- function(nome) {
@@ -454,7 +458,7 @@ agrobr.r/
 |   +-- conab_serie.R        # Pure HTTP (httr2)
 |   +-- conab_progresso.R    # Pure HTTP (httr2)
 |   +-- conab_custo.R        # Pure HTTP (httr2)
-|   +-- conab_safras.R       # Via chromote
+|   +-- conab_safras.R       # Pure HTTP (httr2); optional chromote
 |   +-- ibge.R               # Via sidrar or direct
 |   +-- nasa_power.R         # Via nasapower or direct
 |   +-- bcb.R
@@ -477,10 +481,10 @@ agrobr.r/
 +-- man/
 ```
 
-!!! tip "4 of the 5 CONAB modules work without a browser"
+!!! tip "The CONAB modules work without a browser"
     CEASA, production cost, progress and historical series use pure HTTP.
-    Only the current-crop bulletin needs `chromote`. This
-    significantly simplifies an R port.
+    The current-crop bulletin also works over HTTP; `chromote` is only an
+    optional fallback. This significantly simplifies an R port.
 
 ---
 
@@ -495,7 +499,7 @@ agrobr.r/
 | **5** | NASA POWER | None | `nasapower` |
 | **6** | ComexStat (pure HTTP) | None | -- |
 | **7** | CEPEA (headless) | `chromote` | -- |
-| **8** | CONAB Bulletin (headless) | `chromote` | -- |
+| **8** | CONAB Bulletin (HTTP; optional `chromote`) | None | -- |
 | **9** | DuckDB cache | None | -- |
 | **10** | Other free sources | Varies | -- |
 

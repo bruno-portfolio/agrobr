@@ -31,7 +31,7 @@ All arguments are keyword-only. Combined filters use intersection: each row must
 | `nr_processo` | No | Yes | Full textual equality of the application/process number |
 | `nr_certificado` | No | Yes | Full textual equality of the certificate; may select several processes |
 
-Filters default to `None`. Values must be nonblank strings after trimming surrounding whitespace; numbers and booleans are not converted to text. IDs are also trimmed before exact comparison: `" 42039 "` selects `"42039"`, whereas `"042039"` remains different. Identifier punctuation, leading zeros and case are preserved. Other filters ignore case and treat punctuation literally, without regular expressions or accent normalization.
+Filters default to `None`. Values must be nonblank strings after trimming surrounding whitespace; numbers and booleans are not converted to text. IDs are also trimmed before exact comparison: `" 42039 "` selects `"42039"`, whereas `"042039"` remains different. Identifier punctuation, leading zeros and case are preserved. Other filters ignore case and accents (`"feijao"` matches `"Feijão"`) and treat punctuation literally, without regular expressions.
 
 | Flag | Default | Behavior |
 |---|---|---|
@@ -61,7 +61,7 @@ Each family cache stores the raw CSV and an acquisition manifest with its hash, 
 
 `source_details` includes `acquisition.resource/search`, `parser` diagnostics, filters and rows in `selection`, cache status and `coverage`. A verified total in the public search must match CSV rows (`count_matched`); disagreement fails. Without a verified total, coverage is `unknown`. A matching count does not make search and export a transactional snapshot. Population and selected-row counts remain separate, and metadata is independently copied.
 
-Source transport, parsing and contract failures are wrapped by the base as `SourceUnavailableError`, with classification in `errors`. There is no fallback to the other family. See the [source description](../sources/rnc.en.md) and [licenses](../licenses.en.md); access to the CSV does not establish rights over a cultivar.
+Source transport and contract failures are wrapped by the base as `SourceUnavailableError`, with classification in `errors`; CSV layout or content failures come out as `ParseError`. There is no fallback to the other family. See the [source description](../sources/rnc.en.md) and [licenses](../licenses.en.md); access to the CSV does not establish rights over a cultivar.
 
 ## Determinism, sync and Polars
 

@@ -72,7 +72,7 @@ A junção é externa 1:1 entre exportação e importação inversa. Revisões H
 | Fonte | UN Comtrade | ComexStat/MDIC |
 | Recorte | Bilateral, conforme disponibilidade do reporter | Brasil |
 | Classificação | HS | NCM |
-| Dimensão geográfica | Países por códigos numéricos | País de destino/origem e UF brasileira |
+| Dimensão geográfica | Países por códigos numéricos | UF brasileira (o país de destino/origem só no `agregacao="detalhado"` da API `agrobr.comexstat`) |
 
 A categoria interna de licença Comtrade é `zona_cinza`; veja [Licenças](../licenses.md#un-comtrade) e a [migração](../guides/migracao-2.md).
 

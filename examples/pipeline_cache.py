@@ -15,7 +15,7 @@ Demonstra:
 - Coleta paralela de múltiplas fontes
 - MetaInfo com proveniência completa
 - Cache do CEPEA na segunda execução (from_cache=True); as outras fontes não têm cache no agrobr
-- Exportação em Parquet
+- Exportação em Parquet (requer pyarrow: pip install agrobr[polars] ou pip install pyarrow)
 
 Uso:
     python pipeline_cache.py

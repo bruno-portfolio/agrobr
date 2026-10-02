@@ -54,7 +54,7 @@ The WFS returns current registry records. Creation and update filters select rec
 
 `cadastro_rural` rejects an active `datasets.deterministic(...)` context with `InvalidParameterError` before network access, including when explicit dates are supplied. The previous implementation converted the snapshot into `criado_apos`, selecting records created after the cutoff. That conversion has been removed. Normal queries return `meta.snapshot=None`.
 
-The contract moves to **2.0** to require explicit UTC in both date columns; the eleven columns and primary key remain unchanged. All-null columns and empty results also use a UTC dtype. The tabular transport uses GeoJSON projected to attributes only, without geometry or a GeoPandas dependency. See the [migration guide](../guides/migracao-2.md).
+The contract moves to **2.0** to require explicit UTC in both date columns; the eleven columns and primary key remain unchanged. Version **2.1** adds the optional `cod_municipio` column. All-null columns and empty results also use a UTC dtype. The tabular transport uses GeoJSON projected to attributes only, without geometry or a GeoPandas dependency. See the [migration guide](../guides/migracao-2.md).
 
 Official captures showed different clocks in CSV and GeoJSON for the same record, with offsets of two and three hours. CQL compared cutoffs against the GeoJSON UTC instant. The tabular API therefore stopped using CSV: returned UTC timestamps can now feed `atualizado_apos` directly through `.isoformat()`. Naive dates from old CSV captures are not assigned an assumed timezone or a fixed offset.
 
@@ -97,7 +97,7 @@ Pagination identity is the feature ID, without adding a DataFrame column. Repeat
 unique-ID count different from the last announced count raise `ParseError` with instructions to
 repeat the query. Count changes produce warnings; the largest observed total determines the pages
 requested. The source advertises `PagingIsTransactionSafe=FALSE`: count reconciliation does not
-guarantee a consistent snapshot across pages. Contract 2.0 and primary key `[cod_imovel]` are unchanged.
+guarantee a consistent snapshot across pages. Contract 2.1 and primary key `[cod_imovel]` are unchanged.
 
 ## Guarantees
 

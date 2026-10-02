@@ -54,7 +54,7 @@ sobrepostas em uma ocorrência para detectar mudança durante a paginação.
 | `fase` | str \| None | None | Um dos [7 seletores](#fases-validas), comparação literal |
 | `bbox` | tuple \| None | None | `(minlon, minlat, maxlon, maxlat)` em **EPSG:4326**; o servidor pré-seleciona e o agrobr confirma por interseção |
 | `max_registros` | int \| None | 1500 | Teto de perímetros lidos; `None` retira o teto |
-| `tamanho_pagina` | int \| None | 250 (tabular) / 10 (geo) | Máximo 1000 (tabular) e 100 (geo) |
+| `tamanho_pagina` | int \| None | 250 (tabular) / 10 (geo ou com `bbox`) | Máximo 1000 (tabular) e 100 (geo ou com `bbox`) |
 
 Os filtros `uf` e `fase` são aplicados localmente depois do download: o servidor não
 respeita `CQL_FILTER` nesses campos. Parâmetro inválido levanta `InvalidParameterError`

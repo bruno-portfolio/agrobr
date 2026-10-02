@@ -42,7 +42,7 @@ async def sinistros(
 DataFrame with columns: `nr_apolice`, `ano_apolice`, `uf`, `municipio`, `cd_ibge`,
 `cultura`, `classificacao`, `evento`, `area_total`, `valor_indenizacao`, `valor_premio`,
 `valor_subvencao`, `valor_limite_garantia`, `produtividade_estimada`,
-`produtividade_segurada`, `nivel_cobertura`, `seguradora`
+`produtividade_segurada`, `nivel_cobertura`, `seguradora`, `cod_municipio`
 
 **Example:**
 
@@ -98,7 +98,7 @@ async def apolices(
 DataFrame with columns: `nr_apolice`, `ano_apolice`, `uf`, `municipio`, `cd_ibge`,
 `cultura`, `classificacao`, `area_total`, `valor_premio`, `valor_subvencao`,
 `valor_limite_garantia`, `valor_indenizacao`, `evento`, `produtividade_estimada`,
-`produtividade_segurada`, `nivel_cobertura`, `taxa`, `seguradora`
+`produtividade_segurada`, `nivel_cobertura`, `taxa`, `seguradora`, `cod_municipio`
 
 **Example:**
 

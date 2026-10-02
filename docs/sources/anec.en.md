@@ -185,8 +185,8 @@ The parser accepts both published headers: the six products in both weekly
 periods (plus Total Products in the monthly table), from W3/2026 on, and the four
 of the editions up to W2/2026, read by name. A column without a product name, such
 as the soybean one in the current week of W14/2026, raises `ParseError`: agrobr
-does not guess the product. An incomplete header also raises `ParseError`; the
-dataset preserves its cause in `SourceUnavailableError`. The sum of the ports in
+does not guess the product. An incomplete header also raises `ParseError`, and the
+dataset passes it on as `ParseError`, with the cause in `errors`. The sum of the ports in
 each weekly column is checked against the bulletin's TOTAL row: a difference above
 rounding (0.5 t per port) becomes a warning (`UserWarning` and
 `meta.validation_warnings`), and the per-port values are passed on unchanged.

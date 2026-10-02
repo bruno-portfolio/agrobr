@@ -28,7 +28,7 @@ Sem fallback para a tabela da Base dos Dados.
 
 **Restrições:** `qtd_contratos >= 0`, `valor >= 0`
 
-- `safra` no formato `AAAA/AAAA`, de julho a junho.
+- `safra` no formato `AAAA/AA` (ex.: `2022/23`), de julho a junho.
 - `finalidade`: `custeio`, `investimento`, `comercializacao` ou `industrializacao`.
 - Na agregação `uf`, `programa` e `cd_programa` são nulos. Na agregação `programa`, identificam o programa, com o nome vigente da tabela oficial.
 - `valor` é a soma em BRL, ao centavo; `qtd_contratos` é a soma dos contratos.

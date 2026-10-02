@@ -111,6 +111,7 @@ df = await queimadas.focos(
 | `precipitacao` | float | Precipitacao (mm) |
 | `risco_fogo` | float | Indice de risco (0-1) |
 | `frp` | float | Fire Radiative Power (MW) |
+| `cod_municipio` | Int64 | Código IBGE de 7 dígitos, do `municipio_id`; nulo fora de município |
 
 A fonte publica, em alguns meses, focos fora do contrato: a cópia igual sai uma vez; a chave repetida que difere só no FRP
 sai em 1 linha com o `frp` nulo; a que difere em outra coluna sai do resultado; e o FRP negativo sai nulo. Cada caso vem com

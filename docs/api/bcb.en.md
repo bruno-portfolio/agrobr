@@ -27,7 +27,7 @@ async def credito_rural(
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `produto` | `str` | Product key (soja, milho, arroz, feijao, trigo, algodao, cafe, cana, mandioca, sorgo) or SICOR investment item (e.g. "BOVINOS"); accents, case and surrounding spaces are ignored |
+| `produto` | `str` | Product key (soja, milho, arroz, feijao, trigo, algodao, cafe, cana, mandioca, sorgo) or SICOR investment item (e.g. "BOVINOS"); for keys, accents, case and surrounding spaces are ignored; for other items, case and surrounding spaces are ignored, and accents must match SICOR |
 | `safra` | `str \| None` | Crop year `"YYYY/YY"`, `"YYYY/YYYY"` (consecutive years) or `"YYYY"` (ending year: `"2025"` = 2024/2025); any other form raises `InvalidParameterError` before any request. `None` (default) applies no crop-year filter |
 | `finalidade` | `str` | `"custeio"`, `"investimento"` or `"comercializacao"`; agro-industrialisation is not published by product and raises `InvalidParameterError` pointing to `credito_rural_total` |
 | `uf` | `str \| None` | State abbreviation (e.g. "MT", "PR"); whitespace/case are normalized and invalid values raise `ValueError` |
@@ -168,7 +168,7 @@ async def sgs(
 | `as_polars` | Boolean; True requires `agrobr[polars]` |
 | `return_meta` | Boolean; True also returns MetaInfo |
 
-Without dates or `ultimos`, the default range starts ten years before the query's UTC date and ends on that UTC date, adjusting February 29 to February 28 if needed. With only a start date, the end defaults to the query's UTC date. With only an end date, the request keeps the start omitted: the source may reject this selection. This does not select a frozen historical revision.
+Without dates or `ultimos`, the default range starts ten years before the query's Brasília civil date (UTC−3) and ends on that date, adjusting February 29 to February 28 if needed. With only a start date, the end defaults to the query's Brasília civil date (UTC−3). With only an end date, the request keeps the start omitted: the source may reject this selection. This does not select a frozen historical revision.
 
 Each block ends on December 31 of its starting year + 9, or the requested end if earlier; the next starts on January 1. This respects the ten-year request limit for daily queries without assuming every code is daily. Calendar alignment means a ten-year range can require two requests. A failed block aborts the query without partial output.
 
@@ -225,8 +225,8 @@ async def ptax(
 | Parameter | Rule |
 |-----------|------|
 | `data` | Single civil date: `date`, `datetime`, ISO or DD/MM/YYYY; mutually exclusive with either interval bound |
-| `inicio`, `fim` | Inclusive bounds; start alone fills the end with today UTC, end alone fills the start with end minus 30 days |
-| No dates | Today UTC minus 30 days through today UTC, using one reference date |
+| `inicio`, `fim` | Inclusive bounds; start alone fills the end with today (Brasília civil date, UTC−3), end alone fills the start with end minus 30 days |
+| No dates | Today (Brasília civil date, UTC−3) minus 30 days through today, using one reference date |
 | `moeda` | Three ASCII letters; case normalized to uppercase, without whitespace trimming or name/numeric aliases; default USD |
 | `boletim` | `fechamento` (default), `todos`, `abertura`, or `intermediario` |
 | `top` | Strict positive integer, requested quote page size; default 1000 |

@@ -31,7 +31,7 @@ Each call reads the official page and downloads the complete file, even with fil
 
 `formato="auto"` prefers CSV. The source may choose PDF when CSV is not advertised or an eligible availability failure occurs, retaining the cause in metadata. Explicit `formato="csv"` and `formato="pdf"` are exclusive. Malformed CSV in a successful HTTP response or divergent TXT raises an error; neither triggers a silent switch to PDF. Only the PDF route requires `agrobr[pdf]`.
 
-Validation covers the complete publication before filtering. Source acquisition, parsing, and contract failures are wrapped by the base in `SourceUnavailableError`, with classifications in `errors`; a missing PDF dependency also remains identifiable in that diagnostic. The dataset has no fallback to another institution. Format fallback and its cause remain the source's responsibility.
+Validation covers the complete publication before filtering. Source acquisition and contract failures are wrapped by the base in `SourceUnavailableError`, with classifications in `errors`; layout failures surface as `ParseError` (also with `errors`). Without `agrobr[pdf]`, the PDF route raises `ImportError`. The dataset has no fallback to another institution. Format fallback and its cause remain the source's responsibility.
 
 ## Contract and identity
 

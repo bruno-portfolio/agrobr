@@ -99,5 +99,6 @@ e em `UserWarning`.
 
 O parser 2 exige os cabeçalhos Ruim, Média, Boa, Plantada e Colhida nas tabelas
 com várias culturas. Se faltar um deles, a fonte levanta `ParseError` e o dataset
-propaga `SourceUnavailableError` com o motivo, evitando sucesso parcial com
-apenas as abas históricas. O contrato permanece na versão 1.0.
+também levanta `ParseError` ("Todas as fontes falharam por layout", com o motivo da
+fonte em `errors`), evitando sucesso parcial com apenas as abas históricas.
+O contrato é a versão 2.0: `data` passou de texto `dd/mm/yyyy` a `datetime64[ns]`.

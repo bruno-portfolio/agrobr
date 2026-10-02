@@ -127,9 +127,9 @@ print(contract.to_json())
 
 Os valores publicados não são convertidos implicitamente. `unidade_producao`, `unidade_rendimento` e `unidade_valor_producao` identificam a escala de cada linha. Laranja anterior a 2001 usa `mil_frutos` e `frutos/ha`; desde 2001, `ton` e `kg/ha`. `condicao_produto` distingue café `em_coco` até 2001 e `beneficiado` desde 2002. As moedas históricas permanecem identificadas, sem conversão para reais nem correção de inflação. Consulte as [notas metodológicas do IBGE](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
 
-O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.1; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.
+O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.2; as quatro colunas descritivas, o `localidade_cod` e o `cod_municipio` (derivado do `localidade_cod`) são opcionais no contrato e entregues pela API PAM.
 
-O parser PAM 2 preserva também localidades e medidas inteiramente ausentes ou suprimidas. Duas observações para a mesma localidade, ano e medida, inclusive aliases de variável que colidem, geram `ParseError`; variáveis sem mapeamento também são recusadas. Não há seleção silenciosa do primeiro valor. O schema é 2.1 (2.0 mais o `localidade_cod`).
+O parser PAM 2 preserva também localidades e medidas inteiramente ausentes ou suprimidas. Duas observações para a mesma localidade, ano e medida, inclusive aliases de variável que colidem, geram `ParseError`; variáveis sem mapeamento também são recusadas. Não há seleção silenciosa do primeiro valor. O schema é 2.2 (2.0 mais o `localidade_cod` na 2.1 e o `cod_municipio` na 2.2).
 
 No fallback CONAB, Brasil é a soma das UFs e o rendimento é recalculado como
 produção em toneladas × 1.000 / área em hectares. A produtividade nacional

@@ -41,7 +41,7 @@ As **59 colunas** abaixo seguem a ordem do contrato. A linha de decêndios repre
 | `registro_origem` | INTEGER | Não | Posição CSV antes de filtros; somente identificável junto ao hash do corpo |
 | `cod_municipio` | INTEGER | Sim | O `geocodigo` em inteiro, a chave comum dos datasets municipais |
 
-Todos os campos INTEGER usam o dtype pandas `Int64`; apenas os riscos admitem nulos. Campos textuais vazios permanecem strings vazias, sem conversão para nulo. O texto sai no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2), igual com linhas, no vazio e no cache.
+Todos os campos INTEGER usam o dtype pandas `Int64`; admitem nulos os riscos e o `cod_municipio`. Campos textuais vazios permanecem strings vazias, sem conversão para nulo. O texto sai no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2), igual com linhas, no vazio e no cache.
 
 ## Semântica e limites
 

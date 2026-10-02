@@ -57,7 +57,7 @@ A CONAB publica levantamentos mensais de safra:
 
 ### Seleção de edição no dataset
 
-`datasets.estimativa_safra("soja", safra="2024/25", uf="MT", levantamento=1)` seleciona o primeiro levantamento CONAB; `levantamento=11` seleciona o décimo primeiro. `fonte="conab"` sem levantamento seleciona a publicação mais recente que traz a safra: para uma safra passada, o último levantamento da safra seguinte, que a revisa. O `levantamento` e a `data_publicacao` são do boletim CONAB que publicou o número, e não da safra: sem `levantamento`, a safra passada vem da publicação mais recente que a traz, revisada. A safra 2024/25 servida pelo 12º levantamento de 2025/26 sai com `levantamento=12` e `data_publicacao=2026-09-15`; o 12º levantamento de 2024/25 é outro boletim, com outro número. A safra do boletim está em `meta.source_details["publicacao"]["safra"]`.
+`datasets.estimativa_safra("soja", safra="2024/25", uf="MT", levantamento=1)` seleciona o primeiro levantamento CONAB; `levantamento=11` seleciona o décimo primeiro. `fonte="conab"` sem levantamento seleciona a publicação mais recente que traz a safra: para uma safra passada, o último levantamento da safra seguinte, que a revisa. O `levantamento` e a `data_publicacao` são do boletim CONAB que publicou o número, e não da safra: sem `levantamento`, a safra passada vem da publicação mais recente que a traz, revisada. A safra 2024/25 servida pelo 12º levantamento de 2025/26 sai com `levantamento=12` e `data_publicacao=2026-09-15`; o 12º levantamento de 2024/25 é outro boletim, com outro número. A safra do boletim está em `meta.source_details["publicacao"]["safra"]`. Duas ou mais safras atrás da edição mais recente, sem `levantamento`, o número vem da série histórica, e `levantamento` e `data_publicacao` saem nulos (ver `conab.safras`).
 
 O mês civil do LSPA é outro seletor: `mes` direciona o dataset ao IBGE LSPA e não representa o número de levantamento CONAB. Seletores incompatíveis são rejeitados antes da rede. Sem `uf`, a CONAB retorna linhas estaduais; para comparação com LSPA, informe a mesma UF nas duas consultas.
 
@@ -250,8 +250,8 @@ Abas selecionadas ilegíveis, ausentes ou ambíguas geram `ParseError`; filtros 
 
 ## Cache
 
-As consultas da CONAB não guardam cópia local: cada chamada baixa a publicação. `meta.cache_expires_at` sai nulo, e o
-`meta.cache_key` identifica a consulta (produto, safra, publicação, levantamento e UF).
+As consultas da CONAB não guardam cópia local: cada chamada baixa a publicação. `meta.cache_expires_at` sai nulo; em `conab.safras`, o
+`meta.cache_key` identifica a consulta (produto, safra, publicação, levantamento e UF), e nas demais funções sai nulo.
 
 ## Atualizacao
 
@@ -280,7 +280,7 @@ A data de publicação é nula quando o download não traz essa informação. A 
 
 `conab.custo_sociobiodiversidade(produto, uf=None, ano=None, *, local=None, planilha=None, aba=None, use_cache=True, as_polars=False, return_meta=False)` retorna os custos extrativistas publicados. O dataset tem os mesmos seletores. `conab.catalogo_sociobiodiversidade()` lista todas as revisões de recursos com indicação de ativo; com produto, inventaria o workbook ativo, incluindo contextos pendentes. `planilha=` seleciona um recurso histórico exato. Os 20 produtos capturados, unidades literais, seleção e limitações nominais estão no [contrato 1.0](../contracts/custo_sociobiodiversidade.md). Sem conversão hectare/safra nem mescla de revisões. Cache do catálogo de 1 h, separado dos custos agrícolas; workbooks sempre baixados. `use_cache=False` ignora o cache do catálogo.
 
-Custos agrícolas usam parser 4: cabeçalhos mesclados, café por recurso oficial,
+Custos agrícolas usam parser 5: cabeçalhos mesclados, café por recurso oficial,
 safra anual ou bienal literal e notas cambiais separadas dos itens. Percentuais
 só recebem escala Excel quando a célula é numérica. Custos da sociobiodiversidade
 usam parser 2 e preservam a seleção explícita de revisões arquivadas. Contratos

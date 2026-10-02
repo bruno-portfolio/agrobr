@@ -92,8 +92,8 @@ desmatamento_em_car = gpd.sjoin(gdf, car)
 
 ### Notes
 
-- Default `maxFeatures=10000` — use filters (uf, ano) to reduce volume
-- A warning is logged automatically if the response reaches the feature limit (possible truncation)
+- Default `max_registros=10000`, in pages of `tamanho_pagina=100`; use filters (uf, ano) or `max_registros=None`
+- If `max_registros` cuts the selection, a `UserWarning` reports the WFS total and the number returned
 - The geometry column in GeoServer is `geom` for all 6 biomes (uniform)
 
 ---
@@ -133,7 +133,7 @@ df = await agrobr.desmatamento.deter(
 | `classe` | str | Alert type (DESMATAMENTO_CR, DEGRADACAO, MINERACAO, etc.) |
 | `uf` | str | State code |
 | `municipio` | str | Municipality name |
-| `municipio_id` | int | IBGE municipality code |
+| `municipio_id` | str | IBGE municipality code as published (text; null in DETER Cerrado) |
 | `area_km2` | float | Area in km2 |
 | `satelite` | str | Satellite used |
 | `sensor` | str | Satellite sensor |
@@ -194,7 +194,7 @@ alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
 | `classe` | str | Alert type (DESMATAMENTO_CR, DEGRADACAO, MINERACAO, etc.) |
 | `uf` | str | State code |
 | `municipio` | str | Municipality name |
-| `municipio_id` | int | IBGE municipality code |
+| `municipio_id` | str | IBGE municipality code as published (text; null in DETER Cerrado) |
 | `area_km2` | float | Area in km2 |
 | `satelite` | str | Satellite used |
 | `sensor` | str | Satellite sensor |
@@ -203,8 +203,8 @@ alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
 
 ### Notes
 
-- Default `maxFeatures=10000` — use filters (uf, inicio/fim, classe) to reduce volume
-- A warning is logged automatically if the response reaches the feature limit (possible truncation)
+- Default `max_registros=10000`, in pages of `tamanho_pagina=100`; use filters (uf, inicio/fim, classe) or `max_registros=None`
+- If `max_registros` cuts the selection, a `UserWarning` reports the WFS total and the number returned
 - Approximate volume: ~1.1 KB per feature with geometry
 
 ---

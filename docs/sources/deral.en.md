@@ -97,6 +97,7 @@ the date comes from the cell, as published. When a dated sheet name (`dd-mm-yy` 
 parsing follows the cell and warns in `validation_warnings` and `UserWarning`.
 
 Parser 2 requires the Ruim, Média, Boa, Plantada and Colhida headers in tables
-containing several crops. A missing header raises `ParseError` in the source
-and `SourceUnavailableError` with the reason in the dataset, preventing partial
-success containing only historical sheets. The contract remains at version 1.0.
+containing several crops. A missing header raises `ParseError` in the source,
+and the dataset also raises `ParseError` ("Todas as fontes falharam por layout", with the
+source reason in `errors`), preventing partial success containing only historical sheets.
+The contract is version 2.0: `data` changed from `dd/mm/yyyy` text to `datetime64[ns]`.

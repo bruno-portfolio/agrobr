@@ -1,7 +1,7 @@
 # Data Sources
 
 agrobr integrates data from 41 agricultural data sources.
-All sources support `return_meta=True` for full traceability.
+Source data functions accept `return_meta=True`; Notícias Agrícolas, the CEPEA fallback, carries its provenance in `cepea.indicador(..., return_meta=True)`.
 What has a SemVer guarantee in each source is in the [public API](../api/index.md).
 
 ## Overview
@@ -95,15 +95,11 @@ The `MetaInfo` object contains the following information:
 | `agrobr_version` | str | agrobr version |
 | `parser_version` | int | Parser version used |
 
-## Integrity Verification
+## Export for auditing
 
-MetaInfo lets you verify data integrity:
+`MetaInfo` exports the metadata; `raw_content_hash` is the SHA-256 of the body received from the source (see [Contracts](../contracts/index.md#metainfo)):
 
 ```python
-# Check that the DataFrame was not altered
-is_valid = meta.verify_hash(df)
-
-# Export metadata for auditing
 meta_json = meta.to_json()
 meta_dict = meta.to_dict()
 ```

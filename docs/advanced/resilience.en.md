@@ -89,7 +89,7 @@ Each source has its own rate limit, configurable via env vars:
 | ZARC | 2 seconds | `AGROBR_HTTP_RATE_LIMIT_ZARC` |
 | Default | 1 second | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` |
 
-The table shows the main sources; each supported source has its own rate limit (default 1 second). Four internal requests have no variable of their own and use `AGROBR_HTTP_RATE_LIMIT_DEFAULT`: CONAB's production cost and historical series, IBGE's legacy Agricultural Census (FTP), and MAPA PSR; `AGROBR_HTTP_RATE_LIMIT_CONAB` and `AGROBR_HTTP_RATE_LIMIT_IBGE` do not apply to them. Beyond the interval between requests, per-source concurrency is controlled by `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` for four sources only: ANA (1), ANP Diesel (3), B3 (3), and IBGE (3); the others use `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` (1), and another source's variable (for example, `AGROBR_HTTP_MAX_CONCURRENT_CFTC`) has no effect. A value below 1 is rejected at validation, with `ValidationError`. Concurrency is enforced via semaphores that allow parallel requests to different sources. The interval and the concurrency hold for the whole process: across `agrobr.sync` calls (each with its own `asyncio.run`), across loops and across threads. The wait for a slot across threads is capped (`AGROBR_HTTP_TIMEOUT_READ`); at the cap, the request goes ahead with a warning, and the interval still holds.
+The table shows the main sources; each supported source has its own rate limit (default 1 second), except ANTAQ: it downloads through `requests` and does not go through the limiter (interval and concurrency), so `AGROBR_HTTP_RATE_LIMIT_ANTAQ` has no effect. Four internal requests have no variable of their own and use `AGROBR_HTTP_RATE_LIMIT_DEFAULT`: CONAB's production cost and historical series, IBGE's legacy Agricultural Census (FTP), and MAPA PSR; `AGROBR_HTTP_RATE_LIMIT_CONAB` and `AGROBR_HTTP_RATE_LIMIT_IBGE` do not apply to them. Beyond the interval between requests, per-source concurrency is controlled by `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` for four sources only: ANA (1), ANP Diesel (3), B3 (3), and IBGE (3); the others use `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` (1), and another source's variable (for example, `AGROBR_HTTP_MAX_CONCURRENT_CFTC`) has no effect. A value below 1 is rejected at validation, with `ValidationError`. Concurrency is enforced via semaphores that allow parallel requests to different sources. The interval and the concurrency hold for the whole process: across `agrobr.sync` calls (each with its own `asyncio.run`), across loops and across threads. The wait for a slot across threads is capped (`AGROBR_HTTP_TIMEOUT_READ`); at the cap, the request goes ahead with a warning, and the interval still holds.
 
 ## Centralized HTTP Configuration
 
@@ -159,7 +159,7 @@ calamine (ignores styles, extracts data only)
 ParseError
 ```
 
-xlrd guard: OLE2/BIFF files (.xls) use xlrd directly, with no calamine fallback.
+OLE2/BIFF files (.xls) go through the same fallback: pandas reads them with xlrd, and calamine steps in if it fails. The CEPEA series does the reverse: it reads with calamine and falls back to xlrd with `ignore_workbook_corruption`.
 
 Helpers: `open_excel_safe()` (multi-sheet) and `read_excel_safe()` (single-sheet)
 in `agrobr/utils/io.py`.
@@ -173,8 +173,10 @@ expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises 
   `open_zip_member`, which check the declared size. `zipfile` never returns more than the declared size: a member that expands
   beyond it fails the CRC.
 - **XLSX** (`read_excel_safe`, `open_excel_safe`, the CEPEA series, the MapBiomas municipal file and UNICA):
-  `check_xlsx_expansion` adds up the declared size of the members and checks the CRC of each one as a stream, before the
-  spreadsheet reader. calamine does not honour the declared size: without the CRC, an XLSX with a forged size would get through.
+  `check_xlsx_expansion` adds up the declared size of the members and then measures the real expansion of each one,
+  decompressing as a stream until it goes over the limit, before the spreadsheet reader. calamine does not honour the
+  declared size, and the CRC is chosen by whoever builds the file: neither proves how much the XLSX expands. An unreadable
+  ZIP, or one with a member compressed by a method other than deflate, is refused.
 
 | Source | Limit | Largest file published (as of 2026-09-27) |
 |---|---|---|
@@ -258,7 +260,7 @@ Fetch source
    └─fail──→ Stale cache? ──yes──→ Returns stale + warning
                  │no
                  ▼
-           cepea.indicador() → empty DataFrame
+           cepea.indicador() → SourceUnavailableError
            datasets.* → SourceUnavailableError
 ```
 
@@ -421,9 +423,9 @@ also masks agrobr's credentials, whether from the environment or passed as an ar
 
 | Level | Trigger | Channels |
 |-------|---------|--------|
-| Info | Health check OK | Logs only |
-| Warning | Fingerprint drift, stale cache | Slack/Discord |
-| Critical | Parse failed, source down | All + GitHub Issue |
+| Info | Source recovered | Every configured channel |
+| Warning | Consecutive failures at the warning threshold, soft block, structure drift | Every configured channel |
+| Critical | Consecutive failures at the critical threshold, structure fetch error in the Structure Monitor | Every configured channel |
 
 ## Offline Mode
 
@@ -450,11 +452,13 @@ agrobr diagnostics v2.0.0
 ==================================================
 
 Sources Connectivity
-  [OK] CEPEA (Noticias Agricolas)             142ms
-  [OK] CONAB                                   89ms
-  [OK] IBGE/SIDRA                              67ms
+  [OK] CEPEA                                 142ms
+  [OK] CONAB                                  89ms
+  [OK] IBGE                                   67ms
 
 Cache Status
+  Status:        ok
+  Error:         -
   Location:      ~/.agrobr/cache/agrobr.duckdb
   Size:          2.40 MB
   Total records: 1,152
@@ -467,7 +471,8 @@ Cache Expiry
   CEPEA: Expira às 18h BRT (atualização CEPEA)
 
 Configuration
-  Alternative source: enabled (Notícias Agrícolas via httpx)
+  Browser fallback:   disabled
+  Alternative source: enabled
 
 [OK] All systems operational
 ```

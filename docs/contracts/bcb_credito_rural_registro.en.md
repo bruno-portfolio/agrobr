@@ -54,7 +54,7 @@ No fallback: the Base dos Dados table aggregates by municipality and carries no 
 - **Area:** through OData, `area_financiada` is null. Operating costs publish an empty `AreaCusteio`, and investment and marketing have no area.
 - **Sum:** summed by crop year, state, product and purpose, the records equal `agregacao="uf"` of the same call.
 - **Current crop year:** the same warning as the other aggregations, in `MetaInfo.validation_warnings` and in `source_details["safra_em_curso"]`.
-- **pandas types:** those of the empty contract (`str` → `object`, `int` → `Int64`, `float` → `Float64`), including the empty result. With `as_polars=True`: `Utf8`, `Int64` and `Float64`.
+- **pandas types:** those of the empty contract (`str` → the installed pandas default text dtype, `str` on pandas 3 and `object` on 2; `int` → `Int64`; `float` → `float64`), including the empty result. With `as_polars=True`: `Utf8`, `Int64` and `Float64`.
 - **`MetaInfo`:** `schema_version` and `contract_version` are `1.0`, and `source_details["contract"]` is `bcb.credito_rural_registro`.
 
 ## Version history

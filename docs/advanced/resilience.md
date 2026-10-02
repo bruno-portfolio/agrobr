@@ -93,7 +93,7 @@ Cada fonte tem seu próprio rate limit, configurável via env vars:
 | ZARC | 2 segundos | `AGROBR_HTTP_RATE_LIMIT_ZARC` |
 | Default | 1 segundo | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` |
 
-A tabela mostra as principais fontes; cada uma das fontes suportadas tem seu próprio rate limit (default 1 segundo). Quatro pedidos internos não têm variável própria e usam o `AGROBR_HTTP_RATE_LIMIT_DEFAULT`: o custo de produção e a série histórica da CONAB, o Censo Agro legado do IBGE (FTP) e o MAPA PSR; o `AGROBR_HTTP_RATE_LIMIT_CONAB` e o `AGROBR_HTTP_RATE_LIMIT_IBGE` não valem para eles. Além do intervalo entre requisições, a concorrência por fonte é controlada por `AGROBR_HTTP_MAX_CONCURRENT_<FONTE>` só em quatro fontes: ANA (1), ANP Diesel (3), B3 (3) e IBGE (3); as demais usam `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` (1), e a variável de outra fonte (por exemplo, `AGROBR_HTTP_MAX_CONCURRENT_CFTC`) não tem efeito. Valor menor que 1 é recusado na validação, com `ValidationError`. A concorrência vale via semáforos que permitem requests paralelos a fontes diferentes. O intervalo e a concorrência valem para o processo inteiro: entre chamadas do `agrobr.sync` (cada uma com o seu `asyncio.run`), entre loops e entre threads. A espera por vaga entre threads tem teto (`AGROBR_HTTP_TIMEOUT_READ`); no teto, o pedido segue com aviso, e o intervalo continua valendo.
+A tabela mostra as principais fontes; cada uma das fontes suportadas tem seu próprio rate limit (default 1 segundo), menos a ANTAQ: ela baixa pelo `requests` e não passa pelo limitador (intervalo e concorrência), e o `AGROBR_HTTP_RATE_LIMIT_ANTAQ` não tem efeito. Quatro pedidos internos não têm variável própria e usam o `AGROBR_HTTP_RATE_LIMIT_DEFAULT`: o custo de produção e a série histórica da CONAB, o Censo Agro legado do IBGE (FTP) e o MAPA PSR; o `AGROBR_HTTP_RATE_LIMIT_CONAB` e o `AGROBR_HTTP_RATE_LIMIT_IBGE` não valem para eles. Além do intervalo entre requisições, a concorrência por fonte é controlada por `AGROBR_HTTP_MAX_CONCURRENT_<FONTE>` só em quatro fontes: ANA (1), ANP Diesel (3), B3 (3) e IBGE (3); as demais usam `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` (1), e a variável de outra fonte (por exemplo, `AGROBR_HTTP_MAX_CONCURRENT_CFTC`) não tem efeito. Valor menor que 1 é recusado na validação, com `ValidationError`. A concorrência vale via semáforos que permitem requests paralelos a fontes diferentes. O intervalo e a concorrência valem para o processo inteiro: entre chamadas do `agrobr.sync` (cada uma com o seu `asyncio.run`), entre loops e entre threads. A espera por vaga entre threads tem teto (`AGROBR_HTTP_TIMEOUT_READ`); no teto, o pedido segue com aviso, e o intervalo continua valendo.
 
 ## Configuração HTTP Centralizada
 
@@ -163,7 +163,7 @@ calamine (ignora estilos, extrai só dados)
 ParseError
 ```
 
-Guard xlrd: arquivos OLE2/BIFF (.xls) usam xlrd direto, sem fallback calamine.
+Arquivos OLE2/BIFF (.xls) passam pelo mesmo fallback: o pandas lê com o xlrd, e o calamine entra se ele falhar. A série do CEPEA faz o inverso: lê com o calamine e recorre ao xlrd com `ignore_workbook_corruption`.
 
 Helpers: `open_excel_safe()` (multi-sheet) e `read_excel_safe()` (single-sheet)
 em `agrobr/utils/io.py`.
@@ -177,8 +177,10 @@ e cada XLSX expande, contra um teto por fonte (`constants.MAX_EXPANDED_BYTES`), 
   `open_zip_member`, que conferem o tamanho declarado. O `zipfile` não entrega mais do que o declarado: um membro que expande
   além dele falha no CRC.
 - **XLSX** (`read_excel_safe`, `open_excel_safe`, a série do CEPEA, o MapBiomas municipal e a UNICA): `check_xlsx_expansion`
-  soma o tamanho declarado dos membros e confere o CRC de cada um em stream, antes do leitor de planilha. O calamine não
-  respeita o tamanho declarado: sem o CRC, um XLSX com o tamanho forjado passaria.
+  soma o tamanho declarado dos membros e depois mede a expansão real de cada um, descomprimindo em stream até passar do
+  teto, antes do leitor de planilha. O calamine não respeita o tamanho declarado, e o CRC é escolhido por quem gera o
+  arquivo: nenhum dos dois prova quanto o XLSX expande. ZIP ilegível, ou com membro comprimido por outro método que não o
+  deflate, é recusado.
 
 | Fonte | Teto | Maior arquivo publicado (em 27/09/2026) |
 |---|---|---|
@@ -262,7 +264,7 @@ Fetch fonte
    └─fail──→ Cache stale? ──yes──→ Retorna stale + warning
                  │no
                  ▼
-           cepea.indicador() → DataFrame vazio
+           cepea.indicador() → SourceUnavailableError
            datasets.* → SourceUnavailableError
 ```
 
@@ -423,9 +425,9 @@ mascara as credenciais do agrobr, do ambiente ou passadas por argumento.
 
 | Nível | Trigger | Canais |
 |-------|---------|--------|
-| Info | Health check OK | Logs apenas |
-| Warning | Fingerprint drift, cache stale | Slack/Discord |
-| Critical | Parse failed, fonte down | Todos + GitHub Issue |
+| Info | Fonte voltou (recuperação) | Todos os canais configurados |
+| Warning | Falhas seguidas no limiar de aviso, soft block, drift de estrutura | Todos os canais configurados |
+| Critical | Falhas seguidas no limiar crítico, erro ao baixar a estrutura no Structure Monitor | Todos os canais configurados |
 
 ## Modo Offline
 
@@ -452,11 +454,13 @@ agrobr diagnostics v2.0.0
 ==================================================
 
 Sources Connectivity
-  [OK] CEPEA (Noticias Agricolas)             142ms
-  [OK] CONAB                                   89ms
-  [OK] IBGE/SIDRA                              67ms
+  [OK] CEPEA                                 142ms
+  [OK] CONAB                                  89ms
+  [OK] IBGE                                   67ms
 
 Cache Status
+  Status:        ok
+  Error:         -
   Location:      ~/.agrobr/cache/agrobr.duckdb
   Size:          2.40 MB
   Total records: 1,152
@@ -469,7 +473,8 @@ Cache Expiry
   CEPEA: Expira às 18h BRT (atualização CEPEA)
 
 Configuration
-  Alternative source: enabled (Notícias Agrícolas via httpx)
+  Browser fallback:   disabled
+  Alternative source: enabled
 
 [OK] All systems operational
 ```

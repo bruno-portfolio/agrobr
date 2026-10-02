@@ -17,7 +17,7 @@
 | **Operator** | Olivi Produções de Vídeo e Comunicação LTDA |
 | **Website** | [noticiasagricolas.com.br](https://www.noticiasagricolas.com.br) |
 | **License** | `restrito` — all rights reserved |
-| **Role in agrobr** | CEPEA fallback (3rd option after direct httpx and Playwright) |
+| **Role in agrobr** | CEPEA fallback (2nd option, after direct access) |
 | **Data** | 100% CEPEA/ESALQ republication — no exclusive data |
 
 ## How it works in agrobr
@@ -30,9 +30,8 @@ be combined as if it were the reference month returned by CEPEA.
 The Notícias Agrícolas module is **not called directly by the user**. It is
 triggered automatically by the CEPEA module when:
 
-1. The direct httpx request to CEPEA fails (Cloudflare 403)
-2. Playwright is not installed or also fails
-3. The circuit breaker opens for CEPEA httpx
+1. Direct access to CEPEA fails (Cloudflare 403, network or HTTP status)
+2. The CEPEA page arrives but the parser finds no indicator (`ParseError`)
 
 ## Weekly Data
 

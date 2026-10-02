@@ -54,7 +54,7 @@ O WFS retorna o cadastro corrente. Os filtros de criação e atualização selec
 
 `cadastro_rural` rejeita um contexto `datasets.deterministic(...)` ativo com `InvalidParameterError` antes da rede, inclusive quando há datas explícitas. A implementação anterior transformava o snapshot em `criado_apos`, selecionando registros criados depois do corte. Essa transformação foi removida. Nas consultas normais, `meta.snapshot` é nulo.
 
-O contrato passa a **2.0** por tornar UTC explícito nas duas datas; as onze colunas e a chave não mudam. Inclusive colunas totalmente nulas e resultados vazios usam dtype UTC. O transporte tabular usa GeoJSON projetado apenas nos atributos, sem geometria nem dependência de GeoPandas. Consulte o [guia de migração](../guides/migracao-2.md).
+O contrato passa a **2.0** por tornar UTC explícito nas duas datas; as onze colunas e a chave não mudam. A **2.1** acrescenta a coluna opcional `cod_municipio`. Inclusive colunas totalmente nulas e resultados vazios usam dtype UTC. O transporte tabular usa GeoJSON projetado apenas nos atributos, sem geometria nem dependência de GeoPandas. Consulte o [guia de migração](../guides/migracao-2.md).
 
 As capturas oficiais mostraram horários diferentes entre CSV e GeoJSON no mesmo registro, com deslocamentos de duas e três horas. O CQL comparou os limites pelo instante UTC do GeoJSON. Por isso a API tabular deixou o CSV: os timestamps UTC retornados agora podem alimentar `atualizado_apos` diretamente via `.isoformat()`. Datas naive de capturas CSV antigas não recebem um fuso presumido nem deslocamento fixo.
 
@@ -97,7 +97,7 @@ A identidade da paginação é o id da feature, sem acrescentar coluna ao DataFr
 id ou terminar com quantidade de ids diferente da última contagem anunciada gera `ParseError`
 com orientação para repetir a consulta. Mudanças de contagem geram avisos; o maior total observado
 define as páginas solicitadas. A fonte declara `PagingIsTransactionSafe=FALSE`: a conferência de
-contagem não garante uma fotografia consistente entre páginas. O contrato 2.0 e a chave
+contagem não garante uma fotografia consistente entre páginas. O contrato 2.1 e a chave
 `[cod_imovel]` permanecem os mesmos.
 
 ## Garantias

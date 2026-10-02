@@ -172,7 +172,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 | Download manual de planilhas | Uma linha de código |
 | Layouts inconsistentes | Parsing robusto com fallback |
 | Scripts que quebram | Fingerprinting detecta mudanças |
-| Sem histórico | Cache DuckDB com acumulação |
+| Sem histórico | Snapshots em parquet sob demanda; cache DuckDB só para os indicadores CEPEA |
 | Encoding caótico | Fallback chain automático |
 | Escolher fonte | Datasets abstraem a fonte |
 
@@ -194,7 +194,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 - **Contratos públicos** — schema versionado com garantias de estabilidade
 - **Modo determinístico + snapshots** — reprodutibilidade para papers e auditorias (modo determinístico no `preco_diario`; snapshots CEPEA/CONAB/IBGE) ([guia](guides/snapshots.md))
 - **Async-first** com sync wrapper para uso simples
-- **Cache DuckDB** com histórico permanente
+- **Cache DuckDB** dos indicadores CEPEA, com TTL inteligente (expira às 18h)
 - **Suporte pandas + polars** (`as_polars=True`)
 - **CLI completa** (`agrobr cepea indicador soja --formato csv`)
 - **Validação** — Pydantic v2 + sanity checks estatísticos + fingerprinting

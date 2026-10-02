@@ -106,7 +106,7 @@ agropecuários com lavoura temporária" (10084) and, for permanent crops, "com 5
 ```python
 from agrobr import ibge
 
-# Herd inventory by state (2017)
+# Herd inventory by state (1995 and 2017)
 df = await ibge.censo_agro('efetivo_rebanho')
 
 # Land use in Mato Grosso
