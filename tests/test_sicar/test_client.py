@@ -15,7 +15,6 @@ from agrobr.alt.sicar.models import PAGE_SIZE, WFS_BASE
 from agrobr.exceptions import ParseError
 from tests.helpers import collect_failures
 
-VAZIO = b'{"type":"FeatureCollection","features":[]}'
 CQL_MUNICIPIO = "municipio ILIKE '%Cabrobó%'"
 
 
@@ -55,7 +54,7 @@ def servidor_geo(
         pedidos.append(query)
         if query.get("resultType") == "hits":
             return f'<wfs:FeatureCollection numberMatched="{total}"/>'.encode()
-        return VAZIO
+        return pagina(int(query.get("startIndex", "0")), int(query["count"]))
 
     return fetch_wfs
 
@@ -189,12 +188,13 @@ async def test_geo_sem_limite_pausa_depois_da_quinta_pagina(monkeypatch: pytest.
 
     async def fetch_wfs(url: str, **_kwargs: Any) -> bytes:
         if "resultType=hits" in url:
-            return f'<wfs:FeatureCollection numberMatched="{paginas * PAGE_SIZE}"/>'.encode()
-        return VAZIO
+            return f'<wfs:FeatureCollection numberMatched="{paginas}"/>'.encode()
+        return pagina(int(consulta(url)["startIndex"]), 1)
 
     async def sleep(delay: float) -> None:
         pausas.append(delay)
 
+    monkeypatch.setattr(client, "PAGE_SIZE", 1)
     monkeypatch.setattr(client, "fetch_wfs", fetch_wfs)
     monkeypatch.setattr(client.asyncio, "sleep", sleep)
     lotes = [len(pages) async for pages, _url in client.stream_imoveis_geo("MT", max_features=None)]

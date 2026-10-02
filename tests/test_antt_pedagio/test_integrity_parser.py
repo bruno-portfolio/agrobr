@@ -426,17 +426,17 @@ def test_official_integrity_sample_all_cells(name):
         )
         expected = {
             "data": pd.Timestamp(expected_date),
-            "concessionaria": source["concessionaria"],
-            "praca": source["praca"],
-            "sentido": source["sentido"],
+            "concessionaria": source["concessionaria"].strip(),
+            "praca": source["praca"].strip(),
+            "sentido": source["sentido"].strip().upper(),
             "n_eixos": int(axle[1]) if axle else None,
-            "tipo_veiculo": source["tipo_de_veiculo"],
+            "tipo_veiculo": source["tipo_de_veiculo"].strip(),
             "volume": int(Decimal(source["volume_total"].replace(",", "."))),
             "rodovia": None,
             "uf": None,
             "municipio": None,
             "categoria_eixo": category,
-            "tipo_cobranca": source["tipo_cobranca"],
+            "tipo_cobranca": source["tipo_cobranca"].strip(),
             "frequencia": sample["frequency"],
         }
         for column, value in expected.items():

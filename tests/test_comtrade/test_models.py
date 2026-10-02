@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from agrobr.comtrade import models, query
+from agrobr.comtrade import api, models, query
 from agrobr.exceptions import InvalidParameterError
 
 
@@ -20,6 +20,11 @@ from agrobr.exceptions import InvalidParameterError
 )
 def test_country_aliases(name, expected):
     assert models.resolve_pais(name) == expected
+
+
+@pytest.mark.parametrize("codigo", api.paises())
+def test_pais_listado_resolve_para_o_proprio_codigo(codigo):
+    assert models.COMTRADE_PAISES_INV[models.resolve_pais(codigo)] == codigo
 
 
 def build(**changes):

@@ -142,12 +142,16 @@ CATEGORIAS_CNFP: frozenset[str] = frozenset(
     }
 )
 
+SCHEMA_VERSIONS: dict[str, str] = {"cnfp": "1.1"}
+
+_CNFP_CAMPOS = "fid,nome,uf,bioma,categoria,tipo,governo,classe,area_ha,anocriacao,municipio"
+
 LAYERS: dict[str, LayerConfig] = {
     "cnfp": {
         "service_path": "Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9",
         "max_record_count": 2000,
         "oid_field": "fid",
-        "fields": "fid,nome,uf,bioma,categoria,tipo,governo,classe,area_ha,anocriacao,municipio",
+        "fields": _CNFP_CAMPOS,
         "rename_map": {
             "anocriacao": "ano_criacao",
         },
@@ -162,9 +166,10 @@ LAYERS: dict[str, LayerConfig] = {
             "classe",
             "area_ha",
             "ano_criacao",
+            "ano_criacao_texto",
             "municipio",
         ],
-        "required_cols": {"nome", "uf"},
+        "required_cols": set(_CNFP_CAMPOS.split(",")),
     },
     "concessoes": {
         "service_path": "Hosted/unidades_concessoes_florestais/FeatureServer/0",

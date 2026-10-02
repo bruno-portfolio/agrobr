@@ -39,6 +39,12 @@ class Coleta:
     avisos: list[str] = field(default_factory=list)
 
 
+_ORIENTACAO_TOKEN = (
+    " — confira AGROBR_MAPBIOMAS_ALERTA_TOKEN ou o argumento token=; o token é pessoal e expira "
+    "(um novo sai da mutation signIn da API)"
+)
+
+
 def _get_token(token: str | None = None) -> str:
     if token:
         return token
@@ -70,6 +76,12 @@ async def _graphql_request(
             lambda: http.post(GRAPHQL_URL, json=payload, headers=headers),
             source="mapbiomas_alerta",
         )
+        if response.status_code in (401, 403):
+            raise SourceUnavailableError(
+                source="mapbiomas_alerta",
+                url=GRAPHQL_URL,
+                last_error=f"HTTP {response.status_code}: credencial recusada{_ORIENTACAO_TOKEN}",
+            )
         responses.raise_for_status(response, source="mapbiomas_alerta")
         if corpos is not None:
             corpos.append(response.content)
@@ -82,10 +94,13 @@ async def _graphql_request(
         if "errors" in data:
             errors = data["errors"]
             msg = errors[0].get("message", str(errors)) if errors else "Unknown GraphQL error"
+            detalhe = responses.redact_secrets(str(msg), token)
+            if "token" in detalhe.lower():
+                detalhe += _ORIENTACAO_TOKEN
             raise SourceUnavailableError(
                 source="mapbiomas_alerta",
                 url=GRAPHQL_URL,
-                last_error=f"GraphQL error: {responses.redact_secrets(str(msg), token)}",
+                last_error=f"GraphQL error: {detalhe}",
             )
         result: dict[str, Any] = data.get("data", {})
         return result

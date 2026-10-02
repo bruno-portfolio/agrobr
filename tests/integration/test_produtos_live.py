@@ -24,6 +24,8 @@ C7_DATASETS = {
     "destinos_anec",
     "preco_diario",
 }
+ROTATING_DATASETS = {"embarques_anec", "preco_atacado"}
+OFF_MATRIX_DATASETS = {"zoneamento_agricola"}
 COLLECTION_DATE = datetime.now(UTC).date()
 ISO_WEEK = COLLECTION_DATE.isocalendar().week
 DESMATAMENTO_UF_SOURCE = (
@@ -190,6 +192,10 @@ def _uses_ibge(dataset_name: str) -> bool:
     )
 
 
+def _rotates(dataset_name: str) -> bool:
+    return dataset_name in ROTATING_DATASETS or _uses_ibge(dataset_name)
+
+
 def _weekly_products(products: list[str], week: int) -> list[str]:
     ordered = sorted(products, key=lambda value: (hashlib.sha256(value.encode()).digest(), value))
     if not ordered:
@@ -202,10 +208,10 @@ def _weekly_products(products: list[str], week: int) -> list[str]:
 def _product_cases(week: int) -> list[tuple[str, str]]:
     cases = []
     for name in datasets.list_datasets():
-        if name in C7_DATASETS:
+        if name in C7_DATASETS or name in OFF_MATRIX_DATASETS:
             continue
         products = datasets.list_products(name)
-        selected = _weekly_products(products, week) if _uses_ibge(name) else products
+        selected = _weekly_products(products, week) if _rotates(name) else products
         cases.extend((name, product) for product in selected)
     return cases
 

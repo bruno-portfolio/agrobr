@@ -27,7 +27,7 @@ logger = _log.get_logger(__name__)
 _LICENSE_WARNING = (
     "Dados da UNICA (unicadata.com.br) sem termos de uso públicos — classificação "
     "zona cinza. Uso educacional/pesquisa; para uso comercial, consulte a UNICA. "
-    "Detalhes em docs/licenses.md"
+    "Detalhes em https://www.agrobr.dev/docs/licenses/"
 )
 
 

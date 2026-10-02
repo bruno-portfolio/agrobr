@@ -5,10 +5,11 @@ import httpx
 import pandas as pd
 import pytest
 
+from agrobr.contracts import estimativa_safra as safra_contract
 from agrobr.datasets.estimativa_safra import (
     EstimativaSafraDataset,
 )
-from agrobr.exceptions import ContractViolationError, SourceUnavailableError
+from agrobr.exceptions import ContractViolationError, ParseError, SourceUnavailableError
 from tests.helpers import collect_failures, isolated_dataset_case, levanta_exatamente
 
 from .conftest import make_source, mock_source_meta
@@ -246,3 +247,69 @@ class TestNormalizeLspa:
 
                 assert len(df) == 0
                 assert list(df.columns) == _SAFRA_OUTPUT_COLS
+
+
+def _fontes_reais() -> EstimativaSafraDataset:
+    from agrobr.datasets.estimativa_safra import _fetch_conab, _fetch_ibge_lspa
+
+    dataset = EstimativaSafraDataset()
+    dataset.info.sources[0].fetch_fn = _fetch_conab
+    dataset.info.sources[1].fetch_fn = _fetch_ibge_lspa
+    return dataset
+
+
+def _conab(**kwargs):
+    return patch("agrobr.conab.safras", new_callable=AsyncMock, **kwargs)
+
+
+def _lspa(**kwargs):
+    return patch("agrobr.ibge.lspa", new_callable=AsyncMock, **kwargs)
+
+
+CONAB_VAZIA = {"return_value": (pd.DataFrame(), mock_source_meta())}
+LSPA_VAZIO = {"return_value": (_sidra_lspa_all_nan(2023), mock_source_meta())}
+
+
+class TestTodasAsFontesVazias:
+    async def test_as_duas_vazias_devolvem_o_vazio_do_contrato_com_aviso(self):
+        with isolated_dataset_case("vazias"):
+            dataset = _fontes_reais()
+            with _conab(**CONAB_VAZIA), _lspa(**LSPA_VAZIO), pytest.warns(UserWarning) as avisos:
+                df, meta = await dataset.fetch("trigo", safra="2022/23", return_meta=True)
+        esperado = safra_contract.ESTIMATIVA_SAFRA_V3_1.empty_frame()
+        assert df.empty
+        assert df.columns.tolist() == esperado.columns.tolist()
+        assert df.dtypes.equals(esperado.dtypes)
+        assert meta.attempted_sources == ["conab", "ibge_lspa"]
+        assert [str(aviso.message) for aviso in avisos] == meta.validation_warnings
+        assert "conab, ibge_lspa" in meta.validation_warnings[0]
+
+    async def test_levantamento_so_consulta_a_conab_e_o_vazio_dela_basta(self):
+        with isolated_dataset_case("levantamento"):
+            dataset = _fontes_reais()
+            with _conab(**CONAB_VAZIA), _lspa(**LSPA_VAZIO) as lspa, pytest.warns(UserWarning):
+                df = await dataset.fetch("soja", safra="2022/23", levantamento=3)
+        assert df.empty
+        lspa.assert_not_awaited()
+
+    async def test_vazio_mais_falha_de_rede_mantem_source_unavailable(self):
+        with isolated_dataset_case("vazio_rede"):
+            dataset = _fontes_reais()
+            with (
+                _conab(side_effect=httpx.ConnectError("fora")),
+                _lspa(**LSPA_VAZIO),
+                levanta_exatamente(SourceUnavailableError),
+            ):
+                await dataset.fetch("trigo", safra="2022/23")
+
+    async def test_vazio_mais_falha_de_layout_mantem_parse_error(self):
+        with isolated_dataset_case("vazio_layout"):
+            dataset = _fontes_reais()
+            with (
+                _conab(side_effect=ParseError(source="conab", parser_version=7, reason="layout")),
+                _lspa(**LSPA_VAZIO),
+                levanta_exatamente(ParseError) as erro,
+            ):
+                await dataset.fetch("trigo", safra="2022/23")
+        assert erro.value.parser_version == 7
+        assert [nome for nome, _, _ in erro.value.errors] == ["conab", "ibge_lspa"]

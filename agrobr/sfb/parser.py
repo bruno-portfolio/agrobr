@@ -21,9 +21,15 @@ _NUMERIC_COLS = frozenset({"area_ha", "codigo_lote"})
 _ANO = re.compile(r"(?<!\d)\d{4}(?!\d)")
 
 
-def _com_ano_criacao(df: pd.DataFrame) -> pd.DataFrame:
+def _com_ano_criacao(df: pd.DataFrame, *, texto: bool) -> pd.DataFrame:
     if "ano_criacao" not in df.columns:
         return df
+    if texto:
+        publicado = df["ano_criacao"].astype(object).where(df["ano_criacao"].notna(), None)
+        if "ano_criacao_texto" in df.columns:
+            df["ano_criacao_texto"] = publicado
+        else:
+            df.insert(list(df.columns).index("ano_criacao") + 1, "ano_criacao_texto", publicado)
     anos = [
         set(_ANO.findall(str(valor))) if pd.notna(valor) else set() for valor in df["ano_criacao"]
     ]
@@ -63,6 +69,10 @@ def _normalizar_tipos(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _mantem_texto(layer_key: str) -> bool:
+    return "ano_criacao_texto" in LAYERS[layer_key]["colunas_saida"]
+
+
 def parse_layer_tabular(pages: list[bytes], *, layer_key: str) -> pd.DataFrame:
     return _normalizar_tipos(
         _com_ano_criacao(
@@ -72,7 +82,9 @@ def parse_layer_tabular(pages: list[bytes], *, layer_key: str) -> pd.DataFrame:
                 layer_config=LAYERS[layer_key],
                 parser_version=PARSER_VERSION,
                 numeric_cols=_NUMERIC_COLS,
-            )
+                validate_required=True,
+            ),
+            texto=_mantem_texto(layer_key),
         )
     )
 
@@ -86,6 +98,7 @@ def parse_layer_geojson(pages: list[bytes], *, layer_key: str) -> Any:
                 layer_config=LAYERS[layer_key],
                 parser_version=PARSER_VERSION,
                 numeric_cols=_NUMERIC_COLS,
-            )
+            ),
+            texto=_mantem_texto(layer_key),
         )
     )

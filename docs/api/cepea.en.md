@@ -20,7 +20,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: bool = False,
     validate_sanity: bool = False,
@@ -36,9 +35,8 @@ async def indicador(
 |-----------|------|-------------|
 | `produto` | `str` | CEPEA product (22 available). See `produtos()` for the full list |
 | `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` returns all |
-| `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD). Default: 365 days ago |
+| `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD). Default: 365 days before `fim` |
 | `fim` | `str \| date \| None` | End date. Default: today |
-| `_moeda` | `str` | Reserved; has no effect on the result |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `validate_sanity` | `bool` | Check unit, price range and temporal change when a rule exists. Default: `False` |
 | `force_refresh` | `bool` | Bypass cache and fetch fresh data |
@@ -227,11 +225,11 @@ produtos = cepea.produtos()
 
 ## Cache Behavior
 
-1. **Fresh cache**: returns immediately from cache. The product's latest collection is valid until 18:00 BRT of the next business day (the CEPEA update time; Saturday and Sunday do not count)
+1. **Fresh cache**: returns immediately from cache. The product's latest collection is valid until the next 18:00 BRT turnover on a business day (the CEPEA update time; the same day if collected before 18:00; Saturday and Sunday do not count)
 2. **Stale cache**: fetches again; if the source fails, returns the cache with `StaleDataWarning` and `source="cache_fallback"`
 3. **No cache**: fetches from source and saves to cache
 
-With `return_meta=True`, the `MetaInfo` of a cached response carries the actual collection time in `fetched_at` and `fetch_timestamp` (the most recent among the returned rows), not the call time, and `cache_expires_at` is the 18:00 BRT turnover following that collection. `ultimo()` follows the same turnover. With `fim` before the recent 25-calendar-day window (a closed period, which never goes back to the source), `cache_expires_at` is null: the validity does not apply.
+With `return_meta=True`, the `MetaInfo` of a cached response carries the actual collection time in `fetched_at` and `fetch_timestamp` (the most recent among the returned rows), not the call time, and `cache_expires_at` is the 18:00 BRT turnover following that collection. `ultimo()` follows the same turnover. With `fim` before the recent 25-calendar-day window (a closed period, which does not query the page), `cache_expires_at` is null: the validity does not apply.
 
 History accumulates progressively in the local DuckDB, allowing queries over old periods without new requests.
 
@@ -265,3 +263,14 @@ observation. DuckDB retains both providers' observations; selection happens
 at query time. `indicador()` keeps distinct locations, and `data_sources`
 describes only returned rows. `force_refresh=True` still bypasses the initial
 cache read and returns the requested collection.
+
+## Product normalization and parser warnings
+
+Products accept case differences, surrounding whitespace, and accented aliases such as `" CAFÉ "`.
+Names are normalized before querying the cache or source, preserving previously accepted codes.
+A product outside the catalog raises `InvalidParameterError`.
+
+When the selected parser recognizes the layout with confidence below the recommended threshold,
+`indicador()` emits `UserWarning` and records the message in `meta.validation_warnings` for each
+acquisition. The warning identifies the parser version and observed confidence; a cache-only read
+receives no inferred confidence. Published values and units are preserved.

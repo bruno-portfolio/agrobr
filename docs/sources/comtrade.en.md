@@ -1,13 +1,13 @@
 # UN Comtrade — international trade
 
-The integration provides bilateral merchandise trade (type C), exports/imports, annual or monthly periods and HS classification. The mirror compares export declarations with reverse imports. See the [API selectors](../api/comtrade.md) and [contract 2.1](../contracts/comercio_internacional.md).
+The integration provides bilateral merchandise trade (type C), exports/imports, annual or monthly periods and HS classification. The mirror compares export declarations with reverse imports. See the [API selectors](../api/comtrade.md) and the [dataset contract 3.0](../contracts/comercio_internacional.md) (the source validates `comercio_bilateral` 2.1).
 
 ## Routes and options
 
 | Layer | Delivery |
 |---|---|
 | Public preview | No key, one period per request and an independent count |
-| Authenticated acquisition | Optional key transport and full preview replanning on 401/403 |
+| Authenticated acquisition | Optional key transport and full preview replanning on 401/403, with a warning pointing to `AGROBR_COMTRADE_API_KEY` and `api_key=` |
 | Bilateral | Explicit World or all published partners; individual HS, agricultural alias or textual list |
 | Mirror | Outer 1:1 join, numeric identity and each declaration's HS revision |
 | Semantic dataset | Same selectors, full contract including empty output, metadata, sync and Polars |

@@ -1350,6 +1350,42 @@ IBGE_CENSO_AGRO_MUNICIPAL_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
+CREDITO_RURAL_V1_1 = Contract(
+    name="bcb.credito_rural",
+    version="1.1",
+    effective_from="0.10.1",
+    primary_key=["safra", "produto", "uf", "finalidade"],
+    columns=[
+        Column(name="safra", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="produto", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="uf", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="finalidade", type=ColumnType.STRING, nullable=False, stable=True),
+        Column(name="agregacao", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="volume", type=ColumnType.FLOAT, nullable=True, stable=True, min_value=0),
+        Column(
+            name="valor", type=ColumnType.FLOAT, nullable=True, unit="BRL", stable=True, min_value=0
+        ),
+        Column(name="cd_programa", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="programa", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="cd_fonte_recurso", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="fonte_recurso", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="cd_tipo_seguro", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="tipo_seguro", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="cd_modalidade", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="modalidade", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="cd_atividade", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="atividade", type=ColumnType.STRING, nullable=True, stable=True),
+        Column(name="regiao", type=ColumnType.STRING, nullable=True, stable=True),
+    ],
+    guarantees=[
+        "Column names never change (additions only)",
+        "'safra' always matches pattern YYYY/YYYY",
+        "'uf' is always a valid Brazilian state code when present",
+        "Numeric values are always >= 0",
+    ],
+    breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
+)
+
 _CONTRACTS = {
     "MAPBIOMAS_COBERTURA_V1": MAPBIOMAS_COBERTURA_V1,
     "MAPBIOMAS_TRANSICAO_V1": MAPBIOMAS_TRANSICAO_V1,
@@ -1371,6 +1407,7 @@ _CONTRACTS = {
     "CONAB_CUSTO_PRODUCAO_V1": CONAB_CUSTO_PRODUCAO_V1,
     "IBGE_PAM_V1": IBGE_PAM_V1,
     "IBGE_CENSO_AGRO_MUNICIPAL_V1": IBGE_CENSO_AGRO_MUNICIPAL_V1,
+    "CREDITO_RURAL_V1_1": CREDITO_RURAL_V1_1,
 }
 
 _ALIASES = {

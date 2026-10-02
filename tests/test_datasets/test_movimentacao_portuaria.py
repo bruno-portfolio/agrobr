@@ -1,13 +1,19 @@
+import io
+from pathlib import Path
 from typing import Any
+from unittest.mock import AsyncMock
 
 import pandas as pd
 import pytest
 
+from agrobr.antaq import client
 from agrobr.datasets.movimentacao_portuaria import (
     MovimentacaoPortuariaDataset,
+    movimentacao_portuaria,
 )
+from agrobr.exceptions import ParseError
 from tests import helpers
-from tests.helpers import collect_failures, isolated_dataset_case
+from tests.helpers import collect_failures, isolated_dataset_case, levanta_exatamente
 
 from .conftest import make_source
 
@@ -115,3 +121,43 @@ class TestMovimentacaoPortuariaAgregacao:
                         assert df["terminal"].iloc[0] is None
                         assert "data_atracacao" in df.columns
                         assert "natureza_carga" in df.columns
+
+
+async def test_movimentacao_portuaria_soma_com_medida_nula_sai_nula():
+    frame = pd.concat(
+        [
+            _make_df(peso_bruto_ton=4.0, qt_carga=float("nan")),
+            _make_df(peso_bruto_ton=float("nan"), qt_carga=float("nan")),
+            _make_df(porto="Paranaguá", peso_bruto_ton=6.0, qt_carga=2.0),
+            _make_df(porto="Paranaguá", peso_bruto_ton=1.0, qt_carga=3.0),
+        ],
+        ignore_index=True,
+    ).astype({"teu": "Int64"})
+    with isolated_dataset_case("soma_com_medida_nula"):
+        dataset = MovimentacaoPortuariaDataset()
+        dataset.info.sources[0].fetch_fn = make_source(frame)
+        df = await dataset.fetch(ano=2024)
+    santos = df[df["porto"] == "Santos"].iloc[0]
+    paranagua = df[df["porto"] == "Paranaguá"].iloc[0]
+    assert pd.isna(santos["peso_bruto_ton"]) and pd.isna(santos["qt_carga"])
+    assert santos["teu"] == 0
+    assert (paranagua["peso_bruto_ton"], paranagua["qt_carga"]) == (7.0, 5.0)
+    assert {str(df[c].dtype) for c in ("peso_bruto_ton", "qt_carga")} == {"float64"}
+    assert str(df["teu"].dtype) == "Int64"
+
+
+async def test_movimentacao_portuaria_carga_sem_coluna_da_chave_levanta_parse_error():
+    base = Path(__file__).parents[1] / "golden_data" / "antaq" / "movimentacao_sample"
+    textos = {
+        nome: (base / f"{nome}.txt").read_text(encoding="utf-8")
+        for nome in ("atracacao", "carga", "mercadoria")
+    }
+    carga = pd.read_csv(io.StringIO(textos["carga"]), sep=";", dtype=str, keep_default_na=False)
+    textos["carga"] = carga.drop(columns="Sentido").to_csv(sep=";", index=False)
+    with isolated_dataset_case("carga_sem_sentido") as monkeypatch:
+        monkeypatch.setattr(client, "fetch_ano_zip", AsyncMock(return_value=b"ano"))
+        monkeypatch.setattr(client, "fetch_mercadoria_zip", AsyncMock(return_value=b"merc"))
+        for nome in textos:
+            monkeypatch.setattr(client, f"extract_{nome}", lambda *_, t=textos[nome]: t)
+        with levanta_exatamente(ParseError, match="Sentido"):
+            await movimentacao_portuaria(ano=2024, tipo_navegacao="cabotagem")

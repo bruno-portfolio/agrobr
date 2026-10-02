@@ -63,18 +63,29 @@ def test_matriz_cobre_catalogos_sem_duplicar_c7():
     eligible = {
         name
         for name in datasets.list_datasets()
-        if datasets.list_products(name) and name not in matrix.C7_DATASETS
+        if datasets.list_products(name)
+        and name not in matrix.C7_DATASETS | matrix.OFF_MATRIX_DATASETS
     }
+    rotating = {"embarques_anec", "preco_atacado"}
     assert {name for name, _ in cases} == eligible
+    assert rotating <= eligible
     assert len(cases) == len(set(cases))
     for name in eligible:
         advertised = set(datasets.list_products(name))
         selected = {product for dataset, product in cases if dataset == name}
         assert selected <= advertised
-        if matrix._uses_ibge(name):
+        if matrix._uses_ibge(name) or name in rotating:
             assert 0 < len(selected) <= 5
         else:
             assert selected == advertised
+
+
+def test_zoneamento_agricola_fica_fora_da_matriz_pela_safra_fixa_da_consulta():
+    assert datasets.list_products("zoneamento_agricola")
+    assert "zoneamento_agricola" not in {name for name, _ in matrix._product_cases(38)}, (
+        "a consulta de referência fixa safra='2025/2026', e as culturas perenes e as anuais "
+        "que terminam em 2023/2024 não estão nessa tábua"
+    )
 
 
 @pytest.mark.parametrize("name,product", [("precos_diesel", "DIESEL"), ("producao_anual", "milho")])

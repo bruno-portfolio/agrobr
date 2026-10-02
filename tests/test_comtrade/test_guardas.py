@@ -261,9 +261,9 @@ def test_envelope_de_contagem_com_erro_declarado_e_recusado():
         ({"period": "202302-202301", "freq": "M"}, "invertido"),
         ({"period": "2023-2022"}, "invertido"),
         ({"period": "2021-2022-2023"}, "Intervalo de períodos inválido"),
-        ({"period": 2023.0}, "Período deve ser ano"),
-        ({"freq": None}, "freq deve ser A ou M"),
-        ({"flow": None}, "flow deve ser X ou M"),
+        ({"period": 2023.0}, "periodo deve ser texto ou inteiro"),
+        ({"freq": None}, r"freq \(frequencia em datasets.comercio_internacional\) deve ser A ou M"),
+        ({"flow": None}, "fluxo deve ser X ou M"),
     ],
 )
 def test_consulta_invalida_recusada_com_o_motivo(changes, motivo):

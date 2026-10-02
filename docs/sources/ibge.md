@@ -7,7 +7,7 @@
 | **Instituicao** | Governo Federal |
 | **Website** | [ibge.gov.br](https://www.ibge.gov.br) |
 | **API** | [SIDRA](https://sidra.ibge.gov.br) |
-| **Acesso agrobr** | Via API SIDRA (JSON) |
+| **Acesso agrobr** | Via API SIDRA (JSON); malha municipal e áreas urbanizadas via WFS (GeoJSON) |
 
 ## Origem dos Dados
 
@@ -22,7 +22,7 @@
 Todas as consultas tabulares (PAM, LSPA, PPM, abate, PEVS, leite, PIB agropecuario e censos) passam por
 `agrobr.ibge.client.fetch_sidra`. A API SIDRA (`apisidra.ibge.gov.br`) e o canal principal; desde setembro
 de 2026 ela responde 403 com desafio Cloudflare a clientes programaticos. Quando a SIDRA falha (403, HTML,
-5xx ou rede), a mesma tabela e consultada na API de agregados do IBGE
+5xx; falha de rede ou timeout não aciona a troca), a mesma tabela e consultada na API de agregados do IBGE
 (`servicodados.ibge.gov.br/api/v3/agregados`), com os mesmos seletores traduzidos
 (`t/p/v/n/c` → `agregados/{tabela}/periodos/{p}/variaveis/{v}?localidades=N{n}[...]&classificacao=c[...]`)
 e a resposta convertida para o mesmo formato de colunas da SIDRA (`NC`, `NN`, `MC`, `MN`, `V`, `D1C`…), de
@@ -32,8 +32,10 @@ vem vazio, porque a API de agregados publica apenas o nome da unidade; `allxp` v
 `MetaInfo.source_details["canal"]` (`sidra`, `servicodados` ou `misto`), `source_details["consultas"]` lista canal e URL
 de cada consulta, `attempted_sources` ganha `ibge_servicodados` e `selected_source` passa a ser `ibge_servicodados`
 quando o fallback foi usado (o dataset herda essa proveniencia); `source_url` aponta para a URL consultada;
-a primeira queda emite um `warnings.warn` unico por processo. No LSPA de julho/2026 (soja), os dois canais
+a troca de canal emite `SourceFallbackWarning` (detalhe abaixo). No LSPA de julho/2026 (soja), os dois canais
 dao os mesmos valores. O probe de saude do IBGE consulta a API de agregados.
+
+Quando uma resposta da SIDRA exige a troca para a API de agregados, cada aquisição emite `SourceFallbackWarning` com o motivo. Com `return_meta=True`, a mensagem também aparece em `meta.validation_warnings`, e `selected_source="ibge_servicodados"` identifica o canal usado. Consultas sucessivas continuam avisando; uma resposta vazia preserva tanto o aviso de troca de canal quanto o de ausência de observações. Os datasets preservam esses metadados. Falhas de rede ou timeout mantêm o tratamento anterior e não acionam essa troca de canal.
 
 Cada consulta também pede `/agregados/{tabela}/periodos` e registra a data de modificação dos períodos devolvidos, que
 diz de qual edição veio o número: `source_details["periodos_modificacao"]` sai como `{tabela: {período: data ISO}}` (a
@@ -54,7 +56,7 @@ Cada consulta SIDRA vazia emite um aviso e registra o mesmo texto em `MetaInfo.v
 
 ### PAM - Producao Agricola Municipal
 
-- **Tabela SIDRA**: 5457 (nova serie 2018+)
+- **Tabela SIDRA**: 5457 (serie desde 1974)
 - **Cobertura**: Todos os municipios
 - **Frequencia**: Anual
 
@@ -81,7 +83,7 @@ O dataset agrega os componentes esperados de milho e feijão, converte hectares/
 ### Abate - Pesquisa Trimestral do Abate de Animais
 
 - **Tabelas SIDRA**: 1092 (bovinos), 1093 (suinos), 1094 (frangos)
-- **Cobertura**: Brasil + UF (27 UFs)
+- **Cobertura**: 27 UFs (sem linha Brasil; para o total nacional, use a tabela da espécie no SIDRA, no nível Brasil)
 - **Frequencia**: Trimestral
 - **Serie**: 1997-presente
 - **Especies**: bovino, suino, frango
@@ -129,7 +131,7 @@ O dataset agrega os componentes esperados de milho e feijão, converte hectares/
 - **Fonte**: FTP IBGE (`ftp.ibge.gov.br`)
 - **Formato**: ZIPs com XLS legado (BIFF5/BIFF8) ou HTML
 - **Cobertura**: Brasil, totais estaduais e municípios; `uf` distingue municípios homônimos
-- **Contrato**: [Censo legado 2.0](../contracts/censo_agropecuario_legado.md), com categorias, variáveis e unidades dos cabeçalhos oficiais
+- **Contrato**: [Censo legado 2.1](../contracts/censo_agropecuario_legado.md), com categorias, variáveis e unidades dos cabeçalhos oficiais
 - **Frequencia**: Unica (Censo 1995/96)
 - **Temas**: tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro
 - **Acesso**: Publico, sem autenticacao
@@ -170,7 +172,7 @@ valores estaduais não são reconstruídos pela soma dos municípios.
 ### Leite Trimestral — Pesquisa Trimestral do Leite
 
 - **Tabela SIDRA**: 1086
-- **Cobertura**: Brasil + UF (27 UFs)
+- **Cobertura**: 27 UFs (sem linha Brasil; para o total nacional, use a tabela 1086 do SIDRA no nível Brasil)
 - **Frequencia**: Trimestral
 - **Serie**: 1997-presente
 - **Variaveis**: leite adquirido (var 282, mil litros), leite industrializado (var 283, mil litros), preco medio (var 2522, R$/litro)
@@ -255,13 +257,18 @@ df, meta = await ibge.lspa('soja', ano=2024, return_meta=True)
 |--------|------|-----------|
 | `ano` | int | Ano de referencia |
 | `localidade` | str | Nome da localidade |
+| `localidade_cod` | int | Código IBGE da localidade (D1C do SIDRA) |
 | `produto` | str | Nome do produto |
 | `area_plantada` | float | Hectares |
 | `area_colhida` | float | Hectares |
-| `producao` | float | Toneladas |
-| `rendimento` | float | kg/ha |
-| `valor_producao` | float | Mil reais |
+| `producao` | float | Ver `unidade_producao` |
+| `rendimento` | float | Ver `unidade_rendimento` |
+| `valor_producao` | float | Ver `unidade_valor_producao` |
 | `fonte` | str | "ibge_pam" |
+| `unidade_producao` | str | `ton`; laranja antes de 2001, `mil_frutos` |
+| `unidade_rendimento` | str | `kg/ha`; laranja antes de 2001, `frutos/ha` |
+| `unidade_valor_producao` | str | `mil_reais`; antes de 1994, a moeda da época (`mil_cruzeiros`, `mil_cruzados` etc.) |
+| `condicao_produto` | str | Café: `em_coco` até 2001, `beneficiado` desde 2002; nulo nos demais produtos |
 
 ## Schema - LSPA
 
@@ -269,8 +276,12 @@ df, meta = await ibge.lspa('soja', ano=2024, return_meta=True)
 |--------|------|-----------|
 | `ano` | int | Ano de referencia |
 | `mes` | int | Mes de referencia |
+| `localidade` | str | Nome da localidade |
+| `localidade_cod` | int | Código IBGE da localidade (D1C do SIDRA) |
 | `variavel` | str | Nome da variavel |
+| `variavel_cod` | int | Código SIDRA da variável |
 | `valor` | float | Valor da variavel |
+| `unidade` | str | Unidade publicada pelo SIDRA |
 | `produto` | str | Nome do produto |
 | `fonte` | str | "ibge_lspa" |
 
@@ -389,7 +400,7 @@ async def main():
     # Abate de frango no Parana
     df = await ibge.abate('frango', trimestre='202303', uf='PR')
 
-    # Abate de suinos — Brasil
+    # Abate de suinos — todas as UFs
     df = await ibge.abate('suino', trimestre='202304')
 
     # Com metadados
@@ -442,7 +453,7 @@ async def main():
     df = await ibge.censo_agro('lavoura_temporaria', nivel='municipio', uf='PR')
 
     # Lavoura permanente — Brasil
-    df = await ibge.censo_agro('lavoura_permanente')
+    df = await ibge.censo_agro('lavoura_permanente', nivel='brasil')
 
     # Com metadados
     df, meta = await ibge.censo_agro('efetivo_rebanho', return_meta=True)
@@ -646,6 +657,29 @@ asyncio.run(main())
 | `setor` | str | Setor economico |
 | `fonte` | str | "ibge_pib" |
 
+## Malha municipal e áreas urbanizadas (geoserviços)
+
+Fora do SIDRA, o módulo lê 2 camadas do WFS dos geoserviços do IBGE (GeoServer, WFS 2.0.0, saída em GeoJSON):
+
+| Função | Camada | Edição | Feições |
+|--------|--------|--------|---------|
+| `malha_municipal` / `malha_municipal_geo` | `CGMAT:qg_2025_030_munic`, em `https://geoservicos.ibge.gov.br/geoserverIBGE/wfs` | malha municipal 2025 | 5.573: os 5.571 municípios e 2 áreas operacionais de lagoas do RS |
+| `areas_urbanizadas` / `areas_urbanizadas_geo` | `CGEO:AU_2026_AreasUrbanizadas2022_Brasil`, em `https://geoservicos.ibge.gov.br/geoserverCGEO/wfs` | Áreas Urbanizadas do Brasil 2022 | 190.172 polígonos, sem UF nem município |
+
+- A contagem (`resultType=hits`) sai antes do download; acima do teto da consulta, `ResourceLimitError` sem baixar nada, e o
+  recebido é conciliado com a contagem, como no CNUC e no ICMBio.
+- Os filtros vão ao servidor só por igualdade (`sigla_uf`, `cd_mun`) e `BBOX`. O firewall do IBGE recusa CQL com `OR` ou
+  `NOT LIKE` com uma página HTML "Request Rejected" e status 200, que o agrobr levanta como `SourceUnavailableError`.
+- A geometria sai em EPSG:4326, pedida ao servidor (`srsName`), na resolução original da camada.
+- A API de malhas do IBGE (`servicodados.ibge.gov.br/api/v3/malhas`) não é usada: a geometria dela é generalizada para web
+  (Brasília com 840 vértices, contra 9.896 no WFS) e só traz o código da área.
+- Em arquivo, os ZIPs da malha por UF e do Brasil ficam no
+  [geoftp do IBGE](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/),
+  e o shapefile das áreas urbanizadas, em `organizacao_do_territorio/tipologias_do_territorio/areas_urbanizadas_do_brasil/2022/Shapefile/`
+  no mesmo servidor.
+- Licença: IBGE, `livre` (ver [licenças](../licenses.md)).
+- Colunas, limites e exemplos: [API IBGE](../api/ibge.md#malha_municipal-malha_municipal_geo).
+
 ## Limites e erros
 
 Rajadas de consultas ao SIDRA podem provocar uma verificação antibot do Cloudflare (`challenge`). Quando a resposta 403 contém `cf-mitigated: challenge` ou a página “Just a moment”, a consulta levanta `SourceUnavailableError` com a indicação `Cloudflare challenge` e orientação para reduzir a taxa de requisições. Aguarde antes de tentar novamente; esse 403 não é repetido automaticamente.
@@ -655,7 +689,7 @@ Rajadas de consultas ao SIDRA podem provocar uma verificação antibot do Cloudf
 - PEVS Silvicultura: 14 produtos, dados anuais desde 1986. Area plantada (tab 5930) com 3 especies
 - PEVS Extracao Vegetal: 21 produtos, dados anuais desde 1986. Unidades mistas (Toneladas vs Metros cubicos)
 - Leite Trimestral: tabela 1086, 3 variaveis pivotadas em colunas wide. Serie desde 1997
-- PIB Agropecuario: tabs 1846/6612, 4 setores, nivel Brasil. Serie desde 1996. Sem contrato (macro view)
+- PIB Agropecuario: tabs 1846/6612, 4 setores, nivel Brasil. Serie desde 1996. Contrato `pib_agro` 1.0 (dataset `datasets.pib_agro`)
 
 ## Períodos e cobertura histórica
 
@@ -667,6 +701,6 @@ PPM rejeita anos futuros com `InvalidParameterError`, também em `datasets.pecua
 
 Os valores publicados não são convertidos implicitamente. `unidade_producao`, `unidade_rendimento` e `unidade_valor_producao` identificam a escala de cada linha. Laranja anterior a 2001 usa `mil_frutos` e `frutos/ha`; desde 2001, `ton` e `kg/ha`. `condicao_produto` distingue café `em_coco` até 2001 e `beneficiado` desde 2002. As moedas históricas permanecem identificadas, sem conversão para reais nem correção de inflação. Consulte as [notas metodológicas do IBGE](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
 
-`localidade_cod` (contrato `producao_anual` 2.1) traz o código IBGE da localidade como o SIDRA publica (D1C): 7 dígitos no município, 2 na UF e 1 no Brasil. Use-o para juntar municípios entre anos, porque o nome publicado muda (e o do DF sai como "Brasília (DF)", sem o " - UF" dos demais). No `producao_anual`, só as linhas do IBGE trazem o código; o fallback da CONAB não.
+`localidade_cod` (contrato `producao_anual` 2.2) traz o código IBGE da localidade como o SIDRA publica (D1C): 7 dígitos no município, 2 na UF e 1 no Brasil. Use-o para juntar municípios entre anos, porque o nome publicado muda (e o do DF sai como "Brasília (DF)", sem o " - UF" dos demais). No `producao_anual`, só as linhas do IBGE trazem o código; o fallback da CONAB não.
 
-O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.1; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.
+O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.2; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.

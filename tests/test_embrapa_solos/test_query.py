@@ -71,3 +71,49 @@ async def test_ordem_sem_texto_recusada_antes_da_coleta(funcao, ordem, monkeypat
     with pytest.raises(InvalidParameterError, match="ordem"):
         await funcao(ordem=ordem)
     coleta.assert_not_called()
+
+
+@pytest.mark.parametrize("funcao", [embrapa_solos.mapa_solos, embrapa_solos.mapa_solos_geo])
+@pytest.mark.parametrize("ordem", ["latos", "solos", "xx", "LATOSSOLOS VERMELHOS"])
+async def test_ordem_fora_das_classes_publicadas_recusada_antes_da_coleta(
+    funcao, ordem, monkeypatch
+):
+    coleta = AsyncMock(side_effect=AssertionError("Coleta não deveria ser iniciada"))
+    monkeypatch.setattr(client, "fetch_acquisition", coleta)
+    with pytest.raises(InvalidParameterError, match="fora das classes publicadas: AFLORAMENTOS"):
+        await funcao(ordem=ordem)
+    coleta.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("pedido", "canonica"),
+    [
+        ("latossolo", "LATOSSOLOS"),
+        ("Gleissolos", "GLEISSOLOS"),
+        ("  neossolo  ", "NEOSSOLOS"),
+        ("afloramento de rocha", "AFLORAMENTOS DE ROCHAS"),
+        ("duna", "DUNAS"),
+        ("espodossólos", "ESPODOSSOLOS"),
+    ],
+)
+def test_ordem_vira_a_classe_publicada(pedido, canonica):
+    assert (
+        query.build_query(
+            product="mapa", include_geometry=False, max_registros=10, ordem=pedido
+        ).ordem
+        == canonica
+    )
+
+
+def test_classes_cobrem_o_que_os_goldens_publicam():
+    from agrobr.embrapa_solos.models import ORDENS_SOLO
+    from tests.test_embrapa_solos import oficial
+
+    dados = oficial.manifest()
+    publicadas = {
+        feature["properties"]["ordem1"]
+        for caso in ("mapa_prefixo", "mapa_bbox_floripa")
+        for feature in oficial.feicoes(dados, caso)
+    } - {None}
+    assert publicadas <= set(ORDENS_SOLO)
+    assert len(ORDENS_SOLO) == 15

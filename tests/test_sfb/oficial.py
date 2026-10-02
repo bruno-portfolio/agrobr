@@ -20,6 +20,7 @@ COLUNAS_CNFP = [
     "classe",
     "area_ha",
     "ano_criacao",
+    "ano_criacao_texto",
     "municipio",
 ]
 COLUNAS_CONCESSOES = ["fid", "nome", "uf", "bioma", "area_ha", "ano_criacao", "grupo", "categoria"]
@@ -78,6 +79,7 @@ def esperado_cnfp(cenario: str) -> list[dict[str, Any]]:
             "classe": f["classe"],
             "area_ha": f["area_ha"],
             "ano_criacao": ano(f["anocriacao"]),
+            "ano_criacao_texto": f["anocriacao"],
             "municipio": f["municipio"],
         }
         for f in feicoes(cenario)

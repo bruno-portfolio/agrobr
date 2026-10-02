@@ -185,7 +185,7 @@ class TestOiHistorico:
 
     @pytest.mark.asyncio
     async def test_filter_vencimento(self, mock_fetch_oi):  # noqa: ARG002
-        df = await api.oi_historico(
+        df = await api.posicoes_abertas_historico(
             contrato="boi",
             inicio=date(2025, 12, 19),
             fim=date(2025, 12, 19),

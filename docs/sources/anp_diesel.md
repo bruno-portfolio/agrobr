@@ -80,7 +80,7 @@ O contrato de fonte `anp_diesel_precos` 2.0 tem 15 colunas; o dataset `precos_di
 |---|---|---|---|
 | `data` | datetime | Nao | Primeiro dia do mes |
 | `uf` | str | Sim | Sigla UF |
-| `regiao` | str | Sim | Regiao geografica |
+| `regiao` | str | Sim | Região, com o nome canônico (`Norte`, `Nordeste`, `Centro-Oeste`, `Sudeste`, `Sul`) |
 | `produto` | str | Sim | Tipo diesel |
 | `volume_m3` | float | Sim | Volume vendido em m3 |
 
@@ -97,7 +97,7 @@ O contrato de fonte `anp_diesel_precos` 2.0 tem 15 colunas; o dataset `precos_di
 1. Download CSV de vendas de diesel por tipo (dados abertos ANP)
 2. Parse CSV semicolon-delimited (ANO, MES, GRANDE REGIAO, UNIDADE DA FEDERACAO, PRODUTO, VENDAS)
 3. Filtro de diesel (OLEO DIESEL e variantes)
-4. Normalizacao: prefixo "OLEO"/"ÓLEO" removido do produto, nomes de estado convertidos para sigla UF
+4. Normalizacao: prefixo "OLEO"/"ÓLEO" removido do produto e `DIESEL S-10` escrito `DIESEL S10`, como nos preços; os outros combustíveis (`DIESEL S-500`, `DIESEL S-1800`, `DIESEL MARÍTIMO`, `DIESEL (OUTROS )`) ficam como publicados; `REGIÃO CENTRO-OESTE` vira `Centro-Oeste`; nomes de estado convertidos para sigla UF
 5. Conversao para formato padrao (data, uf, regiao, produto, volume_m3)
 
 ## MetaInfo
@@ -148,3 +148,5 @@ Os preços usam texto no dtype padrão do pandas instalado (`str` no pandas 3 e 
 datas em `datetime64[ns]`, valores em `float64` e contagens em `Int64`, inclusive em resultados vazios.
 As flags `as_polars` e `return_meta` são passadas por nome. A virada anual do catálogo municipal
 segue o dia civil de Brasília.
+
+`inicio` e `fim` aceitam `date`, `datetime` (vale a data civil) e texto `AAAA-MM-DD`. Período que começa depois de hoje levanta `InvalidParameterError` antes da rede, em todos os níveis; no município, limite fora de 2022 até o ano corrente também. Ano dentro desse intervalo cujo arquivo a ANP ainda não publicou continua `SourceUnavailableError`.

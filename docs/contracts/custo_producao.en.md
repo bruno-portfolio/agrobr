@@ -23,7 +23,10 @@ Corn, rice and beans each have two workbooks: first/second crop corn,
 irrigated/upland rice, and first/second+third crop beans. Call
 `conab.catalogo_custos(cultura)` and pass `planilha=`; then call
 `conab.catalogo_custos(cultura, planilha=...)` to choose a recognized `aba=`.
-The filters must identify a single context.
+The filters must identify a single context. This requirement applies to any product with
+multiple candidate workbooks or contexts, including contexts awaiting identification.
+The API rejects ambiguous selections with `InvalidParameterError` and lists the candidates;
+it does not select the latest workbook or combine contexts automatically.
 
 For coffee, pass `cafe_arabica` or `cafe_conilon`. The generic `cafe` request
 lists these alternatives. The source catalog also includes other agricultural

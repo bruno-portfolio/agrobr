@@ -14,7 +14,6 @@ from agrobr.exceptions import (
     InvalidParameterError,
     ParseError,
     ResourceLimitError,
-    SourceUnavailableError,
 )
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import check_geopandas, validate_bbox
@@ -113,10 +112,10 @@ async def _fetch_tabular(query: dict[str, Any]) -> tuple[pd.DataFrame, MetaInfo]
     count_body, count_url = await client.fetch_ucs_count(**query)
     expected = parser.parse_feature_count(count_body)
     if expected > models.MAX_FEATURES_TABULAR:
-        raise SourceUnavailableError(
-            source="icmbio",
+        raise ResourceLimitError(
+            "icmbio",
+            f"Seleção de {expected} feições excede o limite de {models.MAX_FEATURES_TABULAR}; refine os filtros",
             url=count_url,
-            last_error=f"Seleção de {expected} feições excede o limite de {models.MAX_FEATURES_TABULAR}; refine os filtros",
         )
     csv_bytes, source_url = await client.fetch_ucs(**query)
     acquired_at = datetime.now(UTC)

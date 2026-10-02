@@ -65,7 +65,7 @@ Todos os 41 anos de 1985–2025 e todas as linhas identificadas da Coleção 11 
 
 `municipio` aceita o nome inteiro (sem diferenciar caixa e acento, com `uf` para desambiguar) ou o código de sete dígitos, e seleciona pelo `geocodigo`; exige `nivel="municipio"`. Pedaço de nome, nome de mais de um município sem `uf` e código ausente do recurso levantam `InvalidParameterError`. Um `classe_id` fora das classes publicadas na coleção também levanta, com a lista. Veja [parâmetros e proveniência da fonte](../api/mapbiomas.md#cobertura-municipal-da-colecao-11).
 
-A Coleção 10 usa o mesmo esquema municipal de dez colunas, com 40 anos de 1985–2024. Seu recurso contém linhas com a mesma combinação territorial e áreas distintas, preservadas por seus IDs originais. Não há soma ou deduplicação automática; o ID publicado repetido causa erro antes dos filtros. `source_details["territorial_keys"]` descreve as repetições territoriais sem classificá-las como erro geográfico.
+A Coleção 10 usa o mesmo esquema municipal de onze colunas, com 40 anos de 1985–2024. Seu recurso contém linhas com a mesma combinação territorial e áreas distintas, preservadas por seus IDs originais. Não há soma ou deduplicação automática; o ID publicado repetido causa erro antes dos filtros. `source_details["territorial_keys"]` descreve as repetições territoriais sem classificá-las como erro geográfico.
 
 `classe_id` deve ser interpretado junto da coleção: classe 13 municipal significa **Outras Formações não Florestais** na 10 e **Mosaico Herbáceo-Arbustivo** na 11. Classe 0 corresponde a não observado em ambas. A identidade contratual não estabelece equivalência semântica entre coleções. Dentro de uma coleção, a legenda é a mesma nos recortes estadual e municipal: a classe 0 sai como `Não observado` nos dois. Um código publicado fora da legenda conhecida sai com o rótulo nulo (`classe`, ou `classe_de`/`classe_para` na transição), o `classe_id` publicado e um aviso (`UserWarning` e `meta.validation_warnings`) com os códigos. Até a 1.1.0, o estadual devolvia `Classe {id}`. Célula de classe sem código inteiro é defeito da planilha: a leitura falha com `ParseError`, com a linha e o valor publicado.
 
@@ -91,9 +91,9 @@ Cada coleção revisa o histórico completo. Para reprodução, fixe `colecao` e
 
 ## Seleção e erros
 
-O dataset usa somente MapBiomas, sem fallback para outra instituição. Cobertura aceita os filtros `bioma`, `uf`, `ano`, `classe_id`, `nivel`, `municipio` e `colecao`. Transição aceita `bioma`, `uf`, `periodo`, `classe_de_id`, `classe_para_id` e `colecao`, apenas no nível estadual. Filtros do outro modo e opções desconhecidas são rejeitados; não são ignorados.
+`nivel="uf"` é sinônimo de `nivel="estado"` e devolve o mesmo resultado. O dataset usa somente MapBiomas, sem fallback para outra instituição. Cobertura aceita os filtros `bioma`, `uf`, `ano`, `classe_id`, `nivel`, `municipio` e `colecao`. Transição aceita `bioma`, `uf`, `periodo`, `classe_de_id`, `classe_para_id` e `colecao`, apenas no nível estadual. Filtros do outro modo e opções desconhecidas são rejeitados; não são ignorados.
 
-`as_polars` e `return_meta` exigem booleanos. A conversão para Polars ocorre após a validação do contrato. Não há `produto` nem `use_cache`. O contexto `deterministic` é recusado antes da aquisição, pois não existe seleção de snapshot histórico arbitrário. Erros de aquisição ou parsing podem chegar pela camada de datasets como `SourceUnavailableError`, com detalhes em `errors`; não há retorno parcial de uma planilha inválida.
+`as_polars` e `return_meta` exigem booleanos. A conversão para Polars ocorre após a validação do contrato. Não há `produto` nem `use_cache`. O contexto `deterministic` é recusado antes da aquisição, pois não existe seleção de snapshot histórico arbitrário. Erros de aquisição chegam pela camada de datasets como `SourceUnavailableError` e erros de layout como `ParseError`, ambos com detalhes em `errors`; não há retorno parcial de uma planilha inválida.
 
 ## Exemplo
 

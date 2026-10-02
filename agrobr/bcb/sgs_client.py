@@ -11,6 +11,7 @@ from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailab
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils.time import hoje
 
 from . import sgs_acquisition, sgs_models, sgs_parser, sgs_query
 
@@ -21,7 +22,7 @@ TIMEOUT = get_timeout(read=30.0)
 
 
 def _default_start_date() -> str:
-    return sgs_query.format_date(sgs_query.default_start(datetime.now(UTC).date()))
+    return sgs_query.format_date(sgs_query.default_start(hoje()))
 
 
 def _request_parameters(
@@ -265,7 +266,7 @@ async def fetch_sgs(
         data_inicial=data_inicial,
         data_final=data_final,
         ultimos=ultimos,
-        reference_date=datetime.now(UTC).date(),
+        reference_date=hoje(),
     )
     acquisition = await fetch_sgs_acquisition(query)
     records = [

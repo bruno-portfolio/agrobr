@@ -107,7 +107,7 @@ async def mapa_solos(
 
 | Parameter | Type | Description |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read. E.g. "LATOSSOLO". Blank or non-text input raises `InvalidParameterError` before collection. If the filter matches nothing after a complete read, `UserWarning` and `MetaInfo.validation_warnings` report the requested value and the `ordem1` values observed. |
+| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`): the whole class, one of the 15 published (13 orders plus `AFLORAMENTOS DE ROCHAS` and `DUNAS`), with case, accents and the singular accepted (`"latossolo"` means `LATOSSOLOS`), applied locally to the prefix read. A fragment (`"latos"`), a blank, non-text or out-of-domain value raises `InvalidParameterError` before collection, listing the classes. If the filter matches nothing after a complete read, `UserWarning` and `MetaInfo.validation_warnings` report the requested value and the `ordem1` values observed. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 50,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |
@@ -149,7 +149,7 @@ async def mapa_solos_geo(
 
 | Parameter | Type | Description |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`; contains, case-insensitive), applied locally to the prefix read. Blank or non-text input raises `InvalidParameterError` before collection. If the filter matches nothing after a complete read, `UserWarning` and `MetaInfo.validation_warnings` report the requested value and the `ordem1` values observed. |
+| `ordem` | `str \| None` | Filter by the order of the 1st component (`ordem1`): the whole class, one of the 15 published (13 orders plus `AFLORAMENTOS DE ROCHAS` and `DUNAS`), with case, accents and the singular accepted (`"latossolo"` means `LATOSSOLOS`), applied locally to the prefix read. A fragment (`"latos"`), a blank, non-text or out-of-domain value raises `InvalidParameterError` before collection, listing the classes. If the filter matches nothing after a complete read, `UserWarning` and `MetaInfo.validation_warnings` report the requested value and the `ordem1` values observed. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Cap on occurrences read in `fid` order (default 3,000; `None` reads the whole layer). Local filters only see this prefix; a cut that leaves the selection partial raises a `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Occurrences per page: default 250 (profiles) / 500 (map), maximum 1000; with geometry (`_geo` or `bbox`), 100 / 25, maximum 100 |

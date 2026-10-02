@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import threading
+import time
 from datetime import date, datetime
 
 import httpx
 
 from agrobr import _log
-from agrobr.constants import MIN_CSV_SIZE, MIN_ZIP_SIZE, URLS, Fonte
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.constants import MIN_CSV_SIZE, MIN_ZIP_SIZE, URLS, Fonte, HTTPSettings
+from agrobr.exceptions import InvalidParameterError, ResourceLimitError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
@@ -23,6 +24,8 @@ BASE_URL_ARQUIVOS = URLS[Fonte.B3]["arquivos"]
 TIMEOUT = get_timeout()
 TIMEOUT_DOWNLOAD = get_timeout(read=120.0)
 _OI_LOCK = threading.Lock()
+_OI_POLL_SECONDS = 0.05
+_oi_vezes = 0
 
 
 def validate_oi_date(value: str) -> date:
@@ -77,12 +80,41 @@ async def fetch_ajustes_zip(data: str) -> tuple[bytes, str]:
 
 async def fetch_posicoes_abertas(data: str) -> tuple[bytes, str]:
     validate_oi_date(data)
-    while not _OI_LOCK.acquire(blocking=False):
-        await asyncio.sleep(0.05)
+    await _ocupar_vez_oi()
     try:
         return await _fetch_posicoes_abertas(data)
     finally:
         _OI_LOCK.release()
+
+
+async def _ocupar_vez_oi() -> None:
+    """Espera a vez do par token→CSV, com teto de ``timeout_read`` sem a vez trocar de mãos.
+
+    Numa fila que anda (``gather`` de várias datas, várias threads), a vez troca a cada consulta e o
+    prazo recomeça. Se o dono não solta (tarefa do loop parado pelo ``agrobr.sync``), seguir sem a
+    vez arriscaria invalidar o token dele. A espera levanta ``ResourceLimitError``, e não
+    ``SourceUnavailableError``, para quem busca o pregão recente não tomar a vez ocupada por pregão
+    não publicado e devolver um dia mais velho.
+    """
+    global _oi_vezes
+    teto = HTTPSettings().timeout_read
+    vista, prazo = _oi_vezes, time.monotonic() + teto
+    while not _OI_LOCK.acquire(blocking=False):
+        if _oi_vezes != vista:
+            vista, prazo = _oi_vezes, time.monotonic() + teto
+        elif time.monotonic() >= prazo:
+            raise ResourceLimitError(
+                source="b3",
+                url=BASE_URL_ARQUIVOS,
+                reason=(
+                    "outra consulta das posições em aberto segura a vez do par token→CSV há mais de "
+                    f"{teto:g} s sem soltar, em geral uma tarefa do loop que chamou o agrobr.sync; "
+                    "repita a consulta ou serialize as chamadas, e dentro de um loop prefira o await "
+                    "na API async"
+                ),
+            )
+        await asyncio.sleep(_OI_POLL_SECONDS)
+    _oi_vezes += 1
 
 
 def ticket_url(data: str) -> str:

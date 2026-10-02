@@ -13,7 +13,7 @@ from agrobr.utils.result import DataFrameResult
 
 logger = _log.get_logger(__name__)
 
-_PRODUCTS = sorted(deral_models.DERAL_PRODUTOS_PUBLICADOS)
+_PRODUCTS = sorted(deral_models.PRODUTOS_ACEITOS)
 
 
 async def _fetch_deral(

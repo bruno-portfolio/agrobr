@@ -286,22 +286,31 @@ async def _sicor_mes(
     return registros
 
 
-async def n2_sicor(http: httpx.AsyncClient, base: str, hoje: date) -> list[dict[str, Any]]:
-    (ano, mes), meses = meses_consultados(hoje)
+SicorColeta = tuple[dict[tuple[int, int], list[dict[str, Any]]], list[dict[str, Any]], Any]
+
+
+async def _coletar_sicor(
+    http: httpx.AsyncClient,
+    base: str,
+    meses: list[tuple[int, int]],
+    ano: int,
+    mes: int,
+    inicio: int,
+) -> SicorColeta:
+    regiao_uf = {
+        periodo: await _sicor_mes(http, base, sicor_client.TOTAL_ENDPOINT, *periodo)
+        for periodo in meses
+    }
+    municipios = await _sicor_mes(http, base, SICOR_MUNICIPIOS, ano, mes)
+    frame = await sicor_api.credito_rural_total(safra=f"{inicio}/{inicio + 1}")
+    return regiao_uf, municipios, frame
+
+
+def _casos_sicor(
+    coleta: SicorColeta, casos: tuple[str, str], meses: list[tuple[int, int]], ano: int, mes: int
+) -> list[dict[str, Any]]:
+    regiao_uf, municipios, frame = coleta
     inicio = meses[0][0]
-    casos = ("sicor_total_agrobr_x_regiaouf", "sicor_regiaouf_x_semfiltros")
-    try:
-        regiao_uf = {
-            periodo: await _sicor_mes(http, base, sicor_client.TOTAL_ENDPOINT, *periodo)
-            for periodo in meses
-        }
-        municipios = await _sicor_mes(http, base, SICOR_MUNICIPIOS, ano, mes)
-        frame = await sicor_api.credito_rural_total(safra=f"{inicio}/{inicio + 1}")
-    except (SourceUnavailableError, httpx.HTTPError) as erro:
-        return [
-            {"case": caso, "status": "indisponivel", "problems": [f"{type(erro).__name__}: {erro}"]}
-            for caso in casos
-        ]
     agrobr = {
         (str(uf), str(finalidade)): (int(qtd), Decimal(str(valor)))
         for uf, finalidade, qtd, valor in zip(
@@ -328,6 +337,69 @@ async def n2_sicor(http: httpx.AsyncClient, base: str, hoje: date) -> list[dict[
             **mensal,
         },
     ]
+
+
+def _mesma_publicacao(primeira: SicorColeta, segunda: SicorColeta) -> bool:
+    return (
+        primeira[0] == segunda[0] and primeira[1] == segunda[1] and primeira[2].equals(segunda[2])
+    )
+
+
+async def n2_sicor(http: httpx.AsyncClient, base: str, hoje: date) -> list[dict[str, Any]]:
+    """Diferença na 1ª leitura só vira ``mismatch`` se uma 2ª leitura dos dois lados, com a
+    publicação igual à da 1ª, mantiver a diferença; a Olinda publica o mês aos poucos."""
+    (ano, mes), meses = meses_consultados(hoje)
+    inicio = meses[0][0]
+    casos = ("sicor_total_agrobr_x_regiaouf", "sicor_regiaouf_x_semfiltros")
+    try:
+        primeira = await _coletar_sicor(http, base, meses, ano, mes, inicio)
+    except (SourceUnavailableError, httpx.HTTPError) as erro:
+        return [
+            {"case": caso, "status": "indisponivel", "problems": [f"{type(erro).__name__}: {erro}"]}
+            for caso in casos
+        ]
+    resultado = _casos_sicor(primeira, casos, meses, ano, mes)
+    if all(caso["status"] != "mismatch" for caso in resultado):
+        return resultado
+    try:
+        segunda = await _coletar_sicor(http, base, meses, ano, mes, inicio)
+    except (SourceUnavailableError, httpx.HTTPError) as erro:
+        return [
+            {
+                **caso,
+                "status": "indisponivel",
+                "problems": [
+                    *caso["problems"],
+                    f"2ª leitura falhou ({type(erro).__name__}: {erro}); diferença não confirmada",
+                ],
+            }
+            if caso["status"] == "mismatch"
+            else caso
+            for caso in resultado
+        ]
+    estavel = _mesma_publicacao(primeira, segunda)
+    final = []
+    for antes, depois in zip(resultado, _casos_sicor(segunda, casos, meses, ano, mes), strict=True):
+        if antes["status"] != "mismatch":
+            final.append(antes)
+        elif depois["status"] != "mismatch":
+            final.append({**depois, "segunda_leitura": "a diferença da 1ª leitura sumiu"})
+        elif estavel:
+            final.append(
+                {**depois, "segunda_leitura": "diferença confirmada com a publicação igual"}
+            )
+        else:
+            final.append(
+                {
+                    **depois,
+                    "status": "indisponivel",
+                    "problems": [
+                        *depois["problems"],
+                        "a publicação mudou entre as 2 leituras; diferença não confirmada",
+                    ],
+                }
+            )
+    return final
 
 
 async def _get(http: httpx.AsyncClient, url: str) -> httpx.Response:

@@ -39,7 +39,7 @@ CHAMADAS = {
     "ajustes": lambda **kw: api.ajustes(data="2025-02-13", **kw),
     "posicoes_abertas": lambda **kw: api.posicoes_abertas(data="2025-12-19", **kw),
     "historico": lambda **kw: api.historico(**PERIODO, **kw),
-    "oi_historico": lambda **kw: api.oi_historico(**PERIODO, **kw),
+    "posicoes_abertas_historico": lambda **kw: api.posicoes_abertas_historico(**PERIODO, **kw),
 }
 
 
@@ -66,9 +66,11 @@ async def test_contrato_aceita_nome_ou_ticker_sem_caixa(contrato):
         lambda: api.ajustes(data="21-09-2026"),
         lambda: api.posicoes_abertas(data="2026/09/21"),
         lambda: api.historico(contrato="boi", inicio="21-09-2026", fim="2026-09-22"),
-        lambda: api.oi_historico(contrato="boi", inicio="2026-09-21", fim="22.09.2026"),
+        lambda: api.posicoes_abertas_historico(
+            contrato="boi", inicio="2026-09-21", fim="22.09.2026"
+        ),
     ],
-    ids=["ajustes", "posicoes_abertas", "historico", "oi_historico"],
+    ids=["ajustes", "posicoes_abertas", "historico", "posicoes_abertas_historico"],
 )
 async def test_data_fora_do_formato_e_recusada_antes_da_rede(rede, chamada):
     with pytest.raises(InvalidParameterError, match="AAAA-MM-DD ou DD/MM/AAAA"):
@@ -84,9 +86,9 @@ async def test_data_em_dd_mm_aaaa_vale_em_toda_a_familia(rede):
     assert zip_.await_args.args == ("13/02/2025",)
 
 
-@pytest.mark.parametrize("funcao", ["historico", "oi_historico"])
+@pytest.mark.parametrize("funcao", ["historico", "posicoes_abertas_historico"])
 async def test_inicio_depois_de_fim_e_recusado_antes_da_rede(rede, funcao):
-    chamada = api.historico if funcao == "historico" else api.oi_historico
+    chamada = api.historico if funcao == "historico" else api.posicoes_abertas_historico
     with pytest.raises(InvalidParameterError, match=r"inicio \(2025-02-14\) posterior a fim"):
         await chamada(contrato="boi", inicio="2025-02-14", fim="2025-02-10")
     assert all(mock.await_count == 0 for mock in rede)
@@ -97,13 +99,21 @@ async def test_inicio_depois_de_fim_e_recusado_antes_da_rede(rede, funcao):
     [
         lambda: api.historico(contrato="boi", **PERIODO, vencimento="xx"),
         lambda: api.posicoes_abertas(data="2025-12-19", tipo="futuros"),
-        lambda: api.oi_historico(contrato="boi", **PERIODO, tipo="call"),
+        lambda: api.posicoes_abertas_historico(contrato="boi", **PERIODO, tipo="call"),
     ],
-    ids=["vencimento_historico", "tipo_posicoes", "tipo_oi_historico"],
+    ids=["vencimento_historico", "tipo_posicoes", "tipo_posicoes_abertas_historico"],
 )
 async def test_vencimento_e_tipo_invalidos_sao_recusados_antes_da_rede(rede, chamada):
     with pytest.raises(InvalidParameterError, match="inválido"):
         await chamada()
+    assert all(mock.await_count == 0 for mock in rede)
+
+
+@pytest.mark.parametrize("vencimento", ["XWK4", "vvjk", "lixo"])
+async def test_historico_recusa_vencimento_que_nao_e_mes_de_futuro_antes_da_rede(rede, vencimento):
+    with pytest.raises(InvalidParameterError, match="historico traz só futuros") as erro:
+        await api.historico(contrato="boi", **PERIODO, vencimento=vencimento)
+    assert "opção" not in str(erro.value)
     assert all(mock.await_count == 0 for mock in rede)
 
 
@@ -170,11 +180,11 @@ DIAS = {"inicio": "2026-09-21", "fim": "2026-09-22"}
         ),
         (
             "posicoes_abertas",
-            lambda: api.oi_historico(contrato="boi", **DIAS),
-            lambda: api.oi_historico(contrato="cafe_conillon", **DIAS),
+            lambda: api.posicoes_abertas_historico(contrato="boi", **DIAS),
+            lambda: api.posicoes_abertas_historico(contrato="cafe_conillon", **DIAS),
         ),
     ],
-    ids=["historico", "posicoes_abertas", "oi_historico"],
+    ids=["historico", "posicoes_abertas", "posicoes_abertas_historico"],
 )
 async def test_cheio_e_vazio_saem_com_os_dtypes_do_contrato(contrato, cheio, vazio):
     esperado = contracts.get_contract(contrato).empty_frame().dtypes.to_dict()

@@ -14,6 +14,20 @@ logger = _log.get_logger(__name__)
 
 
 def parse_cot(records: list[dict[str, Any]]) -> pd.DataFrame:
+    if not records:
+        contagens = {*models.POSITION_COLUMNS, *models.CHANGE_COLUMNS, "managed_money_net"}
+        return pd.DataFrame(
+            {
+                coluna: pd.Series(
+                    dtype="datetime64[ns]"
+                    if coluna == "data"
+                    else "Int64"
+                    if coluna in contagens
+                    else "str"
+                )
+                for coluna in models.COLUNAS_SAIDA
+            }
+        )
     df = pd.DataFrame(records)
 
     missing = [c for c in models.COLUMN_MAP if c not in df.columns]
@@ -37,7 +51,7 @@ def parse_cot(records: list[dict[str, Any]]) -> pd.DataFrame:
     _validate(df)
 
     for col in models.POSITION_COLUMNS:
-        df[col] = df[col].astype("int64")
+        df[col] = df[col].astype("Int64")
     df["managed_money_net"] = df["managed_money_long"] - df["managed_money_short"]
 
     return df[models.COLUNAS_SAIDA].sort_values(["data", "commodity"]).reset_index(drop=True)

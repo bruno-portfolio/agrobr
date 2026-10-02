@@ -36,6 +36,7 @@ def test_duplicate_registration_preserves_original(monkeypatch):
         (datasets, "CLIMA_V2", "clima", "2.0"),
         (datasets, "ZONEAMENTO_AGRICOLA_V1", "zoneamento_agricola", "1.0"),
         (datasets, "SICAR_IMOVEIS_V1", "cadastro_rural", "1.0"),
+        (datasets, "CREDITO_RURAL_V1_1", "credito_rural", "1.1"),
     ],
 )
 def test_historical_import_preserves_active_contract(module, symbol, key, version):

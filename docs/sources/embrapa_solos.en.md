@@ -127,7 +127,7 @@ the horizons with all three values; `saturacao_bases` = 100 x S / T and `ctc` = 
 ## Specifics
 
 - **`_geo()` functions require [geo]**: `pip install agrobr[geo]` (geopandas)
-- **Order filter**: `ordem` matches part of `ordem1`, ignoring case. A blank or non-text value is rejected before collection. A complete read with no match emits `UserWarning` and records the requested value and observed classes in `MetaInfo.validation_warnings`; a partial read continues to warn about the remote prefix.
+- **Order filter**: `ordem` matches the whole `ordem1` class, one of the 15 published in the `brasil_solos_5m_20201104` layer (13 soil orders plus `AFLORAMENTOS DE ROCHAS` and `DUNAS`; full read on 2026-10-01: 2,852 polygons, 177 without `ordem1`). Case, accents and the singular are accepted (`"latossolo"` means `LATOSSOLOS`); a fragment (`"latos"`), a blank, non-text or out-of-domain value raises `InvalidParameterError` before collection, listing the classes. A complete read with no match emits `UserWarning` and records the requested value and observed classes in `MetaInfo.validation_warnings`; a partial read continues to warn about the remote prefix.
 - **Pagination**: count/startIndex ordered by `fid`, with a 1-record overlap between pages. `max_registros` (default 50,000; 5,000 profiles and 3,000 polygons in the `_geo` functions) cuts the remote prefix; the `uf` and `ordem` filters are applied locally to that prefix and, when the cut leaves the selection partial, a `UserWarning` is raised (`max_registros=None` scans the whole layer)
 - **CRS**: EPSG:4326, the default CRS of both layers in the WFS; `bbox` is also EPSG:4326
 - **NC license**: commercial use requires authorization from EMBRAPA

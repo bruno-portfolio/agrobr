@@ -40,7 +40,7 @@ SOURCE_WINDOW_DAYS = 25
 
 _LICENSE_WARNING = (
     "CEPEA/ESALQ: dados sob CC BY-NC 4.0; uso comercial requer autorização do "
-    "CEPEA (cepea@usp.br). Veja docs/licenses.md."
+    "CEPEA (cepea@usp.br). Veja https://www.agrobr.dev/docs/licenses/."
 )
 
 
@@ -87,7 +87,7 @@ def _normalize_dates(
 def _normalize_produto(produto: object) -> str:
     if not isinstance(produto, str):
         raise InvalidParameterError("produto deve ser uma string")
-    normalized = produto.strip().lower()
+    normalized = "_".join(regions.remover_acentos(produto).lower().split())
     if normalized not in constants.CEPEA_PRODUTOS:
         raise InvalidParameterError(
             f"Produto inválido: {produto!r}. Opções: {sorted(constants.CEPEA_PRODUTOS)}"
@@ -170,13 +170,17 @@ def _precisa_da_serie(
     return _vencido(baixada_em) and publicada_ate + folga < min(fim, janela)
 
 
-async def _baixar_a_serie(store: Any, produto: str) -> tuple[list[Indicador], list[dict[str, Any]]]:
+async def _baixar_a_serie(
+    store: Any, produto: str, conhecidos: list[Indicador]
+) -> tuple[list[Indicador], list[dict[str, Any]]]:
     """Baixa a série inteira e grava no cache só o dia que ele ainda não tem.
 
-    A linha do cache prevalece: no leite, a página publica 4 casas, e a série, 2.
+    A linha do cache prevalece: no leite, a página publica 4 casas, e a série, 2. O que volta para
+    a consulta se mede contra ``conhecidos`` (o que ela já leu), não contra o cache, que outra
+    consulta simultânea pode ter preenchido depois da leitura.
 
     Returns:
-        Os indicadores novos e os recursos baixados, para a proveniência.
+        Os dias da série fora de ``conhecidos`` e os recursos baixados, para a proveniência.
     """
     indicadores: list[Indicador] = []
     pesos: dict[date, float] = {}
@@ -200,15 +204,19 @@ async def _baixar_a_serie(store: Any, produto: str) -> tuple[list[Indicador], li
     for ind in indicadores:
         if ind.data in pesos:
             ind.meta["peso_medio_kg"] = pesos[ind.data]
+    vistos = {(ind.praca, ind.data) for ind in conhecidos}
+    novos = [ind for ind in indicadores if (ind.praca, ind.data) not in vistos]
     try:
         existentes = {(linha["praca"], linha["data"]) for linha in store.indicadores_query(produto)}
-        novos = [ind for ind in indicadores if (ind.praca, ind.data) not in existentes]
-        store.indicadores_upsert(_indicadores_to_dicts(novos))
+        store.indicadores_upsert(
+            _indicadores_to_dicts(
+                [ind for ind in indicadores if (ind.praca, ind.data) not in existentes]
+            )
+        )
         if indicadores:
             store.serie_registrar(produto, max(ind.data for ind in indicadores), baixada.fetched_at)
     except duckdb.Error as e:
         logger.warning("cache_upsert_failed", produto=produto, error=str(e))
-        novos = indicadores
     logger.info(
         "cepea_serie_gravada", produto=produto, recebidos=len(indicadores), novos=len(novos)
     )
@@ -280,6 +288,7 @@ class _FetchResult(NamedTuple):
     raw_hash: str
     raw_size: int
     parse_ms: int
+    avisos: tuple[str, ...] = ()
 
 
 def _cepea_source_url(produto: str) -> str:
@@ -298,6 +307,7 @@ async def _parse_fetch_result(produto: str, fetch_result: client.FetchResult) ->
     source_name = fetch_result.source
     raw_size = len(html.encode("utf-8"))
     raw_hash = hashlib.sha256(html.encode("utf-8")).hexdigest()
+    avisos: list[str] = []
 
     if source_name == "noticias_agricolas":
         new_indicadores = na_parser.parse_indicador(html, produto)
@@ -309,7 +319,7 @@ async def _parse_fetch_result(produto: str, fetch_result: client.FetchResult) ->
             records_count=len(new_indicadores),
         )
     else:
-        parser, new_indicadores = await get_parser_with_fallback(html, produto)
+        parser, new_indicadores = await get_parser_with_fallback(html, produto, avisos=avisos)
         source_url = _cepea_source_url(produto)
         parser_version = parser.version
 
@@ -327,6 +337,7 @@ async def _parse_fetch_result(produto: str, fetch_result: client.FetchResult) ->
         raw_hash=raw_hash,
         raw_size=raw_size,
         parse_ms=parse_ms,
+        avisos=tuple(avisos),
     )
 
 
@@ -397,7 +408,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: Literal[False] = False,
     validate_sanity: bool = False,
@@ -413,7 +423,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: Literal[False] = False,
     validate_sanity: bool = False,
@@ -429,7 +438,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: bool = False,
     validate_sanity: bool = False,
@@ -445,7 +453,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: bool = False,
     validate_sanity: bool = False,
@@ -461,7 +468,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: bool = False,
     validate_sanity: bool = False,
@@ -476,7 +482,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: bool = False,
     validate_sanity: bool = False,
@@ -498,9 +503,9 @@ async def indicador(
         produto: Código do produto (ex: "soja", "milho", "boi_gordo").
         praca: Praça de cotação. Aceita slug de ``pracas()`` ou rótulo da fonte.
             ``None`` retorna todas.
-        inicio: Data inicial (ISO string ou ``date``). Default: 365 dias atrás.
+        inicio: Data inicial (ISO string ``AAAA-MM-DD`` ou ``date``). Default: 365 dias antes de
+            ``fim``.
         fim: Data final. Default: hoje.
-        _moeda: Reservado para conversão futura de moeda. Sem efeito atual.
         as_polars: Retorna ``polars.DataFrame`` em vez de pandas.
         validate_sanity: Confere unidade, faixa e variação temporal quando houver regra.
         force_refresh: Ignora cache e força fetch na fonte.
@@ -552,7 +557,7 @@ async def indicador(
     erro_da_serie: SourceUnavailableError | ParseError | None = None
     if not offline and _precisa_da_serie(store, produto, inicio, fim, force_refresh):
         try:
-            novos, recursos = await _baixar_a_serie(store, produto)
+            novos, recursos = await _baixar_a_serie(store, produto, indicadores)
         except (SourceUnavailableError, ParseError) as e:
             erro_da_serie = e
             _avisar(
@@ -561,7 +566,9 @@ async def indicador(
                 "que a página e o cache tinham no período.",
             )
         else:
-            indicadores = _merge_indicadores(indicadores, novos)
+            indicadores = _merge_indicadores(
+                indicadores, [ind for ind in novos if inicio <= ind.data <= fim]
+            )
             meta.source = meta.selected_source = "cepea"
             meta.source_method = "httpx+xls"
             meta.attempted_sources = ["cepea"]
@@ -607,6 +614,8 @@ async def indicador(
             meta.fetch_timestamp = utcnow()
             meta.parser_version = result.parser_version
             meta.from_cache = False
+            for aviso in result.avisos:
+                _avisar(meta, aviso)
             pagina_baixada = True
 
             if result.indicadores:

@@ -124,3 +124,11 @@ class TestApolices:
         assert meta.attempted_sources == ["mapa_psr"]
         assert meta.selected_source == "mapa_psr"
         assert meta.fetch_duration_ms >= 0
+
+    @pytest.mark.asyncio
+    @patch.object(api.client, "open_periodo")
+    async def test_uf_com_espaco_e_minuscula_filtra_pela_sigla(self, mock_fetch):
+        mock_fetch.side_effect = lambda _: binary_stream(_make_csv_bytes())
+        df = await api.apolices(uf=" mt ")
+        assert df["nr_apolice"].tolist() == ["AP001"]
+        assert df["uf"].tolist() == ["MT"]

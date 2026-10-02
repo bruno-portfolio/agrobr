@@ -65,7 +65,7 @@ def _warn_license() -> None:
         "comtrade_license",
         "UN Comtrade: licença classificada como zona_cinza. Uso e redistribuição têm condições "
         "e exceções; consulte https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/ "
-        "e docs/licenses.md.",
+        "e https://www.agrobr.dev/docs/licenses/.",
     )
 
 

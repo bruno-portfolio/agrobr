@@ -12,6 +12,7 @@ from agrobr.antaq.parser import (
     parse_carga,
     parse_mercadoria,
 )
+from agrobr.exceptions import ParseError
 
 ATRACACAO_TXT = (
     "IDAtracacao;Porto Atracação;Complexo Portuário;Tipo da Autoridade Portuária;"
@@ -171,6 +172,19 @@ class TestJoinMovimentacao:
         df_c = parse_carga(CARGA_TXT)
         df_m = parse_mercadoria(MERCADORIA_TXT)
         return df_a, df_c, df_m
+
+    def test_data_inteiramente_nula_e_numerica_nao_quebra_o_join(self):
+        df_a, df_c, df_m = self._parse_all()
+        df_a["Data Atracação"] = float("nan")
+        df = join_movimentacao(df_a, df_c, df_m)
+        assert str(df["data_atracacao"].dtype) == "datetime64[ns]"
+        assert df["data_atracacao"].isna().all() and len(df) == 4
+
+    def test_data_numerica_preenchida_e_recusada(self):
+        df_a, df_c, df_m = self._parse_all()
+        df_a["Data Atracação"] = 20240115.0
+        with pytest.raises(ParseError, match="não é texto"):
+            join_movimentacao(df_a, df_c, df_m)
 
     def test_join_produces_result(self):
         df_a, df_c, df_m = self._parse_all()

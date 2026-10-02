@@ -174,19 +174,23 @@ async def fetch_imoveis(
                 await asyncio.sleep(THROTTLE_DELAY)
             i += 1
 
-        if len(seen) != latest_total:
-            raise ParseError(
-                source="sicar",
-                parser_version=models.PARSER_VERSION,
-                reason=(
-                    f"Varredura inconsistente: {len(seen)} unicas x {latest_total} anunciadas; "
-                    "a fonte pode ter sido atualizada durante a consulta, repita a consulta"
-                ),
-            )
+        _conferir_varredura(len(seen), latest_total)
 
     if source_details is not None:
         source_details.update(anunciados=latest_total, features_unicas=len(seen))
     return pages, base_url
+
+
+def _conferir_varredura(unicas: int, anunciadas: int) -> None:
+    if unicas != anunciadas:
+        raise ParseError(
+            source="sicar",
+            parser_version=models.PARSER_VERSION,
+            reason=(
+                f"Varredura inconsistente: {unicas} unicas x {anunciadas} anunciadas; "
+                "a fonte pode ter sido atualizada durante a consulta, repita a consulta"
+            ),
+        )
 
 
 def _validate_tabular_page(
@@ -223,6 +227,8 @@ async def stream_imoveis_geo(
     uf: str,
     cql_filter: str | None = None,
     max_features: int | None = MAX_FEATURES_GEO,
+    *,
+    validation_warnings: list[str] | None = None,
 ) -> AsyncGenerator[tuple[list[bytes], str], None]:
     """Yields (pages, source_url) conforme as paginas sao baixadas.
 
@@ -267,8 +273,11 @@ async def stream_imoveis_geo(
             return
 
         n_pages = math.ceil(limit / PAGE_SIZE)
+        latest_total = total
+        seen: set[str] = set()
 
         async def fetch_page(i: int) -> bytes:
+            nonlocal latest_total
             count = min(PAGE_SIZE, limit - i * PAGE_SIZE)
             url = _build_wfs_url(
                 uf,
@@ -285,6 +294,9 @@ async def stream_imoveis_geo(
                 timeout=TIMEOUT,
                 client=http,
             )
+            latest_total = _validate_tabular_page(
+                content, latest_total, seen, validation_warnings=validation_warnings
+            )
             logger.debug(
                 "sicar_geo_page",
                 uf=uf,
@@ -299,8 +311,10 @@ async def stream_imoveis_geo(
         if max_features is None:
             for i in range(n_pages):
                 yield [await fetch_page(i)], base_url
+            _conferir_varredura(len(seen), latest_total)
         else:
             pages = [await fetch_page(i) for i in range(n_pages)]
+            _conferir_varredura(len(seen), min(latest_total, max_features))
             yield pages, base_url
 
     logger.info("sicar_imoveis_geojson", source="sicar", pages=n_pages, uf=uf)
@@ -310,11 +324,15 @@ async def fetch_imoveis_geo(
     uf: str,
     cql_filter: str | None = None,
     max_features: int | None = MAX_FEATURES_GEO,
+    *,
+    validation_warnings: list[str] | None = None,
 ) -> tuple[list[bytes], str]:
     """Acumula todas as paginas em memoria. Use stream_imoveis_geo para baixo consumo."""
     all_pages: list[bytes] = []
     source_url = ""
-    async for batch, url in stream_imoveis_geo(uf, cql_filter, max_features):
+    async for batch, url in stream_imoveis_geo(
+        uf, cql_filter, max_features, validation_warnings=validation_warnings
+    ):
         all_pages.extend(batch)
         source_url = url
     return all_pages, source_url

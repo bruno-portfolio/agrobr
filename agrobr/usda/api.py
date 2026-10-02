@@ -76,7 +76,10 @@ async def psd(
     return_meta: bool = False,
 ) -> DataFrameResult:
     if not all(isinstance(flag, bool) for flag in (pivot, as_polars, return_meta)):
-        raise InvalidParameterError("pivot, as_polars e return_meta devem ser booleanos")
+        raise InvalidParameterError(
+            "pivot (pivotar em datasets.oferta_demanda_global), as_polars e return_meta "
+            "devem ser booleanos"
+        )
     if api_key is not None and (not isinstance(api_key, str) or not api_key.strip()):
         raise InvalidParameterError("api_key deve ser texto não vazio ou None")
     commodity_code = resolve_commodity_code(produto)

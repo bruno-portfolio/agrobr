@@ -99,7 +99,7 @@ CREDITO_RURAL_V2 = Contract(
     ],
     guarantees=[
         "Column names never change (additions only)",
-        "'safra' always matches pattern YYYY/YYYY",
+        "'safra' always matches pattern YYYY/YY",
         "'uf' is always a valid Brazilian state code when present",
         "Numeric values are always >= 0",
     ],
@@ -2356,6 +2356,7 @@ def __getattr__(name: str) -> Contract:
                 "SICAR_IMOVEIS_V1",
                 "MAPBIOMAS_COBERTURA_V1",
                 "MAPBIOMAS_TRANSICAO_V1",
+                "CREDITO_RURAL_V1_1",
             ]
         ),
     )

@@ -302,6 +302,13 @@ async def pracas_pedagio(
     t1 = time.monotonic()
     df = _filtrar_pracas(_pracas_saida(parser.parse_pracas(raw)), uf, rodovia, situacao)
     parse_ms = int((time.monotonic() - t1) * 1000)
+    if "municipal" in df.columns:
+        aviso = (
+            "antt_pedagio: a coluna 'municipal' do cadastro repete 'municipio' e sai na próxima "
+            "versão major; use 'municipio'"
+        )
+        df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+        warnings.warn(aviso, FutureWarning, stacklevel=2)
 
     meta = build_source_meta(
         "antt_pedagio",

@@ -16,7 +16,8 @@ from tests.helpers import collect_failures, levanta_exatamente, sem_excecao
 from tests.test_bcb.focus_replay import encode
 
 LIMITE_LOCAL = (
-    "Limite local max_registros=6 encerrou a coleta Focus; cobertura unknown, total declarado None."
+    "Limite local max_registros=6 encerrou a coleta Focus; cobertura não comprovada, "
+    "total não informado pela fonte."
 )
 
 

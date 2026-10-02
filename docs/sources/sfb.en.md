@@ -83,6 +83,7 @@ asyncio.run(main())
 | classe | str | Class |
 | area_ha | float | Area in hectares |
 | ano_criacao | Int64 | Creation year taken from the published date (see Specifics) |
+| ano_criacao_texto | str | Text published in `anocriacao`, as it came from the source (null when the source publishes it empty; a feature without the `anocriacao` field raises `ParseError`) |
 | municipio | str | Municipality |
 
 ### concessoes
@@ -114,7 +115,7 @@ asyncio.run(main())
 
 - **CNFP service name**: includes the rectification date in the path (`CNFP_v19_03_retificado_17072025`)
 - **Keyset pagination**: on CNFP and concessions, pages follow increasing `fid` (`fid > last` with `orderByFields=fid`). If the pages add up to fewer features than the official count, the query raises `SourceUnavailableError` stating how many are missing, instead of returning a partial result. An HTML response (maintenance or a WAF block, even with status 200) also becomes `SourceUnavailableError`
-- **CNFP creation year**: the service's `anocriacao` field is text with the full date (`DD/MM/YYYY`, `DD-MM-YYYY`; rarely `YYYY-MM-DD`, `YYYY/MM/DD` or the year alone). agrobr publishes the year when the text has a single year. It is null when the field is blank or `-`, and when the date is compound with different years (overlapping units, e.g. `22/06/2011 / 10-01-2002` on a "PA / APA"). In that last case a `UserWarning` and `MetaInfo.validation_warnings` report the count and up to three examples of the published text; the `sfb_ano_criacao_ambiguo` log is also retained. In the 2026-09-23 layer: 15,068 of 20,829 records with a year, 4,718 blank or `-` and 1,043 compound with different years
+- **CNFP creation year**: the service's `anocriacao` field is text with the full date (`DD/MM/YYYY`, `DD-MM-YYYY`; rarely `YYYY-MM-DD`, `YYYY/MM/DD` or the year alone). agrobr publishes the year when the text has a single year. It is null when the field is blank or `-`, and when the date is compound with different years (overlapping units, e.g. `22/06/2011 / 10-01-2002` on a "PA / APA"). In that last case a `UserWarning` and `MetaInfo.validation_warnings` report the count and up to three examples of the published text; the `sfb_ano_criacao_ambiguo` log is also retained. In the 2026-09-23 layer: 15,068 of 20,829 records with a year, 4,718 blank or `-` and 1,043 compound with different years. The `ano_criacao_texto` column carries the published text on every row, compound ones included, and the CNFP `MetaInfo.schema_version` is `1.1`
 - **Tabular without geometry**: `cnfp()`, `concessoes()` and `ifn_conglomerados()` request `returnGeometry=false` (the first page of the national CNFP drops from 378 MB to 0.5 MB); geometry only comes with the `_geo` functions
 - **Units and CRS**: area in hectares as published (`area_ha` on CNFP, `hectares` on concessions), not recomputed from the geometry. Geometry is requested in EPSG:4326 (`outSR=4326`) and reprojected by the server (CNFP is stored in 3857 and concessions in 4674)
 - **Parameters**: an unknown argument raises `TypeError` before any request; invalid `uf`, `bioma` and `categoria` raise `InvalidParameterError`; an invalid `bbox` raises `ValueError`

@@ -44,7 +44,7 @@ As colunas de texto usam o dtype padrão do pandas instalado (`str` no pandas 3 
 |---|---|---|
 | `produto` | `str` | `'DIESEL S10'` |
 | `uf` | `str \| None` | `None` |
-| `municipio` | `str \| None` | `None` |
+| `municipio` | `int \| str \| None` | `None` |
 | `inicio` | `str \| date \| None` | `None` |
 | `fim` | `str \| date \| None` | `None` |
 | `agregacao` | `str` | `'semanal'` |

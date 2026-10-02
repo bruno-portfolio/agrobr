@@ -189,6 +189,8 @@ async def _fetch(
     return_meta: bool,
 ) -> DataFrameResult:
     validate_year_uf(uf=uf, ano=ano, ano_inicio=ano_inicio, ano_fim=ano_fim, ano_min=ANO_INICIO_PSR)
+    if uf is not None:
+        uf = uf.strip().upper()
     alvo = None if municipio is None else municipalities.resolver_municipio(municipio, uf)
 
     effective_inicio, effective_fim = _resolve_range(ano, ano_inicio, ano_fim)

@@ -61,6 +61,7 @@ thousands of rows of the same chain repeat the other four columns (e.g. soybeans
   `source_details["duplicatas_colapsadas"]` (`linhas` and `indicadores`).
 - A key repeated with different values is not collapsed: all its rows are returned, with a warning and the count in
   `source_details["chaves_repetidas"]`. An error would drop the whole chain because of one indicator.
+- Both warnings go to `meta.validation_warnings` on every call; the `UserWarning` is emitted only on the first call for each chain in the process.
 
 ### Unit and indicator
 

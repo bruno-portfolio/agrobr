@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import io
 import json
@@ -498,3 +499,107 @@ async def test_dentro_da_validade_a_serie_nao_se_baixa_de_novo(baixar, monkeypat
     with sem_excecao():
         await api.indicador("soja", inicio="2026-10-01", fim="2026-10-31")
     assert baixar.await_count == 1
+
+
+@pytest.fixture
+def transporte(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    monkeypatch.setattr(client, "_circuit_state", {})
+    recursos = {recurso["url"]: recurso for recurso in MANIFESTO["resources"]}
+    original = httpx.AsyncClient
+    servidos: list[str] = []
+
+    async def responder(request: httpx.Request) -> httpx.Response:
+        recurso = recursos[str(request.url)]
+        servidos.append(recurso["file"])
+        await asyncio.sleep(0)
+        return httpx.Response(
+            200,
+            content=corpo(recurso["file"]),
+            headers={"Content-Type": recurso["content_type"]},
+            request=request,
+        )
+
+    monkeypatch.setattr(
+        httpx,
+        "AsyncClient",
+        lambda **kwargs: original(transport=httpx.MockTransport(responder), **kwargs),
+    )
+    return servidos
+
+
+def _por_dia(frame: pd.DataFrame) -> dict[str, float]:
+    return dict(zip(frame["data"].dt.strftime("%d/%m/%Y"), frame["valor"], strict=True))
+
+
+@pytest.mark.parametrize(
+    "periodos",
+    [
+        pytest.param([("2020-01-01", "2020-12-31")] * 2, id="mesmo_pedido"),
+        pytest.param(
+            [("2020-01-01", "2020-12-31"), ("2021-01-01", "2021-12-31")], id="anos_diferentes"
+        ),
+    ],
+)
+@pytest.mark.usefixtures("cache")
+async def test_consultas_simultaneas_trazem_a_serie_inteira(transporte, periodos):
+    with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
+        warnings.simplefilter("always")
+        resultados = await asyncio.gather(
+            *(
+                api.indicador("soja", inicio=inicio, fim=fim, return_meta=True)
+                for inicio, fim in periodos
+            )
+        )
+
+    assert transporte == ["soja_92.xls", "soja_92.xls"]
+    for (inicio, fim), (frame, meta) in zip(periodos, resultados, strict=True):
+        esperado = diario("soja_92.xls", inicio, fim)
+        assert len(frame) == len(esperado) > 200
+        assert _por_dia(frame) == dict(zip(esperado[0], esperado[1].astype(float), strict=True))
+        assert (meta.selected_source, meta.from_cache, meta.validation_warnings) == (
+            "cepea",
+            False,
+            [],
+        )
+    assert not avisos_de(emitidos, "cepea: sem dado")
+
+
+async def test_force_refresh_com_o_cache_cheio_traz_a_serie_inteira(cache, transporte):
+    ano = {"inicio": "2020-01-01", "fim": "2020-12-31"}
+    recente = {"inicio": "2026-01-01", "fim": "2026-09-26"}
+    ano_no_cache = {"inicio": datetime(2020, 1, 1), "fim": datetime(2020, 12, 31, 23, 59)}
+
+    with sem_excecao():
+        await api.indicador("soja", **ano)
+        no_cache = cache.indicadores_query("soja", **ano_no_cache)
+        fechado = await api.indicador("soja", **ano, force_refresh=True)
+        aberto, meta = await api.indicador("soja", **recente, force_refresh=True, return_meta=True)
+
+    assert transporte == [
+        "soja_92.xls",
+        "soja_92.xls",
+        "soja_pagina.html",
+        "soja_92.xls",
+        "soja_pagina.html",
+    ]
+    for frame, periodo in ((fechado, ano), (aberto, recente)):
+        esperado = diario("soja_92.xls", **periodo)
+        assert len(frame) == len(esperado) > 150
+        assert _por_dia(frame) == dict(zip(esperado[0], esperado[1].astype(float), strict=True))
+    assert [recurso["papel"] for recurso in meta.source_details["resources"]] == [
+        "serie",
+        "pagina",
+    ]
+    assert cache.indicadores_query("soja", **ano_no_cache) == no_cache
+
+
+@pytest.mark.usefixtures("cache", "baixar", "sem_pagina")
+async def test_periodo_que_a_serie_nao_cobre_avisa_ja_no_primeiro_download(monkeypatch):
+    monkeypatch.setattr(api, "_today", lambda: date(2026, 11, 30))
+
+    with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
+        warnings.simplefilter("always")
+        frame = await api.indicador("soja", inicio="2026-10-01", fim="2026-10-31")
+
+    assert frame.empty
+    assert avisos_de(emitidos, "cepea: sem dado de 'soja' entre 2026-10-01 e 2026-10-31")

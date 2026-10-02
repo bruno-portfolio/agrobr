@@ -85,7 +85,7 @@ async def test_oi_publica_o_mes_do_contrato_em_futuros_e_opcoes(monkeypatch):
                     esperado.append((dia, linha["TckrSymb"], linha["XprtnCd"], ano, mes))
             with check(contrato):
                 with sem_excecao():
-                    frame, meta = await b3.oi_historico(
+                    frame, meta = await b3.posicoes_abertas_historico(
                         contrato=contrato, inicio=DIAS[0], fim=DIAS[1], return_meta=True
                     )
                 assert esperado
@@ -140,14 +140,14 @@ async def test_filtro_de_vencimento_casa_futuro_e_opcao_do_mes(monkeypatch):
         ):
             with check(f"{contrato} {filtro!r}"):
                 with sem_excecao():
-                    frame = await b3.oi_historico(
+                    frame = await b3.posicoes_abertas_historico(
                         contrato=contrato, inicio=DIAS[0], fim=DIAS[1], vencimento=filtro
                     )
                 assert set(frame["tipo"]) == {"futuro", "opcao"}
                 assert _publicado(frame) == esperado(ativo, ano, mes)
         with check("boi V26 opções"):
             with sem_excecao():
-                opcoes = await b3.oi_historico(
+                opcoes = await b3.posicoes_abertas_historico(
                     contrato="boi", inicio=DIAS[0], fim=DIAS[1], tipo="opcao", vencimento="V26"
                 )
             assert opcoes.groupby(opcoes["data"].dt.date)["posicoes_abertas"].agg(
@@ -158,7 +158,7 @@ async def test_filtro_de_vencimento_casa_futuro_e_opcao_do_mes(monkeypatch):
             }
         with check("código próprio da opção"):
             with sem_excecao():
-                serie = await b3.oi_historico(
+                serie = await b3.posicoes_abertas_historico(
                     contrato="boi", inicio=DIAS[0], fim=DIAS[1], vencimento="vvjk"
                 )
             assert sorted(serie["ticker_completo"]) == ["BGIV26C030000"] * 2
@@ -170,7 +170,7 @@ async def test_filtro_de_vencimento_invalido_recusado_antes_da_rede(monkeypatch)
     with collect_failures() as check:
         for filtro in ("V2026", "Z9", "A26", "V2X", "VVJ", "", "outubro"):
             with check(repr(filtro)), levanta_exatamente(InvalidParameterError, match="vencimento"):
-                await b3.oi_historico(
+                await b3.posicoes_abertas_historico(
                     contrato="boi", inicio=DIAS[0], fim=DIAS[1], vencimento=filtro
                 )
 

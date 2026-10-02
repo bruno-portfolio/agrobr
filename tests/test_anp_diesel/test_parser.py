@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import io
+from pathlib import Path
 
 import pandas as pd
 import pytest
 
-from agrobr.alt.anp_diesel import parser
+from agrobr import constants
+from agrobr.alt.anp_diesel import models, parser
 from agrobr.exceptions import ParseError
+
+GOLDEN_VENDAS = Path(__file__).parents[1] / "golden_data" / "anp_diesel" / "vendas_sample"
 
 
 def _make_precos_xlsx(
@@ -189,7 +193,7 @@ class TestOleoDieselNormalization:
         content = _make_vendas_csv()
         df = parser.parse_vendas(content)
         for p in df["produto"]:
-            assert p in ("DIESEL", "DIESEL S-10"), f"Produto nao normalizado: {p}"
+            assert p in ("DIESEL", "DIESEL S10"), f"Produto nao normalizado: {p}"
 
 
 class TestEstadoNomeCompleto:
@@ -240,3 +244,31 @@ class TestHelpers:
         df = parser._normalize_columns(df)
         assert parser._find_column(df, ["PRODUTO"]) == "PRODUTO"
         assert parser._find_column(df, ["ESTADO - SIGLA"]) == "ESTADO - SIGLA"
+
+
+def test_texto_nulo_nao_vira_a_string_none():
+    linha = dict.fromkeys(models.COLUNAS_PRECOS)
+    frame = pd.DataFrame([linha], columns=models.COLUNAS_PRECOS).astype(models.PRECOS_DTYPES)
+    textos = [nome for nome, dtype in constants.ANP_DIESEL_PRECOS_DTYPES.items() if dtype == "str"]
+    assert textos
+    assert frame[textos].isna().all().all()
+    assert {frame[nome].dtype for nome in textos} == {pd.Series([""]).dtype}
+
+
+def test_vendas_usam_o_vocabulario_de_precos_e_as_regioes_canonicas():
+    corpo = (GOLDEN_VENDAS / "response.csv").read_bytes()
+    bruto = pd.read_csv(io.BytesIO(corpo), sep=";", encoding="utf-8-sig", decimal=",")
+    frame = parser.parse_vendas(corpo)
+    assert frame["produto"].value_counts().to_dict() == {
+        "DIESEL S10": 4401,
+        "DIESEL S-500": 4401,
+        "DIESEL S-1800": 4401,
+        "DIESEL MARÍTIMO": 4401,
+        "DIESEL (OUTROS )": 4401,
+    }
+    assert set(frame["regiao"]) == {"Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"}
+    s10 = bruto["PRODUTO"].str.strip().eq("ÓLEO DIESEL S-10")
+    assert frame.loc[frame["produto"] == "DIESEL S10", "volume_m3"].sum() == pytest.approx(
+        bruto.loc[s10, "VENDAS"].sum()
+    )
+    assert frame["volume_m3"].sum() == pytest.approx(bruto["VENDAS"].sum())

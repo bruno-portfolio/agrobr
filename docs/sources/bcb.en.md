@@ -14,7 +14,7 @@ df = await bcb.credito_rural(produto="soja", safra="2024/25", finalidade="custei
 # Filter by state
 df = await bcb.credito_rural(produto="soja", safra="2024/25", uf="MT")
 
-# Aggregate by state (sums municipalities)
+# Aggregate by state (sums the state's months and programs)
 df = await bcb.credito_rural(produto="soja", safra="2024/25", agregacao="uf")
 
 # Aggregate by program
@@ -286,3 +286,8 @@ The catalogue and its [monthly](https://dadosabertos.bcb.gov.br/dataset/expectat
 SICOR filtering uses exact equality with the published name, including literal double quotes. This excludes corn silage from corn queries and wheat silage or buckwheat from wheat queries. Aliases such as `cafe`, `feijao`, `algodao`, `cana`, and `mandioca` are mapped to source spelling for the filter, while `produto` publishes the requested key, unaccented and lower-case. `cafe_arabica` and `cafe_conilon` were removed: this SICOR dataset does not distinguish these types; use `cafe`.
 
 `custeio` uses agricultural products. `investimento` uses investment items such as BOVINOS, CAFÉ, CANA-DE-AÇUCAR, BANANA, and tractors; soybean and corn may have no records. Valid queries without records return an empty DataFrame matching rural-credit contract 2.0 and an explanatory warning, not `ParseError`.
+
+Omitted SGS date bounds use the civil date in Brasília (UTC−3), including day and year boundaries.
+Acquisition timestamps remain in UTC. When Focus collection reaches the local limit, its warning
+describes coverage in Portuguese and states when the source supplied no total; structured
+completeness and count fields remain in `source_details`.

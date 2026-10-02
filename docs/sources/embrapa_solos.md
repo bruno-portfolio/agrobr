@@ -128,7 +128,7 @@ horizontes com as tres medidas; `saturacao_bases` = 100 x S / T e `ctc` = S + H 
 ## Particularidades
 
 - **Funcoes `_geo()` requerem [geo]**: `pip install agrobr[geo]` (geopandas)
-- **Filtro de ordem**: `ordem` casa por trecho de `ordem1`, sem diferenciar caixa. Texto vazio ou não textual é recusado antes da coleta. Uma leitura completa sem correspondência emite `UserWarning` e registra o valor pedido e as classes observadas em `MetaInfo.validation_warnings`; uma leitura parcial continua avisando sobre o prefixo remoto.
+- **Filtro de ordem**: `ordem` casa a classe inteira de `ordem1`, uma das 15 publicadas na camada `brasil_solos_5m_20201104` (13 ordens de solo mais `AFLORAMENTOS DE ROCHAS` e `DUNAS`; leitura completa em 01/10/2026: 2.852 polígonos, 177 sem `ordem1`). Caixa, acento e singular são aceitos (`"latossolo"` vale `LATOSSOLOS`); trecho (`"latos"`), texto vazio, não textual ou fora das classes levanta `InvalidParameterError` antes da coleta, com a lista das classes. Uma leitura completa sem correspondência emite `UserWarning` e registra o valor pedido e as classes observadas em `MetaInfo.validation_warnings`; uma leitura parcial continua avisando sobre o prefixo remoto.
 - **Paginacao**: count/startIndex ordenado por `fid`, com 1 registro de sobreposicao entre paginas. `max_registros` (padrao 50.000; 5.000 perfis e 3.000 poligonos nas funcoes `_geo`) corta o prefixo remoto; os filtros `uf` e `ordem` sao aplicados localmente sobre esse prefixo e, quando o corte deixa a selecao parcial, sai um `UserWarning` (`max_registros=None` varre a camada inteira)
 - **CRS**: EPSG:4326, o CRS padrao das duas camadas no WFS; o `bbox` tambem e EPSG:4326
 - **Licenca NC**: uso comercial requer autorizacao da EMBRAPA

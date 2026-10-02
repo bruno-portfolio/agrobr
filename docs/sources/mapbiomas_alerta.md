@@ -21,7 +21,8 @@
 
 O token é pessoal e expira. Ele vem da mutation `signIn` da API, com o e-mail e a senha da conta na plataforma. Com o token
 vencido ou inválido, a API responde "Token de acesso inválido", e o agrobr levanta `SourceUnavailableError` com essa
-mensagem. O `alerta_info()` é público e não usa token.
+mensagem e a orientação de trocar o token em `AGROBR_MAPBIOMAS_ALERTA_TOKEN` ou no argumento `token=`, sem o valor do
+token. HTTP 401 ou 403 sai da mesma forma ("credencial recusada"). O `alerta_info()` é público e não usa token.
 
 ## Exemplo de Uso
 

@@ -12,6 +12,7 @@ from agrobr import _log
 from agrobr.constants import MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.http.retry import retry_async, should_retry_status
+from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import detect_encoding_chain
 from agrobr.utils import io as io_utils
@@ -45,11 +46,20 @@ class _Download(NamedTuple):
     final_url: str
 
 
+def _timeout_requests() -> tuple[float | None, float | None]:
+    """``(connect, read)`` do ``HTTPSettings`` para o requests, com piso de leitura de 180 s.
+
+    ``write`` e ``pool`` são do httpx e não se aplicam a este transporte.
+    """
+    timeout = get_timeout(read=ANTAQ_TIMEOUT)
+    return timeout.connect, timeout.read
+
+
 def _get_sync(url: str) -> _Download:
     """Baixa via requests: o WAF da ANTAQ rejeita o fingerprint do httpx (HTTP 403)."""
     response = requests.get(
         url,
-        timeout=ANTAQ_TIMEOUT,
+        timeout=_timeout_requests(),
         headers=UserAgentRotator.get_headers(source="antaq"),
         allow_redirects=True,
     )

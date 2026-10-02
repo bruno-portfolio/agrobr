@@ -581,10 +581,12 @@ async def safras(
 ) -> result_utils.DataFrameResult:
     safra = models.validate_selection(safra, levantamento)
     uf = validate_uf(uf)
-    if not isinstance(produto, str) or produto.lower() not in constants.CONAB_PRODUTOS:
+    produto_normalizado = crops.normalizar_cultura(produto) if isinstance(produto, str) else ""
+    if produto_normalizado not in constants.CONAB_PRODUTOS:
         raise InvalidParameterError(
             f"Produto CONAB {produto!r} inválido. Válidos: {sorted(constants.CONAB_PRODUTOS)}"
         )
+    produto = produto_normalizado
     logger.info(
         "conab_safras_request",
         produto=produto,

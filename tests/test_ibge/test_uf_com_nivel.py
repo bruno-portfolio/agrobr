@@ -12,6 +12,7 @@ from agrobr.ibge import client
 from tests.helpers import levanta_exatamente
 
 MENSAGEM = "só filtra com nivel='uf' ou 'municipio'"
+MENSAGEM_HISTORICO = "só filtra com nivel='uf'; com nivel='regiao'"
 
 
 @pytest.fixture
@@ -22,28 +23,35 @@ def sidra(monkeypatch: pytest.MonkeyPatch) -> AsyncMock:
 
 
 @pytest.mark.parametrize(
-    ("funcao", "argumentos"),
+    ("funcao", "argumentos", "mensagem"),
     [
-        (ibge.pam, {"produto": "soja", "nivel": "brasil"}),
-        (ibge.ppm, {"especie": "bovino", "nivel": "brasil"}),
-        (ibge.censo_agro, {"tema": next(iter(client.TABELAS_CENSO_AGRO)), "nivel": "brasil"}),
+        (ibge.pam, {"produto": "soja", "nivel": "brasil"}, MENSAGEM),
+        (ibge.ppm, {"especie": "bovino", "nivel": "brasil"}, MENSAGEM),
+        (
+            ibge.censo_agro,
+            {"tema": next(iter(client.TABELAS_CENSO_AGRO)), "nivel": "brasil"},
+            MENSAGEM,
+        ),
         (
             ibge.censo_agro_historico,
             {"tema": next(iter(client.TABELAS_CENSO_HISTORICO)), "nivel": "regiao"},
+            MENSAGEM_HISTORICO,
         ),
         (
             ibge.silvicultura,
             {"produto": next(iter(client.PRODUTOS_SILVICULTURA)), "nivel": "brasil"},
+            MENSAGEM,
         ),
         (
             ibge.extracao_vegetal,
             {"produto": next(iter(client.PRODUTOS_EXTRACAO_VEGETAL)), "nivel": "brasil"},
+            MENSAGEM,
         ),
     ],
     ids=["pam", "ppm", "censo_agro", "censo_agro_historico", "silvicultura", "extracao_vegetal"],
 )
-async def test_uf_com_nivel_sem_filtro_recusa_antes_da_rede(sidra, funcao, argumentos):
-    with levanta_exatamente(InvalidParameterError, MENSAGEM):
+async def test_uf_com_nivel_sem_filtro_recusa_antes_da_rede(sidra, funcao, argumentos, mensagem):
+    with levanta_exatamente(InvalidParameterError, mensagem):
         await funcao(uf="MT", **argumentos)
     sidra.assert_not_awaited()
 

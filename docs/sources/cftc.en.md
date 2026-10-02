@@ -39,13 +39,13 @@ come in with `combinado=True`; the table is in [posicionamento_fundos](../contra
 | `commodity` | str | agrobr canonical name (`soja`, `milho`, ...) |
 | `contrato` | str | Contract and exchange name (e.g.: `SOYBEANS - CHICAGO BOARD OF TRADE`) |
 | `codigo_cftc` | str | CFTC contract code |
-| `open_interest` | int64 | Open contracts |
-| `managed_money_long/short/spread` | int64 | Fund positions |
-| `managed_money_net` | int64 | Long − short (calculated) |
-| `producer_long/short` | int64 | Commercial hedgers |
-| `swap_long/short/spread` | int64 | Swap dealers |
-| `other_long/short/spread` | int64 | Other reportables |
-| `nonreportable_long/short` | int64 | Non-reportable positions |
+| `open_interest` | Int64 | Open contracts |
+| `managed_money_long/short/spread` | Int64 | Fund positions |
+| `managed_money_net` | Int64 | Long − short (calculated) |
+| `producer_long/short` | Int64 | Commercial hedgers |
+| `swap_long/short/spread` | Int64 | Swap dealers |
+| `other_long/short/spread` | Int64 | Other reportables |
+| `nonreportable_long/short` | Int64 | Non-reportable positions |
 | `change_managed_money_long/short` | Int64 | Weekly change (nullable) |
 | `change_open_interest` | Int64 | Weekly change in OI (nullable) |
 
@@ -56,6 +56,15 @@ come in with `combinado=True`; the table is in [posicionamento_fundos](../contra
 `laranja` (FCOJ-A), `arroz` (rough rice). Accepts canonical name, EN alias or CFTC code; any other value raises
 `InvalidParameterError` with the list. `inicio` and `fim` accept `date`, `datetime`, and `YYYY-MM-DD` or
 `DD/MM/YYYY` text.
+
+A period with no reports returns an empty frame with the same 22 columns and dtypes as a populated
+result: counts and changes use `Int64`, dates use `datetime64[ns]`, and text uses the native pandas
+dtype. An invalid response envelope still raises `ParseError`.
+
+The query has a 50,000-record limit. When that limit is reached, the API emits `UserWarning` and
+records it in `meta.validation_warnings`; `meta.source_details` contains `row_limit` and
+`completeness="unknown"`. This means completeness has not been established. Request a shorter
+period. The dataset preserves the warning and these metadata fields.
 
 ## MetaInfo
 

@@ -180,7 +180,7 @@
   },
   "guarantees": [
     "Column names never change (additions only)",
-    "'safra' always matches pattern YYYY/YYYY",
+    "'safra' always matches pattern YYYY/YY",
     "'uf' is always a valid Brazilian state code when present",
     "Numeric values are always >= 0"
   ]

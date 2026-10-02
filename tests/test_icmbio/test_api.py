@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ResourceLimitError
 from agrobr.icmbio import api
 
 UCS_DIR = Path(__file__).parent.parent / "golden_data" / "icmbio" / "ucs_sample"
@@ -55,7 +55,18 @@ class TestUcs:
         assert isinstance(result, pl.DataFrame)
 
 
-gpd = pytest.importorskip("geopandas")
+@pytest.mark.asyncio
+async def test_ucs_acima_do_limite_e_resource_limit_antes_do_download(monkeypatch):
+    body = b'<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" numberOfFeatures="501"/>'
+    monkeypatch.setattr(
+        api.client, "fetch_ucs_count", AsyncMock(return_value=(body, "https://test/hits"))
+    )
+    with (
+        patch.object(api.client, "fetch_ucs", new_callable=AsyncMock) as fetch,
+        pytest.raises(ResourceLimitError, match="excede o limite de 500"),
+    ):
+        await api.ucs()
+    fetch.assert_not_awaited()
 
 
 class TestUcsGeo:
@@ -63,6 +74,7 @@ class TestUcsGeo:
     def source_count(self, monkeypatch):
         import json
 
+        pytest.importorskip("geopandas")
         count = len(json.loads(_ucs_geojson_bytes())["features"])
         body = (
             '<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" '

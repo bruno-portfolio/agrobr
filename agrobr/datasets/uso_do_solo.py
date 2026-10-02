@@ -82,7 +82,7 @@ def _validar_consulta(
     if not isinstance(tipo, str) or tipo not in ("cobertura", "transicao"):
         raise InvalidParameterError("tipo deve ser 'cobertura' ou 'transicao'")
     if not isinstance(nivel, str) or nivel not in ("estado", "municipio"):
-        raise InvalidParameterError("nivel deve ser 'estado' ou 'municipio'")
+        raise InvalidParameterError("nivel deve ser 'estado', 'uf' ou 'municipio'")
     for name, value in (("as_polars", as_polars), ("return_meta", return_meta)):
         if not isinstance(value, bool):
             raise InvalidParameterError(f"{name} deve ser booleano")
@@ -150,6 +150,7 @@ class UsodoSoloDataset(base.BaseDataset):
             "classe_de_id": classe_de_id,
             "classe_para_id": classe_para_id,
         }
+        nivel = "estado" if nivel == "uf" else nivel
         _validar_consulta(
             tipo,
             nivel,

@@ -75,7 +75,7 @@ async def ensaio_soja(
     warn_once(
         "rio_verde",
         "Fundação Rio Verde: termos de uso não encontrados. "
-        "Classificação: zona_cinza. Veja docs/licenses.md.",
+        "Classificação: zona_cinza. Veja https://www.agrobr.dev/docs/licenses/.",
     )
     logger.info("rio_verde_ensaio_soja", safra=safra, cultivar=cultivar, empresa=empresa)
 

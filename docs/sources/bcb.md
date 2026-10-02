@@ -14,7 +14,7 @@ df = await bcb.credito_rural(produto="soja", safra="2024/25", finalidade="custei
 # Filtrar por UF
 df = await bcb.credito_rural(produto="soja", safra="2024/25", uf="MT")
 
-# Agregacao por UF (soma municipios)
+# Agregacao por UF (soma meses e programas da UF)
 df = await bcb.credito_rural(produto="soja", safra="2024/25", agregacao="uf")
 
 # Agregacao por programa
@@ -130,7 +130,7 @@ resolvido pelo numero da tabela (`"1"` = LAVOURA). O subprograma sai so com o co
 
 ## Produtos
 
-Soja, milho, cafe, algodao, arroz, trigo, feijao, cana-de-acucar, mandioca,
+Soja, milho, cafe, algodao, arroz, trigo, feijao, cana, mandioca,
 sorgo, aveia, cevada, entre outros. Use o nome canonico do agrobr.
 
 ## MetaInfo
@@ -283,3 +283,8 @@ O catálogo e os recursos [mensal](https://dadosabertos.bcb.gov.br/dataset/expec
 O filtro SICOR usa igualdade exata com o nome publicado, incluindo as aspas duplas literais. Isso exclui milho silagem das consultas de milho e trigo silagem ou sarraceno das consultas de trigo. A API normaliza aliases como `cafe`, `feijao`, `algodao`, `cana` e `mandioca` para a grafia da fonte no filtro e publica em `produto` a chave pedida, sem acento e em minúsculas. `cafe_arabica` e `cafe_conilon` foram removidos: o SICOR consultado não distingue esses tipos; use `cafe`.
 
 A finalidade `custeio` usa produtos agrícolas. `investimento` usa itens como BOVINOS, CAFÉ, CANA-DE-AÇUCAR, BANANA e tratores; soja e milho podem não ter registros. Uma consulta válida sem registros devolve DataFrame vazio com o contrato de crédito rural 2.0 e um aviso explicativo, não `ParseError`.
+
+Na consulta SGS, limites omitidos usam a data civil de Brasília (UTC−3), inclusive na virada do
+dia e do ano. Os instantes de aquisição continuam em UTC. Quando a coleta Focus atinge o limite
+local, o aviso descreve a cobertura em português e informa quando a fonte não declarou o total;
+os valores estruturados de completude e contagem permanecem em `source_details`.

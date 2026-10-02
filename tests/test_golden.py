@@ -831,17 +831,17 @@ def test_antt_pedagio_golden_parsing(_name: str, path: Path):
                         "data": datetime.strptime(
                             reference, "%d/%m/%Y" if reference.count("/") == 2 else "%m/%Y"
                         ),
-                        "concessionaria": source["concessionaria"],
-                        "praca": source["praca"],
-                        "sentido": source["sentido"],
+                        "concessionaria": source["concessionaria"].strip(),
+                        "praca": source["praca"].strip(),
+                        "sentido": source["sentido"].strip().upper(),
                         "n_eixos": int(match[1]) if match else None,
-                        "tipo_veiculo": source["tipo_de_veiculo"],
+                        "tipo_veiculo": source["tipo_de_veiculo"].strip(),
                         "volume": int(Decimal(source["volume_total"].replace(",", "."))),
                         "rodovia": None,
                         "uf": None,
                         "municipio": None,
-                        "categoria_eixo": category,
-                        "tipo_cobranca": source["tipo_cobranca"],
+                        "categoria_eixo": category.strip(),
+                        "tipo_cobranca": source["tipo_cobranca"].strip(),
                         "frequencia": sample["frequency"],
                     }
                 )

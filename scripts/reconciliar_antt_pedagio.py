@@ -138,12 +138,12 @@ def oracle(body: bytes, frequency: str) -> dict[str, Any]:
             reference = values[position["mes_ano"]]
             key = (
                 month_of(reference) if frequency == "mensal" else day_of(reference),
-                values[position["concessionaria"]],
-                values[position["praca"]],
-                values[position["sentido"]],
-                values[category] if category is not None else "",
-                values[position["tipo_cobranca"]],
-                values[position["tipo_de_veiculo"]],
+                values[position["concessionaria"]].strip(),
+                values[position["praca"]].strip(),
+                values[position["sentido"]].strip().upper(),
+                values[category].strip() if category is not None else "",
+                values[position["tipo_cobranca"]].strip(),
+                values[position["tipo_de_veiculo"]].strip(),
             )
             volume = int(Decimal(values[position["volume_total"]].replace(",", ".")))
             totals[key] += volume * count // copies
@@ -272,7 +272,7 @@ def compare_enrichment(
 ) -> dict[str, Any]:
     groups: dict[tuple[str, str], set[tuple[Any, ...]]] = collections.defaultdict(set)
     for row in plazas:
-        groups[row["concessionaria"], row["praca_de_pedagio"]].add(
+        groups[row["concessionaria"].strip(), row["praca_de_pedagio"].strip()].add(
             (row["rodovia"], row["uf"], row["municipio"])
         )
     unique = {key: next(iter(values)) for key, values in groups.items() if len(values) == 1}

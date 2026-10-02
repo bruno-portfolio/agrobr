@@ -38,6 +38,16 @@ def _codigo_de_vencimento(vencimento: str) -> str:
     )
 
 
+def _codigo_do_mes_do_futuro(vencimento: str) -> str:
+    codigo = vencimento.strip().upper() if isinstance(vencimento, str) else ""
+    if _RE_VENCIMENTO_MES.fullmatch(codigo):
+        return codigo
+    raise InvalidParameterError(
+        f"vencimento {vencimento!r} inválido: historico traz só futuros; use o código do mês "
+        "do contrato (ex.: 'V26')"
+    )
+
+
 def _ticker(contrato: str) -> str:
     chave = contrato.strip() if isinstance(contrato, str) else ""
     ticker = B3_CONTRATOS_AGRO.get(chave.lower(), chave.upper())
@@ -102,7 +112,7 @@ async def ajustes(
         "b3_ajustes",
         "agrobr.b3: dados da B3 (empresa privada). Ajustes diarios publicados "
         "sem autenticacao, mas termos de uso para acesso programatico nao sao "
-        "claros. Classificacao: zona_cinza. Veja docs/licenses.md.",
+        "claros. Classificacao: zona_cinza. Veja https://www.agrobr.dev/docs/licenses/.",
     )
 
     logger.info("b3_ajustes", data=str(data), contrato=contrato)
@@ -196,7 +206,7 @@ async def historico(
 
     ticker = _ticker(contrato)
     inicio_dt, fim_dt = _periodo(inicio, fim)
-    codigo_vencimento = _codigo_de_vencimento(vencimento) if vencimento is not None else None
+    codigo_vencimento = _codigo_do_mes_do_futuro(vencimento) if vencimento is not None else None
 
     t0 = time.monotonic()
 
@@ -355,7 +365,7 @@ async def posicoes_abertas(
         "b3_posicoes",
         "agrobr.b3: dados da B3 (empresa privada). Posicoes em aberto publicadas "
         "sem autenticacao, mas termos de uso para acesso programatico nao sao "
-        "claros. Classificacao: zona_cinza. Veja docs/licenses.md.",
+        "claros. Classificacao: zona_cinza. Veja https://www.agrobr.dev/docs/licenses/.",
     )
 
     logger.info("b3_posicoes_abertas", data=str(data), contrato=contrato, tipo=tipo)
@@ -400,7 +410,7 @@ async def posicoes_abertas(
 
 
 @overload
-async def oi_historico(
+async def posicoes_abertas_historico(
     *,
     contrato: str,
     inicio: str | date,
@@ -413,7 +423,7 @@ async def oi_historico(
 
 
 @overload
-async def oi_historico(
+async def posicoes_abertas_historico(
     *,
     contrato: str,
     inicio: str | date,
@@ -426,7 +436,7 @@ async def oi_historico(
 
 
 @overload
-async def oi_historico(
+async def posicoes_abertas_historico(
     *,
     contrato: str,
     inicio: str | date,
@@ -438,7 +448,7 @@ async def oi_historico(
 ) -> DataFrameResult: ...
 
 
-async def oi_historico(
+async def posicoes_abertas_historico(
     *,
     contrato: str,
     inicio: str | date,
@@ -460,7 +470,9 @@ async def oi_historico(
     futuro e as opções daquele mês, ou o código publicado de uma opção
     (ex.: "VVJK").
     """
-    logger.info("b3_oi_historico", contrato=contrato, inicio=str(inicio), fim=str(fim))
+    logger.info(
+        "b3_posicoes_abertas_historico", contrato=contrato, inicio=str(inicio), fim=str(fim)
+    )
 
     ticker = _ticker(contrato)
     inicio_dt, fim_dt = _periodo(inicio, fim)

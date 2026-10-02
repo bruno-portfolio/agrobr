@@ -203,7 +203,7 @@ async def test_geo_publica_propriedades_e_geometria_do_corpo(monkeypatch: pytest
 
     assert geo_rows(frame) == [geo_linha(feature) for feature in features]
     assert fetch.await_args.args == ("DF", None)
-    assert fetch.await_args.kwargs == {"max_features": None}
+    assert fetch.await_args.kwargs == {"max_features": None, "validation_warnings": []}
     assert (meta.selected_source, meta.attempted_sources) == ("sicar_wfs_geo", ["sicar_wfs_geo"])
     assert meta.records_count == len(features)
     helpers.conferir_corpo(meta, body)

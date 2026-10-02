@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import math
 import os
 import re
 import threading
@@ -175,15 +176,25 @@ _MAX_PAGES = 20
 
 _LIST_CACHE: dict[int, tuple[float, list[ANECArticle]]] = {}
 
+_LIST_TTL_PADRAO = 300.0
+
 
 def _list_ttl_seconds() -> float:
     raw = os.environ.get("AGROBR_ANEC_LIST_TTL")
     if raw is None:
-        return 300.0
+        return _LIST_TTL_PADRAO
     try:
-        return max(0.0, float(raw))
+        ttl = float(raw)
     except ValueError:
-        return 300.0
+        ttl = math.nan
+    if math.isfinite(ttl) and ttl >= 0:
+        return ttl
+    warn_once(
+        f"anec_list_ttl_invalido:{raw}",
+        f"AGROBR_ANEC_LIST_TTL inválido ({raw!r}): use segundos, número finito maior ou igual a 0 "
+        f"(0 desliga o cache da listagem); usando o padrão de {_LIST_TTL_PADRAO:.0f} s.",
+    )
+    return _LIST_TTL_PADRAO
 
 
 def _list_cache_clear() -> None:

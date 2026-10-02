@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import warnings
+from collections.abc import Awaitable, Callable
 from dataclasses import replace
 from typing import Any, Literal, overload
 
@@ -11,7 +13,12 @@ from agrobr.contracts import estimativa_safra as safra_contract
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.datasets.registry import register
-from agrobr.exceptions import ContractViolationError, InvalidParameterError, SourceUnavailableError
+from agrobr.exceptions import (
+    ContractViolationError,
+    InvalidParameterError,
+    ParseError,
+    SourceUnavailableError,
+)
 from agrobr.models import MetaInfo
 from agrobr.normalize import dates, regions
 from agrobr.utils import result as result_utils
@@ -135,6 +142,24 @@ def _normalize_lspa(
     return result
 
 
+class _SemObservacoes(SourceUnavailableError):
+    pass
+
+
+_FetchFn = Callable[..., Awaitable[tuple[pd.DataFrame, MetaInfo | None]]]
+
+
+def _registrando(nome: str, fetch_fn: _FetchFn, registro: dict[str, Exception]) -> _FetchFn:
+    async def chamada(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
+        try:
+            return await fetch_fn(produto, **kwargs)
+        except (ParseError, _SemObservacoes) as exc:
+            registro[nome] = exc
+            raise
+
+    return chamada
+
+
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
 
@@ -147,9 +172,7 @@ async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
     )
     df, meta = _unpack_result(result)
     if df.empty:
-        raise SourceUnavailableError(
-            source="conab", last_error=f"CONAB sem estimativa de {produto}"
-        )
+        raise _SemObservacoes(source="conab", last_error=f"CONAB sem estimativa de {produto}")
     requested = kwargs.get("levantamento")
     if requested is not None and (
         "levantamento" not in df
@@ -179,7 +202,7 @@ async def _fetch_ibge_lspa(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
     df, meta = _unpack_result(result)
     df = _normalize_lspa(df, produto, safra_resultado, uf, mes=mes)
     if df.empty:
-        raise SourceUnavailableError(
+        raise _SemObservacoes(
             source="ibge_lspa",
             last_error=f"LSPA sem dados de {produto} em {ano}"
             + (f"/{mes:02d}" if mes else "")
@@ -279,15 +302,52 @@ class EstimativaSafraDataset(BaseDataset):
             mes=month,
         )
         snapshot = get_snapshot()
-        runner = self
-        if selected is not None:
-            runner = copy.copy(self)
-            runner.info = replace(
-                self.info, sources=[s for s in self.info.sources if s.name == selected]
-            )
-        df, source_name, source_meta, attempted = await runner._try_sources(
-            produto, safra=safra, uf=uf, levantamento=levantamento, mes=month
+        registro: dict[str, Exception] = {}
+        runner = copy.copy(self)
+        runner.info = replace(
+            self.info,
+            sources=[
+                replace(s, fetch_fn=_registrando(s.name, s.fetch_fn, registro))
+                for s in self.info.sources
+                if selected is None or s.name == selected
+            ],
         )
+        try:
+            df, source_name, source_meta, attempted = await runner._try_sources(
+                produto, safra=safra, uf=uf, levantamento=levantamento, mes=month
+            )
+        except SourceUnavailableError as erro:
+            vazias = [nome for nome, exc in registro.items() if isinstance(exc, _SemObservacoes)]
+            falhas = [nome for nome, _, _ in erro.errors if nome not in vazias]
+            if not vazias:
+                raise
+            layout = [exc for nome in falhas if isinstance(exc := registro.get(nome), ParseError)]
+            if falhas and len(layout) == len(falhas):
+                raise ParseError(
+                    source=f"estimativa_safra/{produto}",
+                    parser_version=layout[-1].parser_version,
+                    reason="As fontes com resposta falharam por layout; as demais vieram sem observações",
+                    errors=erro.errors,
+                    attempted_sources=erro.attempted_sources,
+                ) from erro
+            if falhas:
+                raise
+            aviso = (
+                f"estimativa_safra: {', '.join(vazias)} responderam sem observações de {produto} "
+                "para o recorte pedido; o resultado sai vazio"
+            )
+            warnings.warn(aviso, UserWarning, stacklevel=2)
+            vazio = safra_contract.ESTIMATIVA_SAFRA_V3_1.empty_frame()
+            meta = (
+                self._build_meta(vazio, vazias[-1], None, erro.attempted_sources, snapshot)
+                if return_meta
+                else None
+            )
+            if meta is not None:
+                meta.validation_warnings.append(aviso)
+            return result_utils.finalize_result(
+                vazio, meta, as_polars=as_polars, return_meta=return_meta
+            )
         df = self._normalize(df, produto)
         self._validate_contract(df)
         meta = (

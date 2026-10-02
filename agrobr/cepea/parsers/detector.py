@@ -22,6 +22,8 @@ async def get_parser_with_fallback(
     produto: str,
     data_referencia: date | None = None,
     strict: bool = False,
+    *,
+    avisos: list[str] | None = None,
 ) -> tuple[base.BaseParser, list[models.Indicador]]:
     if not PARSERS:
         raise exceptions.ParseError(
@@ -32,10 +34,10 @@ async def get_parser_with_fallback(
         )
 
     errors: list[tuple[str, str]] = []
-    warnings: list[str] = []
 
     for parser_cls in reversed(PARSERS):
         parser = parser_cls()
+        warnings: list[str] = []
 
         if data_referencia:
             if parser.valid_from > data_referencia:
@@ -64,8 +66,8 @@ async def get_parser_with_fallback(
 
         if confidence < constants.CONFIDENCE_HIGH:
             warnings.append(
-                f"Parser v{parser.version} confidence {confidence:.1%} "
-                f"(expected >= {constants.CONFIDENCE_HIGH:.1%})"
+                f"cepea: parser v{parser.version} com confiança de {confidence:.1%} "
+                f"(esperado >= {constants.CONFIDENCE_HIGH:.1%}); confira o layout da fonte."
             )
 
         try:
@@ -83,6 +85,8 @@ async def get_parser_with_fallback(
                     warnings=warnings,
                 )
 
+            if avisos is not None:
+                avisos.extend(warnings)
             return parser, result
 
         except Exception as e:

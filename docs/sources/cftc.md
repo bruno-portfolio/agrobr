@@ -39,13 +39,13 @@ com `combinado=True`; a tabela está em [posicionamento_fundos](../contracts/pos
 | `commodity` | str | Nome canônico agrobr (`soja`, `milho`, ...) |
 | `contrato` | str | Nome do contrato e bolsa (ex.: `SOYBEANS - CHICAGO BOARD OF TRADE`) |
 | `codigo_cftc` | str | Código CFTC do contrato |
-| `open_interest` | int64 | Contratos em aberto |
-| `managed_money_long/short/spread` | int64 | Posições dos fundos |
-| `managed_money_net` | int64 | Long − short (calculado) |
-| `producer_long/short` | int64 | Hedgers comerciais |
-| `swap_long/short/spread` | int64 | Swap dealers |
-| `other_long/short/spread` | int64 | Other reportables |
-| `nonreportable_long/short` | int64 | Posições não reportáveis |
+| `open_interest` | Int64 | Contratos em aberto |
+| `managed_money_long/short/spread` | Int64 | Posições dos fundos |
+| `managed_money_net` | Int64 | Long − short (calculado) |
+| `producer_long/short` | Int64 | Hedgers comerciais |
+| `swap_long/short/spread` | Int64 | Swap dealers |
+| `other_long/short/spread` | Int64 | Other reportables |
+| `nonreportable_long/short` | Int64 | Posições não reportáveis |
 | `change_managed_money_long/short` | Int64 | Variação semanal (nullable) |
 | `change_open_interest` | Int64 | Variação semanal do OI (nullable) |
 
@@ -56,6 +56,15 @@ com `combinado=True`; a tabela está em [posicionamento_fundos](../contracts/pos
 `laranja` (FCOJ-A), `arroz` (rough rice). Aceita nome canônico, alias EN ou código CFTC; outro valor gera
 `InvalidParameterError` com a lista. `inicio` e `fim` aceitam `date`, `datetime` e texto `AAAA-MM-DD` ou
 `DD/MM/AAAA`.
+
+Um período sem relatórios retorna um quadro vazio com as mesmas 22 colunas e dtypes do resultado
+preenchido: contagens e variações em `Int64`, data em `datetime64[ns]` e textos no dtype nativo do
+pandas. Um envelope inválido continua gerando `ParseError`.
+
+A consulta tem limite de 50.000 registros. Ao atingir esse limite, a API emite `UserWarning` e
+registra o aviso em `meta.validation_warnings`; `meta.source_details` informa `row_limit` e
+`completeness="unknown"`. Isso indica que a completude não foi comprovada. Reduza o período
+solicitado. O dataset preserva o aviso e esses metadados.
 
 ## MetaInfo
 

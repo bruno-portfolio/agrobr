@@ -96,7 +96,7 @@ def geocodigo_do_municipio(nivel: str, municipio: str | int | None, uf: str | No
     cadastro de municípios do IBGE (Lagoa Mirim e Lagoa dos Patos), conferidos depois do download.
     """
     if not isinstance(nivel, str) or nivel not in {"estado", "municipio"}:
-        raise InvalidParameterError("nivel deve ser 'estado' ou 'municipio'")
+        raise InvalidParameterError("nivel deve ser 'estado', 'uf' ou 'municipio'")
     if municipio is None:
         return None
     if nivel != "municipio":

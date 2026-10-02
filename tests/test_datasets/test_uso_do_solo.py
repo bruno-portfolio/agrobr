@@ -1,5 +1,7 @@
 import hashlib
 from datetime import timedelta
+from pathlib import Path
+from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 import pytest
@@ -7,7 +9,10 @@ import pytest
 from agrobr import contracts, datasets
 from agrobr.datasets.deterministic import deterministic
 from agrobr.exceptions import InvalidParameterError
-from tests.helpers import levanta_exatamente
+from agrobr.mapbiomas import api as mapbiomas_api
+from tests.helpers import levanta_exatamente, mapbiomas_workbook_bundle
+
+GOLDEN_MAPBIOMAS = Path(__file__).parents[1] / "golden_data" / "mapbiomas"
 
 
 def _make_cobertura_df(**overrides):
@@ -141,3 +146,24 @@ async def test_estado_e_geocodigo_nao_sao_mais_parametros(nome, replay_mapbiomas
     with levanta_exatamente(TypeError, nome):
         await datasets.uso_do_solo(**{nome: "MT" if nome == "estado" else "5107925"})
     assert not requests
+
+
+async def test_nivel_uf_e_alias_de_estado():
+    corpo = (GOLDEN_MAPBIOMAS / "biome_state_sample" / "response.xlsx").read_bytes()
+    bundle = mapbiomas_workbook_bundle(
+        corpo, "https://storage.googleapis.com/mapbiomas-public/t.xlsx"
+    )
+    with patch.object(
+        mapbiomas_api.client,
+        "fetch_biome_state_bundle",
+        new_callable=AsyncMock,
+        return_value=bundle,
+    ):
+        estado = await datasets.uso_do_solo(
+            bioma="Cerrado", uf="GO", ano=2020, nivel="estado", colecao=10
+        )
+        alias = await datasets.uso_do_solo(
+            bioma="Cerrado", uf="GO", ano=2020, nivel="uf", colecao=10
+        )
+    assert not estado.empty
+    assert alias.equals(estado)

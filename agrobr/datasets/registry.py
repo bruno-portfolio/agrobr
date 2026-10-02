@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from agrobr.datasets.base import BaseDataset, DatasetInfo
 
 _REGISTRY: dict[str, BaseDataset] = {}
+_FONTES_INTERNAS: dict[str, tuple[str, ...]] = {"cepea": ("noticias_agricolas",)}
 
 
 def register(dataset: BaseDataset) -> BaseDataset:
@@ -35,11 +36,22 @@ def list_products(name: str) -> list[str]:
 
 
 def info(name: str) -> dict[str, Any]:
-    return get_dataset(name).info.to_dict()
+    dataset_info = get_dataset(name).info
+    return {**dataset_info.to_dict(), "licenses": _licencas_por_fonte(dataset_info)}
+
+
+def _licencas_por_fonte(info: DatasetInfo) -> dict[str, str | None]:
+    """Licença de cada adaptador e, logo depois dele, das fontes que ele tenta por dentro."""
+    nomes = [
+        nome
+        for fonte in info.sources
+        for nome in (fonte.name, *_FONTES_INTERNAS.get(fonte.name, ()))
+    ]
+    return {nome: constants.licenca_da_fonte(nome) for nome in nomes}
 
 
 def _licencas(info: DatasetInfo) -> str:
-    classes = {fonte.name: constants.licenca_da_fonte(fonte.name) for fonte in info.sources}
+    classes = _licencas_por_fonte(info)
     if len({classe for classe in classes.values() if classe}) < 2:
         return info.license
     return ", ".join(f"{classe} ({fonte})" for fonte, classe in classes.items() if classe)
@@ -76,6 +88,6 @@ def describe_all() -> str:
             products += f" +{len(i.products) - 4}"
         lines.append(
             f"{i.name:<20} {i.source_institution:<15} "
-            f"{i.update_frequency:<10} {i.license:<12} {products}"
+            f"{i.update_frequency:<10} {_licencas(i):<12} {products}"
         )
     return "\n".join(lines)

@@ -50,7 +50,8 @@ async def test_data_e_janela_juntas_sao_recusadas_antes_da_rede(
     monkeypatch, tipo, argumentos, mensagem
 ):
     chamadas = {
-        nome: AsyncMock() for nome in ("ajustes", "posicoes_abertas", "historico", "oi_historico")
+        nome: AsyncMock()
+        for nome in ("ajustes", "posicoes_abertas", "historico", "posicoes_abertas_historico")
     }
     for nome, espiao in chamadas.items():
         monkeypatch.setattr(b3, nome, espiao)
@@ -73,10 +74,37 @@ async def test_datas_de_todo_tipo_sao_validadas_antes_da_rede(
     monkeypatch, tipo, argumentos, mensagem
 ):
     chamadas = {
-        nome: AsyncMock() for nome in ("ajustes", "posicoes_abertas", "historico", "oi_historico")
+        nome: AsyncMock()
+        for nome in ("ajustes", "posicoes_abertas", "historico", "posicoes_abertas_historico")
     }
     for nome, espiao in chamadas.items():
         monkeypatch.setattr(b3, nome, espiao)
     with levanta_exatamente(InvalidParameterError, match=mensagem):
+        await datasets.futuros_agricolas(PRODUTO, tipo=tipo, **argumentos)
+    assert all(espiao.await_count == 0 for espiao in chamadas.values())
+
+
+@pytest.mark.parametrize(
+    ("tipo", "argumentos"),
+    [
+        ("ajustes", {"data": "2026-09-21", "vencimento": "X26"}),
+        ("ajustes", {"vencimento": "lixo"}),
+        ("posicoes", {"data": "2026-09-21", "vencimento": "X26"}),
+    ],
+    ids=["ajustes_com_data", "ajustes_pregao_recente", "posicoes_com_data"],
+)
+async def test_vencimento_em_tipo_de_um_pregao_e_recusado_antes_da_rede(
+    monkeypatch, tipo, argumentos
+):
+    chamadas = {
+        nome: AsyncMock()
+        for nome in ("ajustes", "posicoes_abertas", "historico", "posicoes_abertas_historico")
+    }
+    for nome, espiao in chamadas.items():
+        monkeypatch.setattr(b3, nome, espiao)
+    with levanta_exatamente(
+        InvalidParameterError,
+        match=f"tipo='{tipo}' traz todos os vencimentos do pregão; vencimento vale só para",
+    ):
         await datasets.futuros_agricolas(PRODUTO, tipo=tipo, **argumentos)
     assert all(espiao.await_count == 0 for espiao in chamadas.values())

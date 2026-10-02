@@ -17,6 +17,32 @@ from agrobr import constants
 from . import _json
 
 Product = Literal["perfis", "mapa"]
+
+ORDENS_SOLO: tuple[str, ...] = (
+    "AFLORAMENTOS DE ROCHAS",
+    "ARGISSOLOS",
+    "CAMBISSOLOS",
+    "CHERNOSSOLOS",
+    "DUNAS",
+    "ESPODOSSOLOS",
+    "GLEISSOLOS",
+    "LATOSSOLOS",
+    "LUVISSOLOS",
+    "NEOSSOLOS",
+    "NITOSSOLOS",
+    "ORGANOSSOLOS",
+    "PLANOSSOLOS",
+    "PLINTOSSOLOS",
+    "VERTISSOLOS",
+)
+
+ORDENS_ALIASES: dict[str, str] = {
+    **{ordem: ordem for ordem in ORDENS_SOLO},
+    **{ordem.removesuffix("S"): ordem for ordem in ORDENS_SOLO if " " not in ordem},
+    "AFLORAMENTO DE ROCHA": "AFLORAMENTOS DE ROCHAS",
+    "AFLORAMENTO DE ROCHAS": "AFLORAMENTOS DE ROCHAS",
+    "AFLORAMENTOS DE ROCHA": "AFLORAMENTOS DE ROCHAS",
+}
 WFS_BASE = constants.URLS[constants.Fonte.EMBRAPA_SOLOS]["geoserver"]
 WFS_VERSION = constants.EMBRAPA_SOLOS_WFS_VERSION
 PERFIS_NAMESPACE = MAPA_NAMESPACE = constants.EMBRAPA_SOLOS_NAMESPACE

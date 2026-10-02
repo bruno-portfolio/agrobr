@@ -99,7 +99,7 @@ PRECO_DIARIO_INFO = DatasetInfo(
     source_url="https://cepea.esalq.usp.br",
     source_institution="CEPEA/ESALQ/USP",
     min_date="2004-01-01",
-    unit="BRL/unidade",
+    unit="BRL por unidade da coluna unidade; algodão em centavos de BRL por libra-peso (cBRL/lb)",
     license="nc",
 )
 

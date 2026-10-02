@@ -77,7 +77,7 @@ async def exportacao(
         "abiove",
         "ABIOVE: termos de uso não encontrados publicamente. "
         "Autorização solicitada em fev/2026. Classificação: zona_cinza. "
-        "Veja docs/licenses.md para detalhes.",
+        "Veja https://www.agrobr.dev/docs/licenses/ para detalhes.",
     )
 
     logger.info(

@@ -80,7 +80,7 @@ Source contract `anp_diesel_precos` 2.0 has 15 columns; the `precos_diesel` data
 |---|---|---|---|
 | `data` | datetime | No | First day of the month |
 | `uf` | str | Yes | State abbreviation |
-| `regiao` | str | Yes | Geographic region |
+| `regiao` | str | Yes | Region, with the canonical name (`Norte`, `Nordeste`, `Centro-Oeste`, `Sudeste`, `Sul`) |
 | `produto` | str | Yes | Diesel type |
 | `volume_m3` | float | Yes | Sold volume in m3 |
 
@@ -97,7 +97,7 @@ Source contract `anp_diesel_precos` 2.0 has 15 columns; the `precos_diesel` data
 1. CSV download of diesel sales by type (ANP open data)
 2. Parse semicolon-delimited CSV (ANO, MES, GRANDE REGIAO, UNIDADE DA FEDERACAO, PRODUTO, VENDAS)
 3. Diesel filter (OLEO DIESEL and variants)
-4. Normalization: "OLEO"/"ÓLEO" prefix removed from the product, state names converted to state abbreviation
+4. Normalization: "OLEO"/"ÓLEO" prefix removed from the product and `DIESEL S-10` written as `DIESEL S10`, as in prices; the other fuels (`DIESEL S-500`, `DIESEL S-1800`, `DIESEL MARÍTIMO`, `DIESEL (OUTROS )`) stay as published; `REGIÃO CENTRO-OESTE` becomes `Centro-Oeste`; state names converted to state abbreviation
 5. Conversion to standard format (data, uf, regiao, produto, volume_m3)
 
 ## MetaInfo
@@ -148,3 +148,5 @@ Price columns use the installed pandas version's default text dtype (`str` in pa
 in pandas 2), `datetime64[ns]` dates, `float64` values, and `Int64` counts, including empty results.
 Pass `as_polars` and `return_meta` by name. The municipal catalog's year boundary follows the
 Brasília civil date.
+
+`inicio` and `fim` accept `date`, `datetime` (its civil date counts) and `YYYY-MM-DD` text. A period starting after today raises `InvalidParameterError` before any network call, at every level; at the municipal level, a boundary outside 2022 to the current year does too. A year inside that range whose file ANP has not published yet is still `SourceUnavailableError`.

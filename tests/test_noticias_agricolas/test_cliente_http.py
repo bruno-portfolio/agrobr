@@ -20,7 +20,7 @@ NOVA = f"{URL}-nova"
 AVISO = (
     "Notícias Agrícolas (classificação restrito): fallback temporário do CEPEA, pendente "
     "deprecação. O site não publica termos de uso: todos os direitos reservados (Lei 9.610/98), "
-    "sem permissão de republicação. Os dados vêm do CEPEA (CC BY-NC 4.0). Veja docs/licenses.md."
+    "sem permissão de republicação. Os dados vêm do CEPEA (CC BY-NC 4.0). Veja https://www.agrobr.dev/docs/licenses/."
 )
 _CLIENTE_REAL = httpx.AsyncClient
 

@@ -6,7 +6,7 @@ ANTT publishes CSV resources and metadata in its [official open-data catalogue](
 
 ## Traffic contract 3.0
 
-The output preserves 13 columns and the published collection modality, tariff category and frequency. Its key is `data`, `concessionaria`, `praca`, `sentido`, `tipo_veiculo`, `categoria_eixo`, `tipo_cobranca`, `frequencia`. Collection modalities are not merged. `n_eixos` requires explicit textual evidence; historical category codes are not universal physical axle counts. Literal labels and spaces remain intact.
+The output preserves 13 columns and the published collection modality, tariff category and frequency. Its key is `data`, `concessionaria`, `praca`, `sentido`, `tipo_veiculo`, `categoria_eixo`, `tipo_cobranca`, `frequencia`. Collection modalities are not merged. `n_eixos` requires explicit textual evidence; historical category codes are not universal physical axle counts. Labels come out as published, without outer spaces, and `sentido` is upper case (`Crescente `, `Crescente` and `CRESCENTE` become `CRESCENTE`): in the 2023 monthly CSV, total volume and volume per direction do not change.
 
 `frequencia="mensal"` and `"diaria"` select separate resource families. The client does not replace a missing frequency with another. The catalogue determines the selected year/revision; bytes, hashes and parsing statistics describe the actual acquisition.
 
@@ -16,7 +16,7 @@ In the monthly CSVs, 2020, 2021 and 2023 carry `mes_ano` values on a day other t
 
 ## Plaza registry
 
-The current registry can supply state, highway and municipality through an unambiguous literal match. It does not reconstruct historical geography. With a state/highway filter, a plaza without that link (15 pairs in GO, MG and PR in 2026) is dropped from the result with a warning. The official `municipal` header supplies `municipio`; the canonical column takes precedence if both exist. Registry contract: 1.0.1.
+The current registry can supply state, highway and municipality through an unambiguous match of operator and plaza, without outer spaces. It does not reconstruct historical geography. With a state/highway filter, a plaza without that link (15 pairs in GO, MG and PR in 2026) is dropped from the result with a warning. If no plaza in the registry has the requested state/highway, the result is empty with a separate warning that says so, not a transport error. At monthly frequency, `inicio` and `fim` use day 1 of the month, and the error names which of the two and the value. The official `municipal` header supplies `municipio`; the canonical column takes precedence if both exist. In `pracas_pedagio`, the `municipal` column still comes out, with a `FutureWarning` and a `MetaInfo` warning, and is dropped in the next major version: use `municipio`. Registry contract: 2.0.
 
 ## Transport and budgets
 

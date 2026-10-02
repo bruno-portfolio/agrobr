@@ -5,7 +5,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 
 from agrobr import _log
-from agrobr.conab._serie_historica.client import _PRODUCT_REGISTRY
+from agrobr.conab._serie_historica.client import _PRODUCT_REGISTRY, SERIES_HISTORICAS_URL
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
@@ -45,7 +45,7 @@ SERIE_HISTORICA_SAFRA_INFO = DatasetInfo(
     contract_version="1.1",
     update_frequency="yearly",
     typical_latency="safra+6 meses",
-    source_url="https://www.conab.gov.br/info-agro/safras/serie-historica-das-safras",
+    source_url=SERIES_HISTORICAS_URL,
     source_institution="CONAB",
     min_date="1976/77",
     unit="mil ha / mil ton / kg/ha",

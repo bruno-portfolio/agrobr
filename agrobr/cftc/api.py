@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import time
+import warnings
 from datetime import date, datetime
 from typing import Literal, overload
 
@@ -101,4 +102,12 @@ async def cot(
         raw_content_hash=hashlib.sha256(corpo).hexdigest(),
         raw_content_size=len(corpo),
     )
+    if len(records) >= client.MAX_ROWS:
+        aviso = (
+            f"A consulta CFTC atingiu o limite de {client.MAX_ROWS} registros; "
+            "a completude não foi comprovada. Reduza o período solicitado."
+        )
+        warnings.warn(aviso, UserWarning, stacklevel=2)
+        meta.validation_warnings.append(aviso)
+        meta.source_details.update(row_limit=client.MAX_ROWS, completeness="unknown")
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

@@ -124,11 +124,16 @@ def build_query(
     texts["uf"] = validation.validate_uf(texts["uf"])
     texts["tipo_veiculo"] = _tipo_veiculo(texts["tipo_veiculo"])
     start, end = validation.parse_data(inicio, "inicio"), validation.parse_data(fim, "fim")
-    for value in (start, end):
+    for name, value in (("inicio", start), ("fim", end)):
         if value is not None and value.year not in years:
-            raise InvalidParameterError("Filtro de data deve estar nos anos solicitados")
+            raise InvalidParameterError(
+                f"{name}={value.isoformat()} fora dos anos solicitados: {list(years)}"
+            )
         if value is not None and frequencia == "mensal" and value.day != 1:
-            raise InvalidParameterError("Filtro mensal usa a referência no primeiro dia do mês")
+            raise InvalidParameterError(
+                f"{name}={value.isoformat()}: o filtro mensal usa a referência no primeiro dia "
+                f"do mês ({value.replace(day=1).isoformat()})"
+            )
     if start is not None and end is not None and start > end:
         raise InvalidParameterError("inicio deve ser menor ou igual a fim")
     if not enriquecer and (uf is not None or rodovia is not None):

@@ -9,7 +9,7 @@ import pytest
 
 from agrobr import datasets
 from agrobr.alt.anp_diesel import api, client, models
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError
 
 
 @pytest.fixture(scope="module")
@@ -68,7 +68,7 @@ async def test_vazio_tem_o_dtype_textual_nativo_e_os_tipos_numericos(
     consulta, estados_publicados, monkeypatch
 ):
     monkeypatch.setattr(client, "fetch_precos_resource", AsyncMock(return_value=estados_publicados))
-    frame = await consulta(nivel="uf", uf="SP", inicio="2030-01-01")
+    frame = await consulta(nivel="uf", uf="SP", inicio="2000-01-01", fim="2000-12-31")
     assert frame.empty
     assert frame["uf"].dtype == pd.Series(["SP"]).dtype
     assert str(frame["preco_venda"].dtype) == "float64"
@@ -117,7 +117,7 @@ async def test_virada_do_ano_usa_o_dia_civil_de_brasilia(monkeypatch):
     catalogo, download = AsyncMock(), AsyncMock()
     monkeypatch.setattr(client, "fetch_precos_catalog", catalogo)
     monkeypatch.setattr(client, "fetch_precos_resource", download)
-    with pytest.raises(SourceUnavailableError, match="2022 a 2026"):
+    with pytest.raises(InvalidParameterError, match="no futuro: a ANP publica até 2026-12-31"):
         await api.precos_diesel(inicio="2027-01-01")
     catalogo.assert_not_awaited()
     download.assert_not_awaited()

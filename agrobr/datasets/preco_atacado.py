@@ -5,6 +5,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 
 from agrobr import _log
+from agrobr.conab.ceasa import models as ceasa_models
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
@@ -35,11 +36,11 @@ PRECO_ATACADO_INFO = DatasetInfo(
             description="CONAB CEASA/PROHORT (preços diários de hortifrúti)",
         ),
     ],
-    products=[],
+    products=sorted(ceasa_models.PRODUTOS_PROHORT),
     contract_version="1.1",
     update_frequency="daily",
     typical_latency="D+1",
-    source_url="http://dw.ceasa.gov.br",
+    source_url=ceasa_models.PENTAHO_BASE,
     source_institution="CONAB/PROHORT",
     unit="BRL/unidade",
     license="zona_cinza",
@@ -48,6 +49,9 @@ PRECO_ATACADO_INFO = DatasetInfo(
 
 class PrecoAtacadoDataset(BaseDataset):
     info = PRECO_ATACADO_INFO
+
+    def _produto_do_dataset(self, produto: Any) -> Any:
+        return produto
 
     def _validate_produto(self, produto: str) -> None:
         pass

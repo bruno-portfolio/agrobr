@@ -122,22 +122,22 @@ async def movimentacao(
     df = parser.join_movimentacao(df_atracacao, df_carga, df_mercadoria)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    if tipo_nav_filtro and "tipo_navegacao" in df.columns:
+    if tipo_nav_filtro:
         df = df[df["tipo_navegacao"] == tipo_nav_filtro]
 
-    if nat_carga_filtro and "natureza_carga" in df.columns:
+    if nat_carga_filtro:
         df = df[df["natureza_carga"] == nat_carga_filtro]
 
-    if mercadoria and "mercadoria" in df.columns:
+    if mercadoria:
         df = df[df["mercadoria"].str.contains(mercadoria, case=False, na=False, regex=False)]
 
-    if porto and "porto" in df.columns:
+    if porto:
         df = df[df["porto"].str.contains(porto, case=False, na=False, regex=False)]
 
-    if uf and "uf" in df.columns:
+    if uf:
         df = df[df["uf"].str.upper() == uf.strip().upper()]
 
-    if sentido_filtro and "sentido" in df.columns:
+    if sentido_filtro:
         df = df[df["sentido"] == sentido_filtro]
 
     df = df.reset_index(drop=True)

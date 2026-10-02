@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import importlib
 import inspect
+import json
 from io import BytesIO
+from pathlib import Path
 from types import ModuleType
 from unittest import mock
 
@@ -143,3 +145,58 @@ async def test_vazios_preservam_colunas_tipos_e_metadados(endpoint, monkeypatch)
     if endpoint == "safras":
         assert frame["levantamento"].dtype == "Int64"
         assert str(frame["data_publicacao"].dtype) == "datetime64[ns]"
+
+
+async def test_safras_normaliza_acento_antes_de_consultar_e_filtrar(monkeypatch):
+    parser = mock.MagicMock(version=3)
+    parser.parse_safra_produto.return_value = []
+    monkeypatch.setattr(api, "ConabParserV1", mock.Mock(return_value=parser))
+    download = mock.AsyncMock(return_value=(BytesIO(b"sem linhas"), {"safra": "2025/26"}))
+    monkeypatch.setattr(api.client, "fetch_safra_xlsx", download)
+    await conab.safras(" FEIJÃO ")
+    download.assert_awaited_once()
+    assert parser.parse_safra_produto.call_args.kwargs["produto"] == "feijao"
+
+
+@pytest.mark.parametrize("endpoint", ["safras", "balanco", "brasil_total"])
+async def test_vazio_tem_os_dtypes_do_boletim_oficial_preenchido(endpoint, monkeypatch):
+    golden = Path(__file__).resolve().parents[1] / "golden_data/conab/safra_2025_26_agosto"
+    corpo = (golden / "response.xlsx").read_bytes()
+    publicacao = json.loads((golden / "provenance.json").read_text(encoding="utf-8"))
+    monkeypatch.setattr(
+        api.client,
+        "fetch_safra_xlsx",
+        mock.AsyncMock(side_effect=lambda **_kwargs: (BytesIO(corpo), publicacao.copy())),
+    )
+    args = {"safras": ("soja",), "balanco": ("milho",), "brasil_total": ()}[endpoint]
+    consultar = getattr(conab, endpoint)
+    cheio, _ = await consultar(*args, safra="2025/26", levantamento=11, return_meta=True)
+    if endpoint == "safras":
+        linha = cheio.set_index("uf").loc["RR"]
+        assert linha["produto"] == "soja"
+        assert linha["area_plantada"] == 150
+        assert linha["producao"] == 513
+        assert linha["produtividade"] == 3420
+    elif endpoint == "balanco":
+        linha = cheio.set_index("safra").loc["2025/26"]
+        assert linha["produto"] == "MILHO"
+        assert linha["producao"] == 142955
+        assert linha["exportacao"] == 46500
+        assert linha["levantamento"] == "ago/26"
+        assert linha["unidade"] == "mil_ton"
+    else:
+        linha = cheio[cheio["rotulo"].eq("SOJA")].set_index("safra").loc["2025/26"]
+        assert linha["produto"] == "soja"
+        assert linha["producao"] == 180463.5
+        assert linha["unidade_producao"] == "mil_ton"
+    metodo = {
+        "safras": "parse_safra_produto",
+        "balanco": "parse_suprimento",
+        "brasil_total": "parse_brasil_total",
+    }[endpoint]
+    monkeypatch.setattr(api.ConabParserV1, metodo, lambda _self, **_kwargs: [])
+    vazio, meta = await consultar(*args, safra="2025/26", levantamento=11, return_meta=True)
+    assert vazio.empty
+    assert meta.records_count == 0
+    assert list(vazio.columns) == list(cheio.columns)
+    assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict()

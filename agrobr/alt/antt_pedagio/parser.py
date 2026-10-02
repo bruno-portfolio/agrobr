@@ -157,6 +157,7 @@ def build_pracas_enrichment(
         if not concession or not concession.strip() or not plaza or not plaza.strip():
             missing += 1
             continue
+        concession, plaza = concession.strip(), plaza.strip()
         values = (
             _nullable_text(row.get("rodovia")),
             _nullable_text(row.get("uf")),
@@ -166,7 +167,7 @@ def build_pracas_enrichment(
     mapping = {key: next(iter(values)) for key, values in groups.items() if len(values) == 1}
     conflicts = [key for key, values in groups.items() if len(values) > 1]
     return mapping, {
-        "matching": "literal concessionaria/praca; no strip/casefold/first or row multiplication",
+        "matching": "concessionaria/praca without outer spaces; no casefold/first or row multiplication",
         "source_rows": len(frame),
         "matched_unique_keys": len(mapping),
         "missing_key_rows": missing,

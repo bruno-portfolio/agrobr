@@ -49,3 +49,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]
 - Fallback active while CEPEA remains protected by Cloudflare
 
 Unknown products or invalid argument types raise `InvalidParameterError` with the accepted product list before any request. Case and surrounding whitespace are normalized.
+
+`parse_indicador()` validates the product before interpreting HTML and accepts accented aliases,
+such as `" CAFÉ "`. An unknown product is rejected with the list of options instead of receiving
+a generic unit, preserving the units and locations of published products.

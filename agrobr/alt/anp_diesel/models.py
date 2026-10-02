@@ -5,6 +5,7 @@ from collections.abc import Mapping
 from datetime import date, datetime, time
 from typing import Any, Literal, Self
 
+import pandas as pd
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -19,11 +20,14 @@ from agrobr import constants
 from agrobr.constants import URLS, Fonte
 from agrobr.normalize.dates import month_to_number
 from agrobr.normalize.numeric import parse_numeric_br
+from agrobr.normalize.regions import REGIOES, normalizar_uf, remover_acentos
 from agrobr.normalize.regions import UFS_VALIDAS as UFS_VALIDAS
-from agrobr.normalize.regions import normalizar_uf, remover_acentos
 
 COLUNAS_PRECOS = constants.ANP_DIESEL_PRECOS_COLUMNS
-PRECOS_DTYPES = constants.ANP_DIESEL_PRECOS_DTYPES
+PRECOS_DTYPES = {
+    nome: pd.Series([""]).dtype if dtype == "str" else dtype
+    for nome, dtype in constants.ANP_DIESEL_PRECOS_DTYPES.items()
+}
 
 SHLP_BASE = URLS[Fonte.ANP_DIESEL]["shlp"]
 VENDAS_DIESEL_CSV_URL = URLS[Fonte.ANP_DIESEL]["vendas_diesel_csv"]
@@ -209,10 +213,22 @@ class VendaMensal(BaseModel):
             raise ValueError("UF publicada inválida")
         return normalized
 
+    @field_validator("regiao")
+    @classmethod
+    def canonical_region(cls, value: str) -> str:
+        if not value:
+            return value
+        regioes = {remover_acentos(nome).upper(): nome for nome in REGIOES}
+        chave = remover_acentos(value).upper().removeprefix("REGIAO ").strip()
+        if chave not in regioes:
+            raise ValueError("Região publicada inválida")
+        return regioes[chave]
+
     @field_validator("produto")
     @classmethod
     def canonical_product(cls, value: str) -> str:
-        return re.sub(r"^[OÓ]LEO\s+", "", value.upper())
+        produto = re.sub(r"^[OÓ]LEO\s+", "", value.upper())
+        return "DIESEL S10" if produto == "DIESEL S-10" else produto
 
 
 class MunicipalWorkbook(BaseModel):

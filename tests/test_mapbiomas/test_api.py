@@ -138,3 +138,23 @@ async def test_classe_fora_das_publicadas_no_municipal_levanta(replay_mapbiomas,
     with pytest.raises(InvalidParameterError, match="fora das classes publicadas na coleção 11"):
         await api.cobertura(nivel="municipio", classe_id=99999)
     assert 99999 not in publicadas and 39 in publicadas
+
+
+@pytest.mark.asyncio
+async def test_nivel_uf_e_alias_de_estado_no_mesmo_golden():
+    bundle = workbook_bundle(
+        _golden_xlsx(), "https://storage.googleapis.com/mapbiomas-public/test.xlsx"
+    )
+    with patch.object(
+        api.client, "fetch_biome_state_bundle", new_callable=AsyncMock, return_value=bundle
+    ) as fetch:
+        estado = await api.cobertura(colecao=10, bioma="Cerrado", uf="GO", ano=2020)
+        alias = await api.cobertura(colecao=10, bioma="Cerrado", uf="GO", ano=2020, nivel="uf")
+    assert fetch.await_count == 2
+    assert alias.equals(estado)
+
+
+@pytest.mark.asyncio
+async def test_nivel_invalido_lista_o_alias():
+    with pytest.raises(InvalidParameterError, match="'estado', 'uf' ou 'municipio'"):
+        await api.cobertura(nivel="pais")

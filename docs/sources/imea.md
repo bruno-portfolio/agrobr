@@ -61,6 +61,7 @@ registros do indicador `708192508838936580` (R$/sc, Mato Grosso e 22 municípios
   `source_details["duplicatas_colapsadas"]` (`linhas` e `indicadores`).
 - A chave repetida com valores diferentes não se colapsa: as linhas saem todas, com aviso e a contagem em
   `source_details["chaves_repetidas"]`. Um erro derrubaria a cadeia inteira por um indicador.
+- Os 2 avisos vão para `meta.validation_warnings` em toda chamada; o `UserWarning` sai só na 1ª chamada de cada cadeia no processo.
 
 ### Unidade e indicador
 

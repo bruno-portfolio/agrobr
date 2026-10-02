@@ -84,11 +84,17 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
     if config.api_key_header and chave:
         headers[config.api_key_header] = chave
 
+    async def chave_so_na_origem(request: httpx.Request) -> None:
+        origem, url = httpx.URL(config.url), request.url
+        if config.api_key_header and (url.scheme, url.netloc) != (origem.scheme, origem.netloc):
+            request.headers.pop(config.api_key_header, None)
+
     try:
         async with httpx.AsyncClient(
             timeout=config.timeout,
             headers=headers,
             verify=config.verify,
+            event_hooks={"request": [chave_so_na_origem]},
         ) as client:
             if config.method == "HEAD":
                 response = await client.head(

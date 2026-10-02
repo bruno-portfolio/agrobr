@@ -169,3 +169,25 @@ async def test_chave_repetida_com_valor_diferente_sai_toda_com_aviso(monkeypatch
     }
     assert meta.source_details["chaves_repetidas"] == {"linhas": 2, "indicadores": [INDICADOR]}
     assert avisos == [AVISO_DUPLICATAS.format(n=68), AVISO_CHAVE]
+
+
+async def test_avisos_vao_ao_metainfo_em_toda_chamada(monkeypatch):
+    registros = _registros()
+    copias = [
+        i
+        for i, r in enumerate(registros)
+        if r["IndicadorFinalId"] == INDICADOR and r["Localidade"] == "Sorriso"
+    ]
+    registros[copias[-1]] = {**registros[copias[-1]], "Valor": registros[copias[-1]]["Valor"] + 1}
+    _servir(monkeypatch, json.dumps(registros).encode("utf-8"))
+    esperados = [AVISO_DUPLICATAS.format(n=68), AVISO_CHAVE]
+
+    primeira = await _cotacoes()
+    segunda = await _cotacoes()
+
+    assert primeira[2] == esperados
+    assert segunda[2] == []
+    for df, meta, _ in (primeira, segunda):
+        assert meta.validation_warnings == esperados
+        assert len(df) == meta.records_count == 68
+        assert meta.source_details["chaves_repetidas"] == {"linhas": 2, "indicadores": [INDICADOR]}

@@ -17,10 +17,11 @@ Paraná crop conditions — SEAB/DERAL.
 
 ## Products
 
-8 crops: cafe, cevada, feijao_1, feijao_2, milho_1, milho_2, soja, trigo.
+10 crops: cafe, cevada, feijao, feijao_1, feijao_2, milho, milho_1, milho_2, soja, trigo.
 
-Oats, sugarcane, canola, cassava and aggregate corn/bean totals have parser aliases,
-but do not appear in the February and September 2026 editions of the weekly report. Individual crop availability varies by edition.
+`feijao` and `milho` combine the 1st and 2nd crops: the filter returns the `feijao_1`/`feijao_2` (or `milho_1`/`milho_2`)
+rows, and the `produto` column carries the crop. Oats, sugarcane, canola and cassava have parser aliases, but do not
+appear in the February and September 2026 editions of the weekly report. Individual crop availability varies by edition.
 
 ## Geographic scope
 
@@ -75,7 +76,7 @@ the date comes from the cell, as published. When a dated sheet name (`dd-mm-yy` 
 parsing follows the cell and warns in `validation_warnings` and `UserWarning`.
 
 Parser 2 requires the Ruim, Média, Boa, Plantada and Colhida headers in tables
-containing several crops. A missing header raises `ParseError` in the source
-and `SourceUnavailableError` with the reason in the dataset, preventing partial
-success containing only historical sheets. The contract is version 2.0: `data` changed from
+containing several crops. A missing header raises `ParseError` in the source,
+and the dataset also raises `ParseError` ("Todas as fontes falharam por layout", with the
+source reason in `errors`), preventing partial success containing only historical sheets. The contract is version 2.0: `data` changed from
 `dd/mm/yyyy` text to `datetime64[ns]`.

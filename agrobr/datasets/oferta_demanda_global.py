@@ -90,6 +90,7 @@ OFERTA_DEMANDA_GLOBAL_INFO = DatasetInfo(
 
 class OfertaDemandaGlobalDataset(BaseDataset):
     info = OFERTA_DEMANDA_GLOBAL_INFO
+    sinonimos_que_mudam_o_recorte = frozenset({"arroz_casca", "arroz_em_casca"})
 
     async def fetch(  # type: ignore[override]
         self,

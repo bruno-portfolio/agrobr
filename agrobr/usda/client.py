@@ -17,6 +17,8 @@ logger = _log.get_logger(__name__)
 
 BASE_URL = URLS[Fonte.USDA]["base"]
 
+_API = httpx.URL(BASE_URL)
+
 TIMEOUT = get_timeout(read=60.0)
 
 
@@ -49,11 +51,21 @@ def _codigo_de_erro(response: httpx.Response) -> str:
         return ""
 
 
+async def _chave_so_na_api(request: httpx.Request) -> None:
+    """Tira a chave do redirecionamento que sai da origem da API, como o httpx faz com ``Authorization``."""
+    if (request.url.scheme, request.url.netloc) != (_API.scheme, _API.netloc):
+        request.headers.pop("X-Api-Key", None)
+
+
 async def _fetch_json(url: str, api_key: str) -> RespostaPSD:
     headers = UserAgentRotator.get_bot_headers()
     headers["X-Api-Key"] = api_key
 
-    async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=TIMEOUT,
+        follow_redirects=True,
+        event_hooks={"request": [_chave_so_na_api]},
+    ) as client:
         logger.debug("usda_request", url=url)
         response = await retry_on_status(
             lambda: client.get(url, headers=headers),

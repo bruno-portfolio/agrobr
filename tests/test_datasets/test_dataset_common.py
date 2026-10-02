@@ -122,7 +122,11 @@ DYNAMIC_PRODUCTS_DATASETS = {
     name for name in ALL_DATASETS if registry.get_dataset(name).info.products == []
 }
 
-DATASETS_WITH_PRODUCTS = [d for d in ALL_DATASETS if d not in DYNAMIC_PRODUCTS_DATASETS]
+VALIDAM_O_PRODUTO_NA_FONTE = {"embarques_anec", "preco_atacado", "zoneamento_agricola"}
+
+DATASETS_WITH_PRODUCTS = [
+    d for d in ALL_DATASETS if d not in DYNAMIC_PRODUCTS_DATASETS | VALIDAM_O_PRODUTO_NA_FONTE
+]
 
 
 ALL_DATASETS = sorted(registry.list_datasets())

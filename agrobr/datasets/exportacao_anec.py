@@ -5,6 +5,7 @@ from typing import Any, Literal, overload
 import pandas as pd
 
 from agrobr import _log
+from agrobr.anec import models as anec_models
 from agrobr.datasets.base import BaseDataset, DatasetInfo, DatasetSource, _unpack_result
 from agrobr.datasets.deterministic import get_snapshot
 from agrobr.models import MetaInfo
@@ -42,7 +43,7 @@ EMBARQUES_ANEC_INFO = DatasetInfo(
             description="ANEC — Associação Nacional dos Exportadores de Cereais",
         ),
     ],
-    products=[],
+    products=sorted(set(anec_models.PRODUTO_ALIASES.values())),
     contract_version="1.1",
     update_frequency="weekly",
     typical_latency="W+1",
@@ -56,6 +57,9 @@ EMBARQUES_ANEC_INFO = DatasetInfo(
 
 class EmbarquesANECDataset(BaseDataset):
     info = EMBARQUES_ANEC_INFO
+
+    def _produto_do_dataset(self, produto: Any) -> Any:
+        return produto
 
     def _validate_produto(self, produto: str) -> None:
         pass

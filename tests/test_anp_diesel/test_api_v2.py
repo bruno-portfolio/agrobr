@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
@@ -27,7 +26,6 @@ from tests.helpers import make_anp_precos_resource
         {"municipio": " "},
         {"nivel": "brasil", "uf": "MT"},
         {"nivel": "uf", "municipio": "CUIABA"},
-        {"inicio": datetime(2024, 1, 1)},
         {"inicio": True},
         {"inicio": "20240101"},
         {"inicio": "2024-02-30"},
@@ -77,8 +75,8 @@ async def test_agregado_invalido_recusado_antes_da_saida(fetch):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("fetch", [api.precos_diesel, datasets.precos_diesel])
 @pytest.mark.parametrize("agregacao", ["semanal", "mensal"])
-@pytest.mark.parametrize("inicio", ["2024-01-01", "2030-01-01"])
-async def test_polars_preserva_schema_e_nulos(fetch, agregacao, inicio):
+@pytest.mark.parametrize(("inicio", "fim"), [("2024-01-01", None), ("2000-01-01", "2000-12-31")])
+async def test_polars_preserva_schema_e_nulos(fetch, agregacao, inicio, fim):
     pl = pytest.importorskip("polars")
     resource = make_anp_precos_resource(nivel="brasil")
     with patch.object(api.client, "fetch_precos_resource", return_value=resource):
@@ -86,6 +84,7 @@ async def test_polars_preserva_schema_e_nulos(fetch, agregacao, inicio):
             nivel="brasil",
             agregacao=agregacao,
             inicio=inicio,
+            fim=fim,
             as_polars=True,
             return_meta=True,
         )

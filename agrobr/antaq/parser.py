@@ -27,6 +27,30 @@ COLUNAS_TIPADAS = {
     "teu": "Int64",
 }
 
+_COLUNAS_EXIGIDAS = {
+    "atracação": (
+        "IDAtracacao",
+        "Porto Atracação",
+        "Complexo Portuário",
+        "Terminal",
+        "Município",
+        "SGUF",
+        "Região Geográfica",
+        "Ano",
+        "Mes",
+        "Data Atracação",
+    ),
+    "carga": (
+        "IDAtracacao",
+        "CDMercadoria",
+        "Tipo Navegação",
+        "Natureza da Carga",
+        "Sentido",
+        "VLPesoCargaBruta",
+    ),
+    "mercadoria": ("CDMercadoria", "Nomenclatura Simplificada Mercadoria"),
+}
+
 
 def _read_txt(content: str, usecols: list[str] | None = None) -> pd.DataFrame:
     df = pd.read_csv(
@@ -100,21 +124,17 @@ def join_movimentacao(
     df_carga: pd.DataFrame,
     df_mercadoria: pd.DataFrame,
 ) -> pd.DataFrame:
+    arquivos = (("atracação", df_atracacao), ("carga", df_carga), ("mercadoria", df_mercadoria))
+    for arquivo, frame in arquivos:
+        faltando = [c for c in _COLUNAS_EXIGIDAS[arquivo] if c not in frame.columns]
+        if faltando:
+            raise ParseError(
+                source="antaq",
+                parser_version=PARSER_VERSION,
+                reason=f"TXT de {arquivo} sem as colunas {faltando}",
+            )
     df = df_carga.merge(
-        df_atracacao[
-            [
-                "IDAtracacao",
-                "Porto Atracação",
-                "Complexo Portuário",
-                "Terminal",
-                "Município",
-                "SGUF",
-                "Região Geográfica",
-                "Ano",
-                "Mes",
-                "Data Atracação",
-            ]
-        ],
+        df_atracacao[list(_COLUNAS_EXIGIDAS["atracação"])],
         on="IDAtracacao",
         how="left",
     )
@@ -142,7 +162,16 @@ def join_movimentacao(
         df["mes"] = mes_numerico.fillna(mes_por_nome).astype("Int64")
 
     if "data_atracacao" in df.columns:
-        texto = df["data_atracacao"].str.strip()
+        bruto = df["data_atracacao"].astype(object)
+        nao_texto = bruto.notna() & ~bruto.map(lambda valor: isinstance(valor, str))
+        if nao_texto.any():
+            raise ParseError(
+                source="antaq",
+                parser_version=PARSER_VERSION,
+                reason="data_atracacao com valor que não é texto; a fonte publica DD/MM/AAAA HH:MM:SS",
+                errors=[("data_atracacao", "DD/MM/AAAA HH:MM:SS", str(int(nao_texto.sum())))],
+            )
+        texto = pd.Series(bruto.array, index=df.index, dtype=pd.Series([""]).dtype).str.strip()
         presentes = texto.notna() & texto.ne("")
         formato = r"[0-9]{2}/[0-9]{2}/[0-9]{4}(?: [0-9]{2}:[0-9]{2}:[0-9]{2})?"
         invalidas = presentes & ~texto.str.fullmatch(formato, na=False)

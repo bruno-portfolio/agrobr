@@ -20,7 +20,7 @@ df = await datasets.posicionamento_fundos("acucar", combinado=True)  # futures +
 `inicio` and `fim` accept `date`, `datetime`, and `YYYY-MM-DD` or `DD/MM/YYYY` text; any other format, or `inicio`
 after `fim`, raises `InvalidParameterError` before the request.
 
-## Contract `cftc.cot` v2.0
+## Contract `posicionamento_fundos` v2.0
 
 PK: `[data, codigo_cftc]` — effective from 2.0.0
 
@@ -57,6 +57,12 @@ In 2.0, the columns moved to Portuguese. The `cftc.cot` source keeps the report'
 the from/to table is in the migration guide.
 
 ## Semantics
+
+Periods with no report return an empty frame with the same columns and dtypes as a populated frame.
+In pandas, the 18 counts and changes use `Int64`, dates use `datetime64[ns]`, and text uses the native
+dtype. Reaching the source's 50,000-record limit emits `UserWarning` and preserves it in
+`meta.validation_warnings`, with `completeness="unknown"` and `row_limit` in `meta.source_details`.
+Request a shorter period to check coverage.
 
 - `fundos_*` — managed money, the funds (the "fund positioning" cited by the agri market)
 - `produtores_*` — producer/merchant, the commercial hedgers (producers, processors, trading firms)

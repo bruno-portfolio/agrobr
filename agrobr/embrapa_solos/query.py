@@ -12,6 +12,8 @@ from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize import regions
 from agrobr.utils import validation
 
+from .models import ORDENS_ALIASES, ORDENS_SOLO
+
 
 class SolosQuery(BaseModel):
     model_config = ConfigDict(strict=True, frozen=True, extra="forbid")
@@ -49,6 +51,15 @@ class SolosQuery(BaseModel):
         _bbox(self.bbox)
         json.dumps(self.requested, allow_nan=False)
         return self
+
+
+def _ordem(value: str | None) -> str | None:
+    if value is None:
+        return None
+    canonica = ORDENS_ALIASES.get(" ".join(regions.remover_acentos(value).upper().split()))
+    if canonica is None:
+        raise ValueError(f"ordem {value!r} fora das classes publicadas: {', '.join(ORDENS_SOLO)}")
+    return canonica
 
 
 def _bbox(value: object) -> tuple[float, float, float, float] | None:
@@ -111,7 +122,7 @@ def build_query(
                 "fetch_geometry": fetch_geometry,
                 "fetch_crs": constants.EMBRAPA_SOLOS_CRS if fetch_geometry else None,
                 "uf": validation.validate_uf(uf),
-                "ordem": ordem,
+                "ordem": _ordem(ordem),
                 "bbox": canonical_bbox,
                 "bbox_crs": constants.EMBRAPA_SOLOS_CRS,
                 "output_crs": constants.EMBRAPA_SOLOS_CRS if include_geometry else None,

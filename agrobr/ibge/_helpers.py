@@ -98,8 +98,9 @@ def resolve_ibge_code(
     nivel = normalizar_opcao(nivel, "nível", nivel_map)
     uf = validate_uf(uf)
     if uf and nivel not in ("uf", "municipio"):
+        finos = " ou ".join(repr(n) for n in ("uf", "municipio") if n in nivel_map)
         raise InvalidParameterError(
-            f"uf={uf!r} só filtra com nivel='uf' ou 'municipio'; com nivel={nivel!r}, "
+            f"uf={uf!r} só filtra com nivel={finos}; com nivel={nivel!r}, "
             "a consulta devolveria o agregado sem o filtro"
         )
     territorial_level = nivel_map[nivel]

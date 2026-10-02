@@ -125,7 +125,12 @@ class TrafegoRecord(pydantic.BaseModel):
     def present_text(cls, value: str | None) -> str | None:
         if value is not None and not value.strip():
             raise ValueError("campo textual presente vazio; ausência estrutural deve ser explícita")
-        return value
+        return None if value is None else value.strip()
+
+    @pydantic.field_validator("sentido")
+    @classmethod
+    def uppercase_direction(cls, value: str | None) -> str | None:
+        return None if value is None else value.upper()
 
     @pydantic.model_validator(mode="after")
     def derivations(self) -> TrafegoRecord:

@@ -20,7 +20,7 @@ df = await datasets.posicionamento_fundos("acucar", combinado=True)  # futuros +
 `inicio` e `fim` aceitam `date`, `datetime` e texto `AAAA-MM-DD` ou `DD/MM/AAAA`; formato fora disso ou `inicio` depois
 de `fim` gera `InvalidParameterError` antes da consulta.
 
-## Contrato `cftc.cot` v2.0
+## Contrato `posicionamento_fundos` v2.0
 
 PK: `[data, codigo_cftc]` — effective from 2.0.0
 
@@ -57,6 +57,12 @@ Na 2.0, as colunas passaram ao português. A fonte `cftc.cot` segue com os nomes
 tabela de/para está no guia de migração.
 
 ## Semântica
+
+Recortes sem relatório retornam um quadro vazio com as mesmas colunas e dtypes do quadro preenchido.
+No pandas, as 18 contagens e variações usam `Int64`, a data usa `datetime64[ns]` e os textos usam o
+dtype nativo. Ao atingir o teto de 50.000 registros da fonte, a consulta emite `UserWarning` e
+preserva o aviso em `meta.validation_warnings`, com `completeness="unknown"` e `row_limit` em
+`meta.source_details`. Reduza o período para conferir a cobertura.
 
 - `fundos_*` — managed money, os fundos (a "posição dos fundos" citada pelo mercado agro)
 - `produtores_*` — producer/merchant, os hedgers comerciais (produtores, processadores, tradings)

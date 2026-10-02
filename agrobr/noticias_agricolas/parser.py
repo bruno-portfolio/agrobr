@@ -7,9 +7,10 @@ from decimal import Decimal, InvalidOperation
 from bs4 import BeautifulSoup, Tag
 
 from agrobr import _log
-from agrobr.constants import NOTICIAS_AGRICOLAS_PARSER_VERSION, Fonte
-from agrobr.exceptions import ParseError
+from agrobr.constants import NOTICIAS_AGRICOLAS_PARSER_VERSION, NOTICIAS_AGRICOLAS_PRODUTOS, Fonte
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.models import Indicador
+from agrobr.normalize import regions
 
 logger = _log.get_logger(__name__)
 
@@ -128,11 +129,19 @@ def _extract_parent_date(table: Tag) -> tuple[datetime, bool] | None:
 
 
 def parse_indicador(html: str, produto: str) -> list[Indicador]:
+    produto_lower = (
+        "_".join(regions.remover_acentos(produto).lower().split())
+        if isinstance(produto, str)
+        else ""
+    )
+    if produto_lower not in NOTICIAS_AGRICOLAS_PRODUTOS:
+        raise InvalidParameterError(
+            f"Produto {produto!r} inválido. Válidos: {sorted(NOTICIAS_AGRICOLAS_PRODUTOS)}"
+        )
     soup = BeautifulSoup(html, "lxml")
     indicadores: list[Indicador] = []
 
-    produto_lower = produto.lower()
-    unidade = UNIDADES.get(produto_lower, "BRL/unidade")
+    unidade = UNIDADES[produto_lower]
     praca = PRACAS.get(produto_lower)
 
     tables = soup.find_all("table", class_="cot-fisicas")

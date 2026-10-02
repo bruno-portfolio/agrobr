@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agrobr.cftc import client as cftc_client
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ParseError
 from tests.helpers import (
     make_mock_async_client,
     make_mock_response,
@@ -38,11 +38,22 @@ class TestFetchCotQuery:
 
 class TestFetchCotErrors:
     @pytest.mark.asyncio
-    async def test_resposta_vazia_raises(self):
+    async def test_resposta_vazia_preserva_corpo_e_consulta(self):
         mock_client = _client_with(make_mock_response(200, json_data=[]))
+
+        with patch("agrobr.cftc.client.httpx.AsyncClient", return_value=mock_client):
+            registros, url, corpo = await cftc_client.fetch_cot(["005602"])
+
+        assert registros == []
+        assert url == str(mock_client.get.return_value.url)
+        assert corpo == mock_client.get.return_value.content
+
+    @pytest.mark.parametrize("resposta", [{}, {"data": []}, {"error": "consulta inválida"}])
+    async def test_envelope_invalido_levanta_parse_error(self, resposta):
+        mock_client = _client_with(make_mock_response(200, json_data=resposta))
 
         with (
             patch("agrobr.cftc.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(SourceUnavailableError, match="Resposta vazia"),
+            pytest.raises(ParseError, match="lista"),
         ):
             await cftc_client.fetch_cot(["005602"])

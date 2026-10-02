@@ -17,10 +17,11 @@ Condição das lavouras paranaenses — SEAB/DERAL.
 
 ## Produtos
 
-8 culturas: cafe, cevada, feijao_1, feijao_2, milho_1, milho_2, soja, trigo.
+10 culturas: cafe, cevada, feijao, feijao_1, feijao_2, milho, milho_1, milho_2, soja, trigo.
 
-Aveia, cana, canola, mandioca e os totais milho/feijão têm alias no parser, mas não
-aparecem no relatório semanal nas edições de fevereiro e setembro de 2026. A disponibilidade de cada cultura varia conforme a edição.
+`feijao` e `milho` juntam a 1ª e a 2ª safra: o filtro devolve as linhas de `feijao_1`/`feijao_2` (ou `milho_1`/`milho_2`),
+e a coluna `produto` traz a safra. Aveia, cana, canola e mandioca têm alias no parser, mas não aparecem no relatório
+semanal nas edições de fevereiro e setembro de 2026. A disponibilidade de cada cultura varia conforme a edição.
 
 ## Escopo geográfico
 
@@ -77,6 +78,6 @@ e em `UserWarning`.
 
 O parser 2 exige os cabeçalhos Ruim, Média, Boa, Plantada e Colhida nas tabelas
 com várias culturas. Se faltar um deles, a fonte levanta `ParseError` e o dataset
-propaga `SourceUnavailableError` com o motivo, evitando sucesso parcial com
-apenas as abas históricas. O contrato é a versão 2.0: `data` passou de texto `dd/mm/yyyy` a
+também levanta `ParseError` ("Todas as fontes falharam por layout", com o motivo da
+fonte em `errors`), evitando sucesso parcial com apenas as abas históricas. O contrato é a versão 2.0: `data` passou de texto `dd/mm/yyyy` a
 `datetime64[ns]`.

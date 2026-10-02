@@ -341,6 +341,8 @@ async def censo_agro_municipal_1985(
     Raises:
         InvalidParameterError: tema, UF ou nível inválidos, ou UF cujo volume não tem a tabela (o IBGE
             omite a tabela que não se aplica ao estado).
+        ParseError: a tabela está no volume da UF, mas a extração não leu nenhuma casa (hoje:
+            inseminacao_ordenha em AM, AP e RR; producao_particular em RR).
     """
     t0 = time.perf_counter()
     tabela, uf_normalizada, nivel_normalizado = _validar(tema, uf, nivel)
@@ -409,5 +411,6 @@ def _cobertura() -> dict[str, list[str]]:
 
 
 async def cobertura_censo_agro_municipal_1985() -> dict[str, list[str]]:
-    """UFs cujo volume tem a tabela de cada tema no pacote (o IBGE omite a tabela que não se aplica)."""
+    """UFs com casa lida de cada tema no pacote. Fica de fora a UF cujo volume omite a tabela e a
+    UF cujo volume tem a tabela sem nenhuma casa lida (nesta, `censo_agro_municipal_1985` levanta ParseError)."""
     return {tema: ufs.copy() for tema, ufs in _cobertura().items()}

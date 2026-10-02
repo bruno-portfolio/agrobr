@@ -13,6 +13,12 @@ LICENCA: zona_cinza — B3 e empresa privada. Dados publicados abertamente
 sem autenticacao. Uso programatico nao possui termos claros.
 """
 
-from agrobr.b3.api import ajustes, contratos, historico, oi_historico, posicoes_abertas
+from agrobr.b3.api import (
+    ajustes,
+    contratos,
+    historico,
+    posicoes_abertas,
+    posicoes_abertas_historico,
+)
 
-__all__ = ["ajustes", "contratos", "historico", "oi_historico", "posicoes_abertas"]
+__all__ = ["ajustes", "contratos", "historico", "posicoes_abertas_historico", "posicoes_abertas"]

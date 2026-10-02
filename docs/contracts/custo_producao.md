@@ -23,7 +23,10 @@ Milho, arroz e feijão têm duas planilhas cada: milho de 1ª/2ª safra, arroz
 irrigado/sequeiro e feijão de 1ª/2ª+3ª safras. Consulte
 `conab.catalogo_custos(cultura)` e informe `planilha=`; depois consulte
 `conab.catalogo_custos(cultura, planilha=...)` para escolher uma `aba=` reconhecida.
-Os filtros devem identificar um único contexto.
+Os filtros devem identificar um único contexto. A exigência vale para qualquer produto com
+mais de uma planilha ou contexto candidato, inclusive contextos ainda pendentes de identificação.
+A API recusa a seleção ambígua com `InvalidParameterError` e informa os candidatos; não escolhe
+a planilha mais recente nem combina contextos automaticamente.
 
 Para café, informe `cafe_arabica` ou `cafe_conilon`. O pedido genérico `cafe`
 informa essas alternativas. O catálogo da fonte também inclui outras culturas

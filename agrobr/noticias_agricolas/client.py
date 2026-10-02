@@ -9,6 +9,7 @@ from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.retry import RetriableStatusError, retry_async, should_retry_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.normalize import regions
 from agrobr.normalize.encoding import decode_content
 from agrobr.utils.warnings import warn_once
 
@@ -34,7 +35,9 @@ TIMEOUT = get_timeout()
 
 def _get_produto_url(produto: str) -> str:
     produto_key = constants.NOTICIAS_AGRICOLAS_PRODUTOS.get(
-        produto.strip().lower() if isinstance(produto, str) else ""
+        "_".join(regions.remover_acentos(produto).lower().split())
+        if isinstance(produto, str)
+        else ""
     )
     if produto_key is None:
         raise InvalidParameterError(
@@ -51,7 +54,7 @@ async def fetch_indicador_page(produto: str) -> str:
         "Notícias Agrícolas (classificação restrito): fallback temporário do CEPEA, pendente "
         "deprecação. O site não publica termos de uso: todos os direitos reservados "
         "(Lei 9.610/98), sem permissão de republicação. Os dados vêm do CEPEA (CC BY-NC 4.0). "
-        "Veja docs/licenses.md.",
+        "Veja https://www.agrobr.dev/docs/licenses/.",
     )
 
     url = _get_produto_url(produto)

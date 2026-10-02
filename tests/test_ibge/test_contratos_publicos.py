@@ -10,7 +10,12 @@ import pandas as pd
 import pytest
 
 from agrobr import conab, contracts, datasets, ibge
-from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    SourceFallbackWarning,
+    SourceUnavailableError,
+)
 from agrobr.ibge import agregados, censo_municipal_1985, client, ftp_client, legacy_api
 from tests.helpers import assert_replay_samples, assert_replay_served
 from tests.test_ibge import test_agregados as replay
@@ -33,6 +38,36 @@ DATASET_CALLS = {
         "estabelecimentos_area", ano=2006, return_meta=True
     ),
 }
+
+
+@pytest.mark.parametrize(
+    "caso,camada",
+    [
+        (caso, camada)
+        for caso in sorted(replay.CALLS)
+        for camada in ("fonte", "dataset")
+        if camada == "fonte" or caso in DATASET_CALLS
+    ],
+)
+async def test_fallback_avisa_em_cada_aquisicao_e_chega_ao_meta(monkeypatch, caso, camada):
+    monkeypatch.setattr(agregados, "_periodos_cache", {})
+    servido = replay._fallback_frame(caso, monkeypatch)
+    chamada = replay.CALLS[caso] if camada == "fonte" else DATASET_CALLS[caso]
+    for _ in range(2):
+        with warnings.catch_warnings(record=True) as emitidos:
+            warnings.simplefilter("always")
+            frame, meta = await chamada()
+        assert_replay_samples(frame, replay.ORACLE_CASES[caso])
+        avisos = [
+            aviso for aviso in emitidos if str(aviso.message).startswith("SIDRA indisponível")
+        ]
+        assert avisos
+        assert all(aviso.category is SourceFallbackWarning for aviso in avisos)
+        assert [str(aviso.message) for aviso in avisos] == [
+            aviso for aviso in meta.validation_warnings if aviso.startswith("SIDRA indisponível")
+        ]
+        assert meta.selected_source == "ibge_servicodados"
+    assert_replay_served(servido)
 
 
 @pytest.mark.parametrize("variaveis", [[], ["xx"], ["area_plantada", "xx"], "producao", [None]])

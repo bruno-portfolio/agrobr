@@ -10,6 +10,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result
+from agrobr.zarc import models as zarc_models
 
 
 async def _fetch_zarc(
@@ -35,7 +36,7 @@ ZONEAMENTO_AGRICOLA_INFO = base.DatasetInfo(
             description="ZARC — Zoneamento Agrícola de Risco Climático (MAPA/Embrapa)",
         ),
     ],
-    products=[],
+    products=sorted(zarc_models.CULTURAS_CANONICAS),
     contract_version="2.1",
     update_frequency="weekly",
     typical_latency="conforme atualização publicada de cada recurso",
@@ -47,6 +48,9 @@ ZONEAMENTO_AGRICOLA_INFO = base.DatasetInfo(
 
 class ZoneamentoAgricolaDataset(base.BaseDataset):
     info = ZONEAMENTO_AGRICOLA_INFO
+
+    def _produto_do_dataset(self, produto: Any) -> Any:
+        return produto
 
     def _validate_produto(self, produto: str) -> None:
         if not isinstance(produto, str):

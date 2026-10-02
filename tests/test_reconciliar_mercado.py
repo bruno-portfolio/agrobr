@@ -254,3 +254,62 @@ async def test_n2_sicor_le_o_mes_pelo_filtro_e_recusa_o_teto(monkeypatch: pytest
         monkeypatch.setattr(sicor_client, "SICOR_RECORD_LIMIT", len(registros))
         with pytest.raises(SourceUnavailableError, match="volume no teto"):
             await reconciliation._sicor_mes(http, "https://sicor", "RegiaoUF", 2023, 1)
+
+
+def _sicor_por_rodada(monkeypatch: pytest.MonkeyPatch, alterar: Any) -> None:
+    rodada = {"n": 1}
+
+    async def sicor_mes(_http: Any, _base: str, entidade: str, ano: int, mes: int) -> Any:
+        registros = alterar(
+            rodada["n"], entidade, (ano, mes), _sicor(f"{entidade}_{ano}_{mes:02d}.json.gz")
+        )
+        if entidade == reconciliation.SICOR_MUNICIPIOS:
+            rodada["n"] += 1
+        return registros
+
+    ate_fevereiro = [
+        registro
+        for nome in sorted(SICOR.glob("RegiaoUF_*.json.gz"))
+        if nome.stem.removesuffix(".json") <= "RegiaoUF_2023_02"
+        for registro in _sicor(nome.name, decimal=False)
+    ]
+    monkeypatch.setattr(reconciliation, "_sicor_mes", sicor_mes)
+    monkeypatch.setattr(
+        sicor_client, "_fetch_odata", AsyncMock(return_value={"value": ate_fevereiro})
+    )
+
+
+def _corta_janeiro(quantos: int) -> Any:
+    def alterar(_rodada: int, entidade: str, periodo: tuple[int, int], registros: Any) -> Any:
+        return registros[quantos:] if (entidade, periodo) == ("RegiaoUF", (2023, 1)) else registros
+
+    return alterar
+
+
+@pytest.mark.parametrize(
+    ("cenario", "status", "nota"),
+    [
+        ("converge", "ok", "a diferença da 1ª leitura sumiu"),
+        ("persiste", "mismatch", "diferença confirmada com a publicação igual"),
+        ("falha", "indisponivel", "2ª leitura falhou"),
+        ("muda", "indisponivel", "a publicação mudou entre as 2 leituras"),
+    ],
+)
+async def test_n2_sicor_confirma_a_diferenca_com_uma_segunda_leitura(
+    monkeypatch: pytest.MonkeyPatch, cenario: str, status: str, nota: str
+):
+    def alterar(rodada: int, entidade: str, periodo: tuple[int, int], registros: Any) -> Any:
+        if rodada == 2 and cenario == "falha":
+            raise SourceUnavailableError(source="bcb", last_error="HTTP 503 after 6 attempts")
+        quantos = {"converge": 1 if rodada == 1 else 0, "persiste": 1, "falha": 1, "muda": rodada}[
+            cenario
+        ]
+        return _corta_janeiro(quantos)(rodada, entidade, periodo, registros)
+
+    _sicor_por_rodada(monkeypatch, alterar)
+    with sem_excecao():
+        casos = await reconciliation.n2_sicor(None, "base", date(2023, 2, 10))
+    assert [caso["status"] for caso in casos] == [status, status]
+    for caso in casos:
+        texto = " ".join([caso.get("segunda_leitura", ""), *caso["problems"]])
+        assert nota in texto, caso

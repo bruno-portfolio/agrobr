@@ -53,6 +53,7 @@ COMTRADE_PAISES: dict[str, int] = {
     "ury": 858,
     "uruguai": 858,
     "world": 0,
+    "wld": 0,
     "mundo": 0,
     "eg": 818,
     "egy": 818,

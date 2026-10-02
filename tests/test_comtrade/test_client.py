@@ -165,6 +165,10 @@ async def test_simulated_auth_failure_restarts_guest_without_secret_in_provenanc
     assert secret not in result.model_dump_json(exclude={"records"})
     assert all(secret not in str(request.url) for request in requests)
     assert result.fallback
+    assert result.warnings[0] == (
+        f"Chave do Comtrade recusada (HTTP {status}): confira AGROBR_COMTRADE_API_KEY ou o "
+        "argumento api_key=; plano reiniciado integralmente no preview público."
+    )
 
 
 @pytest.mark.parametrize(

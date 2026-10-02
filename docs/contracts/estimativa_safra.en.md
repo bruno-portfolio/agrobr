@@ -7,12 +7,14 @@ Crop estimates with an explicit CONAB survey or LSPA reference month. The datase
 | Selection | Source used | Reference |
 |---|---|---|
 | No source or reference selector | CONAB → IBGE LSPA | Latest available observation from the selected source |
-| `fonte="conab"` | CONAB only | Most recent publication carrying the crop year (for a past crop year, the next crop year's, revised), or explicit `levantamento` |
+| `fonte="conab"` | CONAB only | Most recent publication carrying the crop year (the previous crop year comes from the next crop year's survey, revised; two or more crop years back, from CONAB's historical series, with null `levantamento` and `data_publicacao`), or explicit `levantamento` |
 | `levantamento=1` | CONAB only | Survey 1 of the requested crop year |
 | `fonte="ibge_lspa"` | LSPA only | Latest observed month, or explicit `mes` |
 | `mes="01"` | LSPA only | January in the crop year's final calendar year |
 
 `levantamento` and `mes` are distinct selectors. Using both, or combining either with an incompatible `fonte`, raises an error before network access. A forced source is not replaced by another source. An unavailable explicit reference raises an error rather than silently selecting another month, survey or source.
+
+When every queried source answers without observations for the selection (product, season, state and selector with no row), the result is the contract's empty frame, with the same dtypes, a `UserWarning` and the warning in `MetaInfo.validation_warnings`. A network or layout failure in any source keeps its error class: with one source empty and the other down the result is `SourceUnavailableError`, and with the other failing on layout it is `ParseError`.
 
 Without an explicit month, LSPA selects the latest available period with observations. It does not fill a requested month's missing components from earlier months.
 
@@ -65,8 +67,8 @@ Crop years are normalized to consecutive `YYYY/YY` years. For LSPA, `safra="2024
 | `area_colhida` | float64 | Yes | LSPA harvested area, thousand ha; null for CONAB |
 | `produtividade` | float64 | Yes | Yield, kg/ha |
 | `producao` | float64 | Yes | Production, thousand tonnes |
-| `levantamento` | Int64 | Yes | CONAB survey number (1–12) of the bulletin that published the number; null for LSPA |
-| `data_publicacao` | date | Yes | Date of the CONAB bulletin that published the number, when available; null for LSPA |
+| `levantamento` | Int64 | Yes | CONAB survey number (1–12) of the bulletin that published the number; null for LSPA and for a crop year served by the historical series |
+| `data_publicacao` | date | Yes | Date of the CONAB bulletin that published the number, when available; null for LSPA and for a crop year served by the historical series |
 | `ano_lspa` | Int64 | Yes | Observed LSPA calendar year; null for CONAB |
 | `mes_lspa` | Int64 | Yes | Observed LSPA month (1–12); null for CONAB |
 | `unidade_producao` | str | No | Unit of `producao`: `mil_ton` from both sources |
@@ -74,7 +76,7 @@ Crop years are normalized to consecutive `YYYY/YY` years. For LSPA, `safra="2024
 
 **Primary key:** `[fonte, safra, produto, uf, levantamento, ano_lspa, mes_lspa]`.
 
-`levantamento` and `data_publicacao` belong to the CONAB bulletin that published the number, not to the crop year: without `levantamento`, a past crop year comes from the most recent publication carrying it, revised. Crop year 2024/25 served by the 12th survey of 2025/26 comes with `levantamento=12` and `data_publicacao=2026-09-15`; the 12th survey of 2024/25 is another bulletin, with another number. The bulletin crop year is in `meta.source_details["publicacao"]["safra"]`.
+`levantamento` and `data_publicacao` belong to the CONAB bulletin that published the number, not to the crop year: without `levantamento`, a past crop year comes from the most recent publication carrying it, revised. Crop year 2024/25 served by the 12th survey of 2025/26 comes with `levantamento=12` and `data_publicacao=2026-09-15`; the 12th survey of 2024/25 is another bulletin, with another number. The bulletin crop year is in `meta.source_details["publicacao"]["safra"]`. Two or more crop years behind the latest edition, without `levantamento`, the number comes from the historical series, and `levantamento` and `data_publicacao` are null (see `conab.safras`).
 
 All columns are present, including nullable columns. The scale is the same on both routes: production in thousand tonnes and areas in thousand hectares, declared in `unidade_producao` (`mil_ton`) and `unidade_area` (`mil_ha`), the same values as `conab.brasil_total`. [`producao_anual`](./producao_anual.md) comes out in tonnes and hectares: to compare, multiply the estimate by 1,000. The key distinguishes origins and LSPA months that previously collided. Preserve the complete key when storing or deduplicating observations.
 

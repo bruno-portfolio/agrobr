@@ -106,7 +106,7 @@ async def cobertura(
     uf: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
-    nivel: Literal["estado", "municipio"] = "estado",
+    nivel: Literal["estado", "uf", "municipio"] = "estado",
     municipio: str | int | None = None,
     colecao: int | None = None,
     as_polars: Literal[False] = False,
@@ -121,7 +121,7 @@ async def cobertura(
     uf: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
-    nivel: Literal["estado", "municipio"] = "estado",
+    nivel: Literal["estado", "uf", "municipio"] = "estado",
     municipio: str | int | None = None,
     colecao: int | None = None,
     as_polars: Literal[False] = False,
@@ -136,7 +136,7 @@ async def cobertura(
     uf: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
-    nivel: Literal["estado", "municipio"] = "estado",
+    nivel: Literal["estado", "uf", "municipio"] = "estado",
     municipio: str | int | None = None,
     colecao: int | None = None,
     as_polars: bool = False,
@@ -150,7 +150,7 @@ async def cobertura(
     uf: str | None = None,
     ano: int | None = None,
     classe_id: int | None = None,
-    nivel: Literal["estado", "municipio"] = "estado",
+    nivel: Literal["estado", "uf", "municipio"] = "estado",
     municipio: str | int | None = None,
     colecao: int | None = None,
     as_polars: bool = False,
@@ -163,6 +163,7 @@ async def cobertura(
     bioma = queries.normalizar_bioma(bioma)
     queries.validar_ano(ano, colecao)
     queries.validar_classe("classe_id", classe_id)
+    nivel = "estado" if nivel == "uf" else nivel
     geocodigo = queries.geocodigo_do_municipio(nivel, municipio, uf)
     filters = {"bioma": bioma, "uf": uf, "ano": ano, "classe_id": classe_id}
     logger.info("mapbiomas_cobertura", **filters, nivel=nivel, geocodigo=geocodigo)

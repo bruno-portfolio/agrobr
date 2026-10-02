@@ -246,6 +246,7 @@ def aviso_deterministico(dataset: str, snapshot: str) -> str:
 class BaseDataset(ABC):
     info: DatasetInfo
     honra_deterministico: ClassVar[bool] = False
+    sinonimos_que_mudam_o_recorte: ClassVar[frozenset[str]] = frozenset()
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Aplica o formato de saída e o schema do contrato ao ``fetch`` de cada dataset."""
@@ -335,12 +336,16 @@ class BaseDataset(ABC):
         """O nome que este dataset usa para ``produto``, por qualquer sinônimo do ``normalize``.
 
         Sem produto do dataset com o mesmo canônico, a entrada volta como veio, e a validação de
-        cada dataset segue igual.
+        cada dataset segue igual. O sinônimo listado em ``sinonimos_que_mudam_o_recorte`` (sem
+        acento, caixa e espaço) também volta como veio: o produto de mesmo canônico é outro recorte.
         """
         if not isinstance(produto, str) or not self.info.products or produto in self.info.products:
             return produto
-        from agrobr.normalize import crops
+        from agrobr.normalize import crops, regions
 
+        chave = "_".join(regions.remover_acentos(produto).lower().split())
+        if chave in self.sinonimos_que_mudam_o_recorte:
+            return produto
         canonico = crops.normalizar_cultura(produto)
         return next(
             (nome for nome in self.info.products if crops.normalizar_cultura(nome) == canonico),

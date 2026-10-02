@@ -6,11 +6,13 @@ import httpx
 
 from agrobr import _log
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+
+from . import models
 
 logger = _log.get_logger(__name__)
 
@@ -67,15 +69,15 @@ async def fetch_cot(
         responses.raise_for_status(response, source="cftc")
         data = responses.parse_json_response(response, source="cftc", url=url)
 
-    if not data or not isinstance(data, list):
-        raise SourceUnavailableError(
+    if not isinstance(data, list):
+        raise ParseError(
             source="cftc",
-            url=url,
-            last_error="Resposta vazia do CFTC para os contratos solicitados",
+            parser_version=models.PARSER_VERSION,
+            reason="Resposta Socrata deve ser uma lista de registros",
         )
 
     if len(data) >= MAX_ROWS:
-        logger.warning("cftc_cot_truncated", rows=len(data), limit=MAX_ROWS)
+        logger.warning("cftc_cot_limit_reached", rows=len(data), limit=MAX_ROWS)
 
     logger.info("cftc_cot_ok", records=len(data))
     return data, str(response.url), response.content

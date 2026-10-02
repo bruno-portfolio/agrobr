@@ -59,7 +59,7 @@ def _matches(feature: Any, query: query_module.SolosQuery) -> bool:
             return False
     if query.ordem is not None:
         raw = properties["ordem1"]
-        if not isinstance(raw, str) or query.ordem.upper() not in raw.upper():
+        if not isinstance(raw, str) or raw.strip().upper() != query.ordem:
             return False
     return True
 

@@ -8,6 +8,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
 from agrobr.utils import tasks
 from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
@@ -81,12 +82,20 @@ async def precos(
     for nome, valor in (("produto", produto), ("ceasa", ceasa)):
         if valor is not None and (not isinstance(valor, str) or not valor.strip()):
             raise InvalidParameterError(f"{nome} deve ser texto não vazio, recebeu {valor!r}")
+    produto_upper = (
+        regions.remover_acentos(produto.strip()).upper() if produto is not None else None
+    )
+    if produto_upper is not None and produto_upper not in PRODUTOS_PROHORT:
+        raise InvalidParameterError(
+            f"Produto {produto!r} fora do que a CONAB/PROHORT publica. "
+            f"Válidos: {sorted(PRODUTOS_PROHORT)}"
+        )
     warn_once(
         "conab_ceasa",
         "agrobr.conab.ceasa: dados CONAB/PROHORT via Pentaho CDA. "
         "Credenciais publicas embutidas no frontend, mas API nao e "
         "oficialmente documentada. Classificacao: zona_cinza. "
-        "Veja docs/licenses.md.",
+        "Veja https://www.agrobr.dev/docs/licenses/.",
     )
 
     logger.info("conab_ceasa_precos", produto=produto, ceasa=ceasa)
@@ -105,7 +114,6 @@ async def precos(
     publicados = {coluna: sorted(df[coluna].dropna().unique()) for coluna in ("produto", "ceasa")}
 
     if produto is not None:
-        produto_upper = produto.strip().upper()
         if produto_upper not in {nome.upper() for nome in publicados["produto"]}:
             raise InvalidParameterError(
                 f"Produto {produto!r} fora do que a CONAB/PROHORT publica. "

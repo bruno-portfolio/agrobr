@@ -74,7 +74,7 @@ async def test_cot_combined_confere_o_relatorio_oficial(monkeypatch):
     assert len(publicado) == len(esperado) == 5
     assert {
         coluna: str(frame[coluna].dtype) for coluna in models.POSITION_COLUMNS
-    } == dict.fromkeys(models.POSITION_COLUMNS, "int64")
+    } == dict.fromkeys(models.POSITION_COLUMNS, "Int64")
     assert [{k: linha[k] for k in esperado[0]} for linha in publicado] == esperado
 
 

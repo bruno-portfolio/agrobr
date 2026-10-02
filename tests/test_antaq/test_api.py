@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import re
 import zipfile
 from unittest.mock import AsyncMock, patch
 
@@ -11,7 +12,9 @@ import pandas as pd
 import pytest
 
 from agrobr.antaq import api
+from agrobr.exceptions import ParseError
 from agrobr.utils import time as time_utils
+from tests.helpers import levanta_exatamente
 
 
 def _make_zip(files: dict[str, str]) -> bytes:
@@ -254,3 +257,57 @@ class TestMovimentacao:
         ]
         for col in expected_cols:
             assert col in df.columns, f"Missing column: {col}"
+
+
+COLUNAS_EXIGIDAS = [
+    *(
+        ("atracacao", coluna)
+        for coluna in (
+            "IDAtracacao",
+            "Porto Atracação",
+            "Complexo Portuário",
+            "Terminal",
+            "Município",
+            "SGUF",
+            "Região Geográfica",
+            "Ano",
+            "Mes",
+            "Data Atracação",
+        )
+    ),
+    *(
+        ("carga", coluna)
+        for coluna in (
+            "IDAtracacao",
+            "CDMercadoria",
+            "Tipo Navegação",
+            "Natureza da Carga",
+            "Sentido",
+            "VLPesoCargaBruta",
+        )
+    ),
+    ("mercadoria", "CDMercadoria"),
+    ("mercadoria", "Nomenclatura Simplificada Mercadoria"),
+]
+
+
+@pytest.mark.parametrize(("arquivo", "coluna"), COLUNAS_EXIGIDAS)
+async def test_movimentacao_txt_sem_coluna_exigida_levanta_parse_error(arquivo, coluna):
+    textos = {"atracacao": ATRACACAO_TXT, "carga": CARGA_TXT, "mercadoria": MERCADORIA_TXT}
+    textos[arquivo] = (
+        pd.read_csv(io.StringIO(textos[arquivo]), sep=";", dtype=str, keep_default_na=False)
+        .drop(columns=coluna)
+        .to_csv(sep=";", index=False)
+    )
+    ano_zip = _make_zip(
+        {"2024Atracacao.txt": textos["atracacao"], "2024Carga.txt": textos["carga"]}
+    )
+    merc_zip = _make_zip({"Mercadoria.txt": textos["mercadoria"]})
+    with (
+        patch.object(api.client, "fetch_ano_zip", new_callable=AsyncMock, return_value=ano_zip),
+        patch.object(
+            api.client, "fetch_mercadoria_zip", new_callable=AsyncMock, return_value=merc_zip
+        ),
+        levanta_exatamente(ParseError, match=re.escape(coluna)),
+    ):
+        await api.movimentacao(2024, tipo_navegacao="cabotagem")

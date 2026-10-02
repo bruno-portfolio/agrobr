@@ -207,9 +207,9 @@ async def test_ano_fora_do_catalogo_recusado_sem_baixar_o_catalogo(monkeypatch):
         client, "fetch_precos_catalog", AsyncMock(side_effect=AssertionError("catálogo baixado"))
     )
     with levanta_exatamente(
-        SourceUnavailableError, "Período fora do catálogo municipal disponível: 2022 a 2027"
+        InvalidParameterError, "2030-01-01 fora do catálogo municipal da ANP: 2022 a 2027"
     ):
-        await api.precos_diesel(nivel="municipio", inicio="2030-01-01")
+        await api.precos_diesel(nivel="municipio", fim="2030-01-01")
 
 
 def test_vendas_cabecalho_com_espacos():

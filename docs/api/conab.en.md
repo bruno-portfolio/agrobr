@@ -123,8 +123,8 @@ DataFrame with columns:
 - `estoque_inicial`: Initial stock (thousand t)
 - `producao`: Production (thousand t)
 - `importacao`: Imports (thousand t)
-- `suprimento`: Total supply (thousand t), opening stock + production + imports, added up by agrobr
-- `consumo`: Consumption (thousand t), seeds/other + crushing, added up by agrobr
+- `suprimento`: Total supply (thousand t), as published in the Suprimento sheet; in soybean's own sheet, opening stock + production + imports, added up by agrobr
+- `consumo`: Consumption (thousand t), as published; in the soybean sheet, seeds/other + crushing, added up by agrobr
 - `exportacao`: Exports (thousand t)
 - `demanda_total`: Total demand (thousand t); null in the soybean wide layout and the legacy long layout without this column
 - `estoque_final`: Ending stock (thousand t)
@@ -236,7 +236,7 @@ async def ufs() -> list[str]
 
 The CONAB module also exposes (documented in their own pages or in the contracts):
 
-- `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — production costs per hectare; `as_polars` and `return_meta` are keyword-only. `catalogo_custos(produto)` lists agricultural workbooks, and a product with no workbook in the catalog raises `InvalidParameterError` listing the published crops; with `planilha=...`, it lists sheets and identified or unresolved contexts, with `data_referencia` as `datetime64[ns]`. Corn, rice and beans each have two workbooks and require explicit selection; also choose a single sheet/context. Coffee uses `cafe_arabica` or `cafe_conilon`. A subtotal or formula total that does not close with the published items issues a warning in `meta.validation_warnings`. See the dataset's eight products and their semantics in the [custo_producao](../contracts/custo_producao.md) contract
+- `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — production costs per hectare; `as_polars` and `return_meta` are keyword-only. `catalogo_custos(produto)` lists agricultural workbooks, and a product with no workbook in the catalog raises `InvalidParameterError` listing the published crops; with `planilha=...`, it lists sheets and identified or unresolved contexts, with `data_referencia` as `datetime64[ns]`. Any product with multiple candidate workbooks or contexts requires explicit `planilha` and `aba` selection until a single context is identified; the API lists candidates and does not select a revision automatically. Coffee uses `cafe_arabica` or `cafe_conilon`. A subtotal or formula total that does not close with the published items issues a warning in `meta.validation_warnings`. See the dataset's eight products and their semantics in the [custo_producao](../contracts/custo_producao.md) contract
 - `serie_historica(produto, ...)` — crop historical series (45 products, with coverage depending on the product). Coffee includes producing/developing areas and explicit conversions to thousand ha, thousand tonnes and kg/ha; sugarcane publishes harvested area in `area_colhida_mil_ha`. Warns when the sum of the states does not match the published BRASIL, under the `safras` rule. See the [serie_historica_safra](../contracts/serie_historica_safra.md) contract
 - `progresso_safra(...)` / `semanas_disponiveis()` — weekly planting/harvest progress. See the [CONAB Progress API](conab_progresso.md)
 - `ceasa_precos(...)` / `ceasa_produtos()` / `ceasa_categorias()` / `lista_ceasas()` — wholesale produce prices. See the [CONAB CEASA API](conab_ceasa.md)
@@ -263,7 +263,7 @@ class Safra(BaseModel):
     unidade_area: str = Field(default="mil_ha")
     unidade_producao: str = Field(default="mil_ton")
     levantamento: int = Field(..., ge=1, le=12)
-    data_publicacao: date
+    data_publicacao: date | None = None
     meta: dict[str, Any] = Field(default_factory=dict)
     parsed_at: datetime = Field(default_factory=utcnow)
     parser_version: int = Field(default=1)
@@ -315,7 +315,7 @@ df = conab.balanco('milho')
 
 `conab.custo_sociobiodiversidade(produto, uf=None, ano=None, *, local=None, planilha=None, aba=None, use_cache=True, as_polars=False, return_meta=False)` returns the published extraction costs. The dataset has the same selectors. `conab.catalogo_sociobiodiversidade()` lists all resource revisions with an active flag; with a product it inventories the active workbook, including unresolved contexts. Select an exact historical resource with `planilha=`. The 20 captured products, literal units, selection rules and nominal limitations are documented in the [1.0 contract](../contracts/custo_sociobiodiversidade.md). No hectare/crop conversion or revision merging. Catalogue cache: 1 hour, separate from agricultural costs; workbooks are always downloaded. `use_cache=False` bypasses the catalogue cache.
 
-Agricultural costs use parser 4: merged headers, coffee identified by official
+Agricultural costs use parser 5: merged headers, coffee identified by official
 resource, literal annual or two-year crop tokens, and exchange-rate notes kept
 outside cost items. Excel percentage scaling applies only to numeric cells.
 Sociobiodiversity costs use parser 2 and preserve explicit archived-revision
@@ -324,3 +324,14 @@ selection. Contracts remain 3.0 and 1.0, with text in the installed pandas defau
 Survey parser 3 recognizes historical wheat sheets such as `Trigo 2021`, selected
 by the requested harvest ending year. Two matching sheets raise `ParseError`;
 worksheet order never determines the selected year.
+
+## Catalogs and product normalization
+
+`produtos()` and `ufs()` are local catalogs with no network access and retain their asynchronous
+signatures: use `await conab.produtos()` and `await conab.ufs()`. Through the synchronous facade,
+use `sync.conab.produtos()` and `sync.conab.ufs()`.
+
+`safras()` normalizes case, surrounding whitespace, and accented aliases such as `" FEIJÃO "`
+before requesting data and selecting rows. `ceasa_precos(produto=...)` also normalizes accents
+and rejects products outside `ceasa_produtos()` before network access. After acquisition, it
+checks that the product appears in the received publication.

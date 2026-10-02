@@ -200,9 +200,19 @@ def _finish(
     records = state.records if query.max_registros is None else state.records[: query.max_registros]
     coverage = _coverage(query, state, len(records), stop, next_link)
     if stop == "local_limit":
+        cobertura = {
+            "complete": "completa",
+            "partial": "parcial",
+            "unknown": "não comprovada",
+        }[coverage.completeness]
+        total = (
+            "total não informado pela fonte"
+            if coverage.expected_count is None
+            else f"total declarado {coverage.expected_count}"
+        )
         state.warnings.append(
             f"Limite local max_registros={query.max_registros} encerrou a coleta Focus; "
-            f"cobertura {coverage.completeness}, total declarado {coverage.expected_count}."
+            f"cobertura {cobertura}, {total}."
         )
     return focus_acquisition.FocusAcquisition(
         query=query,

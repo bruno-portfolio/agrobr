@@ -17,6 +17,8 @@ National Waterway Transport Agency. Port cargo movement data
 ## Installation
 
 Does not require optional dependencies. Uses requests + pandas (core) — ANTAQ's WAF rejects httpx clients.
+The download follows `AGROBR_HTTP_TIMEOUT_CONNECT` and `AGROBR_HTTP_TIMEOUT_READ`, with a 180 s floor on reads (a larger
+value prevails); `AGROBR_HTTP_TIMEOUT_WRITE` and `AGROBR_HTTP_TIMEOUT_POOL` belong to httpx and do not apply to this transport.
 
 ## API
 
@@ -77,9 +79,9 @@ df = antaq_sync.movimentacao(2024, uf="SP")
 
 | Column | Type | Nullable | Description |
 |---|---|---|---|
-| `ano` | int | No | Year |
-| `mes` | int | No | Month (1-12) |
-| `data_atracacao` | str | Yes | Berthing date |
+| `ano` | Int64 | Yes (cargo without berthing) | Year |
+| `mes` | Int64 | Yes (cargo without berthing) | Month (1-12) |
+| `data_atracacao` | datetime64[ns] | Yes | Berthing date and time |
 | `tipo_navegacao` | str | Yes | Navigation type |
 | `tipo_operacao` | str | Yes | Cargo operation type |
 | `natureza_carga` | str | Yes | Cargo nature |
@@ -131,6 +133,13 @@ January 2024 excerpt, atracacao `1406197` has 5), so the row count is the number
 atracacao without carga never shows up. A carga without atracacao keeps the row with null `ano`/`mes`
 in the source API and is dropped by the dataset, which requires `ano` and `mes`. A carga whose
 `CDMercadoria` is absent from the table keeps the row with null `mercadoria`/`grupo_mercadoria`.
+
+**Missing column.** If a TXT member lacks a column used by the join, the filters or the dataset key,
+`antaq.movimentacao()` and `datasets.movimentacao_portuaria()` raise `ParseError` naming the column.
+These are: in atracacao, `IDAtracacao`, `Porto Atracação`, `Complexo Portuário`, `Terminal`, `Município`,
+`SGUF`, `Região Geográfica`, `Ano`, `Mes` and `Data Atracação`; in carga, `IDAtracacao`, `CDMercadoria`,
+`Tipo Navegação`, `Natureza da Carga`, `Sentido` and `VLPesoCargaBruta`; in mercadoria, `CDMercadoria`
+and `Nomenclatura Simplificada Mercadoria`.
 
 **Columns with two origins.** `tipo_navegacao` comes from `Tipo Navegacao` (carga); atracacao
 publishes `Tipo de Navegacao da Atracacao`, which is read and dropped in the join projection - the

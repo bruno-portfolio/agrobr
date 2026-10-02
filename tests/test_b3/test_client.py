@@ -1,11 +1,53 @@
 from __future__ import annotations
 
+import asyncio
+import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from agrobr.b3 import client
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
+from tests.helpers import levanta_exatamente
+
+
+async def test_vez_presa_sem_soltar_tem_teto(monkeypatch):
+    monkeypatch.setenv("AGROBR_HTTP_TIMEOUT_READ", "0.2")
+    pedido = AsyncMock(return_value=(b"", "url"))
+    monkeypatch.setattr(client, "_fetch_posicoes_abertas", pedido)
+    assert client._OI_LOCK.acquire(blocking=False)
+    try:
+        inicio = time.monotonic()
+        with levanta_exatamente(
+            ResourceLimitError, match="outra consulta das posições em aberto segura a vez"
+        ):
+            await asyncio.wait_for(client.fetch_posicoes_abertas("2026-09-21"), timeout=5)
+        espera = time.monotonic() - inicio
+    finally:
+        client._OI_LOCK.release()
+    assert 0.15 <= espera < 2
+    assert pedido.await_count == 0
+
+
+async def test_fila_que_anda_nao_estoura_o_teto(monkeypatch):
+    monkeypatch.setenv("AGROBR_HTTP_TIMEOUT_READ", "0.5")
+    ativos = pico = 0
+
+    async def pedido(data):
+        nonlocal ativos, pico
+        ativos += 1
+        pico = max(pico, ativos)
+        await asyncio.sleep(0.1)
+        ativos -= 1
+        return b"", data
+
+    monkeypatch.setattr(client, "_fetch_posicoes_abertas", pedido)
+    datas = [f"2026-09-{dia:02d}" for dia in range(14, 26)]
+    inicio = time.monotonic()
+    respostas = await asyncio.gather(*(client.fetch_posicoes_abertas(data) for data in datas))
+    assert time.monotonic() - inicio > 1
+    assert [url for _, url in respostas] == datas
+    assert pico == 1
 
 
 class TestFetchPosicoesAbertas:

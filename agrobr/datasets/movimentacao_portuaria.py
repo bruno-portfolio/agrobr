@@ -110,10 +110,13 @@ class MovimentacaoPortuariaDataset(BaseDataset):
         def _single_or_none(s: pd.Series) -> Any:
             return s.iloc[0] if s.nunique(dropna=False) == 1 else None
 
+        def _soma_ou_nulo(s: pd.Series) -> Any:
+            return s.sum(min_count=len(s))
+
         agg: dict[str, Any] = {}
         for col in ("peso_bruto_ton", "qt_carga", "teu"):
             if col in df.columns:
-                agg[col] = "sum"
+                agg[col] = _soma_ou_nulo
         for col in (
             "complexo_portuario",
             "municipio",

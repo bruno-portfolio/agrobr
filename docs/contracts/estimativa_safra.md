@@ -7,12 +7,14 @@ Estimativas de safra com levantamento CONAB ou mês de referência LSPA explíci
 | Seleção | Fonte usada | Referência |
 |---|---|---|
 | Sem fonte ou seletor de referência | CONAB → IBGE LSPA | Observação mais recente disponível na fonte selecionada |
-| `fonte="conab"` | Somente CONAB | Publicação mais recente que traz a safra (para safra passada, a da safra seguinte, revisada), ou `levantamento` explícito |
+| `fonte="conab"` | Somente CONAB | Publicação mais recente que traz a safra (a safra anterior vem da safra seguinte, revisada; duas ou mais safras atrás, da série histórica da CONAB, com `levantamento` e `data_publicacao` nulos), ou `levantamento` explícito |
 | `levantamento=1` | Somente CONAB | Levantamento 1 da safra solicitada |
 | `fonte="ibge_lspa"` | Somente LSPA | Mês mais recente com observações, ou `mes` explícito |
 | `mes="01"` | Somente LSPA | Janeiro do ano civil final da safra |
 
 `levantamento` e `mes` são seletores distintos. Usar ambos, ou combinar um deles com `fonte` incompatível, gera erro antes da rede. Uma fonte forçada não é substituída por outra. Referência explícita indisponível gera erro, sem seleção silenciosa de outro mês, levantamento ou fonte.
+
+Quando todas as fontes consultadas respondem sem observações para o recorte (produto, safra, UF e seletor sem linha), o resultado é o vazio do contrato, com os mesmos dtypes, um `UserWarning` e o aviso em `MetaInfo.validation_warnings`. Falha de rede ou de layout de alguma fonte mantém a classe do erro: com uma fonte vazia e a outra fora do ar sai `SourceUnavailableError`, e com a outra falhando por layout sai `ParseError`.
 
 Sem mês explícito, o LSPA seleciona o período mais recente disponível com observações. Não completa componentes ausentes do mês solicitado com meses anteriores.
 
@@ -65,8 +67,8 @@ A safra é normalizada para anos consecutivos no formato `YYYY/YY`. Para LSPA, `
 | `area_colhida` | float64 | Sim | Área colhida LSPA, mil ha; nula na CONAB |
 | `produtividade` | float64 | Sim | Produtividade, kg/ha |
 | `producao` | float64 | Sim | Produção, mil toneladas |
-| `levantamento` | Int64 | Sim | Número do levantamento CONAB (1–12) do boletim que publicou o número; nulo para LSPA |
-| `data_publicacao` | date | Sim | Data do boletim CONAB que publicou o número, quando disponível; nula para LSPA |
+| `levantamento` | Int64 | Sim | Número do levantamento CONAB (1–12) do boletim que publicou o número; nulo para LSPA e para safra servida pela série histórica |
+| `data_publicacao` | date | Sim | Data do boletim CONAB que publicou o número, quando disponível; nula para LSPA e para safra servida pela série histórica |
 | `ano_lspa` | Int64 | Sim | Ano civil observado no LSPA; nulo para CONAB |
 | `mes_lspa` | Int64 | Sim | Mês observado no LSPA (1–12); nulo para CONAB |
 | `unidade_producao` | str | Não | Unidade de `producao`: `mil_ton` nas 2 fontes |
@@ -74,7 +76,7 @@ A safra é normalizada para anos consecutivos no formato `YYYY/YY`. Para LSPA, `
 
 **Chave primária:** `[fonte, safra, produto, uf, levantamento, ano_lspa, mes_lspa]`.
 
-O `levantamento` e a `data_publicacao` são do boletim CONAB que publicou o número, e não da safra: sem `levantamento`, a safra passada vem da publicação mais recente que a traz, revisada. A safra 2024/25 servida pelo 12º levantamento de 2025/26 sai com `levantamento=12` e `data_publicacao=2026-09-15`; o 12º levantamento de 2024/25 é outro boletim, com outro número. A safra do boletim está em `meta.source_details["publicacao"]["safra"]`.
+O `levantamento` e a `data_publicacao` são do boletim CONAB que publicou o número, e não da safra: sem `levantamento`, a safra passada vem da publicação mais recente que a traz, revisada. A safra 2024/25 servida pelo 12º levantamento de 2025/26 sai com `levantamento=12` e `data_publicacao=2026-09-15`; o 12º levantamento de 2024/25 é outro boletim, com outro número. A safra do boletim está em `meta.source_details["publicacao"]["safra"]`. Duas ou mais safras atrás da edição mais recente, sem `levantamento`, o número vem da série histórica, e `levantamento` e `data_publicacao` saem nulos (ver `conab.safras`).
 
 Todas as colunas estão presentes, inclusive as nullable. A escala é a mesma nas 2 rotas: produção em mil toneladas e áreas em mil hectares, declaradas em `unidade_producao` (`mil_ton`) e `unidade_area` (`mil_ha`), os mesmos valores de `conab.brasil_total`. O [`producao_anual`](./producao_anual.md) sai em toneladas e hectares: para comparar, multiplique a estimativa por 1.000. A chave distingue origens e meses LSPA que antes colidiam. Preserve a chave completa ao armazenar ou deduplicar observações.
 

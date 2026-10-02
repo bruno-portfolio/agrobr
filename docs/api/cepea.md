@@ -19,7 +19,6 @@ async def indicador(
     praca: str | None = None,
     inicio: str | date | None = None,
     fim: str | date | None = None,
-    _moeda: str = "BRL",
     *,
     as_polars: bool = False,
     validate_sanity: bool = False,
@@ -35,9 +34,8 @@ async def indicador(
 |-----------|------|-----------|
 | `produto` | `str` | Produto CEPEA (22 disponíveis). Veja `produtos()` para lista completa |
 | `praca` | `str \| None` | Praça de cotação. Aceita o slug de `pracas()` ou o rótulo exibido pela fonte; `None` retorna todas |
-| `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 365 dias atrás |
+| `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 365 dias antes de `fim` |
 | `fim` | `str \| date \| None` | Data final. Default: hoje |
-| `_moeda` | `str` | Reservado; não altera o resultado |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `validate_sanity` | `bool` | Conferir unidade, faixa de preço e variação temporal quando houver regra. Default: `False` |
 | `force_refresh` | `bool` | Ignorar cache e buscar dados frescos |
@@ -226,11 +224,11 @@ produtos = cepea.produtos()
 
 ## Comportamento de Cache
 
-1. **Cache fresh**: Retorna imediatamente do cache. A última coleta do produto vale até as 18h BRT do dia útil seguinte (horário de atualização do CEPEA; sábado e domingo não contam)
+1. **Cache fresh**: Retorna imediatamente do cache. A última coleta do produto vale até a próxima virada das 18h BRT em dia útil (horário de atualização do CEPEA; no mesmo dia, se a coleta foi antes das 18h; sábado e domingo não contam)
 2. **Cache stale**: Busca de novo; se a fonte falhar, devolve o cache com `StaleDataWarning` e `source="cache_fallback"`
 3. **Sem cache**: Busca da fonte e salva no cache
 
-Com `return_meta=True`, o `MetaInfo` de uma resposta do cache traz em `fetched_at` e `fetch_timestamp` a coleta real (a mais recente entre as linhas devolvidas), não o instante da chamada, e `cache_expires_at` é a virada das 18h BRT seguinte a essa coleta. `ultimo()` segue a mesma virada. Com `fim` anterior à janela recente de 25 dias corridos (período fechado, que não volta à fonte), `cache_expires_at` sai nulo: a validade não se aplica.
+Com `return_meta=True`, o `MetaInfo` de uma resposta do cache traz em `fetched_at` e `fetch_timestamp` a coleta real (a mais recente entre as linhas devolvidas), não o instante da chamada, e `cache_expires_at` é a virada das 18h BRT seguinte a essa coleta. `ultimo()` segue a mesma virada. Com `fim` anterior à janela recente de 25 dias corridos (período fechado, que não consulta a página), `cache_expires_at` sai nulo: a validade não se aplica.
 
 O histórico é acumulado progressivamente no DuckDB local, permitindo consultas a períodos antigos sem novas requisições.
 
@@ -264,3 +262,14 @@ preserva as observações dos dois provedores; a seleção ocorre na consulta.
 `indicador()` mantém todas as praças distintas, e `data_sources` descreve
 somente as linhas retornadas. `force_refresh=True` continua ignorando a leitura
 inicial do cache e retornando a coleta solicitada.
+
+## Normalização e avisos do parser
+
+Os produtos aceitam caixa, espaços externos e aliases com acento, como `" CAFÉ "`.
+O nome é normalizado antes da consulta ao cache ou à fonte, preservando os códigos já aceitos.
+Produto fora do catálogo levanta `InvalidParameterError`.
+
+Quando o parser selecionado reconhece o layout com confiança abaixo do limiar recomendado,
+`indicador()` emite `UserWarning` e registra a mensagem em `meta.validation_warnings` em cada
+aquisição. O aviso identifica a versão e a confiança observada; uma leitura só do cache não
+recebe uma confiança inferida. Os valores e unidades publicados permanecem os mesmos.

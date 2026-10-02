@@ -1,13 +1,13 @@
 # UN Comtrade — comércio internacional
 
-A integração entrega comércio bilateral de mercadorias (tipo C), exportação/importação, períodos anuais ou mensais e classificações HS. O espelho cruza declarações de exportação com importações inversas. Veja a [API e seus seletores](../api/comtrade.md) e o [contrato 2.1](../contracts/comercio_internacional.md).
+A integração entrega comércio bilateral de mercadorias (tipo C), exportação/importação, períodos anuais ou mensais e classificações HS. O espelho cruza declarações de exportação com importações inversas. Veja a [API e seus seletores](../api/comtrade.md) e o [contrato 3.0 do dataset](../contracts/comercio_internacional.md) (a fonte valida o `comercio_bilateral` 2.1).
 
 ## Rotas e opções
 
 | Camada | Entrega |
 |---|---|
 | Preview público | Consulta sem chave, um período por chamada e contagem independente |
-| Aquisição autenticada | Transporte com chave opcional e replanejamento integral para preview em 401/403 |
+| Aquisição autenticada | Transporte com chave opcional e replanejamento integral para preview em 401/403, com aviso que aponta `AGROBR_COMTRADE_API_KEY` e `api_key=` |
 | Bilateral | World explícito ou todos os parceiros publicados; HS individual, alias agrícola ou lista textual |
 | Espelho | Junção externa 1:1, identidade numérica e revisão HS de cada declaração |
 | Dataset semântico | Mesmos seletores, contrato completo inclusive vazio, metadados, sync e Polars |

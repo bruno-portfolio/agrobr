@@ -3,15 +3,17 @@ from __future__ import annotations
 import asyncio
 import time
 from functools import partial
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import httpx
+import pandas as pd
 import pytest
 
 from agrobr import constants
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.ibge import client
 from agrobr.sync import run_sync
+from agrobr.utils.result import ATRIBUTO_AVISOS
 
 
 @pytest.fixture
@@ -107,3 +109,21 @@ async def test_non_json_response_retried(sidra_http):
         call for call in sidra_http.get.await_args_list if "apisidra" in str(call.args[0])
     ]
     assert len(sidra_calls) == constants.HTTPSettings().max_retries
+
+
+async def test_fallback_vazio_preserva_avisos_de_canal_e_ausencia(monkeypatch):
+    monkeypatch.setattr(
+        client,
+        "_fetch_sidra_em_fatias",
+        AsyncMock(side_effect=SourceUnavailableError(source="ibge", last_error="HTTP 403")),
+    )
+    monkeypatch.setattr(
+        client.agregados,
+        "fetch_agregados",
+        AsyncMock(return_value=(pd.DataFrame(), "https://example.invalid/agregados")),
+    )
+    with pytest.warns(UserWarning):
+        frame = await client.fetch_sidra("5457", period="2023")
+    assert frame.empty
+    assert any(aviso.startswith("SIDRA indisponível") for aviso in frame.attrs[ATRIBUTO_AVISOS])
+    assert any("IBGE sem dado" in aviso for aviso in frame.attrs[ATRIBUTO_AVISOS])

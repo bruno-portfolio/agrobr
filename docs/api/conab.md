@@ -123,8 +123,8 @@ DataFrame com colunas:
 - `estoque_inicial`: Estoque inicial (mil t)
 - `producao`: Produção (mil t)
 - `importacao`: Importação (mil t)
-- `suprimento`: Suprimento total (mil t), estoque inicial + produção + importação, somados pelo agrobr
-- `consumo`: Consumo (mil t), sementes/outros + processamento, somados pelo agrobr
+- `suprimento`: Suprimento total (mil t), como publicado na aba Suprimento; na aba própria da soja, estoque inicial + produção + importação, somados pelo agrobr
+- `consumo`: Consumo (mil t), como publicado; na aba da soja, sementes/outros + processamento, somados pelo agrobr
 - `exportacao`: Exportação (mil t)
 - `demanda_total`: Demanda total (mil t); nula no wide da soja e no layout longo legado sem essa coluna
 - `estoque_final`: Estoque final (mil t)
@@ -236,7 +236,7 @@ async def ufs() -> list[str]
 
 O módulo CONAB também expõe (documentadas em páginas próprias ou nos contratos):
 
-- `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — custos de produção por hectare; `as_polars` e `return_meta` só por nome. `catalogo_custos(produto)` lista as planilhas agrícolas, e produto sem planilha no catálogo levanta `InvalidParameterError` com as culturas publicadas; com `planilha=...`, lista abas e contextos reconhecidos ou pendentes, com `data_referencia` em `datetime64[ns]`. Milho, arroz e feijão têm duas planilhas cada e exigem seleção explícita; escolha também uma aba/contexto único. Café usa `cafe_arabica` ou `cafe_conilon`. Subtotal ou total de fórmula que não fecha com os itens publicados gera aviso em `meta.validation_warnings`. Ver os oito produtos do dataset e sua semântica no contrato [custo_producao](../contracts/custo_producao.md)
+- `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — custos de produção por hectare; `as_polars` e `return_meta` só por nome. `catalogo_custos(produto)` lista as planilhas agrícolas, e produto sem planilha no catálogo levanta `InvalidParameterError` com as culturas publicadas; com `planilha=...`, lista abas e contextos reconhecidos ou pendentes, com `data_referencia` em `datetime64[ns]`. Qualquer produto com múltiplas planilhas ou contextos candidatos exige seleção explícita por `planilha` e `aba`, até identificar um contexto único; a API informa os candidatos e não escolhe uma revisão automaticamente. Café usa `cafe_arabica` ou `cafe_conilon`. Subtotal ou total de fórmula que não fecha com os itens publicados gera aviso em `meta.validation_warnings`. Ver os oito produtos do dataset e sua semântica no contrato [custo_producao](../contracts/custo_producao.md)
 - `serie_historica(produto, ...)` — série histórica de safras (45 produtos, com início conforme produto). Café inclui áreas em produção/formação e conversões explícitas para mil ha, mil toneladas e kg/ha; cana publica a área colhida em `area_colhida_mil_ha`. Avisa quando a soma das UFs não fecha com o BRASIL publicado, na regra de `safras`. Ver contrato [serie_historica_safra](../contracts/serie_historica_safra.md)
 - `progresso_safra(...)` / `semanas_disponiveis()` — progresso semanal de plantio/colheita. Ver [API CONAB Progresso](conab_progresso.md)
 - `ceasa_precos(...)` / `ceasa_produtos()` / `ceasa_categorias()` / `lista_ceasas()` — preços de atacado hortifrúti. Ver [API CONAB CEASA](conab_ceasa.md)
@@ -263,7 +263,7 @@ class Safra(BaseModel):
     unidade_area: str = Field(default="mil_ha")
     unidade_producao: str = Field(default="mil_ton")
     levantamento: int = Field(..., ge=1, le=12)
-    data_publicacao: date
+    data_publicacao: date | None = None
     meta: dict[str, Any] = Field(default_factory=dict)
     parsed_at: datetime = Field(default_factory=utcnow)
     parser_version: int = Field(default=1)
@@ -315,7 +315,7 @@ df = conab.balanco('milho')
 
 `conab.custo_sociobiodiversidade(produto, uf=None, ano=None, *, local=None, planilha=None, aba=None, use_cache=True, as_polars=False, return_meta=False)` retorna os custos extrativistas publicados. O dataset tem os mesmos seletores. `conab.catalogo_sociobiodiversidade()` lista todas as revisões de recursos com indicação de ativo; com produto, inventaria o workbook ativo, incluindo contextos pendentes. `planilha=` seleciona um recurso histórico exato. Os 20 produtos capturados, unidades literais, seleção e limitações nominais estão no [contrato 1.0](../contracts/custo_sociobiodiversidade.md). Sem conversão hectare/safra nem mescla de revisões. Cache do catálogo de 1 h, separado dos custos agrícolas; workbooks sempre baixados. `use_cache=False` ignora o cache do catálogo.
 
-Custos agrícolas usam parser 4: cabeçalhos mesclados, café por recurso oficial,
+Custos agrícolas usam parser 5: cabeçalhos mesclados, café por recurso oficial,
 safra anual ou bienal literal e notas cambiais separadas dos itens. Percentuais
 só recebem escala Excel quando a célula é numérica. Custos da sociobiodiversidade
 usam parser 2 e preservam a seleção explícita de revisões arquivadas. Contratos
@@ -324,3 +324,14 @@ usam parser 2 e preservam a seleção explícita de revisões arquivadas. Contra
 O parser de levantamento 3 reconhece o trigo histórico em abas como `Trigo 2021`,
 selecionadas pelo ano de encerramento da safra solicitada. Se duas abas correspondem
 à mesma seleção, a leitura falha com `ParseError`; a ordem das abas não decide o ano.
+
+## Catálogos e normalização de produtos
+
+`produtos()` e `ufs()` são catálogos locais, sem acesso à rede, e mantêm a assinatura assíncrona:
+use `await conab.produtos()` e `await conab.ufs()`. Na fachada síncrona, use `sync.conab.produtos()`
+e `sync.conab.ufs()`.
+
+`safras()` normaliza caixa, espaços externos e aliases com acento, como `" FEIJÃO "`, antes da
+consulta e da seleção das linhas. `ceasa_precos(produto=...)` também normaliza acentos e recusa
+produtos fora de `ceasa_produtos()` antes de consultar a rede. Após a aquisição, confere se o
+produto consta da publicação recebida.

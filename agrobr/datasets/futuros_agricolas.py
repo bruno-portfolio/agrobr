@@ -66,7 +66,7 @@ async def _fetch_b3(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo
     if tipo in ("historico", "oi_historico"):
         if not kwargs.get("inicio") or not kwargs.get("fim"):
             raise InvalidParameterError(f"tipo='{tipo}' requer inicio e fim (YYYY-MM-DD)")
-        fetch_historico = b3.oi_historico if tipo == "oi_historico" else b3.historico
+        fetch_historico = b3.posicoes_abertas_historico if tipo == "oi_historico" else b3.historico
         result = await fetch_historico(
             contrato=contrato or "",
             inicio=kwargs["inicio"],
@@ -104,7 +104,10 @@ FUTUROS_AGRICOLAS_INFO = DatasetInfo(
     typical_latency="D+1",
     source_url="https://www.b3.com.br",
     source_institution="B3",
-    unit="BRL ou USD por contrato",
+    unit=(
+        "cotação por unidade da mercadoria na coluna unidade (BRL/@, BRL/sc60kg, USD/sc60kg, "
+        "BRL/m3, USD/ton); ajuste_por_contrato em BRL ou USD por contrato; posições em contratos"
+    ),
     license="zona_cinza",
 )
 
@@ -168,6 +171,11 @@ class FuturosAgricolasDataset(BaseDataset):
         if tipo in ("ajustes", "posicoes") and (inicio is not None or fim is not None):
             raise InvalidParameterError(
                 f"tipo='{tipo}' usa data; inicio e fim valem só para 'historico' e 'oi_historico'"
+            )
+        if tipo in ("ajustes", "posicoes") and vencimento is not None:
+            raise InvalidParameterError(
+                f"tipo='{tipo}' traz todos os vencimentos do pregão; vencimento vale só para "
+                "'historico' e 'oi_historico' (ou filtre a coluna vencimento_codigo)"
             )
 
         self._validate_params(tipo, produto, data, inicio, fim)

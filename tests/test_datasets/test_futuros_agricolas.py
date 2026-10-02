@@ -1,15 +1,27 @@
+import asyncio
+import importlib
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 
 from agrobr import datasets
+from agrobr.b3 import client
 from agrobr.datasets.futuros_agricolas import (
     FuturosAgricolasDataset,
 )
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ResourceLimitError
 from tests.helpers import collect_failures, isolated_dataset_case, levanta_exatamente
 
 from .conftest import make_source, mock_source_meta
+
+CSV_OI = (
+    Path(__file__).resolve().parents[1]
+    / "golden_data"
+    / "b3"
+    / "pregoes_20260921_20260922"
+    / "b3_oi_20260922_agribusiness.csv"
+)
 
 
 def _mock_ajustes_df():
@@ -200,3 +212,29 @@ class TestFuturosValidation:
 async def test_historico_sem_periodo_explica_no_dataset():
     with levanta_exatamente(InvalidParameterError, match="obrigatórios para tipo='historico'"):
         await datasets.futuros_agricolas("boi", tipo="historico")
+
+
+async def test_pregao_recente_nao_pula_dia_quando_a_vez_do_oi_passa_do_teto(monkeypatch):
+    monkeypatch.setenv("AGROBR_HTTP_TIMEOUT_READ", "0.2")
+    modulo = importlib.import_module("agrobr.datasets.futuros_agricolas")
+    monkeypatch.setattr(
+        modulo, "_dias_uteis_recentes", lambda: ["2026-09-25", "2026-09-24", "2026-09-23"]
+    )
+    pedido = AsyncMock(return_value=(CSV_OI.read_bytes(), "https://arquivos.b3.com.br/test"))
+    monkeypatch.setattr(client, "_fetch_posicoes_abertas", pedido)
+    assert client._OI_LOCK.acquire(blocking=False)
+    solta = asyncio.Event()
+
+    def soltar():
+        client._OI_LOCK.release()
+        solta.set()
+
+    asyncio.get_running_loop().call_later(0.3, soltar)
+    try:
+        with levanta_exatamente(
+            ResourceLimitError, match="outra consulta das posições em aberto segura a vez"
+        ):
+            await datasets.futuros_agricolas("boi", tipo="posicoes")
+    finally:
+        await solta.wait()
+    assert pedido.await_args_list == []

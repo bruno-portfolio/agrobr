@@ -39,7 +39,7 @@ DataFrame com colunas: `data`, `commodity`, `contrato`, `codigo_cftc`, `open_int
 `other_spread`, `nonreportable_long`, `nonreportable_short`, `change_managed_money_long`,
 `change_managed_money_short`, `change_open_interest`.
 
-Posições em número de contratos (int64). Colunas `change_*` são nullable (Int64) —
+Posições em número de contratos (`Int64`, como as variações). Colunas `change_*` são
 nulas na primeira semana de cada contrato na série. As colunas seguem os nomes do relatório do CFTC; o dataset
 `posicionamento_fundos` as entrega em português.
 

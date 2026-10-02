@@ -16,7 +16,9 @@ from . import acquisition
 
 def validate_access_options(api_key: str | None, require_complete: bool) -> None:
     if not isinstance(require_complete, bool):
-        raise InvalidParameterError("require_complete deve ser booleano")
+        raise InvalidParameterError(
+            "require_complete (exigir_completo em datasets.comercio_internacional) deve ser booleano"
+        )
     if api_key is not None and (not isinstance(api_key, str) or not api_key.strip()):
         raise InvalidParameterError("api_key deve ser texto não vazio ou None")
 
@@ -46,7 +48,10 @@ def _monthly_range(start: int, end: int) -> list[str]:
 
 def expand_periods(period: str | int, freq: str) -> list[str]:
     if isinstance(period, bool) or not isinstance(period, (str, int)):
-        raise InvalidParameterError("Período deve ser ano, mês, lista ou intervalo textual")
+        raise InvalidParameterError(
+            "periodo deve ser texto ou inteiro: ano (2024), mês (202401), lista separada por "
+            "vírgula ('2022,2023') ou intervalo ('2020-2023')"
+        )
     text = str(period).strip()
     if "," in text:
         tokens = [part.strip() for part in text.split(",")]
@@ -90,9 +95,11 @@ def build_query(
     freq: str = "A",
 ) -> acquisition.TradeQuery:
     if not isinstance(freq, str) or freq.strip().upper() not in {"A", "M"}:
-        raise InvalidParameterError("freq deve ser A ou M")
+        raise InvalidParameterError(
+            "freq (frequencia em datasets.comercio_internacional) deve ser A ou M"
+        )
     if not isinstance(flow, str) or flow.strip().upper() not in {"X", "M"}:
-        raise InvalidParameterError("flow deve ser X ou M")
+        raise InvalidParameterError("fluxo deve ser X ou M")
     if (
         not isinstance(hs_codes, list)
         or not hs_codes

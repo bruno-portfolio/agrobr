@@ -6,7 +6,7 @@ A ANTT publica recursos CSV e metadados no [catálogo oficial de dados abertos](
 
 ## Contrato de fluxo 3.0
 
-A saída preserva 13 colunas e a modalidade de cobrança, categoria tarifária e frequência publicadas. A chave é `data`, `concessionaria`, `praca`, `sentido`, `tipo_veiculo`, `categoria_eixo`, `tipo_cobranca`, `frequencia`. Modalidades de cobrança não são juntadas. `n_eixos` exige evidência textual explícita; códigos históricos de categoria não são contagens físicas universais. Rótulos e espaços permanecem literais.
+A saída preserva 13 colunas e a modalidade de cobrança, categoria tarifária e frequência publicadas. A chave é `data`, `concessionaria`, `praca`, `sentido`, `tipo_veiculo`, `categoria_eixo`, `tipo_cobranca`, `frequencia`. Modalidades de cobrança não são juntadas. `n_eixos` exige evidência textual explícita; códigos históricos de categoria não são contagens físicas universais. Os rótulos saem como publicados, sem os espaços externos, e `sentido` sai em maiúsculas (`Crescente `, `Crescente` e `CRESCENTE` viram `CRESCENTE`): no CSV mensal de 2023, o volume total e o volume por sentido não mudam.
 
 `frequencia="mensal"` e `"diaria"` selecionam famílias separadas de recursos. O client não substitui uma frequência ausente por outra. O catálogo determina ano/revisão selecionados; bytes, hashes e estatísticas descrevem a aquisição efetiva.
 
@@ -16,7 +16,7 @@ Nos CSVs mensais, 2020, 2021 e 2023 trazem `mes_ano` fora do dia 1 (fim de mês,
 
 ## Cadastro de praças
 
-O cadastro corrente pode fornecer UF, rodovia e município por correspondência literal e única. Não reconstrói geografia histórica. Com filtro de UF/rodovia, praça sem esse vínculo (em 2026, 15 pares em GO, MG e PR) sai do resultado com aviso. O cabeçalho oficial `municipal` alimenta `municipio`; a coluna canônica tem precedência quando ambas existem. Contrato do cadastro: 1.0.1.
+O cadastro corrente pode fornecer UF, rodovia e município por correspondência única de concessionária e praça, sem os espaços externos. Não reconstrói geografia histórica. Com filtro de UF/rodovia, praça sem esse vínculo (em 2026, 15 pares em GO, MG e PR) sai do resultado com aviso. Se nenhuma praça do cadastro tem a UF/rodovia pedida, o resultado sai vazio com outro aviso, que diz isso, e não com erro de transporte. Na frequência mensal, `inicio` e `fim` usam o dia 1 do mês, e o erro diz qual dos dois e o valor. O cabeçalho oficial `municipal` alimenta `municipio`; a coluna canônica tem precedência quando ambas existem. No `pracas_pedagio`, a coluna `municipal` ainda sai, com `FutureWarning` e aviso no `MetaInfo`, e deixa de sair na próxima versão major: use `municipio`. Contrato do cadastro: 2.0.
 
 ## Transporte e orçamentos
 

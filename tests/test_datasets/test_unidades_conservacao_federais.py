@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from agrobr import datasets
-from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError, ParseError, ResourceLimitError
 from agrobr.icmbio import api
 from tests.helpers import (
     collect_failures,
@@ -103,7 +103,7 @@ async def test_unidades_conservacao_federais_casos_2():
         ):
             fetch, count = acquisition
             count.return_value = (count_body(501), "https://test/hits")
-            with pytest.raises(SourceUnavailableError, match="excede o limite"):
+            with pytest.raises(ResourceLimitError, match="excede o limite"):
                 await datasets.unidades_conservacao_federais()
             fetch.assert_not_awaited()
 

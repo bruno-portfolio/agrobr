@@ -127,6 +127,32 @@ def _basic_match(record: models.TrafegoRecord, selected: query.FluxoQuery) -> bo
     )
 
 
+def _mesmo_valor(nome: str, publicado: str | None, pedido: str) -> bool:
+    normalizar = query._rodovia if nome == "rodovia" else str.upper
+    return publicado is not None and normalizar(publicado) == normalizar(pedido)
+
+
+def _avisar_filtro_sem_praca(state: Pipeline, cadastro: pd.DataFrame) -> None:
+    filtros = {
+        nome: getattr(state.validated, nome)
+        for nome in ("uf", "rodovia")
+        if getattr(state.validated, nome) is not None
+    }
+    if not filtros:
+        return
+    for linha in cadastro.reindex(columns=["rodovia", "uf"]).to_dict("records"):
+        publicados = {nome: parser._nullable_text(valor) for nome, valor in linha.items()}
+        if all(_mesmo_valor(nome, publicados[nome], valor) for nome, valor in filtros.items()):
+            return
+    descricao = ", ".join(f"{nome}={valor!r}" for nome, valor in filtros.items())
+    message = (
+        f"Nenhuma praça do cadastro ANTT casa {descricao}; o resultado sai vazio, sem falha "
+        "de transporte"
+    )
+    state.messages.append(message)
+    warnings.warn(message, UserWarning, stacklevel=4)
+
+
 def _geographic_match(record: models.TrafegoRecord, state: Pipeline) -> bool:
     selected = state.validated
     if selected.uf is None and selected.rodovia is None:
@@ -186,6 +212,7 @@ async def _load_enrichment(state: Pipeline) -> None:
                 "parsing": copy.deepcopy(frame.attrs.get("parsing", {})),
                 **copy.deepcopy(diagnostics),
             }
+            _avisar_filtro_sem_praca(state, frame)
     except (httpx.HTTPError, SourceUnavailableError) as exc:
         state.fetch_seconds += time.monotonic() - started
         details = getattr(exc, "antt_acquisition", None)

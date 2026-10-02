@@ -236,10 +236,12 @@ async def test_historico_marca_o_pregao_sem_arquivo(monkeypatch):
 
 
 @pytest.mark.parametrize(("contrato", "ticker"), CONTRATOS_OI)
-async def test_oi_historico_reune_as_posicoes_publicadas(contrato, ticker, monkeypatch):
+async def test_posicoes_abertas_historico_reune_as_posicoes_publicadas(
+    contrato, ticker, monkeypatch
+):
     visto = install_replay_http(monkeypatch, _caso(), GOLDEN)
     with sem_excecao():
-        frame, meta = await b3.oi_historico(
+        frame, meta = await b3.posicoes_abertas_historico(
             contrato=contrato, inicio=DIAS[0], fim=DIAS[1], return_meta=True
         )
     assert_replay_served(visto)
@@ -249,7 +251,7 @@ async def test_oi_historico_reune_as_posicoes_publicadas(contrato, ticker, monke
     assert meta.validation_warnings == []
     for tipo in ("futuro", "opcao"):
         with sem_excecao():
-            filtrado = await b3.oi_historico(
+            filtrado = await b3.posicoes_abertas_historico(
                 contrato=contrato, inicio=DIAS[0], fim=DIAS[1], tipo=tipo
             )
         assert sorted(filtrado["ticker_completo"]) == sorted(
@@ -257,10 +259,10 @@ async def test_oi_historico_reune_as_posicoes_publicadas(contrato, ticker, monke
         )
 
 
-async def test_oi_historico_avisa_o_pregao_sem_arquivo(monkeypatch):
+async def test_posicoes_abertas_historico_avisa_o_pregao_sem_arquivo(monkeypatch):
     visto = install_replay_http(monkeypatch, _caso(), GOLDEN)
     with sem_excecao():
-        frame, meta = await b3.oi_historico(
+        frame, meta = await b3.posicoes_abertas_historico(
             contrato="boi", inicio=DIAS[0], fim=date(2026, 9, 23), return_meta=True
         )
     assert len(visto["unmatched"]) == 1 and "date=2026-09-23" in visto["unmatched"][0]
@@ -450,13 +452,15 @@ async def test_historico_sem_dia_util_nao_lista_corpo(monkeypatch):
 
 
 @pytest.mark.parametrize("fim", [DIAS[0], date(2026, 9, 23)], ids=["um_corpo", "varios_corpos"])
-async def test_oi_historico_lista_cada_corpo_recebido(fim, monkeypatch):
+async def test_posicoes_abertas_historico_lista_cada_corpo_recebido(fim, monkeypatch):
     relogio = itertools.count()
     base = datetime(2026, 9, 23, 18, tzinfo=UTC)
     monkeypatch.setattr(agrobr_time, "utcnow", lambda: base + timedelta(seconds=next(relogio)))
     install_replay_http(monkeypatch, _caso(), GOLDEN)
     with sem_excecao():
-        _, meta = await b3.oi_historico(contrato="boi", inicio=DIAS[0], fim=fim, return_meta=True)
+        _, meta = await b3.posicoes_abertas_historico(
+            contrato="boi", inicio=DIAS[0], fim=fim, return_meta=True
+        )
     esperado = []
     for dia in (dia for dia in DIAS if dia <= fim):
         corpo = (PREGOES / f"b3_oi_{dia:%Y%m%d}_agribusiness.csv").read_bytes()

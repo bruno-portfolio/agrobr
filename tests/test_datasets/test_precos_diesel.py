@@ -1,3 +1,4 @@
+import typing
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -28,3 +29,9 @@ async def test_kwarg_desconhecido_registry_recusado():
     ):
         await dataset.fetch(ano=2024)
     fetch.assert_not_awaited()
+
+
+def test_municipio_aceita_codigo_ibge_na_anotacao_publica():
+    dataset = type(datasets.get_dataset("precos_diesel"))
+    alvos = [datasets.precos_diesel, *typing.get_overloads(datasets.precos_diesel), dataset.fetch]
+    assert {alvo.__annotations__["municipio"] for alvo in alvos} == {"int | str | None"}

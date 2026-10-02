@@ -66,14 +66,15 @@ def oracle(body: bytes) -> dict[tuple[object, ...], int]:
         copies = 2 if all(count % 2 == 0 for count in occurrences.values()) else 1
         for items, count in occurrences.items():
             row = dict(items)
+            categoria = row.get("categoria_eixo", row.get("categoria"))
             key = (
                 month(row["mes_ano"]),
-                row["concessionaria"],
-                row["praca"],
-                row["sentido"],
-                row.get("categoria_eixo", row.get("categoria")),
-                row["tipo_cobranca"],
-                row["tipo_de_veiculo"],
+                row["concessionaria"].strip(),
+                row["praca"].strip(),
+                row["sentido"].strip().upper(),
+                None if categoria is None else categoria.strip(),
+                row["tipo_cobranca"].strip(),
+                row["tipo_de_veiculo"].strip(),
             )
             totals[key] += int(Decimal(row["volume_total"].replace(",", "."))) * count // copies
     return dict(totals)

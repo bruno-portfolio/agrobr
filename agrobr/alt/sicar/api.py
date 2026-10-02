@@ -348,12 +348,14 @@ async def imoveis_geo(
     if cod_municipio is None:
         await _warn_consulta_grande(uf_upper, cql, max_registros)
 
+    validation_warnings: list[str] = []
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_imoveis_geo(uf_upper, cql, max_features=max_registros)
+    pages, source_url = await client.fetch_imoveis_geo(
+        uf_upper, cql, max_features=max_registros, validation_warnings=validation_warnings
+    )
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    validation_warnings: list[str] = []
     sicar_details: dict[str, Any] = {}
     gdf = parser.parse_imoveis_geojson(
         pages,

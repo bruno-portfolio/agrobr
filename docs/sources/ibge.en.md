@@ -7,7 +7,7 @@
 | **Institution** | Federal Government |
 | **Website** | [ibge.gov.br](https://www.ibge.gov.br) |
 | **API** | [SIDRA](https://sidra.ibge.gov.br) |
-| **agrobr access** | Via SIDRA API (JSON) |
+| **agrobr access** | Via SIDRA API (JSON); municipal mesh and urbanized areas via WFS (GeoJSON) |
 
 ## Data Origin
 
@@ -22,7 +22,7 @@
 Every tabular query (PAM, LSPA, PPM, slaughter, PEVS, milk, agricultural GDP and censuses) goes through
 `agrobr.ibge.client.fetch_sidra`. The SIDRA API (`apisidra.ibge.gov.br`) is the primary channel; since
 September 2026 it answers 403 with a Cloudflare challenge to programmatic clients. When SIDRA fails (403,
-HTML, 5xx or network), the same table is queried on the IBGE aggregates API
+HTML, 5xx; a network failure or timeout does not trigger the switch), the same table is queried on the IBGE aggregates API
 (`servicodados.ibge.gov.br/api/v3/agregados`) with the same selectors translated
 (`t/p/v/n/c` → `agregados/{table}/periodos/{p}/variaveis/{v}?localidades=N{n}[...]&classificacao=c[...]`)
 and the response is converted to the same SIDRA column layout (`NC`, `NN`, `MC`, `MN`, `V`, `D1C`…), so
@@ -31,8 +31,10 @@ because the aggregates API publishes only the unit name; `allxp` becomes `all`; 
 from the table's own `/periodos` endpoint. The channel used is recorded in
 `MetaInfo.source_details["canal"]` (`sidra`, `servicodados` or `misto`), `source_details["consultas"]` lists channel
 and URL per query, `attempted_sources` gains `ibge_servicodados` and `selected_source` becomes `ibge_servicodados`
-when the fallback was used (datasets inherit that provenance); `source_url` points to the URL actually queried; the first fallback emits a single `warnings.warn` per process. Both channels
+when the fallback was used (datasets inherit that provenance); `source_url` points to the URL actually queried; the channel switch emits `SourceFallbackWarning` (details below). Both channels
 return the same values for the July 2026 LSPA (soybeans). The IBGE health probe queries the aggregates API.
+
+When a SIDRA response requires switching to the aggregates API, each acquisition emits `SourceFallbackWarning` with the reason. With `return_meta=True`, the message also appears in `meta.validation_warnings`, and `selected_source="ibge_servicodados"` identifies the selected channel. Successive calls keep emitting the warning; an empty response preserves both the channel-switch warning and the missing-observations warning. Datasets retain these metadata. Network failures and timeouts retain their existing handling and do not trigger this switch.
 
 Each query also requests `/agregados/{tabela}/periodos` and records the modification date of the returned periods, which
 tells which edition the number came from: `source_details["periodos_modificacao"]` comes as `{table: {period: ISO date}}`
@@ -53,7 +55,7 @@ Each empty SIDRA query emits a warning and records the same text in `MetaInfo.va
 
 ### PAM - Municipal Agricultural Production
 
-- **SIDRA table**: 5457 (new series 2018+)
+- **SIDRA table**: 5457 (series since 1974)
 - **Coverage**: All municipalities
 - **Frequency**: Annual
 
@@ -80,7 +82,7 @@ The dataset combines expected maize and bean crop components, converts hectares/
 ### Slaughter - Quarterly Animal Slaughter Survey
 
 - **SIDRA tables**: 1092 (cattle), 1093 (hogs), 1094 (chickens)
-- **Coverage**: Brazil + states (27 states)
+- **Coverage**: 27 states (no Brazil row; for the national total, use the species table in SIDRA at the Brazil level)
 - **Frequency**: Quarterly
 - **Series**: 1997-present
 - **Species**: cattle, hog, chicken
@@ -128,7 +130,7 @@ The dataset combines expected maize and bean crop components, converts hectares/
 - **Source**: IBGE FTP (`ftp.ibge.gov.br`)
 - **Format**: ZIP archives containing legacy XLS (BIFF5/BIFF8) or HTML
 - **Coverage**: Brazil, actual state totals, and municipalities; `uf` distinguishes municipalities with identical names
-- **Contract**: [Legacy Census 2.0](../contracts/censo_agropecuario_legado.md), with categories, variables, and units from official headers
+- **Contract**: [Legacy Census 2.1](../contracts/censo_agropecuario_legado.md), with categories, variables, and units from official headers
 - **Frequency**: One-off (1995/96 Census)
 - **Themes**: tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro
 - **Access**: Public, no authentication
@@ -170,7 +172,7 @@ by summing municipalities.
 ### Quarterly Milk — Quarterly Milk Survey
 
 - **SIDRA table**: 1086
-- **Coverage**: Brazil + states (27 states)
+- **Coverage**: 27 states (no Brazil row; for the national total, use SIDRA table 1086 at the Brazil level)
 - **Frequency**: Quarterly
 - **Series**: 1997-present
 - **Variables**: milk acquired (var 282, thousand liters), milk industrialized (var 283, thousand liters), average price (var 2522, R$/liter)
@@ -255,13 +257,18 @@ df, meta = await ibge.lspa('soja', ano=2024, return_meta=True)
 |--------|------|-----------|
 | `ano` | int | Reference year |
 | `localidade` | str | Locality name |
+| `localidade_cod` | int | IBGE locality code (SIDRA D1C) |
 | `produto` | str | Product name |
 | `area_plantada` | float | Hectares |
 | `area_colhida` | float | Hectares |
-| `producao` | float | Tonnes |
-| `rendimento` | float | kg/ha |
-| `valor_producao` | float | Thousand reais |
+| `producao` | float | See `unidade_producao` |
+| `rendimento` | float | See `unidade_rendimento` |
+| `valor_producao` | float | See `unidade_valor_producao` |
 | `fonte` | str | "ibge_pam" |
+| `unidade_producao` | str | `ton`; oranges before 2001, `mil_frutos` |
+| `unidade_rendimento` | str | `kg/ha`; oranges before 2001, `frutos/ha` |
+| `unidade_valor_producao` | str | `mil_reais`; before 1994, the currency of the time (`mil_cruzeiros`, `mil_cruzados`, etc.) |
+| `condicao_produto` | str | Coffee: `em_coco` through 2001, `beneficiado` since 2002; null for other products |
 
 ## Schema - LSPA
 
@@ -269,8 +276,12 @@ df, meta = await ibge.lspa('soja', ano=2024, return_meta=True)
 |--------|------|-----------|
 | `ano` | int | Reference year |
 | `mes` | int | Reference month |
+| `localidade` | str | Locality name |
+| `localidade_cod` | int | IBGE locality code (SIDRA D1C) |
 | `variavel` | str | Variable name |
+| `variavel_cod` | int | SIDRA variable code |
 | `valor` | float | Variable value |
+| `unidade` | str | Unit published by SIDRA |
 | `produto` | str | Product name |
 | `fonte` | str | "ibge_lspa" |
 
@@ -389,7 +400,7 @@ async def main():
     # Chicken slaughter in Paraná
     df = await ibge.abate('frango', trimestre='202303', uf='PR')
 
-    # Hog slaughter — Brazil
+    # Hog slaughter — all states
     df = await ibge.abate('suino', trimestre='202304')
 
     # With metadata
@@ -442,7 +453,7 @@ async def main():
     df = await ibge.censo_agro('lavoura_temporaria', nivel='municipio', uf='PR')
 
     # Permanent crops — Brazil
-    df = await ibge.censo_agro('lavoura_permanente')
+    df = await ibge.censo_agro('lavoura_permanente', nivel='brasil')
 
     # With metadata
     df, meta = await ibge.censo_agro('efetivo_rebanho', return_meta=True)
@@ -646,6 +657,29 @@ asyncio.run(main())
 | `setor` | str | Economic sector |
 | `fonte` | str | "ibge_pib" |
 
+## Municipal mesh and urbanized areas (geoservices)
+
+Outside SIDRA, the module reads 2 layers from the IBGE geoservices WFS (GeoServer, WFS 2.0.0, GeoJSON output):
+
+| Function | Layer | Edition | Features |
+|----------|-------|---------|----------|
+| `malha_municipal` / `malha_municipal_geo` | `CGMAT:qg_2025_030_munic`, at `https://geoservicos.ibge.gov.br/geoserverIBGE/wfs` | 2025 municipal mesh | 5,573: the 5,571 municipalities and 2 operational lagoon areas in RS |
+| `areas_urbanizadas` / `areas_urbanizadas_geo` | `CGEO:AU_2026_AreasUrbanizadas2022_Brasil`, at `https://geoservicos.ibge.gov.br/geoserverCGEO/wfs` | Urbanized Areas of Brazil 2022 | 190,172 polygons, with no state or municipality |
+
+- The count (`resultType=hits`) runs before the download; above the query cap, `ResourceLimitError` without downloading
+  anything, and what arrives is reconciled with the count, as in CNUC and ICMBio.
+- Filters run on the server only as equality (`sigla_uf`, `cd_mun`) and `BBOX`. The IBGE firewall rejects CQL with `OR` or
+  `NOT LIKE` through an HTML "Request Rejected" page with status 200, which agrobr raises as `SourceUnavailableError`.
+- Geometry comes in EPSG:4326, requested from the server (`srsName`), at the layer's original resolution.
+- The IBGE mesh API (`servicodados.ibge.gov.br/api/v3/malhas`) is not used: its geometry is generalized for the web
+  (Brasília with 840 vertices, against 9,896 in the WFS) and it only carries the area code.
+- As files, the mesh ZIPs per state and for Brazil are on the
+  [IBGE geoftp](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/),
+  and the urbanized areas shapefile is at `organizacao_do_territorio/tipologias_do_territorio/areas_urbanizadas_do_brasil/2022/Shapefile/`
+  on the same server.
+- License: IBGE, `livre` (see [licenses](../licenses.md)).
+- Columns, limits and examples: [IBGE API](../api/ibge.md#malha_municipal-malha_municipal_geo).
+
 ## Limits and errors
 
 Bursts of SIDRA queries may trigger a Cloudflare anti-bot check (`challenge`). When a 403 response contains `cf-mitigated: challenge` or the “Just a moment” page, the query raises `SourceUnavailableError` with a `Cloudflare challenge` message and guidance to reduce the request rate. Wait before trying again; this 403 response is not retried automatically.
@@ -655,7 +689,7 @@ Bursts of SIDRA queries may trigger a Cloudflare anti-bot check (`challenge`). W
 - PEVS Silviculture: 14 products, annual data since 1986. Planted area (tab 5930) with 3 species
 - PEVS Plant Extraction: 21 products, annual data since 1986. Mixed units (Tonnes vs cubic meters)
 - Quarterly Milk: table 1086, 3 variables pivoted into wide columns. Series since 1997
-- Agricultural GDP: tabs 1846/6612, 4 sectors, Brazil level. Series since 1996. No contract (macro view)
+- Agricultural GDP: tabs 1846/6612, 4 sectors, Brazil level. Series since 1996. `pib_agro` contract 1.0 (`datasets.pib_agro` dataset)
 
 ## Periods and historical coverage
 
@@ -667,6 +701,6 @@ PPM rejects future years with `InvalidParameterError`, including through `datase
 
 Published values are not implicitly converted. `unidade_producao`, `unidade_rendimento`, and `unidade_valor_producao` identify each row's scale. Before 2001, oranges use `mil_frutos` and `frutos/ha`; from 2001 onward, `ton` and `kg/ha`. `condicao_produto` distinguishes coffee `em_coco` through 2001 from `beneficiado` since 2002. Historical currencies remain identified without conversion to BRL or inflation adjustment. See the [IBGE methodology notes](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
 
-`localidade_cod` (`producao_anual` contract 2.1) carries the locality's IBGE code as SIDRA publishes it (D1C): 7 digits for a municipality, 2 for a state and 1 for Brazil. Use it to join municipalities across years, because the published name changes (and the Federal District comes out as "Brasília (DF)", without the " - UF" suffix of the others). In `producao_anual`, only IBGE rows carry the code; the CONAB fallback does not.
+`localidade_cod` (`producao_anual` contract 2.2) carries the locality's IBGE code as SIDRA publishes it (D1C): 7 digits for a municipality, 2 for a state and 1 for Brazil. Use it to join municipalities across years, because the published name changes (and the Federal District comes out as "Brasília (DF)", without the " - UF" suffix of the others). In `producao_anual`, only IBGE rows carry the code; the CONAB fallback does not.
 
-SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.1; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.
+SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.2; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.

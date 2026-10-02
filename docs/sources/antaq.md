@@ -17,6 +17,8 @@ portuaria de carga (granel solido, liquido, geral, conteiner) desde 2010.
 ## Instalacao
 
 Nao requer dependencias opcionais. Usa requests + pandas (core) — o WAF da ANTAQ rejeita clients httpx.
+O download segue `AGROBR_HTTP_TIMEOUT_CONNECT` e `AGROBR_HTTP_TIMEOUT_READ`, com piso de 180 s na leitura (valor maior
+prevalece); `AGROBR_HTTP_TIMEOUT_WRITE` e `AGROBR_HTTP_TIMEOUT_POOL` são do httpx e não valem para este transporte.
 
 ## API
 
@@ -77,9 +79,9 @@ df = antaq_sync.movimentacao(2024, uf="SP")
 
 | Coluna | Tipo | Nullable | Descricao |
 |---|---|---|---|
-| `ano` | int | Nao | Ano |
-| `mes` | int | Nao | Mes (1-12) |
-| `data_atracacao` | str | Sim | Data de atracacao |
+| `ano` | Int64 | Sim (carga sem atracacao) | Ano |
+| `mes` | Int64 | Sim (carga sem atracacao) | Mes (1-12) |
+| `data_atracacao` | datetime64[ns] | Sim | Data e hora de atracacao |
 | `tipo_navegacao` | str | Sim | Tipo de navegacao |
 | `tipo_operacao` | str | Sim | Tipo de operacao da carga |
 | `natureza_carga` | str | Sim | Natureza da carga |
@@ -130,6 +132,13 @@ recorte de janeiro de 2024, a atracacao `1406197` tem 5), entao o numero de linh
 atracacoes; atracacao sem carga nao aparece. Carga sem atracacao mantem a linha com `ano`/`mes`
 nulos na API da fonte e e descartada pelo dataset, que exige `ano` e `mes`. Carga com
 `CDMercadoria` fora da tabela mantem a linha com `mercadoria`/`grupo_mercadoria` nulos.
+
+**Coluna ausente.** Se um dos TXT vier sem uma coluna que o join, os filtros ou a chave do dataset usam,
+`antaq.movimentacao()` e `datasets.movimentacao_portuaria()` levantam `ParseError` com o nome da coluna.
+São elas: na atracação, `IDAtracacao`, `Porto Atracação`, `Complexo Portuário`, `Terminal`, `Município`,
+`SGUF`, `Região Geográfica`, `Ano`, `Mes` e `Data Atracação`; na carga, `IDAtracacao`, `CDMercadoria`,
+`Tipo Navegação`, `Natureza da Carga`, `Sentido` e `VLPesoCargaBruta`; na mercadoria, `CDMercadoria` e
+`Nomenclatura Simplificada Mercadoria`.
 
 **Colunas com duas origens.** `tipo_navegacao` vem de `Tipo Navegacao` (carga); a atracacao publica
 `Tipo de Navegacao da Atracacao`, que e lida e descartada na projecao do join - as duas divergem

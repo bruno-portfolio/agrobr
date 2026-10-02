@@ -5,7 +5,7 @@ from functools import cache
 from pathlib import Path
 
 from agrobr.exceptions import InvalidParameterError
-from agrobr.normalize import crops
+from agrobr.normalize import crops, regions
 from agrobr.utils import time as time_utils
 
 CATALOGOS = Path(__file__).parent / "catalogos"
@@ -32,6 +32,8 @@ PSD_COMMODITIES: dict[str, str] = {
     "cafe": "0711100",
     "coffee": "0711100",
 }
+
+_SINONIMOS_QUE_MUDAM_O_RECORTE = frozenset({"arroz_casca", "arroz_em_casca"})
 
 _COMMODITY_NAMES: dict[str, str] = {
     "2222000": "soja",
@@ -111,7 +113,8 @@ def resolve_commodity_code(nome: str) -> str:
     if not isinstance(nome, str):
         raise InvalidParameterError("produto deve ser uma string")
     key = nome.strip().lower()
-    key = crops.normalizar_cultura(key)
+    if "_".join(regions.remover_acentos(key).split()) not in _SINONIMOS_QUE_MUDAM_O_RECORTE:
+        key = crops.normalizar_cultura(key)
     if key in PSD_COMMODITIES:
         return PSD_COMMODITIES[key]
     if key in nomes_de_produto():
@@ -142,7 +145,9 @@ def resolve_attributes(attributes: list[str] | None) -> list[str] | None:
     if attributes is None:
         return None
     if not isinstance(attributes, list) or not all(isinstance(a, str) for a in attributes):
-        raise InvalidParameterError("attributes deve ser uma lista de strings")
+        raise InvalidParameterError(
+            "attributes (atributos em datasets.oferta_demanda_global) deve ser uma lista de strings"
+        )
     conhecidos = {nome.lower() for nome in nomes_de_atributo().values()}
     conhecidos |= {*PSD_ATTRIBUTES.values(), "consumo_domestico", "perdas"}
     pedidos = [a.strip().lower() for a in attributes]
@@ -167,5 +172,6 @@ def validate_market_year(ano: int | None) -> None:
         not isinstance(ano, int) or isinstance(ano, bool) or not 1960 <= ano <= corrente
     ):
         raise InvalidParameterError(
-            f"market_year deve ser inteiro entre 1960 e {corrente}: {ano!r}"
+            "market_year (ano_comercial em datasets.oferta_demanda_global) deve ser inteiro "
+            f"entre 1960 e {corrente}: {ano!r}"
         )

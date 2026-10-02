@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import warnings
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
@@ -278,10 +279,27 @@ class TestListMemCache:
         assert len(articles_a) == len(articles_b)
         assert mock_client.get.call_count == 1
 
-    @pytest.mark.asyncio
-    async def test_invalid_ttl_falls_back_to_default(self, monkeypatch):
-        monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", "garbage")
-        assert client._list_ttl_seconds() == 300.0
+    @pytest.mark.parametrize("bruto", ["garbage", "-5", "nan", "inf", "-inf"])
+    def test_ttl_invalido_avisa_uma_vez_e_usa_o_padrao(self, monkeypatch, bruto):
+        from agrobr.utils.warnings import warn_once_reset
+
+        warn_once_reset()
+        monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", bruto)
+        with warnings.catch_warnings(record=True) as avisos:
+            warnings.simplefilter("always")
+            valores = [client._list_ttl_seconds() for _ in range(3)]
+        assert valores == [300.0, 300.0, 300.0]
+        assert [str(aviso.message) for aviso in avisos] == [
+            f"AGROBR_ANEC_LIST_TTL inválido ({bruto!r}): use segundos, número finito maior ou "
+            "igual a 0 (0 desliga o cache da listagem); usando o padrão de 300 s."
+        ]
+
+    @pytest.mark.parametrize(("bruto", "esperado"), [("0", 0.0), ("60", 60.0), ("1.5", 1.5)])
+    def test_ttl_valido_nao_avisa(self, monkeypatch, bruto, esperado):
+        monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", bruto)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            assert client._list_ttl_seconds() == esperado
 
     @pytest.mark.asyncio
     async def test_cache_returns_defensive_copy(self, category_2026_p1_payload, html_factory):

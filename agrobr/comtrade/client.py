@@ -385,7 +385,9 @@ async def fetch_trade_acquisition(
             for resource in resources:
                 resource.accepted = False
             warnings.append(
-                "Autenticação recusada; plano reiniciado integralmente no preview público."
+                f"Chave do Comtrade recusada (HTTP {exc.status_code}): confira "
+                "AGROBR_COMTRADE_API_KEY ou o argumento api_key=; plano reiniciado integralmente "
+                "no preview público."
             )
             fallback = {
                 "from": "authenticated",

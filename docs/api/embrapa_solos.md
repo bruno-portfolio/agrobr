@@ -107,7 +107,7 @@ async def mapa_solos(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`; contains, case-insensitive), aplicado localmente ao prefixo lido. Ex: "LATOSSOLO". Texto vazio ou não textual levanta `InvalidParameterError` antes da coleta. Se o filtro não casar nada após uma leitura completa, `UserWarning` e `MetaInfo.validation_warnings` informam o valor pedido e os valores de `ordem1` observados. |
+| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`): a classe inteira, uma das 15 publicadas (13 ordens mais `AFLORAMENTOS DE ROCHAS` e `DUNAS`), com caixa, acento e singular aceitos (`"latossolo"` vale `LATOSSOLOS`), aplicado localmente ao prefixo lido. Trecho (`"latos"`), texto vazio, não textual ou fora das classes levanta `InvalidParameterError` antes da coleta, com a lista das classes. Se o filtro não casar nada após uma leitura completa, `UserWarning` e `MetaInfo.validation_warnings` informam o valor pedido e os valores de `ordem1` observados. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Teto de ocorrencias lidas em ordem de `fid` (padrao 50.000; `None` le a camada inteira). Os filtros locais atuam so sobre esse prefixo; corte que deixa a selecao parcial emite `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Ocorrencias por pagina: padrao 250 (perfis) / 500 (mapa), maximo 1000; com geometria (`_geo` ou `bbox`), 100 / 25, maximo 100 |
@@ -149,7 +149,7 @@ async def mapa_solos_geo(
 
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
-| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`; contains, case-insensitive), aplicado localmente ao prefixo lido. Texto vazio ou não textual levanta `InvalidParameterError` antes da coleta. Se o filtro não casar nada após uma leitura completa, `UserWarning` e `MetaInfo.validation_warnings` informam o valor pedido e os valores de `ordem1` observados. |
+| `ordem` | `str \| None` | Filtro pela ordem do 1o componente (`ordem1`): a classe inteira, uma das 15 publicadas (13 ordens mais `AFLORAMENTOS DE ROCHAS` e `DUNAS`), com caixa, acento e singular aceitos (`"latossolo"` vale `LATOSSOLOS`), aplicado localmente ao prefixo lido. Trecho (`"latos"`), texto vazio, não textual ou fora das classes levanta `InvalidParameterError` antes da coleta, com a lista das classes. Se o filtro não casar nada após uma leitura completa, `UserWarning` e `MetaInfo.validation_warnings` informam o valor pedido e os valores de `ordem1` observados. |
 | `bbox` | `tuple \| None` | Bounding box (lon_min, lat_min, lon_max, lat_max) |
 | `max_registros` | `int \| None` | Teto de ocorrencias lidas em ordem de `fid` (padrao 3.000; `None` le a camada inteira). Os filtros locais atuam so sobre esse prefixo; corte que deixa a selecao parcial emite `UserWarning` |
 | `tamanho_pagina` | `int \| None` | Ocorrencias por pagina: padrao 250 (perfis) / 500 (mapa), maximo 1000; com geometria (`_geo` ou `bbox`), 100 / 25, maximo 100 |

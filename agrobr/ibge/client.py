@@ -11,7 +11,12 @@ import httpx
 import pandas as pd
 
 from agrobr import _log, constants
-from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    SourceFallbackWarning,
+    SourceUnavailableError,
+)
 from agrobr.http import responses
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.retry import (
@@ -25,7 +30,6 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.ibge import agregados
 from agrobr.utils.result import ATRIBUTO_AVISOS
 from agrobr.utils.validation import validate_uf
-from agrobr.utils.warnings import warn_once
 
 logger = _log.get_logger(__name__)
 
@@ -689,6 +693,7 @@ async def fetch_sidra(
         classifications,
         header,
     )
+    avisos_fallback: list[str] = []
     try:
         df = await _fetch_sidra_em_fatias(
             table_code,
@@ -705,11 +710,12 @@ async def fetch_sidra(
             sidra_error.__cause__, (httpx.TimeoutException, httpx.NetworkError, TimeoutError)
         ):
             raise
-        warn_once(
-            "ibge_sidra_fallback",
+        aviso_fallback = (
             f"SIDRA indisponível ({sidra_error.last_error}); "
-            "consultando a API de agregados do IBGE (servicodados.ibge.gov.br)",
+            "consultando a API de agregados do IBGE (servicodados.ibge.gov.br)"
         )
+        warnings.warn(aviso_fallback, SourceFallbackWarning, stacklevel=2)
+        avisos_fallback.append(aviso_fallback)
         try:
             df, url_used = await agregados.fetch_agregados(
                 table_code,
@@ -742,6 +748,8 @@ async def fetch_sidra(
         df.attrs[ATRIBUTO_AVISOS] = [aviso]
     else:
         identidade.update(await _periodos_modificacao(table_code, df))
+    if avisos_fallback:
+        df.attrs.setdefault(ATRIBUTO_AVISOS, []).extend(avisos_fallback)
     df.attrs.update(identidade, canal=canal, url=url_used)
     return df
 

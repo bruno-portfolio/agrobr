@@ -262,3 +262,24 @@ class TestExtractHelpers:
         result = client.extract_mercadoria(zip_bytes)
 
         assert "CDMercadoria" in result
+
+
+@pytest.mark.parametrize(
+    ("ambiente", "esperado"),
+    [
+        ({}, (10.0, 180.0)),
+        ({"AGROBR_HTTP_TIMEOUT_CONNECT": "3", "AGROBR_HTTP_TIMEOUT_READ": "60"}, (3.0, 180.0)),
+        ({"AGROBR_HTTP_TIMEOUT_READ": "300"}, (10.0, 300.0)),
+    ],
+)
+def test_requests_recebe_o_timeout_configurado_com_piso_de_leitura(monkeypatch, ambiente, esperado):
+    for nome in ("AGROBR_HTTP_TIMEOUT_CONNECT", "AGROBR_HTTP_TIMEOUT_READ"):
+        monkeypatch.delenv(nome, raising=False)
+    for nome, valor in ambiente.items():
+        monkeypatch.setenv(nome, valor)
+    zip_bytes = _make_zip({"test.txt": "hello"}, min_size=500)
+    with patch(
+        "agrobr.antaq.client.requests.get", return_value=_make_requests_response(200, zip_bytes)
+    ) as get:
+        client._get_sync(_ANTAQ_URL)
+    assert get.call_args.kwargs["timeout"] == esperado

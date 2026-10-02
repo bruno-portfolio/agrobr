@@ -49,6 +49,7 @@ COMERCIO_INTERNACIONAL_INFO = base.DatasetInfo(
 
 class ComercioInternacionalDataset(base.BaseDataset):
     info = COMERCIO_INTERNACIONAL_INFO
+    sinonimos_que_mudam_o_recorte = frozenset({"arroz_casca", "arroz_em_casca", "etanol_hidratado"})
 
     def _validate_produto(self, produto: str) -> None:
         models.resolve_hs(produto)

@@ -192,6 +192,14 @@ class TestVendasDiesel:
         assert result.volume_m3.dtype == "float64"
 
     @pytest.mark.asyncio
+    async def test_uf_com_espaco_e_minuscula_filtra_pela_sigla(self):
+        content = _make_vendas_csv_bytes()
+        with patch.object(api.client, "fetch_vendas_m3", AsyncMock(return_value=content)):
+            esperado = await api.vendas_diesel(uf="MT")
+            result = await api.vendas_diesel(uf=" mt ")
+        assert len(result) == len(esperado) > 0
+
+    @pytest.mark.asyncio
     async def test_filtro_data(self):
         csv_bytes = _make_vendas_csv_bytes()
         with patch.object(api.client, "fetch_vendas_m3", new_callable=AsyncMock) as mock:

@@ -109,6 +109,15 @@ def test_resolve_commodity_code():
         models.resolve_commodity_code(2222000)  # type: ignore[arg-type]
 
 
+def test_resolve_commodity_code_recusa_arroz_em_casca():
+    for nome in ("arroz em casca", "Arroz Casca", "arroz_casca"):
+        with levanta_exatamente(InvalidParameterError, f"Produto desconhecido: '{nome}'"):
+            models.resolve_commodity_code(nome)
+    with sem_excecao():
+        resolvidos = [models.resolve_commodity_code(n) for n in ("Arroz", "rice", "Soja em grão")]
+    assert resolvidos == ["0422110", "0422110", "2222000"]
+
+
 def test_resolve_country_code():
     with sem_excecao():
         resolvidos = [models.resolve_country_code(n) for n in ("ar", " E4 ")]

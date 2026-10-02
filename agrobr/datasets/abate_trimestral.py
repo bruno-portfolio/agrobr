@@ -54,6 +54,7 @@ ABATE_TRIMESTRAL_INFO = DatasetInfo(
 
 class AbateTrimestralDataset(BaseDataset):
     info = ABATE_TRIMESTRAL_INFO
+    sinonimos_que_mudam_o_recorte = frozenset({"frango_congelado"})
 
     async def fetch(  # type: ignore[override]
         self,

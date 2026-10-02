@@ -54,6 +54,8 @@ def validate_output_options(*, as_polars: bool, return_meta: bool) -> None:
 def _normalize_price_date(value: str | date | None) -> date | None:
     if value is None:
         return value
+    if isinstance(value, datetime):
+        value = value.date()
     if type(value) is date and date(1678, 1, 1) <= value <= date(2261, 12, 31):
         return value
     if isinstance(value, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
@@ -92,6 +94,10 @@ def normalize_price_query(
     start, end = _normalize_price_date(inicio), _normalize_price_date(fim)
     if start is not None and end is not None and start > end:
         raise InvalidParameterError("inicio deve ser anterior ou igual a fim")
+    if start is not None and start > time_utils.hoje():
+        raise InvalidParameterError(
+            f"inicio {start.isoformat()} no futuro: a ANP publica até {time_utils.hoje().isoformat()}"
+        )
     alvo = None if municipio is None else municipalities.resolver_municipio(municipio, uf)
     return {
         "uf": validate_uf(uf) if alvo is None else alvo["uf"],
@@ -295,6 +301,8 @@ async def vendas_diesel(
 ) -> result.DataFrameResult:
     validate_output_options(as_polars=as_polars, return_meta=return_meta)
     validate_year_uf(uf=uf)
+    if uf is not None:
+        uf = uf.strip().upper()
     inicio, fim = _normalize_range(inicio, fim)
 
     t0 = time.monotonic()
@@ -381,10 +389,8 @@ async def _resolve_price_urls(query: dict[str, Any]) -> list[str]:
     current_year = time_utils.hoje().year
     for boundary in (query["inicio"], query["fim"]):
         if boundary is not None and not 2022 <= boundary.year <= current_year:
-            raise SourceUnavailableError(
-                source="anp_diesel",
-                url=constants.URLS[constants.Fonte.ANP_DIESEL]["precos_catalogo"],
-                last_error=f"Período fora do catálogo municipal disponível: 2022 a {current_year}",
+            raise InvalidParameterError(
+                f"Período {boundary.isoformat()} fora do catálogo municipal da ANP: 2022 a {current_year}"
             )
     final_year = (
         min((query["fim"] + timedelta(days=6)).year, current_year) if query["fim"] else current_year

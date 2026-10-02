@@ -8,7 +8,12 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.models import MetaInfo
-from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
+from agrobr.utils.result import (
+    ATRIBUTO_AVISOS,
+    DataFrameResult,
+    build_source_meta,
+    finalize_result,
+)
 from agrobr.utils.warnings import warn_once
 
 from . import client, parser
@@ -133,23 +138,26 @@ def _colapsar_repetidos(
     se colapsa: todas as linhas saem, com aviso, porque um erro derrubaria a cadeia inteira por
     um indicador.
     """
+    avisos: list[str] = []
     iguais = df.duplicated(keep="first")
     colapsadas = _resumo(df, iguais)
     if colapsadas["linhas"]:
-        warn_once(
-            f"imea_duplicatas_{cadeia_id}",
+        avisos.append(
             f"IMEA: {colapsadas['linhas']} registro(s) publicados mais de uma vez pela fonte, "
             "iguais em todas as colunas, saem uma vez só (indicadores "
-            f"{', '.join(colapsadas['indicadores'])})",
+            f"{', '.join(colapsadas['indicadores'])})"
         )
+        warn_once(f"imea_duplicatas_{cadeia_id}", avisos[-1])
         df = df[~iguais].reset_index(drop=True)
     conflitantes = df.duplicated(CHAVE, keep=False)
     repetidas = _resumo(df, conflitantes)
     if repetidas["linhas"]:
-        warn_once(
-            f"imea_chaves_repetidas_{cadeia_id}",
+        avisos.append(
             f"IMEA: {repetidas['linhas']} linha(s) repetem a chave (indicador, localidade, data, "
             "safra e unidade) com valores diferentes e saem todas (indicadores "
-            f"{', '.join(repetidas['indicadores'])})",
+            f"{', '.join(repetidas['indicadores'])})"
         )
+        warn_once(f"imea_chaves_repetidas_{cadeia_id}", avisos[-1])
+    if avisos:
+        df.attrs.setdefault(ATRIBUTO_AVISOS, []).extend(avisos)
     return df, colapsadas, repetidas
