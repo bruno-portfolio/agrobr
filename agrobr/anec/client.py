@@ -25,6 +25,7 @@ from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils import atomic
+from agrobr.utils import io as io_utils
 from agrobr.utils.time import hoje
 from agrobr.utils.warnings import warn_once
 
@@ -357,6 +358,7 @@ async def fetch_pdf_bytes(article: ANECArticle, *, use_cache: bool = True) -> tu
 
 
 async def _acquire_pdf(article: ANECArticle, *, use_cache: bool) -> Aquisicao:
+    io_utils.validate_download_url(article.pdf_url, base_url=_BASE_URL, source="anec")
     lock_key = article.cuid
     lock = await _get_fetch_lock(lock_key)
     async with lock:

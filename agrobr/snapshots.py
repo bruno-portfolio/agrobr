@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import importlib.util
 import json
 import re
@@ -311,6 +312,18 @@ async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
         _record_error(manifest, "ibge", f"lspa: {e}")
 
 
+def _require_safe_pyarrow() -> None:
+    try:
+        version = importlib.metadata.version("pyarrow")
+    except importlib.metadata.PackageNotFoundError:
+        return
+    if tuple(int(part) for part in re.findall(r"\d+", version)[:3]) < (14, 0, 1):
+        raise ImportError(
+            f"pyarrow {version} executa código ao ler Parquet malicioso (CVE-2023-47248); "
+            'atualize antes de carregar o snapshot: pip install "pyarrow>=14.0.1"'
+        )
+
+
 def load_from_snapshot(
     source: str,
     dataset: str,
@@ -367,6 +380,7 @@ def load_from_snapshot(
                 message="Não foi possível verificar o snapshot.",
             ) from exc
 
+    _require_safe_pyarrow()
     return pd.read_parquet(snapshot_path)
 
 

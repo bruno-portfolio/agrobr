@@ -7,6 +7,7 @@ import zipfile
 import zlib
 from collections.abc import Callable
 from typing import IO, Any, Literal
+from urllib.parse import urlsplit
 
 import pandas as pd
 
@@ -71,6 +72,27 @@ def validate_download(
     )
 
 
+def validate_download_url(url: str, *, base_url: str, source: str) -> None:
+    """Recusa a URL lida da resposta que não seja ``https`` no host de ``base_url``, na porta padrão."""
+    parts = urlsplit(url)
+    try:
+        port = parts.port
+    except ValueError:
+        port = -1
+    if (
+        parts.scheme != "https"
+        or parts.hostname != urlsplit(base_url).hostname
+        or port not in (None, 443)
+        or parts.username is not None
+        or parts.password is not None
+    ):
+        raise SourceUnavailableError(
+            source=source,
+            url=url,
+            last_error="URL lida da resposta fora da origem HTTPS oficial da fonte",
+        )
+
+
 def _expansion_limit(source: str) -> int:
     return constants.MAX_EXPANDED_BYTES.get(source, constants.MAX_EXPANDED_BYTES_DEFAULT)
 
@@ -102,48 +124,64 @@ def read_zip_member(
         return stream.read()
 
 
-def _real_expansion(raw: bytes, info: zipfile.ZipInfo, budget: int) -> int:
+def read_zip_members(
+    archive: zipfile.ZipFile, members: list[zipfile.ZipInfo], *, source: str, url: str = ""
+) -> list[tuple[str, bytes]]:
+    """Lê os membros se a soma dos tamanhos declarados cabe no teto da fonte, além do teto por membro."""
+    limit = _expansion_limit(source)
+    total = sum(info.file_size for info in members)
+    if total > limit:
+        raise ResourceLimitError(
+            source,
+            f"os membros do ZIP expandem para {total} bytes, acima do teto de {limit}",
+            url=url,
+        )
+    return [
+        (info.filename, read_zip_member(archive, info, source=source, url=url)) for info in members
+    ]
+
+
+def _real_expansion(stream: IO[bytes], info: zipfile.ZipInfo, budget: int) -> int:
     """Bytes que um leitor tira do membro; no deflate, a conta para em ``budget + 1``.
 
     O deflate vai do cabeçalho local até o fim do stream, sem parar no tamanho comprimido nem no expandido declarados.
     """
-    signature, name_size, extra_size = struct.unpack_from("<4s22xHH", raw, info.header_offset)
-    if signature != _DOWNLOAD_SIGNATURES["zip"]:
+    stream.seek(max(info.header_offset, 0))
+    signature, name_size, extra_size = struct.unpack("<4s22xHH", stream.read(30))
+    if info.header_offset < 0 or signature != _DOWNLOAD_SIGNATURES["zip"]:
         raise zipfile.BadZipFile(f"o membro {info.filename} não tem cabeçalho local")
     start: int = info.header_offset + 30 + name_size + extra_size
     if info.compress_type == zipfile.ZIP_STORED:
-        return max(0, min(info.compress_size, len(raw) - start))
+        return max(0, min(info.compress_size, stream.seek(0, io.SEEK_END) - start))
+    stream.seek(start)
     inflater = zlib.decompressobj(-15)
     total = 0
-    for offset in range(start, len(raw), _INFLATE_CHUNK):
-        total += len(inflater.decompress(raw[offset : offset + _INFLATE_CHUNK], budget - total + 1))
+    while chunk := stream.read(_INFLATE_CHUNK):
+        total += len(inflater.decompress(chunk, budget - total + 1))
         if inflater.eof or total > budget:
             break
     return total
 
 
-def check_xlsx_expansion(raw: bytes, *, source: str, url: str = "") -> None:
-    """Recusa, antes do leitor de planilha, o XLSX que expande além do teto da fonte.
+def check_zip_expansion(
+    archive: IO[bytes], *, source: str, limit: int, label: str, url: str = ""
+) -> None:
+    """Recusa, antes do leitor, o ZIP que expande além de ``limit``.
 
     Soma primeiro o tamanho declarado dos membros e depois mede a expansão real de cada um, com orçamento cumulativo:
     descomprime o deflate a partir do cabeçalho local até o fim do stream e para assim que o total passa do teto.
-    O calamine não respeita o tamanho declarado e o CRC é escolhido por quem gera o arquivo; por isso nenhum dos dois
-    serve de prova. Membro guardado conta o que cabe no arquivo; outro método de compressão é recusado. Decide pelo
-    diretório central, não pelo início: o ``zipfile`` e o calamine abrem ZIP com dado antes do ``PK``. Arquivo sem
-    diretório central segue para o leitor, que dá o erro dele; ZIP ou deflate ilegível é recusado, porque a expansão
-    real não é conhecida.
+    O calamine e o GDAL não respeitam o tamanho declarado e o CRC é escolhido por quem gera o arquivo; por isso nenhum
+    dos dois serve de prova. Membro guardado conta o que cabe no arquivo; outro método de compressão é recusado. ZIP
+    ou deflate ilegível é recusado, porque a expansão real não é conhecida.
     """
-    if not zipfile.is_zipfile(io.BytesIO(raw)):
-        return
-    limit = _expansion_limit(source)
     try:
-        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-            members = archive.infolist()
+        with zipfile.ZipFile(archive) as zip_file:
+            members = zip_file.infolist()
         declared = sum(info.file_size for info in members)
         if declared > limit:
             raise ResourceLimitError(
                 source,
-                f"o XLSX expande para {declared} bytes, acima do teto de {limit}",
+                f"o {label} expande para {declared} bytes, acima do teto de {limit}",
                 url=url,
             )
         total = 0
@@ -151,24 +189,43 @@ def check_xlsx_expansion(raw: bytes, *, source: str, url: str = "") -> None:
             if info.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
                 raise ResourceLimitError(
                     source,
-                    f"o membro {info.filename} do XLSX usa a compressão {info.compress_type}; "
+                    f"o membro {info.filename} do {label} usa a compressão {info.compress_type}; "
                     "a expansão real não é conhecida",
                     url=url,
                 )
-            total += _real_expansion(raw, info, limit - total)
+            total += _real_expansion(archive, info, limit - total)
             if total > limit:
                 raise ResourceLimitError(
                     source,
-                    f"o XLSX expande de fato para mais de {limit} bytes, acima do teto de {limit}",
+                    f"o {label} expande de fato para mais de {limit} bytes, acima do teto de {limit}",
                     url=url,
                 )
-    except (zipfile.BadZipFile, zlib.error, struct.error, NotImplementedError) as exc:
+    except (
+        zipfile.BadZipFile,
+        zlib.error,
+        struct.error,
+        NotImplementedError,
+        UnicodeDecodeError,
+    ) as exc:
         raise ResourceLimitError(
             source,
-            f"o ZIP do XLSX está ilegível ({type(exc).__name__}: {exc}); "
+            f"o ZIP do {label} está ilegível ({type(exc).__name__}: {exc}); "
             "a expansão real não é conhecida",
             url=url,
         ) from exc
+
+
+def check_xlsx_expansion(raw: bytes, *, source: str, url: str = "") -> None:
+    """Recusa, antes do leitor de planilha, o XLSX que expande além do teto da fonte (ver ``check_zip_expansion``).
+
+    Decide pelo diretório central, não pelo início: o ``zipfile`` e o calamine abrem ZIP com dado antes do ``PK``.
+    Arquivo sem diretório central segue para o leitor, que dá o erro dele.
+    """
+    if not zipfile.is_zipfile(io.BytesIO(raw)):
+        return
+    check_zip_expansion(
+        io.BytesIO(raw), source=source, limit=_expansion_limit(source), label="XLSX", url=url
+    )
 
 
 def _extract_bytes(data: bytes | io.BytesIO) -> bytes:

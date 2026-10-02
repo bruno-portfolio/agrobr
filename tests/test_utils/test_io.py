@@ -250,3 +250,24 @@ def test_xlsx_com_crc_do_inicio_recusado_pela_expansao_real(monkeypatch, leitor,
     ):
         leitor(bruto, source="teste")
     assert [log for log in logs if log["event"] == "excel_engine_fallback"] == []
+
+
+def _zip_com_nome_utf8_invalido() -> bytes:
+    """ZIP com a flag UTF-8 no nome do membro e bytes que não são UTF-8 no diretório central."""
+    saida = io.BytesIO()
+    with zipfile.ZipFile(saida, "w") as arquivo:
+        arquivo.writestr("ab.xml", b"<a/>")
+    bruto = bytearray(saida.getvalue())
+    central = bruto.find(b"PK\x01\x02")
+    flags = struct.unpack_from("<H", bruto, central + 8)[0]
+    struct.pack_into("<H", bruto, central + 8, flags | 0x800)
+    bruto[central + 46 : central + 48] = b"\xff\xfe"
+    return bytes(bruto)
+
+
+@pytest.mark.parametrize("leitor", [read_excel_safe, open_excel_safe])
+def test_xlsx_com_nome_de_membro_utf8_invalido_recusado_como_ilegivel(leitor):
+    with levanta_exatamente(
+        ResourceLimitError, r"o ZIP do XLSX está ilegível \(UnicodeDecodeError: "
+    ):
+        leitor(_zip_com_nome_utf8_invalido(), source="teste")

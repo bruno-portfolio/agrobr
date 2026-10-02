@@ -58,6 +58,7 @@ async def fetch_estatisticas_page() -> str:
 async def download_file(url: str) -> bytes:
     logger.debug("anda_download", url=url)
     logger.info("anda_download", source="anda")
+    io_utils.validate_download_url(url, base_url=BASE_URL, source="anda")
     response = await _get_with_retry(url)
     content = response.content
 

@@ -14,6 +14,7 @@ from agrobr.datasets.deterministic import get_snapshot
 from agrobr.exceptions import ContractViolationError, InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
+from agrobr.utils import io as io_utils
 from agrobr.utils import result
 
 from . import acquisition, cache, catalog, client, models, parser, query, store
@@ -141,6 +142,9 @@ async def _load(
             int((time.monotonic() - started) * 1000),
             0,
         )
+    io_utils.validate_download_url(
+        selected.url, base_url=constants.URLS[constants.Fonte.ZARC]["base"], source="zarc"
+    )
     captured = await client.download_acquisition(selected.url)
     fetch_ms = int((time.monotonic() - started) * 1000)
     parse_started = time.monotonic()

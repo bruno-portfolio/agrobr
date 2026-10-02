@@ -16,7 +16,7 @@ Collection runs in a temporary directory under the snapshot root. The final name
 
 New snapshots record SHA-256 for each file. `load_from_snapshot()` checks the hash before reading Parquet and raises `SnapshotError` on a mismatch. Legacy snapshots without hashes remain readable without this integrity guarantee. Hashes detect file changes but do not authenticate data provenance.
 
-**Load only snapshots from a trusted origin.** `pyarrow` before 14.0.1 executes code when reading a malicious Parquet file (CVE-2023-47248), which is why the floor is 14.0.1. SHA-256 checks the files against the snapshot's own `manifest.json`, which travels with them: whoever receives someone else's snapshot checks the `manifest.json` SHA-256 against what the author published through another channel.
+**Load only snapshots from a trusted origin.** `pyarrow` before 14.0.1 executes code when reading a malicious Parquet file (CVE-2023-47248), which is why the floor is 14.0.1: with an older `pyarrow` installed (by another package, since the agrobr core does not depend on it), `load_from_snapshot()` raises `ImportError` before reading and says to upgrade. SHA-256 checks the files against the snapshot's own `manifest.json`, which travels with them: whoever receives someone else's snapshot checks the `manifest.json` SHA-256 against what the author published through another channel.
 
 ```python
 from agrobr.snapshots import create_snapshot

@@ -5,10 +5,11 @@ from typing import Any, cast
 
 import pandas as pd
 
-from agrobr import _log
+from agrobr import _log, constants
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
 from agrobr.normalize.regions import UFS_VALIDAS, ibge_para_uf
+from agrobr.utils import io as io_utils
 from agrobr.utils.geo import check_geopandas, check_pyogrio
 from agrobr.utils.result import ATRIBUTO_AVISOS
 
@@ -40,6 +41,18 @@ PARSER_VERSION = 2
 BBox = tuple[float, float, float, float]
 
 
+def _check_expansion(zip_path: Path) -> None:
+    """O GDAL lê o membro até o fim do deflate, sem parar no tamanho declarado; o teto da expansão é o do download,
+    porque o INCRA publica o ZIP sem compressão."""
+    with zip_path.open("rb") as archive:
+        io_utils.check_zip_expansion(
+            archive,
+            source="acervo_fundiario",
+            limit=constants.ACERVO_MAX_DOWNLOAD_BYTES,
+            label="shapefile",
+        )
+
+
 def _read_tabular(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
     """Com ``bbox``, lê com a geometria e a descarta.
 
@@ -49,12 +62,14 @@ def _read_tabular(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
     if bbox is not None:
         geo = _read_geo(zip_path, bbox=bbox)
         return pd.DataFrame(geo.drop(columns=geo.geometry.name))
+    _check_expansion(zip_path)
     pyogrio = check_pyogrio()
     df = pyogrio.read_dataframe(zip_path, encoding=DBF_ENCODING, read_geometry=False)
     return cast(pd.DataFrame, df)
 
 
 def _read_geo(zip_path: Path, *, bbox: BBox | None = None) -> Any:
+    _check_expansion(zip_path)
     gpd = check_geopandas()
     return gpd.read_file(zip_path, encoding=DBF_ENCODING, bbox=bbox)
 

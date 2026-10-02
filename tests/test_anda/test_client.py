@@ -9,6 +9,7 @@ import pytest
 from agrobr.anda import client
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from tests.helpers import (
+    levanta_exatamente,
     make_mock_async_client,
     make_mock_response,
 )
@@ -75,3 +76,65 @@ class TestFetchEntregasPdf:
             _, ano_real, _ = await client.fetch_entregas_pdf(2024)
 
         assert ano_real == 2024
+
+
+class TestLinkDaPagina:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "href",
+        [
+            "http://169.254.169.254/latest/entregas-2024.pdf",
+            "http://anda.org.br/wp-content/uploads/entregas-2024.pdf",
+            "https://anda.org.br.exemplo.net/entregas-2024.pdf",
+            "https://usuario@anda.org.br/entregas-2024.pdf",
+            "https://anda.org.br:8443/entregas-2024.pdf",
+            "https://anda.org.br:porta/entregas-2024.pdf",
+        ],
+    )
+    async def test_link_fora_da_origem_https_recusado_antes_do_pedido(self, href):
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(return_value=make_mock_response(200, content=b"%PDF" * 200))
+
+        with (
+            patch(
+                "agrobr.anda.client.fetch_estatisticas_page",
+                new_callable=AsyncMock,
+                return_value=f'<a href="{href}">Entregas 2024</a>',
+            ),
+            patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client) as sessao,
+            levanta_exatamente(SourceUnavailableError, "fora da origem HTTPS oficial da fonte"),
+        ):
+            await client.fetch_entregas_pdf(2024)
+        sessao.assert_not_called()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("href", "url"),
+        [
+            (
+                "https://anda.org.br/wp-content/uploads/2025/03/Principais_Indicadores_2024.pdf",
+                "https://anda.org.br/wp-content/uploads/2025/03/Principais_Indicadores_2024.pdf",
+            ),
+            (
+                "/wp-content/uploads/entregas-2024.pdf",
+                "https://anda.org.br/wp-content/uploads/entregas-2024.pdf",
+            ),
+        ],
+    )
+    async def test_link_da_origem_segue(self, href, url):
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(return_value=make_mock_response(200, content=b"%PDF" * 200))
+
+        with (
+            patch(
+                "agrobr.anda.client.fetch_estatisticas_page",
+                new_callable=AsyncMock,
+                return_value=f'<a href="{href}">Entregas 2024</a>',
+            ),
+            patch("agrobr.anda.client.httpx.AsyncClient", return_value=mock_client),
+        ):
+            conteudo, _, alvo = await client.fetch_entregas_pdf(2024)
+
+        assert conteudo == b"%PDF" * 200
+        assert alvo["url"] == url
+        mock_client.get.assert_awaited_once_with(url)

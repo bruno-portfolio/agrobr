@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import importlib.metadata
 import json
 from datetime import date, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -584,3 +585,45 @@ async def test_nome_reservado_do_windows_e_recusado_em_todo_so(tmp_path, nome):
 def test_nome_parecido_com_reservado_segue_valido(nome):
     with sem_excecao():
         _validate_path_component(nome, "snapshot name")
+
+
+def _snapshot_com_safras(raiz, monkeypatch, versao: str) -> None:
+    pasta = raiz / "2025-06-01" / "conab"
+    pasta.mkdir(parents=True)
+    pd.DataFrame({"safra": ["2024/25"], "valor": [100.0]}).to_parquet(
+        pasta / "safras.parquet", index=False
+    )
+    original = importlib.metadata.version
+    monkeypatch.setattr(
+        importlib.metadata,
+        "version",
+        lambda nome: versao if nome == "pyarrow" else original(nome),
+    )
+
+
+@requires_pyarrow
+@pytest.mark.parametrize("versao", ["0.17.1", "13.0.0", "14.0.0"])
+def test_load_recusa_pyarrow_anterior_a_14_0_1(tmp_path, monkeypatch, versao):
+    _snapshot_com_safras(tmp_path, monkeypatch, versao)
+
+    with (
+        patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
+        patch("agrobr.snapshots.pd.read_parquet") as ler,
+        levanta_exatamente(
+            ImportError, rf"pyarrow {versao} .*CVE-2023-47248.*pip install \"pyarrow>=14\.0\.1\""
+        ),
+    ):
+        load_from_snapshot("conab", "safras", snapshot_name="2025-06-01")
+    ler.assert_not_called()
+
+
+@requires_pyarrow
+@pytest.mark.parametrize("versao", ["14.0.1", "15.0.0.dev123"])
+def test_load_aceita_pyarrow_a_partir_de_14_0_1(tmp_path, monkeypatch, versao):
+    _snapshot_com_safras(tmp_path, monkeypatch, versao)
+
+    with patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path), sem_excecao():
+        carregado = load_from_snapshot("conab", "safras", snapshot_name="2025-06-01")
+
+    assert carregado is not None
+    assert carregado["safra"].tolist() == ["2024/25"]

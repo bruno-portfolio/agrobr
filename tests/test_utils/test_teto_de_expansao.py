@@ -13,6 +13,7 @@ import openpyxl
 import pytest
 
 from agrobr import constants
+from agrobr.acervo_fundiario import parser as acervo_parser
 from agrobr.alt.anp_diesel import parser as anp_parser
 from agrobr.antaq import client as antaq_client
 from agrobr.b3 import parser as b3_parser
@@ -238,6 +239,24 @@ def test_xlsx_com_tamanho_declarado_forjado_e_recusado(monkeypatch):
     assert pico < EXPANSAO // 2
 
 
+def test_censo_legado_soma_dos_membros_tem_teto(monkeypatch):
+    monkeypatch.setitem(constants.MAX_EXPANDED_BYTES, "ibge", TETO)
+    bomba = _zip({f"Tab_{indice}Mn.xls": b"0" * (TETO // 2) for indice in range(4)})
+
+    tracemalloc.start()
+    try:
+        with levanta_exatamente(
+            ResourceLimitError,
+            f"os membros do ZIP expandem para {2 * TETO} bytes, acima do teto de {TETO}",
+        ):
+            ftp_client.extract_tables_from_zip(bomba)
+        _atual, pico = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+
+    assert pico < TETO // 2
+
+
 def test_zip_com_tamanho_declarado_forjado_para_no_crc():
     forjado = _forjar(_zip({"focos.csv": b"0" * EXPANSAO}), "focos.csv", 1024)
 
@@ -257,3 +276,66 @@ def test_xlsx_dentro_do_teto_segue_para_o_leitor():
 def test_fonte_sem_teto_proprio_usa_o_padrao():
     assert "deral" not in constants.MAX_EXPANDED_BYTES
     assert io_utils._expansion_limit("deral") == constants.MAX_EXPANDED_BYTES_DEFAULT
+
+
+def _shapefile_zip(pasta: Path, *, linhas: int = 4000) -> Path:
+    gpd = pytest.importorskip("geopandas")
+    geometria = pytest.importorskip("shapely.geometry")
+    camada = gpd.GeoDataFrame(
+        {"txt": ["x" * 250] * linhas},
+        geometry=[geometria.Point(-50, -15)] * linhas,
+        crs="EPSG:4674",
+    )
+    camada.to_file(pasta / "a.shp", engine="pyogrio")
+    destino = pasta / "a.zip"
+    partes = sorted(pasta.glob("a.*"))
+    with zipfile.ZipFile(destino, "w", zipfile.ZIP_DEFLATED) as arquivo:
+        for parte in partes:
+            arquivo.write(parte, parte.name)
+    return destino
+
+
+LEITORES_ACERVO = {
+    "tabular": acervo_parser.parse_assentamentos,
+    "geo": acervo_parser.parse_assentamentos_geo,
+}
+
+
+@pytest.mark.parametrize("leitor", list(LEITORES_ACERVO))
+def test_acervo_zip_com_tamanho_forjado_recusado_antes_do_gdal(monkeypatch, tmp_path, leitor):
+    honesto = _shapefile_zip(tmp_path)
+    with zipfile.ZipFile(honesto) as arquivo:
+        declarado = sum(info.file_size for info in arquivo.infolist())
+        declarado += 1024 - arquivo.getinfo("a.dbf").file_size
+    forjado = tmp_path / "forjado.zip"
+    forjado.write_bytes(_forjar(honesto.read_bytes(), "a.dbf", 1024))
+    teto = declarado + 4096
+    monkeypatch.setattr(constants, "ACERVO_MAX_DOWNLOAD_BYTES", teto)
+
+    with levanta_exatamente(
+        ResourceLimitError, f"o shapefile expande de fato para mais de {teto} bytes"
+    ):
+        LEITORES_ACERVO[leitor](forjado)
+
+
+def test_acervo_zip_acima_do_teto_declarado_recusado(monkeypatch, tmp_path):
+    honesto = _shapefile_zip(tmp_path)
+    with zipfile.ZipFile(honesto) as arquivo:
+        declarado = sum(info.file_size for info in arquivo.infolist())
+    monkeypatch.setattr(constants, "ACERVO_MAX_DOWNLOAD_BYTES", declarado - 1)
+
+    with levanta_exatamente(
+        ResourceLimitError,
+        f"o shapefile expande para {declarado} bytes, acima do teto de {declarado - 1}",
+    ):
+        acervo_parser.parse_snci(honesto)
+
+
+def test_acervo_zip_dentro_do_teto_segue_para_o_gdal(tmp_path):
+    honesto = _shapefile_zip(tmp_path)
+
+    with sem_excecao():
+        tabular = acervo_parser._read_tabular(honesto)
+        recorte = acervo_parser._read_tabular(honesto, bbox=(-51.0, -16.0, -49.0, -14.0))
+
+    assert len(tabular) == len(recorte) == 4000

@@ -11,7 +11,12 @@ import pytest
 from agrobr.anec import client
 from agrobr.anec.models import ANECArticle
 from agrobr.exceptions import ParseError, SourceUnavailableError
-from tests.helpers import RETRY_SLEEP, make_mock_async_client, make_mock_response
+from tests.helpers import (
+    RETRY_SLEEP,
+    levanta_exatamente,
+    make_mock_async_client,
+    make_mock_response,
+)
 
 
 def _make_article(
@@ -178,6 +183,30 @@ class TestFetchPdfBytes:
             await client.fetch_pdf_bytes(article, use_cache=False)
 
         assert mock_client.get.call_count == 3
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "pdf_url",
+        [
+            "http://10.0.0.5/interno.pdf",
+            "http://www.anec.com.br/uploads/test.pdf",
+            "https://www.anec.com.br.exemplo.net/uploads/test.pdf",
+        ],
+    )
+    async def test_url_fora_da_origem_https_recusada_antes_do_pedido(self, pdf_url):
+        article = _make_article(pdf_url=pdf_url)
+        pdf_content = b"%PDF-1.7" + b"x" * 20_000
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(
+            return_value=make_mock_response(200, content=pdf_content, url=pdf_url)
+        )
+
+        with (
+            patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client) as sessao,
+            levanta_exatamente(SourceUnavailableError, "fora da origem HTTPS oficial da fonte"),
+        ):
+            await client.fetch_pdf_bytes(article, use_cache=False)
+        sessao.assert_not_called()
 
 
 class TestValidateCacheKey:

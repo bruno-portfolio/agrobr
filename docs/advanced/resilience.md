@@ -175,12 +175,17 @@ e cada XLSX expande, contra um teto por fonte (`constants.MAX_EXPANDED_BYTES`), 
 
 - **ZIP** (Queimadas, B3, MapBiomas, ANTAQ e o Censo legado do IBGE): o membro passa por `read_zip_member` ou
   `open_zip_member`, que conferem o tamanho declarado. O `zipfile` não entrega mais do que o declarado: um membro que expande
-  além dele falha no CRC.
+  além dele falha no CRC. O Censo legado lê todas as tabelas do ZIP, e o teto vale também para a soma delas
+  (`read_zip_members`).
 - **XLSX** (`read_excel_safe`, `open_excel_safe`, a série do CEPEA, o MapBiomas municipal e a UNICA): `check_xlsx_expansion`
   soma o tamanho declarado dos membros e depois mede a expansão real de cada um, descomprimindo em stream até passar do
   teto, antes do leitor de planilha. O calamine não respeita o tamanho declarado, e o CRC é escolhido por quem gera o
-  arquivo: nenhum dos dois prova quanto o XLSX expande. ZIP ilegível, ou com membro comprimido por outro método que não o
-  deflate, é recusado.
+  arquivo: nenhum dos dois prova quanto o XLSX expande. ZIP ilegível (inclusive nome de membro marcado como UTF-8 que não é
+  UTF-8), ou com membro comprimido por outro método que não o deflate, é recusado.
+- **Shapefile do Acervo Fundiário** (SIGEF, SNCI e assentamentos do INCRA): o GDAL também lê o membro até o fim do deflate,
+  sem parar no tamanho declarado. Antes de o pyogrio ou o GeoPandas abrir o ZIP, `check_zip_expansion` faz a mesma conta do
+  XLSX, com o teto do download (`ACERVO_MAX_DOWNLOAD_BYTES`): o INCRA publica o ZIP sem compressão, e a expansão é o
+  tamanho do próprio arquivo.
 
 | Fonte | Teto | Maior arquivo publicado (em 27/09/2026) |
 |---|---|---|
@@ -188,7 +193,8 @@ e cada XLSX expande, contra um teto por fonte (`constants.MAX_EXPANDED_BYTES`), 
 | B3 | 512 MiB | ZIP interno de 13 MB; XML de 144 MB |
 | MapBiomas | 1 GiB | XLSX municipal: 267 MB |
 | ANTAQ | 4 GiB | não medido: o site está fora do ar desde 23/06/2026 |
-| IBGE (Censo legado, FTP) | 16 MiB | 122 KB |
+| IBGE (Censo legado, FTP), por tabela e pela soma | 16 MiB | 122 KB |
+| Acervo Fundiário (INCRA) | 4 GiB | SIGEF privado de MG: 749 MB |
 | ANP | 512 MiB | planilha de preços 2022–2023: 152 MB |
 | ABIOVE, UNICA, CONAB e progresso da CONAB | 64 MiB | 0,8 MB, 1,0 MB, 3,9 MB e 0,2 MB |
 | Demais fontes | 256 MiB | a série do CEPEA, a DERAL e a série histórica da CONAB publicam XLS, que não é compactado |
@@ -201,6 +207,11 @@ O custo de produção da CONAB e o histórico do INMET têm teto próprio (`CONA
 `conab.progresso_safra(semana_url=...)` só segue páginas em `https://www.gov.br/conab/`. Outra URL, ou um redirecionamento ou
 link que saia dela, levanta `InvalidParameterError` antes de o pedido sair. Numa aplicação que repassa a URL do usuário, isso
 fecha o pedido a endereço interno.
+
+A URL lida da resposta da fonte também só é seguida com `https`, no host da fonte, na porta padrão e sem credencial: o link do
+PDF na página de recursos da ANDA (`anda.org.br`), o PDF do boletim no JSON do artigo da ANEC (`www.anec.com.br`) e o CSV da
+safra no catálogo CKAN do ZARC (`dados.agricultura.gov.br`). Fora disso, `SourceUnavailableError` antes do pedido: uma página
+ou um catálogo adulterado não faz o agrobr pedir endereço interno da rede do usuário nem baixar por `http://`.
 
 ## Fallback de Fonte
 

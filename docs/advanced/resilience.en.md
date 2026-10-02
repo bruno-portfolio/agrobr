@@ -171,12 +171,18 @@ expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises 
 
 - **ZIP** (Queimadas, B3, MapBiomas, ANTAQ and the IBGE legacy census): the member goes through `read_zip_member` or
   `open_zip_member`, which check the declared size. `zipfile` never returns more than the declared size: a member that expands
-  beyond it fails the CRC.
+  beyond it fails the CRC. The legacy census reads every table in the ZIP, and the limit also applies to their sum
+  (`read_zip_members`).
 - **XLSX** (`read_excel_safe`, `open_excel_safe`, the CEPEA series, the MapBiomas municipal file and UNICA):
   `check_xlsx_expansion` adds up the declared size of the members and then measures the real expansion of each one,
   decompressing as a stream until it goes over the limit, before the spreadsheet reader. calamine does not honour the
   declared size, and the CRC is chosen by whoever builds the file: neither proves how much the XLSX expands. An unreadable
-  ZIP, or one with a member compressed by a method other than deflate, is refused.
+  ZIP (including a member name flagged as UTF-8 that is not UTF-8), or one with a member compressed by a method other than
+  deflate, is refused.
+- **Acervo Fundiário shapefile** (INCRA's SIGEF, SNCI and settlements): GDAL also reads the member to the end of the deflate
+  stream, without stopping at the declared size. Before pyogrio or GeoPandas opens the ZIP, `check_zip_expansion` runs the
+  same check as for XLSX, with the download limit (`ACERVO_MAX_DOWNLOAD_BYTES`): INCRA publishes the ZIP uncompressed, so
+  the expansion is the size of the file itself.
 
 | Source | Limit | Largest file published (as of 2026-09-27) |
 |---|---|---|
@@ -184,7 +190,8 @@ expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises 
 | B3 | 512 MiB | 13 MB inner ZIP; 144 MB XML |
 | MapBiomas | 1 GiB | municipal XLSX: 267 MB |
 | ANTAQ | 4 GiB | not measured: the site has been down since 2026-06-23 |
-| IBGE (legacy census, FTP) | 16 MiB | 122 KB |
+| IBGE (legacy census, FTP), per table and for the sum | 16 MiB | 122 KB |
+| Acervo Fundiário (INCRA) | 4 GiB | private SIGEF for MG: 749 MB |
 | ANP | 512 MiB | 2022–2023 price sheet: 152 MB |
 | ABIOVE, UNICA, CONAB and CONAB progress | 64 MiB | 0.8 MB, 1.0 MB, 3.9 MB and 0.2 MB |
 | Other sources | 256 MiB | the CEPEA series, DERAL and the CONAB historical series publish XLS, which is not compressed |
@@ -197,6 +204,12 @@ The CONAB production cost and the INMET history have their own limit (`CONAB_CUS
 `conab.progresso_safra(semana_url=...)` only follows pages under `https://www.gov.br/conab/`. Any other URL, or a redirect or
 link that leaves it, raises `InvalidParameterError` before the request goes out. In an application that passes the end user's
 URL along, this closes requests to internal addresses.
+
+A URL read from the source's response is also followed only over `https`, on the source host, on the default port and without
+credentials: the PDF link on ANDA's resources page (`anda.org.br`), the bulletin PDF in ANEC's article JSON
+(`www.anec.com.br`) and the season CSV in ZARC's CKAN catalog (`dados.agricultura.gov.br`). Otherwise,
+`SourceUnavailableError` before the request: a tampered page or catalog does not make agrobr request an address inside the
+user's network or download over `http://`.
 
 ## Source Fallback
 

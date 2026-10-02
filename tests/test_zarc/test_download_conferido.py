@@ -26,7 +26,7 @@ def servidor(monkeypatch):
                 {
                     "id": "2026_2027",
                     "name": "Safra 2026/2027",
-                    "url": "https://example.org/2026_2027.csv",
+                    "url": "https://dados.agricultura.gov.br/2026_2027.csv",
                     "format": "CSV",
                     "last_modified": "2026-09-07T00:00:00",
                 }

@@ -15,7 +15,7 @@ def zarc_replay(monkeypatch):
         {
             "id": name,
             "name": f"Safra {safra}",
-            "url": f"https://example.org/{name}.csv",
+            "url": f"https://dados.agricultura.gov.br/{name}.csv",
             "format": "CSV",
             "last_modified": "2026-09-07T00:00:00",
         }

@@ -16,7 +16,7 @@ A coleta ocorre em um diretório temporário dentro da raiz de snapshots. O nome
 
 Snapshots novos registram SHA-256 por arquivo. `load_from_snapshot()` confere esse hash antes de ler o Parquet e levanta `SnapshotError` em caso de divergência. Snapshots legados sem hash continuam legíveis, sem essa garantia de integridade; hashes detectam alteração dos arquivos, mas não autenticam a origem dos dados.
 
-**Carregue só snapshot de origem confiável.** O `pyarrow` anterior ao 14.0.1 executa código ao ler um Parquet malicioso (CVE-2023-47248), e é por isso que o piso é 14.0.1. O SHA-256 confere os arquivos contra o `manifest.json` do próprio snapshot, que vem junto com eles: quem recebe um snapshot de outra pessoa confere o SHA-256 do `manifest.json` contra o que o autor publicou por outro canal.
+**Carregue só snapshot de origem confiável.** O `pyarrow` anterior ao 14.0.1 executa código ao ler um Parquet malicioso (CVE-2023-47248), e é por isso que o piso é 14.0.1: com um `pyarrow` mais antigo instalado (por outro pacote, já que o core do agrobr não depende dele), `load_from_snapshot()` levanta `ImportError` antes de ler e manda atualizar. O SHA-256 confere os arquivos contra o `manifest.json` do próprio snapshot, que vem junto com eles: quem recebe um snapshot de outra pessoa confere o SHA-256 do `manifest.json` contra o que o autor publicou por outro canal.
 
 ```python
 from agrobr.snapshots import create_snapshot

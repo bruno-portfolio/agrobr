@@ -17,7 +17,7 @@ from agrobr.exceptions import (
     SourceUnavailableError,
 )
 from agrobr.zarc import api, cache, client, parser, store
-from tests.helpers import zarc_csv
+from tests.helpers import levanta_exatamente, zarc_csv
 
 
 @pytest.mark.asyncio
@@ -392,6 +392,27 @@ async def test_nullable_risk_is_distinct_from_zero(zarc_replay):
 async def test_safras_disponiveis_uses_catalog(zarc_replay):
     assert await api.safras_disponiveis() == ["2016/2017", "2026/2027", "perene"]
     assert len(zarc_replay["requests"]) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.0.0.1:8080/2026_2027.csv",
+        "http://dados.agricultura.gov.br/2026_2027.csv",
+        "https://dados.agricultura.gov.br.exemplo.net/2026_2027.csv",
+        "https://example.org/2026_2027.csv",
+    ],
+)
+async def test_recurso_fora_da_origem_https_recusado_antes_do_download(zarc_replay, url):
+    recurso = zarc_replay["catalog"]["result"]["resources"][1]
+    recurso["url"] = url
+
+    with levanta_exatamente(SourceUnavailableError, "fora da origem HTTPS oficial da fonte"):
+        await api.zoneamento(use_cache=False)
+    assert [str(pedido.url) for pedido in zarc_replay["requests"]] == [
+        client.models.build_ckan_package_url(client.models.DATASET_SLUG)
+    ]
 
 
 async def test_culturas_observadas_chegam_ao_dataset_antes_do_filtro(zarc_replay):

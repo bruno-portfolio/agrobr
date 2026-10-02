@@ -174,7 +174,7 @@ class TestDownloadClientsRejectHtml:
             ),
             pytest.raises(SourceUnavailableError, match="Assinatura inválida"),
         ):
-            await anda_client.download_file("https://example.test/file.pdf")
+            await anda_client.download_file("https://anda.org.br/file.pdf")
 
     @pytest.mark.asyncio
     async def test_b3(self):

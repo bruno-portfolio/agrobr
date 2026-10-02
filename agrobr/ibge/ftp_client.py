@@ -131,10 +131,6 @@ def extract_tables_from_zip(zip_bytes: bytes) -> list[tuple[str, bytes]]:
 
 
 def _extract_tables(zip_bytes: bytes, extensions: tuple[str, ...]) -> list[tuple[str, bytes]]:
-    results: list[tuple[str, bytes]] = []
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
-        for name in zf.namelist():
-            if not name.lower().endswith(extensions):
-                continue
-            results.append((name, io_utils.read_zip_member(zf, name, source="ibge")))
-    return results
+        tables = [info for info in zf.infolist() if info.filename.lower().endswith(extensions)]
+        return io_utils.read_zip_members(zf, tables, source="ibge")
