@@ -4,13 +4,18 @@ import re
 from collections.abc import Iterator
 from pathlib import Path
 
-from agrobr import contracts, ibge, zarc
+from agrobr import constants, contracts, ibge, zarc
 from agrobr.conab._serie_historica import client
 from agrobr.contracts import _legacy
 from agrobr.datasets import registry
 from tests.helpers import collect_failures
 
 ROOT = Path(__file__).resolve().parents[1]
+LANDINGS = (ROOT / "index.html", ROOT / "en/index.html")
+SOURCE_COUNT = r"(?<!\+ )\b(\d+) (?:fontes|(?:public |agricultural data )?sources)\b"
+CONTRACT_COUNT = (
+    r"\b(\d+) (?:contratos (?:versionados|registrados)|(?:versioned|registered) contracts)\b"
+)
 CONTRACT_PAGES = tuple(
     path
     for path in sorted((ROOT / "docs/contracts").glob("*.md"))
@@ -199,6 +204,7 @@ def test_contagem_de_datasets_nos_catalogos():
             ROOT / "README.pt-BR.md",
             *_pair("docs/index"),
             *_pair("docs/contracts/index"),
+            *LANDINGS,
         ]:
             with check(f"test_contagem_de_datasets_nos_catalogos[{(path,)!r}]"):
                 found = [int(value) for value in re.findall(r"\b(\d+) datasets\b", _read(path))]
@@ -322,6 +328,53 @@ def test_contagem_de_datasets_nos_catalogos():
                         line for line in text.splitlines() if "zarc.culturas()" in line
                     )
                 _assert_count(path, text, len(zarc.culturas()))
+
+
+def test_contagem_de_fontes_e_contratos_nos_catalogos():
+    sources = len(constants.Fonte)
+    with collect_failures() as check:
+        for path in [
+            ROOT / "README.md",
+            ROOT / "README.pt-BR.md",
+            *_pair("docs/index"),
+            *_pair("docs/sources/index"),
+            *LANDINGS,
+        ]:
+            with check(f"test_contagem_de_fontes_nos_catalogos[{(path,)!r}]"):
+                found = [int(value) for value in re.findall(SOURCE_COUNT, _read(path))]
+                _assert_equal(path, "contagem de fontes publicada", True, bool(found))
+                _assert_equal(path, "fontes do enum Fonte", [sources] * len(found), found)
+        for path in LANDINGS:
+            with check(f"test_contagem_de_fontes_alem_das_destacadas[{(path,)!r}]"):
+                footnote = re.search(r'<p class="hero-footnote">(.*?)</p>', _read(path))
+                _assert_equal(path, "rodapé do hero presente", True, footnote is not None)
+                assert footnote is not None
+                spans = re.findall(r"<span>([^<]+)</span>", footnote[1])
+                featured = [span for span in spans if not span.startswith("+")]
+                remaining = [
+                    int(match[1])
+                    for span in spans
+                    if (match := re.fullmatch(r"\+ (\d+) (?:fontes|sources)", span))
+                ]
+                _assert_equal(
+                    path, "fontes além das destacadas", [sources - len(featured)], remaining
+                )
+        for path in [
+            ROOT / "README.md",
+            ROOT / "README.pt-BR.md",
+            *_pair("docs/index"),
+            *_pair("docs/contracts/index"),
+            *LANDINGS,
+        ]:
+            with check(f"test_contagem_de_contratos_nos_catalogos[{(path,)!r}]"):
+                found = [int(value) for value in re.findall(CONTRACT_COUNT, _read(path))]
+                _assert_equal(path, "contagem de contratos publicada", True, bool(found))
+                _assert_equal(
+                    path,
+                    "contratos registrados",
+                    [len(contracts.list_contracts())] * len(found),
+                    found,
+                )
 
 
 def test_contrato_colunas_documentadas():

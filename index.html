@@ -121,6 +121,8 @@
     .hero-grid { position: relative; flex: 1; display: grid; grid-template-columns: minmax(0, 650px); align-content: center; padding-block: 116px 76px; }
     .hero-copy { position: relative; z-index: 2; }
     .hero-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; letter-spacing: .13em; }
+    .hero-eyebrow a { text-decoration: underline; text-underline-offset: 3px; }
+    .hero-eyebrow a:hover { color: var(--gold-light); }
     .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px #9ec5a044; flex-shrink: 0; }
     .hero h1 { font: 400 clamp(46px, 5.6vw, 80px)/1.1 var(--display); letter-spacing: -.038em; margin-bottom: 24px; }
     .hero h1 em { color: var(--gold); font-weight: 400; white-space: nowrap; }
@@ -154,7 +156,7 @@
     .map-scene::before { content: ''; position: absolute; inset: 6% -2% 7%; background: radial-gradient(ellipse, #b8914221, transparent 67%); pointer-events: none; }
     .map-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-inline: 26px 20px; }
     .map-heading .eyebrow { color: #b1b6a8; font-size: 10px; letter-spacing: .14em; }
-    .map-tilt { --rx: 10deg; --ry: -10deg; position: relative; transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(-3deg); transform-style: preserve-3d; transition: transform .6s cubic-bezier(.22,1,.36,1); will-change: transform; }
+    .map-tilt { position: relative; transform: rotateX(10deg) rotateY(-10deg) rotateZ(-3deg); transform-style: preserve-3d; }
     .brasil-svg { width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 25px 20px #0007); }
     .map-base { fill: #171e1a; stroke: #6f623f; stroke-width: 1; }
     .map-mid { fill: #1c241c; stroke: #938050; stroke-width: .8; }
@@ -915,9 +917,9 @@
       </div>
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow hero-eyebrow"><span class="status-dot" aria-hidden="true"></span>Código aberto · Do Brasil para o mundo</p>
+          <p class="eyebrow hero-eyebrow"><span class="status-dot" aria-hidden="true"></span>Código aberto · Versão 2.0 · <a href="https://www.agrobr.dev/docs/guides/migracao-2/" aria-label="O que muda na versão 2.0: guia de migração">O que muda ↗</a></p>
           <h1 id="hero-title">O Brasil agrícola,<br><em>em uma linha.</em></h1>
-          <p class="hero-desc">41 fontes em uma API Python. Preços, safras, clima e território direto no seu DataFrame.</p>
+          <p class="hero-desc">41 fontes, 54 datasets e 89 contratos versionados em uma API Python. Preços, safras, clima e território direto no seu DataFrame.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="https://www.agrobr.dev/docs/quickstart/">Começar a usar<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
             <button class="install-button" type="button" data-copy="pip install agrobr" aria-label="Copiar comando pip install agrobr"><span><span class="install-prompt" aria-hidden="true">$</span>pip install agrobr</span><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
@@ -1114,7 +1116,7 @@ df.<span class="fn">head</span>()</code></pre>
           <p class="sr-only" id="terrainStatus" role="status" aria-live="polite"></p>
           <noscript><p class="terrain-noscript">Ative o JavaScript para explorar o mapa e os dados. Fonte: Conab, histórico de 2018 a 2025 e safra 2025/26. Uso da terra: MapBiomas, 2018–2025.</p></noscript>
         </div>
-        <div class="explorer-provenance"><p>Coletado via agrobr em <span id="explorerFetchedDate">06 set 2026</span></p><div><a id="explorerSourceLink" href="https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras" target="_blank" rel="noopener noreferrer">Consultar Conab ↗</a></div></div>
+        <div class="explorer-provenance"><p>Coletado via agrobr em <span id="explorerFetchedDate">09 set 2026</span></p><div><a id="explorerSourceLink" href="https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras" target="_blank" rel="noopener noreferrer">Consultar Conab ↗</a></div></div>
       </div>
     </section>
 
@@ -1906,9 +1908,7 @@ df.<span class="fn">head</span>()</code></pre>
     const navLinks = document.getElementById('navLinks');
     const smallScreen = window.matchMedia('(max-width: 960px)');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const mapScene = document.getElementById('mapScene');
-    const mapTilt = document.getElementById('mapTilt');
     const mapPoints = document.getElementById('mapPoints');
     const mapDots = Array.from(mapPoints.children);
     const tickerTrack = document.getElementById('tickerTrack');
@@ -1916,7 +1916,6 @@ df.<span class="fn">head</span>()</code></pre>
     const toast = document.getElementById('toast');
     const siteHeader = document.querySelector('.site-header');
     let toastTimer;
-    let mapFrame = 0;
     let mapVisible = false;
     let mapGlowTimer;
     let activeMode = 'async';
@@ -2021,25 +2020,6 @@ df.<span class="fn">head</span>()</code></pre>
     mapObserver.observe(mapScene);
     document.addEventListener('visibilitychange', updateMapMotion);
     reducedMotion.addEventListener('change', updateMapMotion);
-
-    mapScene.addEventListener('pointermove', event => {
-      if (reducedMotion.matches || !finePointer.matches) return;
-      cancelAnimationFrame(mapFrame);
-      mapFrame = requestAnimationFrame(() => {
-        const rect = mapScene.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - .5;
-        const y = (event.clientY - rect.top) / rect.height - .5;
-        mapTilt.style.setProperty('--rx', (10 - y * 9) + 'deg');
-        mapTilt.style.setProperty('--ry', (-10 + x * 13) + 'deg');
-      });
-    });
-    function resetMap() {
-      cancelAnimationFrame(mapFrame);
-      mapTilt.style.removeProperty('--rx');
-      mapTilt.style.removeProperty('--ry');
-    }
-    mapScene.addEventListener('pointerleave', resetMap);
-    reducedMotion.addEventListener('change', resetMap);
   </script>
   <script type="module" src="/assets/landing/boot.js"></script>
 </body>
