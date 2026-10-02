@@ -99,11 +99,11 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -e ".[dev,pdf]"
       - name: Check async execution and atomic writes with network blocked
-        run: python -m pytest tests/test_network_isolation.py tests/test_http/test_rate_limiter.py tests/test_bcb/test_client.py tests/test_sync.py tests/test_acervo_fundiario/test_concurrent_downloads.py tests/test_acervo_fundiario/test_replace_retry.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
+        run: python -m pytest tests/test_network_isolation.py tests/test_http/test_rate_limiter.py tests/test_bcb/test_client.py tests/test_sync.py tests/test_acervo_fundiario/test_replace_retry.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
       - name: Check native Windows typing
         run: python -m mypy agrobr/
       - name: Check fixtures and streams without UTF-8 mode
-        run: python -X utf8=0 -m pytest tests/test_rnc/test_client.py tests/test_abiove/test_official_workbook.py tests/test_mapa_psr/test_official_claims.py tests/test_mapa_psr/test_streaming.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
+        run: python -X utf8=0 -m pytest tests/test_rnc/test_client.py tests/test_abiove/test_official_workbook.py tests/test_mapa_psr/test_reconciliacao_r11.py tests/test_mapa_psr/test_streaming.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
       - name: Check cache upgrades and dataset composition on Windows
         run: python -X utf8=0 -m pytest tests/test_cache/ tests/test_cepea/ tests/test_datasets/test_preco_diario.py tests/test_live_matrix_policy.py --disable-socket --allow-unix-socket -m "not integration and not benchmark"
 

@@ -15,6 +15,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pandas as pd
 import pytest
 import typer
+from typer import rich_utils
 from typer.testing import CliRunner
 
 from agrobr import cli, constants
@@ -26,6 +27,11 @@ from agrobr.normalize import regions
 from agrobr.utils import time as time_utils
 
 runner = CliRunner()
+
+
+@pytest.fixture(autouse=True)
+def ajuda_sem_terminal_forcado(monkeypatch):
+    monkeypatch.setattr(rich_utils, "FORCE_TERMINAL", None)
 
 
 class TestMainApp:

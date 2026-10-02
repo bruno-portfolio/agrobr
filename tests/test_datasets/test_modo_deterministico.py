@@ -144,6 +144,7 @@ def snapshot_root(tmp_path, monkeypatch):
 
 
 async def test_snapshot_com_o_nome_em_outra_caixa_nao_acusa_adulteracao(snapshot_root, monkeypatch):
+    pytest.importorskip("pyarrow")
     monkeypatch.setattr(snapshots, "_snapshot_cepea", _fonte_com_parquet)
     await snapshots.create_snapshot("caixa", ["cepea"])
     original = snapshots.load_from_snapshot("cepea", "sample", "caixa")
