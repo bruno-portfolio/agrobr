@@ -4,7 +4,7 @@ module_depth: 2
 
 layers:
   core:
-    modules: ["cli", "__main__", "config", "constants", "exceptions", "export", "models", "quality", "sla", "snapshots", "sync"]
+    modules: ["cli", "__main__", "config", "constants", "exceptions", "models", "snapshots", "sync"]
     label: Core
   data:
     modules: ["cache", "http", "datasets", "data", "schemas", "contracts"]
@@ -16,13 +16,13 @@ layers:
     modules: ["conab", "ibge", "deral", "imea", "usda", "abiove", "anda", "unica", "rnc", "rio_verde", "defensivos"]
     label: Production
   geo:
-    modules: ["inmet", "nasa_power", "zarc", "mapbiomas", "desmatamento", "queimadas", "ana", "embrapa_solos", "sfb", "funai", "ibama", "icmbio", "mapbiomas_alerta", "acervo_fundiario", "incra"]
+    modules: ["inmet", "nasa_power", "zarc", "mapbiomas", "desmatamento", "queimadas", "ana", "embrapa_solos", "sfb", "funai", "ibama", "icmbio", "mapbiomas_alerta", "acervo_fundiario", "incra", "cnuc"]
     label: Geo & Climate
   quality:
     modules: ["validators", "normalize", "health", "alerts", "benchmark", "lista_suja"]
     label: Quality
   infra:
-    modules: ["utils", "plugins", "alt", "antaq"]
+    modules: ["utils", "alt", "antaq"]
     label: Infrastructure
 
 git:

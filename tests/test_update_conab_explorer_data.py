@@ -19,6 +19,12 @@ def test_nacional_preserva_metricas_nulas():
     ) == [None, 30, None]
 
 
+def test_nacional_ignora_producao_vazia_de_uf_sem_area():
+    assert explorer.national_metrics(
+        {"MT": [100, 20, 5000], "CE": [None, 0.0, 0.0]}, ["MT", "CE"]
+    ) == [100, 20, 5000]
+
+
 def test_nacional_deriva_rendimento_sem_somar_taxas():
     assert explorer.national_metrics(
         {"MT": [100, 20, 5000], "AM": [50, 10, 5000]}, ["MT", "AM"]

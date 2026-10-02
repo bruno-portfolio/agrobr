@@ -171,9 +171,9 @@ def rodar(script: Path, pasta: Path, ambiente: dict[str, str] | None = None) -> 
                 str(saida),
             ],
             cwd=script.parent.parent,
-            env=ambiente
+            env={k: v for k, v in ambiente.items() if k != "AGROBR_CACHE_CACHE_DIR"}
             | {
-                "AGROBR_CACHE_CACHE_DIR": str(pasta / f"{fonte}_cache"),
+                "AGROBR_CACHE_DIR": str(pasta / f"{fonte}_cache"),
                 "PYTHONIOENCODING": "utf-8",
             },
             capture_output=True,

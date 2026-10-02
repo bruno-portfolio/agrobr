@@ -217,7 +217,8 @@ def test_rodar_credencial_presente_e_argumentos_ao_vivo(tmp_path, monkeypatch):
             "usda": 'gravar({"checks": [{"case": "psd", "status": "ok"}]})',
             "captura": """
                 assert args.live and args.capture_dir.name == "captura_captura"
-                assert Path(os.environ["AGROBR_CACHE_CACHE_DIR"]).name == "captura_cache"
+                assert Path(os.environ["AGROBR_CACHE_DIR"]).name == "captura_cache"
+                assert "AGROBR_CACHE_CACHE_DIR" not in os.environ
                 gravar({"checks": {"capturado": {"status": "ok"}}})
             """,
         },
@@ -235,6 +236,27 @@ def test_rodar_credencial_presente_e_argumentos_ao_vivo(tmp_path, monkeypatch):
         "ok",
         [{"caso": "capturado", "estado": "ok"}],
     )
+
+
+def test_rodar_isola_o_cache_mesmo_com_a_pasta_do_usuario(tmp_path):
+    raiz = _raiz(
+        tmp_path,
+        {
+            "cache": """
+                from agrobr.constants import CacheSettings
+                pasta = CacheSettings().cache_dir
+                assert pasta.name == "cache_cache", pasta
+                gravar({"checks": {"cache": {"status": "ok"}}})
+            """,
+        },
+    )
+    pasta = tmp_path / "saida"
+    pasta.mkdir()
+    ambiente = {**os.environ, "AGROBR_CACHE_DIR": str(tmp_path / "usuario")}
+
+    resultado = semanal.rodar(raiz / "scripts/reconciliar_cache.py", pasta, ambiente)
+
+    assert (resultado["estado"], resultado["casos"]) == ("ok", [{"caso": "cache", "estado": "ok"}])
 
 
 def test_texto_da_issue_sem_pii(tmp_path):

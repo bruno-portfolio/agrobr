@@ -106,9 +106,10 @@ def metric(value: float | None, multiplier: int = 1) -> float | None:
 def national_metrics(
     records: dict[str, list[float | None]], available: list[str]
 ) -> list[float | None]:
+    plantadas = [uf for uf in available if records[uf][1] != 0]
     totals = []
-    for column in (0, 1):
-        values = [records[uf][column] for uf in available]
+    for column, ufs in ((0, plantadas), (1, available)):
+        values = [records[uf][column] for uf in ufs]
         totals.append(
             math.fsum(value for value in values if value is not None)
             if values and all(value is not None for value in values)
