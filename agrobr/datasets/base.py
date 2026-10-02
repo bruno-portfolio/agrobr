@@ -41,6 +41,7 @@ _TIPOS_POLARS = {
     "str": "String",
     "bool": "Boolean",
 }
+_FONTES_INTERNAS: dict[str, tuple[str, ...]] = {"cepea": ("noticias_agricolas",)}
 
 from agrobr.contracts import _auto_discover_contracts  # noqa: E402
 
@@ -58,6 +59,14 @@ class DatasetSource:
 
 @dataclass
 class DatasetInfo:
+    """Metadados de um dataset do registro.
+
+    Attributes:
+        contract_version: Versão do contrato do modo padrão. Num dataset com mais de um modo
+            (``tipo``, ``nivel``, ``estacao``, ``agregacao``), cada modo valida o seu contrato, e
+            ``datasets.describe`` lista todos.
+    """
+
     name: str
     description: str
     sources: list[DatasetSource] = field(default_factory=list)
@@ -85,7 +94,11 @@ class DatasetInfo:
             "min_date": self.min_date,
             "unit": self.unit,
             "license": self.license,
-            "licenses": {s.name: constants.licenca_da_fonte(s.name) for s in self.sources},
+            "licenses": {
+                nome: constants.licenca_da_fonte(nome)
+                for fonte in self.sources
+                for nome in (fonte.name, *_FONTES_INTERNAS.get(fonte.name, ()))
+            },
         }
 
 
@@ -247,6 +260,7 @@ class BaseDataset(ABC):
     info: DatasetInfo
     honra_deterministico: ClassVar[bool] = False
     sinonimos_que_mudam_o_recorte: ClassVar[frozenset[str]] = frozenset()
+    _modos_de_contrato: ClassVar[dict[str, dict[str, Any]]] = {}
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Aplica o formato de saída e o schema do contrato ao ``fetch`` de cada dataset."""

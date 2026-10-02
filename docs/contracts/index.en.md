@@ -149,6 +149,11 @@ df = await ds.fetch("soja", inicio="2024-01-01")
 An unknown name in `get_dataset`, `info`, `list_products` or `describe` raises `UnknownNameError`, which inherits from
 `InvalidParameterError` and `KeyError`, with the valid names in the message.
 
+The `contract_version` in `info()` is the default mode's. In datasets with more than one mode (`desmatamento`,
+`futuros_agricolas`, `seguro_rural`, `uso_do_solo`, `clima` and `credito_rural`), each mode validates its own contract:
+`describe` lists all of them, one per line, under `Contract:`, and each query's `MetaInfo.contract_version` carries the
+one of the mode used.
+
 ## Automatic Fallback
 
 Automatic fallback applies to datasets with configured alternative sources, respecting query selection and coverage. Single-source datasets, including all four Agrofit datasets, have no fallback to another institution:

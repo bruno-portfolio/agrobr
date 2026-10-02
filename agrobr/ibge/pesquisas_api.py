@@ -198,7 +198,13 @@ async def silvicultura(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:silvicultura",
-        {"produto": produto, "ano": ano, "variavel": variavel},
+        {
+            "produto": produto,
+            "ano": ano,
+            "variavel": variavel,
+            "territorial_level": territorial_level,
+            "ibge_code": ibge_code,
+        },
         schema_version=meta.schema_version,
     )
 
@@ -363,7 +369,13 @@ async def extracao_vegetal(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:extracao_vegetal",
-        {"produto": produto, "ano": ano, "variavel": variavel},
+        {
+            "produto": produto,
+            "ano": ano,
+            "variavel": variavel,
+            "territorial_level": territorial_level,
+            "ibge_code": ibge_code,
+        },
         schema_version=meta.schema_version,
     )
 
@@ -525,7 +537,7 @@ async def leite_trimestral(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:leite_trimestral",
-        {"trimestre": trimestre},
+        {"trimestre": trimestre, "territorial_level": territorial_level, "ibge_code": ibge_code},
         schema_version=meta.schema_version,
     )
 

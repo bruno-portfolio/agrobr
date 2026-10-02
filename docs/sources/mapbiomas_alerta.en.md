@@ -22,7 +22,8 @@
 The token is personal and expires. It comes from the API's `signIn` mutation, with the e-mail and password of the platform
 account. With an expired or invalid token, the API answers "Token de acesso inválido", and agrobr raises
 `SourceUnavailableError` with that message plus a hint to replace the token in `AGROBR_MAPBIOMAS_ALERTA_TOKEN` or in the
-`token=` argument, without the token value. HTTP 401 or 403 comes out the same way ("credencial recusada"). `alerta_info()` is public and uses no token.
+`token=` argument, without the token value. HTTP 401 or 403 comes out the same way ("credencial recusada"). `alerta_info()` is public and uses no token:
+there, a refusal comes out as "acesso recusado (consulta sem token)", without the token hint.
 
 ## Usage Example
 

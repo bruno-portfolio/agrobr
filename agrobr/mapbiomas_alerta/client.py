@@ -70,6 +70,7 @@ async def _graphql_request(
     if token:
         headers["Authorization"] = f"Bearer {token}"
     payload = {"query": query, "variables": variables}
+    orientacao = _ORIENTACAO_TOKEN if token else " (consulta sem token)"
 
     async def _do(http: httpx.AsyncClient) -> dict[str, Any]:
         response = await retry_on_status(
@@ -80,7 +81,8 @@ async def _graphql_request(
             raise SourceUnavailableError(
                 source="mapbiomas_alerta",
                 url=GRAPHQL_URL,
-                last_error=f"HTTP {response.status_code}: credencial recusada{_ORIENTACAO_TOKEN}",
+                last_error=f"HTTP {response.status_code}: "
+                f"{'credencial recusada' if token else 'acesso recusado'}{orientacao}",
             )
         responses.raise_for_status(response, source="mapbiomas_alerta")
         if corpos is not None:
@@ -96,7 +98,7 @@ async def _graphql_request(
             msg = errors[0].get("message", str(errors)) if errors else "Unknown GraphQL error"
             detalhe = responses.redact_secrets(str(msg), token)
             if "token" in detalhe.lower():
-                detalhe += _ORIENTACAO_TOKEN
+                detalhe += orientacao
             raise SourceUnavailableError(
                 source="mapbiomas_alerta",
                 url=GRAPHQL_URL,

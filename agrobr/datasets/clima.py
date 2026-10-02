@@ -146,6 +146,11 @@ CLIMA_INFO = DatasetInfo(
 
 class ClimaDataset(BaseDataset):
     info = CLIMA_INFO
+    _modos_de_contrato = {
+        "sem estacao": {},
+        "estacao": {"estacao": "codigo"},
+        "estacao, agregacao='horario'": {"estacao": "codigo", "agregacao": "horario"},
+    }
 
     def _validate_produto(self, produto: str) -> None:
         pass

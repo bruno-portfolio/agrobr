@@ -332,6 +332,7 @@ signatures: use `await conab.produtos()` and `await conab.ufs()`. Through the sy
 use `sync.conab.produtos()` and `sync.conab.ufs()`.
 
 `safras()` normalizes case, surrounding whitespace, and accented aliases such as `" FEIJÃO "`
-before requesting data and selecting rows. `ceasa_precos(produto=...)` also normalizes accents
-and rejects products outside `ceasa_produtos()` before network access. After acquisition, it
-checks that the product appears in the received publication.
+before requesting data and selecting rows. `ceasa_precos(produto=...)` checks the product after the
+network call, against the received publication, ignoring accents and case on both sides: a published
+product outside `ceasa_produtos()` also filters, and one missing from the publication raises
+`InvalidParameterError` listing the published ones.

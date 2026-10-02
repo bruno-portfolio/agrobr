@@ -30,7 +30,7 @@ async def exportacao(
 |-----------|------|-------------|
 | `ano` | `int` | Reference year, from 2010 to the current one |
 | `mes` | `int \| None` | Data month (1-12). None returns every published month |
-| `produto` | `str \| None` | Filter: `"grao"`, `"farelo"`, `"oleo"`, `"milho"`. For the all-product total use `agregacao="mensal"` (returned as `produto="total"`); `produto="total"` returns an empty DataFrame on the published workbooks |
+| `produto` | `str \| None` | Filter: `"grao"`, `"farelo"`, `"oleo"`, `"milho"`. In the monthly sum, rows keep the filtered product. For the all-product total use `agregacao="mensal"` without `produto` or with `produto="total"` (returned as `produto="total"`); `produto="total"` with `agregacao="detalhado"` raises `InvalidParameterError` before the network call |
 | `agregacao` | `str` | `"detalhado"` (by product/month) or `"mensal"` (sum) |
 | `edicao` | `str \| None` | Workbook edition, `"YYYY-MM"` (e.g. `"2025-12"`), of `ano` or `ano + 1`. None reads the latest edition that publishes `ano` |
 | `as_polars` | `bool` | Return as polars DataFrame |

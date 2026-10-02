@@ -75,6 +75,13 @@ def _is_robusta(text: str) -> bool:
     return "robust" in t or "conil" in t
 
 
+def _tabela_da_secao(titulo: Any) -> Any | None:
+    seguinte = titulo.find_next(
+        lambda tag: tag.name == "table" or "imagenet-table-titulo" in (tag.get("class") or [])
+    )
+    return seguinte if seguinte is not None and seguinte.name == "table" else None
+
+
 class CepeaParserV1(BaseParser):
     version = CEPEA_PARSER_VERSION
     source = "cepea"
@@ -204,21 +211,37 @@ class CepeaParserV1(BaseParser):
 
     def _data_tables(self, soup: BeautifulSoup, produto: str) -> list[tuple[Any, str | None]]:
         """Uma tabela por praça quando a página publica cada praça em tabela própria (trigo:
-        PR e RS); nos demais produtos, a tabela do indicador, com a praça da linha."""
+        PR e RS): a da praça é a que vem depois do seu título e antes do título seguinte, e
+        ``ParseError`` se faltar alguma ou se a mesma tabela couber a duas praças; nos demais
+        produtos, a tabela do indicador, com a praça da linha."""
         por_praca = CEPEA_TABELAS_POR_PRACA.get(produto)
         if not por_praca:
             tabela = self._find_data_table(soup, produto)
             return [(tabela, None)] if tabela else []
-        titulos = [
-            (" ".join(titulo.get_text(" ", strip=True).split()), titulo)
+        secoes = [
+            (" ".join(titulo.get_text(" ", strip=True).split()), _tabela_da_secao(titulo))
             for titulo in soup.find_all("div", class_="imagenet-table-titulo")
         ]
-        return [
-            (titulo.find_next("table"), praca)
+        encontradas: list[tuple[Any, str | None]] = [
+            (tabela, praca)
             for praca, padrao in por_praca.items()
-            for texto, titulo in titulos
-            if re.search(padrao, texto, re.I) and titulo.find_next("table") is not None
+            for texto, tabela in secoes
+            if re.search(padrao, texto, re.I) and tabela is not None
         ]
+        faltando = sorted(set(por_praca) - {praca for _, praca in encontradas})
+        if encontradas and faltando:
+            raise ParseError(
+                source=self.source,
+                parser_version=self.version,
+                reason=f"layout do CEPEA mudou: tabela de {faltando} não encontrada",
+            )
+        if len({id(tabela) for tabela, _ in encontradas}) < len(encontradas):
+            raise ParseError(
+                source=self.source,
+                parser_version=self.version,
+                reason="layout do CEPEA mudou: a mesma tabela para mais de uma praça",
+            )
+        return encontradas
 
     def _find_data_table(self, soup: BeautifulSoup, produto: str | None = None) -> Any | None:
         titles = soup.find_all("div", class_="imagenet-table-titulo")
@@ -227,7 +250,14 @@ class CepeaParserV1(BaseParser):
             for title in titles:
                 text = " ".join(title.get_text(" ", strip=True).split())
                 if re.search(pattern, text, re.I):
-                    return title.find_next("table")
+                    tabela = _tabela_da_secao(title)
+                    if tabela is None:
+                        raise ParseError(
+                            source=self.source,
+                            parser_version=self.version,
+                            reason=f"layout do CEPEA mudou: tabela de {[text]} não encontrada",
+                        )
+                    return tabela
             return None
 
         tables = soup.find_all("table")
@@ -326,7 +356,7 @@ class CepeaParserV1(BaseParser):
         for title in soup.find_all("div", class_="imagenet-table-titulo"):
             if not re.search(r"peso\s+m[ée]dio", title.get_text(" ", strip=True), re.I):
                 continue
-            table = title.find_next("table")
+            table = _tabela_da_secao(title)
             if table is None:
                 continue
             for row in table.find_all("tr")[1:]:

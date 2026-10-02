@@ -430,7 +430,12 @@ async def censo_agro(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:censo_agro",
-        {"tema": tema, "ano": ano, "uf": uf},
+        {
+            "tema": tema,
+            "ano": ano,
+            "territorial_level": territorial_level,
+            "ibge_code": ibge_code,
+        },
         schema_version=meta.schema_version,
     )
 
@@ -656,7 +661,12 @@ async def censo_agro_historico(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:censo_agro_historico",
-        {"tema": tema, "ano": ano, "uf": uf},
+        {
+            "tema": tema,
+            "ano": ano,
+            "territorial_level": territorial_level,
+            "ibge_code": ibge_code,
+        },
         schema_version=meta.schema_version,
     )
 

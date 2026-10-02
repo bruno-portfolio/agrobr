@@ -3,13 +3,12 @@ from __future__ import annotations
 import copy
 from typing import TYPE_CHECKING, Any
 
-from agrobr import constants, exceptions
+from agrobr import contracts, exceptions
 
 if TYPE_CHECKING:
     from agrobr.datasets.base import BaseDataset, DatasetInfo
 
 _REGISTRY: dict[str, BaseDataset] = {}
-_FONTES_INTERNAS: dict[str, tuple[str, ...]] = {"cepea": ("noticias_agricolas",)}
 
 
 def register(dataset: BaseDataset) -> BaseDataset:
@@ -36,22 +35,11 @@ def list_products(name: str) -> list[str]:
 
 
 def info(name: str) -> dict[str, Any]:
-    dataset_info = get_dataset(name).info
-    return {**dataset_info.to_dict(), "licenses": _licencas_por_fonte(dataset_info)}
-
-
-def _licencas_por_fonte(info: DatasetInfo) -> dict[str, str | None]:
-    """Licença de cada adaptador e, logo depois dele, das fontes que ele tenta por dentro."""
-    nomes = [
-        nome
-        for fonte in info.sources
-        for nome in (fonte.name, *_FONTES_INTERNAS.get(fonte.name, ()))
-    ]
-    return {nome: constants.licenca_da_fonte(nome) for nome in nomes}
+    return get_dataset(name).info.to_dict()
 
 
 def _licencas(info: DatasetInfo) -> str:
-    classes = _licencas_por_fonte(info)
+    classes: dict[str, str | None] = info.to_dict()["licenses"]
     if len({classe for classe in classes.values() if classe}) < 2:
         return info.license
     return ", ".join(f"{classe} ({fonte})" for fonte, classe in classes.items() if classe)
@@ -69,7 +57,13 @@ def describe(name: str) -> str:
         f"  Products: {', '.join(i.products)}",
         f"  Sources: {' > '.join(s.name for s in i.sources)}",
         f"  Frequency: {i.update_frequency} (latency: {i.typical_latency})",
-        f"  Contract: v{i.contract_version}",
+        f"  Contract: v{i.contract_version}" + (" (modo padrão)" if d._modos_de_contrato else ""),
+        *(
+            f"    {rotulo}: {nome} v{contracts.get_contract(nome).version}"
+            for rotulo, argumentos in d._modos_de_contrato.items()
+            for nome in [d._contract_name(**argumentos)]
+            if nome
+        ),
         f"  Min date: {i.min_date or 'N/A'}",
         f"  Unit: {i.unit or 'N/A'}",
     ]

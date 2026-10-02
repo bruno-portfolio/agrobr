@@ -75,6 +75,10 @@ CREDITO_RURAL_INFO = DatasetInfo(
 
 class CreditoRuralDataset(BaseDataset):
     info = CREDITO_RURAL_INFO
+    _modos_de_contrato = {
+        "agregacao='uf' ou 'programa'": {},
+        "agregacao='registro'": {"agregacao": "registro"},
+    }
 
     async def fetch(  # type: ignore[override]
         self,

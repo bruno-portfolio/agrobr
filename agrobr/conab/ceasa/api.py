@@ -22,6 +22,10 @@ if TYPE_CHECKING:
 logger = _log.get_logger(__name__)
 
 
+def _chave_produto(nome: str) -> str:
+    return regions.remover_acentos(nome.strip()).upper()
+
+
 @overload
 async def precos(
     *,
@@ -82,14 +86,6 @@ async def precos(
     for nome, valor in (("produto", produto), ("ceasa", ceasa)):
         if valor is not None and (not isinstance(valor, str) or not valor.strip()):
             raise InvalidParameterError(f"{nome} deve ser texto não vazio, recebeu {valor!r}")
-    produto_upper = (
-        regions.remover_acentos(produto.strip()).upper() if produto is not None else None
-    )
-    if produto_upper is not None and produto_upper not in PRODUTOS_PROHORT:
-        raise InvalidParameterError(
-            f"Produto {produto!r} fora do que a CONAB/PROHORT publica. "
-            f"Válidos: {sorted(PRODUTOS_PROHORT)}"
-        )
     warn_once(
         "conab_ceasa",
         "agrobr.conab.ceasa: dados CONAB/PROHORT via Pentaho CDA. "
@@ -114,12 +110,13 @@ async def precos(
     publicados = {coluna: sorted(df[coluna].dropna().unique()) for coluna in ("produto", "ceasa")}
 
     if produto is not None:
-        if produto_upper not in {nome.upper() for nome in publicados["produto"]}:
+        chave = _chave_produto(produto)
+        if chave not in {_chave_produto(nome) for nome in publicados["produto"]}:
             raise InvalidParameterError(
                 f"Produto {produto!r} fora do que a CONAB/PROHORT publica. "
                 f"Válidos: {publicados['produto']}"
             )
-        df = df[df["produto"].str.upper() == produto_upper].reset_index(drop=True)
+        df = df[df["produto"].map(_chave_produto) == chave].reset_index(drop=True)
 
     if ceasa is not None:
         ceasa_upper = ceasa.strip().upper()

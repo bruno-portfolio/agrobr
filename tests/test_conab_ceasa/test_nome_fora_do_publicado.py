@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+import copy
+import json
 import warnings
 from pathlib import Path
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from agrobr.conab import ceasa_precos
-from agrobr.conab.ceasa import models
+from agrobr.conab.ceasa import client, models
 from agrobr.exceptions import InvalidParameterError
 from tests.helpers import install_replay_http, levanta_exatamente, sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/conab_ceasa/precos_20260923"
+AMOSTRA = Path(__file__).resolve().parents[1] / "golden_data/conab_ceasa/precos_sample"
 
 
 def _servir(monkeypatch: pytest.MonkeyPatch) -> dict:
@@ -68,3 +72,29 @@ async def test_nomes_publicados_seguem_filtrando(monkeypatch):
         frame = await ceasa_precos(produto="abacate", ceasa="juazeiro")
     assert set(frame["produto"]) <= {"ABACATE"}
     assert set(frame["ceasa"]) <= {"AMA/BA - JUAZEIRO"}
+
+
+@pytest.mark.parametrize(
+    ("original", "publicado", "pedido", "saida"),
+    [
+        ("TOMATE (KG)", "PITAYA (KG)", "pitaya", "PITAYA"),
+        ("ABOBORA (KG)", "ABÓBORA (KG)", "abobora", "ABÓBORA"),
+    ],
+    ids=["fora_da_tabela", "publicado_com_acento"],
+)
+async def test_produto_confere_com_o_publicado_depois_da_rede(original, publicado, pedido, saida):
+    precos = json.loads((AMOSTRA / "precos_response.json").read_text(encoding="utf-8"))
+    ceasas = json.loads((AMOSTRA / "ceasas_response.json").read_text(encoding="utf-8"))
+    alterado = copy.deepcopy(precos)
+    linha = next(row for row in alterado["resultset"] if row[0] == original)
+    linha[0] = publicado
+    url = "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery"
+    with (
+        patch.object(client, "fetch_precos", new_callable=AsyncMock, return_value=(alterado, url)),
+        patch.object(client, "fetch_ceasas", new_callable=AsyncMock, return_value=(ceasas, url)),
+        warnings.catch_warnings(),
+    ):
+        warnings.simplefilter("ignore")
+        frame = await ceasa_precos(produto=pedido)
+    assert set(frame["produto"]) == {saida}
+    assert len(frame) == sum(preco is not None for preco in linha[1:])

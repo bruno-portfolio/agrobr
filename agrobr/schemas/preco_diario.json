@@ -77,7 +77,7 @@
       "name": "valor",
       "type": "float",
       "nullable": false,
-      "unit": "BRL",
+      "unit": "BRL por unidade da coluna unidade; algodão em centavos de BRL por libra-peso (cBRL/lb)",
       "stable": true,
       "deprecated": false,
       "description": "",

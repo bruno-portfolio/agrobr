@@ -103,6 +103,11 @@ def _validar_consulta(
 
 class UsodoSoloDataset(base.BaseDataset):
     info = USO_DO_SOLO_INFO
+    _modos_de_contrato = {
+        "tipo='cobertura'": {"tipo": "cobertura"},
+        "tipo='transicao'": {"tipo": "transicao"},
+        "nivel='municipio'": {"nivel": "municipio"},
+    }
 
     def _contract_name(self, **kwargs: Any) -> str:
         if kwargs.get("nivel", "estado") == "municipio":

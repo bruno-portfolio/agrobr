@@ -17,6 +17,7 @@ from agrobr.noticias_agricolas import parser as na_parser
 from agrobr.utils import time as time_utils
 from agrobr.zarc import models as zarc_models
 from tests.helpers import levanta_exatamente
+from tests.test_conab_ceasa import test_nome_fora_do_publicado
 
 
 def _licenca_do_describe(nome: str) -> str:
@@ -104,7 +105,11 @@ def test_condicao_lavouras_lista_os_produtos_que_o_validador_aceita():
         ("zoneamento_agricola", "banana_inexistente"),
     ],
 )
-async def test_produto_fora_do_vocabulario_chega_igual_a_fonte_e_e_recusado(nome, produto):
+async def test_produto_fora_do_vocabulario_chega_igual_a_fonte_e_e_recusado(
+    monkeypatch, nome, produto
+):
+    if nome == "preco_atacado":
+        test_nome_fora_do_publicado._servir(monkeypatch)
     ano = {"ano": 2026} if nome == "embarques_anec" else {}
     with levanta_exatamente(InvalidParameterError, match=f"'{produto}'"):
         await getattr(datasets, nome)(produto=produto, **ano)

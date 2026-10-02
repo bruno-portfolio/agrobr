@@ -114,6 +114,10 @@ FUTUROS_AGRICOLAS_INFO = DatasetInfo(
 
 class FuturosAgricolasDataset(BaseDataset):
     info = FUTUROS_AGRICOLAS_INFO
+    _modos_de_contrato = {
+        "tipo='ajustes' ou 'historico'": {"tipo": "ajustes"},
+        "tipo='posicoes' ou 'oi_historico'": {"tipo": "posicoes"},
+    }
 
     def _contract_name(self, **kwargs: Any) -> str | None:
         tipo = kwargs.get("tipo", "ajustes")

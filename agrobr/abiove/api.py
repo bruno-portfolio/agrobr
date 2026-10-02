@@ -73,6 +73,12 @@ async def exportacao(
         raise InvalidParameterError(
             f"agregacao deve ser 'detalhado' ou 'mensal', recebido {agregacao!r}"
         )
+    if produto_norm == "total" and agregacao != "mensal":
+        raise InvalidParameterError(
+            "produto='total' só existe na soma mensal: use agregacao='mensal', "
+            "com ou sem produto='total'"
+        )
+    filtro = None if produto_norm == "total" else produto_norm
     warn_once(
         "abiove",
         "ABIOVE: termos de uso não encontrados publicamente. "
@@ -100,11 +106,13 @@ async def exportacao(
     if mes is not None:
         df = df[df["mes"] == mes].reset_index(drop=True)
 
-    if produto_norm:
-        df = df[df["produto"] == produto_norm].reset_index(drop=True)
+    if filtro:
+        df = df[df["produto"] == filtro].reset_index(drop=True)
 
     if agregacao == "mensal":
         df = parser.agregar_mensal(df)
+        if filtro and not df.empty:
+            df["produto"] = filtro
 
     meta = build_source_meta(
         "abiove",

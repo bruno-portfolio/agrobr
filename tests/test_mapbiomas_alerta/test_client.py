@@ -42,6 +42,23 @@ async def test_credencial_recusada_aponta_a_variavel_e_o_argumento(monkeypatch, 
     assert pedidos == ["Bearer segredo-123"]
 
 
+@pytest.mark.parametrize("status", [401, 403])
+@pytest.mark.parametrize("consulta", ["fetch_alert_date_range", "fetch_last_publication"])
+async def test_recusa_da_consulta_sem_token_nao_cita_o_token(monkeypatch, status, consulta):
+    pedidos = responder(monkeypatch, status, b'{"message": "unauthorized"}')
+    with levanta_exatamente(SourceUnavailableError) as erro:
+        await getattr(client, consulta)()
+    assert erro.value.last_error == f"HTTP {status}: acesso recusado (consulta sem token)"
+    assert pedidos == [""]
+
+
+async def test_erro_de_token_no_graphql_sem_token_nao_cita_a_variavel(monkeypatch):
+    responder(monkeypatch, 200, b'{"errors": [{"message": "Token required"}]}')
+    with levanta_exatamente(SourceUnavailableError) as erro:
+        await client.fetch_last_publication()
+    assert erro.value.last_error == "GraphQL error: Token required (consulta sem token)"
+
+
 async def test_token_invalido_no_graphql_ganha_a_orientacao(monkeypatch):
     responder(monkeypatch, 200, b'{"errors": [{"message": "Token de acesso inv\\u00e1lido"}]}')
     with levanta_exatamente(SourceUnavailableError) as erro:

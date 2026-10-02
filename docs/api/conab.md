@@ -332,6 +332,6 @@ use `await conab.produtos()` e `await conab.ufs()`. Na fachada síncrona, use `s
 e `sync.conab.ufs()`.
 
 `safras()` normaliza caixa, espaços externos e aliases com acento, como `" FEIJÃO "`, antes da
-consulta e da seleção das linhas. `ceasa_precos(produto=...)` também normaliza acentos e recusa
-produtos fora de `ceasa_produtos()` antes de consultar a rede. Após a aquisição, confere se o
-produto consta da publicação recebida.
+consulta e da seleção das linhas. `ceasa_precos(produto=...)` confere o produto depois da rede, contra a publicação recebida, sem
+acento e sem caixa nos 2 lados: produto publicado fora de `ceasa_produtos()` também filtra, e o que
+não consta da publicação levanta `InvalidParameterError` com os publicados.

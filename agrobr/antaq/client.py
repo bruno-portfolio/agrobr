@@ -11,6 +11,7 @@ import requests
 from agrobr import _log
 from agrobr.constants import MIN_ZIP_SIZE, URLS, Fonte
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.http.rate_limiter import RateLimiter
 from agrobr.http.retry import retry_async, should_retry_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
@@ -86,12 +87,17 @@ def _rejection_reason(download: _Download, problem: str) -> str:
     return detail
 
 
+async def _get_limitado(url: str) -> _Download:
+    async with RateLimiter.acquire(Fonte.ANTAQ):
+        return await asyncio.to_thread(_get_sync, url)
+
+
 async def _download_zip(url: str) -> bytes:
     logger.debug("antaq_download_zip", url=url)
 
     try:
         download = await retry_async(
-            lambda: asyncio.to_thread(_get_sync, url),
+            lambda: _get_limitado(url),
             retriable_exceptions=(
                 requests.exceptions.ConnectionError,
                 requests.exceptions.Timeout,

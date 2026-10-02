@@ -30,7 +30,7 @@ async def exportacao(
 |-----------|------|-----------|
 | `ano` | `int` | Ano de referência, de 2010 ao corrente |
 | `mes` | `int \| None` | Mês dos dados (1-12). None retorna todos os meses publicados |
-| `produto` | `str \| None` | Filtrar: `"grao"`, `"farelo"`, `"oleo"`, `"milho"`. Para o total dos produtos, use `agregacao="mensal"` (sai com `produto="total"`); `produto="total"` devolve DataFrame vazio nas planilhas publicadas |
+| `produto` | `str \| None` | Filtrar: `"grao"`, `"farelo"`, `"oleo"`, `"milho"`. Na soma mensal, a linha sai com o produto filtrado. Para o total dos produtos, use `agregacao="mensal"` sem `produto` ou com `produto="total"` (sai com `produto="total"`); `produto="total"` com `agregacao="detalhado"` levanta `InvalidParameterError` antes da rede |
 | `agregacao` | `str` | `"detalhado"` (por produto/mes) ou `"mensal"` (soma) |
 | `edicao` | `str \| None` | Edição da planilha, `"AAAA-MM"` (ex.: `"2025-12"`), de `ano` ou `ano + 1`. None lê a edição mais recente que publica `ano` |
 | `as_polars` | `bool` | Retorna polars DataFrame |

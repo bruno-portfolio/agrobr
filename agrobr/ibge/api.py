@@ -256,7 +256,13 @@ async def pam(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:pam",
-        {"produto": produto, "ano": normalized_ano},
+        {
+            "produto": produto,
+            "ano": normalized_ano,
+            "territorial_level": territorial_level,
+            "ibge_code": ibge_code,
+            "variaveis": variaveis,
+        },
         schema_version=meta.schema_version,
     )
 
@@ -558,7 +564,12 @@ async def ppm(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:ppm",
-        {"especie": especie, "ano": ano},
+        {
+            "especie": especie,
+            "ano": ano,
+            "territorial_level": territorial_level,
+            "ibge_code": ibge_code,
+        },
         schema_version=meta.schema_version,
     )
 
@@ -768,7 +779,12 @@ async def abate(
     meta.columns = df.columns.tolist()
     meta.cache_key = build_cache_key(
         "ibge:abate",
-        {"especie": especie, "trimestre": trimestre},
+        {
+            "especie": especie,
+            "trimestre": trimestre,
+            "territorial_level": territorial_level,
+            "ibge_code": ibge_code,
+        },
         schema_version=meta.schema_version,
     )
 

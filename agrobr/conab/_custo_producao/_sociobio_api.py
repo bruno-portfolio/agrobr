@@ -377,7 +377,7 @@ async def catalogo_sociobiodiversidade(
     *,
     planilha: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
 
@@ -388,9 +388,42 @@ async def catalogo_sociobiodiversidade(
     *,
     planilha: str | None = None,
     use_cache: bool = True,
-    as_polars: bool = False,
+    as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def catalogo_sociobiodiversidade(
+    produto: str | None = None,
+    *,
+    planilha: str | None = None,
+    use_cache: bool = True,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def catalogo_sociobiodiversidade(
+    produto: str | None = None,
+    *,
+    planilha: str | None = None,
+    use_cache: bool = True,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def catalogo_sociobiodiversidade(
+    produto: str | None = None,
+    *,
+    planilha: str | None = None,
+    use_cache: bool = True,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> Frame | tuple[Frame, MetaInfo]: ...
 
 
 async def catalogo_sociobiodiversidade(

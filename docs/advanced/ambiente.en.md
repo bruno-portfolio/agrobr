@@ -45,7 +45,7 @@ Set the variables before importing agrobr. In detail:
 | `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` | `1` | Simultaneous requests of the other sources; below 1 is rejected with `ValidationError` |
 
 Interval `<SOURCE>`, with the default in seconds: `ABIOVE` (3), `ACERVO_FUNDIARIO` (3), `ANA` (2), `ANDA` (3), `ANEC` (3),
-`ANP_DIESEL` (2), `ANTT_PEDAGIO` (2), `B3` (1), `B3_ARQUIVOS` (5), `BCB` (1), `CEPEA` (5), `CFTC` (2), `CNUC` (2),
+`ANP_DIESEL` (2), `ANTAQ` (1), `ANTT_PEDAGIO` (2), `B3` (1), `B3_ARQUIVOS` (5), `BCB` (1), `CEPEA` (5), `CFTC` (2), `CNUC` (2),
 `COMEXSTAT` (2), `COMTRADE` (2), `CONAB` (3), `CONAB_CEASA` (2), `DEFENSIVOS` (2), `DERAL` (3), `DESMATAMENTO` (2),
 `EMBRAPA_SOLOS` (2), `FUNAI` (2), `IBAMA` (2), `IBGE` (1), `ICMBIO` (2), `IMEA` (1), `INCRA` (2), `INMET` (0.5),
 `LISTA_SUJA` (2), `MAPBIOMAS` (2), `MAPBIOMAS_ALERTA` (3), `NASA_POWER` (1), `NOTICIAS_AGRICOLAS` (2), `QUEIMADAS` (1),

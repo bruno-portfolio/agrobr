@@ -36,7 +36,7 @@ CEPEA_INDICADOR_V1 = Contract(
             name="valor",
             type=ColumnType.FLOAT,
             nullable=False,
-            unit="BRL",
+            unit="BRL por unidade da coluna unidade; algodão em centavos de BRL por libra-peso (cBRL/lb)",
             stable=True,
             min_value=0,
         ),

@@ -11,8 +11,9 @@ Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
 ## Produtos
 
 48 produtos do PROHORT na tabela do agrobr; sem filtro de produto, produto novo publicado sai com `categoria`
-nula e aviso. `produto` fora dos 48 de `conab.ceasa_produtos()` levanta `InvalidParameterError` antes da rede,
-e o produto e a CEASA pedidos são conferidos contra o que o corpo publica, com os válidos na mensagem.
+nula e aviso. O produto e a CEASA pedidos são conferidos depois da rede,
+contra o que o corpo publica (o produto sem acento e sem caixa), com os válidos na mensagem; produto
+publicado fora dos 48 de `conab.ceasa_produtos()` também filtra.
 
 ## Schema
 

@@ -74,6 +74,10 @@ SEGURO_RURAL_INFO = DatasetInfo(
 
 class SeguroRuralDataset(BaseDataset):
     info = SEGURO_RURAL_INFO
+    _modos_de_contrato = {
+        "tipo='apolices'": {"tipo": "apolices"},
+        "tipo='sinistros'": {"tipo": "sinistros"},
+    }
 
     def _contract_name(self, **kwargs: Any) -> str | None:
         tipo = kwargs.get("tipo", "apolices")

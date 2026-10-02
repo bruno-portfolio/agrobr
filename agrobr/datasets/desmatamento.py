@@ -99,6 +99,7 @@ def _require_reconciled(source_meta: MetaInfo | None, tipo: str, rows: int) -> N
 
 class DesmatamentoDataset(base.BaseDataset):
     info = DESMATAMENTO_INFO
+    _modos_de_contrato = {"tipo='prodes'": {"tipo": "prodes"}, "tipo='deter'": {"tipo": "deter"}}
 
     def _contract_name(self, **kwargs: Any) -> str:
         return f"desmatamento_{kwargs.get('tipo', 'prodes')}"
