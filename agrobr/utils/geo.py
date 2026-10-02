@@ -546,6 +546,10 @@ async def fetch_arcgis_layer(
     return pages, first_url
 
 
+def _campos_pedidos(layer_config: LayerConfig) -> set[str]:
+    return set(layer_config["fields"].split(",")) | layer_config["required_cols"]
+
+
 def parse_arcgis_tabular(
     pages: list[bytes],
     *,
@@ -553,10 +557,10 @@ def parse_arcgis_tabular(
     layer_config: LayerConfig,
     parser_version: int,
     numeric_cols: frozenset[str] | None = None,
-    validate_required: bool = False,
 ) -> pd.DataFrame:
     colunas = layer_config["colunas_saida"]
     rename_map = layer_config["rename_map"]
+    required = _campos_pedidos(layer_config)
 
     if not pages:
         return pd.DataFrame(columns=colunas)
@@ -573,16 +577,14 @@ def parse_arcgis_tabular(
             ) from e
         for feat in data.get("features", []):
             row = feat.get("properties") or feat.get("attributes", {})
-            if validate_required:
-                missing = layer_config["required_cols"] - row.keys()
-                if missing:
-                    raise ParseError(
-                        source=source,
-                        parser_version=parser_version,
-                        reason=f"Colunas obrigatorias ausentes na pagina {i}: {sorted(missing)}",
-                    )
-            if row:
-                all_rows.append(row)
+            missing = required - row.keys()
+            if missing:
+                raise ParseError(
+                    source=source,
+                    parser_version=parser_version,
+                    reason=f"Colunas obrigatorias ausentes na pagina {i}: {sorted(missing)}",
+                )
+            all_rows.append(row)
 
     if not all_rows:
         return pd.DataFrame(columns=colunas)
@@ -614,7 +616,7 @@ def parse_arcgis_geojson(
     gpd = check_geopandas()
     colunas_geo = layer_config["colunas_saida"] + ["geometry"]
     rename_map = layer_config["rename_map"]
-    required = layer_config["required_cols"]
+    required = _campos_pedidos(layer_config)
 
     if not pages:
         empty = gpd.GeoDataFrame(columns=colunas_geo)

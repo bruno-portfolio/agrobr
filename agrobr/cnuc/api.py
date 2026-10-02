@@ -207,10 +207,15 @@ async def _adquirir(consulta: Consulta, *, geo: bool) -> tuple[Any, MetaInfo]:
     a_baixar = expected if count is None else min(expected, count)
     limite = models.MAX_FEATURES_GEO if geo else models.MAX_FEATURES_TABULAR
     if a_baixar > limite:
+        filtros = (
+            "uf, esfera, categoria, grupo ou bbox"
+            if consulta.filtro_local
+            else "uf, esfera, categoria, grupo, bbox ou max_registros"
+        )
         raise ResourceLimitError(
             "cnuc",
             f"Seleção de {a_baixar} UCs excede o limite de {limite}"
-            f"{' com geometria' if geo else ''}; refine os filtros, use bbox ou max_registros",
+            f"{' com geometria' if geo else ''}; reduza com {filtros}",
             url=count_url,
         )
     body = b""

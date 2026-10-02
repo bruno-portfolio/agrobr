@@ -88,12 +88,12 @@ def _texto(valor: object, parametro: str) -> str:
 
 
 def remover_acentos(texto: str) -> str:
-    nfkd = unicodedata.normalize("NFKD", texto)
+    nfkd = unicodedata.normalize("NFKD", _texto(texto, "texto"))
     return "".join(c for c in nfkd if not unicodedata.combining(c))
 
 
 def slugificar_praca(praca: str) -> str:
-    sem_uf = re.sub(r"\s*/\s*[A-Za-z]{2}\s*$", "", praca.strip())
+    sem_uf = re.sub(r"\s*/\s*[A-Za-z]{2}\s*$", "", _texto(praca, "praca").strip())
     sem_acentos = remover_acentos(sem_uf).lower()
     return re.sub(r"[^a-z0-9]+", "_", sem_acentos).strip("_")
 
@@ -190,7 +190,7 @@ def normalizar_municipio(nome: str) -> str:
 
 
 def validar_uf(uf: str) -> bool:
-    return uf.upper() in UFS
+    return _texto(uf, "uf").upper() in UFS
 
 
 PRACAS_CEPEA: dict[str, dict[str, str]] = {
@@ -237,10 +237,11 @@ def normalizar_bioma(bioma: str) -> str:
 
 
 def normalizar_praca(praca: str, produto: str | None = None) -> str:
-    praca_norm = remover_acentos(praca.lower().strip())
+    praca_norm = remover_acentos(_texto(praca, "praca").lower().strip())
+    produto_norm = None if produto is None else _texto(produto, "produto").lower()
 
-    if produto and produto.lower() in PRACAS_CEPEA:
-        pracas_produto = PRACAS_CEPEA[produto.lower()]
+    if produto_norm and produto_norm in PRACAS_CEPEA:
+        pracas_produto = PRACAS_CEPEA[produto_norm]
         for praca_padrao in pracas_produto:
             if praca_padrao in praca_norm or praca_norm in praca_padrao:
                 return praca_padrao.title()

@@ -15,6 +15,7 @@ from agrobr.normalize.regions import (
     normalizar_municipio,
     normalizar_praca,
     normalizar_uf,
+    remover_acentos,
     slugificar_praca,
     uf_para_ibge,
     uf_para_nome,
@@ -178,6 +179,41 @@ def test_normalizador_recusa_valor_que_nao_e_texto(funcao, parametro, valor):
         InvalidParameterError, match=re.escape(f"{parametro} deve ser texto, recebeu {valor!r}")
     ):
         funcao(valor)
+
+
+@pytest.mark.parametrize("valor", [51, ["MT"], None], ids=["int", "lista", "none"])
+@pytest.mark.parametrize(
+    ("funcao", "parametro"),
+    [
+        (remover_acentos, "texto"),
+        (slugificar_praca, "praca"),
+        (validar_uf, "uf"),
+        (normalizar_praca, "praca"),
+    ],
+    ids=["remover_acentos", "slugificar_praca", "validar_uf", "normalizar_praca"],
+)
+def test_utilitario_recusa_valor_que_nao_e_texto(funcao, parametro, valor):
+    with pytest.raises((InvalidParameterError, TypeError, AttributeError)) as erro:
+        funcao(valor)
+    assert (erro.type, str(erro.value)) == (
+        InvalidParameterError,
+        f"{parametro} deve ser texto, recebeu {valor!r}",
+    )
+
+
+@pytest.mark.parametrize("produto", [51, ["soja"]], ids=["int", "lista"])
+def test_normalizar_praca_recusa_produto_que_nao_e_texto(produto):
+    with pytest.raises((InvalidParameterError, TypeError, AttributeError)) as erro:
+        normalizar_praca("Paranaguá", produto)
+    assert (erro.type, str(erro.value)) == (
+        InvalidParameterError,
+        f"produto deve ser texto, recebeu {produto!r}",
+    )
+    assert [normalizar_praca("Paranaguá", p) for p in (None, "", "SOJA")] == [
+        "Paranaguá",
+        "Paranaguá",
+        "Paranagua",
+    ]
 
 
 def test_normalizadores_mantem_o_retorno_do_texto():

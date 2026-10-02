@@ -27,6 +27,7 @@ from .models import (
 logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=120.0)
+_NOMES_UF = [str(info["nome"]).upper() for info in UFS.values()]
 
 
 @dataclass(frozen=True)
@@ -45,12 +46,25 @@ def _igual(campo: str, valor: str) -> str:
     )
 
 
-def _contem(campo: str, valor: str) -> str:
+def _like(campo: str, padrao: str) -> str:
     return (
         "<fes:PropertyIsLike wildCard='%' singleChar='_' escapeChar='!'>"
         f"<fes:ValueReference>{campo}</fes:ValueReference>"
-        f"<fes:Literal>%{escape(valor)}%</fes:Literal></fes:PropertyIsLike>"
+        f"<fes:Literal>{escape(padrao)}</fes:Literal></fes:PropertyIsLike>"
     )
+
+
+def _contem(campo: str, valor: str) -> str:
+    return _like(campo, f"%{valor}%")
+
+
+def _uf(nome: str) -> list[str]:
+    return [_contem("uf", nome)] + [
+        f"<fes:Or><fes:Not>{_contem('uf', outro)}</fes:Not>"
+        f"{_contem('uf', f'{nome},')}{_like('uf', f'%{nome}')}</fes:Or>"
+        for outro in _NOMES_UF
+        if nome in outro and outro != nome
+    ]
 
 
 def _bbox(bbox: tuple[float, float, float, float]) -> str:
@@ -67,7 +81,7 @@ def _bbox(bbox: tuple[float, float, float, float]) -> str:
 def build_filter(filtro: FiltroServidor) -> str:
     condicoes = [_igual("limite", LIMITE_UC)]
     if filtro.uf is not None:
-        condicoes.append(_contem("uf", str(UFS[filtro.uf]["nome"]).upper()))
+        condicoes.extend(_uf(str(UFS[filtro.uf]["nome"]).upper()))
     if filtro.esfera is not None:
         condicoes.append(_igual("esfera", ESFERAS[filtro.esfera]))
     if filtro.categoria is not None:

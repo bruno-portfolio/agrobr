@@ -105,15 +105,15 @@ df = await agrobr.alt.sicar.resumo("MT")
 
 ### Return without municipality (state-level)
 
-Uses `resultType=hits` (five queries: total and four statuses, without downloading records):
+Uses `resultType=hits` (five queries: total and four statuses, without downloading records). The count is of **published features**: versions of the same `cod_imovel` in force on the layer count separately, so the total can exceed the number of properties and the sum of the municipality summaries, which count one version per `cod_imovel`. The output says so in `MetaInfo.source_details["sicar"]["unidade"] = "feicoes_publicadas"` and in a warning in `MetaInfo.validation_warnings` (with `return_meta=True`):
 
 | Column | Type | Description |
 |--------|------|-------------|
-| total | int | Total properties |
-| ativos | int | Properties with status AT |
-| pendentes | int | Properties with status PE |
-| suspensos | int | Properties with status SU |
-| cancelados | int | Properties with status CA |
+| total | int | Published features |
+| ativos | int | Features with status AT |
+| pendentes | int | Features with status PE |
+| suspensos | int | Features with status SU |
+| cancelados | int | Features with status CA |
 
 ### Return with municipality
 

@@ -33,6 +33,7 @@ buscar_municipios("santo", limite=-1)  # InvalidParameterError (limite negativo)
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
 municipio_para_ibge(5107602)                    # InvalidParameterError: nome deve ser texto, recebeu 5107602
+municipio_para_ibge("Bom Jesus")                # InvalidParameterError: ambíguo, 5 municípios (PB, PI, RN, RS, SC); informe a uf
 
 # Nome inteiro ou código IBGE, com erro em vez de palpite
 resolver_municipio("sorriso")           # {'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}
@@ -178,10 +179,15 @@ listar_regioes()               # ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste'
 
 `UnknownNameError` é `InvalidParameterError` e também `KeyError`: o `except KeyError` de antes segue pegando.
 
-`normalizar_uf`, `normalizar_municipio`, `normalizar_bioma` e `municipio_para_ibge` recusam o que não é texto (número,
-lista, `None`) com `InvalidParameterError`, que diz o parâmetro e o valor recebido. Com texto, o retorno não muda: no
+`normalizar_uf`, `normalizar_municipio`, `normalizar_bioma`, `normalizar_praca` (também no `produto`), `slugificar_praca`,
+`validar_uf`, `remover_acentos`, `municipio_para_ibge` e `buscar_municipios` recusam o que não é texto (número, lista,
+`None`) com `InvalidParameterError`, que diz o parâmetro e o valor recebido. Com texto, o retorno não muda: no
 `normalizar_uf` e no `municipio_para_ibge`, nome que não casa segue devolvendo `None`; no `normalizar_bioma`, o próprio
 texto.
+
+Sem `uf`, o `municipio_para_ibge` recusa o nome de mais de um município (521 municípios dividem 240 nomes, como
+"Bom Jesus" e "Planalto") com o mesmo `InvalidParameterError` do `resolver_municipio`, que lista os candidatos; antes,
+devolvia calado o código do primeiro da lista, muitas vezes de outra UF.
 
 ## Biomas
 

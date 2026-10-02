@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import itertools
+import re
 from urllib import parse
 
 from lxml import etree
 
 from agrobr.cnuc import client, models
+from agrobr.normalize.regions import UFS
 from tests.test_cnuc.golden import MANIFESTO
 
 FES = "{http://www.opengis.net/fes/2.0}"
@@ -39,10 +42,46 @@ def test_filtro_traduz_parametros_para_os_textos_publicados():
     assert _condicoes(filtro) == [
         ("PropertyIsEqualTo", "limite", "uc"),
         ("PropertyIsLike", "uf", "%MATO GROSSO%"),
+        ("Or", None, ""),
         ("PropertyIsEqualTo", "esfera", "Estadual"),
         ("PropertyIsEqualTo", "categoria", "Parque"),
         ("PropertyIsEqualTo", "grupo", "Proteção Integral"),
     ]
+
+
+def _casa(elemento: etree._Element, linha: dict[str, str]) -> bool:
+    operador = etree.QName(elemento).localname
+    filhos = [filho for filho in elemento if etree.QName(filho).namespace == FES[1:-1]]
+    if operador in {"Filter", "And"}:
+        return all(_casa(filho, linha) for filho in filhos)
+    if operador == "Or":
+        return any(_casa(filho, linha) for filho in filhos)
+    if operador == "Not":
+        return not _casa(filhos[0], linha)
+    valor = linha[elemento.findtext(f"{FES}ValueReference")]
+    literal = elemento.findtext(f"{FES}Literal")
+    if operador == "PropertyIsEqualTo":
+        return valor == literal
+    assert operador == "PropertyIsLike"
+    padrao = "".join(".*" if c == "%" else "." if c == "_" else re.escape(c) for c in literal)
+    return re.fullmatch(padrao, valor) is not None
+
+
+def test_filtro_de_uf_no_servidor_casa_so_a_uf_pedida():
+    nomes = {str(info["nome"]).upper(): sigla for sigla, info in UFS.items()}
+    linhas = [
+        ", ".join(combinacao)
+        for tamanho in (1, 2)
+        for combinacao in itertools.permutations(sorted(nomes), tamanho)
+    ] + ["GOIÁS, MATO GROSSO, MATO GROSSO DO SUL", "MATO GROSSO DO SUL, MATO GROSSO, GOIÁS"]
+    divergentes = []
+    for sigla in sorted(UFS):
+        filtro = etree.fromstring(client.build_filter(client.FiltroServidor(uf=sigla)).encode())
+        for linha in linhas:
+            esperado = sigla in {nomes[nome] for nome in linha.split(", ")}
+            if _casa(filtro, {"limite": "uc", "uf": linha}) != esperado:
+                divergentes.append((sigla, linha))
+    assert divergentes == []
 
 
 def test_filtro_bbox_usa_urn_com_latitude_primeiro():

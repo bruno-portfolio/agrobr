@@ -515,6 +515,11 @@ async def resumo(
 
         source_url = WFS_BASE
         parse_ms = 0
+        sicar_details["unidade"] = "feicoes_publicadas"
+        validation_warnings.append(
+            "sicar: o resumo sem município conta feições publicadas, e versões do mesmo cod_imovel "
+            "contam separado; com municipio, conta imóveis (uma versão por cod_imovel)"
+        )
     else:
         cql = _build_cql_filter(cod_municipio=cod_municipio)
 

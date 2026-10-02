@@ -57,7 +57,6 @@ def parse_layer_tabular(pages: list[bytes], *, layer_key: str) -> pd.DataFrame:
             layer_config=LAYERS[layer_key],
             parser_version=PARSER_VERSION,
             numeric_cols=_NUMERIC_COLS,
-            validate_required=True,
         )
     )
 
@@ -139,6 +138,5 @@ def parse_massas_dagua(pages: list[bytes], *, geo: bool) -> Any:
             source="ana",
             layer_config=MASSAS_DAGUA,
             parser_version=PARSER_VERSION,
-            validate_required=True,
         )
     return _normalizar_massas(bruto)

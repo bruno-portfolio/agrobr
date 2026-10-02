@@ -66,6 +66,14 @@ def _build_codigo_lookup() -> dict[int, MunicipioInfo]:
 
 
 def municipio_para_ibge(nome: str, uf: str | None = None) -> int | None:
+    """Código IBGE pelo nome inteiro do município, sem caixa e acento.
+
+    Devolve `None` quando o nome não existe (na `uf`, se informada).
+
+    Raises:
+        InvalidParameterError: `nome` ou `uf` que não é texto, ou nome de mais de um município
+            sem `uf`; a mensagem lista os candidatos, como em `resolver_municipio`.
+    """
     key = _remover_acentos(regions._texto(nome, "nome").lower().strip())
     uf_upper = None if uf is None else regions._texto(uf, "uf").upper().strip()
     lookup = _build_lookup()
@@ -80,7 +88,10 @@ def municipio_para_ibge(nome: str, uf: str | None = None) -> int | None:
                 return m["codigo_ibge"]
         return None
 
-    return matches[0]["codigo_ibge"]
+    candidatos = sorted({m["codigo_ibge"]: m for m in matches}.values(), key=lambda m: m["uf"])
+    if len(candidatos) > 1:
+        raise _ambiguo(nome, candidatos)
+    return candidatos[0]["codigo_ibge"]
 
 
 def ibge_para_municipio(codigo: int) -> MunicipioInfo | None:
@@ -92,7 +103,7 @@ def buscar_municipios(termo: str, uf: str | None = None, limite: int = 10) -> li
     if isinstance(limite, bool) or not isinstance(limite, int) or limite < 0:
         raise InvalidParameterError(f"limite deve ser inteiro não negativo, recebeu {limite!r}")
     uf_upper = None if uf is None else regions.sigla_uf(uf)
-    termo_norm = _remover_acentos(termo.lower().strip())
+    termo_norm = _remover_acentos(regions._texto(termo, "termo").lower().strip())
     results: dict[int, MunicipioInfo] = {}
 
     for key, entries in _build_lookup().items():
@@ -116,6 +127,13 @@ def _listar(infos: list[MunicipioInfo]) -> str:
     texto = ", ".join(_rotulo(m) for m in infos[:_MAX_CANDIDATOS])
     resto = len(infos) - _MAX_CANDIDATOS
     return texto + (f" e mais {resto}" if resto > 0 else "")
+
+
+def _ambiguo(valor: object, infos: list[MunicipioInfo]) -> InvalidParameterError:
+    return InvalidParameterError(
+        f"Município ambíguo: {valor!r} é o nome de {len(infos)} municípios "
+        f"({_listar(infos)}); informe a uf"
+    )
 
 
 def _resolver_codigo(valor: int | str, uf: str | None) -> MunicipioInfo:
@@ -158,10 +176,7 @@ def resolver_municipio(valor: int | str, uf: str | None = None) -> MunicipioInfo
     if len(na_uf) == 1:
         return na_uf[0].copy()
     if na_uf:
-        raise InvalidParameterError(
-            f"Município ambíguo: {valor!r} é o nome de {len(na_uf)} municípios "
-            f"({_listar(na_uf)}); informe a uf"
-        )
+        raise _ambiguo(valor, na_uf)
 
     parecidos = {
         m["codigo_ibge"]: m

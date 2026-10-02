@@ -58,7 +58,7 @@ asyncio.run(main())
 
 | Parameter | Values | Where it filters |
 |-----------|--------|------------------|
-| `uf` | state code | on the server by state name; the result matches the exact code inside `uf` |
+| `uf` | state code | on the server by state name (for `MT`, without the units in Mato Grosso do Sul only); the result matches the exact code inside `uf` |
 | `municipio` | full name or 7-digit IBGE code | by the municipality's state on the server; each published municipality is compared with the IBGE register |
 | `esfera` | `federal`, `estadual`, `municipal` | on the server |
 | `categoria` | the 12 published management categories, case- and accent-insensitive | on the server |
@@ -69,7 +69,7 @@ asyncio.run(main())
 
 A value outside the domain raises `InvalidParameterError` before any network call, listing the valid values. The 12 categories: Área de Proteção Ambiental, Área de Relevante Interesse Ecológico, Estação Ecológica, Floresta, Monumento Natural, Parque, Refúgio de Vida Silvestre, Reserva Biológica, Reserva de Desenvolvimento Sustentável, Reserva de Fauna, Reserva Extrativista and Reserva Particular do Patrimônio Natural.
 
-The query counts the units on the server before downloading. Above 10,000 units in the table, or 600 in `ucs_geo`, it raises `ResourceLimitError` without downloading anything; the largest state (RJ) has 568. `bioma` alone does not reduce the download, because it filters the result. When no filter is applied on the result (`uf`, `municipio` and `bioma`), `max_registros` also reduces the download on the server.
+The query counts the units on the server before downloading. Above 10,000 units in the table, or 600 in `ucs_geo`, it raises `ResourceLimitError` without downloading anything; the largest state (RJ) has 568. `bioma` alone does not reduce the download, because it filters the result. When no filter is applied on the result (`uf`, `municipio` and `bioma`), `max_registros` also reduces the download on the server. The error message suggests only what reduces the download: `uf`, `esfera`, `categoria`, `grupo` and `bbox`, and `max_registros` when no filter is applied on the result.
 
 ## Columns
 

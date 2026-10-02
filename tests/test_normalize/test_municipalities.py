@@ -287,6 +287,16 @@ def test_buscar_municipios_recusa_filtro_invalido(kwargs, motivo):
         buscar_municipios("sao", **kwargs)
 
 
+@pytest.mark.parametrize("termo", [51, ["sao"], None], ids=["int", "lista", "none"])
+def test_buscar_municipios_recusa_termo_que_nao_e_texto(termo):
+    with pytest.raises((InvalidParameterError, TypeError, AttributeError)) as erro:
+        buscar_municipios(termo)
+    assert (erro.type, str(erro.value)) == (
+        InvalidParameterError,
+        f"termo deve ser texto, recebeu {termo!r}",
+    )
+
+
 @pytest.mark.parametrize(
     "consulta",
     [
@@ -398,3 +408,26 @@ def test_municipio_para_ibge_recusa_valor_que_nao_e_texto(argumentos, parametro,
 
     assert municipio_para_ibge(" cuiaba ", "mt ") == 5103403
     assert (municipio_para_ibge("Cuiabá", ""), municipio_para_ibge("Nenhures")) == (5103403, None)
+
+
+def test_municipio_para_ibge_sem_uf_recusa_homonimo_como_o_resolver():
+    divergentes = []
+    ambiguos = 0
+    for nome in sorted({nome for nome, _, _ in _municipios_dtb().values()}):
+        try:
+            esperado: int | str = resolver_municipio(nome)["codigo_ibge"]
+        except InvalidParameterError as erro:
+            esperado = str(erro)
+            ambiguos += 1
+        try:
+            obtido: int | str | None = municipio_para_ibge(nome)
+        except InvalidParameterError as erro:
+            obtido = str(erro)
+        if obtido != esperado:
+            divergentes.append((nome, obtido, esperado))
+
+    assert (ambiguos, divergentes[:3], len(divergentes)) == (248, [], 0)
+    assert (
+        municipio_para_ibge("Bom Jesus", "rs")
+        == resolver_municipio("Bom Jesus", "RS")["codigo_ibge"]
+    )

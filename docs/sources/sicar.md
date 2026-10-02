@@ -87,6 +87,9 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
   mantém a chave e as doze colunas do contrato 2.1. Avisos e `source_details["sicar"]` registram
   contagens de features, códigos colapsados, descartes e critérios; a lista de descartes tem
   até 1.000 itens e sinaliza truncagem. Veja a [regra e os campos de proveniência](../contracts/cadastro_rural.md#ocorrencias-do-mesmo-imovel-e-proveniencia)
+- **Resumo da UF:** `resumo(uf)` sem município conta feições publicadas (`resultType=hits`), sem a seleção acima:
+  versões do mesmo `cod_imovel` contam separado. A saída diz isso em `source_details["sicar"]["unidade"] =
+  "feicoes_publicadas"` e em `validation_warnings`; para contar imóveis, use o resumo por município
 - **Sem cache:** cada chamada consulta o GeoServer do CAR; repetir a consulta baixa tudo de novo
 - **Timeout estendido:** read timeout de 180s para UFs com muitos registros (BA, MG, MT)
 - **SSL:** o GeoServer do CAR usa cipher suite legado que rejeita handshake TLS padrao.

@@ -82,7 +82,6 @@ def parse_layer_tabular(pages: list[bytes], *, layer_key: str) -> pd.DataFrame:
                 layer_config=LAYERS[layer_key],
                 parser_version=PARSER_VERSION,
                 numeric_cols=_NUMERIC_COLS,
-                validate_required=True,
             ),
             texto=_mantem_texto(layer_key),
         )

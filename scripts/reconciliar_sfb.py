@@ -34,6 +34,7 @@ CAMPOS_CNFP = {
     "classe": "classe",
     "area_ha": "area_ha",
     "municipio": "municipio",
+    "ano_criacao_texto": "anocriacao",
 }
 CAMPOS_CONCESSOES = {
     "nome": "nome_uc",

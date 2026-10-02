@@ -570,6 +570,26 @@ async def test_resumo_estadual_conta_cada_status_pela_sondagem(monkeypatch: pyte
     ]
 
 
+async def test_resumo_estadual_rotula_a_contagem_de_feicoes_publicadas(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    body = (GOLDEN / "sicar/versoes_20260916/go_duplicates.json").read_bytes()
+    feicoes = json.loads(body)["features"]
+    assert len({feicao["properties"]["cod_imovel"] for feicao in feicoes}) == 1
+    monkeypatch.setattr(client, "fetch_hits", AsyncMock(return_value=len(feicoes)))
+    monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([body], URL)))
+
+    estadual, meta = await api.resumo("GO", return_meta=True)
+    municipal = await api.resumo("GO", municipio=5205802)
+
+    assert (estadual.loc[0, "total"], municipal.loc[0, "total"]) == (2, 1)
+    assert meta.source_details.get("sicar") == {"unidade": "feicoes_publicadas"}
+    assert meta.validation_warnings == [
+        "sicar: o resumo sem município conta feições publicadas, e versões do mesmo cod_imovel "
+        "contam separado; com municipio, conta imóveis (uma versão por cod_imovel)"
+    ]
+
+
 async def test_sondagem_de_volume_avisa_e_nao_derruba_a_consulta(monkeypatch: pytest.MonkeyPatch):
     body = geo_capture("df_geo_srs4326_count3.json")
     tabular = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())

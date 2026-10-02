@@ -105,15 +105,15 @@ df = await agrobr.alt.sicar.resumo("MT")
 
 ### Retorno sem municipio (UF-level)
 
-Usa `resultType=hits` (cinco consultas: total e quatro status, sem download de registros):
+Usa `resultType=hits` (cinco consultas: total e quatro status, sem download de registros). A contagem é de **feições publicadas**: versões do mesmo `cod_imovel` em vigor na camada contam separado, então o total pode passar do número de imóveis e da soma dos resumos por município, que contam uma versão por `cod_imovel`. A saída diz isso em `MetaInfo.source_details["sicar"]["unidade"] = "feicoes_publicadas"` e num aviso em `MetaInfo.validation_warnings` (com `return_meta=True`):
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| total | int | Total de imoveis |
-| ativos | int | Imoveis com status AT |
-| pendentes | int | Imoveis com status PE |
-| suspensos | int | Imoveis com status SU |
-| cancelados | int | Imoveis com status CA |
+| total | int | Feições publicadas |
+| ativos | int | Feições com status AT |
+| pendentes | int | Feições com status PE |
+| suspensos | int | Feições com status SU |
+| cancelados | int | Feições com status CA |
 
 ### Retorno com municipio
 

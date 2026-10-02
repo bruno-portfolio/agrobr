@@ -197,14 +197,15 @@ lines (BHO), no polygons.
 - **bbox required**: `hidrografia` and `demanda_irrigacao` require bbox (large datasets)
 - **Keyset pagination**: each page asks for up to 1K features ordered by `OBJECTID` and the next one continues from the last `OBJECTID` received, until the official count is reached. The Hidrografia server returns one feature fewer than requested on each page; with offset pagination the boundary feature was lost (1,046 of 1,047 in the test extract). If pagination stops before the official count, or a page does not advance the `OBJECTID`, the query raises `SourceUnavailableError` stating how many features are missing, instead of returning a partial result. An unreadable page (truncated JSON, proxy HTML) or a page without `OBJECTID` raises `ParseError`
 - **max_registros**: positive integer limiting the returned features, or `None` for no cap. Zero, negative values, booleans and non-integers raise `InvalidParameterError` before collection. The previous `max_features` argument is no longer accepted
-- **Required fields**: the tabular parser checks the fields configured in `required_cols` for every feature on every page; a missing field raises `ParseError`
+- **Required fields**: every field requested from the service (`outFields`) must be present in every feature of every page in the tabular functions, and in every page in the `_geo` variants. The service sends all of them, nulls included, so a missing field is a layout change and raises `ParseError` naming the field, instead of returning one column fewer
 
-| Layer | Required field in the official response | Normalized column |
-|-------|-----------------------------------------|-------------------|
-| `hidrografia` | `COCURSODAG` | `codigo_curso` |
-| `pivos_irrigacao` | `NM_ESTADO` | `estado` |
-| `demanda_irrigacao` | `COBACIA` | `codigo_bacia` |
-| `disponibilidade_hidrica` | `DISPQ95` | `disponibilidade_m3_s` |
+| Layer | Requested fields |
+|-------|------------------|
+| `hidrografia` | `OBJECTID`, `COCURSODAG`, `COBACIA`, `NORIOCOMP`, `DEDOMINIAL` |
+| `pivos_irrigacao` | `OBJECTID`, `CD_GEOCMU`, `NM_MUNICIP`, `NM_ESTADO`, `REGIAO_HID`, `HECTARES` |
+| `demanda_irrigacao` | `OBJECTID`, `ID`, `COBACIA`, `DSVERSAO`, `VZMAXMEN`, `VZMESSEC`, `VZMESIRR`, `VZMEDANO` |
+| `disponibilidade_hidrica` | `OBJECTID`, `ID`, `NUAREAMONT`, `DISPQ95`, `NMRIO`, `DEDOMINIAL`, `DSVERSAO` |
+| `massas_dagua` | the 19 fields in the water bodies column table |
 
 An official count of zero returns a valid empty result with the published columns;
 in the `_geo` variants the empty result is also in EPSG:4326. A field containing a null

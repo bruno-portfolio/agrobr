@@ -58,7 +58,7 @@ asyncio.run(main())
 
 | Parâmetro | Valores | Onde filtra |
 |-----------|---------|-------------|
-| `uf` | sigla da UF | no servidor pelo nome da UF; o resultado casa a sigla exata dentro de `uf` |
+| `uf` | sigla da UF | no servidor pelo nome da UF (em `MT`, sem as UCs só de Mato Grosso do Sul); o resultado casa a sigla exata dentro de `uf` |
 | `municipio` | nome inteiro ou código IBGE de 7 dígitos | pela UF do município no servidor; cada município publicado é comparado ao cadastro do IBGE |
 | `esfera` | `federal`, `estadual`, `municipal` | no servidor |
 | `categoria` | as 12 categorias de manejo publicadas, sem caixa e acento | no servidor |
@@ -69,7 +69,7 @@ asyncio.run(main())
 
 Valor fora do domínio levanta `InvalidParameterError` antes da rede, com a lista dos válidos. As 12 categorias: Área de Proteção Ambiental, Área de Relevante Interesse Ecológico, Estação Ecológica, Floresta, Monumento Natural, Parque, Refúgio de Vida Silvestre, Reserva Biológica, Reserva de Desenvolvimento Sustentável, Reserva de Fauna, Reserva Extrativista e Reserva Particular do Patrimônio Natural.
 
-A consulta conta as UCs no servidor antes de baixar. Acima de 10.000 UCs no tabular, ou de 600 no `ucs_geo`, levanta `ResourceLimitError` sem baixar nada; a maior UF (RJ) tem 568. O `bioma` sozinho não reduz o download, porque filtra no resultado. Quando não há filtro aplicado no resultado (`uf`, `municipio` e `bioma`), `max_registros` também reduz o download no servidor.
+A consulta conta as UCs no servidor antes de baixar. Acima de 10.000 UCs no tabular, ou de 600 no `ucs_geo`, levanta `ResourceLimitError` sem baixar nada; a maior UF (RJ) tem 568. O `bioma` sozinho não reduz o download, porque filtra no resultado. Quando não há filtro aplicado no resultado (`uf`, `municipio` e `bioma`), `max_registros` também reduz o download no servidor. A mensagem do erro sugere só o que reduz o download: `uf`, `esfera`, `categoria`, `grupo` e `bbox`, e `max_registros` quando não há filtro no resultado.
 
 ## Colunas
 

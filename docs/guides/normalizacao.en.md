@@ -33,6 +33,7 @@ buscar_municipios("santo", limite=-1)  # InvalidParameterError (negative limit)
 municipio_para_ibge("Brasília")                 # 5300108 (DF)
 municipio_para_ibge("Brasília de Minas", "MG")  # 3108602
 municipio_para_ibge(5107602)                    # InvalidParameterError: nome is not text
+municipio_para_ibge("Bom Jesus")                # InvalidParameterError: ambiguous, 5 municipalities (PB, PI, RN, RS, SC); pass uf
 
 # Full name or IBGE code, raising instead of guessing
 resolver_municipio("sorriso")           # {'codigo_ibge': 5107925, 'nome': 'Sorriso', 'uf': 'MT'}
@@ -178,10 +179,15 @@ listar_regioes()               # ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste'
 
 `UnknownNameError` is an `InvalidParameterError` and also a `KeyError`: an existing `except KeyError` still catches it.
 
-`normalizar_uf`, `normalizar_municipio`, `normalizar_bioma` and `municipio_para_ibge` reject anything that is not text
-(a number, a list, `None`) with `InvalidParameterError`, which names the parameter and the value received. With text,
-the return does not change: in `normalizar_uf` and `municipio_para_ibge`, a name that does not match still returns
-`None`; in `normalizar_bioma`, the text itself.
+`normalizar_uf`, `normalizar_municipio`, `normalizar_bioma`, `normalizar_praca` (also for `produto`), `slugificar_praca`,
+`validar_uf`, `remover_acentos`, `municipio_para_ibge` and `buscar_municipios` reject anything that is not text (a
+number, a list, `None`) with `InvalidParameterError`, which names the parameter and the value received. With text, the
+return does not change: in `normalizar_uf` and `municipio_para_ibge`, a name that does not match still returns `None`;
+in `normalizar_bioma`, the text itself.
+
+Without `uf`, `municipio_para_ibge` rejects a name shared by more than one municipality (521 municipalities share 240
+names, such as "Bom Jesus" and "Planalto") with the same `InvalidParameterError` as `resolver_municipio`, which lists the
+candidates; before, it silently returned the code of the first one on the list, often from another state.
 
 ## Biomes
 

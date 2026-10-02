@@ -88,6 +88,10 @@ with server-side filters (CQL_FILTER) and transparent pagination.
   Warnings and `source_details["sicar"]` record feature counts, collapsed codes, discarded
   occurrences and criteria. The discard list contains up to 1,000 items and flags truncation.
   See the [selection rule and provenance fields](../contracts/cadastro_rural.en.md#multiple-occurrences-and-provenance)
+- **State summary:** `resumo(uf)` without a municipality counts published features (`resultType=hits`), without the
+  selection above: versions of the same `cod_imovel` count separately. The output says so in
+  `source_details["sicar"]["unidade"] = "feicoes_publicadas"` and in `validation_warnings`; to count properties, use the
+  municipality summary
 - **No cache:** every call queries the CAR GeoServer; repeating the query downloads everything again
 - **Extended timeout:** 180s read timeout for states with many records (BA, MG, MT)
 - **SSL:** the CAR GeoServer uses a legacy cipher suite that rejects the standard TLS handshake.

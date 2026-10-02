@@ -218,6 +218,27 @@ async def test_ucs_geo_limite_antes_do_download(monkeypatch):
     fetch_ucs.assert_not_awaited()
 
 
+@pytest.mark.parametrize(
+    ("kwargs", "dica"),
+    [
+        ({"esfera": "estadual"}, "reduza com uf, esfera, categoria, grupo, bbox ou max_registros"),
+        ({"uf": "SE", "max_registros": 1}, "reduza com uf, esfera, categoria, grupo ou bbox"),
+        (
+            {"bioma": "caatinga", "max_registros": 1},
+            "reduza com uf, esfera, categoria, grupo ou bbox",
+        ),
+    ],
+    ids=["sem_filtro_local", "uf", "bioma"],
+)
+async def test_dica_do_limite_so_sugere_o_que_reduz_o_download(monkeypatch, kwargs, dica):
+    pytest.importorskip("geopandas")
+    _, fetch_ucs = instalar(monkeypatch, contagem=hits(601))
+    with levanta_exatamente(ResourceLimitError) as erro:
+        await cnuc.ucs_geo(**kwargs)
+    assert erro.value.reason == f"Seleção de 601 UCs excede o limite de 600 com geometria; {dica}"
+    fetch_ucs.assert_not_awaited()
+
+
 async def test_ucs_geo_vazio(monkeypatch):
     gpd = pytest.importorskip("geopandas")
     instalar(monkeypatch, contagem=hits(0))
