@@ -119,7 +119,7 @@ como erro. Outros erros de programação não são capturados nem acionam fallba
 
 A identidade publicada segue duas convenções:
 
-- **Rota da fonte:** `comercio_internacional`, `desmatamento`, `empregadores_lista_suja`, `unidades_conservacao_federais`, `uso_do_solo`, `cultivares_registradas` e `cultivares_protegidas` preservam a rota e as tentativas informadas pela fonte, mesmo com uma única tentativa. As duas funções de cultivares compartilham essa regra em `_rnc.py`. Na ausência dessa proveniência, o nome do adaptador serve como identificação.
+- **Rota da fonte:** `comercio_internacional`, `desmatamento`, `empregadores_lista_suja`, `unidades_conservacao`, `unidades_conservacao_federais`, `uso_do_solo`, `cultivares_registradas` e `cultivares_protegidas` preservam a rota e as tentativas informadas pela fonte, mesmo com uma única tentativa. As duas funções de cultivares compartilham essa regra em `_rnc.py`. Na ausência dessa proveniência, o nome do adaptador serve como identificação.
 - **Adaptador do dataset:** nos demais datasets, `selected_source` usa `DatasetSource.name` e `attempted_sources` lista os adaptadores tentados. Por exemplo, `cadastro_rural` publica `selected_source="sicar"` e `["sicar"]` em uma tentativa simples, enquanto a API da fonte publica `sicar_wfs`.
 
 A regra da base adota a proveniência interna quando a fonte informa mais de uma tentativa ou `selected_source="cache"`: preserva a rota selecionada e combina os adaptadores anteriores com as tentativas internas, sem duplicatas e na ordem original. Sem identificador interno selecionado, conserva o nome do adaptador. `from_cache` é propagado independentemente; `from_cache=True` sozinho não muda a convenção dos nomes.

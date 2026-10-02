@@ -1,5 +1,5 @@
-"""ANA/SNIRH — Dados hidrologicos e irrigacao.
-Fonte: portal1.snirh.gov.br (ArcGIS REST MapServer, sem auth).
+"""ANA/SNIRH — Dados hidrologicos, irrigacao e massas d'agua.
+Fonte: portal1.snirh.gov.br e www.snirh.gov.br (ArcGIS REST MapServer, sem auth).
 Licenca: Livre (dados publicos governo federal).
 """
 
@@ -10,6 +10,8 @@ from agrobr.ana.api import (
     disponibilidade_hidrica_geo,
     hidrografia,
     hidrografia_geo,
+    massas_dagua,
+    massas_dagua_geo,
     pivos_irrigacao,
     pivos_irrigacao_geo,
 )
@@ -21,6 +23,8 @@ __all__ = [
     "disponibilidade_hidrica_geo",
     "hidrografia",
     "hidrografia_geo",
+    "massas_dagua",
+    "massas_dagua_geo",
     "pivos_irrigacao",
     "pivos_irrigacao_geo",
 ]

@@ -96,6 +96,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
         {"codigo": 1, "inicio": "01/01/2024", "fim": "10/01/2024"},
     ),
     "silvicultura": (("carvao",), {"ano": 2023, "uf": "AC"}),
+    "unidades_conservacao": ((), {"uf": "SE", "esfera": "municipal"}),
     "unidades_conservacao_federais": ((), {"uf": "MT", "grupo": "PI", "bioma": "Cerrado"}),
     "precos_diesel": ((), {"nivel": "brasil", "inicio": "2026-08-01", "fim": "2026-08-31"}),
     "uso_do_solo": (

@@ -57,6 +57,7 @@ ROTULOS = {
     "ibama embargoes": ("ibama",),
     "icmbio ucs federais": ("icmbio",),
     "icmbio federal ucs": ("icmbio",),
+    "cnuc (mma)": ("cnuc",),
     "incra quilombolas": ("incra",),
     "lista suja": ("lista_suja",),
     "mapbiomas alerta": ("mapbiomas_alerta",),

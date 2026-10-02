@@ -169,7 +169,7 @@ agrobr/
 │   ├── conab/                 #    Cada fonte tem:
 │   ├── ibge/                  #    client.py → parser.py → models.py → api.py
 │   ├── usda/                  #
-│   ├── b3/                    #    40 fontes no total
+│   ├── b3/                    #    41 fontes no total
 │   ├── ...                    #
 │   │
 │   ├── alt/                   # Fontes alternativas (anp_diesel, antt, mapa_psr, sicar)
@@ -178,7 +178,7 @@ agrobr/
 │   │   ├── base.py            #    BaseDataset (fallback, contrato, meta)
 │   │   ├── registry.py        #    Auto-descoberta de datasets
 │   │   ├── deterministic.py   #    Modo determinístico (contextvars)
-│   │   └── *.py               #    53 datasets
+│   │   └── *.py               #    54 datasets
 │   │
 │   ├── contracts/             # Schema contracts + validação
 │   ├── schemas/               # JSON schemas gerados

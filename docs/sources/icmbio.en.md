@@ -28,7 +28,7 @@ import asyncio
 from agrobr import icmbio
 
 async def main():
-    # All federal conservation units
+    # Federal units in the ICMBio layer, without private reserves (RPPN)
     df = await icmbio.ucs()
 
     # Filter by group (PI = strict protection, US = sustainable use)
@@ -62,7 +62,7 @@ asyncio.run(main())
 
 ## Limitations
 
-- Only federal conservation units; the current count varies. State and municipal ones are not in this WFS.
+- Only federal conservation units, without private reserves (RPPN); the current count varies. State and municipal units and private reserves are not in this WFS: for the full CNUC, use [`cnuc.ucs`](cnuc.md).
 - The `uf` field may contain multiple states (e.g., "MT/PA")
 - `area_ha` is the whole unit's area, not the part inside the state: `uf="SP"` returns 22 units, 7 of them shared with another state and with their full area (the APA das Ilhas e Várzeas do Rio Paraná, SP/PR/MS, comes with 1,005,181 ha). Summing `area_ha` by state counts those units more than once.
 - Data reflects the current state of the INDE/ICMBio GeoServer

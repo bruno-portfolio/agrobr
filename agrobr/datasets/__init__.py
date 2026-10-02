@@ -59,6 +59,7 @@ from agrobr.datasets.seguro_rural import seguro_rural
 from agrobr.datasets.serie_historica_safra import serie_historica_safra
 from agrobr.datasets.series_economicas import series_economicas
 from agrobr.datasets.silvicultura import silvicultura
+from agrobr.datasets.unidades_conservacao import unidades_conservacao
 from agrobr.datasets.unidades_conservacao_federais import unidades_conservacao_federais
 from agrobr.datasets.uso_do_solo import uso_do_solo
 from agrobr.datasets.zoneamento_agricola import zoneamento_agricola
@@ -123,6 +124,7 @@ __all__ = [
     "serie_historica_safra",
     "series_economicas",
     "silvicultura",
+    "unidades_conservacao",
     "unidades_conservacao_federais",
     "uso_do_solo",
     "zoneamento_agricola",

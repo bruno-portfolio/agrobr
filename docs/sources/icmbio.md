@@ -28,7 +28,7 @@ import asyncio
 from agrobr import icmbio
 
 async def main():
-    # Todas as UCs federais
+    # UCs federais da camada do ICMBio, sem RPPN
     df = await icmbio.ucs()
 
     # Filtrar por grupo (PI = protecao integral, US = uso sustentavel)
@@ -62,7 +62,7 @@ asyncio.run(main())
 
 ## Limitacoes
 
-- Apenas UCs federais; a contagem corrente varia. Estaduais e municipais nao estao neste WFS.
+- Apenas UCs federais, sem RPPN; a contagem corrente varia. Estaduais, municipais e RPPNs nao estao neste WFS: para o CNUC completo, use [`cnuc.ucs`](cnuc.md).
 - Campo `uf` pode conter multiplas UFs (ex: "MT/PA")
 - `area_ha` é a área da UC inteira, não a parte dentro da UF: `uf="SP"` devolve 22 UCs, 7 delas com outra UF e a área toda (a APA das Ilhas e Várzeas do Rio Paraná, SP/PR/MS, sai com 1.005.181 ha). Somar `area_ha` por UF conta essas UCs mais de uma vez.
 - Dados refletem o estado atual do GeoServer INDE/ICMBio

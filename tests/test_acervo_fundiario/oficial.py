@@ -122,7 +122,7 @@ def replace_cell(archive: bytes, index: int, field: str, value: str) -> bytes:
     return output.getvalue()
 
 
-def sigef(record: dict[str, str]) -> dict[str, Any]:
+def sigef(record: dict[str, str], natureza: str) -> dict[str, Any]:
     return {
         "codigo_parcela": text(record["parcela_co"]),
         "rt": text(record["rt"]),
@@ -137,6 +137,7 @@ def sigef(record: dict[str, str]) -> dict[str, Any]:
         "registro_data": dbf_date(record["registro_d"]),
         "cod_municipio": integer(record["municipio_"]),
         "uf": IBGE_UF.get(int(record["uf_id"])),
+        "natureza": natureza,
     }
 
 

@@ -75,6 +75,7 @@ plugins:
             B3 Futuros Agro: B3 Agricultural Futures
             FUNAI Terras Indígenas: FUNAI Indigenous Lands
             ICMBio UCs Federais: ICMBio Federal Conservation Units
+            CNUC Unidades de Conservação: CNUC Conservation Units
             Acervo Fundiário/INCRA: Land Registry/INCRA
             IBAMA Embargos: IBAMA Environmental Embargoes
             Embarques ANEC: ANEC Shipments
@@ -163,6 +164,7 @@ nav:
     - serie_historica_safra: contracts/serie_historica_safra.md
     - series_economicas: contracts/series_economicas.md
     - silvicultura: contracts/silvicultura.md
+    - unidades_conservacao: contracts/unidades_conservacao.md
     - unidades_conservacao_federais: contracts/unidades_conservacao_federais.md
     - uso_do_solo: contracts/uso_do_solo.md
     - zoneamento_agricola: contracts/zoneamento_agricola.md
@@ -237,6 +239,7 @@ nav:
     - Defensivos: sources/defensivos.md
     - FUNAI Terras Indígenas: sources/funai.md
     - ICMBio UCs Federais: sources/icmbio.md
+    - CNUC Unidades de Conservação: sources/cnuc.md
     - INCRA Quilombolas: sources/incra.md
     - Acervo Fundiário/INCRA: sources/acervo_fundiario.md
     - IBAMA Embargos: sources/ibama.md

@@ -1,6 +1,6 @@
 # IBGE API
 
-The IBGE module provides access to data from the IBGE Automatic Retrieval System (SIDRA).
+The IBGE module provides access to data from the IBGE Automatic Retrieval System (SIDRA). The municipal mesh and the urbanized areas come from the IBGE geoservices WFS ([`malha_municipal`](#malha_municipal-malha_municipal_geo) and [`areas_urbanizadas`](#areas_urbanizadas-areas_urbanizadas_geo)).
 
 SIDRA queries use asynchronous HTTP directly, with a 120-second request deadline per attempt, cancellation, and exponential retries for transient failures. No transport thread remains pending after a timeout. Queries follow the [official SIDRA parameters](https://apisidra.ibge.gov.br/home/ajuda).
 
@@ -49,6 +49,7 @@ async def pam(
 | `area_colhida` | Harvested area (hectares) |
 | `producao` | Quantity produced (see `unidade_producao`) |
 | `rendimento` | Average yield (see `unidade_rendimento`) |
+| `valor_producao` | Production value (see `unidade_valor_producao`) |
 
 **Example:**
 
@@ -317,7 +318,7 @@ df = await ibge.abate('bovino', trimestre='202303')
 # Chicken slaughter in Paraná
 df = await ibge.abate('frango', trimestre='202303', uf='PR')
 
-# Swine slaughter — Brazil
+# Swine slaughter — all states
 df = await ibge.abate('suino', trimestre='202304')
 
 # With metadata
@@ -415,7 +416,7 @@ agropecuários com lavoura temporária" (10084) and, for permanent crops, "com 5
 ```python
 from agrobr import ibge
 
-# Herd inventory by state (2017)
+# Herd inventory by state (1995 and 2017)
 df = await ibge.censo_agro('efetivo_rebanho')
 
 # Land use in Mato Grosso
@@ -453,7 +454,7 @@ async def temas_censo_agro() -> list[str]
 
 Retrieves Agricultural Census 1995/96 data — six themes via FTP, in ZIP archives containing XLS or HTML tables.
 
-[Contract 2.0](../contracts/censo_agropecuario_legado.md) distinguishes Brazil, actual state totals, and municipalities using the official tables. The default `nivel='uf'` queries all 27 states when `uf` is omitted. `nivel='brasil'` includes national activity categories and does not accept a `uf` filter. The `uf` column distinguishes municipalities with identical names; municipal codes absent from the source remain null. Variables and units come from the actual headers. IBGE does not publish Pará's municipal machinery table (`Para/Tab_7Mn.zip` carries Table 6, personnel): `tema='maquinas'` without `uf` returns the other 26 states, with the warning in `MetaInfo.validation_warnings` and a `UserWarning`, and `uf='PA'` raises `SourceUnavailableError`.
+[Contract 2.1](../contracts/censo_agropecuario_legado.md) distinguishes Brazil, actual state totals, and municipalities using the official tables. The default `nivel='uf'` queries all 27 states when `uf` is omitted. `nivel='brasil'` includes national activity categories and does not accept a `uf` filter. The `uf` column distinguishes municipalities with identical names; municipal codes absent from the source remain null. Variables and units come from the actual headers. IBGE does not publish Pará's municipal machinery table (`Para/Tab_7Mn.zip` carries Table 6, personnel): `tema='maquinas'` without `uf` returns the other 26 states, with the warning in `MetaInfo.validation_warnings` and a `UserWarning`, and `uf='PA'` raises `SourceUnavailableError`.
 
 ```python
 async def censo_agro_legado(
@@ -669,6 +670,101 @@ Lists available states.
 
 ```python
 async def ufs() -> list[str]
+```
+
+---
+
+### `malha_municipal` / `malha_municipal_geo`
+
+Municipal boundaries from the IBGE territorial mesh, 2025 edition, at original resolution, through the IBGE geoservices WFS
+(`https://geoservicos.ibge.gov.br/geoserverIBGE/wfs`, layer `CGMAT:qg_2025_030_munic`).
+
+```python
+async def malha_municipal(
+    *,
+    uf: str | None = None,
+    municipio: str | int | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
+
+async def malha_municipal_geo(
+    *,
+    uf: str | None = None,
+    municipio: str | int | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]
+```
+
+- `uf`: state code. `municipio`: 7-digit IBGE code or full name (`normalize.resolver_municipio`); pass `uf` as well to
+  disambiguate the name. Both filters run on the server.
+- `bbox` (`_geo` only): `(minlon, minlat, maxlon, maxlat)` in EPSG:4326. Returns the municipalities that touch the rectangle
+  and combines with `uf`.
+- **Columns:** `uf`, `cod_uf` (text, 2 digits), `cod_municipio` (`Int64`), `municipio`, `area_km2` (`float64`, the area
+  published by IBGE). `_geo` adds `geometry` (MultiPolygon, EPSG:4326). Empty and full results share the same dtypes.
+- **Lagoons:** the layer has 5,573 features: the 5,571 municipalities and 2 operational lagoon areas in RS (`4300001`, Lagoa
+  Mirim, and `4300002`, Lagoa dos Patos), which IBGE publishes in the mesh. They come back with `uf="RS"`, with `bbox` and in
+  the whole mesh; not by `municipio`, because they are not municipalities.
+- **Limits:** the tabular call returns the whole layer (1.4 MB). `_geo` accepts up to 900 municipalities per query: MG, the
+  largest state, has 853 (74 MB of GeoJSON, ~17 s on 2026-10-01). Above the cap, `ResourceLimitError` before the download;
+  narrow with `uf`, `municipio`, `bbox` or `max_registros`. For the whole country as a file, use the mesh ZIP on the
+  [IBGE geoftp](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/)
+  (`Brasil/BR_Municipios_2025.zip`, 237 MB, or `UFs/<UF>/<UF>_Municipios_2025.zip`).
+- `max_registros` cuts on the server, in `cd_mun` order; with it, `coverage["truncated"]` is `True` when the selection is
+  larger.
+- **`MetaInfo`:** `source="ibge"`, `selected_source` `ibge_malha_municipal_wfs` (`_wfs_geo` for geo); `source_details` with
+  `layer`, `edition` (2025), `query`, `coverage` (the `hits` count runs before the download and is reconciled with what
+  arrives) and `count`. Current layer: no `ano`, `inicio` or `fim`.
+
+```python
+municipios = await ibge.malha_municipal(uf="MT")
+sinop = await ibge.malha_municipal_geo(municipio="Sinop", uf="MT")
+entorno = await ibge.malha_municipal_geo(bbox=(-48.3, -16.1, -47.3, -15.5))
+```
+
+---
+
+### `areas_urbanizadas` / `areas_urbanizadas_geo`
+
+IBGE Urbanized Areas of Brazil 2022: polygons mapped on satellite imagery, through the WFS
+(`https://geoservicos.ibge.gov.br/geoserverCGEO/wfs`, layer `CGEO:AU_2026_AreasUrbanizadas2022_Brasil`, 190,172 polygons).
+
+```python
+async def areas_urbanizadas(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
+
+async def areas_urbanizadas_geo(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]
+```
+
+- **`bbox` is required**, `(minlon, minlat, maxlon, maxlat)` in EPSG:4326: the layer has no state or municipality. Without
+  it, `TypeError`; with `bbox=None`, `InvalidParameterError`.
+- **One municipality:** use the rectangle of its boundary, `tuple((await ibge.malha_municipal_geo(municipio=...)).total_bounds)`.
+  It also picks neighbouring polygons; to cut by the boundary, intersect with the municipality geometry (`geopandas.clip` or
+  `geopandas.overlay`).
+- **Columns:** `id` (text, the layer `fid`), `densidade`, `tipo` and `comparacao` (text, as IBGE publishes them; in the DF
+  rectangle, `densidade` is "Densa", "Pouco densa" or "Loteamento vazio", and `comparacao`, the change since 2019, has values
+  such as "Sem alteração", "Adição" and "Densificação"), `data_imagem` (`datetime64[ns]`, the first day of the image month,
+  published as `"2022/09"`), `area_ha` and `area_km2` (`float64`). `_geo` adds `geometry` (MultiPolygon, EPSG:4326).
+- **Limits:** 50,000 polygons in the tabular call and 10,000 in `_geo` per query (the DF rectangle has 1,083, 1.1 MB of
+  GeoJSON). Above that, `ResourceLimitError` before the download. `max_registros` cuts on the server, in `id` (text) order.
+- **`MetaInfo`:** as in the mesh, with `selected_source` `ibge_areas_urbanizadas_wfs` (`_wfs_geo`) and `edition` 2022.
+
+```python
+bbox = tuple((await ibge.malha_municipal_geo(municipio="Sinop", uf="MT")).total_bounds)
+areas = await ibge.areas_urbanizadas_geo(bbox=bbox)
 ```
 
 ---
@@ -918,7 +1014,7 @@ df, meta = await ibge.pib_agro(return_meta=True)
 | Aspect | PAM | LSPA | PPM | Slaughter | PEVS | Milk | GDP | Agri Census | Legacy Census | Historical Series | Municipal 1985 |
 |--------|-----|------|-----|-----------|------|------|-----|-------------|---------------|-------------------|----------------|
 | Frequency | Annual | Monthly | Annual | Quarterly | Annual | Quarterly | Quarterly | Decennial | One-off (1995/96) | Decennial | One-off (1985) |
-| Granularity | To municipality | To state | To municipality | Brazil + state | To municipality | State | Brazil | To municipality | To municipality | Brazil/Region/State | To municipality |
+| Granularity | To municipality | To state | To municipality | State | To municipality | State | Brazil | To municipality | To municipality | Brazil/Region/State | To municipality |
 | Type | Consolidated | Estimates | Consolidated | Consolidated | Consolidated | Consolidated | Estimates | Census | Census (FTP) | Census | Census (OCR) |
 | Availability | Y+1 year | Y+1 month | Y+1 year | Q+2 months | Y+1 year | Q+2 months | Q+2 months | Post-census | Static | Static | Static (local package) |
 | Scope | Crops | Crops | Livestock | Slaughter | Silviculture + Plant extraction | Milk (acquisition, processing) | Sector GDP | Agri structure | 6 legacy themes | 9 themes (1920-2006) | 53 themes (1985) |
@@ -927,9 +1023,8 @@ df, meta = await ibge.pib_agro(return_meta=True)
 
 | Table | Description |
 |-------|-------------|
-| 5457 | PAM - New series (2018+) |
+| 5457 | PAM - Series since 1974 |
 | 6588 | LSPA - Monthly estimates |
-| 1612 | PAM - Temporary crops (historical) |
 | 3939 | PPM - Herd inventory |
 | 74 | PPM - Animal-origin production |
 | 1092 | Slaughter - Cattle |
@@ -1003,13 +1098,13 @@ df = ibge.pib_agro(trimestre='202501')
 
 Published values are not implicitly converted. `unidade_producao`, `unidade_rendimento`, and `unidade_valor_producao` identify each row's scale. Before 2001, oranges use `mil_frutos` and `frutos/ha`; from 2001 onward, `ton` and `kg/ha`. `condicao_produto` distinguishes coffee `em_coco` through 2001 from `beneficiado` since 2002. Historical currencies remain identified without conversion to BRL or inflation adjustment. See the [IBGE methodology notes](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
 
-`localidade_cod` (`producao_anual` contract 2.1) carries the locality's IBGE code as SIDRA publishes it (D1C): 7 digits for a municipality, 2 for a state and 1 for Brazil. Use it to join municipalities across years, because the published name changes (and the Federal District comes out as "Brasília (DF)", without the " - UF" suffix of the others). In `producao_anual`, only IBGE rows carry the code; the CONAB fallback does not.
+`localidade_cod` (`producao_anual` contract 2.2) carries the locality's IBGE code as SIDRA publishes it (D1C): 7 digits for a municipality, 2 for a state and 1 for Brazil. Use it to join municipalities across years, because the published name changes (and the Federal District comes out as "Brasília (DF)", without the " - UF" suffix of the others). In `producao_anual`, only IBGE rows carry the code; the CONAB fallback does not.
 
-SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.1; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.
+SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.2; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.
 
-PAM parser 2 also preserves localities and measures whose values are entirely missing or suppressed. Two observations for the same locality, year and measure, including colliding variable aliases, raise `ParseError`; unmapped variables are also rejected. The reader does not silently select the first value. The schema remains 2.0.
+PAM parser 2 also preserves localities and measures whose values are entirely missing or suppressed. Two observations for the same locality, year and measure, including colliding variable aliases, raise `ParseError`; unmapped variables are also rejected. The reader does not silently select the first value. The PAM API schema is 2.1 (2.0 plus `localidade_cod`); the dataset contract is 2.2, with `cod_municipio`.
 
-In the PEVS APIs, `variavel="valor_producao"` preserves the published monetary unit in `unidade` and returns `valor` as `float64`, even when all values are whole numbers. The parser is version 2; forestry and plant extraction contracts remain 1.0.
+In the PEVS APIs, `variavel="valor_producao"` preserves the published monetary unit in `unidade` and returns `valor` as `float64`, even when all values are whole numbers. The parser is version 2; forestry and plant extraction contracts are at 1.1.
 
 The quarterly slaughter, milk and GDP APIs use parser 2. In slaughter data, `-`
 means zero while `X` and `...` remain null; reported carcass weight is preserved

@@ -1,0 +1,24 @@
+{
+ "source": "ibge",
+ "format": "wfs2_geojson",
+ "license": "IBGE (livre no agrobr, docs/licenses.md)",
+ "content": "Malha municipal 2025 do IBGE (camada CGMAT:qg_2025_030_munic) filtrada por sigla_uf='DF': contagem, atributos e geometria em EPSG:4326, ordenados por cd_mun.",
+ "fetched_at": "2026-10-02T00:40:47+00:00",
+ "files": {
+  "hits.xml": {
+   "url": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT:qg_2025_030_munic&resultType=hits&CQL_FILTER=sigla_uf%3D%27DF%27",
+   "sha256": "d3dad04d94e0bbf2d3d34f2a53055e55961e72f71d25a967c10d40a9a4c7bb96",
+   "bytes": 769
+  },
+  "tabular.json": {
+   "url": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT:qg_2025_030_munic&outputFormat=application%2Fjson&propertyName=cd_uf,sigla_uf,cd_mun,nm_mun,area_km2&sortBy=cd_mun&CQL_FILTER=sigla_uf%3D%27DF%27",
+   "sha256": "18dcd0a4f5e159bbfe56e507c7594f122f7d93227a8bb0f7797057f0a71f6a54",
+   "bytes": 398
+  },
+  "geo.json": {
+   "url": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT:qg_2025_030_munic&outputFormat=application%2Fjson&propertyName=geom,cd_uf,sigla_uf,cd_mun,nm_mun,area_km2&sortBy=cd_mun&srsName=EPSG:4326&CQL_FILTER=sigla_uf%3D%27DF%27",
+   "sha256": "d60aef8fb3ab6d17876a80c0a228aebab86083290b5f6c9221e6d2cca1389145",
+   "bytes": 266624
+  }
+ }
+}

@@ -38,6 +38,7 @@ Tudo o que está no `__all__` do módulo da fonte. O caminho público é o do m�
 | `agrobr.bcb` | [BCB](bcb.md) e [séries econômicas](series_economicas.md) |
 | `agrobr.cepea` | [CEPEA](cepea.md) |
 | `agrobr.cftc` | [CFTC](cftc.md) |
+| `agrobr.cnuc` | [CNUC](../sources/cnuc.md) |
 | `agrobr.comexstat` | [ComexStat](comexstat.md) |
 | `agrobr.comtrade` | [UN Comtrade](comtrade.md) |
 | `agrobr.conab` | [CONAB](conab.md), [progresso](conab_progresso.md) e [CEASA](conab_ceasa.md) |

@@ -8,7 +8,7 @@ import httpx
 import pandas as pd
 import pytest
 
-from agrobr import exceptions
+from agrobr import constants, exceptions
 from scripts import reconciliacao_semanal
 from scripts import reconciliar_acervo_fundiario as reconciliacao
 
@@ -87,19 +87,51 @@ def test_data_dbf_nula_ou_fora_da_regra(bruto):
 
 
 def test_sigef_datas_dbf_publicadas():
-    golden = Path(__file__).parent / "golden_data/acervo_fundiario/sigef_ap_20260922/response.zip"
-    linha = reconciliacao.dbf(golden.read_bytes())[0]
-    assert (linha["data_submi"], linha["data_aprov"], linha["registro_d"]) == (
-        "20191209",
-        "20191209",
-        "00000000",
+    pasta = Path(__file__).parent / "golden_data/acervo_fundiario/sigef_publico_df_20261001"
+    linhas = reconciliacao.dbf((pasta / "response.zip").read_bytes())
+    assert [(linha["data_submi"], linha["data_aprov"], linha["registro_d"]) for linha in linhas][
+        :3
+    ] == [
+        ("20150122", "20150225", "00000000"),
+        ("20181025", "20181025", "00000000"),
+        ("20180814", "20180814", "20200413"),
+    ]
+
+    registros = [reconciliacao.BUILDERS["sigef_publico"](linha) for linha in linhas]
+
+    assert registros[0]["data_submissao"] == pd.Timestamp(2015, 1, 22)
+    assert registros[0]["data_aprovacao"] == pd.Timestamp(2015, 2, 25)
+    assert registros[0]["registro_data"] is None
+    assert registros[2]["registro_data"] == pd.Timestamp(2020, 4, 13)
+    assert {registro["natureza"] for registro in registros} == {"publico"}
+
+
+@pytest.mark.parametrize("natureza", ["publico", "privado"])
+async def test_sigef_por_natureza_chama_o_agrobr_com_o_filtro(monkeypatch, natureza):
+    from agrobr import acervo_fundiario
+
+    chamadas = []
+
+    async def sigef(uf, **opcoes):
+        chamadas.append(("sigef", uf, opcoes))
+        return pd.DataFrame(), SimpleNamespace()
+
+    async def sigef_geo(uf, **opcoes):
+        chamadas.append(("sigef_geo", uf, opcoes))
+        return SimpleNamespace()
+
+    monkeypatch.setattr(acervo_fundiario, "sigef", sigef)
+    monkeypatch.setattr(acervo_fundiario, "sigef_geo", sigef_geo)
+
+    await reconciliacao.agrobr_outputs(f"sigef_{natureza}", "DF")
+
+    assert chamadas == [
+        ("sigef", "DF", {"return_meta": True, "natureza": natureza}),
+        ("sigef_geo", "DF", {"natureza": natureza}),
+    ]
+    assert reconciliacao.url_of(f"sigef_{natureza}", "DF").endswith(
+        {"publico": "Sigef%20P%C3%BAblico_DF.zip", "privado": "Sigef%20Privado_DF.zip"}[natureza]
     )
-
-    registro = reconciliacao.sigef(linha)
-
-    assert registro["data_submissao"] == pd.Timestamp(2019, 12, 9)
-    assert registro["data_aprovacao"] == pd.Timestamp(2019, 12, 9)
-    assert registro["registro_data"] is None
 
 
 @pytest.mark.parametrize("etapa", ["agrobr", "captura"])
@@ -143,7 +175,7 @@ def test_run_404_snci_preserva_outros_resultados(monkeypatch, tmp_path, etapa, d
     monkeypatch.setattr(
         reconciliacao.tempfile, "mkdtemp", lambda **_kwargs: str(tmp_path / "cache")
     )
-    monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("AGROBR_CACHE_DIR", str(tmp_path / "cache"))
     output = tmp_path / "resultado.json"
 
     codigo = reconciliacao.run(tmp_path / "capturas", output, [], ["SC", "RR", "AL"])
@@ -184,7 +216,27 @@ def test_run_nao_oculta_erro_distinto_de_404(monkeypatch, tmp_path):
     monkeypatch.setattr(
         reconciliacao.tempfile, "mkdtemp", lambda **_kwargs: str(tmp_path / "cache")
     )
-    monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("AGROBR_CACHE_DIR", str(tmp_path / "cache"))
 
     with pytest.raises(exceptions.SourceUnavailableError, match="HTTP 500"):
         reconciliacao.run(tmp_path / "capturas", tmp_path / "resultado.json", [], ["RR"])
+
+
+def test_run_isola_o_cache_mesmo_com_a_pasta_do_usuario(monkeypatch, tmp_path):
+    pastas = []
+
+    async def saida(_tema, _uf):
+        pastas.append(constants.CacheSettings().cache_dir)
+        raise exceptions.SourceUnavailableError(source="acervo_fundiario", last_error="HTTP 500")
+
+    monkeypatch.setattr(reconciliacao, "agrobr_outputs", saida)
+    monkeypatch.setattr(reconciliacao, "coverage", lambda _cliente: {"status": "ok"})
+    monkeypatch.setattr(
+        reconciliacao.tempfile, "mkdtemp", lambda **_kwargs: str(tmp_path / "cache")
+    )
+    monkeypatch.setenv("AGROBR_CACHE_DIR", str(tmp_path / "usuario"))
+
+    with pytest.raises(exceptions.SourceUnavailableError, match="HTTP 500"):
+        reconciliacao.run(tmp_path / "capturas", tmp_path / "resultado.json", [], ["RR"])
+
+    assert pastas == [tmp_path / "cache"]

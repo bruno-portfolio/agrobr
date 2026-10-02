@@ -60,3 +60,39 @@ async def test_valid_parameters_require_geo_before_download(
     assert isinstance(caught, ImportError) and "pip install agrobr[geo]" in str(caught), caught
     check.assert_called_once_with()
     download.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("api_name", "bbox", "exige"),
+    [
+        ("sigef", None, False),
+        ("sigef", (-48.25, -15.9, -48.1, -15.6), True),
+        ("sigef_geo", None, True),
+        ("snci", None, False),
+        ("snci", (-61.0, 2.0, -60.0, 3.0), True),
+        ("snci_geo", None, True),
+        ("assentamentos", None, False),
+        ("assentamentos", (-50.0, -25.0, -35.0, -10.0), True),
+        ("assentamentos_geo", None, True),
+    ],
+)
+async def test_geopandas_conferido_antes_do_download_quando_a_leitura_usa(
+    monkeypatch: pytest.MonkeyPatch, api_name: str, bbox: tuple[float, ...] | None, exige: bool
+):
+    sem_geopandas = Mock(side_effect=ImportError("Install with: pip install agrobr[geo]"))
+    download = AsyncMock(side_effect=RuntimeError("download"))
+    monkeypatch.setattr(api, "check_pyogrio", Mock())
+    monkeypatch.setattr(api, "check_geopandas", sem_geopandas)
+    monkeypatch.setattr(api.client, "download_and_cache", download)
+    uf = "RR" if api_name.startswith("snci") else "DF"
+
+    with pytest.raises(ImportError if exige else RuntimeError) as caught:
+        await getattr(api, api_name)(uf=uf, bbox=bbox)
+
+    if exige:
+        assert "pip install agrobr[geo]" in str(caught.value)
+        download.assert_not_awaited()
+    else:
+        sem_geopandas.assert_not_called()
+        download.assert_awaited()

@@ -1,6 +1,6 @@
 # API IBGE
 
-O módulo IBGE fornece acesso aos dados do Sistema IBGE de Recuperação Automática (SIDRA).
+O módulo IBGE fornece acesso aos dados do Sistema IBGE de Recuperação Automática (SIDRA). A malha municipal e as áreas urbanizadas vêm do WFS dos geoserviços do IBGE ([`malha_municipal`](#malha_municipal-malha_municipal_geo) e [`areas_urbanizadas`](#areas_urbanizadas-areas_urbanizadas_geo)).
 
 As consultas SIDRA usam HTTP assíncrono direto, com timeout total de 120 segundos por tentativa, cancelamento e retry exponencial de falhas transitórias. Não há uma thread de transporte pendente após timeout. A montagem da consulta segue os [parâmetros oficiais do SIDRA](https://apisidra.ibge.gov.br/home/ajuda).
 
@@ -49,6 +49,7 @@ async def pam(
 | `area_colhida` | Área colhida (hectares) |
 | `producao` | Quantidade produzida (ver `unidade_producao`) |
 | `rendimento` | Rendimento médio (ver `unidade_rendimento`) |
+| `valor_producao` | Valor da produção (ver `unidade_valor_producao`) |
 
 **Exemplo:**
 
@@ -317,7 +318,7 @@ df = await ibge.abate('bovino', trimestre='202303')
 # Abate de frango no Paraná
 df = await ibge.abate('frango', trimestre='202303', uf='PR')
 
-# Abate de suínos — Brasil
+# Abate de suínos — todas as UFs
 df = await ibge.abate('suino', trimestre='202304')
 
 # Com metadados
@@ -415,7 +416,7 @@ temporária" (10084) e, na permanente, "com 50 pés e mais existentes" (9504).
 ```python
 from agrobr import ibge
 
-# Efetivo de rebanho por UF (2017)
+# Efetivo de rebanho por UF (1995 e 2017)
 df = await ibge.censo_agro('efetivo_rebanho')
 
 # Uso da terra em Mato Grosso
@@ -453,7 +454,7 @@ async def temas_censo_agro() -> list[str]
 
 Obtém dados do Censo Agropecuário 1995/96 — seis temas via FTP, em ZIPs com tabelas XLS ou HTML.
 
-O [contrato 2.0](../contracts/censo_agropecuario_legado.md) distingue Brasil, totais estaduais e municípios pelas tabelas oficiais. `nivel='uf'` é o padrão e consulta as 27 UFs quando `uf` não é informado. `nivel='brasil'` inclui as categorias nacionais de atividade e não aceita filtro `uf`. A coluna `uf` identifica o estado de municípios homônimos; códigos municipais ausentes na fonte permanecem nulos. Variáveis e unidades vêm dos cabeçalhos reais. O IBGE não publica a tabela municipal de máquinas do Pará (o `Para/Tab_7Mn.zip` traz a Tabela 6, de pessoal ocupado): `tema='maquinas'` sem `uf` devolve as outras 26 UFs, com o aviso em `MetaInfo.validation_warnings` e um `UserWarning`, e `uf='PA'` levanta `SourceUnavailableError`.
+O [contrato 2.1](../contracts/censo_agropecuario_legado.md) distingue Brasil, totais estaduais e municípios pelas tabelas oficiais. `nivel='uf'` é o padrão e consulta as 27 UFs quando `uf` não é informado. `nivel='brasil'` inclui as categorias nacionais de atividade e não aceita filtro `uf`. A coluna `uf` identifica o estado de municípios homônimos; códigos municipais ausentes na fonte permanecem nulos. Variáveis e unidades vêm dos cabeçalhos reais. O IBGE não publica a tabela municipal de máquinas do Pará (o `Para/Tab_7Mn.zip` traz a Tabela 6, de pessoal ocupado): `tema='maquinas'` sem `uf` devolve as outras 26 UFs, com o aviso em `MetaInfo.validation_warnings` e um `UserWarning`, e `uf='PA'` levanta `SourceUnavailableError`.
 
 ```python
 async def censo_agro_legado(
@@ -667,6 +668,101 @@ Lista UFs disponíveis.
 
 ```python
 async def ufs() -> list[str]
+```
+
+---
+
+### `malha_municipal` / `malha_municipal_geo`
+
+Limites municipais da malha territorial do IBGE, edição 2025, em resolução original, pelo WFS dos geoserviços do IBGE
+(`https://geoservicos.ibge.gov.br/geoserverIBGE/wfs`, camada `CGMAT:qg_2025_030_munic`).
+
+```python
+async def malha_municipal(
+    *,
+    uf: str | None = None,
+    municipio: str | int | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
+
+async def malha_municipal_geo(
+    *,
+    uf: str | None = None,
+    municipio: str | int | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]
+```
+
+- `uf`: sigla. `municipio`: código IBGE de 7 dígitos ou nome inteiro (`normalize.resolver_municipio`); passe `uf` junto para
+  desambiguar o nome. Os dois filtros vão ao servidor.
+- `bbox` (só no `_geo`): `(minlon, minlat, maxlon, maxlat)` em EPSG:4326. Devolve os municípios que tocam o retângulo e
+  combina com `uf`.
+- **Colunas:** `uf`, `cod_uf` (texto, 2 dígitos), `cod_municipio` (`Int64`), `municipio`, `area_km2` (`float64`, a área
+  publicada pelo IBGE). O `_geo` acrescenta `geometry` (MultiPolygon, EPSG:4326). Vazio e cheio têm os mesmos dtypes.
+- **Lagoas:** a camada tem 5.573 feições: os 5.571 municípios e 2 áreas operacionais de lagoas do RS (`4300001`, Lagoa Mirim,
+  e `4300002`, Lagoa dos Patos), que o IBGE publica na malha. Elas saem com `uf="RS"`, com `bbox` e na malha inteira; por
+  `municipio`, não, porque não são municípios.
+- **Limites:** o tabular traz a camada inteira (1,4 MB). O `_geo` aceita até 900 municípios por consulta: MG, a maior UF, tem
+  853 (74 MB de GeoJSON, ~17 s em 01/10/2026). Acima do teto, `ResourceLimitError` antes do download; refine com `uf`,
+  `municipio`, `bbox` ou `max_registros`. Para o Brasil inteiro em arquivo, use o ZIP da malha no
+  [geoftp do IBGE](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/)
+  (`Brasil/BR_Municipios_2025.zip`, 237 MB, ou `UFs/<UF>/<UF>_Municipios_2025.zip`).
+- `max_registros` corta no servidor, na ordem de `cd_mun`; com ele, `coverage["truncated"]` fica `True` quando a seleção é
+  maior.
+- **`MetaInfo`:** `source="ibge"`, `selected_source` `ibge_malha_municipal_wfs` (`_wfs_geo` no geo); `source_details` com
+  `layer`, `edition` (2025), `query`, `coverage` (a contagem `hits` sai antes do download e é conciliada com o recebido) e
+  `count`. Camada corrente: sem `ano`, `inicio` nem `fim`.
+
+```python
+municipios = await ibge.malha_municipal(uf="MT")
+sinop = await ibge.malha_municipal_geo(municipio="Sinop", uf="MT")
+entorno = await ibge.malha_municipal_geo(bbox=(-48.3, -16.1, -47.3, -15.5))
+```
+
+---
+
+### `areas_urbanizadas` / `areas_urbanizadas_geo`
+
+Áreas Urbanizadas do Brasil 2022, do IBGE: polígonos mapeados em imagem de satélite, pelo WFS
+(`https://geoservicos.ibge.gov.br/geoserverCGEO/wfs`, camada `CGEO:AU_2026_AreasUrbanizadas2022_Brasil`, 190.172 polígonos).
+
+```python
+async def areas_urbanizadas(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
+
+async def areas_urbanizadas_geo(
+    *,
+    bbox: tuple[float, float, float, float],
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> gpd.GeoDataFrame | tuple[gpd.GeoDataFrame, MetaInfo]
+```
+
+- **`bbox` obrigatório**, `(minlon, minlat, maxlon, maxlat)` em EPSG:4326: a camada não traz UF nem município. Sem ele,
+  `TypeError`; com `bbox=None`, `InvalidParameterError`.
+- **Um município:** use o retângulo do limite, `tuple((await ibge.malha_municipal_geo(municipio=...)).total_bounds)`. Ele
+  pega também polígonos vizinhos; para cortar pelo limite, cruze com a geometria do município (`geopandas.clip` ou
+  `geopandas.overlay`).
+- **Colunas:** `id` (texto, o `fid` da camada), `densidade`, `tipo` e `comparacao` (texto, como o IBGE publica; no retângulo
+  do DF, `densidade` é "Densa", "Pouco densa" ou "Loteamento vazio", e `comparacao`, a mudança desde 2019, traz valores
+  como "Sem alteração", "Adição" e "Densificação"), `data_imagem` (`datetime64[ns]`, o 1º dia do mês da imagem, publicado como
+  `"2022/09"`), `area_ha` e `area_km2` (`float64`). O `_geo` acrescenta `geometry` (MultiPolygon, EPSG:4326).
+- **Limites:** 50.000 polígonos no tabular e 10.000 no `_geo` por consulta (o retângulo do DF tem 1.083, 1,1 MB de GeoJSON).
+  Acima, `ResourceLimitError` antes do download. `max_registros` corta no servidor, na ordem de `id` (texto).
+- **`MetaInfo`:** como na malha, com `selected_source` `ibge_areas_urbanizadas_wfs` (`_wfs_geo`) e `edition` 2022.
+
+```python
+bbox = tuple((await ibge.malha_municipal_geo(municipio="Sinop", uf="MT")).total_bounds)
+areas = await ibge.areas_urbanizadas_geo(bbox=bbox)
 ```
 
 ---
@@ -916,7 +1012,7 @@ df, meta = await ibge.pib_agro(return_meta=True)
 | Aspecto | PAM | LSPA | PPM | Abate | PEVS | Leite | PIB | Censo Agro | Censo Legado | Série Histórica | Municipal 1985 |
 |---------|-----|------|-----|-------|------|-------|-----|------------|--------------|-----------------|----------------|
 | Frequência | Anual | Mensal | Anual | Trimestral | Anual | Trimestral | Trimestral | Decenial | Única (1995/96) | Decenial | Única (1985) |
-| Granularidade | Até município | Até UF | Até município | Brasil + UF | Até município | UF | Brasil | Até município | Até município | Brasil/Região/UF | Até município |
+| Granularidade | Até município | Até UF | Até município | UF | Até município | UF | Brasil | Até município | Até município | Brasil/Região/UF | Até município |
 | Tipo | Consolidados | Estimativas | Consolidados | Consolidados | Consolidados | Consolidados | Estimativas | Censitários | Censitários (FTP) | Censitários | Censitários (OCR) |
 | Disponibilidade | T+1 ano | T+1 mês | T+1 ano | T+2 meses | T+1 ano | T+2 meses | T+2 meses | Pós-censo | Estático | Estático | Estático (pacote local) |
 | Escopo | Lavouras | Lavouras | Pecuária | Abate | Silvicultura + Extr. vegetal | Leite (aquisição, industrialização) | PIB setorial | Estrutura agro | 6 temas legados | 9 temas (1920-2006) | 53 temas (1985) |
@@ -925,9 +1021,8 @@ df, meta = await ibge.pib_agro(return_meta=True)
 
 | Tabela | Descrição |
 |--------|-----------|
-| 5457 | PAM - Nova série (2018+) |
+| 5457 | PAM - Série desde 1974 |
 | 6588 | LSPA - Estimativas mensais |
-| 1612 | PAM - Lavouras temporárias (histórico) |
 | 3939 | PPM - Efetivo de rebanhos |
 | 74 | PPM - Produção de origem animal |
 | 1092 | Abate - Bovinos |
@@ -1001,13 +1096,13 @@ df = ibge.pib_agro(trimestre='202501')
 
 Os valores publicados não são convertidos implicitamente. `unidade_producao`, `unidade_rendimento` e `unidade_valor_producao` identificam a escala de cada linha. Laranja anterior a 2001 usa `mil_frutos` e `frutos/ha`; desde 2001, `ton` e `kg/ha`. `condicao_produto` distingue café `em_coco` até 2001 e `beneficiado` desde 2002. As moedas históricas permanecem identificadas, sem conversão para reais nem correção de inflação. Consulte as [notas metodológicas do IBGE](https://sidra.ibge.gov.br/pesquisa/pam/tabelas/).
 
-`localidade_cod` (contrato `producao_anual` 2.1) traz o código IBGE da localidade como o SIDRA publica (D1C): 7 dígitos no município, 2 na UF e 1 no Brasil. Use-o para juntar municípios entre anos, porque o nome publicado muda (e o do DF sai como "Brasília (DF)", sem o " - UF" dos demais). No `producao_anual`, só as linhas do IBGE trazem o código; o fallback da CONAB não.
+`localidade_cod` (contrato `producao_anual` 2.2) traz o código IBGE da localidade como o SIDRA publica (D1C): 7 dígitos no município, 2 na UF e 1 no Brasil. Use-o para juntar municípios entre anos, porque o nome publicado muda (e o do DF sai como "Brasília (DF)", sem o " - UF" dos demais). No `producao_anual`, só as linhas do IBGE trazem o código; o fallback da CONAB não.
 
-O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.1; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.
+O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.2; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.
 
-O parser PAM 2 preserva também localidades e medidas inteiramente ausentes ou suprimidas. Duas observações para a mesma localidade, ano e medida, inclusive aliases de variável que colidem, geram `ParseError`; variáveis sem mapeamento também são recusadas. Não há seleção silenciosa do primeiro valor. O schema permanece 2.0.
+O parser PAM 2 preserva também localidades e medidas inteiramente ausentes ou suprimidas. Duas observações para a mesma localidade, ano e medida, inclusive aliases de variável que colidem, geram `ParseError`; variáveis sem mapeamento também são recusadas. Não há seleção silenciosa do primeiro valor. O schema da API PAM é 2.1 (2.0 mais o `localidade_cod`); o contrato do dataset é 2.2, com `cod_municipio`.
 
-Nas APIs PEVS, `variavel="valor_producao"` preserva a unidade monetária publicada em `unidade` e retorna `valor` como `float64`, mesmo quando todos os valores são inteiros. O parser é 2; os contratos de silvicultura e extrativismo permanecem 1.0.
+Nas APIs PEVS, `variavel="valor_producao"` preserva a unidade monetária publicada em `unidade` e retorna `valor` como `float64`, mesmo quando todos os valores são inteiros. O parser é 2; os contratos de silvicultura e extrativismo estão em 1.1.
 
 As APIs trimestrais de abate, leite e PIB usam parser 2. No abate, `-` representa
 zero, enquanto `X` e `...` continuam nulos; peso disponível é preservado mesmo

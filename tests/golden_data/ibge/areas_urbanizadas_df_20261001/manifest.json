@@ -1,0 +1,24 @@
+{
+ "source": "ibge",
+ "format": "wfs2_geojson",
+ "license": "IBGE (livre no agrobr, docs/licenses.md)",
+ "content": "Áreas urbanizadas 2022 do IBGE (camada CGEO:AU_2026_AreasUrbanizadas2022_Brasil) no bbox [-47.68, -15.64, -47.62, -15.58] (Planaltina, DF): contagem, atributos e geometria em EPSG:4326, ordenados por fid.",
+ "fetched_at": "2026-10-02T00:40:56+00:00",
+ "files": {
+  "hits.xml": {
+   "url": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO:AU_2026_AreasUrbanizadas2022_Brasil&resultType=hits&CQL_FILTER=BBOX%28geom,-47.68,-15.64,-47.62,-15.58,%27EPSG:4326%27%29",
+   "sha256": "1494cb2441114c6766c6f5f0d416ff9305d53583dc02c0f57c80f61c1740c8d0",
+   "bytes": 838
+  },
+  "tabular.json": {
+   "url": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO:AU_2026_AreasUrbanizadas2022_Brasil&outputFormat=application%2Fjson&propertyName=fid,Densidade,Tipo,Comparacao,DataImagem,Area_ha,Area_km2&sortBy=fid&CQL_FILTER=BBOX%28geom,-47.68,-15.64,-47.62,-15.58,%27EPSG:4326%27%29",
+   "sha256": "d0fcc99654b1325e86a57e0b6925a455b50626166faebb5f8a25ee05079682c0",
+   "bytes": 8480
+  },
+  "geo.json": {
+   "url": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO:AU_2026_AreasUrbanizadas2022_Brasil&outputFormat=application%2Fjson&propertyName=geom,fid,Densidade,Tipo,Comparacao,DataImagem,Area_ha,Area_km2&sortBy=fid&srsName=EPSG:4326&CQL_FILTER=BBOX%28geom,-47.68,-15.64,-47.62,-15.58,%27EPSG:4326%27%29",
+   "sha256": "59d8180dec6e9437bb7b98f5e56dba29500f091469fbead9c9193dcedde58f1a",
+   "bytes": 27892
+  }
+ }
+}

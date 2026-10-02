@@ -1,6 +1,6 @@
 # Data Sources
 
-agrobr integrates data from 40 agricultural data sources.
+agrobr integrates data from 41 agricultural data sources.
 All sources support `return_meta=True` for full traceability.
 What has a SemVer guarantee in each source is in the [public API](../api/index.md).
 
@@ -10,7 +10,7 @@ What has a SemVer guarantee in each source is in the [public API](../api/index.m
 |--------|------|--------|----------|
 | [CEPEA/ESALQ](cepea.md) | Prices | Daily | Agricultural commodities |
 | [CONAB](conab.md) | Crops, costs, historical series, [weekly progress](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Monthly/Weekly/Daily | National production |
-| [IBGE/SIDRA](ibge.md) | Statistics | Annual/Monthly/Quarterly | Official data (PAM, LSPA, PPM, Slaughter, PEVS, Milk, GDP, Census) |
+| [IBGE/SIDRA](ibge.md) | Statistics | Annual/Monthly/Quarterly | Official data (PAM, LSPA, PPM, Slaughter, PEVS, Milk, GDP, Census), municipal mesh and urbanized areas (WFS geo) |
 | [NASA POWER](nasa_power.md) | Climatology | Daily | Global, 0.5 degree grid |
 | [BCB](bcb.en.md) | Rural credit, time series, exchange-rate bulletins, and forecasts | Varies by service | Crop/state, series, currency/bulletin, or indicator |
 | [ComexStat](comexstat.md) | Exports | Weekly | NCM/state |
@@ -35,13 +35,14 @@ What has a SemVer guarantee in each source is in the [public API](../api/index.m
 | [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 32 crops, all municipalities |
 | [Agrofit/MAPA](defensivos.md) | Registered pesticides | Continuous | ~8K formulated products, ~267K authorizations |
 | [FUNAI Indigenous Lands](funai.md) | Indigenous lands (WFS geo) | Continuous | 665 territories, all states |
-| [ICMBio Federal Conservation Units](icmbio.md) | Federal conservation units (WFS geo) | Continuous | 344 federal UCs |
+| [ICMBio Federal Conservation Units](icmbio.md) | Federal conservation units (WFS geo) | Continuous | 347 federal units, without private reserves |
+| [CNUC Conservation Units](cnuc.md) | Federal, state and municipal units, including private reserves (WFS geo) | Continuous | 3,450 units |
 | [INCRA Quilombola Territories](incra.md) | Quilombola perimeters (WFS geo), process progress (PDF) and NUP links | Continuous | 445 perimeters and 649 processes (2026-09-22) |
-| [Land Registry/INCRA](acervo_fundiario.md) | Certified parcels + settlements (shapefile ZIP) | Continuous | SIGEF (27 states) + SNCI (27 states) + settlements Brazil |
+| [Land Registry/INCRA](acervo_fundiario.md) | Certified parcels + settlements (shapefile ZIP) | Continuous | SIGEF (27 states, public and private) + SNCI (24 states on 2026-10-01) + settlements Brazil |
 | [IBAMA Environmental Embargoes](ibama.md) | Environmental embargoes (open-data CSV + WKT) | Daily | ~116K terms |
 | [MapBiomas Alerta](mapbiomas_alerta.md) | Deforestation alerts (GraphQL) | Weekly | National |
 | [Lista Suja](lista_suja.md) | MTE registry (CSV/TXT; PDF alternative) | Periodic publication with interim updates | National |
-| [ANA/SNIRH](ana.md) | Hydrography, irrigation, water availability (ArcGIS REST) | Variable | National |
+| [ANA/SNIRH](ana.md) | Hydrography, irrigation, water availability, water bodies (ArcGIS REST) | Variable | National |
 | [SFB](sfb.md) | Public forests, concessions, IFN (ArcGIS REST) | Annual | National |
 | [RNC/CultivarWeb](rnc.md) | Registered/protected cultivars | Continuous | ~37K registered, ~5K protected |
 | [EMBRAPA Solos](embrapa_solos.md) | Soil profiles and soil map | Continuous | 34K profiles, 2.8K polygons |

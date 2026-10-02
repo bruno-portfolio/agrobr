@@ -30,11 +30,11 @@ async def test_cache_requires_matching_remote_validator(
     redownload: bool,
 ):
     payload = b"PK\x03\x04" + b"x" * 1000
-    target = client._zip_path("sigef", "ES")
+    target = client._zip_path("sigef_privado", "ES")
     target.parent.mkdir(parents=True)
     target.write_bytes(payload)
     client._save_meta(
-        client._meta_path("sigef", "ES"),
+        client._meta_path("sigef_privado", "ES"),
         {
             "last_modified": cached_modified,
             "etag": cached_etag,
@@ -56,7 +56,7 @@ async def test_cache_requires_matching_remote_validator(
     download = AsyncMock(return_value=(len(payload), "new-hash"))
     monkeypatch.setattr(client, "_stream_download", download)
 
-    assert (await client.download_and_cache("sigef", "ES")).zip_path == target
+    assert (await client.download_and_cache("sigef_privado", "ES")).zip_path == target
     assert download.await_count == int(redownload)
 
 

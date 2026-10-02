@@ -10,6 +10,7 @@ from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
 from agrobr.normalize.regions import UFS_VALIDAS, ibge_para_uf
 from agrobr.utils.geo import check_geopandas, check_pyogrio
+from agrobr.utils.result import ATRIBUTO_AVISOS
 
 from .models import (
     ASSENTAMENTOS_COLUNAS_SAIDA,
@@ -138,19 +139,26 @@ def _make_geometries_valid(gdf: Any) -> Any:
     return gdf
 
 
-def parse_sigef(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
+def _with_natureza(df: Any, natureza: str) -> Any:
+    df = df.copy()
+    df["natureza"] = pd.Series(natureza, index=df.index, dtype=pd.Series([""]).dtype)
+    return df
+
+
+def parse_sigef(zip_path: Path, *, natureza: str, bbox: BBox | None = None) -> pd.DataFrame:
     df = _read_tabular(zip_path, bbox=bbox)
     _validate_required(df, SIGEF_REQUIRED_COLS, "sigef")
     df = df.rename(columns=SIGEF_RENAME_MAP)
     df = _resolve_uf_from_ibge(df)
     df = _normalize_uf_column(df)
     df = _coerce_dates(df, SIGEF_DATE_COLS)
+    df = _with_natureza(df, natureza)
     df = _select_output(df, SIGEF_COLUNAS_SAIDA)
-    logger.info("acervo_fundiario_sigef_parse_ok", records=len(df))
+    logger.info("acervo_fundiario_sigef_parse_ok", records=len(df), natureza=natureza)
     return df
 
 
-def parse_sigef_geo(zip_path: Path, *, bbox: BBox | None = None) -> Any:
+def parse_sigef_geo(zip_path: Path, *, natureza: str, bbox: BBox | None = None) -> Any:
     gdf = _read_geo(zip_path, bbox=bbox)
     _validate_required(gdf, SIGEF_REQUIRED_COLS, "sigef")
     gdf = gdf.rename(columns=SIGEF_RENAME_MAP)
@@ -158,9 +166,38 @@ def parse_sigef_geo(zip_path: Path, *, bbox: BBox | None = None) -> Any:
     gdf = _normalize_uf_column(gdf)
     gdf = _coerce_dates(gdf, SIGEF_DATE_COLS)
     gdf = _make_geometries_valid(gdf)
+    gdf = _with_natureza(gdf, natureza)
     gdf = _select_output(gdf, SIGEF_COLUNAS_SAIDA_GEO)
-    logger.info("acervo_fundiario_sigef_geo_parse_ok", records=len(gdf))
+    logger.info("acervo_fundiario_sigef_geo_parse_ok", records=len(gdf), natureza=natureza)
     return gdf
+
+
+def join_sigef(partes: dict[str, Any]) -> Any:
+    """Empilha os arquivos do SIGEF na ordem recebida (público, depois privado).
+
+    Os avisos de cada arquivo seguem para o resultado, e parcela presente nos dois arquivos vira
+    aviso, sem descartar linha: o INCRA regrava os arquivos em horários diferentes.
+    """
+    avisos = [
+        f"sigef {natureza}: {aviso}"
+        for natureza, parte in partes.items()
+        for aviso in parte.attrs.get(ATRIBUTO_AVISOS, [])
+    ]
+    frames = list(partes.values())
+    if len(frames) == 2:
+        comuns = set(frames[0]["codigo_parcela"].dropna()) & set(
+            frames[1]["codigo_parcela"].dropna()
+        )
+        if comuns:
+            logger.warning("acervo_fundiario_sigef_parcela_nos_dois_arquivos", parcelas=len(comuns))
+            avisos.append(
+                f"acervo_fundiario: {len(comuns)} codigo_parcela aparece(m) nos arquivos público "
+                "e privado do SIGEF; as linhas dos dois foram mantidas"
+            )
+    cheios = [frame for frame in frames if len(frame)] or frames[:1]
+    df = cheios[0] if len(cheios) == 1 else pd.concat(cheios, ignore_index=True)
+    df.attrs = {ATRIBUTO_AVISOS: avisos} if avisos else {}
+    return df
 
 
 def parse_snci(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:

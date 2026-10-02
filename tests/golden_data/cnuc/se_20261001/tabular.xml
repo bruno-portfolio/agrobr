@@ -1,0 +1,492 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?map=/var/www/storage/app/mapfiles/ucs.map&amp;SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=ms:ucs_selected&amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B%20version%3D3.2 http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"
+   timeStamp="2026-10-01T21:45:13" numberMatched="19" numberReturned="19">
+      <wfs:boundedBy>
+      	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4674">
+      		<gml:lowerCorner>-11.523417 -38.206457</gml:lowerCorner>
+      		<gml:upperCorner>-9.373403 -36.529746</gml:upperCorner>
+      	</gml:Envelope>
+      </wfs:boundedBy>
+<!-- WARNING: No featureid defined for typename 'ucs_selected'. Output will not validate. -->
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.0147</ms:cd_cnuc>
+        <ms:wdpa_pid>351827</ms:wdpa_pid>
+        <ms:nome_uc>PARQUE NACIONAL SERRA DE ITABAIANA</ms:nome_uc>
+        <ms:cria_ano>15-06-2005</ms:cria_ano>
+        <ms:cria_ato>Decreto S/N de 15-06-2005</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>8024.63</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>AREIA BRANCA (SE), CAMPO DO BRITO (SE), ITABAIANA (SE), ITAPORANGA D&#39;AJUDA (SE), LARANJEIRAS (SE), MALHADOR (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Parque</ms:categoria>
+        <ms:cat_iucn>Category II</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga>0.92</ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>8024.2</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.0199</ms:cd_cnuc>
+        <ms:wdpa_pid>18745</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA BIOLÓGICA DE SANTA ISABEL</ms:nome_uc>
+        <ms:cria_ano>20-10-1988</ms:cria_ano>
+        <ms:cria_ato>Decreto Nº 96.999 de 20-10-1988</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>4110.12</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>PACATUBA (SE), PIRAMBU (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Reserva Biológica</ms:categoria>
+        <ms:cat_iucn>Category Ia</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>3856.07</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.0269</ms:cd_cnuc>
+        <ms:wdpa_pid>351812</ms:wdpa_pid>
+        <ms:nome_uc>FLORESTA NACIONAL DO IBURA</ms:nome_uc>
+        <ms:cria_ano>19-09-2005</ms:cria_ano>
+        <ms:cria_ato>Decreto S/N de 19-09-2005</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>143.44</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>LARANJEIRAS (SE), NOSSA SENHORA DO SOCORRO (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Floresta</ms:categoria>
+        <ms:cat_iucn>Category VI</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>142.91</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.1812</ms:cd_cnuc>
+        <ms:wdpa_pid>478424</ms:wdpa_pid>
+        <ms:nome_uc>MONUMENTO NATURAL DO RIO SÃO FRANCISCO</ms:nome_uc>
+        <ms:cria_ano>05-06-2009</ms:cria_ano>
+        <ms:cria_ato>Decreto S/N de 05-06-2009</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>26736.15</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>ALAGOAS, BAHIA, SERGIPE</ms:uf>
+        <ms:municipio>CANINDÉ DE SÃO FRANCISCO (SE), DELMIRO GOUVEIA (AL), OLHO D&#39;ÁGUA DO CASADO (AL), PAULO AFONSO (BA), PIRANHAS (AL)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Monumento Natural</ms:categoria>
+        <ms:cat_iucn>Category III</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga>26736.96</ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica></ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.2095</ms:cd_cnuc>
+        <ms:wdpa_pid>555600108</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA PARTICULAR DO PATRIMÔNIO NATURAL DO CAJU </ms:nome_uc>
+        <ms:cria_ano>17-01-2011</ms:cria_ano>
+        <ms:cria_ato>Portaria 04/2011 de 17-01-2011</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>762.24</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>ITAPORANGA D&#39;AJUDA (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Reserva Particular do Patrimônio Natural</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>762.95</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.2097</ms:cd_cnuc>
+        <ms:wdpa_pid>555600025</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA PARTICULAR DO PATRIMÔNIO NATURAL DONA BENTA E SEU CABOCLO</ms:nome_uc>
+        <ms:cria_ano>27-08-2010</ms:cria_ano>
+        <ms:cria_ato>Portaria 71 de 27-08-2010</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>24.06</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>PIRAMBU (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Reserva Particular do Patrimônio Natural</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>23.91</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.2134</ms:cd_cnuc>
+        <ms:wdpa_pid>555682804</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA PARTICULAR DO PATRIMÔNIO NATURAL MATA 01 (BOM JARDIM) E MATA 02,03 E 04 (TAPERA)</ms:nome_uc>
+        <ms:cria_ano>19-12-2006</ms:cria_ano>
+        <ms:cria_ato>Portaria 102 de 19-12-2006</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>297.09</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>SANTA LUZIA DO ITANHY (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Reserva Particular do Patrimônio Natural</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>297.24</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.2135</ms:cd_cnuc>
+        <ms:wdpa_pid>555682748</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA PARTICULAR DO PATRIMÔNIO NATURAL MATA 01 E 02 (MARINHEIRO) E MATA 03 (PEDRA DA URÇA)</ms:nome_uc>
+        <ms:cria_ano>10-01-2007</ms:cria_ano>
+        <ms:cria_ato>Portaria 04/2007 de 10-01-2007</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>174.32</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>SANTA LUZIA DO ITANHY (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Reserva Particular do Patrimônio Natural</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>174.26</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.2740</ms:cd_cnuc>
+        <ms:wdpa_pid>555600045</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA PARTICULAR DO PATRIMÔNIO NATURAL LAGOA ENCANTADA DO MORRO DA LUCRÉCIA</ms:nome_uc>
+        <ms:cria_ano>18-11-2011</ms:cria_ano>
+        <ms:cria_ato>Portaria 92 de 18-11-2011</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>10.72</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>PIRAMBU (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Reserva Particular do Patrimônio Natural</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>10.77</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.3091</ms:cd_cnuc>
+        <ms:wdpa_pid>555599954</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA PARTICULAR DO PATRIMÔNIO NATURAL CAMPOS NOVOS</ms:nome_uc>
+        <ms:cria_ano>20-01-2014</ms:cria_ano>
+        <ms:cria_ato>Portaria 3 de 20-01-2014</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>102.79</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>CARIRA (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Reserva Particular do Patrimônio Natural</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga>102.49</ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica></ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.00.3092</ms:cd_cnuc>
+        <ms:wdpa_pid>555600040</ms:wdpa_pid>
+        <ms:nome_uc>RESERVA PARTICULAR DO PATRIMÔNIO NATURAL PIRANGY</ms:nome_uc>
+        <ms:cria_ano>17-12-2012</ms:cria_ano>
+        <ms:cria_ato>Portaria 135 de 17-12-2012</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>13.59</ms:ha_total>
+        <ms:esfera>Federal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>ITABAIANINHA (SE)</ms:municipio>
+        <ms:org_gestor>INSTITUTO CHICO MENDES DE CONSERVAÇÃO DA BIODIVERSIDADE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Reserva Particular do Patrimônio Natural</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga>13.35</ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica></ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.28.0793</ms:cd_cnuc>
+        <ms:wdpa_pid>555682920</ms:wdpa_pid>
+        <ms:nome_uc>ÁREA DE PROTEÇÃO AMBIENTAL DO LITORAL SUL</ms:nome_uc>
+        <ms:cria_ano>21-01-1993</ms:cria_ano>
+        <ms:cria_ato>Decreto 13.468 de 21-01-1993</ms:cria_ato>
+        <ms:quali_pol>Polígono é uma estimativa dos limites da UC</ms:quali_pol>
+        <ms:ha_total>50366.28</ms:ha_total>
+        <ms:esfera>Estadual</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>ESTÂNCIA (SE), INDIAROBA (SE), ITAPORANGA D&#39;AJUDA (SE), SANTA LUZIA DO ITANHY (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA DE ESTADO DO DESENVOLVIMENTO URBANO E SUSTENTABILIDADE DE SERGIPE - SE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Área de Proteção Ambiental</ms:categoria>
+        <ms:cat_iucn>Category V</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>49787.03</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.28.1603</ms:cd_cnuc>
+        <ms:wdpa_pid>555682922</ms:wdpa_pid>
+        <ms:nome_uc>MONUMENTO NATURAL GROTA DO ANGICO</ms:nome_uc>
+        <ms:cria_ano>21-12-2007</ms:cria_ano>
+        <ms:cria_ato>Decreto 24.922 de 21-12-2007</ms:cria_ato>
+        <ms:quali_pol>Polígono é uma estimativa dos limites da UC</ms:quali_pol>
+        <ms:ha_total></ms:ha_total>
+        <ms:esfera>Estadual</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>CANINDÉ DE SÃO FRANCISCO (SE), POÇO REDONDO (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA DE ESTADO DO DESENVOLVIMENTO URBANO E SUSTENTABILIDADE DE SERGIPE - SE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Monumento Natural</ms:categoria>
+        <ms:cat_iucn>Category III</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga>2103.52</ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica></ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.28.1604</ms:cd_cnuc>
+        <ms:wdpa_pid>555576436</ms:wdpa_pid>
+        <ms:nome_uc>REFÚGIO DE VIDA SILVESTRE MATA DO JUNCO</ms:nome_uc>
+        <ms:cria_ano>26-12-2007</ms:cria_ano>
+        <ms:cria_ato>Decreto 24994 de 26-12-2007</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>894.58</ms:ha_total>
+        <ms:esfera>Estadual</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>CAPELA (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA DE ESTADO DO DESENVOLVIMENTO URBANO E SUSTENTABILIDADE DE SERGIPE - SE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Refúgio de Vida Silvestre</ms:categoria>
+        <ms:cat_iucn>Category III</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>893.83</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.28.4118</ms:cd_cnuc>
+        <ms:wdpa_pid>555715685</ms:wdpa_pid>
+        <ms:nome_uc>PARQUE ESTADUAL MARITUBA</ms:nome_uc>
+        <ms:cria_ano>21-01-2020</ms:cria_ano>
+        <ms:cria_ato>Decreto 40.515 de 21-01-2020</ms:cria_ato>
+        <ms:quali_pol>Polígono é uma estimativa dos limites da UC</ms:quali_pol>
+        <ms:ha_total>1752.17</ms:ha_total>
+        <ms:esfera>Estadual</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>BARRA DOS COQUEIROS (SE), SANTO AMARO DAS BROTAS (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA DE ESTADO DO DESENVOLVIMENTO URBANO E SUSTENTABILIDADE DE SERGIPE - SE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Parque</ms:categoria>
+        <ms:cat_iucn>Category II</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>1752.76</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0000.28.5574</ms:cd_cnuc>
+        <ms:wdpa_pid></ms:wdpa_pid>
+        <ms:nome_uc>SERRA DA MELANCIA</ms:nome_uc>
+        <ms:cria_ano>16-06-2026</ms:cria_ano>
+        <ms:cria_ato>Decreto 1.484/2026 de 16-06-2026</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>838.53</ms:ha_total>
+        <ms:esfera>Estadual</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>GARARU (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA DE ESTADO DO DESENVOLVIMENTO URBANO E SUSTENTABILIDADE DE SERGIPE - SE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Monumento Natural</ms:categoria>
+        <ms:cat_iucn>Category III</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga>838.26</ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica></ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0030.28.3459</ms:cd_cnuc>
+        <ms:wdpa_pid>555636532</ms:wdpa_pid>
+        <ms:nome_uc>PARQUE NATURAL MUNICIPAL DO POXIM</ms:nome_uc>
+        <ms:cria_ano>02-08-2016</ms:cria_ano>
+        <ms:cria_ato>Decreto 5370 de 02-08-2016</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>173.14</ms:ha_total>
+        <ms:esfera>Municipal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>ARACAJU (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA MUNICIPAL DE MEIO AMBIENTE DE ARACAJU - SE</ms:org_gestor>
+        <ms:grupo>Proteção Integral</ms:grupo>
+        <ms:categoria>Parque</ms:categoria>
+        <ms:cat_iucn>Category II</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>173.14</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>0605.28.4948</ms:cd_cnuc>
+        <ms:wdpa_pid>555799811</ms:wdpa_pid>
+        <ms:nome_uc>ÁREA DE RELEVANTE INTERESSE ECOLÓGICO DOS MANGUEZAIS</ms:nome_uc>
+        <ms:cria_ano>04-06-2021</ms:cria_ano>
+        <ms:cria_ato>Decreto 677 de 04-06-2021</ms:cria_ato>
+        <ms:quali_pol>Polígono corresponde ao memorial descritivo</ms:quali_pol>
+        <ms:ha_total>1660.45</ms:ha_total>
+        <ms:esfera>Municipal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>BARRA DOS COQUEIROS (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA MUNICIPAL DO MEIO AMBIENTE DE BARRA DOS COQUEIROS - SE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Área de Relevante Interesse Ecológico</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>1660.24</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+    <wfs:member>
+      <ms:ucs_selected>
+        <ms:cd_cnuc>2007.28.5583</ms:cd_cnuc>
+        <ms:wdpa_pid></ms:wdpa_pid>
+        <ms:nome_uc>ÁREA DE RELEVANTE INTERESSE ECOLÓGICO MATA BOACICA (ARIE MATA DA BOACICA)</ms:nome_uc>
+        <ms:cria_ano>22-03-2022</ms:cria_ano>
+        <ms:cria_ato>Decreto 017 de 22-03-2022</ms:cria_ato>
+        <ms:quali_pol>Polígono é uma estimativa dos limites da UC</ms:quali_pol>
+        <ms:ha_total>10.12</ms:ha_total>
+        <ms:esfera>Municipal</ms:esfera>
+        <ms:uf>SERGIPE</ms:uf>
+        <ms:municipio>DIVINA PASTORA (SE)</ms:municipio>
+        <ms:org_gestor>SECRETARIA MUNICIPAL DE AGRICULTURA E MEIO AMBIENTE DE DIVINA PASTORA - SE</ms:org_gestor>
+        <ms:grupo>Uso Sustentável</ms:grupo>
+        <ms:categoria>Área de Relevante Interesse Ecológico</ms:categoria>
+        <ms:cat_iucn>Category IV</ms:cat_iucn>
+        <ms:amazonia></ms:amazonia>
+        <ms:caatinga></ms:caatinga>
+        <ms:cerrado></ms:cerrado>
+        <ms:matlantica>9.87</ms:matlantica>
+        <ms:pampa></ms:pampa>
+        <ms:pantanal></ms:pantanal>
+        <ms:limite>uc</ms:limite>
+      </ms:ucs_selected>
+    </wfs:member>
+</wfs:FeatureCollection>
+

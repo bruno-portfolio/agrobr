@@ -97,3 +97,59 @@ LAYERS: dict[str, LayerConfig] = {
         "required_cols": {"DISPQ95"},
     },
 }
+
+ANA_SPR: str = URLS[Fonte.ANA]["arcgis_spr"]
+
+_MASSAS_CAMPOS = (
+    "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,"
+    "nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao"
+)
+
+MASSAS_DAGUA: LayerConfig = {
+    "service_path": "Massa_dagua/MapServer/0",
+    "max_record_count": 1000,
+    "oid_field": "FID",
+    "fields": _MASSAS_CAMPOS,
+    "rename_map": {
+        "esp_cd": "codigo",
+        "nmoriginal": "nome",
+        "nmalternat": "nome_alternativo",
+        "detipomass": "tipo",
+        "dedominial": "dominio",
+        "defiscaliz": "entidade_fiscalizadora",
+        "usoprinc": "uso_principal",
+        "nuvolumhm3": "volume_hm3",
+        "nuareakm2": "area_km2",
+        "nuareaha": "area_ha",
+        "nuperimkm": "perimetro_km",
+        "dtreserv": "data_construcao",
+        "nmriocomp": "nome_rio",
+        "cod_snisb": "codigo_snisb",
+        "cotrecho": "codigo_trecho",
+        "nmufe": "uf",
+        "nmmun": "municipios",
+        "deversao": "fonte_geometria",
+    },
+    "colunas_saida": [
+        "FID",
+        "codigo",
+        "nome",
+        "nome_alternativo",
+        "tipo",
+        "dominio",
+        "entidade_fiscalizadora",
+        "uso_principal",
+        "volume_hm3",
+        "area_km2",
+        "area_ha",
+        "perimetro_km",
+        "data_construcao",
+        "nome_rio",
+        "codigo_snisb",
+        "codigo_trecho",
+        "uf",
+        "municipios",
+        "fonte_geometria",
+    ],
+    "required_cols": set(_MASSAS_CAMPOS.split(",")),
+}

@@ -120,7 +120,7 @@ error. Other programming errors are not caught and do not trigger fallback.
 
 Published identifiers follow two conventions:
 
-- **Source route:** `comercio_internacional`, `desmatamento`, `empregadores_lista_suja`, `unidades_conservacao_federais`, `uso_do_solo`, `cultivares_registradas`, and `cultivares_protegidas` preserve the route and attempts reported by the source, even for a single attempt. The two cultivar functions share this rule in `_rnc.py`. Without that provenance, the adapter name provides the identifier.
+- **Source route:** `comercio_internacional`, `desmatamento`, `empregadores_lista_suja`, `unidades_conservacao`, `unidades_conservacao_federais`, `uso_do_solo`, `cultivares_registradas`, and `cultivares_protegidas` preserve the route and attempts reported by the source, even for a single attempt. The two cultivar functions share this rule in `_rnc.py`. Without that provenance, the adapter name provides the identifier.
 - **Dataset adapter:** other datasets use `DatasetSource.name` for `selected_source` and list attempted adapters in `attempted_sources`. For example, `cadastro_rural` publishes `selected_source="sicar"` and `["sicar"]` for a single attempt, whereas the source API publishes `sicar_wfs`.
 
 The base rule adopts internal provenance when the source reports more than one attempt or `selected_source="cache"`: it preserves the selected route and combines previous adapters with internal attempts, removing duplicates while retaining order. Without a selected internal identifier, it retains the adapter name. `from_cache` is propagated independently; `from_cache=True` alone does not change the naming convention.

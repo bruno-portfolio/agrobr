@@ -107,6 +107,7 @@ _modules: dict[str, _SyncModule | None] = {
     "bcb": None,
     "cepea": None,
     "cftc": None,
+    "cnuc": None,
     "comexstat": None,
     "comtrade": None,
     "conab": None,

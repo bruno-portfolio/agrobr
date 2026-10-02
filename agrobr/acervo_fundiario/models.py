@@ -8,10 +8,15 @@ DBF_ENCODING = "latin1"
 
 
 FILENAME_PATTERNS: dict[str, str] = {
-    "sigef": "Sigef Brasil_{uf}.zip",
+    "sigef_publico": "Sigef Público_{uf}.zip",
+    "sigef_privado": "Sigef Privado_{uf}.zip",
     "snci": "Imóvel certificado SNCI Brasil_{uf}.zip",
     "assentamentos": "Assentamento Brasil.zip",
 }
+
+SIGEF_NATUREZAS: tuple[str, ...] = ("publico", "privado")
+
+SIGEF_SCHEMA_VERSION = "1.1"
 
 
 SIGEF_RENAME_MAP: dict[str, str] = {
@@ -45,6 +50,7 @@ SIGEF_COLUNAS_SAIDA: list[str] = [
     "registro_data",
     "cod_municipio",
     "uf",
+    "natureza",
 ]
 
 SIGEF_COLUNAS_SAIDA_GEO: list[str] = [*SIGEF_COLUNAS_SAIDA, "geometry"]

@@ -62,6 +62,7 @@ SONDA = {
     "serie_historica_safra": {"ufs": ["GO"]},
     "series_economicas": {"codigos": [432]},
     "silvicultura": {"ufs": ["PR"]},
+    "unidades_conservacao": {"ufs": ["DF"]},
     "unidades_conservacao_federais": {"ufs": ["DF"]},
     "uso_do_solo": {"estado": "DF"},
     "zoneamento_agricola": {"ufs": ["SP"]},

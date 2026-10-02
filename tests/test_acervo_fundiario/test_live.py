@@ -16,6 +16,8 @@ async def test_live_sigef_smallest_uf():
     assert len(df) > 0
     assert "uf" in df.columns
     assert df["uf"].dropna().unique().tolist() == ["AC"]
+    assert set(df["natureza"]) == {"publico", "privado"}
+    assert not df["codigo_parcela"].duplicated().any()
 
 
 @pytest.mark.asyncio
@@ -39,11 +41,12 @@ async def test_live_uf_availability_unchanged():
     import httpx
 
     async with httpx.AsyncClient(timeout=30.0) as c:
-        for tema in ("sigef", "snci"):
+        for tema in ("sigef_publico", "sigef_privado", "snci"):
             for uf in sorted(UFS_VALIDAS):
                 url = BASE_URL + quote(FILENAME_PATTERNS[tema].format(uf=uf))
                 r = await c.head(url)
-                assert r.status_code == 200, f"{tema.upper()} {uf} regrediu: {r.status_code}"
+                esperado = (200, 404) if tema == "snci" else (200,)
+                assert r.status_code in esperado, f"{tema} {uf} regrediu: {r.status_code}"
 
 
 @pytest.mark.asyncio

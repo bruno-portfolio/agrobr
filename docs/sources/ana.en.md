@@ -5,7 +5,7 @@
 | Item | Detail |
 |------|---------|
 | Provider | ANA (Agencia Nacional de Aguas e Saneamento Basico) |
-| Data | Hydrography, irrigation pivots, irrigation demand, water availability |
+| Data | Hydrography, irrigation pivots, irrigation demand, water availability, water bodies |
 | Access | ArcGIS REST MapServer API |
 | Format | JSON (tabular) / GeoJSON (geo) |
 | Authentication | None |
@@ -19,6 +19,7 @@
 | `pivos_irrigacao` | ~19.9K polygons | Polygon | No |
 | `demanda_irrigacao` | ~265K polygons | Polygon | Yes |
 | `disponibilidade_hidrica` | ~42K polylines | Polyline | No |
+| `massas_dagua` | ~241K polygons | Polygon | `uf` or `bbox` |
 
 ## Data vintage and reference
 
@@ -82,6 +83,10 @@ async def main():
     # Limit features
     df = await ana.hidrografia(bbox=(-50, -20, -48, -18), max_registros=500)
 
+    # Water bodies (uf or bbox required)
+    df = await ana.massas_dagua(uf="DF")
+    gdf = await ana.massas_dagua_geo(bbox=(-47.6, -16.0, -47.5, -15.9))
+
 asyncio.run(main())
 ```
 
@@ -133,6 +138,60 @@ asyncio.run(main())
 | dominio | str | Domain |
 | versao | str | Original DSVERSAO identifier of the hydrographic base |
 
+## Water bodies (massas d'água)
+
+`massas_dagua` and `massas_dagua_geo` read the polygons of lakes, ponds, reservoirs and river reaches drawn as polygons,
+from ANA's official "Massas d'Água" theme (2019 version, 1:100,000 scale, [metadata in ANA's catalog](https://metadados.snirh.gov.br/geonetwork/srv/api/records/7d054e5a-8cc9-403c-9f1a-085fd933610c),
+license: "O acesso ao dado é livre." — access to the data is free). `hidrografia` is a different layer: only the drainage
+lines (BHO), no polygons.
+
+| Item | Detail |
+|------|--------|
+| Service | `https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0` (the one the metadata points to) |
+| Features | 240,899 polygons (the count of the 2019 national shapefile) on 2026-10-01 |
+| Volume | DF: 228 features, ~0.9 MB of GeoJSON; RS: 33,467 features, ~140 MB at the DF average |
+| Required filter | `uf` or `bbox` (the whole country exceeds 1 GB); both together = intersection |
+
+- **`uf`**: the `nmufe` field holds the state name in upper case, with accents, and lists the states of a border feature
+  separated by commas (`"DISTRITO FEDERAL, GOIÁS"`). The filter matches the whole name as a list item: `uf="MT"` does
+  not match `MATO GROSSO DO SUL`, and `uf="DF"` matches the border feature. In the output, the `uf` column holds the
+  abbreviations (`"DF/GO"`): filtering the result with `df["uf"] == "DF"` drops border features. 106 features have no
+  state and only come through `bbox`. A name outside the registry leaves that feature's `uf` null and becomes a warning in
+  `MetaInfo.validation_warnings`.
+- **Pagination by `FID` range**: this server rejects `resultRecordCount` and `orderByFields` ("Pagination is not
+  supported"). The query counts the features, reads the official `FID` list (`returnIdsOnly`) and requests each range of
+  up to 1,000 `FID` in the `where` clause. Each page must return exactly the range's `FID`; a missing one, or a list that
+  does not match the count, raises `SourceUnavailableError`. An unreadable page, a feature missing any of the 19 requested fields (the source sends all of them, nulls
+  included) or an unreadable geometry raises `ParseError`.
+  `max_registros` trims the `FID` list, in ascending order.
+- **Published values**: the source publishes empty text as `" "` (returned as null) and many missing numbers as `0`
+  (in DF, on 2026-10-01: `volume_hm3` is 0 in 198 of the 228 features, `codigo_snisb` in 188 and `codigo_trecho` in 222); zeros are preserved. `FID`
+  is the service's internal key and is not returned; the official code is `codigo`.
+- **Left out**: the developer's name (`nmemp`, which holds natural persons' names) is not requested from the service.
+- The `dados_abertos/Massa_d_Agua` service on the portal of the other layers returned error 500 on 2026-10-01; that is why
+  agrobr uses `SPR/Massa_dagua`. The metadata's national shapefile (426 MB, not split by state) is not downloaded.
+
+| Column | Type | Source field | Description |
+|--------|------|--------------|-------------|
+| codigo | Int64 | `esp_cd` | Water body code |
+| nome | str | `nmoriginal` | Original name |
+| nome_alternativo | str | `nmalternat` | Alternative name |
+| tipo | str | `detipomass` | `Natural` or `Artificial` |
+| dominio | str | `dedominial` | Jurisdiction (`Federal` or `Estadual`), as in `hidrografia` |
+| entidade_fiscalizadora | str | `defiscaliz` | Supervising body |
+| uso_principal | str | `usoprinc` | Main water use |
+| volume_hm3 | float | `nuvolumhm3` | Storage capacity (hm³) |
+| area_km2 | float | `nuareakm2` | Area (km²) |
+| area_ha | float | `nuareaha` | Area (ha) |
+| perimetro_km | float | `nuperimkm` | Perimeter (km) |
+| data_construcao | datetime | `dtreserv` | Reservoir construction date (`dd/mm/yyyy` at the source) |
+| nome_rio | str | `nmriocomp` | River name |
+| codigo_snisb | Int64 | `cod_snisb` | SNISB code |
+| codigo_trecho | Int64 | `cotrecho` | BHO drainage reach code |
+| uf | str | `nmufe` | State abbreviations, in alphabetical order and separated by `/` (`"DF/GO"`) |
+| municipios | str | `nmmun` | Municipalities, as published (`"BRASÍLIA, FORMOSA"`) |
+| fonte_geometria | str | `deversao` | Geometry origin (`FBDS (2017)`, `bho_massa_dagua_2019`…) |
+
 ## Specifics
 
 - **bbox required**: `hidrografia` and `demanda_irrigacao` require bbox (large datasets)
@@ -156,7 +215,7 @@ value differs from a missing field; null values and zeros are preserved.
 ## Limitations
 
 - Hidrografia and irrigation demand require bbox (without a filter they would return hundreds of thousands of features)
-- Only pivots support a UF filter; all layers accept bbox and max_registros
+- Only pivots and water bodies support a UF filter; all layers accept bbox and max_registros
 - There is no year or date-range filter; each query uses the configured layer edition
 - Queries count records before downloading pages; even a small max_registros can require waiting for the count
 - Pages accumulate in memory before building the result; there is no streaming or persistent ANA cache

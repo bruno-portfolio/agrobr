@@ -1,4 +1,4 @@
-"""Modulo IBGE - Dados PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo Agropecuario, Censo Legado, Serie Historica e Municipal 1985."""
+"""Modulo IBGE - Dados PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo Agropecuario, Censo Legado, Serie Historica, Municipal 1985, malha municipal e areas urbanizadas."""
 
 from __future__ import annotations
 
@@ -25,6 +25,12 @@ from agrobr.ibge.censo_municipal_1985 import (
     temas_censo_agro_municipal_1985,
 )
 from agrobr.ibge.legacy_api import censo_agro_legado, temas_censo_agro_legado
+from agrobr.ibge.malhas import (
+    areas_urbanizadas,
+    areas_urbanizadas_geo,
+    malha_municipal,
+    malha_municipal_geo,
+)
 from agrobr.ibge.pesquisas_api import (
     especies_silvicultura_area,
     extracao_vegetal,
@@ -37,6 +43,8 @@ from agrobr.ibge.pesquisas_api import (
 
 __all__ = [
     "abate",
+    "areas_urbanizadas",
+    "areas_urbanizadas_geo",
     "censo_agro",
     "censo_agro_historico",
     "censo_agro_legado",
@@ -48,6 +56,8 @@ __all__ = [
     "extracao_vegetal",
     "leite_trimestral",
     "lspa",
+    "malha_municipal",
+    "malha_municipal_geo",
     "pam",
     "pib_agro",
     "ppm",

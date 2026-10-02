@@ -1,0 +1,241 @@
+{
+  "name": "unidades_conservacao",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "codigo"
+  ],
+  "required_columns": [
+    "codigo",
+    "nome",
+    "esfera",
+    "categoria",
+    "grupo",
+    "categoria_iucn",
+    "uf",
+    "municipios",
+    "bioma",
+    "area_ha",
+    "data_criacao",
+    "ato_criacao",
+    "orgao_gestor",
+    "qualidade_poligono",
+    "wdpa_id"
+  ],
+  "dtypes": {
+    "codigo": "str",
+    "nome": "str",
+    "esfera": "str",
+    "categoria": "str",
+    "grupo": "str",
+    "categoria_iucn": "str",
+    "uf": "str",
+    "municipios": "str",
+    "bioma": "str",
+    "area_ha": "float",
+    "data_criacao": "date",
+    "ato_criacao": "str",
+    "orgao_gestor": "str",
+    "qualidade_poligono": "str",
+    "wdpa_id": "str"
+  },
+  "nullable": {
+    "codigo": false,
+    "nome": false,
+    "esfera": false,
+    "categoria": false,
+    "grupo": false,
+    "categoria_iucn": true,
+    "uf": false,
+    "municipios": false,
+    "bioma": true,
+    "area_ha": true,
+    "data_criacao": true,
+    "ato_criacao": true,
+    "orgao_gestor": true,
+    "qualidade_poligono": true,
+    "wdpa_id": true
+  },
+  "columns": [
+    {
+      "name": "codigo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Código CNUC publicado",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "nome",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "esfera",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "federal, estadual ou municipal",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "categoria",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Categoria de manejo do SNUC",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "grupo",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "PI (proteção integral) ou US (uso sustentável)",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "categoria_iucn",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Siglas em ordem alfabética, separadas por /",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "municipios",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Lista publicada; a fonte corta textos longos com ...",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "bioma",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Biomas com área publicada na UC, separados por /",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "area_ha",
+      "type": "float",
+      "nullable": true,
+      "unit": "ha",
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "data_criacao",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "ato_criacao",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "orgao_gestor",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "qualidade_poligono",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "wdpa_id",
+      "type": "str",
+      "nullable": true,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "",
+      "min_value": null,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "area_ha_min": 0
+  },
+  "guarantees": [
+    "UCs federais, estaduais e municipais, inclusive RPPNs, com limite cadastrado no CNUC",
+    "UCs sem polígono no CNUC e zonas de amortecimento não entram",
+    "Código CNUC único por linha",
+    "Área publicada em hectares, sem recálculo geométrico",
+    "Data de criação é atributo da UC, não edição da camada",
+    "Contagem do serviço conciliada com o retorno; não há snapshot transacional",
+    "Seleção acima do limite de aquisição é recusada, sem resultado parcial",
+    "Geometria na API de fonte cnuc.ucs_geo, com dependência geo separada"
+  ]
+}

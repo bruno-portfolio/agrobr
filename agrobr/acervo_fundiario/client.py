@@ -226,8 +226,8 @@ def _warn_download_size_once() -> None:
         (
             "acervo_fundiario: download de shapefile estatico do INCRA. "
             "Tamanhos: SIGEF 2-766 MB por UF, SNCI 0.01-23 MB por UF, Assentamentos 50 MB. "
-            "Cache em ~/.agrobr/cache/acervo_fundiario/ (opt-out: use_cache=False ou "
-            "AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1)."
+            f"Cache em {CacheSettings().cache_dir / 'acervo_fundiario'} "
+            "(opt-out: use_cache=False ou AGROBR_ACERVO_FUNDIARIO_CACHE_DISABLED=1)."
         ),
     )
 

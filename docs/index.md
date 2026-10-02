@@ -13,9 +13,9 @@
 
 ## O que é o agrobr?
 
-Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 40 fontes públicas.
+Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 41 fontes públicas.
 
-**v2.0.0** — 53 datasets | 88 contratos versionados | validação de parâmetros antes da rede | golden tests por fonte
+**v2.0.0** — 54 datasets | 89 contratos versionados | validação de parâmetros antes da rede | golden tests por fonte
 
 - **CEPEA/ESALQ**: 22 indicadores de preços (soja, milho, boi, café arábica, café robusta, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção, série histórica, progresso semanal de plantio/colheita e preços atacado hortifruti (CEASA/PROHORT)
@@ -43,7 +43,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 - **ZARC**: Zoneamento Agricola de Risco Climatico — janelas de plantio por municipio/cultura/solo/ciclo (MAPA/Embrapa, CC-BY)
 - **Agrofit/MAPA (Defensivos)**: Agrotoxicos registrados no Brasil — produtos formulados, autorizações de uso, produtos técnicos e composição (Creative Commons Attribution, versão não indicada)
 - **FUNAI**: Terras indigenas via WFS (665 TIs, reprodução com citação)
-- **ICMBio**: Unidades de conservacao federais via WFS (344 UCs)
+- **ICMBio**: Unidades de conservacao federais via WFS (347 UCs, sem RPPN)
 - **INCRA**: Territorios quilombolas via WFS (~426 territorios)
 - **IBAMA**: Embargos ambientais do portal de dados abertos (~116 mil termos, atualização diária)
 - **MapBiomas Alerta**: Alertas de desmatamento via GraphQL (citacao obrigatoria)
@@ -56,7 +56,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 
 ## Datasets — Camada Semântica
 
-53 datasets disponíveis, com proveniência. O fallback depende das fontes alternativas configuradas para cada dataset:
+54 datasets disponíveis, com proveniência. O fallback depende das fontes alternativas configuradas para cada dataset:
 
 | Dataset | Descrição | Fontes |
 |---------|-----------|------------------------------|
@@ -67,6 +67,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 | `moedas_cambio` | Catálogo corrente de moedas do serviço PTAX/BCB | BCB |
 | `precos_diesel` | Preços semanais de diesel da ANP e médias mensais derivadas | ANP |
 | `series_economicas` | Séries econômicas do Sistema Gerenciador de Séries Temporais do Banco Central | BCB |
+| `unidades_conservacao` | Unidades de conservação federais, estaduais e municipais, com RPPNs, do CNUC | CNUC/MMA |
 | `unidades_conservacao_federais` | Cadastro corrente de unidades de conservação federais da camada ICMBio/INDE | ICMBio |
 | `abate_trimestral` | Abate de bovinos, suínos e frangos por UF | IBGE Abate |
 | `autorizacoes_defensivos` | Autorizações de uso com multiplicidade publicada | Agrofit/MAPA |
@@ -186,7 +187,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 ## Features
 
-- **40 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, B3 Futuros Agro, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedagio, SICAR, ZARC, Agrofit/MAPA (Defensivos), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA, CFTC COT, UNICA
+- **41 fontes públicas** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Desmatamento, MapBiomas, B3 Futuros Agro, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Pedagio, SICAR, ZARC, Agrofit/MAPA (Defensivos), FUNAI, ICMBio, CNUC/MMA, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA, CFTC COT, UNICA
 - **Golden tests** — fixtures de referência por fonte (dados reais ou sintéticos documentados)
 - **Resiliência HTTP** — `retry_on_status()`/`retry_async()` centralizado, Retry-After, 429 handling
 - **Camada semântica** — datasets com proveniência e fallback quando há fontes alternativas configuradas

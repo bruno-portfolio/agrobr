@@ -24,7 +24,8 @@ from agrobr import exceptions
 
 BASE = "https://certificacao.incra.gov.br/csv_shp/zip/"
 FILES = {
-    "sigef": "Sigef Brasil_{uf}.zip",
+    "sigef_publico": "Sigef Público_{uf}.zip",
+    "sigef_privado": "Sigef Privado_{uf}.zip",
     "snci": "Imóvel certificado SNCI Brasil_{uf}.zip",
     "assentamentos": "Assentamento Brasil.zip",
 }
@@ -129,7 +130,7 @@ def decimal(value: str) -> float | None:
     return float(Decimal(value)) if value and set(value) != {"*"} else None
 
 
-def sigef(record: dict[str, str]) -> dict[str, Any]:
+def sigef(record: dict[str, str], natureza: str) -> dict[str, Any]:
     return {
         "codigo_parcela": text(record["parcela_co"]),
         "rt": text(record["rt"]),
@@ -144,6 +145,7 @@ def sigef(record: dict[str, str]) -> dict[str, Any]:
         "registro_data": dbf_date(record["registro_d"]),
         "cod_municipio": integer(record["municipio_"]),
         "uf": IBGE_UF[int(record["uf_id"])],
+        "natureza": natureza,
     }
 
 
@@ -181,7 +183,8 @@ def assentamento(record: dict[str, str]) -> dict[str, Any]:
 
 
 BUILDERS: dict[str, Callable[[dict[str, str]], dict[str, Any]]] = {
-    "sigef": sigef,
+    "sigef_publico": lambda record: sigef(record, "publico"),
+    "sigef_privado": lambda record: sigef(record, "privado"),
     "snci": snci,
     "assentamentos": assentamento,
 }
@@ -240,16 +243,21 @@ def fetch(client: httpx.Client, url: str, path: Path) -> dict[str, Any]:
 async def agrobr_outputs(tema: str, uf: str | None) -> tuple[pd.DataFrame, Any, Any, list[str]]:
     from agrobr import acervo_fundiario
 
-    tabular_function = getattr(acervo_fundiario, tema)
-    geo_function = getattr(acervo_fundiario, f"{tema}_geo")
+    funcao, opcoes = (
+        ("sigef", {"natureza": tema.removeprefix("sigef_")})
+        if tema.startswith("sigef_")
+        else (tema, {})
+    )
+    tabular_function = getattr(acervo_fundiario, funcao)
+    geo_function = getattr(acervo_fundiario, f"{funcao}_geo")
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
         if uf is None:
             frame, meta = await tabular_function(return_meta=True)
             geo = await geo_function()
         else:
-            frame, meta = await tabular_function(uf, return_meta=True)
-            geo = await geo_function(uf)
+            frame, meta = await tabular_function(uf, return_meta=True, **opcoes)
+            geo = await geo_function(uf, **opcoes)
     return frame, meta, geo, [str(item.message) for item in caught]
 
 
@@ -301,7 +309,7 @@ def compare(
 def coverage(client: httpx.Client) -> dict[str, Any]:
     missing = []
     unavailable = []
-    for tema in ("sigef", "snci"):
+    for tema in ("sigef_publico", "sigef_privado", "snci"):
         for uf in UFS:
             response = client.head(url_of(tema, uf))
             if tema == "snci" and response.status_code == 404:
@@ -318,9 +326,10 @@ def coverage(client: httpx.Client) -> dict[str, Any]:
 
 def run(directory: Path, output: Path, sigef_ufs: list[str], snci_ufs: list[str]) -> int:
     directory.mkdir(parents=True, exist_ok=True)
-    os.environ["AGROBR_CACHE_CACHE_DIR"] = tempfile.mkdtemp(prefix="agrobr_reconciliar_acervo_")
+    os.environ.pop("AGROBR_CACHE_CACHE_DIR", None)
+    os.environ["AGROBR_CACHE_DIR"] = tempfile.mkdtemp(prefix="agrobr_reconciliar_acervo_")
     targets: list[tuple[str, str | None]] = [
-        *(("sigef", uf) for uf in sigef_ufs),
+        *((tema, uf) for uf in sigef_ufs for tema in ("sigef_publico", "sigef_privado")),
         *(("snci", uf) for uf in snci_ufs),
         ("assentamentos", None),
     ]

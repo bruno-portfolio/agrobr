@@ -38,6 +38,7 @@ Everything in the `__all__` of the source module. The public path is the module'
 | `agrobr.bcb` | [BCB](bcb.md) and [economic series](series_economicas.md) |
 | `agrobr.cepea` | [CEPEA](cepea.md) |
 | `agrobr.cftc` | [CFTC](cftc.md) |
+| `agrobr.cnuc` | [CNUC](../sources/cnuc.md) |
 | `agrobr.comexstat` | [ComexStat](comexstat.md) |
 | `agrobr.comtrade` | [UN Comtrade](comtrade.md) |
 | `agrobr.conab` | [CONAB](conab.md), [progress](conab_progresso.md) and [CEASA](conab_ceasa.md) |

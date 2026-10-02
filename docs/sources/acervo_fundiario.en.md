@@ -8,8 +8,8 @@
     The `certificacao.incra.gov.br` host answered normally from Brazil, but did not answer
     (connection timeout) from GitHub Actions runners nor from any of the 8 international
     nodes tested on 2026-08-31 (Austria, Cyprus, Finland, Iran, Serbia, Ukraine).
-    If you run agrobr outside Brazil and get `httpx.ConnectTimeout` on this source,
-    that network restriction is the likely cause — not a library bug.
+    If you run agrobr outside Brazil and this source raises `SourceUnavailableError`
+    with `ConnectTimeout` in the message, that network restriction is the likely cause — not a library bug.
     That is why this source's live tests carry the `integration_br` marker and are excluded from CI.
 
 !!! info "Geospatial dependency"
@@ -35,11 +35,11 @@
 
 | Dataset | Available states | Typical size | Granularity |
 |---|---|---|---|
-| **SIGEF** | 27/27 | 2-766 MB per state | Per state |
-| **SNCI** | 27/27 | 0.01-23 MB per state | Per state |
+| **SIGEF** | 27/27, in 2 files (public and private) | public 0.4-21 MB, private 1-749 MB per state | Per state |
+| **SNCI** | 24/27 on 2026-10-01 (AC, DF and RR without a file) | 0.07-23 MB per state | Per state |
 | **Settlements** | Brazil-wide single | 50 MB | Full Brazil, client-side state filter |
 
-INCRA publishes SIGEF and SNCI for all 27 states (2026-09-22). A state without a file on the server raises `SourceUnavailableError` (HTTP 404).
+INCRA publishes each state's SIGEF in 2 files, `Sigef Público_{UF}.zip` and `Sigef Privado_{UF}.zip`, which partition the state: on 2026-10-01, in all 27 states, the record counts of the two added up to that of `Sigef Brasil_{UF}.zip` (1,848,075 = 159,681 + 1,688,394), and in DF and AP no parcel appeared in both. SNCI is published per state, and the list changes over time: on 2026-10-01, AC, DF and RR had no file (RR's existed on 2026-09-22). A state without a file on the server raises `SourceUnavailableError` (HTTP 404).
 
 ## Public functions
 
@@ -48,8 +48,9 @@ import asyncio
 from agrobr import acervo_fundiario
 
 async def main():
-    # SIGEF — certified parcels post-2013
+    # SIGEF — certified parcels post-2013, from the public and private files
     df = await acervo_fundiario.sigef("GO")
+    df = await acervo_fundiario.sigef("GO", natureza="publico")  # downloads only the public file
     df, meta = await acervo_fundiario.sigef("MG", return_meta=True)
     df_pl = await acervo_fundiario.sigef("SP", as_polars=True)
     gdf = await acervo_fundiario.sigef_geo("GO", bbox=(-50, -16, -49, -15))
@@ -68,9 +69,9 @@ asyncio.run(main())
 
 ## Filesystem cache
 
-Downloaded files are stored in `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` with a `{UF}.json` alongside containing `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. Where it lives and how to clean it: [What agrobr writes to disk](../advanced/disco.md).
+Downloaded files are stored in `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` with a `{UF}.json` alongside containing `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. The themes are `sigef_publico`, `sigef_privado`, `snci` and `assentamentos` (the latter in `brasil.zip`). The `sigef/` folder from earlier versions held `Sigef Brasil_{UF}.zip`, which is no longer read: it can be deleted. Where it lives and how to clean it: [What agrobr writes to disk](../advanced/disco.md).
 
-With `return_meta=True`, the `MetaInfo` states where the file came from. When the HEAD confirms the cache: `from_cache=True`, `fetched_at` = the ZIP's original collection (the `fetched_at` in `{UF}.json`) and `source_details` with `revalidado_em`, `etag` and `last_modified`. On a new download: `from_cache=False`, `fetched_at` = the download and `source_details` with only `etag` and `last_modified`.
+With `return_meta=True`, the `MetaInfo` states where the file came from. When the HEAD confirms the cache: `from_cache=True`, `fetched_at` = the ZIP's original collection (the `fetched_at` in `{UF}.json`) and `source_details` with `revalidado_em`, `etag` and `last_modified`. On a new download: `from_cache=False`, `fetched_at` = the download and `source_details` with only `etag` and `last_modified`. In SIGEF, which may read 2 files, these fields are per file: see [`natureza` in SIGEF](#natureza-in-sigef).
 
 Revalidation performs a HEAD request and requires at least one matching,
 nonempty validator (`ETag` or `Last-Modified`). Changed validators or file sizes
@@ -79,8 +80,8 @@ local to the event loop, and each write cleans up only its own temporary file.
 
 **Potential cache size:**
 
-- SIGEF full Brazil (27 states) ≈ 3.1 GB (largest: MG=766 MB, SP=356 MB, PR=312 MB)
-- SNCI full Brazil (27 states) ≈ 105 MB
+- Full SIGEF (27 states, public + private) ≈ 3.1 GB (0.2 GB public + 2.9 GB private; largest: MG, 749 MB in the private file)
+- Full SNCI (24 states published on 2026-10-01) ≈ 104 MB
 - Settlements Brazil = 50 MB
 
 On demand. A casual case of 1-3 states usually stays below 1 GB.
@@ -118,6 +119,7 @@ error or cancellation; nothing is written to `~/.agrobr/cache/acervo_fundiario/`
 | registro_data | datetime | Registration date (nullable) |
 | cod_municipio | int | Municipality IBGE code |
 | uf | str | State abbreviation (mapped from IBGE `uf_id`) |
+| natureza | str | `publico` or `privado`: the INCRA file the parcel came from (`Sigef Público_{UF}.zip` or `Sigef Privado_{UF}.zip`) |
 | geometry | Polygon Z | Geometry with vertex altitude (only in `_geo`) |
 
 ### SNCI
@@ -165,6 +167,20 @@ Applied by `pyogrio` while reading the shapefile (pre-read spatial filter, 4-9x 
 gdf = await acervo_fundiario.sigef_geo("MG", bbox=(-44, -18, -43, -17))
 ```
 
+### `natureza` in SIGEF
+
+The SIGEF shapefile has no field separating public from private parcels: the split is the file INCRA publishes. The `natureza` column states which of the two the row came from.
+
+- `natureza=None` (default) reads both files, with the same volume as the former `Sigef Brasil_{UF}.zip`, and returns the public rows followed by the private ones, each part in file order.
+- `natureza="publico"` or `"privado"` downloads only that file. Case and accents are ignored (`"Público"` works); any other value raises `InvalidParameterError` before any network call.
+- `MetaInfo`: `source_url` is the URL of the first file read (the public one when both are read); `attempted_sources` lists the files read (`acervo_fundiario_sigef_publico`, `acervo_fundiario_sigef_privado`); `source_details["arquivos"]` holds, per `natureza`, `url`, `from_cache`, `fetched_at`, `sha256`, `size_bytes`, `etag`, `last_modified` and, on a cache hit, `revalidado_em`. `from_cache` is `True` only when every file came from the cache; `fetched_at` is the oldest collection; `raw_content_hash` is filled only for a single file; `raw_content_size` adds up the files; `schema_version` is `1.1`.
+- INCRA rewrites the 2 files at different times. If a `codigo_parcela` shows up in both, both rows are kept and `MetaInfo.validation_warnings` says so.
+
+```python
+df = await acervo_fundiario.sigef("DF")                      # public + private
+publico = await acervo_fundiario.sigef("DF", natureza="publico")
+```
+
 ### `uf` in settlements
 
 The settlements dataset is Brazil-wide single — the `uf` filter is client-side, normalizing the `uf` column (`.str.upper().str.strip()`) and comparing.
@@ -175,5 +191,5 @@ If the source brings a state outside the 27 abbreviations, the parser does not d
 
 - **Verified TLS** — downloads and health checks validate certificates and hostnames.
   Certificate errors terminate the connection without disabling verification.
-- **No private/public distinction** — the shapefile has no type field (that was a distinction of the legacy WFS)
+- **Public × private comes from the file, not from a field** — the shapefile has no type field; the `natureza` column states which of INCRA's 2 files the parcel came from (see [`natureza` in SIGEF](#natureza-in-sigef))
 - **Cache size may accumulate into GB** — see the "Filesystem cache" section

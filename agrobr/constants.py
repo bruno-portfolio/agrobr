@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import os
 import warnings
 from enum import StrEnum
@@ -11,6 +12,7 @@ from pydantic import (
     Field,
     TypeAdapter,
     ValidationError,
+    ValidationInfo,
     field_validator,
     model_validator,
 )
@@ -70,6 +72,7 @@ class Fonte(StrEnum):
     BCB = "bcb"
     CEPEA = "cepea"
     CFTC = "cftc"
+    CNUC = "cnuc"
     COMEXSTAT = "comexstat"
     COMTRADE = "comtrade"
     CONAB = "conab"
@@ -113,6 +116,7 @@ LICENCAS: dict[str, str] = {
     Fonte.BCB: "livre",
     Fonte.CEPEA: "nc",
     Fonte.CFTC: "livre",
+    Fonte.CNUC: "livre",
     Fonte.COMEXSTAT: "livre",
     Fonte.COMTRADE: "zona_cinza",
     Fonte.CONAB: "livre",
@@ -167,6 +171,7 @@ URLS = {
     Fonte.ANA: {
         "base": "https://portal1.snirh.gov.br",
         "arcgis": "https://portal1.snirh.gov.br/server/rest/services/dados_abertos",
+        "arcgis_spr": "https://www.snirh.gov.br/arcgis/rest/services/SPR",
     },
     Fonte.ANDA: {
         "base": "https://anda.org.br",
@@ -207,6 +212,11 @@ URLS = {
         "disaggregated_futures": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json",
         "disaggregated_combined": "https://publicreporting.cftc.gov/resource/kh3c-gbw2.json",
     },
+    Fonte.CNUC: {
+        "base": "https://cnuc.mma.gov.br",
+        "mapserver": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv",
+        "dados_abertos": "https://dados.mma.gov.br/dataset/unidadesdeconservacao",
+    },
     Fonte.COMEXSTAT: {
         "base": "https://comexstat.mdic.gov.br",
         "bulk_csv": "https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm",
@@ -239,6 +249,8 @@ URLS = {
         "api": "https://apisidra.ibge.gov.br",
         "agregados": "https://servicodados.ibge.gov.br/api/v3/agregados",
         "ftp_censo_agro_1996": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96",
+        "wfs_malha_municipal": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs",
+        "wfs_areas_urbanizadas": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs",
     },
     Fonte.LISTA_SUJA: {
         "base": "https://www.gov.br/trabalho-e-emprego",
@@ -686,18 +698,26 @@ class CacheSettings(BaseSettings):
     def _vazio_vale_o_padrao(cls, valor: object) -> object:
         return _CACHE_DIR_PADRAO if isinstance(valor, str) and not valor.strip() else valor
 
-    @model_validator(mode="after")
-    def _avisar_pastas_divergentes(self) -> CacheSettings:
+    def __init__(self, **dados: Any) -> None:
+        super().__init__(**dados)
+        self._avisar_pastas_divergentes(argumento="cache_dir" in dados)
+
+    def _avisar_pastas_divergentes(self, *, argumento: bool) -> None:
         nova = os.environ.get("AGROBR_CACHE_DIR", "").strip()
         antiga = os.environ.get("AGROBR_CACHE_CACHE_DIR", "").strip()
-        if nova and antiga and Path(nova) != Path(antiga):
-            warnings.warn(
-                f"agrobr: AGROBR_CACHE_DIR ({nova}) e AGROBR_CACHE_CACHE_DIR ({antiga}) apontam para "
-                "pastas diferentes; vale AGROBR_CACHE_DIR. Deixe só uma das duas.",
-                UserWarning,
-                stacklevel=2,
-            )
-        return self
+        if not (nova and antiga and Path(nova) != Path(antiga)):
+            return
+        vencedor = (
+            f"vale o argumento cache_dir ({self.cache_dir}), e as duas ficam sem efeito"
+            if argumento
+            else f"vale AGROBR_CACHE_DIR ({self.cache_dir})"
+        )
+        warnings.warn(
+            f"agrobr: AGROBR_CACHE_DIR ({nova}) e AGROBR_CACHE_CACHE_DIR ({antiga}) apontam para "
+            f"pastas diferentes; {vencedor}. Deixe só uma das duas.",
+            UserWarning,
+            stacklevel=3,
+        )
 
 
 class HTTPSettings(BaseSettings):
@@ -727,6 +747,7 @@ class HTTPSettings(BaseSettings):
     rate_limit_bcb: float = 1.0
     rate_limit_cepea: float = 5.0
     rate_limit_cftc: float = 2.0
+    rate_limit_cnuc: float = 2.0
     rate_limit_comexstat: float = 2.0
     rate_limit_comtrade: float = 2.0
     rate_limit_conab: float = 3.0
@@ -771,6 +792,15 @@ class HTTPSettings(BaseSettings):
     @classmethod
     def _zero_vale_uma_tentativa(cls, valor: int) -> int:
         return max(valor, 1)
+
+    @field_validator("*")
+    @classmethod
+    def _intervalo_finito_nao_negativo(cls, valor: Any, info: ValidationInfo) -> Any:
+        if str(info.field_name).startswith("rate_limit_") and not (
+            math.isfinite(valor) and valor >= 0
+        ):
+            raise ValueError("intervalo entre pedidos deve ser número finito maior ou igual a 0")
+        return valor
 
 
 class AlertSettings(BaseSettings):
@@ -1134,7 +1164,7 @@ EMBRAPA_SOLOS_WFS_VERSION = "2.0.0"
 
 EMBRAPA_SOLOS_NC_WARNING = (
     "EMBRAPA Solos: CC BY-NC 3.0 BR — uso comercial requer autorizacao. "
-    "Classificacao: nc. Veja docs/licenses.md."
+    "Classificacao: nc. Veja https://www.agrobr.dev/docs/licenses/."
 )
 
 EMBRAPA_SOLOS_INTEGER_BITS = {"fid": 32, "ogc_fid": 32, "codigo_pon": 64}

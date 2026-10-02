@@ -1,0 +1,24 @@
+{
+ "source": "cnuc",
+ "format": "wfs2_gml32",
+ "license": "CC-BY (portal de dados abertos do MMA, dataset unidadesdeconservacao)",
+ "content": "UCs de SE com limite cadastrado no CNUC (limite='uc'): contagem, atributos e geometria em EPSG:4326, ordenadas por cd_cnuc.",
+ "fetched_at": "2026-10-01T21:45:15+00:00",
+ "files": {
+  "hits.xml": {
+   "url": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?MAP=/var/www/storage/app/mapfiles/ucs.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:ucs_selected&RESULTTYPE=hits&FILTER=%3Cfes:Filter%20xmlns:fes%3D%27http://www.opengis.net/fes/2.0%27%20xmlns:gml%3D%27http://www.opengis.net/gml/3.2%27%3E%3Cfes:And%3E%3Cfes:PropertyIsEqualTo%3E%3Cfes:ValueReference%3Elimite%3C/fes:ValueReference%3E%3Cfes:Literal%3Euc%3C/fes:Literal%3E%3C/fes:PropertyIsEqualTo%3E%3Cfes:PropertyIsLike%20wildCard%3D%27%25%27%20singleChar%3D%27_%27%20escapeChar%3D%27%21%27%3E%3Cfes:ValueReference%3Euf%3C/fes:ValueReference%3E%3Cfes:Literal%3E%25SERGIPE%25%3C/fes:Literal%3E%3C/fes:PropertyIsLike%3E%3C/fes:And%3E%3C/fes:Filter%3E",
+   "sha256": "4d23d6695a204c32feceb01f46c03dfe2f09920f258207d95e5c16e63a9e9c35",
+   "bytes": 823
+  },
+  "tabular.xml": {
+   "url": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?MAP=/var/www/storage/app/mapfiles/ucs.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:ucs_selected&FILTER=%3Cfes:Filter%20xmlns:fes%3D%27http://www.opengis.net/fes/2.0%27%20xmlns:gml%3D%27http://www.opengis.net/gml/3.2%27%3E%3Cfes:And%3E%3Cfes:PropertyIsEqualTo%3E%3Cfes:ValueReference%3Elimite%3C/fes:ValueReference%3E%3Cfes:Literal%3Euc%3C/fes:Literal%3E%3C/fes:PropertyIsEqualTo%3E%3Cfes:PropertyIsLike%20wildCard%3D%27%25%27%20singleChar%3D%27_%27%20escapeChar%3D%27%21%27%3E%3Cfes:ValueReference%3Euf%3C/fes:ValueReference%3E%3Cfes:Literal%3E%25SERGIPE%25%3C/fes:Literal%3E%3C/fes:PropertyIsLike%3E%3C/fes:And%3E%3C/fes:Filter%3E&PROPERTYNAME=cd_cnuc%2Cnome_uc%2Cesfera%2Ccategoria%2Cgrupo%2Ccat_iucn%2Cuf%2Cmunicipio%2Corg_gestor%2Cha_total%2Ccria_ano%2Ccria_ato%2Cquali_pol%2Cwdpa_pid%2Camazonia%2Ccaatinga%2Ccerrado%2Cmatlantica%2Cpampa%2Cpantanal%2Climite&SORTBY=cd_cnuc",
+   "sha256": "62f6d9ce28454e6a443056bf74cf74c519b969b6c384f70835b2a2549fcdf9c3",
+   "bytes": 23074
+  },
+  "geo.xml": {
+   "url": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?MAP=/var/www/storage/app/mapfiles/ucs.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:ucs_selected&FILTER=%3Cfes:Filter%20xmlns:fes%3D%27http://www.opengis.net/fes/2.0%27%20xmlns:gml%3D%27http://www.opengis.net/gml/3.2%27%3E%3Cfes:And%3E%3Cfes:PropertyIsEqualTo%3E%3Cfes:ValueReference%3Elimite%3C/fes:ValueReference%3E%3Cfes:Literal%3Euc%3C/fes:Literal%3E%3C/fes:PropertyIsEqualTo%3E%3Cfes:PropertyIsLike%20wildCard%3D%27%25%27%20singleChar%3D%27_%27%20escapeChar%3D%27%21%27%3E%3Cfes:ValueReference%3Euf%3C/fes:ValueReference%3E%3Cfes:Literal%3E%25SERGIPE%25%3C/fes:Literal%3E%3C/fes:PropertyIsLike%3E%3C/fes:And%3E%3C/fes:Filter%3E&PROPERTYNAME=msGeometry%2Ccd_cnuc%2Cnome_uc%2Cesfera%2Ccategoria%2Cgrupo%2Ccat_iucn%2Cuf%2Cmunicipio%2Corg_gestor%2Cha_total%2Ccria_ano%2Ccria_ato%2Cquali_pol%2Cwdpa_pid%2Camazonia%2Ccaatinga%2Ccerrado%2Cmatlantica%2Cpampa%2Cpantanal%2Climite&SORTBY=cd_cnuc&SRSNAME=urn:ogc:def:crs:EPSG::4326",
+   "sha256": "16ffcbc72089263712ebb4c4668ffe0f759600ff3e3ee39b92db4b4c4aeaba20",
+   "bytes": 247533
+  }
+ }
+}

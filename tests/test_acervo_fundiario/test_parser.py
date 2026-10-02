@@ -28,4 +28,4 @@ class TestSchemaDriftDetection:
                 zf.write(f, f.name)
 
         with pytest.raises(ParseError, match="Colunas obrigatorias"):
-            parser.parse_sigef(zip_path)
+            parser.parse_sigef(zip_path, natureza="privado")

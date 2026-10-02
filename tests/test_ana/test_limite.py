@@ -20,6 +20,8 @@ from agrobr.utils import geo
         "demanda_irrigacao_geo",
         "disponibilidade_hidrica",
         "disponibilidade_hidrica_geo",
+        "massas_dagua",
+        "massas_dagua_geo",
     ],
 )
 @pytest.mark.parametrize("limite", [-1, 0, True, 1.5, "10"])

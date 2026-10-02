@@ -24,7 +24,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 
 > A tabela lista os contratos **documentados** — não é idêntica a `datasets.list_datasets()`. `bcb_focus`, `bcb_ptax` e `bcb_ptax_moedas` são contratos de fonte reutilizados por `expectativas_mercado`, `cotacoes_cambio` e `moedas_cambio`; os nomes dos datasets não acrescentam aliases de contrato. A página PTAX reúne os contratos de cotações e catálogo.
 
-Os quatro nomes de datasets Agrofit reutilizam os contratos `agrofit_*` existentes via `_contract_name`; não registram aliases de contrato. São 53 datasets e 88 contratos registrados. `bcb_credito_rural_total` é o contrato de fonte da função `bcb.credito_rural_total`, sem dataset, e `bcb_credito_rural_registro`, o do `agregacao="registro"` do `bcb.credito_rural` e do dataset `credito_rural`. `autorizacoes_defensivos` preserva linhas repetidas publicadas e não possui chave primária artificial.
+Os quatro nomes de datasets Agrofit reutilizam os contratos `agrofit_*` existentes via `_contract_name`; não registram aliases de contrato. São 54 datasets e 89 contratos registrados. `bcb_credito_rural_total` é o contrato de fonte da função `bcb.credito_rural_total`, sem dataset, e `bcb_credito_rural_registro`, o do `agregacao="registro"` do `bcb.credito_rural` e do dataset `credito_rural`. `autorizacoes_defensivos` preserva linhas repetidas publicadas e não possui chave primária artificial.
 
 `series_economicas` reutiliza `bcb_sgs` 3.0 sem alias de contrato. A seleção é por código ou alias SGS, com unidade e frequência dependentes da série. O dataset conserva a proveniência da consulta e não reconstitui revisões históricas.
 
@@ -36,6 +36,7 @@ Os dois [datasets de cultivares](../api/cultivares.md) reutilizam os novos contr
 
 | Dataset | Descrição | Fontes |
 |---------|-----------|--------|
+| [unidades_conservacao](./unidades_conservacao.md) | Unidades de conservação federais, estaduais e municipais, com RPPNs, do CNUC | CNUC/MMA |
 | [unidades_conservacao_federais](./unidades_conservacao_federais.md) | Cadastro corrente de unidades de conservação federais da camada ICMBio/INDE | ICMBio |
 | [precos_diesel](./precos_diesel.md) | Preços semanais de diesel da ANP e médias mensais derivadas | ANP |
 | [moedas_cambio](./moedas_cambio.md) | Catálogo corrente de moedas do serviço PTAX/BCB | BCB |
@@ -126,7 +127,7 @@ from agrobr import datasets
 
 # Listar datasets
 print(datasets.list_datasets())
-# 53 datasets
+# 54 datasets
 
 # Listar produtos de um dataset
 datasets.list_products("preco_diario")

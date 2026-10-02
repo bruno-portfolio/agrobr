@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import time
-from typing import TYPE_CHECKING, Literal, cast, overload
+from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import pandas as pd
 
 from agrobr import _log
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
+from agrobr.normalize import regions
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
@@ -624,3 +626,182 @@ async def disponibilidade_hidrica_geo(
         max_registros=max_registros,
         return_meta=return_meta,
     )
+
+
+# ---------------------------------------------------------------------------
+# massas_dagua (uf or bbox required)
+# ---------------------------------------------------------------------------
+
+
+def _recorte_massas(
+    uf: str | None, bbox: tuple[float, float, float, float] | None
+) -> tuple[str, tuple[float, float, float, float] | None]:
+    uf = validate_uf(uf)
+    bbox = validate_bbox(bbox)
+    if uf is None and bbox is None:
+        raise InvalidParameterError(
+            "massas_dagua exige uf ou bbox: o Brasil inteiro tem 240 mil polígonos (cerca de 1 GB)"
+        )
+    if uf is None:
+        return "1=1", bbox
+    nome = regions.uf_para_nome(uf).upper()
+    return (
+        f"(nmufe = '{nome}' OR nmufe LIKE '{nome}, %' OR nmufe LIKE '%, {nome}' "
+        f"OR nmufe LIKE '%, {nome}, %')"
+    ), bbox
+
+
+async def _fetch_massas(
+    *,
+    uf: str | None,
+    bbox: tuple[float, float, float, float] | None,
+    max_registros: int | None,
+    geo: bool,
+) -> tuple[Any, MetaInfo]:
+    where, bbox = _recorte_massas(uf, bbox)
+    formato = "geojson" if geo else "json"
+    logger.info("ana_massas_dagua", uf=uf, bbox=bbox, geo=geo)
+
+    t0 = time.monotonic()
+    pages, source_url = await client.fetch_massas_dagua(
+        where=where, bbox=bbox, max_registros=max_registros, f=formato
+    )
+    fetch_ms = int((time.monotonic() - t0) * 1000)
+
+    t1 = time.monotonic()
+    df = parser.parse_massas_dagua(pages, geo=geo)
+    parse_ms = int((time.monotonic() - t1) * 1000)
+
+    fonte = "ana_massas_dagua_geo" if geo else "ana_massas_dagua"
+    meta = build_source_meta(
+        "ana",
+        source_url,
+        f"httpx+arcgis+{formato}",
+        fetch_ms,
+        parse_ms,
+        df,
+        parser.PARSER_VERSION,
+        attempted_sources=[fonte],
+        selected_source=fonte,
+        raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
+        raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
+    )
+    return df, meta
+
+
+@overload
+async def massas_dagua(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def massas_dagua(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def massas_dagua(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[False] = False,
+) -> pl.DataFrame: ...
+
+
+@overload
+async def massas_dagua(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: Literal[True],
+    return_meta: Literal[True],
+) -> tuple[pl.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def massas_dagua(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult: ...
+
+
+async def massas_dagua(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> DataFrameResult:
+    df, meta = await _fetch_massas(uf=uf, bbox=bbox, max_registros=max_registros, geo=False)
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            str(column) for column in df if pd.api.types.is_string_dtype(df[column].dtype)
+        ),
+    )
+
+
+@overload
+async def massas_dagua_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: Literal[False] = False,
+) -> gpd.GeoDataFrame: ...
+
+
+@overload
+async def massas_dagua_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: Literal[True],
+) -> tuple[gpd.GeoDataFrame, MetaInfo]: ...
+
+
+@overload
+async def massas_dagua_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult: ...
+
+
+async def massas_dagua_geo(
+    *,
+    uf: str | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    return_meta: bool = False,
+) -> GeoDataFrameResult:
+    gdf, meta = await _fetch_massas(uf=uf, bbox=bbox, max_registros=max_registros, geo=True)
+    if return_meta:
+        return gdf, meta
+    return cast("gpd.GeoDataFrame", gdf)

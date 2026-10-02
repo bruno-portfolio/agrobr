@@ -23,11 +23,11 @@
   </a>
 </p>
 
-Python infrastructure for Brazilian agricultural data with a semantic layer over **40 public sources** — market prices, production and crop seasons, foreign trade, rural credit, climate, environmental monitoring, land registries and regulatory data.
+Python infrastructure for Brazilian agricultural data with a semantic layer over **41 public sources** — market prices, production and crop seasons, foreign trade, rural credit, climate, environmental monitoring, land registries and regulatory data.
 
 Brazil is one of the world's largest agricultural producers, but its public data is scattered across dozens of government portals, each with its own format, encoding and quirks. agrobr turns all of that into clean, validated DataFrames.
 
-**v2.0.0** — 53 datasets | 88 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
+**v2.0.0** — 54 datasets | 89 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -44,7 +44,7 @@ pip install agrobr[pdf]             # pdfplumber for ANDA, Rio Verde and the Lis
 pip install agrobr[polars]          # Polars support
 pip install agrobr[browser]         # Playwright (optional, for JS-heavy sources)
 pip install agrobr[bigquery]        # Base dos Dados (BCB/SICOR fallback)
-pip install agrobr[geo]             # GeoPandas — enables _geo variants (PRODES, DETER, SICAR, FUNAI, ICMBio, INCRA, IBAMA, fire hotspots, MapBiomas Alerta, ANA, SFB, EMBRAPA Soils, INCRA land registry)
+pip install agrobr[geo]             # GeoPandas — enables _geo variants (PRODES, DETER, SICAR, FUNAI, ICMBio, CNUC, IBGE municipal mesh and urbanized areas, INCRA, IBAMA, fire hotspots, MapBiomas Alerta, ANA, SFB, EMBRAPA Soils, INCRA land registry)
 pip install agrobr[all]             # All optional runtime integrations
 ```
 
@@ -232,7 +232,7 @@ gdf = await ana.pivos_irrigacao_geo(uf='MT')   # requires agrobr[geo]
 
 ### Environmental
 
-Fire hotspots (INPE), deforestation (PRODES + DETER), MapBiomas (land cover/transitions), MapBiomas Alerta, IBAMA (embargoes), ICMBio (protected areas), SFB (public forests).
+Fire hotspots (INPE), deforestation (PRODES + DETER), MapBiomas (land cover/transitions), MapBiomas Alerta, IBAMA (embargoes), ICMBio and CNUC (protected areas), SFB (public forests).
 
 ```python
 from agrobr import queimadas, desmatamento, mapbiomas
@@ -262,6 +262,7 @@ gdf = await queimadas.focos_geo(ano=2024, mes=9, uf='MT')
 | **MapBiomas Alerta** | `mapbiomas_alerta.alertas(inicio='2024-01-01')` (requires `AGROBR_MAPBIOMAS_ALERTA_TOKEN`) | [docs/sources/mapbiomas_alerta.md](https://www.agrobr.dev/docs/sources/mapbiomas_alerta/) |
 | **IBAMA** embargoes | `ibama.embargos(uf='PA')` | [docs/sources/ibama.md](https://www.agrobr.dev/docs/sources/ibama/) |
 | **ICMBio** federal protected areas | `icmbio.ucs(uf='AM', grupo='PI')` | [docs/sources/icmbio.md](https://www.agrobr.dev/docs/sources/icmbio/) |
+| **CNUC** protected areas (federal, state, municipal, private reserves) | `cnuc.ucs(uf='SE', esfera='municipal')` | [docs/sources/cnuc.md](https://www.agrobr.dev/docs/sources/cnuc/) |
 | **SFB** public forests | `sfb.cnfp(uf='AM')`, `sfb.concessoes(uf='AM')`, `sfb.ifn_conglomerados(uf='MT')` | [docs/sources/sfb.md](https://www.agrobr.dev/docs/sources/sfb/) |
 
 ### Land registries
@@ -354,7 +355,7 @@ print(meta.selected_source, meta.attempted_sources, meta.contract_version)
 print(datasets.list_datasets())
 ```
 
-53 datasets available. See the [full list](#available-datasets) below.
+54 datasets available. See the [full list](#available-datasets) below.
 
 ## Reproducibility — snapshots and deterministic mode
 
@@ -447,6 +448,7 @@ agrobr snapshot list
 | `expectativas_mercado` | Annual and monthly BCB Focus expectations | BCB |
 | `moedas_cambio` | Current PTAX currency catalogue | BCB |
 | `precos_diesel` | ANP weekly prices and explicit monthly aggregates | ANP |
+| `unidades_conservacao` | Federal, state and municipal conservation units, including private reserves, from CNUC | CNUC/MMA |
 | `unidades_conservacao_federais` | Federal conservation-unit attributes | ICMBio |
 | `abate_trimestral` | Cattle, hog and poultry slaughter by state | IBGE |
 | `autorizacoes_defensivos` | Use authorizations preserving published multiplicity | Agrofit/MAPA |
@@ -541,7 +543,8 @@ Availability is monitored automatically. Run `agrobr health` to check locally (o
 | SFB | Public forests (CNFP), forest concessions, national forest inventory (ArcGIS REST) | ✅ | Working (IFN offline since 2026-09-02) |
 | FUNAI | Indigenous lands (WFS) — 665 territories, state/phase/bbox filters | ✅ | Working |
 | IBAMA | Environmental embargoes (open-data CSV + WKT geometries) — ~116K records, daily update, state/bbox filter | ✅ | Working |
-| ICMBio | Federal protected areas (WFS) — 344 units | ✅ | Working |
+| ICMBio | Federal protected areas (WFS) — 347 units | ✅ | Working |
+| CNUC | Federal, state and municipal protected areas, including private reserves (WFS) — 3,450 units | ✅ | Working |
 | INCRA | Quilombola territories (WFS) — ~426 territories | ✅ | Working |
 | INCRA land registry | SIGEF certified parcels (27 states) + SNCI (27 states) + settlements — shapefile ZIP | ✅ | Working |
 | RNC/CultivarWeb | Current registered and protected cultivars; exact IDs and published end-date text — MAPA/SNPC | ✅ | Working |
@@ -649,7 +652,7 @@ See the [pipelines guide](https://www.agrobr.dev/docs/advanced/pipelines/) and t
 
 - [Quickstart](https://www.agrobr.dev/docs/en/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/en/contracts/) — contracts and guarantees
-- [Sources](https://www.agrobr.dev/docs/en/sources/) — all 40 sources documented
+- [Sources](https://www.agrobr.dev/docs/en/sources/) — all 41 sources documented
 - [Public API and reference](https://www.agrobr.dev/docs/en/api/)
 - [Resilience](https://www.agrobr.dev/docs/en/advanced/resilience/)
 - [Porting](https://www.agrobr.dev/docs/en/porting/) — guide for porting agrobr to R, Julia or other languages

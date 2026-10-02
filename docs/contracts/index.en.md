@@ -24,7 +24,7 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 
 > This table lists the **documented** contracts — it is not identical to `datasets.list_datasets()`. `bcb_focus`, `bcb_ptax` and `bcb_ptax_moedas` are source contracts reused by `expectativas_mercado`, `cotacoes_cambio` and `moedas_cambio`; their dataset names do not add contract aliases. The PTAX page covers both quotes and the catalogue.
 
-The four Agrofit dataset names reuse the existing `agrofit_*` contracts through `_contract_name`; they do not register contract aliases. There are 53 datasets and 88 registered contracts. `bcb_credito_rural_total` is the source contract of the `bcb.credito_rural_total` function, without a dataset, and `bcb_credito_rural_registro` that of `agregacao="registro"` in `bcb.credito_rural` and in the `credito_rural` dataset. `autorizacoes_defensivos` preserves published duplicate rows and has no artificial primary key.
+The four Agrofit dataset names reuse the existing `agrofit_*` contracts through `_contract_name`; they do not register contract aliases. There are 54 datasets and 89 registered contracts. `bcb_credito_rural_total` is the source contract of the `bcb.credito_rural_total` function, without a dataset, and `bcb_credito_rural_registro` that of `agregacao="registro"` in `bcb.credito_rural` and in the `credito_rural` dataset. `autorizacoes_defensivos` preserves published duplicate rows and has no artificial primary key.
 
 `series_economicas` reuses `bcb_sgs` 3.0 without a contract alias. Selection uses an SGS code or alias, with units and frequency depending on the series. The dataset preserves query provenance and does not reconstruct historical revisions.
 
@@ -36,6 +36,7 @@ The two [cultivar datasets](../api/cultivares.en.md) reuse the new `rnc_registra
 
 | Dataset | Description | Sources |
 |---------|-------------|---------|
+| [unidades_conservacao](./unidades_conservacao.en.md) | Federal, state and municipal conservation units, including private reserves, from CNUC. | CNUC/MMA |
 | [unidades_conservacao_federais](./unidades_conservacao_federais.en.md) | Federal conservation-unit attributes published by ICMBio. | ICMBio |
 | [precos_diesel](./precos_diesel.en.md) | Weekly diesel prices and explicit monthly aggregates from ANP. | ANP |
 | [moedas_cambio](./moedas_cambio.en.md) | Current currency catalogue from the BCB PTAX OData service. | BCB |
@@ -126,7 +127,7 @@ from agrobr import datasets
 
 # List datasets
 print(datasets.list_datasets())
-# 53 datasets
+# 54 datasets
 
 # List a dataset's products
 datasets.list_products("preco_diario")

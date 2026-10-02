@@ -23,11 +23,11 @@
   </a>
 </p>
 
-Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **40 fontes públicas** — preços de mercado, produção e safras, comércio exterior, crédito rural, clima, monitoramento ambiental, cadastros territoriais e regulatório.
+Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **41 fontes públicas** — preços de mercado, produção e safras, comércio exterior, crédito rural, clima, monitoramento ambiental, cadastros territoriais e regulatório.
 
 O Brasil é um dos maiores produtores agrícolas do mundo, mas os dados públicos estão espalhados por dezenas de portais do governo, cada um com seu formato, codificação e peculiaridades. O agrobr transforma tudo isso em DataFrames limpos e validados.
 
-**v2.0.0** — 53 datasets | 88 contratos versionados | evidências de validação por incremento | validação de parâmetros antes da rede | golden tests por fonte
+**v2.0.0** — 54 datasets | 89 contratos versionados | evidências de validação por incremento | validação de parâmetros antes da rede | golden tests por fonte
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -44,7 +44,7 @@ pip install agrobr[pdf]             # pdfplumber para ANDA, Lista Suja, Rio Verd
 pip install agrobr[polars]          # Suporte a Polars
 pip install agrobr[browser]         # Playwright (opcional, para fontes com JS)
 pip install agrobr[bigquery]        # Base dos Dados (fallback BCB/SICOR)
-pip install agrobr[geo]             # GeoPandas — habilita variantes _geo (PRODES, DETER, SICAR, FUNAI, ICMBio, INCRA, IBAMA, Queimadas, MapBiomas Alerta, ANA, SFB, EMBRAPA Solos, Acervo Fundiário)
+pip install agrobr[geo]             # GeoPandas — habilita variantes _geo (PRODES, DETER, SICAR, FUNAI, ICMBio, CNUC, IBGE (malha municipal e áreas urbanizadas), INCRA, IBAMA, Queimadas, MapBiomas Alerta, ANA, SFB, EMBRAPA Solos, Acervo Fundiário)
 pip install agrobr[all]             # Todas as integrações opcionais de runtime
 ```
 
@@ -230,7 +230,7 @@ gdf = await ana.pivos_irrigacao_geo(uf='MT')   # requer agrobr[geo]
 
 ### Ambiental
 
-Queimadas (focos INPE), Desmatamento (PRODES + DETER), MapBiomas (cobertura/transição), MapBiomas Alerta, IBAMA (embargos), ICMBio (UCs), SFB (florestas públicas).
+Queimadas (focos INPE), Desmatamento (PRODES + DETER), MapBiomas (cobertura/transição), MapBiomas Alerta, IBAMA (embargos), ICMBio e CNUC (UCs), SFB (florestas públicas).
 
 ```python
 from agrobr import queimadas, desmatamento, mapbiomas
@@ -260,6 +260,7 @@ gdf = await queimadas.focos_geo(ano=2024, mes=9, uf='MT')
 | **MapBiomas Alerta** | `mapbiomas_alerta.alertas(inicio='2024-01-01')` (requer `AGROBR_MAPBIOMAS_ALERTA_TOKEN`) | [docs/sources/mapbiomas_alerta.md](https://www.agrobr.dev/docs/sources/mapbiomas_alerta/) |
 | **IBAMA** embargos | `ibama.embargos(uf='PA')` | [docs/sources/ibama.md](https://www.agrobr.dev/docs/sources/ibama/) |
 | **ICMBio** UCs federais | `icmbio.ucs(uf='AM', grupo='PI')` | [docs/sources/icmbio.md](https://www.agrobr.dev/docs/sources/icmbio/) |
+| **CNUC** UCs das 3 esferas, com RPPNs | `cnuc.ucs(uf='SE', esfera='municipal')` | [docs/sources/cnuc.md](https://www.agrobr.dev/docs/sources/cnuc/) |
 | **SFB** florestas públicas | `sfb.cnfp(uf='AM')`, `sfb.concessoes(uf='AM')`, `sfb.ifn_conglomerados(uf='MT')` | [docs/sources/sfb.md](https://www.agrobr.dev/docs/sources/sfb/) |
 
 ### Cadastros territoriais
@@ -352,7 +353,7 @@ print(meta.selected_source, meta.attempted_sources, meta.contract_version)
 print(datasets.list_datasets())
 ```
 
-53 datasets disponíveis. Veja a [lista completa](#datasets-disponíveis) abaixo.
+54 datasets disponíveis. Veja a [lista completa](#datasets-disponíveis) abaixo.
 
 ## Reprodutibilidade — snapshots e modo determinístico
 
@@ -444,6 +445,7 @@ agrobr snapshot list
 | `expectativas_mercado` | Expectativas anuais e mensais de mercado do Focus/BCB | BCB |
 | `moedas_cambio` | Catálogo corrente de moedas do serviço PTAX/BCB | BCB |
 | `precos_diesel` | Preços semanais de diesel da ANP e médias mensais derivadas | ANP |
+| `unidades_conservacao` | Unidades de conservação federais, estaduais e municipais, com RPPNs, do CNUC | CNUC/MMA |
 | `unidades_conservacao_federais` | Cadastro corrente de unidades de conservação federais da camada ICMBio/INDE | ICMBio |
 | `abate_trimestral` | Abate de bovinos, suínos e frangos por UF | IBGE Abate |
 | `autorizacoes_defensivos` | Autorizações de uso com multiplicidade publicada | Agrofit/MAPA |
@@ -538,7 +540,8 @@ Disponibilidade monitorada automaticamente. Use `agrobr health` para verificar l
 | SFB | Florestas públicas (CNFP), concessões florestais, IFN conglomerados (ArcGIS REST) | ✅ | Funcional (IFN fora do ar desde 02/09/2026) |
 | FUNAI | Terras indígenas (WFS geoserver.funai.gov.br) — 665 TIs, filtros uf/fase/bbox | ✅ | Funcional |
 | IBAMA | Embargos ambientais (CSV de dados abertos + geometrias WKT) — ~116 mil registros, atualização diária, filtro uf/bbox | ✅ | Funcional |
-| ICMBio | Unidades de conservação federais (WFS geoservicos.inde.gov.br) — 344 UCs | ✅ | Funcional |
+| ICMBio | Unidades de conservação federais (WFS geoservicos.inde.gov.br) — 347 UCs | ✅ | Funcional |
+| CNUC | UCs federais, estaduais e municipais, com RPPNs (WFS cnuc-mapserv.mma.gov.br) — 3.450 UCs | ✅ | Funcional |
 | INCRA | Territórios quilombolas (WFS cmr.funai.gov.br) — ~426 territórios | ✅ | Funcional |
 | Acervo Fundiário/INCRA | Parcelas certificadas SIGEF (27 UFs) + SNCI (27 UFs) + assentamentos Brasil — shapefile ZIP | ✅ | Funcional |
 | RNC/CultivarWeb | Cadastros correntes de registradas e protegidas; IDs exatos e término textual — MAPA/SNPC | ✅ | Funcional |
@@ -646,7 +649,7 @@ Veja o [guia completo de pipelines](https://www.agrobr.dev/docs/advanced/pipelin
 
 - [Guia Rápido](https://www.agrobr.dev/docs/quickstart/)
 - [Datasets](https://www.agrobr.dev/docs/contracts/) — Contratos e garantias
-- [Fontes](https://www.agrobr.dev/docs/sources/) — 40 fontes documentadas
+- [Fontes](https://www.agrobr.dev/docs/sources/) — 41 fontes documentadas
 - [API pública e referência](https://www.agrobr.dev/docs/api/)
 - [Resiliência](https://www.agrobr.dev/docs/advanced/resilience/)
 - [Portabilidade](https://www.agrobr.dev/docs/porting/) — Guia para portar o agrobr para R, Julia ou outras linguagens

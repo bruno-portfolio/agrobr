@@ -13,9 +13,9 @@
 
 ## What is agrobr?
 
-Python infrastructure for Brazilian agricultural data with a **semantic layer** over 40 public sources.
+Python infrastructure for Brazilian agricultural data with a **semantic layer** over 41 public sources.
 
-**v2.0.0** — 53 datasets | 88 versioned contracts | parameter validation before network calls | per-source golden tests
+**v2.0.0** — 54 datasets | 89 versioned contracts | parameter validation before network calls | per-source golden tests
 
 - **CEPEA/ESALQ**: 22 price indicators (soybean, corn, live cattle, arabica coffee, robusta coffee, cotton, wheat, rice, sugar, ethanol, poultry, hog, milk, orange)
 - **CONAB**: Crop surveys, supply/demand balance, production costs, historical series, weekly planting/harvest progress, and wholesale produce prices (CEASA/PROHORT)
@@ -43,7 +43,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 - **ZARC**: Agricultural Climate Risk Zoning — planting windows by municipality/crop/soil/cycle (MAPA/Embrapa, CC-BY)
 - **Agrofit/MAPA (Pesticides)**: Pesticides registered in Brazil — formulated products, use authorizations, technical products and composition (Creative Commons Attribution, version unspecified)
 - **FUNAI**: Indigenous lands via WFS (665 territories, reproduction with citation)
-- **ICMBio**: Federal conservation units via WFS (344 units)
+- **ICMBio**: Federal conservation units via WFS (347 units, without private reserves)
 - **INCRA**: Quilombola territories via WFS (~426 territories)
 - **IBAMA**: Environmental embargoes from the open data portal (~116K terms, daily update)
 - **MapBiomas Alerta**: Deforestation alerts via GraphQL (citation required)
@@ -56,7 +56,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 
 ## Datasets — Semantic Layer
 
-53 datasets are available with tracked provenance. Fallback depends on the alternative sources configured for each dataset:
+54 datasets are available with tracked provenance. Fallback depends on the alternative sources configured for each dataset:
 
 | Dataset | Description | Sources |
 |---------|-------------|------------------------------|
@@ -67,6 +67,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 | `moedas_cambio` | Current PTAX currency catalogue | BCB |
 | `precos_diesel` | ANP weekly prices and explicit monthly aggregates | ANP |
 | `series_economicas` | Economic time series by SGS code or alias | BCB |
+| `unidades_conservacao` | Federal, state and municipal conservation units, including private reserves, from CNUC | CNUC/MMA |
 | `unidades_conservacao_federais` | Federal conservation-unit attributes | ICMBio |
 | `abate_trimestral` | Slaughter of cattle, hogs and poultry by state | IBGE Slaughter |
 | `autorizacoes_defensivos` | Use authorizations preserving published multiplicity | Agrofit/MAPA |
@@ -186,7 +187,7 @@ df = nasa_power.clima_uf('MT', ano=2025)
 
 ## Features
 
-- **40 public sources** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Deforestation, MapBiomas, B3 Agricultural Futures, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Tolls, SICAR, ZARC, Agrofit/MAPA (Pesticides), FUNAI, ICMBio, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA, CFTC COT, UNICA
+- **41 public sources** — CEPEA, CONAB, IBGE, NASA POWER, BCB/SICOR, ComexStat, ANDA, ABIOVE, ANEC, USDA, IMEA, DERAL, INMET, Notícias Agrícolas, Queimadas/INPE, Deforestation, MapBiomas, B3 Agricultural Futures, UN Comtrade, ANTAQ, ANP Diesel, MAPA PSR, ANTT Tolls, SICAR, ZARC, Agrofit/MAPA (Pesticides), FUNAI, ICMBio, CNUC/MMA, INCRA, IBAMA, MapBiomas Alerta, Lista Suja, ANA/SNIRH, SFB, RNC/CultivarWeb, EMBRAPA Solos, Fundação Rio Verde, Acervo Fundiário/INCRA, CFTC COT, UNICA
 - **Golden tests** — per-source reference fixtures (real or documented synthetic data)
 - **HTTP resilience** — centralized `retry_on_status()`/`retry_async()`, Retry-After, 429 handling
 - **Semantic layer** — datasets with provenance and fallback where alternative sources are configured

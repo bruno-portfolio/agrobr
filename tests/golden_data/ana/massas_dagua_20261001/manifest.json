@@ -1,0 +1,358 @@
+{
+ "source": "ana",
+ "format": "arcgis_rest_json_geojson",
+ "license": "livre (metadado oficial 'Massas d'Água' da ANA: 'O acesso ao dado é livre.')",
+ "needs_real_data": false,
+ "content": "Respostas oficiais do ArcGIS REST da ANA (serviço SPR/Massa_dagua) gravadas byte a byte: count, returnIdsOnly e as faixas de FID de cada recorte, em JSON e GeoJSON. manifest.json liga cada pedido (caminho + parâmetros) ao arquivo, com SHA-256, bytes, URL e horário. O campo do empreendedor (nmemp) não é pedido pelo agrobr e não está nas respostas.",
+ "cases": {
+  "bbox_df": "massas d'água num bbox de 0,05° no DF",
+  "divisa_df_go": "bbox na divisa DF/GO com a feição publicada como 'DISTRITO FEDERAL, GOIÁS'",
+  "barragem_df": "bbox de uma barragem de irrigação no DF com nome, data de construção, volume e código SNISB publicados",
+  "uf_df_3": "uf='DF' com max_registros=3: contagem, FID das 228 e 1 faixa de 3",
+  "oceano": "bbox no Atlântico: contagem oficial zero, sem páginas"
+ },
+ "oracle": "tests/test_ana/oficial.py lê as respostas com json da biblioteca padrão; a completude vem do returnIdsOnly oficial.",
+ "metadata": "https://metadados.snirh.gov.br/geonetwork/srv/api/records/7d054e5a-8cc9-403c-9f1a-085fd933610c",
+ "base": "https://www.snirh.gov.br/arcgis/rest/services/SPR",
+ "layer": "Massa_dagua/MapServer/0",
+ "captured_at": "2026-10-01T21:57:13.136385+00:00",
+ "requests": [
+  {
+   "case": "bbox_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.6,-16.0,-47.55,-15.95",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "bbox_df/count.json",
+   "sha256": "1fb6f6be8607ab15c04198cba240a52c2ae4524e5d0d79068813f1972f29054c",
+   "bytes": 11,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-47.6%2C-16.0%2C-47.55%2C-15.95&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-10-01T21:55:40.733086+00:00"
+  },
+  {
+   "case": "bbox_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "FID",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.6,-16.0,-47.55,-15.95",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "bbox_df/ids.json",
+   "sha256": "34bfe5314492ebb2bc5d9abfae11a537e12d14e8838ae2257f90d97173bf21d2",
+   "bytes": 81,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=1%3D1&outFields=FID&outSR=4326&f=json&geometry=-47.6%2C-16.0%2C-47.55%2C-15.95&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-10-01T21:55:44.219315+00:00"
+  },
+  {
+   "case": "bbox_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(1=1) AND FID >= 37637 AND FID <= 229628",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.6,-16.0,-47.55,-15.95",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false"
+   },
+   "file": "bbox_df/faixa_0.json",
+   "sha256": "6bb325f5d0b58fb957b44d1b41225a7e10ec70a3a127fa866b3bda66a865756d",
+   "bytes": 4987,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%281%3D1%29+AND+FID+%3E%3D+37637+AND+FID+%3C%3D+229628&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=json&geometry=-47.6%2C-16.0%2C-47.55%2C-15.95&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false",
+   "fetched_at": "2026-10-01T21:55:49.190853+00:00"
+  },
+  {
+   "case": "bbox_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(1=1) AND FID >= 37637 AND FID <= 229628",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "geojson",
+    "geometry": "-47.6,-16.0,-47.55,-15.95",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects"
+   },
+   "file": "bbox_df/faixa_0.geojson",
+   "sha256": "b436e83150b5dc5980ba41a1d0827387a651dcde3e45a55e83612b5fddbfb108",
+   "bytes": 6896,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%281%3D1%29+AND+FID+%3E%3D+37637+AND+FID+%3C%3D+229628&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=geojson&geometry=-47.6%2C-16.0%2C-47.55%2C-15.95&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+   "fetched_at": "2026-10-01T21:56:01.087366+00:00"
+  },
+  {
+   "case": "divisa_df_go",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.39,-15.58,-47.37,-15.56",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "divisa_df_go/count.json",
+   "sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+   "bytes": 11,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-47.39%2C-15.58%2C-47.37%2C-15.56&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-10-01T21:56:04.543078+00:00"
+  },
+  {
+   "case": "divisa_df_go",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "FID",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.39,-15.58,-47.37,-15.56",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "divisa_df_go/ids.json",
+   "sha256": "4bb39c3c83e63b4c9fec827cea42b28b561ab596b33b238cfd1bdfd7a942ccca",
+   "bytes": 61,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=1%3D1&outFields=FID&outSR=4326&f=json&geometry=-47.39%2C-15.58%2C-47.37%2C-15.56&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-10-01T21:56:07.988813+00:00"
+  },
+  {
+   "case": "divisa_df_go",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(1=1) AND FID >= 58108 AND FID <= 218910",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.39,-15.58,-47.37,-15.56",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false"
+   },
+   "file": "divisa_df_go/faixa_0.json",
+   "sha256": "835ea9449892fa0d3836f2f66395140c5380b43955d7cabdc51254c5dce35f1a",
+   "bytes": 3743,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%281%3D1%29+AND+FID+%3E%3D+58108+AND+FID+%3C%3D+218910&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=json&geometry=-47.39%2C-15.58%2C-47.37%2C-15.56&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false",
+   "fetched_at": "2026-10-01T21:56:12.697534+00:00"
+  },
+  {
+   "case": "divisa_df_go",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(1=1) AND FID >= 58108 AND FID <= 218910",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "geojson",
+    "geometry": "-47.39,-15.58,-47.37,-15.56",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects"
+   },
+   "file": "divisa_df_go/faixa_0.geojson",
+   "sha256": "273a7211312286159b0900d4f45104d052e144b57bb2b1b567bf03775df51949",
+   "bytes": 5107,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%281%3D1%29+AND+FID+%3E%3D+58108+AND+FID+%3C%3D+218910&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=geojson&geometry=-47.39%2C-15.58%2C-47.37%2C-15.56&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+   "fetched_at": "2026-10-01T21:56:24.361361+00:00"
+  },
+  {
+   "case": "barragem_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.466,-15.993,-47.462,-15.988",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "barragem_df/count.json",
+   "sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+   "bytes": 11,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-10-01T21:56:27.816565+00:00"
+  },
+  {
+   "case": "barragem_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "FID",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.466,-15.993,-47.462,-15.988",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnIdsOnly": "true"
+   },
+   "file": "barragem_df/ids.json",
+   "sha256": "9db97dd9e8a14326b96e71c1ffd685da7fd5f5199c06cbd77230a6ff20184459",
+   "bytes": 48,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=1%3D1&outFields=FID&outSR=4326&f=json&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+   "fetched_at": "2026-10-01T21:56:31.278710+00:00"
+  },
+  {
+   "case": "barragem_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(1=1) AND FID >= 114424 AND FID <= 114424",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-47.466,-15.993,-47.462,-15.988",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "false"
+   },
+   "file": "barragem_df/faixa_0.json",
+   "sha256": "4e1fa67744f6f0c563dd27cafbf8e6169501dd85f7f9ee915ca8b72261532164",
+   "bytes": 3032,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%281%3D1%29+AND+FID+%3E%3D+114424+AND+FID+%3C%3D+114424&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=json&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=false",
+   "fetched_at": "2026-10-01T21:56:34.357343+00:00"
+  },
+  {
+   "case": "barragem_df",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(1=1) AND FID >= 114424 AND FID <= 114424",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "geojson",
+    "geometry": "-47.466,-15.993,-47.462,-15.988",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects"
+   },
+   "file": "barragem_df/faixa_0.geojson",
+   "sha256": "4e01eae54ed484d25230efaec66b661c6cd26ce4b21359053ff89ca97408eb2a",
+   "bytes": 1761,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%281%3D1%29+AND+FID+%3E%3D+114424+AND+FID+%3C%3D+114424&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=geojson&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+   "fetched_at": "2026-10-01T21:56:44.366214+00:00"
+  },
+  {
+   "case": "uf_df_3",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "returnCountOnly": "true"
+   },
+   "file": "uf_df_3/count.json",
+   "sha256": "1e466bd76e03527cc94fa0ef0e243e972302f45fde1de61148af11bc64c11bee",
+   "bytes": 13,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29&outFields=%2A&outSR=4326&f=json&returnCountOnly=true",
+   "fetched_at": "2026-10-01T21:56:48.823550+00:00"
+  },
+  {
+   "case": "uf_df_3",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "(nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')",
+    "outFields": "FID",
+    "outSR": "4326",
+    "f": "json",
+    "returnIdsOnly": "true"
+   },
+   "file": "uf_df_3/ids.json",
+   "sha256": "cc5950bf4c5303461cca9f7755d53fda2c71e5d209192340a0984c1867c67481",
+   "bytes": 1541,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29&outFields=FID&outSR=4326&f=json&returnIdsOnly=true",
+   "fetched_at": "2026-10-01T21:56:53.284993+00:00"
+  },
+  {
+   "case": "uf_df_3",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "((nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')) AND FID >= 961 AND FID <= 13043",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "json",
+    "returnGeometry": "false"
+   },
+   "file": "uf_df_3/faixa_0.json",
+   "sha256": "b4e74f2949f1e0b18b5ac3ffcd97e070c69ce96b4f519dbc3c7b27e4e6f37d77",
+   "bytes": 3743,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29%29+AND+FID+%3E%3D+961+AND+FID+%3C%3D+13043&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=json&returnGeometry=false",
+   "fetched_at": "2026-10-01T21:56:56.492393+00:00"
+  },
+  {
+   "case": "uf_df_3",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "((nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')) AND FID >= 961 AND FID <= 13043",
+    "outFields": "FID,esp_cd,nmoriginal,nmalternat,detipomass,dedominial,defiscaliz,usoprinc,nuvolumhm3,nuareakm2,nuareaha,nuperimkm,dtreserv,nmriocomp,cod_snisb,cotrecho,nmufe,nmmun,deversao",
+    "outSR": "4326",
+    "f": "geojson"
+   },
+   "file": "uf_df_3/faixa_0.geojson",
+   "sha256": "50b8c18a7486bf8546b694ed3694b787dd32f88bfad0725d86871c3f023eb630",
+   "bytes": 4841,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29%29+AND+FID+%3E%3D+961+AND+FID+%3C%3D+13043&outFields=FID%2Cesp_cd%2Cnmoriginal%2Cnmalternat%2Cdetipomass%2Cdedominial%2Cdefiscaliz%2Cusoprinc%2Cnuvolumhm3%2Cnuareakm2%2Cnuareaha%2Cnuperimkm%2Cdtreserv%2Cnmriocomp%2Ccod_snisb%2Ccotrecho%2Cnmufe%2Cnmmun%2Cdeversao&outSR=4326&f=geojson",
+   "fetched_at": "2026-10-01T21:57:08.652521+00:00"
+  },
+  {
+   "case": "oceano",
+   "path": "Massa_dagua/MapServer/0",
+   "params": {
+    "where": "1=1",
+    "outFields": "*",
+    "outSR": "4326",
+    "f": "json",
+    "geometry": "-30.0,-20.0,-29.9,-19.9",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnCountOnly": "true"
+   },
+   "file": "oceano/count.json",
+   "sha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+   "bytes": 11,
+   "status": 200,
+   "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=json&geometry=-30.0%2C-20.0%2C-29.9%2C-19.9&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+   "fetched_at": "2026-10-01T21:57:12.122269+00:00"
+  }
+ ]
+}

@@ -55,6 +55,7 @@ tests/golden_data/ibge/pevs_valor_oficial/** -text
 tests/golden_data/ibge/ppm_galinhas_oficial_20260922/** -text
 tests/golden_data/icmbio/official_20260905/** -text
 tests/golden_data/icmbio/ucs_20260908/** -text
+tests/golden_data/cnuc/se_20261001/** -text
 tests/golden_data/icmbio/crs_20260923/** -text
 tests/golden_data/incra/andamento_20260608/** -text
 tests/golden_data/incra/nacional_20260908/** -text
@@ -73,6 +74,9 @@ tests/golden_data/sicar/selecao_20260906/** -text
 tests/golden_data/sicar/versoes_20260916/** -text
 tests/golden_data/incra/andamento_20260903/** -text
 tests/golden_data/ana/oficial_20260923/** -text
+tests/golden_data/ana/massas_dagua_20261001/** -text
+tests/golden_data/ibge/malha_df_20261001/** -text
+tests/golden_data/ibge/areas_urbanizadas_df_20261001/** -text
 tests/golden_data/ibge/dtb_2025/** -text
 tests/golden_data/zarc/edicoes_20260923/** -text
 tests/golden_data/conab_ceasa/prohort_grupos_20260923/** -text

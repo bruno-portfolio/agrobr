@@ -1,0 +1,26 @@
+{
+  "source": "acervo_fundiario",
+  "format": "shapefile_zip",
+  "parser_module": "agrobr.acervo_fundiario.parser",
+  "parser_function": "parse_sigef",
+  "url": "https://certificacao.incra.gov.br/csv_shp/zip/Sigef%20P%C3%BAblico_DF.zip",
+  "captured_at": "2026-10-01T20:43:55.145595+00:00",
+  "last_modified": "Thu, 01 Oct 2026 09:46:15 GMT",
+  "etag": "\"7bd2abb38951dd1:0\"",
+  "sha256": "0bec7658e8f423360e07664d44957e202a9642209f7c682a87ab9cf372465042",
+  "bytes": 8289,
+  "original_sha256": "f0688f8cdbd8f106855725108705a8c7c3654e72c5f06725b4cf494fb9d621dd",
+  "original_bytes": 387843,
+  "license": "nc",
+  "license_reference": "docs/licenses.md — Acervo Fundiario/INCRA",
+  "needs_real_data": false,
+  "reduction": "Records at source_positions of the official shapefile, in original order. DBF header, field descriptors and record bytes, SHP record contents and PRJ retained byte for byte. Only the DBF record count, SHP record numbers (renumbered 1..n), SHP/SHX file lengths, header bounding boxes (and Z range) and the SHX index were recomputed; ZIP repackaged. No values generated or normalized.",
+  "privacy": "Glebas, lotes de núcleo rural e de projeto de assentamento (nomes de lugar); sem CPF/CNPJ nem nome de pessoa.",
+  "oracle": "tests/test_acervo_fundiario/oficial.py: DBF descriptors/records and SHP geometry read with struct, Latin-1 decoded; no agrobr parser, GDAL or pyogrio involved.",
+  "source_positions": [
+    1,
+    4,
+    16,
+    22
+  ]
+}

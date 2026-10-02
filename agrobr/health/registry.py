@@ -8,7 +8,8 @@ from datetime import date
 from typing import Any, Literal
 
 from agrobr.ana import models as ana_models
-from agrobr.constants import URLS, Fonte
+from agrobr.cnuc import client as cnuc_client
+from agrobr.constants import RNC_PUBLIC_URLS, URLS, Fonte
 from agrobr.icmbio import models as icmbio_models
 from agrobr.sfb import models as sfb_models
 from agrobr.utils import geo
@@ -52,7 +53,7 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
     stable_year = date.today().year - 2
     overrides: dict[Fonte, dict[str, Any]] = {
         Fonte.ACERVO_FUNDIARIO: {
-            "url": f"{URLS[Fonte.ACERVO_FUNDIARIO]['download']}Sigef%20Brasil_AC.zip",
+            "url": f"{URLS[Fonte.ACERVO_FUNDIARIO]['download']}Sigef%20P%C3%BAblico_AC.zip",
             "method": "HEAD",
             "tier": "best_effort",
         },
@@ -94,6 +95,10 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
         },
         Fonte.CFTC: {
             "url": f"{URLS[Fonte.CFTC]['disaggregated_futures']}?$limit=1",
+        },
+        Fonte.CNUC: {
+            "url": cnuc_client.count_url(cnuc_client.FiltroServidor()),
+            "body_error_markers": ("ExceptionReport", "ServiceException"),
         },
         Fonte.UNICA: {
             "url": URLS[Fonte.UNICA]["quinzenal_page"],
@@ -167,7 +172,8 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             "verify": _legacy_tls_context(),
         },
         Fonte.RNC: {
-            "url": URLS[Fonte.RNC]["cultivarweb"],
+            "url": RNC_PUBLIC_URLS["registradas"],
+            "method": "HEAD",
         },
         Fonte.ZARC: {
             "url": _ckan_package_url(
@@ -214,6 +220,7 @@ SOURCE_DATASET_MAP: dict[str, list[str]] = {
     ],
     "cepea": ["preco_diario"],
     "cftc": ["posicionamento_fundos"],
+    "cnuc": ["unidades_conservacao"],
     "comexstat": ["exportacao", "importacao"],
     "comtrade": ["comercio_internacional"],
     "conab": [

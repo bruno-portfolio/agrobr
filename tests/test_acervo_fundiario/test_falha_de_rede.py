@@ -13,7 +13,7 @@ from tests.helpers import levanta_exatamente
 
 pytestmark = pytest.mark.usefixtures("isolated_cache")
 
-URL = "https://certificacao.incra.gov.br/csv_shp/zip/Sigef%20Brasil_SE.zip"
+URL = "https://certificacao.incra.gov.br/csv_shp/zip/Sigef%20Privado_SE.zip"
 
 
 def _servir(
@@ -52,7 +52,7 @@ def _erro_500(_request: httpx.Request) -> httpx.Response:
 async def test_download_tipa_a_falha_e_repete(monkeypatch, responder, causa, mensagem):
     pedidos = _servir(monkeypatch, responder)
     with levanta_exatamente(SourceUnavailableError) as erro:
-        await client.download_and_cache("sigef", "SE")
+        await client.download_and_cache("sigef_privado", "SE")
     assert mensagem in str(erro.value)
     assert isinstance(erro.value.__cause__, causa)
     assert erro.value.url == URL
@@ -72,7 +72,7 @@ async def test_head_tipa_a_falha_e_repete(monkeypatch):
 async def test_status_nao_transitorio_tipa_sem_repetir(monkeypatch):
     pedidos = _servir(monkeypatch, lambda _request: httpx.Response(403))
     with levanta_exatamente(SourceUnavailableError) as erro:
-        await client.download_and_cache("sigef", "SE")
+        await client.download_and_cache("sigef_privado", "SE")
     assert "HTTP 403: a fonte recusou o pedido" in str(erro.value)
     assert isinstance(erro.value.__cause__, httpx.HTTPStatusError)
     assert pedidos == ["GET"]
