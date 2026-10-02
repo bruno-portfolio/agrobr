@@ -99,27 +99,32 @@ In order of risk. Each line points to the section with the details.
 34. `cadastro_rural`, `desmatamento`, `exportacao`, `importacao`, `uso_do_solo` and `zoneamento_agricola` inside
     `datasets.deterministic(...)` raise `InvalidParameterError` before the network, where 1.1.0 returned current data: move
     those calls outside the block ([§71](#71-deterministic-mode-a-warning-where-the-mode-does-not-apply)).
+35. `normalize.municipio_para_ibge(nome)` without `uf` raises `InvalidParameterError` when the name belongs to more than one
+    municipality (521 municipalities share 240 names), where 1.1.0 silently returned the code of the first one on the list:
+    pass `uf` ([§90](#90-errors-the-class-tells-the-cause)).
+36. `abiove.exportacao(ano, produto="total")` raises `InvalidParameterError`, where 1.1.0 returned empty: for the total
+    of all products, use `agregacao="mensal"` ([§39](#39-abiove-latest-edition-and-edicao)).
 
 **No longer raises**
 
-35. `datasets.estimativa_safra` with no observations in every source returns the contract's empty frame with
+37. `datasets.estimativa_safra` with no observations in every source returns the contract's empty frame with
     `UserWarning`, no longer `SourceUnavailableError`: check `df.empty` ([estimativa_safra](#estimativa_safra-contract-31-and-temporal-selection)).
-36. `cftc.cot` with no report in the period returns a typed empty frame, no longer `SourceUnavailableError`; counts come as
+38. `cftc.cot` with no report in the period returns a typed empty frame, no longer `SourceUnavailableError`; counts come as
     `Int64` ([§99](#99-cftc-a-period-without-reports-returns-a-typed-empty-frame)).
 
 **Removed API**
 
-37. `agrobr.configure()`, the `quality`, `sla`, `export`, `plugins` and `validators.semantic` modules and
+39. `agrobr.configure()`, the `quality`, `sla`, `export`, `plugins` and `validators.semantic` modules and
     `load_baseline_fingerprint` are gone, and `cache.get_policy` now applies to CEPEA only: remove the uses
     ([§9](#9-experimental-modules-were-removed), [§10](#10-agrobrconfigure-was-removed), [§50](#50-dead-code-cleanup),
     [§83](#83-cache-the-cepea-policy-only-and-load_baseline_fingerprint-is-gone)).
     The `uf=` argument of `anda.entregas` and `datasets.fertilizante` is also gone: it was an explicit parameter in 1.1.0,
     and passing it raises `TypeError`, because the PDFs only carry the national total ([§50](#50-dead-code-cleanup)).
-38. The `agrobr.conab.custo_producao` and `agrobr.conab.serie_historica` subpackages are gone: import the functions
+40. The `agrobr.conab.custo_producao` and `agrobr.conab.serie_historica` subpackages are gone: import the functions
     from `agrobr.conab` ([§93](#93-conab-one-path-per-function)).
-39. `b3.oi_historico` is renamed `b3.posicoes_abertas_historico`, also in `sync.b3`; the `futuros_agricolas`
+41. `b3.oi_historico` is renamed `b3.posicoes_abertas_historico`, also in `sync.b3`; the `futuros_agricolas`
     `tipo="oi_historico"` stays ([§98](#98-b3-oi_historico-is-renamed-posicoes_abertas_historico)).
-40. The `_moeda` parameter of `cepea.indicador` is removed: passing it raises `TypeError` ([§6](#6-cepea-rejects-invalid-parameters)).
+42. The `_moeda` parameter of `cepea.indicador` is removed: passing it raises `TypeError` ([§6](#6-cepea-rejects-invalid-parameters)).
 
 To stay on the 1.x series while you migrate: `pip install "agrobr<2"`.
 
@@ -620,7 +625,7 @@ Live hog preserves the State column as market location; affected legacy rows are
 
 ## 16. Snapshots and period parameters
 
-Snapshots require `pyarrow` or `fastparquet` and accept only CEPEA, CONAB, and IBGE. Zero files removes the newly created directory and raises `SnapshotError`, exported from `agrobr`; the CLI exits with code 1. Partial snapshots record errors by source in the manifest.
+Snapshots require `pyarrow` or `fastparquet` and accept only CEPEA, CONAB, and IBGE. Zero files removes the newly created directory and raises `SnapshotError`, exported from `agrobr`; the CLI exits with code 1. Partial snapshots record errors by source in the manifest. `load_from_snapshot()` rejects `pyarrow` before 14.0.1 (CVE-2023-47248) with `ImportError`, before reading the Parquet file; upgrade with `pip install "pyarrow>=14.0.1"`.
 
 PPM rejects future years; PRODES requires an integer year within its layer range. Slaughter, quarterly milk, and GDP accept formats such as `2025-T4`, normalized to `202504`. ZARC accepts aliases and source names, but availability depends on season. Legacy annual fire archives are supported; fallback downloads may contain hundreds of MB. HTTP 400/404 when requesting a token indicates an unpublished file and returns an empty result after date validation. At download time, HTTP 404 returns empty data, but HTTP 400 raises `SourceUnavailableError`. Token/download operations are serialized within the process; historical queries fetch days sequentially.
 
@@ -778,7 +783,7 @@ another process and a full disk move nothing. See [what agrobr writes to disk](.
 
 ## 19. Dependencies, failures, and structured output
 
-Security floors also move to HTTPX 0.28.1, httpcore 1.0.9, lxml 6.1.0, requests 2.33.0, and GeoPandas 1.1.4 in the geo extra. See the rationale in the [dependency policy](dependencies.md).
+Security floors also move to HTTPX 0.28.1, httpcore 1.0.9, lxml 6.1.0, requests 2.33.0, and GeoPandas 1.1.4 in the geo extra, and `certifi` 2026.7.22 (TLS certificate authorities) becomes a direct core dependency. See the rationale in the [dependency policy](dependencies.md).
 
 Upgrade dependencies with the package: minimum pandas 2.2.2, Typer 0.26.0, pdfplumber 0.11.10 for PDF, pyogrio 0.8.0 for geo, and polars 0.20.3 for polars (the datasets' `as_polars=True` uses the `String` type, which Polars only has from that version on). These floors exclude combinations that failed during import, CLI execution, or numeric PDF extraction. SIDRA now uses asynchronous HTTP directly; sidrapy is no longer a dependency.
 
@@ -1047,6 +1052,9 @@ without its own edition (e.g. `ano=2026, mes=1`) raised `SourceUnavailableError`
   workbook SHA-256. See the [API](../api/abiove.md).
 - `datasets.exportacao` does not accept `mes`. In 1.1.0, the argument reached the ABIOVE fallback; in 2.0, it raises
   `TypeError` (section 78). For a month, use `abiove.exportacao(ano, mes=...)` or filter the result's `mes` column.
+- `abiove.exportacao(ano, produto="total")` raises `InvalidParameterError`: for the total of all products, use
+  `agregacao="mensal"` (with or without `produto="total"`). In the monthly sum with `produto="grao"` (or another), the
+  `produto` column carries the filtered product; in 1.1.0, it carried `"total"`.
 
 ## 40. Comtrade: aliases with the same meaning as ComexStat
 
@@ -1446,7 +1454,7 @@ unavailability error after the network. In 2.0, they raise `InvalidParameterErro
 - `desmatamento.prodes` (and the dataset) with a year after the current one, before the network; a valid year without
   features still returns empty, now with a warning;
 - `conab.ceasa_precos` and `preco_atacado` with a product or CEASA outside what CONAB/PROHORT publishes, listing the valid
-  ones;
+  ones (after the network call, against the response: a published product outside the 48 in `ceasa_produtos()` filters);
 - `ibge.abate` and `ibge.leite_trimestral` with an unknown state (before, `SourceUnavailableError`), before the network;
 - `cftc.cot` with `inicio > fim`, `conab.custo_sociobiodiversidade` with a year after the current one, and
   `antaq.movimentacao` with an unknown state, before the network or the download;
@@ -1992,13 +2000,13 @@ a text `ano` in ABIOVE, an unknown Notícias Agrícolas product, an out-of-range
 ANTT's `tipo_veiculo`, `evento` with `tipo="apolices"` in `seguro_rural`, a non-text `uf`, an out-of-range `bbox`, an invalid
 crop year in `normalize` and `max_pages` ≤ 0 in the progress weeks. The fire satellite and the MapBiomas class are checked
 after the download, against what the file publishes. `InvalidParameterError` is a `ValueError` subclass: code that checked
-`df.empty` after user input must catch the exception.
+`df.empty` after user input must catch the exception. In `normalize.municipio_para_ibge`, a name shared by more than one municipality without `uf` raises the same error as `resolver_municipio`, listing the candidates; 1.1.0 returned the code of the first one on the list.
 
 **A malformed response raises `ParseError`**, no longer an empty result that looks like "no data": an ArcGIS count without
 `count` (ANA and SFB), a SICOR envelope without `value`, CEASA prices without `resultset`, an ANEC page without the article
 list, an empty IMEA list, an INMET catalogue that is not a list, a MapBiomas Alerta `alerta_info` without the period, a CONAB
 totals sheet without a header, a corrupted structural baseline and a CEPEA consensus without records. Legitimate empties
-(`count` zero, `value=[]`, a day without prices) stay empty.
+(`count` zero, `value=[]`, a day without prices) stay empty. A requested field missing from an ArcGIS layer (ANA and SFB) also raises `ParseError`, naming the field; before, the column was dropped from the result without an error.
 
 **INMET without observations.** `inmet.estacao` and `inmet.clima_uf` with no observation in the period raise
 `SourceUnavailableError`, no longer `ParseError`. Code that caught `ParseError` for "no data" must change the class.
@@ -2128,6 +2136,7 @@ pin the agrobr version.
   Comtrade, ComexStat, ANEC, ANTT and ANP. On a UTC server, from 21:00 to 24:00 on 31 December, the next year is no longer
   accepted.
 - `defensivos`: the cache format moves to 2; the first query downloads again.
+- SICAR, `resumo(uf)` without a municipality: the count is of published features, and versions of the same `cod_imovel` count separately; `MetaInfo` carries `source_details["sicar"]["unidade"] = "feicoes_publicadas"` and a warning in `validation_warnings`. To count properties, use the municipality summary.
 
 ## 98. B3: `oi_historico` is renamed `posicoes_abertas_historico`
 

@@ -1,7 +1,7 @@
 # R Developer Guide
 
 Practical guide to accessing Brazilian agricultural data in R,
-using agrobr as the reference implementation.
+using agrobr as the reference implementation. The examples require R ≥ 4.4 (base R `%||%` operator).
 
 !!! warning "Data Licenses"
     Before implementing access to any source, check the
@@ -46,9 +46,12 @@ These packages already cover part of the scope:
 | [`GetBCBData`](https://CRAN.R-project.org/package=GetBCBData) | BCB series | BCB (partial) |
 | [`rbcb`](https://github.com/wilsonfreitas/rbcb) | BCB API | BCB (partial) |
 | [`deflateBR`](https://CRAN.R-project.org/package=deflateBR) | Deflate BR series | Auxiliary utility |
+| [`comexr`](https://CRAN.R-project.org/package=comexr) | ComexStat API client | ComexStat |
+| [`rb3`](https://CRAN.R-project.org/package=rb3) | Public B3 files (futures settlement prices, yield curves, indexes) | B3 (partial) |
+| [`datazoom.amazonia`](https://CRAN.R-project.org/package=datazoom.amazonia) | Legal Amazon data (PRODES, DETER, MapBiomas, foreign trade) | Deforestation and MapBiomas (partial) |
 
-No R package covers CEPEA, CONAB (any module), ANDA, ABIOVE,
-IMEA, DERAL, ComexStat, Desmatamento, Queimadas, MapBiomas or B3.
+No CRAN package covers CEPEA, CONAB (any module), ANDA, ABIOVE,
+IMEA, DERAL or Queimadas.
 
 ---
 
@@ -59,8 +62,8 @@ IMEA, DERAL, ComexStat, Desmatamento, Queimadas, MapBiomas or B3.
 !!! info "License: CC BY-NC 4.0"
     Free non-commercial use with attribution.
 
-CEPEA uses Cloudflare, so `httr2` directly gets a 403.
-Use `chromote` (R-native headless Chrome):
+CEPEA sits behind Cloudflare, which may answer direct `httr2` requests with a 403.
+That is why the example uses `chromote` (R-native headless Chrome):
 
 ```r
 library(chromote)
@@ -126,6 +129,7 @@ buscar_ceasa <- function(produto = NULL) {
 
   dados <- resp |> resp_body_json()
   cabecalhos <- vapply(dados$metadata[-1], function(m) m$colName, character(1))
+  datas <- as.Date(sub(".*\\((\\d{2}/\\d{2}/\\d{4})\\).*", "\\1", cabecalhos), "%d/%m/%Y")
   ceasas <- sub("\\s*\\(\\d{2}/\\d{2}/\\d{4}\\).*$", "", cabecalhos)
   ceasas <- trimws(gsub("\\s*\r\\s*", " - ", ceasas))
 
@@ -134,7 +138,8 @@ buscar_ceasa <- function(produto = NULL) {
     ok <- !vapply(precos, is.null, logical(1))
     if (!any(ok)) return(NULL)
     data.frame(
-      produto = r[[1]], ceasa = ceasas[ok], preco = unlist(precos[ok]),
+      produto = r[[1]], ceasa = ceasas[ok], data = datas[ok],
+      preco = unlist(precos[ok]),
       stringsAsFactors = FALSE
     )
   }))
@@ -149,6 +154,9 @@ buscar_ceasa <- function(produto = NULL) {
 df <- buscar_ceasa("tomate")
 ```
 
+Each column header of the response carries the date of that CEASA's last price, which can be
+months or years old; that is why the example keeps `data` next to `preco`.
+
 ### CONAB Historical Series (pure HTTP)
 
 !!! info "License: Public data"
@@ -159,26 +167,42 @@ df <- buscar_ceasa("tomate")
 library(httr2)
 library(readxl)
 
-buscar_serie_historica <- function(produto) {
-  urls <- list(
-    soja = "https://www.gov.br/conab/.../soja/view",
-    milho = "https://www.gov.br/conab/.../milho/view"
+buscar_serie_historica <- function(produto, aba = "Produção") {
+  base <- paste0(
+    "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias",
+    "/safras/series-historicas/graos/"
+  )
+  arquivos <- list(
+    soja = "soja/sojaseriehist.xls",
+    milho = "milho/milhototalseriehist.xls"
   )
 
-  url <- urls[[produto]]
-  if (is.null(url)) stop(paste("Unmapped product:", produto))
+  arquivo <- arquivos[[produto]]
+  if (is.null(arquivo)) stop(paste("Unmapped product:", produto))
 
   tmp <- tempfile(fileext = ".xls")
-  req <- request(url) |>
+  req <- request(paste0(base, arquivo)) |>
     req_headers(`User-Agent` = "Mozilla/5.0") |>
     req_timeout(60)
 
   resp <- req |> req_perform()
   writeBin(resp_body_raw(resp), tmp)
 
-  readxl::read_xls(tmp)
+  bruto <- read_xls(tmp, sheet = aba, col_names = FALSE, .name_repair = "minimal")
+  cabecalho <- which(bruto[[1]] == "REGIÃO/UF")
+  dados <- bruto[-seq_len(cabecalho), ]
+  names(dados) <- c("regiao_uf", unlist(bruto[cabecalho, -1]))
+  dados <- dados[!is.na(dados[[2]]), ]
+  dados[-1] <- lapply(dados[-1], as.numeric)
+  dados
 }
+
+producao_soja <- buscar_serie_historica("soja")
 ```
+
+The XLS has one sheet per metric (`Área`, `Produtividade`, `Produção`) and title rows
+above the `REGIÃO/UF` header. The current crop year column may be flagged as `Previsão`
+in its header: it is an estimate, not a closed figure.
 
 ### IBGE/SIDRA
 
@@ -186,11 +210,11 @@ buscar_serie_historica <- function(produto) {
 library(sidrar)
 
 pam <- get_sidra(
-  api = "/t/5457/n3/all/v/214,216/p/2023/c81/2713"
+  api = "/t/5457/n3/all/v/214,216/p/2023/c782/40124"
 )
 
 lspa <- get_sidra(
-  api = "/t/6588/n3/all/v/214,216/p/202406/c81/2713"
+  api = "/t/6588/n3/all/v/35,109/p/202406/c48/39443"
 )
 ```
 
@@ -231,7 +255,7 @@ buscar_exportacao <- function(ano) {
   tmp <- tempfile(fileext = ".csv")
   writeBin(resp_body_raw(resp), tmp)
 
-  read.csv2(tmp, stringsAsFactors = FALSE)
+  read.csv2(tmp, colClasses = c(CO_NCM = "character"))
 }
 
 df <- buscar_exportacao(2024)
@@ -239,7 +263,8 @@ df <- buscar_exportacao(2024)
 
 !!! note "Semicolon separator"
     ComexStat CSVs use `;` as the separator. Use `read.csv2()` or
-    `readr::read_csv2()` instead of `read.csv()`.
+    `readr::read_csv2()` instead of `read.csv()`. Read `CO_NCM` as text:
+    the code has 8 digits and loses its leading zero if it becomes a number (coffee: `09011110`).
 
 ---
 
@@ -252,7 +277,7 @@ Essential port of `agrobr/normalize/crops.py` (158 variants → 43 canonical):
 ```r
 CULTURAS <- c(
   "soja" = "soja", "soja em grao" = "soja",
-  "soja em grao" = "soja", "soybean" = "soja", "soybeans" = "soja",
+  "soybean" = "soja", "soybeans" = "soja",
   "milho" = "milho", "milho total" = "milho",
   "corn" = "milho", "maize" = "milho",
   "milho 1a safra" = "milho_1", "milho 2a safra" = "milho_2",
@@ -272,9 +297,8 @@ normalizar_cultura <- function(nome) {
 
   if (key %in% names(CULTURAS)) return(CULTURAS[[key]])
 
-  key_sem_acento <- stringi::stri_trans_general(key, "Latin-ASCII")
-  nomes_sem_acento <- stringi::stri_trans_general(names(CULTURAS), "Latin-ASCII")
-  idx <- match(key_sem_acento, nomes_sem_acento)
+  sem_acento <- function(x) stringi::stri_trans_general(x, "NFKD; [:Nonspacing Mark:] Remove")
+  idx <- match(sem_acento(key), sem_acento(names(CULTURAS)))
   if (!is.na(idx)) return(CULTURAS[[idx]])
 
   gsub(" ", "_", key)
@@ -291,7 +315,7 @@ normalizar_cultura("ALGODAO")         # "algodao"
 INICIO_SAFRA_MES <- 7L  # July
 
 normalizar_safra <- function(safra) {
-  safra <- trimws(safra)
+  safra <- gsub("\\s*/\\s*", "/", trimws(safra))
 
   if (grepl("^\\d{4}/\\d{2}$", safra)) return(safra)
 
@@ -340,10 +364,11 @@ sacas_para_toneladas <- function(sacas, tipo = "sc60kg") {
 
 preco_saca_para_tonelada <- function(preco_saca, tipo = "sc60kg") {
   peso <- PESO_SACA_KG[[tipo]]
+  if (is.null(peso)) stop(paste("Invalid bag type:", tipo))
   preco_saca * (1000 / peso)
 }
 
-sacas_para_toneladas(100, "sc60kg")       # 6.0
+sacas_para_toneladas(100, "sc60kg")       # 6
 preco_saca_para_tonelada(150, "sc60kg")   # 2500
 ```
 
@@ -353,22 +378,14 @@ preco_saca_para_tonelada(150, "sc60kg")   # 2500
 library(stringi)
 
 decodificar_response <- function(raw_bytes) {
-  det <- stri_enc_detect(raw_bytes)[[1]]
-  encoding <- det$Encoding[1]
-  confianca <- det$Confidence[1]
-
-  if (confianca > 0.7) {
-    return(stri_encode(raw_bytes, from = encoding, to = "UTF-8"))
+  if (stri_enc_isutf8(raw_bytes)) {
+    return(stri_encode(raw_bytes, from = "UTF-8", to = "UTF-8"))
   }
 
-  for (enc in c("UTF-8", "Windows-1252", "ISO-8859-1")) {
-    tryCatch(
-      return(stri_encode(raw_bytes, from = enc, to = "UTF-8")),
-      error = function(e) NULL
-    )
-  }
+  texto <- iconv(list(raw_bytes), from = "windows-1252", to = "UTF-8")
+  if (!is.na(texto)) return(texto)
 
-  iconv(rawToChar(raw_bytes), from = "UTF-8", to = "UTF-8", sub = "?")
+  iconv(list(raw_bytes), from = "ISO-8859-1", to = "UTF-8")
 }
 ```
 
@@ -381,7 +398,7 @@ rate_limiters <- new.env(parent = emptyenv())
 
 com_rate_limit <- function(fonte, delay_s, expr) {
   agora <- proc.time()["elapsed"]
-  ultimo <- rate_limiters[[fonte]] %||% 0
+  ultimo <- rate_limiters[[fonte]] %||% -Inf
 
   espera <- delay_s - (agora - ultimo)
   if (espera > 0) Sys.sleep(espera)
@@ -397,11 +414,12 @@ com_rate_limit("cepea", 5.0, {
 })
 ```
 
-Idiomatic alternative with `httr2`:
+Idiomatic alternative with `httr2` (>= 1.1.1). In that version `req_throttle()` switched to a token
+bucket, and `rate = 1` alone allows bursts of up to 60 requests; `capacity = 1` spaces each one:
 
 ```r
 req <- request("https://apisidra.ibge.gov.br/...") |>
-  req_throttle(rate = 1 / 1)  # 1 request per second
+  req_throttle(capacity = 1, fill_time_s = 1)  # 1 request per second
 ```
 
 ---
@@ -413,7 +431,7 @@ req <- request("https://...") |>
   req_retry(
     max_tries = 3,
     is_transient = \(resp) resp_status(resp) %in% c(408, 429, 500, 502, 503, 504),
-    backoff = ~ 2  # exponential backoff base 2
+    backoff = \(i) min(2^(i - 1), 30)  # 1 s, 2 s, ... (30 s cap)
   )
 ```
 
@@ -425,17 +443,19 @@ req <- request("https://...") |>
 library(DBI)
 library(duckdb)
 
-con <- dbConnect(duckdb(), dbdir = "~/.agrobr/cache/agrobr.duckdb")
+dir_cache <- tools::R_user_dir("agrobr", "cache")
+dir.create(dir_cache, recursive = TRUE, showWarnings = FALSE)
+con <- dbConnect(duckdb(), dbdir = file.path(dir_cache, "agrobr.duckdb"))
 
 cache_get <- function(con, fonte, produto, ttl_horas = 4) {
-  query <- sprintf(
+  if (!dbExistsTable(con, "cache")) return(NULL)
+  dbGetQuery(
+    con,
     "SELECT * FROM cache
-     WHERE fonte = '%s' AND produto = '%s'
-     AND collected_at > NOW() - INTERVAL '%d hours'
+     WHERE fonte = ? AND produto = ? AND collected_at > ?
      ORDER BY collected_at DESC LIMIT 1",
-    fonte, produto, ttl_horas
+    params = list(fonte, produto, Sys.time() - ttl_horas * 3600)
   )
-  tryCatch(dbGetQuery(con, query), error = function(e) NULL)
 }
 
 cache_set <- function(con, fonte, produto, dados) {
@@ -497,7 +517,7 @@ agrobr.r/
 | **3** | CONAB Historical Series (pure HTTP) | None | -- |
 | **4** | IBGE/SIDRA | None | `sidrar` |
 | **5** | NASA POWER | None | `nasapower` |
-| **6** | ComexStat (pure HTTP) | None | -- |
+| **6** | ComexStat (pure HTTP) | None | `comexr` |
 | **7** | CEPEA (headless) | `chromote` | -- |
 | **8** | CONAB Bulletin (HTTP; optional `chromote`) | None | -- |
 | **9** | DuckDB cache | None | -- |

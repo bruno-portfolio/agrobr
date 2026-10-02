@@ -121,8 +121,8 @@ ComexStat also requires a browser User-Agent (Mozilla).
     Commercial use requires authorization: cepea@usp.br
 
 !!! danger "Cloudflare"
-    The CEPEA site uses Cloudflare protection that blocks direct HTTP requests
-    with status 403.
+    The CEPEA site sits behind Cloudflare, which may block direct HTTP
+    requests with status 403.
 
 **agrobr fallback chain:**
 
