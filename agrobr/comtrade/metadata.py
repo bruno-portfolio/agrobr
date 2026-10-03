@@ -41,7 +41,7 @@ def _build(
     details["manifest_encoding"] = "canonical_json_utf8"
     details["manifest_fields"] = ["query", "resources"]
     details["license"] = {
-        "classification": "zona_cinza",
+        "classification": "restrito",
         "terms_url": "https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/",
     }
     details["resource_bytes"] = sum(resource["size_bytes"] for resource in details["resources"])

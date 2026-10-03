@@ -3,8 +3,8 @@
 Cotações, indicadores e dados de safra para Mato Grosso.
 Fonte: API pública IMEA (api1.imea.com.br).
 
-LICENÇA: Termos de uso IMEA proíbem redistribuição de dados sem
-autorização escrita. Uso pessoal/educacional apenas.
+LICENÇA: zona_cinza para as séries públicas, sem licença de reutilização comprovada.
+Arquivos não públicos exigem autorização escrita para compartilhamento.
 Ref: https://imea.com.br/imea-site/termo-de-uso.html
 """
 

@@ -99,8 +99,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
 
 ## Licenca
 
-Dados abertos do governo federal brasileiro. Disponivel via portal CKAN gov.br.
-Licenca: **CC-BY** — uso livre com citacao da fonte.
+A classificação do SICAR é `livre` pela base pública federal: LAI, Decreto 8.777/2016 e publicidade do CAR na Lei 12.651/2012. A consulta pública oferece visualização e download da base por UF sem termo específico de reutilização localizado. Campos `Fees` e `AccessConstraints` vazios no WFS não são uma concessão de licença. Não foi comprovada uma CC BY da base; o BY-ND do rodapé gov.br é do conteúdo do site. Preservar SFB/CAR, camada, UF, extração e transformações. [Geosserviços do CAR](https://consultapublica.car.gov.br/publico/geoservicos/index).
 
 ## Links
 

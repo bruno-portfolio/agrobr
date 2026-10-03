@@ -105,7 +105,7 @@ class Fonte(StrEnum):
 
 LICENCAS: dict[str, str] = {
     Fonte.ABIOVE: "zona_cinza",
-    Fonte.ACERVO_FUNDIARIO: "nc",
+    Fonte.ACERVO_FUNDIARIO: "livre",
     Fonte.ANA: "livre",
     Fonte.ANDA: "zona_cinza",
     Fonte.ANEC: "zona_cinza",
@@ -118,7 +118,7 @@ LICENCAS: dict[str, str] = {
     Fonte.CFTC: "livre",
     Fonte.CNUC: "livre",
     Fonte.COMEXSTAT: "livre",
-    Fonte.COMTRADE: "zona_cinza",
+    Fonte.COMTRADE: "restrito",
     Fonte.CONAB: "livre",
     Fonte.DEFENSIVOS: "livre",
     Fonte.DERAL: "livre",
@@ -128,7 +128,7 @@ LICENCAS: dict[str, str] = {
     Fonte.IBAMA: "livre",
     Fonte.IBGE: "livre",
     Fonte.ICMBIO: "livre",
-    Fonte.IMEA: "restrito",
+    Fonte.IMEA: "zona_cinza",
     Fonte.INCRA: "livre",
     Fonte.INMET: "livre",
     Fonte.LISTA_SUJA: "livre",
@@ -136,7 +136,7 @@ LICENCAS: dict[str, str] = {
     Fonte.MAPBIOMAS: "livre",
     Fonte.MAPBIOMAS_ALERTA: "livre",
     Fonte.NASA_POWER: "livre",
-    Fonte.NOTICIAS_AGRICOLAS: "restrito",
+    Fonte.NOTICIAS_AGRICOLAS: "zona_cinza",
     Fonte.QUEIMADAS: "livre",
     Fonte.RIO_VERDE: "zona_cinza",
     Fonte.RNC: "livre",
@@ -1163,8 +1163,9 @@ DESMATAMENTO_DETER_COLUMNS = (
 EMBRAPA_SOLOS_WFS_VERSION = "2.0.0"
 
 EMBRAPA_SOLOS_NC_WARNING = (
-    "EMBRAPA Solos: CC BY-NC 3.0 BR — uso comercial requer autorizacao. "
-    "Classificacao: nc. Veja https://www.agrobr.dev/docs/licenses/."
+    "Embrapa Solos: as camadas PronaSolos 2020 e Mapa de Solos do Brasil usam CC BY-NC 3.0 "
+    "BR; atribuição obrigatória e uso comercial sujeito a permissão do titular. Veja "
+    "https://www.agrobr.dev/docs/licenses/."
 )
 
 EMBRAPA_SOLOS_INTEGER_BITS = {"fid": 32, "ogc_fid": 32, "codigo_pon": 64}

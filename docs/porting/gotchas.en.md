@@ -118,7 +118,7 @@ ComexStat also requires a browser User-Agent (Mozilla).
 
 !!! info "License: CC BY-NC 4.0"
     Free non-commercial use with attribution to CEPEA.
-    Commercial use requires authorization: cepea@usp.br
+    Commercial use requires express authorization from CEPEA.
 
 !!! danger "Cloudflare"
     The CEPEA site sits behind Cloudflare, which may block direct HTTP
@@ -127,7 +127,7 @@ ComexStat also requires a browser User-Agent (Mozilla).
 **agrobr fallback chain:**
 
 ```
-direct httpx → Notícias Agrícolas (restricted)
+direct httpx → Notícias Agrícolas (zona_cinza; CEPEA origin nc)
 ```
 
 Headless Playwright is an **optional/internal** fallback (`_use_browser=False` by default); when enabled, it sits between direct httpx and Notícias Agrícolas. It is not part of the default chain.
@@ -473,9 +473,8 @@ wheat, cotton, coffee (arabica, conilon), sugar, ethanol, meats
 
 ## IMEA (Mato Grosso)
 
-!!! danger "Redistribution prohibited"
-    IMEA's terms of use prohibit sharing data without written
-    authorization. API not officially documented.
+!!! warning "zona_cinza"
+    IMEA's public series are classified as `zona_cinza`: no reuse license was verified, nor was the non-public-file clause shown to cover this scope. The terms require prior written authorization to share non-public files; that restriction remains for those files. Reservations concerning databases and other assets do not constitute an open license. The module warns on the first call. [IMEA Terms of Use](https://imea.com.br/imea-site/termo-de-uso.html).
 
 - Endpoint: `api1.imea.com.br/api/v2/mobile/cadeias`
 - Discovered by reverse engineering — no public documentation
@@ -488,7 +487,7 @@ wheat, cotton, coffee (arabica, conilon), sugar, ethanol, meats
 ## ABIOVE (Soybean Complex Exports)
 
 !!! warning "Gray area"
-    No public terms of use. Formal authorization pending.
+    No reuse license located for the statistics. Attribution does not replace any permission that may be required.
 
 - **Access:** XLSX download by month/year
 - URL: `https://abiove.org.br/abiove_content/Abiove/exp_{YYYYMM}.xlsx`
@@ -502,7 +501,7 @@ wheat, cotton, coffee (arabica, conilon), sugar, ethanol, meats
 ## ANDA (Fertilizers)
 
 !!! warning "Gray area"
-    No public terms of use. Formal authorization pending.
+    No reuse license located for the statistics. Attribution does not replace any permission that may be required.
 
 - **Indirect access:** HTML scraping to extract PDF links, then PDF parsing
 - URL: `https://anda.org.br/recursos/`

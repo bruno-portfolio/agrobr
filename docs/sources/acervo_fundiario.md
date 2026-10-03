@@ -1,8 +1,7 @@
 # Acervo Fundiário — SIGEF, SNCI e Assentamentos (INCRA)
 
-!!! warning "Licença `nc` — vedado uso comercial"
-    Os dados do Acervo Fundiário do INCRA são de uso público com restrição de uso comercial.
-    A primeira chamada emite `UserWarning` lembrando dessa restrição.
+!!! info "Licença livre"
+    Os dados públicos SIGEF, SNCI e assentamentos do Acervo Fundiário/INCRA são classificados como livre pela LAI, pelo Decreto 8.777/2016 e pela política institucional do INCRA, após busca sem restrição comercial específica localizada. A alegação anterior de veto comercial não tinha cláusula comprovada. A indicação histórica de CC BY não foi recapturada e não sustenta versão numérica. Citar INCRA, família, UF/abrangência, arquivo, edição e transformações, preservando direitos de terceiros expressos. O PDA 2021–2023 prova política e origem, não atualidade de todo serviço em 2026.
 
 !!! note "Nao acessivel de fora do Brasil nos ambientes testados"
     O host `certificacao.incra.gov.br` respondeu normalmente do Brasil, mas nao respondeu
@@ -29,7 +28,7 @@
 | Encoding | DBF latin1 (cp1252) |
 | Atualização | Contínua (varia por UF, exposta via `Last-Modified`) |
 | Autenticação | Nenhuma |
-| Licença | Vedado uso comercial — `nc` |
+| Licença | Dados públicos federais — `livre`; citar INCRA, camada e extração |
 
 ## Cobertura por dataset
 

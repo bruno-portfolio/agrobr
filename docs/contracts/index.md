@@ -196,7 +196,7 @@ mantém o nome do adaptador do dataset.
 
 `license` é a classificação de licença do dado (`livre`, `nc`, `zona_cinza` ou `restrito`, da
 [tabela de licenças](../licenses.md)): a mais restritiva entre as fontes de `data_sources` (o CEPEA com
-o fallback da Notícias Agrícolas sai `restrito`) ou, sem elas, a da fonte selecionada. Vem da tabela
+o fallback da Notícias Agrícolas sai `nc`) ou, sem elas, a da fonte selecionada. Vem da tabela
 `agrobr.constants.LICENCAS`, a mesma da documentação; fonte fora da tabela dá `None`.
 
 **Proveniência física.**

@@ -1,14 +1,9 @@
 # IMEA — MT Quotes and Indicators
 
-> **License:** IMEA terms of use prohibit redistribution of data without
-> written authorization. Personal/educational use only.
-> Ref: [Terms of Use](https://imea.com.br/imea-site/termo-de-uso.html)
-> Classification: `restrito`
+> IMEA's public series are classified as `zona_cinza`: no reuse license was verified, nor was the non-public-file clause shown to cover this scope. The terms require prior written authorization to share non-public files; that restriction remains for those files. Reservations concerning databases and other assets do not constitute an open license. The module warns on the first call. [IMEA Terms of Use](https://imea.com.br/imea-site/termo-de-uso.html).
 
-!!! warning "Redistribution restriction"
-    IMEA explicitly prohibits sharing data without written
-    authorization. A `warnings.warn()` is emitted on first use of the module.
-    Do not redistribute data obtained via this module without authorization from IMEA.
+!!! warning "License of the public scope"
+    First use emits a `UserWarning` for the `zona_cinza` classification. The express sharing restriction still applies to non-public files.
 
 Instituto Mato-Grossense de Economia Agropecuária.
 Daily quotes, price indicators and crop-year data for Mato Grosso.
@@ -118,4 +113,4 @@ print(meta.source_details["chaves_repetidas"])  # {"linhas": 0, "indicadores": [
 - Update: daily
 - Coverage: Mato Grosso
 - Authentication: none (public API)
-- License: `restrito` — redistribution requires written authorization from IMEA
+- License: `zona_cinza` for public series; non-public files require written authorization.

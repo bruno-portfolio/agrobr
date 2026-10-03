@@ -17,7 +17,6 @@ from agrobr.utils.result import (
     finalize_result,
 )
 from agrobr.utils.validation import validate_uf
-from agrobr.utils.warnings import warn_once
 
 from . import client, parser
 from .models import SIGEF_NATUREZAS, SIGEF_SCHEMA_VERSION
@@ -26,11 +25,6 @@ if TYPE_CHECKING:
     import geopandas as gpd
 
 logger = _log.get_logger(__name__)
-
-_NC_WARNING = (
-    "Acervo Fundiario/INCRA: vedado o uso comercial — uso comercial requer "
-    "autorizacao. Classificacao: nc. Veja https://www.agrobr.dev/docs/licenses/."
-)
 
 _SOURCE_METHOD = "httpx+pyogrio+shapefile_zip"
 
@@ -188,7 +182,6 @@ async def sigef(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> DataFrameResult:
-    warn_once("acervo_fundiario_license", _NC_WARNING)
     uf = regions.sigla_uf(uf)
     naturezas = _naturezas(natureza)
     bbox = validate_bbox(bbox)
@@ -232,7 +225,6 @@ async def sigef_geo(
     use_cache: bool = True,
     return_meta: bool = False,
 ) -> GeoDataFrameResult:
-    warn_once("acervo_fundiario_license", _NC_WARNING)
     uf = regions.sigla_uf(uf)
     naturezas = _naturezas(natureza)
     bbox = validate_bbox(bbox)
@@ -289,7 +281,6 @@ async def snci(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> DataFrameResult:
-    warn_once("acervo_fundiario_license", _NC_WARNING)
     uf = regions.sigla_uf(uf)
     bbox = validate_bbox(bbox)
     _check_readers(geo=bbox is not None)
@@ -335,7 +326,6 @@ async def snci_geo(
     use_cache: bool = True,
     return_meta: bool = False,
 ) -> GeoDataFrameResult:
-    warn_once("acervo_fundiario_license", _NC_WARNING)
     uf = regions.sigla_uf(uf)
     bbox = validate_bbox(bbox)
     _check_readers(geo=True)
@@ -397,7 +387,6 @@ async def assentamentos(
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> DataFrameResult:
-    warn_once("acervo_fundiario_license", _NC_WARNING)
     uf_norm = validate_uf(uf)
     bbox = validate_bbox(bbox)
     _check_readers(geo=bbox is not None)
@@ -448,7 +437,6 @@ async def assentamentos_geo(
     use_cache: bool = True,
     return_meta: bool = False,
 ) -> GeoDataFrameResult:
-    warn_once("acervo_fundiario_license", _NC_WARNING)
     uf_norm = validate_uf(uf)
     bbox = validate_bbox(bbox)
     _check_readers(geo=True)

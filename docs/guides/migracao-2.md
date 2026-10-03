@@ -71,64 +71,67 @@ Em ordem de risco. Cada linha aponta a seção com o detalhe.
 21. `anp_diesel.vendas_diesel` sai com `produto` `DIESEL S10` (era `DIESEL S-10`) e `regiao` pelo nome canônico
     (`Centro-Oeste`, era `REGIÃO CENTRO-OESTE`): o filtro pelo texto antigo volta vazio ([§97](#97-outras-mudancas-por-fonte)).
 22. `agrobr conab levantamentos` lista todos os levantamentos, e não só os 10 primeiros ([§92](#92-cli-formato-em-todos-os-comandos-e-snapshot-use-retirado)).
+23. `MetaInfo.license` e `datasets.info()["licenses"]` mudam de classe: IMEA e Notícias Agrícolas passam a `zona_cinza`,
+    Comtrade a `restrito` e Acervo Fundiário a `livre`; com CEPEA e Notícias Agrícolas juntos, `nc`. Revise filtros por
+    licença ([§11](#11-novos-avisos-de-licenca-e-fallback)).
 
 **Passa a levantar erro**
 
-23. Status HTTP de erro sai como `SourceUnavailableError`, e não como `httpx.HTTPStatusError`: troque o `except`
+24. Status HTTP de erro sai como `SourceUnavailableError`, e não como `httpx.HTTPStatusError`: troque o `except`
    ([§75](#75-status-http-de-erro-sourceunavailableerror-nao-httpxhttpstatuserror)).
-24. Argumento desconhecido ou com nome errado, que a 1.1.0 descartava em silêncio, levanta erro antes da rede: `TypeError`
+25. Argumento desconhecido ou com nome errado, que a 1.1.0 descartava em silêncio, levanta erro antes da rede: `TypeError`
     nas 77 funções que perderam o `**kwargs`, e `TypeError` ou `InvalidParameterError` nas 32 que o mantêm: corrija o nome
     ([§78](#78-argumento-fora-da-assinatura-levanta-typeerror)).
-25. Parâmetro impossível (UF inexistente, período invertido) levanta `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia
+26. Parâmetro impossível (UF inexistente, período invertido) levanta `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia
     vazio ou erro de fonte; na 2.0, a regra vale em todas as fontes ([§66](#66-parametro-impossivel-recusado-antes-da-rede),
     [§90](#90-erros-a-classe-diz-a-causa)).
-26. `as_polars=True` sem o Polars levanta `ImportError`, e não devolve mais pandas: instale `agrobr[polars]`
+27. `as_polars=True` sem o Polars levanta `ImportError`, e não devolve mais pandas: instale `agrobr[polars]`
     ([§8](#8-as_polarstrue-exige-polars)). O extra passa a exigir `polars>=0.20.3`: com um Polars mais antigo fixado, a
     instalação acusa conflito ([§19](#19-dependencias-falhas-e-saidas-estruturadas)).
-27. Os nomes antigos de parâmetro (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
+28. Os nomes antigos de parâmetro (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
     `max_features` e outros) levantam `TypeError` (`InvalidParameterError` em `zarc.zoneamento`, `mapbiomas.cobertura` e
     `mapbiomas.transicao`): troque pelo nome novo ([§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api)).
-28. `as_polars`, `return_meta` e as opções depois deles passam a ser só por nome; no IBGE, também os filtros secundários
+29. `as_polars`, `return_meta` e as opções depois deles passam a ser só por nome; no IBGE, também os filtros secundários
     ([§88](#88-flags-e-filtros-secundarios-so-por-nome)).
-29. Falha de layout em todas as fontes de um dataset levanta `ParseError`, e não mais `SourceUnavailableError`
+30. Falha de layout em todas as fontes de um dataset levanta `ParseError`, e não mais `SourceUnavailableError`
     ([§90](#90-erros-a-classe-diz-a-causa)).
-30. Na CLI, `--output`, `--json` e `snapshot use` saem com código 2: use `--formato`
+31. Na CLI, `--output`, `--json` e `snapshot use` saem com código 2: use `--formato`
     ([§92](#92-cli-formato-em-todos-os-comandos-e-snapshot-use-retirado)).
-31. `precos_diesel` com período que começa depois de hoje levanta `InvalidParameterError` antes da rede, onde a 1.1.0
+32. `precos_diesel` com período que começa depois de hoje levanta `InvalidParameterError` antes da rede, onde a 1.1.0
     devolvia vazio na UF e no Brasil ([§97](#97-outras-mudancas-por-fonte)).
-32. `embrapa_solos.mapa_solos(ordem=...)` casa a classe inteira: um trecho do nome (`"latos"`) levanta
+33. `embrapa_solos.mapa_solos(ordem=...)` casa a classe inteira: um trecho do nome (`"latos"`) levanta
     `InvalidParameterError` com a lista das classes ([§97](#97-outras-mudancas-por-fonte)).
-33. `AGROBR_HTTP_RATE_LIMIT_<FONTE>` e o `rate_limit_*` por argumento recusam negativo, `inf` e `nan` com `ValidationError`
+34. `AGROBR_HTTP_RATE_LIMIT_<FONTE>` e o `rate_limit_*` por argumento recusam negativo, `inf` e `nan` com `ValidationError`
     ([§91](#91-variaveis-de-ambiente)).
-34. `cadastro_rural`, `desmatamento`, `exportacao`, `importacao`, `uso_do_solo` e `zoneamento_agricola` dentro de
+35. `cadastro_rural`, `desmatamento`, `exportacao`, `importacao`, `uso_do_solo` e `zoneamento_agricola` dentro de
     `datasets.deterministic(...)` levantam `InvalidParameterError` antes da rede, onde a 1.1.0 devolvia o dado corrente: tire
     essas chamadas do bloco ([§71](#71-modo-deterministico-aviso-onde-o-modo-nao-se-aplica)).
-35. `normalize.municipio_para_ibge(nome)` sem `uf` levanta `InvalidParameterError` quando o nome é de mais de um município
+36. `normalize.municipio_para_ibge(nome)` sem `uf` levanta `InvalidParameterError` quando o nome é de mais de um município
     (521 municípios dividem 240 nomes), onde a 1.1.0 devolvia calado o código do primeiro da lista: passe `uf`
     ([§90](#90-erros-a-classe-diz-a-causa)).
-36. `abiove.exportacao(ano, produto="total")` levanta `InvalidParameterError`, onde a 1.1.0 devolvia vazio: para o total
+37. `abiove.exportacao(ano, produto="total")` levanta `InvalidParameterError`, onde a 1.1.0 devolvia vazio: para o total
     dos produtos, use `agregacao="mensal"` ([§39](#39-abiove-edicao-mais-recente-e-edicao)).
 
 **Deixa de levantar erro**
 
-37. `datasets.estimativa_safra` sem observações em todas as fontes devolve o vazio do contrato com `UserWarning`, e não
+38. `datasets.estimativa_safra` sem observações em todas as fontes devolve o vazio do contrato com `UserWarning`, e não
     mais `SourceUnavailableError`: confira `df.empty` ([estimativa_safra](#estimativa_safra-contrato-31-e-selecao-temporal)).
-38. `cftc.cot` sem relatório no recorte devolve vazio tipado, e não mais `SourceUnavailableError`; as contagens saem em
+39. `cftc.cot` sem relatório no recorte devolve vazio tipado, e não mais `SourceUnavailableError`; as contagens saem em
     `Int64` ([§99](#99-cftc-recorte-sem-relatorio-devolve-vazio-tipado)).
 
 **API removida**
 
-39. Saem `agrobr.configure()`, os módulos `quality`, `sla`, `export`, `plugins` e `validators.semantic` e o
+40. Saem `agrobr.configure()`, os módulos `quality`, `sla`, `export`, `plugins` e `validators.semantic` e o
     `load_baseline_fingerprint`, e o `cache.get_policy` passa a valer só para o CEPEA: remova os usos
     ([§9](#9-modulos-experimentais-foram-removidos), [§10](#10-agrobrconfigure-foi-removida),
     [§50](#50-limpeza-de-codigo-morto), [§83](#83-cache-a-politica-so-do-cepea-e-sai-o-load_baseline_fingerprint)).
     O `uf=` de `anda.entregas` e de `datasets.fertilizante` também sai: era parâmetro explícito na 1.1.0, e passá-lo levanta
     `TypeError`, porque os PDFs só trazem o total nacional ([§50](#50-limpeza-de-codigo-morto)).
-40. Os subpacotes `agrobr.conab.custo_producao` e `agrobr.conab.serie_historica` saem: importe as funções de
+41. Os subpacotes `agrobr.conab.custo_producao` e `agrobr.conab.serie_historica` saem: importe as funções de
     `agrobr.conab` ([§93](#93-conab-um-caminho-por-funcao)).
-41. `b3.oi_historico` passa a se chamar `b3.posicoes_abertas_historico`, também em `sync.b3`; o `tipo="oi_historico"`
+42. `b3.oi_historico` passa a se chamar `b3.posicoes_abertas_historico`, também em `sync.b3`; o `tipo="oi_historico"`
     do `futuros_agricolas` fica ([§98](#98-b3-oi_historico-passa-a-se-chamar-posicoes_abertas_historico)).
-42. O parâmetro `_moeda` de `cepea.indicador` sai: passá-lo levanta `TypeError` ([§6](#6-cepea-rejeita-parametros-invalidos)).
+43. O parâmetro `_moeda` de `cepea.indicador` sai: passá-lo levanta `TypeError` ([§6](#6-cepea-rejeita-parametros-invalidos)).
 
 Para ficar na série 1.x enquanto migra: `pip install "agrobr<2"`.
 
@@ -177,7 +180,7 @@ HS aceita 2/4/6 dígitos ASCII, incluindo listas textuais; códigos ímpares e p
 
 O client compara contagem independente à união de partições. O padrão `require_complete=False` (`exigir_completo` no dataset) devolve parcial com aviso; use True quando a aplicação exigir cobertura comprovada. Preserve `source_details` para conhecer limites e tentativas. O hash superior identifica um manifesto de recursos, com tamanho próprio; cada corpo tem seu hash. Snapshot apenas preenche o ano omitido.
 
-Use `COMERCIO_BILATERAL_V2` e `TRADE_MIRROR_V2` de `agrobr.contracts.comtrade`, ou o registry. As constantes V1 permanecem históricas. A licença interna passa a `zona_cinza`, com aviso na primeira chamada. Veja [API, metadados e limites](../api/comtrade.md).
+Use `COMERCIO_BILATERAL_V2` e `TRADE_MIRROR_V2` de `agrobr.contracts.comtrade`, ou o registry. As constantes V1 permanecem históricas. A licença interna é `restrito`, com aviso na primeira chamada e as dispensas expressas da política da ONU; veja [Licenças](../licenses.md#un-comtrade). Veja [API, metadados e limites](../api/comtrade.md).
 
 ## Lista Suja: CSV, contexto de publicação e contrato 2.0
 
@@ -592,6 +595,26 @@ A primeira chamada ao CEPEA também emite um aviso sobre a licença CC BY-NC
 4.0. O que fazer: mantenha o aviso visível, revise as
 [licenças das fontes](../licenses.md) e escolha conscientemente se um fallback
 deve ser aceito, registrado ou convertido em erro.
+
+### Classificações de licença na 2.0
+
+Quem filtra por `MetaInfo.license` deve atualizar sua política para estas mudanças:
+
+| Fonte ou conjunto de fontes | Antes | Agora |
+|---|---|---|
+| IMEA — séries públicas | `restrito` | `zona_cinza` |
+| Notícias Agrícolas — publicador | `restrito` | `zona_cinza` |
+| UN Comtrade | `zona_cinza` | `restrito` |
+| Acervo Fundiário/INCRA | `nc` | `livre` |
+| CEPEA e Notícias Agrícolas em `data_sources` | `restrito` | `nc` |
+
+B3 permanece `zona_cinza`. Arquivos não públicos do IMEA continuam sujeitos à autorização escrita prevista nos termos. Dados de origem CEPEA conservam CC BY-NC 4.0, inclusive no fallback; quando as duas fontes aparecem nos metadados, prevalece `nc`. Comtrade conserva as dispensas de redistribuição previstas em sua política. O Acervo deixa de emitir o aviso de vedação comercial.
+
+As novas classes também aparecem em `datasets.info()["licenses"]` e na descrição das fontes; `datasets.info("comercio_internacional")["license"]` e `source_details["license"]["classification"]` das novas consultas Comtrade passam a `restrito`. Arquivos de metadados já salvos não são regravados. `MetaInfo.from_dict()` recalcula `license` pela tabela instalada, mas conserva as classificações antigas dentro de `source_details`. Ao ler arquivos antigos, confira sua proveniência e a [tabela atual de licenças](../licenses.md) antes de aplicar um filtro.
+
+`livre` admite uso comercial no escopo descrito, mas pode exigir atribuição, preservação de avisos, indicação de alterações e condições ND/SA. `zona_cinza` não concede permissão nem estabelece proibição geral. A reclassificação não muda o fluxo de aquisição nem os valores retornados.
+
+O MapBiomas Alerta mantém `livre`, mas seus dados, inclusive os obtidos pela API, estão sob CC BY-SA 3.0 BR: preserve atribuição, link da licença, indicação de alterações e as condições SA para adaptações. Imagens e laudos de terceiros exigem termos próprios. Um filtro baseado só em `license == "livre"` não verifica essas obrigações; consulte o [escopo do MapBiomas Alerta](../licenses.md#mapbiomas-alerta).
 
 ## 12. Custos preservam a aba publicada
 

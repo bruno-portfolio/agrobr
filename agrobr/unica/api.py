@@ -25,9 +25,9 @@ from .models import (
 logger = _log.get_logger(__name__)
 
 _LICENSE_WARNING = (
-    "Dados da UNICA (unicadata.com.br) sem termos de uso públicos — classificação "
-    "zona cinza. Uso educacional/pesquisa; para uso comercial, consulte a UNICA. "
-    "Detalhes em https://www.agrobr.dev/docs/licenses/"
+    "UNICA: fonte privada sem licença de reutilização das séries e relatórios localizada. "
+    "Classificação: zona_cinza. Preserve a atribuição; ela não substitui eventual permissão "
+    "necessária. Veja https://www.agrobr.dev/docs/licenses/."
 )
 
 

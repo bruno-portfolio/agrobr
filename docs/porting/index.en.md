@@ -330,11 +330,8 @@ The table above is a sample; the `tests/golden_data/` directory has 45 source di
 | 10 | CONAB Production Cost | Free | Direct HTTP | Costs per crop/state |
 | 11+ | DERAL, USDA, Queimadas, Desmatamento, MapBiomas | Free | Varies | As needed |
 
-!!! warning "Restricted sources"
-    IMEA and Notícias Agrícolas have a **restricted** license (redistribution
-    prohibited). B3, ANDA, ABIOVE and CONAB CEASA are in a **gray area** (no clear terms
-    for programmatic access). Check the [licenses page](../licenses.md)
-    before implementing access to these sources.
+!!! warning "Source licenses"
+    IMEA (public series), Notícias Agrícolas, B3, ANDA, ABIOVE and CONAB CEASA are classified as `zona_cinza`. CEPEA-origin data retains `nc`. Comtrade is `restrito`, with explicit exceptions in the UN policy. Check the scope and conditions on the [licenses page](../licenses.md).
 
 ---
 

@@ -1,13 +1,6 @@
 # ANDA — Fertilizantes
 
-> **Licença:** Sem termos de uso públicos localizados. Autorização formal
-> solicitada em fev/2026 — aguardando resposta.
-> Classificação: `zona_cinza`
-
-!!! note "Autorização pendente"
-    Autorização formal para redistribuição de dados foi solicitada à ANDA
-    em fevereiro/2026. Aguardando resposta. Verifique diretamente com a
-    ANDA antes de uso comercial.
+> A ANDA é uma entidade privada e não foi localizada licença de reutilização das estatísticas de entregas de fertilizantes. A classificação é zona_cinza. A reserva genérica do portal não foi convertida em uma cláusula NC dos números; a ausência de licença tampouco autoriza a reprodução integral de relatórios ou de uma base protegida. Registrar fonte, mês/ano e extração. A categoria registra a ausência de licença publicada.
 
 Associação Nacional para Difusão de Adubos. Entregas mensais de
 fertilizantes ao mercado brasileiro (total nacional, `uf="BR"`).
@@ -84,7 +77,7 @@ seção de entregas (diz até que mês o PDF vai). `raw_content_hash` é o SHA-2
 - Formato: PDF/Excel
 - Atualizacao: mensal
 - Catálogo público: 2016–2026
-- Licença: `zona_cinza` — autorização solicitada (fev/2026)
+- Licença: `zona_cinza` — licença de reutilização não localizada.
 
 
 ## Cobertura e validação da publicação

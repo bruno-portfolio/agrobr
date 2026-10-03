@@ -68,63 +68,66 @@ In order of risk. Each line points to the section with the details.
 21. `anp_diesel.vendas_diesel` comes with `produto` `DIESEL S10` (was `DIESEL S-10`) and `regiao` by the canonical name
     (`Centro-Oeste`, was `REGIÃO CENTRO-OESTE`): a filter by the old text comes back empty ([§97](#97-other-per-source-changes)).
 22. `agrobr conab levantamentos` lists every survey, not just the first 10 ([§92](#92-cli-formato-in-every-command-and-snapshot-use-removed)).
+23. `MetaInfo.license` and `datasets.info()["licenses"]` change class: IMEA and Notícias Agrícolas become `zona_cinza`,
+    Comtrade `restrito` and Acervo Fundiário `livre`; with CEPEA and Notícias Agrícolas together, `nc`. Review license
+    filters ([§11](#11-new-license-and-fallback-warnings)).
 
 **Now raises**
 
-23. HTTP error statuses raise `SourceUnavailableError`, not `httpx.HTTPStatusError`: change the `except`
+24. HTTP error statuses raise `SourceUnavailableError`, not `httpx.HTTPStatusError`: change the `except`
    ([§75](#75-http-error-statuses-sourceunavailableerror-not-httpxhttpstatuserror)).
-24. An unknown or misspelled argument, which 1.1.0 silently dropped, raises before the network: `TypeError` in the 77
+25. An unknown or misspelled argument, which 1.1.0 silently dropped, raises before the network: `TypeError` in the 77
     functions that lost `**kwargs`, and `TypeError` or `InvalidParameterError` in the 32 that keep it: fix the name
     ([§78](#78-argument-outside-the-signature-raises-typeerror)).
-25. An impossible argument (unknown state, inverted period) raises `InvalidParameterError` before the network, where 1.1.0
+26. An impossible argument (unknown state, inverted period) raises `InvalidParameterError` before the network, where 1.1.0
     returned empty data or a source error; in 2.0, the rule applies to every source
     ([§66](#66-impossible-arguments-rejected-before-the-network), [§90](#90-errors-the-class-tells-the-cause)).
-26. `as_polars=True` without Polars raises `ImportError` instead of returning pandas: install `agrobr[polars]`
+27. `as_polars=True` without Polars raises `ImportError` instead of returning pandas: install `agrobr[polars]`
     ([§8](#8-as_polarstrue-requires-polars)). The extra now requires `polars>=0.20.3`: with an older Polars pinned, the
     install reports a conflict ([§19](#19-dependencies-failures-and-structured-output)).
-27. The old parameter names (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
+28. The old parameter names (`data_inicial`, `start`, `commodity`, `cultura`, `estado`, `cod_municipio`,
     `max_features` and others) raise `TypeError` (`InvalidParameterError` in `zarc.zoneamento`, `mapbiomas.cobertura` and
     `mapbiomas.transicao`): use the new name ([§85](#85-parameter-names-one-vocabulary-across-the-api)).
-28. `as_polars`, `return_meta` and the options after them become keyword-only; in IBGE, the secondary filters too
+29. `as_polars`, `return_meta` and the options after them become keyword-only; in IBGE, the secondary filters too
     ([§88](#88-flags-and-secondary-filters-by-keyword-only)).
-29. A layout failure in every source of a dataset raises `ParseError`, no longer `SourceUnavailableError`
+30. A layout failure in every source of a dataset raises `ParseError`, no longer `SourceUnavailableError`
     ([§90](#90-errors-the-class-tells-the-cause)).
-30. In the CLI, `--output`, `--json` and `snapshot use` exit with code 2: use `--formato` ([§92](#92-cli-formato-in-every-command-and-snapshot-use-removed)).
-31. `precos_diesel` with a period starting after today raises `InvalidParameterError` before the network, where 1.1.0
+31. In the CLI, `--output`, `--json` and `snapshot use` exit with code 2: use `--formato` ([§92](#92-cli-formato-in-every-command-and-snapshot-use-removed)).
+32. `precos_diesel` with a period starting after today raises `InvalidParameterError` before the network, where 1.1.0
     returned an empty result for a state or Brazil ([§97](#97-other-per-source-changes)).
-32. `embrapa_solos.mapa_solos(ordem=...)` matches the whole class: a name fragment (`"latos"`) raises
+33. `embrapa_solos.mapa_solos(ordem=...)` matches the whole class: a name fragment (`"latos"`) raises
     `InvalidParameterError` with the list of classes ([§97](#97-other-per-source-changes)).
-33. `AGROBR_HTTP_RATE_LIMIT_<SOURCE>` and a `rate_limit_*` argument reject negative values, `inf` and `nan` with
+34. `AGROBR_HTTP_RATE_LIMIT_<SOURCE>` and a `rate_limit_*` argument reject negative values, `inf` and `nan` with
     `ValidationError` ([§91](#91-environment-variables)).
-34. `cadastro_rural`, `desmatamento`, `exportacao`, `importacao`, `uso_do_solo` and `zoneamento_agricola` inside
+35. `cadastro_rural`, `desmatamento`, `exportacao`, `importacao`, `uso_do_solo` and `zoneamento_agricola` inside
     `datasets.deterministic(...)` raise `InvalidParameterError` before the network, where 1.1.0 returned current data: move
     those calls outside the block ([§71](#71-deterministic-mode-a-warning-where-the-mode-does-not-apply)).
-35. `normalize.municipio_para_ibge(nome)` without `uf` raises `InvalidParameterError` when the name belongs to more than one
+36. `normalize.municipio_para_ibge(nome)` without `uf` raises `InvalidParameterError` when the name belongs to more than one
     municipality (521 municipalities share 240 names), where 1.1.0 silently returned the code of the first one on the list:
     pass `uf` ([§90](#90-errors-the-class-tells-the-cause)).
-36. `abiove.exportacao(ano, produto="total")` raises `InvalidParameterError`, where 1.1.0 returned empty: for the total
+37. `abiove.exportacao(ano, produto="total")` raises `InvalidParameterError`, where 1.1.0 returned empty: for the total
     of all products, use `agregacao="mensal"` ([§39](#39-abiove-latest-edition-and-edicao)).
 
 **No longer raises**
 
-37. `datasets.estimativa_safra` with no observations in every source returns the contract's empty frame with
+38. `datasets.estimativa_safra` with no observations in every source returns the contract's empty frame with
     `UserWarning`, no longer `SourceUnavailableError`: check `df.empty` ([estimativa_safra](#estimativa_safra-contract-31-and-temporal-selection)).
-38. `cftc.cot` with no report in the period returns a typed empty frame, no longer `SourceUnavailableError`; counts come as
+39. `cftc.cot` with no report in the period returns a typed empty frame, no longer `SourceUnavailableError`; counts come as
     `Int64` ([§99](#99-cftc-a-period-without-reports-returns-a-typed-empty-frame)).
 
 **Removed API**
 
-39. `agrobr.configure()`, the `quality`, `sla`, `export`, `plugins` and `validators.semantic` modules and
+40. `agrobr.configure()`, the `quality`, `sla`, `export`, `plugins` and `validators.semantic` modules and
     `load_baseline_fingerprint` are gone, and `cache.get_policy` now applies to CEPEA only: remove the uses
     ([§9](#9-experimental-modules-were-removed), [§10](#10-agrobrconfigure-was-removed), [§50](#50-dead-code-cleanup),
     [§83](#83-cache-the-cepea-policy-only-and-load_baseline_fingerprint-is-gone)).
     The `uf=` argument of `anda.entregas` and `datasets.fertilizante` is also gone: it was an explicit parameter in 1.1.0,
     and passing it raises `TypeError`, because the PDFs only carry the national total ([§50](#50-dead-code-cleanup)).
-40. The `agrobr.conab.custo_producao` and `agrobr.conab.serie_historica` subpackages are gone: import the functions
+41. The `agrobr.conab.custo_producao` and `agrobr.conab.serie_historica` subpackages are gone: import the functions
     from `agrobr.conab` ([§93](#93-conab-one-path-per-function)).
-41. `b3.oi_historico` is renamed `b3.posicoes_abertas_historico`, also in `sync.b3`; the `futuros_agricolas`
+42. `b3.oi_historico` is renamed `b3.posicoes_abertas_historico`, also in `sync.b3`; the `futuros_agricolas`
     `tipo="oi_historico"` stays ([§98](#98-b3-oi_historico-is-renamed-posicoes_abertas_historico)).
-42. The `_moeda` parameter of `cepea.indicador` is removed: passing it raises `TypeError` ([§6](#6-cepea-rejects-invalid-parameters)).
+43. The `_moeda` parameter of `cepea.indicador` is removed: passing it raises `TypeError` ([§6](#6-cepea-rejects-invalid-parameters)).
 
 To stay on the 1.x series while you migrate: `pip install "agrobr<2"`.
 
@@ -173,7 +176,7 @@ HS accepts 2/4/6 ASCII digits, including textual lists; odd codes and unknown ar
 
 The client compares an independent count with disjoint partitions. Default `require_complete=False` (`exigir_completo` in the dataset) returns partial output with a warning; use True when the application requires proven coverage. Preserve source details for limits and attempts. The top hash and size identify a resource manifest; each response body has its own hash. Snapshot only fills an omitted year.
 
-Use `COMERCIO_BILATERAL_V2` and `TRADE_MIRROR_V2` from `agrobr.contracts.comtrade`, or the registry. V1 constants remain historical. The internal license becomes `zona_cinza`, with a first-call warning. See [API, metadata and limits](../api/comtrade.md).
+Use `COMERCIO_BILATERAL_V2` and `TRADE_MIRROR_V2` from `agrobr.contracts.comtrade`, or the registry. V1 constants remain historical. The internal license is `restrito`, with a first-call warning and the UN policy's explicit exceptions; see [Licenses](../licenses.md#un-comtrade). See [API, metadata and limits](../api/comtrade.md).
 
 ## Lista Suja: CSV, publication context, and contract 2.0
 
@@ -586,6 +589,26 @@ The first CEPEA call also emits a notice about the CC BY-NC 4.0 data license.
 What to do: keep the notice visible, review the [source
 licenses](../licenses.md), and explicitly decide whether a fallback should
 be accepted, logged, or converted to an error.
+
+### License classifications in 2.0
+
+Applications filtering on `MetaInfo.license` must update their policy for these changes:
+
+| Source or source combination | Before | Now |
+|---|---|---|
+| IMEA — public series | `restrito` | `zona_cinza` |
+| Notícias Agrícolas — publisher | `restrito` | `zona_cinza` |
+| UN Comtrade | `zona_cinza` | `restrito` |
+| Acervo Fundiário/INCRA | `nc` | `livre` |
+| CEPEA and Notícias Agrícolas in `data_sources` | `restrito` | `nc` |
+
+B3 remains `zona_cinza`. IMEA's non-public files still require the written authorization specified in its terms. CEPEA-origin data retains CC BY-NC 4.0, including during fallback; when both sources appear in metadata, `nc` takes precedence. Comtrade retains the redistribution exceptions in its policy. Acervo no longer emits the commercial-use-prohibition warning.
+
+The new categories also appear in `datasets.info()["licenses"]` and source descriptions; Comtrade's `datasets.info("comercio_internacional")["license"]` and `source_details["license"]["classification"]` from new queries become `restrito`. Previously saved metadata files are not rewritten. `MetaInfo.from_dict()` recomputes `license` from the installed table but retains older classifications inside `source_details`. When reading older files, check their provenance and the [current license table](../licenses.md) before applying a filter.
+
+`livre` permits commercial use within the stated scope but may require attribution, preservation of notices, identification of changes and ND/SA conditions. `zona_cinza` neither grants permission nor establishes a general prohibition. Reclassification does not change data acquisition or returned values.
+
+MapBiomas Alerta remains `livre`, but its data, including API results, is under CC BY-SA 3.0 BR: preserve attribution, a license link, identification of changes and the SA conditions for adaptations. Third-party images and reports require their own terms. A filter based only on `license == "livre"` does not check these obligations; see the [MapBiomas Alerta scope](../licenses.md#mapbiomas-alerta).
 
 ## 12. Production costs preserve the published sheet
 

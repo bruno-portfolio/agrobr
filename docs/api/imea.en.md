@@ -2,8 +2,8 @@
 
 The IMEA module provides daily quotations, price indicators and trade data from the Mato Grosso Institute of Agricultural Economics.
 
-!!! danger "restrito license"
-    IMEA's terms of use prohibit redistribution without written authorization. Personal/educational use only. Ref: [imea.com.br/termo-de-uso](https://imea.com.br/imea-site/termo-de-uso.html)
+!!! warning "zona_cinza"
+    IMEA's public series are classified as `zona_cinza`: no reuse license was verified, nor was the non-public-file clause shown to cover this scope. The terms require prior written authorization to share non-public files; that restriction remains for those files. Reservations concerning databases and other assets do not constitute an open license. The module warns on the first call. [IMEA Terms of Use](https://imea.com.br/imea-site/termo-de-uso.html).
 
 ## Functions
 
@@ -58,6 +58,6 @@ df = imea.cotacoes("soja")
 
 ## Notes
 
-- Source: [IMEA](https://imea.com.br) — `restrito` license
+- Source: [IMEA](https://imea.com.br) — `zona_cinza` license
 - Mato Grosso-exclusive data
 - Warning emitted on first use

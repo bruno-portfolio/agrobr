@@ -118,4 +118,4 @@ PK: `[data, ticker_completo]`
 
 ## Licença
 
-`zona_cinza` — B3 é empresa privada. Dados públicos sem termos claros para acesso programático.
+Classificação: `zona_cinza`. A dispensa D-1 da FAQ e os termos do website têm alcances distintos; confira canal, uso e vigência da política em [Licenças](../licenses.md#b3-brasil-bolsa-balcao).

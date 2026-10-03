@@ -74,6 +74,6 @@ The outer 1:1 join compares exports and reverse imports. Incompatible HS revisio
 | Classification | HS | NCM |
 | Geography | Numeric country codes | Brazilian state (destination/origin country only in the `agrobr.comexstat` API with `agregacao="detalhado"`) |
 
-The internal Comtrade license category is `zona_cinza`; see [Licenses](../licenses.md#un-comtrade) and [migration](../guides/migracao-2.md).
+The internal Comtrade license category is `restrito`; see [Licenses](../licenses.md#un-comtrade) and [migration](../guides/migracao-2.md). The classification preserves the UN policy's explicit redistribution exceptions.
 
 `declarante`, `parceiro`, `frequencia`, and `exigir_completo` are dataset parameters. The source retains `reporter`, `partner`, `freq`, and `require_complete`. Requested years must be between 1962 and the current year; annual, monthly, list and range selections are checked before network access. Text uses the installed pandas default in both populated and empty results.

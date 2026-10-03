@@ -237,7 +237,7 @@ History accumulates progressively in the local DuckDB, allowing queries over old
 
 When CEPEA is unavailable (Cloudflare), agrobr automatically uses Notícias Agrícolas as a fallback source, which republishes the same CEPEA/ESALQ indicators.
 
-On the first call to `indicador()` or `ultimo()`, the module emits a `UserWarning`: CEPEA data is licensed under CC BY-NC 4.0, and commercial use requires authorization from CEPEA (`cepea@usp.br`). The Notícias Agrícolas fallback keeps its own `restrito` license warning; see `docs/licenses.md`.
+On the first call to `indicador()` or `ultimo()`, the module emits a `UserWarning`: CEPEA data under CC BY-NC 4.0 requires attribution, and commercial use requires express authorization from CEPEA. The Notícias Agrícolas fallback emits its `zona_cinza` warning; the original source's `nc` license remains. See [Licenses](../licenses.md).
 
 Monthly milk uses CEPEA collection and its cache only: the Notícias Agrícolas fallback is disabled for this product. Its standalone parser exposes the closing date, whereas CEPEA uses the reference month. Previously cached NA milk rows are preserved in quarantine by migration 9. Milk history comes from the series with 2 decimals; the page, with 4, wins when both exist.
 

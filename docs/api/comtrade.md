@@ -119,6 +119,6 @@ from agrobr.sync import comtrade
 df = comtrade.comercio("soja", partner="world", periodo=2023, require_complete=True)
 ```
 
-`paises()` lista os aliases ISO do mapa local, sem declarar catálogo mundial dinâmico. `produtos()` devolve uma cópia dos aliases agrícolas e seus HS. A categoria interna de licença é `zona_cinza`, com aviso na primeira chamada; veja os [termos verificados](../licenses.md#un-comtrade).
+`paises()` lista os aliases ISO do mapa local, sem declarar catálogo mundial dinâmico. `produtos()` devolve uma cópia dos aliases agrícolas e seus HS. A categoria interna de licença é `restrito`, com aviso na primeira chamada; veja os [termos verificados](../licenses.md#un-comtrade). A classificação preserva as dispensas expressas de redistribuição da política da ONU.
 
 Os anos pedidos devem estar entre 1962 e o ano corrente. Período inválido levanta `InvalidParameterError` antes da rede. A fonte mantém seletores e colunas técnicos; o [contrato do dataset](../contracts/comercio_internacional.md) descreve os nomes em português. Texto usa o padrão do pandas instalado, inclusive no vazio.

@@ -108,4 +108,4 @@ print(meta.source)  # "unica"
 - Biweekly report: `https://unicadata.com.br/listagem.php?idMn=63` (PDF, rotating URL)
 - History: `https://unicadata.com.br/xlsHPM.php` (XLSX)
 - Update: per season-report edition, biweekly or monthly; the listing only carries the current edition
-- License: `zona_cinza` — educational/research use; for commercial use, consult UNICA
+- License: `zona_cinza` — no reuse license located for series and reports; attribution does not replace any required permission.

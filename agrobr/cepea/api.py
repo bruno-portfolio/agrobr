@@ -39,8 +39,8 @@ logger = _log.get_logger(__name__)
 SOURCE_WINDOW_DAYS = 25
 
 _LICENSE_WARNING = (
-    "CEPEA/ESALQ: dados sob CC BY-NC 4.0; uso comercial requer autorização do "
-    "CEPEA (cepea@usp.br). Veja https://www.agrobr.dev/docs/licenses/."
+    "CEPEA/ESALQ: dados sob CC BY-NC 4.0; atribuição obrigatória e uso comercial sujeito a "
+    "autorização expressa do CEPEA. Veja https://www.agrobr.dev/docs/licenses/."
 )
 
 

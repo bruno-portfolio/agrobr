@@ -273,5 +273,5 @@ df = sync.sicar.resumo("MT", municipio="Sorriso")
 
 - **Provedor:** Servico Florestal Brasileiro (SFB) / SICAR
 - **API:** WFS 2.0.0 (OGC GeoServer)
-- **Licenca:** CC-BY (dados abertos governo federal)
+- **Licença:** `livre` pela base federal de dados públicos; CC BY da base não comprovada. Preservar fonte e proveniência; veja [Licenças](../licenses.md#sicar).
 - **Atualizacao:** continua (cadastros em tempo real)

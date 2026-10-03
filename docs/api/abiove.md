@@ -2,8 +2,8 @@
 
 O modulo ABIOVE fornece dados de exportacao do complexo soja — grao, farelo, oleo e milho — publicados pela Associacao Brasileira das Industrias de Oleos Vegetais.
 
-!!! warning "Licenca zona_cinza"
-    Termos de uso nao localizados publicamente. Autorizacao formal solicitada em fev/2026 — aguardando resposta.
+!!! warning "Licença zona_cinza"
+    Fonte privada sem licença de reutilização das estatísticas localizada. Atribuição não substitui eventual permissão necessária.
 
 ## Funcoes
 

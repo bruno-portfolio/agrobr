@@ -43,7 +43,7 @@ COMERCIO_INTERNACIONAL_INFO = base.DatasetInfo(
     source_url="https://comtradeplus.un.org",
     source_institution="United Nations / Comtrade",
     unit="kg / USD",
-    license="zona_cinza",
+    license="restrito",
 )
 
 

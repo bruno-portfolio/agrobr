@@ -114,6 +114,6 @@ from agrobr.sync import comtrade
 df = comtrade.comercio("soja", partner="world", periodo=2023, require_complete=True)
 ```
 
-`paises()` lists ISO aliases in the local map, not a dynamic worldwide catalog. `produtos()` returns a copy of agricultural aliases and HS selections. The internal license category is `zona_cinza`, with a first-call warning; see [verified terms](../licenses.md#un-comtrade).
+`paises()` lists ISO aliases in the local map, not a dynamic worldwide catalog. `produtos()` returns a copy of agricultural aliases and HS selections. The internal license category is `restrito`, with a first-call warning; see [verified terms](../licenses.md#un-comtrade). The classification preserves the UN policy's explicit redistribution exceptions.
 
 Requested years must be between 1962 and the current year. Invalid periods raise `InvalidParameterError` before network access. The source keeps its technical selectors and columns; the [dataset contract](../contracts/comercio_internacional.md) describes the Portuguese dataset names. Text uses the installed pandas default, including empty results.

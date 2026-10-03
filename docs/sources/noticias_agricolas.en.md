@@ -1,9 +1,6 @@
 # Notícias Agrícolas — CEPEA Fallback
 
-> **License:** All rights reserved (Law 9.610/98). Private company
-> with no public terms of use on the republication of quotes. Data originating
-> from CEPEA is subject to CC BY-NC 4.0.
-> Classification: `restrito`
+> Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0, with attribution and permission for commercial use. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
 
 !!! info "Fallback active"
     This module is the primary fallback to work around Cloudflare protection
@@ -16,7 +13,7 @@
 |-------|-------|
 | **Operator** | Olivi Produções de Vídeo e Comunicação LTDA |
 | **Website** | [noticiasagricolas.com.br](https://www.noticiasagricolas.com.br) |
-| **License** | `restrito` — all rights reserved |
+| **License** | `zona_cinza`; CEPEA origin CC BY-NC 4.0 |
 | **Role in agrobr** | CEPEA fallback (2nd option, after direct access) |
 | **Data** | 100% CEPEA/ESALQ republication — no exclusive data |
 
@@ -56,4 +53,4 @@ activating the cache fallback in the CEPEA module.
 - URL: `https://www.noticiasagricolas.com.br/cotacoes/`
 - Format: HTML (server-side rendered, no JavaScript)
 - Update: daily (follows CEPEA)
-- License: `restrito`
+- License: `zona_cinza`; CEPEA origin `nc`

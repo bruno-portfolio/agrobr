@@ -3,7 +3,7 @@
 The ANDA module provides monthly fertilizer deliveries to the Brazilian market (national total), published by the Associacao Nacional para Difusao de Adubos.
 
 !!! warning "zona_cinza license"
-    Terms of use not found publicly. Formal authorization requested in Feb/2026 — awaiting response.
+    Private source without a located reuse license for its statistics. Attribution does not replace any permission that may be required.
 
 ## Dependency
 

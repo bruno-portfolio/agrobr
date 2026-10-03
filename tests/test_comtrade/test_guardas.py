@@ -293,7 +293,7 @@ async def test_aviso_de_licenca_na_primeira_consulta(replay_http):
     with warnings.catch_warnings(record=True) as avisos:
         warnings.simplefilter("always")
         await comtrade.comercio("1201", partner="CN", periodo=2023)
-    licenca = [str(aviso.message) for aviso in avisos if "zona_cinza" in str(aviso.message)]
+    licenca = [str(aviso.message) for aviso in avisos if "restrito" in str(aviso.message)]
     assert len(licenca) == 1
     assert "uncomtrade.org/docs/policy-on-use-and-re-dissemination" in licenca[0]
 
@@ -307,6 +307,8 @@ async def test_meta_declara_parceiro_omitido_e_url_dos_dados(
 ):
     requests, _ = replay_http()
     frame, meta = await comtrade.comercio("1201", partner=partner, periodo=2023, return_meta=True)
+    assert meta.license == "restrito"
+    assert meta.source_details["license"]["classification"] == "restrito"
     assert meta.source_details["query"]["partner_parameter_omitted"] is omitido
     dados = [str(r.url) for r in requests if r.url.params.get("countOnly") != "true"]
     assert meta.source_url in dados
@@ -326,6 +328,8 @@ async def test_snapshot_declara_que_so_fixa_o_ano_padrao(replay_http):
     async with deterministic("2023-12-31"):
         _, meta = await datasets.comercio_internacional("1201", parceiro="CN", return_meta=True)
     assert meta.snapshot == "2023-12-31"
+    assert meta.license == "restrito"
+    assert meta.source_details["license"]["classification"] == "restrito"
     assert meta.source_details.get("snapshot_scope") == (
         "default_year_only; source revisions are not frozen"
     )

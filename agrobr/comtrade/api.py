@@ -63,9 +63,13 @@ def _resolve_partner(partner: str | None) -> int | None:
 def _warn_license() -> None:
     warnings.warn_once(
         "comtrade_license",
-        "UN Comtrade: licença classificada como zona_cinza. Uso e redistribuição têm condições "
-        "e exceções; consulte https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/ "
-        "e https://www.agrobr.dev/docs/licenses/.",
+        (
+            "UN Comtrade: classificação restrito; redistribuição sujeita a "
+            "autorização/licenciamento, com dispensas expressas na política da fonte. Preserve "
+            "atribuição e confira as condições, inclusive assinatura quando exigida. Política: "
+            "https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/. Veja "
+            "https://www.agrobr.dev/docs/licenses/."
+        ),
     )
 
 

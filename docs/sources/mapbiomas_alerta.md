@@ -9,8 +9,12 @@
 | Acesso | GraphQL API |
 | Formato | JSON (GraphQL) |
 | Autenticação | Token (env AGROBR_MAPBIOMAS_ALERTA_TOKEN) |
-| Licença | Livre (citação obrigatória) |
+| Licença | CC BY-SA 3.0 BR — `livre`, com atribuição e SA nas adaptações |
 | Volume | 533.140 alertas publicados desde 2019 (26/09/2026) |
+
+## Licença
+
+Os dados do MapBiomas Alerta usam [CC BY-SA 3.0 BR](https://creativecommons.org/licenses/by-sa/3.0/br/), conforme o link do item 3.1 dos [termos](https://plataforma.alerta.mapbiomas.org/terms). O texto escreve `CC-CY-SA`, mas aponta para essa licença; o item 3.2 inclui expressamente o acesso pela API. A classe é `livre`: uso comercial permitido, com atribuição ao MapBiomas Alerta, link da licença, indicação de alterações e compartilhamento de adaptações sob as condições SA aplicáveis. A licença específica dos dados delimita a reserva geral de propriedade intelectual do site (8.2/8.3). A vedação de vender ou alugar o Serviço (7.1, ix) não é tratada como cláusula NC dos dados. Imagens, bases e laudos de terceiros exigem a verificação própria indicada no item 6.7.
 
 ## Acesso via GraphQL
 

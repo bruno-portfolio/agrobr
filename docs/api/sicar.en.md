@@ -273,5 +273,5 @@ df = sync.sicar.resumo("MT", municipio="Sorriso")
 
 - **Provider:** Brazilian Forest Service (SFB) / SICAR
 - **API:** WFS 2.0.0 (OGC GeoServer)
-- **License:** CC-BY (federal government open data)
+- **License:** `livre` under the federal public-data framework; no CC BY license verified for the database. Preserve source and provenance; see [Licenses](../licenses.md#sicar).
 - **Update:** continuous (real-time registrations)

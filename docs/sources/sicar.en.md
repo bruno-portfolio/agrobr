@@ -101,8 +101,7 @@ with server-side filters (CQL_FILTER) and transparent pagination.
 
 ## License
 
-Open data from the Brazilian federal government. Available via the gov.br CKAN portal.
-License: **CC-BY** — free use with attribution to the source.
+SICAR is classified as `livre` under the federal public-data framework: the access law, Decree 8,777/2016 and CAR publicity under Law 12,651/2012. Public consultation offers viewing and downloading the database by state without a located reuse-specific term. Empty WFS `Fees` and `AccessConstraints` fields are not a license grant. No CC BY license was verified for the database; the gov.br footer's BY-ND applies to website content. Preserve SFB/CAR attribution, layer, state, extraction and transformations. [CAR geoservices](https://consultapublica.car.gov.br/publico/geoservicos/index).
 
 ## Links
 

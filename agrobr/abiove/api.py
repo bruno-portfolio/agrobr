@@ -81,9 +81,11 @@ async def exportacao(
     filtro = None if produto_norm == "total" else produto_norm
     warn_once(
         "abiove",
-        "ABIOVE: termos de uso não encontrados publicamente. "
-        "Autorização solicitada em fev/2026. Classificação: zona_cinza. "
-        "Veja https://www.agrobr.dev/docs/licenses/ para detalhes.",
+        (
+            "ABIOVE: fonte privada sem licença de reutilização das estatísticas localizada. "
+            "Classificação: zona_cinza. Atribuição não substitui eventual permissão necessária. "
+            "Veja https://www.agrobr.dev/docs/licenses/."
+        ),
     )
 
     logger.info(

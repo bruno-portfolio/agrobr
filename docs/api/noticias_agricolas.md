@@ -2,8 +2,8 @@
 
 O modulo Noticias Agricolas republica indicadores CEPEA/ESALQ e serve como fallback automatico quando o acesso direto ao CEPEA falha (Cloudflare).
 
-!!! danger "Licenca restrito"
-    Todos os direitos reservados (Lei 9.610/98). Dados originarios do CEPEA (CC BY-NC 4.0).
+!!! warning "zona_cinza"
+    Notícias Agrícolas é classificado como `zona_cinza` porque não foi localizada licença própria de reutilização das cotações. A reserva genérica de direitos não comprova uma proibição específica de reutilizar todo fato numérico, nem concede permissão sobre relatórios ou bases protegidas. Dados de origem CEPEA conservam a CC BY-NC 4.0, com atribuição e autorização para uso comercial. O fallback automático permanece e emite o aviso do publicador, além do aviso da origem. Quando CEPEA e Notícias Agrícolas constam em `MetaInfo.data_sources`, prevalece `nc` em `MetaInfo.license`.
 
 !!! note "Uso interno"
     Este modulo **nao e chamado diretamente pelo usuario**. E invocado automaticamente pelo modulo CEPEA como fallback. Documentado aqui para referencia tecnica.
@@ -43,7 +43,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]
 
 ## Notas
 
-- Fonte: [Noticias Agricolas](https://noticiasagricolas.com.br) — licenca `restrito`
+- Fonte: Notícias Agrícolas — `zona_cinza`; origem CEPEA `nc`.
 - Fallback automatico do CEPEA — usuario nao precisa chamar diretamente
 - Warning emitido no primeiro uso
 - Fallback ativo enquanto CEPEA estiver protegido por Cloudflare

@@ -1,13 +1,6 @@
 # ABIOVE — Soybean Complex Exports
 
-> **License:** No public terms of use located. Formal authorization
-> requested in Feb/2026 — awaiting reply.
-> Classification: `zona_cinza`
-
-!!! note "Authorization pending"
-    Formal authorization for redistribution of data was requested from ABIOVE
-    in February/2026. Awaiting reply. Verify directly with ABIOVE before
-    commercial use.
+> ABIOVE is a private association. No specific reuse license was located for Soy Complex statistics; the classification is zona_cinza. Distinguish extracted values from spreadsheet structure, text and reports. Crediting ABIOVE, file, period and transformations documents provenance but does not replace any required permission. The category records the absence of a published license.
 
 Associação Brasileira das Indústrias de Óleos Vegetais. Monthly export data
 for soybean grain, meal, oil and maize.
@@ -81,4 +74,4 @@ recognize, without guessing products or columns.
 - Format: Excel (.xlsx)
 - Update: monthly
 - History: 2010+
-- License: `zona_cinza` — authorization requested (Feb/2026)
+- License: `zona_cinza` — no reuse license located.

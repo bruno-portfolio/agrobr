@@ -1,8 +1,7 @@
 # Land Registry — SIGEF, SNCI and Settlements (INCRA)
 
-!!! warning "License `nc` — commercial use prohibited"
-    The data from INCRA's Land Registry is public-use data with a commercial-use restriction.
-    The first call emits a `UserWarning` reminding you of this restriction.
+!!! info "License: livre"
+    Public SIGEF, SNCI and settlement data from INCRA's Land Collection are classified as livre under the access law, Decree 8,777/2016 and INCRA's institutional policy, after a search finding no specific commercial restriction. The earlier claim of a commercial prohibition lacked a substantiated clause. The historical CC BY indication was not recaptured and does not establish a numbered version. Credit INCRA, family, state/scope, file, edition and transformations, preserving express third-party rights. The 2021–2023 plan establishes policy and provenance, not the 2026 status of every service.
 
 !!! note "Not reachable from outside Brazil in the environments tested"
     The `certificacao.incra.gov.br` host answered normally from Brazil, but did not answer
@@ -29,7 +28,7 @@
 | Encoding | DBF latin1 (cp1252) |
 | Update | Continuous (varies by state, exposed via `Last-Modified`) |
 | Authentication | None |
-| License | Commercial use prohibited — `nc` |
+| License | Federal public data — `livre`; credit INCRA, layer and extraction |
 
 ## Coverage by dataset
 

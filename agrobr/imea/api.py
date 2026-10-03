@@ -67,9 +67,12 @@ async def cotacoes(
 ) -> DataFrameResult:
     warn_once(
         "imea",
-        "IMEA: termos de uso proíbem redistribuição de dados sem "
-        "autorização escrita. Uso pessoal/educacional apenas. "
-        "Ref: https://imea.com.br/imea-site/termo-de-uso.html",
+        (
+            "IMEA: classificação zona_cinza para as séries públicas; licença de reutilização "
+            "não comprovada. Arquivos não públicos exigem autorização escrita para "
+            "compartilhamento. Ref: https://imea.com.br/imea-site/termo-de-uso.html. Veja "
+            "https://www.agrobr.dev/docs/licenses/."
+        ),
     )
 
     cadeia_id = resolve_cadeia_id(cadeia)

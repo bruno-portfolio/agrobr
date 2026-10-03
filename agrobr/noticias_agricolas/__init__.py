@@ -1,9 +1,8 @@
 """Módulo para coleta de dados do Notícias Agrícolas (fonte alternativa CEPEA).
 
-AVISO: Fallback temporário para contornar Cloudflare no CEPEA.
-Pendente deprecação em favor de acesso direto ao CEPEA ou fontes
-primárias (DERAL, etc.). Notícias Agrícolas é empresa privada sem
-termos de uso públicos — todos os direitos reservados (Lei 9.610/98).
+AVISO: fonte privada com classificação zona_cinza, sem licença própria de
+reutilização das cotações localizada. O fallback automático emite aviso na
+primeira chamada.
 Dados originários do CEPEA estão sujeitos a CC BY-NC 4.0.
 """
 

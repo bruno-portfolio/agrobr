@@ -1,7 +1,7 @@
 """Acervo Fundiario — Certificacao fundiaria e assentamentos (INCRA).
 
 Fonte: certificacao.incra.gov.br/csv_shp/zip/ (download de shapefile estatico).
-Licenca: Vedado uso comercial — classificacao nc.
+Licenca: dados publicos federais — classificacao livre.
 """
 
 from agrobr.acervo_fundiario.api import (

@@ -51,10 +51,11 @@ def _get_produto_url(produto: str) -> str:
 async def fetch_indicador_page(produto: str) -> str:
     warn_once(
         "noticias_agricolas",
-        "Notícias Agrícolas (classificação restrito): fallback temporário do CEPEA, pendente "
-        "deprecação. O site não publica termos de uso: todos os direitos reservados "
-        "(Lei 9.610/98), sem permissão de republicação. Os dados vêm do CEPEA (CC BY-NC 4.0). "
-        "Veja https://www.agrobr.dev/docs/licenses/.",
+        (
+            "Notícias Agrícolas: classificação zona_cinza; licença própria de reutilização das "
+            "cotações não localizada. Dados de origem CEPEA continuam sujeitos a CC BY-NC 4.0, "
+            "inclusive no fallback automático. Veja https://www.agrobr.dev/docs/licenses/."
+        ),
     )
 
     url = _get_produto_url(produto)

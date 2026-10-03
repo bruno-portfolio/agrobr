@@ -196,7 +196,7 @@ keeps the dataset adapter name.
 
 `license` is the license classification of the data (`livre`, `nc`, `zona_cinza` or `restrito`, from the
 [license table](../licenses.md)): the most restrictive among the `data_sources` (CEPEA with the Notícias
-Agrícolas fallback comes out `restrito`) or, without them, the selected source's. It comes from
+Agrícolas fallback comes out `nc`) or, without them, the selected source's. It comes from
 `agrobr.constants.LICENCAS`, the same table as the documentation; a source outside it gives `None`.
 
 **Physical provenance.**

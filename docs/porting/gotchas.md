@@ -118,7 +118,7 @@ ComexStat também exige User-Agent de browser (Mozilla).
 
 !!! info "Licença: CC BY-NC 4.0"
     Uso não-comercial livre com atribuição ao CEPEA.
-    Uso comercial requer autorização: cepea@usp.br
+    Uso comercial requer autorização expressa do CEPEA.
 
 !!! danger "Cloudflare"
     O site CEPEA fica atrás do Cloudflare, que pode bloquear requests HTTP
@@ -127,7 +127,7 @@ ComexStat também exige User-Agent de browser (Mozilla).
 **Cadeia de fallback do agrobr:**
 
 ```
-httpx direto → Notícias Agrícolas (restrito)
+httpx direto → Notícias Agrícolas (zona_cinza; origem CEPEA nc)
 ```
 
 Playwright headless é um fallback **opcional/interno** (`_use_browser=False` por padrão); quando ativado, entra entre o httpx direto e o Notícias Agrícolas. Não faz parte da cadeia padrão.
@@ -473,9 +473,8 @@ trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
 
 ## IMEA (Mato Grosso)
 
-!!! danger "Redistribuição proibida"
-    Termos de uso do IMEA proíbem compartilhamento de dados sem autorização
-    escrita. API não documentada oficialmente.
+!!! warning "zona_cinza"
+    As séries públicas do IMEA são classificadas como `zona_cinza`: não foi comprovada licença de reutilização nem que a cláusula de arquivos não públicos alcance esse recorte. Os termos condicionam o compartilhamento de arquivos não públicos à autorização prévia por escrito; essa restrição permanece para tais arquivos. As reservas sobre bases de dados e outros ativos não são uma licença aberta. O módulo avisa na primeira chamada. [Termo de Uso do IMEA](https://imea.com.br/imea-site/termo-de-uso.html).
 
 - Endpoint: `api1.imea.com.br/api/v2/mobile/cadeias`
 - Descoberto por engenharia reversa — sem documentação pública
@@ -488,7 +487,7 @@ trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
 ## ABIOVE (Exportação Complexo Soja)
 
 !!! warning "Zona cinza"
-    Sem termos de uso públicos. Autorização formal pendente.
+    Licença de reutilização das estatísticas não localizada. Atribuição não substitui eventual permissão necessária.
 
 - **Acesso:** download de XLSX por mês/ano
 - URL: `https://abiove.org.br/abiove_content/Abiove/exp_{YYYYMM}.xlsx`
@@ -502,7 +501,7 @@ trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
 ## ANDA (Fertilizantes)
 
 !!! warning "Zona cinza"
-    Sem termos de uso públicos. Autorização formal pendente.
+    Licença de reutilização das estatísticas não localizada. Atribuição não substitui eventual permissão necessária.
 
 - **Acesso indireto:** scraping de HTML para extrair links de PDF, depois parsing do PDF
 - URL: `https://anda.org.br/recursos/`

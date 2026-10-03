@@ -1,13 +1,6 @@
 # ANDA — Fertilizers
 
-> **License:** No public terms of use located. Formal authorization
-> requested in Feb/2026 — awaiting reply.
-> Classification: `zona_cinza`
-
-!!! note "Authorization pending"
-    Formal authorization for redistribution of data was requested from ANDA
-    in February/2026. Awaiting reply. Verify directly with ANDA before
-    commercial use.
+> ANDA is a private organization, and no reuse license was located for fertilizer-delivery statistics. The classification is zona_cinza. The portal's generic rights reservation was not treated as an NC clause for numerical facts; the absence of a license also does not authorize copying entire reports or a protected database. Record the source, month/year and extraction. The category records the absence of a published license.
 
 Associação Nacional para Difusão de Adubos. Monthly fertilizer deliveries
 to the Brazilian market (national total, `uf="BR"`).
@@ -83,7 +76,7 @@ row of the deliveries section (it tells up to which month the PDF goes). `raw_co
 - Format: PDF/Excel
 - Update: monthly
 - Public catalog: 2016–2026
-- License: `zona_cinza` — authorization requested (Feb/2026)
+- License: `zona_cinza` — no reuse license located.
 
 
 ## Publication coverage and validation

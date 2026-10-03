@@ -3,7 +3,7 @@
 The ABIOVE module provides export data for the soybean complex — beans, meal, oil and corn — published by the Brazilian Association of Vegetable Oil Industries.
 
 !!! warning "zona_cinza license"
-    Terms of use not located publicly. Formal authorization requested in Feb/2026 — awaiting reply.
+    Private source without a located reuse license for its statistics. Attribution does not replace any permission that may be required.
 
 ## Functions
 

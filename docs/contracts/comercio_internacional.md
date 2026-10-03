@@ -74,6 +74,6 @@ A junção é externa 1:1 entre exportação e importação inversa. Revisões H
 | Classificação | HS | NCM |
 | Dimensão geográfica | Países por códigos numéricos | UF brasileira (o país de destino/origem só no `agregacao="detalhado"` da API `agrobr.comexstat`) |
 
-A categoria interna de licença Comtrade é `zona_cinza`; veja [Licenças](../licenses.md#un-comtrade) e a [migração](../guides/migracao-2.md).
+A categoria interna de licença Comtrade é `restrito`; veja [Licenças](../licenses.md#un-comtrade) e a [migração](../guides/migracao-2.md). A classificação preserva as dispensas expressas de redistribuição da política da ONU.
 
 `declarante`, `parceiro`, `frequencia` e `exigir_completo` são os parâmetros do dataset. A fonte mantém `reporter`, `partner`, `freq` e `require_complete`. Os anos pedidos devem estar entre 1962 e o ano corrente; seleções anuais, mensais, listas e intervalos são conferidos antes da rede. Texto usa o padrão do pandas instalado, tanto no resultado cheio como no vazio.

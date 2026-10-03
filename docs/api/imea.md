@@ -2,8 +2,8 @@
 
 O modulo IMEA fornece cotacoes diarias, indicadores de precos e dados de comercializacao do Instituto Mato-Grossense de Economia Agropecuaria.
 
-!!! danger "Licenca restrito"
-    Termos de uso do IMEA proibem redistribuicao sem autorizacao escrita. Uso pessoal/educacional apenas. Ref: [imea.com.br/termo-de-uso](https://imea.com.br/imea-site/termo-de-uso.html)
+!!! warning "zona_cinza"
+    As séries públicas do IMEA são classificadas como `zona_cinza`: não foi comprovada licença de reutilização nem que a cláusula de arquivos não públicos alcance esse recorte. Os termos condicionam o compartilhamento de arquivos não públicos à autorização prévia por escrito; essa restrição permanece para tais arquivos. As reservas sobre bases de dados e outros ativos não são uma licença aberta. O módulo avisa na primeira chamada. [Termo de Uso do IMEA](https://imea.com.br/imea-site/termo-de-uso.html).
 
 ## Funcoes
 
@@ -58,6 +58,6 @@ df = imea.cotacoes("soja")
 
 ## Notas
 
-- Fonte: [IMEA](https://imea.com.br) — licenca `restrito`
+- Fonte: [IMEA](https://imea.com.br) — licenca `zona_cinza`
 - Dados exclusivos de Mato Grosso
 - Warning emitido no primeiro uso

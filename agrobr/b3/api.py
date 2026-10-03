@@ -110,9 +110,11 @@ async def ajustes(
 ) -> DataFrameResult:
     warn_once(
         "b3_ajustes",
-        "agrobr.b3: dados da B3 (empresa privada). Ajustes diarios publicados "
-        "sem autenticacao, mas termos de uso para acesso programatico nao sao "
-        "claros. Classificacao: zona_cinza. Veja https://www.agrobr.dev/docs/licenses/.",
+        (
+            "B3: classificação zona_cinza; a dispensa D-1 da FAQ e os termos do website têm "
+            "alcances distintos. Confira o canal, o uso e a vigência da política. Veja "
+            "https://www.agrobr.dev/docs/licenses/."
+        ),
     )
 
     logger.info("b3_ajustes", data=str(data), contrato=contrato)
@@ -363,9 +365,11 @@ async def posicoes_abertas(
     """
     warn_once(
         "b3_posicoes",
-        "agrobr.b3: dados da B3 (empresa privada). Posicoes em aberto publicadas "
-        "sem autenticacao, mas termos de uso para acesso programatico nao sao "
-        "claros. Classificacao: zona_cinza. Veja https://www.agrobr.dev/docs/licenses/.",
+        (
+            "B3: classificação zona_cinza; a dispensa D-1 da FAQ e os termos do website têm "
+            "alcances distintos. Confira o canal, o uso e a vigência da política. Veja "
+            "https://www.agrobr.dev/docs/licenses/."
+        ),
     )
 
     logger.info("b3_posicoes_abertas", data=str(data), contrato=contrato, tipo=tipo)

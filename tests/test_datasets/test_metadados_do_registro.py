@@ -43,9 +43,9 @@ def test_preco_diario_publica_a_licenca_da_noticias_agricolas_tentada_pela_cepea
     dataset = datasets.get_dataset("preco_diario")
     assert info["sources"] == ["cepea", "cache"]
     assert [fonte.name for fonte in dataset.info.sources if fonte.enabled] == ["cepea", "cache"]
-    assert info["licenses"] == {"cepea": "nc", "noticias_agricolas": "restrito", "cache": None}
+    assert info["licenses"] == {"cepea": "nc", "noticias_agricolas": "zona_cinza", "cache": None}
     assert (
-        "  License: nc (cepea), restrito (noticias_agricolas)"
+        "  License: nc (cepea), zona_cinza (noticias_agricolas)"
         in datasets.describe("preco_diario").splitlines()
     )
     outras = [nome for nome in datasets.list_datasets() if nome != "preco_diario"]
@@ -56,6 +56,13 @@ def test_preco_diario_publica_a_licenca_da_noticias_agricolas_tentada_pela_cepea
         }
         for nome in outras
     }
+
+
+def test_comercio_internacional_publica_a_classificacao_restrito():
+    info = datasets.info("comercio_internacional")
+    assert info["license"] == "restrito"
+    assert info["licenses"] == {"comtrade": "restrito"}
+    assert _licenca_do_describe("comercio_internacional") == "restrito"
 
 
 def test_futuros_agricolas_unit_cita_a_unidade_de_cada_contrato():

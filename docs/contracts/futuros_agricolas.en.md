@@ -119,4 +119,4 @@ PK: `[data, ticker_completo]`
 
 ## License
 
-`zona_cinza` — B3 is a private company. Public data without clear terms for programmatic access.
+Classification: `zona_cinza`. The D-1 FAQ waiver and website terms have different scopes; check channel, use and policy dates in [Licenses](../licenses.md#b3-brasil-bolsa-balcao).

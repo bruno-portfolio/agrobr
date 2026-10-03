@@ -2,8 +2,8 @@
 
 The Noticias Agricolas module republishes CEPEA/ESALQ indicators and serves as an automatic fallback when direct access to CEPEA fails (Cloudflare).
 
-!!! danger "restrito license"
-    All rights reserved (Law 9.610/98). Data originating from CEPEA (CC BY-NC 4.0).
+!!! warning "zona_cinza"
+    Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0, with attribution and permission for commercial use. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
 
 !!! note "Internal use"
     This module is **not called directly by the user**. It is invoked automatically by the CEPEA module as a fallback. Documented here for technical reference.
@@ -43,7 +43,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]
 
 ## Notes
 
-- Source: [Noticias Agricolas](https://noticiasagricolas.com.br) — `restrito` license
+- Source: Notícias Agrícolas — `zona_cinza`; CEPEA origin `nc`.
 - Automatic CEPEA fallback — the user does not need to call it directly
 - Warning emitted on first use
 - Fallback active while CEPEA remains protected by Cloudflare

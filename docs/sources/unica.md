@@ -108,4 +108,4 @@ print(meta.source)  # "unica"
 - Relatório quinzenal: `https://unicadata.com.br/listagem.php?idMn=63` (PDF, URL rotativa)
 - Histórico: `https://unicadata.com.br/xlsHPM.php` (XLSX)
 - Atualização: por edição do relatório de safra, quinzenal ou mensal; a listagem traz só a edição corrente
-- Licença: `zona_cinza` — uso educacional/pesquisa; comercial, consultar a UNICA
+- Licença: `zona_cinza` — licença de reutilização das séries e relatórios não localizada; atribuição não substitui eventual permissão.

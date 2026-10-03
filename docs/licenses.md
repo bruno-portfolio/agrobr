@@ -11,190 +11,113 @@ classificação do dado chega ao `MetaInfo.license`.
 
 | Fonte | Licença | Uso Comercial | Classificação | URL dos Termos |
 |-------|---------|---------------|---------------|----------------|
-| **CEPEA/ESALQ** | CC BY-NC 4.0 | Requer autorização do CEPEA | `nc` | [Licença](https://www.cepea.org.br/br/licenca-de-uso-de-dados.aspx) |
-| **CONAB** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Gov.br](https://www.gov.br/conab/) |
-| **IBGE/SIDRA** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
-| **NASA POWER** | CC BY 4.0 | Sim (com citação) | `livre` | [Earthdata Policy](https://earthdata.nasa.gov/collaborate/open-data-services-and-software) |
-| **BCB/SICOR** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [BCB OData](https://olinda.bcb.gov.br) |
-| **ComexStat** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [MDIC](https://comexstat.mdic.gov.br) |
-| **ANDA** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [anda.org.br](https://anda.org.br) |
-| **ANTAQ** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Fonte fora do ar desde 23/06/2026](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel) |
-| **ANP Diesel** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [ANP](https://www.gov.br/anp/) |
-| **ANTT Pedagio** | CC-BY (Creative Commons Attribution) | Sim (dados públicos) | `livre` | [ANTT Dados Abertos](https://dados.antt.gov.br) |
-| **MAPA PSR** | Dados públicos governo federal (CC-BY) | Sim (dados públicos) | `livre` | [SISSER/MAPA](https://dados.agricultura.gov.br/dataset/sisser3) |
-| **SICAR** | Dados públicos governo federal (CC-BY) | Sim (dados públicos) | `livre` | [CAR](https://www.car.gov.br) |
-| **ABIOVE** | Sem termos públicos; autorização solicitada (fev/2026) | Aguardando resposta | `zona_cinza` | [abiove.org.br](https://abiove.org.br) |
-| **ANEC** | Sem termos públicos localizados; sem contato formal | Verificar com a associação | `zona_cinza` | [anec.com.br](https://anec.com.br) |
-| **USDA PSD** | U.S. Public Domain | Sim (governo EUA) | `livre` | [Ag Data Commons](https://data.nal.usda.gov/dataset/usda-foreign-agricultural-service-production-supply-and-distribution-database) |
-| **UN Comtrade** | Termos ONU com condições e exceções de redistribuição | Depende da aplicação | `zona_cinza` | [Política oficial](https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/) |
-| **CFTC COT** | U.S. Public Domain | Sim (governo EUA) | `livre` | [CFTC Public Reporting](https://publicreporting.cftc.gov) |
-| **IMEA** | Restritivo: redistribuição proibida sem autorização escrita | Não | `restrito` | [Termo de Uso](https://imea.com.br/imea-site/termo-de-uso.html) |
-| **DERAL** | Dados públicos governo estadual PR | Sim (dados públicos) | `livre` | [SEAB/PR](https://www.agricultura.pr.gov.br) |
-| **INMET** | Dados públicos governo federal | Sim (dados públicos; API observacional com token, ZIPs públicos sem token) | `livre` | [INMET — arquivos históricos](https://portal.inmet.gov.br/dadoshistoricos) |
-| **Notícias Agrícolas** | Todos os direitos reservados (Lei 9.610/98) | Não | `restrito` | — |
-| **Queimadas/INPE** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [BDQueimadas](https://queimadas.dgi.inpe.br) |
-| **Desmatamento PRODES/DETER** | Dados públicos governo federal | Sim (dados públicos, com citação) | `livre` | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) |
-| **MapBiomas** | CC BY 4.0 — dados públicos, livre com citação | Sim (com citação ao projeto) | `livre` | [FAQ / citação dos dados](https://brasil.mapbiomas.org/faq/?tema=dados) |
-| **CONAB Progresso** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Gov.br](https://www.gov.br/conab/) |
-| **IBGE PPM** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
-| **IBGE Abate** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
-| **IBGE Censo Agro** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
-| **IBGE Censo Agro Histórico** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [SIDRA](https://sidra.ibge.gov.br) |
-| **IBGE Censo Agro Municipal 1985** | Dados públicos governo federal | Sim (dados públicos) | `livre` | [Biblioteca IBGE](https://biblioteca.ibge.gov.br) |
-| **B3 Futuros Agro** | Sem termos públicos para acesso programático | Verificar com B3 | `zona_cinza` | [B3](https://www.b3.com.br) |
-| **CONAB CEASA/PROHORT** | Credenciais públicas embutidas no frontend, API não documentada oficialmente | Verificar com CONAB | `zona_cinza` | [Portal CONAB](https://portaldeinformacoes.conab.gov.br) |
-| **MAPA Agrofit (Defensivos)** | Creative Commons Attribution (versão não indicada pelo portal em 07/09/2026) | Sim, com atribuição | `livre` | [Agrofit/MAPA](https://dados.agricultura.gov.br/dataset/sistema-de-agrotoxicos-fitossanitarios-agrofit) |
-| **ZARC** | Dados públicos governo federal (CC-BY) | Sim | `livre` | [dados.agricultura.gov.br](https://dados.agricultura.gov.br/dataset/tabua-de-risco-zoneamento-agricola-de-risco-climatico) |
-| **ANA/SNIRH** | Dados publicos | Sim | `livre` | [SNIRH](https://portal1.snirh.gov.br) |
-| **FUNAI Terras Indigenas** | Termo da FUNAI para geoprocessamento e mapas: reprodução com citação da fonte (rodapé do portal: CC BY-ND 3.0) | Sim (com citação) | `livre` | [FUNAI — geoprocessamento e mapas](https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas) |
-| **IBAMA Embargos** | "Outra (Aberta)" no catálogo; dados abertos federais (Decreto 8.777/2016: livre utilização, creditando a fonte) | Sim (com citação) | `livre` | [Dados Abertos IBAMA — termo de embargo](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo) |
-| **ICMBio UCs Federais** | Dados publicos governo federal | Sim (dados publicos) | `livre` | [geoservicos.inde.gov.br](https://geoservicos.inde.gov.br) |
-| **CNUC (MMA)** | CC-BY (Creative Commons Atribuição), dataset "Unidades de Conservação" do portal de dados abertos do MMA | Sim (com atribuição) | `livre` | [dados.mma.gov.br](https://dados.mma.gov.br/dataset/unidadesdeconservacao) |
-| **INCRA Quilombolas** | Dados publicos governo federal | Sim (dados publicos) | `livre` | [cmr.funai.gov.br](https://cmr.funai.gov.br) |
-| **Lista Suja** | Rodapé do portal: CC BY-ND 3.0; licença separada dos arquivos não localizada | Ver termos abaixo | `livre` (classificação existente) | [MTE — cadastro oficial](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo) |
-| **MapBiomas Alerta** | Livre (citacao obrigatoria) | Sim | `livre` | [MapBiomas Alerta](https://plataforma.alerta.mapbiomas.org) |
-| **SFB** | Dados publicos | Sim | `livre` | [SFB](https://mapas.florestal.gov.br) |
-| **RNC/CultivarWeb** | Dados publicos governo federal | Sim (dados publicos) | `livre` | [CultivarWeb](https://sistemas.agricultura.gov.br/snpc/cultivarweb) |
-| **EMBRAPA Solos** | CC BY-NC 3.0 BR | Requer autorizacao da EMBRAPA | `nc` | [GeoInfo](https://geoinfo.dados.embrapa.br) |
-| **Acervo Fundiario/INCRA** | Vedado uso comercial (portal) | Nao | `nc` | [INCRA Certificacao](https://certificacao.incra.gov.br) |
-| **Fundacao Rio Verde** | Sem termos publicos | Verificar com a fundacao | `zona_cinza` | [fundacaorioverde.com.br](https://fundacaorioverde.com.br) |
-| **UNICA** | Sem termos publicos; todos os direitos reservados no rodape | Verificar com a UNICA | `zona_cinza` | [unicadata.com.br](https://unicadata.com.br) |
+| **CEPEA/ESALQ** | CC BY-NC 4.0 | Requer autorização do titular | `nc` | [Termos/fundamento](#cepeaesalq) |
+| **CONAB** | Estatísticas públicas; LAI e busca sem restrição específica | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/conab/pt-br/acesso-a-informacao/dados-abertos) |
+| **IBGE/SIDRA** | Dados abertos: LAI, Decreto 8.777/2016 e PDA IBGE; sem CC nominal geral | Sim, com fonte e proveniência | `livre` | [Termos/base](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
+| **NASA POWER** | Declaração específica de domínio público do POWER | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://forum.earthdata.nasa.gov/viewtopic.php?p=635) |
+| **BCB/SICOR** | ODbL 1.0 — Matriz de Dados do Crédito Rural | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dadosabertos.bcb.gov.br/api/3/action/package_show?id=matrizdadoscreditorural) |
+| **ComexStat** | Dados públicos federais; sem CC nominal comprovada | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/base-de-dados-bruta) |
+| **ANDA** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://anda.org.br/recursos/) |
+| **ANTAQ** | Estatístico Aquaviário: dados abertos no PDA | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/antaq/pt-br/acesso-a-informacao/dados-abertos/PDA20262028ANTAQOCR.pdf) |
+| **ANP Diesel** | Preços e vendas: política de dados abertos, PDA 2026–2028 | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/arquivos/home/pda-2026-2028.pdf) |
+| **ANTT Pedagio** | CC BY — versão não indicada nos dois catálogos | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.antt.gov.br/api/3/action/package_show?id=volume-trafego-praca-pedagio) |
+| **MAPA PSR** | CC BY — versão não indicada no catálogo PSR | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.agricultura.gov.br/api/3/action/package_search?fq=id:baefdc68-9bad-4204-83e8-f2888b79ab48&rows=0&facet.field=%5B%22license_id%22%5D) |
+| **SICAR** | Dados públicos federais; licença CC da base não comprovada | Sim, com fonte e proveniência | `livre` | [Termos/base](https://consultapublica.car.gov.br/publico/geoservicos/index) |
+| **ABIOVE** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://abiove.org.br/estatisticas/) |
+| **ANEC** | Fonte privada; sem licença de reutilização dos boletins localizada | Permissão comercial não estabelecida | `zona_cinza` | [Termos/base](https://www.anec.com.br/) |
+| **USDA PSD** | CC BY 4.0 no registro oficial PSD preservado | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://catalog.data.gov/harvest_record/40692b29-74dd-4e52-bd1e-a5873ea9e010/raw) |
+| **UN Comtrade** | Redistribuição condicionada; dispensas expressas | Depende do uso e das dispensas | `restrito` | [Termos/fundamento](https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/) |
+| **CFTC COT** | Domínio público da informação governamental CFTC | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.cftc.gov/WebPolicy/index.htm) |
+| **IMEA** | Séries públicas sem licença comprovada; arquivos não públicos têm restrição expressa | Verificar o recorte e os termos | `zona_cinza` | [Termo de Uso](https://imea.com.br/imea-site/termo-de-uso.html) |
+| **DERAL** | Dados públicos estaduais; LAI e Decreto PR 10.285 | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.legislacao.pr.gov.br/legislacao/listarAtosAno.do?action=exibirImpressao&codAto=114209) |
+| **INMET** | Observações públicas próprias do INMET | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://portal.inmet.gov.br/dadoshistoricos) |
+| **Notícias Agrícolas** | Fonte privada sem licença própria de cotações; origem CEPEA CC BY-NC 4.0 | Origem CEPEA: autorização para uso comercial | `zona_cinza` | — |
+| **Queimadas/INPE** | Dados públicos; FAQ e fundamento federal | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://data.inpe.br/queimadas/faq/) |
+| **Desmatamento PRODES/DETER** | CC BY-SA 4.0 | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://terrabrasilis.dpi.inpe.br/citacoes-e-licenca-de-uso/) |
+| **MapBiomas** | CC BY 4.0 — cobertura e uso da terra | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://brasil.mapbiomas.org/faq/?tema=dados) |
+| **CONAB Progresso** | CC BY-ND 3.0 no portal/ficha; sem licença individual do XLSX | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-21-09-a-27-09-26/plantio-e-colheita-19-09-a-25-09/view) |
+| **IBGE PPM** | Base federal e PDA IBGE 2024–2025; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
+| **IBGE Abate** | Base federal e PDA IBGE 2024–2025; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
+| **IBGE Censo Agro** | Base federal e PDA IBGE 2024–2025; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
+| **IBGE Censo Agro Histórico** | Base federal e PDA IBGE 2024–2025; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
+| **IBGE Censo Agro Municipal 1985** | Base federal e PDA IBGE 2024–2025; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
+| **B3 Futuros Agro** | FAQ D-1 e termos do site com alcances distintos | Conferir canal, uso e vigência com B3 | `zona_cinza` | [B3](https://www.b3.com.br) |
+| **CONAB CEASA/PROHORT** | Painel e licença específica do PROHORT não confirmados; origem inclui terceiros | Verificar origem e condições | `zona_cinza` | [Termos/base](https://portaldeinformacoes.conab.gov.br/home) |
+| **MAPA Agrofit (Defensivos)** | CC BY, sem versão; CSVs de formulados e técnicos | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.agricultura.gov.br/api/3/action/package_show?id=sistema-de-agrotoxicos-fitossanitarios-agrofit) |
+| **ZARC** | CC BY, sem versão; tábua de risco do ZARC | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.agricultura.gov.br/api/3/action/package_show?id=tabua-de-risco-zoneamento-agricola-de-risco-climatico) |
+| **ANA/SNIRH** | Dados públicos; base legal e política institucional | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/ana/pt-br/todos-os-documentos-do-portal/documentos-cor/planos-de-dados-abertos/plano-de-dados-abertos-2025-2027) |
+| **FUNAI Terras Indigenas** | Termo específico da camada: reprodução com citação | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas) |
+| **IBAMA Embargos** | Outra (Aberta), com selo Open Definition no catálogo | Sim, preservando fonte e condições | `livre` | [Termos/base](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo) |
+| **ICMBio UCs Federais** | Política de dados abertos para limites federais | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/icmbio/pt-br/acesso-a-informacao/dados-abertos) |
+| **CNUC (MMA)** | WFS: base legal; catálogo CKAN: CC BY sem versão | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.mma.gov.br/api/3/action/package_show?id=unidadesdeconservacao) |
+| **INCRA Quilombolas** | Dados públicos do INCRA; base legal federal | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/incra/pt-br/acesso-a-informacao/dados-abertos) |
+| **Lista Suja** | CC BY-ND 3.0 no portal; sem licença individual dos arquivos | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo) |
+| **MapBiomas Alerta** | CC BY-SA 3.0 BR — dados, inclusive via API | Sim, com atribuição e SA nas adaptações | `livre` | [Termos/base](https://plataforma.alerta.mapbiomas.org/terms) |
+| **SFB** | Dados públicos federais: CNFP, concessões e IFN; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://mapas.florestal.gov.br) |
+| **RNC/CultivarWeb** | Cadastros públicos RNC/SNPC; sem CC nominal | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_registradas.php) |
+| **EMBRAPA Solos** | CC BY-NC 3.0 BR nas duas camadas | Requer autorização do titular | `nc` | [Termos/fundamento](https://geoinfo.dados.embrapa.br/datasets/geoinfo_data%3Ageonode%3Aperfis_pronasolos_2020/metadata_detail) |
+| **Acervo Fundiario/INCRA** | Dados públicos SIGEF/SNCI/assentamentos; base legal e INCRA | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/incra/pt-br/acesso-a-informacao/dados-abertos) |
+| **Fundacao Rio Verde** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://fundacaorioverde.com.br/publicacoes/) |
+| **UNICA** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://unicadata.com.br/) |
 
 ### Legenda de Classificação
 
 | Classificação | Significado |
-|---------------|-------------|
-| `livre` | Dados públicos sem restrição a uso comercial. Citar a fonte é boa prática. |
-| `nc` | Non-commercial. Uso comercial requer autorização explícita do detentor. |
-| `zona_cinza` | Termos de uso não localizados publicamente ou ambíguos. Autorização solicitada. |
-| `restrito` | Redistribuição proibida ou condicionada a autorização escrita. |
+|---|---|
+| `livre` | Uso comercial admitido no escopo descrito. Atribuição, preservação de avisos e indicação de alterações podem ser obrigatórias. SA/ODbL podem exigir compartilhamento nas mesmas condições; ND pode impedir distribuir adaptações protegidas. A categoria não significa ausência de condições. |
+| `nc` | A licença permite uso não comercial nas condições publicadas; uso comercial depende de autorização do titular. |
+| `zona_cinza` | Licença de reutilização ausente ou alcance dos termos ambíguo. A classificação não concede permissão nem prova proibição geral. |
+| `restrito` | Redistribuição proibida ou condicionada a autorização/licença, ressalvadas as dispensas expressas da fonte. A forma escrita só é exigida quando prevista no termo aplicável. |
 
 ## Detalhes por Fonte
 
 ### CEPEA/ESALQ
 
-- **Licença:** Creative Commons BY-NC 4.0
-- **Resumo:** Permite uso não-comercial com atribuição ao CEPEA. Uso comercial
-  (revenda de dados, integração em produtos pagos, etc.) requer autorização
-  escrita do CEPEA.
-- **Contato:** cepea@usp.br
-- **Referência EN:** [Non-commercial use of data](https://cepea.esalq.usp.br/en/non-commercial-use-of-data.aspx)
+Os indicadores e séries CEPEA/ESALQ usam CC BY-NC 4.0: atribuição obrigatória, indicação de alterações e uso não comercial. Uso comercial exige autorização expressa do CEPEA. A licença recuperada não impõe literalmente forma escrita; documentar a autorização por escrito é uma recomendação. Preserve os créditos e avisos.
 
 ### IMEA
 
-- **Classificação:** `restrito`
-- **Termos:** "Todo o arquivo não público disponibilizado pela plataforma, seja
-  ele relatório ou dado, é de uso exclusivo do usuário não podendo ser
-  compartilhado sem prévia autorização por escrito."
-- **Situação:** API pública (`api1.imea.com.br`) sem autenticação, mas o Termo
-  de Uso é explícito sobre proibição de redistribuição. O endpoint `/v2/mobile/`
-  não é documentado oficialmente.
-- **Recomendação:** Módulo mantido para uso pessoal/educacional direto. Não
-  incluir em datasets de fallback automático. Usuários que redistribuam dados
-  devem obter autorização escrita do IMEA.
+As séries públicas do IMEA são classificadas como `zona_cinza`: não foi comprovada licença de reutilização nem que a cláusula de arquivos não públicos alcance esse recorte. Os termos condicionam o compartilhamento de arquivos não públicos à autorização prévia por escrito; essa restrição permanece para tais arquivos. As reservas sobre bases de dados e outros ativos não são uma licença aberta. O módulo avisa na primeira chamada. [Termo de Uso do IMEA](https://imea.com.br/imea-site/termo-de-uso.html).
 
 ### ANDA
 
-- **Classificação:** `zona_cinza`
-- **Situação:** Associação setorial que publica dados de entregas de fertilizantes.
-  Sem página de termos de uso pública localizada.
-- **Ação:** Autorização formal solicitada em fevereiro/2026. Aguardando resposta.
+A ANDA é uma entidade privada e não foi localizada licença de reutilização das estatísticas de entregas de fertilizantes. A classificação é zona_cinza. A reserva genérica do portal não foi convertida em uma cláusula NC dos números; a ausência de licença tampouco autoriza a reprodução integral de relatórios ou de uma base protegida. Registrar fonte, mês/ano e extração. A categoria registra a ausência de licença publicada.
 
 ### ABIOVE
 
-- **Classificação:** `zona_cinza`
-- **Situação:** Associação setorial que publica dados de exportação do complexo soja.
-  Sem página de termos de uso pública localizada.
-- **Ação:** Autorização formal solicitada em fevereiro/2026. Aguardando resposta.
+A ABIOVE é uma associação privada. Não foi localizada licença específica de reutilização das estatísticas do Complexo Soja; a classificação é zona_cinza. Distinguir os valores extraídos da estrutura de planilhas, textos e relatórios. Citar ABIOVE, arquivo, período e transformações documenta a origem, mas não substitui eventual permissão necessária. A categoria registra a ausência de licença publicada.
 
 ### ANEC
 
-- **Classificação:** `zona_cinza`
-- **Situação:** Associação Nacional dos Exportadores de Cereais. Publica relatórios
-  semanais em PDF de embarques por porto (soja, farelo, milho, DDGS, sorgo, trigo).
-  Sem página de termos de uso pública localizada.
-- **Decisão no agrobr:** Módulo emite `UserWarning` na primeira chamada por sessão
-  alertando o usuário sobre o status. Não incluído em fallback automático de
-  outros datasets. Sem contato formal estabelecido com a associação.
+A ANEC permanece `zona_cinza`. O portal e a área de estatísticas anuais consultados não apresentam licença de reutilização nem cláusula específica sobre os relatórios; o rodapé contém apenas a reserva genérica de direitos da associação. Acesso público não concede permissão sobre relatórios ou bases protegidas. Preservar ANEC, publicação, edição, período e transformações. O aviso de licença na primeira chamada permanece.
 
 ### Notícias Agrícolas
 
-- **Classificação:** `restrito`
-- **Situação:** Empresa privada (Olivi Produções de Vídeo e Comunicação LTDA)
-  sem termos de uso públicos sobre republicação de cotações. Pela Lei 9.610/98,
-  ausência de licença explícita implica todos os direitos reservados.
-- **Decisão no agrobr (02/09/2026):** O fallback automático do CEPEA foi mantido.
-  `cepea.indicador()` e `cepea.ultimo()` avisam sobre a licença CC BY-NC 4.0 do
-  CEPEA, e o client do Notícias Agrícolas emite seu próprio aviso de fonte
-  `restrito`; assim, os dois caminhos alertam o usuário na primeira chamada.
+Notícias Agrícolas é classificado como `zona_cinza` porque não foi localizada licença própria de reutilização das cotações. A reserva genérica de direitos não comprova uma proibição específica de reutilizar todo fato numérico, nem concede permissão sobre relatórios ou bases protegidas. Dados de origem CEPEA conservam a CC BY-NC 4.0, com atribuição e autorização para uso comercial. O fallback automático permanece e emite o aviso do publicador, além do aviso da origem. Quando CEPEA e Notícias Agrícolas constam em `MetaInfo.data_sources`, prevalece `nc` em `MetaInfo.license`.
 
 ### B3 (Brasil, Bolsa, Balcão)
 
-- **Classificação:** `zona_cinza`
-- **Situação:** Empresa privada que publica ajustes diários de futuros sem
-  autenticação ou paywall. Dados são referência oficial para cálculo de margem
-  (exigência CVM). Sem termos de uso específicos para acesso programático.
-- **Dados utilizados:** Ajustes diários (settlement prices) de futuros
-  agrícolas (BGI, CCM, ICF, CNL, ETH, SJC, SOY) via página pública +
-  posições em aberto (open interest) de futuros e opções via CSV público.
-- **Recomendação:** Uso educacional/pesquisa. Redistribuição em produto
-  comercial deve ser verificada com B3 (marketdata@b3.com.br).
+A B3 mantém a classificação `zona_cinza`. A FAQ dispensa autorização prévia para determinados dados de fim de dia e históricos a partir de D-1 obtidos das plataformas Market Data B3, mas os termos do website condicionam uso comercial e redistribuição. Não foi demonstrado que a dispensa cubra os arquivos de ajustes e posições em aberto usados pelo agrobr. A política vigente até 31/10/2026 e a política anunciada para 01/11/2026 têm vigências separadas; o conteúdo da política futura não fundamenta esta classificação. Conferir o canal e o uso concreto nos [documentos oficiais da B3](https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/distribuidores/politica-comercial-e-contratos/). A categoria não afirma permissão comercial nem ausência de termos.
 
 ### CONAB CEASA/PROHORT
 
-- **Classificação:** `zona_cinza`
-- **Situação:** CONAB é empresa pública federal. O sistema PROHORT (preços de
-  atacado hortifruti em CEASAs) utiliza Pentaho BA Server com credenciais
-  embutidas no frontend público (`userid=pentaho`, `password=password`).
-  A API não é documentada oficialmente, mas alimenta dashboards e app mobile
-  públicos da CONAB.
-- **Dados utilizados:** Preços diários de 48 produtos (frutas, hortaliças, ovos)
-  em 43 CEASAs do Brasil via Pentaho CDA REST API.
-- **Recomendação:** Dados de interesse público (preços de alimentos). Uso
-  educacional/pesquisa. Consultar CONAB para redistribuição comercial.
+CEASA/PROHORT permanece `zona_cinza`. O portal de informações da CONAB identifica os painéis visíveis como informação pública e reserva direitos sobre o Sistema, sem cláusula específica sobre os dados. A página antiga redireciona para a página inicial, e o painel do PROHORT não foi localizado na consulta de 02/10/2026; a prova permanece limitada. Dados das CEASAs podem ter origem em terceiros. Esse alcance não recebe automaticamente a classificação das estatísticas próprias da CONAB. Preservar CONAB/PROHORT, CEASA de origem, produto, período e extração.
 
 ### UNICA
 
-- **Classificação:** `zona_cinza`
-- **Situação:** Associação setorial (União da Indústria de Cana-de-Açúcar e
-  Bioenergia) que publica estatísticas de moagem e produção via unicadata.com.br
-  e relatórios quinzenais de divulgação. Sem página de termos de uso para dados
-  localizada; rodapé do portal indica "todos os direitos reservados".
-- **Dados utilizados:** Relatório quinzenal de acompanhamento de safra do
-  Centro-Sul (PDF público) e histórico anual de produção por estado
-  (export XLSX do portal, safras 1980/1981–2020/2021).
-- **Decisão no agrobr:** Módulo emite `UserWarning` na primeira chamada por
-  sessão. Uso educacional/pesquisa; redistribuição comercial deve ser
-  verificada com a UNICA.
+A UNICA é uma associação privada; não foi localizada licença específica de reutilização das séries históricas e dos relatórios quinzenais. A classificação é zona_cinza. O rodapé reserva direitos, sem demonstrar proibição comercial específica dos números ou dispensa educacional geral. Citar UNICA/UNICAdata, relatório ou série, safra/período e tratamento. A atribuição não substitui eventual permissão.
 
 ### FUNAI
 
-Em 23/09/2026, a [página oficial de geoprocessamento e mapas da FUNAI](https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas) traz a licença de uso
-específica dos dados: "o conteúdo dos arquivos correspondentes a geoprocessamento e mapas poderão ser reproduzidos desde
-que citada a fonte, excetuando os casos especificados em contrário e os conteúdos replicados de outras fontes". O mesmo
-texto está no resumo da camada `Funai:tis_poligonais` no WFS. O rodapé do portal gov.br declara a licença
-[Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada](https://creativecommons.org/licenses/by-nd/3.0/) para o conteúdo do site.
-
-A classificação `livre` é mantida pelo termo específico dos dados, que condiciona a reprodução apenas à citação da fonte.
-A restrição a derivados do rodapé genérico não aparece no termo dos dados; quem redistribuir material modificado deve
-avaliar os dois textos.
+O termo específico de geoprocessamento da FUNAI, repetido no Abstract de Funai:tis_poligonais, permite reprodução com citação, ressalvados casos expressamente contrários e conteúdos de terceiros. Esse termo precede o rodapé genérico BY-ND para a camada própria identificada. Citar FUNAI, camada, edição e tratamento, sem apresentar modificações próprias como novo documento oficial. Não estender a licença às camadas de outros produtores.
 
 ### IBAMA
 
-Em 23/09/2026, o conjunto [Fiscalização - termo de embargo](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo),
-de onde o agrobr lê o CSV, declara a licença "Outra (Aberta)" do CKAN, sem texto próprio. A ODbL citada antes era do
-conjunto "Termos de Embargo" (shapefile do PAMGIA, hoje fora do ar). Como dado aberto federal, vale a definição do
-[Decreto 8.777/2016](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm), art. 2º, III:
-licença aberta "que permita sua livre utilização, consumo ou cruzamento, limitando-se a creditar a autoria ou a fonte".
-A classificação `livre` é mantida. O CSV da fonte traz nome e CPF/CNPJ do embargado; o agrobr não expõe esses campos.
+O conjunto [Fiscalização — termo de embargo](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo) declara `Outra (Aberta)` com link de conformidade à Open Definition. A classificação é `livre`, apoiada na declaração aberta do conjunto e na base federal; não se atribui CC nominal ou ODbL de outro conjunto. Preservar IBAMA, conjunto, edição, acesso e transformações. A página individual do recurso retornou 502 na conferência de 02/10/2026: o vínculo com o CSV utilizado foi identificado pelo nome, sem comprovação byte a byte do download nessa conferência.
 
 ### Lista Suja
 
-Em 07/09/2026, a [página oficial do MTE](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo) publica os arquivos sem autenticação e informa no rodapé a licença [Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada](https://creativecommons.org/licenses/by-nd/3.0/). Não foi localizada uma declaração de licença própria para os arquivos CSV, TXT, XLSX e PDF.
-
-A classificação preexistente `livre` é mantida como categoria interna, sem afirmar autorização irrestrita para derivados. A licença indicada pelo portal contém condições de atribuição e de distribuição de material modificado; seu [resumo oficial](https://creativecommons.org/licenses/by-nd/3.0/deed.pt_BR) distingue uma mera mudança de formato de uma obra derivada. Acesso público e Lei de Acesso à Informação não substituem a verificação dos termos aplicáveis a uma redistribuição. O módulo preserva o aviso existente sobre CPF/CNPJ e a proveniência da publicação.
-
-O dataset [`empregadores_lista_suja`](api/empregadores_lista_suja.md) reutiliza a mesma publicação e conserva atribuição e proveniência. Esse wrapper não estabelece uma licença separada dos arquivos nem acrescenta cobertura histórica ou CEAC.
+A página oficial do Cadastro de Empregadores do MTE indica CC BY-ND 3.0 no rodapé, sem licença individual dos arquivos localizada. A categoria livre admite uso comercial com atribuição, preservada a vedação de distribuir adaptação protegida. Mudança técnica de formato não é, por si, derivação. Citar MTE, edição, publicação e tratamento; a saída do agrobr não deve ser apresentada como documento oficial modificado. O dataset que reutiliza a publicação não cria outra licença. O aviso operacional sobre dados pessoais permanece.
 
 ### BCB SGS
 
@@ -218,48 +141,147 @@ Esta verificação cobre o catálogo OData e as rotas genéricas usadas pelo agr
 
 ### Fontes Governamentais Brasileiras
 
-CONAB (incluindo Progresso de Safra), IBGE, BCB, ComexStat, DERAL, INMET, INPE (Queimadas, PRODES/DETER), ANP, ANTT, SICAR (Serviço Florestal Brasileiro), IBAMA, ANA/SNIRH e SFB são órgãos públicos brasileiros.
-MapBiomas é um projeto multi-institucional que disponibiliza dados abertos com citação obrigatória.
-Dados produzidos por órgãos públicos no exercício de suas funções são, em regra,
-de acesso público (Lei de Acesso à Informação — Lei 12.527/2011). Não há
-restrição a uso comercial de dados públicos governamentais, mas a citação da
-fonte é recomendada.
-
-O agrobr embute códigos IBGE de 5571 municípios (arquivo `_municipios_ibge.json`)
-obtidos da [API IBGE Localidades](https://servicodados.ibge.gov.br/api/docs/localidades),
-que é pública e livre para uso.
+A licença deve ser verificada para o conjunto e o canal efetivamente usados. A LAI disciplina transparência e acesso, inclusive automatizado; não elimina termos específicos ou direitos de terceiros. O Decreto 8.777/2016 fornece a base federal de dados abertos e livre utilização no seu âmbito, com as ressalvas de titularidade previstas. Empresas públicas e fontes estaduais exigem delimitação própria. A classificação de uma fonte não estende automaticamente a licença a outros produtos da instituição. Citar fonte, edição e transformações; cumprir as condições específicas de atribuição, ND, SA, NC ou autorização descritas em cada fonte.
 
 ### NASA POWER
 
-Dados NASA são disponibilizados sob CC BY 4.0. Uso livre (incluindo comercial)
-com citação obrigatória ao NASA POWER Project.
+A declaração específica do projeto POWER identifica seus dados como domínio público; não foi comprovada a CC BY 4.0 antes atribuída ao produto. O aviso histórico foi conferido e deve ser lido com o guia de referência do POWER e a regra americana para obras federais, 17 U.S.C. § 105. Reconhecer NASA POWER Project, os produtos e versões usados e as transformações. A conclusão não licencia marcas nem materiais de terceiros.
 
 ### USDA PSD
 
-Dados do governo americano estão em domínio público nos EUA (17 U.S.C. 105).
-Uso livre sem restrições de copyright dentro dos EUA. Para uso internacional,
-verificar se CC0 foi aplicado explicitamente.
+O registro oficial preservado do conjunto USDA/FAS Production, Supply and Distribution, USDA-26341, indica CC BY 4.0. Usar esse rótulo com atribuição, link e alterações; a antiguidade do registro e a consulta atual do portal são limites explícitos da prova. A regra de domínio público de obras federais nos EUA é fundamento adicional delimitado, não uma declaração de CC0 ou de domínio público mundial.
 
 ### UN Comtrade
 
-- **Classificação interna:** `zona_cinza`, revista em setembro de 2026; aviso na primeira chamada.
-- A [política oficial](https://uncomtrade.org/docs/policy-on-use-and-re-dissemination/) reserva direitos à ONU e distingue uso interno de redistribuição. Lista exceções para certas apresentações/extrações gratuitas, mas também requisitos de licença e condições comerciais. Sua aplicação deve ser conferida para o uso concreto; acesso público à API não comprova redistribuição irrestrita.
-- **Dados utilizados:** comércio bilateral HS e espelho, preservando atribuição UN Comtrade.
+A classificação UN Comtrade é restrito: a redistribuição depende, como regra, de permissão/licenciamento. A política dispensa autorização/licença de distribuição em poucas tabelas ou gráficos de publicações; extração/streaming gratuitos de até 100.000 registros; extração/streaming gratuitos de muitos registros para assinantes ativos existentes; visualização/análise gratuitas; e uso interno, inclusive em modelo de IA. Há previsão de compartilhamento em projeto conjunto. Transformação substancial afasta a licença de distribuição com taxa segundo a política, sem apagar as demais condições. Aplicações com fins lucrativos são listadas como sujeitas a licença com taxa. A exigência geral de assinante premium ativo para redistribuição precisa ser lida junto às dispensas, sem presumir sua inaplicabilidade. Citar UN Comtrade e preservar o disclaimer. Acesso gratuito não equivale a redistribuição irrestrita.
 
 ### CFTC COT
 
-- **Classificação:** `livre`
-- **Situação:** Dados do governo americano (Commodity Futures Trading
-  Commission) em domínio público nos EUA (17 U.S.C. 105), publicados via
-  API Socrata aberta sem autenticação.
-- **Dados utilizados:** Relatório semanal Commitments of Traders (COT),
-  formato Disaggregated, para contratos agropecuários de CBOT/CME/ICE
-  (posições de managed money, producer/merchant, swap dealers e other
-  reportables).
+A Web Policy da CFTC coloca sua informação governamental em domínio público e permite cópia e distribuição, solicitando reconhecimento da fonte. Essa declaração alcança os relatórios COT próprios conferidos, com apoio em 17 U.S.C. § 105. Citar CFTC, família Futures/Combined, data e contrato. A ressalva de material de terceiros continua aplicável; não há CC nominal para afirmar.
+
+### CONAB
+
+As estatísticas próprias de safra, séries e custos da CONAB são classificadas como livre com base na LAI, na natureza de empresa pública e na busca sem restrição específica dos valores. Não foi comprovada licença nominal de cada planilha. A CONAB declara não integrar o escopo institucional do Decreto 8.777/2016; esse decreto não é apresentado como licença automática da empresa. Citar publicação, safra, edição e tratamento. Conteúdo editorial do portal pode estar sujeito a BY-ND; CEASA/PROHORT e Progresso têm análises próprias.
+
+### IBGE/SIDRA
+
+O SIDRA e sua API são canais de dados abertos no [PDA do IBGE 2024–2025](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf). A classificação é `livre`, com base na LAI, no Decreto 8.777/2016 e na política institucional, sem atribuir uma licença CC nominal a todas as estatísticas. O [termo do portal, versão de 11/03/2024](https://www.ibge.gov.br/acesso-informacao/acoes-e-programas/politica-de-privacidade.html) trata de privacidade e serviços e não traz restrição à reutilização das estatísticas ou vetores publicados. Preservar IBGE, pesquisa, tabela, período, edição e transformações. A antiguidade do PDA e a ausência de licença nominal por conjunto delimitam a prova; a licença deve ser verificada no produto efetivamente usado. A página de Áreas Urbanizadas também não apresenta licença ou restrição específica e remete ao mesmo termo do portal; esse recorte é `livre` pela base federal e institucional. A licença nominal de um produto, como a MMD 2025, não é generalizada aos demais.
+
+### BCB/SICOR
+
+O catálogo da Matriz de Dados do Crédito Rural/SICOR v2 declara ODbL 1.0. Uso comercial é permitido com atribuição ao BCB, link da licença e preservação dos avisos. Bases derivadas compartilhadas devem observar as condições de compartilhamento pela mesma licença quando aplicáveis; resultados produzidos e bases derivadas não são hipóteses idênticas. Esta prova não licencia automaticamente todas as séries SGS ou outros produtos do BCB.
+
+### ComexStat
+
+Os arquivos brutos próprios de importação, exportação e tabelas auxiliares Comex Stat são classificados como livre pela base federal de dados públicos e pela busca documentada no catálogo MDIC. Não foi demonstrada licença CC dos CSVs. Preservar MDIC/SECEX-Comex Stat, fluxo, período, classificação e transformações, além de eventuais direitos de terceiros expressamente indicados.
+
+### ANTAQ
+
+O Estatístico Aquaviário é identificado como base aberta no PDA 2026–2028 da ANTAQ. A classificação livre mantém fundamento na publicação própria da autarquia, na legislação federal e na busca documentada. O catálogo direto de downloads permaneceu bloqueado nesta conferência; isso não prova licença nem indisponibilidade total do serviço. Citar ANTAQ, ano, arquivo e tratamento.
+
+### ANP Diesel
+
+A Série Histórica de Preços de Combustíveis e de GLP e as Vendas de derivados de petróleo e biocombustíveis são identificadas como conjuntos já abertos no PDA ANP 2026–2028. A classificação livre decorre dessa política específica, lida com o Decreto 8.777/2016. Os termos gerais do portal contêm restrições comerciais; foram confrontados com a política dos conjuntos, não declarados inexistentes. Não foi comprovada CC nominal. Citar ANP, família, período, edição, unidade e alterações. A conclusão não abrange todos os sistemas ou serviços da ANP.
+
+### ANTT Pedagio
+
+Os dois conjuntos ANTT, Volume de tráfego por praça de pedágio e Praça de pedágio, declaram Creative Commons Atribuição. Uso comercial com crédito e indicação de alterações. A versão não é informada nos catálogos; não a completar como 4.0. Ao combinar os conjuntos, conservar a identificação e o link de ambos.
+
+### MAPA PSR
+
+O conjunto MAPA/SISSER-PSR identificado no catálogo declara Creative Commons Atribuição, sem versão numérica. Uso comercial permitido com crédito, identificação do conjunto/recurso, período e alterações. A licença é do conjunto PSR conferido; não uma licença geral de todas as bases do MAPA.
+
+### SICAR
+
+A classificação do SICAR é `livre` pela base pública federal: LAI, Decreto 8.777/2016 e publicidade do CAR na Lei 12.651/2012. A consulta pública oferece visualização e download da base por UF sem termo específico de reutilização localizado. Campos `Fees` e `AccessConstraints` vazios no WFS não são uma concessão de licença. Não foi comprovada uma CC BY da base; o BY-ND do rodapé gov.br é do conteúdo do site. Preservar SFB/CAR, camada, UF, extração e transformações. [Geosserviços do CAR](https://consultapublica.car.gov.br/publico/geoservicos/index).
+
+### DERAL
+
+As estatísticas próprias de Previsão de Safras do DERAL/SEAB-PR são classificadas como livre pela natureza pública estadual, pela LAI e pelo Decreto estadual 10.285/2014, com busca sem restrição específica localizada. A norma estadual complementa a LAI. Preservar safra, data, publicação e alterações; não atribuir uma licença CC inexistente.
+
+### INMET
+
+A conclusão livre abrange as observações próprias publicadas pelo INMET, com base federal e busca documentada. Conservar estação/arquivo, período, variáveis e transformações. O contrato operacional de emissão e uso do token não foi auditado; licença dos dados e condições de acesso ao serviço são assuntos distintos. Não se afirma CC nominal ou ausência de limites operacionais.
+
+### Queimadas/INPE
+
+Os dados próprios do Programa Queimadas/INPE são classificados como livre pela publicação oficial, FAQ e base federal. Seguir a orientação de referência do produto e citar INPE, produto, período e satélite, com indicação das transformações. Não importar a licença BY-SA de outro programa. Falhas de transporte na reabertura da FAQ foram registradas e não apagam a evidência preservada.
+
+### Desmatamento PRODES/DETER
+
+Os dados PRODES/DETER abrangidos pela política do Programa de Monitoramento dos Biomas Brasileiros usam CC BY-SA 4.0. Uso comercial permitido com atribuição ao INPE, identificação do produto/bioma/camada/período, link da licença e alterações. Adaptações compartilhadas devem observar CompartilhaIgual quando aplicável. A categoria livre não elimina essas condições.
+
+### MapBiomas
+
+A FAQ atual dos dados de cobertura e uso da terra MapBiomas declara CC BY 4.0, prevalecendo sobre a reserva genérica do rodapé. Citar Projeto MapBiomas, coleção, recurso, recorte, data de acesso e alterações. A política geral fundamenta também a coleção 11; não se declara leitura dos termos internos de cada planilha. Esta conclusão não abrange MapBiomas Alerta.
+
+### CONAB Progresso
+
+A ficha de publicação do XLSX de Progresso de Safra vincula o conteúdo ao rodapé CC BY-ND 3.0. A categoria livre registra permissão de reprodução comercial com atribuição, preservada a condição de não distribuir adaptações protegidas. Não foi encontrada licença individual incorporada à planilha. Mera alteração técnica de formato não cria derivado por si só. Citar CONAB, semana e edição, e distinguir extração/tratamento do documento oficial.
+
+### IBGE PPM
+
+O SIDRA e sua API são canais de dados abertos no [PDA do IBGE 2024–2025](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf). A classificação é `livre`, com base na LAI, no Decreto 8.777/2016 e na política institucional, sem atribuir uma licença CC nominal a todas as estatísticas. O [termo do portal, versão de 11/03/2024](https://www.ibge.gov.br/acesso-informacao/acoes-e-programas/politica-de-privacidade.html) trata de privacidade e serviços e não traz restrição à reutilização das estatísticas ou vetores publicados. Preservar IBGE, pesquisa, tabela, período, edição e transformações. A antiguidade do PDA e a ausência de licença nominal por conjunto delimitam a prova; a licença deve ser verificada no produto efetivamente usado. O PDA nomeia a Pesquisa da Pecuária Municipal e a tabela SIDRA 3939.
+
+### IBGE Abate
+
+O SIDRA e sua API são canais de dados abertos no [PDA do IBGE 2024–2025](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf). A classificação é `livre`, com base na LAI, no Decreto 8.777/2016 e na política institucional, sem atribuir uma licença CC nominal a todas as estatísticas. O [termo do portal, versão de 11/03/2024](https://www.ibge.gov.br/acesso-informacao/acoes-e-programas/politica-de-privacidade.html) trata de privacidade e serviços e não traz restrição à reutilização das estatísticas ou vetores publicados. Preservar IBGE, pesquisa, tabela, período, edição e transformações. A antiguidade do PDA e a ausência de licença nominal por conjunto delimitam a prova; a licença deve ser verificada no produto efetivamente usado. O PDA nomeia a Pesquisa Trimestral do Abate de Animais e a tabela SIDRA 1092.
+
+### IBGE Censo Agro
+
+O SIDRA e sua API são canais de dados abertos no [PDA do IBGE 2024–2025](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf). A classificação é `livre`, com base na LAI, no Decreto 8.777/2016 e na política institucional, sem atribuir uma licença CC nominal a todas as estatísticas. O [termo do portal, versão de 11/03/2024](https://www.ibge.gov.br/acesso-informacao/acoes-e-programas/politica-de-privacidade.html) trata de privacidade e serviços e não traz restrição à reutilização das estatísticas ou vetores publicados. Preservar IBGE, pesquisa, tabela, período, edição e transformações. A antiguidade do PDA e a ausência de licença nominal por conjunto delimitam a prova; a licença deve ser verificada no produto efetivamente usado. O PDA nomeia o Censo Agropecuário e a tabela SIDRA 6846, além da abertura do Censo 2017.
+
+### IBGE Censo Agro Histórico
+
+O SIDRA e sua API são canais de dados abertos no [PDA do IBGE 2024–2025](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf). A classificação é `livre`, com base na LAI, no Decreto 8.777/2016 e na política institucional, sem atribuir uma licença CC nominal a todas as estatísticas. O [termo do portal, versão de 11/03/2024](https://www.ibge.gov.br/acesso-informacao/acoes-e-programas/politica-de-privacidade.html) trata de privacidade e serviços e não traz restrição à reutilização das estatísticas ou vetores publicados. Preservar IBGE, pesquisa, tabela, período, edição e transformações. A antiguidade do PDA e a ausência de licença nominal por conjunto delimitam a prova; a licença deve ser verificada no produto efetivamente usado. Para o Censo Agro histórico, preservar o ano, a pesquisa e a tabela de cada edição; a política institucional não torna comparáveis recortes metodológicos distintos.
+
+### IBGE Censo Agro Municipal 1985
+
+A classificação é `livre` pela LAI, pelo Decreto 8.777/2016 e pelo [PDA do IBGE 2024–2025](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf). O PDA, p. 12, declara o objetivo de acesso livre à produção institucional da Biblioteca, que alcança os volumes digitalizados. Para os volumes do Censo Agropecuário 1985, preservar volume, UF, página/tabela e transformações. Não foi identificada licença nominal desses volumes.
+
+### ZARC
+
+O conjunto da tábua de risco ZARC declara Creative Commons Attribution, sem versão numérica. Atribuir MAPA/ZARC, safra/família, identificador do recurso e alterações. Não há condição SA demonstrada. A conclusão acompanha os recursos vinculados ao conjunto, inclusive o recurso 2026/2027 conferido.
+
+### ANA/SNIRH
+
+As cinco famílias ANA/SNIRH utilizadas — hidrografia, pivôs, demanda de irrigação, disponibilidade e massas d'água — têm classificação livre pela base federal, política institucional e metadados acessíveis. Não foi demonstrada licença nominal individual. Atribuir ANA/SNIRH, camada e edição, preservando autores adicionais expressos. Campos vazios de licença não foram tratados como concessão.
+
+### ICMBio UCs Federais
+
+A política oficial de dados abertos do ICMBio nomeia o conjunto Limites oficiais das Unidades de Conservação Federais e admite acesso, uso, modificação e compartilhamento. A classificação é livre, preservando ICMBio, camada, edição e alterações. Ressalvas técnicas dos metadados não foram convertidas em NC. Não há licença CC nominal ou SA comprovados.
+
+### CNUC (MMA)
+
+A camada WFS ms:ucs_selected do CNUC é classificada como livre pela base legal federal e busca documentada. O catálogo CKAN Unidades de Conservação declara CC BY para seus recursos, sem versão numérica; não foi demonstrado que esse campo licencia também o WFS. Atribuir MMA/CNUC, camada/edição e tratamento; acrescentar CC BY e identificador quando o recurso efetivo for o do catálogo.
+
+### INCRA Quilombolas
+
+A camada de Territórios Quilombolas publicada pelo INCRA e distribuída pelo CMR/FUNAI tem classificação livre pela base federal e política do produtor. Atribuir a origem ao INCRA e identificar separadamente o distribuidor, camada, edição e alterações. A autorização da FUNAI para dados próprios não foi aplicada ao conteúdo do INCRA; não se afirma CC BY 4.0.
+
+### MapBiomas Alerta
+
+Os dados do MapBiomas Alerta usam [CC BY-SA 3.0 BR](https://creativecommons.org/licenses/by-sa/3.0/br/), conforme o link do item 3.1 dos [termos](https://plataforma.alerta.mapbiomas.org/terms). O texto escreve `CC-CY-SA`, mas aponta para essa licença; o item 3.2 inclui expressamente o acesso pela API. A classe é `livre`: uso comercial permitido, com atribuição ao MapBiomas Alerta, link da licença, indicação de alterações e compartilhamento de adaptações sob as condições SA aplicáveis. A licença específica dos dados delimita a reserva geral de propriedade intelectual do site (8.2/8.3). A vedação de vender ou alugar o Serviço (7.1, ix) não é tratada como cláusula NC dos dados. Imagens, bases e laudos de terceiros exigem a verificação própria indicada no item 6.7.
+
+### SFB
+
+CNFP, concessões florestais e IFN são classificados como `livre` pela base federal de dados públicos, LAI e Decreto 8.777/2016, com busca sem restrição específica nos metadados consultados. Não foi comprovada uma licença CC nominal. No IFN, `copyrightText` vazio não é uma concessão de licença; a fundamentação é institucional. Preservar SFB, família, camada/edição, território, extração e transformações. Disponibilidade do serviço e classificação de licença são condições distintas.
+
+### EMBRAPA Solos
+
+Os metadados de perfis_pronasolos_2020 e brasil_solos_5m_20201104 declaram separadamente CC BY-NC 3.0 BR. Manter atribuição à Embrapa e aos autores indicados, camada/edição, link da licença e alterações. Uso comercial depende de permissão do titular. Não generalizar essa condição para todos os recursos GeoInfo nem acrescentar SA não demonstrada.
+
+### Acervo Fundiario/INCRA
+
+Os dados públicos SIGEF, SNCI e assentamentos do Acervo Fundiário/INCRA são classificados como livre pela LAI, pelo Decreto 8.777/2016 e pela política institucional do INCRA, após busca sem restrição comercial específica localizada. A alegação anterior de veto comercial não tinha cláusula comprovada. A indicação histórica de CC BY não foi recapturada e não sustenta versão numérica. Citar INCRA, família, UF/abrangência, arquivo, edição e transformações, preservando direitos de terceiros expressos. O PDA 2021–2023 prova política e origem, não atualidade de todo serviço em 2026.
+
+### Fundacao Rio Verde
+
+A Fundação Rio Verde é um publicador privado sem licença específica de reutilização localizada para os resultados de competição de cultivares de soja. A classificação é zona_cinza. A reserva genérica do portal não comprova NC dos valores, e a ausência de licença não libera a reprodução integral da base ou dos PDFs. Citar fundação, safra, publicação, página/tabela e extração.
 
 ## Defensivos Agrofit
 
-Em 07/09/2026, o [portal oficial Agrofit/MAPA](https://dados.agricultura.gov.br/dataset/sistema-de-agrotoxicos-fitossanitarios-agrofit) identifica os recursos CSV de produtos formulados e técnicos sob **Creative Commons Attribution**, sem indicar a versão. A classificação interna é `livre`; conservar atribuição ao MAPA/Agrofit e a proveniência dos recursos.
+O catálogo MAPA/Agrofit declara Creative Commons Attribution, sem versão, para os CSVs de produtos formulados e técnicos identificados no conjunto. Atribuição obrigatória, com recurso, acesso e alterações. Os datasets derivados desses dois CSVs não criam licença própria. A prova não abrange automaticamente bulas, marcas, imagens ou arquivos de terceiros.
 
 Os quatro [datasets Agrofit](api/defensivos_datasets.md) reutilizam esses mesmos dois CSVs. Produtos formulados e autorizações de uso vêm da exportação de formulados; produtos técnicos vêm da exportação de técnicos; composição é extraída do texto publicado de componentes de cada família. A camada de datasets não cria uma licença nova nem comprova vigência legal a partir do valor bruto de `situacao`.
 
@@ -267,6 +289,6 @@ Esta verificação não se estende a registros de empresas, rótulos ou bulas, n
 
 ## RNC/SNPC — CultivarWeb
 
-Em 07/09/2026, o [CultivarWeb oficial](https://sistemas.agricultura.gov.br/snpc/cultivarweb/index.php) oferece consulta pública aos cadastros de cultivares registradas e protegidas sem conta pessoal. Não foi localizada uma declaração de licença específica nas exportações CSV ou nos formulários consultados. O rodapé da [página Gov.br de consulta de pedidos](https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-agricolas/protecao-de-cultivar/consultar-pedido-de-protecao) indica CC BY-ND 3.0 para o conteúdo da página; essa indicação não foi atribuída aos CSVs do sistema.
+Os cadastros públicos RNC e SNPC do CultivarWeb são classificados como livre pela base federal e busca documentada nos formulários. Não foi localizada licença CC nominal dos CSVs. Citar MAPA, família registradas/protegidas, data de extração e tratamento. A conclusão não concede direito de exploração de material propagativo nem abrange processos ou anexos restritos.
 
-A classificação institucional preexistente `livre` permanece como categoria interna. Ela não comprova licença irrestrita de redistribuição dos arquivos. Os dois [datasets de cultivares](api/cultivares.md) reutilizam as exportações públicas e conservam sua origem, aquisição e hashes. Não criam licença separada nem interpretam direitos de exploração de cultivares a partir do cadastro. Processos restritos, anexos e histórico de alterações ficam fora.
+Os dois [datasets de cultivares](api/cultivares.md) reutilizam as exportações públicas e conservam sua origem, aquisição e hashes. Não criam licença separada nem interpretam direitos de exploração de cultivares a partir do cadastro. Processos restritos, anexos e histórico de alterações ficam fora.

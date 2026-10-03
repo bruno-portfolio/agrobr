@@ -236,7 +236,7 @@ O histórico é acumulado progressivamente no DuckDB local, permitindo consultas
 
 Quando o CEPEA está indisponível (Cloudflare), o agrobr automaticamente usa o Notícias Agrícolas como fonte alternativa, que republica os mesmos indicadores CEPEA/ESALQ.
 
-Na primeira chamada de `indicador()` ou `ultimo()`, o módulo emite um `UserWarning`: os dados CEPEA estão sob CC BY-NC 4.0, e o uso comercial requer autorização do CEPEA (`cepea@usp.br`). O fallback Notícias Agrícolas mantém seu próprio aviso de licença `restrito`; consulte `docs/licenses.md`.
+Na primeira chamada de `indicador()` ou `ultimo()`, o módulo emite um `UserWarning`: dados CEPEA sob CC BY-NC 4.0 exigem atribuição, e uso comercial depende de autorização expressa do CEPEA. O fallback Notícias Agrícolas emite seu aviso de `zona_cinza`; a licença `nc` da origem permanece. Consulte [Licenças](../licenses.md).
 
 Leite mensal usa somente a coleta CEPEA e seu cache: o fallback Notícias Agrícolas está desabilitado para esse produto. Seu parser autônomo expõe a data de fechamento, enquanto CEPEA usa o mês de referência. Linhas NA de leite já armazenadas ficam preservadas em quarentena na migração 9. O histórico do leite vem da série com 2 casas; a página, com 4, prevalece quando os 2 existem.
 

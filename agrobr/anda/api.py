@@ -93,9 +93,11 @@ async def entregas(
 
     warn_once(
         "anda",
-        "ANDA: termos de uso não encontrados publicamente. "
-        "Autorização solicitada em fev/2026. Classificação: zona_cinza. "
-        "Veja https://www.agrobr.dev/docs/licenses/ para detalhes.",
+        (
+            "ANDA: fonte privada sem licença de reutilização das estatísticas localizada. "
+            "Classificação: zona_cinza. Atribuição não substitui eventual permissão necessária. "
+            "Veja https://www.agrobr.dev/docs/licenses/."
+        ),
     )
 
     logger.info(
