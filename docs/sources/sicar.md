@@ -112,3 +112,7 @@ A classificação do SICAR é `livre` pela base pública federal: LAI, Decreto 8
 Em 18/09/2026, a consulta integral do DF tinha 21.006 feições em três páginas, com 513 atualizações nulas. Numa consulta de MT, o valor zero de módulos fiscais sai preservado. Em duas páginas de 10.000 feições de GO e RS, a escolha de ocorrências por atualização e por criação deixa 9.999 imóveis em cada uma.
 
 Contagens coincidentes não garantem snapshot transacional. Com várias páginas, o `MetaInfo` traz cada uma em `source_details["resources"]` (SHA-256 e bytes) e, no topo, o hash do manifesto `{query, resources}` (`hash_kind` `resource_manifest_sha256`).
+
+## Coleta bruta
+
+`agrobr.bruto.coletar("sicar", "imoveis", uf=..., ...)` guarda as páginas GeoJSON originais da camada da UF no CRS nativo (`EPSG:4674`) e com todos os atributos, com a sessão TLS e as pausas do client. Guarda todas as versões publicadas de um imóvel e conta pelo `feature.id`, não pelo `cod_imovel`. Como o SICAR não publica um identificador ordenável, as páginas vêm em `sortBy=cod_imovel A,dat_criacao A`, e a coleta só fecha `ok` com o par (`cod_imovel`, `dat_criacao`) estritamente crescente: duas versões com o mesmo `dat_criacao` encerram a coleta com erro. Um `ok` prova a ordem do que veio naquela coleta, não que o par seja único na base inteira. A bbox é opcional. Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).

@@ -704,3 +704,7 @@ Os valores publicados não são convertidos implicitamente. `unidade_producao`, 
 `localidade_cod` (contrato `producao_anual` 2.2) traz o código IBGE da localidade como o SIDRA publica (D1C): 7 dígitos no município, 2 na UF e 1 no Brasil. Use-o para juntar municípios entre anos, porque o nome publicado muda (e o do DF sai como "Brasília (DF)", sem o " - UF" dos demais). No `producao_anual`, só as linhas do IBGE trazem o código; o fallback da CONAB não.
 
 O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.2; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.
+
+## Coleta bruta (malhas)
+
+`agrobr.bruto.coletar("ibge", "malha_municipal", ...)` e `("ibge", "areas_urbanizadas", ...)` guardam as páginas GeoJSON originais das camadas `CGMAT:qg_2025_030_munic` (edição 2025) e `CGEO:AU_2026_AreasUrbanizadas2022_Brasil` (edição 2022), no CRS nativo (`EPSG:4674`) e com todos os atributos; `ibge.malha_municipal` e `ibge.areas_urbanizadas` (e os `_geo`) seguem em `EPSG:4326`. A chave da cobertura é `cd_mun` na malha e o atributo `fid` nas áreas urbanizadas, não o ID da feição do GeoServer (a feição `AU_2026_AreasUrbanizadas2022_Brasil.43300` tem `fid="45886"`); as duas são texto, e as páginas têm de vir em ordem estritamente crescente. Áreas urbanizadas recusam UF. Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).

@@ -19,7 +19,7 @@ CONTRACT_COUNT = (
 CONTRACT_PAGES = tuple(
     path
     for path in sorted((ROOT / "docs/contracts").glob("*.md"))
-    if path.name.removesuffix(".md").removesuffix(".en") not in {"index", "semver"}
+    if path.name.removesuffix(".md").removesuffix(".en") not in {"index", "semver", "bruto"}
 )
 MULTI_CONTRACT_PAGES = {
     "bcb_ptax",

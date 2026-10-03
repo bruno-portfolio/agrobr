@@ -241,6 +241,14 @@ O contrato atual está em `agrobr.contracts.clima.CLIMA_V3`; `agrobr.contracts.d
 
 Em `datasets.deterministic(...)`, clima usa o ano do contexto somente quando `ano` não é informado. O contexto não corta observações na data indicada, não força execução offline nem congela a revisão dos arquivos. Isso é declarado nos metadados; preserve os dados e os hashes para reproduzir a edição consultada. Veja o [contrato e os limites de cobertura](../contracts/clima.md).
 
+## ANA: proveniência de consultas com várias páginas
+
+`return_meta=True` agora preenche `raw_content_hash` e `raw_content_size` também quando a ANA retorna mais de uma página. Nesse caso, o hash identifica a serialização UTF-8 de `{"query": ..., "resources": ...}`, com chaves ordenadas, `ensure_ascii=False` e separadores `(',', ':')`. `raw_content_size` mede essa serialização. O tamanho total dos corpos originais está em `source_details["resource_bytes"]`.
+
+`source_details` publica `hash_kind="resource_manifest_sha256"`, `manifest_encoding="canonical_json_utf8"`, `manifest_fields=["query", "resources"]`, `query` e `resources`. A consulta lógica contém `fonte`, `recurso`, `where`, `bbox`, `max_registros` e `formato`; `resources` preserva a ordem da aquisição e contém `pagina` (a partir de 1), `sha256` e `bytes`.
+
+Uma única página conserva o hash e o tamanho do corpo; zero páginas conserva hash nulo e tamanho zero. Dados, colunas, tipos, geometrias, CRS, requisições e `source_url` das APIs tabulares/geográficas permanecem iguais. O manifesto de hashes do `MetaInfo` não armazena corpos; use a coleta bruta para preservá-los em disco.
+
 ## Imports de constantes de contrato
 
 Atualize os imports diretos que mudaram de nome no 2.0:

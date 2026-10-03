@@ -35,7 +35,7 @@ def _acervo(recurso: str) -> RecursoRegistrado:
         "obrigatoria",
         "recusada",
         False,
-        False,
+        True,
     )
 
 
@@ -52,7 +52,7 @@ RECURSOS: dict[tuple[str, str], RecursoRegistrado] = {
             "opcional",
             "opcional",
             True,
-            False,
+            True,
         ),
         RecursoRegistrado(
             "cnuc",
@@ -64,7 +64,7 @@ RECURSOS: dict[tuple[str, str], RecursoRegistrado] = {
             "opcional",
             "opcional",
             False,
-            False,
+            True,
         ),
         RecursoRegistrado(
             "ibge",
@@ -76,7 +76,7 @@ RECURSOS: dict[tuple[str, str], RecursoRegistrado] = {
             "opcional",
             "opcional",
             False,
-            False,
+            True,
         ),
         RecursoRegistrado(
             "ibge",
@@ -88,7 +88,7 @@ RECURSOS: dict[tuple[str, str], RecursoRegistrado] = {
             "recusada",
             "opcional",
             False,
-            False,
+            True,
         ),
         _acervo("sigef_publico"),
         _acervo("sigef_privado"),
@@ -105,7 +105,7 @@ RECURSOS: dict[tuple[str, str], RecursoRegistrado] = {
             "obrigatoria",
             "opcional",
             False,
-            False,
+            True,
         ),
     )
 }

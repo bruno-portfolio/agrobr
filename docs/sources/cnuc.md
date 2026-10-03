@@ -112,3 +112,7 @@ A contagem do servidor (`resultType=hits`) vem antes do download e é conciliada
 ## Relação com o ICMBio
 
 `icmbio.ucs` e o dataset `unidades_conservacao_federais` continuam com a camada do ICMBio na INDE: só UCs federais, sem RPPN. Para as três esferas e as RPPNs, use `cnuc.ucs` ou o dataset `unidades_conservacao`.
+
+## Coleta bruta
+
+`agrobr.bruto.coletar("cnuc", "ucs", ...)` guarda as páginas GML originais do WFS no CRS nativo (`EPSG:4674`) e com todos os atributos, sem o `PROPERTYNAME` e o `SRSNAME` que `ucs()` e `ucs_geo()` usam. O filtro é o mesmo da API: `limite=uc` sempre e a UF com a regra dos estados compostos; a bbox vai em latitude/longitude, em `EPSG:4674` ou `EPSG:4326`. As páginas declaram `numberMatched="unknown"`; a coleta fecha pelas contagens `hits` antes e depois e exige `cd_cnuc` presente, único e estritamente crescente entre as páginas. Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).

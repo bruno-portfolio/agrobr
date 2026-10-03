@@ -68,7 +68,7 @@ asyncio.run(main())
 
 ## Cache filesystem
 
-Arquivos baixados ficam em `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` com `{UF}.json` ao lado contendo `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. Os temas são `sigef_publico`, `sigef_privado`, `snci` e `assentamentos` (este em `brasil.zip`). A pasta `sigef/` das versões anteriores guardava o `Sigef Brasil_{UF}.zip`, que não é mais lido: pode ser apagada. Onde fica e como limpar: [O que o agrobr grava no disco](../advanced/disco.md).
+Arquivos baixados ficam em `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` com `{UF}.json` ao lado contendo `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. Os temas são `sigef_publico`, `sigef_privado`, `snci`, `snci_publico`, `snci_privado` e `assentamentos` (este em `brasil.zip`). A pasta `sigef/` das versões anteriores guardava o `Sigef Brasil_{UF}.zip`, que não é mais lido: pode ser apagada. Onde fica e como limpar: [O que o agrobr grava no disco](../advanced/disco.md).
 
 Com `return_meta=True`, o `MetaInfo` diz de onde veio o arquivo. Quando o HEAD confirma o cache: `from_cache=True`, `fetched_at` = coleta original do ZIP (o `fetched_at` do `{UF}.json`) e `source_details` com `revalidado_em`, `etag` e `last_modified`. Num download novo: `from_cache=False`, `fetched_at` = o download e `source_details` só com `etag` e `last_modified`. No SIGEF, que pode ler 2 arquivos, esses campos ficam por arquivo: ver [`natureza` no SIGEF](#natureza-no-sigef).
 
@@ -134,6 +134,7 @@ aceitam `1`/`true`/`yes`.
 | cod_imovel_rural | str | Código do imóvel rural |
 | nome_imovel | str | Nome do imóvel |
 | uf | str | Sigla UF (de `uf_municip`) |
+| natureza | str | Só com `natureza`: `publico` ou `privado`, o arquivo de onde veio a linha |
 | geometry | Polygon | Apenas em `_geo` |
 
 ### Assentamentos
@@ -180,6 +181,14 @@ df = await acervo_fundiario.sigef("DF")                      # público + privad
 publico = await acervo_fundiario.sigef("DF", natureza="publico")
 ```
 
+### `natureza` no SNCI
+
+Além do `SNCI Brasil_{UF}.zip`, o INCRA publica o SNCI de cada UF em `Imóvel certificado SNCI Público_{UF}.zip` e `Imóvel certificado SNCI Privado_{UF}.zip`, com os mesmos campos.
+
+- `natureza=None` (padrão) lê o arquivo Brasil da UF, como antes: mesmas colunas, cache em `snci/`, `schema_version` `1.0`.
+- `natureza="publico"` ou `"privado"` baixa só aquele arquivo, acrescenta a coluna `natureza` (também no resultado vazio) e marca `schema_version` `1.1`; o cache fica em `snci_publico/` ou `snci_privado/`. Caixa e acento são ignorados; outro valor levanta `InvalidParameterError` antes da rede.
+- O agrobr não une os dois arquivos nem promete que a união é o arquivo Brasil: em AL, em 03/10/2026, os tamanhos não somavam (11.900 + 58.927 bytes contra 69.506 do Brasil, publicado em outra data). Quem precisar da partição tem de conferir pelos registros, na mesma janela.
+
 ### `uf` em assentamentos
 
 O dataset de assentamentos é Brasil único — o filtro `uf` é client-side, normalizando a coluna `uf` (`.str.upper().str.strip()`) e comparando.
@@ -192,3 +201,7 @@ Se a fonte trouxer UF fora das 27 siglas, o parser não descarta a linha: o log 
   Falhas de certificado interrompem a conexão, sem desabilitar a verificação.
 - **Público × privado vem do arquivo, não de um campo** — o shapefile não tem campo de tipo; a coluna `natureza` diz de qual dos 2 arquivos do INCRA a parcela veio (ver [`natureza` no SIGEF](#natureza-no-sigef))
 - **Tamanho de cache pode acumular GB** — ver seção "Cache filesystem"
+
+## Coleta bruta
+
+`agrobr.bruto.coletar("acervo_fundiario", recurso, uf=..., ...)` guarda o ZIP da UF como o INCRA publica, com um único GET, sem HEAD, cache nem leitura do shapefile: `sigef_publico`, `sigef_privado`, `snci_publico`, `snci_privado` e `snci_brasil`. O manifesto registra a natureza (`publico`, `privado` ou nula no `snci_brasil`). 404 vira `ausente_na_fonte`, e a próxima retomada tenta de novo; resposta 200 que não é ZIP é erro. Os arquivos por natureza não são unidos nem comparados ao arquivo Brasil. Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).

@@ -81,6 +81,7 @@ plugins:
             Embarques ANEC: ANEC Shipments
             Séries econômicas: Economic time series
             API pública: Public API
+            Coleta bruta: Raw collection
             Variáveis de ambiente: Environment variables
             Linha de comando: Command line
   - mkdocstrings:
@@ -172,6 +173,7 @@ nav:
     - lspa: contracts/lspa.md
   - API Reference:
     - API pública: api/index.md
+    - Coleta bruta: api/bruto.md
     - CEPEA: api/cepea.md
     - CONAB: api/conab.md
     - CONAB Progresso: api/conab_progresso.md
@@ -276,6 +278,7 @@ nav:
     - Linha de comando: advanced/cli.md
   - Contratos:
     - SemVer: contracts/semver.md
+    - Coleta bruta: contracts/bruto.md
     - BCB Focus: contracts/bcb_focus.md
     - BCB PTAX: contracts/bcb_ptax.md
     - BCB crédito rural total: contracts/bcb_credito_rural_total.md

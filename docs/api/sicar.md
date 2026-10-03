@@ -269,6 +269,11 @@ gdf = sync.sicar.imoveis_geo("DF")
 df = sync.sicar.resumo("MT", municipio="Sorriso")
 ```
 
+## Coleta bruta
+
+Para guardar as páginas originais do WFS, com todas as versões de cada imóvel e o manifesto, use a
+[coleta bruta](bruto.md): `bruto.coletar("sicar", "imoveis", uf="DF", destino=...)`.
+
 ## Fonte de dados
 
 - **Provedor:** Servico Florestal Brasileiro (SFB) / SICAR

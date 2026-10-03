@@ -36,6 +36,7 @@ Everything in the `__all__` of the source module. The public path is the module'
 | `agrobr.antaq` | [ANTAQ](antaq.md) |
 | `agrobr.b3` | [B3](b3.md) |
 | `agrobr.bcb` | [BCB](bcb.md) and [economic series](series_economicas.md) |
+| `agrobr.bruto` | [Raw collection](bruto.md): original files and pages with a manifest |
 | `agrobr.cepea` | [CEPEA](cepea.md) |
 | `agrobr.cftc` | [CFTC](cftc.md) |
 | `agrobr.cnuc` | [CNUC](../sources/cnuc.md) |

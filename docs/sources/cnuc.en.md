@@ -112,3 +112,7 @@ The server count (`resultType=hits`) comes before the download and is reconciled
 ## Relation to ICMBio
 
 `icmbio.ucs` and the `unidades_conservacao_federais` dataset keep the ICMBio layer on INDE: federal units only, without private reserves. For the three government levels and private reserves, use `cnuc.ucs` or the `unidades_conservacao` dataset.
+
+## Raw collection
+
+`agrobr.bruto.coletar("cnuc", "ucs", ...)` stores the original GML pages of the WFS in the native CRS (`EPSG:4674`) with every attribute, without the `PROPERTYNAME` and `SRSNAME` that `ucs()` and `ucs_geo()` use. The filter is the API's: always `limite=uc` and the state with the composite-state rule; the bbox goes as latitude/longitude, in `EPSG:4674` or `EPSG:4326`. Pages declare `numberMatched="unknown"`; the collection closes on the `hits` counts before and after and requires `cd_cnuc` present, unique and strictly increasing across pages. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).

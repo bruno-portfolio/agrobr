@@ -242,3 +242,7 @@ o fallback da Notícias Agrícolas sai `nc`) ou, sem elas, a da fonte selecionad
   planilha na CONAB), em `source_details["data_file_bytes"]`.
 - Na NASA POWER, o hash é o da lista de recibos em
   `source_details["http_receipts"]`, e o tamanho soma os corpos HTTP.
+
+## Coleta bruta
+
+O modo bruto não é um dataset nem um contrato tabular: o `manifesto.jsonl` tem contrato próprio, versionado à parte (schema 1.0.0). Veja [Coleta bruta](bruto.md).

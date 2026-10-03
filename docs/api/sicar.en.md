@@ -269,6 +269,11 @@ gdf = sync.sicar.imoveis_geo("DF")
 df = sync.sicar.resumo("MT", municipio="Sorriso")
 ```
 
+## Raw collection
+
+To store the original WFS pages, with every version of each property and the manifest, use
+[raw collection](bruto.md): `bruto.coletar("sicar", "imoveis", uf="DF", destino=...)`.
+
 ## Data source
 
 - **Provider:** Brazilian Forest Service (SFB) / SICAR

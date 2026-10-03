@@ -68,7 +68,7 @@ asyncio.run(main())
 
 ## Filesystem cache
 
-Downloaded files are stored in `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` with a `{UF}.json` alongside containing `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. The themes are `sigef_publico`, `sigef_privado`, `snci` and `assentamentos` (the latter in `brasil.zip`). The `sigef/` folder from earlier versions held `Sigef Brasil_{UF}.zip`, which is no longer read: it can be deleted. Where it lives and how to clean it: [What agrobr writes to disk](../advanced/disco.md).
+Downloaded files are stored in `~/.agrobr/cache/acervo_fundiario/{tema}/{UF}.zip` with a `{UF}.json` alongside containing `last_modified`, `etag`, `sha256`, `size_bytes`, `fetched_at`, `source_url`. The themes are `sigef_publico`, `sigef_privado`, `snci`, `snci_publico`, `snci_privado` and `assentamentos` (the latter in `brasil.zip`). The `sigef/` folder from earlier versions held `Sigef Brasil_{UF}.zip`, which is no longer read: it can be deleted. Where it lives and how to clean it: [What agrobr writes to disk](../advanced/disco.md).
 
 With `return_meta=True`, the `MetaInfo` states where the file came from. When the HEAD confirms the cache: `from_cache=True`, `fetched_at` = the ZIP's original collection (the `fetched_at` in `{UF}.json`) and `source_details` with `revalidado_em`, `etag` and `last_modified`. On a new download: `from_cache=False`, `fetched_at` = the download and `source_details` with only `etag` and `last_modified`. In SIGEF, which may read 2 files, these fields are per file: see [`natureza` in SIGEF](#natureza-in-sigef).
 
@@ -134,6 +134,7 @@ error or cancellation; nothing is written to `~/.agrobr/cache/acervo_fundiario/`
 | cod_imovel_rural | str | Rural property code |
 | nome_imovel | str | Property name |
 | uf | str | State abbreviation (from `uf_municip`) |
+| natureza | str | Only with `natureza`: `publico` or `privado`, the file the row came from |
 | geometry | Polygon | Only in `_geo` |
 
 ### Settlements
@@ -180,6 +181,14 @@ df = await acervo_fundiario.sigef("DF")                      # public + private
 publico = await acervo_fundiario.sigef("DF", natureza="publico")
 ```
 
+### `natureza` in SNCI
+
+Besides `SNCI Brasil_{UF}.zip`, INCRA publishes each state's SNCI as `Imóvel certificado SNCI Público_{UF}.zip` and `Imóvel certificado SNCI Privado_{UF}.zip`, with the same fields.
+
+- `natureza=None` (default) reads the state's Brasil file, as before: same columns, cache in `snci/`, `schema_version` `1.0`.
+- `natureza="publico"` or `"privado"` downloads only that file, adds the `natureza` column (also in an empty result) and sets `schema_version` `1.1`; the cache goes to `snci_publico/` or `snci_privado/`. Case and accents are ignored; any other value raises `InvalidParameterError` before the network.
+- agrobr does not merge the two files nor promise that their union is the Brasil file: in AL, on 2026-10-03, the sizes did not add up (11,900 + 58,927 bytes against 69,506 for Brasil, published on another date). Whoever needs the partition must check it by records, in the same window.
+
 ### `uf` in settlements
 
 The settlements dataset is Brazil-wide single — the `uf` filter is client-side, normalizing the `uf` column (`.str.upper().str.strip()`) and comparing.
@@ -192,3 +201,7 @@ If the source brings a state outside the 27 abbreviations, the parser does not d
   Certificate errors terminate the connection without disabling verification.
 - **Public × private comes from the file, not from a field** — the shapefile has no type field; the `natureza` column states which of INCRA's 2 files the parcel came from (see [`natureza` in SIGEF](#natureza-in-sigef))
 - **Cache size may accumulate into GB** — see the "Filesystem cache" section
+
+## Raw collection
+
+`agrobr.bruto.coletar("acervo_fundiario", resource, uf=..., ...)` stores the state's ZIP as INCRA publishes it, with a single GET, no HEAD, cache or shapefile reading: `sigef_publico`, `sigef_privado`, `snci_publico`, `snci_privado` and `snci_brasil`. The manifest records the nature (`publico`, `privado`, or null for `snci_brasil`). A 404 becomes `ausente_na_fonte`, and the next resumption tries again; a 200 response that is not a ZIP is an error. Files per nature are neither merged nor compared to the Brasil file. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).

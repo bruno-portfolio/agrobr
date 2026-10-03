@@ -220,3 +220,27 @@ zeros sao preservados.
 - A consulta conta os registros antes de baixar as paginas; mesmo um max_registros pequeno pode exigir aguardar essa contagem
 - As paginas sao acumuladas em memoria antes de construir o resultado; nao ha streaming nem cache persistente ANA
 - Pausa de 2s apos a sexta pagina e as seguintes para nao sobrecarregar o servidor
+
+## Coleta bruta
+
+```python
+from agrobr import bruto
+
+coleta = await bruto.coletar(
+    "ana", "massas_dagua", destino="dados", uf="DF",
+    bbox=(-47.466, -15.993, -47.462, -15.988),
+    bbox_crs="EPSG:4674", nome="barragem_df",
+)
+```
+
+A coleta guarda os corpos Esri JSON sem renomear atributos, sem remover campos como `gid` e sem transformar as geometrias. Pede todos os atributos, geometria e `outSR=4674`; o CRS é conferido no corpo recebido. Os mesmos filtros e CRS de entrada são usados nas contagens, na lista oficial de FIDs e nas páginas. A ordenação dos FIDs serve para definir as faixas dos pedidos; a ordem e os bytes das feições recebidas são preservados. O recurso só fecha com contagens e FIDs concordantes. Zero feições exige duas contagens zero e a lista oficial vazia.
+
+Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).
+
+## Proveniência de consultas com várias páginas
+
+`return_meta=True` agora preenche `raw_content_hash` e `raw_content_size` também quando a ANA retorna mais de uma página. Nesse caso, o hash identifica a serialização UTF-8 de `{"query": ..., "resources": ...}`, com chaves ordenadas, `ensure_ascii=False` e separadores `(',', ':')`. `raw_content_size` mede essa serialização. O tamanho total dos corpos originais está em `source_details["resource_bytes"]`.
+
+`source_details` publica `hash_kind="resource_manifest_sha256"`, `manifest_encoding="canonical_json_utf8"`, `manifest_fields=["query", "resources"]`, `query` e `resources`. A consulta lógica contém `fonte`, `recurso`, `where`, `bbox`, `max_registros` e `formato`; `resources` preserva a ordem da aquisição e contém `pagina` (a partir de 1), `sha256` e `bytes`.
+
+Uma única página conserva o hash e o tamanho do corpo; zero páginas conserva hash nulo e tamanho zero. Dados, colunas, tipos, geometrias, CRS, requisições e `source_url` das APIs tabulares/geográficas permanecem iguais. O manifesto de hashes do `MetaInfo` não armazena corpos; use a coleta bruta para preservá-los em disco.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import warnings
 
 import pytest
@@ -16,11 +17,18 @@ def test_exporta_a_api_publica():
     assert sync.bruto.coletar.__name__ == "coletar"
 
 
-def test_nenhum_adaptador_habilitado_sem_o_modulo_da_fonte():
-    assert [chave for chave, r in registry.RECURSOS.items() if r.habilitado] == []
+def test_todo_recurso_ligado_tem_o_adaptador_da_fonte(monkeypatch):
+    assert all(registrado.habilitado for registrado in registry.RECURSOS.values())
+    for registrado in registry.RECURSOS.values():
+        adaptador = registry.adaptador(registrado)
+        assert callable(adaptador.planejar) and callable(adaptador.adquirir)
     assert len(registry.RECURSOS) == 10 and ("funai", "terras_indigenas") not in registry.RECURSOS
+    chave = ("sicar", "imoveis")
+    monkeypatch.setitem(
+        registry.RECURSOS, chave, dataclasses.replace(registry.RECURSOS[chave], habilitado=False)
+    )
     with pytest.raises(InvalidParameterError, match="não está disponível"):
-        registry.recurso("sicar", "imoveis")
+        registry.recurso(*chave)
 
 
 @pytest.mark.parametrize(

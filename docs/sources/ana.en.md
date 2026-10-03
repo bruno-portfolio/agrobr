@@ -221,3 +221,27 @@ value differs from a missing field; null values and zeros are preserved.
 - Queries count records before downloading pages; even a small max_registros can require waiting for the count
 - Pages accumulate in memory before building the result; there is no streaming or persistent ANA cache
 - A 2s pause follows the sixth page and each subsequent page to avoid overloading the server
+
+## Raw collection
+
+```python
+from agrobr import bruto
+
+coleta = await bruto.coletar(
+    "ana", "massas_dagua", destino="dados", uf="DF",
+    bbox=(-47.466, -15.993, -47.462, -15.988),
+    bbox_crs="EPSG:4674", nome="barragem_df",
+)
+```
+
+Collection stores Esri JSON bodies without renaming attributes, removing fields such as `gid`, or transforming geometries. It requests all attributes, geometry and `outSR=4674`, then checks the CRS declared in the response. The same filters and input CRS apply to counts, the official FID list and pages. Sorting FIDs defines request ranges; feature order and response bytes remain unchanged. Completion requires matching counts and FIDs. An empty selection requires two zero counts and an empty official ID list.
+
+See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).
+
+## Provenance for queries with multiple pages
+
+With `return_meta=True`, `raw_content_hash` and `raw_content_size` are now populated when ANA returns more than one page. The hash identifies the UTF-8 serialization of `{"query": ..., "resources": ...}`, using sorted keys, `ensure_ascii=False` and `(',', ':')` separators. `raw_content_size` measures that serialization. The total size of the original bodies is `source_details["resource_bytes"]`.
+
+`source_details` exposes `hash_kind="resource_manifest_sha256"`, `manifest_encoding="canonical_json_utf8"`, `manifest_fields=["query", "resources"]`, `query` and `resources`. The logical query contains `fonte`, `recurso`, `where`, `bbox`, `max_registros` and `formato`; `resources` preserves acquisition order and contains `pagina` (starting at 1), `sha256` and `bytes`.
+
+A single page keeps the body hash and size; zero pages keep a null hash and size zero. Data, columns, types, geometries, CRS, requests and `source_url` in the tabular/geographic APIs remain unchanged. The `MetaInfo` hash manifest does not store bodies; use raw collection to preserve them on disk.

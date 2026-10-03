@@ -114,3 +114,7 @@ SICAR is classified as `livre` under the federal public-data framework: the acce
 On 2026-09-18, the complete DF query had 21,006 features across three pages, including 513 null update timestamps. In an MT query, a zero fiscal-module value is preserved. In two pages of 10,000 features from GO and RS, occurrence selection by update and by creation yields 9,999 properties in each.
 
 Matching counts do not guarantee a transactional snapshot. With several pages, `MetaInfo` carries each one in `source_details["resources"]` (SHA-256 and bytes) and, at the top, the hash of the `{query, resources}` manifest (`hash_kind` `resource_manifest_sha256`).
+
+## Raw collection
+
+`agrobr.bruto.coletar("sicar", "imoveis", uf=..., ...)` stores the original GeoJSON pages of the state's layer in the native CRS (`EPSG:4674`) with every attribute, using the client's TLS session and pauses. It keeps every published version of a property and counts by `feature.id`, not by `cod_imovel`. Because SICAR publishes no sortable identifier, pages use `sortBy=cod_imovel A,dat_criacao A`, and the collection only closes `ok` when the pair (`cod_imovel`, `dat_criacao`) strictly increases: two versions with the same `dat_criacao` end the collection with an error. An `ok` proves the order of what arrived in that collection, not that the pair is unique across the whole database. The bbox is optional. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).

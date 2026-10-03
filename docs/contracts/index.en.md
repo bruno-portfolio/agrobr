@@ -245,3 +245,7 @@ Agrícolas fallback comes out `nc`) or, without them, the selected source's. It 
   data (CSVs for ANTT, the workbook for CONAB), in `source_details["data_file_bytes"]`.
 - For NASA POWER, the hash is that of the receipt list in
   `source_details["http_receipts"]`, and the size adds up the HTTP bodies.
+
+## Raw collection
+
+Raw mode is neither a dataset nor a tabular contract: `manifesto.jsonl` has its own contract, versioned separately (schema 1.0.0). See [Raw collection](bruto.md).

@@ -36,6 +36,7 @@ Tudo o que está no `__all__` do módulo da fonte. O caminho público é o do m�
 | `agrobr.antaq` | [ANTAQ](antaq.md) |
 | `agrobr.b3` | [B3](b3.md) |
 | `agrobr.bcb` | [BCB](bcb.md) e [séries econômicas](series_economicas.md) |
+| `agrobr.bruto` | [Coleta bruta](bruto.md): arquivos e páginas originais com manifesto |
 | `agrobr.cepea` | [CEPEA](cepea.md) |
 | `agrobr.cftc` | [CFTC](cftc.md) |
 | `agrobr.cnuc` | [CNUC](../sources/cnuc.md) |

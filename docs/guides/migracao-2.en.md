@@ -237,6 +237,14 @@ The current contract is `agrobr.contracts.clima.CLIMA_V3`; `agrobr.contracts.dat
 
 Within `datasets.deterministic(...)`, climate uses the context year only when `ano` is omitted. The context does not truncate observations at that date, force offline execution, or freeze archive revisions. Metadata states these limits; preserve data and hashes to reproduce the queried edition. See the [contract and coverage limits](../contracts/clima.md).
 
+## ANA: provenance for queries with multiple pages
+
+With `return_meta=True`, `raw_content_hash` and `raw_content_size` are now populated when ANA returns more than one page. The hash identifies the UTF-8 serialization of `{"query": ..., "resources": ...}`, using sorted keys, `ensure_ascii=False` and `(',', ':')` separators. `raw_content_size` measures that serialization. The total size of the original bodies is `source_details["resource_bytes"]`.
+
+`source_details` exposes `hash_kind="resource_manifest_sha256"`, `manifest_encoding="canonical_json_utf8"`, `manifest_fields=["query", "resources"]`, `query` and `resources`. The logical query contains `fonte`, `recurso`, `where`, `bbox`, `max_registros` and `formato`; `resources` preserves acquisition order and contains `pagina` (starting at 1), `sha256` and `bytes`.
+
+A single page keeps the body hash and size; zero pages keep a null hash and size zero. Data, columns, types, geometries, CRS, requests and `source_url` in the tabular/geographic APIs remain unchanged. The `MetaInfo` hash manifest does not store bodies; use raw collection to preserve them on disk.
+
 ## Contract constant imports
 
 Update direct imports whose names changed in 2.0:

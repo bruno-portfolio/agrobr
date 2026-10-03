@@ -711,6 +711,8 @@ async def malha_municipal_geo(
   `municipio`, `bbox` ou `max_registros`. Para o Brasil inteiro em arquivo, use o ZIP da malha no
   [geoftp do IBGE](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/)
   (`Brasil/BR_Municipios_2025.zip`, 237 MB, ou `UFs/<UF>/<UF>_Municipios_2025.zip`).
+- **Páginas originais do WFS:** para guardá-las como o IBGE publica, no CRS nativo (`EPSG:4674`) e com o manifesto,
+  use a [coleta bruta](bruto.md): `bruto.coletar("ibge", "malha_municipal", ...)` ou `"areas_urbanizadas"`.
 - `max_registros` corta no servidor, na ordem de `cd_mun`; com ele, `coverage["truncated"]` fica `True` quando a seleção é
   maior.
 - **`MetaInfo`:** `source="ibge"`, `selected_source` `ibge_malha_municipal_wfs` (`_wfs_geo` no geo); `source_details` com
