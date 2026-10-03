@@ -1,0 +1,81 @@
+{
+  "source": "sicar",
+  "resource": "imoveis",
+  "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+  "parametros": {
+    "CQL_FILTER": "BBOX(geo_area_imovel,-47.8,-15.8,-47.79,-15.79,'EPSG:4674')",
+    "outputFormat": "application/json",
+    "request": "GetFeature",
+    "service": "WFS",
+    "sortBy": "cod_imovel A,dat_criacao A",
+    "typeNames": "sicar:sicar_imoveis_df",
+    "version": "2.0.0"
+  },
+  "selecao": {
+    "uf": "DF",
+    "bbox": [
+      -47.8,
+      -15.8,
+      -47.79,
+      -15.79
+    ],
+    "bbox_crs": "EPSG:4674",
+    "nome": "df_centro"
+  },
+  "tamanho_pagina": 5,
+  "captured_at": "2026-10-03T14:52:29.104233Z",
+  "files": {
+    "hits.xml": {
+      "papel": "contagem_antes",
+      "url_solicitada": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar%3Asicar_imoveis_df&CQL_FILTER=BBOX%28geo_area_imovel%2C-47.8%2C-15.8%2C-47.79%2C-15.79%2C%27EPSG%3A4674%27%29&resultType=hits",
+      "date": "Sat, 03 Oct 2026 14:52:38 GMT",
+      "content_type": "text/xml",
+      "sha256": "6e25a1f84b77c192414309780c0fea047e9a7492f0905809fc7121d3a7bd4d3e",
+      "bytes": 828
+    },
+    "hits_depois.xml": {
+      "papel": "contagem_depois",
+      "url_solicitada": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar%3Asicar_imoveis_df&CQL_FILTER=BBOX%28geo_area_imovel%2C-47.8%2C-15.8%2C-47.79%2C-15.79%2C%27EPSG%3A4674%27%29&resultType=hits",
+      "date": "Sat, 03 Oct 2026 14:52:46 GMT",
+      "content_type": "text/xml",
+      "sha256": "538a24a4adef5e214261fb19ec740b22a0df2bc9630b7cf5051160abcccbb70c",
+      "bytes": 828
+    },
+    "response.json": {
+      "papel": "pagina",
+      "start_index": 0,
+      "count": 5,
+      "url_solicitada": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar%3Asicar_imoveis_df&outputFormat=application%2Fjson&sortBy=cod_imovel+A%2Cdat_criacao+A&CQL_FILTER=BBOX%28geo_area_imovel%2C-47.8%2C-15.8%2C-47.79%2C-15.79%2C%27EPSG%3A4674%27%29&count=5&startIndex=0",
+      "date": "Sat, 03 Oct 2026 14:52:40 GMT",
+      "content_type": "application/json;charset=utf-8",
+      "sha256": "2f30539adcb088ec9b8146338f792d57b3498bbf343ca76a467b3b2b47955328",
+      "bytes": 9351
+    },
+    "response_2.json": {
+      "papel": "pagina",
+      "start_index": 5,
+      "count": 5,
+      "url_solicitada": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar%3Asicar_imoveis_df&outputFormat=application%2Fjson&sortBy=cod_imovel+A%2Cdat_criacao+A&CQL_FILTER=BBOX%28geo_area_imovel%2C-47.8%2C-15.8%2C-47.79%2C-15.79%2C%27EPSG%3A4674%27%29&count=5&startIndex=5",
+      "date": "Sat, 03 Oct 2026 14:52:42 GMT",
+      "content_type": "application/json;charset=utf-8",
+      "sha256": "a7dcdde8b985cddf6056e9b6f584d4758777b26590ca4f4253fc4afeb244435d",
+      "bytes": 19178
+    },
+    "response_3.json": {
+      "papel": "pagina",
+      "start_index": 10,
+      "count": 5,
+      "url_solicitada": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar%3Asicar_imoveis_df&outputFormat=application%2Fjson&sortBy=cod_imovel+A%2Cdat_criacao+A&CQL_FILTER=BBOX%28geo_area_imovel%2C-47.8%2C-15.8%2C-47.79%2C-15.79%2C%27EPSG%3A4674%27%29&count=5&startIndex=10",
+      "date": "Sat, 03 Oct 2026 14:52:44 GMT",
+      "content_type": "application/json;charset=utf-8",
+      "sha256": "0d0123e4026be751c9512ba554fcf4c38be25eda30b8d701c4de4acf4eb2865f",
+      "bytes": 5525
+    }
+  },
+  "license": "livre",
+  "license_reference": "docs/licenses.md",
+  "needs_real_data": false,
+  "reduction": "Nenhuma: corpos do GET como o servidor devolveu (recorte pela consulta, páginas de 5 feições), sem reformatar.",
+  "privacy": "Código do imóvel, datas, área, município e geometria; sem nome, CPF ou CNPJ.",
+  "oracle": "expected.json: numberMatched das contagens por regex; feature.id, (cod_imovel, dat_criacao) e CRS lidos com json direto, sem o adaptador nem o parser do SICAR."
+}

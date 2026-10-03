@@ -1,0 +1,121 @@
+{
+  "campo_id": "feature.id",
+  "total_antes": 14,
+  "total_depois": 14,
+  "paginas": [
+    {
+      "arquivo": "response.json",
+      "start_index": 0,
+      "feature_ids": [
+        "sicar_imoveis_df.8706013",
+        "sicar_imoveis_df.12364022",
+        "sicar_imoveis_df.11623560",
+        "sicar_imoveis_df.542545",
+        "sicar_imoveis_df.10015220"
+      ],
+      "ordem": [
+        [
+          "DF-5300108-005FBC66E8E34270A66FF41089E6905B",
+          "2020-10-30T23:46:41.634Z"
+        ],
+        [
+          "DF-5300108-0558D80B2110477FB6A15C30894393F0",
+          "2023-12-08T14:36:48.201Z"
+        ],
+        [
+          "DF-5300108-0A2225C98AEE48DC8FEBB40FC4A3434B",
+          "2023-06-01T19:54:40.390Z"
+        ],
+        [
+          "DF-5300108-1274A9532343473DB7413440C0ABF8AD",
+          "2015-02-24T14:22:24.807Z"
+        ],
+        [
+          "DF-5300108-527C5E85CB0E4519A79AD3493FD31EFD",
+          "2022-01-11T20:31:31.284Z"
+        ]
+      ],
+      "crs_declarado": "urn:ogc:def:crs:EPSG::4674"
+    },
+    {
+      "arquivo": "response_2.json",
+      "start_index": 5,
+      "feature_ids": [
+        "sicar_imoveis_df.4396546",
+        "sicar_imoveis_df.4399619",
+        "sicar_imoveis_df.4396020",
+        "sicar_imoveis_df.4396134",
+        "sicar_imoveis_df.865757"
+      ],
+      "ordem": [
+        [
+          "DF-5300108-7E88276055C545788BED64A64D4DBD99",
+          "2017-07-19T19:43:27.587Z"
+        ],
+        [
+          "DF-5300108-88395A2F730346E8837BE8D70EAA58D7",
+          "2017-07-20T20:25:07.384Z"
+        ],
+        [
+          "DF-5300108-96CD2B5EBA0C4789BDEEC6817EC4CF44",
+          "2017-07-19T13:40:37.507Z"
+        ],
+        [
+          "DF-5300108-A5F928E74BB84957BB1F4830F2341AC6",
+          "2017-07-19T14:32:44.519Z"
+        ],
+        [
+          "DF-5300108-AB840D7B499B43E69C3D999165FF2475",
+          "2015-05-04T14:15:11.278Z"
+        ]
+      ],
+      "crs_declarado": "urn:ogc:def:crs:EPSG::4674"
+    },
+    {
+      "arquivo": "response_3.json",
+      "start_index": 10,
+      "feature_ids": [
+        "sicar_imoveis_df.13068119",
+        "sicar_imoveis_df.13294088",
+        "sicar_imoveis_df.12868737",
+        "sicar_imoveis_df.10381970"
+      ],
+      "ordem": [
+        [
+          "DF-5300108-B46B13EE13B14D348E3124DD0F77D8B1",
+          "2024-07-24T14:09:02.025Z"
+        ],
+        [
+          "DF-5300108-BC4603F8A7B54309A97F8E101D7B3124",
+          "2024-09-19T13:33:42.882Z"
+        ],
+        [
+          "DF-5300108-C10020AB1E3A4B2AA443F387830D6BB3",
+          "2024-05-25T19:38:23.305Z"
+        ],
+        [
+          "DF-5300108-C1C8A4F9DA4E4357BBAC8CAFB1AF4A1A",
+          "2022-05-20T11:44:23.027Z"
+        ]
+      ],
+      "crs_declarado": "urn:ogc:def:crs:EPSG::4674"
+    }
+  ],
+  "ids": [
+    "sicar_imoveis_df.8706013",
+    "sicar_imoveis_df.12364022",
+    "sicar_imoveis_df.11623560",
+    "sicar_imoveis_df.542545",
+    "sicar_imoveis_df.10015220",
+    "sicar_imoveis_df.4396546",
+    "sicar_imoveis_df.4399619",
+    "sicar_imoveis_df.4396020",
+    "sicar_imoveis_df.4396134",
+    "sicar_imoveis_df.865757",
+    "sicar_imoveis_df.13068119",
+    "sicar_imoveis_df.13294088",
+    "sicar_imoveis_df.12868737",
+    "sicar_imoveis_df.10381970"
+  ],
+  "versoes": 0
+}
