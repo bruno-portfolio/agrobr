@@ -180,6 +180,7 @@ class Consulta:
     municipio: municipalities.MunicipioInfo | None = None
     bbox: tuple[float, float, float, float] | None = None
     max_registros: int | None = None
+    bbox_crs: str = "EPSG:4326"
 
     def filtro_cql(self) -> str | None:
         condicoes = []
@@ -190,7 +191,7 @@ class Consulta:
         if self.bbox is not None:
             minlon, minlat, maxlon, maxlat = (float(valor) for valor in self.bbox)
             condicoes.append(
-                f"BBOX({GEOM_COLUMN},{minlon!r},{minlat!r},{maxlon!r},{maxlat!r},'EPSG:4326')"
+                f"BBOX({GEOM_COLUMN},{minlon!r},{minlat!r},{maxlon!r},{maxlat!r},'{self.bbox_crs}')"
             )
         return " AND ".join(condicoes) or None
 

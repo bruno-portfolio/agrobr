@@ -1,0 +1,81 @@
+{
+  "source": "ibge",
+  "resource": "malha_municipal",
+  "endpoint": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs",
+  "parametros": {
+    "CQL_FILTER": "sigla_uf='AL' AND BBOX(geom,-35.8,-9.7,-35.65,-9.55,'EPSG:4674')",
+    "outputFormat": "application/json",
+    "request": "GetFeature",
+    "service": "WFS",
+    "sortBy": "cd_mun",
+    "typeNames": "CGMAT:qg_2025_030_munic",
+    "version": "2.0.0"
+  },
+  "selecao": {
+    "uf": "AL",
+    "bbox": [
+      -35.8,
+      -9.7,
+      -35.65,
+      -9.55
+    ],
+    "bbox_crs": "EPSG:4674",
+    "nome": "al_maceio"
+  },
+  "tamanho_pagina": 2,
+  "captured_at": "2026-10-03T14:36:52.924194Z",
+  "files": {
+    "hits.xml": {
+      "papel": "contagem_antes",
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT%3Aqg_2025_030_munic&CQL_FILTER=sigla_uf%3D%27AL%27+AND+BBOX%28geom%2C-35.8%2C-9.7%2C-35.65%2C-9.55%2C%27EPSG%3A4674%27%29&resultType=hits",
+      "date": "Sat, 03 Oct 2026 14:37:01 GMT",
+      "content_type": "text/xml",
+      "sha256": "6bd9c1aa578e085a5b47346fe7d0c1241ab19f218eb6e9cf96d4f4f1de00cf40",
+      "bytes": 844
+    },
+    "hits_depois.xml": {
+      "papel": "contagem_depois",
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT%3Aqg_2025_030_munic&CQL_FILTER=sigla_uf%3D%27AL%27+AND+BBOX%28geom%2C-35.8%2C-9.7%2C-35.65%2C-9.55%2C%27EPSG%3A4674%27%29&resultType=hits",
+      "date": "Sat, 03 Oct 2026 14:37:06 GMT",
+      "content_type": "text/xml",
+      "sha256": "440f08553ee5d13ec2b99e8686162f3098c203465a05140b5eaa7986d971f6e6",
+      "bytes": 844
+    },
+    "response.json": {
+      "papel": "pagina",
+      "start_index": 0,
+      "count": 2,
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT%3Aqg_2025_030_munic&outputFormat=application%2Fjson&sortBy=cd_mun&CQL_FILTER=sigla_uf%3D%27AL%27+AND+BBOX%28geom%2C-35.8%2C-9.7%2C-35.65%2C-9.55%2C%27EPSG%3A4674%27%29&count=2&startIndex=0",
+      "date": "Sat, 03 Oct 2026 14:37:02 GMT",
+      "content_type": "application/json;charset=UTF-8",
+      "sha256": "d35c59acabd99387fede327285449cee5084fa8939b5a675d21ca9bb52738c41",
+      "bytes": 107976
+    },
+    "response_2.json": {
+      "papel": "pagina",
+      "start_index": 2,
+      "count": 2,
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT%3Aqg_2025_030_munic&outputFormat=application%2Fjson&sortBy=cd_mun&CQL_FILTER=sigla_uf%3D%27AL%27+AND+BBOX%28geom%2C-35.8%2C-9.7%2C-35.65%2C-9.55%2C%27EPSG%3A4674%27%29&count=2&startIndex=2",
+      "date": "Sat, 03 Oct 2026 14:37:04 GMT",
+      "content_type": "application/json;charset=UTF-8",
+      "sha256": "9a259854725b8bf03e1d0603d578e15d4aa6184aac385492bb1230c2d9f06697",
+      "bytes": 114746
+    },
+    "response_3.json": {
+      "papel": "pagina",
+      "start_index": 4,
+      "count": 2,
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGMAT%3Aqg_2025_030_munic&outputFormat=application%2Fjson&sortBy=cd_mun&CQL_FILTER=sigla_uf%3D%27AL%27+AND+BBOX%28geom%2C-35.8%2C-9.7%2C-35.65%2C-9.55%2C%27EPSG%3A4674%27%29&count=2&startIndex=4",
+      "date": "Sat, 03 Oct 2026 14:37:05 GMT",
+      "content_type": "application/json;charset=UTF-8",
+      "sha256": "6789b50b5375382f9c3bd8b96d1d3cc1db348d6d678a4e518cec07d1bd5821d5",
+      "bytes": 18133
+    }
+  },
+  "license": "livre",
+  "license_reference": "docs/licenses.md",
+  "needs_real_data": false,
+  "reduction": "Nenhuma: corpos do GET como o servidor devolveu (recorte pela consulta, páginas de 2 feições), sem reformatar.",
+  "privacy": "Dado público de unidades de conservação/municípios/áreas urbanizadas; sem dado pessoal.",
+  "oracle": "expected.json: numberMatched das contagens por regex; chaves e srsName lidos com json/lxml direto, sem o adaptador nem os parsers do agrobr."
+}

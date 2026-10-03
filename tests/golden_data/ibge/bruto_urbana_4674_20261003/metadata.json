@@ -1,0 +1,81 @@
+{
+  "source": "ibge",
+  "resource": "areas_urbanizadas",
+  "endpoint": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs",
+  "parametros": {
+    "CQL_FILTER": "BBOX(geom,-35.75,-9.67,-35.7,-9.62,'EPSG:4674')",
+    "outputFormat": "application/json",
+    "request": "GetFeature",
+    "service": "WFS",
+    "sortBy": "fid",
+    "typeNames": "CGEO:AU_2026_AreasUrbanizadas2022_Brasil",
+    "version": "2.0.0"
+  },
+  "selecao": {
+    "uf": null,
+    "bbox": [
+      -35.75,
+      -9.67,
+      -35.7,
+      -9.62
+    ],
+    "bbox_crs": "EPSG:4674",
+    "nome": "maceio"
+  },
+  "tamanho_pagina": 2,
+  "captured_at": "2026-10-03T14:37:01.645051Z",
+  "files": {
+    "hits.xml": {
+      "papel": "contagem_antes",
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO%3AAU_2026_AreasUrbanizadas2022_Brasil&CQL_FILTER=BBOX%28geom%2C-35.75%2C-9.67%2C-35.7%2C-9.62%2C%27EPSG%3A4674%27%29&resultType=hits",
+      "date": "Sat, 03 Oct 2026 14:37:10 GMT",
+      "content_type": "text/xml",
+      "sha256": "23f5dd78cff3574c17b10b47df1e8c9ad233cf795a652e9e07693e98ee5e4402",
+      "bytes": 834
+    },
+    "hits_depois.xml": {
+      "papel": "contagem_depois",
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO%3AAU_2026_AreasUrbanizadas2022_Brasil&CQL_FILTER=BBOX%28geom%2C-35.75%2C-9.67%2C-35.7%2C-9.62%2C%27EPSG%3A4674%27%29&resultType=hits",
+      "date": "Sat, 03 Oct 2026 14:37:14 GMT",
+      "content_type": "text/xml",
+      "sha256": "d6790d6308aeff241bdd485c9864dbf91bf982a05a5372b27e7de1d67f0794f1",
+      "bytes": 834
+    },
+    "response.json": {
+      "papel": "pagina",
+      "start_index": 0,
+      "count": 2,
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO%3AAU_2026_AreasUrbanizadas2022_Brasil&outputFormat=application%2Fjson&sortBy=fid&CQL_FILTER=BBOX%28geom%2C-35.75%2C-9.67%2C-35.7%2C-9.62%2C%27EPSG%3A4674%27%29&count=2&startIndex=0",
+      "date": "Sat, 03 Oct 2026 14:37:11 GMT",
+      "content_type": "application/json;charset=UTF-8",
+      "sha256": "a1a0df4fccb55e3be4cbe265172a8897c821f4535d4d2a914a320715f735ad4d",
+      "bytes": 57879
+    },
+    "response_2.json": {
+      "papel": "pagina",
+      "start_index": 2,
+      "count": 2,
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO%3AAU_2026_AreasUrbanizadas2022_Brasil&outputFormat=application%2Fjson&sortBy=fid&CQL_FILTER=BBOX%28geom%2C-35.75%2C-9.67%2C-35.7%2C-9.62%2C%27EPSG%3A4674%27%29&count=2&startIndex=2",
+      "date": "Sat, 03 Oct 2026 14:37:12 GMT",
+      "content_type": "application/json;charset=UTF-8",
+      "sha256": "ba993391a7083cc1fce5c23091b8242dca4eb317faa36ddb12972e8fade8b774",
+      "bytes": 5894
+    },
+    "response_3.json": {
+      "papel": "pagina",
+      "start_index": 4,
+      "count": 2,
+      "url_solicitada": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CGEO%3AAU_2026_AreasUrbanizadas2022_Brasil&outputFormat=application%2Fjson&sortBy=fid&CQL_FILTER=BBOX%28geom%2C-35.75%2C-9.67%2C-35.7%2C-9.62%2C%27EPSG%3A4674%27%29&count=2&startIndex=4",
+      "date": "Sat, 03 Oct 2026 14:37:13 GMT",
+      "content_type": "application/json;charset=UTF-8",
+      "sha256": "81ba3067c53fdf732c3621c00d780a2c2c34cb6c78dc525a649453769f46e250",
+      "bytes": 2534
+    }
+  },
+  "license": "livre",
+  "license_reference": "docs/licenses.md",
+  "needs_real_data": false,
+  "reduction": "Nenhuma: corpos do GET como o servidor devolveu (recorte pela consulta, páginas de 2 feições), sem reformatar.",
+  "privacy": "Dado público de unidades de conservação/municípios/áreas urbanizadas; sem dado pessoal.",
+  "oracle": "expected.json: numberMatched das contagens por regex; chaves e srsName lidos com json/lxml direto, sem o adaptador nem os parsers do agrobr."
+}

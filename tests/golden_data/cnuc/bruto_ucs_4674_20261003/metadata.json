@@ -1,0 +1,71 @@
+{
+  "source": "cnuc",
+  "resource": "ucs",
+  "endpoint": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv",
+  "parametros": {
+    "FILTER": "<fes:Filter xmlns:fes='http://www.opengis.net/fes/2.0' xmlns:gml='http://www.opengis.net/gml/3.2'><fes:And><fes:PropertyIsEqualTo><fes:ValueReference>limite</fes:ValueReference><fes:Literal>uc</fes:Literal></fes:PropertyIsEqualTo><fes:PropertyIsLike wildCard='%' singleChar='_' escapeChar='!'><fes:ValueReference>uf</fes:ValueReference><fes:Literal>%ALAGOAS%</fes:Literal></fes:PropertyIsLike><fes:BBOX><fes:ValueReference>msGeometry</fes:ValueReference><gml:Envelope srsName='urn:ogc:def:crs:EPSG::4674'><gml:lowerCorner>-9.7 -35.8</gml:lowerCorner><gml:upperCorner>-9.55 -35.65</gml:upperCorner></gml:Envelope></fes:BBOX></fes:And></fes:Filter>",
+    "MAP": "/var/www/storage/app/mapfiles/ucs.map",
+    "REQUEST": "GetFeature",
+    "SERVICE": "WFS",
+    "SORTBY": "cd_cnuc",
+    "TYPENAMES": "ms:ucs_selected",
+    "VERSION": "2.0.0"
+  },
+  "selecao": {
+    "uf": "AL",
+    "bbox": [
+      -35.8,
+      -9.7,
+      -35.65,
+      -9.55
+    ],
+    "bbox_crs": "EPSG:4674",
+    "nome": "al_maceio"
+  },
+  "tamanho_pagina": 2,
+  "captured_at": "2026-10-03T14:36:39.724376Z",
+  "files": {
+    "hits.xml": {
+      "papel": "contagem_antes",
+      "url_solicitada": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?MAP=%2Fvar%2Fwww%2Fstorage%2Fapp%2Fmapfiles%2Fucs.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms%3Aucs_selected&FILTER=%3Cfes%3AFilter+xmlns%3Afes%3D%27http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%27+xmlns%3Agml%3D%27http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%27%3E%3Cfes%3AAnd%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Elimite%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3Euc%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsLike+wildCard%3D%27%25%27+singleChar%3D%27_%27+escapeChar%3D%27%21%27%3E%3Cfes%3AValueReference%3Euf%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E%25ALAGOAS%25%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsLike%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3EmsGeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%27urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4674%27%3E%3Cgml%3AlowerCorner%3E-9.7+-35.8%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-9.55+-35.65%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AAnd%3E%3C%2Ffes%3AFilter%3E&RESULTTYPE=hits",
+      "date": "Sat, 03 Oct 2026 14:36:49 GMT",
+      "content_type": "text/xml; subtype=\"gml/3.2.1\"; charset=UTF-8",
+      "sha256": "fbc7ce00c9246298eec7d9295f7979c511fa443626ad4b66a3887b5c8d41fe41",
+      "bytes": 822
+    },
+    "hits_depois.xml": {
+      "papel": "contagem_depois",
+      "url_solicitada": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?MAP=%2Fvar%2Fwww%2Fstorage%2Fapp%2Fmapfiles%2Fucs.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms%3Aucs_selected&FILTER=%3Cfes%3AFilter+xmlns%3Afes%3D%27http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%27+xmlns%3Agml%3D%27http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%27%3E%3Cfes%3AAnd%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Elimite%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3Euc%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsLike+wildCard%3D%27%25%27+singleChar%3D%27_%27+escapeChar%3D%27%21%27%3E%3Cfes%3AValueReference%3Euf%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E%25ALAGOAS%25%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsLike%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3EmsGeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%27urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4674%27%3E%3Cgml%3AlowerCorner%3E-9.7+-35.8%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-9.55+-35.65%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AAnd%3E%3C%2Ffes%3AFilter%3E&RESULTTYPE=hits",
+      "date": "Sat, 03 Oct 2026 14:36:58 GMT",
+      "content_type": "text/xml; subtype=\"gml/3.2.1\"; charset=UTF-8",
+      "sha256": "39af20a78608701cbfec85b42f406d06f1e43e73314942dd0beb3d6fa0647b2e",
+      "bytes": 822
+    },
+    "response.gml": {
+      "papel": "pagina",
+      "start_index": 0,
+      "count": 2,
+      "url_solicitada": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?MAP=%2Fvar%2Fwww%2Fstorage%2Fapp%2Fmapfiles%2Fucs.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms%3Aucs_selected&FILTER=%3Cfes%3AFilter+xmlns%3Afes%3D%27http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%27+xmlns%3Agml%3D%27http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%27%3E%3Cfes%3AAnd%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Elimite%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3Euc%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsLike+wildCard%3D%27%25%27+singleChar%3D%27_%27+escapeChar%3D%27%21%27%3E%3Cfes%3AValueReference%3Euf%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E%25ALAGOAS%25%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsLike%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3EmsGeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%27urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4674%27%3E%3Cgml%3AlowerCorner%3E-9.7+-35.8%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-9.55+-35.65%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AAnd%3E%3C%2Ffes%3AFilter%3E&SORTBY=cd_cnuc&COUNT=2&STARTINDEX=0",
+      "date": "Sat, 03 Oct 2026 14:36:52 GMT",
+      "content_type": "text/xml; subtype=\"gml/3.2.1\"; charset=UTF-8",
+      "sha256": "546bdc80270491d7862e311662d15c28031b6d1dd9e424638e4aa060d69187d8",
+      "bytes": 34516
+    },
+    "response_2.gml": {
+      "papel": "pagina",
+      "start_index": 2,
+      "count": 2,
+      "url_solicitada": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv?MAP=%2Fvar%2Fwww%2Fstorage%2Fapp%2Fmapfiles%2Fucs.map&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms%3Aucs_selected&FILTER=%3Cfes%3AFilter+xmlns%3Afes%3D%27http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%27+xmlns%3Agml%3D%27http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%27%3E%3Cfes%3AAnd%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Elimite%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3Euc%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsLike+wildCard%3D%27%25%27+singleChar%3D%27_%27+escapeChar%3D%27%21%27%3E%3Cfes%3AValueReference%3Euf%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E%25ALAGOAS%25%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsLike%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3EmsGeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%27urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4674%27%3E%3Cgml%3AlowerCorner%3E-9.7+-35.8%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-9.55+-35.65%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AAnd%3E%3C%2Ffes%3AFilter%3E&SORTBY=cd_cnuc&COUNT=2&STARTINDEX=2",
+      "date": "Sat, 03 Oct 2026 14:36:55 GMT",
+      "content_type": "text/xml; subtype=\"gml/3.2.1\"; charset=UTF-8",
+      "sha256": "3890af2c52953b165d8fd8787f3d68826106f386a4d96751eb29cbef71f0d495",
+      "bytes": 9128
+    }
+  },
+  "license": "livre",
+  "license_reference": "docs/licenses.md",
+  "needs_real_data": false,
+  "reduction": "Nenhuma: corpos do GET como o servidor devolveu (recorte pela consulta, páginas de 2 feições), sem reformatar.",
+  "privacy": "Dado público de unidades de conservação/municípios/áreas urbanizadas; sem dado pessoal.",
+  "oracle": "expected.json: numberMatched das contagens por regex; chaves e srsName lidos com json/lxml direto, sem o adaptador nem os parsers do agrobr."
+}

@@ -1,0 +1,46 @@
+{
+  "campo_id": "fid",
+  "total_antes": 5,
+  "total_depois": 5,
+  "paginas": [
+    {
+      "arquivo": "response.json",
+      "start_index": 0,
+      "ids": [
+        "1024",
+        "45886"
+      ],
+      "crs_declarado": [
+        "urn:ogc:def:crs:EPSG::4674"
+      ]
+    },
+    {
+      "arquivo": "response_2.json",
+      "start_index": 2,
+      "ids": [
+        "52479",
+        "52480"
+      ],
+      "crs_declarado": [
+        "urn:ogc:def:crs:EPSG::4674"
+      ]
+    },
+    {
+      "arquivo": "response_3.json",
+      "start_index": 4,
+      "ids": [
+        "52481"
+      ],
+      "crs_declarado": [
+        "urn:ogc:def:crs:EPSG::4674"
+      ]
+    }
+  ],
+  "ids": [
+    "1024",
+    "45886",
+    "52479",
+    "52480",
+    "52481"
+  ]
+}

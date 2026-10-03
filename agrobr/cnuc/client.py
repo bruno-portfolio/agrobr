@@ -37,6 +37,7 @@ class FiltroServidor:
     categoria: str | None = None
     grupo: str | None = None
     bbox: tuple[float, float, float, float] | None = None
+    bbox_srs: str = CRS_URN_4326
 
 
 def _igual(campo: str, valor: str) -> str:
@@ -67,11 +68,11 @@ def _uf(nome: str) -> list[str]:
     ]
 
 
-def _bbox(bbox: tuple[float, float, float, float]) -> str:
+def _bbox(bbox: tuple[float, float, float, float], srs: str) -> str:
     minlon, minlat, maxlon, maxlat = (float(valor) for valor in bbox)
     return (
         f"<fes:BBOX><fes:ValueReference>{GEOM_COLUMN}</fes:ValueReference>"
-        f"<gml:Envelope srsName='{CRS_URN_4326}'>"
+        f"<gml:Envelope srsName='{srs}'>"
         f"<gml:lowerCorner>{minlat!r} {minlon!r}</gml:lowerCorner>"
         f"<gml:upperCorner>{maxlat!r} {maxlon!r}</gml:upperCorner>"
         "</gml:Envelope></fes:BBOX>"
@@ -89,12 +90,12 @@ def build_filter(filtro: FiltroServidor) -> str:
     if filtro.grupo is not None:
         condicoes.append(_igual("grupo", GRUPOS[filtro.grupo]))
     if filtro.bbox is not None:
-        condicoes.append(_bbox(filtro.bbox))
+        condicoes.append(_bbox(filtro.bbox, filtro.bbox_srs))
     corpo = condicoes[0] if len(condicoes) == 1 else f"<fes:And>{''.join(condicoes)}</fes:And>"
     return f"<fes:Filter xmlns:fes='{NS_FES}' xmlns:gml='{NS_GML}'>{corpo}</fes:Filter>"
 
 
-def _url(params: dict[str, str]) -> str:
+def parametros(params: dict[str, str]) -> dict[str, str]:
     base = {
         "MAP": MAPFILE,
         "SERVICE": "WFS",
@@ -102,7 +103,11 @@ def _url(params: dict[str, str]) -> str:
         "REQUEST": "GetFeature",
         "TYPENAMES": TYPENAME,
     }
-    return f"{MAPSERVER}?{parse.urlencode(base | params, quote_via=parse.quote, safe='/:')}"
+    return base | params
+
+
+def _url(params: dict[str, str]) -> str:
+    return f"{MAPSERVER}?{parse.urlencode(parametros(params), quote_via=parse.quote, safe='/:')}"
 
 
 def count_url(filtro: FiltroServidor) -> str:
