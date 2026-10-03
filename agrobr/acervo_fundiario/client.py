@@ -71,6 +71,12 @@ def _build_url(tema: str, uf: str | None) -> str:
     return BASE_URL + quote(_build_filename(tema, uf))
 
 
+def sessao() -> httpx.AsyncClient:
+    return httpx.AsyncClient(
+        headers=UserAgentRotator.get_bot_headers(), follow_redirects=True, timeout=TIMEOUT
+    )
+
+
 def _cache_key(tema: str, uf: str | None) -> str:
     return f"{tema}:{uf}" if uf else tema
 
@@ -261,13 +267,7 @@ async def download_and_cache(
     from agrobr.http.rate_limiter import RateLimiter
 
     lock = await _get_lock(_cache_key(tema, uf))
-    async with (
-        lock,
-        httpx.AsyncClient(
-            headers=UserAgentRotator.get_bot_headers(),
-            follow_redirects=True,
-        ) as client,
-    ):
+    async with lock, sessao() as client:
         head_info: dict[str, str | int] | None = None
 
         if cache_active:

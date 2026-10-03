@@ -1,0 +1,52 @@
+{
+  "membro_dbf": "Imóvel certificado SNCI Público_AL.dbf",
+  "campos": [
+    "num_proces",
+    "sr",
+    "num_certif",
+    "data_certi",
+    "qtd_area_p",
+    "cod_profis",
+    "cod_imovel",
+    "nome_imove",
+    "uf_municip"
+  ],
+  "prj": "GEOGCS[\"SIRGAS 2000\",DATUM[\"D_SIRGAS_2000\",SPHEROID[\"GRS_1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]",
+  "registros": [
+    {
+      "num_proces": "54360.000686/2013-00",
+      "cod_imovel": "2410320005400",
+      "data_certi": "20140416",
+      "qtd_area_p": "1028.4587",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000040/2014-03",
+      "cod_imovel": "2450460000273",
+      "data_certi": "20140407",
+      "qtd_area_p": "576.6616",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000037/2014-81",
+      "cod_imovel": "2440150018215",
+      "data_certi": "20140417",
+      "qtd_area_p": "291.9388",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000038/2014-26",
+      "cod_imovel": "2420201601130",
+      "data_certi": "20140409",
+      "qtd_area_p": "171.5613",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000687/2013-46",
+      "cod_imovel": "9501491736307",
+      "data_certi": "20140416",
+      "qtd_area_p": "517.0008",
+      "uf_municip": "AL"
+    }
+  ]
+}

@@ -11,6 +11,8 @@ FILENAME_PATTERNS: dict[str, str] = {
     "sigef_publico": "Sigef Público_{uf}.zip",
     "sigef_privado": "Sigef Privado_{uf}.zip",
     "snci": "Imóvel certificado SNCI Brasil_{uf}.zip",
+    "snci_publico": "Imóvel certificado SNCI Público_{uf}.zip",
+    "snci_privado": "Imóvel certificado SNCI Privado_{uf}.zip",
     "assentamentos": "Assentamento Brasil.zip",
 }
 
@@ -85,6 +87,12 @@ SNCI_COLUNAS_SAIDA: list[str] = [
 ]
 
 SNCI_COLUNAS_SAIDA_GEO: list[str] = [*SNCI_COLUNAS_SAIDA, "geometry"]
+
+SNCI_NATUREZA_SCHEMA_VERSION = "1.1"
+
+SNCI_COLUNAS_SAIDA_NATUREZA: list[str] = [*SNCI_COLUNAS_SAIDA, "natureza"]
+
+SNCI_COLUNAS_SAIDA_NATUREZA_GEO: list[str] = [*SNCI_COLUNAS_SAIDA_NATUREZA, "geometry"]
 
 SNCI_DATE_COLS: tuple[str, ...] = ("data_certificacao",)
 

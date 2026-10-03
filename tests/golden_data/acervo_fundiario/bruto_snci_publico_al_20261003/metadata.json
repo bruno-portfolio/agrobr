@@ -1,0 +1,22 @@
+{
+  "source": "acervo_fundiario",
+  "format": "shapefile_zip",
+  "resource": "snci_publico",
+  "url": "https://certificacao.incra.gov.br/csv_shp/zip/Im%C3%B3vel%20certificado%20SNCI%20P%C3%BAblico_AL.zip",
+  "method": "GET",
+  "captured_at": "2026-10-03T13:58:33Z",
+  "http_status": 200,
+  "server_date": "Sat, 03 Oct 2026 13:58:41 GMT",
+  "content_type": "application/x-zip-compressed",
+  "content_length": 11900,
+  "last_modified": "Fri, 02 Oct 2026 07:07:47 GMT",
+  "etag": "\"b2f6a6ba3c52dd1:0\"",
+  "sha256": "24426ccf9204ada6995bdd36fe573428009b4b132c7c5923248fc4146385b86a",
+  "bytes": 11900,
+  "license": "livre",
+  "license_reference": "docs/licenses.md — Acervo Fundiário/INCRA",
+  "needs_real_data": false,
+  "reduction": "Nenhuma: os bytes do GET, sem reembalar; o SHA-256 é o do arquivo publicado.",
+  "privacy": "Nomes de imóvel (projetos de assentamento e fazendas com nome de lugar ou religioso); sem nome de pessoa, CPF ou CNPJ.",
+  "oracle": "expected.json: descritores e registros do DBF lidos com struct/zipfile (stdlib), Latin-1; sem o parser do agrobr, GDAL ou pyogrio."
+}

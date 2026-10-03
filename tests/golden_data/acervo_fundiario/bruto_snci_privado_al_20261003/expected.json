@@ -1,0 +1,199 @@
+{
+  "membro_dbf": "Imóvel certificado SNCI Privado_AL.dbf",
+  "campos": [
+    "num_proces",
+    "sr",
+    "num_certif",
+    "data_certi",
+    "qtd_area_p",
+    "cod_profis",
+    "cod_imovel",
+    "nome_imove",
+    "uf_municip"
+  ],
+  "prj": "GEOGCS[\"SIRGAS 2000\",DATUM[\"D_SIRGAS_2000\",SPHEROID[\"GRS_1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]",
+  "registros": [
+    {
+      "num_proces": "54360.000193/2012-81",
+      "cod_imovel": "9501309697377",
+      "data_certi": "20130418",
+      "qtd_area_p": "750.6359",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000027/2013-65",
+      "cod_imovel": "2450380031747",
+      "data_certi": "20130418",
+      "qtd_area_p": "524.2817",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000319/2009-11",
+      "cod_imovel": "2490330039994",
+      "data_certi": "20090525",
+      "qtd_area_p": "3569.1398",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000403/2013-11",
+      "cod_imovel": "2470490139781",
+      "data_certi": "20131209",
+      "qtd_area_p": "1661.2095",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000144/2012-48",
+      "cod_imovel": "2461152547204",
+      "data_certi": "20130729",
+      "qtd_area_p": "687.8630",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000654/2013-04",
+      "cod_imovel": "9501812867107",
+      "data_certi": "20140128",
+      "qtd_area_p": "618.8854",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000033/2014-01",
+      "cod_imovel": "2470650005310",
+      "data_certi": "20140320",
+      "qtd_area_p": "540.5564",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000508/2013-71",
+      "cod_imovel": "2470650001323",
+      "data_certi": "20131023",
+      "qtd_area_p": "936.0099",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000648/2013-49",
+      "cod_imovel": "2450542695490",
+      "data_certi": "20131216",
+      "qtd_area_p": "1088.1593",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000460/2013-09",
+      "cod_imovel": "9501737335200",
+      "data_certi": "20130806",
+      "qtd_area_p": "741.7637",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360001789200811",
+      "cod_imovel": "9500925546009",
+      "data_certi": "20090413",
+      "qtd_area_p": "1225.9989",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54140.000237/2013-48",
+      "cod_imovel": "2450620006982",
+      "data_certi": "20130527",
+      "qtd_area_p": "944.6099",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000304/2012-59",
+      "cod_imovel": "2450112559470",
+      "data_certi": "20121212",
+      "qtd_area_p": "1023.0550",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360000011200712",
+      "cod_imovel": "2441802535370",
+      "data_certi": "20070207",
+      "qtd_area_p": "2215.3852",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000479/2012-66",
+      "cod_imovel": "2440152636307",
+      "data_certi": "20121219",
+      "qtd_area_p": "533.8208",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000320/2009-46",
+      "cod_imovel": "2490330003965",
+      "data_certi": "20090818",
+      "qtd_area_p": "2521.8516",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360001775200806",
+      "cod_imovel": "2470570005077",
+      "data_certi": "20090413",
+      "qtd_area_p": "2777.3910",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000995/2011-18",
+      "cod_imovel": "2450540005829",
+      "data_certi": "20111121",
+      "qtd_area_p": "1504.8748",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000185/2013-15",
+      "cod_imovel": "2450972503927",
+      "data_certi": "20130611",
+      "qtd_area_p": "1060.8610",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "546600005222007-26",
+      "cod_imovel": "2490252687801",
+      "data_certi": "20070830",
+      "qtd_area_p": "1726.7682",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000207/2012-66",
+      "cod_imovel": "2460690067186",
+      "data_certi": "20120622",
+      "qtd_area_p": "618.1333",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000260/2012-67",
+      "cod_imovel": "2470652739613",
+      "data_certi": "20140609",
+      "qtd_area_p": "202.0900",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360001831200802",
+      "cod_imovel": "2490332938228",
+      "data_certi": "20090323",
+      "qtd_area_p": "1827.0232",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000553/2013-25",
+      "cod_imovel": "2440900002480",
+      "data_certi": "20131121",
+      "qtd_area_p": "1063.0985",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000626/2013-89",
+      "cod_imovel": "2470650012600",
+      "data_certi": "20140401",
+      "qtd_area_p": "580.1714",
+      "uf_municip": "AL"
+    },
+    {
+      "num_proces": "54360.000247/2012-16",
+      "cod_imovel": "2470652739532",
+      "data_certi": "20120919",
+      "qtd_area_p": "1126.9311",
+      "uf_municip": "AL"
+    }
+  ]
+}

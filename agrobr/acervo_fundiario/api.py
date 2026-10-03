@@ -19,7 +19,13 @@ from agrobr.utils.result import (
 from agrobr.utils.validation import validate_uf
 
 from . import client, parser
-from .models import SIGEF_NATUREZAS, SIGEF_SCHEMA_VERSION
+from .models import (
+    SIGEF_NATUREZAS,
+    SIGEF_SCHEMA_VERSION,
+    SNCI_COLUNAS_SAIDA_NATUREZA,
+    SNCI_COLUNAS_SAIDA_NATUREZA_GEO,
+    SNCI_NATUREZA_SCHEMA_VERSION,
+)
 
 if TYPE_CHECKING:
     import geopandas as gpd
@@ -47,6 +53,19 @@ def _naturezas(natureza: object) -> tuple[str, ...]:
     )
 
 
+def _tema_snci(natureza: object) -> tuple[str, str | None]:
+    if natureza is None:
+        return "snci", None
+    (escolhida,) = _naturezas(natureza)
+    return f"snci_{escolhida}", escolhida
+
+
+def _com_natureza(df: Any, natureza: str | None, colunas: list[str]) -> Any:
+    if natureza is None:
+        return df
+    return parser._with_natureza(df, natureza)[colunas]
+
+
 def _build_meta(
     *,
     tema: str,
@@ -55,6 +74,7 @@ def _build_meta(
     parse_ms: int,
     df: Any,
     aquisicao: client.Aquisicao,
+    schema_version: str = "1.0",
 ) -> MetaInfo:
     meta = build_source_meta(
         "acervo_fundiario",
@@ -64,6 +84,7 @@ def _build_meta(
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        schema_version=schema_version,
         attempted_sources=[f"acervo_fundiario_{tema}"],
         selected_source=f"acervo_fundiario_{tema}",
         raw_content_hash=aquisicao.sha256,
@@ -244,6 +265,7 @@ async def sigef_geo(
 async def snci(
     uf: str,
     *,
+    natureza: Literal["publico", "privado"] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     as_polars: Literal[False] = False,
@@ -255,6 +277,7 @@ async def snci(
 async def snci(
     uf: str,
     *,
+    natureza: Literal["publico", "privado"] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     as_polars: Literal[False] = False,
@@ -266,6 +289,7 @@ async def snci(
 async def snci(
     uf: str,
     *,
+    natureza: Literal["publico", "privado"] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     as_polars: bool = False,
@@ -276,25 +300,34 @@ async def snci(
 async def snci(
     uf: str,
     *,
+    natureza: Literal["publico", "privado"] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> DataFrameResult:
     uf = regions.sigla_uf(uf)
+    tema, escolhida = _tema_snci(natureza)
     bbox = validate_bbox(bbox)
     _check_readers(geo=bbox is not None)
-    logger.info("acervo_fundiario_snci", uf=uf, bbox=bbox)
+    logger.info("acervo_fundiario_snci", uf=uf, natureza=escolhida, bbox=bbox)
 
     t0 = time.monotonic()
-    async with client.adquirir("snci", uf, use_cache=use_cache) as aquisicao:
+    async with client.adquirir(tema, uf, use_cache=use_cache) as aquisicao:
         fetch_ms = int((time.monotonic() - t0) * 1000)
         t1 = time.monotonic()
         df = parser.parse_snci(aquisicao.zip_path, bbox=bbox)
+        df = _com_natureza(df, escolhida, SNCI_COLUNAS_SAIDA_NATUREZA)
         parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = _build_meta(
-        tema="snci", uf=uf, fetch_ms=fetch_ms, parse_ms=parse_ms, df=df, aquisicao=aquisicao
+        tema=tema,
+        uf=uf,
+        fetch_ms=fetch_ms,
+        parse_ms=parse_ms,
+        df=df,
+        aquisicao=aquisicao,
+        schema_version="1.0" if escolhida is None else SNCI_NATUREZA_SCHEMA_VERSION,
     )
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -303,6 +336,7 @@ async def snci(
 async def snci_geo(
     uf: str,
     *,
+    natureza: Literal["publico", "privado"] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     return_meta: Literal[False] = False,
@@ -313,6 +347,7 @@ async def snci_geo(
 async def snci_geo(
     uf: str,
     *,
+    natureza: Literal["publico", "privado"] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     return_meta: Literal[True],
@@ -322,25 +357,34 @@ async def snci_geo(
 async def snci_geo(
     uf: str,
     *,
+    natureza: Literal["publico", "privado"] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
     use_cache: bool = True,
     return_meta: bool = False,
 ) -> GeoDataFrameResult:
     uf = regions.sigla_uf(uf)
+    tema, escolhida = _tema_snci(natureza)
     bbox = validate_bbox(bbox)
     _check_readers(geo=True)
-    logger.info("acervo_fundiario_snci_geo", uf=uf, bbox=bbox)
+    logger.info("acervo_fundiario_snci_geo", uf=uf, natureza=escolhida, bbox=bbox)
 
     t0 = time.monotonic()
-    async with client.adquirir("snci", uf, use_cache=use_cache) as aquisicao:
+    async with client.adquirir(tema, uf, use_cache=use_cache) as aquisicao:
         fetch_ms = int((time.monotonic() - t0) * 1000)
         t1 = time.monotonic()
         gdf = parser.parse_snci_geo(aquisicao.zip_path, bbox=bbox)
+        gdf = _com_natureza(gdf, escolhida, SNCI_COLUNAS_SAIDA_NATUREZA_GEO)
         parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
         meta = _build_meta(
-            tema="snci", uf=uf, fetch_ms=fetch_ms, parse_ms=parse_ms, df=gdf, aquisicao=aquisicao
+            tema=tema,
+            uf=uf,
+            fetch_ms=fetch_ms,
+            parse_ms=parse_ms,
+            df=gdf,
+            aquisicao=aquisicao,
+            schema_version="1.0" if escolhida is None else SNCI_NATUREZA_SCHEMA_VERSION,
         )
         return gdf, meta
     return gdf
