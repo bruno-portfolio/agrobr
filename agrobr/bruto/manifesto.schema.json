@@ -1,0 +1,1071 @@
+{
+  "$defs": {
+    "Cobertura": {
+      "additionalProperties": false,
+      "properties": {
+        "campo_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Campo Id"
+        },
+        "completa": {
+          "title": "Completa",
+          "type": "boolean"
+        },
+        "controles": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Controles",
+          "type": "array"
+        },
+        "estado": {
+          "enum": [
+            "conferida",
+            "divergente",
+            "nao_comprovada",
+            "nao_aplicavel"
+          ],
+          "title": "Estado",
+          "type": "string"
+        },
+        "ids_distintos": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ids Distintos"
+        },
+        "ids_repetidos": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ids Repetidos"
+        },
+        "recebidas": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recebidas"
+        },
+        "snapshot_transacional": {
+          "const": false,
+          "title": "Snapshot Transacional",
+          "type": "boolean"
+        },
+        "total_antes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total Antes"
+        },
+        "total_depois": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total Depois"
+        }
+      },
+      "required": [
+        "total_antes",
+        "total_depois",
+        "recebidas",
+        "ids_distintos",
+        "ids_repetidos",
+        "campo_id",
+        "estado",
+        "completa",
+        "snapshot_transacional",
+        "controles"
+      ],
+      "title": "Cobertura",
+      "type": "object"
+    },
+    "ControleBruto": {
+      "additionalProperties": false,
+      "properties": {
+        "arquivo": {
+          "title": "Arquivo",
+          "type": "string"
+        },
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "bytes_armazenados": {
+          "minimum": 0,
+          "title": "Bytes Armazenados",
+          "type": "integer"
+        },
+        "cabecalhos": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Cabecalhos",
+          "type": "object"
+        },
+        "compressao": {
+          "enum": [
+            "gzip",
+            "nenhuma"
+          ],
+          "title": "Compressao",
+          "type": "string"
+        },
+        "fim": {
+          "format": "date-time",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+          "title": "Fim",
+          "type": "string"
+        },
+        "formato": {
+          "enum": [
+            "json",
+            "xml"
+          ],
+          "title": "Formato",
+          "type": "string"
+        },
+        "http_status": {
+          "const": 200,
+          "title": "Http Status",
+          "type": "integer"
+        },
+        "inicio": {
+          "format": "date-time",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+          "title": "Inicio",
+          "type": "string"
+        },
+        "numero": {
+          "minimum": 1,
+          "title": "Numero",
+          "type": "integer"
+        },
+        "papel": {
+          "enum": [
+            "contagem_antes",
+            "contagem_depois",
+            "ids",
+            "crs"
+          ],
+          "title": "Papel",
+          "type": "string"
+        },
+        "parametros": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Parametros",
+          "type": "object"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "url": {
+          "pattern": "^https://[^\\s]+$",
+          "title": "Url",
+          "type": "string"
+        },
+        "url_solicitada": {
+          "pattern": "^https://[^\\s]+$",
+          "title": "Url Solicitada",
+          "type": "string"
+        },
+        "valor_declarado": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "const": "unknown",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Valor Declarado"
+        }
+      },
+      "required": [
+        "numero",
+        "url_solicitada",
+        "url",
+        "parametros",
+        "inicio",
+        "fim",
+        "http_status",
+        "arquivo",
+        "sha256",
+        "bytes",
+        "bytes_armazenados",
+        "compressao",
+        "cabecalhos",
+        "formato",
+        "papel",
+        "valor_declarado"
+      ],
+      "title": "ControleBruto",
+      "type": "object"
+    },
+    "ErroBruto": {
+      "additionalProperties": false,
+      "properties": {
+        "http_status": {
+          "anyOf": [
+            {
+              "maximum": 599,
+              "minimum": 100,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Http Status"
+        },
+        "mensagem": {
+          "minLength": 1,
+          "title": "Mensagem",
+          "type": "string"
+        },
+        "tipo": {
+          "enum": [
+            "HTTP404",
+            "SourceUnavailableError",
+            "ParseError",
+            "ResourceLimitError",
+            "ContractViolationError",
+            "OSError",
+            "CancelledError",
+            "KeyboardInterrupt"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "pattern": "^https://[^\\s]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Url"
+        }
+      },
+      "required": [
+        "tipo",
+        "mensagem",
+        "http_status",
+        "url"
+      ],
+      "title": "ErroBruto",
+      "type": "object"
+    },
+    "EvidenciaCRS": {
+      "additionalProperties": false,
+      "properties": {
+        "arquivo": {
+          "title": "Arquivo",
+          "type": "string"
+        },
+        "localizador": {
+          "minLength": 1,
+          "title": "Localizador",
+          "type": "string"
+        },
+        "tipo": {
+          "enum": [
+            "pagina",
+            "controle",
+            "prj"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "valor": {
+          "minLength": 1,
+          "title": "Valor",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "arquivo",
+        "localizador",
+        "valor"
+      ],
+      "title": "EvidenciaCRS",
+      "type": "object"
+    },
+    "LimitesManifesto": {
+      "additionalProperties": false,
+      "description": "Os seis limites efetivos de uma tentativa, como ficam em ``opcoes.limites``: todos obrigatórios.",
+      "properties": {
+        "max_bytes_ids": {
+          "minimum": 1,
+          "title": "Max Bytes Ids",
+          "type": "integer"
+        },
+        "max_bytes_pagina": {
+          "minimum": 1,
+          "title": "Max Bytes Pagina",
+          "type": "integer"
+        },
+        "max_bytes_recurso": {
+          "minimum": 1,
+          "title": "Max Bytes Recurso",
+          "type": "integer"
+        },
+        "max_ids": {
+          "minimum": 1,
+          "title": "Max Ids",
+          "type": "integer"
+        },
+        "max_paginas": {
+          "minimum": 1,
+          "title": "Max Paginas",
+          "type": "integer"
+        },
+        "max_segundos": {
+          "exclusiveMinimum": 0,
+          "title": "Max Segundos",
+          "type": "number"
+        }
+      },
+      "required": [
+        "max_bytes_recurso",
+        "max_bytes_pagina",
+        "max_paginas",
+        "max_ids",
+        "max_bytes_ids",
+        "max_segundos"
+      ],
+      "title": "LimitesManifesto",
+      "type": "object"
+    },
+    "Opcoes": {
+      "additionalProperties": false,
+      "properties": {
+        "compactar": {
+          "title": "Compactar",
+          "type": "boolean"
+        },
+        "limites": {
+          "$ref": "#/$defs/LimitesManifesto"
+        },
+        "tamanho_pagina": {
+          "anyOf": [
+            {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Tamanho Pagina"
+        }
+      },
+      "required": [
+        "tamanho_pagina",
+        "compactar",
+        "limites"
+      ],
+      "title": "Opcoes",
+      "type": "object"
+    },
+    "PaginaBruta": {
+      "additionalProperties": false,
+      "properties": {
+        "arquivo": {
+          "title": "Arquivo",
+          "type": "string"
+        },
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "bytes_armazenados": {
+          "minimum": 0,
+          "title": "Bytes Armazenados",
+          "type": "integer"
+        },
+        "cabecalhos": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Cabecalhos",
+          "type": "object"
+        },
+        "compressao": {
+          "enum": [
+            "gzip",
+            "nenhuma"
+          ],
+          "title": "Compressao",
+          "type": "string"
+        },
+        "crs": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Crs"
+        },
+        "feicoes_recebidas": {
+          "minimum": 0,
+          "title": "Feicoes Recebidas",
+          "type": "integer"
+        },
+        "fim": {
+          "format": "date-time",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+          "title": "Fim",
+          "type": "string"
+        },
+        "formato": {
+          "enum": [
+            "esri_json",
+            "gml",
+            "geojson"
+          ],
+          "title": "Formato",
+          "type": "string"
+        },
+        "http_status": {
+          "const": 200,
+          "title": "Http Status",
+          "type": "integer"
+        },
+        "ids_distintos": {
+          "minimum": 0,
+          "title": "Ids Distintos",
+          "type": "integer"
+        },
+        "inicio": {
+          "format": "date-time",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+          "title": "Inicio",
+          "type": "string"
+        },
+        "numero": {
+          "minimum": 1,
+          "title": "Numero",
+          "type": "integer"
+        },
+        "paginacao": {
+          "discriminator": {
+            "mapping": {
+              "fid": "#/$defs/PaginacaoFID",
+              "offset": "#/$defs/PaginacaoOffset"
+            },
+            "propertyName": "tipo"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/PaginacaoOffset"
+            },
+            {
+              "$ref": "#/$defs/PaginacaoFID"
+            }
+          ],
+          "title": "Paginacao"
+        },
+        "parametros": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Parametros",
+          "type": "object"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "total_declarado": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "const": "unknown",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total Declarado"
+        },
+        "url": {
+          "pattern": "^https://[^\\s]+$",
+          "title": "Url",
+          "type": "string"
+        },
+        "url_solicitada": {
+          "pattern": "^https://[^\\s]+$",
+          "title": "Url Solicitada",
+          "type": "string"
+        }
+      },
+      "required": [
+        "numero",
+        "url_solicitada",
+        "url",
+        "parametros",
+        "inicio",
+        "fim",
+        "http_status",
+        "arquivo",
+        "sha256",
+        "bytes",
+        "bytes_armazenados",
+        "compressao",
+        "cabecalhos",
+        "formato",
+        "paginacao",
+        "feicoes_recebidas",
+        "ids_distintos",
+        "total_declarado",
+        "crs"
+      ],
+      "title": "PaginaBruta",
+      "type": "object"
+    },
+    "PaginacaoFID": {
+      "additionalProperties": false,
+      "properties": {
+        "max": {
+          "title": "Max",
+          "type": "integer"
+        },
+        "min": {
+          "title": "Min",
+          "type": "integer"
+        },
+        "quantidade": {
+          "minimum": 1,
+          "title": "Quantidade",
+          "type": "integer"
+        },
+        "tipo": {
+          "const": "fid",
+          "title": "Tipo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "min",
+        "max",
+        "quantidade"
+      ],
+      "title": "PaginacaoFID",
+      "type": "object"
+    },
+    "PaginacaoOffset": {
+      "additionalProperties": false,
+      "properties": {
+        "inicio": {
+          "minimum": 0,
+          "title": "Inicio",
+          "type": "integer"
+        },
+        "quantidade": {
+          "minimum": 1,
+          "title": "Quantidade",
+          "type": "integer"
+        },
+        "tipo": {
+          "const": "offset",
+          "title": "Tipo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "inicio",
+        "quantidade"
+      ],
+      "title": "PaginacaoOffset",
+      "type": "object"
+    },
+    "Selecao": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Bbox"
+        },
+        "bbox_crs": {
+          "anyOf": [
+            {
+              "enum": [
+                "EPSG:4674",
+                "EPSG:4326"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Bbox Crs"
+        },
+        "camada": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Camada"
+        },
+        "edicao": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Edicao"
+        },
+        "natureza": {
+          "anyOf": [
+            {
+              "enum": [
+                "publico",
+                "privado"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Natureza"
+        },
+        "uf": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Uf"
+        }
+      },
+      "required": [
+        "uf",
+        "bbox",
+        "bbox_crs",
+        "camada",
+        "edicao",
+        "natureza"
+      ],
+      "title": "Selecao",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Uma linha do ``manifesto.jsonl`` (schema 1.0.0); a validação confere também os invariantes cruzados do contrato.",
+  "properties": {
+    "agrobr_version": {
+      "minLength": 1,
+      "title": "Agrobr Version",
+      "type": "string"
+    },
+    "arquivo": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Arquivo"
+    },
+    "avisos": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Avisos",
+      "type": "array"
+    },
+    "bytes": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bytes"
+    },
+    "bytes_armazenados": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bytes Armazenados"
+    },
+    "cabecalhos": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Cabecalhos",
+      "type": "object"
+    },
+    "cobertura": {
+      "$ref": "#/$defs/Cobertura"
+    },
+    "coleta_id": {
+      "minLength": 1,
+      "title": "Coleta Id",
+      "type": "string"
+    },
+    "compressao": {
+      "enum": [
+        "gzip",
+        "nenhuma"
+      ],
+      "title": "Compressao",
+      "type": "string"
+    },
+    "consulta_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Consulta Id",
+      "type": "string"
+    },
+    "controles": {
+      "items": {
+        "$ref": "#/$defs/ControleBruto"
+      },
+      "title": "Controles",
+      "type": "array"
+    },
+    "crs": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Crs"
+    },
+    "crs_evidencia": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EvidenciaCRS"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "erro": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErroBruto"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "feicoes": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Feicoes"
+    },
+    "fim": {
+      "format": "date-time",
+      "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+      "title": "Fim",
+      "type": "string"
+    },
+    "fonte": {
+      "minLength": 1,
+      "title": "Fonte",
+      "type": "string"
+    },
+    "formato": {
+      "enum": [
+        "zip",
+        "esri_json",
+        "gml",
+        "geojson"
+      ],
+      "title": "Formato",
+      "type": "string"
+    },
+    "http_fim": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Http Fim"
+    },
+    "http_inicio": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Http Inicio"
+    },
+    "http_status": {
+      "anyOf": [
+        {
+          "maximum": 599,
+          "minimum": 100,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Http Status"
+    },
+    "inicio": {
+      "format": "date-time",
+      "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+      "title": "Inicio",
+      "type": "string"
+    },
+    "modo": {
+      "enum": [
+        "arquivo",
+        "paginado"
+      ],
+      "title": "Modo",
+      "type": "string"
+    },
+    "nome": {
+      "minLength": 1,
+      "title": "Nome",
+      "type": "string"
+    },
+    "opcoes": {
+      "$ref": "#/$defs/Opcoes"
+    },
+    "paginas": {
+      "items": {
+        "$ref": "#/$defs/PaginaBruta"
+      },
+      "title": "Paginas",
+      "type": "array"
+    },
+    "parametros": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Parametros",
+      "type": "object"
+    },
+    "recurso": {
+      "minLength": 1,
+      "title": "Recurso",
+      "type": "string"
+    },
+    "registrado_em": {
+      "format": "date-time",
+      "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(\\.\\d{1,6})?Z$",
+      "title": "Registrado Em",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selecao": {
+      "$ref": "#/$defs/Selecao"
+    },
+    "sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Sha256"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "erro",
+        "ausente_na_fonte"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "tipo": {
+      "const": "recurso",
+      "title": "Tipo",
+      "type": "string"
+    },
+    "url": {
+      "pattern": "^https://[^\\s]+$",
+      "title": "Url",
+      "type": "string"
+    },
+    "url_solicitada": {
+      "pattern": "^https://[^\\s]+$",
+      "title": "Url Solicitada",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "tipo",
+    "fonte",
+    "recurso",
+    "nome",
+    "consulta_id",
+    "coleta_id",
+    "status",
+    "inicio",
+    "fim",
+    "registrado_em",
+    "url_solicitada",
+    "url",
+    "parametros",
+    "selecao",
+    "opcoes",
+    "modo",
+    "formato",
+    "crs",
+    "crs_evidencia",
+    "http_status",
+    "http_inicio",
+    "http_fim",
+    "arquivo",
+    "sha256",
+    "bytes",
+    "bytes_armazenados",
+    "compressao",
+    "cabecalhos",
+    "paginas",
+    "controles",
+    "feicoes",
+    "cobertura",
+    "erro",
+    "avisos",
+    "agrobr_version"
+  ],
+  "title": "RecursoBruto",
+  "type": "object"
+}
